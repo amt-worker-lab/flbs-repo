@@ -1,0 +1,24 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": [ "*" ],
+      "js": [ "global.js", "script.js" ],
+      "matches": ["http://*/*","https://*/*"],
+      "run_at": "document_idle",
+      "all_frames": true
+   } ],
+   "background": {
+      "scripts": ["eventPage.js"]
+   },
+   "permissions": [
+		"http://*/",
+		"https://*/"
+   ],
+   "converted_from_user_script": false,
+   "description": "",
+   "key": "Mt2SWnq1lkxE25k7wxESx5b7FJoOlQJPWnqkqWAoAaU=",
+   "name": "AMT, Core, All Pages",
+   "version": "1.0",
+   "manifest_version": 2
+}

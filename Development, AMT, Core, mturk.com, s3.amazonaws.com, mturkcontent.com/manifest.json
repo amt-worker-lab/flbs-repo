@@ -1,0 +1,38 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": ["https://*.mturk.com/*", "https://s3.amazonaws.com/*", "https://*.mturkcontent.com/dynamic/hit*"],
+      "js": [ "global.js", "includes/Event.js", "includes/Magnifier.js", "test.js", "script.js" ],
+      "matches": ["http://*/*","https://*/*"],
+      "run_at": "document_idle",
+      "all_frames": true
+   } ],
+   "background": {
+      "scripts": ["eventPage.js"]
+   },
+   "permissions": [
+		"http://*/",
+		"https://*/",
+		"tabs"
+   ],
+   "browser_action": {
+		"default_icon": {
+			"19": "images/RobGTX_Cardinal.png",
+			"38": "images/RobGTX_Cardinal.png"
+		},
+		"default_title": "AMT, Core, mturk.com",		// optional; shown in tooltip
+		"default_popup": "popup.html"			// optional
+   },
+   "web_accessible_resources": ["images/*.ico"],
+   "icons": { "16": "/images/favicon.ico"},
+   "converted_from_user_script": false,
+   "description": "",
+   "key": "pF488cx8hKR9ZIhRXinp8eWvOkdWYJUvBGTDLsuivRs=",
+   "name": "AMT, Core, mturk.com, s3.amazonaws.com, mturkcontent.com",
+   "version": "1.0",
+   "manifest_version": 2
+}
+
+
+ 

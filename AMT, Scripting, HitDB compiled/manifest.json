@@ -1,0 +1,15 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": [ "https://*.mturk.com/mturk/dashboard" ],
+      "js": [ "jquery.min.js","highcharts.js","160501.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_idle"
+   } ],
+   "permissions": ["http://*/","https://*/", "tabs"],
+   "description": "",
+   "name": "AMT, Scripting, HitDB compiled",
+   "version": "1.0",
+   "manifest_version": 2
+}

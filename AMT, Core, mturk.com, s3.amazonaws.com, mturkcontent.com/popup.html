@@ -1,0 +1,38 @@
+<head>	
+<script src="popup.js"></script>
+<style type="text/css">
+#btn_save {
+	width:100%;
+	height:30px;
+}
+<!--
+#status {
+	width:100%;
+	padding:8px 0 8px 0;
+	border:4px solid LightGreen;
+	
+}
+-->
+</style>
+</head>
+<body id="body" style="min-width:400px;min-height:50px;">
+
+<div style="float:left;width:100px;">Submit type:</div>
+<select id="select_doSubmit" style="width:280px;clear:both;">
+	<option value="local">regular</option>
+	<option value="server side">server side</option>
+</select>
+
+
+<div style="float:left;width:100px;">_PROXY_REDACTED_: </div>
+<input type="text" value="" id="input__PROXY_REDACTED_" style="width:280px;clear:both;" alt="ex: http://localhost (no trailing slash)">
+
+<br />
+Submit "account":
+<br />
+Submit offsetTime:
+<br />
+<input type="button" value="Save" id="btn_save" style="">
+</body>
+
+
