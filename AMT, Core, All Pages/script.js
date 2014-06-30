@@ -325,10 +325,14 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Andrew_Ryan_guidestar_stats(event.data);
 			}
+			if (event.data.task == 'AMT__Robin_Demaria_smartagora_captcha' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				AMT__Robin_Demaria_smartagora_captcha(event.data);
+			}
 		}
 	}
 	/*
-	 * Andrew Ryan
+	 * AMT__all_pages_util
 	 * 
 	 */
 	function AMT__all_pages_util(r) {
@@ -362,6 +366,58 @@ function load()
 			
 			
 		
+	}
+	/*
+	 * Robin Demaria
+	 * 
+	 */
+	function AMT__Robin_Demaria_smartagora_captcha(r) {
+		//extend
+		MT___all_pages_extend();
+		
+		// r.name,subject,email,body
+		console.log(r);
+		
+		
+		if (document.body.innerHTML.indexOf('<h4 class="success pngfix"><span><a href="#" rel="systemMessage" class="hideThis">Cacher ce message</a></span>') != -1) {
+			
+			// send complete
+			parent.postMessage(
+				{
+					key: 'AMT__Robin_Demaria_smartagora_captcha__complete',
+					data: 'Cacher ce message'
+				},
+				"*"
+			);
+			return;
+		}
+		
+		// Here?
+		document.getElementById('your_name').value = r.o.name;
+		document.getElementById('your_email').value = r.o.email;
+		document.getElementById('your_subject').value = r.o.subject;
+		document.getElementById('your_message').value = r.o.body;
+		
+		GM_addStyle('.captcha {zoom:1.2;position:absolute;top:0;left:0;}');
+		
+		setTimeout(function() {
+			document.getElementById('captcha').focus();
+		}, 400);
+		setTimeout(function() {
+			document.getElementById('captcha').focus();
+		}, 800);
+		
+		document.getElementById('captcha').addEventListener('keyup', function() {
+			console.log(this.value);
+			if (this.value.length >= 5) {
+				// go to next!
+				new AMT___core_factory().nextWindow();
+				//~ new AMT___core_factory().nextTab();
+				
+				document.getElementById('submit').click();
+			}
+			
+		}, false);
 	}
 	/*
 	 * AMT__x8_Data_find_executives

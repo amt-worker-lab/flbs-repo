@@ -832,6 +832,17 @@ AMT___core_factory.prototype.nextTab = function() {
 				}
 			);
 }
+//
+AMT___core_factory.prototype.nextWindow = function() {
+	console.log('core_nextWindow');
+	chrome.extension.sendRequest({
+			core_nextWindow: true
+		},
+		function(response)
+		{
+		}
+	);
+}
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
 	
 	// Is there an iframe on the page?

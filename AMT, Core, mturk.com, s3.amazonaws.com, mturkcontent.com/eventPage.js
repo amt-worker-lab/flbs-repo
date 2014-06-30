@@ -1,4 +1,17 @@
 
+// NEXT WINDOW
+var next_window__windowIds = []
+function __js_inarray(array, needle) // //
+{
+	for (var i in array)
+	{
+		if (array[i] == needle)
+			return true;
+	}
+	return false;
+}
+
+// SHOW TABS Q
 var showTabsQ = function() {
 
 };
@@ -59,7 +72,7 @@ showTabsQ.addTab = function(tabWindowPair) {
 
 
 
-function showNextTab() {
+function showNextTab() { //argv currentWindow
 	console.log('FUNC.showNextTab');
 	//~ console.log(this);
 	
@@ -68,6 +81,11 @@ function showNextTab() {
 		console.log('Commanded to switch: Empty Q');
 		return;
 	}
+	
+	// To consider...
+	// VAR CURRENTWINDOW
+	// currentWindow= true  => 
+	// currentWindow= false => 
 	
 	//Get all of the active tabs
 	// Added currentWindow:true
@@ -390,8 +408,89 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				{
 					nextTab = allTabs[0].id;
 				}
-				chrome.tabs.update(nextTab, {active: true});				
+				chrome.tabs.update(nextTab, {active: true});
 			});
+		});
+	}
+	
+	/**
+	 * request.core_nextWindow
+	 * 
+	 * This will change to the next available window that is not:
+	 * a) minimized; and b) focused. It will add this window to an
+	 * array of next_window__windowIds[]. When all windows have been
+	 * added to the array the window in first position in array
+	 * is shifted off of the front, focused, and added to the end
+	 * of the array.
+	 * 
+	 * @param, global: next_window__windowIds = []
+	 * [ win1 -changedTo @0.1, win2 -changedTo @0.2, ... winN  -changedTo @0.N ]
+	 */
+	if(request.core_nextWindow)
+	{
+		
+		//~ chrome.windows.getLastFocused({}, function(window) { // RETURN THE "FOCUSED=TRUE" WINDOW
+			//~ console.log(window.id);
+		//~ });
+		
+		chrome.windows.getAll({}, function(windows) { // []
+			
+			//~ // FIND THE LARGEST WINDOW
+			//~ var largest = 0;
+			//~ var s = windows[i].height
+			
+			next_window__windowIds
+			
+			var available_win = {};
+			
+			for (var i in windows) {
+				if (windows[i].focused) continue;
+				if (windows[i].state == 'minimized') continue; // normal, min, maximized, fullscreen
+				
+				// new win?
+				if (!__js_inarray(next_window__windowIds, windows[i].id)) {
+					next_window__windowIds.push(windows[i].id);
+					chrome.windows.update(windows[i].id, {focused: true});
+					return;
+				}
+				
+				// SET THIS TO THE WINDOW OBJECT
+				available_win[windows[i].id] = windows[i];
+				
+				//~ available_win[windows[i]] = true;
+				
+				//~ available_win.push(windows[i]);
+				
+				//~ console.log(windows[i]);
+				//~ 
+			}
+			
+			// Get first from next_window__windowIds
+			// that is in available_win.
+			for (var i in next_window__windowIds) {
+				//~ if (next_window__windowIds[i].focused) continue;
+				//~ if (next_window__windowIds[i].state == 'minimized') continue; // normal, min, maximized, fullscreen
+				
+				if  (
+					available_win.hasOwnProperty(next_window__windowIds[i]) //&&
+					//~ !available_win[next_window__windowIds[i]].focused &&
+					//~ available_win[next_window__windowIds[i]].state != 'minimized'
+					)
+				{
+					var next = next_window__windowIds[i];
+					next_window__windowIds.splice(i, 0, next); // remove and place @ end!
+					//next_window__windowIds.splice(i, 0); // remove 
+					
+					chrome.windows.update(next, {focused: true});
+					break;
+				}
+			}
+			
+			//~ // add to array
+			//~ next_window__windowIds.push(wid);
+			//~ 
+			//~ // update
+			//~ chrome.windows.update(windows[0].id, {active: true});
 		});
 	}
 

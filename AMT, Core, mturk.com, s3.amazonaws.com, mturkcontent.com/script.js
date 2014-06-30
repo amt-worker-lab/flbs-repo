@@ -169,6 +169,17 @@ function MT__bold(o, arr, options_object) {
  */
 function MT__RUN() {
 	
+	/*s = 'Below is a table of interests. An interest can be anything. The first interest'
+	if(ih.indexOf(s) != -1)
+	{
+		console.log('ran');
+		document.getElementById('turk_interest_match_result_interest_id_0').onclick = document.getElementById('turk_interest_match_result_interest_id_- 1' function() {
+			//doSubmit();
+		}
+		
+	}*/
+	
+	
 	//
 	//
 	//Testing Tab-Switching, uses Five Star Colorado
@@ -3403,6 +3414,123 @@ function MT__RUN() {
 				}
 			});
 		}
+	}
+	
+	//
+	// Robin Demaria
+	// 
+	// 
+	var s = '<fieldset><strong>Go to&nbsp;</strong><b style="font-family: Verdana, Geneva, sans-serif; font-size: 12px;"><a href="http://www.smartagora.com/fr/contact/form/id/';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:400px;margin-left:40px !important;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;zoom:0.8;}'); //;width:100%//margin-left:-40px;
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var site = document.getElementsByTagName('a')[0].href;
+		var fs = document.getElementsByTagName('fieldset');
+		var r;
+		var o = {
+			name:'',
+			email:'',
+			subject:'',
+			body:fs[4].innerText.replace( /4\. In "Votre message", paste ​​the following text:/, '').trim()
+			//~ body:fs[4].innerText.replace(/^4\. In "Votre message", paste ​​the following text:/, '').trim()
+		};
+		o.name		= /<label>1\. "Votre nom" is&nbsp;<u>([^<]+)<\/u><\/label>/.exec(ih)[1];
+		o.email		= /<label>2\. "Votre email" is&nbsp;<u>​([^<]+)<\/u><\/label>/.exec(ih)[1];
+		o.subject	= /<label>3\. "Sujet de votre message" is&nbsp;<u>([^<]+)<\/u><\/label>/.exec(ih)[1];
+		//~ o[i] = __js_clean_html_str(o[i]).trim();
+		for (var i in o) {
+			if (i == 'body') break;
+			o[i] = __js_clean_html_str(o[i]).trim();
+		}
+		
+		//~ 
+		//~ var o = {
+			//~ name: td[1].innerText.trim(),
+			//~ country: td[5].innerText.trim(),
+			//~ name_cln: td[1].innerText.trim().replace(/[^\w\d]/g, '').toLowerCase()
+		//~ }
+	
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('iframe');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//~ //
+		//~ var d2 = document.createElement('input');
+		//~ d2.setAttribute('type','text');
+		//~ d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+		//~ d2.onblur = function() {
+			//~ this.value = this.value.replace(/\s+/g, ' ').trim();
+			//~ Charles_Devereux_politician_birth__wikipedia();
+		//~ }
+		//~ document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		d1.src = site;
+		
+		// ...
+		document.getElementsByName('Done')[0].checked = true;
+		
+		// post message
+		var ifr_intv = setInterval(function() {
+			d1.contentWindow.postMessage({
+				task: 'AMT__Robin_Demaria_smartagora_captcha',
+				o: o
+			}, "*");
+		}, 1000);
+		// watch for complete
+		window.addEventListener("message", AMT__Robin_Demaria_smartagora_captcha__complete, false);
+		function AMT__Robin_Demaria_smartagora_captcha__complete(event)
+		{
+			//~ console.log(event);return;
+			var v = event.data;
+			if (v.key != 'AMT__Robin_Demaria_smartagora_captcha__complete')
+				return;
+			
+			if (v.data == 'Cacher ce message') {
+				console.log('sbm');
+				doSubmit();
+			}
+		}
+		
+		// ...
+		// blank + >any not N/A?
+		document.getElementById('submitButton').onclick = function() {
+			//~ var has_non_na = false;
+			//~ for (var i in q) {
+				//~ q[i].value = q[i].value.trim();
+				//~ if (q[i].value == '') {
+					//~ return false;
+				//~ } else if (q[i].value != 'N/A') {
+					//~ has_non_na = true;
+				//~ }
+			//~ }
+			//~ if (!has_non_na) {
+				//~ return false;
+			//~ }
+			//~ // any 
+			//~ showNextTab(); // next!
+		}
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
 	}
 	
 	//
@@ -10094,12 +10222,18 @@ function MT__RUN() {
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];
 		x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
-		x.onclick	= chios_system_geocoding__hide_show; //xx onclick
+		x.onclick		= chios_system_geocoding__hide_show; //xx onclick
+		x.setAttribute('style', 'overflow:auto;');
 		x.style.border = '2px solid LightGreen';
 		x.style.cursor = 'pointer';
 		x.style.height = '28px';
+		x.style.fontSize = '24px';
+		x.innerText = name + '\n' + x.innerText;
 		
-		
+		// ...
+		var d = document.createElement('script');
+		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
+		document.body.appendChild(d);
 		
 		//...
 		var d;
@@ -10108,7 +10242,7 @@ function MT__RUN() {
 		d = document.createElement('iframe');
 		d.setAttribute('id','d2');
 		d.setAttribute('style',
-			'position:absolute;top:80px;left:0;width:20%;height:'+tmp_h+';border:1px solid blue;background-color:#eee;visibility:visible;'
+			'position:absolute;top:80px;left:0;width:30%;height:'+tmp_h+';border:1px solid blue;background-color:#eee;visibility:visible;'
 		);//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d);
 		d.src = iframe_url;
@@ -57287,7 +57421,7 @@ qatar,80
 		b = b2 = b3 = b4 = '';
 		
 		b  = __js_clean_html_str(/Company:&nbsp;<b[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
-		b2 = __js_clean_html_str(/City:&nbsp;<b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
+		b2 = __js_clean_html_str(/City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
 		b3 = __js_clean_html_str(/State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
 		
 		b3 = b2 + ', ' + b3; //city, st
@@ -74641,8 +74775,12 @@ qatar,80
 		d2.value = o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';//str_num
 		d2c.value= '"'+o_phon+'" "'+o_stat+'"';
 		
-		var q = document.getElementById('Business Revenue');
+		// UPDATE JUN30
+		// REMOVED NUM EMPLOYEES?
+		var q = document.getElementById('Annual Revenue');
 		var q2= document.getElementById('Number of Employees');
+		//~ var q = document.getElementById('Business Revenue');
+		
 		
 		// local caching
 		var pages = {};
@@ -74765,8 +74903,8 @@ qatar,80
 			var r, r2, r3;
 			var sbm = true;
 			
-			var q = document.getElementById('Business Revenue');
-			var q2= document.getElementById('Number of Employees');
+			//~ var q = document.getElementById('Business Revenue');
+			//~ var q2= document.getElementById('Number of Employees');
 			
 			q.value = '';
 			if (q2)

@@ -1,7 +1,3 @@
-/**
- * THIS IS COPIED FROM script.js of core mturk.com
- * 
- */
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 
@@ -30,6 +26,12 @@ var AMT__Global_Vars = function()
 	var isPreview;
 	var groupId;
 	var hitId;
+	
+	//
+	var isQProduct = false;
+	//~ var AMT__Queue = {
+		//~ isQProduct: false
+	//~ };
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
@@ -151,6 +153,67 @@ AMT__Global_Vars.initializeHitId = function () {
  * 
  * */
 
+
+/**
+ * Tab Switching 
+ ***/
+isQProduct = false;
+
+function goToNextTab() {
+	chrome.extension.sendRequest({
+								  getActiveTab: true
+							  }, function(response) {
+								 //do nothign with the response
+							});
+}
+
+function addToTabsQ() {
+	isQProduct = true;
+	
+	//Tell eventPage to add this to the Q
+	chrome.extension.sendRequest({
+								  addToTabsQ: true
+							  }, function(response) {
+								//do nothing with the response
+							});
+}
+
+
+
+function showNextTab() {
+	isQProduct = false;
+	console.log('Showing Next Tab');
+	chrome.extension.sendRequest({
+									  showNextTab: true
+								  }, function(response) {
+									//do nothing with the response
+								});
+}
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.checkPreview)
+	{
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			//Only have the top window send back the response
+			console.log('Commanded to tell if idle');
+			sendResponse({isPreview: AMT__Global_Vars.isPreview});
+		}
+	}	
+	else if(request.isQProduct)
+	{
+		//Only have the top window sending back the response
+		console.log('Commanded to tell if isQProduct: ' + isQProduct);
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			sendResponse({isQProduct: isQProduct});
+		}
+	}
+});
+/**
+ * End of Tab Switching
+ * 
+ * **/
 
 /**
  * 
@@ -283,6 +346,7 @@ AMT___Floater.accept = function() {
 	return false;
 }
 
+// -800 to 400 on May 30 for Peter Heyneman.
 AMT___Floater.skip = function() {
 	if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
@@ -293,7 +357,7 @@ AMT___Floater.skip = function() {
 						, timeToSkip);
 						
 			}
-			, -800); //2200//800
+			, -800); //2200//800 
 	}
 	else if (AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
@@ -740,6 +804,115 @@ function FindObject(recordName,matchString, timeCutOff) {
 	//~ // this.___SKIP_SITES = ''; // would this work?
 //~ }
 
+/**
+ * AMT___events_factory
+ * AMT___requests_factory
+ * AMT___huge_vars_factory
+ * AMT___items_factory
+ * AMT___core_factory
+**/
+
+/**
+ * AMT___events_factory
+ *
+ * @
+ * @   
+ */
+function AMT___core_factory() {
+
+}
+//Shows the tab on the right of the curren tab
+//If there is no tab on the right, it shows the tab at the far left
+AMT___core_factory.prototype.nextTab = function() {
+	chrome.extension.sendRequest({
+					nextTab: true
+				},
+				function(response)
+				{
+				}
+			);
+}
+//
+AMT___core_factory.prototype.nextWindow = function() {
+	chrome.extension.sendRequest({
+			core_nextWindow: true
+		},
+		function(response)
+		{
+		}
+	);
+}
+AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
+	
+	// Is there an iframe on the page?
+	// If there is not then this is the end!
+	if (!document.getElementsByTagName('iframe').length)
+		return;
+	
+	// Still here. There is an iframe so listen for any
+	// messages that may come.
+	// ...
+	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
+	
+	// ...
+	function top_window__addEventListener_iframe__complete(event)
+	{
+		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		var v = event.data;
+		
+		if (v.action == 'return_button__showNextTab') {
+			//~ console.log('Will showNextTab on return');
+			
+			var b = getReturnButton();
+			console.log(b);
+			if (b) {
+				b.addEventListener('mouseup', function() {
+					//~ console.log('mouseup on return button');
+					
+					showNextTab();
+				}, false);
+				
+				//~ b.addEventListener('mouseup', v.callback_function, false);
+			}
+		}
+	}
+	
+	/**
+	 * var getReturnButton
+	 */
+	var getReturnButton = function() {
+		
+		/*<a href="/mturk/return?groupId=394TEHR260Y0TAZL4P5WWJA29V265A&amp;requesterId=A1DPN0ELREA8BX&amp;hitId=337RC3OW06B1S9HP5GO231XZJR8LVQ&amp;signature=69fiOfplYPuNDOqYG2nIVj%2F1V0Y%3D&amp;externalHit=true&amp;canAccept="><img src="/images/return_hit.gif" alt="" border="0" width="82" height="22"></a>*/
+		
+		var a = document.getElementsByTagName('a');
+		for (var i in a) {
+			if (i == 'length') break;
+			//~ console.log(a[i].href);
+			if (a[i].href && a[i].href.indexOf('https://www.mturk.com/mturk/return?') == 0) {
+				return a[i];
+				break;
+			}
+		}
+		
+		// here?
+		return false;
+	}
+}
+AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
+	
+	
+	parent.postMessage({
+		action: options.action //'return_button__showNextTab'
+		
+		//~ action: 'return',
+		//~ callback_function: callback_function
+	}, "*");
+	
+	//~ setInterval
+}
+//~ AMT___core_factory.prototype.iframe2parent__addEventListener_return_HIT = function(options, callback_function) {
+
 
 /**
  * AMT___events_factory
@@ -763,6 +936,756 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 	}
 }
 
+/**
+ * AMT___huge_vars_factory
+ *
+ * @
+ * @ 
+ * 
+ * @type
+ */
+function AMT___huge_vars_factory(obj_vars) {
+	// this.___SKIP_SITES = ''; // would this work?
+}
+AMT___huge_vars_factory.prototype.linkedin__industry_categories = function() {
+	return [
+		{
+			"code": "47",
+			"group": "corp fin",
+			"description": "Accounting"
+		},
+		{
+			"code": "94",
+			"group": "man tech tran",
+			"description": "Airlines/Aviation"
+		},
+		{
+			"code": "120",
+			"group": "leg org",
+			"description": "Alternative Dispute Resolution"
+		},
+		{
+			"code": "125",
+			"group": "hlth",
+			"description": "Alternative Medicine"
+		},
+		{
+			"code": "127",
+			"group": "art med",
+			"description": "Animation"
+		},
+		{
+			"code": "19",
+			"group": "good",
+			"description": "Apparel & Fashion"
+		},
+		{
+			"code": "50",
+			"group": "cons",
+			"description": "Architecture & Planning"
+		},
+		{
+			"code": "111",
+			"group": "art med rec",
+			"description": "Arts and Crafts"
+		},
+		{
+			"code": "53",
+			"group": "man",
+			"description": "Automotive"
+		},
+		{
+			"code": "52",
+			"group": "gov man",
+			"description": "Aviation & Aerospace"
+		},
+		{
+			"code": "41",
+			"group": "fin",
+			"description": "Banking"
+		},
+		{
+			"code": "12",
+			"group": "gov hlth tech",
+			"description": "Biotechnology"
+		},
+		{
+			"code": "36",
+			"group": "med rec",
+			"description": "Broadcast Media"
+		},
+		{
+			"code": "49",
+			"group": "cons",
+			"description": "Building Materials"
+		},
+		{
+			"code": "138",
+			"group": "corp man",
+			"description": "Business Supplies and Equipment"
+		},
+		{
+			"code": "129",
+			"group": "fin",
+			"description": "Capital Markets"
+		},
+		{
+			"code": "54",
+			"group": "man",
+			"description": "Chemicals"
+		},
+		{
+			"code": "90",
+			"group": "org serv",
+			"description": "Civic & Social Organization"
+		},
+		{
+			"code": "51",
+			"group": "cons gov",
+			"description": "Civil Engineering"
+		},
+		{
+			"code": "128",
+			"group": "cons corp fin",
+			"description": "Commercial Real Estate"
+		},
+		{
+			"code": "118",
+			"group": "tech",
+			"description": "Computer & Network Security"
+		},
+		{
+			"code": "109",
+			"group": "med rec",
+			"description": "Computer Games"
+		},
+		{
+			"code": "3",
+			"group": "tech",
+			"description": "Computer Hardware"
+		},
+		{
+			"code": "5",
+			"group": "tech",
+			"description": "Computer Networking"
+		},
+		{
+			"code": "4",
+			"group": "tech",
+			"description": "Computer Software"
+		},
+		{
+			"code": "48",
+			"group": "cons",
+			"description": "Construction"
+		},
+		{
+			"code": "24",
+			"group": "good man",
+			"description": "Consumer Electronics"
+		},
+		{
+			"code": "25",
+			"group": "good man",
+			"description": "Consumer Goods"
+		},
+		{
+			"code": "91",
+			"group": "org serv",
+			"description": "Consumer Services"
+		},
+		{
+			"code": "18",
+			"group": "good",
+			"description": "Cosmetics"
+		},
+		{
+			"code": "65",
+			"group": "agr",
+			"description": "Dairy"
+		},
+		{
+			"code": "1",
+			"group": "gov tech",
+			"description": "Defense & Space"
+		},
+		{
+			"code": "99",
+			"group": "art med",
+			"description": "Design"
+		},
+		{
+			"code": "69",
+			"group": "edu",
+			"description": "Education Management"
+		},
+		{
+			"code": "132",
+			"group": "edu org",
+			"description": "E-Learning"
+		},
+		{
+			"code": "112",
+			"group": "good man",
+			"description": "Electrical/Electronic Manufacturing"
+		},
+		{
+			"code": "28",
+			"group": "med rec",
+			"description": "Entertainment"
+		},
+		{
+			"code": "86",
+			"group": "org serv",
+			"description": "Environmental Services"
+		},
+		{
+			"code": "110",
+			"group": "corp rec serv",
+			"description": "Events Services"
+		},
+		{
+			"code": "76",
+			"group": "gov",
+			"description": "Executive Office"
+		},
+		{
+			"code": "122",
+			"group": "corp serv",
+			"description": "Facilities Services"
+		},
+		{
+			"code": "63",
+			"group": "agr",
+			"description": "Farming"
+		},
+		{
+			"code": "43",
+			"group": "fin",
+			"description": "Financial Services"
+		},
+		{
+			"code": "38",
+			"group": "art med rec",
+			"description": "Fine Art"
+		},
+		{
+			"code": "66",
+			"group": "agr",
+			"description": "Fishery"
+		},
+		{
+			"code": "34",
+			"group": "rec serv",
+			"description": "Food & Beverages"
+		},
+		{
+			"code": "23",
+			"group": "good man serv",
+			"description": "Food Production"
+		},
+		{
+			"code": "101",
+			"group": "org",
+			"description": "Fund-Raising"
+		},
+		{
+			"code": "26",
+			"group": "good man",
+			"description": "Furniture"
+		},
+		{
+			"code": "29",
+			"group": "rec",
+			"description": "Gambling & Casinos"
+		},
+		{
+			"code": "145",
+			"group": "cons man",
+			"description": "Glass, Ceramics & Concrete"
+		},
+		{
+			"code": "75",
+			"group": "gov",
+			"description": "Government Administration"
+		},
+		{
+			"code": "148",
+			"group": "gov",
+			"description": "Government Relations"
+		},
+		{
+			"code": "140",
+			"group": "art med",
+			"description": "Graphic Design"
+		},
+		{
+			"code": "124",
+			"group": "hlth rec",
+			"description": "Health, Wellness and Fitness"
+		},
+		{
+			"code": "68",
+			"group": "edu",
+			"description": "Higher Education"
+		},
+		{
+			"code": "14",
+			"group": "hlth",
+			"description": "Hospital & Health Care"
+		},
+		{
+			"code": "31",
+			"group": "rec serv tran",
+			"description": "Hospitality"
+		},
+		{
+			"code": "137",
+			"group": "corp",
+			"description": "Human Resources"
+		},
+		{
+			"code": "134",
+			"group": "corp good tran",
+			"description": "Import and Export"
+		},
+		{
+			"code": "88",
+			"group": "org serv",
+			"description": "Individual & Family Services"
+		},
+		{
+			"code": "147",
+			"group": "cons man",
+			"description": "Industrial Automation"
+		},
+		{
+			"code": "84",
+			"group": "med serv",
+			"description": "Information Services"
+		},
+		{
+			"code": "96",
+			"group": "tech",
+			"description": "Information Technology and Services"
+		},
+		{
+			"code": "42",
+			"group": "fin",
+			"description": "Insurance"
+		},
+		{
+			"code": "74",
+			"group": "gov",
+			"description": "International Affairs"
+		},
+		{
+			"code": "141",
+			"group": "gov org tran",
+			"description": "International Trade and Development"
+		},
+		{
+			"code": "6",
+			"group": "tech",
+			"description": "Internet"
+		},
+		{
+			"code": "45",
+			"group": "fin",
+			"description": "Investment Banking"
+		},
+		{
+			"code": "46",
+			"group": "fin",
+			"description": "Investment Management"
+		},
+		{
+			"code": "73",
+			"group": "gov leg",
+			"description": "Judiciary"
+		},
+		{
+			"code": "77",
+			"group": "gov leg",
+			"description": "Law Enforcement"
+		},
+		{
+			"code": "9",
+			"group": "leg",
+			"description": "Law Practice"
+		},
+		{
+			"code": "10",
+			"group": "leg",
+			"description": "Legal Services"
+		},
+		{
+			"code": "72",
+			"group": "gov leg",
+			"description": "Legislative Office"
+		},
+		{
+			"code": "30",
+			"group": "rec serv tran",
+			"description": "Leisure, Travel & Tourism"
+		},
+		{
+			"code": "85",
+			"group": "med rec serv",
+			"description": "Libraries"
+		},
+		{
+			"code": "116",
+			"group": "corp tran",
+			"description": "Logistics and Supply Chain"
+		},
+		{
+			"code": "143",
+			"group": "good",
+			"description": "Luxury Goods & Jewelry"
+		},
+		{
+			"code": "55",
+			"group": "man",
+			"description": "Machinery"
+		},
+		{
+			"code": "11",
+			"group": "corp",
+			"description": "Management Consulting"
+		},
+		{
+			"code": "95",
+			"group": "tran",
+			"description": "Maritime"
+		},
+		{
+			"code": "97",
+			"group": "corp",
+			"description": "Market Research"
+		},
+		{
+			"code": "80",
+			"group": "corp med",
+			"description": "Marketing and Advertising"
+		},
+		{
+			"code": "135",
+			"group": "cons gov man",
+			"description": "Mechanical or Industrial Engineering"
+		},
+		{
+			"code": "126",
+			"group": "med rec",
+			"description": "Media Production"
+		},
+		{
+			"code": "17",
+			"group": "hlth",
+			"description": "Medical Devices"
+		},
+		{
+			"code": "13",
+			"group": "hlth",
+			"description": "Medical Practice"
+		},
+		{
+			"code": "139",
+			"group": "hlth",
+			"description": "Mental Health Care"
+		},
+		{
+			"code": "71",
+			"group": "gov",
+			"description": "Military"
+		},
+		{
+			"code": "56",
+			"group": "man",
+			"description": "Mining & Metals"
+		},
+		{
+			"code": "35",
+			"group": "art med rec",
+			"description": "Motion Pictures and Film"
+		},
+		{
+			"code": "37",
+			"group": "art med rec",
+			"description": "Museums and Institutions"
+		},
+		{
+			"code": "115",
+			"group": "art rec",
+			"description": "Music"
+		},
+		{
+			"code": "114",
+			"group": "gov man tech",
+			"description": "Nanotechnology"
+		},
+		{
+			"code": "81",
+			"group": "med rec",
+			"description": "Newspapers"
+		},
+		{
+			"code": "100",
+			"group": "org",
+			"description": "Non-Profit Organization Management"
+		},
+		{
+			"code": "57",
+			"group": "man",
+			"description": "Oil & Energy"
+		},
+		{
+			"code": "113",
+			"group": "med",
+			"description": "Online Media"
+		},
+		{
+			"code": "123",
+			"group": "corp",
+			"description": "Outsourcing/Offshoring"
+		},
+		{
+			"code": "87",
+			"group": "serv tran",
+			"description": "Package/Freight Delivery"
+		},
+		{
+			"code": "146",
+			"group": "good man",
+			"description": "Packaging and Containers"
+		},
+		{
+			"code": "61",
+			"group": "man",
+			"description": "Paper & Forest Products"
+		},
+		{
+			"code": "39",
+			"group": "art med rec",
+			"description": "Performing Arts"
+		},
+		{
+			"code": "15",
+			"group": "hlth tech",
+			"description": "Pharmaceuticals"
+		},
+		{
+			"code": "131",
+			"group": "org",
+			"description": "Philanthropy"
+		},
+		{
+			"code": "136",
+			"group": "art med rec",
+			"description": "Photography"
+		},
+		{
+			"code": "117",
+			"group": "man",
+			"description": "Plastics"
+		},
+		{
+			"code": "107",
+			"group": "gov org",
+			"description": "Political Organization"
+		},
+		{
+			"code": "67",
+			"group": "edu",
+			"description": "Primary/Secondary Education"
+		},
+		{
+			"code": "83",
+			"group": "med rec",
+			"description": "Printing"
+		},
+		{
+			"code": "105",
+			"group": "corp",
+			"description": "Professional Training & Coaching"
+		},
+		{
+			"code": "102",
+			"group": "corp org",
+			"description": "Program Development"
+		},
+		{
+			"code": "79",
+			"group": "gov",
+			"description": "Public Policy"
+		},
+		{
+			"code": "98",
+			"group": "corp",
+			"description": "Public Relations and Communications"
+		},
+		{
+			"code": "78",
+			"group": "gov",
+			"description": "Public Safety"
+		},
+		{
+			"code": "82",
+			"group": "med rec",
+			"description": "Publishing"
+		},
+		{
+			"code": "62",
+			"group": "man",
+			"description": "Railroad Manufacture"
+		},
+		{
+			"code": "64",
+			"group": "agr",
+			"description": "Ranching"
+		},
+		{
+			"code": "44",
+			"group": "cons fin good",
+			"description": "Real Estate"
+		},
+		{
+			"code": "40",
+			"group": "rec serv",
+			"description": "Recreational Facilities and Services"
+		},
+		{
+			"code": "89",
+			"group": "org serv",
+			"description": "Religious Institutions"
+		},
+		{
+			"code": "144",
+			"group": "gov man org",
+			"description": "Renewables & Environment"
+		},
+		{
+			"code": "70",
+			"group": "edu gov",
+			"description": "Research"
+		},
+		{
+			"code": "32",
+			"group": "rec serv",
+			"description": "Restaurants"
+		},
+		{
+			"code": "27",
+			"group": "good man",
+			"description": "Retail"
+		},
+		{
+			"code": "121",
+			"group": "corp org serv",
+			"description": "Security and Investigations"
+		},
+		{
+			"code": "7",
+			"group": "tech",
+			"description": "Semiconductors"
+		},
+		{
+			"code": "58",
+			"group": "man",
+			"description": "Shipbuilding"
+		},
+		{
+			"code": "20",
+			"group": "good rec",
+			"description": "Sporting Goods"
+		},
+		{
+			"code": "33",
+			"group": "rec",
+			"description": "Sports"
+		},
+		{
+			"code": "104",
+			"group": "corp",
+			"description": "Staffing and Recruiting"
+		},
+		{
+			"code": "22",
+			"group": "good",
+			"description": "Supermarkets"
+		},
+		{
+			"code": "8",
+			"group": "gov tech",
+			"description": "Telecommunications"
+		},
+		{
+			"code": "60",
+			"group": "man",
+			"description": "Textiles"
+		},
+		{
+			"code": "130",
+			"group": "gov org",
+			"description": "Think Tanks"
+		},
+		{
+			"code": "21",
+			"group": "good",
+			"description": "Tobacco"
+		},
+		{
+			"code": "108",
+			"group": "corp gov serv",
+			"description": "Translation and Localization"
+		},
+		{
+			"code": "92",
+			"group": "tran",
+			"description": "Transportation/Trucking/Railroad"
+		},
+		{
+			"code": "59",
+			"group": "man",
+			"description": "Utilities"
+		},
+		{
+			"code": "106",
+			"group": "fin tech",
+			"description": "Venture Capital & Private Equity"
+		},
+		{
+			"code": "16",
+			"group": "hlth",
+			"description": "Veterinary"
+		},
+		{
+			"code": "93",
+			"group": "tran",
+			"description": "Warehousing"
+		},
+		{
+			"code": "133",
+			"group": "good",
+			"description": "Wholesale"
+		},
+		{
+			"code": "142",
+			"group": "good man rec",
+			"description": "Wine and Spirits"
+		},
+		{
+			"code": "119",
+			"group": "tech",
+			"description": "Wireless"
+		},
+		{
+			"code": "103",
+			"group": "art med rec",
+			"description": "Writing and Editing"
+		}
+	]
+}
 /**
  * AMT___requests_factory
  *
@@ -1196,6 +2119,44 @@ AMT___requests_factory.prototype.general_functions__md5 = function(str)
   return temp.toLowerCase();
 }
 //
+AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, callback_func) //
+{
+	var kw = cs_object.keywords;
+	u = 'http://www.linkedin.com/vsearch/cj'+
+		'?type=companies'+
+		'&keywords='+encodeURIComponent(kw)+
+		'&orig=FCTD'+
+		'&rsid='+
+		'&pageKey=voltron_company_search_internal_jsp';
+	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			if (response.status != 200)
+				return;
+			
+			var r;
+			
+			//console.log(rs);
+			r = JSON.parse(rs);
+			
+			
+			var x = r.content.page.voltron_unified_search_json.search.results;
+			var y;
+			if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+				y = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '');
+			else
+				y = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '');
+			
+			callback_func({results:x, results_count:y, result: r});
+		}
+	});
+}
+//
 AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) //
 {
 	var jobid = jobid;
@@ -1221,6 +2182,8 @@ AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) /
  * 
  * @callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
  */
+// TODO
+// XXDONE Jun4 2014: MATCH "DOMAIN.COM" WITH "JOBID.JL" FOR CACHED FUTURE REQUESTS!
 AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_object, callback_function, seed_object) //
 {
 	/*
@@ -1261,142 +2224,220 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 	//~ console.log(data.split('&').join(' -d '));
 	//~ console.log(data.split('&').join(' -a '));
 	
+	/** Function scrapy__begin_scrape__process_completed
+	 * @param: input_object
+	 * @param: input_object.rs
+	 * @param: input_object.seed_object
+	 * @param: input_object.seed_object.callback__scrapy__begin_scrape__process_completed
+	 * 
+	 * @desc: helper function
+	*/
+	function scrapy__begin_scrape__process_completed( input_object ) {
+		
+		// callback_function(jobid, callback_obj, seed_object);
+		//~ console.log(input_object);
+		
+		var rs = input_object.rs;
+		var seed_object = input_object.seed_object;
+		//~ var jobid = input_object.jobid;
+		
+		// obj
+		// urls is: {"urls_priority": "none", "urls_url": "http://www.crossfitsolcity.com/sign-up/"}
+		var obj = rs.trim().split("\n");
+		var callback_obj = {
+			urls: {
+				high	:[],
+				low		:[],
+				none	:[],
+				outside	:[],
+				complete_high_to_low : [] // inclues all: high, low, none, outside
+			},
+			matches: []
+		}
+		if (obj.length) {
+			for (var i in obj) {
+				if (obj[i].trim().length == 0)
+					continue;
+				obj[i] = JSON.parse(obj[i]);
+				if (obj[i].email_contexts)	// is email context
+				{
+					obj[i].email_contexts = JSON.parse(obj[i].email_contexts);
+				}
+				if (obj[i].urls_url)	// is url
+				{ 
+					switch (obj[i].urls_priority) {
+						case 'high':
+							callback_obj.urls.high.push(obj[i]);
+							break;
+						case 'low':
+							callback_obj.urls.low.push(obj[i]);
+							break;
+						case 'none':
+							callback_obj.urls.none.push(obj[i]);
+							break;
+						case 'outside':
+							callback_obj.urls.outside.push(obj[i]);
+							break;
+					}
+				}
+				if (obj[i].email_email)
+					callback_obj.matches.push(obj[i]);
+				//~ if (callback_obj.matches.length)
+				//~ else 						// is match
+				//~ {
+					//~ callback_obj.matches.push(obj[i]);
+				//~ }
+			}
+		}
+		// make complete urls (high to none/outside)
+		// is {} object
+		// high, low, none, outside, (complete_high_to_low)
+		for (var tmp_priority in callback_obj.urls) {
+			for (var j in callback_obj.urls[tmp_priority]) {
+				if (j == 'complete_high_to_low') continue;
+				
+				callback_obj.urls.complete_high_to_low.push({
+					url		 : callback_obj.urls[tmp_priority][j].urls_url,
+					priority : tmp_priority
+				});
+			}
+		}
+		
+		// temp callback function?
+		if (seed_object.callback__scrapy__begin_scrape__process_completed) {
+			
+			var x = seed_object.callback__scrapy__begin_scrape__process_completed(callback_obj);
+			
+			if (x) { // RESPONSE IS TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+				return;
+			}
+		}
+		
+		//
+		// max powers
+		//
+		//~ console.log(callback_obj);
+		
+		callback_function(callback_obj, seed_object);
+		
+		//~ callback_function(jobid, callback_obj, seed_object);
+		
+	}
+	
+	// CACHE !! //
+	var rf		= new AMT___requests_factory();
+	var md5_url	= rf.general_functions__md5(data);//console.log(md5_url);
+	
 	GM_xmlhttpRequest({
-		method: 'POST',
-		url: AMT___POPUP___PROXY_REDACTED_+':6800/schedule.json', //http://localhost
-		data: data,
-		timeout: 10000,
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded"
-		},
-		onload: function (response) {
+		method: "GET",
+		url: MT___host + '/mturk/.cached/'+md5_url,
+		onload: function(response) {
 			var rs = response.responseText;
 			
-			console.log(rs);
-			
-			rs = JSON.parse(rs);
-			
-			var jobid = rs.jobid;
-			var complete_interval;
-			
-			// POLL FOR COMPLETION!!
-			complete_interval = setInterval(function() {
-				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: AMT___POPUP___PROXY_REDACTED_ + ':6800/listjobs.json?project=scrapy_amt', //http://localhost
-					timeout: 2000,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						rs = JSON.parse(rs);
-						
-						var finished;
-						var pending;
-						var running;
-						
-						finished = JSON.stringify(rs.finished);
-						if (finished.indexOf(jobid) != -1) { // done!
-							
-							clearInterval(complete_interval);
-							
-							// the local filepath is /var/www/html/development/scrapy/data/items/scrapy_amt/AMTSpider
-							
-							var item_url = AMT___POPUP___PROXY_REDACTED_ +
-								'/development/scrapy/data/items/scrapy_amt/AMTSpider/' +
-								jobid + '.jl';
-							
-							// RETRIEVE THE LIST!
-							GM_xmlhttpRequest({
-								method: 'GET',
-								url: item_url,
-								timeout: 4000,
-								onload: function (response) {
-									var rs = response.responseText;
-									
-									//rs = JSON.parse(rs);
-									
-									// obj
-									// urls is: {"urls_priority": "none", "urls_url": "http://www.crossfitsolcity.com/sign-up/"}
-									var obj = rs.trim().split("\n");
-									var callback_obj = {
-										urls: {
-											high	:[],
-											low		:[],
-											none	:[],
-											outside	:[],
-											complete_high_to_low : []
-										},
-										matches: []
-									}
-									if (obj.length) {
-										for (var i in obj) {
-											if (obj[i].trim().length == 0)
-												continue;
-											obj[i] = JSON.parse(obj[i]);
-											if (obj[i].email_contexts) {
-												obj[i].email_contexts = JSON.parse(obj[i].email_contexts);
-											}
-											if (obj[i].urls_url) { // is url
-												switch (obj[i].urls_priority) {
-													case 'high':
-														callback_obj.urls.high.push(obj[i]);
-														break;
-													case 'low':
-														callback_obj.urls.low.push(obj[i]);
-														break;
-													case 'none':
-														callback_obj.urls.none.push(obj[i]);
-														break;
-													case 'outside':
-														callback_obj.urls.outside.push(obj[i]);
-														break;
-												}
-											} else { // is match
-												callback_obj.matches.push(obj[i]);
-											}
-										}
-									}
-									// make complete urls (high to none/outside)
-									// is {} object
-									// high, low, none, outside, (complete_high_to_low)
-									for (var tmp_priority in callback_obj.urls) {
-										for (var j in callback_obj.urls[tmp_priority]) {
-											if (j == 'complete_high_to_low') continue;
-											
-											callback_obj.urls.complete_high_to_low.push({
-												url		 : callback_obj.urls[tmp_priority][j].urls_url,
-												priority : tmp_priority
-											});
-										}
-									}
-									
-									//
-									// max powers
-									//
-									
-									callback_function(jobid, callback_obj, seed_object);
-									
-									//callback_function(jobid, obj, seed_object);//
-								}
-							});
-						}
-						
-						// is the job still pending?
-						else {
-							pending = JSON.stringify(rs.pending);
-							running = JSON.stringify(rs.running);
-							if (pending.indexOf(jobid) == -1 && running.indexOf(jobid) == -1) { // cancelled ??
-								clearInterval(complete_interval);
-								callback_function(jobid, [], seed_object); // send blank
-							}
-						}
-					}
+			if (response.status == 200) {
+				scrapy__begin_scrape__process_completed({
+					rs:				rs,
+					seed_object:	seed_object
+					//~ jobid:			jobid,
 				});
-				
-			}, 4000);
+				return;
+			}
+			
+			// Here! This is a new request.
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: AMT___POPUP___PROXY_REDACTED_+':6800/schedule.json', //http://localhost
+				data: data,
+				timeout: 10000,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					console.log(rs);
+					
+					rs = JSON.parse(rs);
+					
+					var jobid = rs.jobid;
+					var complete_interval;
+					
+					// POLL FOR COMPLETION!!
+					complete_interval = setInterval(function() {
+						
+						GM_xmlhttpRequest({
+							method: 'GET',
+							url: AMT___POPUP___PROXY_REDACTED_ + ':6800/listjobs.json?project=scrapy_amt', //http://localhost
+							timeout: 2000,
+							onload: function (response) {
+								var rs = response.responseText;
+								
+								rs = JSON.parse(rs);
+								
+								var finished;
+								var pending;
+								var running;
+								
+								finished = JSON.stringify(rs.finished);
+								if (finished.indexOf(jobid) != -1) { // done!
+									
+									clearInterval(complete_interval);
+									
+									// the local filepath is /var/www/html/development/scrapy/data/items/scrapy_amt/AMTSpider
+									
+									var item_url = AMT___POPUP___PROXY_REDACTED_ +
+										'/development/scrapy/data/items/scrapy_amt/AMTSpider/' +
+										jobid + '.jl';
+									
+									// RETRIEVE THE LIST!
+									GM_xmlhttpRequest({
+										method: 'GET',
+										url: item_url,
+										timeout: 4000,
+										onload: function (response) {
+											var rs = response.responseText;
+											
+											// WRITE TO FILE!
+											rf.io__write_to_file(
+												{
+													data:		'AMT__serverSide_write__value='	+encodeURIComponent(response.responseText)+
+																'&AMT__serverSide_write__folder=.cached'+
+																'&AMT__serverSide_write__file='	+ md5_url,
+													rs:			response.responseText,	//rs
+													//~ jobid:		jobid,					//jobid
+													seed_object:seed_object,			//seed_object
+													host:		MT___host				//host
+												},
+												scrapy__begin_scrape__process_completed
+											);
+											
+											
+										}
+									});
+								}
+								
+								// is the job still pending?
+								else {
+									pending = JSON.stringify(rs.pending);
+									running = JSON.stringify(rs.running);
+									if (pending.indexOf(jobid) == -1 && running.indexOf(jobid) == -1) { // cancelled ??
+										clearInterval(complete_interval);
+										callback_function([], seed_object); // send blank
+										// REMOVED JOBID !! JUNE 5.
+										//callback_function(jobid, [], seed_object); // send blank
+									}
+								}
+							}
+						});
+						
+					}, 4000);
+				}
+			});
 		}
 	});
+	
+	
+	
 		// XXXXX SET A DEFAULT TIMEOUT FOR THIS TASK!
 		// b/c cpu sitting at max...
 		//~ var rf = new AMT___requests_factory();
@@ -1422,7 +2463,7 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 			
 			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
 			
-			console.log(rs);
+			//~ console.log(rs);
 			if (rs == '') //
 				rs = '[]'; // blank!!
 				
@@ -1430,6 +2471,160 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 			callback_function(database_object); // send this back!
 		}
 	});
+}
+// WRITE!
+AMT___requests_factory.prototype.database__write = function(database_object, callback_function) //
+{
+	var database_object = database_object;
+	var callback_function = callback_function;
+	
+	var u = 'AMT__database_write='+
+			'&AMT__database_write__query='+encodeURIComponent(database_object.query);
+	if (database_object.encodeStrings)
+		u +='&AMT__database_write__encodeStrings='+encodeURIComponent(JSON.stringify(database_object.encodeStrings));
+	
+	GM_xmlhttpRequest({
+		method: "POST",
+		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+		data: u,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) return;
+			
+			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
+			
+			//~ console.log(rs);
+			if (rs == '') //
+				rs = '[]'; // blank!!
+			
+			console.log(rs);
+			
+			try {
+				database_object.responseObject = JSON.parse(rs);
+			}
+			catch(e)
+			{
+				console.log(database_object);
+				console.log(rs);
+				console.log(e);
+				exit();
+			}
+			
+			// Here?
+			callback_function(database_object); // send this back!
+		}
+	});
+}
+//
+AMT___requests_factory.prototype.io__command_line_request = function(options_object, callback_function_complete) //
+{
+	var options_object				= options_object;
+	var callback_function_complete	= callback_function_complete;
+	
+	GM_xmlhttpRequest({
+		method: "POST",
+		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+		data: 'AMT__io__command_line_request=' + encodeURIComponent(JSON.stringify(options_object)),
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		onload: function(response) {
+			// DEBUG
+			//
+			//
+			//~ var rs = response.responseText;
+			//~ console.log(rs);
+			
+			//~ if (response.status != 200) return;
+			//~ options_object.responseText = rs;
+			//~ callback_function(download_object); // send this back!
+		}
+	});
+	
+	// set polling
+	// 
+	var xint = setInterval(function() {
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+			data: 'AMT__io__command_line_request__complete=' + encodeURIComponent(JSON.stringify(options_object)),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				if (rs == '') {
+					return;
+				}
+				
+				clearInterval(xint);
+				
+				//~ console.log(rs);
+				//~ echo json_encode($files);
+				//~ 
+				//~ options_object.rs = JSON.parse(rs);
+				
+				options_object.responseText = rs;
+				
+				callback_function_complete(options_object); // send this back!
+			}
+		});
+	}, 1000);
+}
+//
+AMT___requests_factory.prototype.io__wget_download_images = function(options_object, callback_function_complete) //
+{
+	var options_object				= options_object;
+	var callback_function_complete	= callback_function_complete;
+	
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: AMT___POPUP___PROXY_REDACTED_ +
+			'/mturk/util.php?AMT__io__wget_download_images=' +
+			'&AMT__io__wget_download_images_filename=' + encodeURIComponent(options_object.filename) +
+			'&AMT__io__wget_download_images_website='  + encodeURIComponent(options_object.website),
+		onload: function(response) {
+			var rs = response.responseText;
+			//~ if (response.status != 200) return;
+			//~ options_object.responseText = rs;
+			//~ callback_function(download_object); // send this back!
+		}
+	});
+	
+	// set polling
+	// rs = ["\/www.dcmeadows.com\/Portals\/0\/100_3452 button.jpg","\/www.dcmeadows.com\/Portals\/0\/nssl0081.jpg","\/www.dcmeadows.com\/wp-content\/plugins\/social-media-widget\/images\/default\/64\/facebook.png","\/www.dcmeadows.com\/wp-content\/plugins\/floatingsocialmediapopout\/Images\/FBFloat.png","\/www.paypalobjects.com\/en_US\/i\/scr\/pixel.gif","\/www.paypalobjects.com\/en_US\/i\/btn\/btn_buynowCC_LG.gif"]
+	var xint = setInterval(function() {
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: AMT___POPUP___PROXY_REDACTED_ +
+				'/mturk/util.php?AMT__io__wget_download_images__complete=' + 
+				'&AMT__io__wget_download_images_filename=' + encodeURIComponent(options_object.filename) +
+				'&AMT__io__wget_download_images_website='  + encodeURIComponent(options_object.website),
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				if (rs == '') {
+					return;
+				}
+				
+				clearInterval(xint);
+				
+				console.log(rs);
+				//~ echo json_encode($files);
+				
+				options_object.rs = JSON.parse(rs);
+				options_object.responseText = rs;
+				
+				callback_function_complete(options_object); // send this back!
+			}
+		});
+	}, 1000);
 }
 //
 AMT___requests_factory.prototype.io__download_file = function(download_object, callback_function) //
@@ -1494,9 +2689,11 @@ AMT___requests_factory.prototype.io__write_to_file = function(write_object, call
 	var write_object = write_object;
 	var callback_function = callback_function;
 	
+	var host = (!write_object.host) ? AMT___POPUP___PROXY_REDACTED_ : write_object.host;
+	
 	GM_xmlhttpRequest({
 		method: "POST",
-		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+		url: host + '/mturk/util.php',
 		data: write_object.data,
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"
@@ -1546,6 +2743,7 @@ AMT___requests_factory.prototype.io__read_file = function(file_object, callback_
 			
 			file_object.responseText	= rs;
 			file_object.response		= response;
+			file_object.status			= response.status;
 			
 			callback_function(file_object);
 			//~ var tmp_skip_sites = rs.split("\n");
@@ -1577,6 +2775,8 @@ AMT___requests_factory.prototype.io__send_email = function(email_object, callbac
 {
 	var email_object = email_object;
 	var callback_function = callback_function;
+	
+	//~ console.log(email_object);
 	
 	GM_xmlhttpRequest({ 
 		method: "POST",
@@ -1685,7 +2885,7 @@ function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 // switch select field of d1
-AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div) {
+AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
 	//var out_div = d1;
 	
 	var old_divs = out_div.getElementsByTagName('div');
@@ -1708,6 +2908,13 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 
 	out_div.appendChild(el_div);
 	
+	// ...
+	var input_send_success = (seed_object.input_send_success) ? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
+	
+	var do_submit_callback = (seed_object.do_submit_callback) ? seed_object.do_submit_callback : doSubmit;
+	
+	
+	// ...
 	for (var j in email_contexts) {
 		var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 		context = __js_clean_html_str(context);
@@ -1723,17 +2930,34 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		
 		var el_div = document.createElement('div');
 		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
+		
 		//el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
 		//newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
+		
 		el_div.innerHTML = context;
 		el_div.email = results_array.email_email;
+		el_div.complete = results_array.email_email;
+		
+		//input_success
+		el_div.input_send_success		= input_send_success;
+		
+		//do_submit_callback
+		el_div.do_submit_callback	= do_submit_callback;
+		
+		//onclick
 		el_div.onclick = function() {
-			//this.style.border = '8px solid LightGreen';
 			this.style.backgroundColor = 'LightGreen';
-			document.getElementById('Q1Url').value = this.email;
-			if (this.email.length > 6 && this.email.indexOf('@') != -1) {
-				doSubmit();
+			
+				
+			this.input_send_success.value = this.email;
+			if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+				
+				this.do_submit_callback();
+				//~ doSubmit();
+			
 			}
+			
+			//this.style.border = '8px solid LightGreen';
 		}
 	
 		out_div.appendChild(el_div);
@@ -1744,7 +2968,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	el_div.setAttribute('style','height:1400px;');
 	out_div.appendChild(el_div);
 }
-AMT___items_factory.prototype.create_dashboard__powers_v1 = function(jobid, object_response, seed_object)// dashboard/area
+// callback_function(jobid, callback_obj, seed_object);
+// IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
+AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
 {
 	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
 	//~ var req = new AMT___requests_factory();
@@ -1766,15 +2992,18 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(jobid, obje
 	
 	out_div.innerHTML = '';
 	
-	if (AMT__Global_Vars.isPreview) {
-		if (object_response.matches.length == 0) {
-			AMT___Floater.skip();
-			return;
-		} else {
-			AMT___Floater.accept();
-			return;
-		}
-	}
+	// DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
+	//
+	//
+	//~ if (AMT__Global_Vars.isPreview) {
+		//~ if (object_response.matches.length == 0) {
+			//~ AMT___Floater.skip();
+			//~ return;
+		//~ } else {
+			//~ AMT___Floater.accept();
+			//~ return;
+		//~ }
+	//~ }
 	
 	// matches select
 	var el_select = document.createElement('select');
@@ -1782,13 +3011,15 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(jobid, obje
 	el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
+	el_select.seed_object = seed_object;
 	el_select.onchange = function() {
 		if (this.value == '') return;
 		
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
 				this.options[this.selectedIndex].results_array,
-				this.main_div
+				this.main_div,
+				this.seed_object
 			);
 		//create_dashboard__powers_v1__showScrapyResult_contexts
 		//~ Max_Powers_eventbrite__showScrapyResult_contexts(
@@ -1868,7 +3099,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(jobid, obje
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
 				el_select.options[0].results_array,
-				out_div
+				out_div,
+				seed_object
 			);
 		//~ Max_Powers_eventbrite__showScrapyResult_contexts(
 			//~ el_select.options[0].results_array
@@ -2058,8 +3290,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				onload: function(response) {
 					var rs = response.responseText;
 					
-					//this = this_obj;
-					
 					if (rs.trim() != '') {
 						clearInterval(xint);
 					} else
@@ -2070,10 +3300,16 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 						rs = this_obj.array_yahoo_results(rs);
 					}
 					
-					if (this_obj.obj_vars.seed_arg1) {
+					// ...
+					if (this_obj.obj_vars.return_init_object) {
+						this_obj.rs = rs;
+						callback_function(this_obj);
+					}
+					else if (this_obj.obj_vars.seed_arg1)
+					{
 						callback_function(rs, this_obj.obj_vars.seed_arg1);
-						//callback_function(rs, this.obj_vars.seed_arg1)
-					} else
+					}
+					else
 						callback_function(rs);
 					
 					//alert('x');
@@ -2286,27 +3522,41 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 			key: "MT__DOSUBMIT__USER_SET_TYPE"
 		},
 		function(response) {
-			if (response.data) {
-				var r = JSON.parse(response.data); // { data: "{}" } or { data: "{ type: "" }" }
+			if (response) {
+				try {
+					if (!response.data)
+					{
+						//
+					}
+					
+					var r = JSON.parse(response.data); // { data: "{}" } or { data: "{ type: "" }" }
 				
-				//{ type: "[regular OR server side]" }
-				//~ if (r.type == 'server side') {
-					//~ MT__DOSUBMIT__USER_SET_TYPE = 'server side';
-				//~ }
-				
-				if (r.type) {
-					MT__DOSUBMIT__USER_SET_TYPE = r.type;
+					//{ type: "[regular OR server side]" }
+					//~ if (r.type == 'server side') {
+						//~ MT__DOSUBMIT__USER_SET_TYPE = 'server side';
+					//~ }
+					
+					if (r.type) {
+						MT__DOSUBMIT__USER_SET_TYPE = r.type;
+					}
+					if (r._PROXY_REDACTED_ && r._PROXY_REDACTED_.length > 6) {
+						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
+						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
+					}
+					if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
+						AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+						//~ AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+					}
 				}
-				if (r._PROXY_REDACTED_ && r._PROXY_REDACTED_.length > 6) {
-					AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
-					AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
-				}
-				if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
-					AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
-					AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+				catch(e)
+				{
+					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 				}
 			} else {
-				
+				if (!response)
+					console.log('Alert, AMT___POPUP__initializeGlobals :: !response');
+				else
+					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 			}
 			
 			if (callback_function)
@@ -2658,12 +3908,20 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	
 	// still here?
 	// this is the browser's saved queue
-	chrome.extension.sendRequest({method: "getLocalStorage", key: "MT__DOSUBMIT__ALL_JOBS_CHR"}, function(response) {
+	chrome.extension.sendRequest(
+		{
+			method: "getLocalStorage",
+			key: "MT__DOSUBMIT__ALL_JOBS_CHR"
+		},
+		function(response) {
+		
 		//console.log(response.data);
 		
 		var arr_all_submits = AMT__doSubmit__editSubmitArray(response.data, offsetTime);
+		
 		//console.log(arr_all_submits);return;
 		//
+		
 		console.log('submit queue:'		+arr_all_submits.length);
 		console.log('time_to_submit:'	+MT__DOSUBMIT__TIME_TO_SUBMIT);
 		console.log('ID:'				+MT__DOSUBMIT__BY_ID_THIS_ID);
@@ -3261,6 +4519,9 @@ function MT___page1_show_jobs() {
 	var u = /https:\/\/www.mturk.com\/mturk\/findhits\?match=false/;
 	if (!u.exec(s)) return;
 	
+	var ignore_requesters__ids = [
+		'A3A0N4OPTWRYPD' //Research Project
+	];
 	var ignore_requesters = [
 		'CrowdFlower',
 		'CrowdSource',
@@ -3653,7 +4914,13 @@ function MT___page1_show_jobs() {
 						if (new_job) continue;
 						
 						// on page number, hits avail, !ignore_
-						if (rs[1][i] < 20 && rs[4][i] >= 80 && !__js_inarray(ignore_requesters, rs[3][i])) {
+						if  (
+							rs[1][i] < 20 &&
+							rs[4][i] >= 80 &&
+							!__js_inarray(ignore_requesters,		rs[3][i]) &&
+							!__js_inarray(ignore_requesters__ids,	rs[6][i])
+							)
+						{
 							new_job = true;
 						}
 					}
@@ -3733,7 +5000,12 @@ function MT___page1_show_jobs() {
 						
 						// Append main
 						// In top or bottom
-						if (!__js_inarray(ignore_requesters, rs[3][i]))
+						// 3 == requester name
+						// 6 == requester id
+						if  (
+							!__js_inarray(ignore_requesters,		rs[3][i]) &&
+							!__js_inarray(ignore_requesters__ids,	rs[6][i])
+							)
 						{
 							div__reload.appendChild(div_contain);
 							div__reload.appendChild(document.createElement('hr'));
@@ -4769,12 +6041,19 @@ function MT___resolveURL(url, callback_function, seed) {
 **/
 function MT___google_api_geocode_parse(rs, callback_function, return_complete_response) {
 	rs = JSON.parse(rs);
-	if (!rs.results) return false;
-	if (!rs.results[0]) return false;
-	if (!rs.results[0].geometry) return false;
-	if (!rs.results[0].geometry.location) return false;
-	if (!rs.results[0].geometry.location.lat) return false;
-	if (!rs.results[0].geometry.location.lng) return false;
+	var found = true;
+	if  (
+		!rs.results ||
+		!rs.results[0] ||
+		!rs.results[0].geometry ||
+		!rs.results[0].geometry.location ||
+		!rs.results[0].geometry.location.lat ||
+		!rs.results[0].geometry.location.lng
+		)
+	{
+		callback_function(false);
+		return;
+	}
 	
 	if (!return_complete_response) // just lat/lng
 		callback_function(rs.results[0].geometry.location.lat, rs.results[0].geometry.location.lng);
@@ -4786,106 +6065,154 @@ function MT___google_api_geocode_parse(rs, callback_function, return_complete_re
  * return reverse lat/lng
 **/
 function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) { //, return_complete_response) { // latlng->str
+	
+	// Global
+	//
+	//
+	var latlng = latlng;
+	var callback_function = callback_function;
+	var use_a_proxy = use_a_proxy;
+	
 	var u = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+encodeURIComponent(latlng)+'&sensor=false';
 	
-	if (!use_a_proxy) {
-		GM_xmlhttpRequest({ // init
-			method: "GET",
-			url: u,
-			onload: function(response) {
-				var rs = response.responseText;
+	// IS THIS REQUEST CACHED?
+	GM_xmlhttpRequest({ // init
+		method: "GET",
+		url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+		onload: function(response) {
+			var rs = response.responseText;
+			
+			if (rs.trim() != '') {
 				MT___google_api_geocode_parse(rs, callback_function, true); // return full response == true
+				return;
 			}
-		});
-		return;
-	}
-	
-	if (use_a_proxy) {
-		GM_xmlhttpRequest({ // init
-			method: "GET",
-			url: MT___host+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
-			onload: function(response) {
-				//var rs = response.responseText;
-			}
-		});
-		
-		var xint = setInterval(function() {
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: MT___host+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
-				onload: function(response) {
-					var rs = response.responseText;
 					
-					if (rs.trim() != '') {
-						clearInterval(xint);
-					} else
-						return;
-						
-					MT___google_api_geocode_parse(rs, callback_function, true);
-				}
-			});
-		}, 1000);
-	}
+			if (!use_a_proxy) {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						MT___google_api_geocode_parse(rs, callback_function, true); // return full response == true
+					}
+				});
+				return;
+			}
+			
+			if (use_a_proxy) {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: MT___host+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
+					onload: function(response) {
+						//var rs = response.responseText;
+					}
+				});
+				
+				var xint = setInterval(function() {
+					GM_xmlhttpRequest({ // init
+						method: "GET",
+						url: MT___host+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+						onload: function(response) {
+							var rs = response.responseText;
+							
+							if (rs.trim() != '') {
+								clearInterval(xint);
+							} else
+								return;
+								
+							MT___google_api_geocode_parse(rs, callback_function, true);
+						}
+					});
+				}, 1000);
+			}
+			
+		}
+	});
 }
 /*
  * MT___google_api_geocode
  * return lat/lng or full response object
+ * http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
 **/
 function MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy) {
+	
+	// Global
+	//
+	//
+	var location = location;
+	var callback_function = callback_function;
+	var return_complete_response = return_complete_response;
+	var use_a_proxy = use_a_proxy;
+	
 	var u = 'http://maps.googleapis.com/maps/api/geocode/json?address='+encodeURIComponent(location)+'&sensor=false';
 	
-	//http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
-	
-	if (!use_a_proxy) {
-		
-		GM_xmlhttpRequest({ // init
-			method: "GET",
-			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
-			onload: function(response) {
-				var rs = response.responseText;
-				MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
-			}
-		});
-		
-		//~ GM_xmlhttpRequest({
-			//~ method: "GET",
-			//~ url: u,
-			//~ onload: function(response) {
-				//~ var rs = response.responseText;
-				//~ MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
-			//~ }
-		//~ });
-		return;
-	}
-	
-	if (use_a_proxy) {
-		AMT___POPUP__initializeGlobals(function() {
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
-				onload: function(response) {
-					//var rs = response.responseText;
-				}
-			});
+	// IS THIS REQUEST CACHED?
+	GM_xmlhttpRequest({ // init
+		method: "GET",
+		url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+		onload: function(response) {
+			var rs = response.responseText;
 			
-			var xint = setInterval(function() {
+			if (rs.trim() != '') {
+				MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+				return;
+			}
+			
+			// Here?
+			//
+			//
+			if (!use_a_proxy) {
+				
 				GM_xmlhttpRequest({ // init
 					method: "GET",
-					url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
 					onload: function(response) {
 						var rs = response.responseText;
-						
-						if (rs.trim() != '') {
-							clearInterval(xint);
-						} else
-							return;
-							
 						MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
 					}
 				});
-			}, 1000);
-		});
-	}
+				
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: u,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+					//~ }
+				//~ });
+				return;
+			}
+			
+			if (use_a_proxy) {
+				AMT___POPUP__initializeGlobals(function() {
+					GM_xmlhttpRequest({ // init
+						method: "GET",
+						url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
+						onload: function(response) {
+							//var rs = response.responseText;
+						}
+					});
+					
+					var xint = setInterval(function() {
+						GM_xmlhttpRequest({ // init
+							method: "GET",
+							url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								if (rs.trim() != '') {
+									clearInterval(xint);
+								} else
+									return;
+									
+								MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+							}
+						});
+					}, 1000);
+				});
+			}
+		}
+	});
 }
 /*
  * exit
