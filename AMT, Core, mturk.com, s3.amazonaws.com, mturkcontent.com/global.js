@@ -2,69 +2,6 @@
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 
 
-
-
-/**
- * Tab Switching 
- ***/
-var isQProduct = false;
-
-function goToNextTab() {
-	chrome.extension.sendRequest({
-								  getActiveTab: true
-							  }, function(response) {
-								 //do nothign with the response
-							});
-}
-
-function addToTabsQ() {
-	isQProduct = true;
-		
-	//Tell eventPage to add this to the Q
-	chrome.extension.sendRequest({
-								  addToTabsQ: true
-							  }, function(response) {
-								//do nothing with the response
-							});
-}
-
-
-
-function showNextTab() {
-	console.log('Showing Next Tab');
-	chrome.extension.sendRequest({
-									  showNextTab: true
-								  }, function(response) {
-									//do nothing with the response
-								});
-}
-
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	if(request.checkPreview)
-	{
-		if(AMT__Global_Vars.isTopWindow)
-		{
-			//Only have the top window send back the response
-			console.log('Commanded to tell if idle');
-			sendResponse({isPreview: AMT__Global_Vars.isPreview});
-		}
-	}	
-	else if(request.isQProduct)
-	{
-		//Only have the top window sending back the response
-		console.log('Commanded to tell if isQProduct');
-		if(AMT__Global_Vars.isTopWindow)
-		{
-			sendResponse({isQProduct: isQProduct});
-		}
-	}
-});
-/**
- * End of Tab Switching
- * 
- * **/
-
-
 /**
  * OTHER GLOBAL VARIABLES
  * 
@@ -89,6 +26,12 @@ var AMT__Global_Vars = function()
 	var isPreview;
 	var groupId;
 	var hitId;
+	
+	//
+	var isQProduct = false;
+	//~ var AMT__Queue = {
+		//~ isQProduct: false
+	//~ };
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
@@ -210,6 +153,67 @@ AMT__Global_Vars.initializeHitId = function () {
  * 
  * */
 
+
+/**
+ * Tab Switching 
+ ***/
+isQProduct = false;
+
+function goToNextTab() {
+	chrome.extension.sendRequest({
+								  getActiveTab: true
+							  }, function(response) {
+								 //do nothign with the response
+							});
+}
+
+function addToTabsQ() {
+	isQProduct = true;
+	
+	//Tell eventPage to add this to the Q
+	chrome.extension.sendRequest({
+								  addToTabsQ: true
+							  }, function(response) {
+								//do nothing with the response
+							});
+}
+
+
+
+function showNextTab() {
+	isQProduct = false;
+	console.log('Showing Next Tab');
+	chrome.extension.sendRequest({
+									  showNextTab: true
+								  }, function(response) {
+									//do nothing with the response
+								});
+}
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.checkPreview)
+	{
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			//Only have the top window send back the response
+			console.log('Commanded to tell if idle');
+			sendResponse({isPreview: AMT__Global_Vars.isPreview});
+		}
+	}	
+	else if(request.isQProduct)
+	{
+		//Only have the top window sending back the response
+		console.log('Commanded to tell if isQProduct: ' + isQProduct);
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			sendResponse({isQProduct: isQProduct});
+		}
+	}
+});
+/**
+ * End of Tab Switching
+ * 
+ * **/
 
 /**
  * 
@@ -799,6 +803,105 @@ function FindObject(recordName,matchString, timeCutOff) {
 //~ function AMT___generic_factory(obj_vars) {
 	//~ // this.___SKIP_SITES = ''; // would this work?
 //~ }
+
+/**
+ * AMT___events_factory
+ * AMT___requests_factory
+ * AMT___huge_vars_factory
+ * AMT___items_factory
+ * AMT___core_factory
+**/
+
+/**
+ * AMT___events_factory
+ *
+ * @
+ * @   
+ */
+function AMT___core_factory() {
+
+}
+//Shows the tab on the right of the curren tab
+//If there is no tab on the right, it shows the tab at the far left
+AMT___core_factory.prototype.nextTab = function() {
+	chrome.extension.sendRequest({
+					nextTab: true
+				},
+				function(response)
+				{
+				}
+			);
+}
+AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
+	
+	// Is there an iframe on the page?
+	// If there is not then this is the end!
+	if (!document.getElementsByTagName('iframe').length)
+		return;
+	
+	// Still here. There is an iframe so listen for any
+	// messages that may come.
+	// ...
+	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
+	
+	// ...
+	function top_window__addEventListener_iframe__complete(event)
+	{
+		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		var v = event.data;
+		
+		if (v.action == 'return_button__showNextTab') {
+			//~ console.log('Will showNextTab on return');
+			
+			var b = getReturnButton();
+			console.log(b);
+			if (b) {
+				b.addEventListener('mouseup', function() {
+					//~ console.log('mouseup on return button');
+					
+					showNextTab();
+				}, false);
+				
+				//~ b.addEventListener('mouseup', v.callback_function, false);
+			}
+		}
+	}
+	
+	/**
+	 * var getReturnButton
+	 */
+	var getReturnButton = function() {
+		
+		/*<a href="/mturk/return?groupId=394TEHR260Y0TAZL4P5WWJA29V265A&amp;requesterId=A1DPN0ELREA8BX&amp;hitId=337RC3OW06B1S9HP5GO231XZJR8LVQ&amp;signature=69fiOfplYPuNDOqYG2nIVj%2F1V0Y%3D&amp;externalHit=true&amp;canAccept="><img src="/images/return_hit.gif" alt="" border="0" width="82" height="22"></a>*/
+		
+		var a = document.getElementsByTagName('a');
+		for (var i in a) {
+			if (i == 'length') break;
+			//~ console.log(a[i].href);
+			if (a[i].href && a[i].href.indexOf('https://www.mturk.com/mturk/return?') == 0) {
+				return a[i];
+				break;
+			}
+		}
+		
+		// here?
+		return false;
+	}
+}
+AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
+	
+	
+	parent.postMessage({
+		action: options.action //'return_button__showNextTab'
+		
+		//~ action: 'return',
+		//~ callback_function: callback_function
+	}, "*");
+	
+	//~ setInterval
+}
+//~ AMT___core_factory.prototype.iframe2parent__addEventListener_return_HIT = function(options, callback_function) {
 
 
 /**
@@ -2630,6 +2733,7 @@ AMT___requests_factory.prototype.io__read_file = function(file_object, callback_
 			
 			file_object.responseText	= rs;
 			file_object.response		= response;
+			file_object.status			= response.status;
 			
 			callback_function(file_object);
 			//~ var tmp_skip_sites = rs.split("\n");
@@ -2794,8 +2898,13 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 
 	out_div.appendChild(el_div);
 	
+	// ...
 	var input_send_success = (seed_object.input_send_success) ? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
 	
+	var do_submit_callback = (seed_object.do_submit_callback) ? seed_object.do_submit_callback : doSubmit;
+	
+	
+	// ...
 	for (var j in email_contexts) {
 		var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 		context = __js_clean_html_str(context);
@@ -2818,13 +2927,24 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		el_div.innerHTML = context;
 		el_div.email = results_array.email_email;
 		el_div.complete = results_array.email_email;
+		
+		//input_success
+		el_div.input_send_success		= input_send_success;
+		
+		//do_submit_callback
+		el_div.do_submit_callback	= do_submit_callback;
+		
+		//onclick
 		el_div.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			
 				
-			input_send_success.value = this.email;
-			if (this.email.length > 6 && this.email.indexOf('@') != -1 && input_send_success && input_send_success.value == this.email) {
-				doSubmit();
+			this.input_send_success.value = this.email;
+			if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+				
+				this.do_submit_callback();
+				//~ doSubmit();
+			
 			}
 			
 			//this.style.border = '8px solid LightGreen';

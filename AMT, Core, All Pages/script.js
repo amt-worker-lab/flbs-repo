@@ -13,6 +13,8 @@ var RUN_James_M_Ratcliffe_Verizon_com = false;
 //test coding and stuff
 // Tony Pavia
 var RUN_Tony_Pavia_Schools = false;
+// Tony Pavia
+var RUN_NPDLabs_Schools = true;
 // Sahar UNC "ReferIt Game"
 var RUN_Sahar_ReferIt_Game = true;
 // Jordan Mills, URL of pricing page
@@ -227,8 +229,9 @@ function load()
 	 * TO SPEAK TO/RECEIVE MESSAGES FROM PARENT WINDOWS
 	 * 
 	 */
-	window.addEventListener("message", AMT__iframeReceiveMessage, false);
 	var AMT__iframeReceiveMessage_done = false;
+	var AMT__iframeReceiveMessage_done2= false;
+	window.addEventListener("message", AMT__iframeReceiveMessage, false);
 	function AMT__iframeReceiveMessage(event)
 	{
 		//console.log(event);
@@ -243,8 +246,8 @@ function load()
 			//~ //delete event.data;
 			//~ //event.data = '';
 		//~ }
-		if (AMT__iframeReceiveMessage_done)
-			return;
+		//~ if (AMT__iframeReceiveMessage_done)
+			//~ return;
 		
 		if (typeof event.data != 'object') {
 			if (event.data == 'AMT__Ed_Hallen_CEO_or_Marketing' && !AMT__iframeReceiveMessage_done) {
@@ -299,6 +302,10 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Arthur_McKee_provosts_info(event.data);
 			}
+			if (event.data.indexOf('AMT__x8_Data_find_executives') != -1 && !AMT__iframeReceiveMessage_done2) { // DONE 2 !
+				AMT__iframeReceiveMessage_done2 = true;
+				AMT__x8_Data_find_executives(event.data);
+			}
 		}
 		//
 		else if (typeof event.data == 'object') {
@@ -325,14 +332,72 @@ function load()
 	 * 
 	 */
 	function AMT__all_pages_util(r) {
+		
 		//extend
-		if (r.MT___all_pages_extend)
+		if ( r.MT___all_pages_extend )
 			MT___all_pages_extend();
+		
 		//zoom
-		if (r.MT___all_pages_zoom  )
+		if ( r.MT___all_pages_zoom )
 			MT___all_pages_zoom();
 		
+		//scroll
+		// MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight)
+		if ( r.MT___text_scrollIntoView )
+			MT___all_pages_highlightEmailAddresses(true, r.MT___text_scrollIntoView); 
+		
+		//debug_display: o.name
+		if ( r.debug_display ) {
+			// 1 //
+			var d = document.createElement('div');
+			d.setAttribute('style', 'position:absolute;top:0;margin:0 auto;width:40%;background-color:#fefeff;border:2px dashed #a2a2a2;z-index:99999999;zoom:2;font-weight:bold;');
+			d.innerText = r.debug_display;
+			document.body.appendChild(d);
+			// 2 //
+			var d = document.createElement('div');
+			d.setAttribute('style', 'position:fixed;top:0;margin:0 auto;width:40%;background-color:#fefeff;border:2px dashed #a2a2a2;z-index:99999999;zoom:2;font-weight:bold;');
+			d.innerText = r.debug_display;
+			document.body.appendChild(d);
+		}
+			
+			
+		
 	}
+	/*
+	 * AMT__x8_Data_find_executives
+	 * 
+	 */
+	function AMT__x8_Data_find_executives(r) {
+		
+		//~ console.log(r);
+		
+		window.addEventListener('keydown', function(e) {
+			var k = e.keyCode;
+			//~ console.log(k);
+			if (k == 13) { // enter
+				sel = window.getSelection().toString().trim();
+				
+				if (sel && sel.trim() != '') {
+					sel = sel.trim();
+					//~ console.log(sel);
+					
+					// send complete
+					parent.postMessage(
+						{
+							key: 'AMT__x8_Data_find_executives__complete',
+							data: sel // "data" is the href !!
+						},
+						"*"
+					);
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			}
+		}, false);
+		
+	}
+	
 	/*
 	 * Andrew Ryan
 	 * 
@@ -1241,9 +1306,12 @@ function load()
 						
 						if (this.value.length == 5) {
 							chrome.extension.sendRequest({
-								nextTab: true					
-								}, function(response) {
-							});
+									nextTab: true
+								},
+								function(response)
+								{
+								}
+							);
 
 							//
 							// SAVE THE IMAGE FILE + THE CURRENT CAPTCHA HERE!
@@ -1788,6 +1856,87 @@ function load()
 				//~ this.parentNode.removeChild(this);
 			//~ }
 		}, false);
+	}
+	
+	//
+	// RUN_NPDLabs_Schools
+	// NPDRD
+	// Review school supply list
+	//
+	if  (
+			RUN_NPDLabs_Schools
+		)
+	{
+		console.log('');
+		//
+		//
+		// iframe
+		// 
+		s = '<li>Your job is to review the school supply list for the grade listed and answer the questions below. If there are multiple grades listed on the website, please only answer the questions for the grade listed below.</li>';
+		if (ih.indexOf(s) != -1) {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button {margin:0;padding:0;font-size:12px;}');
+			
+			//~ GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
+			//~ GM_addStyle('.panel {position:absolute;top:1600px;}');
+			//~ GM_addStyle('.divs-yahoo:hover {background-color:aqua;cursor:pointer;}');
+			
+			GM_addStyle('body {width:30%;}');
+			GM_addStyle('.highlight-box {position:absolute;top:2000px;}');
+			
+			//~ 
+			//~ GM_addStyle('body {margin-top:0px;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1200px;}');
+			//~ GM_addStyle('input {width:90%;}');
+			//~ GM_addStyle('.divs-yahoo:hover {background-color:LightGreen;}');
+			
+			var b = document.getElementById('schoollisturl').innerText.trim();
+			//~ var o = {
+				//~ website: b[9].innerText.trim()
+			//~ }
+			
+			/* BEGIN ITEMS */
+			//~ var d1;
+			//~ d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;top:0px;left:20%;width:78%;height:500px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+			//~ document.body.appendChild(d1);
+			//~ //
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style','margin-left:20%;width:78%;height:98%;border-left:1px solid blue;background-color:#eee;');
+			//~ d1.appendChild(d1b);
+			//~ //
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:30%;width:69%;height:200px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/[\r\t ]/g, '');
+				this.value = this.value.replace(/[\n]+/g, '\n');
+				document.getElementById('QSchoolListItemNumber').value = this.value.trim().split('\n').length;
+			}
+			document.body.appendChild(d2);
+			// ...
+			var d1c = document.createElement('iframe');
+			d1c.setAttribute('style','position:absolute;top:260px;left:1%;width:98%;height:600px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+			// Flicker
+			d1c.style.visibility = 'hidden';
+			d1c.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+			}, false);
+			document.body.appendChild(d1c);
+			/* END ITEMS */
+			
+			d1c.src = b;
+			
+			
+			// zoom out d1c!
+			// post msg
+			var ifr_intv = setInterval(function() {
+				d1c.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+			}, 600);
+			
+			document.getElementById('QValidURL').value = 1;
+			document.getElementById('QSchoolYear').value = 1;
+			
+		}
 	}
 	
 	//
@@ -3060,15 +3209,23 @@ function load()
 		var last_el = false;
 		
 		var r;
+		var by_email = true;
 		if (!regex_highlight)
 			r = /^([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})$/i;
-		else
+		else {
+			by_email = false;
 			r = regex_highlight;
+		}
+		
+		console.log(r);
 		
 		var arrMatchedStrings = [];
 		var el_innerText;
+		var reset_all_items = []; // this will contain reset zooms!
 		
-		for (var i in el) {
+		for (var i = el.length - 1; i>=0; i--) {
+		//~ for (var i in el) {
+		//~ for (var i in el) {
 			if (!el[i]) continue;
 			if (!el[i].innerText) continue;
 			if (!el[i].tagName) continue;
@@ -3079,13 +3236,24 @@ function load()
 				el[i].innerText.indexOf('@') == -1 &&
 				el[i].innerText.indexOf('[at]') == -1 &&
 				el[i].innerText.indexOf('&#064;') == -1 &&
-				!regex_highlight // !!
-			) {
+				by_email
+				//~ !regex_highlight // !!
+				)
+			{
 				continue;
 			}
 			
-			// 
+			// ...
 			el_innerText = el[i].innerText.trim();
+			
+			//~ if (r != /\.youtube\.com/i)
+			//~ {
+				//~ el_innerText = el[i].innerText.trim();
+			//~ }
+			//~ else
+			//~ {
+				//~ el_innerText = el[i].innerHTML;
+			//~ }
 			
 			// replace prev. matched
 			for (var j in arrMatchedStrings) {
@@ -3095,34 +3263,147 @@ function load()
 				);
 			}
 			
+			//~ console.log(el[i].innerText);
+			//~ console.log(el_innerText);
+			
 			if (r.exec(el_innerText)) {
 				
 				if (!last_el)
 					last_el = el[i];
 				
 				arrMatchedStrings.push(el[i].innerText.trim());
+				//~ if (r != /\.youtube\.com/i)
+				//~ {
+					//~ arrMatchedStrings.push(el[i].innerText.trim());
+				//~ }
+				//~ else
+				//~ {
+					//~ arrMatchedStrings.push(el[i].innerHTML.trim());
+				//~ }
+				
+				
+				console.log(el[i]);
+				
+				reset_all_items.push(el[i]);
 				
 				el[i].style.fontWeight = 'bold';
-				//el[i].style.fontSize = '1.6em';
-				el[i].style.zoom = '2';
+				el[i].style.zoom = '1.6';
+				el[i].style.border = '4px dashed #a2a2a2;';
+				//~ el[i].style.fontSize = '1.2em';
+				//~ el[i].style.zoom = '2';
+				
+				//~ el[i].parentNode.style.border = '4px dashed #a2a2a2;';
 			
 				//break; // BREAK HERE ... IF FIRST...
 			}
 		}
 		
-		console.log(arrMatchedStrings);
+		//~ console.log(arrMatchedStrings);
 		
 		if (last_el && scrollIntoView) {
 			//last_el.parentNode.scrollTop = last_el.offsetTop - last_el.parentNode.offsetTop;
+			
+			// ...
 			setTimeout(function() {
-				last_el.scrollIntoView();
+				last_el.scrollIntoView(false); // BOTTOM
 			}, 600);
+			
+			// addEventListener
+			window.addEventListener('dblclick', function() {
+				
+				console.log('reset_all_items');
+				console.log(reset_all_items);
+				
+				if (!reset_all_items.length) return;
+				
+				for (var i in reset_all_items) {
+					reset_all_items[i].style.fontWeight = '';
+					reset_all_items[i].style.zoom = '';
+					reset_all_items[i].style.border = '';
+				}
+			}, false);
 		}
+		
+		console.log('arrMatchedStrings');
+		console.log(arrMatchedStrings);
 		
 		return arrMatchedStrings; // RETURNS!
 		
 		//}, 800);  // !!
 	}
+	//~ function MT___all_pages_highlightStringMatches(scrollIntoView, regex_highlight) { // scrollIntoView true/false
+		//~ var scrollIntoView = scrollIntoView;
+		//~ 
+		//~ //setTimeout(function() {  // !!
+		//~ 
+		//~ var el = document.body.getElementsByTagName("*");
+		//~ 
+		//~ var last_el = false;
+		//~ 
+		//~ var r;
+		//~ if (!regex_highlight)
+			//~ r = /^([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})$/i;
+		//~ else
+			//~ r = regex_highlight;
+		//~ 
+		//~ var arrMatchedStrings = [];
+		//~ var el_innerText;
+		//~ 
+		//~ for (var i in el) {
+			//~ if (!el[i]) continue;
+			//~ if (!el[i].innerText) continue;
+			//~ if (!el[i].tagName) continue;
+			//~ if (el[i].tagName.toUpperCase() == 'SCRIPT') continue;
+			//~ if (el[i].tagName.toUpperCase() == 'STYLE') continue;
+			//~ 
+			//~ if  (
+				//~ el[i].innerText.indexOf('@') == -1 &&
+				//~ el[i].innerText.indexOf('[at]') == -1 &&
+				//~ el[i].innerText.indexOf('&#064;') == -1 &&
+				//~ !regex_highlight // !!
+			//~ ) {
+				//~ continue;
+			//~ }
+			//~ 
+			//~ // 
+			//~ el_innerText = el[i].innerText.trim();
+			//~ 
+			//~ // replace prev. matched
+			//~ for (var j in arrMatchedStrings) {
+				//~ el_innerText = el_innerText.replace( // replaces first occurrence
+					//~ arrMatchedStrings[j],
+					//~ ''
+				//~ );
+			//~ }
+			//~ 
+			//~ if (r.exec(el_innerText)) {
+				//~ 
+				//~ if (!last_el)
+					//~ last_el = el[i];
+				//~ 
+				//~ arrMatchedStrings.push(el[i].innerText.trim());
+				//~ 
+				//~ el[i].style.fontWeight = 'bold';
+				//~ //el[i].style.fontSize = '1.6em';
+				//~ el[i].style.zoom = '2';
+			//~ 
+				//~ //break; // BREAK HERE ... IF FIRST...
+			//~ }
+		//~ }
+		//~ 
+		//~ console.log(arrMatchedStrings);
+		//~ 
+		//~ if (last_el && scrollIntoView) {
+			//~ //last_el.parentNode.scrollTop = last_el.offsetTop - last_el.parentNode.offsetTop;
+			//~ setTimeout(function() {
+				//~ last_el.scrollIntoView();
+			//~ }, 600);
+		//~ }
+		//~ 
+		//~ return arrMatchedStrings; // RETURNS!
+		//~ 
+		//~ //}, 800);  // !!
+	//~ }
 	//
 	// Zoom all pages
 	// 
@@ -3500,7 +3781,7 @@ function load()
 	// Jaime Arguello
 	// Use a search engine to...
 	//
-	var loc = window.location.href;console.log(loc);
+	//~ var loc = window.location.href;console.log(loc);
 	if (loc.indexOf('http://152.2.81.210/') == 0) {
 		
 		if ( /copy and paste this code/.exec(ih) )
@@ -6009,14 +6290,48 @@ function load()
 		// 0,1,2,3
 		// 2 == phone or postcard
 		
+		
+		var continueButton;
+		var x = document.getElementsByTagName('div');
+		for (var i in x) {
+			if (i == 'length') break;
+			if (x[i].innerText == 'Continue') {
+				continueButton = x[i];
+				break;
+			}
+		}
+		
+		// START
 		var xint = setInterval(function() {
-			if (document.getElementsByClassName('b-Ca').length == 9) {
+			// Changed June 16 2014. Elements 9 to 7?
+			//if (document.getElementsByClassName('b-Ca').length == 9) {
+			
+			if (document.getElementsByClassName('b-Ca').length == 7) {
 				clearInterval(xint);
 				mt_matt();
 			}
-		},intervalTime);
+		}, intervalTime);
 		
+		
+		
+		// FINAL NEW
 		var xint_final_Verify = setInterval(function() { // watch for completed
+			
+			//We need to create a Google+ page so you can manage your business on Google. Please confirm this information:
+			var ih = document.body.innerHTML;
+			if (ih.indexOf('We need to create a Google+ page so you can manage your business on Google. Please confirm this information:') != -1) {
+				clearInterval(xint_final_Verify);
+				// write final
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: 'http://localhost/mturk/util.php?Matt_writecomplete_id='+encodeURIComponent(que_object[8])+'&Matt_writecomplete=Available', // ADD "AVAILABLE" JUNE 25 2014
+					onload: function (response) {
+						//var rs = response.responseText;
+						window.location = 'https://www.google.com/local/business/u/0/add/info'; // NEXT
+					}
+				});
+			}
+			
 			// final phone/post
 			var x;
 			x = document.getElementsByClassName('Ym n1');
@@ -6079,6 +6394,7 @@ function load()
 			}
 		}, intervalTime);
 		
+		// FINAL VERIFIED
 		var xint_final_Verify2 = setInterval(function() { // watch for completed
 			
 			if  (
@@ -6180,8 +6496,8 @@ function load()
 						rs = JSON.parse(rs); // [] array
 						
 						var r;
-						r = document.getElementsByClassName('b-Ca');
 						
+						r = document.getElementsByClassName('b-Ca');
 						r[0].value = rs[0]; //name
 						r[1].value = rs[2]; //addr1
 						r[3].value = rs[3]; //city
@@ -6191,6 +6507,11 @@ function load()
 						
 						//rs8 == ID
 						//rs4 == state
+						
+						// document.getElementsByClassName('c-v-x c-y-i-d-V') (0..3)
+						// El 2 is Country, 3 is State.
+						//
+						//
 						
 						// state
 						var state = false;
@@ -6210,17 +6531,24 @@ function load()
 						   ,true		// can bubble?
 						   ,true		// cancelable?
 						);
-						document.getElementsByClassName('c-v-x c-y-i-d-V')[2].dispatchEvent(myEvt);
+						
+						// document.getElementsByClassName('c-v-x c-y-i-d-V')
+						// Changed from el 2 to 3.
+						//
+						//
+						
+						document.getElementsByClassName('c-v-x c-y-i-d-V')[3].dispatchEvent(myEvt);
 						var xint1b = setInterval(function() {
 							var x;
 							x = document.getElementsByClassName('c-X-u');
+							
+							// THIS WOULD BE STATES (59)
 							if (x.length == 59) {
 								clearInterval(xint1b);
 							} else
 								return;
 							
 							// still here?
-							
 							var state_obj;
 							
 							for (var i in x) {
@@ -6246,7 +6574,12 @@ function load()
 							}
 							
 							var xint1c = setInterval(function() {
-								if (document.getElementsByClassName('c-v-x c-y-i-d-V')[2].innerHTML.toLowerCase() == state) {
+								
+								// document.getElementsByClassName('c-v-x c-y-i-d-V')
+								// Changed from el 2 to 3.
+								//
+								//
+								if (document.getElementsByClassName('c-v-x c-y-i-d-V')[3].innerHTML.toLowerCase() == state) {
 									clearInterval(xint1c);
 								} else if (state_obj) {
 									var myEvt = document.createEvent('MouseEvents');
@@ -6262,24 +6595,35 @@ function load()
 								// still here?
 								
 								// submit (down+up)
+								// Changed to c-v-x b-d b-d-nb Q4w7Qd from "c-v-x b-d b-d-nb Tp"
+								// Changed to var continueButton 
+								//
+								//
+								//
+								
 								var myEvt = document.createEvent('MouseEvents');
 								myEvt.initEvent(
 								   'mousedown'      // event type
 								   ,true      // can bubble?
 								   ,true      // cancelable?
 								);
-								document.getElementsByClassName('c-v-x b-d b-d-nb Tp')[0].dispatchEvent(myEvt);
+								continueButton.dispatchEvent(myEvt);
+								//~ document.getElementsByClassName('c-v-x b-d b-d-nb Q4w7Qd')[0].dispatchEvent(myEvt);
 								var myEvt = document.createEvent('MouseEvents');
 								myEvt.initEvent(
 								   'mouseup'      // event type
 								   ,true      // can bubble?
 								   ,true      // cancelable?
 								);
-								document.getElementsByClassName('c-v-x b-d b-d-nb Tp')[0].dispatchEvent(myEvt);
+								continueButton.dispatchEvent(myEvt);
+								//~ document.getElementsByClassName('c-v-x b-d b-d-nb Q4w7Qd')[0].dispatchEvent(myEvt);
 								
 								// start running getYour now.
 								mt_matt_getYourBusiness();
-								//running_getYour = true;
+								
+								
+								
+								
 								
 								// but in case trouble with addr?
 								var xint2 = setInterval(function() {

@@ -238,7 +238,6 @@ function MT__RUN() {
 			},1000)
 	}
 	
-	
 	//
 	//
 	// Jerry Rios
@@ -1093,6 +1092,217 @@ function MT__RUN() {
 		a[1].click();
 	}
 	
+	
+	//
+	// Superfish
+	// 
+	//
+	//~ s = 'Select all pictures with <u><strong>track lighting</strong></u><u><strong> (furniture)</strong></u>&nbsp;occupying a significant part of the image (or mark here <input name="flagged" type="checkbox" value="none"> if none fits)';
+	s = '</u>&nbsp;occupying a significant part of the image (or mark here <input name="flagged" type="checkbox" value="none"> if none fits)';
+	if(ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('img {cursor:pointer;}');
+		
+		// ...
+		var c = document.getElementsByTagName('strong');
+		var category = c[0].innerText.trim() + c[1].innerText.trim();
+		
+		// ...
+		var rf = new AMT___requests_factory();
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			//~ new AMT___core_factory().nextTab();
+			
+			// WRITE THIS DECISION TO DB !
+			// don't submit yet
+			// image.md5
+			// image.choice
+			// xx
+			// >> MAKE AN ARRAY OF IDS TO INCREMENT!
+			var img_flag = [];
+			var img_not_flag = [];
+			for (var md5 in all_images) {
+				for (var j in all_images[md5]) {
+					if (!all_images[md5][j].parentNode.getElementsByTagName('input')[0].checked) { // "true"/"false"
+						img_flag		.push(md5);
+					}
+					else
+					{
+						img_not_flag	.push(md5);
+					}
+				}
+			}
+			img_flag = img_flag.join(',');
+			img_not_flag = img_not_flag.join(',');
+			//~ console.log(img_flag);
+			//~ console.log(img_not_flag);
+			
+			rf.database__write(
+				{
+					query: 'AMT_Requester__Superfish_write',
+					encodeStrings: [img_flag, img_not_flag]
+				},
+				function(response) {
+					// now submit
+					//~ console.log(response);
+					doSubmit()
+				}
+			);
+			
+			return false;
+			
+		}
+		
+		// ...
+		var img_to_check = [];
+		var img = document.getElementsByTagName('img');
+		var all_images = {};
+		for (var i in img) {
+			if (i == 'length') break;
+			
+			// IGNORE (+HARD CODED)
+			if  (
+				img[i].src == 'http://starman.superfish.com/imgGalV3/algo1/datasets/training/ginn/furniture_20140623/semantic_classes/tags/input/track_lighting/track_lighting/photos/a4b100ffdf70aa733d9a45724c01c820.jpg'
+				)
+			{
+				img[i].style.border = '4px solid orange';
+				img[i].style.zoom = '0.4';
+				continue;
+			}
+			
+			var x = img[i].parentNode.getElementsByTagName('input')[0];
+			x.checked = true;
+			console.log(x);
+			
+			var md5 = any_md5(img[i].src, '0123456789ABCDEF');
+			img[i].md5 = md5;
+			
+			img[i].onclick = function() {
+				var x = this.parentNode.getElementsByTagName('input')[0];
+				x.click();
+				if (x.checked) {
+					this.style.border = '';
+				} else {
+					this.style.border = '4px solid orange';
+				}
+			}
+			
+			// get any md5 of image src
+			// check db for all images on page (by md5)
+			// hide images that are already complete
+			/*
+			Table: flag_images
+			Columns:
+			id	int(11) PK AI
+			img_src_md5	varchar(80) 
+			category	varchar(100) 
+			choice	tinyint(4) 
+			num_choices	int(11) */
+			
+			// hide?
+			//~ Superfish_flag_images__select(md5, category);
+			
+			
+			// to check, push md5
+			img_to_check.push(md5)
+			
+			// all, push img[i]
+			if (!all_images.hasOwnProperty(md5)) {
+				all_images[md5] = [];
+			} else {
+				//
+			}
+			all_images[md5].push(img[i]);
+			
+		}
+		// check
+		img_to_check = img_to_check.join(',');
+		// init
+		Superfish_flag_images__select(img_to_check, category);
+		
+		// ...
+		function Superfish_flag_images__select(m, c) {
+			rf.database__select(
+				{
+					query: 'AMT_Requester__Superfish_select',
+					encodeStrings: [m, c]
+				},
+				Superfish_flag_images__select_process
+			);
+		}
+		// ...
+		function Superfish_flag_images__hide_determined(img, choice) {
+			
+			var cb = img.parentNode.getElementsByTagName('input')[0];
+			
+			//~ console.log(cb);
+			//~ console.log(img);
+			//~ console.log(choice);
+			
+			// Choice = 0, 1
+			// 0 = good (checked)
+			// 1 = flagged (not checked)
+			if (choice == 0) {
+				img.style.border = '4px solid orange';
+			}
+			else if (choice == 1) {
+				
+			}
+			
+			img.style.border = '4px solid orange';
+			img.style.zoom = '0.4';
+		}
+		// ...
+		function Superfish_flag_images__select_process(database_object) {
+			//array_push($out_arr, [ $row['img_src_md5'], $row['choice'], $row['num_choices'] ]);
+			//database_object.responseObject = JSON.parse(rs);
+			if (database_object.responseObject.length == 0) {
+				//~ d1.innerText = d2.value + "\n" + '0';
+				return;
+			}
+			
+			var r = database_object.responseObject;
+			for (var i in r) {
+				var row_img_choice = r[i];
+				if (all_images.hasOwnProperty(row_img_choice[0])) {
+					for (var j in all_images[row_img_choice[0]]) {
+						var img = all_images[row_img_choice[0]][j];
+						var cb = img.parentNode.getElementsByTagName('input')[0];
+						
+						//~ console.log(row_img_choice[2]*1);
+						
+						// How many choices?
+						if (row_img_choice[2]*1 >= 3) { // 3 or more?
+							//~ Superfish_flag_images__hide_determined(img, row_img_choice[1]);
+							img.style.border = '4px solid orange';
+							img.style.zoom = '0.4';
+						}
+						else if (row_img_choice[2]*1 > 0) // is it > 0?
+						{
+							var tmps = (row_img_choice[1] == '0') ? 'solid' : 'dashed';
+							img.style.border = '2px '+tmps+' LightGreen';
+						}
+						else // XX
+						{
+							
+						}
+						
+						// set previously checked
+						if (row_img_choice[1] == '0') {
+							cb.checked = true;
+						}
+						else { // == '1'
+							cb.checked = false;
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * scrapy
 	 */
@@ -1214,7 +1424,7 @@ function MT__RUN() {
 		
 		GM_addStyle('.section {position:absolute;top:0px;left:0;}');
 		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('table {zoom:0.6;}');
+		//~ GM_addStyle('table {zoom:0.6;}');
 		
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
@@ -1237,6 +1447,7 @@ function MT__RUN() {
 		d2.addEventListener('mouseover', function() {
 			d1.scrollIntoView()
 		}, false);
+		
 		// Flicker
 		d2.addEventListener('load', function() {
 			this.style.visibility = 'visible';
@@ -1251,23 +1462,53 @@ function MT__RUN() {
 		d3.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			document.getElementById('web_url').value = 'NO@email.com';
+			
+			showNextTab();
 			doSubmit();
 		}
 		
+		// The domain!
 		var td = document.getElementsByTagName('td')[1].innerText.trim();
 		
+		// The url!
 		var url = (!/^http/i.exec(td)) ? 'http://' + td : td;
 		//~ var domain = td.toLowerCase().replace(/http:\/\/www)/, '');
 		
-		//
+		var o = {
+			domain: td.replace(/\/\**$/, ''), // /* or /
+			url: url
+		}
+		
+		// ...
 		d3b.value = td; // domain
 		d3b.onblur = function() {
 			var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
 			Amazon_Requester_Inc_EPS_Marketing__scrapy([url], [this.value]);
 		}
 		
-		Amazon_Requester_Inc_EPS_Marketing__scrapy([url], [td]);
+		// return button function!
+		//~ var cf = new AMT___core_factory()
+		new AMT___core_factory()
+			.iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
 		
+		document.getElementById('submitButton').onclick = function(e) {
+			
+			showNextTab();
+			doSubmit();
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		// INIT
+		Amazon_Requester_Inc_EPS_Marketing__scrapy([o.url], [o.domain]);
+		
+		/**
+		 * function
+		 */
 		function Amazon_Requester_Inc_EPS_Marketing__scrapy(start_urls, allowed_domains) {
 			//
 			var s_obj = 
@@ -1284,9 +1525,9 @@ function MT__RUN() {
 					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
 					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 					
-					'CONCURRENT_ITEMS=200', //DEFAUL = 100
-					'CONCURRENT_REQUESTS=16', //DEFAUL = 16
-					'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+					'CONCURRENT_ITEMS=40', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
 					
 					'AJAXCRAWL_ENABLED=1', //true
 					'COOKIES_ENABLED=0', //false
@@ -1307,6 +1548,12 @@ function MT__RUN() {
 						{
 							div: d1,
 							input_send_success: document.getElementById('web_url'),
+							do_submit_callback: function() {
+								
+								showNextTab();
+								doSubmit();
+							},
+							// RUNS BEFORE DASHBOARD IS FILLED IN !
 							callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 								//~ console.log(callback_obj);
 								//~ return;
@@ -1335,7 +1582,10 @@ function MT__RUN() {
 											AMT___Floater.accept();
 										}
 										else
+										{
+											//showNextTab(); // !
 											AMT___Floater.skip();
+										}
 									}
 									else
 									{
@@ -1346,8 +1596,65 @@ function MT__RUN() {
 								}
 								else // JOB IS ACCEPTED
 								{
-									// add to active tabs queue
-									//~ console.log(callback_obj);
+									
+									
+									
+									// customercare @ gmail.com
+									// bizname @ gmail.com
+									//
+									
+									// Is there an auto email?
+									// If so, then return the task at the
+									// current state, i.e., stop processing
+									// of the "Max Powers" dashboard.
+									console.log(callback_obj);
+									// Is unique?
+									var last = '';
+									var unique = true;
+									var em;
+									for (var i in callback_obj.matches) {
+										em = callback_obj.matches[i].email_email.toLowerCase();
+										if (em != last && i == 0) {
+											last = em;
+										}
+										else if (em != last) { // not unique
+											unique = false;
+										}
+									}
+									if (unique && callback_obj.matches.length && em) {
+										var name;
+										if (name = new RegExp('^([^@]+)@' + __js_escape_regEx(o.domain) + '$','i').exec(em)) {
+											name = name[1].toLowerCase();
+											
+											var good_names = {
+												'owner' : true,
+												'marketing' : true,
+												'sales' : true,
+												'manager' : true,
+												'support' : true,
+												'contact' : true,
+												'contactus' : true,
+												'service' : true,
+												'information' : true,
+												'info' : true
+											};
+											
+											if (good_names.hasOwnProperty(name) && o.domain.length > 4) {
+												document.getElementById('web_url').value = em;
+												doSubmit();
+												return true; // ends tasks at current state!
+											}
+										}
+									}
+									
+									
+									// Here?
+									// Add to active tabs queue!
+									//
+									//
+									//
+									addToTabsQ();
+									
 									
 									// open in Iframe
 									var try_url = false;
@@ -1355,7 +1662,7 @@ function MT__RUN() {
 									for (var i in callback_obj.urls.high) {
 										u = callback_obj.urls.high[i].urls_url;
 										if (/[\.\/]facebook\.com\//.exec(u)) continue;
-										if (/[\.\/]facebook\.com\//.exec(u)) continue;
+										if (/[\.\/]plus\.google\.com\//.exec(u)) continue;
 										if (/contact/i.exec(u)) {
 											try_url = u;
 											break;
@@ -1366,6 +1673,9 @@ function MT__RUN() {
 										d2.src = try_url;
 									}
 								}
+								
+								// 
+								
 								
 								// CONTINUES (job is NOT in "preview" mode)
 								return false;
@@ -3096,6 +3406,622 @@ function MT__RUN() {
 	}
 	
 	//
+	// factors
+	// -SimpleSearch
+	// Use Google to search a pre-defined term, record details about top page returned
+	var s = '	<li>Click on the top ranked page, and fill in details about what you find on the page below</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+		
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var site = /^([^ ]+) site:alexa\.com inurl:siteinfo$/.exec(document.getElementsByTagName('td')[1].innerText)[1];
+		
+		//~ 
+		//~ var o = {
+			//~ name: td[1].innerText.trim(),
+			//~ country: td[5].innerText.trim(),
+			//~ name_cln: td[1].innerText.trim().replace(/[^\w\d]/g, '').toLowerCase()
+		//~ }
+	
+		
+		/* BEGIN ITEMS */
+		//~ var d1 = document.createElement('div');
+		//~ d1.setAttribute('style','position:absolute;top:30px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		//~ document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+		d2.onblur = function() {
+			//~ this.value = this.value.replace(/\s+/g, ' ').trim();
+			//~ Charles_Devereux_politician_birth__wikipedia();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		d2.value = site;
+		
+		// ...
+		var q = [
+			document.getElementById('global_rank'),
+			document.getElementById('us_rank'),
+			document.getElementById('bounce'),
+			document.getElementById('pageviews'),
+			document.getElementById('time_on_site'),
+			document.getElementById('search_traffic'),
+			document.getElementById('top_keywords')
+		];
+		
+		// ...
+		// blank + >any not N/A?
+		document.getElementById('submitButton').onclick = function() {
+			var has_non_na = false;
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '') {
+					return false;
+				} else if (q[i].value != 'N/A') {
+					has_non_na = true;
+				}
+			}
+			if (!has_non_na) {
+				return false;
+			}
+			//~ // any 
+			//~ showNextTab(); // next!
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+			
+		// ...
+		factors_alexa_urls_site_search();
+		
+		// ...
+		function factors_alexa_urls_site_search() {
+			
+			var u = 'http://www.alexa.com/siteinfo/' + encodeURIComponent(d2.value);
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u), // + '&redirect=no'
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						// add to queue
+						addToTabsQ();
+						exit(response.status);
+					}
+					
+					var sbm = true;
+					var r;
+					
+					// 284,220
+					r = /alt='Global rank icon'><strong class="metrics-data align-vmiddle">(<span style='margin-left: 10px;'>|)([\d\,]+|-)<\//.exec(rs);
+					if (r) {
+						r = r[2];
+						if (r == '-') // N/A!
+							r = 'N/A';
+						q[0].value = r;
+					} else sbm = false;
+					
+					// US rank
+					r = /United States<\/a><\/td>[\r\n\t\s]*<td class='text-right' ><span class=''>[^<]*<\/span><\/td>[\r\n\t\s]*<td class='text-right' ><span class=''>([\d,]+)<\/span><\/td>/.exec(rs);
+					if (r) {
+						r = r[1];
+						q[1].value = r;
+					} else {
+						
+						r = /Rank in Country<\/th>[\r\n\t\s]*<\/tr>[\r\n\t\s]*<\/thead>[\r\n\t\s]*<tbody>[\r\n\t\s]*<tr>[\r\n\t\s]*<td colspan="100%" class="align-center"><span>No data available for this site\.<br>We do not[\r\n\t\s]*have enough data to estimate these metrics\./.exec(rs);
+						if (r) {
+							q[1].value = 'N/A';
+						} else {
+							if (rs.indexOf('United States') == -1) {
+								q[1].value = 'N/A';
+							} else
+								sbm = false;
+						}
+					}
+					
+					// 
+					r = /Bounce Rate<\/h4>[\r\n\t\s]*<div>[\r\n\t\s]*<strong class="metrics-data align-vmiddle">([\d\.]+%|-)<\/strong>/.exec(rs);
+					if (r) {
+						r = r[1];
+						if (r == '-') // N/A!
+							r = 'N/A';
+						q[2].value = r;
+					} else sbm = false;
+					
+					// 
+					r = /Daily Pageviews per Visitor<\/h4>[\r\n\t\s]*<div>[\r\n\t\s]*<strong class="metrics-data align-vmiddle">([\d\.]+|-)<\/strong>/.exec(rs);
+					if (r) {
+						r = r[1];
+						if (r == '-') // N/A!
+							r = 'N/A';
+						q[3].value = r;
+					} else sbm = false;
+					
+					// 
+					r = /Daily Time on Site<\/h4>[\r\n\t\s]*<div>[\r\n\t\s]*<strong class="metrics-data align-vmiddle">([\d:]+|-)<\/strong>/.exec(rs);
+					if (r) {
+						r = r[1];
+						if (r == '-') // N/A!
+							r = 'N/A';
+						q[4].value = r;
+					} else sbm = false;
+					
+					// 
+					r = /Search Visits<\/h4>[\r\n\t\s]*<div>[\r\n\t\s]*<strong class="metrics-data align-vmiddle">([\d\.]+%|-)<\/strong>/.exec(rs);
+					if (r) {
+						r = r[1];
+						if (r == '-') // N/A!
+							r = 'N/A';
+						q[5].value = r;
+					} else sbm = false;
+					
+					// 
+					r = /<\/span>&nbsp;&nbsp<span>([^<]+)<\/span>/g;
+					var m;
+					var tmp = [];
+					while (m = r.exec(rs)) {
+						var x = __js_clean_html_str(m[1]).trim();
+						tmp.push(x);
+					}
+					if (!tmp.length) {
+						q[6].value = 'N/A';
+					} else {
+						q[6].value = tmp.join(', ');
+					}
+					
+					
+					var has_non_na = false;
+					for (var i in q) {
+						q[i].value = q[i].value.trim();
+						if (q[i].value != 'N/A') {
+							has_non_na = true;
+							break;
+						}
+					}
+					if (!has_non_na) {
+						sbm = false;
+					}
+					
+					
+					console.log(sbm);
+					if (sbm) {
+						// any 
+						showNextTab(); // next!
+			
+						doSubmit();
+					} else {
+						// add to queue
+						addToTabsQ();
+						document.body.style.backgroundColor = 'LightGreen';
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// Charles Devereux
+	// -SimpleSearch
+	// Find the Details for Politically Prominent Leaders
+	var s = '<p>Find the date of birth and place of birth for prominent political leaders</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:280px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			country: td[5].innerText.trim(),
+			name_cln: td[1].innerText.trim().replace(/[^\w\d]/g, '').toLowerCase()
+		}
+	
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:30px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Charles_Devereux_politician_birth__wikipedia();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		d2.value = o.name;
+		
+		// ...
+		var q = [
+			document.getElementById('city_birth'),
+			document.getElementById('country_birth'),
+			document.getElementById('year_birth'),
+			document.getElementById('month_birth'),
+			document.getElementById('day_birth'),
+			document.getElementById('web_url')
+		];
+		
+		//
+		var REDIRECT = false;
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '') {
+					return false;
+				}
+			}
+			
+			//~ showNextTab(); // next!
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+			
+		// ...
+		Charles_Devereux_politician_birth__wikipedia();
+		
+		// ...
+		function Charles_Devereux_politician_birth__wikipedia_profile(u, div, IS_AUTO) {
+			
+			var u = u;
+			var div = div;
+			//~ var canonical = canonical;
+			
+			var canonical = 'http://en.wikipedia.org/wiki/' + encodeURIComponent(u);
+			var api = 'http://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvsection=0&titles='+ encodeURIComponent(u) +'&rvprop=content&format=json';
+							
+			q[5].value = canonical;
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(api), // + '&redirect=no'
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						exit(response.status);
+					}
+					
+					rs = JSON.parse(rs);
+					console.log(rs);
+					
+					if  ( // CHANGE TO ARRAY !
+						rs.hasOwnProperty('query') &&
+						rs.query.hasOwnProperty('pages')
+						)
+					{
+						for (var i in rs.query.pages) {
+							rs.query.pages = new Array(rs.query.pages[i]);
+							break;
+						}
+					}
+						
+					if  (
+						!rs.hasOwnProperty('query') ||
+						!rs.query.hasOwnProperty('pages') ||
+						!rs.query.pages.length ||
+						!rs.query.pages[0].hasOwnProperty('revisions') ||
+						!rs.query.pages[0].revisions.length ||
+						!rs.query.pages[0].revisions[0].hasOwnProperty('*') ||
+						rs.query.pages[0].revisions[0]['*'].length < 10
+						)
+					{
+						console.log('x');
+						return;
+					}
+					
+					rs = rs.query.pages[0].revisions[0]['*'];
+					
+					var tmp_rd;
+					var tmp_rd = /^[\r\n\t\s]*#REDIRECT *\[\[([^\]]+)\]\]/.exec(rs) //Sigurður Jónsson
+					if  (
+						!REDIRECT &&
+						tmp_rd
+						//~ tmp_rd = /^[\r\n\t\s]*#REDIRECT\[\[([^\]]+)\]\]/.exec(rs) //Sigurður Jónsson
+						)
+					{
+						REDIRECT = true;
+						Charles_Devereux_politician_birth__wikipedia_profile(tmp_rd[1], div);
+						return;
+					}
+						
+					/*	#REDIRECT[[Sigurður Jónsson]]
+						{{R from title without diacritics}}
+						*/
+					
+					// Trucial States<br><small>(now United Arab Emirates)</small>
+					
+					// | birth_date = {{Birth date and age|1950|12|6|df=y}}
+					// | birth_place = [[Sivasagar]], [[Assam]], [[India]]
+					
+					// |birth_date = {{birth date and age|mf=yes|1963|2|17}}
+					// |birth_place = [[Brooklyn]], [[New York]]
+					
+					// Is second a state? Or is second a country?
+					// Is third a state? Is third a country?
+					
+					var sbm = true;
+					if (o.country == 'Georgia') sbm = false;
+					var months = [
+						'', // BLANK
+						'January',
+						'February',
+						'March',
+						'April',
+						'May',
+						'June',
+						'July',
+						'August',
+						'September',
+						'October',
+						'November',
+						'December'
+					]
+					
+					var r;
+					r = /\| *birth_place *= *([^\r\n\|\}]+)/.exec(rs);
+					if (r) {
+						r = r[1];
+						div.innerText += '\n' + r;
+						
+						r = r.split(', ');
+						if (r.length < 2) {
+							sbm = false;
+							q[0].value = r.join(',').replace(/[\[\]]/g, '');
+							//~ return;
+						}
+						else
+						{
+						
+							// ...
+							var city, country_;
+							city_ = r[0].replace(/[\[\]]/g, '');
+							country_ = r[r.length - 1].replace(/[\[\]]/g, '');
+							
+							q[0].value = city_;
+							q[1].value = country_;
+							
+							if  (
+								/[<>]/.exec(city_) ||
+								/[<>]/.exec(country_)
+								)
+							{
+								sbm = false;
+							}
+							
+							// Is LAST a US state? Or... ? ... country?
+							// Georgia? Puetro Rico?
+							var found = false;
+							country_ = country_.toLowerCase();
+							for (var i in MT___states) { // {"AL": "Alabama",
+								//~ if (MT___states[i] == '') continue;
+								if (MT___states[i].toLowerCase() == country_) {
+									q[1].value = 'United States';
+									found = true;
+									break;
+								}
+							}
+						}
+						//~ if (!found)
+							//~ sbm = false;
+					} else sbm = false;
+					
+					var r;
+					var bd;
+					r = /\| *birth_date *= *([^\r\n\}]+)/.exec(rs);
+					if (r) {
+						r = r[1];
+						div.innerText += '\n' + r;
+						
+						bd = /\|(\d{4})\|(\d+)\|(\d+)/.exec(r);
+						if (bd) {
+							q[2].value = bd[1]; //yr
+							
+							q[3].value = months[bd[2] * 1]; //month
+							
+							q[4].value = bd[3]; //day
+						} else {
+							//{{b-da|15 August 1956
+							//{{b-da|7 January 1957 
+							bd = /b-da\|(\d{1,2}) ([A-Z]\w+) (\d{4})/.exec(r);
+							if (bd) {
+								q[2].value = bd[3]; //yr
+							
+								q[3].value = bd[2]; //month
+								
+								q[4].value = bd[1]; //day
+								
+								// double-check that month is real month
+								var found = false;
+								for (var i in months) {
+									if (months[i] == bd[2]) {
+										found = true;
+										break;
+									}
+								}
+								if (!found) sbm = false;
+							} else {
+								sbm = false;
+								console.log(r);
+							}
+						}
+					}
+					
+					console.log('IS_AUTO:'+IS_AUTO);
+					console.log(u);
+					console.log(div);
+					
+					// ...
+					if (sbm) {
+						showNextTab(); // next!
+						
+						doSubmit(); //
+					}
+					else if (IS_AUTO) // manual
+					{
+						// add to queue
+						addToTabsQ();
+					}
+				}
+			});
+		}
+		// ...
+		function Charles_Devereux_politician_birth__wikipedia(r) {
+			
+			//Paban+Singh+GHATOWAR
+			var u = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search='+
+				encodeURIComponent(d2.value)+
+				'&namespace=0&suggest=';
+			// namespace=0 is "(Main/Article)"
+			
+			d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					// 1 result
+					//["Paban Singh GHATOWAR",["Paban Singh Ghatowar"]]
+					// 0 results
+					//["Pabanzzzzzzzzzzzzzzz",[]]
+					rs = JSON.parse(rs);
+					
+					if (!rs.length || rs.length != 2 || !rs[1].length) {
+						d1.innerText = 0;
+						
+						// try wikipedia.org search? (includes [id,fr, ... etc.].wikipedia.org)?
+						
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						return;
+					}
+					
+					// Here?
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.accept();
+						return;
+					} else {
+						//~ // add to queue
+						//~ addToTabsQ();
+					}
+						
+					// 
+					for (var i in rs[1]) {
+						var d = document.createElement('div');
+						d.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;width:30%;');
+						d.className = 'exe'
+						d.innerText = rs[1][i];
+						d.wiki_namespace = rs[1][i].replace(/\s+/g, '_');
+						d.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							//~ var x = this.innerText.replace(/\s+/g, '_');
+							
+							//~ x = 'http://en.wikipedia.org/wiki/' + encodeURIComponent(x);
+							
+							//~ var canonical = 'http://en.wikipedia.org/wiki/' + encodeURIComponent(x);
+							
+							//~ var api = 'http://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvsection=0&titles='+ encodeURIComponent(x) +'&rvprop=content&format=json';
+							
+							Charles_Devereux_politician_birth__wikipedia_profile(this.wiki_namespace, this, false); // false == MANUAL!
+						}
+						d1.appendChild(d);
+					}
+					
+					console.log(rs[1][0].replace(/[^\w\d]/g, '').toLowerCase());
+					console.log(o.name_cln);
+					if  (
+						rs[1].length == 1 &&
+						rs[1][0].replace(/[^\w\d]/g, '').toLowerCase() == o.name_cln &&
+						o.name_cln.length >= 6
+						)
+					{
+						//~ d.click();
+						//(u, div, IS_AUTO)
+						
+						d.style.backgroundColor = 'LightGreen';
+						Charles_Devereux_politician_birth__wikipedia_profile(d.wiki_namespace, d, true); // true == IS_AUTO!
+					}
+					else // manual
+					{
+						// add to queue
+						addToTabsQ();
+					}
+					
+					//~ // always add ...
+					//~ // add to queue
+					//~ addToTabsQ();
+				}
+			});
+		}
+	}
+	
+	//
 	// Ralph Post
 	// -SimpleSearch
 	// 
@@ -3999,6 +4925,612 @@ function MT__RUN() {
 	}
 	
 	//
+	// Dave Todd
+	// -SimpleSearch
+	// 
+	s = '<li>Click on the Wikipedia URL. Choose a "primarily" label and a "secondarily" label.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		GM_addStyle('body {margin-top:620px;}');
+		
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		//~ GM_addStyle('.container {position:absolute;top:1000px;margin-left:-40px;width:30%;zoom:0.6;}');
+		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.highlight-box {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('select {cursor:pointer;}');
+		
+		//~ GM_addStyle('.exe-div * {pointer-events: none;}');
+		
+		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
+		
+		//var a = document.getElementsByTagName('a')[0].href.trim() + '/about';
+		
+		var a = document.getElementsByTagName('a')[0].href;
+		
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:20px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var debug = [''];
+		for (var i = 0; i < 3; i++) {
+			var x = document.createElement('input');
+			x.setAttribute('type','text');
+			x.setAttribute('style','position:absolute;top:0px;left:'+(i*20)+'%;width:20%;height:20px;');
+			document.body.appendChild(x);
+			debug.push(x);
+		}
+		//~ //
+		//~ var d2 = document.createElement('input');
+		//~ d2.setAttribute('type','text');
+		//~ d2.setAttribute('style','position:absolute;top:0px;width:40%;height:20px;');
+		//~ document.body.appendChild(d2);
+		//~ //
+		//~ var d2b = document.createElement('input');
+		//~ d2b.setAttribute('type','text');
+		//~ d2b.setAttribute('style','position:absolute;top:0px;width:40%;height:20px;');
+		//~ document.body.appendChild(d2b);
+		//~ //
+		//~ var d2c = document.createElement('input');
+		//~ d2c.setAttribute('type','text');
+		//~ d2c.setAttribute('style','position:absolute;top:0px;width:40%;height:20px;');
+		//~ document.body.appendChild(d2c);
+		//~ //
+		//~ var d2b = document.createElement('textarea');
+		//~ d2b.setAttribute('type','text');
+		//~ d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:30px;');
+		//~ d2b.onblur = function() {
+			//~ this.value = this.value.replace(/\s+/g, ' ').trim();
+			//~ Emergo_Group_find_url();
+		//~ }
+		//~ document.body.appendChild(d2b);
+		/* END ITEMS */
+		//~ 
+		//~ d2.value  = o.artist;
+		//~ d2b.value = o.song;
+		//~ 
+		//~ // ...
+		//~ var ef = new AMT___events_factory();
+		//~ d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		//~ d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		//~ 
+		// ...
+		//~ var rf;
+		
+		// ...
+		var SYNONYMS;
+		var all_choices = {};
+		var current_index = 1;
+		var WP_HREF = a;
+		var global_showing = [];
+		
+		// d1
+		// TRUE
+		d1.addEventListener('mouseover', function(e) {
+			for (var i in global_showing) {
+				//~ global_showing[i].innerText = '';
+				global_showing[i].style.display = 'none';
+				global_showing[i].parentNode.style.border = '';
+				global_showing[i].parentNode.style.zIndex = '1';
+				global_showing[i].parentNode.style.position = '';
+				
+				//~ global_showing[i].parentNode.style.marginRight = '0';
+			}
+			global_showing = [];
+		}, true); //TRUE
+		
+		// 
+		window.addEventListener('keydown', function(e) {
+			var k = e.keyCode;
+			if (k == 13) {
+				var x = document.getElementsByName('Q1');
+				var found = false;
+				for (var i in x) {
+					if (x[i].checked) {
+						found = true;
+						break;
+					}
+				}
+				if (found)
+					doSubmit();
+				
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+		}, true);
+		
+		// 
+		document.getElementById('submitButton').addEventListener('click', function(e) {
+			var x = document.getElementsByName('Q1');
+			var found = false;
+			for (var i in x) {
+				if (x[i].checked) {
+					found = true;
+					break;
+				}
+			}
+			if (found)
+				doSubmit();
+				
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}, true);
+		
+		// current_index
+		//~ d2.value = '1';
+		
+		// all_choices
+		var x = document.getElementsByTagName('input');
+		for (var i in x) {
+			if (x == 'length') break;
+			if (x[i].type != 'radio') continue;
+			if (x[i].value == 'Person but none of the above') continue;
+			if (x[i].value == 'Not a person') continue;
+			if (x[i].value == 'Could not open the link') continue;
+			if (x[i].value == 'Not a person') continue;
+			
+			if (x[i].value == 'No secondary type') {
+				x[i].checked = true; // THIS IS DEFAULT
+				continue;
+			}
+			
+			//~ if (!all_choices[x[i].value]) {
+			
+			if (!all_choices.hasOwnProperty(x[i].value)) {
+				all_choices[x[i].value] = true;
+			}
+		}
+		
+		// ...
+		Dave_Todd_wikipedia_careers__init_synonyms('isInit');
+		
+		// ...
+		function Dave_Todd_wikipedia_careers__init_synonyms(isInit) {
+			
+			var isInit = isInit;
+			
+			var rf = new AMT___requests_factory()
+				.io__read_file
+				(
+					{
+						filename: MT___host + '/mturk/.miscellaneous/Dave_Todd_wikipedia_careers__synonyms?random=' + Math.random()
+					},
+					function(response) { // (file_object)
+						//~ if (response.status == 200) {
+						//~ }
+						//~ 
+						//~ SYNONYMS = response.responseText;
+						
+						if (response.responseText == '' || response.status != 200)
+							SYNONYMS = {};
+						else
+							SYNONYMS = JSON.parse(response.responseText);
+						
+						// {'word': choiceX, 'word2': choiceY, ...}
+						
+						if (isInit == 'isInit')
+							Dave_Todd_wikipedia_careers__loadWP();
+						else // is choice
+							isInit(); // CALLBACK
+							//~ Dave_Todd_wikipedia_careers__executeChoice();
+					}
+				);
+		}
+		
+		// ...
+		function Dave_Todd_wikipedia_careers__addToForm(completion_object) {
+			
+			console.log(completion_object);
+			
+			//current_index
+			
+			//completion_object.choice
+			
+			var radio = document.getElementsByName('Q' + current_index);
+			var found = false;
+			for (var i in radio) {
+				if (i == 'length') break;
+				if (radio[i].value == completion_object.choice) {
+					radio[i].checked = true;
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				alert('choice not found!')
+			}
+			
+			debug[current_index].value = completion_object.choice;
+			
+			if (current_index < 3)
+				current_index++;
+			
+			//~ d2.value = current_index;
+			
+		}
+		// ...
+		function Dave_Todd_wikipedia_careers__executeChoice(word, choice) {
+			
+			// ...
+			var word = word;
+			var choice = choice;
+			
+			// update choices
+			Dave_Todd_wikipedia_careers__init_synonyms(
+				
+				// Callback function!
+				// Update SYNONYMS and write to file.
+				function() {
+					SYNONYMS[word] = choice;
+					
+					console.log(word);
+					console.log(choice);
+					
+					var rf = new AMT___requests_factory()
+						.io__write_to_file(
+								{
+									data:	'AMT__serverSide_write__value='+encodeURIComponent(JSON.stringify(SYNONYMS))+
+											'&AMT__serverSide_write__folder=.miscellaneous'+
+											'&AMT__serverSide_write__file=Dave_Todd_wikipedia_careers__synonyms',
+									choice: choice
+								},
+								Dave_Todd_wikipedia_careers__addToForm
+							);
+				}
+						
+			)
+					
+			//~ if (SYNONYMS[word]) {
+				//~ SYNONYMS[word] = choice;
+			//~ } else {
+				//~ SYNONYMS[word] = choice;
+			//~ }
+		}
+		// ...
+		function Dave_Todd_wikipedia_careers__makeButton(word) {
+			
+			var word_cln = word;
+			// REPLACE!
+			word_cln = word_cln.replace(/^[^\w\d]*/, '');
+			word_cln = word_cln.replace(/[^\w\d]*$/, '');
+			
+			// div
+			var div = document.createElement('div');
+			div.setAttribute('style', 'display:inline-block;background-color:#eee;margin-bottom:-300px;');
+			//~ div.className = 'exe-div';
+			
+			//~ var div2 = document.createElement('div');
+			//~ div2.setAttribute('style', 'position:relative;');
+			//~ div2.setAttribute('style', 'display:inline;');
+			//~ div2.className = 'exe-div';
+			
+			// sel
+			var sel = document.createElement('select');
+			sel.setAttribute('style', 'display:none;');
+			sel.multiple= 'multiple';
+			sel.size	= 14;
+			sel.word	= word_cln; // !! word_cln
+			sel.onchange = function() {
+				if (this.value != '')
+					Dave_Todd_wikipedia_careers__executeChoice(this.word, this.value);
+			}
+			// make choices
+			for (var i in all_choices) {
+				var o = document.createElement('option');
+				o.value		= i;
+				o.innerText	= i;
+				sel.appendChild(o);
+			}
+			
+			div.sel = sel;
+			
+			// inp
+			var inp = document.createElement('button');
+			inp.setAttribute('style', 'border:0;background-color:none;z-index:1;');
+			inp.className	= 'exe';
+			inp.innerText	= word;
+			inp.word		= word_cln; // !! word_cln
+			
+			
+			
+			//~ console.log(SYNONYMS[word]);
+			//~ console.log(SYNONYMS);
+			if (SYNONYMS[word_cln]) {
+				
+				inp.style.border = '1px solid teal';
+				inp.style.backgroundColor = 'MintCream';
+				
+				// show the previous choice for this word
+				inp.innerText += '\n' + SYNONYMS[word_cln];
+				
+				inp.choice = SYNONYMS[word_cln];
+				
+				// onclick
+				// fills in the next open radio
+				inp.onclick = function() {
+					Dave_Todd_wikipedia_careers__executeChoice(this.word, this.choice);
+				}
+			}
+			
+			
+			// mouseover
+			div.addEventListener('mouseover', function() {
+				var s = this.sel;
+				//~ s.innerText = '';
+				s.style.display = 'block';
+				
+				this.style.border = '1px solid #a2a2a2';
+				this.style.zIndex = '2'; // 
+				this.style.position = 'absolute'; // 
+				
+				//~ this.style.marginRight = '80px'; // 
+				
+				//~ this.style.marginBottom = '-300px';
+				
+				//~ console.log(all_choices);
+				
+				// ADD S TO GLOBAL THAT ARE SHOWING !
+				global_showing.push(s);
+				
+				
+			}, false);
+			
+			// mouseout
+			div.addEventListener('mouseout', function(e) {
+				
+			}, false);
+			
+			// append
+			div.appendChild(inp);
+			div.appendChild(sel);
+			
+			//~ div.appendChild(div2);
+			//~ div2.appendChild(inp);
+			//~ div2.appendChild(sel);
+			
+			// return
+			return div;
+		}
+		// ...
+		function Dave_Todd_wikipedia_careers__loadWP() {
+			
+			d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(WP_HREF),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					var r = /<div id="content" class="mw-body" role="main">((.|\s)*?(?=<div id='catlinks' class='catlinks'>|$)|$)/.exec(rs);
+					if (r) {
+						var d = document.createElement('div');
+						d.setAttribute('style', 'width:90%;');
+						
+						r = r[0];
+						
+						// The topic of this article <b>may not meet Wikipedia's
+						r = r.replace(/<table class="metadata plainlinks ambox ambox-content ambox-Notability" role="presentation">((.|\s)*?(?=<\/table>|$)|$)/g, '');
+						
+						// infobox's
+						var x = /<table class="infobox"[^>]*>((.|\s)*?(?=<\/table>|$)|$)/g;
+						var m;
+						var replace = '';
+						while (m = x.exec(r)) {
+							replace += m[0];
+						}
+						r = r.replace(/<table class="infobox"[^>]*>((.|\s)*?(?=<\/table>|$)|$)/g, '');
+						r += replace;
+						
+						// img iframe script
+						r = r.replace(/<\/?(img|iframe)[^>]*>/g, '');
+						
+						// Set innerHTML
+						d.innerHTML = r;
+						
+						// Get innerText
+						var x = d.innerText;
+						
+						//~ console.log(x);
+						
+						x = x.replace(/ *[\r\n]+ */g, '\n');
+						
+						// FORM INTO BUTTONS
+						x = x.split(' ');
+						
+						// ...
+						var d = document.createElement('div');
+						d.setAttribute('style', 'width:84%;');
+						
+						// Add to d1
+						for (var i in x) {
+							
+							// contains \n ?
+							var tx = x[i].split('\n');
+							if (tx.length > 1) {
+								for (var j in tx) {
+									d.appendChild(Dave_Todd_wikipedia_careers__makeButton(tx[j]));
+									d.appendChild(document.createElement('br'));
+								}
+							} else {
+								d.appendChild(Dave_Todd_wikipedia_careers__makeButton(x[i]));
+							}
+						}
+						
+						d1.appendChild(d);
+						
+						// length
+						var d = document.createElement('div');
+						d.setAttribute('style', 'height:1600px;');
+						d1.appendChild(d);
+					}
+					
+				}
+			});
+		}
+	}
+	
+	//
+	// Emergo Group
+	// -SimpleSearch
+	// 
+	s = 'The company below is exhibiting at a tradeshow, and we would like the website address for the <strong>official website of the company</strong>';
+	if (ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+		GM_addStyle('body {margin-top:90px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		//~ GM_addStyle('.container {position:absolute;top:1000px;margin-left:-40px;width:30%;zoom:0.6;}');
+		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.highlight-box {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
+		
+		//var a = document.getElementsByTagName('a')[0].href.trim() + '/about';
+		
+		var b = document.getElementsByTagName('b');
+		var o = {
+			name:		b[0].innerText.trim(),
+			name_cln:	b[0].innerText.trim().replace(/[^\w\d]/g, '')
+		}
+		//~ o.song_array = o.song.replace(/[,\.]/g, ' ').split(' ');
+		
+		/* BEGIN ITEMS */
+		//~ var d1 = document.createElement('div');
+		//~ d1.setAttribute('style','position:absolute;top:32px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		//~ document.body.appendChild(d1);
+		//~ //
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:30px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Emergo_Group_find_url();
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('type','text');
+		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:30px;');
+		d2b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Emergo_Group_find_url();
+		}
+		//~ document.body.appendChild(d2b);
+		/* END ITEMS */
+		//~ 
+		//~ d2.value  = o.artist;
+		//~ d2b.value = o.song;
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		Emergo_Group_find_url();
+		
+		// ...
+		function Emergo_Group_find_url__profile(u) {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),//a,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					//<span class="BoothContactUrl"><a id="BoothContactUrl" target="_blank" href="www.lrmc.com">www.lrmc.com</a>
+					var r;
+					//www.lrmc.com
+					r = /<span class="BoothContactUrl"><a id="BoothContactUrl" target="_blank" href="([^"]+)">[^<]+<\/a>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('URL').value = r;
+						if (r.length > 8) doSubmit();
+					}
+					//~ rs = rs.replace(/^song = /, '');
+					//~ rs = rs.replace(/'/g, '"');
+					//~ console.log(rs);
+					//~ rs = JSON.parse(rs);
+					
+				}
+			});
+		}
+		// ...
+		function Emergo_Group_find_url() {
+			
+			var u = 'http://events.jspargo.com/AACC14/Public/Exhibitors.aspx?ID=45746&sortMenu=104002';
+			
+			//~ d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					//~ rs = rs.replace();
+					
+					var r;
+					
+					// eBooth.aspx?IndexInList=425&amp;FromPage=Exhibitors.aspx&amp;ParentBoothID=&amp;ListByBooth=true&amp;BoothID=349100
+					// Lakeland Regional Medical Center
+					r = new RegExp('<TD width="40%"><a class="exhibitorName" href="([^"]+)">'+o.name+'<\\/a><\\/TD>', 'i').exec(rs);
+					r = new RegExp('<TDwidth40><aclassexhibitorNamehref="([^"]+)">'+o.name+'<\\/a><\\/TD>', 'i').exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						console.log(r);
+						Emergo_Group_find_url__profile('http://events.jspargo.com/AACC14/Public/' + r);
+					}
+					
+					//~ var d = document.createElement('div');
+					//~ d.setAttribute('style', 'height:1600px;');
+					//~ d1.appendChild(d);
+					
+				}
+			});
+		}
+	}
+	
+	//
 	// AT ""
 	// -SimpleSearch, Find lyrics to popular songs online
 	// lyrics, lyricwiki
@@ -4273,6 +5805,472 @@ function MT__RUN() {
 					
 					
 					
+				}
+			});
+		}
+	}
+	
+	//
+	// Sergey Schmidt
+	// -SimpleSearch
+	// Find YouTube News channels
+	s = 'You will be given a an online news source, such as “cnn.com”, and your task will be to find it’s official YouTube channel. ';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');// !important
+		//~ GM_addStyle('body {position:absolute;top:400px;}');
+		
+		//~ GM_addStyle('form {position:absolute;top:430px;}');
+		
+		GM_addStyle('form {margin-top:10px;}');
+		GM_addStyle('#submitButton {position:absolute;top:0;left:0;height:30px;width:10%;}');
+		
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('.container {position:absolute;top:1000px;margin-left:-40px;width:30%;zoom:0.6;}');
+		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
+		
+		// hide 0,1
+		// 3,4 = ...
+		var p = document.getElementsByTagName('p');
+		p[0].style.position = 'absolute';
+		p[0].style.top = '1200px';
+		p[1].style.position = 'absolute';
+		p[1].style.top = '1400px';
+		
+		//~ p[2].style.marginTop = '10px !important !important !important !important !important !important';
+		
+		var o = {
+			name:		p[3].innerText.replace(/^Name of news source =/, '').trim(),
+			website:	p[4].innerText.replace(/^Official website =/, '').trim().replace(/\/$/g, '').toLowerCase().replace(/^(https?:\/\/)www*\./i, '$1')
+		}
+		o.name_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.web_array  = o.website.replace(/[^\w\d]/g, ' ').split(' ');
+		o.short_website = o.website.replace(/^https?:\/\/(www\.|)/i, '');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:120px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:520px;width:98%;height:800px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+		document.body.appendChild(d2);
+		// flicker...
+		d2.style.visibility = 'hidden';
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+		}, false);
+		if (!AMT__Global_Vars.isPreview) {
+			d2.src = o.website;
+			d2.onmouseover = function() {
+				this.scrollIntoView();
+			}
+			// zoom out !
+			// post msg
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage(
+					{
+						task: 'AMT__all_pages_util',
+						MT___all_pages_extend: true,
+						MT___all_pages_zoom: true,
+						MT___text_scrollIntoView: /\.youtube\.com/i
+					},
+				 "*");
+			}, 1000);
+		}
+		//
+		var d3 = document.createElement('textarea');
+		//~ d3.setAttribute('type', 'text');
+		d3.setAttribute('style','position:absolute;top:0px;left:10%;width:50%;height:30px;');
+		document.body.appendChild(d3);
+		//
+		var d3b = document.createElement('input');
+		d3b.setAttribute('type', 'button');
+		d3b.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
+		document.body.appendChild(d3b);
+		/* END ITEMS */
+		
+		d3.value = o.name  + ' ' + o.short_website;
+		d3.onblur = function() {
+			Sergey_Schmidt_find_youtube();
+		}
+		
+		d3b.value = 'N/A';
+		d3b.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementsByName('comment')[1].value = 'I could not find a YouTube user for this company.';
+			doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		var q = document.getElementsByName('comment')[0];
+		document.getElementById('submitButton').onclick = function(e) {
+			this.style.backgroundColor = 'LightGreen';
+			if (q.value.trim().length < 10) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ return false;
+			} else {
+				doSubmit();
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ return false;
+			}
+			
+			showNextTab(); // next!
+			
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		
+		// if accepted add to tabs queue!
+		if (!AMT__Global_Vars.isPreview)
+			addToTabsQ();
+		
+		// ...
+		// global
+		//~ var CONTINUE_SKIP = true;
+		var FOUND_ACCEPT_MATCH = false;
+		var items_to_click_arr = [];
+		
+		// ...
+		Sergey_Schmidt_find_youtube();
+		
+		// ...
+		function Sergey_Schmidt_find_youtube() {
+			//
+			//http://www.tumblr.com/search/touringplans
+			var u = 'https://www.youtube.com/results?filters=channel&lclk=channel&search_query=' + encodeURIComponent(d3.value); //
+			u += '&sp=EgIQAkICCAE%253D'; // THIS WILL STOP YOUTUBE FROM SAYING "SEARCHED BY XXXXX. WOULD YOU LIKE TO SEARCH BY (CORRECT TERM) ?" !!
+			
+			d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),//a,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					// profiles
+					
+					var r;
+					
+					//~ r = /<li class="yt-lockup clearfix yt-uix-tile yt-lockup-channel yt-lockup-tile[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+					
+					r = /<li class="yt-lockup clearfix yt-uix-tile yt-lockup-channel yt-lockup-tile[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]*<\/li>|$)|$)/g;
+					
+					if (!r.exec(rs)) {
+						d1.innerText = '0';
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						return;
+					} else if (AMT__Global_Vars.isPreview) {
+						
+						// NOT HERE
+						//~ AMT___Floater.accept();
+						//~ return;
+						
+					}
+					//~ if (AMT__Global_Vars.isPreview) { //DEBUG
+						//~ AMT___Floater.skip();
+					//~ }
+						
+					// ...
+					r.lastIndex = 0;
+					var m;
+					var r2;
+					var r3;
+					var first = true;
+					var c = 0;
+					
+					// ...
+					while (m = r.exec(rs)) {
+						
+						if (c>=8) break;
+						c++;
+						
+						// chan link, chan nm, chan by, active, #vid, #subsc.
+						var chan = '';
+						var chan = {
+							lk:'',
+							nm:'',
+							vf:'',
+							by:'',
+							av:'',
+							vd:'',
+							sb:'',
+							ds:''
+						}
+						
+						// Construction Citizen
+						// /user/ConstructionCitizen OR https://www.youtube.com/channel/UC58rLtNFyCMbdbn8_hTK6ZQ
+						// OR <a class="yt-uix-sessionlink yt-uix-tile-link  spf-link  yt-ui-ellipsis yt-ui-ellipsis-2" dir="ltr" title="Fightline.com » News - Topic" data-sessionlink="ved=CBMQvxs&amp;ei=50CqU7uTIIWH8wb8koDQAg" href="/channel/UCAyFP0tPi1db11Dtircc8gQ">Fightline.com » News - Topic<span class="qualified-channel-title-badge"><img src="https://s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" class="yt-uix-tooltip yt-channel-title-autogenerated" alt="" title="Auto-generated by YouTube"></span></a>
+						m[1] = m[1].replace(/<span class="qualified-channel-title-badge"><img src=[^>]*><\/span>/g, '');
+						r2 = /<a class="[^"]*" dir="ltr" title="([^"]*)" data-sessionlink="[^"]*" href="([^"]*)">[^<]*<\/a>/.exec(m[1]);
+						if (r2) {
+							chan.lk = 'https://www.youtube.com' + __js_clean_html_str(r2[2]).trim(); //NOT !!! toLowerCase
+							chan.nm = __js_clean_html_str(r2[1]).trim();
+						}
+						
+						// VERIFIED?
+						r2 = / *<img src="[^"]+" class="[^"]+" alt="" title="Verified">[\r\n\t\s]*/.exec(m[1]);
+						if (r2) {
+							m[1] = m[1].replace(/ *<img src="[^"]+" class="[^"]+" alt="" title="Verified">[\r\n\t\s]*/g, '');
+							chan.vf = '<b>VF</b>';
+						}
+						
+						//Construction Citizen
+						//Active 5 days ago
+						//99 videos
+						//~ r2 = /<div class="yt-lockup-meta"><ul class="yt-lockup-meta-info"><li>[\r\n\t\s]*by <a href="[^"]*" class="[^"]*" data-sessionlink="[^"]*" dir="ltr" data-ytid="[^"]*" data-name="">([^<]*)<\/a><\/li><li>([^<]*)<\/li><li>([^<]*)<\/li><\/ul><\/div>/.exec(m[1]);
+						r2 = /<ul class="yt-lockup-meta-info"><li>[\r\n\t\s]*by <a href="[^"]*" class="[^"]*" data-sessionlink="[^"]*" dir="ltr" data-ytid="[^"]*" data-name="">([^<]*)<\/a><\/li><li>([^<]*)<\/li>(<li>([^<]*)<\/li>|)/.exec(m[1]);
+						if (r2) {
+							chan.by = __js_clean_html_str(r2[1]).trim();
+							chan.av = __js_clean_html_str(r2[2]).trim().replace(/^Active */, '');
+							chan.vd = (r2[3] != '') ? __js_clean_html_str(r2[4]).trim() : '0';
+						}
+						
+						//ex: 19
+						r2 = /<span class="yt-subscription-button-subscriber-count-unbranded-horizontal" title="[^"]*">([^<]*)<\/span>/.exec(m[1]);
+						if (r2) {
+							chan.sb = __js_clean_html_str(r2[1]).trim();
+						}
+						
+						var bgc_topic = ''; //bgc_topic
+						if (/ - Topic$/.exec(chan.nm)) {
+							bgc_topic = 'background-color:aqua;';
+						}
+						
+						//~ // desc.
+						//~ /*
+						//~ <div class="about-description branded-page-box-padding" >
+						//~ <p>Check out editors&#39; picks from JEMS, JEMS.com and EMS conferences, like EMS Today!</p>
+						//~ </div>
+						//~ */
+						//~ r2 = /<div class="about-description branded-page-box-padding" >((.|\s)*?(?=<\/div>|$)|$)/.exec(m[1]);
+						//~ if (r2) {
+							//~ desc = r2[1].replace(/<[^>]*>/g, '');
+							//~ desc = __js_clean_html_str(desc);
+							//~ desc = desc   .replace(/<[^>]*>/g, '');
+							//~ desc = desc   .replace(/[\t\s]+/g, ' ');
+							//~ desc = desc   .replace(/[\r\n]+/g, '\n');
+							//~ desc = desc   .substr(0,400);
+							//~ 
+							//~ var x = document.createElement('div');
+							//~ x.setAttribute('style', 'width:40%;'); //max-height:80px;overflow:auto;
+							//~ x.innerText = desc;
+							//~ chan.ds = x;
+						//~ } else {
+							//~ var x = document.createElement('div');
+							//~ x.innerText = ' - ';
+							//~ chan.ds = x;
+						//~ }
+						var x = document.createElement('div');
+						x.setAttribute('style', 'width:40%;background-color:#dedeed');
+						chan.ds = x;
+						
+						r2 = /<span class="yt-subscription-button-subscriber-count-unbranded-horizontal" title="[^"]*">([^<]*)<\/span>/.exec(m[1]);
+						if (r2) {
+							chan.sb = __js_clean_html_str(r2[1]).trim();
+						}
+						
+						var bold_name = MT__bold(chan.nm, o.name_array);
+						
+						var x = document.createElement('div');
+						x.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;'+bgc_topic);//CLEAR //height:80px;overflow:auto;
+						x.className = 'exe';
+						x.yt_link = chan.lk;
+						x.div_desc = chan.ds;
+						x.innerHTML = 
+							bold_name + ' -BY- ' + chan.by + '<br>' +
+							'Active:'+chan.av + '<br>' +
+							'Videos:'+chan.vd + '<br>' +
+							'Subscr:'+chan.sb + '<br>' +
+							'VF:'	 +chan.vf + '<br>' +
+							chan.lk // '<br>' +
+							;
+						x.appendChild(chan.ds);
+						x.onclick = function() {
+							
+							this.style.border = '2px solid teal';
+							
+							// UPDATE THIS.ONCLICK !!
+							this.onclick = function() {
+								
+								// UPDATE THIS.ONCLICK !!
+								this.onclick = function() {}
+								
+								this.style.backgroundColor = 'LightGreen';	
+								q.value += ', ' + this.yt_link;
+								q.value = q.value.replace(/^, /, '');
+								
+								document.getElementById('submitButton').focus();
+							}
+							
+							Sergey_Schmidt_find_youtube__profile(this);
+							
+							
+						}
+						d1.appendChild(x);
+						
+						
+						// first?
+						if (first) {
+							first = false;
+							x.click();
+						} else {
+							
+							// 
+							// bold in name + not a topic
+							if (bold_name.indexOf('<b>') != -1 && bgc_topic == '') { //CONTINUE_SKIP
+								items_to_click_arr.push(x)
+								//~ x.click();
+							}
+						}
+					}
+					
+					// add height
+					var x = document.createElement('div');
+					x.setAttribute('style', 'height:1600px;');
+					d1.appendChild(x);
+					
+					//~ //items_to_click_arr !!
+					//~ var xint = setInterval(function() {
+						//~ if (!FOUND_ACCEPT_MATCH || !items_to_click_arr.length) {
+							//~ clearInterval(xint);
+							//~ return;
+						//~ }
+						//~ 
+						//~ var item = items_to_click_arr.shift(); // first
+						//~ 
+						//~ //Sergey_Schmidt_find_youtube__profile
+						//~ item.click();
+						//~ 
+					//~ }, 400);
+					
+					
+				}
+			});
+		}
+		// ...
+		function Sergey_Schmidt_find_youtube__profile(div) {
+			
+			var u = div.yt_link + '/about'; // /ABOUT !
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),//a,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+						}
+						exit(response.status);
+					}
+					
+					var r;
+					
+					// desc.
+					/*
+					<div class="about-description branded-page-box-padding" >
+					<p>Check out editors&#39; picks from JEMS, JEMS.com and EMS conferences, like EMS Today!</p>
+					</div>
+					*/
+					r = /<div class="about-description branded-page-box-padding" >((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					if (r) {
+						var desc = r[1].replace(/<[^>]*>/g, '');
+						desc = __js_clean_html_str(desc);
+						desc = desc   .replace(/<[^>]*>/g, '');
+						desc = desc   .replace(/[\t\s]+/g, ' ');
+						desc = desc   .replace(/[\r\n]+/g, '\n');
+						desc = desc   .substr(0,400);
+						
+						div.div_desc.innerText = desc;
+					} else {
+						//
+					}
+					
+					// img
+					if (!AMT__Global_Vars.isPreview) {
+						var img = /<img class="appbar-nav-avatar" src="([^"]{8,})"/.exec(rs);
+						var i;
+						if (img) {
+							i = document.createElement('img');
+							i.src = img[1];
+							i.setAttribute('style', 'max-height:100px;float:right;clear:right;margin-top:-80px;');
+						} else
+							i = document.createTextNode('');
+						div.appendChild(i);
+					}
+						
+					// scrape for urls
+					var m;
+					var found = false;
+					var c = 0;
+					
+					// "http://newyorkhabitat.tumblr.com/"
+					var r = /<li class="channel-links-item">[\r\n\t\s]*<a href="([^"]*)"/g; //http:\/\/
+					var out_urls = [];
+					
+					while (m = r.exec(rs)) {
+						m[1] = __js_clean_html_str(m[1]);
+						m[1] = m[1].replace(/^(https?:\/\/)www*\./i, '$1');
+						m[1] = m[1].replace(/\/$/, '');
+						
+						if (out_urls.hasOwnProperty(m[1])) continue;
+						
+						// Here?
+						out_urls[m[1]] = true; // obj array
+						
+						div.innerHTML += '<br>' + MT__bold(m[1], o.web_array);
+						
+						if (m[1].toLowerCase() == o.website) { // lowercase here!
+							
+							div.style.border = '6px dashed blue';
+							
+							// THIS IS A MATCH WORTH ACCEPTING :)
+							if (AMT__Global_Vars.isPreview) {
+								FOUND_ACCEPT_MATCH = true;
+								AMT___Floater.accept();
+								return;
+							}
+						}
+					}
+					
+					// HERE!?
+					if (AMT__Global_Vars.isPreview && !items_to_click_arr.length) { // no more choices!
+						AMT___Floater.skip();
+						return;
+					}
+					// HERE!?
+					if (items_to_click_arr.length) {
+						//~ AMT__Global_Vars.isPreview
+						
+						var item = items_to_click_arr.shift(); // first
+						
+						//Sergey_Schmidt_find_youtube__profile
+						item.click();
+					}
 				}
 			});
 		}
@@ -4988,6 +6986,318 @@ function MT__RUN() {
 						Amanda_Webb_charolaisusa_people__profile(__js_clean_html_str(m[1]));
 					}
 					
+				}
+			});
+		}
+	}
+	
+	/**
+	 * FOURSQUARE API
+	 * 
+	**/
+	//
+	// Jeremy von Halle
+	// -SimpleSearch
+	// Find the Foursquare Page URL for Businesses
+	s = '<li>Open google and search for the business name, business city and foursquare (i.e: Molly\'s Cupcakes and&nbsp;Chicago and foursquare)</li>';
+	if (ih.indexOf(s) != -1)
+	{	
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		//~ GM_addStyle('.container {position:absolute;top:200px;margin-left:-40px;width:30%;zoom:0.9;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:100%;zoom:0.9;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var b = document.getElementsByTagName('td');
+		
+		var tmp_nm = b[1].innerText.trim().replace(/^GAMA - */, '');
+		
+		var o = {};
+		o = {
+			name:		tmp_nm,
+			name_cln:	tmp_nm.replace(/[^\w\d]/g, '').toLowerCase(),
+			locn:		b[3].innerText.trim().replace(/ (\d{4})$/, '0$1'),
+			locn_cln:	'',
+			phone:		b[5].innerText.trim(),
+			phone_cln:	b[5].innerText.trim().replace(/[^\d]/g, ''),
+			name_array: '',
+			locn_array: ''
+		}
+		
+		o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase(),
+		
+		o.name_array = o.name.replace(/[\.\-,\/]/g, ' ').split(' ');
+		o.locn_array = o.locn.replace(/[\.\-,\/]/g, ' ').split(' ');
+		
+		// THIS IS REGEX
+		// locn_cln_regex
+		/*
+			431 east grand avenue beloit, wi 53511 script.js:5286
+			431 (e|east) grand (av|ave|avenue) beloit, wi 53511 script.js:5300
+			431(e|east)grand(av|ave|avenue)beloitwi53511 script.js:5304
+			/431(e|east)grand(av|ave|avenue)beloitwi53511/i 
+		 */ 
+		o.locn_cln_regex = b[3].innerText.trim().toLowerCase();
+		//~ o.name_cln_regex = __js_escape_regEx()
+		o.locn_cln_regex = o.locn_cln_regex.replace(/[\(\)\|]/g, '');
+		console.log(o.locn_cln_regex);
+		o.locn_cln_regex = o.locn_cln_regex
+			
+			.replace(/ (av|ave|avenue)([\.,]* )/g,	' (av|ave|avenue)$2')
+			.replace(/ (e|east)([\.,]* )/g,			' (e|east)$2')
+			.replace(/ (w|west)([\.,]* )/g,			' (w|west)$2')
+			.replace(/ (sw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+			.replace(/ (nw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+			.replace(/ (se|southeast)([\.,]* )/g,	' (se|southeast)$2')
+			.replace(/ (ne|northeast)([\.,]* )/g,	' (ne|northeast)$2')
+			.replace(/ (rd|road)([\.,]* )/g,			' (rd|road)$2')
+			.replace(/ (st|street)([\.,]* )/g,		' (st|street)$2')
+			.replace(/ (pl|place)([\.,]* )/g,		' (pl|place)$2')
+			;
+		console.log(o.locn_cln_regex);
+		
+		o.locn_cln_regex = o.locn_cln_regex	
+			.replace(/[^\w\d\(\)\|]/g, '');
+		console.log(o.locn_cln_regex);
+		o.locn_cln_regex = new RegExp(o.locn_cln_regex, 'i');
+		console.log(o.locn_cln_regex);
+		//~ console.log('x');return;
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:220px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:190px;width:99%;height:28px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ');
+			Jeremy_von_Halle_foursquare_url();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		d2.value = o.name;
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		Jeremy_von_Halle_foursquare_url();
+		
+		// ...
+		function Jeremy_von_Halle_foursquare_url() {
+			
+			var nm = d2.value.split(' ');
+			
+			d1.innerHTML = '';
+			
+			
+			var url;
+			url = 'https://api.foursquare.com/v2/venues/search?';
+			url+= 'query='+encodeURIComponent(d2.value);
+			url+= '&near='+encodeURIComponent(o.locn);
+			//url+= '&near='+encodeURIComponent(yelp.location.address[0])+',seattle,wa%20'+yelp.location.postal_code;
+			url+= '&limit=10';
+			url+= '&client_id=5OXZ3M1Y3EU42VDIYAEL012GKBY4AU3DEVIFLABFBTCXQDRZ&client__API_KEY_REDACTED_;
+			url+= '&v=20140601';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					rs = JSON.parse(rs); //[]
+					console.log(rs);
+					
+					if  (
+						rs.hasOwnProperty('response') &&
+						rs.response.hasOwnProperty('venues') &&
+						rs.response.venues.length
+						)
+					{
+						//
+					} else {
+						d1.innerText = '0';
+						return;
+					}
+					
+					// dist1, dist2
+					var dist1, dist2;
+					try {
+						if (rs.response.geocode.feature.geometry.center.lat) {
+							dist1 = [
+								rs.response.geocode.feature.geometry.center.lat,
+								rs.response.geocode.feature.geometry.center.lng
+							];
+						}
+					} catch(e) {
+						//
+					}
+					
+					rs = rs.response.venues;
+					
+					console.log(rs);
+					
+					var auto = false;
+					var tmp_addr;
+					var tmp_phone;
+					var dist_bgc;
+					for (var i in rs) {
+						
+						var addr = '';
+						if (rs[i].location && rs[i].location.formattedAddress && rs[i].location.formattedAddress.length) { // >= 2
+							for (var j in rs[i].location.formattedAddress) {
+								addr += rs[i].location.formattedAddress[j] + ' '
+							}
+							addr = addr.trim();
+						} else if (rs[i].location && rs[i].location.address) {
+							addr = rs[i].location.address;
+						}
+						// REMOVE (XX) FROM ADDR
+						addr = addr.replace(/\([^\)]+\)/g, '')
+						tmp_addr = addr;
+						addr = MT__bold(addr, o.locn_array);
+						if (addr != '') {
+							addr = '<br>' + addr;
+						}
+						
+						tmp_phone = '';
+						if (rs[i].contact && rs[i].contact.phone && rs[i].contact.phone == o.phone_cln) {
+							tmp_phone = 'border:4px solid teal;';
+						}
+						
+						dist2 = '';
+						dist_bgc = '';
+						if (dist1 && rs[i].location && rs[i].location.lat) {
+							dist2 = MT___lat_lng_distance(dist1[0]*1, dist1[1]*1, rs[i].location.lat*1, rs[i].location.lng*1);
+							if (dist2) {
+								dist2 = Math.round(dist2*100) / 100;
+								
+								if (dist2 >= 4) {
+									dist_bgc = 'background-color:aqua;'
+								}
+								
+								dist2 = '<br>' + dist2;
+							}
+						}
+						
+						// FINAL URL
+						// "-" (hyphen) is BLANK
+						// "'" (apos) is BLANK
+						// " " (space) is "-" (hyphen)
+						// "." (period) is "-" (hyphen) ==> Double hyphen possible! ". " == '--'
+						var final_url = '';
+						if (/^[\w\d'\- ]+$/.exec(rs[i].name) && rs[i].name.length >= 6) {
+							final_url = 'https://www.foursquare.com/v/' + rs[i].name.toLowerCase()
+								.replace(/-/g,	'' )
+								.replace(/[ ]/g,'-')
+								.replace(/'/g,	'' ) + '/' + rs[i].id;
+						}
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;' + tmp_phone + dist_bgc);
+						div.className	= 'exe';
+						div.profile_id	= rs[i].id;
+						div.final_url	= final_url;
+						//~ div.profile_url	= 'https://www.foursquare.com/' + rs[i].id;
+						div.innerHTML	=  MT__bold(rs[i].name, o.name_array)
+						div.innerHTML	+= addr;
+						div.innerHTML	+= dist2; //dist
+						
+						div.onclick		= function() {
+							this.style.backgroundColor = 'LightGreen';
+							
+							if (this.final_url != '') {
+								document.getElementById('web_url').value = this.final_url;
+								
+								doSubmit();
+							} else
+								Jeremy_von_Halle_foursquare_url__profile(this.profile_id);
+						}
+						
+						d1.appendChild(div);
+						
+						// AUTO CLICK?
+						if (!auto) {
+							var tmp_nm = rs[i].name	.replace(/[^\w\d]/g, '').toLowerCase();
+							var tmp_lc = tmp_addr	.replace(/[^\w\d]/g, '').toLowerCase();
+							
+							console.log(o.name_cln);
+							console.log(o.locn_cln);
+							console.log(tmp_nm);
+							console.log(tmp_lc);
+							if  (
+								o.name_cln == tmp_nm &&
+								(
+									o.locn_cln == tmp_lc ||			//
+									o.locn_cln_regex.exec(tmp_lc)	// REGEX
+								) &&
+								tmp_nm.length >= 4 &&
+								tmp_lc.length >= 4
+								)
+							{
+								found = true;
+								div.click(); //
+							}
+						}
+					}
+					
+					if (d1.innerText != '') {
+						var eldv = document.createElement('div');
+						eldv.setAttribute('style', 'height:1200px;');
+						d1.appendChild(eldv);
+					}
+				}
+			});
+		}
+		function Jeremy_von_Halle_foursquare_url__profile(id) {
+			
+			//https://api.foursquare.com/v2/venues/40a55d80f964a52020f31ee3?o_API_KEY_REDACTED_&v=20140623
+			
+			var u;
+			u = 'https://api.foursquare.com/v2/venues/'+encodeURIComponent(id)+'?';
+			u+= 'client_id=5OXZ3M1Y3EU42VDIYAEL012GKBY4AU3DEVIFLABFBTCXQDRZ&client__API_KEY_REDACTED_;
+			u+= '&v=20140601';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					rs = JSON.parse(rs); //[]
+					console.log(rs);
+					
+					if  (
+						rs.response &&
+						rs.response.venue &&
+						rs.response.venue.canonicalUrl &&
+						rs.response.venue.canonicalUrl.length >= 10
+						)
+					{
+						document.getElementById('web_url').value = rs.response.venue.canonicalUrl;
+						doSubmit();
+					}
 				}
 			});
 		}
@@ -7815,6 +10125,7 @@ function MT__RUN() {
 			this.style.backgroundColor = 'LightGreen';
 			if (q.value.trim() == '')
 				return false;
+			(new AMT___core_factory()).nextTab();
 		}
 		
 		// ...
@@ -7979,6 +10290,8 @@ function MT__RUN() {
 	// turk-HPCBeauty
 	// Amazon unit size
 	//
+	// TODO : 1 + "count" == Hotkey=> XX
+	//		: calculator ->onblur?
 	s = '<p><strong>Hello Turkers!</strong> We are trying to determine the unit size and unit of measure for the products listed below.</p>';
 	if(ih.indexOf(s) != -1)
 	{		
@@ -8015,7 +10328,7 @@ function MT__RUN() {
 			x[i].setAttribute('style', 'width:100%;border:1px solid black;'); //float:none;
 			
 			var div = document.createElement('div');
-			div.setAttribute('style',  'float:left;width:60%;border:1px solid black;height:600px;overflow:auto;margin-top:40px;'); //
+			div.setAttribute('style',  'float:left;width:60%;border:1px solid black;height:800px;overflow:auto;margin-top:40px;'); //from 600 to 800
 			//~ div.innerText = 'xx';
 			
 			//~ var y = x[i].getElementsByTagName('fieldset');
@@ -8036,27 +10349,72 @@ function MT__RUN() {
 				div: div,
 				href: x[i].getElementsByTagName('a')[0].href,
 				all_inp: out_inp,
-				inp: out_inp[out_inp.length - 1]
+				inp: out_inp[out_inp.length - 1],
+				fieldset: x[i].getElementsByTagName('fieldset')[0]
 			});
 			
 			
 		}
 		
-		// onclick select
-		// onfocus select
+		// fieldset
+		//~ for (var i in out_complete) {
+			//~ 
+		//~ }
+		
+		
+		// input->multiply &&
+		//
+		// input.onclick select
+		// ""	.onfocus select
 		for (var i in out_complete) {
-			out_complete[i].inp.onclick = out_complete[i].inp.onfocus = function() {
+			out_complete[i].inp.onclick = out_complete[i].inp.onfocus = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
 				this.select();
+				return false;
 			}
+			// Change the value here!
+			//~ out_complete[i].inp.onblur = function(e) {
+				//~ this.select();
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ return false;
+			//~ }
+			out_complete[i].inp.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				if (c == '45' && this.value.indexOf('*') != -1) { // MINUS
+					
+					e.stopPropagation();
+					e.preventDefault();
+					
+					var n = this.value.split('*');
+					var i = 1;
+					for (var j in n) {
+						i *= n[j];
+					}
+					this.value = Math.round(i*100)/100; // 0.00
+					
+					return false;
+				}
+			}, false);
 		}
 		
-		// onkeypress
+		// window.onkeypress
+		// 
 		window.addEventListener('keypress', function(e) {
 			var c = e.keyCode;
-			//~ console.log(c);
+			console.log(c);
 			
-			// 49 ... 54 (0..9)
-			if (c >= 106 && c <= 108) {
+			//~ // 49 ... 54 (0..9)
+			
+			// 
+			c = (c == 59)?109:c; //;
+			c = (c == 39)?110:c; //'
+			
+			// 
+			if (c >= 106 && c <= 110) {
+			
+			//~ if (c >= 106 && c <= 108) {
 				
 				e.preventDefault(); //FIRST
 				e.stopPropagation();
@@ -8097,8 +10455,6 @@ function MT__RUN() {
 			if (i == 'length') break;
 			var y = x[i].getElementsByTagName('label')[0];
 			y.onclick = function(e) {
-				// next
-				currentIndex++;
 				
 				// label.checked
 				this.getElementsByTagName('input')[0].checked = true;
@@ -8108,6 +10464,18 @@ function MT__RUN() {
 				
 				// scroll
 				turk_HPCBeauty_amazon_units__scrollIntoView_current();
+				
+				//~ // next
+				//~ currentIndex++;
+				//~ 
+				//~ // label.checked
+				//~ this.getElementsByTagName('input')[0].checked = true;
+				//~ 
+				//~ if (!this.getElementsByTagName('input')[0])
+					//~ alert('x');
+				//~ 
+				//~ // scroll
+				//~ turk_HPCBeauty_amazon_units__scrollIntoView_current();
 				
 				// ...
 				e.stopPropagation();
@@ -8141,15 +10509,9 @@ function MT__RUN() {
 		
 		
 		
-		// INIT
-		for (var i in out_complete) {
-			
-			turk_HPCBeauty_amazon_units(out_complete[i]);
-			
-		}
-		
 		// all q
 		var q = [];
+		var q_inp = [];
 		for (var i=1; i<=4; i++) {
 			var j = document.getElementsByName('Q'+i+'a');
 			var y = [];
@@ -8158,11 +10520,20 @@ function MT__RUN() {
 				y.push(j[k]);
 			}
 			q.push(y);
+			
+			//
+			var j = document.getElementsByName('Q'+i+'b')[0];
+			q_inp.push(j);
 		}
-		//~ console.log(q);
 		
 		// submit onclick
-		document.getElementById('submitButton').onclick = function() {
+		document.getElementById('submitButton').onclick = function(e) {
+			//~ var e = e;
+			//~ var rf = function() {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ return false;
+			//~ }
 			for (var i in q) {
 				var found = false;
 				for (var j in q[i]) {
@@ -8171,8 +10542,36 @@ function MT__RUN() {
 						break;
 					}
 				}
-				if (!found)
+				if (!found) {
+					
+					e.stopPropagation();
+					e.preventDefault();
 					return false;
+				}
+			}
+			// If404 from Amazon:
+			// out.inp.SKIPNODE = true; // set input.SKIPNODE!!
+			for (var i in q_inp) { 
+				q_inp[i].value = q_inp[i].value.trim();
+				if  (q_inp[i].value.indexOf('*') != -1) {
+					
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				if  (
+					(
+						q_inp[i].value == '' ||
+						q_inp[i].value == 'Enter the numerical value, e.g. 10.0'
+					) &&
+					!q_inp[i].hasOwnProperty('SKIPNODE')
+					)
+				{
+					
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
 			}
 			
 			// Still here?
@@ -8183,20 +10582,33 @@ function MT__RUN() {
 				{
 				}
 			);
+			
+			//~ e.stopPropagation();
+			//~ e.preventDefault();
 		}
 		
-		// Function 
+		// INIT
+		for (var i in out_complete) {
+			
+			turk_HPCBeauty_amazon_units(out_complete[i]);
+			
+		}
+		
+		// Function turk_HPCBeauty_amazon_units__scrollIntoView_current
 		function turk_HPCBeauty_amazon_units__scrollIntoView_current() {
 			
-			console.log('1'+currentIndex);
-			// SKIPNODE!
+			console.log('1CI:'+currentIndex);
+			
+			// If SKIPNODE! Then continue.
 			while (out_complete[currentIndex] && out_complete[currentIndex].hasOwnProperty('SKIPNODE')) {
 				currentIndex++;
 				
 				currentIndex = Math.round(currentIndex);
 			}
-			console.log('2'+currentIndex);
 			
+			console.log('2CI:'+currentIndex);
+			
+			// focus
 			if (out_complete[currentIndex] && out_complete[currentIndex].inp) {
 				out_complete[currentIndex].inp.focus();
 			}
@@ -8231,6 +10643,7 @@ function MT__RUN() {
 			} else {
 				document.getElementById('submitButton').scrollIntoView();
 				document.getElementById('submitButton').focus();
+				document.getElementById('submitButton').click(); // AUTO!
 			}
 			
 		}
@@ -8289,6 +10702,21 @@ function MT__RUN() {
 			
 		}
 		// Function turk_HPCBeauty_amazon_units
+		function turk_HPCBeauty_amazon_units__fillFirstNumber(out_input, inputs) { //(out.div.getElementsByTagName('input'))
+			console.log(out_input);
+			console.log(inputs);
+			for (var i in inputs) {
+				if (i == 'length') break;
+				var n;
+				if (n = /([\d\.]+)/.exec(inputs[i].innerText)) {
+					out_input.value = n[0].trim();
+					inputs[i].style.border = '4px solid teal';
+					break;
+				}
+			}
+		}
+		// Function turk_HPCBeauty_amazon_units
+		// out is the container div (1...4)
 		function turk_HPCBeauty_amazon_units(out) {
 			
 			var out = out;
@@ -8310,6 +10738,7 @@ function MT__RUN() {
 						out.parent.style.height = '40px';
 						out.parent.style.overflow = 'auto';
 						out.SKIPNODE = true; // skip
+						out.inp.SKIPNODE = true; // set input.SKIPNODE!!
 						
 						setTimeout(function() {
 							turk_HPCBeauty_amazon_units__scrollIntoView_current(); // IF NECESSARY, THIS WILL RESET THE VIEW !!
@@ -8327,39 +10756,52 @@ function MT__RUN() {
 						//~ out.inp.value = r;
 						//~ out.div.innerText = r + '\n';
 						
+						// REMOVE 4T/5T, 4T-5T (pull-ups)
+						r = r.replace(/ \dt[\/\-]\dt,*/i, '');
+						
 						turk_HPCBeauty_amazon_units__appendTxt(out.div, r, out.inp);
 						
-						// PUT THE FIRST NUMBER IN! (no dashes) => "\d,\. "
-						var n = /[\d\.]+/.exec(r); // init \d
-						
-						//~ var n = /[\d][\d,\. ]+/.exec(r); // init \d
-						
-						if (n) {
-							//~ console.log(n);
-							//~ console.log(out.inp);
-							out.inp.value = n[0].trim();
-							
-							turk_HPCBeauty_amazon_units__scrollIntoView_current(); // THIS WILL SELECT THE TEXT BOX
-						}
+						//~ // PUT THE FIRST NUMBER IN! (no dashes) => "\d,\. "
+						//~ var n = /[\d\.]+/.exec(r); // init \d
+						//~ if (n) {
+							//~ out.inp.value = n[0].trim();
+							//~ 
+							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // THIS WILL SELECT THE TEXT BOX
+						//~ }
 					}
 					// click to select fields !!
-					r = /<li id="size_name_[^"]*" title="([^"]*)" data-dp-url="[^"]*" class="([^"]*)"/g;
+					//&&<li id="item_package_quantity_0" title="Click to select 4" data-dp-url="" class="swatchSelect">
+					r = /<li id="(size_name_|item_package_quantity_)[^"]*" title="([^"]*)" data-dp-url="[^"]*" class="([^"]*)"/g;
 					if (r.exec(rs)) {
 						r.lastIndex = 0;
 						var m;
 						while (m = r.exec(rs)) {
-							m[1] = __js_clean_html_str(m[1]).trim();
+							m[2] = __js_clean_html_str(m[2]).trim();
 							
 							//~ out.div.innerText += m[1] + '\n';
+							//~ console.log(m[2]);
 							
-							console.log(m[2]);
-							if (m[2] == 'swatchSelect') {
+							if (m[3] == 'swatchSelect') {
 								//~ out.div.appendChild(document.createTextNode('>**>'));
-								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[1], out.inp, true); // TRUE-> isHighlighted
+								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[2], out.inp, true); // TRUE-> isHighlighted
 							} else
-								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[1], out.inp);
+								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[2], out.inp);
 							
 						}
+					}
+					// ITERATE THROUGH ALL INPUTS LOOKING FOR 
+					// the first instance of [digit]. This is a change from
+					// the regex (above).
+					turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					
+					// The bullet points that describe the product.
+					// Append to fieldset.
+					r = /<ul class="a-vertical a-spacing-none">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
+					if (r) {
+						var d = document.createElement('div');
+						d.setAttribute('style','width:100%;');
+						d.innerHTML = r[0];
+						out.fieldset.appendChild(d);
 					}
 					
 					// ...
@@ -8372,8 +10814,8 @@ function MT__RUN() {
 					if (r) {
 						if (type_rslt == 0) {
 							r = r[1].trim();
-							r = r.replace(/,$/, '');// console.log(r);return;
-							r = r.replace(/'/g, '"');// console.log(r);return;
+							r = r.replace(/,$/, '');
+							r = r.replace(/'/g, '"');
 							r = JSON.parse(r);
 						} else {
 							r = {
@@ -21443,18 +23885,18 @@ function MT__RUN() {
 			MT___google_api_geocode(this.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
 		}
 		
-		//~ // sau paulo
-		//~ if (d1.value.indexOf(', State of Sao Paulo') != -1) {
-			//~ d1.value = d1.value.replace(/, State of Sao Paulo/, ', Brazil');
-		//~ } else return;
+		// sau paulo
+		if (d1.value.indexOf('Sao Paulo, State of Sao Paulo') != -1) {
+			d1.value = d1.value.replace(/Sao Paulo, State of Sao Paulo/, 'Sao Paulo, Brazil');
+		} else return;
 		//~ //
 		//~ if (d1.value.indexOf('Bangkok') != -1) {
 			//~ d1.value += ', Thailand';
 		//~ } else return;
 		//
-		if (d1.value.indexOf('Sydney') != -1) {
-			d1.value += ', Australia';
-		} else return;
+		//~ if (d1.value.indexOf('Sydney') != -1) {
+			//~ d1.value += ', Australia';
+		//~ } else return;
 		
 		//~ var google = true;
 		
@@ -21504,7 +23946,11 @@ function MT__RUN() {
 					)
 					)
 				{
+					
+					// ADD A ' TO LEADING '0'
+					x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
 					document.getElementById('Q1Url').value = x.short_name;
+					
 					if (AMT__Global_Vars.isPreview) {
 						AMT___Floater.accept();
 						return;
@@ -32009,13 +34455,18 @@ qatar,80
 	// Find the phone numbers for businesses
 	// 
 	s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
+	s = '<li>For the business below, enter the official 10 digit phone number.</li>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		
-		GM_addStyle('body {margin-top:600px;}');
+		GM_addStyle('body {margin-top:460px;}');
+		
 		//GM_addStyle('input {width:96%;}');
 		//GM_addStyle('#submitButton {width:96%;height:80px;}');
+		
 		GM_addStyle('.exe:hover {cursor:pointer;background-color:aqua;}');
+		
+		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
 		
 		var q;
 		q = document.getElementById('Q1Url');
@@ -32040,7 +34491,7 @@ qatar,80
 		d1.style.top='62px';
 		d1.style.left='0%';
 		d1.style.width='98%';
-		d1.style.height='600px';
+		d1.style.height='400px';
 		d1.style.border='1px solid blue';
 		d1.style.borderBottom='1px solid blue';
 		d1.style.overflow = 'auto';
@@ -32072,19 +34523,40 @@ qatar,80
 		}
 		//console.log(b);
 		
-		var o = {
-			name: b[0].innerText.trim(),
-			locn: b[1].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-			
-			//bad_phone: b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
-			
+		var by_phone = false;
+		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
+			by_phone = true;
 		}
-		o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-		o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-		o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-		o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 		
-		//if (o.bad_phone.length != 10) alert(bad_phone);
+		if (!by_phone) {
+			var o = {
+				name:		b[0].innerText.trim(),
+				locn:		b[1].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				
+				//~ bad_phone:	b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
+				
+			}
+			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+		}
+		if (by_phone) {
+			var o = {
+				name:		b[2].innerText.trim(),
+				locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+				
+				bad_phone:	b[0].innerText.trim().replace(/[^\d]/g, '')
+				
+			}
+			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+			
+			if (o.bad_phone.length != 10) alert(o.bad_phone);
+		}
+		
 		
 		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
 		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
@@ -32116,8 +34588,6 @@ qatar,80
 		// google places api
 		MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll);
 		
-		
-		
 		function Peter_Heyneman_find_phone__check_no_good_match(){
 			no_good_match++;
 			
@@ -32128,7 +34598,6 @@ qatar,80
 				}
 			}
 		}
-		//Peter_Heyneman_find_phone__FB()
 		function Peter_Heyneman_find_phone__FB() {
 			//d1.innerHTML = '';
 			
@@ -32205,12 +34674,16 @@ qatar,80
 						r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
 						
 						var dist = '-';
+						var dist_bgc = '';
 						if (r[i].location) {
 							//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
 							if (r[i].location.latitude && r[i].location.longitude) {
 								dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
-								if (dist)
+								if (dist) {
 									dist = Math.round(dist*100) / 100;
+									if (dist*1 >= 4)
+										dist_bgc = 'background-color:aqua;';
+								}
 							}
 							
 							if (r[i].location.latitude) {
@@ -32236,9 +34709,9 @@ qatar,80
 						var dv = document.createElement('div');
 						d1.appendChild(dv);
 						
-						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 						dv.className = 'exe';
-						dv.phone = r[i].phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						dv.phone = r[i].phone;
 						dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
 						dv.innerHTML += '<br>likes:'+r[i].likes;
 						dv.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
@@ -32247,8 +34720,27 @@ qatar,80
 						
 						dv.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
-							if (this.phone.length == 10) {
-								q.value = this.phone;
+							
+							var p = this.phone;
+							
+							if (/[a-z]/i.exec(p)) {
+								q.value = p;
+								q.style.border = '4px solid teal';
+								return;
+							}
+							
+							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+							
+							q.value = p;
+							
+							if (p == o.bad_phone || p.length != 10) {
+								d2.value = 'bad phone!';
+								q.style.border = '4px solid teal';
+								return;
+							}
+						
+							if (p.length == 10 && q.value == p) {
+								//~ q.value = this.phone;
 								doSubmit();
 							}
 						}
@@ -32276,7 +34768,7 @@ qatar,80
 			ll.lat = lat;
 			ll.lng = lng;
 			Peter_Heyneman_google_find_phone(); // do both
-			Peter_Heyneman_find_phone__FB(); 	// 
+			// 	// 
 		}
 		
 		
@@ -32312,8 +34804,10 @@ qatar,80
 					
 					console.log(rs);
 					
+					Peter_Heyneman_find_phone__FB();
+					
 					if (!rs.results || !rs.results.length) {
-						d1.innerHTML = '0';
+						d1.innerHTML += '0';
 						
 						Peter_Heyneman_find_phone__check_no_good_match();
 						
@@ -32328,7 +34822,7 @@ qatar,80
 					}
 					
 					// here?
-					d1.innerHTML = '';
+					//~ d1.innerHTML = '';
 					//~ console.log(AMT__Global_Vars.isPreview);
 					// not auto!!
 					//~ if (AMT__Global_Vars.isPreview) {
@@ -32353,16 +34847,20 @@ qatar,80
 						//~ lat: 34.049662
 						//~ lng: -118.25385
 						var dist = '';
+						var dist_bgc = '';
 						if (x.geometry && x.geometry.location) {
 							dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
-							if (dist)
+							if (dist) {
 								dist = Math.round(dist*100) / 100;
+								//~ console.log(dist);
+								if (dist*1 >= 4)
+									dist_bgc = 'background-color:aqua;';
+							}
 						}
 
 						var dv = document.createElement('div');
 						d1.appendChild(dv);
-						
-						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 						dv.className = 'exe';
 						dv.greference = x.reference;
 						
@@ -32459,23 +34957,28 @@ qatar,80
 					if (r) {
 						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
 						
-						if (r == o.bad_phone || r.length != 10) {
-							div.innerText = 'bad phone';
-							return;
-						}
-						
 						// here?
 						div.innerText  += '\n' + r;
 						div.gphone		=  r;
 						
 						div.onclick = function() {
 							this.style.backgroundColor = 'teal';
+							
 							q.value = this.gphone;
+							
+							if (this.gphone == o.bad_phone || this.gphone.length != 10) {
+								d2.value = 'bad phone!';
+								q.style.border = '4px solid teal';
+								return;
+							}
+							
+							// Here?
 							doSubmit();
 						}
 						
 						// is good?
 						div.click();
+						
 						//~ var x = r;
 						//~ if (x[0] != '8' && x[0] != '9') { // NOT 8XX 9XX !!
 							//~ div.click();
@@ -60008,6 +62511,447 @@ qatar,80
 	}
 	
 	//
+	// x8 Data
+	// Check/Find Executive Data
+	//
+	s = '<li>The goal of this HIT is to collect the current title and company for the Executive in our database.</li>';
+	if (ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {width:20%;margin-top:-10px;}');
+		//~ GM_addStyle('input {width:90%;}');
+		
+		GM_addStyle('.highlight-box {position:absolute;top:1400px;width:20%;}');
+		
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		//~ GM_addStyle('p>input {margin-left:4%;}');
+		
+		var b = document.getElementsByTagName('b');
+		var a = document.getElementsByTagName('a')[1].href.replace(/http:\/\/www\.google\.com\/search\?q=/, ''); //http://www.google.com/search?q=Robert+Vahala+site%3Avahalafoam.com
+		a = decodeURIComponent(a);
+		a = a.split('site:')[1];
+		
+		var o = {
+			name:	b[4].innerText.trim(),
+			site:	a
+		}
+		o.name_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		//~ o.web_array  = o.website.replace(/[^\w\d]/g, ' ').split(' ');
+		//~ o.short_website = o.website.replace(/^https?:\/\/(www\.|)/i, '');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:140px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:140px;left:50%;width:49%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:540px;width:98%;height:600px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+		document.body.appendChild(d2);
+		// flicker...
+		d2.style.visibility = 'hidden';
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+		}, false);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:110px;left:0%;  width:50%;height:30px;');
+		document.body.appendChild(d3);
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:110px;left:50%;width:49%;height:30px;');
+		document.body.appendChild(d3b);
+		/* END ITEMS */
+		
+		// d3, d3b
+		d3.value  = '"' + o.name + '" site:'+o.site;
+		d3b.value = o.name + ' site:'+o.site;
+		
+		// d2
+		if (!AMT__Global_Vars.isPreview) {
+			//~ d2.src = o.website;
+			
+			d2.onmouseover = function() {
+				this.scrollIntoView();
+			}
+			// zoom out !
+			// post msg
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage(
+					{
+						task: 'AMT__all_pages_util',
+						MT___all_pages_extend: true,
+						MT___all_pages_zoom: true,
+						MT___text_scrollIntoView: new RegExp('(' + __js_escape_regEx(o.name) + '|' + __js_escape_regEx(o.name.replace(/[^\w\d]/g, '')) + ')', 'i'),
+						//~ MT___text_scrollIntoView: new RegExp('(' + __js_escape_regEx(o.name) + '|' + __js_escape_regEx(o.name.replace(/[^\w\d]/g, '')) + ')', 'gi'),
+						debug_display: o.name
+						//~ MT___text_scrollIntoView: /\.youtube\.com/i
+					},
+				 "*");
+			}, 1000);
+			
+			// 
+			var ifr_intv2= setInterval(function() {
+				d2.contentWindow.postMessage('AMT__x8_Data_find_executives', "*");
+			}, 1000);
+			// Watch for complete
+			window.addEventListener("message", x8_Data_find_executives__iframe_complete, false);
+			function x8_Data_find_executives__iframe_complete(event)
+			{
+				if (!event || !event.hasOwnProperty('data') || !event.data.hasOwnProperty('key')) return;
+				
+				var v = event.data;
+				//~ console.log(v);
+				
+				// clear intv search
+				if (v.key == 'AMT__x8_Data_find_executives__complete') {
+					//clearInterval(ifr_intv);
+					//~ doSearch = false; // !! cancel searches !!
+					q[0].value = v.data;
+					q[0].focus();
+					return;
+				}
+			}
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3 .addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+			
+		//
+		var q = [
+			document.getElementById('title_2'),
+			document.getElementById('evidence_2')
+		];
+		
+		//
+		document.getElementById('submitButton').onclick = function(e) {
+			this.style.backgroundColor = 'LightGreen';
+			var done = true;
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value.length < 2) {
+					done = false;
+				}
+			}
+			if (done) {
+				doSubmit();
+				showNextTab(); // next!
+			}
+			
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		
+		// if accepted add to tabs queue!
+		if (!AMT__Global_Vars.isPreview)
+			addToTabsQ();
+		
+		// ...
+		// global
+		var num_searches_complete = 0;
+		var first_result = [];
+		first_result[0]  = false;
+		first_result[1] = false;
+		
+		//~ var CONTINUE_SKIP = true;
+		//~ var FOUND_ACCEPT_MATCH = false;
+		//~ var items_to_click_arr = [];
+		
+		d3.onblur = function() {
+			this.value=this.value.replace(/\s+/g, ' ').trim();
+			x8_Data_find_executives__init(this, d1);
+		}
+		d3b.onblur = function() {
+			this.value=this.value.replace(/\s+/g, ' ').trim();
+			x8_Data_find_executives__init(this, d1b);
+		}
+		
+		var SKIP_SITES;
+		
+		// allq
+		//~ var allq = [
+			//~ document.getElementById('Salutation'),
+			//~ document.getElementById('Firstname'),
+			//~ document.getElementById('Lastname'),
+			//~ document.getElementById('emailaddress')
+		//~ ];
+		//~ 
+		//~ function x8_Data_find_executive__load_skips() {
+			//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: MT___host+'/mturk/util.php?austin_load_skips=',
+				//~ onload: function (response) {
+					//~ var rs=response.responseText;
+					//~ SKIP_SITES = rs.split("\n");
+					//~ 
+					//~ // SUBDOMAINS!
+					//~ var x;
+					//~ for (var i in SKIP_SITES) {
+						//~ if (x = /\.([^\.]+\.[^\.]+)$/.exec(SKIP_SITES[i])) {
+							//~ SKIP_SITES[i] = x[1];
+						//~ }
+					//~ }
+					//~ 
+					//~ // do proxy (inside of AMT___POPUP__initializeGlobals)
+					//~ // set initializer function :: AMT___POPUP__initializeGlobals !?
+					//~ x8_Data_find_executives__init();
+				//~ }
+			//~ });
+		//~ }
+		
+		AMT___POPUP__initializeGlobals(
+			x8_Data_find_executives__init
+			//~ x8_Data_find_executive__load_skips()
+		);
+		
+		function x8_Data_find_executives__init(el_inp, el_div) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					seed_arg1: el_div,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					x8_Data_find_executives
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3.value),
+				seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				x8_Data_find_executives
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3b.value),
+				seed_arg1: d1b,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				x8_Data_find_executives
+			);
+		}
+		
+		// ...
+		function x8_Data_find_executives(rs, out_div) {
+			
+			// process result using AMT___xhr_PROXY_REDACTED_!
+			// -> returns array of arrays
+			// -> rs [ [m[1],m[2]], [m[1], m[2]], [ ... ] ]
+			
+			// rs.length?
+			if (!rs.length) {
+				out_div.innerText = 0;
+				num_searches_complete++;
+				x8_Data_find_executives__open(); // CHECK
+				return;
+			}
+			// Else preview?
+			else if (AMT__Global_Vars.isPreview) {
+				AMT___Floater.accept();
+				return;
+			}
+			//~ if (!rs.length) {
+				//~ out_div.innerText = 0;
+				//~ if (AMT__Global_Vars.isPreview) {
+					//~ AMT___Floater.skip();
+				//~ }
+				//~ return;
+			//~ }
+			//~ // Else preview?
+			//~ else if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.accept();
+				//~ return;
+			//~ }
+			
+			var short_url;
+			var x;
+			var y;
+			var c = 0;
+			var first_url = false;
+			//~ var first_url = {
+				//~ url: '',
+				//~ div: ''
+			//~ };
+			
+			for (var i in rs) {
+				
+				short_url = rs[i][0].replace(/^https?:\/\/(www*\.|)/, '').toLowerCase().trim();
+				
+				// output
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style','cursor:pointer;border-bottom:1px solid #a2a2a2;');//margin-bottom:4px;
+				el_div.setAttribute('class','class__highlightURL__'+short_url);
+				el_div.isClicked = false;
+				//click
+				el_div.addEventListener('click', function(e) {
+					this.getElementsByTagName('input')[0].click();
+					this.isClicked = true;
+					// .isClicked others
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className) {
+							x[j].isClicked = true;
+						} else {
+							x[j].isClicked = false; // unclick ?
+						}
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}, false);
+				//mouseover
+				el_div.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className) {
+							x[j].style.backgroundColor = 'LightGreen';
+						} else if (!x[j].isClicked) {
+							x[j].style.backgroundColor = '#eee';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				el_div.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className && !x[j].isClicked) {
+							x[j].style.backgroundColor = '#eee';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// FULL = rs[i][0]
+				// shortened = x
+				var el_inp = document.createElement('input');
+				el_inp.setAttribute('style','width:auto;');
+				el_inp.setAttribute('type','button');
+				el_inp.value = rs[i][0]; 
+				el_inp.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					
+					// update
+					if (d2.src != this.value)
+						d2.src = this.value;
+					
+					// val
+					q[1].value = this.value;
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				el_div.appendChild(el_inp);
+				
+				var el_a = document.createElement('a');
+				el_a.setAttribute('style','width:auto;margin:0 2px 0 2px;');
+				el_a.setAttribute('type','button');
+				el_a.innerText = 'link';
+				el_a.target = '_blank';
+				el_a.href = rs[i][0]; // full href!
+				//~ el_inp.onclick = function() {
+					//~ 
+				//~ }
+				el_div.appendChild(el_a);
+				
+				
+				var el_p = document.createElement('p');
+				el_p.innerHTML = rs[i][1]; // YAHOO TEXT RESULT !!!
+				el_div.appendChild(el_p);
+				
+				// container
+				out_div.appendChild(el_div);
+				
+				if (c == 0) {
+					first_url = el_div;
+					//~ first_url.url = rs[i][0];
+					//~ first_url.div = el_div;
+				}
+				c++;
+			}
+			
+			if (rs.length > 0) {
+				var el = document.createElement('div');
+				el.setAttribute('style','height:1200px;');
+				out_div.appendChild(el);
+			}
+			
+			// auto click first!
+			num_searches_complete++;
+			if (out_div == d1) // d1
+			{
+				first_result[0] = first_url;
+			}
+			else // d1b
+			{
+				first_result[1] = first_url;
+			}
+			
+			x8_Data_find_executives__open();
+		}
+		function x8_Data_find_executives__open() {
+			if (num_searches_complete < 2) {
+				return;
+			}
+			
+			// Here?
+			if (AMT__Global_Vars.isPreview) {
+				if (!first_result[0] && !first_result[1]) {
+					AMT___Floater.skip();
+				}
+				return;
+			}
+			
+			// Here?
+			if (first_result[0]) {
+				
+				first_result[0].click();
+				
+			} else if (first_result[1]) {
+				
+				//first_result[1].click();
+				
+			} else {
+				
+				//
+				
+			}
+		}
+	}
+	
+	//
 	// Arthur McKee
 	// Masters, university provosts
 	//
@@ -62118,19 +65062,26 @@ qatar,80
 		d3c.style.height='30px';
 		//
 		d3.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim()
 			MT_Project_Find_Web_Info__init(this, d1);
 		}
 		d3b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim()
 			MT_Project_Find_Web_Info__init(this, d1b);
 		}
-		d3c.onclick = function() {
+		//~ d3c.onclick = function() {
 			//~ this.style.backgroundColor = 'LightGreen';
 			//~ document.getElementById('Q4email').value = 'N/A';
 			//~ doSubmit();
-		}
+		//~ }
 		//
 		d3.value  = COMP;
 		d3b.value = COMP + ' ' + LOCN
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3 .addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b.addEventListener('keydown', ef.keydown__blur_field, true);
 		
 		var SKIP_SITES;
 		var ELEMENT_OUT = document.getElementById('Q4email');
@@ -62242,7 +65193,7 @@ qatar,80
 		}
 		
 		/*
-		 * Daniel_Axelsen_Find_Email_yahoo_rows()
+		 * MT_Project_Find_Web_Info_yahoo_rows()
 		 */
 		function MT_Project_Find_Web_Info_yahoo_rows(rs, out_div) {
 			
@@ -62666,6 +65617,345 @@ qatar,80
 					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
 					//'AJAXCRAWL_ENABLED=1', //true
 				]
+			}
+		}
+	}
+	
+	//
+	// MT Project
+	// Masters, URL
+	//
+	s = '<li><u><strong>MANDATORY:</strong></u>&nbsp; Must capture the web domain of the actual institution (e.g. http://www.medicalsite.com)</li>';
+	if (ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {width:20%;margin-top:800px;}');
+		GM_addStyle('input {width:90%;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1200px;width:20%;}');
+		
+		var b  = document.getElementsByTagName('b');
+		//~ var st = document.getElementsByTagName('strong')[1].innerText;
+		//~ b = b[0].innerText.trim() + ' ' + b[1].innerText.trim();
+		var o = {
+			name:b[0].innerText.trim(),
+			addr:b[1].innerText.trim().replace(/[\r\n\t\s]+/, ' ')
+		}
+		
+		//var bx= document.getElementsByTagName('b');
+		//
+		//var b2 = (
+		//	b + ' ' + bx[2].innerText + ' ' + bx[4].innerText.replace(/[^\d]/g, ' ').replace(/\s+/g, ' ')
+		//).trim();
+		//~ var bx;
+		
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='50px';
+		d1.style.left='0%';
+		d1.style.width='50%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='50px';
+		d1b.style.left='50%';
+		d1b.style.width='49%';
+		d1b.style.height='600px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='0px';
+		d3.style.left='0%';
+		d3.style.width='50%';
+		d3.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='0px';
+		d3b.style.left='50%';
+		d3b.style.width='49%';
+		d3b.style.height='50px';
+		//
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d3c');
+		//~ d.setAttribute('type','button');
+		//~ document.body.appendChild(d);
+		//~ var d3c = document.getElementById('d3c');
+		//~ d3c.style.position='absolute';
+		//~ d3c.style.top='0px';
+		//~ d3c.style.left='0%';
+		//~ d3c.style.width='18%';
+		//~ d3c.style.height='30px';
+		//
+		d3.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim()
+			MT_Project_find_URL__init(this, d1);
+			//~ David_Austin_URL(d1,  this.value);
+			//~ CRE_websiteForFirm_URL(d1,  this.value, false);
+		}
+		d3b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim()
+			MT_Project_find_URL__init(this, d1b);
+			//~ David_Austin_URL(d1b, this.value);
+			//~ CRE_websiteForFirm_URL(d1b, this.value, false);
+		}
+		//~ d3c.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById('Q1Url').value = 'N/A';
+			//~ doSubmit();
+		//~ }
+		
+		//o.addr
+		var x = /[\d\D]{4}\d+$/.exec(o.addr);
+		console.log(x);
+		x = (x) ? x[0].trim() : o.addr;
+		console.log(o.addr);
+		
+		//
+		d3.value = o.name;
+		d3b.value= o.name + ' ' + x;
+		//~ d3c.value = 'N/A'
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3 .addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		var SKIP_SITES;
+		var ELEMENT_OUT = document.getElementById('Q1Url');
+		
+		var req_proxy; //GLOBAL
+		
+		function MT_Project_find_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					SKIP_SITES = rs.split("\n");
+					
+					MT_Project_find_URL__init();
+				}
+			});
+		}
+		// load skips init
+		AMT___POPUP__initializeGlobals(
+			MT_Project_find_URL__load_skips
+		);
+		
+		// init
+		function MT_Project_find_URL__init(el_inp, el_div) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					seed_arg1: el_div,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					MT_Project_find_URL
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3.value),
+				seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				MT_Project_find_URL
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3b.value),
+				seed_arg1: d1b,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				MT_Project_find_URL
+			);
+		}
+		// main
+		function MT_Project_find_URL(rs, out_div) {
+			
+			//console.log(this);return;
+			
+			// process result using AMT___xhr_PROXY_REDACTED_!
+			// -> returns array of arrays
+			// -> rs [ [m[1],m[2]], [m[1], m[2]], [ ... ] ]
+			
+			//var rs = this.array_yahoo_results(rs);
+			
+			var short_domain;
+			var x;
+			var y;
+			
+			for (var i in rs) {
+				
+				x = rs[i][0];
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /[\.\/]([^\.\/]{4,}\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				short_domain = short_domain.replace(/^https?:\/\/(www\.|)/i, '');
+				
+				if (__js_inarray(SKIP_SITES, short_domain)) {//border-top:1px solid #3a4d3a;border-bottom:1px solid #3a4d3a;
+					var el = document.createElement('p');
+					el.innerText = 'x' + x;
+					out_div.appendChild(el);
+					continue;
+				}
+				
+				// output
+				//console.log(short_domain);
+				
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style','cursor:pointer;margin-bottom:4px;');
+				el_div.setAttribute('class','class__highlightURL__'+short_domain); // "short_domain" rather than "x"
+				el_div.isClicked = false;
+				//click
+				el_div.addEventListener('click', function(e) {
+					this.getElementsByTagName('input')[0].click();
+					this.isClicked = true;
+					// .isClicked others
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className) {
+							x[j].isClicked = true;
+						} else {
+							x[j].isClicked = false; // unclick ?
+						}
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}, false);
+				//mouseover
+				el_div.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className) {
+							x[j].style.backgroundColor = 'LightGreen';
+						} else if (!x[j].isClicked) {
+							x[j].style.backgroundColor = '#eee';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				el_div.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('div');
+					for (var j in x) {
+						if (j == 'length') break;
+						if (x[j].className == this.className && !x[j].isClicked) {
+							x[j].style.backgroundColor = '#eee';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// WITHOUT HTTP://!
+				//~ var cln = x.replace(/^https?:\/\//i, '');
+				
+				var el_inp = document.createElement('input');
+				el_inp.setAttribute('style','width:auto;');
+				el_inp.setAttribute('type','button');
+				el_inp.value = x;
+				el_inp.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					ELEMENT_OUT.value = this.value;
+					doSubmit();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				el_div.appendChild(el_inp);
+				
+				var el_a = document.createElement('a');
+				el_a.setAttribute('style','width:auto;margin:0 2px 0 2px;');
+				el_a.setAttribute('type','button');
+				el_a.innerText = 'link';
+				el_a.target = '_blank';
+				el_a.href = rs[i][0]; // full href!
+				el_a.onclick = function(e) {
+					window.open(this.href, 'new');
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				el_div.appendChild(el_a);
+				
+				
+				
+				
+				// SKIP BUTTON CREATE
+				var el_inp_skip = new AMT___items_factory();
+				el_div.appendChild(
+					// (ARR_SKIP_SITES, url, skips_key_php_get)
+					el_inp_skip.create__input_skip_button(
+						x,
+						'austin_load_skips',
+						function(skip_btn_id) {
+							SKIP_SITES.push(skip_btn_id); // ADD SKIP SITE HERE!
+							//console.log(SKIP_SITES.length);
+						}
+					)
+				);
+				
+				
+				
+				
+				var el_p = document.createElement('p');
+				el_p.innerHTML = rs[i][1]; // YAHOO TEXT RESULT !!!
+				el_div.appendChild(el_p);
+				
+				// container
+				out_div.appendChild(el_div);
+			}
+			
+			if (rs.length > 0) {
+				var el = document.createElement('div');
+				el.setAttribute('style','height:1200px;');
+				out_div.appendChild(el);
+			} else {
+				out_div.innerText = '0';
 			}
 		}
 	}
@@ -71174,7 +74464,8 @@ qatar,80
 	//
 	//s = 'The revenue and employee information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
 	//s = 'The revenue&nbsp;information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
-	s = 'The revenue and employee information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
+	//~ s = 'The revenue and employee information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
+	s = '<li><span new="">The revenue&nbsp;information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.</span></li>';
 	if (ih.indexOf(s) != -1) { // && 0 == 1
 		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
@@ -71283,6 +74574,7 @@ qatar,80
 			u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
 			Brittany_Graham_rv_emp_yahoo(u,  d1b);
 		}
+		//
 		d = document.createElement('input');
 		d.setAttribute('id','d2d');
 		document.body.appendChild(d);
@@ -71302,13 +74594,13 @@ qatar,80
 		
 		
 		
-		//~ var b = document.getElementsByTagName('strong');
-		var b = document.getElementsByTagName('b'); // these change!
+		var b = document.getElementsByTagName('strong');
+		//~ var b = document.getElementsByTagName('b'); // these change!
 		var o_name = __js_clean_html_str(b[3].innerText).trim().toLowerCase();
-		var o_addr = __js_clean_html_str(b[5].innerText).trim().toLowerCase();
-		var o_city = __js_clean_html_str(b[6].innerText).trim().toLowerCase();
-		var o_stat = __js_clean_html_str(b[7].innerText).trim().toLowerCase();
-		var o_phon = __js_clean_html_str(b[4].innerText).trim().toLowerCase();
+		var o_addr = __js_clean_html_str(b[4].innerText).trim().toLowerCase();
+		var o_city = __js_clean_html_str(b[5].innerText).trim().toLowerCase();
+		var o_stat = __js_clean_html_str(b[6].innerText).trim().toLowerCase();
+		var o_phon = __js_clean_html_str(b[8].innerText).trim().toLowerCase();
 		
 		var FULL_ADDR; // THIS IS FOR BOLDING OF THE COMPANY ADDRESS!
 		FULL_ADDR = o_addr + ' ' + o_city + ' ' + o_stat + ' ' + o_stat;
@@ -71338,12 +74630,13 @@ qatar,80
 		
 		var auto_clicked = false;
 		
-		var u; //OLD//3=name,5=city,6=state
-		u  = 'site:manta.com/c/ '+o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';
-		u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
-		var u2;
-		u2 = 'site:manta.com/c/ "'+o_phon+'" "'+o_stat+'"';
-		u2 = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u2); //%2B;
+		//~ var u; //OLD//3=name,5=city,6=state
+		//~ u  = 'site:manta.com/c/ '+o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';
+		//~ u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
+		//~ 
+		//~ var u2;
+		//~ u2 = 'site:manta.com/c/ "'+o_phon+'" "'+o_stat+'"';
+		//~ u2 = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u2); //%2B;
 		
 		d2.value = o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';//str_num
 		d2c.value= '"'+o_phon+'" "'+o_stat+'"';
@@ -71365,7 +74658,7 @@ qatar,80
 		// var max_on_regular init yahoo proxy
 		var MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
 		
-		// set MT___host
+		// MT___host
 		var x = GM_getValue('AMT__Brittany_Graham_rv_emp_MT_host');
 		if (x) {
 			MT___host = x;
@@ -71373,8 +74666,12 @@ qatar,80
 		}
 			
 		// init
-		Brittany_Graham_rv_emp_yahoo(u,  d1);
-		Brittany_Graham_rv_emp_yahoo(u2, d1b);
+		//~ Brittany_Graham_rv_emp_yahoo(u,  d1);
+		//~ Brittany_Graham_rv_emp_yahoo(u2, d1b);
+		d2 .focus();
+		d2 .blur();
+		d2c.focus();
+		d2c.blur();
 		
 		
 		//~ /**
@@ -71884,16 +75181,6 @@ qatar,80
 				
 				match		= yahoo_rslt[i];
 				manta_url	= match[1];
-				
-				//match = (['']).concat(yahoo_rslt[i]); // ['', <1>, <2>]
-				//console.log(match);
-				
-				//~ if (yahoo_type == 0)
-					//~ match[1] = decodeURIComponent(match[1]);
-				
-				//~ if (yahoo_type == 2)
-					//~ match[1] = decodeURIComponent(/RU=([^\/]+)/.exec(match[1])[1]);
-				
 				
 				// cache
 				//<a href="http://208.71.46.190/search/srpcache?
@@ -76807,10 +80094,12 @@ qatar,80
 	//
 	// https://www.google.com/local/business/u/0/add/info
 	//
+	// Jun. 25, 2014, add "Available"
 	// Aug. 16, 2013
 	//s = '1. Fill in the data forms on Google according to the data from the spreadsheet. *Leave the checkbox at the end unchecked.';
 	//s = 'Do NOT click on the box that says Verify by postcard. Just click the back button to start a new search.';
-	s = 'Do NOT click on the box that says Verify by phone or Verify by postcard. Just click the back button to start a new search.';
+	//~ s = 'Do NOT click on the box that says Verify by phone or Verify by postcard. Just click the back button to start a new search.';
+	s = 'In the search bar that says “Search for your business”, enter the phone number. Press enter. If nothing shows up, you can also search by restaurant name, address, city, state.';
 	if (ih.indexOf(s) != -1 && 1 == 1) {
 		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
@@ -76883,6 +80172,7 @@ qatar,80
 			x == 'unknown' ||
 			x == 'take out' ||
 			x == 'pickup only' ||
+			x == 'pick up only' ||
 			x == 'delivery' ||
 			x == 'ds' ||
 			x == ''
@@ -76995,7 +80285,9 @@ qatar,80
 					
 					// here?
 					console.log(rs);
-					if (rs == 'Phone' || rs == 'Postcard' || rs == 'Verified' || rs == 'New') {
+					if (rs == 'Available' || rs == 'Verified' || rs == 'New') {
+					
+					//~ if (rs == 'Phone' || rs == 'Postcard' || rs == 'Verified' || rs == 'New') {
 						
 						document.getElementById(rs).click();
 						
@@ -94307,6 +97599,15 @@ function mturk_load()
 				case '36IAL8HYOXSJR4ZTP64QYGFIEY8R4M': // Rich Gentry, Find on zoominfo.com
 					AMT___Floater({runMT_Run: true});
 					break;
+				case '3BJ81NIZAFOA17GSU3B9OYVNVQU6KM': // Sergey Schmidt, Find youtube URL
+					AMT___Floater({runMT_Run: true});
+					break;
+				case '369VX4MEOJBFUMBQ6OU5ATS3K8VGI7': // x8 Data, Check exec data
+					AMT___Floater({runMT_Run: true});
+					break;
+				case '3SIEQXXS6F7ON6EED2H97HN3N7D4Q9': // Charles Devereux, politician birth wikipedia
+					AMT___Floater({runMT_Run: true});
+					break;
 
 				console.log('case ran');
 				break;
@@ -94353,6 +97654,12 @@ function mturk_load()
 		 * Scripts execute here if window.top == window.self
 		 * && href == mturk.com
 		 * return here!
+		 * 
+		 * AMT__Global_Vars.isTopWindow
+		 * AMT__Global_Vars.isPreview
+		 * AMT__Global_Vars.initializeHitId()
+		 * 
+		 * AMT___core_factory().top_window__addEventListener_iframe();
 		 */
 		
 		AMT__Global_Vars.isTopWindow = true;
@@ -94360,7 +97667,11 @@ function mturk_load()
 		//AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
 		
+		// Add event listener (will only do this if Iframe is on the page)
+		new AMT___core_factory()
+			.top_window__addEventListener_iframe();
 		
+		//~ var r = AMT___core_factory().top_window__addEventListener_iframe();
 		
 
 		
