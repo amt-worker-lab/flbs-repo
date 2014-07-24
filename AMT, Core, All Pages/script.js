@@ -28,6 +28,43 @@ var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
 var RUN__ALL_PAGES_TEXTAREA = false;
 
+
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		
+		//JANET LEE
+		if(request.itsOkayToRun) {
+			//~ console.log('loc ' + loc);
+			if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
+				//alert('hi hi');
+				
+				new AMT___core_factory().nextWindow();
+				
+				var theForm = document.forms['aspnetForm'];
+				if (theForm) {
+					//~ console.log(document.location.href);
+					var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
+					if (rg) {
+						document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
+						theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
+						theForm.__EVENTARGUMENT.value = '';
+						theForm.submit();
+						//~ 
+						//~ console.log(new AMT___core_factory().nextWindow());
+						//~ 
+						//~ // GO TO NEXT 
+						//~ 
+						//~ 
+						//~ // submit
+						
+					}
+				}
+			}
+		}
+	}
+);
+  
+ 
 function load()
 {
 
@@ -329,6 +366,10 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Robin_Demaria_smartagora_captcha(event.data);
 			}
+			if (event.data.task == 'AMT__Leonid_check_site_advertisement' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				AMT__Leonid_check_site_advertisement(event.data);
+			}
 		}
 	}
 	/*
@@ -366,6 +407,37 @@ function load()
 			
 			
 		
+	}
+	/*
+	 * Leonid
+	 * 
+	 */
+	function AMT__Leonid_check_site_advertisement(r) {
+		//extend
+		MT___all_pages_extend();
+		
+		// r.name,subject,email,body
+		//~ console.log(r);
+		
+		var type = 0;
+		if (/(advertise|advertize|advertizing)/i.exec(document.body.innerText))
+		{
+			type = 1;
+		}
+		else if (/(advertise|advertize|advertizing)/i.exec(document.body.innerHTML))
+		{
+			type = 2;
+		}
+		
+		// send complete
+		parent.postMessage(
+			{
+				key: 'AMT__Leonid_check_site_advertisement__complete',
+				data: type
+			},
+			"*"
+		);
+		return;
 	}
 	/*
 	 * Robin Demaria
@@ -3804,6 +3876,18 @@ function load()
 									document.getElementById('ctl00_MainContent_MyCaptcha1_TxtCpatcha').onkeyup = function() {};
 								//	document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
 									document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									
+									//new AMT___core_factory().nextTab();
+									chrome.extension.sendRequest({nextTab: true, option:'tellNextPageThatItIsOkayToRun'},
+									function(response) {
+										//squelch response
+									});
+									
+									/**chrome.extension.sendRequest({nextWindow: true, option:'tellNextPageThatItIsOkayToRun'},
+									function(response) {
+										//squelch response
+									});**/
+
 									//this.focus();
 									this.blur(); // remove focus!
 									

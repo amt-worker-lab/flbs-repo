@@ -38,12 +38,16 @@ function MT__bold(o, arr, options_object) {
 	var word;
 	
 	for (var i in arr) {
-		word = arr[i];
+		
+		// July 2 2014, Added .trim()
+		//
+		//
+		word = arr[i].trim();
 		
 		//~ console.log(word);
 		//~ console.log(x.match(new RegExp('('+__js_escape_regEx(word)+')', 'gi')));
 		
-		if (word.trim() == '') {
+		if (word == '') {
 			continue;
 		}
 		//~ // is in found_words_bolded ?
@@ -71,8 +75,9 @@ function MT__bold(o, arr, options_object) {
 				var prev_match = found_words_bolded[j];
 				var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
 				if (tmp_match) {
-					console.log('found in old p1:' + tmp_match);
-					console.log(found_words_bolded);
+					//~ console.log('found in old p1:' + tmp_match);
+					//~ console.log(found_words_bolded);
+					
 					//found_in_prev = true;
 					return p1; // ends here
 				}
@@ -168,6 +173,188 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	
+	//
+	//Jeffrey M. Howard
+	//Jeffry Howard
+	//
+	s = 'Do not worry about entering in new dates if a rate is not available, simply move on to the next date.'
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+		
+		var link = document.getElementsByTagName('a')[0].href;
+		
+		var detail;
+		
+
+		
+		var ifr = document.createElement('iframe');
+		ifr.setAttribute('style', 'position:absolute;top:0px;width:100%;height:200px;z-index:1000')
+		ifr.setAttribute('id','ifr');
+		document.body.appendChild(ifr);
+		ifr = document.getElementById('ifr');
+		var winX = window.open(link,'_blank');
+		ifr.addEventListener('load', function() {
+					setTimeout(AMT_Jeffrey_M_Howard_Init, 4000);
+				}
+
+			);
+		ifr.src = link;
+		
+		function AMT_Jeffrey_M_Howard_Init() {
+			//window.close(winX);
+			var allQueries = [];
+			for(var i = 1; i < 23; i++) {
+				var date = document.body.getElementsByTagName('label')[i].innerText.trim();
+				var monthReg = /^([^\d]+)/
+				var month;
+				if(month = monthReg.exec(date)) {
+					month = month[1].trim();
+				}
+				else
+				{
+					alert('error scraping month for the ' + i + 'th label');
+					return;
+				}
+				
+				var daysReg = /([\d]+) - ([\d]+)/;
+				var days;
+				var startDay;
+				var endDay;
+				if(days = daysReg.exec(date)) {
+					startDay = days[1];
+					endDay = days[2];
+				}
+				else
+				{
+					alert('error scraping day for the ' + i + 'th label');
+				}
+				
+				//Get today's day
+				var today = (new Date).getDate();
+				//alert('today is the ' + today);
+				
+				
+				
+				switch(month){
+					case 'January': month = '1 2015'
+					break;
+					case 'February': month = '2 2015'
+					break;
+					case 'March': month = '3 2015'
+					break;
+					case 'April': month = '4 2015'
+					break;
+					case 'May': month = '5 2015'
+					break;
+					case 'June': month = '6 2015'
+					break;
+					case 'July':
+					if((startDay * 1) < today) {
+						month = '7 2015'
+					} else
+						month = '7 2014'
+					break;
+					case 'August': month = '8 2014'
+					break;
+					case 'September': month = '9 2014'
+					break;
+					case 'October': month = '10 2014'
+					break;
+					case 'November': month = '11 2014'
+					break;
+					case 'December': month = '12 2014'
+					break;
+					default: alert('error encoding ' + month);
+					break;
+				}
+				
+				var query = {
+					startDay: startDay,
+					endDay: endDay,
+					month: month,
+					inp: (i-1)
+				}
+				allQueries.push(query);
+			}	
+			
+			
+			
+			//Scrape the first page
+			GM_xmlhttpRequest({
+				method:'GET',
+				url:link,
+				onload: function(rs) {
+					rs = rs.responseText;
+					var detailReg = /<link rel="alternate" hreflang="en" href="http:\/\/www.tripadvisor.com\/Hotel_Review-g[\d]+-d([\d]+)/
+					if(detail = detailReg.exec(rs)) {
+						detail = detail[1];
+						console.log(detail);
+						setTimeout(AMT__Jeffrey_Howard_Trip_Advisor_Lowest_Rate, 2000);
+					}
+					else
+					{
+						alert('Failed to scrape detail');
+					}
+					//console.log(rs);
+				}
+				});		
+			function AMT__Jeffrey_Howard_Trip_Advisor_Lowest_Rate() {
+				//alert(detail);
+				var naCount = 0;
+				for(var i = 0; i < allQueries.length; i++) {
+					AMT__Jeffrey_Howard_Trip_Advisor_Query(allQueries[i], detail);
+					//break; //only run once for debug
+					if(document.body.getElementsByClassName('form-control')[i].value == 'N/A')
+						naCount++;
+				}
+				if(naCount <= 4)
+					doSubmit();
+				console.log(naCount);
+			}
+			function AMT__Jeffrey_Howard_Trip_Advisor_Query(query, detail) {
+				console.log(query);
+				var link = 'http://www.tripadvisor.com/MiniMetaCRAjax?detail='+detail+
+							'&inMonth=' + encodeURIComponent(query.month) +
+							'&inDay=' +query.startDay +
+							'&outMonth=' + encodeURIComponent(query.month) +
+							'&outDay=' + query.endDay +
+							'&adults=2&area=QC_Meta_Mini&returnAllOffers=true&metaReferer=Hotel_Review&baseLocId=86233&metaRequestTiming=1405145922850&finalRequest=true&displayAvailableChevron=Expedia.com,Orbitz.com,amextravel.com&displayAvailableTextLink=Tingo.com,Otel.com,Hotels.com,Venere.com&displayMaybeAvailableTextLink=Travelocity&displayNoAvailableTextLink=AMOMA.com,Priceline.com,Agoda.com';
+				GM_xmlhttpRequest({
+					method:'GET',
+					url:link,
+					asynchronous: false,
+					onload: function(rs) {
+						console.log(rs);
+						rs = rs.responseText;
+						if(rs.indexOf(detail) == -1)
+						{
+							//alert('error matching details for query ' + query.inp);
+							return;
+						}
+						
+						var priceReg = /<div class="promoText">Send travelers straight to your booking page<\/div> <div class="priceBlock ">[\r\n\s\t]*<div class="price">([^<]*)<\/div>/;
+						var price;
+						if(price = priceReg.exec(rs)) {
+							price = price[1];
+							console.log('query')
+							console.log(query);
+							document.body.getElementsByClassName('form-control')[query.inp].value = price;
+						}
+						else
+						{
+							document.body.getElementsByClassName('form-control')[query.inp].value = 'N/A';
+						}
+						console.log(new Date().getTime());
+						console.log(query.inp);
+					}
+					});
+			}
+		}
+	}
+	
 	
 	/*s = 'Below is a table of interests. An interest can be anything. The first interest'
 	if(ih.indexOf(s) != -1)
@@ -878,6 +1065,64 @@ function MT__RUN() {
 		window.open("https://www.google.com/search?q=" + encodeURIComponent(searchBusiness));
 		window.open("https://www.google.com/search?q=" + encodeURIComponent(searchBusiness + " headquarters"));
 	}
+	//
+	// QCIII
+	//
+	//
+	s= "<p>Find the telphone number and email address for the following person and/or company.</p>";
+	if(ih.indexOf(s) != -1)
+	{
+		//1...11
+		var td = document.getElementsByTagName('td');
+		var str = [];
+		for (var i = 1; i<= 11; i+=2) {
+			str.push(td[i].innerText.trim());
+		}
+		
+		// "email" or "contact"
+		var str1 = str.join(',');
+		str1 += ' ("email" OR "contact" OR "phone")';
+		
+		// quote name
+		var str2 = str;
+		str2[1] = '"'+str2[1]+'"';
+		str2 = str2.join(',');
+		
+		var n1 = window.open("https://www.google.com/search?q=" + encodeURIComponent(str2), 'n1');
+		var n2 = window.open("https://www.google.com/search?q=" + encodeURIComponent(str1), 'n2');
+		
+		//~ window.onbeforeunload = function() {
+			//~ window.close(n1);
+			//~ window.close(n2);
+			//~ alert("confirm exit is being called");
+			//~ return false;
+			//~ return null;
+		//~ }
+		var q = [
+			document.getElementById('phone'),
+			document.getElementById('email')
+		];
+		console.log(q);
+		q[0].onblur = function() {
+			this.value = this.value.replace(/[^\d]/g, '');
+			var x = /^(\d{3})(\d{3})(\d{4})$/.exec(this.value);
+			if (x) {
+				this.value = x[1] + '-' + x[2] + '-' + x[3];
+			}
+		}
+		document.getElementById('submitButton').onclick = function() {
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '')
+					return false;
+			}
+			if (!/^\d{3}-\d{3}-\d{4}$/.exec(q[0].value)) {
+				return false;
+			}
+			doSubmit();
+			return false;
+		}
+	}
 	
 	//
 	// Jim Vesterman
@@ -1105,12 +1350,1982 @@ function MT__RUN() {
 	
 	
 	//
+	// Evan Marks
+	// Find the Facebook User Id of a Person
+	//
+	s = '<li class="panel-heading">You must being using Facebook in the English language and&nbsp;have access to Facebook graph search</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {margin-top:500px !important;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;}');
+		
+		var o = {
+			name: '',
+			//~ name_clean: '',
+			state: '',
+			fb_state_id: '',
+			friend: document.getElementsByTagName('td')[3].innerText.trim(),
+			friend_clean: '',
+			friend_fn: '',
+			friend_name_num_words: 0
+		}
+		
+		var exe = {
+			people_to_try: [],
+			num_tries: 0,
+			search_more_than_20: false,
+			found_end_of_user_friends: false,
+			count_show_more_friends: 0 // max == 10
+		}
+		
+		//Melissa Fernandes who live in Illinois
+		var x = /<td>People named ([^<]+)<\/td>/.exec(ih)[1];
+		x = x.split(' who live in ');
+		o.name  = x[0];
+		o.state = x[1];
+		o.friend_clean = o.friend.replace(/[^\w\d]/g, '').toLowerCase();
+		o.friend_fn = o.friend.replace(/ [^\d\D]*/, '');
+		o.friend_name_num_words = o.friend.split(' ').length;
+		
+		/* BEGIN ITEMS */
+		// Container
+		var d1 = document.createElement('div');
+		d1.setAttribute('style', 'position:absolute;top:0;left:0;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style', 'position:absolute;top:300px;left:0;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1b);
+		/* END ITEMS */
+		
+		Evan_Marks_facebook_users__location();
+		
+		// Evan_Marks_facebook_users__location
+		function Evan_Marks_facebook_users__location() {
+			
+			d1.innerText = '';
+			
+			var u =
+				'https://graph.facebook.com/search'+
+				'?q='+ encodeURIComponent(o.state) + // e.g. ohio
+				'&limit=100&type=page' + 
+				'&access_token='+'114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//~ '&access_token='+'CAABoGo52sJgBAO4xrjZBj1bIGyzjSCy8v8JCSyBvydjZBvZBTSCxbFEOA81cS79FWHbHBW0YL6UqTG2ZARqkZBMAauezO2v3tIsO5749CjQASTJu2QZBqOHeXuw4SkHYl1wyPGYCmX9QAeIL53hjdzOIsMia3gmLMFcgJlYlhHU60smYPyeDvr1uWeLC9AQQvRERp3gNfMEoiYcDH0QFIY';
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					rs = JSON.parse(rs);
+					
+					if  (
+						!rs.hasOwnProperty('data')
+						)
+					{
+						return;
+					}
+					
+					// auto on 0
+					for (var i in rs.data) {
+						
+						var d = document.createElement('div');
+						d.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+						d.className = 'exe';
+						d.innerText = rs.data[i].name + ' :: ' +rs.data[i].category;
+						d.fb_id = rs.data[i].id + '';
+						d1.appendChild(d);
+						
+						d.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.fb_state_id = this.fb_id;
+							Evan_Marks_facebook_users__people();
+						}
+						
+						if (rs.data[i].name == o.state && rs.data[i].category == 'State/province/region') {
+							d.click();
+							//~ o.fb_state_id = rs.data[i].id;
+							//~ Evan_Marks_facebook_users__people();
+							break;
+						}
+						//if (i == 0 && rs.data[i].name == o.state && rs.data[i].category == 'State/province/region') {
+					}
+					
+					
+				}
+			});
+		}
+		
+		// Evan_Marks_facebook_users__people
+		// This page (friends) will show up to
+		// 20 friends.
+		function Evan_Marks_facebook_users__people() {
+			
+			var u = 
+				'https://www.facebook.com/search/str/'+
+				encodeURIComponent(o.name)+
+				'/users-named/'+
+				encodeURIComponent(o.fb_state_id)+
+				'/residents/present/intersect';
+			
+			//~ console.log(u);
+			//~ console.log(o.fb_state_id);
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: u,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					var r;
+					
+					//<div class="mrm _a6u">1 Person</div>
+					//<div class="mrm _a6u">14 People</div>
+					//<div class="mrm _a6u">More Than 100 People</div>
+					
+					r = '<div class="_4-u2 _9py"><div class="clearfix _1cii"><div class="rfloat _ohf">No Results</div><span class="fwb">Filter this Search</span>';
+					if (rs.indexOf(r) != -1) {
+						Evan_Marks_facebook_users__fail();
+						return;
+					}
+					
+					// CONTINUE HERE
+					//
+					//~ r = 'Sorry, we couldn&#039;t find any results for this search. Showing partial matches instead.';
+					//~ if (rs.indexOf(r) != -1) {
+						//~ Evan_Marks_facebook_users__fail();
+						//~ return;
+					//~ }
+					
+					
+					//Bob Skudlarczyk
+					//bob.b2booking?ref=br_rs&amp;fref=browse_search
+					//OR https://www.facebook.com/profile.php?id=100004864246997&ref=br_rs&fref=browse_search
+					//   https://www.facebook.com/profile.php?id=100004864246997&ref=br_rs&sk=friends
+					//<a href="https://www.facebook.com/profile.php?id=100004864246997&amp;ref=br_rs&amp;fref=browse_search">Marlene Loomis</a>
+					r = /<a href="(https:\/\/www\.facebook\.com\/profile\.php\?id=\d+&amp;ref=br_rs&amp;fref=browse_search|https:\/\/www\.facebook\.com\/[^\?]+\?ref=br_rs&amp;fref=browse_search)[^"]*">([^<]+)<\/a>/g;
+					
+					//~ r = /<a href="(https:\/\/www\.facebook\.com\/[^"]+)">([^<]+)<\/a>/g;
+					
+					var m;
+					while (m = r.exec(rs)) {
+						
+						var x;
+						if (/^https:\/\/www\.facebook\.com\/profile\.php/.exec(m[1])) {
+							x = __js_clean_html_str(m[1]) + '&sk=friends';
+						} else {
+							x = __js_clean_html_str(m[1]).replace(/\?[\d\D]*$/, '/friends');
+						}
+						
+						exe.people_to_try.push(x);
+					}
+					console.log(exe.people_to_try);
+					
+					// Try
+					Evan_Marks_facebook_users__try();
+				}
+			});
+		}
+		
+		// Evan_Marks_facebook_users__people
+		function Evan_Marks_facebook_users__fail() {
+			document.getElementById('facebook_id').value = 'none';
+			
+			if (!exe.search_more_than_20)
+				doSubmit();
+		}
+		
+		//Evan_Marks_facebook_users__showMore
+		function Evan_Marks_facebook_users__showMore(data) {
+			
+			// exe.count_show_more_friends (XX0..9) > 0..29
+			// Go back to __try, if necessary.
+			// Set search_more_than_20 == true. This
+			// means that there are additional friends
+			// that we're unable to get (r & a).
+			if (exe.count_show_more_friends >= 30) {
+				exe.search_more_than_20 = true; // TRUE
+				Evan_Marks_facebook_users__try();
+				return;
+			}
+			
+			var u = 'https://www.facebook.com/ajax/pagelet/generic.php/AllFriendsAppCollectionPagelet'+
+						'?data='+encodeURIComponent(JSON.stringify(data))+
+						'&__user=613706455&__a=1&__dyn=7n8ahyj2qmvudDgDxyKBgWyBzECiq78hACF29aGEVFLFwxBxCbzESu49UJ0&__req=16&__rev=1337404';
+			
+			d1b.innerText += '(' + exe.count_show_more_friends + ')=>' + data.collection_token + ' ' + data.cursor + '\n';
+			console.log(data);
+			
+			// xhr
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: u,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					// ...
+					rs = rs.replace(/^for \(;;\);/, '');
+					
+					// On page?
+					var r = JSON.parse(rs);
+					if (r.hasOwnProperty('payload')) {
+						// 
+						//~ console.log(r);
+						// unicode
+						try {
+							var xx = decodeURIComponent(r.payload);
+						} catch(e) {
+							console.log('err');
+							console.log(r);
+							console.log(r.payload);
+						}
+						r.payload = decodeURIComponent(r.payload);
+						// ...
+						r = r.payload.toLowerCase().replace(/[^\w\d]/g, '');
+						if (r.indexOf(o.friend_clean) != -1) {
+							Evan_Marks_facebook_users__success();
+							return;
+						}
+					}
+					
+					// Continue?
+					// Build "data" GET var.
+					var x = /\["pagelet_timeline_app_collection_(\d+)([^"]+)",\{"__m":"[^"]+"\},"([^"]+)"\]\]/.exec(rs);
+					if (x) {
+						var x = {
+							"collection_token":x[1] + x[2],
+							"cursor":x[3],
+							"tab_key":"friends_all",
+							"profile_id":x[1],
+							"overview":false,
+							"ftid":null,
+							"order":null,
+							"sk":"friends",
+							"importer_state":null
+						};
+						exe.count_show_more_friends++;
+						Evan_Marks_facebook_users__showMore(x);
+						return;
+					} else {
+						// END OF THE LINE?
+						// Go to next search.
+						//~ exec.found_end_of_user_friends = true;
+						
+						if (exe.num_tries < 10) {
+							Evan_Marks_facebook_users__try();
+						} else {// FAIL
+							Evan_Marks_facebook_users__fail();
+						}
+					}
+				}
+			});
+						
+		}
+		
+		//Evan_Marks_facebook_users__success
+		function Evan_Marks_facebook_users__success(url) {
+			var x;
+			console.log(url);
+			if (x = /^https:\/\/www\.facebook\.com\/profile\.php\?id=(\d+)/.exec(url)) {
+				x = x[1];
+			} else {
+				x = /^https:\/\/www\.facebook\.com\/([^\?\/]*)/.exec(url)[1];
+			}
+			
+			document.getElementById('facebook_id').value = x;
+			document.getElementById('facebook_id').scrollIntoView();
+			doSubmit();
+		}
+		
+		//Evan_Marks_facebook_users__try
+		function Evan_Marks_facebook_users__try() {
+			
+			// No more.
+			if (!exe.people_to_try.length) {
+				Evan_Marks_facebook_users__fail();
+				return;
+			}
+			
+			var next = exe.people_to_try.shift();
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: next,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					// ...
+					//<div class="_4-y-">No friends to show</div>
+					
+					// increment
+					exe.num_tries++;
+					
+					// How many friends?
+					// Number of friends on this page (max 20)
+					// <div class="fsl fwb fcb">
+					numOnPage = (rs.match(/<div class="fsl fwb fcb">/g) || []).length;
+					if (numOnPage >= 20) {
+						document.body.style.backgroundColor = 'LightGreen';
+						//~ return;
+						//~ exe.search_more_than_20 = true; // TRUE
+					}
+					d1b.innerText += response.finalUrl + '\nnum:' + numOnPage + '\n';
+					
+					var r;
+					r = rs.toLowerCase().replace(/[^\w\d]/g, '');
+					if (r.indexOf(o.friend_clean) != -1) {
+						Evan_Marks_facebook_users__success(response.finalUrl);
+						return;
+					} else if (numOnPage >= 20) {
+						
+						// DRILL IN
+						//["pagelet_timeline_app_collection_1537240602:2356318349:2",{"__m":"m_0_7g"},"MDpub3Rfc3RydWN0dXJlZDoxNDMzNjUyNjc4"]]
+						var x = /\["pagelet_timeline_app_collection_(\d+)([^"]+)",\{"__m":"[^"]+"\},"([^"]+)"\]\]/.exec(rs);
+						if (x) {
+							var x = {
+								"collection_token":x[1] + x[2],
+								"cursor":x[3],
+								"tab_key":"friends_all",
+								"profile_id":x[1],
+								"overview":false,
+								"ftid":null,
+								"order":null,
+								"sk":"friends",
+								"importer_state":null
+							};
+							exe.count_show_more_friends = 0; // RESET THIS
+							Evan_Marks_facebook_users__showMore(x);
+							return;
+						}
+					}
+					//~ } else {
+						// TRY SEARCH FOR USER
+						// OR TRY GETTING ADDITIONAL USERS ON FRONT PAGE
+						
+						// SEARCH FOR USER
+						//~ var u = 'https://www.facebook.com/ajax/typeahead/profile_browser/friends/query.php'+
+								//~ '?value='+encodeURIComponent(friend_fn)+
+								//~ '&viewer=613706455&neighbor=1537240602&existing_ids=735021208&request_id=0.611745614791289&__user=613706455&__a=1'+
+								//~ '&__dyn=7n8ahyj2qmumdDgDxyKBgWyxi9ACxO4oKA8ABGeqrWo8popyUWdDx24Q&__req=m&__rev=1337404'
+						
+						// ADDITIONAL USERS ON FRONT PAGE
+						//~ var x = {"collection_token":"1537240602:2356318349:2","cursor":"MDpub3Rfc3RydWN0dXJlZDoxMDAwMDAxOTUyNDQ3ODY=","tab_key":"friends_all","profile_id":1537240602,"overview":false,"ftid":null,"order":null,"sk":"friends","importer_state":null};
+					//~ }
+					
+					// Here?
+					if (exe.num_tries < 10) {
+						Evan_Marks_facebook_users__try();
+					} else {// FAIL
+						Evan_Marks_facebook_users__fail();
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// Taste of the World
+	// Initial Run at it
+	//
+	s = 'In this HIT, we will provide a text description of what days and times a business is open for business. &nbsp;Using only that description, fill in the opening time and closing time&nbsp;for each day of the week.';
+	if (ih.indexOf(s) != -1 && 0==1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {margin-top:500px !important;}');
+		GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
+		GM_addStyle('.panel-body {position:absolute;top:4400px;}');
+		
+		GM_addStyle('.container {zoom:0.6;}');
+		//~ GM_addStyle('ul {position:absolute;top:2000px;}');
+		
+		// buttons
+		GM_addStyle('.exe:hover {background-color:LightGreen;}');
+		GM_addStyle('.exe {margin:0 0 0 2px;padding:0;background-color:#eee;border:1px solid teal;}');
+		
+		var b = document.getElementsByTagName('b')[0];
+		b.innerText = b.innerText.replace(/(Breakfast|Brunch|Lunch|Dinner):/g, '\n$1:');
+		
+		/* BEGIN ITEMS */
+		// Container
+		var d1 = document.createElement('div');
+		d1.setAttribute('style', 'width:90%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		//~ d1.setAttribute('style', 'position:absolute;top:310px;left:0;width:80%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		//~ document.body.appendChild(d1);
+		/* END ITEMS */
+		
+		
+		
+		// Global counter object
+		var form = {
+			current_index: 0,
+			fields: [],		// the four select fields
+			allButtons: []	// the buttons with the hours text
+		}
+		// Make the buttons
+		var x = b.innerText.trim().split('\n');
+		var out_rows = [];
+		for (var i in x) {
+			var y = x[i].trim().split(' ');
+			var tmp_row = [];
+			for (var j in y) {
+				var btn = document.createElement('button');
+				btn.className = 'exe';
+				btn.innerHTML = y[j];
+				btn.out_value = y[j]; // in the case of decision to bold innerHTML, this is original value
+				btn.onclick = TasteOfTheWorld_restaurant_hours__button2select;
+				tmp_row.push(btn);
+				form.allButtons.push(btn);
+			}
+			
+			out_rows.push(tmp_row);
+		}
+		function TasteOfTheWorld_restaurant_hours__nextRow(direction) {
+			// border
+			for (var i in form.fields) {
+				form.fields[i].style.border = '';
+			}
+			// next border
+			// & set current_index 
+			// 		3(last) + 1 < 4(fields)
+			if (direction) {	// POS
+				if (form.current_index + 1 < form.fields.length) {
+					form.current_index++;
+					//~ form.fields[form.current_index + 1].style.border = '3px solid green';
+					
+				} else {
+					//~ form.fields[0].style.border = '3px solid green';
+					form.current_index = 0;
+				}
+			}
+			else {				// NEG
+				if (form.current_index - 1 >= 0) {
+					form.current_index--;
+				} else {
+					form.current_index = 3;
+				}
+			}
+			
+			form.fields[form.current_index].style.border = '3px solid green';
+		}
+		function TasteOfTheWorld_restaurant_hours__button2select(e) {
+			this.style.backgroundColor = 'LightGreen';
+			
+			var tmp_val = this.out_value;//console.log(tmp_val);
+			tmp_val = tmp_val.toLowerCase();
+			tmp_val = tmp_val.replace(/([a-z]):/, '$1'); // Saturday:
+			tmp_val = tmp_val.replace(/(\d)(am|pm)/i, '$1 $2'); // 4:00pm becomes "4:00 pm"
+			tmp_val = tmp_val.replace(/,$/i, ''); // 4:00pm,
+			
+			// check->12:00 noon/midnight
+			if (tmp_val.toLowerCase() == '12:00 pm') {
+				tmp_val = '12:00 noon';
+			}
+			if (tmp_val.toLowerCase() == '12:00 am') {
+				tmp_val = '12:00 midnight';
+			}
+			console.log(tmp_val);
+			
+			form.fields[form.current_index].value = tmp_val;
+			//~ //XX THIS WOULD WORK OK FOR THE DAYS OF WEEK.
+			//~ //XX HOWEVER, the hours values are 0-48
+			
+			
+			// go to next row
+			// (upward by default)
+			TasteOfTheWorld_restaurant_hours__nextRow(true);
+			
+		}
+		
+		/**
+		 * 4 select fields.
+		 * 2 = day of week = start day / end day.
+		 * 2 = hours = start hours / end hours.
+		 * Sets an opening and closing time for
+		 * a range of days.
+		 * 
+		 * 1 checkbox.
+		 * checked		= Regular hours (default)
+		 * unchecked	= EXTRA hours
+		 * Selects between regular and extra.
+		 * 
+		 * X qqonkeypress (ex: "Q") reset the 4 select fields
+		 * X AND/OR
+		 * X 1 button
+		 * X Resets 4 select fields
+		 * 
+		 * X keypress Q/W/E
+		 * X Q = switch between day select fields
+		 * X W = "	"	"	" hour select fields
+		 * X E = enter the current vales to the form
+		 * 
+		 * keypress Q/W/E/R/3
+		 * Q/W	= Forward / Backward through the 4 select fields. (By default this auto increments.)
+		 * E	= enter the current values to the form
+		 * 3	= "	"	"	"	"	"	"	"	"	"	++Enter as "EXTRA" rather than "Regular"
+		 * R	= Reset (form.allButtons)
+		 */
+		
+		var daysOfWeek_array = [
+			'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+		];
+		var daysOfWeek_array_lc = JSON.parse(JSON.stringify(daysOfWeek_array).toLowerCase());
+		
+		// HOURS
+		//var y = [];var x = document.getElementsByName('Time')[0]; for (var i in x.options) { y.push(x.options[i].value) };
+		//console.log(y.join('","'));
+		var hours_array = [];
+		hours_array.push('Closed');
+		//~ hours_array.push('12:00 am');
+		//~ hours_array.push('12:00 pm');
+		hours_array = hours_array.concat(["12:00 midnight","12:30 am","1:00 am","1:30 am","2:00 am","2:30 am","3:00 am","3:30 am","4:00 am","4:30 am","5:00 am","5:30 am","6:00 am","6:30 am","7:00 am","7:30 am","8:00 am","8:30 am","9:00 am","9:30 am","10:00 am","10:30 am","11:00 am","11:30 am","12:00 noon","12:30 pm","1:00 pm","1:30 pm","2:00 pm","2:30 pm","3:00 pm","3:30 pm","4:00 pm","4:30 pm","5:00 pm","5:30 pm","6:00 pm","6:30 pm","7:00 pm","7:30 pm","8:00 pm","8:30 pm","9:00 pm","9:30 pm","10:00 pm","10:30 pm","11:00 pm","11:30 pm"]);
+		
+		
+		// Container
+		// float:left on the select fields will align to top.
+		var div_cont = document.createElement('div');
+		div_cont.setAttribute('style', 'position:absolute;top:0;left:0;width:99%;');
+		document.body.appendChild(div_cont);
+		
+		// Days
+		for (var i = 0; i<= 1; i++) {
+			var select = document.createElement('select');
+			select.setAttribute('style', 'zoom:1.4;width:6%;float:left;');
+			select.multiple = 'multiple';
+			select.size = 7;
+			div_cont.appendChild(select);
+			
+			for (var j in daysOfWeek_array) {
+				var option = document.createElement('option');
+				//~ option.setAttribute('style', 'zoom:1.2;');
+				option.innerText = daysOfWeek_array[j];
+				option.value = daysOfWeek_array[j].toLowerCase(); // => to lower
+				//~ option.value = j;
+				select.appendChild(option);
+			}
+			
+			//~ select.onclick = TasteOfTheWorld_restaurant_hours__fill;
+			//~ function() {
+				//~ 
+			//~ }
+			
+			select.selectedIndex = 0; // monday
+			
+			// Set first
+			if (i == 0) {
+				select.style.border = '3px solid green';
+			}
+			
+			// PUSH TO GLOBAL COUNTER
+			form.fields.push(select);
+		}
+		
+		// hours
+		// @param hours_array
+		for (var i = 0; i<= 1; i++) {
+			var select = document.createElement('select');
+			select.setAttribute('style', 'zoom:1.4;width:10%;float:left;');
+			select.multiple = 'multiple';
+			select.size = 16;//hours_array.length;
+			div_cont.appendChild(select);
+			
+			for (var j in hours_array) {
+				var option = document.createElement('option');
+				option.innerText = hours_array[j];
+				option.value = hours_array[j]; //.toLowerCase(); // =>XX to lower
+				//~ option.value = j;
+				select.appendChild(option);
+			}
+			
+			//~ select.onclick = TasteOfTheWorld_restaurant_hours__fill;
+			//~ function() {
+				//~ 
+			//~ }
+			
+			select.selectedIndex = 0; // Closed
+			
+			//~ // Set first
+			//~ if (i == 0) {
+				//~ select.style.border = '3px solid green';
+			//~ }
+			
+			// PUSH TO GLOBAL COUNTER
+			form.fields.push(select);
+		}
+		
+		// buttons
+		// 6x2 + 10x2 = 32%
+		var btnDiv = document.createElement('div');
+		btnDiv.setAttribute('style', 'width:66%;float:left;overflow:auto;height:300px;background-color:#efefef;');
+		div_cont.appendChild(btnDiv);
+		for (var i in out_rows) {
+			for (var j in out_rows[i]) {
+				btnDiv.appendChild(out_rows[i][j]);
+			}
+			btnDiv.appendChild(document.createElement('br'));
+			btnDiv.appendChild(document.createElement('br'));
+		}
+		
+		// d1
+		div_cont.appendChild(d1);
+		
+		// TasteOfTheWorld_restaurant_hours__keypress
+		window.addEventListener('keyup', TasteOfTheWorld_restaurant_hours__keypress, false);
+		function TasteOfTheWorld_restaurant_hours__keypress(e) {
+			var k = String.fromCharCode(e.keyCode); // (Upper)
+			console.log(k);
+			
+			switch(k) {
+				case 'Q':
+					TasteOfTheWorld_restaurant_hours__nextRow(false);	//downward
+					break;
+				case 'W':
+					TasteOfTheWorld_restaurant_hours__nextRow(true);	//upward
+					break;
+				case 'E':
+					TasteOfTheWorld_restaurant_hours__fill(true);		// Regular
+					break;
+				case '3':
+					TasteOfTheWorld_restaurant_hours__fill(false);		// EXTRA
+					break;
+				case 'R':
+					TasteOfTheWorld_restaurant_hours__reset();			// Reset
+					break;
+			}
+		}
+		
+		// TasteOfTheWorld_restaurant_hours__keypress
+		function TasteOfTheWorld_restaurant_hours__reset() {
+			for (var i in form.allButtons) {
+				form.allButtons[i].style.backgroundColor = '#eee';
+			}
+			for (var i in form.fields) {
+				form.fields[i].selectedIndex = 0;
+				form.fields[i].style.border = '';
+			}
+			form.current_index = 0;
+			form.fields[0].style.border = '3px solid green';
+			
+			//~ current_index = 1;
+			//~ TasteOfTheWorld_restaurant_hours__nextRow(false); // This goes downward and takes current_index to 0.
+		}
+		
+		// TasteOfTheWorld_restaurant_hours__fill
+		// elements=>days of week are in "fieldset"
+		// Each fieldset contains 4 select fields
+		// 1,2 Regular	open/close
+		// 3,4 EXTRA	open/close
+		//
+		// CALL RESET upon completion of fill.
+		function TasteOfTheWorld_restaurant_hours__fill(isRegular) {
+			
+			try {
+				
+				// Are all select fields selected?
+				// If a select in unselected then
+				// the value will be "".
+				for (var i in form.fields) {
+					if (form.fields[i].value == '') {
+						form.fields[i].style.border = '4px dotted orange';
+						return;
+					}
+				}
+				
+				var choice = {
+					select_start_hours: isRegular ? 0 : 2,
+					select_end_hours:   isRegular ? 1 : 3,
+					select_isRegular_debug: isRegular ? 'Regular' : 'EXTRA'
+				};
+				//~ console.log(choice);
+				
+				var fieldsets = document.getElementsByTagName('fieldset');
+				
+				//~ var out_fs = fs[ form.fields[0].selectedIndex ];
+				
+				out_fs_toFill = [];
+				
+				var tmp_start	= form.fields[0].selectedIndex;
+				var tmp_end		= form.fields[1].selectedIndex;
+				var end			= form.fields[1].selectedIndex;
+				
+				if (tmp_start > end) {
+					tmp_end = 6; // 7th day
+				}
+				
+				for (var i = tmp_start; i <= tmp_end; i++) {
+					var selects = fieldsets[i].getElementsByTagName('select');
+					selects[ choice.select_start_hours ].value = form.fields[2].value;
+					selects[ choice.select_end_hours ]	.value = form.fields[3].value;
+					
+					console.log(selects[ choice.select_start_hours ]);
+					console.log(selects[ choice.select_end_hours ]);
+				}
+				
+				// Is Start Day higher than End Day
+				// E.g. Thursday to Monday (Th, F, S, S, M) versus Monday to Thursday (M, T, W, Th)
+				if (tmp_start > end) {
+					for (var i = 0; i <= end; i++) { // START FROM 0
+						var selects = fieldsets[i].getElementsByTagName('select');
+						selects[ choice.select_start_hours ].value = form.fields[2].value;
+						selects[ choice.select_end_hours ]	.value = form.fields[3].value;
+					}
+				}
+				
+				d1.innerText +=
+						'(' + choice.select_isRegular_debug + ')' +
+						form.fields[0].value +
+						'-' +
+						form.fields[1].value +
+						'=>' +
+						selects[ choice.select_start_hours ].value +
+						'-' +
+						selects[ choice.select_end_hours ].value +
+						'\n';
+				
+				// CALL RESET
+				TasteOfTheWorld_restaurant_hours__reset();
+			}
+			catch(e) {
+				alert('Error with form!');
+			}
+		}
+	}
+	
+	
+	function removejscssfile(filename, filetype){
+		 var targetelement=(filetype=="js")? "script" : (filetype=="css")? "link" : "none" //determine element type to create nodelist from
+		 var targetattr=(filetype=="js")? "src" : (filetype=="css")? "href" : "none" //determine corresponding attribute to test for
+		 var allsuspects=document.getElementsByTagName(targetelement)
+		 for (var i=allsuspects.length; i>=0; i--){ //search backwards within nodelist for matching elements to remove
+		  if (allsuspects[i] && allsuspects[i].getAttribute(targetattr)!=null && allsuspects[i].getAttribute(targetattr).indexOf(filename)!=-1)
+		   allsuspects[i].parentNode.removeChild(allsuspects[i]) //remove element by calling parentNode.removeChild()
+		 }
+	}
+		
+	//
+	// Taste of the World
+	// 
+	//
+	s = 'In this HIT, we will provide a text description of what days and times a business is open for business. &nbsp;Using only that description, fill in the opening time and closing time&nbsp;for each day of the week.';
+	if (ih.indexOf(s) != -1)
+	{
+		//removejscssfile('https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.min.css','css');
+		console.log('');
+		GM_addStyle('body,table,hr,tr,td,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('table,tr,td {margin:0 !important;padding:0 !important;max-height:12px !important;}');
+		GM_addStyle('.exe {width: 16px !important; max-width:16px !important; cursor:pointer;text-align:center;}');
+		GM_addStyle('.exe2 {cursor:pointer;text-align:center;}');
+		GM_addStyle('span {cursor:pointer;}');
+		GM_addStyle('.dayOfWeekTitle {width: 24px !important; max-width:24px !important;cursor:pointer;}');
+		GM_addStyle('#daily{cursor:pointer;text-align:center !important;font-size:18px !important;}');
+		GM_addStyle('body {margin-top:500px !important;}');
+		GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
+		GM_addStyle('.panel-body {position:absolute;top:4400px;}');
+		
+		//~ GM_addStyle('table {border:1px solid gray !important;border-collapse:separate !important;border-spacing:2px !important;}');
+		
+		GM_addStyle('.container {zoom:0.6;}');
+		//~ GM_addStyle('ul {position:absolute;top:2000px;}');
+		
+		// buttons
+		GM_addStyle('.exe:hover {background-color:LightGreen;}');
+		GM_addStyle('.exe2:hover {background-color:LightGreen;}');
+		GM_addStyle('.exe3:hover {background-color:LightGreen;}');
+		GM_addStyle('.dayOfWeekTitle:hover {background-color:LightGreen;}');
+		GM_addStyle('#daily:hover {background-color:LightGreen;}');
+		
+		//Create 7 select fields with 14 
+		var daysOfWeek_array = [
+			'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
+		];
+		
+		// Hours
+		var hours_array = [];
+		hours_array.push('Closed');
+		hours_array = hours_array.concat(["12:00 midnight","12:30 am","1:00 am","1:30 am","2:00 am","2:30 am","3:00 am","3:30 am","4:00 am","4:30 am","5:00 am","5:30 am","6:00 am","6:30 am","7:00 am","7:30 am","8:00 am","8:30 am","9:00 am","9:30 am","10:00 am","10:30 am","11:00 am","11:30 am","12:00 noon","12:30 pm","1:00 pm","1:30 pm","2:00 pm","2:30 pm","3:00 pm","3:30 pm","4:00 pm","4:30 pm","5:00 pm","5:30 pm","6:00 pm","6:30 pm","7:00 pm","7:30 pm","8:00 pm","8:30 pm","9:00 pm","9:30 pm","10:00 pm","10:30 pm","11:00 pm","11:30 pm"]);
+		
+		
+		
+		var initialDetails = document.getElementsByTagName('span')[0];
+		//Place a span underneath the table
+		//var details = document.createElement('span');
+		//details.setAttribute('style', 'position:absolute;top:150px;');
+		//document.body.appendChild(details);
+		detailsText = initialDetails.innerText.toLowerCase();
+		
+		//turn detailsText into a suitable array, where spaces, dashes, and commas all break it
+		detailsText = detailsText.replace(/[^\s](,)[^\s]/g,' $1 ');
+		detailsText = detailsText.replace(/[^\s](-)[^\s]/g,' $1 ');
+		detailsText = detailsText.replace(/[^\s](;)[^\s]/g,' $1 ');
+		
+		//Take all am's and pm's and make sure they're connected to their left-most word
+		detailsText = detailsText.replace(/[\s,-]+(a?\.m?\.)/g,'$1 ');
+		detailsText = detailsText.replace(/[\s,-]+(p?\.m?\.)/g,'$1 ');
+
+		//Turn all a.m.'s, a.m's, am.'s into am, same for pms
+		detailsText = detailsText.replace(/a?\.m?\./g,'am');
+		detailsText = detailsText.replace(/p?\.m?\./g,'pm');
+		
+		//Turn all 5pm's and 3am's into 5:00pm's and 3:00am's
+		detailsText = detailsText.replace(/([^:\d])(\d{1,2})(pm|am)/,'$1$2:00$3');
+		detailsText = detailsText.replace(/noon/,'12:00pm');
+		detailsText = detailsText.replace(/midnight/,'12:00am');
+		
+		
+		var autosObject = {
+			autos: []
+			};
+			
+			
+		//Create a div for the auto-spans to exist
+		var autoTranslateDiv = document.createElement('div');
+		autoTranslateDiv.setAttribute('style','');
+		console.log('x - marks the spot');
+		document.body.appendChild(autoTranslateDiv);
+		console.log(autoTranslateDiv)
+		
+		Taste_Of_The_World_Restauarant_Hours__Find_Autos()
+		
+		
+		detailsText = detailsText.split(/[\s]+/);
+		console.log(detailsText);
+
+		
+		var textContainer = document.createElement('div');
+		textContainer.setAttribute('style','position:absolute;top:150px');
+		document.body.appendChild(textContainer);
+		
+		
+		var textTable = document.createElement('div');
+		textTable.setAttribute('style','top:150px;');
+		document.body.appendChild(textTable);
+		Taste_Of_The_World_Restauarant_Hours__Initialize_TextTable();
+		textContainer.appendChild(textTable);
+		textContainer.appendChild(document.createElement('hr'));
+		textContainer.appendChild(autoTranslateDiv);
+		
+		
+		
+		/**
+		var n = initialDetails.innerText;
+		n = n.replace(/((Breakfast|Brunch|Lunch|Dinner)( Daily|)):/gi, '\n$1:');
+		n = n.replace(/, <putstar/here>g, ',\n');
+		n = n.replace(/; <putstar/here>g, ';\n');
+		details.innerText = n;**/
+		
+		
+		
+		//Move the submit button up
+		var subBut = document.getElementById('submitButton');
+		subBut.style.position = 'absolute';
+		subBut.style.top = '0';
+		subBut.style.width = '100px';
+		subBut.style.height = '25px';
+		subBut.onclick = function() {
+			if(enterFormButton.hasBeenClicked)
+			{
+				doSubmit();
+			}
+			return false;
+		}
+		
+
+		
+		//Create a 'daily button'
+		var dailyBut = document.createElement('div');
+		dailyBut.setAttribute('style','position:absolute;top:0;left:150px;height:25px');
+		document.body.appendChild(dailyBut);
+		dailyBut.innerHTML = 'Daily';
+		dailyBut.isDailyBut = true;
+		dailyBut.id = 'daily';
+		dailyBut.onclick = Taste_Of_The_World_Restauarant_Hours__Text_Click;
+		
+		var enterFormButton = document.createElement('input');
+		enterFormButton.setAttribute('type','button');
+		enterFormButton.setAttribute('style','position:absolute;left:0;top:0;height:25px');
+		document.body.appendChild(enterFormButton);
+		enterFormButton.value = 'Enter Form';
+		enterFormButton.onclick = Taste_Of_The_World_Restauarant_Hours__Enter_Form;
+
+		var switchFillType = document.createElement('input');
+		switchFillType.setAttribute('type','button');
+		switchFillType.setAttribute('style','position:absolute;left:100px;top:0;height:25px');
+		document.body.appendChild(switchFillType);
+		switchFillType.value = 'regular';
+		switchFillType.onclick = function() {
+				if(this.value == 'extra')
+					this.value = 'regular';
+				else 
+					this.value = 'extra';
+			}
+
+		
+		var table = document.createElement('table');
+		table.setAttribute('style','position:absolute;left:0;top:25px;height:125px');
+		table.id = 'table';
+		document.body.appendChild(table);
+
+		
+		
+		var uiTrack =
+		{
+			//when true, is the beginning of a timeslot, when false is the end...
+			isStartClick: true,
+			//var isSpecialClick?
+			startClick: {},
+			endClick: {},
+			isRegular: true,
+			allRows: null,
+			drawInclusive: false
+		};
+		
+		var textUiTrack = 
+		{
+			startDay: null,
+			endDay: null,
+			startTime: null,
+			endTime: null
+		};
+		
+		
+
+
+		
+		for(var i = 0; i < daysOfWeek_array.length; i++) {
+			var tr = document.createElement('tr');
+			tr.className = 'dayOfWeek';
+			//First td of each tr is the day of week title
+			var tdDay = document.createElement('td');
+			tdDay.className = 'dayOfWeekTitle'
+			tdDay.onclick = Taste_Of_The_World_Restauarant_Hours__Text_Click;
+			
+			tdDay.innerText = daysOfWeek_array[i].substr(0,3);
+			tr.appendChild(tdDay);
+										
+			for(var j = 0; j < hours_array.length; j++) {
+				var tdTime = document.createElement('td');
+				tdTime.className = 'exe';
+				//tdTime.isSelected = false;
+				
+				tdTime.uiRow = i;
+				tdTime.uiCol = j;
+				tdTime.status = 'not-selected';//'regular', 'extra', 'not-selected'
+				tdTime.formValue = hours_array[j];
+				
+				if(hours_array[j] != 'Closed') {
+					if(hours_array[j].indexOf('30') != -1) {
+						tdTime.innerText = '.';
+					}
+					else
+						tdTime.innerText = parseInt(hours_array[j]);
+				}
+				else {
+					tdTime.innerText = 'c';
+					tdTime.isClicked = true;
+					tdTime.style.backgroundColor = 'lightgreen';
+				}
+				tdTime.onclick		= Taste_Of_The_World_Restauarant_Hours__Click;
+				tdTime.onmouseover	= Taste_Of_The_World_Restauarant_Hours__mouseover;
+				tdTime.onmouseout	= Taste_Of_The_World_Restauarant_Hours__mouseout;
+				tr.appendChild(tdTime);
+			}
+			table.appendChild(tr);
+		}
+		uiTrack.allRows = table.getElementsByTagName('tr');
+		
+		window.addEventListener('keypress', TasteOfTheWorld_restaurant_hours__keypress, false);
+		
+		function Taste_Of_The_World_Restauarant_Hours__Initialize_TextTable() {			
+			var tr = document.createElement('div');
+			for(var i = 0; i < detailsText.length; i++) {
+				if( detailsText[i].toLowerCase().indexOf('breakfast') != -1 ||
+					detailsText[i].toLowerCase().indexOf('lunch') != -1 ||
+					detailsText[i].toLowerCase().indexOf('brunch') != -1 ||
+					detailsText[i].toLowerCase().indexOf('dinner') != -1 ||
+					detailsText[i].toLowerCase().indexOf('daily') != -1 ||
+					detailsText[i].toLowerCase().indexOf('nightly') != -1
+					)
+				{
+					textTable.appendChild(tr);
+					var tr = document.createElement('div');
+				}
+				var td = document.createElement('span');
+				td.className = 'exe2';
+				td.innerText = detailsText[i] + ' ';
+				td.value = td.innerText;
+				td.onclick = Taste_Of_The_World_Restauarant_Hours__Text_Click;
+				tr.appendChild(td);				
+			}
+			if(textTable.getElementsByTagName('tr').length == 0) {
+				textTable.appendChild(tr);
+			}
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Text_Click(event) {
+			if(!this.isDailyBut)
+				this.style.backgroundColor = 'lightgreen';
+			if(event.ctrlKey)
+				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('pm',this);
+			else
+				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',this);
+		}
+
+		
+		function Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(ampm,td) {
+			var txt = td.innerText.toLowerCase();
+			var hour;
+			var minutes;
+			var type = 'none';
+			var txtRegDay = /(mon|tue|wed|thu|fri|sat|sun)/;
+			var textRegDaily = /(daily|nightly)/;
+			var match;
+			if(match = txtRegDay.exec(txt)) {
+				var day = match[1];
+				type = 'day';
+			}
+			else if(match = textRegDaily.exec(txt)) {//is this daily?
+				type = 'day';
+				day = 'daily';
+			}
+			else {
+				//Check for whether it is a time, and if so scrape that time
+				txtReg = /\d/;
+				if(match = txtReg.exec(txt)) {
+					txtReg = /([\d]{1,2})(:|\.)([\d]{1,2})/;
+					if(match = txtReg.exec(txt)) {
+						if((match[1]*1) > 12)
+							match[1] = match[1]*1-12;
+						else if((match[1] *1) == 12) {
+							if(ampm == 'am')
+							{
+								match[1] = 0;
+							}
+							else
+								match[1] = 12;
+						}
+						//alert(match[1]);
+						hour = match[1];
+						minutes = match[3];
+						type = 'time';
+					}
+					else //The format is not __:__
+					{
+						//Try getting the first 1 or 2 consecutive digits
+						txtReg = /[\d]{1,2}/;
+						if(match = txtReg.exec(txt)) {
+							hour = match[0];
+							if(hour*1 == 12) {
+								if('ampm' == 'am');
+								hour = 0;
+							}
+							minutes = 0;
+							type = 'time';
+						}
+						else {
+							alert('this should not run');
+						}
+					}
+				}
+				else //it has no digits, so check for ., 'noon', 'midnight', etc.
+				{
+
+					if(txt.trim() == '.'){
+						hour = td.hour;
+						minutes = '30';
+						type = 'time';
+						type = 'time';
+					}
+					else
+					{
+						txtReg = /(noon|midnight)/; //think of more
+						if(match = txtReg.exec(txt)) {
+							switch(match[0]) {
+								case 'noon': ampm = 'pm';
+										hour = 12;
+								break;
+								case 'midnight': ampm = 'am';
+										hour = 0;
+								break;
+							}
+							type = 'time';
+							minutes = 0;
+						}
+						else //It isn't a day or a time so return
+						{
+							return;
+						}
+					}
+				}	
+			}
+			
+			
+			if(type == 'day') {
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{day:day})
+			}
+			else if(type == 'time'){
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{hour: hour,minutes: minutes,ampm:ampm});
+			}
+		}
+		
+		/*	var autosObject {
+		 *  autos: []
+			rangeMatches: [],
+			multiSingleMatches: [],
+			r: [],
+			rangeMatches: [],
+			};
+		Taste_Of_The_World_Restauarant_Hours__Find_Autos()*/
+		
+		function Taste_Of_The_World_Restauarant_Hours__Find_Autos() {
+			autosObject.rangeMatches = [];
+			autosObject.multiSingleMatches = [];
+			autosObject.dayMatches = [];
+			autosObject.dailyMatches = [];
+			autosObject.divText = '';
+			
+			var scrapeTxt = detailsText;
+			var finalText = detailsText;
+
+			
+			testScrapeTxts = ['monday, wednesday, friday: 8:00am to 6:00pm',
+							  '...',
+							  ]
+			testScrapeTxt = testScrapeTxts[0];
+			
+			
+			//Look for the most common form of scrape
+			//monday to tuesday : 12:00am to 3:00pm
+			var scrapeReg = /(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var rangeMatch
+			while(rangeMatch = scrapeReg.exec(scrapeTxt)) {
+					//alert(rangeMatch[0]);
+					finalText = finalText.replace(rangeMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="r' +	autosObject.rangeMatches.length + '">'+rangeMatch[0]+'</span>');
+					autosObject.rangeMatches.push(rangeMatch);
+			}
+			console.log(autosObject.rangeMatches);
+			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
+			console.log(scrapeTxt);
+			console.log('Final Txt:'+finalText);
+	
+			//(mon|tue|wed|thur|fri|sat|sun)
+			//(and|[&,])
+			//(mon|tue|wed|thur|fri|sat|sun)
+			//((and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*)*
+			//([\d]{1,2}[\:\.][\d]{1,2})
+			//(am|pm)
+			//([\s-]+|to|through)
+			//([\d]{1,2}[\:\.][\d]{1,2})
+			//(am|pm)
+			//console.log(testScrapeTxt);
+			var scrapeReg =	/(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*(and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*((and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*)*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var multiSingleMatch;
+			while(multiSingleMatch = scrapeReg.exec(scrapeTxt)) {
+				finalText = finalText.replace(multiSingleMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="m' +	autosObject.multiSingleMatches.length + '">'+multiSingleMatch[0]+'</span>');
+				autosObject.multiSingleMatches.push(rangeMatch);
+			}
+			console.log(autosObject.multiSingleMatches);
+			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
+			console.log(scrapeTxt);
+			console.log('Final Txt:'+finalText);
+			
+			
+			var dayMatch;
+			var scrapeReg =
+			/(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			while(dayMatch = scrapeReg.exec(scrapeTxt)) {
+				finalText = finalText.replace(dayMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="d' +	autosObject.dayMatches.length + '">'+dayMatch[0]+'</span>');
+				autosObject.dayMatches.push(dayMatch);
+			}
+			console.log(autosObject.dayMatches);
+			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
+			console.log(scrapeTxt);
+			console.log('Final Txt:'+finalText);
+	
+			
+			var dailyMatch;
+			var scrapeReg =
+			/(daily|nightly)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			while(dailyMatch = scrapeReg.exec(scrapeTxt)) {
+				finalText = finalText.replace(dailyMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="i' +	autosObject.dailyMatches.length + '">'+dailyMatch[0]+'</span>');
+				autosObject.dailyMatches.push(dailyMatch);
+			}
+			console.log(autosObject.dailyMatches);
+			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
+			console.log(scrapeTxt);
+			console.log('Final Txt:'+finalText);
+			
+			autosObject.leftOverText = scrapeTxt;
+			
+			
+			finalText = finalText.replace(/(lunch|dinner|brunch|breakfast|daily|nightly)/gi,'<br>$1');
+			autosObject.divText = finalText;
+			
+			
+			
+			Taste_Of_The_World_Restauarant_Hours__Initialize_Spans();
+			
+		}
+		
+		//Creates the text for each 
+		function Taste_Of_The_World_Restauarant_Hours__Initialize_Spans() {
+			var autoAreaText = detailsText;
+			console.log(autoTranslateDiv);
+			autoTranslateDiv.innerHTML = autosObject.divText;
+			
+			var allSpans = autoTranslateDiv.getElementsByTagName('span');
+			for(var i = 0; i < allSpans.length; i++) {
+				allSpans[i].onclick = Taste_Of_The_World_Restauarant_Hours__Input_Auto_From_Span;
+			}
+			
+			
+			//Build range buttons
+			/**var rangeMatches = autosObject.rangeMatches;
+			for(var i =0; i < rangeMatches.length; i++) {
+				var rangeSpan = document.createElement('span');
+				rangeSpan.className = 'rangeSpan';
+				//(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+				rangeSpan.startDay = rangeMatches[1];
+				rangeSpan.endDay = rangeMatches[3];
+				rangeSpan.startTime = rangeMatches[4];
+				rangeSpan.startTimeAmPm = rangeMatches[5];
+				rangeSpan.endTime = rangeMatches[7];
+				rangeSpan.endTimeAmPm = rangeMatches[8];
+				rangeSpan.innerText = rangeSpan.startDay + '-' +rangeSpan.endDay
+				rangeSpan.replacementText = rangeMatches[0];
+				autosObject.allSpans.push(rangeSpan);
+			}**/
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Input_Auto_From_Span() {
+			var type = this.id[0];
+			var num = /([\d]+)/.exec(this.id)[1];
+			this.style.backgroundColor = 'lightgreen';
+			Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num);
+		}
+		
+		
+		/*
+		 * 	if(type == 'day') {
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{day:day})
+			}
+			else if(type == 'time'){
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{hour: hour,minutes: minutes,ampm:ampm});
+			}
+		 * 
+		 * */
+		
+		//Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking
+		
+		function Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num) {
+			switch(type) {
+				case 'r':
+						var rangeMatch = autosObject.rangeMatches[num];
+				//(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[1]}) //startDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[3]}) //endDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[5], {innerText:rangeMatch[4]}) //startTimeAmPm, startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[8], {innerText:rangeMatch[7]}) //endTimeAmPm, endTime
+				break;
+				case 'm':				
+				break;
+				case 'd':
+							var dayMatch = autosObject.dayMatches[num];
+				///(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:dayMatch[1]})//startDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[3],{innerText:dayMatch[2]})//startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[6],{innerText:dayMatch[5]})//endTime
+				break;
+				case 'i': 
+							var dailyMatch = autosObject.dailyMatches[num];
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:'daily'})//startDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[3],{innerText:dailyMatch[2]})//startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[6],{innerText:dailyMatch[5]})//endTime
+				break;
+			}
+			
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,specifier) {
+			if(type == 'day')
+			{
+				if(specifier.day == 'daily') {
+					textUiTrack.startDay = 'mon';
+					textUiTrack.endDay = 'sun';
+				}
+				else if(textUiTrack.startDay) 
+					textUiTrack.endDay = specifier.day;
+				else
+					textUiTrack.startDay = specifier.day;
+					
+				if(textUiTrack.startTime && textUiTrack.endTime) {
+					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack();
+				}
+			}
+			else if(type == 'time') {
+				if(!textUiTrack.startTime)
+					textUiTrack.startTime = specifier;
+				else
+					textUiTrack.endTime = specifier;
+				if(textUiTrack.startTime && textUiTrack.endTime && textUiTrack.startDay) {
+					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack();			
+				}						
+			}
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack() {
+				//alert(textUiTrack.startTime.hour);
+				//Determine rows/columns that will get clicked
+				var startRow; //Format, first three letters of day, lowercase
+				var endRow;
+				var startCol; //Formate, {hour: num, minutes: num, ampm:boolean}
+				var endCol
+				switch(textUiTrack.startDay) {
+					case 'mon': startRow = 0;
+					break;
+					case 'tue': startRow = 1;
+					break;
+					case 'wed': startRow = 2;
+					break;
+					case 'thu': startRow = 3;
+					break;
+					case 'fri': startRow = 4;
+					break;
+					case 'sat': startRow = 5;
+					break;
+					case 'sun': startRow = 6;
+					break;
+				}
+				if(!textUiTrack.endDay) {
+					textUiTrack.endDay = textUiTrack.startDay;
+				}
+				switch(textUiTrack.endDay) {
+					case 'mon': endRow = 0;
+					break;
+					case 'tue': endRow = 1;
+					break;
+					case 'wed': endRow = 2;
+					break;
+					case 'thu': endRow = 3;
+					break;
+					case 'fri': endRow = 4;
+					break;
+					case 'sat': endRow = 5;
+					break;
+					case 'sun': endRow = 6;
+					break;
+				}
+				var minutes = textUiTrack.startTime.minutes;
+				if(minutes == '0' || 
+				   minutes == '00' || 
+				   minutes == 0 || 
+				   minutes == null) {
+				   midhour = 0;
+			   }
+				else if(minutes == .5 ||
+						minutes == 30 ||
+						minutes == 'thirty' ||
+						minutes == '30' ||
+						minutes == '15' ||
+						minutes == 15) {
+						midhour = 1;
+				}
+				if(textUiTrack.startTime.hour == 12 &&
+				   textUiTrack.startTime.ampm == 'pm')
+				   textUiTrack.startTime.hour = 0;
+				startCol = 1 + (textUiTrack.startTime.hour*2) + 
+							   (textUiTrack.startTime.ampm == 'pm' ? 24 : 0) +
+							   midhour;
+				
+				var minutes = textUiTrack.endTime.minutes;
+				if(minutes == '0' || 
+				   minutes == '00' || 
+				   minutes == 0 || 
+				   minutes == null ||
+				   minutes == '15' ||
+				   minutes == 15) {
+				   midhour = 0;
+			   }
+				else if(minutes == .5 ||
+						minutes == 30 ||
+						minutes == 'thirty' ||
+						minutes == '30') {
+						midhour = 1;
+				}
+				if(textUiTrack.endTime.hour == 12 &&
+				   textUiTrack.endTime.ampm == 'pm')
+				   textUiTrack.endTime.hour = 0;
+				endCol = 1 + (textUiTrack.endTime.hour*2) + 
+							   (textUiTrack.endTime.ampm == 'pm' ? 24 : 0) +
+							   midhour;
+
+				uiTrack.startClick.col = startCol;
+				uiTrack.startClick.row = startRow;
+				uiTrack.endClick.col = endCol;
+				uiTrack.endClick.row = endRow;
+				uiTrack.drawInclusive = true;
+				Taste_Of_The_World_Restauarant_Hours__Fill();
+				uiTrack.drawInclusive = false;
+				uiTrack.startClick.col = false;
+				uiTrack.startClick.row = false;
+				uiTrack.endClick.col = false;
+				uiTrack.endClick.row = false;
+				
+				textUiTrack.endTime = false;
+				textUiTrack.startTime = false;
+				textUiTrack.endDay = false;
+				textUiTrack.startDay = false;
+		}
+		
+		
+		
+		
+		//~ var textUiTrack = 
+				//~ {
+					//~ startDay: null,
+					//~ endDay: null,
+					//~ startTime: null,
+					//~ endTime: null
+				//~ };
+		
+		function TasteOfTheWorld_restaurant_hours__keypress(e) {
+			var k = String.fromCharCode(e.keyCode); // (Upper)
+			console.log(k);
+			
+			switch(k) {
+				case 'M': uiTrack.isRegular = !uiTrack.isRegular;
+				break;
+				case 'm': uiTrack.isRegular = !uiTrack.isRegular;
+				break;
+			}
+		}
+		
+		
+		function Taste_Of_The_World_Restauarant_Hours__Click() {
+			if(this.innerText == 'c') {
+				if(this.isClicked)
+				{
+					alert('hi');
+					this.style.backgroundColor = '';
+					this.isClicked = false;
+				}
+				else {
+					this.style.backgroundColor = 'lightgreen';
+					this.isClicked = true;
+					var turnOffTds = this.parentNode.getElementsByTagName('td');
+					for(var i = 2; i < turnOffTds.length;i++) {
+						turnOffTds[i].status = 'not-selected';
+						turnOffTds[i].style.backgroundColor = '';
+					}
+				}
+				uiTrack.isStartClick = true;
+				return;
+			}
+			else
+			{
+				if(textUiTrack.startDay ||
+				   textUiTrack.endDay ||
+				   textUiTrack.startTime ||
+				   textUiTrack.endTime) {
+					var ampm;
+					if(this.uiCol >=25)
+						ampm = 'pm';
+					else 
+						ampm = 'am';
+					if(this.innerText.trim() == '.')
+					{
+						var hour = uiTrack.allRows[0].getElementsByTagName('td')[this.uiCol-2].innerText*1+1;
+						if(hour == 13)
+							hour = 1;
+						if(!hour)
+							hour = 12;
+						this.hour = hour;
+					}
+					Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(ampm,this)
+					return;
+				 }
+				
+				this.style.backgroundColor = 'lightgreen';
+				if(uiTrack.isStartClick) {
+					uiTrack.startClick.row = this.uiRow;
+					uiTrack.startClick.col = this.uiCol;
+					uiTrack.isStartClick = false;
+					return;
+				}
+				else {
+					uiTrack.endClick.row = this.uiRow;
+					uiTrack.endClick.col = this.uiCol;
+					Taste_Of_The_World_Restauarant_Hours__Fill();
+					uiTrack.isStartClick = true;
+				}
+			}
+		}
+		
+		// Taste_Of_The_World_Restauarant_Hours__mouseover
+		// +Click has occurred.
+		function Taste_Of_The_World_Restauarant_Hours__mouseover(e) {
+			this.parentNode.style.backgroundColor = '#ccc';
+			
+			// CLEAR ALL
+			var r = document.getElementsByClassName('exe');
+			for (var i in r) {
+				if (i == 'length') break;
+				r[i].style.border = 0;
+			}
+			// FILL MOUSE
+			if (!uiTrack.isStartClick)
+				Taste_Of_The_World_Restauarant_Hours__Fill_Mouse({row: this.uiRow, col: this.uiCol});
+		}
+		
+		// Taste_Of_The_World_Restauarant_Hours__mouseout
+		// +Click has occurred.
+		function Taste_Of_The_World_Restauarant_Hours__mouseout(e) {
+			this.parentNode.style.backgroundColor = '';
+			
+			// CLEAR ALL
+			var r = document.getElementsByClassName('exe');
+			for (var i in r) {
+				if (i == 'length') break;
+				r[i].style.border = 0;
+			}
+			//~ var max_cols = uiTrack.allRows[0].getElementsByTagName('td').length - 2;
+			//~ for(var i = 0; i <= 6; i++) {
+				//~ for(var j = 0; j <= ; j++) {
+					//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+				//~ }
+			//~ }
+			
+			//uiTrack.isStartClick = false;
+			//~ if (!uiTrack.isStartClick)
+				//~ Taste_Of_The_World_Restauarant_Hours__Fill_Mouse({row: this.uiRow, col: this.uiCol});
+		}
+		
+		// Taste_Of_The_World_Restauarant_Hours__Fill
+		function Taste_Of_The_World_Restauarant_Hours__Fill_Mouse(end) {
+			
+			// MAX ROW/MAX COL
+			var max_cols = uiTrack.allRows[0].getElementsByTagName('td').length - 2;
+			var tempEnd = {
+				row: (uiTrack.startClick.row > end.row) ? 6		: end.row,
+				col: (uiTrack.startClick.col > end.col) ? max_cols	: end.col
+			}
+			// BASIC
+			for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
+				for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
+					Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+				}
+			}
+			// ROW
+			if  (
+				uiTrack.startClick.row > end.row
+				)
+			{
+				for(var i = 0; i <= end.row; i++) {
+					for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
+						Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+					}
+				}
+				
+				if  (
+					uiTrack.startClick.col > end.col
+					)
+				{
+					for(var i = 0; i <= end.row; i++) {
+						for(var j = 1; j <= end.col; j++) { // START1
+							Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+						}
+					}
+				}
+			}
+			// COL
+			if  (
+				uiTrack.startClick.col > end.col
+				)
+			{
+				for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
+					for(var j = 1; j <= end.col; j++) { // START1
+						Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+					}
+				}
+			}
+		}
+		function Taste_Of_The_World_Restauarant_Hours__Border_Mouse(row,col) {
+			var borderTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
+			borderTd.style.border = '1px solid blue';
+		}
+		
+		// Taste_Of_The_World_Restauarant_Hours__Fill
+		function Taste_Of_The_World_Restauarant_Hours__Fill() {
+			
+			// MAX ROW/MAX COL
+			var max_cols = uiTrack.allRows[0].getElementsByTagName('td').length - 2;
+			//~ console.log('max_cols'+max_cols); // IS 47
+			
+			var tempEnd = {
+				row: (uiTrack.startClick.row > uiTrack.endClick.row) ? 6		: uiTrack.endClick.row,
+				col: (uiTrack.startClick.col > uiTrack.endClick.col) ? max_cols	: uiTrack.endClick.col
+			}
+			//~ console.log(tempEnd);
+			
+			// BASIC
+			for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
+				for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
+					Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+				}
+			}
+			// ROW
+			if  (
+				uiTrack.startClick.row > uiTrack.endClick.row
+				)
+			{
+				for(var i = 0; i <= uiTrack.endClick.row; i++) {
+					for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
+						Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+					}
+				}
+				
+				if  (
+					uiTrack.startClick.col > uiTrack.endClick.col
+					)
+				{
+					for(var i = 0; i <= uiTrack.endClick.row; i++) {
+						for(var j = 1; j <= uiTrack.endClick.col; j++) { // START1
+							Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						}
+					}
+				}
+			}
+			// COL
+			if  (
+				uiTrack.startClick.col > uiTrack.endClick.col
+				)
+			{
+				for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
+					for(var j = 1; j <= uiTrack.endClick.col; j++) { // START1
+						Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+					}
+				}
+				//~ 
+				//~ if  (
+					//~ uiTrack.startClick.row > uiTrack.endClick.row && 0==1
+					//~ )
+				//~ {
+					//~ for(var i = 0; i <= uiTrack.endClick.row; i++) {
+						//~ for(var j = 0; j <= uiTrack.endClick.col; j++) {
+							//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						//~ }
+					//~ }
+				//~ }
+			}
+			//~ if(!rowFlowOver || !colFlowOver) {
+				//~ console.log('got here 2');
+				//~ for(var i = uiTrack.startClick.row; i <= uiTrack.endClick.row; i++) {
+					//~ console.log('got here 3');
+					//~ for(var j = uiTrack.startClick.col; j <= uiTrack.endClick.col; j++) {
+						//~ console.log('got here 4');
+						//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+					//~ }
+				//~ }
+			//~ }
+			//~ else if(rowFlowOver)
+			//~ {
+				//~ 
+			//~ }
+			//~ else if(colFlowOver)
+			//~ {
+			//~ }
+			//~ else
+			//~ {
+				//~ //Do nothing, unless we want it to be meaningful
+			//~ }
+		}
+		function Taste_Of_The_World_Restauarant_Hours__Fill_Click(row,col) {
+			 
+			var fillTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
+			if(fillTd.status == 'regular' && !uiTrack.drawInclusive && switchFillType.value == 'regular' || 
+			   fillTd.status == 'extra' && !uiTrack.drawInclusive &&
+			   switchFillType.value == 'extra'
+			   )
+				fillTd.status = 'not-selected';
+			else
+				fillTd.status = switchFillType.value;
+			
+			if(fillTd.status != 'not-selected') {
+				if(switchFillType.value == 'extra') {
+					fillTd.style.backgroundColor = '#CD919E';
+					Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row);
+				}
+				else
+				{
+					Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row);
+					fillTd.style.backgroundColor = 'lightgreen';
+				}
+			}
+			else if(fillTd.status == 'not-selected') {
+				fillTd.style.backgroundColor = '';
+			}
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row) {
+			var closedTd = uiTrack.allRows[row].getElementsByTagName('td')[1];
+			closedTd.isClicked= false;
+			closedTd.style.backgroundColor = '';			
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Enter_Form() {
+			this.hasBeenClicked = true;
+			this.style.backgroundColor = 'lightgreen';
+			var fieldsets = document.getElementsByTagName('fieldset');
+			var beginEndSwitcher = true;
+			var beginTd;
+			var endTd;
+			var enteringRegular = true;
+			
+			//Go through the closed ones
+			for(var i = 0; i < uiTrack.allRows.length; i++) {
+				var form = fieldsets[i].getElementsByTagName('select');
+				
+				var closedTd = uiTrack.allRows[i].getElementsByTagName('td')[1];
+				if(closedTd.isClicked) {
+					form[0].value = 'Closed';
+					form[1].value = 'Closed';
+				}
+			}
+			
+			//Go through the regular ones
+			var getStartPoint = true;
+			var startDifferemce = 0;
+			for(var i = 0; i < uiTrack.allRows.length; i++) {
+				getStartPoint = true;
+				var startDifferemce = 0;
+				var form = fieldsets[i].getElementsByTagName('select');
+				var allCols = uiTrack.allRows[i].getElementsByTagName('td');
+				for(var j = 2; j < allCols.length; j++) {
+					var currentTd = allCols[j];
+					var nextTd = allCols[j+1];
+					console.log(currentTd.status);
+
+					if(getStartPoint && currentTd.status == 'regular') {
+						form[0].value = currentTd.formValue;
+						getStartPoint = !getStartPoint;
+					}
+					else if(!getStartPoint && nextTd && nextTd.status != 'regular') {
+						if(startDifferemce == 1 && currentTd.status != 'regular') {
+							form[1].value = form[0].value;
+							getStartPoint = !getStartPoint;
+							break;
+						}
+						else 
+						{
+							form[1].value = currentTd.formValue;
+							getStartPoint = !getStartPoint;						
+							break;
+						}
+					}
+					else if(!nextTd && !getStartPoint) {
+						form[1].value = currentTd.formValue;
+						getStartPoint = !getStartPoint;
+						break;
+					}
+					if(!getStartPoint)
+						startDifferemce++;
+				}
+				//alert(j);
+				//If both 11:30 and 12:00, then go through again starting from the point we left off				
+				if(allCols[allCols.length - 1].status == 'regular' &&
+				   allCols[2].status == 'regular') {
+					j++
+					for(j; j < allCols.length; j++) {
+						var currentTd = allCols[j];
+						var nextTd = allCols[j+1];
+						console.log(currentTd.status);
+
+						if(currentTd.status == 'regular') {
+							form[0].value = currentTd.formValue;
+							break;
+						}
+					} 
+				  }
+				//If when we got to the end it was a null, and nothing has been filled in, then it's b/c the nth+1 doesn't exist
+				//so simply end the form at the nth space
+				if(!getStartPoint && form[1].value == 'select one') {
+					form[1].value =  '11:30 pm';
+					getStartPoint = true;
+					break;
+				}
+			}
+			
+
+			
+			
+			
+			//Go through extra ones
+			var getStartPoint = true;
+			var startDifferemce = 0;
+			for(var i = 0; i < uiTrack.allRows.length; i++) {
+				getStartPoint = true;
+				var startDifferemce = 0;
+				var form = fieldsets[i].getElementsByTagName('select');
+				var allCols = uiTrack.allRows[i].getElementsByTagName('td');
+				for(var j = 2; j < allCols.length; j++) {
+					var currentTd = allCols[j];
+					var nextTd = allCols[j+1];
+					console.log(currentTd.status);
+
+					if(getStartPoint && currentTd.status == 'extra') {
+						form[2].value = currentTd.formValue;
+						getStartPoint = !getStartPoint;
+					}
+					else if(!getStartPoint && nextTd && nextTd.status != 'extra') {
+						if(startDifferemce == 1 && currentTd.status != 'extra') {
+							form[3].value = form[2].value;
+							getStartPoint = !getStartPoint;
+							break;
+						}
+						else 
+						{
+							form[3].value = currentTd.formValue;
+							getStartPoint = !getStartPoint;						
+							break;
+						}
+					}
+					else if(!nextTd && !getStartPoint) {
+						form[3].value = currentTd.formValue;
+						getStartPoint = !getStartPoint;
+						break;
+					}
+					if(!getStartPoint)
+						startDifferemce++;
+				}
+				//alert(j);
+				//If both 11:30 and 12:00, then go through again starting from the point we left off				
+				if(allCols[allCols.length - 1].status == 'extra' &&
+				   allCols[2].status == 'extra') {
+					j++
+					for(j; j < allCols.length; j++) {
+						var currentTd = allCols[j];
+						var nextTd = allCols[j+1];
+						console.log(currentTd.status);
+
+						if(currentTd.status == 'extra') {
+							form[2].value = currentTd.formValue;
+							break;
+						}
+					} 
+				  }
+				//If when we got to the end it was a null, and nothing has been filled in, then it's b/c the nth+1 doesn't exist
+				//so simply end the form at the nth space
+				if(!getStartPoint && form[3].value == 'select one') {
+					form[3].value =  '11:30 pm';
+					getStartPoint = true;
+					break;
+				}
+			}
+		}
+	}
+	
+	//
+	// ?
+	// General face categorization
+	//
+	//~ s = 'Select all pictures with <u><strong>track lighting</strong></u><u><strong> (furniture)</strong></u>&nbsp;occupying a significant part of the image (or mark here <input name="flagged" type="checkbox" value="none"> if none fits)';
+	s = '<p>You have to label the features of the face in the image.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('img {cursor:pointer;}');
+		
+		GM_addStyle('img {zoom:1.2;}');
+		GM_addStyle('input[type="button"] {width:100%;height:400px;}');
+		
+		// init
+		document.querySelectorAll('input')[1].click();
+		
+		// when finished
+		document.querySelectorAll('input')[2].onclick = function() {
+			new AMT___core_factory().nextTab();
+			setTimeout(function() {
+				document.querySelectorAll('input')[3].click();
+			}, 2000);
+		}
+		
+		// selects
+		var x = document.getElementsByTagName('select');
+		for (var i in x) {
+			if (i == 'length') break;
+			x[i].multiple = true;
+			
+			var sz;
+			var n;
+			switch(i) {
+				case '0': sz = 3;
+					n = 1;
+					break;
+				case '1': sz = 10;
+					n = 5;
+					break;
+				case '2': sz = 6;
+					n = 2;
+					break;
+				case '3': sz = 7;
+					n = 2;
+					break;
+				case '4': sz = 7;
+					n = 2;
+					break;
+				case '5': sz = 5;
+					n = 1;
+					break;
+				case '6': sz = 8;
+					n = 1;
+					break;
+				case '7': sz = 4;
+					n = 1;
+					break;
+				case '8': sz = 3;
+					n = 2;
+					break;
+				case '9': sz = 5;
+					n = 1;
+					break;
+				case '10': sz = 3;
+					n = 2;
+					break;
+			}
+			
+			x[i].size = sz;
+			x[i].selectedIndex = n;
+		}
+
+	}
+	
+	//
 	// Superfish
 	// 
 	//
 	//~ s = 'Select all pictures with <u><strong>track lighting</strong></u><u><strong> (furniture)</strong></u>&nbsp;occupying a significant part of the image (or mark here <input name="flagged" type="checkbox" value="none"> if none fits)';
 	s = '</u>&nbsp;occupying a significant part of the image (or mark here <input name="flagged" type="checkbox" value="none"> if none fits)';
-	if(ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1)
 	{
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
@@ -1403,6 +3618,318 @@ function MT__RUN() {
 									// ENDS SCRIPT PROCESSING
 									return true;
 								}
+								
+								// CONTINUES (job is NOT in "preview" mode)
+								return false;
+							}
+						}
+					);
+				}
+			);
+		}
+	}
+	
+	//
+	// Rachel Scott
+	// Customer List Email Fetching
+	//
+	// Accept all jobs if they include an email.
+	// Skip all with 0 emails.
+	s = '	<li>For this company, enter the name, title and email address for a decision maker.</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+		GM_addStyle('#submitButton {position:absolute;top:-300px;left:50%;width:50%;height:40px}');
+		//~ GM_addStyle('table {zoom:0.6;}');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:300px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
+		document.body.appendChild(d2);
+		var d3 = document.createElement('input');
+		d3.setAttribute('type', 'button');
+		d3.setAttribute('style','position:absolute;top:760px;left:0%;width:48%;height:30px;text-align:left;');
+		document.body.appendChild(d3);
+		var d3b= document.createElement('textarea');
+		d3b.setAttribute('type', 'text');
+		d3b.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:10px;text-align:left;');
+		document.body.appendChild(d3b);
+		/* END ITEMS */
+		
+		// mouseover
+		d2.addEventListener('mouseover', function() {
+			d1.scrollIntoView()
+		}, false);
+		
+		// Flicker
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+			}, 1000);
+		}, false);
+		
+		// NO email btn
+		//~ d3.value = 'NO@email.com';
+		//~ d3.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById('web_url').value = 'NO@email.com';
+			//~ 
+			//~ showNextTab();
+			//~ doSubmit();
+		//~ }
+		
+		// The domain!
+		//~ var td = document.getElementsByTagName('td')[1].innerText.trim();
+		var b  = document.getElementsByTagName('b')[1].innerText.trim();
+		
+		// The url!
+		var url = (!/^http/i.exec(td)) ? 'http://' + b : b;
+		//~ var domain = td.toLowerCase().replace(/http:\/\/www)/, '');
+		
+		var o = {
+			domain: b.replace(/\/\**$/, ''), // /* or /
+			url: url
+		}
+		
+		// ...
+		d3b.value = b; // domain
+		d3b.onblur = function() {
+			var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
+			Rachel_Scott_decision_maker__scrapy([url], [this.value]);
+		}
+		
+		// return button function!
+		//~ var cf = new AMT___core_factory()
+		new AMT___core_factory()
+			.iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+		
+		// ...
+		var q = [
+			document.getElementById('Q1name'),
+			document.getElementById('Q1position'),
+			document.getElementById('Q1email'),
+			document.getElementById('Q1location')
+		];
+		// ...
+		document.getElementById('submitButton').onclick = function(e) {
+			
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '') {
+					return false;
+				}
+			}
+			
+			// Here?
+			showNextTab();
+			doSubmit();
+			
+			e.stopPropagation();
+			e.preventDefault();
+			
+			return false;
+		}
+		// INIT
+		Rachel_Scott_decision_maker__scrapy([o.url], [o.domain]);
+		
+		/**
+		 * function
+		 */
+		function Rachel_Scott_decision_maker__scrapy(start_urls, allowed_domains) {
+			//
+			var s_obj = 
+			{
+				project: 'scrapy_amt',
+				spider: 'AMTSpider',
+				arg_allowed_domains: allowed_domains,	// array
+				arg_start_urls: start_urls,		// array
+				arg_max_pages_to_fetch: 40,
+				arg_type_scrape: 'all_emails',	// all_emails or str_match
+				settings: [
+					//'DEPTH_LIMIT=4',
+					//'SCHEDULER_ORDER=BFO',
+					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+					
+					'CONCURRENT_ITEMS=40', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+					
+					'AJAXCRAWL_ENABLED=1', //true
+					'COOKIES_ENABLED=0', //false
+					//'RETRY_ENABLED=0', //false
+					//'DI=0', //false
+					'REDIRECT_MAX_TIMES=1'//,
+					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+					//'AJAXCRAWL_ENABLED=1', //true
+				]
+			}
+			
+			var req = new AMT___requests_factory();
+			AMT___POPUP__initializeGlobals(
+				function() {
+					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+						s_obj,
+						(new AMT___items_factory()).create_dashboard__powers_v1,
+						{
+							div: d1,
+							input_send_success: document.getElementById('Q1email'),
+							input_onclick_callback: function() {
+								
+								// OPEN IN IFRAME!
+								//~ el_div.url = url;
+								//~ el_div.onclick = function ...
+								this.style.backgroundColor = 'LightGreen';
+								this.input_send_success.value = this.email;
+								d2.src = this.url;
+								d2.scrollIntoView();
+								
+								//~ showNextTab();
+								//~ doSubmit();
+							},
+							do_submit_callback: function() {
+								
+								// OPEN IN IFRAME!
+								//~ showNextTab();
+								//~ doSubmit();
+							},
+							// RUNS BEFORE DASHBOARD IS FILLED IN !
+							callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+								//~ console.log(callback_obj);
+								//~ return;
+								
+								if (AMT__Global_Vars.isPreview)
+								{
+									// If no email match results
+									if (!callback_obj.matches || !callback_obj.matches.length) {
+										
+										AMT___Floater.skip();
+										
+										//~ // Check URLs option to accept job when
+										//~ // match.
+										//~ var c = callback_obj.urls
+										//~ var d = c.high.length + c.low.length + c.none.length;
+										//~ var try_url = false;
+										//~ var u;
+										//~ for (var i in callback_obj.urls.high) { // only high
+											//~ u = callback_obj.urls.high[i].urls_url;
+											//~ if (/[\.\/]facebook\.com\//.exec(u)) continue;
+											//~ if (/contact/i.exec(u)) {
+												//~ try_url = u;
+												//~ break;
+											//~ }
+										//~ }
+										//~ 
+										//~ if (d <= 10 && try_url) {
+											//~ AMT___Floater.accept();
+										//~ }
+										//~ else
+										//~ {
+											//~ //showNextTab(); // !
+											//~ AMT___Floater.skip();
+										//~ }
+									}
+									else
+									{
+										AMT___Floater.accept();
+									}
+									// ENDS SCRIPT PROCESSING (aka triggers exception)
+									return true;
+								}
+								else // JOB IS ACCEPTED
+								{
+									
+									
+									
+									// customercare @ gmail.com
+									// bizname @ gmail.com
+									//
+									
+									//~ // Is there an auto email?
+									//~ // If so, then return the task at the
+									//~ // current state, i.e., stop processing
+									//~ // of the "Max Powers" dashboard.
+									//~ console.log(callback_obj);
+									//~ // Is unique?
+									//~ var last = '';
+									//~ var unique = true;
+									//~ var em;
+									//~ for (var i in callback_obj.matches) {
+										//~ em = callback_obj.matches[i].email_email.toLowerCase();
+										//~ if (em != last && i == 0) {
+											//~ last = em;
+										//~ }
+										//~ else if (em != last) { // not unique
+											//~ unique = false;
+										//~ }
+									//~ }
+									//~ if (unique && callback_obj.matches.length && em) {
+										//~ var name;
+										//~ if (name = new RegExp('^([^@]+)@' + __js_escape_regEx(o.domain) + '$','i').exec(em)) {
+											//~ name = name[1].toLowerCase();
+											//~ 
+											//~ var good_names = {
+												//~ 'owner' : true,
+												//~ 'marketing' : true,
+												//~ 'sales' : true,
+												//~ 'manager' : true,
+												//~ 'support' : true,
+												//~ 'contact' : true,
+												//~ 'contactus' : true,
+												//~ 'service' : true,
+												//~ 'information' : true,
+												//~ 'info' : true
+											//~ };
+											//~ 
+											//~ if (good_names.hasOwnProperty(name) && o.domain.length > 4) {
+												//~ document.getElementById('web_url').value = em;
+												//~ doSubmit();
+												//~ return true; // ends tasks at current state!
+											//~ }
+										//~ }
+									//~ }
+									
+									
+									// Here?
+									// Add to active tabs queue!
+									//
+									//
+									//
+									addToTabsQ();
+									
+									
+									// open in Iframe
+									var try_url = false;
+									var u;
+									for (var i in callback_obj.urls.high) {
+										u = callback_obj.urls.high[i].urls_url;
+										if (/[\.\/]facebook\.com\//.exec(u)) continue;
+										if (/[\.\/]plus\.google\.com\//.exec(u)) continue;
+										if (/contact/i.exec(u)) {
+											try_url = u;
+											break;
+										}
+									}
+									if (try_url) {
+										//~ console.log(try_url);
+										d2.src = try_url;
+									}
+								}
+								
 								
 								// CONTINUES (job is NOT in "preview" mode)
 								return false;
@@ -3416,6 +5943,115 @@ function MT__RUN() {
 		}
 	}
 	
+	/**
+	 * postMessage to child iframe
+	 * 
+	 * Leonid
+	 * Robin Demaria
+	 */
+	//
+	// Leonid
+	// 
+	// 
+	var s = '<p>To complete the HIT you should provide information whether the website has any advertising (Yes/No). See a detailed description how to check this&nbsp;parameters below:</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:500px !important;margin-left:40px !important;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;zoom:0.8;}'); //;width:100%//margin-left:-40px;
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var site = document.getElementsByTagName('a')[0].href;
+		
+		
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d2);
+		//~ //
+		//~ var d2 = document.createElement('input');
+		//~ d2.setAttribute('type','text');
+		//~ d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+		//~ d2.onblur = function() {
+			//~ this.value = this.value.replace(/\s+/g, ' ').trim();
+			//~ Charles_Devereux_politician_birth__wikipedia();
+		//~ }
+		//~ document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		d2.src = site;
+		
+		// post message
+		var ifr_intv = setInterval(function() {
+			d2.contentWindow.postMessage({
+				task: 'AMT__Leonid_check_site_advertisement'
+			}, "*");
+		}, 1000);
+		// watch for complete
+		window.addEventListener("message", AMT__Leonid_check_site_advertisement__complete, false);
+		function AMT__Leonid_check_site_advertisement__complete(event)
+		{
+			//~ console.log(event);return;
+			var v = event.data;
+			if (v.key != 'AMT__Leonid_check_site_advertisement__complete')
+				return;
+			
+			var q = document.getElementsByName('Ads');
+			
+			if (v.data == 1) {
+				q[0].checked = true;
+				doSubmit();
+			}
+			else if (v.data == 2) {
+				q[0].checked = true;
+				//doSubmit();
+				document.body.style.backgroundColor = 'LightGreen';
+			}
+			else if (v.data == 0) {
+				q[1].checked = true;
+				doSubmit();
+			}
+		}
+		
+		//~ // ...
+		//~ // blank + >any not N/A?
+		//~ document.getElementById('submitButton').onclick = function() {
+			//~ var has_non_na = false;
+			//~ for (var i in q) {
+				//~ q[i].value = q[i].value.trim();
+				//~ if (q[i].value == '') {
+					//~ return false;
+				//~ } else if (q[i].value != 'N/A') {
+					//~ has_non_na = true;
+				//~ }
+			//~ }
+			//~ if (!has_non_na) {
+				//~ return false;
+			//~ }
+			//~ // any 
+			//~ showNextTab(); // next!
+		//~ }
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+	}
 	//
 	// Robin Demaria
 	// 
@@ -3531,6 +6167,719 @@ function MT__RUN() {
 					action: 'return_button__showNextTab'
 				}
 			);
+	}
+	
+	/*Simplesearch*/
+	
+	//
+	// Sarah Catanzaro
+	// -SimpleSearch
+	// 
+	var s = '	<li>Here is a screen shot that shows you the number we want to collect:&nbsp;http://imgur.com/O13H4ZB</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		var a = document.getElementsByTagName('td')[1].innerText.trim().replace(/vsearch\/p/, 'vsearch/pj');
+		
+		// ...
+		// return button function!
+		//~ new AMT___core_factory()
+			//~ .iframe2parent__postMessage( //
+				//~ {
+					//~ action: 'return_button__showNextTab'
+				//~ }
+			//~ );
+		//~ // ...
+		//~ new AMT___core_factory().
+			//~ iframe2parent__postMessage( //
+				//~ {
+					//~ action: 'return_and_accept_button__nextTab'
+				//~ }
+			//~ );
+			
+			
+		// ...
+		Sarah_Catanzaro_linkedin_employees();
+		
+		// ...
+		function Sarah_Catanzaro_linkedin_employees() {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: a,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.context),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						exit(response.status);
+					}
+					
+					rs = JSON.parse(rs);
+					
+					console.log(rs);
+					
+					var x = rs.content.page.voltron_unified_search_json.search.formattedResultCount;
+					
+					console.log(x);
+					
+					document.getElementById('employee_count').value = x;
+					doSubmit();
+				}
+			});
+		}
+	}
+	
+	//
+	// Relevance Groupon
+	// -SimpleSearch
+	// 
+	var s = '<li>You are given a Groupon deal that has been tagged with some existing Category/Interest tags. Click on the URL</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:340px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		GM_addStyle('input[type="radio"] {zoom:3;}');
+		GM_addStyle('.radio {margin-left:80px;margin-bottom:40px !important;}');
+		
+		GM_addStyle('b {zoom:1.6;}');
+		
+		//~ GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var a = document.getElementsByTagName('a');//[1].href;
+		
+		// ...
+		var p = document.getElementsByTagName('p')[3].innerText.replace(/^Reason for Match: */i, '').replace(/[<>]/g, '');
+		
+		// ...
+		var o = {
+			site: a[1].href,
+			context: a[2].href,
+			
+			reason: p
+		}
+		o.reason_arr = p.replace(/[^\w\d]/g, ' ').split(' ');
+		
+		//~ 
+		//~ var o = {
+			//~ name: td[1].innerText.trim(),
+			//~ country: td[5].innerText.trim(),
+			//~ name_cln: td[1].innerText.trim().replace(/[^\w\d]/g, '').toLowerCase()
+		//~ }
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:280px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:280px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		//~ var d2 = document.createElement('input');
+		//~ d2.setAttribute('type','text');
+		//~ d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+		//~ d2.onblur = function() {
+		//~ }
+		//~ document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// ...
+		var r = document.getElementsByName('VALID');
+		var q = [
+			r[0], r[1]
+		];
+		for (var i in q) {
+			q[i].onclick = function() {
+				
+				this.style.zoom = '1';
+				
+				new AMT___core_factory().nextTab();
+				
+				doSubmit();
+			}
+		}
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+			
+		// ...
+		Relevance_Groupon_keyword_search();
+		Relevance_Groupon_keyword_search__category();
+		
+		// ...
+		function Relevance_Groupon_keyword_search__category() {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				//~ url: u,
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.context),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						//~ // add to queue
+						//~ addToTabsQ();
+						exit(response.status);
+					}
+					
+					// MT BOLD
+					//~ if (options_object.return_div_element) {
+						//~ var d = document.createElement('div');
+						//~ d.innerHTML = x;
+						//~ return_object.div_element = d;
+					//~ }
+					
+					var r;
+					r = /<p class="deal-title should-truncate">([^<]+)<\/p>/g;
+					var m;
+					while (m = r.exec(rs)) {
+						var div_el = MT__bold(
+								m[1],
+								o.reason_arr,
+								{
+									return_div_element: true // !
+								}
+							)
+							.div_element;
+						div_el.setAttribute('style', 'margin:1px 0 1px;padding:0;border-bottom:1px solid teal;');
+						d1b.appendChild(
+							div_el
+						);
+						//~ d1b.appendChild(document.createElement('br'));
+					}
+					
+					var d = document.createElement('div');
+					d.setAttribute('style', 'border-top:1px solid teal;height:1400px;');
+					d1b.appendChild(d);
+				}
+			});
+		}
+		
+		// ...
+		function Relevance_Groupon_keyword_search() {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				//~ url: u,
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.site),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						//~ // add to queue
+						//~ addToTabsQ();
+						exit(response.status);
+					}
+					
+					var r;
+					
+					console.log(o.reason_arr);
+					
+					//One or Three Age-Reverse Natural Facelifts or an Acu-Chi Vitality Treatment at The Chi Doctor (Up to 64% Off)
+					r = /<h2 class="deal-page-title">[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/h2>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						console.log(r);
+						
+						d1.innerHTML += 'T:' + MT__bold(r, o.reason_arr);
+						d1.innerHTML += '<br>';
+					} else {
+						d1.innerHTML += 'T:';
+						d1.innerHTML += '<br>';
+					}
+					
+					//
+					r = /<h4>Choose from \w+ Options<\/h4>[\r\n\t\s]*<ul>[\r\n\t\s]*(<li>([^<]*)<\/li>)+[\r\n\t\s]*<\/ul>/.exec(rs);
+					if (r) {
+						console.log(r);
+						
+						
+						var ul = 'O:<ul>';
+						for (var i = 2; i<r.length; i++) {
+							
+							r[i] = __js_clean_html_str(r[i]).trim().replace(/[<>]/g, '');
+							
+							ul += '<li>'+MT__bold(r[i], o.reason_array)+'</li>';
+							
+						}
+						ul+= '</ul>';
+						
+						d1.innerHTML += ul;
+					} else {
+						d1.innerHTML += 'O:';
+						d1.innerHTML += '<br>';
+					}
+					
+					//Acupressure combines with medical quigong techniques to stimulate the flow of chi and relax the face or the organs
+					r = /<div class='nutshell highlights '>[\r\n\t\s]*<h3>In a Nutshell<\/h3>[\r\n\t\s]*<p>([^<]*)/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						d1.innerHTML += 'N:' + MT__bold(r, o.reason_arr);
+					} else {
+						d1.innerHTML += 'N:';
+					}
+					
+					//Acupressure combines with medical quigong techniques to stimulate the flow of chi and relax the face or the organs
+					var d = document.createElement('div');
+					d.setAttribute('style', 'border-top:1px solid teal;height:1400px;');
+					r = /<article class="seven columns pitch">((.|\s)*?(?=<\/article>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1].replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
+						r = __js_clean_html_str(r).trim();
+						r = r.replace(/[<>]/g, '');
+						
+						d.innerHTML = MT__bold(r, o.reason_arr);
+						
+						//~ d1.innerHTML += '<div style="border">' + MT__bold(r, o.reason_arr) + '</div>';
+					} else {
+						//
+					}
+					
+					d1.appendChild(d);
+				}
+			});
+		}
+	}
+	
+	//
+	// LW ""
+	// -SimpleSearch
+	// Find 5 small business hardware stores for a zipcode
+	var s = '<p>Find the name, address, and phone number of 5 small business hardware stores for the following zipcode: ';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:300px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//...for the following zipcode: 97214</p>
+		var zip = /for the following zipcode: (\d+)<\/p>/.exec(ih)[1];
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:30px;left:0%;width:99%;height:160px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;left:0;width:10%;height:30px;');
+		d2.onblur = function() {
+			//~ this.value = this.value.replace(/\s+/g, ' ').trim();
+			//~ Charles_Devereux_politician_birth__wikipedia();
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('input');
+		d2b.setAttribute('type','button');
+		d2b.setAttribute('style','position:absolute;top:0px;left:10%;width:10%;height:30px;');
+		d2b.value = 'N/A'
+		d2b.onclick = function() {
+			
+			LW_google_biz_search__submitWithNA(true); //=nextTab
+			
+		}
+		document.body.appendChild(d2b);
+		/* END ITEMS */
+		
+		// ...
+		d2.value = zip;
+		
+		// ...
+		// This is an array of available choices.
+		var available_choices = [];
+		
+		// ...
+		var q = [];
+		for (var i = 0; i<=4; i++) {
+			q.push(
+				[
+					document.getElementsByName('Name')[i],
+					document.getElementsByName('Address')[i],
+					document.getElementsByName('City')[i],
+					document.getElementsByName('State')[i],
+					document.getElementsByName('Postal Code')[i],
+					document.getElementsByName('Phone Number')[i]
+				]
+			);
+			// resize
+			q[i][0].size = 40;//NAME
+			q[i][3].size = 4; //STATE
+			q[i][3].size = 6; //POSTAL
+			
+			q[i][0].qid = q[i];
+			q[i][0].ondblclick = function() {
+				var all = this.qid;
+				for (var i in all) {
+					all[i].value = '';
+				}
+			}
+		}
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			for (var i in q) {
+				for (var j in q[i]) {
+					q[i][j].value = q[i][j].value.trim();
+					if (q[i][j].value == '')
+						return false;
+				}
+			}
+			// next!
+			new AMT___core_factory().nextTab();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( //
+				{
+					action: 'return_button__showNextTab'
+				}
+			);
+		
+		// ...
+		var bad_urls = {
+			'acehardware.com': true,
+			'lowes.com': true,
+			'sears.com': true,
+			'howard-supply.com': true,
+			'bedbathandbeyond.com': true
+		}
+		// ...
+		var bad_names = {
+			'Home Depot': true,
+			'homedepot': true,
+			'Lowe\'s': true,
+			'lowes': true,
+			'loweshomeimprovement': true,//Lowe's Home Improvement
+			'Sears': true,
+			'sears': true,
+			'Ace Hardware': true,
+			'acehardware': true,
+			'acehomecenter': true,
+			'Howard Supply': true,
+			'howardsupply': true,
+			'howardsupplycompany': true,
+			'Bed Bath & Beyond': true,
+			'Bed Bath and Beyond': true,
+			'bedbathbeyond': true,
+			'bathbeyond': true
+		};
+		// ...
+		LW_google_biz_search();
+		
+		// ...
+		function LW_google_biz_search__submitWithNA(nextTab) {
+			
+			for (var i in q) {
+				for (var j in q[i]) {
+					if (q[i][j].value.trim() == '') {
+						q[i][j].value = 'N/A';
+					}
+				}
+			}
+			// next!
+			if (nextTab)
+				new AMT___core_factory().nextTab();
+			doSubmit();
+			
+		}
+		// ...
+		function LW_google_biz_search__auto_clicks() {
+			
+			var n = available_choices.shift();
+			n.click();
+			
+		}
+		// ...
+		// Includes callback to LW_google_biz_search__auto_clicks!
+		function LW_google_biz_search__profile(div) {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: div.url_g,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(div.url_g),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						// add to queue
+						addToTabsQ();
+						exit(response.status);
+					}
+					
+					// Get current blank row.
+					var row;
+					for (var i in q) {
+						if (q[i][0].value == '') {
+							row = q[i];
+							break;
+						}
+					}
+					
+					if (!row) {
+						return;
+					}
+					
+					var r;
+					
+					// ...
+					r = /<div style="font-size:30px;margin-top:18px">([^<]+)<\/div>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]);
+						row[0].value = r;
+					} else {
+						row[0].style.backgroundColor = 'orange';
+						return;
+					}
+					
+					// e.g. 1019 SE 10th Ave, Portland, OR 97214
+					// 1 or MORE commas
+					// with or without zip
+					r = /Address:<\/span>&nbsp;<span>([^,]+),+ ([^,]+),+ (\w+)( [\d\-]+|)<\/span><\/div>/.exec(rs);
+					if (r) {
+						r[1] = __js_clean_html_str(r[1]);
+						r[2] = __js_clean_html_str(r[2]);
+						r[3] = __js_clean_html_str(r[3]);
+						r[4] = __js_clean_html_str(r[4]);
+						row[1].value = r[1];
+						row[2].value = r[2];
+						row[3].value = r[3];
+						row[4].value = (r[4] != '') ? r[4] : 'N/A';
+					} else {
+						// try 2
+						r = /Address:<\/span>&nbsp;<span>([^,]+),+ (\w+)( [\d\-]+|)<\/span><\/div>/.exec(rs);
+						if (r) {
+							r[1] = __js_clean_html_str(r[1]);
+							r[2] = __js_clean_html_str(r[2]);
+							r[3] = __js_clean_html_str(r[3]);
+							row[1].value = 'N/A'; // NO STR ADDRESS
+							row[2].value = r[1];
+							row[3].value = r[2];
+							row[4].value = (r[3] != '') ? r[3] : 'N/A';
+						} else {
+							row[1].style.backgroundColor = 'orange';
+							return;
+						}
+					}
+					
+					// e.g. (503) 233-5381
+					r = /Phone:<\/span><span>([^<]+)<\/span><\/div>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]);
+						row[5].value = r;
+					} else if (rs.indexOf('Phone:') == -1) {
+						row[5].value = 'N/A';
+					} else {
+						row[5].style.backgroundColor = 'orange';
+						return;
+					}
+					
+					// Get next blank row!
+					// And then load LW_google_biz_search__auto_clicks() !!
+					// available_choices.length must be>0
+					if (!available_choices.length) {
+						return;
+					}
+					var next_row;
+					for (var i in q) {
+						if (q[i][0].value == '') {
+							LW_google_biz_search__auto_clicks();
+							break;
+						}
+					}
+				}
+			});
+		}
+		// ...	
+		function LW_google_biz_search() {
+			
+			var u = 'https://www.google.com/search?q=hardware+stores+near+'+zip+'&oq=hardware+stores+near+'+zip+'&aqs=chrome..69i57&sourceid=chrome&es_sm=93&ie=UTF-8';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						// add to queue
+						addToTabsQ();
+						document.body.style.backgroundColor = 'pink';
+						exit(response.status);
+						
+					}
+					
+					// Has mapped results??
+					if (rs.indexOf('Map results for ') == -1) {
+						LW_google_biz_search__submitWithNA(false);
+						return;
+					}
+					
+					// REPLACE <\/?em>
+					rs = rs.replace(/<\/?em>/g, '');
+					
+					// ...
+					var sbm = true;
+					var r;
+					
+					// ...
+					//ludocid=15325079143553794435&amp;lumarker=G
+					//HSC
+					//...
+					r = /<div class="vsc vscl" data-extra="([^"]*)" sig="([^"]*)">((.|\s)*?(?=<!--n-->|$)|$)/g;
+					
+					while (m = r.exec(rs)) {
+						
+						var r2;
+						
+						var n = {
+							url: __js_clean_html_str(m[1]),
+							sig: __js_clean_html_str(m[2])
+						}
+						//cleanse
+						n.url = (/^ludocid=\d+&lumarker=\w$/.exec(n.url)) ? n.url : '';
+						//~ console.log(n);
+						
+						//...
+						//http://www.gd.com
+						//Green Depot
+						r2 = /<a class="l" href="([^"]*)"[^>]*>([^<]*)<\/a>/.exec(m[3]);
+						if (r2) {
+							
+							var n2 = {
+								href: __js_clean_html_str(r2[1]),
+								name: __js_clean_html_str(r2[2])
+							}
+							//~ console.log(n2);
+							
+							// SKIP?
+							var nm_tmp = n2.name.replace(/[^\w\d]/g, '').toLowerCase();
+							var bad_choice = false;
+							//~ console.log(nm_tmp);
+							if (bad_names.hasOwnProperty(nm_tmp) || bad_urls.hasOwnProperty(n2.href)) {
+								bad_choice = true;
+							} else { // indexOf? // PLUS URL MATCH!
+								var found = false;
+								for (var i in bad_names) {
+									if (nm_tmp.indexOf(i) != -1) {
+										found = true;
+									}
+								}
+								for (var i in bad_urls) {
+									//~ if (n2.href.indexOf(i) != -1 && //.exec()) {
+									if (n2.href.indexOf(i) != -1 ) {
+										found = true;
+									}
+								}
+								if (found)
+									bad_choice = true;
+							}
+							
+							// EX:https://www.google.com/ajax/rd?rdu=http%3A%2F%2Fwww.nbhco.com%2F&q=hardware%20stores%20near%2097214&hl=en&gl=us&sig=ZLA&ludocid=7049798141010168278&lumarker=F&ei=
+							
+							var url_g = 'https://www.google.com/ajax/rd'+
+								'?rdu='+encodeURIComponent(n2.href)+
+								'&q=hardware%20stores%20near%20'+zip+
+								'&hl=en&gl=us&ei='+
+								'&sig='+n.sig+
+								'&' + n.url; // cleansed
+							
+							var d = document.createElement('div');
+							d.setAttribute('style', '');
+							d.className = 'exe'; //hover
+							d.innerText = n2.name;
+							d.url_g = url_g;
+							d.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								LW_google_biz_search__profile(this);
+							}
+							
+							if (n2.href.indexOf('ace') != -1) {
+								d.innerText += '\n     ==>' + n2.href;
+							}
+							
+							d1.appendChild(d);
+							
+							if (!bad_choice)
+								available_choices.push(d);
+						}
+					}
+					
+					if (d1.innerText != '0') {
+						var d = document.createElement('div');
+						d.setAttribute('style', 'height:1200px;');
+						d1.appendChild(d);
+						
+						// ITERATE THROUGH available_choices
+						if (available_choices.length)
+							LW_google_biz_search__auto_clicks();
+					}
+					
+					
+					//~ console.log(sbm);
+					//~ if (sbm) {
+						//~ // any 
+						//~ showNextTab(); // next!
+						//~ 
+						//~ doSubmit();
+					//~ } else {
+						//~ // add to queue
+						//~ addToTabsQ();
+						//~ document.body.style.backgroundColor = 'LightGreen';
+					//~ }
+				}
+			});
+		}
 	}
 	
 	//
@@ -4671,6 +8020,353 @@ function MT__RUN() {
 		}
 	}
 	
+	/**
+	 * Facebook company search
+	 * felix greaves
+	 * Morgan Intrator
+	 */
+	//
+	// felix greaves
+	// -SimpleSearch, Find the Facebook page of these hospitals
+	// 
+	s = '<p>3) searching for the hospital\'s name on&nbsp;Facebook</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:1000px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
+		
+		//var a = document.getElementsByTagName('a')[0].href.trim() + '/about';
+		
+		var b = document.getElementsByTagName('b');
+		var o = {
+			school: b[0].innerText,
+			location: b[1].innerText + ',' + b[2].innerText + ',' + b[3].innerText,
+			school_array: [],
+			location_array: [],
+			city: b[2].innerText,
+			state: b[3].innerText
+		}
+		o.school_array	= o.school.replace(/[^\w\d]/g, ' ').split(' ');
+		o.location_array= o.location.replace(/[^\w\d]/g, ' ').split(' ');
+		
+		//~ var x = /[\r\n]+([^,]*, *\w+)/.exec(o.location);
+		//~ if (x) {
+			//~ o.city = x[1];
+		//~ } else o.city = o.location;
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			felix_greaves_fb_hospitals(d1);
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+		d2b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			felix_greaves_fb_hospitals(d1b);
+			//~ Morgan_Intrator_fb_schools_geo();
+		}
+		document.body.appendChild(d2b);
+		//
+		var d2c = document.createElement('input');
+		d2c.setAttribute('type','button');
+		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+		d2c.value = 'N/A';
+		d2c.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			var x = document.getElementById('Q1Url');
+			if (x.value == '' || x.value == 'http://') {
+				x.value = 'not found';
+				
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+		}
+		document.body.appendChild(d2c);
+		/* END ITEMS */
+		
+		d2.value  = o.school;
+		d2b.value = (o.city != '') ? o.school + ' ' + o.city : '';
+		d2b.value += ' ' + o.state;
+		//~ d2b.value = o.school + ' ' + o.location;
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		var ll = {
+			lat:'',
+			lng:''
+		}
+		
+		// ...
+		felix_greaves_fb_hospitals(d1);
+		felix_greaves_fb_hospitals(d1b);
+		//~ Morgan_Intrator_fb_schools_geo();
+		
+		function felix_greaves_fb_hospitals_geo() {
+			MT___google_api_geocode(o.location, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng ||
+					!/^-?[\d\.]{4,}$/.exec(lat) ||
+					!/^-?[\d\.]{4,}$/.exec(lng)
+					)
+				{
+					//
+				} else {
+				
+					ll.lat = lat;
+					ll.lng = lng;
+				}
+				
+				console.log(ll);
+				
+				if (d2b.value != '')
+					felix_greaves_fb_hospitals(d1b);
+				
+			}, false, true);
+		}
+		
+		function felix_greaves_fb_hospitals(div) {
+			
+			var out = div;
+			out.innerHTML = '';
+			
+			var v;
+			if (out == d1)
+				v = d2.value;
+			else
+				v = d2b.value;
+				
+			var u = 
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link'+
+				'&limit=10'+
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+			//~ }
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						out.innerHTML = '!r.data';
+						return;
+					}
+					
+					r = r.data;
+					console.log(r);
+					
+					var c = 0;
+					//~ var found		= false;
+					//~ var found_a_band= false;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						if (r[i].location) {
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+						out.appendChild(div);
+						
+						div.className	= r[i].link;
+						div.fblikes		= r[i].likes * 1;
+						div.bgc = false;
+						
+						//~ if (div.fblikes < 4) {
+							//~ div.style.backgroundColor = '#aaa';
+							//~ div.bgc = true;
+						//~ }
+						//~ 
+						var tmp = '';
+						
+						tmp += MT__bold(r[i].name, o.school_array);
+						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+						
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
+							}
+						}
+						
+						if (r[i].category) {
+							var x = r[i].category;
+							tmp += '<br>'+x;
+						}
+						tmp += '<br>' + r[i].link;
+						
+						div.innerHTML = tmp;
+						
+						div.onclick = function() {
+							felix_greaves_fb_hospitals__profile(this);
+						}
+						
+						// Init this div if first!
+						//
+						//
+						if (c == 0) 
+							div.click();
+						//~ if (out == d1 && c == 0)  //XX
+						
+						//~ if (div.fblikes >= 4) {
+						//~ }
+						div.onmouseover = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						div.onmouseout = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = '';
+							}
+						}
+						
+						c++;
+					}
+					
+					if (c == 0) {
+						out.innerHTML = '0';
+						return;
+					}
+					else
+					{
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:2000px;');
+						out.appendChild(div);
+					}
+					
+					//~ var x = document.getElementsByClassName('exe');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i]
+					//~ }
+				}
+			});
+		}
+		function felix_greaves_fb_hospitals__profile(div) {
+			
+			var div = div;
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: div.className,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						var maxW = '50%';
+						if  (
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
+							)
+						{
+							//~ div.appendChild(document.createElement('br'));
+							//~ div.appendChild(document.createTextNode(' X X '));
+							div.style.border = '4px solid teal';
+							div.style.margin = '-4px -4px -4px -4px';
+							//return;
+							
+							maxW = '4%';
+						}
+						
+						var img = document.createElement('img');
+						img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
+						img.fblink = div.className;
+						img.onclick = function(e) {
+							this.style.border = '4px solid blue';
+							var i = this.fblink;
+							i = i.replace(/^https?:\/\//gi, '');
+							document.getElementById('Q1Url').value = i;
+							if (/^www\.facebook\.com\/[^$]+/.exec(i)) {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+						img.src = r;
+						div.appendChild(img);
+					}
+				}
+			});
+		}
+	}
+	
 	//
 	// Morgan Intrator
 	// -SimpleSearch, Find the Facebook Page for Schools
@@ -4910,23 +8606,8 @@ function MT__RUN() {
 						div.innerHTML = tmp;
 						
 						div.onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							
-							//~ if (this.fblikes >= 1000)
-							//~ {
-								//~ var i = this.className;
-								//~ document.getElementById('web_url').value = i;
-								//~ if (/^https?:\/\/www.facebook\.com\/[^$]+/.exec(i))
-									//~ doSubmit();
-								//~ return;
-							//~ }
 							
 							Morgan_Intrator_fb_schools__profile(this);
-							//~ if (i) {
-								//~ document.getElementById('web_url').value = i;
-								//~ if (/^https?:\/\/www.facebook\.com\/[^$]+/.exec(i))
-									//~ doSubmit();
-							//~ }
 						}
 						
 						// Init this div if first!
@@ -4949,35 +8630,8 @@ function MT__RUN() {
 							for (var i in x) {
 								if (i == 'length') break;
 								x[i].style.backgroundColor = '';
-								//~ if (x[i].bgc)
-									//~ div.style.backgroundColor = '#aaa';
 							}
 						}
-						
-						//~ if (c<=0 && !found_a_band) {
-							//~ 
-							//~ var match__ = r[i].name;
-							//~ match__ = match__.replace(/&/g, 'and');
-							//~ match__ = match__.replace(/^the /i, '');
-							//~ match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
-							//~ match__ = match__.replace(/(official|music)$/i, '');
-							//~ 
-							//~ console.log(match__);
-							//~ console.log(match_o);
-							//~ 
-							//~ if  (
-								//~ match_o == match__ &&
-								//~ match_o.length >= 3
-								//~ )
-							//~ {
-								//~ found = true;
-								//~ 
-								//~ var x = d1.getElementsByTagName('input');
-								//~ x = x[x.length - 1];
-								//~ x.style.backgroundColor = 'LightGreen';
-							//~ }
-						//~ }
-						//~ out.innerHTML += '<hr>';
 						
 						c++;
 					}
@@ -5520,7 +9174,7 @@ function MT__RUN() {
 	// -SimpleSearch
 	// 
 	s = 'The company below is exhibiting at a tradeshow, and we would like the website address for the <strong>official website of the company</strong>';
-	if (ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1 && ih.indexOf('Search Google (or any other source) for the company name') == -1)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
 		GM_addStyle('body {margin-top:90px;}');
@@ -8207,14 +11861,6 @@ function MT__RUN() {
 			Ryan_Bubley_company_search();
 		}
 		document.body.appendChild(d2);
-		//~ //
-		//~ var d3 = document.createElement('input');
-		//~ d3.setAttribute('type','text');
-		//~ d3.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		//~ d3.onblur = function() {
-			//~ edwin_orange_whitepages_people();
-		//~ }
-		//~ document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -8300,14 +11946,6 @@ function MT__RUN() {
 			Ryan_Bubley_company_search();
 		}
 		document.body.appendChild(d2);
-		//~ //
-		//~ var d3 = document.createElement('input');
-		//~ d3.setAttribute('type','text');
-		//~ d3.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		//~ d3.onblur = function() {
-			//~ edwin_orange_whitepages_people();
-		//~ }
-		//~ document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -8384,6 +12022,334 @@ function MT__RUN() {
 	 * rf.database__select
 	 */
 	//
+	// Hartti Suomela
+	//
+	// AMT_Requester_Hartti_Suomela
+	s = 'The task is to find a text description for a given HCPCS (Healthcare Common Procedure Code System). Please read the instructions carefully before working on the task.';
+	if(ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('body {width:40%;margin-top:50px;}');
+		GM_addStyle('input {width:90%;}');
+		GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		// {MP-Num}
+		var o = {
+			num: td[1].innerText.trim()
+		}
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Hartti_Suomela_fees_search();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// actions
+		d2.value  = o.num;
+		//~ var q = [
+			//~ document.getElementById('CISBN'),
+			//~ document.getElementById('CID')
+		//~ ];
+		
+		//
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		// ...
+		//~ document.getElementById('submitButton').onclick = function() {
+			//~ for (var i in q) {
+				//~ q[i].value = q[i].value.trim();
+				//~ if (q[i].value == '') {
+					//~ return false;
+				//~ }
+			//~ }
+		//~ }
+		
+		// init
+		Hartti_Suomela_fees_search();
+		
+		// ...
+		function Hartti_Suomela_fees_search() {
+			
+			d1 .innerHTML = '';
+			d1b.innerHTML = '';
+			//this.style.backgroundColor = 'LightGreen';
+			
+			var rf = new AMT___requests_factory();
+			rf.database__select(
+				{
+					query: 'AMT__Hartti_Suomela_fees_search',
+					encodeStrings: [d2.value]
+				},
+				Hartti_Suomela_fees_search__process
+			);
+		}
+		// ...
+		function Hartti_Suomela_fees_search__process(database_object) {
+			//array_push($out_arr, [ $row['title'], $row['authors'], $row['cisbn'], $row['cid'], $row['company'] ]);
+			//database_object.responseObject = JSON.parse(rs);
+			
+			if (database_object.responseObject.length == 0) {
+				d1.innerText = d2.value + "\n" + '0';
+				return;
+			}
+			
+			console.log(database_object);
+			
+			// AUTO
+			var auto = (database_object.responseObject.length == 1) ? true : false;
+			
+			//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+			
+			for (var i in database_object.responseObject) {
+				//
+				var x = database_object.responseObject[i]; // 0=code, 1=description
+				
+				//~ var tmp_first_word = x[0].toUpperCase();
+				//~ 
+				// o.title authors publisher
+				//
+				
+				// ...
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				eldiv.className = 'exe';
+				eldiv.innerText = x[1];
+				eldiv.desc = x[1];
+				eldiv.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					
+					document.getElementById('long_description').value = this.desc;
+					if (this.desc.trim().length > 4) {
+						doSubmit();
+					}
+					
+					//tabs
+					//~ new AMT___core_factory().nextTab();
+				}
+				
+				d1 .appendChild(eldiv);
+				
+				if (auto) {
+					eldiv.click();
+				}
+				
+				//~ //
+				//~ var elinp = document.createElement('input');
+				//~ elinp.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				//~ elinp.onclick = function() {
+					//~ 
+				//~ }
+				//~ eldiv.appendChild(elinp);
+				//~ 
+				//~ 
+				//~ if (tmp_first_word.indexOf(first_word) == 0) {
+					//~ d1 .appendChild(eldiv);
+				//~ } else {
+					//~ d1b.appendChild(eldiv);
+				//~ }
+				
+				
+				
+			}
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1 .appendChild(eldiv);
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1b.appendChild(eldiv);
+		}
+	}
+	//
+	// Sol Rosenberg
+	//
+	//
+	s = 'Search &nbsp;the big list at&nbsp;<strong> <a href="http://bit.ly/1pfWdhy" target="_blank">http://bit.ly/1pfWdhy </a></strong></p>';
+	if(ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('body {width:40%;margin-top:50px;}');
+		GM_addStyle('input {width:90%;}');
+		GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		// {MP-Num}
+		var o = {
+			title:		td[1].innerText.replace(/\{MP-Num\}/gi, '').replace(/\s+/g, ' ').trim(),
+			authors:	td[3].innerText.replace(/\{MP-Num\}/gi, '').replace(/\s+/g, ' ').trim(),
+			publisher:	td[5].innerText.replace(/\{MP-Num\}/gi, '').replace(/\s+/g, ' ').trim()
+		}
+		o.title_arr		= o.title.replace(/[^\w\d]/g, ' ').split(' ');
+		o.authors_arr	= o.authors.replace(/[^\w\d]/g, ' ').split(' ');
+		o.publisher_arr	= o.publisher.replace(/[^\w\d]/g, ' ').split(' ');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Sol_Rosenberg_book_search();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// actions
+		d2.value  = o.title
+		var q = [
+			document.getElementById('CISBN'),
+			document.getElementById('CID')
+		];
+		
+		//
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '') {
+					return false;
+				}
+			}
+		}
+		
+		// init
+		Sol_Rosenberg_book_search();
+		
+		// ...
+		function Sol_Rosenberg_book_search() {
+			
+			d1 .innerHTML = '';
+			d1b.innerHTML = '';
+			//this.style.backgroundColor = 'LightGreen';
+			
+			var rf = new AMT___requests_factory();
+			rf.database__select(
+				{
+					query: 'AMT__Sol_Rosenberg_book_search',
+					encodeStrings: [d2.value]
+				},
+				Sol_Rosenberg_book_search__process
+			);
+		}
+		// ...
+		function Sol_Rosenberg_book_search__process(database_object) {
+			//array_push($out_arr, [ $row['title'], $row['authors'], $row['cisbn'], $row['cid'], $row['company'] ]);
+			//database_object.responseObject = JSON.parse(rs);
+			
+			if (database_object.responseObject.length == 0) {
+				d1.innerText = d2.value + "\n" + '0';
+				return;
+			}
+			
+			var first_word = d2.value.split(' ')[0].toUpperCase();
+			
+			for (var i in database_object.responseObject) {
+				//
+				var x = database_object.responseObject[i]; // 0=title,1=authors, .. cisbn,cid,company
+				
+				var tmp_first_word = x[0].toUpperCase();
+				
+				// o.title authors publisher
+				//
+				
+				// ...
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				eldiv.className = 'exe';
+				eldiv.innerHTML = 
+					'T:' + MT__bold(x[0], o.title_arr) + '<br>' +
+					'A:' + MT__bold(x[1], o.authors_arr) + '<br>' +
+					'P:' + MT__bold(x[4], o.publisher_arr);
+				eldiv.id_cisbn = x[2];
+				eldiv.id_cid   = x[3];
+				eldiv.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					q[0].value = this.id_cisbn;
+					q[1].value = this.id_cid;
+					//tabs
+					new AMT___core_factory().nextTab();
+					//~ //sbm
+					if  (
+						this.id_cisbn != '' && this.id_cid != '' &&
+						/^\d{2,}$/.exec(this.id_cisbn) &&
+						/^\d{2,}$/.exec(this.id_cid)
+						)
+						doSubmit();
+				}
+				//~ //
+				//~ var elinp = document.createElement('input');
+				//~ elinp.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				//~ elinp.onclick = function() {
+					//~ 
+				//~ }
+				//~ eldiv.appendChild(elinp);
+				
+				
+				if (tmp_first_word.indexOf(first_word) == 0) {
+					d1 .appendChild(eldiv);
+				} else {
+					d1b.appendChild(eldiv);
+				}
+				
+				
+				
+			}
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1 .appendChild(eldiv);
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1b.appendChild(eldiv);
+		}
+	}
+	//
 	// Ryan Bubley
 	//
 	//
@@ -8414,14 +12380,6 @@ function MT__RUN() {
 			Ryan_Bubley_company_search();
 		}
 		document.body.appendChild(d2);
-		//~ //
-		//~ var d3 = document.createElement('input');
-		//~ d3.setAttribute('type','text');
-		//~ d3.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		//~ d3.onblur = function() {
-			//~ edwin_orange_whitepages_people();
-		//~ }
-		//~ document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -8527,14 +12485,6 @@ function MT__RUN() {
 			Colby_Vorland_food_search();
 		}
 		document.body.appendChild(d2);
-		//~ //
-		//~ var d3 = document.createElement('input');
-		//~ d3.setAttribute('type','text');
-		//~ d3.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		//~ d3.onblur = function() {
-			//~ edwin_orange_whitepages_people();
-		//~ }
-		//~ document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -8665,14 +12615,6 @@ function MT__RUN() {
 			Scott_Neufeld_places_search();
 		}
 		document.body.appendChild(d2);
-		//~ //
-		//~ var d3 = document.createElement('input');
-		//~ d3.setAttribute('type','text');
-		//~ d3.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		//~ d3.onblur = function() {
-			//~ edwin_orange_whitepages_people();
-		//~ }
-		//~ document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -9053,63 +12995,71 @@ function MT__RUN() {
 	// Edwin Orange
 	//
 	//
-	s = '	<li>For this person below, search White Pages (www.whitepages.com) by name and city</li>';
+	//~ s = '<li>For this person below, search White Pages (www.whitepages.com) by name and city</li>';
+	s = '<li>For this person below, search White Pages (www.whitepages.com) by name and city.</li>';
 	if(ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		GM_addStyle('body {width:40%;margin-top:50px;}');
 		GM_addStyle('input {width:90%;}');
 		GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;}');
+		
 		
 		var b = document.getElementsByTagName('b');
-		var name = b[0].innerText.trim();
+		var name = b[0].innerText.trim().replace(/ /g, ' ');
 		var city = b[1].innerText.trim();
-		b = document.getElementsByTagName('strong');
-		var state = b[0].innerText.trim();
+		
+		var b = document.getElementsByTagName('strong');
+		var state = b[1].innerText.trim();
+		
 		var locn = city + ', ' + state;
 		
-		var name_array = name.split(', ');
+		var name_array = name.split(' '); //.split(', ')
 		var name_to_match = (name_array[1] + ' ' + name_array[0]).replace(/\./g, '').toLowerCase();
 		var locn_to_match = locn.replace(/[\r\n\t\s]/g, '').toLowerCase();
 		
-		//
-		var d;
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		d.setAttribute('style','position:absolute;top:0px;left:40%;width:59%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d);
-		var d1 = d;
-		//
-		d = document.createElement('input');
-		//d.setAttribute('id','input_name_email');
-		d.setAttribute('type','text');
-		d.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
-		d.onblur = function() {
-			edwin_orange_whitepages_people();
-		}
-		document.body.appendChild(d);
-		var d2 = d;
-		//
-		d = document.createElement('input');
-		d.setAttribute('type','text');
-		d.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
-		d.onblur = function() {
-			edwin_orange_whitepages_people();
-		}
-		document.body.appendChild(d);
-		var d2b = d;
+		//~ o = {
+			//~ 
+		//~ }
 		
-		d2.value  = name_array[1].replace(/ (.)[\d\D]*$/, ' $1').trim();
-		d2b.value = name_array[0].trim();
+		/* BEGIN ITEMS */
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('id','d1');
+		d1.setAttribute('style','position:absolute;top:0px;left:40%;width:59%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+		d2.onblur = function() {
+			edwin_orange_whitepages_people();
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('input');
+		d2b.setAttribute('type','text');
+		d2b.setAttribute('style','position:absolute;top:30px;width:38%;height:28px;');
+		d2b.onblur = function() {
+			edwin_orange_whitepages_people();
+		}
+		document.body.appendChild(d2b);
+		/* END ITEMS */
+		
+		//~ // OLD
+		//~ d2.value  = name_array[0].trim();  //.replace(/ (.)[\d\D]*$/, ' $1').trim();
+		
+		d2.value  = name_array.slice(0, name_array.length - 1).join(' ');  //.replace(/ (.)[\d\D]*$/, ' $1').trim();
+		d2b.value = name_array[name_array.length - 1].trim();
 		
 		var qall = [
 			document.getElementById('street'),
 			document.getElementById('city'),
 			document.getElementById('state'),
 			document.getElementById('zip'),
-			document.getElementById('phone'),
-			document.getElementById('age')
+			document.getElementById('phone')//,
+			//~ document.getElementById('age')
 		];
 		
 		var sbmButton = document.getElementById('submitButton');
@@ -9147,36 +13097,35 @@ function MT__RUN() {
 					var sbm = true;
 					var r;
 					
-					r = /<a href="tel:\d+">([\d\-]+)<\/a>/.exec(rs);
+					//~ // OLD
+					//~ r = /<a href="tel:\d+">([\d\-]+)<\/a>/.exec(rs);
+					
+					r = /href="tel:\d+">([\d\-]+)<\/a>/.exec(rs);
 					if (r) {
 						document.getElementById('phone').value = r[1];
 					} else {
 						if  (
-							
 							rs.indexOf('dfpSetTargetingParams["rpn"] = "";') == -1
 							)
 						{
 							sbm = false;
 						} else
-							document.getElementById('phone').value = 'N/A';
+							document.getElementById('phone').value = 'n/a';
 					}
 					
-					r = /<span class="subtitle block pull-left">Age: <span itemprop='ageRange'>([^<]+)<\/span><\/span>/.exec(rs);
-					if (r) {
-						var ag = __js_clean_html_str(r[1]).trim();
-						document.getElementById('age').value = ag;
-						if (ag.length <= 1)
-							sbm = false;
-					} else {
-						//~ if (/\d{3}-\d{4}-\d{4}/.exec(rs)) {
+					//~ // NO AGE - JUL6 2014
+					//~ r = /<span class="subtitle block pull-left">Age: <span itemprop='ageRange'>([^<]+)<\/span><\/span>/.exec(rs);
+					//~ if (r) {
+						//~ var ag = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('age').value = ag;
+						//~ if (ag.length <= 1)
 							//~ sbm = false;
-						//~ }
-						//sbm = false;
-						if (rs.indexOf('dfpSetTargetingParams["rag"] = "";') != -1)
-							document.getElementById('age').value = 'Unknown';
-						else
-							sbm = false;
-					}
+					//~ } else {
+						//~ if (rs.indexOf('dfpSetTargetingParams["rag"] = "";') != -1)
+							//~ document.getElementById('age').value = 'Unknown';
+						//~ else
+							//~ sbm = false;
+					//~ }
 					
 					// EX: 4350 Long Lake DrApt 2315 // Batavia, OH 45103-9195
 					//591 Old River Rd
@@ -9190,6 +13139,16 @@ function MT__RUN() {
 						r[2] = __js_clean_html_str(r[2]).trim()
 						if (r[2].length > 0) {
 							document.getElementById('street').value += ' ' + r[2];
+						}
+						
+						// CAP FIRST LETTER
+						if (!/^[A-Z]/.exec(r[3])) {
+							sbm = false;
+						}
+						
+						// CAP STATE
+						if (!/^[A-Z]{2}$/.exec(r[4])) {
+							sbm = false;
 						}
 					} else {
 						//~ if (/\d{3}-\d{4}-\d{4}/.exec(rs)) {
@@ -9243,7 +13202,7 @@ function MT__RUN() {
 					
 						var eldv = document.createElement('div');
 						eldv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
-						//eldv.
+						eldv.className = 'exe';
 						eldv.onclick = edwin_orange_whitepages_people__prof;
 						d1.appendChild(eldv);
 						
@@ -9314,12 +13273,13 @@ function MT__RUN() {
 							eldv.appendChild(d);
 						}
 						
-						console.log(tmp_nm.replace(/\./g, '').toLowerCase());
-						console.log(name_to_match);
-						console.log(tmp_locn.toLowerCase());
-						console.log(locn_to_match);
-						console.log((tmp_nm.replace(/\./g, '').toLowerCase()						== name_to_match));
-						console.log((tmp_locn.replace(/[\r\n\t\s]/g, '').toLowerCase().trim()	== locn_to_match.trim()));
+						//~ console.log(tmp_nm.replace(/\./g, '').toLowerCase());
+						//~ console.log(name_to_match);
+						//~ console.log(tmp_locn.toLowerCase());
+						//~ console.log(locn_to_match);
+						//~ console.log((tmp_nm.replace(/\./g, '').toLowerCase()						== name_to_match));
+						//~ console.log((tmp_locn.replace(/[\r\n\t\s]/g, '').toLowerCase().trim()	== locn_to_match.trim()));
+						
 						// auto click here
 						if  (
 							tmp_nm.replace(/\./g, '').toLowerCase()						== name_to_match		&&
@@ -10180,12 +14140,19 @@ function MT__RUN() {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		GM_addStyle('body {margin-top:0px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
-		GM_addStyle('#submitButton {width:100%;height:90px;}');
+		GM_addStyle('#submitButton {width:100%;height:90px;margin-top:-16px;}');
+		
+		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
+		GM_addStyle('h3 {width:40%;}');
+		
+		// h3
+		var x = document.getElementsByTagName('h3')[0];
+		x.innerText = x.innerText.replace(/\n/g, ' ');
 		
 		//...
 		var HEIGHT = screen.height;
-		var tmp_h = (HEIGHT*1 - 100)+ 'px';
+		var tmp_h = (HEIGHT*1 - 400)+ 'px';
 		
 		//...
 		document.getElementById('map').style.width = '100%';
@@ -10200,10 +14167,9 @@ function MT__RUN() {
 		var b		= document.getElementsByTagName('b');
 		var name	= b[0].innerText.trim();
 		var addr	= b[1].innerText.trim();
-		
 		//b = b[1].innerText.trim();
 		
-		
+		// ...
 		var q = document.getElementById('polygon');
 		
 		// hide Ps
@@ -10230,29 +14196,32 @@ function MT__RUN() {
 		x.style.fontSize = '24px';
 		x.innerText = name + '\n' + x.innerText;
 		
-		// ...
+		/** // ... script
 		var d = document.createElement('script');
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
-		document.body.appendChild(d);
+		document.body.appendChild(d);*/
 		
 		//...
-		var d;
 		var l = encodeURIComponent(name);
-		var iframe_url = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=16&iwloc=A&output=embed';
-		d = document.createElement('iframe');
-		d.setAttribute('id','d2');
-		d.setAttribute('style',
+		var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=&hnear='+l+'&z=17&iwloc=A&output=embed';
+		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
+		
+		var first_url = woutNameSearch;
+		if (ih.indexOf('Planet Fitness') != -1)
+			first_url = withNameSearch;
+		
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style',
 			'position:absolute;top:80px;left:0;width:30%;height:'+tmp_h+';border:1px solid blue;background-color:#eee;visibility:visible;'
 		);//sandbox:allow-scripts allow-same-origin;
-		document.body.appendChild(d);
-		d.src = iframe_url;
-		//d.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=16&iwloc=A&output=embed';
-		var d2 = document.getElementById('d2');
+		document.body.appendChild(d2);
+		d2.src = first_url;
 		
-		// flicker...
+		//~ // flicker...
 		//~ d2.addEventListener('load', function() {
 			//~ this.style.visibility = 'visible';
 		//~ }, false);
+		//~ var iframe_url = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
 		
 		// ...
 		document.getElementById('submitButton').onclick = function() {
@@ -10262,10 +14231,25 @@ function MT__RUN() {
 			(new AMT___core_factory()).nextTab();
 		}
 		
+		// r&a
+		new AMT___core_factory()
+			.iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
 		// ...
 		document.body.ondblclick = function() {
+			if (d2.src == withNameSearch) {
+				d2.src = woutNameSearch
+			} else if (d2.src == woutNameSearch) {
+				d2.src = withNameSearch
+			}
 			
-			d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
+			
+			// home+depot?
+			//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
 			//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
 		}
 		
@@ -10277,7 +14261,7 @@ function MT__RUN() {
 			
 			if (d2.style.visibility == 'hidden') {
 				var l = encodeURIComponent(b);
-				d2.src = iframe_url;
+				d2.src = first_url;
 				//d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
 				d2.style.visibility = 'visible';
 				//~ if (d2.src == '') {
@@ -10438,6 +14422,7 @@ function MT__RUN() {
 		//~ GM_addStyle('.container {width:100% !important !important !important !important;}');
 		//~ GM_addStyle('.col-sm-6 {float:none;width:100%;}');
 		
+		GM_addStyle('.col-sm-6 {overflow:scroll;height:2000px;}'); // Added "scroll" Jul2 2014.
 		GM_addStyle('.col-sm-6>fieldset {position:;display:block;width:10%;float:left;}');
 		
 		//~ GM_addStyle('.col-sm-6>fieldset {float:left;}');
@@ -10447,7 +14432,13 @@ function MT__RUN() {
 		x.setAttribute('style', 'width:100%;');
 		
 		var stats = {
-			total_requests: 0
+			total_requests: 0,
+			
+			TOTAL_LOAD: 0,
+			TOTAL_INFO_NA: 0
+		}
+		if (!AMT__Global_Vars.isPreview) {
+			addToTabsQ();
 		}
 		
 		//~ GM_addStyle('table {width:4000px !important;}');
@@ -10462,7 +14453,7 @@ function MT__RUN() {
 			x[i].setAttribute('style', 'width:100%;border:1px solid black;'); //float:none;
 			
 			var div = document.createElement('div');
-			div.setAttribute('style',  'float:left;width:60%;border:1px solid black;height:800px;overflow:auto;margin-top:40px;'); //from 600 to 800
+			div.setAttribute('style',  'float:left;width:70%;border:1px solid black;height:1800px;margin-top:60px;'); //from 600 to 800 //overflow:auto;
 			//~ div.innerText = 'xx';
 			
 			//~ var y = x[i].getElementsByTagName('fieldset');
@@ -10539,18 +14530,21 @@ function MT__RUN() {
 			var c = e.keyCode;
 			console.log(c);
 			
-			//~ // 49 ... 54 (0..9)
+			//~ // NOT THIS!!
+			//~ c = (c == 59)?109:c; //;
+			//~ c = (c == 39)?110:c; //'
 			
 			// 
-			c = (c == 59)?109:c; //;
-			c = (c == 39)?110:c; //'
+			if  (
+				(c >= 106 && c <= 108) ||
+				c == 59 || c == 39
+				)
+			{
 			
-			// 
-			if (c >= 106 && c <= 110) {
-			
-			//~ if (c >= 106 && c <= 108) {
+				c = (c == 59)?109:c; //;
+				c = (c == 39)?110:c; //'
 				
-				e.preventDefault(); //FIRST
+				e.preventDefault();
 				e.stopPropagation();
 				
 				c = (106 - c) * -1; // 49 = 0, 50 = 1, ...
@@ -10619,28 +14613,28 @@ function MT__RUN() {
 		}
 		
 		// scrollIntoView
-		//~ out_complete[0].parent.scrollIntoView();
-		//~ out_complete[0].parent.scrollIntoView();
-		//~ out_complete[0].parent.scrollIntoView();
-		// scrollIntoView
-		setTimeout(function() {
+		if(!AMT__Global_Vars.isPreview) {
+			setTimeout(function() {
+				//~ out_complete[0].parent.scrollIntoView();
+				
+				turk_HPCBeauty_amazon_units__scrollIntoView_current();
+			}, 400);
+			setTimeout(function() {
+				//~ out_complete[0].parent.scrollIntoView();
+				
+				//~ document.getElementById('submitButton').scrollIntoView();
+				
+				turk_HPCBeauty_amazon_units__scrollIntoView_current();
+			}, 600);
+			setTimeout(function() {
+				//~ out_complete[0].parent.scrollIntoView();
+				
+				turk_HPCBeauty_amazon_units__scrollIntoView_current();
+			}, 800);
 			//~ out_complete[0].parent.scrollIntoView();
-			
-			turk_HPCBeauty_amazon_units__scrollIntoView_current();
-		}, 400);
-		setTimeout(function() {
 			//~ out_complete[0].parent.scrollIntoView();
-			
-			//~ document.getElementById('submitButton').scrollIntoView();
-			
-			turk_HPCBeauty_amazon_units__scrollIntoView_current();
-		}, 600);
-		setTimeout(function() {
 			//~ out_complete[0].parent.scrollIntoView();
-			
-			turk_HPCBeauty_amazon_units__scrollIntoView_current();
-		}, 800);
-		
+		}
 		
 		
 		// all q
@@ -10709,13 +14703,17 @@ function MT__RUN() {
 			}
 			
 			// Still here?
-			chrome.extension.sendRequest({
-					nextTab: true
-				},
-				function(response)
-				{
-				}
-			);
+			showNextTab();
+			
+			//~ 
+			//~ // Still here?
+			//~ chrome.extension.sendRequest({
+					//~ nextTab: true
+				//~ },
+				//~ function(response)
+				//~ {
+				//~ }
+			//~ );
 			
 			//~ e.stopPropagation();
 			//~ e.preventDefault();
@@ -10730,6 +14728,17 @@ function MT__RUN() {
 		
 		// Function turk_HPCBeauty_amazon_units__scrollIntoView_current
 		function turk_HPCBeauty_amazon_units__scrollIntoView_current() {
+			
+			
+			// IN PREVIEW MODE?
+			// THEN RETURN
+			if (AMT__Global_Vars.isPreview) {
+				return;
+			}
+			
+			// JOB IS ACCEPTED?
+			//
+			//
 			
 			console.log('1CI:'+currentIndex);
 			
@@ -10788,6 +14797,10 @@ function MT__RUN() {
 			x.setAttribute('style', 'display:block;');
 			
 			// MAKE BUTTONS
+			
+			// array of returned buttons
+			var return_buttons_array = [];
+			
 			var text = text.split(' ');
 			for (var i in text) {
 				
@@ -10799,22 +14812,63 @@ function MT__RUN() {
 					btn.style.border = '2px solid teal';
 				
 				btn.innerText = text[i];
-				//~ btn.value = text[i];
+				
+				if (text[i] == '<Size>') {
+					btn.style.borderStyle = 'double';
+					btn.style.borderWidth = '4px';
+					//~ btn.style.borderStyle = 'dashed';
+				}
 				
 				btn.out_inp = out_inp;
 				//~ x.out_val = n[0].trim();
 				
+				//onclick
 				btn.onclick = function(e) {
-					this.style.backgroudColor = '#000000'; // !!!!!
-					console.log(this);
-					console.log(this.style.backgroudColor);
-					this.out_inp.value = this.innerText.replace(/[^\d\.]/g, '');
+					//~ this.style.backgroudColor = '#000000'; // Does not work!!!
+					this.style.border = '4px solid teal'; //
+					//~ this.out_inp.value = this.innerText.replace(/[^\d\.]/g, '');
+					
+					var n = this.innerText.replace(/[^\d\.]/g, '') * 1;
+					
+					if(this.out_inp.value == '')
+					{
+						this.out_inp.value = n;
+					}
+					else
+						this.out_inp.value = (Number(n)) 
+											 * (Number(this.out_inp.value.replace(/[^\d\.]/g,'')));
+					
+					this.out_inp.value = this.out_inp.value.replace(/(\.[^0]*)[0]{2,}[\d]*$/,'$1');
+					this.out_inp.value = this.out_inp.value.replace(/\.$/,''); // TRAILING PERIOD!
+					
+					this.out_inp.focus();
+					this.out_inp.select();
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				//ondblclick
+				btn.ondblclick = function(e) {
+					//~ this.style.backgroudColor = '#000000'; // Does not work!!!
+					this.style.border = '4px solid teal'; //
+					//~ this.out_inp.value = this.innerText.replace(/[^\d\.]/g, '');
+					
+					var n = this.innerText.replace(/[^\d\.]/g, '') * 1;
+					
+					this.out_inp.value = n;
+					
+					this.out_inp.focus();
+					this.out_inp.select();
+					
 					e.preventDefault();
 					e.stopPropagation();
 					return false;
 				}
 				
 				x.appendChild(btn);
+				
+				return_buttons_array.push(btn);
 			}
 			
 			//~ x.innerText = text;
@@ -10834,19 +14888,53 @@ function MT__RUN() {
 			
 			//~ div.appendChild(document.createElement('br'));
 			
+			return return_buttons_array;
 		}
 		// Function turk_HPCBeauty_amazon_units
 		function turk_HPCBeauty_amazon_units__fillFirstNumber(out_input, inputs) { //(out.div.getElementsByTagName('input'))
 			console.log(out_input);
 			console.log(inputs);
+			
 			for (var i in inputs) {
 				if (i == 'length') break;
 				var n;
 				if (n = /([\d\.]+)/.exec(inputs[i].innerText)) {
+					if (!/\d/.exec(n)) continue;
 					out_input.value = n[0].trim();
 					inputs[i].style.border = '4px solid teal';
 					break;
 				}
+			}
+			
+			//~ // Try selecting where border != '' first
+			//~ for (var i in inputs) {
+				//~ if (i == 'length') break;
+				//~ var n = /([\d\.]+)/.exec(inputs[i].innerText);
+				//~ if (n && inputs[i].style.border != '') {
+					//~ out_input.value = n[0].trim();
+					//~ inputs[i].style.border = '4px solid teal';
+					//~ return;
+				//~ }
+			//~ }
+			//~ // Here? Try selecting any.
+			//~ 
+		}
+		// Function 
+		function turk_HPCBeauty_amazon_units__totalNA() {
+			
+			// preview
+			if (!AMT__Global_Vars.isPreview)
+				return;
+			
+			// TOTAL_LOAD
+			if (stats.TOTAL_LOAD != 4)
+				return;
+			
+			// TOTAL_INFO_NA
+			if (stats.TOTAL_INFO_NA >= 1) { // at least 2 (up to 4) are NA
+				AMT___Floater.accept();
+			} else {
+				AMT___Floater.skip();
 			}
 		}
 		// Function turk_HPCBeauty_amazon_units
@@ -10866,6 +14954,9 @@ function MT__RUN() {
 						exit(response.status);
 					}
 					
+					// increment
+					stats.TOTAL_LOAD++;
+					
 					if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
 						out.all_inp[out.all_inp.length - 2].checked = true;
 						out.parent.style.backgroundColor = 'teal';
@@ -10877,11 +14968,23 @@ function MT__RUN() {
 						setTimeout(function() {
 							turk_HPCBeauty_amazon_units__scrollIntoView_current(); // IF NECESSARY, THIS WILL RESET THE VIEW !!
 						}, 1000);
+						
+						
+						// TOTAL_INFO_NA
+						stats.TOTAL_INFO_NA++;
+						
+						// RUN stats
+						turk_HPCBeauty_amazon_units__totalNA();
 						return;
 					}
 					
+					// RUN stats
+					turk_HPCBeauty_amazon_units__totalNA();
+					
+					
 					// ...
 					var r;
+					var pre_selection = false;
 					
 					// title
 					r = /<span id="productTitle" class="a-size-large">([^<]*)<\/span>/.exec(rs); //Rainbow Light All-Zyme Double Strength
@@ -10893,7 +14996,9 @@ function MT__RUN() {
 						// REMOVE 4T/5T, 4T-5T (pull-ups)
 						r = r.replace(/ \dt[\/\-]\dt,*/i, '');
 						
+						//return_buttons_array
 						turk_HPCBeauty_amazon_units__appendTxt(out.div, r, out.inp);
+						
 						
 						//~ // PUT THE FIRST NUMBER IN! (no dashes) => "\d,\. "
 						//~ var n = /[\d\.]+/.exec(r); // init \d
@@ -10903,7 +15008,8 @@ function MT__RUN() {
 							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // THIS WILL SELECT THE TEXT BOX
 						//~ }
 					}
-					// click to select fields !!
+					
+					// Fields "Click to select"
 					//&&<li id="item_package_quantity_0" title="Click to select 4" data-dp-url="" class="swatchSelect">
 					r = /<li id="(size_name_|item_package_quantity_)[^"]*" title="([^"]*)" data-dp-url="[^"]*" class="([^"]*)"/g;
 					if (r.exec(rs)) {
@@ -10917,16 +15023,60 @@ function MT__RUN() {
 							
 							if (m[3] == 'swatchSelect') {
 								//~ out.div.appendChild(document.createTextNode('>**>'));
-								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[2], out.inp, true); // TRUE-> isHighlighted
+								var rba = turk_HPCBeauty_amazon_units__appendTxt(out.div, m[2], out.inp, true); // TRUE-> isHighlighted
+								
+								// Pre selected refers to a row that is highlighted.
+								//
+								//
+								//~ pre_selected = 
+								
+								if (rba.length) {
+									pre_selection = true;
+									turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, rba);
+								}
 							} else
 								turk_HPCBeauty_amazon_units__appendTxt(out.div, m[2], out.inp);
 							
 						}
 					}
+					
+					/*
+					 <div id="variation_size_name" class="a-section a-spacing-small">
+						<div class="a-row a-spacing-micro singleton">
+							<label>
+								Size:
+							</label>
+							
+								<span class="selection">1 oz</span>
+							
+
+										
+						</div>
+					</div>*/
+					r = /<span class="selection">([^<]*)<\/span>/.exec(rs); //1 oz
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						turk_HPCBeauty_amazon_units__appendTxt(out.div, '<Size> ' + r, out.inp);
+					}
+					
 					// ITERATE THROUGH ALL INPUTS LOOKING FOR 
 					// the first instance of [digit]. This is a change from
 					// the regex (above).
-					turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					// Pre selected refers to a row that is highlighted.
+					if (!pre_selection) {
+						turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					}
+					
+					//~ // Pre selected refers to a row that is highlighted.
+					//~ if (pre_selected) {
+						//~ turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					//~ } else {
+						//~ 
+					//~ }
+					
+					
+					
+					
 					
 					// The bullet points that describe the product.
 					// Append to fieldset.
@@ -13241,6 +17391,10 @@ function MT__RUN() {
 				}
 			});
 		}
+		/*
+		 * THIS IS A DECODER FOR LINKED IN AND UNICODE !
+		 * DOES IT WORK FOR OTHER TASKS?
+		 */
 		function unescapeUnicode( str ) {
 			return str.replace( /\\u([a-fA-F0-9]{4})/g, function(g, m1) {
 				return String.fromCharCode(parseInt(m1, 16));
@@ -23972,75 +28126,70 @@ function MT__RUN() {
 		
 	}
 	
+	/**
+	 * zip codes
+	 * 
+	 * ReachLocal
+	 * Stephanie Hass
+	 */
 	//
-	// Stephanie Hass
+	// Brittany Graham
+	// Find zip code
 	// 
-	// 
-	s  = '<li>For this restaurant below, find the zip code</li>';
-	s2 = '<li>If there is no zip code, write NA</li>';
+	s  = '<li>Feel free to use google or any other means you would like. Please place the first zip code you find in the form below.</li>';
+	//~ s  = '	<li>For this restaurant below, find the zip code</li>';
 	if  (
-		ih.indexOf(s)  != -1 &&
-		ih.indexOf(s2) != -1
+		ih.indexOf(s)  != -1
 		)
 	{
+		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 		//GM_addStyle('body {width:30%;margin-top:30px;}');
 		GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
 		GM_addStyle('input {width:96%;}');
 		
 		var b = document.getElementsByTagName('b');
-		var nm= document.getElementsByTagName('strong')[0].innerText;
+		//~ var nm= document.getElementsByTagName('strong')[0].innerText;
 		
-		var addr1 = [];
-		var addr2 = [];
-		addr2.push(nm);
+		// 0,1,
 		
-		for (var i = 0; i<=1; i++) {
-			addr1.push(b[i].innerText.trim())
-		}
-		for (var i = 0; i<=1; i++) {
+		var addr = b[2].innerText + ',' + b[0].innerText + ',' + b[1].innerText;
+		
+		//~ var addr2 = [];
+		//~ addr2.push(nm);
+		//~ 
+		//~ for (var i = 0; i<=1; i++) {
 			//~ addr1.push(b[i].innerText.trim())
-			addr2.push(b[i].innerText.trim())
-		}
+		//~ }
+		//~ for (var i = 0; i<=1; i++) {
+			//~ addr1.push(b[i].innerText.trim())
+			//~ addr2.push(b[i].innerText.trim())
+		//~ }
 		//console.log(addr);
 		//~ addr2 = addr2.join(',');
 		
 		// blank str addr or str addr == city
-		if (b[0].innerText.trim() == '' || b[0].innerText.trim() == b[1].innerText.trim())
-			addr1 = addr2;
+		if (b[0].innerText.trim() == '' || b[1].innerText.trim() == '') { // city, st
+			return;
+		}
 		
 		var d = document.createElement('input');
 		d.setAttribute('id','d1');
 		d.setAttribute('style','position:absolute;top:0;left:0;');
 		document.body.appendChild(d);
 		var d1 = document.getElementById('d1');
-		d1.value = addr1.join(',');
+		d1.value = addr;
 		d1.onblur = function() {
-			MT___google_api_geocode(this.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+			MT___google_api_geocode(this.value, Brittay_Graham_find_zipcode_from_addr, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
 		}
-		
-		// sau paulo
-		if (d1.value.indexOf('Sao Paulo, State of Sao Paulo') != -1) {
-			d1.value = d1.value.replace(/Sao Paulo, State of Sao Paulo/, 'Sao Paulo, Brazil');
-		} else return;
-		//~ //
-		//~ if (d1.value.indexOf('Bangkok') != -1) {
-			//~ d1.value += ', Thailand';
-		//~ } else return;
-		//
-		//~ if (d1.value.indexOf('Sydney') != -1) {
-			//~ d1.value += ', Australia';
-		//~ } else return;
-		
-		//~ var google = true;
 		
 		var firstRun = true;
 		var num_tries = 0;
 		
-		MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		MT___google_api_geocode(d1.value, Brittay_Graham_find_zipcode_from_addr, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
 		
 		
-		function Stephanie_Hass_restaurant_zipcode(rs) {
+		function Brittay_Graham_find_zipcode_from_addr(rs) {
 			
 			if (!firstRun) { // second run
 				document.body.style.backgroundColor = '#883388';
@@ -24050,45 +28199,38 @@ function MT__RUN() {
 				document.body.style.backgroundColor = '#a3dda3';
 			}
 			
-			console.log(rs);
+			//~ console.log(rs);
+			
 			for (var i in rs.results[0].address_components) {
 				x = rs.results[0].address_components[i];
-				if  (
-						(
-							x.types[0] == 'postal_code' ||
-							x.types[1] == 'postal_code'
-						) &&
-						!firstRun &&
-						x.short_name == '10500'
-					)
-				{
-					continue;
-				}
 				if  (
 					(
 						x.types[0] == 'postal_code' ||
 						x.types[1] == 'postal_code'
 					) &&
-					x.short_name.length >= 4 &&
-					x.short_name != '01018' &&
-					(
-						(
-							x.short_name == '10500' &&
-							b[0].innerText.trim() != ''
-						) ||
-						x.short_name != '10500'
-					)
+					x.short_name.length >= 4 //&&
+					//~ x.short_name != '01018' &&
+					//~ (
+						//~ (
+							//~ x.short_name == '10500' &&
+							//~ b[0].innerText.trim() != ''
+						//~ ) ||
+						//~ x.short_name != '10500'
+					//~ )
 					)
 				{
 					
-					// ADD A ' TO LEADING '0'
-					x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
-					document.getElementById('Q1Url').value = x.short_name;
+					//~ 
+					//~ // ADD A ' TO LEADING '0'
+					//~ x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
+					
+					document.getElementById('Postal Code').value = x.short_name;
 					
 					if (AMT__Global_Vars.isPreview) {
 						AMT___Floater.accept();
 						return;
 					}
+					
 					//here ?
 					doSubmit();
 					return;
@@ -24116,15 +28258,259 @@ function MT__RUN() {
 					//(latlng, callback_function)
 					MT___google_api_reverseGeocode(
 						rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
-						Stephanie_Hass_restaurant_zipcode,
+						Brittay_Graham_find_zipcode_from_addr,
 						true
 					); 
 				}
-			} else if (num_tries == 1){
+			} else if (num_tries == 1) {
 				//~ num_tries++;
 				//~ d1.value = addr2.join(',');
 				//~ MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true);
 			}
+			//~ try {
+				//~ 
+			//~ } catch (e) {
+				//~ 
+			//~ }
+		}
+	}
+	
+	//
+	// Stephanie Hass
+	// 
+	// 
+	s  = '<li>For this restaurant below, find the zip code</li>';
+	s2 = 'If there is no zip code, write NA';
+	if  (
+		ih.indexOf(s)  != -1 &&
+		ih.indexOf(s2) != -1
+		)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		
+		//GM_addStyle('body {width:30%;margin-top:30px;}');
+		GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
+		GM_addStyle('input {width:96%;}');
+		
+		var b = document.getElementsByTagName('b');
+		var nm= document.getElementsByTagName('strong')[0].innerText;
+		
+		var addr1 = [];
+		var addr2 = [];
+		addr2.push(nm);
+		
+		for (var i = 0; i<=3; i++) {
+			addr1.push(b[i].innerText.trim())
+		}
+		for (var i = 0; i<=1; i++) {
+			addr2.push(b[i].innerText.trim())
+		}
+		//console.log(addr);
+		//~ addr2 = addr2.join(',');
+		
+		// blank str addr or str addr == city
+		if (b[0].innerText.trim() == '' || b[0].innerText.trim() == b[1].innerText.trim())
+			addr1.unshift(nm); // !
+		
+		var o = {
+			state: b[2].innerText.trim(),
+			state_abbr: '',
+			country: b[3].innerText.trim()
+		};
+		//http://www.cwcsoftware.com/webhelp/Transactions/Canadian_province_codes.htm
+		switch(o.state) {
+			case 'Alberta':
+				o.state_abbr = 'AB';
+				break;
+			case 'British Columbia':
+				o.state_abbr = 'BC';
+				break;
+			case 'Manitoba':
+				o.state_abbr = 'MB';
+				break;
+			case 'Nova Scotia':
+				o.state_abbr = 'NS';
+				break;
+			case 'Ontario':
+				o.state_abbr = 'ON';
+				break;
+			case 'Quebec':
+				o.state_abbr = 'QC';
+				break;
+			case 'Saskatchewan':
+				o.state_abbr = 'SK';
+				break;
+		}
+		console.log(o);
+		
+		var d = document.createElement('input');
+		d.setAttribute('id','d1');
+		d.setAttribute('style','position:absolute;top:0;left:0;');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.value = addr1.join(',');
+		d1.onblur = function() {
+			MT___google_api_geocode(this.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		}
+		
+		// sau paulo
+		//~ if (d1.value.indexOf('Sao Paulo, State of Sao Paulo') != -1) {
+			//~ d1.value = d1.value.replace(/Sao Paulo, State of Sao Paulo/, 'Sao Paulo, Brazil');
+		//~ } else return;
+		//~ //
+		//~ if (d1.value.indexOf('Bangkok') != -1) {
+			//~ d1.value += ', Thailand';
+		//~ } else return;
+		//
+		//~ if (d1.value.indexOf('Sydney') != -1) {
+			//~ d1.value += ', Australia';
+		//~ } else return;
+		
+		//~ var google = true;
+		
+		var firstRun = true;
+		var num_tries = 0;
+		
+		MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		
+		
+		function Stephanie_Hass_restaurant_zipcode__increment(rs) {
+			if (num_tries == 0) {
+				num_tries++;
+				
+				if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+					firstRun = false;
+					//(latlng, callback_function)
+					MT___google_api_reverseGeocode(
+						rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+						Stephanie_Hass_restaurant_zipcode,
+						true
+					); 
+					
+					return;
+				}// else num_tries++; // INCREMENT HERE
+			}
+			
+			if (num_tries == 1)
+			{
+				num_tries++;
+				firstRun = false;
+				if (d1.value.indexOf(nm) == -1) {
+					d1.value = nm + ',' + d1.value;
+					MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true);
+				}
+			}
+			else if (num_tries == 2)
+			{
+				num_tries++;
+				if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+					firstRun = false;
+					//(latlng, callback_function)
+					MT___google_api_reverseGeocode(
+						rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+						Stephanie_Hass_restaurant_zipcode,
+						true
+					); 
+				}
+			}
+		}
+		function Stephanie_Hass_restaurant_zipcode(rs) {
+			
+			console.log(rs);
+			
+			if (!firstRun) { // second run
+				document.body.style.backgroundColor = '#883388';
+			}
+			
+			if (!rs || !rs.hasOwnProperty('results') || !rs.results.length) {
+				Stephanie_Hass_restaurant_zipcode__increment();
+				return;
+			}
+			
+			if (rs.results[0].partial_match) {
+				document.body.style.backgroundColor = '#a3dda3';
+			}
+			
+			for (var i in rs.results[0].address_components) {
+				x = rs.results[0].address_components[i];
+				//~ if  (
+						//~ (
+							//~ x.types[0] == 'postal_code' ||
+							//~ x.types[1] == 'postal_code'
+						//~ ) &&
+						//~ !firstRun &&
+						//~ x.short_name == '10500'
+					//~ )
+				//~ {
+					//~ continue;
+				//~ }
+				if  (
+					(
+						x.types[0] == 'postal_code' ||
+						x.types[1] == 'postal_code'
+					) &&
+					x.short_name.length >= 4 // &&
+					//~ x.short_name != '01018' &&
+					//~ (
+						//~ (
+							//~ x.short_name == '10500' &&
+							//~ b[0].innerText.trim() != ''
+						//~ ) ||
+						//~ x.short_name != '10500'
+					//~ )
+					)
+				{
+					
+					// ADD A ' TO LEADING '0'
+					x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
+					document.getElementById('Q1Url').value = x.short_name;
+					
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.accept();
+						return;
+					}
+					//here ?
+					doSubmit();
+					return;
+				}
+				
+				// Here?
+				// CANADA add 
+				//~ console.log(x.short_name);
+				//~ console.log(x.types[0]);
+				//~ console.log(o.country == 'Canada');
+				//~ console.log(x.types[0] == 'postal_code_prefix');
+				//~ console.log(x.short_name.length == '3');
+				//~ console.log(o.state_abbr != '');
+				if (o.country == 'Canada' && x.types[0] == 'postal_code_prefix' && x.short_name.length == '3' && o.state_abbr != '') {
+					//~ console.log('HERE');
+					document.getElementById('Q1Url').value = o.state_abbr + ' ' + x.short_name;
+					doSubmit();
+					return;
+				}
+			}
+			
+			// still here and second run !!
+			//~ if (!firstRun) {
+				//~ Stephanie_Hass_restaurant_zipcode__canadapost();
+				//~ return;
+			//~ }
+			
+			//~ if (AMT__Global_Vars.isPreview && !firstRun) {
+				//~ AMT___Floater.skip();
+				//~ //Stephanie_Hass_restaurant_zipcode__canadapost();
+				//~ return;
+			//~ }
+			
+			// still here?
+			Stephanie_Hass_restaurant_zipcode__increment(rs);
+			//~ if (num_tries == 0) {
+				//~ 
+			//~ } else if (num_tries == 1){
+				//~ num_tries++;
+				//~ d1.value = addr2.join(',');
+				//~ MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true);
+			//~ }
 			//~ try {
 				//~ 
 			//~ } catch (e) {
@@ -29094,7 +33480,11 @@ qatar,80
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		//GM_addStyle('body {width:30%;margin-top:30px;}');
+		
+		GM_addStyle('textarea {position:absolute;top:0;left:0;width:100%;s}');
+		
+		
+		
 		
 		//google-chrome-beta --disable-web-security
 		GM_xmlhttpRequest({ // init
@@ -29114,7 +33504,7 @@ qatar,80
 			}
 		});
 		
-		var u = document.getElementsByTagName('a')[0].href;
+		//~ var u = document.getElementsByTagName('a')[0].href;
 		
 		/*
 		 * 
@@ -29925,15 +34315,43 @@ qatar,80
 	// UW Social Media Lab
 	// Is location in the US?
 	//
-	s = '<p>1. This is a location in the United States</p>';
+	//~ s = '<p>1. This is a location in the United States</p>';
+	s = '<p>1. This<strong> is </strong>a location in the United States.</p>';
 	if(ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		//GM_addStyle('body {width:30%;margin-top:100px;}');
 		
+		GM_addStyle('input[type="radio"] {zoom:2;}');
+		
 		var b = document.getElementsByTagName('b')[0].innerText;
 		b = b.replace(/^"/, '');
 		b = b.replace(/"$/, '');
+		b = b.toLowerCase();
 		
+		var q = document.getElementsByName('Q1');
+		for (var i in q) {
+			if (i == 'length') break;
+			q[i].onclick = function() {
+				this.checked = true;
+				doSubmit();
+			}
+		}
+		
+		console.log(b);
+		
+		//
+		for (var i in MT___countries) {
+			if (MT___countries[i].name.toLowerCase() == b) 
+			{
+				//~ console.log();
+				q[1].checked = true;
+				doSubmit();
+				break;
+			}
+		}
+		
+		
+		/*
 		function UW_Social_Media_Lab_US(rs) {
 			console.log(rs);
 			rs = rs.results[0];
@@ -29954,7 +34372,7 @@ qatar,80
 		
 		//MT___google_api_geocode(location, callback_function, return_complete_response)
 		MT___google_api_geocode(b, UW_Social_Media_Lab_US, true);
-		
+		*/
 		
 		
 	}
@@ -31788,7 +36206,8 @@ qatar,80
 									
 									// begin watch for upload of PDF !!
 									// new May 7
-									filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_March-2014_' + rs.trim() + '.pdf';
+									//~ filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_March-2014_' + rs.trim() + '.pdf';
+									filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_June-2014_' + rs.trim() + '.pdf';
 									AMT___POPUP__initializeGlobals(
 										trever_faden_credit_unions_file_exists
 									);
@@ -32787,18 +37206,13 @@ qatar,80
 		d1.style.position='absolute';
 		d1.style.top='120px';
 		d1.style.left='0%';
-		d1.style.width='400px';
+		d1.style.width='800px';
 		d1.style.height='600px';
 		d1.style.border='1px solid blue';
 		d1.style.backgroundColor='#eee';
-		//d1.style.cursor='url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gQHEiE4N4iT5QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAflBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///+CCKX+AAAAKHRSTlMACgsNDg8QEhMUFRqEiYqNkpieoKKlprDBw8TT4+Tl6O7v8fT29/r9RNUu6gAAAAFiS0dEKcq3hSQAAALFSURBVHja1ZvpVsJADIWrRQQX3BcUEUGg7/+EoiKytJ3cSYfv0J8e6fmmnebeZJJscJF5rv4w9/y8O8i6s3sOoDVbLL/1cU0BnH78LP60uGEA2sVy6e3RLQFwMlot/GR+tX+Aznxt2Z3xw74B8vHGovPp5X4BzqYPgT+kBShZ8NYjSQtQ+so3NkVagIpNv/ZZpAWo/OxXgSEtQE3gW4bGtAC1ob8166UGCIhfd/KYFiCf9Jz/4AMwLFD0BxqA6RVr/kACMG5yyR8oAObPXPEHAoAQ6AR/YAeQQr3dH5gBRLEz+wMrgCz31h8YASIMj/GR2QCiLJ9t05gAIk2v6bOxAETbfkvgMAA4Eh9D6AwDuFK/sHgEAZzJb1A+QwCqvMs3CADIBkd+hPUAusWTN1EtQITJlT+jOoAYmy8HkhqAqERHDqXVAHGpniwmlQCRya4sp1UAsem+7A8qAKILHrI/KAeIL/nI/qAUwFH0kv1BGYCn7Cf7gxIAV+FT9ge7AL7Sr+wPdgCc+i/7g20At/6r/mALoAH9F/3BJkAj+q/5gw2AhvRf8gfrAI3pv+IP1gAa1H/BH/wDNKr/dn+wAmhY/83+4A+gcf23+oMlQAL9N/qDX4Ak+m/zBz8AifTf5A++AZLpv8UfLAAS6n/YH9y9DM6d+p97rvOiGBdPR55bZEPPNRgXRfH+5rlF1vdcz68LgBfXLXyb4Phz8QrusuygN+EBf4Z0IKJDMS1GtBzThoS2ZLQppW05nZjQqRmdnNLpOV2goEs0dJGKLtPRhUq6VEsXq+lyPX1gQR/Z0IdW9LEdfXBJH93Sh9f08T3dwEC3cNBNLHQbD93IRLdy0c1sdDsf3dBIt3TSTa10Wy/d2Ey3dtPN7XR7Pz3gQI940EMu9JgPPehEj3rRw270uB898EiPfNJDr/TYLz34TI9+48Pv9Pj/F4mlc+e3AeEmAAAAAElFTkSuQmCC), auto';
 		d1.style.cursor='url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gQdAg8XtNyzGwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAC80lEQVR42u3dy1LrUAwF0eP9//+cO0oVxQ2Qhx+Suj2kyMCnF4kzQNput9ttrbW2bdsW7LrfO/H+7/eeR4fhxYGfr/JFwHvXy/e3PxGwPvLy6DNQBJznnXz9JRHwHnbz/ZdFwPqmk0cvEgHna25+erEI5sf/FYAI5sf/E4AIZsd/CoAI5sZ/GoAIZsZ/CYAI5sV/GYAIZsV/C4AI5sR/G4AIZsT/CIAI+sf/GIAIesffBYAI+sbfDYAIesbfFYAI+sXfHYAIesU/BIAI+sQ/DIAIesQ/FIAI6sc/HIAIasc/BYAI6sY/DYAIasY/FYAI6sU/HYAIasW/BIAI6sS/DIAI6swmyJWHQEVQaTBFrj4MGoJqU0lS4VAoCCqOpEmVw5mOoOo8olQ6pKkIKg+jSrXDmoag+iSyVDy0KQg6jKFL1cPrjqDLDMJUPsSuCDoNoEz1w+yGoNv00XT4i+qCoOPo2RYAOiDoOne4DYDKCDoPnW4FoCKC7hPH2wGohGDCuPmWACogmLJroC2AKxFMWjTRGsAVCKZtGWkP4EwEE1fMjABwBoKp+4XGADgSweTlUqMAHIFg+maxcQD2REBYKzcSwB4IKDsFxwL4BAFpoeRoAO8goG0THQ/gFQTEVbLIfbn3wD9hIO0RRi+Mpsdfa63N/9FnX/EIBOAFvjbiTfvw50OgD4HEj4BnvufTHopj/P9/RkIQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G0GMz0YQ47MRxPhsBDE+G8E/MY3dHGUt/UUAAAAASUVORK5CYII=), auto';
-		//d1.style.cursor='url('+MT__host+'/mturk/images/crosshair-white.png), auto';
 		
-		
-		d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-		
-		//d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=800x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 		
 		// image onclick
 		d1.onclick = function() {
@@ -32835,6 +37249,28 @@ qatar,80
 			// 21 is max
 		}
 		
+		//~ d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		//d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+
+		//ShowNextTab on button click
+		var allInps = document.querySelectorAll('li.ng-scope');
+		for(var i=0; i < allInps.length; i++) {	
+			allInps[i].onclick = function () {
+				setTimeout(function() {
+					document.body.style.backgroundColor = 'LightGreen';
+				}, 1000);
+				new AMT___core_factory().nextTab();
+			}
+		}
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		
+		
 		// instructions
 		//guidelines
 		var d2 = document.createElement('div');
@@ -32853,7 +37289,7 @@ qatar,80
 		d2.innerHTML = document.getElementById('guidelines').innerHTML;
 		document.body.appendChild(d2);
 		d2.onclick = function() {
-			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=800x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 		}
 		
 		
@@ -33274,9 +37710,19 @@ qatar,80
 			Rich_Gentry_zoominfo_people();
 		}
 		
+		// ...
 		var ef = new AMT___events_factory();
 		d2. addEventListener('keydown', ef.keydown__blur_field, true);
 		d3. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		// Add r&a
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
 		
 		// global
 		//var try_second_search_auto = true;
@@ -34579,18 +39025,21 @@ qatar,80
 		}
 	}
 	
-	/*
+	/**
 	 * GOOGLE PLACES NEARBY SERACH FOR
 	 * TELEPHONE.
+	 * 
+	 * Brittany Graham
+	 * Peter Heyneman
 	 */
 	
 	//
-	// Peter Heyneman
-	// Find the phone numbers for businesses
+	// Brittany Graham
+	// Find the phone number for the company
 	// 
-	s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
-	s = '<li>For the business below, enter the official 10 digit phone number.</li>';
+	s = '<li>Please verify you found the right Dentist by making sure the Address, city and state&nbsp;I provided matches the company you find.</li>';
 	if (ih.indexOf(s) != -1) {
+		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		
 		GM_addStyle('body {margin-top:460px;}');
@@ -34600,27 +39049,27 @@ qatar,80
 		
 		GM_addStyle('.exe:hover {cursor:pointer;background-color:aqua;}');
 		
-		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+		GM_addStyle('ul {position:absolute;top:1000px;}');
 		
 		var q;
-		q = document.getElementById('Q1Url');
+		q = document.getElementById('Business Phone');
 		
 		var b = document.getElementsByTagName('b');
 		
-		document.getElementById('mturk_form').onsubmit = function() {
+		//~ document.getElementById('mturk_form').onsubmit = 
+		
+		document.getElementById('submitButton').onclick = function() {
 			q.value = q.value.trim();
 			var x = q.value.replace(/[^\d]/g,'');
 			if (x.length != 10) return false;
-			if (q1.value == '' || q2.value == '')
-				return false;
+			//~ return false;
+			//~ doSubmit();
+			//~ return false;
 		}
 		
 		/* BEGIN ITEMS */
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
+		var d1 = document.createElement('div');
+		document.body.appendChild(d1);
 		d1.style.position='absolute';
 		d1.style.top='62px';
 		d1.style.left='0%';
@@ -34631,10 +39080,8 @@ qatar,80
 		d1.style.overflow = 'auto';
 		d1.style.backgroundColor='#eee';
 		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
+		var d2 = document.createElement('input');
+		document.body.appendChild(d2);
 		d2.style.position='absolute';
 		d2.style.top='0px';
 		d2.style.left='0%';
@@ -34652,54 +39099,38 @@ qatar,80
 		
 		// actions
 		d2.onblur = function() {
-			this.value = this.value.trim();
-			Peter_Heyneman_google_find_phone();
-		}
-		//console.log(b);
-		
-		var by_phone = false;
-		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
-			by_phone = true;
+			this.value = this.value.trim().replace(/\s+/g, ' ');
+			Brittany_Graham_google_find_phone();
 		}
 		
-		if (!by_phone) {
-			var o = {
-				name:		b[0].innerText.trim(),
-				locn:		b[1].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-				
-				//~ bad_phone:	b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
-				
-			}
-			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+		// locn=6..9
+		var o = {
+			name:	b[3].innerText.trim(),
+			locn:	b[5].innerText.trim()
 		}
-		if (by_phone) {
-			var o = {
-				name:		b[2].innerText.trim(),
-				locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
-				
-				bad_phone:	b[0].innerText.trim().replace(/[^\d]/g, '')
-				
-			}
-			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
-			
-			if (o.bad_phone.length != 10) alert(o.bad_phone);
+		for (var i = 6; i<=8; i++) {
+			o.locn += ',' + b[i].innerText.trim()
 		}
-		
-		
-		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var city = b[2].innerText.trim();//replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var state= b[3].innerText.trim();
-		//~ 
-		//~ city = city.replace(/\s*,$/, '');
+		o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+		o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+		o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+	
+		//~ if (by_phone) {
+			//~ var o = {
+				//~ name:		b[2].innerText.trim(),
+				//~ locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+				//~ 
+				//~ bad_phone:	b[0].innerText.trim().replace(/[^\d]/g, '')
+				//~ 
+			//~ }
+			//~ o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+			//~ o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+			//~ o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+			//~ o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+			//~ 
+			//~ if (o.bad_phone.length != 10) alert(o.bad_phone);
+		//~ }
 		
 		d2.value  = o.name;
 		d2b.value = o.locn;
@@ -34718,11 +39149,10 @@ qatar,80
 		// INIT
 		//
 		
-		
 		// google places api
-		MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll);
+		MT___google_api_geocode(o.locn, Brittany_Graham_google_find_phone__setll);
 		
-		function Peter_Heyneman_find_phone__check_no_good_match(){
+		function Brittany_Graham_google_find_phone__check_no_good_match(){
 			no_good_match++;
 			
 			if (no_good_match >= 2) {
@@ -34732,7 +39162,7 @@ qatar,80
 				}
 			}
 		}
-		function Peter_Heyneman_find_phone__FB() {
+		function Brittany_Graham_google_find_phone__FB() {
 			//d1.innerHTML = '';
 			
 			var dv = document.createElement('div');
@@ -34780,7 +39210,7 @@ qatar,80
 						dv.innerText = '0';
 						
 						
-						Peter_Heyneman_find_phone__check_no_good_match();
+						Brittany_Graham_google_find_phone__check_no_good_match();
 						return;
 					} else {
 						if (AMT__Global_Vars.isPreview) {
@@ -34875,6 +39305,8 @@ qatar,80
 						
 							if (p.length == 10 && q.value == p) {
 								//~ q.value = this.phone;
+								
+								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
 						}
@@ -34898,15 +39330,15 @@ qatar,80
 			});
 		}
 		//
-		function Peter_Heyneman_google_find_phone__setll(lat, lng) {
+		function Brittany_Graham_google_find_phone__setll(lat, lng) {
 			ll.lat = lat;
 			ll.lng = lng;
-			Peter_Heyneman_google_find_phone(); // do both
+			Brittany_Graham_google_find_phone(); // do both
 			// 	// 
 		}
 		
 		
-		function Peter_Heyneman_google_find_phone() {
+		function Brittany_Graham_google_find_phone() {
 			
 			d1.innerHTML = d2.value + '<br>';
 			
@@ -34938,12 +39370,12 @@ qatar,80
 					
 					console.log(rs);
 					
-					Peter_Heyneman_find_phone__FB();
+					Brittany_Graham_google_find_phone__FB(); // here!
 					
 					if (!rs.results || !rs.results.length) {
 						d1.innerHTML += '0';
 						
-						Peter_Heyneman_find_phone__check_no_good_match();
+						Brittany_Graham_google_find_phone__check_no_good_match();
 						
 						//~ if (AMT__Global_Vars.isPreview) {
 							//~ 
@@ -34997,6 +39429,7 @@ qatar,80
 						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 						dv.className = 'exe';
 						dv.greference = x.reference;
+						dv.isAuto = false;
 						
 						var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
 						var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
@@ -35018,15 +39451,15 @@ qatar,80
 						dv.onclick = function() {
 							dv.onclick = function() {}; // clear!
 							this.style.backgroundColor = 'LightGreen';
-							Peter_Heyneman_google_find_phone__profile(this);
+							Brittany_Graham_google_find_phone__profile(this);
 						}
 						
 						m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
 						m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
-						console.log(m_comp);
-						console.log(o.name_cln);
-						console.log(m_locn);
-						console.log(o.locn_cln.indexOf(m_locn));
+						//~ console.log(m_comp);
+						//~ console.log(o.name_cln);
+						//~ console.log(m_locn);
+						//~ console.log(o.locn_cln.indexOf(m_locn));
 						
 						if  (
 							count <= 1 &&
@@ -35040,13 +39473,14 @@ qatar,80
 							o.locn_cln.length >= 6
 							)
 						{
+							dv.isAuto = true; // !!
 							dv.click();
 						}
 						count++;
 					}
-					if (!found) {
-						Peter_Heyneman_find_phone__FB();
-					}
+					//~ if (!found) {
+						//~ Brittany_Graham_google_find_phone__FB();
+					//~ }
 					//~ if (d1.innerHTML != '') {
 						//~ var dv = document.createElement('div');
 						//~ d1.appendChild(dv);
@@ -35057,7 +39491,7 @@ qatar,80
 			});
 		}
 		//
-		function Peter_Heyneman_google_find_phone__profile(div) {
+		function Brittany_Graham_google_find_phone__profile(div) {
 			
 			//greference
 			
@@ -35107,6 +39541,587 @@ qatar,80
 							}
 							
 							// Here?
+							if (!div.isAuto) {
+								new AMT___core_factory().nextTab();
+							}
+							
+							doSubmit();
+						}
+						
+						// is good?
+						div.click();
+						
+						//~ var x = r;
+						//~ if (x[0] != '8' && x[0] != '9') { // NOT 8XX 9XX !!
+							//~ div.click();
+						//~ }
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// Peter Heyneman
+	// Find the phone numbers for businesses
+	// 
+	//~ s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
+	s = '<li>For the business below, enter the official 10 digit phone number.</li>';
+	if (ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:460px;}');
+		
+		//GM_addStyle('input {width:96%;}');
+		//GM_addStyle('#submitButton {width:96%;height:80px;}');
+		
+		GM_addStyle('.exe:hover {cursor:pointer;background-color:aqua;}');
+		
+		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+		
+		var q;
+		q = document.getElementById('Q1Url');
+		
+		var b = document.getElementsByTagName('b');
+		
+		document.getElementById('mturk_form').onsubmit = function() {
+			q.value = q.value.trim();
+			var x = q.value.replace(/[^\d]/g,'');
+			if (x.length != 10) return false;
+			if (q1.value == '' || q2.value == '')
+				return false;
+		}
+		
+		/* BEGIN ITEMS */
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='62px';
+		d1.style.left='0%';
+		d1.style.width='98%';
+		d1.style.height='400px';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='1px solid blue';
+		d1.style.overflow = 'auto';
+		d1.style.backgroundColor='#eee';
+		//
+		d = document.createElement('input');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='98%';
+		d2.style.height='30px';
+		//
+		var d2b = document.createElement('input');
+		document.body.appendChild(d2b);
+		d2b.style.position='absolute';
+		d2b.style.top='30px';
+		d2b.style.left='0%';
+		d2b.style.width='98%';
+		d2b.style.height='30px';
+		/* END ITEMS */
+		
+		// actions
+		d2.onblur = function() {
+			this.value = this.value.trim();
+			Peter_Heyneman_google_find_phone();
+		}
+		
+		var by_phone = false;
+		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
+			by_phone = true;
+		}
+		
+		if (!by_phone) {
+			var o = {
+				name:		b[0].innerText.trim(),
+				locn:		b[1].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				
+				//~ bad_phone:	b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
+				
+			}
+			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+		}
+		if (by_phone) {
+			var o = {
+				name:		b[2].innerText.trim(),
+				locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+				
+				bad_phone:	b[0].innerText.trim().replace(/[^\d]/g, '')
+				
+			}
+			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+			
+			if (o.bad_phone.length != 10) alert(o.bad_phone);
+		}
+		
+		console.log(o);
+		
+		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
+		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
+		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
+		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
+		//~ var city = b[2].innerText.trim();//replace(/[^\d\w_]/g, '').toLowerCase().trim();
+		//~ var state= b[3].innerText.trim();
+		//~ 
+		//~ city = city.replace(/\s*,$/, '');
+		
+		d2.value  = o.name;
+		d2b.value = o.locn;
+		
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// global
+		var ll = {};
+		
+		// var skip
+		// This is when no FB match and no 20% or higher google matches
+		var no_good_match = 0; // 2 signifies skip
+		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		//
+		// INIT
+		//
+		
+		
+		// google places api
+		MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll, false, true);
+		
+		function Peter_Heyneman_find_phone__check_no_good_match(){
+			no_good_match++;
+			
+			if (no_good_match >= 2) {
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.skip();
+					//exit(); // EXIT?
+				}
+			}
+		}
+		function Peter_Heyneman_find_phone__FB() {
+			//d1.innerHTML = '';
+			
+			var dv = document.createElement('div');
+			d1.appendChild(dv);
+			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+		
+			var u = 
+				
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
+				//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
+				'&limit=6'+
+				'&center='+ll.lat+','+ll.lng+ //
+				'&distance=30000'+ // 30k ~ 19mi
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+				//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
+				
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						d1.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+						return;
+					}
+					
+					r = r.data;
+					console.log(r);
+					
+					if (r.length == 0) {
+						var dv = document.createElement('div');
+						d1.appendChild(dv);
+						dv.innerText = '0';
+						
+						
+						Peter_Heyneman_find_phone__check_no_good_match();
+						return;
+					} else {
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.accept();
+							return;
+						}
+					}
+					
+					var c = 0;
+					var found		= false;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
+						
+						var dist = '-';
+						var dist_bgc = '';
+						if (r[i].location) {
+							//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
+							if (r[i].location.latitude && r[i].location.longitude) {
+								dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
+								if (dist) {
+									dist = Math.round(dist*100) / 100;
+									if (dist*1 >= 4)
+										dist_bgc = 'background-color:aqua;';
+								}
+							}
+							
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						
+						// ...
+						var locn__ = '';
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								locn__ += ', ' + r[i].location[j];
+							}
+						}
+						locn__ = locn__.replace(/^,/, '').trim();
+						
+						// ...
+						var dv = document.createElement('div');
+						d1.appendChild(dv);
+						
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+						dv.className = 'exe';
+						dv.phone = r[i].phone;
+						dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
+						dv.innerHTML += '<br>likes:'+r[i].likes;
+						dv.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
+						dv.innerHTML += '<br>phone:'+r[i].phone+'<br>';
+						//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
+						
+						dv.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							
+							var p = this.phone;
+							
+							//~ if (/[a-z]/i.exec(p)) {
+								//~ q.value = p;
+								//~ q.style.border = '4px solid teal';
+								//~ return;
+							//~ }
+							
+							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+							
+							q.value = p;
+							
+							if (p == o.bad_phone || p.length != 10) {
+								d2.value = 'bad phone!';
+								q.style.border = '4px solid teal';
+								return;
+							}
+						
+							if (p.length == 10 && q.value == p) {
+								//~ q.value = this.phone;
+								
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						
+						
+						
+						//~ if (r[i].category) {
+							//~ var x = r[i].category;
+							//~ d1.innerHTML += '<br>'+x;
+						//~ }
+						
+					}
+					
+					if (d1.innerHTML != '') {
+						var dv = document.createElement('div');
+						d1.appendChild(dv);
+						
+						dv.setAttribute('style', 'height:1400px;');
+					}
+				}
+			});
+		}
+		//
+		function Peter_Heyneman_google_find_phone__setll(lat, lng) {
+			ll.lat = lat;
+			ll.lng = lng;
+			Peter_Heyneman_google_find_phone(); // do both
+			// 	// 
+		}
+		
+		
+		function Peter_Heyneman_google_find_phone() {
+			
+			//~ d1.innerHTML = d2.value + '<br>';
+			
+			d1.innerHTML = '';
+			var dv = document.createElement('div');
+			d1.appendChild(dv);
+			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+			dv.innerText = d2.value;
+			
+			
+			// 2
+			var u;
+			u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+			u+= 'location='+ll.lat+','+ll.lng; //lat,lng
+			u+= '&keyword=' + encodeURIComponent(d2.value);
+			//u+= '&rankby=distance';
+			u+= '&radius=50000';
+			u+= '&sensor=false';
+			u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+			
+			//u+= '&radius=40000'; // 5k = 3.1 mi.
+			//u+= '&types=accounting|atm|bank';
+			//u+= '&name=' + encodeURIComponent(b[0].innerText);
+			//u+= '&name=';
+			//u+= '&name='+encodeURIComponent(b[0].innerText);
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					rs = JSON.parse(rs);
+					
+					console.log(rs);
+					
+					
+					
+					if (!rs.results || !rs.results.length) {
+						d1.innerHTML += '0';
+						
+						Peter_Heyneman_find_phone__check_no_good_match();
+						Peter_Heyneman_find_phone__FB();
+						
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ 
+							//~ 
+							//~ 
+						//~ } else {
+							//~ 
+						//~ }
+						return;
+					}
+					
+					// here?
+					//~ d1.innerHTML = '';
+					//~ console.log(AMT__Global_Vars.isPreview);
+					// not auto!!
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.accept();
+						//~ return;
+					//~ }
+					
+					var x;
+					var icon;
+					var count = 0;
+					var m_comp;
+					var m_locn;
+					for (var i in rs.results) {
+						
+						if (i > 10) break; // 8 only!
+						
+						x = rs.results[i];
+						
+						// dist
+						//~ geometry: Object
+						//~ location: Object
+						//~ lat: 34.049662
+						//~ lng: -118.25385
+						var dist = '';
+						var dist_bgc = '';
+						if (x.geometry && x.geometry.location) {
+							dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
+							if (dist) {
+								dist = Math.round(dist*100) / 100;
+								//~ console.log(dist);
+								if (dist*1 >= 4)
+									dist_bgc = 'background-color:aqua;';
+							}
+						}
+
+						var dv = document.createElement('div');
+						d1.appendChild(dv);
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+						dv.className = 'exe';
+						dv.isAuto = false;
+						dv.greference = x.reference;
+						
+						var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
+						var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
+						
+						// Check for skip based on bolding!
+						//
+						//						
+						if (tmp_nm.pm.percent_matched * 1 >= 0.4) { // JUST THE NAME!
+							if (AMT__Global_Vars.isPreview) {
+								AMT___Floater.accept();
+								return;
+							}
+						}
+						//~ if (tmp_nm.pm.percent_matched * 1 + tmp_vc.pm.percent_matched * 1 < 0.2) { // combined 
+						//~ console.log(tmp_nm);
+						// ...
+						dv.innerHTML = tmp_nm.pm.bold_string + '('+dist+')<br>' + tmp_vc.pm.bold_string;
+						
+						dv.onclick = function() {
+							dv.onclick = function() {}; // clear!
+							this.style.backgroundColor = 'LightGreen';
+							Peter_Heyneman_google_find_phone__profile(this);
+						}
+						
+						m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
+						m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
+						
+						//~ console.log(m_comp);
+						//~ console.log(o.name_cln);
+						//~ console.log(m_locn);
+						//~ console.log(o.locn_cln.indexOf(m_locn));
+						
+						if  (
+							count <= 1 &&
+							o.name_cln == m_comp &&
+							o.name_cln.length >= 4 &&
+							(
+								o.locn_cln.indexOf(m_locn) != -1 ||
+								m_locn.indexOf(o.locn_cln) != -1
+							) &&
+							m_locn.length >= 6 &&
+							o.locn_cln.length >= 6
+							)
+						{
+							//~ dv.isAuto = true;
+							//~ dv.click();
+						}
+						count++;
+					}
+					
+					// Always run this here.
+					//
+					//
+					//
+					Peter_Heyneman_find_phone__FB();
+					//~ if (!found) {
+						//~ Peter_Heyneman_find_phone__FB();
+					//~ }
+					//~ if (d1.innerHTML != '') {
+						//~ var dv = document.createElement('div');
+						//~ d1.appendChild(dv);
+						//~ 
+						//~ dv.setAttribute('style', 'height:1400px;');
+					//~ }
+				}
+			});
+		}
+		//
+		function Peter_Heyneman_google_find_phone__profile(div) {
+			
+			//greference
+			
+			var u;
+			u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+div.greference+'&sensor=true&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+			
+			var div = div;
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						d1.innerHTML = response.status;
+						return;
+					}
+					
+					rs = JSON.parse(rs);
+					console.log(rs);
+					if (!rs.result) {
+						d1.innerHTML = 'X';
+						return;
+					}
+					
+					var r;
+					var sbm = true;
+					
+					r = rs.result.formatted_phone_number;
+					if (r) {
+						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+						
+						// here?
+						div.innerText  += '\n' + r;
+						div.gphone		=  r;
+						
+						console.log('div:');
+						console.log(div);
+						
+						div.onclick = function() {
+							//~ console.log(this);
+							//~ console.log('isAuto:'+this.isAuto);return;
+							this.style.backgroundColor = 'teal';
+							
+							q.value = this.gphone;
+							
+							if (this.gphone == o.bad_phone || this.gphone.length != 10) {
+								d2.value = 'bad phone!';
+								d2.style.backgroundColor = 'LightGreen';
+								q.style.border = '4px solid teal';
+								return;
+							}
+							
+							// Here?
+							// isAuto?
+							if (!this.isAuto)
+								new AMT___core_factory().nextTab();
+							
 							doSubmit();
 						}
 						
@@ -36343,34 +41358,359 @@ qatar,80
 			d1.appendChild(d);
 		}
 	}
+	/**
+	 * LinkedIn->Find company LinkedIn URL based on company's 
+	 * website URL.
+	 * 
+	 * @ Mike Rocha
+	 * @ Kyle Morris
+	 */
+	//
+	// Mike Rocha
+	//  ... ...
+	// 
+	s = '	<li>Go to http://www.linkedin.com and search Companies for the given company name</li>';
+	if (ih.indexOf(s) != -1) {
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
+		//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.div-yahoo:hover {background-color:LightGreen;cursor:pointer;}');
+		
+		var a = document.getElementsByTagName('a')[0].href.trim();
+		
+		var o = {
+			comp: a.replace(/^https?:\/\/(www\.|)/i, ''),
+			comp_name: '',
+			href: a
+		}
+		o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*\/$/i, '$1');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:300px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		var d1c = document.createElement('iframe');
+		d1c.setAttribute('style','position:absolute;top:600px;left:0%;width:90%;height:800px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1c);
+		d1c.sandbox = 'allow-forms allow-scripts'; //XX allow-top-navigation
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
+		document.body.appendChild(d2);
+		//
+		var d3 = document.createElement('input');
+		d3.type = 'button';
+		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+		document.body.appendChild(d3);
+		/* END ITEMS */
+		
+		// actions
+		d2.value = o.comp;
+		d2.onblur = function() {
+			Mike_Rocha_linkedin_biz__init();
+			Mike_Rocha_linkedin_biz__li_init();
+		}
+		
+		//
+		d1c.src = o.href;
+		d1c.onmouseover = function() {
+			this.scrollIntoView();
+		}
+		d1c.onmouseout = function() {
+			d2.scrollIntoView();
+		}
+		var ifr_intv = setInterval(function() {// zoom out!
+			d1c.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+		}, 600);
+		
+		//
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		//
+		d3.value = 'N/A';
+		d3.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById('company_size').value = 'N/A';
+			document.getElementById('industry').value = 'N/A';
+			document.getElementById('type').value = 'N/A';
+			document.getElementById('companypage').value = 'N/A';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			//~ 
+			//~ document.getElementById('web_url').value = 'N/A';
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		
+		// ...
+		Mike_Rocha_linkedin_biz__init();
+		Mike_Rocha_linkedin_biz__li_init();
+		
+		// ...
+		function Mike_Rocha_linkedin_biz__li_init() {
+			d1b.innerText = '';
+			var rf = new AMT___requests_factory();
+			rf.linkedin_company_search(
+				{
+					//~ keywords: o.comp_name
+					keywords: d2.value
+				},
+				Mike_Rocha_linkedin_biz__li_process
+			);
+		}
+		// ({results:x, results_count:y, result: r});
+		function Mike_Rocha_linkedin_biz__li_process(response_obj) {
+			
+			var ro = response_obj;
+			
+			var out = d1b;
+			
+			var x = ro.results;
+			
+			console.log(x);
+			
+			out.innerText = ro.results_count + '\n';
+			
+			var found = false;
+			var x_;
+			var btn;
+			for (var i in x) {
+				if (!x[i].company) continue;
+				
+				x_ = x[i].company;
+				x_.fmt_canonicalName = x_.fmt_canonicalName.replace(/<[^>]+>/g, '');
+				x_.fmt_canonicalName = __js_clean_html_str(x_.fmt_canonicalName);
+				
+				//
+				btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				//~ btn.setAttribute('class','exe');
+				//~ btn.setAttribute('id', count+'|'+x_.id);
+				btn.setAttribute('style','width:auto;');
+				btn.value = x_.fmt_canonicalName;
+				//
+				out.appendChild(btn);
+				out.appendChild(document.createElement('br'));
+				
+				
+			}
+		}
+		function Mike_Rocha_linkedin_biz__init() {
+			d1.innerText = '';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+				//~ seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Mike_Rocha_linkedin_biz__complete
+			);
+		}
+		function Mike_Rocha_linkedin_biz__li_profile(u) {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						d1.innerHTML = response.status;
+						return;
+					}
+					
+					var r;
+					var sbm = true;
+					
+					// e.g. 10,001+ employees
+					r = /<li class="company-size">[\r\n\t\s]*<h4>Company Size<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('company_size').value = r;
+						if (r.length < 3) {
+							sbm = false;
+						}
+					} else {
+						sbm = false;
+					}
+					
+					// e.g. Internet
+					r = /<li class="industry">[\r\n\t\s]*<h4>Industry<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('industry').value = r;
+						if (r.length < 3) {
+							sbm = false;
+						}
+					} else {
+						sbm = false;
+					}
+					
+					// e.g. Public Company
+					r = /<li class="type">[\r\n\t\s]*<h4>Type<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('type').value = r;
+						if (r.length < 3) {
+							sbm = false;
+						}
+					} else {
+						sbm = false;
+					}
+					
+					console.log(sbm);
+					if (sbm) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+					//~ // e.g. http://www.google.com
+					//~ r = /<h4>Website<\/h4>[\r\n\t\s]*<p>[\r\n\t\s]*<a[^>]*>([^<]*)<\/a>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ 
+						//~ if (r.length < 6) {
+							//~ sbm = false;
+						//~ }
+					//~ } else {
+						//~ sbm = false;
+					//~ }
+				}
+			});
+		}
+		function Mike_Rocha_linkedin_biz__complete(rs) {
+			if (rs.length == 0) {
+				d1.innerText = '0';
+				return;
+			}
+			for (var i in rs) {
+				
+				var short;
+				var extra = '';
+				var x = /^(https?:\/\/\w+\.linkedin\.com\/company\/[^\/]+)([^$]*)/.exec(rs[i][0]);
+				if (x) {
+					short = (x) ? x[1] : rs[i][0];
+					short = short.replace(/^https?:\/\/\w+\./i, 'http://www.')
+					if (x[2])
+						extra = '<b>' +x[2]+ '</b><br>';
+				} else {
+					short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
+				}
+				
+				var d = document.createElement('div');
+				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				d.y_url = short;
+				//d.y_url = rs[i][0];
+				d.className = 'div-yahoo';
+				d.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('companypage').value = this.y_url;
+					if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
+						
+						Mike_Rocha_linkedin_biz__li_profile(this.y_url);
+						
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+						
+					}
+				}
+				d.innerHTML = short + '<br>' + extra + rs[i][1];
+				d1.appendChild(d);
+				
+				var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
+				//~ var x = new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i');
+				//~ console.log(isMatch);
+				//~ console.log(x);
+				if (isMatch) {
+					d.style.border = '6px solid LightGreen';
+				}
+				
+				// ...
+				var a = document.createElement('a');
+				a.href = rs[i][0];
+				a.innerText = 'L';
+				a.setAttribute('style','font-weight:bold;zoom:1.4;');
+				a.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					window.open(this.href, 'new');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				d.appendChild(a);
+			}
+		}
+	}
 	//
 	// Kyle Morris
 	// 
 	// 
 	s = '	<li><strong>Do not </strong>include URLs for individuals or urls that include https:, /pub/, /dir/, /group/</li>';
 	if (ih.indexOf(s) != -1) {
+		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
-		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
+		//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
 		GM_addStyle('.div-yahoo:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		var td = document.getElementsByTagName('td')[1].innerText.trim();
 		
 		var o = {
-			comp: td
+			comp: td,
+			comp_name: ''
 		}
+		o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*$/g, '$1');
 		
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:200px;left:30%;width:68%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:300px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		var d2 = document.createElement('textarea');
 		d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
 		document.body.appendChild(d2);
+		//
+		var d3 = document.createElement('input');
+		d3.type = 'button';
+		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+		document.body.appendChild(d3);
 		/* END ITEMS */
 		
 		// actions
@@ -36379,9 +41719,26 @@ qatar,80
 			kyle_morris_linkedin_biz__init();
 		}
 		
+		//
 		var ef = new AMT___events_factory();
 		d2. addEventListener('keydown', ef.keydown__blur_field, true);
 		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		//
+		d3.value = 'N/A';
+		d3.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById('web_url').value = 'N/A';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
 		
 		
 		// ...
@@ -36393,7 +41750,8 @@ qatar,80
 			var rf = new AMT___requests_factory();
 			rf.linkedin_company_search(
 				{
-					keywords: d2.value
+					keywords: o.comp_name
+					//~ keywords: d2.value
 				},
 				kyle_morris_linkedin_biz__li_process
 			);
@@ -36474,8 +41832,10 @@ qatar,80
 				d.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
 					document.getElementById('web_url').value = this.y_url;
-					if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url))
+					if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
+						new AMT___core_factory().nextTab();
 						doSubmit();
+					}
 				}
 				d.innerHTML = short + '<br>' + extra + rs[i][1];
 				d1.appendChild(d);
@@ -37370,6 +42730,1282 @@ qatar,80
 	/**
 	 * LI people
 	 */
+	//
+	// Seth Redmore
+	// Find the physical location for each contact (i.e. country)
+	// 
+	s = '	<li>Enter the City, State/Province, and Country for each contact.</li>';
+	if (ih.indexOf(s) != -1) {
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {margin-top:300px;margin-left:-300px;ZOOM:0.7;position:absolute;}');
+		
+		//~ GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
+		//~ GM_addStyle('input {width:90%;}');
+		
+		GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+		
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='0px';
+		d1.style.left='30%';
+		d1.style.width='68%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='12px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='28%';
+		d2.style.height='40px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2b');
+		document.body.appendChild(d);
+		var d2b = document.getElementById('d2b');
+		d2b.style.position='absolute';
+		d2b.style.top='40px';
+		d2b.style.left='0%';
+		d2b.style.width='28%';
+		d2b.style.height='40px';
+		//d2b.value = 'recruit OR recruiter OR recruiting OR staff OR staffing';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2c');
+		document.body.appendChild(d);
+		var d2c = document.getElementById('d2c');
+		d2c.style.position='absolute';
+		d2c.style.top='80px';
+		d2c.style.left='0%';
+		d2c.style.width='28%';
+		d2c.style.height='40px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2d');
+		document.body.appendChild(d);
+		var d2d = document.getElementById('d2d');
+		d2d.style.position='absolute';
+		d2d.style.top='120px';
+		d2d.style.left='0%';
+		d2d.style.width='28%';
+		d2d.style.height='40px';
+		//~ d2d.style.border = '3px solid LightGreen';
+		//
+		d = document.createElement('select');
+		d.setAttribute('id','d2e');
+		document.body.appendChild(d);
+		var d2e = document.getElementById('d2e');
+		d2e.style.position='absolute';
+		d2e.style.top='160px';
+		d2e.style.left='0%';
+		d2e.style.width='28%';
+		d2e.style.height='20px';
+		//
+		d2e.innerHTML = '<option value=""></option>';
+		d2e.innerHTML+= '<option value="us">USA</option>';
+		d2e.innerHTML+= '<option value="au">AUS</option>';
+		d2e.innerHTML+= '<option value="ca">CAN</option>';
+		for (var i in MT___countries) {
+			d2e.innerHTML += '<option value="'+MT___countries[i].code.toLowerCase()+'">'+MT___countries[i].name+'</option>';
+		}
+		d2e.onchange = function() {
+			Seth_Redmore_linkedin_people_location();
+		}
+		
+		var d2f = document.createElement('input');
+		d2f.setAttribute('type','button');
+		d2f.setAttribute('style','position:absolute;top:180px;left:0;width:28%;height:30px;');
+		document.body.appendChild(d2f);
+		d2f.value = 'N/A';
+		d2f.onclick = function() {
+				var sta = document.body.getElementsByClassName('form-control')[1];
+				sta.value = 'N/A';
+				sta.focus();
+			}
+			
+		var ukInp = document.createElement('input');
+		ukInp.setAttribute('type', 'button');
+		ukInp.setAttribute('style', 'position:absolute;top:460px;left:0px;width:28%;height:18px');
+		document.body.appendChild(ukInp);
+		ukInp.value = 'United Kingdom';
+		ukInp.onclick = function() {
+			document.body.getElementsByClassName('form-control')[2].value = 'United Kingdom';
+			document.body.getElementsByClassName('form-control')[2].focus()
+		}
+		
+		var canInp = document.createElement('input');
+		canInp.setAttribute('type', 'button');
+		canInp.setAttribute('style', 'position:absolute;top:478px;left:0px;width:28%;height:18px');
+		document.body.appendChild(canInp);
+		canInp.value = 'Canada';
+		canInp.onclick = function() {
+			document.body.getElementsByClassName('form-control')[2].value = 'Canada';
+			document.body.getElementsByClassName('form-control')[2].focus()
+		}
+		
+		var ausInp = document.createElement('input');
+		ausInp.setAttribute('type', 'button');
+		ausInp.setAttribute('style', 'position:absolute;top:496px;left:0px;width:28%;height:18px');
+		document.body.appendChild(ausInp);
+		ausInp.value = 'Australia';
+		ausInp.onclick = function() {
+			document.body.getElementsByClassName('form-control')[2].value = 'Australia';
+			document.body.getElementsByClassName('form-control')[2].focus()
+		}
+		
+			
+		/* END ITEMS */
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			fn:		td[3].innerText.trim(),
+			ln:		td[5].innerText.trim(),
+			comp:	td[7].innerText.trim(),
+			nm_array: [],
+			comp_array: []
+		}
+		
+		o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
+		o.comp_array = o.comp.split(' ');
+		//~ o.locn_array = o.state.split(' ').concat(o.state.split(' ').concat(o.cty.concat(' ')));
+		
+		d2.value = o.fn;
+		d2b.value = o.ln;
+		d2c.value = o.comp;
+		//~ d2d.value = (o.city != '' && o.state != '') ? '1,'+o.city+','+o.state+','+o.cty : '';
+		
+		// ..
+		d2.onblur = d2b.onblur = d2c.onblur = function() {
+			this.value = this.value.trim();
+			Seth_Redmore_linkedin_people_location();
+		}
+		d2d.onblur = function() {
+			this.style.border = '3px dashed LightGreen';
+			d2e.selectedIndex = 1; // USA
+			MT___google_api_geocode(
+				this.value,
+				function(rs) {
+					console.log(rs);
+					d2d.style.border = '3px solid LightGreen';
+					try{
+						//~ if (rs.results[0].address_components.length) {
+						//~ }
+						for (var i in rs.results[0].address_components) {
+							var x = rs.results[0].address_components[i];
+							if (!x.types) continue;
+							if (!x.types.length) continue;
+							if (x.types[0] == 'postal_code') {
+								d2d.value = x.short_name;
+								break;
+							}
+						}
+						Seth_Redmore_linkedin_people_location();
+					}
+					catch(e) {
+						d2d.style.border = '';
+						Seth_Redmore_linkedin_people_location();
+					}
+				},
+				true // full rs
+			);
+		}
+		
+		// keydown
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// ...
+		var q = [
+			document.getElementsByName('web_url')[0],
+			document.getElementsByName('web_url')[1],
+			document.getElementsByName('web_url')[2]
+		];
+		
+		// ...
+		q[2].value = 'United States';
+		
+		// Set up huge_vars for the city/state auto fill-in.
+		// Returns an object or array => function(is_object)
+		var us_cities_obj = new AMT___huge_vars_factory().us_cities_top_1000_by_population(true);
+		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			for (var i in q) {
+				q[i].value = q[i].value.trim();
+				if (q[i].value == '') {
+					return false;
+				}
+			}
+			// nextTab
+			new AMT___core_factory().nextTab();
+		}
+		
+		// init
+		AMT___POPUP__initializeGlobals(
+			Seth_Redmore_linkedin_people_location
+		);
+		
+		// ...
+		function Seth_Redmore_linkedin_people_location() {
+			
+			var url;
+			
+			url = 'http://www.linkedin.com/vsearch/pj';
+			
+			var out;
+			out = d1;
+			
+			url+= '?company='+encodeURIComponent(d2c.value.trim());
+			url+= '&companyScope=CP'; // CP scope is current/past
+			url+= '&firstName='+encodeURIComponent(d2.value.trim());
+			url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
+			//url+= '&keywords='+encodeURIComponent(d2.value.trim());
+			url+= '&pt=people';
+			url+= '&locationType=I';
+			url+= '&openAdvancedForm=true';
+			//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
+			
+			if (d2d.style.border != '') {
+				url += '&postalCode='+encodeURIComponent(d2d.value);
+				url += '&distance=200';
+				url += '&countryCode='+encodeURIComponent(d2e.value);
+			} else {
+				url += '&countryCode='+encodeURIComponent(d2e.value);
+			}
+			
+			out.innerHTML = '';
+			
+			var rf = new AMT___requests_factory();
+			//~ var md5_url = rf.general_functions__md5(url);
+			var md5_url = any_md5(url, '0123456789ABCDEF');
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/.cached/'+md5_url,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status == 200) {
+						Seth_Redmore_linkedin_people_location__processQuery({rs: rs});
+						return;
+					}
+					
+					
+					// still here?
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: url,
+						onload: function(response) {
+							var rs = response.responseText;
+							
+							if (response.status != 200) {
+								out.innerHTML = response.status;
+								return;
+							}
+							
+							var r;
+							r = JSON.parse(rs);
+							//console.log(r);
+							
+							if (r.status != 'ok') return;
+							if (!r.content) {
+								return;
+							}
+							// write to file !
+							//var x = new AMT___requests_factory();
+							rf.io__write_to_file(
+								{
+									data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+											'&AMT__serverSide_write__folder=.cached'+
+											'&AMT__serverSide_write__file=' + md5_url,
+									rs:		response.responseText,
+									host:	MT___host
+								},
+								Seth_Redmore_linkedin_people_location__processQuery
+							);
+							
+						}
+					});
+				}
+			});
+		}
+		
+		// 
+		function Seth_Redmore_linkedin_people_location__processQuery(write_object) {
+			
+			var out;
+			out = d1;
+			out.innerHTML = d2.value+'<br>'+d2b.value+'<br>'+d2c.value;
+			
+			var r;
+			r = JSON.parse(write_object.rs);
+			if (r.status != 'ok') return;
+			if (!r.content) {
+				return;
+			}
+			if (r.content.page.voltron_unified_search_json.search.results.length === 0) {
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.skip();
+				}
+				return;
+			}
+			
+			//~ // still here?
+			//~ if (AMT__Global_Vars.isPreview) { // PREVIEW ?
+				//~ AMT___Floater.accept();
+				//~ return;
+			//~ }
+			
+			if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+			else
+				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+				
+			
+			var x = r.content.page.voltron_unified_search_json.search.results;
+			
+			console.log(x);
+			
+			var snp,s;
+			var y;
+			
+			var y1, y2;
+			y1 = d2. value.replace(/\s+/g, ' ').trim();
+			y2 = d2b.value.replace(/\s+/g, ' ').trim();
+			y2 = y2.replace(/ OR[ $]*/g, ' ').trim();
+			
+			o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
+			o.comp_array = o.comp.split(' ');
+			//~ o.locn_array
+		
+			var bold_comp = y1.split(' ');
+			var bold_titl = y2.split(' '); //['market','marketing','marketer','owner'];
+			
+			//var auto_click_inp = false;
+			for (var i in x) {
+				
+				y = x[i].person;
+				
+				//~ console.log(y); // this person
+				
+				snp = y.snippets;
+				s = '';
+				var heading;
+				var fmt_body;
+				if (snp.length) {
+					for (var j in snp) {//console.log(snp[j]);
+						heading = false;
+						fmt_body = false;
+						
+						s += '<hr>';
+						s += snp[j].fieldName + ': ';
+						if (snp[j].fmt_heading) {
+							s += snp[j].fmt_heading;
+						} else {
+							s += snp[j].fmt_body;
+						}
+					}
+				} else snp = '';
+				s = s.replace(/<hr>/g, '')
+				
+				y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
+				y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
+				y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
+				y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+				
+				var z;
+				var headline;
+				var et, ec;
+				
+				y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
+				
+				z = y.fmt_headline;
+				
+				var headline_match = false;
+				if (z.indexOf(' at ') != -1) {
+					z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
+					if (z && / at /gi.exec(y.fmt_headline).length === 1) {
+						et = MT__bold(z[1], o.comp_array);
+						ec = MT__bold(z[3], o.comp_array);
+						headline = '\
+							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+							<div class="exe-title" style="display:inline;">\
+								 \
+							</div>\
+							<br >\
+							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Comp." >\
+							<div class="exe-comp" style="display:inline;">\
+								 \
+							</div>\
+							<br >\
+							';
+						headline_match = true;
+					}
+				}
+				if (!headline_match) {
+					et = y.fmt_headline;
+					et = MT__bold(et, o.comp_array);
+					et = MT__bold(et, o.comp_array);
+					ec = '';
+					headline = '\
+						<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+						<div class="exe-title" style="display:inline;">\
+							 \
+						</div>\
+						<div class="exe-comp" style="display:none;">\
+							 \
+						</div>\
+						<br >\
+						';
+					
+				}
+				headline += '\
+					<div class="exe-headline" style="display:none;">\
+						 \
+					</div>';
+				
+				
+				
+				var dv = document.createElement('div');
+				dv.setAttribute('style', 'border-bottom:1px solid teal;');
+				dv.className = 'exe-div';
+				
+				var el_a = document.createElement('a');
+				el_a.setAttribute('style', 'position:absolute;margin-left:200px;');
+				el_a.target    = 'new_win';
+				el_a.innerText = ' LINK';
+				el_a.href = y.link_nprofile_view_3;
+				dv.appendChild(el_a);
+				//"https://www.linkedin.com/profile/view?id=15329492&authType=NAME_SEARCH&authToken=sKun&locale=en_US&srchid=2041448321402183517267&srchindex=1&srchtotal=57&trk=vsrp_people_res_name&trkInfo=VSRPsearchId%3A2041448321402183517267%2CVSRPtargetId%3A15329492%2CVSRPcmpt%3Aprimary"
+				
+				var el_div = document.createElement('div');
+				//~ el_div.setAttribute('style', 'display:inline;');
+				el_div.innerHTML = MT__bold(y.firstName + ' ' + y.lastName, o.nm_array);
+				dv.appendChild(el_div);
+				
+				//~ dv.appendChild(document.createElement('br'));
+				
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', '');
+				el_div.innerHTML = headline;
+				dv.appendChild(el_div);
+				
+				var el_inp = document.createElement('input');
+				el_inp.setAttribute('style', 'width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				el_inp.value = 'Location';
+				dv.appendChild(el_inp);
+				
+				/*
+				 * Location
+				 * This uses create_annotation_to_output_fields
+				 */
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', 'display:inline');
+				el_div.className = 'exe-locn';
+				dv.appendChild(el_div);
+				//
+				el_div.appendChild(
+					Seth_Redmore_linkedin_people_location__makeButtons(y.fmt_location)
+				)
+				
+				
+				dv.appendChild(document.createElement('br'));
+				
+				if (s != '') {
+					var el_div = document.createElement('div');
+					el_div.setAttribute('style', 'border-bottom:1px solid teal;');
+					el_div.innerHTML = s;
+					dv.appendChild(el_div);
+				}
+				
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe-connections');
+				btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				btn.id = '';
+				btn.value = y.connectionCount;
+				dv.appendChild(btn);
+				
+				dv.appendChild(document.createElement('br'));
+				
+				//https://www.linkedin.com/profile/view?id=15329492
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe');
+				btn.setAttribute('style','width:26%;height:30px;');
+				//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3; // OLD !!
+				btn.url_li = y.link_nprofile_view_3;
+				btn.value = 'Title';
+				dv.appendChild(btn);
+				
+				// onclick
+				// THIS WILL SCRAPE THE PROFILE !!
+				// HOWEVER, MAKE THE BUTTONS FOR THE LOCATION USING "y.fmt_location" **IF POSSIBLE**
+				btn.onclick = function() {
+					this.style.border = '4px solid LightGreen';
+					
+					Seth_Redmore_linkedin_people_location__profile(this.url_li);
+					
+					//~ var x = /^(https:\/\/\w+\.linkedin\.com\/profile\/view\?id=\d+)/.exec(this.id);
+					//~ if (x) {
+						//~ q.value = this.id;
+						//~ q.value = x[1];
+						//~ q.style.border = '4px solid LightGreen';
+						//~ doSubmit();
+					//~ }
+				}
+				
+				out.appendChild(dv);
+				
+				var z = out.getElementsByClassName('exe-div');
+				z = z[z.length - 1];
+				
+				//~ z.getElementsByClassName('exe-locn')[0].innerHTML		= y.fmt_location; //MT__bold(y.fmt_location, o.locn_array);
+				z.getElementsByClassName('exe-title')[0].innerHTML		= et;
+				z.getElementsByClassName('exe-comp')[0].innerHTML		= ec;
+				z.getElementsByClassName('exe-headline')[0].innerHTML	= y.fmt_headline;
+				
+			}
+			
+			// STILL HERE AND PREVIEW !?
+			//~ if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.skip();
+				//~ return;
+			//~ }
+			
+			var div = document.createElement('div');
+			div.setAttribute('style','height:1600px;');
+			out.appendChild(div);
+		}
+		/**
+		 * 
+		 */
+		function Seth_Redmore_linkedin_people_location__makeButtons(txt) {
+			
+			// options_object
+			// options_object.textToAnnotate = String
+			// options_object.output_fields = []
+			// options_object.callback_mouseup = Function
+			//~ if (options_object.callback_mouseup) {
+				//~ options_object.callback_mouseup(output_fields[i]);
+			//~ }
+			var div_buttons = new AMT___items_factory().create_annotation_to_output_fields(
+				{
+					textToAnnotate: txt,
+					output_fields:  q,
+					callback_mouseup: function(output_field) { // =>out field
+						
+						//~ // Remove all but words/digits from end of the field!
+						//~ output_field.value = output_field.value.replace(/[^\w\d]$/g, ''); // remove from end all but words
+						
+						// Remove COMMA only
+						output_field.value = output_field.value.replace(/[,]$/g, ''); // remove from end all but words
+						
+						// Get next out field
+						var found = false;
+						for (var i in q) {
+							if (q[i] == output_field) {
+								found = true;
+								continue;
+							}
+							if (found) { // this is it
+								found = q[i];
+								break;
+							}
+						}
+						if (found && found.value == '') {
+							var city_to_match = output_field.value.toLowerCase();
+							
+							//~ var city_to_match = output_field.value.toLowerCase().replace(/[^\w]$/g, ''); // remove from end all but words
+							//~ console.log(city_to_match);
+							
+							if (us_cities_obj.cities_to_lowercase.hasOwnProperty( city_to_match.toLowerCase() )) {
+								// Iterate through .cities
+								for (var city in us_cities_obj.cities) {
+									if (city.toLowerCase() == city_to_match) {
+										found.value = us_cities_obj.cities[city]; //state
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			);
+			//~ console.log(div_buttons);
+			
+			return div_buttons;
+		}
+		function Seth_Redmore_linkedin_people_location__profile(u) {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						d1.innerHTML = response.status;
+						return;
+					}
+					
+					// dashes
+					rs = rs.replace(/\\u002d/g, '-');
+					
+					//topcard
+					var found = false;
+					r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+					if (r) {
+						r = JSON.parse('{'+r[1]+'}');
+						r = r.content;
+						console.log(r);
+						
+						if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+							q.value = r.TopCard.public_url.canonicalUrl;
+							if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(q.value)) {
+								q.style.border = '4px solid LightGreen';
+								doSubmit();
+								return;
+							}
+						}
+					}
+					// still here?
+					var r2;
+					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						q.style.border = '10px dashed pink';
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// Tooey Courtemanche
+	// Find the URL of a Person on LinkedIn
+	// 
+	s = '<li class="li2">Search for the person listed below (Enter their first name and last name in the search field)</li>';
+	if (ih.indexOf(s) != -1) {
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {margin-top:300px;margin-left:-300px;ZOOM:0.7;position:absolute;}');
+		
+		//~ GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
+		//~ GM_addStyle('input {width:90%;}');
+		
+		GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+		
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='0px';
+		d1.style.left='30%';
+		d1.style.width='68%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='12px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='28%';
+		d2.style.height='40px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2b');
+		document.body.appendChild(d);
+		var d2b = document.getElementById('d2b');
+		d2b.style.position='absolute';
+		d2b.style.top='40px';
+		d2b.style.left='0%';
+		d2b.style.width='28%';
+		d2b.style.height='40px';
+		//d2b.value = 'recruit OR recruiter OR recruiting OR staff OR staffing';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2c');
+		document.body.appendChild(d);
+		var d2c = document.getElementById('d2c');
+		d2c.style.position='absolute';
+		d2c.style.top='80px';
+		d2c.style.left='0%';
+		d2c.style.width='28%';
+		d2c.style.height='40px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2d');
+		document.body.appendChild(d);
+		var d2d = document.getElementById('d2d');
+		d2d.style.position='absolute';
+		d2d.style.top='120px';
+		d2d.style.left='0%';
+		d2d.style.width='28%';
+		d2d.style.height='40px';
+		//~ d2d.style.border = '3px solid LightGreen';
+		//
+		d = document.createElement('select');
+		d.setAttribute('id','d2e');
+		document.body.appendChild(d);
+		var d2e = document.getElementById('d2e');
+		d2e.style.position='absolute';
+		d2e.style.top='160px';
+		d2e.style.left='0%';
+		d2e.style.width='28%';
+		d2e.style.height='20px';
+		//
+		d2e.innerHTML = '<option value=""></option>';
+		d2e.innerHTML+= '<option value="us">USA</option>';
+		d2e.innerHTML+= '<option value="au">AUS</option>';
+		d2e.innerHTML+= '<option value="ca">CAN</option>';
+		for (var i in MT___countries) {
+			d2e.innerHTML += '<option value="'+MT___countries[i].code.toLowerCase()+'">'+MT___countries[i].name+'</option>';
+		}
+		d2e.onchange = function() {
+			Tooey_Courtemanche_linkedin_people();
+		}
+		var d2f = document.createElement('input');
+		d2f.setAttribute('type','button');
+		d2f.setAttribute('style','position:absolute;top:180px;left:0;width:28%;height:30px;');
+		document.body.appendChild(d2f);
+		d2f.value = 'NOT FOUND';
+		//
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2f');
+		//~ d.setAttribute('type','button');
+		//~ d.value = 'same';
+		//~ document.body.appendChild(d);
+		//~ var d2f = document.getElementById('d2f');
+		//~ d2f.style.position='absolute';
+		//~ d2f.style.top='150px';
+		//~ d2f.style.left='0%';
+		//~ d2f.style.width='20%';
+		//~ d2f.style.height='30px';
+		//~ d2f.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ allq[2].value = 'Same';
+		//~ }
+		/* END ITEMS */
+		
+		var b = document.getElementsByTagName('p');
+		
+		var o = {
+			fn:		b[2].innerText.trim(),
+			ln:		b[4].innerText.trim(),
+			comp:	b[8].innerText.trim(),
+			city:	b[10].innerText.trim(),
+			state:	b[12].innerText.trim(),
+			cty:	((b[14].innerText.trim() != '') ? b[14].innerText.trim() : 'USA'),
+			nm_array: [],
+			comp_array: [],
+			locn_array: []
+		}
+		
+		o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
+		o.comp_array = o.comp.split(' ');
+		o.locn_array = o.state.split(' ').concat(o.state.split(' ').concat(o.cty.concat(' ')));
+		
+		d2.value = o.fn;
+		d2b.value = o.ln;
+		d2c.value = o.comp;
+		d2d.value = (o.city != '' && o.state != '') ? '1,'+o.city+','+o.state+','+o.cty : '';
+		
+		d2.onblur = d2b.onblur = d2c.onblur = function() {
+			this.value = this.value.trim();
+			Tooey_Courtemanche_linkedin_people();
+		}
+		
+		d2d.onblur = function() {
+			this.style.border = '3px dashed LightGreen';
+			d2e.selectedIndex = 1; // USA
+			MT___google_api_geocode(
+				this.value,
+				function(rs) {
+					console.log(rs);
+					d2d.style.border = '3px solid LightGreen';
+					try{
+						//~ if (rs.results[0].address_components.length) {
+						//~ }
+						for (var i in rs.results[0].address_components) {
+							var x = rs.results[0].address_components[i];
+							if (!x.types) continue;
+							if (!x.types.length) continue;
+							if (x.types[0] == 'postal_code') {
+								d2d.value = x.short_name;
+								break;
+							}
+						}
+						Tooey_Courtemanche_linkedin_people();
+					}
+					catch(e) {
+						d2d.style.border = '';
+						Tooey_Courtemanche_linkedin_people();
+					}
+				},
+				true // full rs
+			);
+		}
+		
+		d2f.onclick = function() {
+			q.value = 'NOT FOUND';
+			doSubmit();
+		}
+		
+		// keydown
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+		//
+		var q = document.getElementById('web_url');
+		document.getElementById('mturk_form').onsubmit = function() {
+			q.value = q.value.trim();
+			if (q.value.length <= 8 && q.value != 'NOT FOUND')
+				return false;
+		}
+		
+		// init
+		AMT___POPUP__initializeGlobals(
+			Tooey_Courtemanche_linkedin_people
+		);
+		
+		
+		
+		
+		function Tooey_Courtemanche_linkedin_people() {
+			
+			var url;
+			
+			url = 'http://www.linkedin.com/vsearch/pj';
+			
+			var out;
+			out = d1;
+			
+			url+= '?company='+encodeURIComponent(d2c.value.trim());
+			url+= '&companyScope=CP'; // CP scope is current/past
+			url+= '&firstName='+encodeURIComponent(d2.value.trim());
+			url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
+			//url+= '&keywords='+encodeURIComponent(d2.value.trim());
+			url+= '&pt=people';
+			url+= '&locationType=I';
+			url+= '&openAdvancedForm=true';
+			//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
+			
+			if (d2d.style.border != '') {
+				url += '&postalCode='+encodeURIComponent(d2d.value);
+				url += '&distance=200';
+				url += '&countryCode='+encodeURIComponent(d2e.value);
+			} else {
+				url += '&countryCode='+encodeURIComponent(d2e.value);
+			}
+			
+			out.innerHTML = '';
+			
+			var rf = new AMT___requests_factory();
+			var md5_url = rf.general_functions__md5(url);
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/.cached/'+md5_url,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status == 200) {
+						Tooey_Courtemanche_linkedin_people__processQuery({rs: rs});
+						return;
+					}
+					
+					
+					// still here?
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: url,
+						onload: function(response) {
+							var rs = response.responseText;
+							
+							if (response.status != 200) {
+								out.innerHTML = response.status;
+								return;
+							}
+							
+							var r;
+							r = JSON.parse(rs);
+							//console.log(r);
+							
+							if (r.status != 'ok') return;
+							if (!r.content) {
+								return;
+							}
+							// write to file !
+							//var x = new AMT___requests_factory();
+							rf.io__write_to_file(
+								{
+									data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+											'&AMT__serverSide_write__folder=.cached'+
+											'&AMT__serverSide_write__file=' + md5_url,
+									rs:		response.responseText,
+									host:	MT___host
+								},
+								Tooey_Courtemanche_linkedin_people__processQuery
+							);
+							
+						}
+					});
+				}
+			});
+		}
+		
+		// 
+		function Tooey_Courtemanche_linkedin_people__processQuery(write_object) {
+			
+			var out;
+			out = d1;
+			out.innerHTML = d2.value+'<br>'+d2b.value+'<br>'+d2c.value;
+			
+			var r;
+			r = JSON.parse(write_object.rs);
+			if (r.status != 'ok') return;
+			if (!r.content) {
+				return;
+			}
+			if (r.content.page.voltron_unified_search_json.search.results.length === 0) {
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.skip();
+				}
+				return;
+			}
+			
+			//~ // still here?
+			//~ if (AMT__Global_Vars.isPreview) { // PREVIEW ?
+				//~ AMT___Floater.accept();
+				//~ return;
+			//~ }
+			
+			if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+			else
+				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+				
+			
+			var x = r.content.page.voltron_unified_search_json.search.results;
+			
+			var snp,s;
+			var y;
+			
+			var y1, y2;
+			y1 = d2. value.replace(/\s+/g, ' ').trim();
+			y2 = d2b.value.replace(/\s+/g, ' ').trim();
+			y2 = y2.replace(/ OR[ $]*/g, ' ').trim();
+			
+			o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
+			o.comp_array = o.comp.split(' ');
+			o.locn_array
+		
+			var bold_comp = y1.split(' ');
+			var bold_titl = y2.split(' '); //['market','marketing','marketer','owner'];
+			
+			//var auto_click_inp = false;
+			for (var i in x) {
+				
+				y = x[i].person;
+				
+				//~ console.log(y); // this person
+				
+				snp = y.snippets;
+				s = '';
+				var heading;
+				var fmt_body;
+				if (snp.length) {
+					for (var j in snp) {//console.log(snp[j]);
+						heading = false;
+						fmt_body = false;
+						
+						s += '<hr>';
+						s += snp[j].fieldName + ': ';
+						if (snp[j].fmt_heading) {
+							s += snp[j].fmt_heading;
+						} else {
+							s += snp[j].fmt_body;
+						}
+					}
+				} else snp = '';
+				s = s.replace(/<hr>/g, '')
+				
+				y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
+				y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
+				y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
+				y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+				
+				var z;
+				var headline;
+				var et, ec;
+				
+				y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
+				
+				z = y.fmt_headline;
+				
+				var headline_match = false;
+				if (z.indexOf(' at ') != -1) {
+					z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
+					if (z && / at /gi.exec(y.fmt_headline).length === 1) {
+						et = MT__bold(z[1], o.comp_array);
+						ec = MT__bold(z[3], o.comp_array);
+						//~ et = MT__bold(z[1], bold_titl);
+						//~ ec = MT__bold(z[3], bold_comp);
+						headline = '\
+							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+							<div class="exe-title" style="display:inline;">\
+								 \
+							</div>\
+							<br >\
+							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Comp." >\
+							<div class="exe-comp" style="display:inline;">\
+								 \
+							</div>\
+							<br >\
+							';
+						headline_match = true;
+					}
+				}
+				if (!headline_match) {
+					et = y.fmt_headline;
+					et = MT__bold(et, o.comp_array);
+					et = MT__bold(et, o.comp_array);
+					ec = '';
+					headline = '\
+						<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+						<div class="exe-title" style="display:inline;">\
+							 \
+						</div>\
+						<div class="exe-comp" style="display:none;">\
+							 \
+						</div>\
+						<br >\
+						';
+					
+				}
+				headline += '\
+					<div class="exe-headline" style="display:none;">\
+						 \
+					</div>';
+				
+				
+				
+				var dv = document.createElement('div');
+				dv.setAttribute('style', 'border-bottom:1px solid teal;');
+				dv.className = 'exe-div';
+				
+				var el_a = document.createElement('a');
+				el_a.setAttribute('style', 'position:absolute;margin-left:200px;');
+				el_a.target    = 'new_win';
+				el_a.innerText = ' LINK';
+				el_a.href = y.link_nprofile_view_3;
+				dv.appendChild(el_a);
+				//"https://www.linkedin.com/profile/view?id=15329492&authType=NAME_SEARCH&authToken=sKun&locale=en_US&srchid=2041448321402183517267&srchindex=1&srchtotal=57&trk=vsrp_people_res_name&trkInfo=VSRPsearchId%3A2041448321402183517267%2CVSRPtargetId%3A15329492%2CVSRPcmpt%3Aprimary"
+				
+				var el_div = document.createElement('div');
+				//~ el_div.setAttribute('style', 'display:inline;');
+				el_div.innerHTML = MT__bold(y.firstName + ' ' + y.lastName, o.nm_array);
+				dv.appendChild(el_div);
+				
+				//~ dv.appendChild(document.createElement('br'));
+				
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', '');
+				el_div.innerHTML = headline;
+				dv.appendChild(el_div);
+				
+				var el_inp = document.createElement('input');
+				el_inp.setAttribute('style', 'width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				el_inp.value = 'Location';
+				dv.appendChild(el_inp);
+				
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', 'display:inline');
+				el_div.className = 'exe-locn';
+				dv.appendChild(el_div);
+				
+				dv.appendChild(document.createElement('br'));
+				
+				if (s != '') {
+					var el_div = document.createElement('div');
+					el_div.setAttribute('style', 'border-bottom:1px solid teal;');
+					el_div.innerHTML = s;
+					dv.appendChild(el_div);
+				}
+				
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe-connections');
+				btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				btn.id = '';
+				btn.value = y.connectionCount;
+				dv.appendChild(btn);
+				
+				dv.appendChild(document.createElement('br'));
+				
+				//https://www.linkedin.com/profile/view?id=15329492
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe');
+				btn.setAttribute('style','width:26%;height:30px;');
+				//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3; // OLD !!
+				btn.id = y.link_nprofile_view_3;
+				btn.value = 'Title';
+				dv.appendChild(btn);
+				
+				out.appendChild(dv);
+				
+				//~ out.innerHTML += '\
+					//~ <div style="border-bottom:1px solid teal;" class="exe-div">\
+						//~ <a href="http://linkedin.com'+y.link_nprofile_view_3+'" target="new_win" style="position:absolute;margin-left:200px;"> LINK </a>\
+						//~ '+y.firstName+'|'+y.lastName+'\
+						//~ <br >\
+						//~ '+headline+'\
+						//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="Location" >\
+						//~ <div class="exe-locn" style="display:inline">\
+							 //~ \
+						//~ </div>\
+						//~ <br >\
+						//~ '+((s != '') ? s + '<br>' : '' )+'\
+						//~ <br style="clear:both;">\
+					//~ </div>';
+				
+				
+				var z = out.getElementsByClassName('exe-div');
+				z = z[z.length - 1];
+				
+				z.getElementsByClassName('exe-locn')[0].innerHTML		= MT__bold(y.fmt_location, o.locn_array);
+				z.getElementsByClassName('exe-title')[0].innerHTML		= et;
+				z.getElementsByClassName('exe-comp')[0].innerHTML		= ec;
+				z.getElementsByClassName('exe-headline')[0].innerHTML	= y.fmt_headline;
+				
+				// append
+				
+				//~ z.appendChild(btn);
+				//
+				//~ z.appendChild(document.createElement('br'));
+				//
+				
+				//~ 
+				//~ if (y.logo_result_base && y.logo_result_base.media_picture_link) {
+					//~ y.logo_result_base.media_picture_link = y.logo_result_base.media_picture_link.replace();
+				//~ }
+				
+				// set val
+				
+				//~ if (img != '')
+					//~ z.getElementsByClassName('exe-img')[0].src = img;
+				
+				//console.log(y.connectionCount);
+				
+			}
+			
+			// STILL HERE AND PREVIEW !?
+			//~ if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.skip();
+				//~ return;
+			//~ }
+			
+			var div = document.createElement('div');
+			div.setAttribute('style','height:1600px;');
+			out.appendChild(div);
+			
+			var x = document.getElementsByClassName('exe');
+			for (var i in x) {
+				if (!x[i]) continue;
+				x[i].onclick = function() {
+					this.style.border = '4px solid LightGreen';
+					
+					var x = /^(https:\/\/\w+\.linkedin\.com\/profile\/view\?id=\d+)/.exec(this.id);
+					if (x) {
+						q.value = this.id;
+						//~ q.value = x[1];
+						q.style.border = '4px solid LightGreen';
+						doSubmit();
+					}
+					
+					//console.log(this.id);
+					//Tooey_Courtemanche_linkedin_people__profile(this.id);
+					//q.style.border = '2px dashed blue';
+				}
+			}
+		}
+		//~ function Tooey_Courtemanche_linkedin_people__profile(u) {
+			//~ 
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
+				//~ url: u,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200) {
+						//~ d1.innerHTML = response.status;
+						//~ return;
+					//~ }
+					//~ 
+					//~ // dashes
+					//~ rs = rs.replace(/\\u002d/g, '-');
+					//~ 
+					//~ //topcard
+					//~ var found = false;
+					//~ r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+					//~ if (r) {
+						//~ r = JSON.parse('{'+r[1]+'}');
+						//~ r = r.content;
+						//~ console.log(r);
+						//~ 
+						//~ if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+							//~ q.value = r.TopCard.public_url.canonicalUrl;
+							//~ if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(q.value)) {
+								//~ q.style.border = '4px solid LightGreen';
+								//~ doSubmit();
+								//~ return;
+							//~ }
+						//~ }
+					//~ }
+					//~ // still here?
+					//~ var r2;
+					//~ if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						//~ q.style.border = '10px dashed pink';
+					//~ }
+				//~ }
+			//~ });
+		//~ }
+	}
 	
 	//
 	// Steven James Moody
@@ -38035,640 +44671,6 @@ qatar,80
 				}
 			});
 		}
-	}
-	
-	//
-	// Tooey Courtemanche
-	// Find the URL of a Person on LinkedIn
-	// 
-	s = '<li class="li2">Search for the person listed below (Enter their first name and last name in the search field)</li>';
-	if (ih.indexOf(s) != -1) {
-		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		
-		GM_addStyle('.container {margin-top:300px;margin-left:-300px;ZOOM:0.7;position:absolute;}');
-		
-		//~ GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
-		//~ GM_addStyle('input {width:90%;}');
-		
-		GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
-		
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='0px';
-		d1.style.left='30%';
-		d1.style.width='68%';
-		d1.style.height='600px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='12px';
-		//
-		//~ d = document.createElement('div');
-		//~ d.setAttribute('id','d1a2');
-		//~ document.body.appendChild(d);
-		//~ var d1a2 = document.getElementById('d1a2');
-		//~ d1a2.style.position='absolute';
-		//~ d1a2.style.top='0px';
-		//~ d1a2.style.left='70%';
-		//~ d1a2.style.width='28%';
-		//~ d1a2.style.height='600px';
-		//~ d1a2.style.overflow='auto';
-		//~ d1a2.style.border='1px solid blue';
-		//~ d1a2.style.borderBottom='2px solid blue';
-		//~ d1a2.style.backgroundColor='#eee';
-		//~ d1a2.style.fontSize='12px';
-		//~ //
-		//~ d = document.createElement('iframe'); // iframe
-		//~ d.setAttribute('id','d1b');
-		//~ document.body.appendChild(d);
-		//~ var d1b = document.getElementById('d1b');
-		//~ d1b.style.position='absolute';
-		//~ d1b.style.top='600px';
-		//~ d1b.style.left='30%';
-		//~ d1b.style.width='68%';
-		//~ d1b.style.height='600px';//200
-		//~ d1b.style.overflow='auto';
-		//~ d1b.style.border='1px solid blue';
-		//~ d1b.style.borderBottom='2px solid blue';
-		//~ d1b.style.backgroundColor='#eee';
-		//~ d1b.style.fontSize='12px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='0px';
-		d2.style.left='0%';
-		d2.style.width='28%';
-		d2.style.height='40px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d2b');
-		document.body.appendChild(d);
-		var d2b = document.getElementById('d2b');
-		d2b.style.position='absolute';
-		d2b.style.top='40px';
-		d2b.style.left='0%';
-		d2b.style.width='28%';
-		d2b.style.height='40px';
-		//d2b.value = 'recruit OR recruiter OR recruiting OR staff OR staffing';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d2c');
-		document.body.appendChild(d);
-		var d2c = document.getElementById('d2c');
-		d2c.style.position='absolute';
-		d2c.style.top='80px';
-		d2c.style.left='0%';
-		d2c.style.width='28%';
-		d2c.style.height='40px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d2d');
-		document.body.appendChild(d);
-		var d2d = document.getElementById('d2d');
-		d2d.style.position='absolute';
-		d2d.style.top='120px';
-		d2d.style.left='0%';
-		d2d.style.width='28%';
-		d2d.style.height='40px';
-		//~ d2d.style.border = '3px solid LightGreen';
-		//
-		d = document.createElement('select');
-		d.setAttribute('id','d2e');
-		document.body.appendChild(d);
-		var d2e = document.getElementById('d2e');
-		d2e.style.position='absolute';
-		d2e.style.top='160px';
-		d2e.style.left='0%';
-		d2e.style.width='28%';
-		d2e.style.height='20px';
-		//
-		d2e.innerHTML = '<option value=""></option>';
-		d2e.innerHTML+= '<option value="us">USA</option>';
-		d2e.innerHTML+= '<option value="au">AUS</option>';
-		d2e.innerHTML+= '<option value="ca">CAN</option>';
-		for (var i in MT___countries) {
-			d2e.innerHTML += '<option value="'+MT___countries[i].code.toLowerCase()+'">'+MT___countries[i].name+'</option>';
-		}
-		d2e.onchange = function() {
-			Tooey_Courtemanche_linkedin_people();
-		}
-		var d2f = document.createElement('input');
-		d2f.setAttribute('type','button');
-		d2f.setAttribute('style','position:absolute;top:180px;left:0;width:28%;height:30px;');
-		document.body.appendChild(d2f);
-		d2f.value = 'NOT FOUND';
-		//
-		//~ d = document.createElement('input');
-		//~ d.setAttribute('id','d2f');
-		//~ d.setAttribute('type','button');
-		//~ d.value = 'same';
-		//~ document.body.appendChild(d);
-		//~ var d2f = document.getElementById('d2f');
-		//~ d2f.style.position='absolute';
-		//~ d2f.style.top='150px';
-		//~ d2f.style.left='0%';
-		//~ d2f.style.width='20%';
-		//~ d2f.style.height='30px';
-		//~ d2f.onclick = function() {
-			//~ this.style.backgroundColor = 'LightGreen';
-			//~ allq[2].value = 'Same';
-		//~ }
-		/* END ITEMS */
-		
-		var b = document.getElementsByTagName('p');
-		
-		var o = {
-			fn:		b[2].innerText.trim(),
-			ln:		b[4].innerText.trim(),
-			comp:	b[8].innerText.trim(),
-			city:	b[10].innerText.trim(),
-			state:	b[12].innerText.trim(),
-			cty:	((b[14].innerText.trim() != '') ? b[14].innerText.trim() : 'USA'),
-			nm_array: [],
-			comp_array: [],
-			locn_array: []
-		}
-		
-		o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
-		o.comp_array = o.comp.split(' ');
-		o.locn_array = o.state.split(' ').concat(o.state.split(' ').concat(o.cty.concat(' ')));
-		
-		d2.value = o.fn;
-		d2b.value = o.ln;
-		d2c.value = o.comp;
-		d2d.value = (o.city != '' && o.state != '') ? '1,'+o.city+','+o.state+','+o.cty : '';
-		
-		d2.onblur = d2b.onblur = d2c.onblur = function() {
-			this.value = this.value.trim();
-			Tooey_Courtemanche_linkedin_people();
-		}
-		
-		d2d.onblur = function() {
-			this.style.border = '3px dashed LightGreen';
-			d2e.selectedIndex = 1; // USA
-			MT___google_api_geocode(
-				this.value,
-				function(rs) {
-					console.log(rs);
-					d2d.style.border = '3px solid LightGreen';
-					try{
-						//~ if (rs.results[0].address_components.length) {
-						//~ }
-						for (var i in rs.results[0].address_components) {
-							var x = rs.results[0].address_components[i];
-							if (!x.types) continue;
-							if (!x.types.length) continue;
-							if (x.types[0] == 'postal_code') {
-								d2d.value = x.short_name;
-								break;
-							}
-						}
-						Tooey_Courtemanche_linkedin_people();
-					}
-					catch(e) {
-						d2d.style.border = '';
-						Tooey_Courtemanche_linkedin_people();
-					}
-				},
-				true // full rs
-			);
-		}
-		
-		d2f.onclick = function() {
-			q.value = 'NOT FOUND';
-			doSubmit();
-		}
-		
-		// keydown
-		var ef = new AMT___events_factory();
-		d2. addEventListener('keydown', ef.keydown__blur_field, true);
-		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-		d2c.addEventListener('keydown', ef.keydown__blur_field, true);
-		//
-		var q = document.getElementById('web_url');
-		document.getElementById('mturk_form').onsubmit = function() {
-			q.value = q.value.trim();
-			if (q.value.length <= 8 && q.value != 'NOT FOUND')
-				return false;
-		}
-		
-		// init
-		AMT___POPUP__initializeGlobals(
-			Tooey_Courtemanche_linkedin_people
-		);
-		
-		
-		
-		
-		function Tooey_Courtemanche_linkedin_people() {
-			
-			var url;
-			
-			url = 'http://www.linkedin.com/vsearch/pj';
-			
-			var out;
-			out = d1;
-			
-			url+= '?company='+encodeURIComponent(d2c.value.trim());
-			url+= '&companyScope=CP'; // CP scope is current/past
-			url+= '&firstName='+encodeURIComponent(d2.value.trim());
-			url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
-			//url+= '&keywords='+encodeURIComponent(d2.value.trim());
-			url+= '&pt=people';
-			url+= '&locationType=I';
-			url+= '&openAdvancedForm=true';
-			//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
-			
-			if (d2d.style.border != '') {
-				url += '&postalCode='+encodeURIComponent(d2d.value);
-				url += '&distance=200';
-				url += '&countryCode='+encodeURIComponent(d2e.value);
-			} else {
-				url += '&countryCode='+encodeURIComponent(d2e.value);
-			}
-			
-			out.innerHTML = '';
-			
-			var rf = new AMT___requests_factory();
-			var md5_url = rf.general_functions__md5(url);
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host + '/mturk/.cached/'+md5_url,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status == 200) {
-						Tooey_Courtemanche_linkedin_people__processQuery({rs: rs});
-						return;
-					}
-					
-					
-					// still here?
-					GM_xmlhttpRequest({
-						method: "GET",
-						url: url,
-						onload: function(response) {
-							var rs = response.responseText;
-							
-							if (response.status != 200) {
-								out.innerHTML = response.status;
-								return;
-							}
-							
-							var r;
-							r = JSON.parse(rs);
-							//console.log(r);
-							
-							if (r.status != 'ok') return;
-							if (!r.content) {
-								return;
-							}
-							// write to file !
-							//var x = new AMT___requests_factory();
-							rf.io__write_to_file(
-								{
-									data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
-											'&AMT__serverSide_write__folder=.cached'+
-											'&AMT__serverSide_write__file=' + md5_url,
-									rs:		response.responseText,
-									host:	MT___host
-								},
-								Tooey_Courtemanche_linkedin_people__processQuery
-							);
-							
-						}
-					});
-				}
-			});
-		}
-		
-		// 
-		function Tooey_Courtemanche_linkedin_people__processQuery(write_object) {
-			
-			var out;
-			out = d1;
-			out.innerHTML = d2.value+'<br>'+d2b.value+'<br>'+d2c.value;
-			
-			var r;
-			r = JSON.parse(write_object.rs);
-			if (r.status != 'ok') return;
-			if (!r.content) {
-				return;
-			}
-			if (r.content.page.voltron_unified_search_json.search.results.length === 0) {
-				if (AMT__Global_Vars.isPreview) {
-					AMT___Floater.skip();
-				}
-				return;
-			}
-			
-			//~ // still here?
-			//~ if (AMT__Global_Vars.isPreview) { // PREVIEW ?
-				//~ AMT___Floater.accept();
-				//~ return;
-			//~ }
-			
-			if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
-				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
-			else
-				out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
-				
-			
-			var x = r.content.page.voltron_unified_search_json.search.results;
-			
-			var snp,s;
-			var y;
-			
-			var y1, y2;
-			y1 = d2. value.replace(/\s+/g, ' ').trim();
-			y2 = d2b.value.replace(/\s+/g, ' ').trim();
-			y2 = y2.replace(/ OR[ $]*/g, ' ').trim();
-			
-			o.nm_array   = o.fn.split(' ').concat(o.ln.split(' '));
-			o.comp_array = o.comp.split(' ');
-			o.locn_array
-		
-			var bold_comp = y1.split(' ');
-			var bold_titl = y2.split(' '); //['market','marketing','marketer','owner'];
-			
-			//var auto_click_inp = false;
-			for (var i in x) {
-				
-				y = x[i].person;
-				
-				//~ console.log(y); // this person
-				
-				snp = y.snippets;
-				s = '';
-				var heading;
-				var fmt_body;
-				if (snp.length) {
-					for (var j in snp) {//console.log(snp[j]);
-						heading = false;
-						fmt_body = false;
-						
-						s += '<hr>';
-						s += snp[j].fieldName + ': ';
-						if (snp[j].fmt_heading) {
-							s += snp[j].fmt_heading;
-						} else {
-							s += snp[j].fmt_body;
-						}
-					}
-				} else snp = '';
-				s = s.replace(/<hr>/g, '')
-				
-				y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
-				y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
-				y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
-				y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
-				
-				var z;
-				var headline;
-				var et, ec;
-				
-				y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
-				
-				z = y.fmt_headline;
-				
-				var headline_match = false;
-				if (z.indexOf(' at ') != -1) {
-					z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
-					if (z && / at /gi.exec(y.fmt_headline).length === 1) {
-						et = MT__bold(z[1], o.comp_array);
-						ec = MT__bold(z[3], o.comp_array);
-						//~ et = MT__bold(z[1], bold_titl);
-						//~ ec = MT__bold(z[3], bold_comp);
-						headline = '\
-							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
-							<div class="exe-title" style="display:inline;">\
-								 \
-							</div>\
-							<br >\
-							<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Comp." >\
-							<div class="exe-comp" style="display:inline;">\
-								 \
-							</div>\
-							<br >\
-							';
-						headline_match = true;
-					}
-				}
-				if (!headline_match) {
-					et = y.fmt_headline;
-					et = MT__bold(et, o.comp_array);
-					et = MT__bold(et, o.comp_array);
-					ec = '';
-					headline = '\
-						<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
-						<div class="exe-title" style="display:inline;">\
-							 \
-						</div>\
-						<div class="exe-comp" style="display:none;">\
-							 \
-						</div>\
-						<br >\
-						';
-					
-				}
-				headline += '\
-					<div class="exe-headline" style="display:none;">\
-						 \
-					</div>';
-				
-				
-				
-				var dv = document.createElement('div');
-				dv.setAttribute('style', 'border-bottom:1px solid teal;');
-				dv.className = 'exe-div';
-				
-				var el_a = document.createElement('a');
-				el_a.setAttribute('style', 'position:absolute;margin-left:200px;');
-				el_a.target    = 'new_win';
-				el_a.innerText = ' LINK';
-				el_a.href = y.link_nprofile_view_3;
-				dv.appendChild(el_a);
-				//"https://www.linkedin.com/profile/view?id=15329492&authType=NAME_SEARCH&authToken=sKun&locale=en_US&srchid=2041448321402183517267&srchindex=1&srchtotal=57&trk=vsrp_people_res_name&trkInfo=VSRPsearchId%3A2041448321402183517267%2CVSRPtargetId%3A15329492%2CVSRPcmpt%3Aprimary"
-				
-				var el_div = document.createElement('div');
-				//~ el_div.setAttribute('style', 'display:inline;');
-				el_div.innerHTML = MT__bold(y.firstName + ' ' + y.lastName, o.nm_array);
-				dv.appendChild(el_div);
-				
-				//~ dv.appendChild(document.createElement('br'));
-				
-				var el_div = document.createElement('div');
-				el_div.setAttribute('style', '');
-				el_div.innerHTML = headline;
-				dv.appendChild(el_div);
-				
-				var el_inp = document.createElement('input');
-				el_inp.setAttribute('style', 'width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
-				el_inp.value = 'Location';
-				dv.appendChild(el_inp);
-				
-				var el_div = document.createElement('div');
-				el_div.setAttribute('style', 'display:inline');
-				el_div.className = 'exe-locn';
-				dv.appendChild(el_div);
-				
-				dv.appendChild(document.createElement('br'));
-				
-				if (s != '') {
-					var el_div = document.createElement('div');
-					el_div.setAttribute('style', 'border-bottom:1px solid teal;');
-					el_div.innerHTML = s;
-					dv.appendChild(el_div);
-				}
-				
-				var btn = document.createElement('input');
-				btn.setAttribute('type','button');
-				btn.setAttribute('class','exe-connections');
-				btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
-				btn.id = '';
-				btn.value = y.connectionCount;
-				dv.appendChild(btn);
-				
-				dv.appendChild(document.createElement('br'));
-				
-				//https://www.linkedin.com/profile/view?id=15329492
-				var btn = document.createElement('input');
-				btn.setAttribute('type','button');
-				btn.setAttribute('class','exe');
-				btn.setAttribute('style','width:26%;height:30px;');
-				//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3; // OLD !!
-				btn.id = y.link_nprofile_view_3;
-				btn.value = 'Title';
-				dv.appendChild(btn);
-				
-				out.appendChild(dv);
-				
-				//~ out.innerHTML += '\
-					//~ <div style="border-bottom:1px solid teal;" class="exe-div">\
-						//~ <a href="http://linkedin.com'+y.link_nprofile_view_3+'" target="new_win" style="position:absolute;margin-left:200px;"> LINK </a>\
-						//~ '+y.firstName+'|'+y.lastName+'\
-						//~ <br >\
-						//~ '+headline+'\
-						//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="Location" >\
-						//~ <div class="exe-locn" style="display:inline">\
-							 //~ \
-						//~ </div>\
-						//~ <br >\
-						//~ '+((s != '') ? s + '<br>' : '' )+'\
-						//~ <br style="clear:both;">\
-					//~ </div>';
-				
-				
-				var z = out.getElementsByClassName('exe-div');
-				z = z[z.length - 1];
-				
-				z.getElementsByClassName('exe-locn')[0].innerHTML		= MT__bold(y.fmt_location, o.locn_array);
-				z.getElementsByClassName('exe-title')[0].innerHTML		= et;
-				z.getElementsByClassName('exe-comp')[0].innerHTML		= ec;
-				z.getElementsByClassName('exe-headline')[0].innerHTML	= y.fmt_headline;
-				
-				// append
-				
-				//~ z.appendChild(btn);
-				//
-				//~ z.appendChild(document.createElement('br'));
-				//
-				
-				//~ 
-				//~ if (y.logo_result_base && y.logo_result_base.media_picture_link) {
-					//~ y.logo_result_base.media_picture_link = y.logo_result_base.media_picture_link.replace();
-				//~ }
-				
-				// set val
-				
-				//~ if (img != '')
-					//~ z.getElementsByClassName('exe-img')[0].src = img;
-				
-				//console.log(y.connectionCount);
-				
-			}
-			
-			// STILL HERE AND PREVIEW !?
-			//~ if (AMT__Global_Vars.isPreview) {
-				//~ AMT___Floater.skip();
-				//~ return;
-			//~ }
-			
-			var div = document.createElement('div');
-			div.setAttribute('style','height:1600px;');
-			out.appendChild(div);
-			
-			var x = document.getElementsByClassName('exe');
-			for (var i in x) {
-				if (!x[i]) continue;
-				x[i].onclick = function() {
-					this.style.border = '4px solid LightGreen';
-					
-					var x = /^(https:\/\/\w+\.linkedin\.com\/profile\/view\?id=\d+)/.exec(this.id);
-					if (x) {
-						q.value = this.id;
-						//~ q.value = x[1];
-						q.style.border = '4px solid LightGreen';
-						doSubmit();
-					}
-					
-					//console.log(this.id);
-					//Tooey_Courtemanche_linkedin_people__profile(this.id);
-					//q.style.border = '2px dashed blue';
-				}
-			}
-		}
-		//~ function Tooey_Courtemanche_linkedin_people__profile(u) {
-			//~ 
-			//~ GM_xmlhttpRequest({
-				//~ method: "GET",
-				//~ url: u,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ if (response.status != 200) {
-						//~ d1.innerHTML = response.status;
-						//~ return;
-					//~ }
-					//~ 
-					//~ // dashes
-					//~ rs = rs.replace(/\\u002d/g, '-');
-					//~ 
-					//~ //topcard
-					//~ var found = false;
-					//~ r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
-					//~ if (r) {
-						//~ r = JSON.parse('{'+r[1]+'}');
-						//~ r = r.content;
-						//~ console.log(r);
-						//~ 
-						//~ if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
-							//~ q.value = r.TopCard.public_url.canonicalUrl;
-							//~ if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(q.value)) {
-								//~ q.style.border = '4px solid LightGreen';
-								//~ doSubmit();
-								//~ return;
-							//~ }
-						//~ }
-					//~ }
-					//~ // still here?
-					//~ var r2;
-					//~ if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
-						//~ q.style.border = '10px dashed pink';
-					//~ }
-				//~ }
-			//~ });
-		//~ }
 	}
 	
 	//
@@ -47747,6 +53749,477 @@ qatar,80
 		
 	}
 	
+	/**
+	 * Generic Twitter Search
+	 * 
+	 */
+	
+	//
+	// Betsey
+	// Find an Athlete's official Twitter handle
+	// 
+	s = 'official Twitter handle. Please beware of imposter and parody accounts. Beware of athletes with identical names and same sport (or across sports).';
+	if (ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:30px;}');
+		//GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
+		
+		// AMT new style
+		GM_addStyle('.container {position:absolute;top:30px;margin-left:-40px;zoom:0.8;}');
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;}');
+		
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name:  td[1].innerText.trim(),
+			sport: td[3].innerText.trim(),
+			team:  td[5].innerText.trim(),
+			name_array: [],
+			team_array: []
+		};
+		o.name_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.team_array = o.team.replace(/[^\w\d]/g, ' ').split(' ');
+		var x = o.sport.replace(/[^\w\d]/g, ' ').split(' ');
+		o.team_array = o.team_array.concat(x);
+		
+		/* BEGIN ITEMS */
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='140px';
+		d1.style.left='0%';
+		d1.style.width='50%';
+		d1.style.height='400px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='12px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='140px';
+		d1b.style.left='50%';
+		d1b.style.width='49%';
+		d1b.style.height='400px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='12px';
+		//
+		d = document.createElement('input');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='50%';
+		d2.style.height='30px';
+		//
+		var d2b = document.createElement('input');
+		document.body.appendChild(d2b);
+		d2b.style.position='absolute';
+		d2b.style.top='0px';
+		d2b.style.left='50%';
+		d2b.style.width='49%';
+		d2b.style.height='30px';
+		/* END ITEMS */
+		
+		// actions
+		d2.onblur = function() {
+			Betsey_athletes_twitter(this, d1);
+		}
+		d2b.onblur = function() {
+			Betsey_athletes_twitter(this, d1b);
+		}
+		
+		d2.value = o.name;
+		d2b.value = o.name + ',' + o.team;
+		
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		var q = document.getElementById('twitter');
+		
+		// init
+		Betsey_athletes_twitter(d2, d1);
+		Betsey_athletes_twitter(d2b, d1b);
+		
+		// function Betsey_athletes_twitter
+		function Betsey_athletes_twitter(input, out) {
+			
+			//q=Twitter%20API&page=1&count=3
+			
+			var out = out;
+			var input = input;
+			
+			var url;
+			url = '';
+			url+= 'q='+encodeURIComponent(input.value.trim());
+			//url+= '%20'+encodeURIComponent(d2b.value.trim());
+			//url+= '%20'+encodeURIComponent(d2c.value.trim());
+			url+= '&page=1&count=10';
+			
+			//~ out.innerHTML = '';
+			out.innerHTML = '<div style="border-bottom:1px solid teal;">'+input.value+'</div>';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?twitter_api_usersearch='+encodeURIComponent(url),
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						out.innerHTML = response.status;
+						return;
+					}
+					
+					var r;
+					
+					r = JSON.parse(rs);
+					console.log(r);
+					
+					var c = 0;
+					var eldiv, elinp;
+					for (var i in r) {
+						var s = r[i];
+						var url = '';
+						try {
+							//console.log(s.entities);return;
+							if (s.entities.url.urls[0].display_url){
+								url = s.entities.url.urls[0].display_url;
+							} else if (s.entities.url.urls[0].expanded_url){
+								url = s.entities.url.urls[0].expanded_url;
+							}
+							//~ console.log(o_url.replace(/\/[\d\D]*$/, ''));
+							//~ console.log(url);
+							//url = MT__bold(url, [o_url.replace(/\/[\d\D]*$/, '')]) //(o, arr)
+							//~ url+= '<br>';
+						}
+						catch (e) {
+							//console.log(e);
+						}
+						
+						eldiv = document.createElement('div');
+						eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+						eldiv.screen_name = s.screen_name;
+						eldiv.className = 'exe ' +s.screen_name;
+						eldiv.tw_followers_above = (s.followers_count*1 >= 1000) ? true : false;
+						
+						
+						if (s.followers_count*1 < 1000)
+							eldiv.style.backgroundColor = 'aqua';
+						
+						var img = document.createElement('img');
+						img.setAttribute('style','float:right;width:90px;');
+						img.src = s.profile_image_url_https;
+						eldiv.appendChild(img);
+						
+						eldiv.innerHTML += MT__bold(s.name, o.name_array) +
+							((s.verified) ? '✓' : '') +"<br>" +
+							'@' + s.screen_name + "<br>" +
+							s.location + "<br>" +
+							'fo:'+s.followers_count + "<br>" +
+							'fr:'+s.friends_count + "<br>" +
+							url + "<br>" +
+							MT__bold(s.description, ['official','officiel'].concat(o.team_array));
+						;
+						//~ eldiv.innerText = s.name + ((s.verified) ? '✓' : '') +"\n" +
+							//~ '@' + s.screen_name + "\n" +
+							//~ s.location + "\n" +
+							//~ 'fo:'+s.followers_count + "\n" +
+							//~ 'fr:'+s.friends_count + "\n" +
+							//~ url + "\n" +
+							//~ s.description
+						//~ ;
+						//~ if (s.verified)
+							//~ eldiv.innerText += '\n✓';
+							//~ eldiv.innerText += '\n<span style="font-weight:bold;">✓</span>';
+						
+						eldiv.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							
+							var x = this.screen_name;
+							q.value = '@'+x;
+							
+							if (x != '' && x.length > 1) {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						
+						eldiv.onmouseover = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						
+						eldiv.onmouseout = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								if (this.tw_followers_above)
+									x[i].style.backgroundColor = '';
+								else
+									x[i].style.backgroundColor = 'aqua';
+							}
+						}
+						
+						out.appendChild(eldiv);
+						
+						//~ if (c == 0) {
+							//~ console.log(s.name.replace(/[^\w\d_]/g, '').toLowerCase());
+							//~ console.log(s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase());
+							//~ console.log(o_name);
+							//~ if (o_url.length >= 6) { // xyz.com
+								//~ if (url.toLowerCase().indexOf(o_url) === 0) {
+									//~ if  (
+										//~ (
+											//~ s.name.replace(/[^\w\d_]/g, '').toLowerCase()			== o_name ||
+											//~ s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase()	== o_name
+										//~ ) &&
+										//~ o_name.length >= 3
+										//~ )
+									//~ {	
+										//~ var x = s.screen_name.trim();
+										//~ q.value = 'https://twitter.com/'+x;
+										//~ if (x != '' && x.length > 1) {
+											//~ var y = d1.getElementsByTagName('input');
+											//~ y[y.length - 1].style.backgroundColor = 'LightGreen';
+											//~ doSubmit();
+										//~ }
+									//~ }
+								//~ }
+							//~ }
+						//~ }
+						c++;
+					}
+					if (r.length) {
+						eldiv = document.createElement('div');
+						eldiv.setAttribute('style','height:1200px;');
+						out.appendChild(eldiv);
+					} else {
+						eldiv = document.createElement('div');
+						eldiv.innerText = '0';
+						out.appendChild(eldiv);
+					}
+					
+					
+				}
+			});
+		}
+	}
+	
+	//
+	// felix greaves
+	// generic twitter api user search (ex. va hospitals)
+	// 
+	// 
+	s = '<p>1) looking on the hospital\'s website (both the home page and the \'contact us\'&nbsp;or similar&nbsp;page)</p>';
+	s2= '3) searching for the hospital\'s name on&nbsp;Facebook';
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) == -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {width:30%;margin-top:30px;}');
+		//GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
+		
+		var b = document.getElementsByTagName('b');
+		var COMP  = b[0].innerText.trim();
+		var STATE = b[3].innerText.trim();
+		
+		
+		/* BEGIN ITEMS */
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='0px';
+		d1.style.left='30%';
+		d1.style.width='68%';
+		d1.style.height='400px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='12px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='400px';
+		d1b.style.left='30%';
+		d1b.style.width='68%';
+		d1b.style.height='200px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='12px';
+		//
+		d = document.createElement('input');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='28%';
+		d2.style.height='30px';
+		/* END ITEMS */
+		
+		// actions
+		d2.onblur = function() {
+			felix_greaves_twitter_hospitals();
+		}
+		d2.value = COMP + ',' + STATE;
+		
+		var q = document.getElementById('Q1Url');
+		
+		// init
+		felix_greaves_twitter_hospitals();
+		
+		// function felix_greaves_twitter_hospitals()
+		function felix_greaves_twitter_hospitals() {
+			
+			//q=Twitter%20API&page=1&count=3
+			
+			var url;
+			url = '';
+			url+= 'q='+encodeURIComponent(d2.value.trim());
+			//url+= '%20'+encodeURIComponent(d2b.value.trim());
+			//url+= '%20'+encodeURIComponent(d2c.value.trim());
+			url+= '&page=1&count=10';
+			
+			d1.innerHTML = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?twitter_api_usersearch='+encodeURIComponent(url),
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						d1.innerHTML = response.status;
+						return;
+					}
+					
+					d1.innerHTML = d2.value+'<hr>';
+					
+					var r;
+					
+					r = JSON.parse(rs);
+					console.log(r);
+					
+					var c = 0;
+					var eldiv, elinp;
+					for (var i in r) {
+						var s = r[i];
+						var url = '';
+						try {
+							//console.log(s.entities);return;
+							if (s.entities.url.urls[0].display_url){
+								url = s.entities.url.urls[0].display_url;
+							} else if (s.entities.url.urls[0].expanded_url){
+								url = s.entities.url.urls[0].expanded_url;
+							}
+							//~ console.log(o_url.replace(/\/[\d\D]*$/, ''));
+							//~ console.log(url);
+							//url = MT__bold(url, [o_url.replace(/\/[\d\D]*$/, '')]) //(o, arr)
+							//~ url+= '<br>';
+						}
+						catch (e) {
+							//console.log(e);
+						}
+						
+						eldiv = document.createElement('div');
+						eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+						eldiv.screen_name = s.screen_name;
+						
+						eldiv.innerText = s.name + "\n" +
+							'@' + s.screen_name + "\n" +
+							s.location + "\n" +
+							'fo:'+s.followers_count + "\n" +
+							'fr:'+s.friends_count + "\n" +
+							url + "\n" +
+							s.description
+							;
+							
+						eldiv.onclick = function() {
+							this.style.backgroundColor = 'lime';
+							
+							var q = document.getElementById('Q1Url');
+							var x = this.screen_name;
+							q.value = '@'+x;
+							
+							if (x != '' && x.length > 1) {
+								//doSubmit();
+							}
+						}
+						
+						d1.appendChild(eldiv);
+						
+						if (c == 0) {
+							/*console.log(s.name.replace(/[^\w\d_]/g, '').toLowerCase());
+							console.log(s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase());
+							console.log(o_name);
+							if (o_url.length >= 6) { // xyz.com
+								if (url.toLowerCase().indexOf(o_url) === 0) {
+									if  (
+										(
+											s.name.replace(/[^\w\d_]/g, '').toLowerCase()			== o_name ||
+											s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase()	== o_name
+										) &&
+										o_name.length >= 3
+										)
+									{	
+										var x = s.screen_name.trim();
+										q.value = 'https://twitter.com/'+x;
+										if (x != '' && x.length > 1) {
+											var y = d1.getElementsByTagName('input');
+											y[y.length - 1].style.backgroundColor = 'LightGreen';
+											doSubmit();
+										}
+									}
+								}
+							}*/
+						}
+						c++;
+					}
+					if (r.length) {
+						eldiv = document.createElement('div');
+						eldiv.setAttribute('style','height:1200px;');
+						d1.appendChild(eldiv);
+					}
+					
+					
+				}
+			});
+		}
+	}
+	
 	//
 	// JANYS
 	// generic twitter api user search (ex. va hospitals)
@@ -47950,195 +54423,6 @@ qatar,80
 							}
 						}
 					}
-				}
-			});
-		}
-	}
-	
-	//
-	// felix greaves
-	// generic twitter api user search (ex. va hospitals)
-	// 
-	// 
-	s = '<p>1) looking on the hospital\'s website (both the home page and the \'contact us\'&nbsp;or similar&nbsp;page)</p>';
-	if (ih.indexOf(s) != -1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:30%;margin-top:30px;}');
-		//GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
-		
-		var b = document.getElementsByTagName('b');
-		var COMP  = b[0].innerText.trim();
-		var STATE = b[3].innerText.trim();
-		
-		
-		/* BEGIN ITEMS */
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='0px';
-		d1.style.left='30%';
-		d1.style.width='68%';
-		d1.style.height='400px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='12px';
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='400px';
-		d1b.style.left='30%';
-		d1b.style.width='68%';
-		d1b.style.height='200px';
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='12px';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='0px';
-		d2.style.left='0%';
-		d2.style.width='28%';
-		d2.style.height='30px';
-		/* END ITEMS */
-		
-		// actions
-		d2.onblur = function() {
-			felix_greaves_twitter_hospitals();
-		}
-		d2.value = COMP + ',' + STATE;
-		
-		var q = document.getElementById('Q1Url');
-		
-		// init
-		felix_greaves_twitter_hospitals();
-		
-		// function felix_greaves_twitter_hospitals()
-		function felix_greaves_twitter_hospitals() {
-			
-			//q=Twitter%20API&page=1&count=3
-			
-			var url;
-			url = '';
-			url+= 'q='+encodeURIComponent(d2.value.trim());
-			//url+= '%20'+encodeURIComponent(d2b.value.trim());
-			//url+= '%20'+encodeURIComponent(d2c.value.trim());
-			url+= '&page=1&count=10';
-			
-			d1.innerHTML = '';
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host + '/mturk/util.php?twitter_api_usersearch='+encodeURIComponent(url),
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						d1.innerHTML = response.status;
-						return;
-					}
-					
-					d1.innerHTML = d2.value+'<hr>';
-					
-					var r;
-					
-					r = JSON.parse(rs);
-					console.log(r);
-					
-					var c = 0;
-					var eldiv, elinp;
-					for (var i in r) {
-						var s = r[i];
-						var url = '';
-						try {
-							//console.log(s.entities);return;
-							if (s.entities.url.urls[0].display_url){
-								url = s.entities.url.urls[0].display_url;
-							} else if (s.entities.url.urls[0].expanded_url){
-								url = s.entities.url.urls[0].expanded_url;
-							}
-							//~ console.log(o_url.replace(/\/[\d\D]*$/, ''));
-							//~ console.log(url);
-							//url = MT__bold(url, [o_url.replace(/\/[\d\D]*$/, '')]) //(o, arr)
-							//~ url+= '<br>';
-						}
-						catch (e) {
-							//console.log(e);
-						}
-						
-						eldiv = document.createElement('div');
-						eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
-						eldiv.screen_name = s.screen_name;
-						
-						eldiv.innerText = s.name + "\n" +
-							'@' + s.screen_name + "\n" +
-							s.location + "\n" +
-							'fo:'+s.followers_count + "\n" +
-							'fr:'+s.friends_count + "\n" +
-							url + "\n" +
-							s.description
-							;
-							
-						eldiv.onclick = function() {
-							this.style.backgroundColor = 'lime';
-							
-							var q = document.getElementById('Q1Url');
-							var x = this.screen_name;
-							q.value = '@'+x;
-							
-							if (x != '' && x.length > 1) {
-								doSubmit();
-							}
-						}
-						
-						d1.appendChild(eldiv);
-						
-						if (c == 0) {
-							/*console.log(s.name.replace(/[^\w\d_]/g, '').toLowerCase());
-							console.log(s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase());
-							console.log(o_name);
-							if (o_url.length >= 6) { // xyz.com
-								if (url.toLowerCase().indexOf(o_url) === 0) {
-									if  (
-										(
-											s.name.replace(/[^\w\d_]/g, '').toLowerCase()			== o_name ||
-											s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase()	== o_name
-										) &&
-										o_name.length >= 3
-										)
-									{	
-										var x = s.screen_name.trim();
-										q.value = 'https://twitter.com/'+x;
-										if (x != '' && x.length > 1) {
-											var y = d1.getElementsByTagName('input');
-											y[y.length - 1].style.backgroundColor = 'LightGreen';
-											doSubmit();
-										}
-									}
-								}
-							}*/
-						}
-						c++;
-					}
-					if (r.length) {
-						eldiv = document.createElement('div');
-						eldiv.setAttribute('style','height:1200px;');
-						d1.appendChild(eldiv);
-					}
-					
-					
 				}
 			});
 		}
@@ -50963,6 +57247,936 @@ qatar,80
 			});
 		}
 	}
+	/**
+	 * Find the address
+	 * Data Cleansing
+	 * Fiber Data
+	 */
+	//
+	// Fiber Data Co.
+	// 
+	// 
+	s = 'You will be given the name of an organization, and you will need to find the address for the given organization. We prefer the physical address, but PO Boxes are also acceptable.';
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		GM_addStyle('body {width:18%;margin-top:160px !important;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+		GM_addStyle('input {width:18% !important;}');
+		GM_addStyle('#State {width:20px;display:block;}');
+		
+		GM_addStyle('.panel-heading {position:absolute;top:1800px;margin-left:100px;width:80%;}');
+		
+		
+		/* BEGIN ITEMS */
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='0px';
+		d1.style.left='20%';
+		d1.style.width='20%';
+		d1.style.height='600px';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.overflow = 'auto';
+		d1.style.backgroundColor='#eee';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='0px';
+		d1b.style.left='40%';
+		d1b.style.width='20%';
+		d1b.style.height='600px';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.overflow = 'auto';
+		d1b.style.backgroundColor='#eee';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='0px';
+		d1c.style.left='60%';
+		d1c.style.width='20%';
+		d1c.style.height='600px';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.overflow = 'auto';
+		d1c.style.backgroundColor='#eee';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1d');
+		document.body.appendChild(d);
+		var d1d = document.getElementById('d1d');
+		d1d.style.position='absolute';
+		d1d.style.top='0px';
+		d1d.style.left='80%';
+		d1d.style.width='20%';
+		d1d.style.height='600px';
+		d1d.style.border='1px solid blue';
+		d1d.style.borderBottom='2px solid blue';
+		d1d.style.overflow = 'auto';
+		d1d.style.backgroundColor='#eee';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2');
+		document.body.appendChild(d);
+		var d2 = document.getElementById('d2');
+		d2.style.position='absolute';
+		d2.style.top='0px';
+		d2.style.left='0%';
+		d2.style.width='18%';
+		d2.style.height='50px';
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2b');
+		//~ document.body.appendChild(d);
+		//~ var d2b = document.getElementById('d2b');
+		//~ d2b.style.position='absolute';
+		//~ d2b.style.top='500px';
+		//~ d2b.style.left='0%';
+		//~ d2b.style.width='18%';
+		//~ d2b.style.height='30px';
+		//~ d2b.type = "button";
+		//~ d2b.value = "United States";
+		//~ d2b.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("Country").value = "US";
+			//~ //document.getElementById("Country").value = "United States";
+		//~ }
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2c');
+		document.body.appendChild(d);
+		var d2c = document.getElementById('d2c');
+		d2c.style.position='absolute';
+		d2c.style.top='50px';
+		d2c.style.left='0%';
+		d2c.style.width='18%';
+		d2c.style.height='40px';
+		d2c.value = "Street Address\nCity, State Zip"; //800 S Main St Canandaigua, NY 14424
+		//
+		var d2d = document.createElement('a');
+		document.body.appendChild(d2d);
+		d2d.style.position='absolute';
+		d2d.style.top='110px';
+		d2d.style.left='0%';
+		d2d.style.width='18%';
+		d2d.style.height='20px';
+		d2d.target='_blank';
+		//
+		var d2e = document.createElement('button');
+		d2e.setAttribute('style','position:absolute;top:90px;left:0;width:18%;height:20px;');
+		document.body.appendChild(d2e);
+		d2e.innerText = 'N/A';
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d2d');
+		//~ d.setAttribute('style','position:absolute;top:500px;left:0;width:18%;height:98px;');
+		//~ document.body.appendChild(d);
+		//~ var d2d = document.getElementById('d2d');
+		//~ d2d.value = '';
+		//~ d2d.onblur = Data_Cleansing_find_company_addr__skips_write;
+		//~ d2d.onfocus = function() {
+			//~ Data_Cleansing_find_company_addr__skips_init(false);
+		//~ }
+		/* END ITEMS */
+		
+		// ...
+		var b;
+		b = /<h2 style="[^"]*">Organization Name: ([^<]+)<\/h2>/.exec(ih)[1];
+		b = __js_clean_html_str(b).trim();
+		var COMP = b;
+		var location = '';
+		//~ // ...
+		//~ var location;
+		//~ location = /<p><span style="font-family: Arial;">Suggested Location:&nbsp;<b>([^<]+)<\/b><\/span><\/p>/.exec(ih);
+		//~ if (location) {
+			//~ location = __js_clean_html_str(location).trim();
+			//~ location = location.replace(/ +[A-Z]{2}$/, '');
+		//~ } else location = '';
+		//var b = document.getElementsByTagName('b')[0].innerText.trim();
+		
+		// ...
+		var match_o = b;
+		match_o = match_o.replace(/&/g, 'and');
+		match_o = match_o.replace(/^the /i, '');
+		match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+		
+		// ...
+		d2.value = b.replace(/"/g, '') + ' ' + location;
+		d2.value = d2.value.trim();
+		
+		//Turn the company name into a google search
+		d2d.href = 'http://www.google.com/search?q='+encodeURIComponent(COMP);
+		d2d.innerText = COMP;
+		
+		// ...
+		d2.onblur = function() {
+			this.value = this.value.trim();
+			Fiber_Data_Co_find_company_addr__FB_addr();
+			Fiber_Data_Co_find_company_addr__hoovers_addr();
+			Fiber_Data_Co_find_company_addr__businessweek_addr(false);
+			Fiber_Data_Co_find_company_addr__google_addr();
+		}
+		d2c.onclick = function() {
+			this.value = '';
+			this.onclick = function() {};
+		}
+		d2c.onblur = function() {
+			// blanks
+			document.getElementById('address1').value =		'';
+			document.getElementById('address2').value =		'';
+			document.getElementById('city').value =			'';
+			document.getElementById('state').value =		'';
+			document.getElementById('postalcode').value =	'';
+			
+			this.value = this.value.replace(/ +/g, ' ');
+			this.value = this.value.replace(/\n +/g, "\n");
+			this.value = this.value.replace(/^ +/g, '');
+			this.value = this.value.trim();
+			
+			var x = this.value.split("\n");
+			
+			document.getElementById('address1').value = x[0].trim();
+			
+			if (x[1]) {
+				x[1] = x[1].trim();
+				var y = /^([^,]*),([ a-z]+)([\d\-]*)$/i.exec(x[1]);
+				if (y) {
+					document.getElementById('city').value		= y[1].trim();
+					document.getElementById('state').value		= y[2].toUpperCase().trim();
+					document.getElementById('postalcode').value	= y[3];
+					if (y[2].trim().length != 2) {
+						document.getElementById('state').style.border = '3px solid teal';
+					}
+				}
+			}
+		}
+		d2e.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById('address1').value =		'N/A';
+			document.getElementById('address2').value =		'N/A';
+			document.getElementById('city').value =			'N/A';
+			document.getElementById('state').value =		'N/A';
+			document.getElementById('postalcode').value =	'N/A';
+			doSubmit();
+			new AMT___core_factory().nextTab();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// onsubmit
+		document.getElementById('mturk_form').onsubmit = function() {
+			var x = document.getElementById('address1');
+			x.value = x.value.trim();
+			if (x.value.length < 1) {
+				x.style.border = '2px solid orange';
+				return false;
+			}
+			var x = document.getElementById('city');
+			x.value = x.value.trim();
+			if (x.value.length < 1) {
+				x.style.border = '2px solid orange';
+				return false;
+			}
+			var x = document.getElementById('state');
+			x.value = x.value.trim();
+			if (x.value.length != 2) {
+				x.style.border = '2px solid orange';
+				return false;
+			}
+			var x = document.getElementById('postalcode');
+			x.value = x.value.trim();
+			if (x.value.length < 1 || x.value.length > 10) {
+				x.style.border = '2px solid orange';
+				return false;
+			}
+			
+			new AMT___core_factory().nextTab();
+		}
+		//~ //
+		//~ if (/^null$/i.exec(d2.value.trim())) {
+			//~ return;
+		//~ }
+		
+		// factory
+		var items_fty = new AMT___items_factory();
+		var requests_fty = new AMT___requests_factory();
+		
+		// skip this job?
+		AMT___POPUP__initializeGlobals(
+			Fiber_Data_Co_find_company_addr__init
+			//~ Data_Cleansing_find_company_addr__skips_init
+		);
+		
+		//~ // function Data_Cleansing_find_company_addr__skips_init()
+		//~ // this will re-populate the textarea when/if !start (textarea.onclick)
+		//~ function Data_Cleansing_find_company_addr__skips_init(start, callback) {
+			//~ 
+			//~ var start = start;
+			//~ var callback = callback;
+			//~ 
+			//~ GM_xmlhttpRequest({ // load the list of synonyms from the browser cache!
+				//~ method: "GET",
+				//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/.miscellaneous/AMT__Data_Cleansing_find_company__skips?'+Math.random()*10000,
+				//~ //url: u,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ if (response.status != 200) return;
+					//~ 
+					//~ d2d.value = rs.trim() + "\n"; // re-populate
+					//~ 
+					//~ // skip this task?
+					//~ if (!start && AMT__Global_Vars.isPreview) {
+						//~ var x = d2d.value.trim().split("\n");
+						//~ for (var i in x) {
+							//~ if (COMP == x[i]) {
+								//~ AMT___Floater.skip();
+								//~ return;
+								//~ //break;
+							//~ }
+						//~ }
+					//~ }
+					//~ 
+					//~ // here?
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.accept();
+						//~ return;
+					//~ }
+					//~ 
+					//~ // here?
+					//~ if (!start)
+						//~ Data_Cleansing_find_company_addr__init();
+				//~ }
+			//~ });
+		//~ }
+		//~ // WRITE TO FILE !
+		//~ function Data_Cleansing_find_company_addr__skips_write(e) {
+			//~ 
+			//~ var el = el;
+			//~ 
+			//~ requests_fty.io__write_to_file(
+				//~ {
+					//~ data:	'AMT__serverSide_write__value='+encodeURIComponent(this.value)+
+							//~ '&AMT__serverSide_write__folder=.miscellaneous'+
+							//~ '&AMT__serverSide_write__file=AMT__Data_Cleansing_find_company__skips',
+					//~ el: this
+				//~ },
+				//~ function (write_object) {
+					//~ write_object.el.style.border = '2px dashed LightGreen';
+				//~ }
+			//~ );
+		//~ }
+		
+		
+		// function Fiber_Data_Co_find_company_addr__init
+		function Fiber_Data_Co_find_company_addr__init() {
+			Fiber_Data_Co_find_company_addr__FB_addr();
+			Fiber_Data_Co_find_company_addr__hoovers_addr();
+			Fiber_Data_Co_find_company_addr__businessweek_addr(false); // initial
+			Fiber_Data_Co_find_company_addr__google_addr();
+		}
+		
+		// function Fiber_Data_Co_find_company_addr__country2abbr
+		function Fiber_Data_Co_find_company_addr__country2abbr(country) {
+			var abbr = requests_fty.general_functions__countryToAbbreviatedCountry(country);
+			if (!abbr) {
+				alert(country + ' not in MT___countries!');
+				return;
+			}
+			// here?
+			return abbr;
+		}
+		
+		// function Fiber_Data_Co_find_company_addr__google_addr_prof
+		function Fiber_Data_Co_find_company_addr__google_addr_prof(el) {
+			
+			// update button bgc
+			el.style.backgroundColor = 'MintCream';
+			
+			// obj
+			var id = JSON.parse(el.json_response); // obj -> prediction
+			
+			var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+				id.reference+
+				'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+				
+			//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(gu);
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var s = rs;
+					
+					rs = JSON.parse(rs);
+					
+					if (rs.status != 'OK') {
+						console.log(rs.status);
+						return;
+					}
+					
+					console.log(rs);
+					
+					// update button id/value
+					//~ el.innerText += "\n"+rs.result.formatted_address;
+					
+					el.appendChild(document.createElement('br'));
+					el.appendChild(document.createTextNode(rs.result.formatted_address));
+					el.json_response = s; // JSON!
+				}
+			});
+		}
+		
+		// function Fiber_Data_Co_find_company_addr__google_addr
+		//
+		// 100 000 requests per 24 hour period	
+		// The Text Search service is subject to a 10-times multiplier.
+		// The Radar Search Service is subject to a 5-times multiplier
+		//
+		// 0,0 20000000 = world search
+		//
+		function Fiber_Data_Co_find_company_addr__google_addr() {
+		
+			d1d.innerHTML = '';
+			
+			var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+				encodeURIComponent(d2.value)+
+				'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					rs = JSON.parse(rs);
+					
+					if (rs.status != 'OK') {
+						console.log(rs.status);
+						d1d.innerText = rs.status;
+						return;
+					}
+					
+					rs = rs.predictions;
+					
+					for (var i in rs) { //obj
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
+						div.innerText = rs[i].description;
+						div.json_response = JSON.stringify(rs[i]);
+						
+						div.onclick = function() {
+							
+							console.log(this.style.backgroundColor);
+							
+							if  (
+								this.style.backgroundColor != 'LightGreen' &&
+								this.style.backgroundColor != 'rgb(245, 255, 250)' // MintCream
+								)
+							{
+								this.style.backgroundColor = 'LightGreen';
+								Fiber_Data_Co_find_company_addr__google_addr_prof(this);
+							}
+							else {
+								// fill in details
+								
+								// blanks
+								document.getElementById('address1').value =	'';
+								document.getElementById('city').value =		'';
+								document.getElementById('state').value =	'';
+								document.getElementById('postalcode').value =		'';
+								
+								var id = JSON.parse(this.json_response); // obj -> place detail
+								//~ console.log(id);
+								
+								var j;
+								var type;
+								
+								for (var i in id.result.address_components) {
+									type = id.result.address_components[i].types[0];
+									j = id.result.address_components[i].long_name;
+									
+									if (type == 'street_number')
+										document.getElementById('address1').value = (j + ' ' + document.getElementById('address1').value).trim();
+									if (type == 'route')
+										document.getElementById('address1').value = (document.getElementById('address1').value+' '+j).trim();
+									if (type == 'locality')
+										document.getElementById('city').value = j;
+									if (type == 'administrative_area_level_1')
+										document.getElementById('state').value = j;
+									if (type == 'postal_code')
+										document.getElementById('postalcode').value = j;
+								}
+							}
+						}
+						
+						d1d.appendChild(div);
+						
+						
+						//~ d1d.innerHTML += '\
+							//~ <div value="" id="" class="exe-google" style="width:auto;text-align:left;border-bottom:2px solid teal;">\
+							//~ </div>\
+						//~ ';//rs[i].reference
+						//~ 
+						//~ var x = d1d.getElementsByTagName('div');
+						//~ x[x.length - 1].id = JSON.stringify(rs[i]);
+						//~ x[x.length - 1].innerText = rs[i].description;
+					}
+					
+					if (rs.length) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1200px;');
+						d1d.appendChild(div);
+						
+						//~ d1d.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
+					}
+					
+					//~ var x = document.getElementsByClassName('exe-google');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ 
+						//~ }
+					//~ }
+				}
+			});
+		}
+		
+		// function
+		function Fiber_Data_Co_find_company_addr__businessweek_addr_prof(u) {
+			document.getElementById('address1').value =	'';
+			document.getElementById('city').value =		'';
+			document.getElementById('state').value =	'';
+			document.getElementById('postalcode').value =		'';
+						
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					//12050 West Broad Street
+					//
+					//United States
+					var r =  /<div itemprop="address">((<p>[^<]+<\/p>)*)<p>([^,]+), ([A-Z]{2})&nbsp;([\d\-]+)<\/p><p style="[^"]*">([^<]+)<\/p><\/div>/.exec(rs);
+					
+					
+					
+					if (r) {
+						for (var i = 1; i<= r.length - 1; i++) {
+							r[i] = r[i].replace(/<[^>]*>/g, ' ');
+							r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+						}
+						document.getElementById('address1').value = r[1];
+						// in reverse
+						document.getElementById('city').value = r[r.length - 4];
+						document.getElementById('state').value = r[r.length - 3];
+						document.getElementById('postalcode').value = r[r.length - 2];
+					}
+					else {
+						r = /<div itemprop="address">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+						document.getElementById('address1').value = __js_clean_html_str(
+							r[1].replace(/<[^>]*>/g,'')
+						);
+					}
+				}
+			});
+		}
+		function Fiber_Data_Co_find_company_addr__businessweek_addr(first) {
+			d1c.innerHTML = '';
+			//if (first) {
+			//	d1c.innerHTML = '';
+			//}
+			//
+			var u = 'http://investing.businessweek.com/research/common/symbollookup/symbollookup.asp?region=all&textIn='+encodeURIComponent(d2.value);
+			//
+			if (first) {
+				u += '&lookuptype=';
+			}
+			else {
+				u += '&lookuptype=private';
+			}
+			//
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = /<div id="resultCaption">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					if (r) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+						div.innerHTML = r[1].replace(/<[^>]+>/g, '');
+						d1c.appendChild(div);
+						//~ d1c.innerHTML +=  r[1].replace(/<[^>]+>/g, '');
+						//~ d1c.innerHTML += '<hr>';
+					}
+					
+					//
+					// Dominion Auto Group
+					// United States
+					// Specialty Retail
+					var r = /<tr>\s*<td><a href="([^"]+)">([^<]+)<\/a><\/td>\s*<td>([^<]+)<\/td>\s*<td>([^<]*)<\/td>\s*<\/tr>/g;
+					
+					if (!r.exec(rs)) {
+						// SHOUGANG GENERACION ELECT-C
+						//
+					}
+					
+					r.lastIndex = 0;
+					
+					var m;
+					var c = 0;
+					while (m = r.exec(rs)) {
+						for (var i = 1; i<= 4; i++) {
+							m[i] = __js_clean_html_str(m[i]).trim();
+						}
+						
+						m[1] = m[1].replace(/\.\.\//g,'');
+						m[1] = 'http://investing.businessweek.com/research/' + m[1];
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+						
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = m[2];
+						inp.url_bw = m[1];
+						inp.name_bw = m[2];
+						
+						inp.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							//~ document.getElementById('OtherNames').value = this.name_bw;
+							//~ document.getElementById('SourceURL').value = this.url_bw;
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+							Fiber_Data_Co_find_company_addr__businessweek_addr_prof(this.url_bw);
+						}
+						
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[3]));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[4]));
+						
+						d1b.appendChild(div);
+						
+						c++;
+					}
+					if (c == 0) {
+						d1c.appendChild(document.createTextNode('0'));
+					}	
+					if (!first) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1400px;');
+						d1c.appendChild(div);
+					}
+					
+					if (first) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+						d1c.appendChild(div);
+						Fiber_Data_Co_find_company_addr__businessweek_addr(false);
+						return;
+					}
+				}
+			});
+		}
+		function Fiber_Data_Co_find_company_addr__hoovers_addr_prof(u) {
+			document.getElementById('address1').value =	'';
+			document.getElementById('city').value =		'';
+			document.getElementById('state').value =	'';
+			document.getElementById('postalcode').value =		'';
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				timeout:10000,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r =   /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([\d\-]+) <span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
+					//4201 S Washington St
+					//Marion
+					//IN
+					//45953
+					//United States
+					//var r2 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]*) <span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
+					//~ else if (r2)
+					//~ {
+						//~ for (var i = 1; i<= r.length - 1; i++) {
+							//~ r[i] = r[i].replace(/<[^>]*>/g, ' ');
+							//~ r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+						//~ }
+						//~ document.getElementById('Address1').value = r[1];
+						//~ // in reverse
+						//~ document.getElementById('City').value = r[r.length - 4];
+						//~ document.getElementById('State').value = r[r.length - 3];
+						//~ document.getElementById('Country').value = r[r.length - 1];
+						//~ document.getElementById('Zip').value = r[r.length - 2];
+					//~ } 
+					if (r) {
+						for (var i = 1; i<= 5; i++) {
+							r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+						}
+						document.getElementById('address1').value = r[1];
+						document.getElementById('city').value = r[2];
+						document.getElementById('state').value = r[3];
+						document.getElementById('postalcode').value = r[4];
+					} else {
+						r = /<p div itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
+						if (r) {
+							r[1] = r[1]
+								.replace(/<span itemprop="telephone">[^<]*/g, '')
+								.replace(/<[^>]*>/g, ' ')
+								.replace(/\s+/g, ' ')
+								.trim();
+							r[1] = __js_clean_html_str(r[1]);
+							document.getElementById('address1').value = r[1];
+						}
+
+					}
+				}
+			});
+		}
+		function Fiber_Data_Co_find_company_addr__hoovers_addr() {
+			d1b.innerHTML = '';
+			//
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
+				//~ timeout:30000,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					// /company-information/cs/company-profile.Cap_Gemini_SA.6af800b9fd01669c.html
+					// Cap Gemini S.A.
+					// Paris, France
+					// $13563.88M
+					var r = /<td><a href="([^"]+)">([^<]*)<\/a><\/td>[\r\n\t\s]+<td>([^<]*)<\/td>[\r\n\t\s]+<td>([^<]*)<\/td>/g;
+					var m;
+					while (m = r.exec(rs)) {
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+						
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = m[2];
+						inp.url_hv = 'http://www.hoovers.com' + m[1];
+						inp.name_hv = m[2];
+						
+						inp.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							//~ document.getElementById('OtherNames').value = this.name_hv;
+							//~ document.getElementById('SourceURL').value = this.url_hv;
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+							Fiber_Data_Co_find_company_addr__hoovers_addr_prof(this.url_hv);
+						}
+						
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[3]));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[4]));
+						
+						d1b.appendChild(div);
+					}
+					if (d1b.innerHTML == '') {
+						d1b.innerHTML = '0';
+					} else {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1400px;');
+						d1b.appendChild(div);
+					}
+				}
+			});
+		}
+		function Fiber_Data_Co_find_company_addr__FB_addr() {
+			d1.innerHTML = '';
+			
+			var u = 
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link'+
+				'&limit=6'+
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						d1.innerHTML = '!r.data';
+						return;
+					}
+					
+					r = r.data;
+					
+					var c = 0;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						if (r[i].location) {
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						//~ 
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						//~ 
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+						
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = r[i].name;
+						inp.json_object = r[i];
+						
+						inp.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							//~ console.log(this.id);
+							//~ var i = JSON.parse(this.id);
+							//~ 
+							//~ console.log(i);
+							
+							var i = this.json_object;
+							
+							if (i.name) {
+								//~ document.getElementById('OtherNames').value = i.name;
+							}
+							if (i.link) {
+								//~ document.getElementById('SourceURL').value = i.link;
+							}
+							if (i.location) {
+								i = i.location;
+								if (i.street) {
+									i.street = i.street.replace(/\s+/g, ' ');
+									document.getElementById('address1').value = i.street;
+								}
+								if (i.city) {
+									document.getElementById('city').value = i.city;
+								}
+								if (i.state) {
+									document.getElementById('state').value = i.state;
+								}
+								if (i.zip) {
+									document.getElementById('postalcode').value = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+								}
+							}
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+						}
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('L:'+r[i].likes));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('T:'+r[i].talking_about_count));
+						
+						if (r[i].category) {
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode('C:'+r[i].category));
+						}
+						
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								div.appendChild(document.createElement('br'));
+								div.appendChild(document.createTextNode('A::'+r[i].location[j]));
+							}
+						}
+						
+						d1.appendChild(div);
+						
+						if (c==0) { // && !found
+							
+							var match__ = r[i].name;
+							match__ = match__.replace(/&/g, 'and');
+							match__ = match__.replace(/^the /i, '');
+							match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+							match__ = match__.replace(/(official|music)$/i, '');
+							
+							console.log(match__);
+							console.log(match_o);
+							
+							if  (
+								match_o == match__ &&
+								match_o.length >= 3
+								)
+							{
+								//~ found = true;
+								
+								var x = d1.getElementsByTagName('input');
+								x = x[x.length - 1];
+								x.style.backgroundColor = 'LightGreen';
+							}
+						}
+						c++;
+					}
+					
+					if (c == 0) {
+						d1.innerHTML = '0';
+						return;
+					}
+					
+					// Here?
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1.appendChild(div);
+				}
+			});
+		}
+	}
 	//
 	// Data Cleansing
 	// Find the most accurate address for the provided company name
@@ -51131,31 +58345,32 @@ qatar,80
 		}
 		/* END ITEMS */
 		
-		//
+		// ...
 		var b;
 		b = /<p><span style="font-family: Arial;">Primary Name: <b>([^<]+)<\/b><\/span><\/p>/.exec(ih)[1];
 		b = __js_clean_html_str(b).trim();
 		var COMP = b;
-		
+		// ...
 		var location;
 		location = /<p><span style="font-family: Arial;">Suggested Location:&nbsp;<b>([^<]+)<\/b><\/span><\/p>/.exec(ih);
 		if (location) {
 			location = __js_clean_html_str(location).trim();
 			location = location.replace(/ +[A-Z]{2}$/, '');
 		} else location = '';
-		
 		//var b = document.getElementsByTagName('b')[0].innerText.trim();
 		
+		// ...
 		var match_o = b;
 		match_o = match_o.replace(/&/g, 'and');
 		match_o = match_o.replace(/^the /i, '');
 		match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
 		
+		// ...
 		d2.value = b.replace(/"/g, '') + ' ' + location;
 		d2.value = d2.value.trim();
-		
 		//d2.value = b.replace(/"/g, '');
 		
+		// ...
 		d2.onblur = function() {
 			this.value = this.value.trim();
 			Data_Cleansing_FB_addr();
@@ -51170,7 +58385,8 @@ qatar,80
 			encodeURIComponent(name.innerText +','+ location) + "' target=_blank>" +
 			name.innerText +
 			"</a>";
-			
+		
+		// onsubmit
 		document.getElementById('mturk_form').onsubmit = function() {
 			var x = document.getElementById('SourceURL');
 			x.value = x.value.trim();
@@ -51211,7 +58427,6 @@ qatar,80
 		if (/^null$/i.exec(d2.value.trim())) {
 			return;
 		}
-		//
 		
 		// factory
 		var items_fty = new AMT___items_factory();
@@ -51289,36 +58504,6 @@ qatar,80
 					write_object.el.style.border = '2px dashed LightGreen';
 				}
 			);
-			
-			//~ Tyler_Yamasaki_businesses_google__init(false, function() {
-				//~ 
-				//~ SYNONYMS[NAME].push(el.biz_name);
-				//~ 
-				//~ console.log(SYNONYMS[NAME]);
-				//~ 
-				//~ var data; //, el = el;
-				//~ data = 'AMT__serverSide_write__value='+encodeURIComponent(JSON.stringify(SYNONYMS))+
-					//~ '&AMT__serverSide_write__folder=.miscellaneous'+
-					//~ '&AMT__serverSide_write__file=AMT__Tyler_Yamasaki';
-					//~ 
-				//~ GM_xmlhttpRequest({ // load the list of synonyms from the browser cache!
-					//~ method: "POST",
-					//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
-					//~ data: data,
-					//~ headers: {
-						//~ "Content-Type": "application/x-www-form-urlencoded"
-					//~ },
-					//url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ if (response.status != 200) return;
-						//~ 
-						//~ el.style.backgroundColor = 'aqua';
-						//~ 
-						//~ console.log(rs);
-					//~ }
-				//~ });
-			//~ });
 		}
 		
 		
@@ -51326,7 +58511,7 @@ qatar,80
 		function Data_Cleansing_find_company_addr__init() {
 			Data_Cleansing_FB_addr();
 			Data_Cleansing_hoovers_addr();
-			Data_Cleansing_businessweek_addr(false);
+			Data_Cleansing_businessweek_addr(false); // initial
 			Data_Cleansing_google_addr();
 		}
 		
@@ -51340,13 +58525,15 @@ qatar,80
 			// here?
 			return abbr;
 		}
+		
+		// function Data_Cleansing_google_addr_prof
 		function Data_Cleansing_google_addr_prof(el) {
 			
 			// update button bgc
 			el.style.backgroundColor = 'MintCream';
 			
 			// obj
-			var id = JSON.parse(el.id); // obj -> prediction
+			var id = JSON.parse(el.json_response); // obj -> prediction
 			
 			var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
 				id.reference+
@@ -51373,11 +58560,16 @@ qatar,80
 					console.log(rs);
 					
 					// update button id/value
-					el.innerText += "\n"+rs.result.formatted_address;
-					el.id = s; //
+					//~ el.innerText += "\n"+rs.result.formatted_address;
+					
+					el.appendChild(document.createElement('br'));
+					el.appendChild(document.createTextNode(rs.result.formatted_address));
+					el.json_response = s; // JSON!
 				}
 			});
 		}
+		
+		// function Data_Cleansing_google_addr
 		function Data_Cleansing_google_addr() {
 		
 				
@@ -51390,7 +58582,7 @@ qatar,80
 				encodeURIComponent(d2.value)+
 				'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 			
-			//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(gu);
+			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 			
 			GM_xmlhttpRequest({ // init
 				method: "GET",
@@ -51410,23 +58602,12 @@ qatar,80
 					
 					for (var i in rs) { //obj
 						
-						d1d.innerHTML += '\
-							<div value="" id="" class="exe-google" style="width:auto;text-align:left;border-bottom:2px solid teal;">\
-							</div>\
-						';//rs[i].reference
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
+						div.innerText = rs[i].description;
+						div.json_response = JSON.stringify(rs[i]);
 						
-						var x = d1d.getElementsByTagName('div');
-						x[x.length - 1].id = JSON.stringify(rs[i]);
-						x[x.length - 1].innerText = rs[i].description;
-					}
-					
-					if (rs.length)
-						d1d.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
-					
-					var x = document.getElementsByClassName('exe-google');
-					for (var i in x) {
-						if (!x[i]) continue;
-						x[i].onclick = function() {
+						div.onclick = function() {
 							
 							console.log(this.style.backgroundColor);
 							
@@ -51450,7 +58631,7 @@ qatar,80
 								document.getElementById('OtherNames').value	= '';
 								document.getElementById('SourceURL').value = '';
 								
-								var id = JSON.parse(this.id); // obj -> place detail
+								var id = JSON.parse(this.json_response); // obj -> place detail
 								console.log(id);
 								
 								var j;
@@ -51478,7 +58659,35 @@ qatar,80
 								document.getElementById('SourceURL').value = id.result.url;
 							}
 						}
+						
+						d1d.appendChild(div);
+						
+						
+						//~ d1d.innerHTML += '\
+							//~ <div value="" id="" class="exe-google" style="width:auto;text-align:left;border-bottom:2px solid teal;">\
+							//~ </div>\
+						//~ ';//rs[i].reference
+						//~ 
+						//~ var x = d1d.getElementsByTagName('div');
+						//~ x[x.length - 1].id = JSON.stringify(rs[i]);
+						//~ x[x.length - 1].innerText = rs[i].description;
 					}
+					
+					if (rs.length) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1200px;');
+						d1d.appendChild(div);
+						
+						//~ d1d.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
+					}
+					
+					//~ var x = document.getElementsByClassName('exe-google');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ 
+						//~ }
+					//~ }
 				}
 			});
 		}
@@ -51548,8 +58757,12 @@ qatar,80
 					
 					var r = /<div id="resultCaption">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
 					if (r) {
-						d1c.innerHTML += r[1].replace(/<[^>]+>/g, '');
-						d1c.innerHTML += '<hr>';
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+						div.innerHTML = r[1].replace(/<[^>]+>/g, '');
+						d1c.appendChild(div);
+						//~ d1c.innerHTML +=  r[1].replace(/<[^>]+>/g, '');
+						//~ d1c.innerHTML += '<hr>';
 					}
 					
 					//
@@ -51575,48 +58788,85 @@ qatar,80
 						m[1] = m[1].replace(/\.\.\//g,'');
 						m[1] = 'http://investing.businessweek.com/research/' + m[1];
 						
-						//<textarea value="" id="" class="exe3" style="width:98%;background-color:#eee;" readonly></textarea>
-						d1c.innerHTML += '\
-							<input type="button" value="" id="" class="exe3" style="width:98%;text-align:left;white-space:normal;">\
-							<br>\
-							'+m[3]+'\
-							<br>\
-							'+m[4]+'\
-							<hr>\
-						';
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
 						
-						var x = d1c.getElementsByTagName('input');
-						x = x[x.length - 1];
-						x.value = m[2];
-						x.id = m[1];
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = m[2];
+						inp.url_bw = m[1];
+						inp.name_bw = m[2];
+						
+						inp.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							document.getElementById('OtherNames').value = this.name_bw;
+							document.getElementById('SourceURL').value = this.url_bw;
+							document.getElementById('OtherNames').focus();
+							document.getElementById('OtherNames').select();
+							Data_Cleansing_businessweek_addr_prof(this.url_bw);
+						}
+						
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[3]));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[4]));
+						
+						d1b.appendChild(div);
+						
+						
+						
+						
+						//<textarea value="" id="" class="exe3" style="width:98%;background-color:#eee;" readonly></textarea>
+						//~ d1c.innerHTML += '\
+							//~ <input type="button" value="" id="" class="exe3" style="width:98%;text-align:left;white-space:normal;">\
+							//~ <br>\
+							//~ '+m[3]+'\
+							//~ <br>\
+							//~ '+m[4]+'\
+							//~ <hr>\
+						//~ ';
+						//~ 
+						//~ var x = d1c.getElementsByTagName('input');
+						//~ x = x[x.length - 1];
+						//~ x.value = m[2];
+						//~ x.id = m[1];
+						
 						c++;
 					}
 					if (c == 0) {
-						d1c.innerHTML += '0';
+						d1c.appendChild(document.createTextNode('0'));
+						//~ d1c.innerHTML += '0';
 					}	
-						
 					if (!first) {
-						d1c.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1400px;');
+						d1c.appendChild(div);
+						//~ d1c.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
 					}
 					
 					if (first) {
-						d1c.innerHTML += '<hr style="border-bottom:3px solid LightGreen;">';
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+						d1c.appendChild(div);
+						//~ d1c.innerHTML += '<hr style="border-bottom:3px solid LightGreen;">';
 						Data_Cleansing_businessweek_addr(false);
 						return;
 					}
-					
-					var x = document.getElementsByClassName('exe3');
-					for (var i in x) {
-						if (!x[i]) continue;
-						x[i].onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							document.getElementById('OtherNames').value = this.value;
-							document.getElementById('SourceURL').value = this.id;
-							document.getElementById('OtherNames').focus();
-							document.getElementById('OtherNames').select();
-							Data_Cleansing_businessweek_addr_prof(this.id);
-						}
-					}
+					//~ 
+					//~ var x = document.getElementsByClassName('exe3');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ document.getElementById('OtherNames').value = this.value;
+							//~ document.getElementById('SourceURL').value = this.id;
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+							//~ Data_Cleansing_businessweek_addr_prof(this.id);
+						//~ }
+					//~ }
 				}
 			});
 		}
@@ -51686,7 +58936,7 @@ qatar,80
 			GM_xmlhttpRequest({ // init
 				method: "GET",
 				url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
-				timeout:10000,
+				//~ timeout:30000,
 				onload: function(response) {
 					var rs = response.responseText;
 					if (response.status != 200) return;
@@ -51699,54 +58949,61 @@ qatar,80
 					var m;
 					while (m = r.exec(rs)) {
 						
-						//~ var div = items_fty.create_element('div');
-						//~ 
-						//~ 
-						//~ items_fty.appendChildren(div, [
-							//~ {
-								//~ element: 'input',
-								//~ value__: m[2],
-								//~ id__: m[1],
-								//~ class__: 'exe2',
-								//~ style__: 'width:auto;'
-							//~ },
-							//~ {
-								//~ element: 'br'
-							//~ },
-							//~ m[3].toString(),
-							//~ {
-								//~ element: 'br'
-							//~ }
-						//~ ]);
-						//~ 
-						//~ d1b.appendChild(div);
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
 						
-						//<input type="button" value="" id="" class="exe3" style="">
-						d1b.innerHTML += '\
-							<input type="button" value="'+m[2]+'" id="'+m[1]+'" class="exe2" style="width:98%;text-align:left;white-space:normal;">\
-							<br>\
-							'+m[3]+'\
-							<br>\
-							'+m[4]+'\
-							<hr>\
-						';
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = m[2];
+						inp.url_hv = 'http://www.hoovers.com' + m[1];
+						inp.name_hv = m[2];
+						
+						inp.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							document.getElementById('OtherNames').value = this.name_hv;
+							document.getElementById('SourceURL').value = this.url_hv;
+							document.getElementById('OtherNames').focus();
+							document.getElementById('OtherNames').select();
+							Data_Cleansing_hoovers_addr_prof(this.url_hv);
+						}
+						
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[3]));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode(m[4]));
+						
+						d1b.appendChild(div);
+						
+						//~ d1b.innerHTML += '\
+							//~ <input type="button" value="'+m[2]+'" id="'+m[1]+'" class="exe2" style="width:98%;text-align:left;white-space:normal;">\
+							//~ <br>\
+							//~ '+m[3]+'\
+							//~ <br>\
+							//~ '+m[4]+'\
+							//~ <hr>\
+						//~ ';
 					}
 					if (d1b.innerHTML == '') {
 						d1b.innerHTML = '0';
-					} else
-						d1b.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
-					var x = document.getElementsByClassName('exe2');
-					for (var i in x) {
-						if (!x[i]) continue;
-						x[i].onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							document.getElementById('OtherNames').value = this.value;
-							document.getElementById('SourceURL').value = 'http://www.hoovers.com'+this.id;
-							document.getElementById('OtherNames').focus();
-							document.getElementById('OtherNames').select();
-							Data_Cleansing_hoovers_addr_prof('http://www.hoovers.com'+this.id);
-						}
+					} else {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1400px;');
+						d1b.appendChild(div);
 					}
+					//~ var x = document.getElementsByClassName('exe2');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ document.getElementById('OtherNames').value = this.value;
+							//~ document.getElementById('SourceURL').value = 'http://www.hoovers.com'+this.id;
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+							//~ Data_Cleansing_hoovers_addr_prof('http://www.hoovers.com'+this.id);
+						//~ }
+					//~ }
 				}
 			});
 		}
@@ -51806,71 +59063,24 @@ qatar,80
 						
 						var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
 						
-						d1.innerHTML += '\
-							<input type="button" value="'+r[i].name+'" id="'+x+'" class="exe" style="width:auto;">\
-							\
-						';
 						
-						var x = d1.getElementsByTagName('input');
-						x = x[x.length - 1];
-						x.id = y;
 						
-						d1.innerHTML += '<br>likes:'+r[i].likes;
-						d1.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
 						
-						if (r[i].location) {
-							for (var j in r[i].location) {
-								d1.innerHTML += '<br>' + r[i].location[j];
-							}
-						}
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
 						
-						if (r[i].category) {
-							var x = r[i].category;
-							d1.innerHTML += '<br>'+x;
-						}
+						var inp = document.createElement('button');
+						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+						inp.innerHTML = r[i].name;
+						inp.json_object = r[i];
 						
-						if (c<=0 && !found_a_band) {
-							
-							var match__ = r[i].name;
-							match__ = match__.replace(/&/g, 'and');
-							match__ = match__.replace(/^the /i, '');
-							match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
-							match__ = match__.replace(/(official|music)$/i, '');
-							
-							console.log(match__);
-							console.log(match_o);
-							
-							if  (
-								match_o == match__ &&
-								match_o.length >= 3
-								)
-							{
-								found = true;
-								
-								var x = d1.getElementsByTagName('input');
-								x = x[x.length - 1];
-								x.style.backgroundColor = 'LightGreen';
-							}
-						}
-						d1.innerHTML += '<hr>';
-						c++;
-					}
-					
-					if (c == 0) {
-						d1.innerHTML = '0';
-						return;
-					}
-					
-					d1.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
-					
-					var x = document.getElementsByClassName('exe');
-					for (var i in x) {
-						if (!x[i]) continue;
-						x[i].onclick = function() {
+						inp.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
-							console.log(this.id);
-							var i = JSON.parse(this.id);
+							//~ console.log(this.id);
+							//~ var i = JSON.parse(this.id);
+							
 							console.log(i);
+							var i = this.id;
 							
 							if (i.name) {
 								document.getElementById('OtherNames').value = i.name;
@@ -51900,7 +59110,131 @@ qatar,80
 							document.getElementById('OtherNames').focus();
 							document.getElementById('OtherNames').select();
 						}
+						div.appendChild(inp);
+						
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('L:'+r[i].likes));
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('T:'+r[i].talking_about_count));
+						
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								div.appendChild(document.createElement('br'));
+								div.appendChild(document.createTextNode(':'+r[i].location[j]));
+							}
+						}
+						
+						if (r[i].category) {
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode('C:'+r[i].category));
+						}
+						
+						d1.appendChild(div);
+						
+						
+						
+						
+						
+						//~ d1.innerHTML += '\
+							//~ <input type="button" value="'+r[i].name+'" id="'+x+'" class="exe" style="width:auto;">\
+							//~ \
+						//~ ';
+						//~ 
+						//~ var x = d1.getElementsByTagName('input');
+						//~ x = x[x.length - 1];
+						//~ x.id = y;
+						//~ 
+						//~ d1.innerHTML += '<br>likes:'+r[i].likes;
+						//~ d1.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
+						//~ 
+						//~ if (r[i].location) {
+							//~ for (var j in r[i].location) {
+								//~ d1.innerHTML += '<br>' + r[i].location[j];
+							//~ }
+						//~ }
+						//~ 
+						//~ if (r[i].category) {
+							//~ var x = r[i].category;
+							//~ d1.innerHTML += '<br>'+x;
+						//~ }
+						
+						if (c==0) { // && !found
+							
+							var match__ = r[i].name;
+							match__ = match__.replace(/&/g, 'and');
+							match__ = match__.replace(/^the /i, '');
+							match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+							match__ = match__.replace(/(official|music)$/i, '');
+							
+							console.log(match__);
+							console.log(match_o);
+							
+							if  (
+								match_o == match__ &&
+								match_o.length >= 3
+								)
+							{
+								//~ found = true;
+								
+								var x = d1.getElementsByTagName('input');
+								x = x[x.length - 1];
+								x.style.backgroundColor = 'LightGreen';
+							}
+						}
+						//~ d1.innerHTML += '<hr>';
+						c++;
 					}
+					
+					if (c == 0) {
+						d1.innerHTML = '0';
+						return;
+					}
+					
+					// Here?
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1.appendChild(div);
+					
+					//~ d1.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
+					//~ 
+					//~ var x = document.getElementsByClassName('exe');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ console.log(this.id);
+							//~ var i = JSON.parse(this.id);
+							//~ console.log(i);
+							//~ 
+							//~ if (i.name) {
+								//~ document.getElementById('OtherNames').value = i.name;
+							//~ }
+							//~ if (i.link) {
+								//~ document.getElementById('SourceURL').value = i.link;
+							//~ }
+							//~ if (i.location) {
+								//~ i = i.location;
+								//~ if (i.street) {
+									//~ i.street = i.street.replace(/\s+/g, ' ');
+									//~ document.getElementById('Address1').value = i.street;
+								//~ }
+								//~ if (i.city) {
+									//~ document.getElementById('City').value = i.city;
+								//~ }
+								//~ if (i.state) {
+									//~ document.getElementById('State').value = i.state;
+								//~ }
+								//~ if (i.country) {
+									//~ document.getElementById('Country').value = Data_Cleansing_find_company_addr__country2abbr( i.country ); // !
+								//~ }
+								//~ if (i.zip) {
+									//~ document.getElementById('Zip').value = i.zip;
+								//~ }
+							//~ }
+							//~ document.getElementById('OtherNames').focus();
+							//~ document.getElementById('OtherNames').select();
+						//~ }
+					//~ }
 				}
 			});
 		}
@@ -55730,7 +63064,6 @@ qatar,80
 	// 
 	s='	<li>For every correct website found a $0.025 bonus will be awarded</li>';
 	if (ih.indexOf(s) != -1) {
-		console.log('Brittany Graham');
 		GM_addStyle('body {width:30%;margin-top:650px;}');
 		
 		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
@@ -57244,22 +64577,43 @@ qatar,80
 			}, 1000);
 		}*/
 	}
+	
+	/**
+	 * Find URL 
+	 * Brittany Graham
+	 * Laura Enstad
+	 * Emergo Group
+	 * 
+	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
+	 * Graham uses an old manual version of yahoo proxy.
+	 */
 	//
-	// Brittany Graham
-	// Find the Website Address for this Company
-	// Feb. 11, 2014
-	s ='<li>For the given company information below, enter the website address for the official website.</li>';
-	s2='<li>For the given company information below, enter the official company website.</li>';
-	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
-		console.log('Brittany Graham');
-		GM_addStyle('body {width:30%;margin-top:650px;}');
+	// Emergo Group
+	// Find the Website Address for Companies
+	// 
+	var s = 'The company below is exhibiting at a tradeshow, and we would like the website address for the <strong>official website of the company</strong>';
+	var s2= 'Search Google (or any other source) for the company name';
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
 		
-		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
-		GM_addStyle('.span7 {width:98%;}');
-		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
-		GM_addStyle('input {zoom:0.8;margin:0;padding:0;}');
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 		
+		var b = document.getElementsByTagName('b');
 		
+		var o = {
+			name: b[0].innerText.trim()
+		}
+		
+		// ...
+		
+		var dyn_h = screen.height - 300;
+		
+		/* BEGINS ITEMS */
 		//
 		var na123;
 		na123 = document.createElement('input');
@@ -57269,16 +64623,510 @@ qatar,80
 		var na = document.getElementById('na123');
 		na.style.position='absolute';
 		na.style.top='0px';
-		na.style.left='0px';
+		na.style.left='78%';
 		na.style.width='20%';
 		na.style.height='20px';
 		na.style.border='1px solid';
 		na.style.fontSize='10px';
-		na.value = "N/A"
+		na.value = "N/A";
 		na.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
-			document.getElementById("Website").value = "N/A";
-			document.getElementById("Notes").value = "I could not find an official website for this company.";
+			document.getElementById("URL").value = "N/A";
+			// nextTab
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height=dyn_h + 'px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height=dyn_h + 'px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height=dyn_h + 'px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		d1.txa = d3;
+
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		d1b.txa = d3b;
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		d1c.txa = d3c;
+		//
+		d3.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1c, this);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		d3.value = o.name;
+		d3b.value= '"' + o.name + '"';
+		d3c.value= o.name + ' "website"';
+		
+		d3.initialValue = o.col1;
+		d3b.initialValue = o.col2_first;
+		d3c.initialValue = o.col2; //col 3
+		
+		var countSkips = 0;
+		//~ if(AMT__Global_Vars.isPreview) {
+			//~ AMT___doPastBehavior('Laura Enstad - 1', 3, 'Do Not Submit',
+				//~ function(e) {
+						//~ if(!e) {
+							//~ countSkips++;
+							//~ //alert(countSkips);
+							//~ //alert(countSkips);
+							//~ if(countSkips == 3)
+								//~ AMT___Floater.skip();
+						//~ }
+						//~ else
+						//~ {
+							//~ AMT___Floater.accept();
+						//~ }
+				//~ }, true
+			//~ );
+		//~ }
+		//~ else
+		//~ {
+			//~ AMT___doPastBehavior('Laura Enstad - 1', 3, false,
+				//~ function(e) {
+					 //~ document.body.style.backgroundColor = 'LightGreen';
+				//~ }
+			//~ );
+		//~ }
+		//~ AMT___doPastBehavior('Laura Enstad - 1', 3, false,
+			//~ function() {
+				//~ document.body.style.backgroundColor = 'LightGreen';
+			//~ }
+		//~ );
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Emergo_Group_firm_name_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Emergo_Group_firm_name_URL__yahoo_init();
+			
+				}
+			});
+		}
+		Emergo_Group_firm_name_URL__load_skips();
+		
+		
+		function Emergo_Group_firm_name_URL__yahoo_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					seed_arg1: el_div,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Emergo_Group_firm_name_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3.value),
+				seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Emergo_Group_firm_name_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3b.value),
+				seed_arg1: d1b,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Emergo_Group_firm_name_URL__processProxyResponse
+			);
+			//3
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3c.value),
+				seed_arg1: d1c,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Emergo_Group_firm_name_URL__processProxyResponse
+			);
+		}
+		
+		function Emergo_Group_firm_name_URL__processProxyResponse(rs, seed_arg) {
+			
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				//~ 
+				//~ match[2] = match[2].replace(/<b>/g, '`');
+				//~ match[2] = match[2].replace(/<\/b>/g, '``');
+				//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+				//~ match[2] = match[2].replace(/[<>]/g, ' ');
+				//~ match[2] = match[2].replace(/``/g, '</b>');
+				//~ match[2] = match[2].replace(/`/g, '<b>');
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				//~ // add bold (bold_array)
+				//~ full = MT__bold(full, bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('URL').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+						
+					//~ AMT___addQuestionAnswer('Laura Enstad - 1', this.parent_txa.initialValue, [new OutputPair('Id(web_url)',this.value)])
+					
+					doSubmit();
+					
+					/*if(this.parent_div == d1 || this.parent_div == d1c)
+						doSubmit();
+					else
+						AMT___recordAndSubmit();*/
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	
+	//
+	// Laura Enstad
+	// Determine the FIRM NAME URL, using information from two columns.
+	// 
+	var s = 'Using information provided (Row 1 &amp; Row 2), determine the FIRM URL. This FIRM URL may be found using the information provided, or may require additional research on Google. <strong>Disregard the APP NUMBER field, you will not use it.</strong>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			col1: td[1].innerText.trim().replace(/ et al$/gi, ''),
+			col2: td[3].innerText.trim(),
+			col2_first: '',
+			zip: ''
+		}
+		o.col2 = o.col2.replace(/^c\/o */gi, ' ');
+		
+		var x;
+		o.col2_first = (x = /^([^~]+)/.exec(o.col2)) ? x[1] : o.col2.replace(/~+/g, ' ');
+		o.zip =	(x = / ([\d\-]{4,})~US$/.exec(o.col2)) ? x[1] : '';
+		
+		// If blank zip
+		// then try adding "US" "AU", etc.
+		if (o.zip == '') {
+			
+		}
+		
+		// replace tilde
+		o.col2 = o.col2.replace(/~+/g, ' ');
+		
+		// JAPAN !
+		// zips
+		// 6500025 6500025 JP
+		o.col2 = o.col2.replace(/( \d+)* \d+ JP$/gi, '');
+		
+		// ...
+		
+		var dyn_h = screen.height - 300;
+		
+		/* BEGINS ITEMS */
+		//
+		var na123;
+		na123 = document.createElement('input');
+		na123.setAttribute('id','na123');
+		na123.setAttribute('type','button');
+		document.body.appendChild(na123);
+		var na = document.getElementById('na123');
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='78%';
+		na.style.width='20%';
+		na.style.height='20px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.value = "N/A";
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "N/A";
+			// nextTab
+			new AMT___core_factory().nextTab();
 			doSubmit();
 		}
 		//
@@ -57302,6 +65150,543 @@ qatar,80
 		}
 		inp_tor.value = HOST;
 		document.body.appendChild(inp_tor);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height=dyn_h + 'px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height=dyn_h + 'px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height=dyn_h + 'px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		d1.txa = d3;
+
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		d1b.txa = d3b;
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		d1c.txa = d3c;
+		//
+		d3.onblur = function() {
+			Laura_Enstad_firm_name_URL__yahoo_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Laura_Enstad_firm_name_URL__yahoo_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Laura_Enstad_firm_name_URL__yahoo_init(d1c, this);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		d3.value = o.col1;
+		d3b.value= o.col2_first;
+		//~ d3.value = o.col1 + ' ' + o.zip;
+		//~ d3b.value= o.col2_first + ' ' + o.zip;
+		d3c.value= o.col2;
+		
+		d3.initialValue = o.col1;
+		d3b.initialValue = o.col2_first;
+		d3c.initialValue = o.col2; //col 3
+		
+		
+		AMT___addUserDecision('Laura Enstad - 1',
+						function() {
+							return o.col1;
+						},
+						['Id(web_url)']
+		);
+
+
+		AMT___addUserDecision('Laura Enstad - 1',
+						function() {
+							return o.col2_first;
+						},
+						['Id(web_url)']
+		);
+		
+		
+		AMT___addUserDecision('Laura Enstad - 1',
+						function() {
+							return o.col2; //column 3
+						},
+						['Id(web_url)']
+		);
+		
+		
+		var countSkips = 0;
+		if(AMT__Global_Vars.isPreview) {
+			AMT___doPastBehavior('Laura Enstad - 1', 3, 'Do Not Submit',
+				function(e) {
+						if(!e) {
+							countSkips++;
+							//alert(countSkips);
+							//alert(countSkips);
+							if(countSkips == 3)
+								AMT___Floater.skip();
+						}
+						else
+						{
+							AMT___Floater.accept();
+						}
+				}, true
+			);
+		}
+		else
+		{
+			AMT___doPastBehavior('Laura Enstad - 1', 3, false,
+				function(e) {
+					 document.body.style.backgroundColor = 'LightGreen';
+				}
+			);
+		}
+		//~ AMT___doPastBehavior('Laura Enstad - 1', 3, false,
+			//~ function() {
+				//~ document.body.style.backgroundColor = 'LightGreen';
+			//~ }
+		//~ );
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Laura_Enstad_firm_name_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					//~ console.log(SKIP_SITES);
+					//~ Brittany_Graham_Find_Website_Address(d1, d3.value);
+					//~ if (b2 != '')
+						//~ Brittany_Graham_Find_Website_Address(d1b, d3b.value, false);
+					
+					Laura_Enstad_firm_name_URL__yahoo_init();
+					
+					//~ if (b2 != '')
+						//~ Laura_Enstad_firm_name_URL(d1,  d3.value );
+					//~ else
+						//~ TOTAL_CALLS++;
+					//~ if (b3 != '')
+						//~ Laura_Enstad_firm_name_URL(d1b, d3b.value);
+					//~ else
+						//~ TOTAL_CALLS++;
+					//~ if (b4 != '')
+						//~ Laura_Enstad_firm_name_URL(d1c, d3c.value);
+					//~ else
+						//~ TOTAL_CALLS++;
+			
+				}
+			});
+		}
+		Laura_Enstad_firm_name_URL__load_skips();
+		
+		
+		function Laura_Enstad_firm_name_URL__yahoo_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					seed_arg1: el_div,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Laura_Enstad_firm_name_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3.value),
+				seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Laura_Enstad_firm_name_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3b.value),
+				seed_arg1: d1b,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Laura_Enstad_firm_name_URL__processProxyResponse
+			);
+			//3
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3c.value),
+				seed_arg1: d1c,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Laura_Enstad_firm_name_URL__processProxyResponse
+			);
+		}
+		
+		function Laura_Enstad_firm_name_URL__processProxyResponse(rs, seed_arg) {
+			
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				//~ 
+				//~ match[2] = match[2].replace(/<b>/g, '`');
+				//~ match[2] = match[2].replace(/<\/b>/g, '``');
+				//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+				//~ match[2] = match[2].replace(/[<>]/g, ' ');
+				//~ match[2] = match[2].replace(/``/g, '</b>');
+				//~ match[2] = match[2].replace(/`/g, '<b>');
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				//~ // add bold (bold_array)
+				//~ full = MT__bold(full, bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+						
+					AMT___addQuestionAnswer('Laura Enstad - 1', this.parent_txa.initialValue, [new OutputPair('Id(web_url)',this.value)])
+					doSubmit();
+					
+					/*if(this.parent_div == d1 || this.parent_div == d1c)
+						doSubmit();
+					else
+						AMT___recordAndSubmit();*/
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// OLD JUN30 2014
+				//
+				//
+				//~ out_div.innerHTML += '\
+					//~ <p class="class_'+cls+'">\
+						//~ <textarea class="exe" style="width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;" readOnly>'+x+'</textarea>\
+						//~ <a href="'+match[1]+'" target="_blank">link</a> \
+						//~ <a href="'+match[1]+'" target="d2">ifr</a> \
+						//~ <input type="button" value=" S " id="'+x+'" class="exe-skip" style="width:auto;" > \
+						//~ <br >'+match[2]+'\
+					//~ </p>';
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	//
+	// Brittany Graham
+	// Find the Website Address for this Company
+	// Feb. 11, 2014
+	// Includes Hover Div scrape.
+	s ='<li>For the given company information below, enter the website address for the official website.</li>';
+	s2='<li>For the given company information below, enter the official company website.</li>';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
+		console.log('');
+		GM_addStyle('body {width:30%;margin-top:650px;}');
+		
+		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
+		GM_addStyle('.span7 {width:98%;}');
+		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
+		GM_addStyle('input {zoom:0.8;margin:0;padding:0;}');
+		
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		document.body.appendChild(na);
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='70%';
+		na.style.width='29%';
+		na.style.height='24px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.style.cursor='pointer';
+		na.value = "N/A"
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("Website").value = "N/A";
+			
+			if(document.getElementById("Notes"))
+				document.getElementById("Notes").value = "I could not find an official website for this company.";
+			
+			// showNextTab OR nextTab
+			if(FOUND_ONE_NONSKIP) {
+				//showNextTab();
+				// nextTab only when manual
+				new AMT___core_factory().nextTab();
+			} else {
+				
+			}
+			
+			doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ var host = GM_getValue('MT__torHost');
+			//~ if (!host)
+				//~ host = 'http://192.168.1.6/';
+			//~ 
+			//~ 
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
+		document.body.appendChild(d2);
 		//
 		var d;
 		d = document.createElement('div');
@@ -57382,7 +65767,7 @@ qatar,80
 		d3b.style.position='absolute';
 		d3b.style.top='20px';
 		d3b.style.left='33%';
-		d3b.style.width='39%';
+		d3b.style.width='33%';
 		d3b.style.height='50px';
 		//
 		d = document.createElement('textarea');
@@ -57416,48 +65801,132 @@ qatar,80
 			Brittany_Graham_Find_Website_Address(d1c, this.value);
 		}
 		
-		//
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		// left = city
+		// middle = city/state/zip
+		// right = phone
 		var b, b2, b3, b4;
+		var x;
+		var o = {
+			city: '',
+			state_abbr: '',
+			state: '',
+			zip: '',
+			phone: '',
+			area_code: ''
+		}
 		b = b2 = b3 = b4 = '';
 		
 		b  = __js_clean_html_str(/Company:&nbsp;<b[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
-		b2 = __js_clean_html_str(/City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
-		b3 = __js_clean_html_str(/State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
 		
-		b3 = b2 + ', ' + b3; //city, st
-		b4 = '"' + b + '" ' + b3;
+		b2 = /City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
+		b3 = /State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
 		
-		//b  = __js_clean_html_str(/Company:&nbsp;<b[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
-		//
-		//b3 = __js_clean_html_str(/City:&nbsp;<b[^>]*>([^<]*)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
+		if (b2 && b3) {
+			b2 = __js_clean_html_str(b2[1]).replace(/\s+/g, ' ').trim();
+			b3 = __js_clean_html_str(b3[1]).replace(/\s+/g, ' ').trim();
+		} else {
+			/* NEW JUL11 2014
+		 <p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Street:&nbsp;<b>7185 Market&nbsp;</b></span><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">Port Hardy, </b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">BC, </b><b style="font-family: Arial, sans-serif; font-size: 12px;">V0N 2P0 </b>,<b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">CAN</b></p>*/
+			//
+			//> Street/Address
+			//> 7185 Market&nbsp;
+			//> "Port Hardy, "
+			//> "BC, "
+			//> "V0N 2P0 "
+			//> CAN
+			x = /<p class="MsoNormal"><span style="[^"]*">[^:]+:&nbsp;<b>[^<]*<\/b><\/span><b style="[^"]*">([^<]*)<\/b><b style="[^"]*">([^<]*)<\/b><b style="[^"]*">([^<]*)<\/b>,*<b style="[^"]*">([^<]*)<\/b>/.exec(ih);
+			if(x){
+				b2 = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // city
+				b3 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state
+			}
+			else {
+				x = /<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">City:&nbsp;<b>([^&]+)&nbsp;<\/b><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-family: Arial, sans-serif; font-size: 12px;">State:&nbsp;<\/span><b style="font-family: Arial, sans-serif; font-size: 12px;">([^<]+)<\/b><\/p>/.exec(ih);
+				if (x) {
+					console.log('x[1]' + x[1]);
+					b2 = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
+					b3 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
+				}
+				else {
+					/*<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>15003 FM 529 Rd ,</b></span><b style="">Houston ,</b><b style="">TX&nbsp;,</b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">77095 ,</b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">USA</b></p>*/
+					
+				}
+			}
+			// zip
+			var z = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
+			z = (z.length == 4) ? '0' + z : z;
+			
+			// ...
+			o.state_abbr = b3;
+			
+			// Determine .state
+			for (var i in MT___states) {
+				if (i.toLowerCase() == b3.toLowerCase()) {
+					o.state = MT___states[i];
+					break;
+				}
+			}
+			
+			// ...
+			b3 += ' ' + z;
+		}
 		
-		var x;
+		// ...
+		o.city = b2;
+		o.zip = z;
+		
+		// b3, b4
+		b3 = b2 + ', ' + b3; // =>city, state(...)
+		b4 = '"' + b + '" ' + b3; // =>"company" state(nc,ny,...)
+		
 		// zip
 		if (x = /Zip:&nbsp;<b[^>]*>([^<]*)/.exec(ih)) {
 			x = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').trim();
 			x = (x.length == 4) ? '0' + x : x;
-				
 			b3 += ' ' + x;
 		}
-		// phone
+		// Phone
+		// Last 4 digits are occasionally only 3!
+		// Ex 607-555-555 instead of 0555
 		if (x = /Phone:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)) {
 			b4 = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').trim();
 			var x = /^(\d{3})(\d{3})(\d+)$/.exec(b4);
 			if (x) {
 				x[3] = (x[3].length == 3) ? '0' + x[3] : x[3];
-				b4 = '(' + x[1] + ') ' + x[2] + ' ' + x[3]; 
+				o.phone = '(' + x[1] + ') ' + x[2] + ' ' + x[3];
+				o.area_code = x[1];
+				b4 = o.phone;
 			}
 			b4 = b + ' ' + b4;
 		}
 		
-		//
+		// ...
 		//d3.value = (b2 != '') ? b + ' ' + b2 : '';
 		d3.value = b + ' ' + b2;
 		d3b.value= (b3 != '') ? b + ' ' + b3 : '';
 		d3c.value= (b4 != '') ? b4 : '';
 		
-		//d3c.value= (b4 != '') ? b + ' ' + b4 : '';
-		
+		// ...
 		var load_first = true;
 		var FOUND_ONE_NONSKIP = false;
 		var TOTAL_CALLS = 0;
@@ -57471,15 +65940,26 @@ qatar,80
 				url: MT___host+'/mturk/util.php?austin_load_skips=',
 				onload: function (response) {
 					var rs=response.responseText;
-					SKIP_SITES = rs.split("\n");
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
 					
 					// SUBDOMAINS!
-					var x;
-					for (var i in SKIP_SITES) {
-						if (x = /\.([^\.]+\.[^\.]+)$/.exec(SKIP_SITES[i])) {
-							SKIP_SITES[i] = x[1];
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
 						}
 					}
+					
 					//~ Brittany_Graham_Find_Website_Address(d1, d3.value);
 					//~ if (b2 != '')
 						//~ Brittany_Graham_Find_Website_Address(d1b, d3b.value, false);
@@ -57538,11 +66018,23 @@ qatar,80
 						break;
 				}
 				
+				if (out_div.id == 'd1') {
+					var keyword_and_index_array = {
+					};
+					keyword_and_index_array['C'] = o.city;
+					keyword_and_index_array['S'] = o.state_abbr;
+					keyword_and_index_array['*S*'] = o.state;
+					//keyword_and_index_array['STATE FULL'] = o.;
+					keyword_and_index_array['Z'] = o.zip;
+					keyword_and_index_array['P'] = o.phone;
+					keyword_and_index_array['AC'] = o.area_code;
+				}
+				
 				while (match = r.exec(rs)) {
 					//if (count >= 8)
 					//	break;
 					//console.log(x);
-					console.log(match);
+					//~ console.log(match);
 					
 					// is this ri.search.yahoo.com
 					if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
@@ -57573,29 +66065,169 @@ qatar,80
 					} else
 						short_domain = x;
 					
-					if (__js_inarray(SKIP_SITES, short_domain)) {//border-top:1px solid #3a4d3a;border-bottom:1px solid #3a4d3a;
-						out_div.innerHTML += '\
-							x'+x+'\
-							<br>';
-						continue;
-					}
-					else
-						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					// SKIP BUTTON CREATE 2
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2({
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						});
 					
 					
 					// add bold (bold_array)
 					match[2] = MT__bold(match[2], bold_array);
+					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/)www\./, '$1');
 					
-					out_div.innerHTML += '\
-						<p class="class_'+cls+'">\
-							<textarea type="button" class="exe" style="width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;" readOnly>'+x+'</textarea>\
-							<a href="'+match[1]+'" target="_blank">link</a> \
-							<a href="'+match[1]+'" target="d2">ifr</a> \
-							<input type="button" value=" S " id="'+x+'" class="exe-skip" style="width:auto;" > \
-							<br >'+match[2]+'\
-						</p>';
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_url = match[1];
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						//~ count++;
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa.readOnly = true;
+					txa.value = x;
+					d.appendChild(txa);
+					// A
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = match[1];
+					d.appendChild(a);
+					// el_inp_skip2__obj.el_btn
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					// ...
+					// Scrape page
+					// Only on d1
+					// @assoc. array [show output (key) => scrape for keyword (value)], []
+					if (count < 6 && out_div.id == 'd1') {
+						var scrape_el = document.createElement('div');
+						scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
+						d.appendChild(scrape_el);
+						new AMT___items_factory().xhr_scrape_page({
+							parent_el: scrape_el,
+							keyword_and_index_array: keyword_and_index_array,
+							url: match[1]
+						});
+					}
+					
+					// Body
+					var pbody = document.createElement('p');
+					d.appendChild(pbody);
+					pbody.setAttribute('style','word-wrap:break-word;border-bottom:1px solid aeaeae;');
+					pbody.innerHTML = match[2];// + '<br>' + match[1];
+					
+					//~ // Full URL
+					//~ var el_txt = document.createElement('div');
+					//~ el_txt.setAttribute('style','display:block;background-color:#eee;width:99%;word-wrap:break-word;');//border:0;margin:0;padding:0;
+					//~ el_txt.innerText = match[1];
+					//~ d.appendChild(el_txt);
+					//~ d.el_full_url = el_txt;
+					//~ d.id_fullURL_child = el_txt;
+					
+					//~ el_txt.onmouseover = d.onmouseover = function() {
+						//~ if (this.id == 'child') {
+							//~ this.style.diplay = 'block';
+						//~ } else {
+							//~ d.id_fullURL_child.style.diplay = 'block';
+						//~ }
+					//~ }
+					//~ el_txt.onmouseout = d.onmouseout = function() {
+						//~ if (this.id == 'child') {
+							//~ this.style.diplay = 'none';
+						//~ } else {
+							//~ d.id_fullURL_child.style.diplay = 'none';
+						//~ }
+					//~ }
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('Website').value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						//showNextTab();
+						
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						
+						d2.value = this.full_url;
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						//~ this.el_full_url.style.diplay = 'block';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+								//~ x[i].full_url.style.backgroundColor = 'LightGreen';
+								
+								// SHOW FULL URLS !
+								//~ var n = x[i].getElementsByTagName('div');
+								//~ n = n[n.length -1];
+								//~ n.style.display = 'block';
+								//~ if (x[i].hasOwnProperty('id_fullURL_child'))
+								//~ x[i].id_fullURL_child.style.display = 'block';
+								//~ console.log(x[i].id_fullURL_child.style.diplay);
+							} else {
+								x[i].style.backgroundColor = '';
+								//~ x[i].full_url.style.backgroundColor = '';
+								//~ // HIDE FULL URLS !
+								//~ var n = x[i].getElementsByTagName('div');
+								//~ n = n[n.length -1];
+								//~ n.style.diplay = 'none';
+								//~ if (x[i].hasOwnProperty('id_fullURL_child'))
+									//~ x[i].id_fullURL_child.style.display = 'none';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, true);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+								//~ x[i].full_url.style.backgroundColor = '';
+								
+								// HIDE FULL URLS !
+								//~ var n = x[i].getElementsByTagName('div');
+								//~ n = n[n.length -1];
+								//~ n.style.diplay = 'none';
+								//~ x[i].id_fullURL_child.style.display = 'none';
+							}
+						}
+						//~ this.id_fullURL_child.style.diplay = 'none';
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
 					
 					// push first match
 					// but only if array is empty
@@ -57609,68 +66241,26 @@ qatar,80
 					}
 					
 					count++;
+					
+					
+					// OLD JUN30 2014
+					//
+					//
+					//~ out_div.innerHTML += '\
+						//~ <p class="class_'+cls+'">\
+							//~ <textarea class="exe" style="width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;" readOnly>'+x+'</textarea>\
+							//~ <a href="'+match[1]+'" target="_blank">link</a> \
+							//~ <a href="'+match[1]+'" target="d2">ifr</a> \
+							//~ <input type="button" value=" S " id="'+x+'" class="exe-skip" style="width:auto;" > \
+							//~ <br >'+match[2]+'\
+						//~ </p>';
 				}
 				
 				if (count > 0) {
-					out_div.innerHTML += '<div style="height:1000px;">&nbsp;</div>';
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
 				}
-				
-				var x = document.getElementsByClassName('exe');
-				for (var i in x) {
-					x[i].onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						document.getElementById('Website').value = this.value;
-						doSubmit();
-					}
-				}
-				var x = document.getElementsByClassName('exe-skip');
-				for (var i in x) {
-					x[i].onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						var btn = this;
-						GM_xmlhttpRequest({
-							method: 'GET',
-							url: MT___host+'/mturk/util.php?austin_load_skips='+encodeURIComponent(this.id),
-							onload: function (response) {
-								var rs=response.responseText;
-								btn.value = ' ---X--- ';
-								SKIP_SITES.push(btn.id);
-							}
-						});
-					}
-				}
-				// p
-				var x = out_div.getElementsByTagName('p');
-				for (var i in x) {
-					if (i == 'length') break;
-					//mouseover
-					x[i].addEventListener('mouseover', function() {
-						var x = document.getElementsByTagName('p');
-						for (var i in x) {
-							if (i == 'length') break;
-							if (x[i].className == this.className) {
-								x[i].style.backgroundColor = 'LightGreen';
-							} else {
-								x[i].style.backgroundColor = '';
-							}
-						}
-						//this.style.backgroundColor = 'LightGreen';
-						// Could do this also! .getElementsByClassName('class_');
-					}, false);
-					//mouseout
-					x[i].addEventListener('mouseout', function() {
-						var x = document.getElementsByTagName('p');
-						for (var i in x) {
-							if (i == 'length') break;
-							if (x[i].className == this.className) {
-								x[i].style.backgroundColor = '';
-							}
-						}
-						//this.style.backgroundColor = 'LightGreen';
-						// Could do this also! .getElementsByClassName('class_');
-					}, false);
-				}
-				
 			} else
 				out_div.innerHTML = '0';
 
@@ -57682,6 +66272,7 @@ qatar,80
 				if (!FOUND_ONE_NONSKIP) {
 					na.click(); // na button
 					//document.getElementById('Website').value = 
+					return;
 				}
 				// All three windows have completed
 				// and the first domain is same across all three
@@ -57694,12 +66285,20 @@ qatar,80
 						x.style.border = '6px solid LightGreen';
 					}
 				}
+				
+				// addToTabsQ
+				//addToTabsQ();
 			}
 		}
 		function Brittany_Graham_Find_Website_Address(out_div, search) {
 			
-			// Yahoo
-			var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			// NEW YAHOO
+			// JUL17 2014
+			var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(search); //%2B
+			
+			// OLD YAHOO
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			
 			out_div.innerHTML = '';
 			var out_div = out_div;
 			
@@ -58728,10 +67327,18 @@ qatar,80
 		if (ih.indexOf('<p>Website: ') != -1)
 			Zachary_S_Clayton_spyfu__searchURL(b);
 		
+		
 		function Zachary_S_Clayton_spyfu__searchURL(b) {
+			
+			var u = 'http://www.spyfu.com/Search?q='+encodeURIComponent(b);
+			//~ var u = 'http://www.spyfu.com/Domain/'+encodeURIComponent(b);
+			
 			GM_xmlhttpRequest({
 				method: 'GET',
-				url: 'http://www.spyfu.com/Search?q='+encodeURIComponent(b),
+				
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				//~ url: 'http://www.spyfu.com/Search?q='+encodeURIComponent(b),
+				
 				onload: function (response) {
 					var rs = response.responseText;
 					
@@ -58752,13 +67359,21 @@ qatar,80
 					}
 					
 					var sbm = true;
-					var r = /<li class='traffic-value' data-graph-src='[^']+'>[\r\n\t\s]+<div>\$([^ ]+) - \$([^ ]+)<\/div>[\r\n\t\s]+<h4>Daily Organic \(SEO\) Traffic Value:<\/h4>/.exec(rs);
+					//~ var r = /<li class='traffic-value' data-graph-src='[^']+'>[\r\n\t\s]+<div>\$([^ ]+) - \$([^ ]+)<\/div>[\r\n\t\s]+<h4>Daily Organic \(SEO\) Traffic Value:<\/h4>/.exec(rs);
+					
+					//budgetRangeMonthly: '$91.11 - $209.33', // TODO: format on frontend
+					//budgetRangeMonthly: '$47.30k - $136.51k', // TODO: format on frontend
+					
+					var r = /budgetRangeMonthly: '\$([^ ]+) - \$([^']+)',/.exec(rs);
 					if (r) {
 						r[1] = Zachary_S_Clayton_spyfu__parseAmt(r[1]);
 						r[2] = Zachary_S_Clayton_spyfu__parseAmt(r[2]);
 						r = ((r[1]*1 + r[2]*1)/2);
 						console.log(r);
-						r = r*30;
+						
+						//~ // Mult. by 30 for month
+						//~ r = r*30;
+						
 						// round to 100
 						r *= 100;
 						r = Math.round(r);
@@ -58774,6 +67389,12 @@ qatar,80
 							
 						if (sbm)
 							doSubmit();
+					} else {
+						var r = /budgetRangeMonthly: 'N\/A'/.exec(rs);
+						if (r) {
+							q.value = 'N/A';
+							doSubmit();
+						}
 					}
 				}
 			});
@@ -58793,23 +67414,24 @@ qatar,80
 	// Zachary S Clayton
 	// Find URL
 	//
-	s = '<li>Please find website URL and then enter URL into SpyFu.com to find average monthly PPC spend (note: SpyFu gives range for Daily Adwords (PPC) Ad Budget, take avg. of these two #s and then multiply by 30)</li>';
-	s2= '<p>Hospital Name: <b>';
-	s3= '<p>Higher Ed Institution&nbsp;Name: <b>';
+	//~ s = '<li>Please find website URL and then enter URL into SpyFu.com to find average monthly PPC spend (note: SpyFu gives range for Daily Adwords (PPC) Ad Budget, take avg. of these two #s and then multiply by 30)</li>';
+	s = 'Provide accurate main website URL for the Institution provided. Then enter URL into SpyFu.com to find average "Monthly Adwords (PPC) Ad Budget." SpyFu.com gives a range, so please take an average of the low and high numbers.';
+	//~ s2= '<p>Hospital Name: <b>';
+	//~ s3= '<p>Higher Ed Institution&nbsp;Name: <b>';
 	if (
-		ih.indexOf(s) != -1 &&
-		(
-			ih.indexOf(s2) != -1 ||
-			ih.indexOf(s3) != -1
-		)
+		ih.indexOf(s) != -1 //&&
+		//~ (
+			//~ ih.indexOf(s2) != -1 ||
+			//~ ih.indexOf(s3) != -1
+		//~ )
 	) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:20%;margin-top:0px;}');
+		
 		GM_addStyle('input {width:90%;}');
 		GM_addStyle('.highlight-box {position:absolute;top:400px;width:20%;}');
 		
-		var b = document.getElementsByTagName('b')[0].innerText.trim();
+		//~ var b = document.getElementsByTagName('b')[0].innerText.trim();
 		
 		document.getElementById('mturk_form').onsubmit = function() {
 			var q = document.getElementsByName('Q1Url');
@@ -58828,16 +67450,85 @@ qatar,80
 			}
 		}
 		
+		
+		
+		var b = document.getElementsByTagName('b');
+		
+		var o = {
+			name: b[0].innerText.trim()
+		}
+		
+		var dyn_h = screen.height - 300;
+		
+		GM_addStyle('body {margin-top:'+dyn_h+'px;}');
+		
+		/* BEGINS ITEMS */
+		//
+		var na123;
+		na123 = document.createElement('input');
+		na123.setAttribute('id','na123');
+		na123.setAttribute('type','button');
+		document.body.appendChild(na123);
+		var na = document.getElementById('na123');
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='78%';
+		na.style.width='20%';
+		na.style.height='20px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.value = "N/A";
+		na.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("web_url").value = "N/A";
+			//~ // nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+			//~ 
+			//~ document.getElementById("Notes").value = "I could not find an official website for this company.";
+			//~ 
+			//~ // showNextTab OR nextTab
+			//~ if(FOUND_ONE_NONSKIP) {
+				//~ //showNextTab();
+				//~ // nextTab only when manual
+				//~ new AMT___core_factory().nextTab();
+			//~ } else {
+				//~ 
+			//~ }
+			//~ 
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ var host = GM_getValue('MT__torHost');
+			//~ if (!host)
+				//~ host = 'http://192.168.1.6/';
+			//~ 
+			//~ 
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
 		var d;
 		d = document.createElement('div');
 		d.setAttribute('id','d1');
 		document.body.appendChild(d);
 		var d1 = document.getElementById('d1');
 		d1.style.position='absolute';
-		d1.style.top='50px';
-		d1.style.left='20%';
-		d1.style.width='70%';
-		d1.style.height='400px';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='50%';
+		d1.style.height=dyn_h + 'px';
 		d1.style.overflow='auto';
 		d1.style.border='1px solid blue';
 		d1.style.borderBottom='2px solid blue';
@@ -58849,40 +67540,39 @@ qatar,80
 		document.body.appendChild(d);
 		var d1b = document.getElementById('d1b');
 		d1b.style.position='absolute';
-		d1b.style.top='50px';
-		d1b.style.left='90%';
-		d1b.style.width='8%';
-		d1b.style.height='400px';
+		d1b.style.top='70px';
+		d1b.style.left='50%';
+		d1b.style.width='49%';
+		d1b.style.height=dyn_h + 'px';
 		d1b.style.overflow='auto';
 		d1b.style.border='1px solid blue';
 		d1b.style.borderBottom='2px solid blue';
 		d1b.style.backgroundColor='#eee';
 		d1b.style.fontSize='10px';
-		//
-		d = document.createElement('iframe');
-		d.setAttribute('id','d2');
-		d.setAttribute('name','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='450px';
-		d2.style.left='20%';
-		d2.style.width='78%';
-		d2.style.height='400px';
-		d2.style.overflow='auto';
-		d2.style.border='1px solid blue';
-		d2.style.borderBottom='2px solid blue';
-		d2.style.backgroundColor='#eee';
-		d2.style.fontSize='8px';
+		//~ //
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1c');
+		//~ document.body.appendChild(d);
+		//~ var d1c = document.getElementById('d1c');
+		//~ d1c.style.position='absolute';
+		//~ d1c.style.top='70px';
+		//~ d1c.style.left='66%';
+		//~ d1c.style.width='33%';
+		//~ d1c.style.height=dyn_h + 'px';
+		//~ d1c.style.overflow='auto';
+		//~ d1c.style.border='1px solid blue';
+		//~ d1c.style.borderBottom='2px solid blue';
+		//~ d1c.style.backgroundColor='#eee';
+		//~ d1c.style.fontSize='10px';
 		//
 		d = document.createElement('textarea');
 		d.setAttribute('id','d3');
 		document.body.appendChild(d);
 		var d3 = document.getElementById('d3');
 		d3.style.position='absolute';
-		d3.style.top='0px';
-		d3.style.left='20%';
-		d3.style.width='70%';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='50%';
 		d3.style.height='50px';
 		//
 		d = document.createElement('textarea');
@@ -58890,11 +67580,21 @@ qatar,80
 		document.body.appendChild(d);
 		var d3b = document.getElementById('d3b');
 		d3b.style.position='absolute';
-		d3b.style.top='0px';
-		d3b.style.left='90%';
-		d3b.style.width='8%';
+		d3b.style.top='20px';
+		d3b.style.left='50%';
+		d3b.style.width='49%';
 		d3b.style.height='50px';
-		//
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d3c');
+		//~ document.body.appendChild(d);
+		//~ var d3c = document.getElementById('d3c');
+		//~ d3c.style.position='absolute';
+		//~ d3c.style.top='20px';
+		//~ d3c.style.left='66%';
+		//~ d3c.style.width='33%';
+		//~ d3c.style.height='50px';
+		/*//
 		d = document.createElement('input');
 		d.setAttribute('id','d3c');
 		d.setAttribute('type','button');
@@ -58904,110 +67604,593 @@ qatar,80
 		d3c.style.top='0px';
 		d3c.style.left='0%';
 		d3c.style.width='18%';
-		d3c.style.height='30px';
+		d3c.style.height='30px';*/
 		//
 		d3.onblur = function() {
-			Zachary_S_Clayton_spyfu__findURL(d1,  this.value, false);
+			Zachary_S_Clayton_spyfu__findURL2(d1,  this.value);
 		}
 		d3b.onblur = function() {
-			Zachary_S_Clayton_spyfu__findURL(d1b, this.value, false);
+			Zachary_S_Clayton_spyfu__findURL2(d1b, this.value);
 		}
-		d3c.onclick = function() {
-		}
-		//
-		d3.value = b;
-		d3b.value = b;
+		//~ d3c.onblur = function() {
+			//~ Zachary_S_Clayton_spyfu__findURL2(d1c, this.value);
+		//~ }
 		
-		var q = document.getElementsByName('Q1Url')[0];
-		q.onblur = function() {
-			this.style.border = '2px solid LightGreen';
-			Zachary_S_Clayton_spyfu__searchURL(this.value);
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		//~ d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		d3.value = o.name;
+		d3b.value= '"' + o.name + '"';
+		//~ d3c.value= o.col2;
+		
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Zachary_S_Clayton_spyfu__findURL2__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					if (b2 != '')
+						Zachary_S_Clayton_spyfu__findURL2(d1,  d3.value );
+					else
+						TOTAL_CALLS++;
+					if (b3 != '')
+						Zachary_S_Clayton_spyfu__findURL2(d1b, d3b.value);
+					else
+						TOTAL_CALLS++;
+					//~ if (b4 != '')
+						//~ Zachary_S_Clayton_spyfu__findURL2(d1c, d3c.value);
+					//~ else
+						//~ TOTAL_CALLS++;
+			
+				}
+			});
 		}
+		Zachary_S_Clayton_spyfu__findURL2__load_skips();
+		
+		function Zachary_S_Clayton_spyfu__findURL2__processProxyResponse(rs, out_div) {
+			
+			//
+			var yahoo_type = 0;
+			var r = /yschttl spt" href="[^*"]+[*]{2,}([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // ** (TWO ASTERISKS) !!
+			if (!r.exec(rs)) {
+				r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+				yahoo_type = 1;
+			}
+			r.lastIndex = 0;
+			
+			if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
+				r.lastIndex = 0;
+				
+				var count = 0;
+				var x, match, out;
+				var r, m;
+				var fb = '';
+				var domain;
+				var short_domain;
+				var y;
+				
+				// add bold to result
+				// b2, b3, b4
+				//~ var bold_array;
+				//~ switch(out_div.id) {
+					//~ case 'd1':
+						//~ bold_array = (b3 + ' ' + b4).split(' ');
+						//~ break;
+					//~ case 'd1b':
+						//~ bold_array = (b2 + ' ' + b4).split(' ');
+						//~ break;
+					//~ case 'd1c':
+						//~ bold_array = (b2 + ' ' + b3).split(' ');
+						//~ break;
+				//~ }
+				
+				while (match = r.exec(rs)) {
+					//if (count >= 8)
+					//	break;
+					//console.log(x);
+					//~ console.log(match);
+					
+					// is this ri.search.yahoo.com
+					if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
+						match[1] = (/\/RU=([^\/]+)/.exec(match[1]))[1];
+						match[1] = decodeURIComponent(match[1]);
+					}
+					else if (yahoo_type == 0)
+						match[1] = decodeURIComponent(match[1]);
+					
+					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					match[2] = match[2].replace(/<b>/g, '`');
+					match[2] = match[2].replace(/<\/b>/g, '``');
+					match[2] = match[2].replace(/<[^>]+>/g, ' ');
+					match[2] = match[2].replace(/[<>]/g, ' ');
+					match[2] = match[2].replace(/``/g, '</b>');
+					match[2] = match[2].replace(/`/g, '<b>');
+					
+					x = match[1];
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// regular = ^http://www.site.com$
+					// subdomains = [\.\/]site.com$
+					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+						short_domain = y[1];
+					} else
+						short_domain = x;
+					
+					// SKIP BUTTON CREATE
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2(
+							{
+								domain: x,
+								load_file: 'austin_load_skips', 
+								var_skip_sites: SKIP_SITES, 
+								callback_function: false
+							}
+						);
+					
+					// add bold (bold_array)
+					//~ match[2] = MT__bold(match[2], bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+					txa.readOnly = true;
+					txa.value = x;
+					d.appendChild(txa);
+					// ...
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = match[1];
+					d.appendChild(a);
+					// ...
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					//~ // ...
+					//~ d.appendChild(document.createElement('br'));
+					// ...
+					var pbody = document.createElement('p');
+					pbody.setAttribute('style','');
+					pbody.innerHTML = match[2];
+					d.appendChild(pbody);
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('Q1Url').value = this.value;
+						
+						Zachary_S_Clayton_spyfu__searchURL(this.value);
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						
+						//showNextTab();
+						
+						//~ doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+							} else {
+								x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
+					// OLD JUN30 2014
+					//
+					//
+					//~ out_div.innerHTML += '\
+						//~ <p class="class_'+cls+'">\
+							//~ <textarea class="exe" style="width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;" readOnly>'+x+'</textarea>\
+							//~ <a href="'+match[1]+'" target="_blank">link</a> \
+							//~ <a href="'+match[1]+'" target="d2">ifr</a> \
+							//~ <input type="button" value=" S " id="'+x+'" class="exe-skip" style="width:auto;" > \
+							//~ <br >'+match[2]+'\
+						//~ </p>';
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					count++;
+				}
+				
+				if (count > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
+				}
+			} else
+				out_div.innerHTML = '0';
 
-		Zachary_S_Clayton_spyfu__findURL(d1,  d3.value);
-		//Zachary_S_Clayton_spyfu__findURL(d1b, d3b.value);
-		
-		function Zachary_S_Clayton_spyfu__findURL(out_div, search) {
+			// All three windows have completed
+			// and none of the three have 
+			// TOTAL_CALLS AND FOUND_ONE_NONSKIP
+			//~ TOTAL_CALLS++;
+			//~ if (TOTAL_CALLS == 3) {
+				//~ if (!FOUND_ONE_NONSKIP) {
+					//~ na.click(); // na button
+					//~ 
+					//~ //document.getElementById('Website').value = 
+					//~ return;
+				//~ }
+				//~ // All three windows have completed
+				//~ // and the first domain is same across all three
+				//~ else if (ARRAY_FIRST_FINDS.length == 3) {
+					//~ //d1, d1b, d1c
+					//~ var divs = [d1, d1b];
+					//~ var x;
+					//~ for (var i in divs) {
+						//~ x = divs[i].getElementsByTagName('textarea')[0];
+						//~ x.style.border = '6px solid LightGreen';
+					//~ }
+				//~ }
+				//~ 
+				//~ // addToTabsQ
+				//~ //addToTabsQ();
+			//~ }
+		}
+		function Zachary_S_Clayton_spyfu__findURL2(out_div, search) {
 			
 			// Yahoo
 			var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
 			out_div.innerHTML = '';
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: u,
-				onload: function (response) {
-					var rs=response.responseText;
-					
-					var rg = /yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
-					
-					if (rg.exec(rs) && rs.indexOf('Including results for') == -1) {
-						rg.lastIndex = 0;
-						rg=/yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // li
-						var count = 0;
-						var x, match, out;
-						
-						var r, m;
-						var fb = '';
-						var domain;
-						
-						//var out_id = out_div.id;
-						while (match = rg.exec(rs)) {
-							if (count >= 8)
-								break;
-							
-							match[1] = decodeURIComponent(match[1]);
-							//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
-							
-							match[2] = match[2].replace(/<b>/g, '`');
-							match[2] = match[2].replace(/<\/b>/g, '``');
-							//match[2] = match[2].replace(/^[^>]+>/, ' '); // first close
-							match[2] = match[2].replace(/<[^>]+>/g, ' ');
-							match[2] = match[2].replace(/[<>]/g, ' ');
-							//match[2] = match[2].replace(/'/g, "\'");
-							match[2] = match[2].replace(/``/g, '</b>');
-							match[2] = match[2].replace(/`/g, '<b>');
-							
-							x = match[1];
-							
-							// trailing
-							x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-							// for full matches, trailing slash when URL is domain only
-							match[1] = match[1].replace(/^(https?:\/\/[^\/]+)\/$/i, '$1');
-							
-							// leading
-							//x = x.replace(/^https?:\/\/(www\.|)/i, '');
-							
-							out_div.innerHTML += '\
-								<p>\
-								<input type="button" value="'+x+'" class="exe" style="width:auto;" >\
-								<a href="'+match[1]+'" target="_blank">link</a> \
-								<a href="'+match[1]+'" target="d2">ifr</a> \
-								<br >'+match[1]+'\
-								<br >'+match[2]+'\
-								</p>';
-								
-							count++;
-						}
-						if (count > 0) {
-							out_div.innerHTML += '<div style="height:1000px;">&nbsp;</div>';
-						}
-						
-						var x = document.getElementsByClassName('exe');
-						for (var i in x) {
-							x[i].onclick = function() {
-								this.style.backgroundColor = 'lime';
-								document.getElementById('Q1Url').value = this.value;
-								//document.getElementById('Q1Url').focus();
-								Zachary_S_Clayton_spyfu__searchURL(this.value);
-								//doSubmit();
-							}
-						}
-					} else
-						out_div.innerHTML = '0';
+			var out_div = out_div;
+			
+			var url = HOST + 
+				'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+				'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999');
+			
+			// init
+			GM_xmlhttpRequest({ // USE "HOST" HERE!
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					//var rs = response.responseText;
 				}
 			});
+			// watch done
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: HOST+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+						
+						// IS HOST 192.168.1.2?
+						// IF NO THEN POST THIS RESPONSE TO 
+						// 192.168.1.2
+						// md5 !!
+						if (HOST == 'http://192.168.1.2') { //MT___host
+							Zachary_S_Clayton_spyfu__findURL2__processProxyResponse(rs, out_div);
+							return;
+						}
+						
+						// still here?
+						// save file !
+						var rf = new AMT___requests_factory();
+						var md5_url = rf.general_functions__md5(u);
+						var data;
+						var yahoo_rs = rs;
+						
+						data = 'AMT__serverSide_write__value='+encodeURIComponent(rs)+
+							'&AMT__serverSide_write__folder=.cached'+
+							'&AMT__serverSide_write__file='+encodeURIComponent(md5_url);
+						
+						GM_xmlhttpRequest({
+							method: "POST",
+							url: 'http://192.168.1.2/mturk/util.php',
+							data: data,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								if (response.status != 200 || rs != '') {
+									exit(response.status + ' ' + rs);
+								}
+								
+								Zachary_S_Clayton_spyfu__findURL2__processProxyResponse(yahoo_rs, out_div); // yahoo_rs !!
+							}
+						});
+						
+					}
+				})
+			}, 1000);
 		}
 	}
+	//OLD ZACHARY S CLAYTON
+	//JUL7 2014
+	//
+	//
+	//
+	//
+		
+		//~ var d;
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1');
+		//~ document.body.appendChild(d);
+		//~ var d1 = document.getElementById('d1');
+		//~ d1.style.position='absolute';
+		//~ d1.style.top='50px';
+		//~ d1.style.left='20%';
+		//~ d1.style.width='70%';
+		//~ d1.style.height='400px';
+		//~ d1.style.overflow='auto';
+		//~ d1.style.border='1px solid blue';
+		//~ d1.style.borderBottom='2px solid blue';
+		//~ d1.style.backgroundColor='#eee';
+		//~ d1.style.fontSize='10px';
+		//~ //
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1b');
+		//~ document.body.appendChild(d);
+		//~ var d1b = document.getElementById('d1b');
+		//~ d1b.style.position='absolute';
+		//~ d1b.style.top='50px';
+		//~ d1b.style.left='90%';
+		//~ d1b.style.width='8%';
+		//~ d1b.style.height='400px';
+		//~ d1b.style.overflow='auto';
+		//~ d1b.style.border='1px solid blue';
+		//~ d1b.style.borderBottom='2px solid blue';
+		//~ d1b.style.backgroundColor='#eee';
+		//~ d1b.style.fontSize='10px';
+		//~ //
+		//~ d = document.createElement('iframe');
+		//~ d.setAttribute('id','d2');
+		//~ d.setAttribute('name','d2');
+		//~ document.body.appendChild(d);
+		//~ var d2 = document.getElementById('d2');
+		//~ d2.style.position='absolute';
+		//~ d2.style.top='450px';
+		//~ d2.style.left='20%';
+		//~ d2.style.width='78%';
+		//~ d2.style.height='400px';
+		//~ d2.style.overflow='auto';
+		//~ d2.style.border='1px solid blue';
+		//~ d2.style.borderBottom='2px solid blue';
+		//~ d2.style.backgroundColor='#eee';
+		//~ d2.style.fontSize='8px';
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d3');
+		//~ document.body.appendChild(d);
+		//~ var d3 = document.getElementById('d3');
+		//~ d3.style.position='absolute';
+		//~ d3.style.top='0px';
+		//~ d3.style.left='20%';
+		//~ d3.style.width='70%';
+		//~ d3.style.height='50px';
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d3b');
+		//~ document.body.appendChild(d);
+		//~ var d3b = document.getElementById('d3b');
+		//~ d3b.style.position='absolute';
+		//~ d3b.style.top='0px';
+		//~ d3b.style.left='90%';
+		//~ d3b.style.width='8%';
+		//~ d3b.style.height='50px';
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d3c');
+		//~ d.setAttribute('type','button');
+		//~ document.body.appendChild(d);
+		//~ var d3c = document.getElementById('d3c');
+		//~ d3c.style.position='absolute';
+		//~ d3c.style.top='0px';
+		//~ d3c.style.left='0%';
+		//~ d3c.style.width='18%';
+		//~ d3c.style.height='30px';
+		//~ //
+		//~ d3.onblur = function() {
+			//~ Zachary_S_Clayton_spyfu__findURL(d1,  this.value, false);
+		//~ }
+		//~ d3b.onblur = function() {
+			//~ Zachary_S_Clayton_spyfu__findURL(d1b, this.value, false);
+		//~ }
+		//~ d3c.onclick = function() {
+		//~ }
+		//~ //
+		//~ d3.value = b;
+		//~ d3b.value = b;
+		//~ 
+		//~ var q = document.getElementsByName('Q1Url')[0];
+		//~ q.onblur = function() {
+			//~ this.style.border = '2px solid LightGreen';
+			//~ Zachary_S_Clayton_spyfu__searchURL(this.value);
+		//~ }
+//~ 
+		//~ Zachary_S_Clayton_spyfu__findURL(d1,  d3.value);
+		//~ //Zachary_S_Clayton_spyfu__findURL(d1b, d3b.value);
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ function Zachary_S_Clayton_spyfu__findURL(out_div, search) {
+			//~ 
+			//~ // Yahoo
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			//~ out_div.innerHTML = '';
+			//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: u,
+				//~ onload: function (response) {
+					//~ var rs=response.responseText;
+					//~ 
+					//~ var rg = /yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+					//~ 
+					//~ if (rg.exec(rs) && rs.indexOf('Including results for') == -1) {
+						//~ rg.lastIndex = 0;
+						//~ rg=/yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // li
+						//~ var count = 0;
+						//~ var x, match, out;
+						//~ 
+						//~ var r, m;
+						//~ var fb = '';
+						//~ var domain;
+						//~ 
+						//~ //var out_id = out_div.id;
+						//~ while (match = rg.exec(rs)) {
+							//~ if (count >= 8)
+								//~ break;
+							//~ 
+							//~ match[1] = decodeURIComponent(match[1]);
+							//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+							//~ 
+							//~ match[2] = match[2].replace(/<b>/g, '`');
+							//~ match[2] = match[2].replace(/<\/b>/g, '``');
+							//~ //match[2] = match[2].replace(/^[^>]+>/, ' '); // first close
+							//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+							//~ match[2] = match[2].replace(/[<>]/g, ' ');
+							//~ //match[2] = match[2].replace(/'/g, "\'");
+							//~ match[2] = match[2].replace(/``/g, '</b>');
+							//~ match[2] = match[2].replace(/`/g, '<b>');
+							//~ 
+							//~ x = match[1];
+							//~ 
+							//~ // trailing
+							//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+							//~ // for full matches, trailing slash when URL is domain only
+							//~ match[1] = match[1].replace(/^(https?:\/\/[^\/]+)\/$/i, '$1');
+							//~ 
+							//~ // leading
+							//~ //x = x.replace(/^https?:\/\/(www\.|)/i, '');
+							//~ 
+							//~ out_div.innerHTML += '\
+								//~ <p>\
+								//~ <input type="button" value="'+x+'" class="exe" style="width:auto;" >\
+								//~ <a href="'+match[1]+'" target="_blank">link</a> \
+								//~ <a href="'+match[1]+'" target="d2">ifr</a> \
+								//~ <br >'+match[1]+'\
+								//~ <br >'+match[2]+'\
+								//~ </p>';
+								//~ 
+							//~ count++;
+						//~ }
+						//~ if (count > 0) {
+							//~ out_div.innerHTML += '<div style="height:1000px;">&nbsp;</div>';
+						//~ }
+						//~ 
+						//~ var x = document.getElementsByClassName('exe');
+						//~ for (var i in x) {
+							//~ x[i].onclick = function() {
+								//~ this.style.backgroundColor = 'lime';
+								//~ document.getElementById('Q1Url').value = this.value;
+								//~ //document.getElementById('Q1Url').focus();
+								//~ Zachary_S_Clayton_spyfu__searchURL(this.value);
+								//~ //doSubmit();
+							//~ }
+						//~ }
+					//~ } else
+						//~ out_div.innerHTML = '0';
+				//~ }
+			//~ });
+		//~ }
+	//~ }
 	
 	//
 	// Aaron Welch
@@ -68204,7 +77387,7 @@ qatar,80
 		}
 	}
 	
-	//
+	// TODO Is this Dan Furman? Dan Ferman??
 	// Jaclyn Criscuolo
 	// Masters, Oct. 1, 2013
 	// https://api.twitter.com/1.1/users/search.json?q=Twitter%20API&page=1&count=3
@@ -74596,6 +83779,9 @@ qatar,80
 	// Brittany Graham
 	// Find the annual revenue and number of employees for the company
 	//
+	// NOTE: Removed /c/ July 18 2014. That is manta.com/c/ could
+	// also be manta.com/ic/.
+	//
 	//s = 'The revenue and employee information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
 	//s = 'The revenue&nbsp;information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
 	//~ s = 'The revenue and employee information on Manta.com is typically located &nbsp;towards the bottom of the page under the section "Business Information" . But please be sure to look at the entire page to find it.';
@@ -74603,7 +83789,7 @@ qatar,80
 	if (ih.indexOf(s) != -1) { // && 0 == 1
 		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		GM_addStyle('body {width:100%;margin-top:600px;}');
+		GM_addStyle('body {width:100%;margin-top:700px;}');
 		GM_addStyle('ul {position:absolute;top:1000px;}');
 		GM_addStyle('input {width:96%;}');
 		
@@ -74614,9 +83800,9 @@ qatar,80
 		document.body.appendChild(d);
 		var d1 = document.getElementById('d1');
 		d1.style.position='absolute';
-		d1.style.top='60px';
+		d1.style.top='70px';
 		d1.style.left='0%';
-		d1.style.width='50%';
+		d1.style.width='33%';
 		d1.style.height='600px';
 		d1.style.overflow='auto';
 		d1.style.border='1px solid blue';
@@ -74629,15 +83815,28 @@ qatar,80
 		document.body.appendChild(d);
 		var d1b = document.getElementById('d1b');
 		d1b.style.position='absolute';
-		d1b.style.top='60px';
-		d1b.style.left='50%';
-		d1b.style.width='49%';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
 		d1b.style.height='600px';
 		d1b.style.overflow='auto';
 		d1b.style.border='1px solid blue';
 		d1b.style.borderBottom='2px solid blue';
 		d1b.style.backgroundColor='#eee';
 		d1b.style.fontSize='12px !important !important';
+		//
+		var d1c = document.createElement('div');
+		document.body.appendChild(d1c);
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height='600px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='12px !important !important';
 		//~ //
 		//~ d = document.createElement('div');
 		//~ d.setAttribute('id','d1c');
@@ -74661,32 +83860,43 @@ qatar,80
 		d2.style.position='absolute';
 		d2.style.top='0px';
 		d2.style.left='0%';
-		d2.style.width='50%';
-		d2.style.height='60px';
+		d2.style.width='33%';
+		d2.style.height='70px';
 		d2.onblur = function() {
-			var u;
-			this.value = this.value.trim();
-			u  = 'site:manta.com/c/ '+this.value;
-			u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
-			Brittany_Graham_rv_emp_yahoo(u,  d1);
+			
+			Brittany_Graham_rv_emp__initWithInput(this);
+			//~ var u;
+			//~ this.value = this.value.trim();
+			//~ u = 'site:manta.com/ '+this.value;
+			//u = 'site:manta.com/c/ '+this.value;
+			//~ 
+			//~ // NEW YAHOO
+			//~ // JUL17 2014
+			//~ var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(u); //%2B
+			//~ 
+			//~ // OLD
+			//u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
+			//~ 
+			//~ Brittany_Graham_rv_emp_yahoo(u,  d1);
 		}
 		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2b');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d2b = document.getElementById('d2b');
+		var d2b = document.createElement('input');
+		d2b.setAttribute('type','button');
+		d2b.setAttribute('style','cursor:pointer;');
+		document.body.appendChild(d2b);
 		d2b.style.position='absolute';
 		d2b.style.top='40px';
-		d2b.style.left='50%';
-		d2b.style.width='49%';
-		d2b.style.height='20px';
+		d2b.style.left='33%';
+		d2b.style.width='33%';
+		d2b.style.height='30px';
 		d2b.value = 'N/A';
 		d2b.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			q.value = 'N/A';
 			if (q2)
 				q2.value = 'N/A';
+			if(!auto_clicked)
+				new AMT___core_factory().nextTab();
 			doSubmit();
 		}
 		//
@@ -74696,17 +83906,27 @@ qatar,80
 		var d2c = document.getElementById('d2c');
 		d2c.style.position='absolute';
 		d2c.style.top='20px';
-		d2c.style.left='50%';
-		d2c.style.width='49%';
+		d2c.style.left='33%';
+		d2c.style.width='33%';
 		d2c.style.height='20px';
 		d2c.value = '';
 		d2c.onblur = function() {
-			var u;
-			this.value = this.value.trim();
-			//u  = 'site:manta.com/c/ '+this.value+' "'+o_city+'" "'+str_num+'"';
-			u  = 'site:manta.com/c/ '+this.value;
-			u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
-			Brittany_Graham_rv_emp_yahoo(u,  d1b);
+			
+			Brittany_Graham_rv_emp__initWithInput(this);
+		}
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d2e');
+		document.body.appendChild(d);
+		var d2e = document.getElementById('d2e');
+		d2e.style.position='absolute';
+		d2e.style.top='0px';
+		d2e.style.left='66%';
+		d2e.style.width='33%';
+		d2e.style.height='70px';
+		d2e.value = '';
+		d2e.onblur = function() {
+			Brittany_Graham_rv_emp__initWithInput(this);
 		}
 		//
 		d = document.createElement('input');
@@ -74715,14 +83935,17 @@ qatar,80
 		var d2d = document.getElementById('d2d');
 		d2d.style.position='absolute';
 		d2d.style.top='0px';
-		d2d.style.left='50%';
-		d2d.style.width='49%';
+		d2d.style.left='33%';
+		d2d.style.width='33%';
 		d2d.style.height='20px';
 		d2d.value = 'http://localhost';
 		d2d.onblur = function() {
 			MT___host = this.value;
 			GM_setValue('AMT__Brittany_Graham_rv_emp_MT_host', this.value);
 		}
+		var txt_debug = document.createElement('input');
+		txt_debug.setAttribute('style', 'position:absolute;top:2000px;');
+		document.body.appendChild(txt_debug);
 		/* END ITEMS */
 		
 		
@@ -74731,11 +83954,42 @@ qatar,80
 		var b = document.getElementsByTagName('strong');
 		//~ var b = document.getElementsByTagName('b'); // these change!
 		var o_name = __js_clean_html_str(b[3].innerText).trim().toLowerCase();
-		var o_addr = __js_clean_html_str(b[4].innerText).trim().toLowerCase();
-		var o_city = __js_clean_html_str(b[5].innerText).trim().toLowerCase();
-		var o_stat = __js_clean_html_str(b[6].innerText).trim().toLowerCase();
-		var o_phon = __js_clean_html_str(b[8].innerText).trim().toLowerCase();
+		var o_addr = __js_clean_html_str(b[6].innerText).trim().toLowerCase();
+		var o_city = __js_clean_html_str(b[7].innerText).trim().toLowerCase();
+		var o_stat = __js_clean_html_str(b[8].innerText).trim().toLowerCase();
+		var o_phon = __js_clean_html_str(b[4].innerText).trim().toLowerCase();
+		// Starts with "Website:"
+		if (b[6].parentNode.innerText.indexOf('Website:') != -1) {
+			o_addr = __js_clean_html_str(b[8].innerText).trim().toLowerCase();
+			o_city = __js_clean_html_str(b[9].innerText).trim().toLowerCase();
+			o_stat = __js_clean_html_str(b[10].innerText).trim().toLowerCase();
+		}
+		//~ console.log(b[6].parentNode.innerText.indexOf('Website:'));
+		//~ console.log(b[6].parentNode.innerText);
+		// Contains "Category"
+		if (ih.indexOf('<p>Category:&nbsp;<strong>') != -1) {
+			var o_addr = __js_clean_html_str(b[9].innerText).trim().toLowerCase();
+			var o_city = __js_clean_html_str(b[10].innerText).trim().toLowerCase();
+			var o_stat = __js_clean_html_str(b[11].innerText).trim().toLowerCase();
+			var o_phon = __js_clean_html_str(b[5].innerText).trim().toLowerCase();
+		}
 		
+		
+		// Add scrape array name_scrape
+		// to this. Only add when name
+		// length >= 3 chars.
+		// ...
+		var o = {
+			name_array: o_name.replace(/[^\w\d]/g, ' ').split(' '),
+			name_scrape: {} //
+		}
+		var x = o.name_array.slice(0, 3); // index, end. 0,2 = 0, 1
+		for (var i in x) {
+			if (x[i].length >= 3)
+				o.name_scrape[i + ''] = x[i];
+		}
+		
+		// ..
 		var FULL_ADDR; // THIS IS FOR BOLDING OF THE COMPANY ADDRESS!
 		FULL_ADDR = o_addr + ' ' + o_city + ' ' + o_stat + ' ' + o_stat;
 		
@@ -74745,9 +83999,30 @@ qatar,80
 			document.body.style.backgroundColor = "orange";
 		}
 		
-		//
-		o_name = o_name.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa)[\.,]*$/i, "");
-		//
+		//~ // replace
+		var replace = [
+			'pty','plc','llc','llp','ltd','limited','inc','incorporated','corp','corporation','bv','ab','gmbh','ag','as','nv','sa','pc','pa'
+		];
+		var tmpArrReplace = [];
+		for (var i in replace) {
+			replace[i] = replace[i].split('');
+			var tmpArr = [];
+			for (var j in replace[i]) {
+				tmpArr.push(replace[i][j]);
+				tmpArr.push('\\.?');
+			}
+			tmpArr = tmpArr.join('');
+			tmpArrReplace.push(tmpArr);
+		}
+		var replaceRegex = new RegExp('( ('+tmpArrReplace.join('|')+')[\.,]*)*$', 'i');
+		
+		// ...
+		o_name = o_name.replace(replaceRegex, '');
+		//~ o_name = o_name.replace(/( (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)[\.,]*)*$/i, '');
+		// ... space
+		o_name = o_name.replace(/,([^ ])/g, ', $1');
+		
+		// Phone
 		var p;
 		if (p = /(\d{3})(\d{3})(\d+)/.exec(o_phon)) {
 			console.log(p);
@@ -74760,20 +84035,15 @@ qatar,80
 			o_phon = '('+p[1]+') '+p[2]+'-'+p[3];
 		}
 		
+		// Str_num
 		var str_num = (/^\d+/.exec(o_addr)) ? /^\d+/.exec(o_addr)[0] : '';
 		
+		// auto_clicked
 		var auto_clicked = false;
-		
-		//~ var u; //OLD//3=name,5=city,6=state
-		//~ u  = 'site:manta.com/c/ '+o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';
-		//~ u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
-		//~ 
-		//~ var u2;
-		//~ u2 = 'site:manta.com/c/ "'+o_phon+'" "'+o_stat+'"';
-		//~ u2 = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u2); //%2B;
 		
 		d2.value = o_name+' "'+o_city+'" "'+str_num+'" "'+o_stat+'"';//str_num
 		d2c.value= '"'+o_phon+'" "'+o_stat+'"';
+		d2e.value= o_name + ' "'+o_stat+'"';
 		
 		// UPDATE JUN30
 		// REMOVED NUM EMPLOYEES?
@@ -74789,12 +84059,23 @@ qatar,80
 		var RESULTS_HL = [];
 		RESULTS_HL[0] = ''; // rslt by name
 		RESULTS_HL[1] = []; // rslt by phone
+		RESULTS_HL[2] = []; // rslt by name only
 		
 		// gloval var @yahoo proxy 1 out of 3 (3?)
 		var COUNT_PROXY;// = GM_getValue('AMT__Brittany_Graham_rv_emp_proxy');
 		
 		// var max_on_regular init yahoo proxy
 		var MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
+		
+		//
+		var initial_searches = {
+			d1_complete:   false,
+			d1b_complete:  false,
+			d1c_complete:  false,
+			d1_no_results: false,
+			//~ first_run:true,
+			no_result_count:0
+		}
 		
 		// MT___host
 		var x = GM_getValue('AMT__Brittany_Graham_rv_emp_MT_host');
@@ -74806,10 +84087,867 @@ qatar,80
 		// init
 		//~ Brittany_Graham_rv_emp_yahoo(u,  d1);
 		//~ Brittany_Graham_rv_emp_yahoo(u2, d1b);
-		d2 .focus();
-		d2 .blur();
-		d2c.focus();
-		d2c.blur();
+		
+		//d2 .focus();
+		//d2 .blur();
+		//d2c.focus();
+		//d2c.blur();
+		
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+
+		
+		Brittany_Graham_rv_emp__initWithInput(d2);
+		Brittany_Graham_rv_emp__initWithInput(d2c);
+		//~ Brittany_Graham_rv_emp__initWithInput(d2e);
+		
+		function Brittany_Graham_rv_emp__initWithInput(input) {
+			
+			var u;
+			input.value = input.value.trim();
+			u = 'site:manta.com/ '+input.value;
+			//~ u = 'site:manta.com/c/ '+d2.value;
+			
+			// NEW YAHOO
+			// JUL17 2014
+			var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(u); //%2B
+			
+			// OLD
+			//~ u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
+			
+			if (input == d2)
+				Brittany_Graham_rv_emp_yahoo(u,  d1);
+			else if (input == d2c)
+				Brittany_Graham_rv_emp_yahoo(u,  d1b);
+			else if (input == d2e)
+				Brittany_Graham_rv_emp_yahoo(u,  d1c);
+		}
+		
+		//~ function Brittany_Graham_initial_rv_emp_d2_yahoo() {
+			//~ var u;
+			//~ d2.value = d2.value.trim();
+			//~ u = 'site:manta.com/ '+d2.value;
+			//~ 
+			//~ // NEW YAHOO
+			//~ // JUL17 2014
+			//~ var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(u); //%2B
+			//~ 
+			//~ // OLD
+			//~ ////~ u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
+			//~ 
+			//~ Brittany_Graham_rv_emp_yahoo(u,  d1);
+		//~ }
+		//~ function Brittany_Graham_initial_rv_emp_d2c_yahoo() {
+			//~ var u;
+			//~ d2c.value = d2c.value.trim();
+			//~ u = 'site:manta.com/ '+d2c.value;
+			//~ 
+			//~ // NEW YAHOO
+			//~ // JUL17 2014
+			//~ var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(u); //%2B
+			//~ 
+			//~ // OLD
+			//~ ////~ u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
+			//~ 
+			//~ Brittany_Graham_rv_emp_yahoo(u,  d1b);
+		//~ }
+		//~ 
+		//~ Brittany_Graham_initial_rv_emp_d2_yahoo();
+		//~ Brittany_Graham_initial_rv_emp_d2c_yahoo();
+		
+		
+		
+		
+		/**
+		 * Function Brittany_Graham_rv_emp
+		 *
+		 */
+		function Brittany_Graham_rv_emp(input, rs) {
+			
+			var r, r2, r3;
+			var sbm = true;
+			
+			//~ var q = document.getElementById('Business Revenue');
+			//~ var q2= document.getElementById('Number of Employees');
+			
+			q.value = '';
+			if (q2)
+				q2.value= '';
+			
+			// ANNUAL REVENUE
+			r = /<span id="profile-annual_revenue" class="">([^<]+)/.exec(rs);
+			r2= /<th[^>]*>Annual Revenue Estimate<\/th>[\r\n\t\s]+<td[^>]*>([^<]+)/.exec(rs);
+			//<th class="text-right">Annual Revenue Estimate</th>                               <td rel="annualRevenue">94000</td>
+			if (r || r2) {
+				if (!r)
+					r = r2;
+				r = r[1];
+				r = __js_clean_html_str(r).trim();
+				if (/^information not found$/i.exec(r))
+					r = 'N/A';
+				q.value = r;
+				if (r == '') q.value = 'N/A';
+			} else if (rs.indexOf('Annual Revenue Estimate') == -1) {
+				q.value = 'N/A';
+			} else
+				sbm = false;
+				
+			//~ // EMPLOYEES
+			//~ if (q2) {
+				//~ r = /<th[^>]*>Employees<\/th>[\r\n\t\s]+<td[^>]*>((.|\s)*?(?=<\/td>|$)|$)/.exec(rs);
+				//~ r2= /<span id="profile-n_employees" class="">([^<]{0,})<\/span>/.exec(rs);
+				//~ r3= /<td rel="numEmployees">([^<]*)<\/td>/.exec(rs);
+				//~ if (r || r2 || r3) {
+					//~ r = (r) ? r : r2; 
+					//~ r = (r) ? r : r3;
+					//~ 
+					//~ r = r[1];
+					//~ r = r.replace(/<[^>]+>/g, ' ');
+					//~ r = r.replace(/\s+/g, ' ');
+					//~ r = __js_clean_html_str(r).trim();
+					//~ 
+					//~ // undefined / Add Employees
+					//~ r = r.replace(/Add Employees/gi, '');
+					//~ //
+					//~ if (/undefined/i.exec(r))
+						//~ r = 'N/A';
+					//~ //
+					//~ if (r == '') r = 'N/A';
+					//~ 
+					//~ //
+					//~ r = r.replace(/\s{0,}[\d,]+ \*\*/, ''); // 1 ** or 1,500 **
+					//~ r = r.trim();
+					//~ 
+					//~ if (/^information not found$/i.exec(r))
+						//~ r = 'N/A';
+					//~ 
+					//~ // set val
+					//~ q2.value = r;
+					//~ 
+					//~ // sbm
+					//~ if (r.length < 1) sbm = false;
+					//~ if (r.indexOf('**') != -1) sbm = false;
+					//~ if  (
+						//~ !/^[\d,]+ to [\d,]+($| at this location [\d,]+$)/i.exec(r) &&
+						//~ !/^([\d,]+ |)at this location [\d,]+$/i.exec(r) &&
+						//~ !/^[\d,]+$/.exec(r) &&
+						//~ r.indexOf('N/A') == -1
+						//~ ) sbm = false;
+				//~ } else {
+					//~ if (rs.indexOf('Employees') != -1) {
+						//~ document.body.style.backgroundColor = '#aaeeaa';
+						//~ console.log('On page: no "Employees"');
+						//~ sbm = false;
+					//~ } else {
+						//~ q2.value = 'N/A';
+					//~ }
+				//~ }
+			//~ }
+			
+			//    >Business Information<
+			if (!/>Business Information</.exec(rs)) {
+				//~ console.log(rs);
+				document.body.style.backgroundColor = '#aaeedd';
+				console.log('Not on page: ">Business Information<"');
+				//~ sbm = false;
+				if (rs.indexOf('Annual Revenue Estimate') != -1 || rs.indexOf('More Businesses Like This') == -1)
+					sbm = false;
+					
+			}
+				
+			console.log(sbm);
+			if (sbm && q.value != '') {
+				if (!auto_clicked)
+					new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+		}
+		// LOAD A MANTA URL DIRECTLY !
+		// Or read it from the cache if already loaded.
+		function Brittany_Graham_rv_emp__manta_direct_url(input, callback_function) { //
+			
+			var input = input;
+			var callback_function = callback_function;
+			
+			if (pages[input.manta_url]) {
+				
+				console.log('cached');
+				
+				var rs;
+				rs = pages[input.manta_url];
+				
+				callback_function(input, rs);
+				
+			}
+			else
+			{
+				// DIRECT LOAD !!
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: input.manta_url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if  (
+							response.status != 200 ||
+							rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+							rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
+							)
+						{
+							d1.style.backgroundColor = 'yellow';
+							console.log('X');
+							return;
+						}
+						
+						pages[input.manta_url]	= rs;
+						pages[input.id]			= rs;
+						callback_function(input, rs);
+						
+						//console.log(rs);
+					}
+				});
+			}
+		}
+		/**
+		 * function Brittany_Graham_rv_emp_address__processResponse
+		 * 
+		 * 
+		 * @- July18 Add xhr_scrape_page
+		//
+		// Brittany_Graham_rv_emp_address
+		// BOLD THE RESULT
+		// THIS IS ONLY FOR "BUTTON" RATHER
+		// THAN "INPUT", SO MUST CHANGE
+		// ACCORDINGLY.
+		// +FILL IN ANY DIVS ??
+		// FULL_ADDR is bold for addresses!!
+		// Ex:	Paul Fleck Attorney
+		// 		Lawyers and Attorneys in San Antonio, TX
+		 * 
+		 */ 
+		function Brittany_Graham_rv_emp_address__processResponse(input, rs) { // "input" is a div
+			var r, r2, r3;
+			r = /<div class="company-address neutralDarkest">([^\r\n]+)/.exec(rs);
+			r2= /<div itemprop="streetAddress" class="inline">([^<]+)/.exec(rs);
+			r3= /<span itemprop="streetAddress">([^<]+)/.exec(rs);
+			if (r || r2 || r3) {
+				if (!r)
+					r = r2;
+				if (!r)
+					r = r3;
+				r = r[1];
+				r = r.replace(/<[^>]{0,}>/g, ' ');
+				r = r.replace(/\s+/g, ' ');
+				r = __js_clean_html_str(r).trim();
+				//input.value = r;
+				//input.value = MT__bold(r, FULL_ADDR.split(' '));
+				
+				if (FULL_ADDR)
+					input.innerHTML = MT__bold(r, FULL_ADDR.split(' '));
+				else
+					input.value = r;
+			} else {
+				input.value = 'X';
+			}
+			// ADD SCRAPE
+			// @assoc. array [show output (key) => scrape for keyword (value)], []
+			// @html
+			// @context_len
+			var scrape_el = document.createElement('div');
+			scrape_el.setAttribute('style','display:block;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;z-index:20;');
+			input.appendChild(scrape_el);
+			new AMT___items_factory().xhr_scrape_page({
+				parent_el: scrape_el,
+				keyword_and_index_array: o.name_scrape,
+				html: rs,
+				context_len: 30
+			});
+			input.appendChild(document.createElement('br'));
+			
+			// ANY DIVS?
+			var x = document.getElementsByClassName('div_related_biz_' + input.manta_url);
+			if (x.length == 0)
+				return;
+			
+			// ...
+			var n = {};
+			
+			// HAS ALT NAME?
+			//
+			//
+			var r = /<em class="text-muted" rel="altName">([^<]*)<\/em>/.exec(rs);
+			if (r) {
+				n.alt = __js_clean_html_str(r[1]);
+			}
+			
+			// OLD AS OF JUL14 2014
+			//~ var r = /<li class="mbm phl">\s*<h4 class="fs-14"><a href="(http:\/\/www\.manta\.com\/c\/[^"]+)">([^<]+)<\/a><\/h4>[\r\n\t\s]*<p class="fs-14 neutralMiddark">([^<]+)<\/p><\/li>/g;
+			
+			// NEW
+			var r = /<li>[\r\n\t\s]+<p>[\r\n\t\s]+<a href="([^"]+)">([^<]*)<\/a><br>[\r\n\t\s]+<span class="text-muted">([^<]+)<\/span>/g;
+			
+			var m;
+			var btn, link;
+			var btn_txt;
+			var count = 0;
+			while (m = r.exec(rs)) {
+				var divs = document.getElementsByClassName('div_related_biz_' + input.manta_url);
+				for (var i in divs) {
+					if (i == 'length') break;
+					
+					// ...
+					n.url = 'http://www.manta.com' + __js_clean_html_str(m[1]);
+					
+					// On the first run add 
+					// the alternate name if 
+					// available.
+					if  (
+						count == 0 &&
+						!divs[i].getElementsByClassName('related_biz__alt').length &&
+						n.hasOwnProperty('alt')
+						)
+					{
+						var x = document.createElement('div');
+						x.setAttribute('style', 'margin-left:30px;'); // SET MARGIN LEFT
+						x.className = 'related_biz__alt';
+						x.innerHTML = 'ALT:'+ MT__bold(n.alt, o.name_array);
+						divs[i].appendChild(x);
+					}
+					// Add br
+					else if (
+						count == 0 &&
+						!divs[i].getElementsByClassName('related_biz__alt').length &&
+						!n.hasOwnProperty('alt')
+						)
+					{
+						divs[i].appendChild(document.createElement('br'));
+					}
+					
+					// Does this div already contain
+					// the related biz? This is by 
+					// class name.
+					if  (
+						divs[i].getElementsByClassName('related_biz__'+n.url).length
+						)
+						continue;
+					
+					// ...
+					divs[i].style.display = 'block';// set display:block!
+					
+					m[2] = __js_clean_html_str(m[2]);
+					
+					if (NAME)
+						btn_txt = MT__bold(m[2], NAME.split(' ')) + '<br>' + __js_clean_html_str(m[3]);
+					else if (o && o.hasOwnProperty('name_array'))
+						btn_txt = MT__bold(m[2], o.name_array);
+					else
+						btn_txt = __js_clean_html_str(m[2]) + '<br>' + __js_clean_html_str(m[3]);
+					
+					btn = document.createElement('button');
+					btn.setAttribute('style', 'width:80%;text-align:left;border-top:0;cursor:pointer;');
+					btn.manta_url	= n.url; // manta_url==> these are the same
+					btn.id			= n.url; // id		 ==> these are the same
+					btn.className	= 'related_biz__'+n.url;
+					btn.innerHTML = btn_txt;
+					btn.onclick = function(e) { // STOP PROP !
+						this.style.backgroundColor = 'LightGreen';
+						e.stopPropagation();
+						e.preventDefault();
+						
+						// THIS IF FOR CONTACT
+						//~ brittany_graham_manta(this); // !!
+						
+						// THIS IS FOR RV/EMP
+						Brittany_Graham_rv_emp_cache(this, Brittany_Graham_rv_emp);
+						
+						// OLD
+						//~ Brittany_Graham_rv_emp_cache(this, brittany_graham_manta__process); // !!
+						
+						return false;
+					}
+					
+					divs[i].appendChild(btn);
+					
+					link = document.createElement('a');
+					link.setAttribute('style', 'width:18%;text-align:left;');
+					link.href = n.url;
+					link.innerText = ' L ';
+					link.target = '_blank';
+					link.onclick = function(e) {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+					
+					divs[i].appendChild(link);
+					divs[i].appendChild(document.createElement('br'));
+				}
+				count++;
+			}
+
+		}
+		/**
+		 * function Brittany_Graham_rv_emp_address
+		 */
+		// Is this request cached?
+		// (@input or @btn)
+		// @input
+		// @input.id		-> yahoo's cache URL or manta's URL
+		// @btn
+		// @btn.manta_url	-> manta url
+		// @btn.id			-> yahoo's cache URL or manta's URL
+		//
+		// @callback_function
+		//
+		// always scrape .id
+		// however, always add the retrieved page as both "id" AND "manta_url"
+		function Brittany_Graham_rv_emp_cache(input, callback_function) { //
+			
+			var input = input;
+			var callback_function = callback_function;
+			
+			console.log('yahoo url:'+input.id);
+			console.log('manta url:'+input.manta_url);
+			
+			// Is input.id also input.manta_url?
+			//
+			//
+			if (input.id == input.manta_url) {
+				Brittany_Graham_rv_emp__manta_direct_url(input, callback_function);
+				return;
+			}
+			
+			// Continue
+			//
+			//
+			if (pages[input.id] || pages[input.manta_url]) {
+				
+				console.log('cached');
+				
+				var rs;
+				rs = pages[input.id];
+				
+				if (rs) {	// is this page cached (by "id")?
+					// :)
+				}
+				else 		// page cached by "manta_url"
+				{
+					rs = pages[input.manta_url];
+				}
+				
+				callback_function(input, rs);
+				
+				return;
+			}
+			
+			// Continue
+			//
+			//
+			var u = input.id;
+			var manta_url = input.manta_url;
+			
+			var url;
+			url = AMT___POPUP___PROXY_REDACTED_ +
+				'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+				'&short_filename='+encodeURIComponent(input.manta_url);
+				'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999')+
+				
+				//~ '&catch_success='+encodeURIComponent('<!DOCTYPE html>')+
+				//~ '&catch_include='+encodeURIComponent('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.')+
+				
+				
+			// Init
+			//
+			//
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					//
+				}
+			});
+			// Wait complete
+			//
+			//
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(manta_url),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+							
+						if  (
+							rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+							rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
+							)
+						{
+							d1.style.backgroundColor = 'yellow';
+							console.log('X');
+							return;
+						}
+						
+						// When using cached pages from
+						// Yahoo for Manta scrape
+						// remove the bolding from Yahoo
+						//<b style="color:#000;background:#ff66ff">
+						rs = rs.replace(/<b style="[^"]*">((.|\s)*?(?=<\/b>|$)|$)/g, '$1');
+						rs = rs.replace(/<\/b>/g, '');
+						
+						// SET CACHE FOR BOTH "ID" AND "MANTA_URL" !!
+						//
+						//
+						pages[input.id] = rs;
+						if (input.manta_url)
+							pages[input.manta_url] = rs;
+						
+						// ...
+						//
+						//
+						callback_function(input, rs);
+					}
+				})
+			}, 1000);
+		}
+		
+		/**
+		 * Function Brittany_Graham_rv_emp_yahoo_processResponse
+		 */
+		function Brittany_Graham_rv_emp_yahoo_processResponse(rs, out) {
+			out.innerHTML = '';
+			
+			//AMT___requests_factory.prototype.parse_yahoo_result
+			var yahoo_rslt = (new AMT___requests_factory()).parse_yahoo_result(rs);
+			//x = yahoo_rslt;
+			
+			//~ console.log(yahoo_rslt);
+			//~ if (!yahoo_rslt.length) {
+				//~ out.innerHTML = '0';
+				//~ 
+				//~ 
+				//~ return;
+			//~ }
+			
+			var count = 0;
+			var r2;
+			var x, y;
+			var match;
+			var o_url;
+			var manta_url;
+			//~ console.log(yahoo_rslt);
+			
+			// ...
+			// loop
+			for (var i in yahoo_rslt) {
+				
+				if (count >= 10)
+					break;
+				
+				match		= yahoo_rslt[i];
+				manta_url	= match[1];
+				
+				// UPDATE
+				// JULY 18 2014
+				// Change manta.com/c/ to manta.com/i?c/
+				if (!/manta\.com\/i?c\//.exec(manta_url)) {
+					continue;
+				}
+				
+				// AND...
+				// Listing must include state.
+				// All of the inputs include the
+				// state in quotes.
+				if (match[2].indexOf(o_stat.toUpperCase()) == -1 && o_stat.length == 2 && /^[a-z]{2}$/i.exec(o_stat)) {
+					continue;
+				}
+				
+				// Cache URL
+				//
+				o_url = match[1]; // FOR CACHE ID
+				//
+				x = /<a href="(http:\/\/[^\/]+\/search\/srpcache\?[^"]+)"/.exec(match[0]);
+				if (x) {
+					match[1] = x[1];
+				} else {
+					x = /<a href="\/r\/_ylt=[^*]+[*]+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[0]);
+					if (x) {
+						match[1] = decodeURIComponent(x[1]);
+					} else {
+						//<a href="http://search.yahoo.com/r/
+						//<a href="http://search.yahoo.com/r/
+						//x = /<a href="http:\/\/(r\.|)search\.yahoo\.com\/\r\/[^*]+\*+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[2]);
+						x = /\*+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[0]);
+						if (x) {
+							match[1] = decodeURIComponent(x[1]);
+						} else {
+							x = /RU=(http%3a%2f%2f[^%]+%2fsearch%2fsrpcache[^\/]+)/.exec(match[0]);
+							if (x) {
+								match[1] = decodeURIComponent(x[1]);
+							}
+						}
+					}
+				}
+				
+				// results highlight
+				// @param RESULTS_HL[]
+				//
+				if (out == d1 && count == 0) {
+					RESULTS_HL[0] = o_url;
+				} else if (out == d1b) {
+					RESULTS_HL[1].push(o_url);
+				} else if (out == d1c) {
+					RESULTS_HL[2].push(o_url);
+				}
+				
+				// btn
+				// @id:			download this url through _PROXY_REDACTED_
+				// @manta_url:	save as this filename
+				var d;
+				d = document.createElement('input');
+				d.setAttribute('id', match[1]);
+				d.setAttribute('value', match[1]);
+				d.setAttribute('class','exe');
+				d.setAttribute('style','text-align:left;width:auto;height:24;cursor:pointer;');
+				d.setAttribute('type','button');
+				d.manta_url = manta_url;
+				out.appendChild(d);
+				d.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					Brittany_Graham_rv_emp_cache(this, Brittany_Graham_rv_emp);
+					//Brittany_Graham_rv_emp_cache(this);
+				}
+				
+				// Replace here!
+				// Is out d1b? This is the right side.
+				// If it is the right side (phone number) then
+				// bold the title words.
+				//
+				d = document.createElement('div');
+				d.setAttribute('style','');
+				out.appendChild(d);
+				var tmp_o_name = o_name;
+				tmp_o_name = tmp_o_name.replace(/\s+/g, ' ');
+				tmp_o_name = tmp_o_name.replace(/ \w( |$)/g, ' ');
+				tmp_o_name = tmp_o_name.replace(/ *& */g, ' ');
+				if (out != d1b)
+					d.innerHTML = match[2];
+				else
+					d.innerHTML += MT__bold(match[2], o.name_array); // OLD IS >> tmp_o_name.split(' ')
+				// ...
+				out.appendChild(document.createElement('hr'));
+				
+				
+				
+				// Auto is here
+				//
+				//
+				//
+				if  (
+					count <= 2 &&
+					!auto_clicked
+					)
+				{
+					var m;
+					m = match[2];
+					m = m.replace(/<[^>]+>/g, '');
+					m = m.toLowerCase();
+					m = __js_clean_html_str(m).trim();
+					
+					m = m.replace(/[^\d\w ]/g, '');
+					m = m.replace(/\s+/g, ' ');
+					o_name = o_name.replace(/[^\d\w ]/g, '');
+					o_name = o_name.replace(/\s+/g, ' ');
+					o_name = o_name.trim();
+					o_city = o_city.replace(/[^\d\w ]/g, '');
+					o_city = o_city.replace(/\s+/g, ' ');
+					o_city = o_city.trim();
+					
+					if  (
+						o_name.length > 2 &&
+						o_city.length > 2 &&
+						m.indexOf(o_name + ' ' + o_city) === 0 &&
+						!auto_clicked
+						)
+					{	
+						auto_clicked = true;								
+						
+						// enter in manual
+						var x = out.getElementsByTagName('input');
+						x[x.length - 1].click();
+					}
+				}
+			
+			
+			
+				// Address and other related biz
+				//
+				//
+				d = document.createElement('div');
+				d.className	= 'div_related_biz_'+manta_url;	// manta_url
+				d.setAttribute('id', match[1]);
+				d.innerText = ' T ';
+				d.setAttribute('style','width:auto;text-align:left;border-bottom:1px dotted #a2a2a2;cursor:pointer;');
+				//d.setAttribute('type','button');
+				d.manta_url = manta_url;
+				out.appendChild(d);
+				d.onclick = function() {
+					Brittany_Graham_rv_emp_cache(this, Brittany_Graham_rv_emp_address__processResponse);
+				}
+				if (count == 0)
+					d.click(); // CLICK FIRST "T" !!
+				
+				count++;
+			}
+			
+			if (count != 0) {
+				d = document.createElement('div');
+				d.setAttribute('style','height:2000px;');
+				out.appendChild(d);
+			} else {
+				out.innerText = '0';
+				
+				
+				switch(out) {
+					case d1:
+						if (initial_searches.d1_complete) return;  // RETURN ON ANY OF THESE WHEN INITIAL SEARCH COMPLETE
+						initial_searches.d1_complete = true;
+						initial_searches.no_result_count++;
+						initial_searches.d1_no_results = true;
+						break;
+					case d1b:
+						if (initial_searches.d1b_complete) return;
+						initial_searches.d1b_complete = true;
+						initial_searches.no_result_count++;
+						break;
+					case d1c:
+						if (initial_searches.d1c_complete) return;
+						initial_searches.d1c_complete = true;
+						initial_searches.no_result_count++;
+						break;
+				}
+				console.log(initial_searches);
+				//~ console.log(initial_searches.no_result_count);
+				
+				if  (
+					initial_searches.d1_complete   &&
+					!initial_searches.d1c_complete &&
+					initial_searches.d1_no_results
+					//~ initial_searches.d1b_complete  &&
+					//~ initial_searches.no_result_count == 2 
+					)
+				{
+					Brittany_Graham_rv_emp__initWithInput(d2e);
+				}
+				else if
+					(
+					initial_searches.d1_complete &&
+					initial_searches.d1b_complete &&
+					initial_searches.d1c_complete && 
+					initial_searches.no_result_count == 3
+					)
+				{
+					q.value = 'N/A';
+					doSubmit();
+				}
+				
+			}
+			
+
+			// check results versus other
+			if (RESULTS_HL[0] != '' && RESULTS_HL[1].length) {
+				var x;
+				var y;
+				x = d1b.getElementsByTagName('input');
+				y = d1.getElementsByTagName('input')[0];
+				for (var i in x) {
+					if (!x[i]) continue;
+					if (!x[i].manta_url) continue;//XX .id
+					if (x[i].manta_url == RESULTS_HL[0]) {//XX .id
+						x[i].style.border = '4px solid LightGreen';
+						y.style.border = '4px solid LightGreen';
+					}
+				}
+			}
+		}
+		function Brittany_Graham_rv_emp_yahoo(u, out) {
+			out.innerHTML = '';
+			
+			// proxy
+			var use_proxy = true;
+			// get current
+			COUNT_PROXY							= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy');
+			MAX_INIT_REQUESTS_WITHOUT_PROXY		= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests');
+			if (COUNT_PROXY == undefined || !COUNT_PROXY || COUNT_PROXY == NaN || !/^\d$/.exec(COUNT_PROXY))
+				COUNT_PROXY = 0;
+			if (MAX_INIT_REQUESTS_WITHOUT_PROXY == undefined || !MAX_INIT_REQUESTS_WITHOUT_PROXY || MAX_INIT_REQUESTS_WITHOUT_PROXY == NaN || !/^\d$/.exec(MAX_INIT_REQUESTS_WITHOUT_PROXY))
+				MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
+			// COUNT_PROXY
+			if (COUNT_PROXY >= MAX_INIT_REQUESTS_WITHOUT_PROXY) {
+				COUNT_PROXY = 0;
+				use_proxy = false;
+			}
+			// increment
+			else {
+				COUNT_PROXY = Math.round(COUNT_PROXY * 1) + 1;
+			}
+			// save value
+			GM_setValue('AMT__Brittany_Graham_rv_emp_proxy', COUNT_PROXY);
+			
+			if (use_proxy) {
+				Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out)
+			}
+			else {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.indexOf('Yahoo! - 999 Unable to process request at this time -- error 999') != -1) {
+							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 20);
+							Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out);
+						}
+						else {
+							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 2); //2
+							Brittany_Graham_rv_emp_yahoo_processResponse(rs, out);
+						}
+					}
+				});
+			}
+		}
+		function Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out) {
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: MT___host+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999'),
+				onload: function(response) {
+					//var rs = response.responseText;
+				}
+			});
+			
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: MT___host+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+						
+						Brittany_Graham_rv_emp_yahoo_processResponse(rs, out);
+					}
+				})
+			}, 1000);
+		}
 		
 		
 		//~ /**
@@ -74891,680 +85029,6 @@ qatar,80
 				//~ 
 			//~ }
 		//~ }
-		function Brittany_Graham_rv_emp(input, rs) {
-			
-			// when using cached pages from Yahoo for Manta scrape
-			// remove the bolding from Yahoo
-			//<b style="color:#000;background:#ff66ff">
-			//rs = rs.replace(/<b style="[^"]*">((.|\s)*?(?=<\/b>|$)|$)/g, '$1');
-			//rs = rs.replace(/<\/b>/g, '');
-			//console.log(rs);
-			
-			var r, r2, r3;
-			var sbm = true;
-			
-			//~ var q = document.getElementById('Business Revenue');
-			//~ var q2= document.getElementById('Number of Employees');
-			
-			q.value = '';
-			if (q2)
-				q2.value= '';
-			
-			// ANNUAL REVENUE
-			r = /<span id="profile-annual_revenue" class="">([^<]+)/.exec(rs);
-			r2= /<th[^>]*>Annual Revenue Estimate<\/th>[\r\n\t\s]+<td[^>]*>([^<]+)/.exec(rs);
-			//<th class="text-right">Annual Revenue Estimate</th>                               <td rel="annualRevenue">94000</td>
-			if (r || r2) {
-				if (!r)
-					r = r2;
-				r = r[1];
-				r = __js_clean_html_str(r).trim();
-				if (/^information not found$/i.exec(r))
-					r = 'N/A';
-				q.value = r;
-				if (r == '') q.value = 'N/A';
-			} else if (rs.indexOf('Annual Revenue Estimate') == -1) {
-				q.value = 'N/A';
-			} else
-				sbm = false;
-				
-			// EMPLOYEES
-			if (q2) {
-				r = /<th[^>]*>Employees<\/th>[\r\n\t\s]+<td[^>]*>((.|\s)*?(?=<\/td>|$)|$)/.exec(rs);
-				r2= /<span id="profile-n_employees" class="">([^<]{0,})<\/span>/.exec(rs);
-				r3= /<td rel="numEmployees">([^<]*)<\/td>/.exec(rs);
-				if (r || r2 || r3) {
-					r = (r) ? r : r2; 
-					r = (r) ? r : r3;
-					
-					r = r[1];
-					r = r.replace(/<[^>]+>/g, ' ');
-					r = r.replace(/\s+/g, ' ');
-					r = __js_clean_html_str(r).trim();
-					
-					//~ if (r) {
-						//~ r = r[1];
-						//~ r = r.replace(/<[^>]+>/g, ' ');
-						//~ r = r.replace(/\s+/g, ' ');
-						//~ r = __js_clean_html_str(r).trim();
-					//~ } else if (r2) {
-						//~ r = r2[1];
-						//~ r = r.replace(/<[^>]+>/g, ' ');
-						//~ r = r.replace(/\s+/g, ' ');
-						//~ r = __js_clean_html_str(r).trim();
-					//~ } else {
-						//~ 
-					//~ }
-					
-					// undefined / Add Employees
-					r = r.replace(/Add Employees/gi, '');
-					//
-					if (/undefined/i.exec(r))
-						r = 'N/A';
-					//
-					if (r == '') r = 'N/A';
-					
-					//
-					r = r.replace(/\s{0,}[\d,]+ \*\*/, ''); // 1 ** or 1,500 **
-					r = r.trim();
-					
-					if (/^information not found$/i.exec(r))
-						r = 'N/A';
-					
-					// set val
-					q2.value = r;
-					
-					// sbm
-					if (r.length < 1) sbm = false;
-					if (r.indexOf('**') != -1) sbm = false;
-					if  (
-						!/^[\d,]+ to [\d,]+($| at this location [\d,]+$)/i.exec(r) &&
-						!/^([\d,]+ |)at this location [\d,]+$/i.exec(r) &&
-						!/^[\d,]+$/.exec(r) &&
-						r.indexOf('N/A') == -1
-						) sbm = false;
-				} else {
-					if (rs.indexOf('Employees') != -1) {
-						document.body.style.backgroundColor = '#aaeeaa';
-						console.log('On page: no "Employees"');
-						sbm = false;
-					} else {
-						q2.value = 'N/A';
-					}
-				}
-			}
-			
-			//q.focus();
-			
-			//    >Business Information<
-			if (!/>Business Information</.exec(rs)) {
-				console.log(rs);
-				document.body.style.backgroundColor = '#aaeedd';
-				console.log('Not on page: ">Business Information<"');
-				sbm = false;
-			}
-				
-			console.log(sbm);
-			if (sbm) {
-				doSubmit();
-			}
-		}
-		// LOAD A MANTA URL DIRECTLY !
-		// Or read it from the cache if already loaded.
-		function Brittany_Graham_rv_emp__manta_direct_url(input, callback_function) { //
-			
-			var input = input;
-			var callback_function = callback_function;
-			
-			//~ console.log(input);
-			//~ console.log(input.id);
-			//~ console.log(input.manta_url);
-			//~ console.log(callback_function);
-			
-			//~ console.log(typeof e);
-			//~ console.log(e.manta_url);
-			//~ var btn;
-			//~ e.stopPropagation();
-			//~ e.preventDefault();
-			//~ 
-			//~ if (typeof e == 'object') {
-				//~ btn = e;
-			//~ } else {
-				//~ btn = this;
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-			//~ }
-			//~ btn.style.backgroundColor = 'LightGreen';
-			
-			if (pages[input.manta_url]) {
-				
-				console.log('cached');
-				
-				var rs;
-				rs = pages[input.manta_url];
-				
-				callback_function(input, rs);
-				
-			}
-			else
-			{
-				// DIRECT LOAD !!
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: input.manta_url,
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						if  (
-							response.status != 200 ||
-							rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
-							rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
-							)
-						{
-							d1.style.backgroundColor = 'yellow';
-							console.log('X');
-							return;
-						}
-						
-						pages[input.manta_url]	= rs;
-						pages[input.id]			= rs;
-						callback_function(input, rs);
-						
-						//console.log(rs);
-					}
-				});
-			}
-		}
-		//
-		// Brittany_Graham_rv_emp_address
-		// BOLD THE RESULT
-		// THIS IS ONLY FOR "BUTTON" RATHER
-		// THAN "INPUT", SO MUST CHANGE
-		// ACCORDINGLY.
-		// +FILL IN ANY DIVS ??
-		// FULL_ADDR is bold for addresses!!
-		function Brittany_Graham_rv_emp_address__processResponse(input, rs) { //
-			var r, r2, r3;
-			r = /<div class="company-address neutralDarkest">([^\r\n]+)/.exec(rs);
-			r2= /<div itemprop="streetAddress" class="inline">([^<]+)/.exec(rs);
-			r3= /<span itemprop="streetAddress">([^<]+)/.exec(rs);
-			if (r || r2 || r3) {
-				if (!r)
-					r = r2;
-				if (!r)
-					r = r3;
-				r = r[1];
-				r = r.replace(/<[^>]{0,}>/g, ' ');
-				r = r.replace(/\s+/g, ' ');
-				r = __js_clean_html_str(r).trim();
-				//input.value = r;
-				//input.value = MT__bold(r, FULL_ADDR.split(' '));
-				
-				if (FULL_ADDR)
-					input.innerHTML = MT__bold(r, FULL_ADDR.split(' '));
-				else
-					input.value = r;
-			} else {
-				input.value = 'X';
-			}
-			
-			// FILL IN ANY DIVS ??
-			// set display:block!
-			var x = document.getElementsByClassName('div_related_biz_' + input.manta_url);
-			if (x.length == 0)
-				return;
-			//
-			// href
-			// Paul Fleck Attorney
-			// Lawyers and Attorneys in San Antonio, TX
-			var r = /<li class="mbm phl">\s*<h4 class="fs-14"><a href="(http:\/\/www\.manta\.com\/c\/[^"]+)">([^<]+)<\/a><\/h4>[\r\n\t\s]*<p class="fs-14 neutralMiddark">([^<]+)<\/p><\/li>/g;
-			var m;
-			//var out;
-			var btn, link;
-			var btn_txt;
-			while (m = r.exec(rs)) {
-				var divs = document.getElementsByClassName('div_related_biz_' + input.manta_url);
-				for (var i in divs) {
-					if (i == 'length') break;
-					
-					divs[i].style.display = 'block';// set display:block!
-					
-					if (NAME)
-						btn_txt = MT__bold(__js_clean_html_str(m[2]), NAME.split(' ')) + '<br>' + __js_clean_html_str(m[3]);
-					else
-						btn_txt = __js_clean_html_str(m[2]) + '<br>' + __js_clean_html_str(m[3]);
-					
-					btn = document.createElement('button');
-					btn.setAttribute('style', 'width:80%;text-align:left;border-top:0;');
-					btn.manta_url	= m[1]; // manta_url==> these are the same
-					btn.id			= m[1]; // id		==> these are the same
-					btn.innerHTML = btn_txt;
-					
-					btn.onclick = function(e) { // STOP PROP !
-						this.style.backgroundColor = 'LightGreen';
-						e.stopPropagation();
-						e.preventDefault();
-						
-						brittany_graham_manta(this); // !!
-						//Brittany_Graham_rv_emp_cache(this, brittany_graham_manta__process); // !!
-						
-						return false;
-					}
-					
-					divs[i].appendChild(btn);
-					
-					link = document.createElement('a');
-					link.setAttribute('style', 'width:18%;text-align:left;');
-					link.href = m[1];
-					link.innerText = ' L ';
-					link.target = '_blank';
-					link.onclick = function(e) {
-						e.stopPropagation();
-						e.preventDefault();
-					}
-					
-					divs[i].appendChild(link);
-					
-					divs[i].appendChild(document.createElement('br'));
-				}
-				
-			}
-
-		}
-		/**
-		 * function Brittany_Graham_rv_emp_address
-		 */
-		// Is this request cached?
-		// (@input or @btn)
-		// @input
-		// @input.id		-> yahoo's cache URL or manta's URL
-		// @btn
-		// @btn.manta_url	-> manta url
-		// @btn.id			-> yahoo's cache URL or manta's URL
-		//
-		// @callback_function
-		//
-		// always scrape .id
-		// however, always add the retrieved page as both "id" AND "manta_url"
-		function Brittany_Graham_rv_emp_cache(input, callback_function) { //
-			
-			var input = input;
-			var callback_function = callback_function;
-			
-			console.log('yahoo url:'+input.id);
-			console.log('manta url:'+input.manta_url);
-			
-			// is input.id also input.manta_url?
-			if (input.id == input.manta_url) {
-				Brittany_Graham_rv_emp__manta_direct_url(input, callback_function);
-				return;
-			}
-			
-			// continue
-			if (pages[input.id] || pages[input.manta_url]) {
-				
-				console.log('cached');
-				
-				var rs;
-				rs = pages[input.id];
-				
-				if (rs) {	// is this page cached (by "id")?
-					// :)
-				}
-				else 		// page cached by "manta_url"
-				{
-					rs = pages[input.manta_url];
-				}
-				
-				callback_function(input, rs);
-				
-			}
-			else
-			{
-				
-				var u = input.id;
-				var manta_url = input.manta_url;
-				
-				var url;
-				url = AMT___POPUP___PROXY_REDACTED_ +
-					'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
-					'&short_filename='+encodeURIComponent(input.manta_url);
-					
-					'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999')+
-					
-					//~ '&catch_success='+encodeURIComponent('<!DOCTYPE html>')+
-					//~ '&catch_include='+encodeURIComponent('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.')+
-					
-					
-				// init
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: url,
-					onload: function(response) {
-						//var rs = response.responseText;
-					}
-				});
-				// wait complete
-				var xint = setInterval(function() {
-					GM_xmlhttpRequest({
-						method: "GET",
-						url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(manta_url),
-						onload: function(response) {
-							var rs = response.responseText;
-							
-							if (rs.trim() != '') {
-								clearInterval(xint);
-							} else
-								return;
-								
-							if  (
-								rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
-								rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
-								)
-							{
-								d1.style.backgroundColor = 'yellow';
-								console.log('X');
-								return;
-							}
-							
-							// when using cached pages from Yahoo for Manta scrape
-							// remove the bolding from Yahoo
-							//<b style="color:#000;background:#ff66ff">
-							rs = rs.replace(/<b style="[^"]*">((.|\s)*?(?=<\/b>|$)|$)/g, '$1');
-							rs = rs.replace(/<\/b>/g, '');
-							
-							//
-							// SET CACHE FOR BOTH "ID" AND "MANTA_URL" !!
-							//
-							pages[input.id] = rs;
-							if (input.manta_url)
-								pages[input.manta_url] = rs;
-							
-							callback_function(input, rs);
-						}
-					})
-				}, 1000);
-			}
-		}
-		
-		/*
-		 * The "yschttl spt" seems different! March 3!
-		 * Caution lol!
-		 */
-		function Brittany_Graham_rv_emp_yahoo_processResponse(rs, out) {
-			out.innerHTML = '';
-			
-			//AMT___requests_factory.prototype.parse_yahoo_result
-			var yahoo_rslt = (new AMT___requests_factory()).parse_yahoo_result(rs);
-			//x = yahoo_rslt;
-			
-			if (!yahoo_rslt.length) {
-				out.innerHTML = '0';
-				return;
-			}
-			
-			var count = 0;
-			var r2;
-			var x, y;
-			var match;
-			var o_url;
-			var manta_url;
-			
-			console.log(yahoo_rslt);
-			
-			for (var i in yahoo_rslt) {
-				
-				if (count >= 8)
-					break;
-				
-				match		= yahoo_rslt[i];
-				manta_url	= match[1];
-				
-				// cache
-				//<a href="http://208.71.46.190/search/srpcache?
-				//<a href="http://98.139.21.31/search/srpcache?ei=UTF-8&p=%2Bsite%3Amanta.com%2Fc%2F+safeguard+self+storage+-+manhattan+%22harvey%22+%221001%22+%22la%22&u=http://cc.bingj.com/cache.aspx?q=%2bsite%3amanta.com%2fc%2f+safeguard+self+storage+-+manhattan+%22harvey%22+%221001%22+%22la%22&d=5030361472709728&mkt=en-US&setlang=en-US&w=gs4PIlMPmkHvi3LD7cVEmReAxZLsW_aA&icp=1&.intl=us&sig=P1y4tCezGT3cvNWsrXyScg--" data-bk="5024.1" aria-describedby="link-1" target="_blank" class="sub">Cached</a>
-				//
-				o_url = match[1]; // FOR CACHE ID
-				//
-				x = /<a href="(http:\/\/[^\/]+\/search\/srpcache\?[^"]+)"/.exec(match[0]);
-				if (x) {
-					match[1] = x[1];
-				} else {
-					x = /<a href="\/r\/_ylt=[^*]+[*]+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[0]);
-					if (x) {
-						match[1] = decodeURIComponent(x[1]);
-					} else {
-						//<a href="http://search.yahoo.com/r/
-						//<a href="http://search.yahoo.com/r/
-						//x = /<a href="http:\/\/(r\.|)search\.yahoo\.com\/\r\/[^*]+\*+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[2]);
-						x = /\*+(http%3a\/\/[^\/]+\/search\/srpcache%3f[^"]+)"/.exec(match[0]);
-						if (x) {
-							match[1] = decodeURIComponent(x[1]);
-						} else {
-							x = /RU=(http%3a%2f%2f[^%]+%2fsearch%2fsrpcache[^\/]+)/.exec(match[0]);
-							if (x) {
-								match[1] = decodeURIComponent(x[1]);
-							}
-						}
-					}
-				}
-				
-				//~ console.log('matches');
-				console.log('YURL:'+match[1]);
-				console.log('YBDY:'+match[2]);
-				console.log('YFLL:'+match[0]);
-				
-				match[2] = match[2].replace(/<b>/g, '`');
-				match[2] = match[2].replace(/<\/b>/g, '``');
-				match[2] = match[2].replace(/<[^>]+>/g, ' ');
-				match[2] = match[2].replace(/[<>]/g, ' ');
-				
-				// CLEAN BEFORE GOING ANY FURTHER!
-				match[2] = __js_clean_html_str(match[2]);
-				
-				match[2] = match[2].replace(/``/g, '</b>');
-				match[2] = match[2].replace(/`/g, '<b>');
-				
-				// results highlight
-				// @param RESULTS_HL[]
-				//
-				if (out == d1 && count == 0) {
-					RESULTS_HL[0] = o_url;
-				} else if (out == d1b) {
-					RESULTS_HL[1].push(o_url);
-				}
-				
-				// btn
-				// @id:			download this url through _PROXY_REDACTED_
-				// @manta_url:	save as this filename
-				var d;
-				d = document.createElement('input');
-				d.setAttribute('id', match[1]);
-				d.setAttribute('value', match[1]);
-				//d.innerText = match[1];
-				d.setAttribute('class','exe');
-				d.setAttribute('style','text-align:left;width:auto;height:24;');
-				d.setAttribute('type','button');
-				d.manta_url = manta_url;
-				out.appendChild(d);
-				d.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					Brittany_Graham_rv_emp_cache(this, Brittany_Graham_rv_emp);
-					//Brittany_Graham_rv_emp_cache(this);
-				}
-				
-				//out.appendChild(document.createElement('br'));
-				
-				d = document.createElement('div');
-				d.setAttribute('id', match[1]);
-				d.innerText = ' T ';
-				d.setAttribute('style','width:auto;text-align:left;border-bottom:1px dotted #a2a2a2;');
-				//d.setAttribute('type','button');
-				d.manta_url = manta_url;
-				out.appendChild(d);
-				d.onclick = function() {
-					Brittany_Graham_rv_emp_cache(this, Brittany_Graham_rv_emp_address__processResponse);
-					//this.style.backgroundColor = 'lime';
-					//Brittany_Graham_rv_emp_address(this);
-				}
-				
-				if (count == 0)
-					d.click(); // CLICK FIRST "T" !!
-				
-				// replace here!
-				// Is out d1b? This is the right side.
-				// If it is the right side (phone number) then
-				// bold the title words.
-				//
-				d = document.createElement('div');
-				d.setAttribute('style','');
-				out.appendChild(d);
-				var tmp_o_name = o_name;
-				tmp_o_name = tmp_o_name.replace(/\s+/g, ' ');
-				tmp_o_name = tmp_o_name.replace(/ \w( |$)/g, ' ');
-				tmp_o_name = tmp_o_name.replace(/ *& */g, ' ');
-				if (out != d1b)
-					d.innerHTML = match[2];
-				else
-					d.innerHTML += MT__bold(match[2], tmp_o_name.split(' ')); // no ampersands!
-				
-				
-				out.appendChild(document.createElement('hr'));
-				
-				if  (
-					count <= 2 &&
-					!auto_clicked
-					)
-				{
-					var m;
-					m = match[2];
-					m = m.replace(/<[^>]+>/g, '');
-					m = m.toLowerCase();
-					m = __js_clean_html_str(m).trim();
-					
-					m = m.replace(/[^\d\w ]/g, '');
-					m = m.replace(/\s+/g, ' ');
-					o_name = o_name.replace(/[^\d\w ]/g, '');
-					o_name = o_name.replace(/\s+/g, ' ');
-					o_name = o_name.trim();
-					o_city = o_city.replace(/[^\d\w ]/g, '');
-					o_city = o_city.replace(/\s+/g, ' ');
-					o_city = o_city.trim();
-					
-					if  (
-						o_name.length > 2 &&
-						o_city.length > 2 &&
-						m.indexOf(o_name + ' ' + o_city) === 0 &&
-						!auto_clicked
-						)
-					{	
-						auto_clicked = true;								
-						
-						var x = out.getElementsByTagName('input');
-						x[x.length - 1].click();
-					}
-				}
-			
-				count++;
-			}
-			
-			if (count != 0) {
-				d = document.createElement('div');
-				d.setAttribute('style','height:2000px;');
-				out.appendChild(d);
-			}
-			
-
-			// check results versus other
-			if (RESULTS_HL[0] != '' && RESULTS_HL[1].length) {
-				var x;
-				var y;
-				x = d1b.getElementsByTagName('input');
-				y = d1.getElementsByTagName('input')[0];
-				for (var i in x) {
-					if (!x[i]) continue;
-					if (!x[i].manta_url) continue;//XX .id
-					if (x[i].manta_url == RESULTS_HL[0]) {//XX .id
-						x[i].style.border = '4px solid LightGreen';
-						y.style.border = '4px solid LightGreen';
-					}
-				}
-			}
-			
-			
-		}
-		function Brittany_Graham_rv_emp_yahoo(u, out) {
-			out.innerHTML = '';
-			
-			// proxy
-			var use_proxy = true;
-			// get current
-			COUNT_PROXY							= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy');
-			MAX_INIT_REQUESTS_WITHOUT_PROXY		= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests');
-			if (COUNT_PROXY == undefined || !COUNT_PROXY || COUNT_PROXY == NaN || !/^\d$/.exec(COUNT_PROXY))
-				COUNT_PROXY = 0;
-			if (MAX_INIT_REQUESTS_WITHOUT_PROXY == undefined || !MAX_INIT_REQUESTS_WITHOUT_PROXY || MAX_INIT_REQUESTS_WITHOUT_PROXY == NaN || !/^\d$/.exec(MAX_INIT_REQUESTS_WITHOUT_PROXY))
-				MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
-			// COUNT_PROXY
-			if (COUNT_PROXY >= MAX_INIT_REQUESTS_WITHOUT_PROXY) {
-				COUNT_PROXY = 0;
-				use_proxy = false;
-			}
-			// increment
-			else {
-				COUNT_PROXY = Math.round(COUNT_PROXY * 1) + 1;
-			}
-			// save value
-			GM_setValue('AMT__Brittany_Graham_rv_emp_proxy', COUNT_PROXY);
-			
-			if (use_proxy) {
-				Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out)
-			}
-			else {
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						if (rs.indexOf('Yahoo! - 999 Unable to process request at this time -- error 999') != -1) {
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 20);
-							Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out);
-						}
-						else {
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 2); //2
-							Brittany_Graham_rv_emp_yahoo_processResponse(rs, out);
-						}
-					}
-				});
-			}
-		}
-		function Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out) {
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: MT___host+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999'),
-				onload: function(response) {
-					//var rs = response.responseText;
-				}
-			});
-			
-			var xint = setInterval(function() {
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: MT___host+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						if (rs.trim() != '') {
-							clearInterval(xint);
-						} else
-							return;
-						
-						Brittany_Graham_rv_emp_yahoo_processResponse(rs, out);
-					}
-				})
-			}, 1000);
-		}
 	}
 	
 	//
@@ -75573,7 +85037,7 @@ qatar,80
 	// Make MT___host variable for dynamic tor
 	s = 'Find &nbsp;a contact name for the business below by cross referencing the business information on Manta.com.&nbsp;While doing the search on Manta.com be sure to look for the section labeled &nbsp;"Company Contacts"';
 	s = 'Find a contact name for the business by searching the company website or by searching Manta.com. Please enter the first name you find.&nbsp;';
-	s = 'Find a contact/owner name for the business by searching on the company website (<strong><span style="color:#FF0000;">About US | Company Profile</span></strong>) or by searching Manta.com. Please enter the first name you find.&nbsp;';
+	s = 'Find &nbsp;a contact name for the business below by cross referencing the business information on Manta.com.&nbsp;While doing the search on Manta.com be sure to look for the section labeled &nbsp;"Company Contacts"';
 	if  (
 		ih.indexOf(s) != -1// ||
 		//ih.indexOf(s2)!= -1 
@@ -75605,13 +85069,13 @@ qatar,80
 		var job_has_a_website = false;
 		
 		// ...
-		var var_name	= b[2] .innerText.trim();
-		var var_phone	= b[4] .innerText.trim();
-		var var_web		= b[5] .innerText.trim();
-		var var_street	= b[6] .innerText.trim();
-		var var_city	= b[8] .innerText.trim();
-		var var_state	= b[9] .innerText.trim();
-		var var_zip		= b[10].innerText.trim();
+		var var_name	= b[5] .innerText.trim();
+		var var_phone	= b[9] .innerText.trim();
+		var var_web		= b[15] .innerText.trim();
+		var var_street	= b[10] .innerText.trim();
+		var var_city	= b[11] .innerText.trim();
+		var var_state	= b[12] .innerText.trim();
+		var var_zip		= b[13].innerText.trim();
 		
 		// 2=name
 		// 4=phone
@@ -75804,11 +85268,13 @@ qatar,80
 		d2.onblur = function() {
 			var u;
 			this.value = this.value.trim();
-			u  = 'site:manta.com/c/ '+this.value+' "'+ci+'" "'+str_num+'" "'+st_code+'"';
+			u  = 'site:manta.com/ '+this.value+' "'+ci+'" "'+str_num+'" "'+st_code+'"';
 			u  = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //%2B;
 			found = false;
 			searchNum = false;
 			brittany_graham_yahoo(false, u);
+			
+			//~ u  = 'site:manta.com/c/ '+this.value+' "'+ci+'" "'+str_num+'" "'+st_code+'"';
 		}
 		//
 		d = document.createElement('input');
@@ -75945,6 +85411,105 @@ qatar,80
 			brittany_graham_yahoo // callback_function // args (true, false)
 		)
 		
+		
+		
+		
+		function brittany_graham_yahoo(first, isManual) {
+			
+			// name city str_number
+			if (FIRST_RUN) {
+				first = true;
+				isManual = false;
+				FIRST_RUN = false;
+			}
+			
+			//
+			var out;
+			var u;
+			if (first || isManual) {
+				
+				u = 'site:manta.com/ +'+d2.value+' +"'+city+'" +"'+str_num+'" "'+st_code+'"';
+				u+= (/^\d+$/.exec(ph)) ? ' '+ph.substr(-4) : ''; // last 4 of phone
+				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //
+				
+				out = d1;
+				out.innerHTML = '';
+				
+				// OLD JUL23 2014
+				//~ u = 'site:manta.com/c/ +'+d2.value+' +"'+city+'" +"'+str_num+'" "'+st_code+'"';
+			}
+			else if (searchNum == 1)
+			{
+				
+				if (ph == '') {
+					d1b.innerHTML = 'Xphone';
+					d1b.style.height = '14px';
+					results_blank += 'x0';
+					searchNum = 2;
+					brittany_graham_yahoo(false, false); // just phone #
+					return;
+				}
+				
+				var p;
+				if (/^\d{7,}$/.exec(ph)) {
+					p = /(\d{3})(\d{3})(\d+)/.exec(ph);
+					if (p[3].length < 4) {
+						while (p[3].length < 4) {
+							p[3] = '0' + p[3];
+						}
+					}
+					p = '('+p[1]+') '+p[2]+'-'+p[3];
+				} else
+					p = ph;
+				
+				console.log(p);
+				console.log(ph);
+				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:manta.com/ "'+p+'"'); //
+				out = d1b;
+				
+				// OLD JUL23 2014
+				//~ u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:manta.com/c/ "'+p+'"'); //
+			}
+			else if (searchNum == 2)
+			{
+				u = 'site:manta.com/ '+d2.value+' "'+st_code+'" '+city;
+				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //
+				
+				out = d1c;
+				out.innerHTML = '';
+				
+				// OLD JUL23 2014
+				//u = 'site:manta.com/c/ '+d2.value+' "'+st_code+'" '+city;
+			}
+			
+			/** 
+			 * use proxy or regular 
+			 */
+			var use_proxy = Brittany_Graham_contact_name_proxy();
+			if (use_proxy) {
+				Brittany_Graham_contact_name_useProxyInitSearch(first, isManual, u, out);
+			}
+			else
+			{
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.indexOf('Yahoo! - 999 Unable to process request at this time -- error 999') != -1) {
+							Brittany_Graham_contact_name_useProxyInitSearch(first, isManual, u, out);
+							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 20);
+						}
+						else {
+							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 2);
+							Brittany_Graham_contact_name_processResp(first, isManual, rs, out);
+						}
+					}
+				});
+			}
+		}
+		
 		/** count proxy **/
 		function Brittany_Graham_contact_name_processResp(first__, isManual__, rs, out) {
 			
@@ -75982,8 +85547,8 @@ qatar,80
 				var match;
 				var manta_url;
 				while (match = r.exec(rs)) {
-					if (count >= 6)
-						break;
+					//~ if (count >= 8)
+						//~ break;
 					
 					//console.log(match[1]);
 					
@@ -75996,6 +85561,12 @@ qatar,80
 					} else {
 						manta_url = match[1];
 					}
+					
+					// CHECK MATCH[1]
+					// JUL23 2014
+					// /ic/ OR /c/
+					if (!/manta\.com\/i?c\//.exec(match[1]))
+						continue;
 					
 					var cache; // !!
 					cache = /<a href="[^*"]+[*]+([^"]+)"[^>]*>Cached<\/a>/.exec(match[2]);
@@ -76415,92 +85986,6 @@ qatar,80
 			}, 1000);
 		}
 		
-		function brittany_graham_yahoo(first, isManual) {
-			
-			// name city str_number
-			if (FIRST_RUN) {
-				first = true;
-				isManual = false;
-				FIRST_RUN = false;
-			}
-			
-			//
-			var out;
-			var u;
-			if (first || isManual) {
-				
-				u = 'site:manta.com/c/ +'+d2.value+' +"'+city+'" +"'+str_num+'" "'+st_code+'"';
-				u+= (/^\d+$/.exec(ph)) ? ' '+ph.substr(-4) : ''; // last 4 of phone
-				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //
-				
-				out = d1;
-				out.innerHTML = '';
-			}
-			else if (searchNum == 1)
-			{
-				
-				if (ph == '') {
-					d1b.innerHTML = 'Xphone';
-					d1b.style.height = '14px';
-					results_blank += 'x0';
-					searchNum = 2;
-					brittany_graham_yahoo(false, false); // just phone #
-					return;
-				}
-				
-				var p;
-				if (/^\d{7,}$/.exec(ph)) {
-					p = /(\d{3})(\d{3})(\d+)/.exec(ph);
-					if (p[3].length < 4) {
-						while (p[3].length < 4) {
-							p[3] = '0' + p[3];
-						}
-					}
-					p = '('+p[1]+') '+p[2]+'-'+p[3];
-				} else
-					p = ph;
-				
-				console.log(p);
-				console.log(ph);
-				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:manta.com/c/ "'+p+'"'); //
-				out = d1b;
-			}
-			else if (searchNum == 2)
-			{
-				u = 'site:manta.com/c/ '+d2.value+' "'+st_code+'" '+city;
-				u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(u); //
-				
-				out = d1c;
-				out.innerHTML = '';
-			}
-			
-			/** 
-			 * use proxy or regular 
-			 */
-			var use_proxy = Brittany_Graham_contact_name_proxy();
-			if (use_proxy) {
-				Brittany_Graham_contact_name_useProxyInitSearch(first, isManual, u, out);
-			}
-			else
-			{
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						if (rs.indexOf('Yahoo! - 999 Unable to process request at this time -- error 999') != -1) {
-							Brittany_Graham_contact_name_useProxyInitSearch(first, isManual, u, out);
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 20);
-						}
-						else {
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 2);
-							Brittany_Graham_contact_name_processResp(first, isManual, rs, out);
-						}
-					}
-				});
-			}
-		}
 		//~ // 
 		//~ function Brittany_Graham_contact_name__manta_similar_biz(div) { //url) {//, input_btn) { //input_btn does not work
 			//~ // create buttons
@@ -76509,7 +85994,7 @@ qatar,80
 		// 
 		function brittany_graham_manta__process(input, rs) {  // INPUT NOT USED IN THIS FUNCTION !!
 			
-			// when using cached pages from Yahoo for Manta scrape
+			// When using cached pages from Yahoo for Manta scrape
 			// remove the bolding from Yahoo
 			//<b style="color:#000;background:#ff66ff">
 			rs = rs.replace(/<b style="[^"]*">((.|\s)*?(?=<\/b>|$)|$)/g, '$1');
@@ -76628,6 +86113,7 @@ qatar,80
 			console.log(input);
 			console.log(input.id);
 			console.log(input.manta_url);
+			
 			if (input.id == input.manta_url || input.id.indexOf('http://ri.search.yahoo.com/') == 0) {
 				Brittany_Graham_rv_emp__manta_direct_url(
 					input,
@@ -90810,6 +100296,7 @@ qatar,80
 		d2.style.width='198px';
 		d2.value = _C_DOMAIN;//.replace(/\.com$/, '');
 		d2.onfocus = function() {
+			console.log('d2 focus ran');
 			if (this.value.indexOf('.') != -1)
 				this.value = this.value.replace(/[\.\-]/g, ' ');
 		}
@@ -97180,13 +106667,11 @@ function top_window() {
 		GM_addStyle('#submitButton {position:absolute;top:0px;left:30%;}');
 		GM_addStyle('#Answer_1_FreeText {position:absolute;top:80px;left:0;width:80%;height:120px;}');
 		
-		
-		
-		
-		
-		var url = document.getElementsByTagName('a')[0].href + '&filter=0&num=10';
+		//~ var url = document.getElementsByTagName('a')[0].href + '&filter=0&num=10';
 		
 		var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0&num=10';
+		
+		console.log(url);//return;
 		
 		var start = 0;
 		
@@ -97236,22 +106721,42 @@ function top_window() {
 						return;
 					}
 					
-					var r, m;
-					
-					// replace "Best Match" !!
-					if (rs.indexOf('Best guess for this image:') != -1) {
-						rs = rs.split('>Visually similar images</a></h3>');
-						rs = rs.slice(1).join('>Visually similar images</a></h3>');
-						
-						rs = rs.replace(/Best guess for this image:[^<]{0,}<a[^>]+>[^<]+<\/a><\/div><\/div><div id="search"><!--a--><h2 class="hd">Search Results<\/h2><div id="ires"><ol[^>]+><li class="g"><!--m-->((.|\s)*?(?=<!--n-->|$)|$)/gi, '');
-						
-						if (rs.indexOf('Best guess for this image') != -1) {
-							alert('Best guess for this image');
-							return;
-						}
+					if (rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1) {
+						d2.value = 'The image is too big, or the network connection is too slow to download it.';
+						return;
 					}
 					
+					
+					
+					// NO LONGER SPLITTING THE PAGE BY "BEST MATCH" AND 
+					// "VISUALLY SIMILAR IMAGES". Instead of this remove
+					// anything prior to "Pages that include matching images"
+					// if it shows up!
+					// >Pages that include matching images<
+					if (rs.indexOf('>Pages that include matching images<') != -1) {
+						rs = rs.split('>Pages that include matching images<');
+						rs.shift(); // remove first!
+						rs = rs.join('>Pages that include matching images<');
+						console.log(rs);
+					}
+					//~ // replace "Best Match" !!
+					//~ if (rs.indexOf('Best guess for this image:') != -1) {
+						//~ rs = rs.split('>Visually similar images</a></h3>');
+						//~ rs = rs.slice(1).join('>Visually similar images</a></h3>');
+						//~ 
+						//~ rs = rs.replace(/Best guess for this image:[^<]{0,}<a[^>]+>[^<]+<\/a><\/div><\/div><div id="search"><!--a--><h2 class="hd">Search Results<\/h2><div id="ires"><ol[^>]+><li class="g"><!--m-->((.|\s)*?(?=<!--n-->|$)|$)/gi, '');
+						//~ 
+						//~ if (rs.indexOf('Best guess for this image') != -1) {
+							//~ alert('Best guess for this image');
+							//~ return;
+						//~ }
+					//~ }
+					
+					
+					var r, m;
+					
 					// results
+					// <h3 class="r"><a href="http://www.emedicinehealth.com/broken_arm/page11_em.htm"
 					r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
 					var count = 0;
 					if (r.exec(rs)) {
@@ -97277,18 +106782,18 @@ function top_window() {
 						}
 					}
 					
-					//save
-					GM_xmlhttpRequest({
-						method: 'POST',
-						url: MT___host + '/mturk/util.php',
-						data: 'johnroberts=&u='+encodeURIComponent(url)+'&v='+encodeURIComponent(q.value),
-						headers: {
-							"Content-Type": "application/x-www-form-urlencoded"
-						},
-						onload: function (response) {
-							//var rs=response.responseText;
-						}
-					});
+					//~ //save
+					//~ GM_xmlhttpRequest({
+						//~ method: 'POST',
+						//~ url: MT___host + '/mturk/util.php',
+						//~ data: 'johnroberts=&u='+encodeURIComponent(url)+'&v='+encodeURIComponent(q.value),
+						//~ headers: {
+							//~ "Content-Type": "application/x-www-form-urlencoded"
+						//~ },
+						//~ onload: function (response) {
+							//~ //var rs=response.responseText;
+						//~ }
+					//~ });
 					
 					console.log(count);
 					
@@ -97324,13 +106829,17 @@ function top_window() {
 					}
 					else if (rs.indexOf('>Next<') == -1) {
 						if (q.value != '') {
+							
+							
 							doSubmit('hitForm');
 						}
 						else if (d2.value == '0') {
 							document.body.style.backgroundColor = 'yellow';
 							if (q.value == '')
 								q.value = 'NONE';
-							doSubmit('hitForm');
+							
+							
+							//~ doSubmit('hitForm');
 						}
 					}
 					
@@ -97744,6 +107253,15 @@ function mturk_load()
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3SIEQXXS6F7ON6EED2H97HN3N7D4Q9': // Charles Devereux, politician birth wikipedia
+					AMT___Floater({runMT_Run: true});
+					break;
+				case '31NV0OR9VLKWN2O604AC8IE68QS666': // turk-HPCBeauty, Data Collection @Amazon
+					AMT___Floater({runMT_Run: true});
+					break;
+				case '3WNTBWVI6H6FB22QWPKXWKDQ9GK1DL': // Rachel Scott, Customer List Email Fetching
+					AMT___Floater({runMT_Run: true});
+					break;
+				case '3TDV6MPLVN8E5RBAZ86VZNC0U72AAL': // Laura Enstad, URL of patent law firms
 					AMT___Floater({runMT_Run: true});
 					break;
 

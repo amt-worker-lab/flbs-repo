@@ -20,19 +20,38 @@ var MT___host = 'http://192.168.1.2';
 //		AMT__Global_Vars.isTopWindow
 //		AMT__Global_Vars.isPreview
 //		AMT__Global_Vars.groupId
-var AMT__Global_Vars = function()
+var AMT__Global_Vars = //function()
 {
-	var isTopWindow;
-	var isPreview;
-	var groupId;
-	var hitId;
+	//~ var isTopWindow;
+	//~ var isPreview;
+	//~ var groupId;
+	//~ var hitId;
+	//~ 
+	//~ 
+	//~ //
+	//~ var isQProduct = false;
+	
+	
+	isTopWindow: null,
+	isPreview: null,
+	groupId: '',
+	hitId: '',
 	
 	//
-	var isQProduct = false;
+	isQProduct: false,
 	//~ var AMT__Queue = {
 		//~ isQProduct: false
 	//~ };
+	
+	core: {
+		return_accept_run_nextTab: false
+	}
 }
+//~ AMT__Global_Vars();
+//~ console.log(AMT__Global_Vars);
+//~ console.log(AMT__Global_Vars.isTopWindow);
+//~ console.log(AMT__Global_Vars.core);
+
 
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
@@ -473,8 +492,10 @@ function decisionRecord(recordName, matchStringFunction, outputIdentifiers, deci
 //Does UserDecisions that have been recorded in the database
 //recordName is the namespace of the decisions it checks against
 //threshold is the minimum number of times the user decision has to have occurred before automatically doing that decision
-// submitObject is optional object. If it is a string of 'Do Not Submit', no submission happens. Otherwise it submits the form based on its attributes
-function AMT___doPastBehavior(recordName, threshold, submitObject, callback)
+//submitObject is optional object. If it is a string of 'Do Not Submit', no submission happens. Otherwise it submits the form based on its attributes
+//Calls the callback even if the match fails or the threshold isn't met.
+//callback sends back the match or a null value if there isn't one.
+function AMT___doPastBehavior(recordName, threshold, submitObject, callback, callbackOnFail)
 {
 	console.log("inside do past behavior");
 	if(!threshold)
@@ -497,6 +518,9 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback)
 					console.log(match);
 					if(match.count < threshold)
 					{
+						if(callbackOnFail) {
+							callback(false);
+						}
 						return;
 					}
 					console.log(match);
@@ -511,8 +535,6 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback)
 							console.log('testing');
 							if(callback)
 							{
-								//console.log(callback);
-								//callback();
 								callback(match);
 							}
 						}
@@ -520,7 +542,7 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback)
 						{
 							if(callback)
 							{
-								callback();
+								callback(match);
 							}
 							doSubmit(
 								submitObject.form,
@@ -534,14 +556,18 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback)
 						{
 							if(callback)
 							{
-								callback();
+								callback(match);
 							}
 							doSubmit();
 						}
 					}
 				}
 				else
+				{
 					console.log("No Match");
+					if(callbackOnFail)
+						callback(false);
+				}
 			});
 	}
 }
@@ -805,6 +831,8 @@ function FindObject(recordName,matchString, timeCutOff) {
 //~ }
 
 /**
+ * AMT factories
+ * 
  * AMT___events_factory
  * AMT___requests_factory
  * AMT___huge_vars_factory
@@ -821,21 +849,23 @@ function FindObject(recordName,matchString, timeCutOff) {
 function AMT___core_factory() {
 
 }
-//Shows the tab on the right of the curren tab
+//Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function() {
-	chrome.extension.sendRequest({
-					nextTab: true
-				},
-				function(response)
-				{
-				}
-			);
+	chrome.extension.sendRequest(
+		{
+			nextTab: true
+		},
+		function(response)
+		{
+		}
+	);
 }
 //
 AMT___core_factory.prototype.nextWindow = function() {
 	console.log('core_nextWindow');
-	chrome.extension.sendRequest({
+	chrome.extension.sendRequest(
+		{
 			core_nextWindow: true
 		},
 		function(response)
@@ -851,7 +881,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		return;
 	
 	// Still here. There is an iframe so listen for any
-	// messages that may come.
+	// messages that may come up.
 	// ...
 	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
 	
@@ -862,20 +892,26 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		var v = event.data;
 		
-		if (v.action == 'return_button__showNextTab') {
-			//~ console.log('Will showNextTab on return');
-			
-			var b = getReturnButton();
-			console.log(b);
-			if (b) {
-				b.addEventListener('mouseup', function() {
-					//~ console.log('mouseup on return button');
-					
-					showNextTab();
-				}, false);
+		switch(v.action) {
+			case 'return_button__showNextTab':
+				//~ console.log('Will showNextTab on return');
 				
-				//~ b.addEventListener('mouseup', v.callback_function, false);
-			}
+				var b = getReturnButton();
+				console.log(b);
+				if (b) {
+					b.addEventListener('mouseup', function() {
+						//~ console.log('mouseup on return button');
+						
+						showNextTab();
+					}, false);
+					
+					//~ b.addEventListener('mouseup', v.callback_function, false);
+				}
+				break;
+			// AMT___returnAndAcceptButton()
+			case 'return_and_accept_button__nextTab':
+				AMT__Global_Vars.core.return_accept_run_nextTab = true;
+				break;
 		}
 	}
 	
@@ -902,7 +938,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 }
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
-	
+	//~ console.log(options);
 	parent.postMessage({
 		action: options.action //'return_button__showNextTab'
 		
@@ -937,756 +973,6 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 	}
 }
 
-/**
- * AMT___huge_vars_factory
- *
- * @
- * @ 
- * 
- * @type
- */
-function AMT___huge_vars_factory(obj_vars) {
-	// this.___SKIP_SITES = ''; // would this work?
-}
-AMT___huge_vars_factory.prototype.linkedin__industry_categories = function() {
-	return [
-		{
-			"code": "47",
-			"group": "corp fin",
-			"description": "Accounting"
-		},
-		{
-			"code": "94",
-			"group": "man tech tran",
-			"description": "Airlines/Aviation"
-		},
-		{
-			"code": "120",
-			"group": "leg org",
-			"description": "Alternative Dispute Resolution"
-		},
-		{
-			"code": "125",
-			"group": "hlth",
-			"description": "Alternative Medicine"
-		},
-		{
-			"code": "127",
-			"group": "art med",
-			"description": "Animation"
-		},
-		{
-			"code": "19",
-			"group": "good",
-			"description": "Apparel & Fashion"
-		},
-		{
-			"code": "50",
-			"group": "cons",
-			"description": "Architecture & Planning"
-		},
-		{
-			"code": "111",
-			"group": "art med rec",
-			"description": "Arts and Crafts"
-		},
-		{
-			"code": "53",
-			"group": "man",
-			"description": "Automotive"
-		},
-		{
-			"code": "52",
-			"group": "gov man",
-			"description": "Aviation & Aerospace"
-		},
-		{
-			"code": "41",
-			"group": "fin",
-			"description": "Banking"
-		},
-		{
-			"code": "12",
-			"group": "gov hlth tech",
-			"description": "Biotechnology"
-		},
-		{
-			"code": "36",
-			"group": "med rec",
-			"description": "Broadcast Media"
-		},
-		{
-			"code": "49",
-			"group": "cons",
-			"description": "Building Materials"
-		},
-		{
-			"code": "138",
-			"group": "corp man",
-			"description": "Business Supplies and Equipment"
-		},
-		{
-			"code": "129",
-			"group": "fin",
-			"description": "Capital Markets"
-		},
-		{
-			"code": "54",
-			"group": "man",
-			"description": "Chemicals"
-		},
-		{
-			"code": "90",
-			"group": "org serv",
-			"description": "Civic & Social Organization"
-		},
-		{
-			"code": "51",
-			"group": "cons gov",
-			"description": "Civil Engineering"
-		},
-		{
-			"code": "128",
-			"group": "cons corp fin",
-			"description": "Commercial Real Estate"
-		},
-		{
-			"code": "118",
-			"group": "tech",
-			"description": "Computer & Network Security"
-		},
-		{
-			"code": "109",
-			"group": "med rec",
-			"description": "Computer Games"
-		},
-		{
-			"code": "3",
-			"group": "tech",
-			"description": "Computer Hardware"
-		},
-		{
-			"code": "5",
-			"group": "tech",
-			"description": "Computer Networking"
-		},
-		{
-			"code": "4",
-			"group": "tech",
-			"description": "Computer Software"
-		},
-		{
-			"code": "48",
-			"group": "cons",
-			"description": "Construction"
-		},
-		{
-			"code": "24",
-			"group": "good man",
-			"description": "Consumer Electronics"
-		},
-		{
-			"code": "25",
-			"group": "good man",
-			"description": "Consumer Goods"
-		},
-		{
-			"code": "91",
-			"group": "org serv",
-			"description": "Consumer Services"
-		},
-		{
-			"code": "18",
-			"group": "good",
-			"description": "Cosmetics"
-		},
-		{
-			"code": "65",
-			"group": "agr",
-			"description": "Dairy"
-		},
-		{
-			"code": "1",
-			"group": "gov tech",
-			"description": "Defense & Space"
-		},
-		{
-			"code": "99",
-			"group": "art med",
-			"description": "Design"
-		},
-		{
-			"code": "69",
-			"group": "edu",
-			"description": "Education Management"
-		},
-		{
-			"code": "132",
-			"group": "edu org",
-			"description": "E-Learning"
-		},
-		{
-			"code": "112",
-			"group": "good man",
-			"description": "Electrical/Electronic Manufacturing"
-		},
-		{
-			"code": "28",
-			"group": "med rec",
-			"description": "Entertainment"
-		},
-		{
-			"code": "86",
-			"group": "org serv",
-			"description": "Environmental Services"
-		},
-		{
-			"code": "110",
-			"group": "corp rec serv",
-			"description": "Events Services"
-		},
-		{
-			"code": "76",
-			"group": "gov",
-			"description": "Executive Office"
-		},
-		{
-			"code": "122",
-			"group": "corp serv",
-			"description": "Facilities Services"
-		},
-		{
-			"code": "63",
-			"group": "agr",
-			"description": "Farming"
-		},
-		{
-			"code": "43",
-			"group": "fin",
-			"description": "Financial Services"
-		},
-		{
-			"code": "38",
-			"group": "art med rec",
-			"description": "Fine Art"
-		},
-		{
-			"code": "66",
-			"group": "agr",
-			"description": "Fishery"
-		},
-		{
-			"code": "34",
-			"group": "rec serv",
-			"description": "Food & Beverages"
-		},
-		{
-			"code": "23",
-			"group": "good man serv",
-			"description": "Food Production"
-		},
-		{
-			"code": "101",
-			"group": "org",
-			"description": "Fund-Raising"
-		},
-		{
-			"code": "26",
-			"group": "good man",
-			"description": "Furniture"
-		},
-		{
-			"code": "29",
-			"group": "rec",
-			"description": "Gambling & Casinos"
-		},
-		{
-			"code": "145",
-			"group": "cons man",
-			"description": "Glass, Ceramics & Concrete"
-		},
-		{
-			"code": "75",
-			"group": "gov",
-			"description": "Government Administration"
-		},
-		{
-			"code": "148",
-			"group": "gov",
-			"description": "Government Relations"
-		},
-		{
-			"code": "140",
-			"group": "art med",
-			"description": "Graphic Design"
-		},
-		{
-			"code": "124",
-			"group": "hlth rec",
-			"description": "Health, Wellness and Fitness"
-		},
-		{
-			"code": "68",
-			"group": "edu",
-			"description": "Higher Education"
-		},
-		{
-			"code": "14",
-			"group": "hlth",
-			"description": "Hospital & Health Care"
-		},
-		{
-			"code": "31",
-			"group": "rec serv tran",
-			"description": "Hospitality"
-		},
-		{
-			"code": "137",
-			"group": "corp",
-			"description": "Human Resources"
-		},
-		{
-			"code": "134",
-			"group": "corp good tran",
-			"description": "Import and Export"
-		},
-		{
-			"code": "88",
-			"group": "org serv",
-			"description": "Individual & Family Services"
-		},
-		{
-			"code": "147",
-			"group": "cons man",
-			"description": "Industrial Automation"
-		},
-		{
-			"code": "84",
-			"group": "med serv",
-			"description": "Information Services"
-		},
-		{
-			"code": "96",
-			"group": "tech",
-			"description": "Information Technology and Services"
-		},
-		{
-			"code": "42",
-			"group": "fin",
-			"description": "Insurance"
-		},
-		{
-			"code": "74",
-			"group": "gov",
-			"description": "International Affairs"
-		},
-		{
-			"code": "141",
-			"group": "gov org tran",
-			"description": "International Trade and Development"
-		},
-		{
-			"code": "6",
-			"group": "tech",
-			"description": "Internet"
-		},
-		{
-			"code": "45",
-			"group": "fin",
-			"description": "Investment Banking"
-		},
-		{
-			"code": "46",
-			"group": "fin",
-			"description": "Investment Management"
-		},
-		{
-			"code": "73",
-			"group": "gov leg",
-			"description": "Judiciary"
-		},
-		{
-			"code": "77",
-			"group": "gov leg",
-			"description": "Law Enforcement"
-		},
-		{
-			"code": "9",
-			"group": "leg",
-			"description": "Law Practice"
-		},
-		{
-			"code": "10",
-			"group": "leg",
-			"description": "Legal Services"
-		},
-		{
-			"code": "72",
-			"group": "gov leg",
-			"description": "Legislative Office"
-		},
-		{
-			"code": "30",
-			"group": "rec serv tran",
-			"description": "Leisure, Travel & Tourism"
-		},
-		{
-			"code": "85",
-			"group": "med rec serv",
-			"description": "Libraries"
-		},
-		{
-			"code": "116",
-			"group": "corp tran",
-			"description": "Logistics and Supply Chain"
-		},
-		{
-			"code": "143",
-			"group": "good",
-			"description": "Luxury Goods & Jewelry"
-		},
-		{
-			"code": "55",
-			"group": "man",
-			"description": "Machinery"
-		},
-		{
-			"code": "11",
-			"group": "corp",
-			"description": "Management Consulting"
-		},
-		{
-			"code": "95",
-			"group": "tran",
-			"description": "Maritime"
-		},
-		{
-			"code": "97",
-			"group": "corp",
-			"description": "Market Research"
-		},
-		{
-			"code": "80",
-			"group": "corp med",
-			"description": "Marketing and Advertising"
-		},
-		{
-			"code": "135",
-			"group": "cons gov man",
-			"description": "Mechanical or Industrial Engineering"
-		},
-		{
-			"code": "126",
-			"group": "med rec",
-			"description": "Media Production"
-		},
-		{
-			"code": "17",
-			"group": "hlth",
-			"description": "Medical Devices"
-		},
-		{
-			"code": "13",
-			"group": "hlth",
-			"description": "Medical Practice"
-		},
-		{
-			"code": "139",
-			"group": "hlth",
-			"description": "Mental Health Care"
-		},
-		{
-			"code": "71",
-			"group": "gov",
-			"description": "Military"
-		},
-		{
-			"code": "56",
-			"group": "man",
-			"description": "Mining & Metals"
-		},
-		{
-			"code": "35",
-			"group": "art med rec",
-			"description": "Motion Pictures and Film"
-		},
-		{
-			"code": "37",
-			"group": "art med rec",
-			"description": "Museums and Institutions"
-		},
-		{
-			"code": "115",
-			"group": "art rec",
-			"description": "Music"
-		},
-		{
-			"code": "114",
-			"group": "gov man tech",
-			"description": "Nanotechnology"
-		},
-		{
-			"code": "81",
-			"group": "med rec",
-			"description": "Newspapers"
-		},
-		{
-			"code": "100",
-			"group": "org",
-			"description": "Non-Profit Organization Management"
-		},
-		{
-			"code": "57",
-			"group": "man",
-			"description": "Oil & Energy"
-		},
-		{
-			"code": "113",
-			"group": "med",
-			"description": "Online Media"
-		},
-		{
-			"code": "123",
-			"group": "corp",
-			"description": "Outsourcing/Offshoring"
-		},
-		{
-			"code": "87",
-			"group": "serv tran",
-			"description": "Package/Freight Delivery"
-		},
-		{
-			"code": "146",
-			"group": "good man",
-			"description": "Packaging and Containers"
-		},
-		{
-			"code": "61",
-			"group": "man",
-			"description": "Paper & Forest Products"
-		},
-		{
-			"code": "39",
-			"group": "art med rec",
-			"description": "Performing Arts"
-		},
-		{
-			"code": "15",
-			"group": "hlth tech",
-			"description": "Pharmaceuticals"
-		},
-		{
-			"code": "131",
-			"group": "org",
-			"description": "Philanthropy"
-		},
-		{
-			"code": "136",
-			"group": "art med rec",
-			"description": "Photography"
-		},
-		{
-			"code": "117",
-			"group": "man",
-			"description": "Plastics"
-		},
-		{
-			"code": "107",
-			"group": "gov org",
-			"description": "Political Organization"
-		},
-		{
-			"code": "67",
-			"group": "edu",
-			"description": "Primary/Secondary Education"
-		},
-		{
-			"code": "83",
-			"group": "med rec",
-			"description": "Printing"
-		},
-		{
-			"code": "105",
-			"group": "corp",
-			"description": "Professional Training & Coaching"
-		},
-		{
-			"code": "102",
-			"group": "corp org",
-			"description": "Program Development"
-		},
-		{
-			"code": "79",
-			"group": "gov",
-			"description": "Public Policy"
-		},
-		{
-			"code": "98",
-			"group": "corp",
-			"description": "Public Relations and Communications"
-		},
-		{
-			"code": "78",
-			"group": "gov",
-			"description": "Public Safety"
-		},
-		{
-			"code": "82",
-			"group": "med rec",
-			"description": "Publishing"
-		},
-		{
-			"code": "62",
-			"group": "man",
-			"description": "Railroad Manufacture"
-		},
-		{
-			"code": "64",
-			"group": "agr",
-			"description": "Ranching"
-		},
-		{
-			"code": "44",
-			"group": "cons fin good",
-			"description": "Real Estate"
-		},
-		{
-			"code": "40",
-			"group": "rec serv",
-			"description": "Recreational Facilities and Services"
-		},
-		{
-			"code": "89",
-			"group": "org serv",
-			"description": "Religious Institutions"
-		},
-		{
-			"code": "144",
-			"group": "gov man org",
-			"description": "Renewables & Environment"
-		},
-		{
-			"code": "70",
-			"group": "edu gov",
-			"description": "Research"
-		},
-		{
-			"code": "32",
-			"group": "rec serv",
-			"description": "Restaurants"
-		},
-		{
-			"code": "27",
-			"group": "good man",
-			"description": "Retail"
-		},
-		{
-			"code": "121",
-			"group": "corp org serv",
-			"description": "Security and Investigations"
-		},
-		{
-			"code": "7",
-			"group": "tech",
-			"description": "Semiconductors"
-		},
-		{
-			"code": "58",
-			"group": "man",
-			"description": "Shipbuilding"
-		},
-		{
-			"code": "20",
-			"group": "good rec",
-			"description": "Sporting Goods"
-		},
-		{
-			"code": "33",
-			"group": "rec",
-			"description": "Sports"
-		},
-		{
-			"code": "104",
-			"group": "corp",
-			"description": "Staffing and Recruiting"
-		},
-		{
-			"code": "22",
-			"group": "good",
-			"description": "Supermarkets"
-		},
-		{
-			"code": "8",
-			"group": "gov tech",
-			"description": "Telecommunications"
-		},
-		{
-			"code": "60",
-			"group": "man",
-			"description": "Textiles"
-		},
-		{
-			"code": "130",
-			"group": "gov org",
-			"description": "Think Tanks"
-		},
-		{
-			"code": "21",
-			"group": "good",
-			"description": "Tobacco"
-		},
-		{
-			"code": "108",
-			"group": "corp gov serv",
-			"description": "Translation and Localization"
-		},
-		{
-			"code": "92",
-			"group": "tran",
-			"description": "Transportation/Trucking/Railroad"
-		},
-		{
-			"code": "59",
-			"group": "man",
-			"description": "Utilities"
-		},
-		{
-			"code": "106",
-			"group": "fin tech",
-			"description": "Venture Capital & Private Equity"
-		},
-		{
-			"code": "16",
-			"group": "hlth",
-			"description": "Veterinary"
-		},
-		{
-			"code": "93",
-			"group": "tran",
-			"description": "Warehousing"
-		},
-		{
-			"code": "133",
-			"group": "good",
-			"description": "Wholesale"
-		},
-		{
-			"code": "142",
-			"group": "good man rec",
-			"description": "Wine and Spirits"
-		},
-		{
-			"code": "119",
-			"group": "tech",
-			"description": "Wireless"
-		},
-		{
-			"code": "103",
-			"group": "art med rec",
-			"description": "Writing and Editing"
-		}
-	]
-}
 /**
  * AMT___requests_factory
  *
@@ -2878,12 +2164,467 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
  * @
  * 
  * 
- * 
- * 
+ * create_dashboard__powers_v1__showScrapyResult_contexts
+ * create_dashboard__powers_v1
+ * create__input_scrapy_button
+ * create__input_skip_button2
+ * create__input_skip_button
  * 
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function create_annotation_to_output_fields
+ * 
+ * @param options_object
+ * 		options_object.parent_el
+ * 		options_object.keyword_and_index_array
+ * @optional
+ * 		options_object.url
+ * 		options_object.html
+ * 		options_object.context_len
+ */
+AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
+	
+	var options_object = options_object;
+	
+	var out = options_object.parent_el;
+	
+	var err_status = {
+		s: '2px solid orange'
+	};
+	var err_TimeWarner = {
+		i: '<html><head><meta http-equiv="refresh" content="0;url=http://www.dnsrsearch.com/index.php?origURL=', // /etc/hosts?
+		m: 'T.W.',
+		s: '2px solid orange'
+	};
+	//~ i: '<html><head><title>Time Warner Cable</title>',
+	
+	// Make divs
+	// Indexes, Context
+	var div = document.createElement('div');
+	div.setAttribute('style', 'display:block;');
+	out.appendChild(div);
+	out.xhr_scrape_page__index = div;
+	var div = document.createElement('div');
+	div.setAttribute('style', 'display:none;');
+	out.appendChild(div);
+	out.xhr_scrape_page__context = div;
+	
+	
+	// Is this a URL
+	// or already downloaded?
+	if (options_object.html) {
+		parse(options_object.html);
+		return;
+	} else {
+		// do xhr
+	}
+	
+	/**
+	 * Function phone_regex
+	 */
+	function phone_regex(kw) {
+		
+		kw = kw.replace(/[^\d]/g, '');
+		kw_arr = kw.split(''); // [6, 0, 7]
+		kw_arr2 = ['.{0,3}']; // START WITH any single character
+		for (var i in kw_arr) {
+			kw_arr2.push(kw_arr[i]);
+			kw_arr2.push('.{0,3}'); // any single character
+		}
+		kw = kw_arr2.join('');
+		
+		return kw;
+		//~ var regex = new RegExp('([\d\D]{0,6})(' + __js_escape_regEx(kw) + ')([\d\D]{0,6})', 'gi');
+	}
+	
+	/**
+	 * Function activate_element
+	 */
+	function activate_element() {
+		
+		out.onmouseover = function() {
+			this.xhr_scrape_page__context.style.display = 'block';
+		}
+		out.onmouseout = function() {
+			this.xhr_scrape_page__context.style.display = 'none';
+		}
+		
+	}
+	
+	/**
+	 * parse
+	 */
+	function parse(rs) {
+		
+		// key -> value
+		var kw = options_object.keyword_and_index_array;
+		
+		//~ console.log(options_object.hasOwnProperty('context_len'));
+		//~ console.log(options_object.hasOwnProperty('context_len'));
+		//~ var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len.replace(/[^\d]/g, '') : 6;
+		
+		var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len : 6;
+		
+		console.log(kw);
+		
+		var foundMatch = false;
+		
+		for (var index in kw) {
+			
+			var keyword = kw[index];
+			var keyword_reg = kw[index];
+			
+			// Is phone?
+			if (index == 'P') {
+				keyword_reg = phone_regex(keyword);
+				
+			} else {
+				keyword_reg = __js_escape_regEx(keyword);
+			}
+			
+			// Regex
+			var regex = new RegExp('([\\d\\D]{0,'+len+'})(' + keyword_reg + ')([\\d\\D]{0,'+len+'})', 'gi');
+			//~ console.log(regex);
+			
+			if (!regex.exec(rs))
+				continue;
+			else
+				foundMatch = true; // !
+			
+			// Add KEY to Index div
+			var x = out.xhr_scrape_page__index.innerText;
+			x = (x + '|' + index);
+			x = x.replace(/^\|/g, '');
+			out.xhr_scrape_page__index.innerText = x;
+			
+			// ...
+			// Add CONTEXT to Context div
+			regex.lastIndex = 0;
+			var m;
+			var count = 0;
+			while (m = regex.exec(rs)) {
+				
+				var sp = document.createElement('span');
+				sp.setAttribute('style', '');
+				sp.innerText = m[1];
+				out.xhr_scrape_page__context.appendChild(sp);
+				
+				var sp = document.createElement('span');
+				sp.setAttribute('style', 'font-weight:bold;');
+				sp.innerText = m[2];
+				out.xhr_scrape_page__context.appendChild(sp);
+				
+				var sp = document.createElement('span');
+				sp.setAttribute('style', '');
+				sp.innerText = m[3];
+				out.xhr_scrape_page__context.appendChild(sp);
+				
+				var hr = document.createElement('hr');
+				hr.setAttribute('style', 'margin:0;padding:0;border:0;border-bottom:2px dotted #828282;');
+				out.xhr_scrape_page__context.appendChild(hr);
+				
+				//~ out.xhr_scrape_page__context.innerHTML += MT___bold(m[1], [ kw[index] ]);
+				
+				if (count > 6) // !
+					break;
+				count++;
+			}
+		}
+		
+		if (foundMatch) {
+			activate_element();
+			return;
+		}
+	}
+		
+	/**
+	 * xhr
+	 */
+	//~ console.log(options_object.url);
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(options_object.url),
+		//~ url: options_object.url,
+		timeout: 30000,
+		ontimeout: function() {
+			
+		},
+		onerror: function() {
+			
+		},
+		onload: function (response) {
+			var rs = response.responseText;
+			//~ console.log(err_TimeWarner.i);
+			//~ console.log(response.status);
+			//~ console.log(rs.indexOf(err_TimeWarner.i));
+			//~ console.log(response.finalUrl);
+			//~ if (response.finalUrl == 'http://www.serviceplumbingandassistant.com/') {
+				//~ console.log(rs);
+			//~ }
+			
+			// not 200 response.status
+			if (response.status > 399) { // 400 - 599
+				out.xhr_scrape_page__index.innerText = response.status;
+				out.xhr_scrape_page__index.style.border = err_status.s;
+				return;
+			}
+			// not 200 response.responseText
+			if (/^[45]\d{2}$/.exec(rs)) { // 400 - 599
+				out.xhr_scrape_page__index.innerText = rs;
+				out.xhr_scrape_page__index.style.border = err_status.s;
+				return;
+			}
+			
+			// Time Warner
+			if (rs.indexOf(err_TimeWarner.i) != -1) {
+				out.xhr_scrape_page__index.innerText = err_TimeWarner.m;
+				out.xhr_scrape_page__index.style.border = err_TimeWarner.s;
+				return;
+			}
+			
+			parse(rs);
+			
+		}
+	});
+}
+/**
+ * function create_annotation_to_output_fields
+ * Handles buttons/div?/p? mousedown, mouseup events.
+ * Handles body.mouseup event.
+ * Draggable.
+ * Outputs to output_fields in order of NEXT EMPTY.
+ * OnMouseUp, focus to output_fields[current].
+ * >> Callback function @ mouseup.
+ * 
+ * @param: {} options_object
+ * @param options_object.textToAnnotate = String
+ * @param options_object.output_fields = []
+ * @param options_object.callback_mouseup = Function
+ */
+AMT___items_factory.prototype.create_annotation_to_output_fields = function(options_object) {
+	
+	// vars
+	//
+	//~ console.log(options_object);
+	
+	var s = options_object.textToAnnotate.split(' ');
+	var array_all_buttons = [];
+	var div = makeCont();
+	for (var i in s) {
+		appendButton(div, s[i], i);
+	}
+	
+	var options_object = options_object;
+	
+	var output_fields = options_object.output_fields;
+	var current_selection = [];
+	var current_index = {
+		start: 0,
+		end: 0
+	}
+	var isDragging = false;
+	
+	/**
+	 * function body_mouse
+	 * This will set isDragging to false!
+	 * 
+	 */
+	//~ document.body.addEventListener('mousedown', body_mouse, false); // ?
+	document.body.addEventListener('mouseup', body_mouse, false);
+	function body_mouse() {
+		
+		// If isDragging is true then
+		// reset the hover color!
+		if (isDragging) {
+			console.log(current_index);
+			console.log(array_all_buttons[current_index.start]);
+			array_all_buttons[current_index.start].style.backgroundColor = '';
+		}
+		isDragging = false;
+	}
+	//~ document.body.onmousedown = document.body.onmouseup = function() {
+	
+	// return for *append*
+	return div;
+	
+	
+	/**
+	 * function applyToOutputs
+	 *
+	 */
+	function applyToOutputs() {
+		
+		var s = '';
+		if (current_index.start <= current_index.end) { // ++
+			for (var i = current_index.start; i <= current_index.end; i++) {
+				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				s += ' ' + array_all_buttons[i].full_text;
+			}
+		} else { // --
+			for (var i = current_index.end; i <= current_index.start; i++) {
+				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				s += ' ' + array_all_buttons[i].full_text;
+			}
+			
+			// THIS WOULD PUT IT IN REVERSE!
+			// As in "cat black the" instead of
+			// "the black cat".
+			//for (var i = current_index.start; i >= current_index.end; i--) {
+		}
+		s = s.trim();
+		
+		for (var i in output_fields) {
+			if (output_fields[i].value == '') {
+				output_fields[i].value = s;
+				output_fields[i].focus();
+				output_fields[i].select();
+				output_fields[i].select();
+				
+				if (options_object.callback_mouseup) {
+					options_object.callback_mouseup(output_fields[i]);
+				}
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * function add_index
+	 */
+	function add_index(new_index) {
+		
+		current_index.end = new_index;
+		
+		// DON'T DO THIS! ALWAYS SAY THAT THE
+		// START IS THE FIRST BUTTON CLICKED.
+		//~ // Is this less than the beginning?
+		//~ // Does this button come before .start?
+		//~ // If so then this button becomes .start
+		//~ // and .start becomes .end
+		//~ // Otherwise, set new_index to be .end.
+		//~ if (new_index < current_index.start) {
+			//~ current_index.end   = current_index.start;
+			//~ current_index.start = new_index;
+		//~ } else 
+			//~ current_index.end = new_index;
+		
+	}
+	/**
+	 * function appendButton
+	 * Append button with "text" and "index" to "div"
+	 * 
+	 * 
+	 * @param: div
+	 * @param: text
+	 * @param: index
+	 */
+	function appendButton(div, text, index) {
+		
+		var t = document.createElement('button');
+		t.setAttribute('style', 'border-radius:2px;');
+		t.index = index;
+		t.innerHTML = text;
+		t.full_text = text;
+		
+		t.onmousedown	= function() {
+			
+			this.style.backgroundColor = 'LightGreen';
+			current_index.start = this.index;
+			current_index.end   = this.index;
+			
+			//~ isActive = true;
+			isDragging = true;
+		}
+		
+		t.onmouseup		= function() {
+			
+			// Only apply if... isDragging?
+			//
+			//
+			if (isDragging) {
+				add_index(this.index);
+				
+				isDragging = false;
+				
+				applyToOutputs();
+			}
+			
+		}
+		
+		t.onmouseover	= function() {
+			
+			// Highlight
+			// from index.start to index.end
+			
+			if (isDragging) {
+				
+				add_index(this.index);
+				
+				//~ console.log('this:'+this.index);
+				//~ console.log(current_index);
+				
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				//~ for (var i = current_index.start; i <= current_index.end; i++) {
+					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				//~ }
+			}
+		}
+		
+		t.onmouseout	= function() {
+			
+			if (isDragging) {
+				// RESET ALL HOVER COLOR!
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						array_all_buttons[i].style.backgroundColor = '';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						array_all_buttons[i].style.backgroundColor = '';
+					}
+				}
+				
+				// Reset the index.end to whatever
+				// is the index.start.
+				// And then *just* the initial word
+				// is to have background color.
+				current_index.end = current_index.start;
+				array_all_buttons[current_index.start].style.backgroundColor = 'LightGreen';
+			}
+			
+		}
+		
+		// append here
+		div.appendChild(t);
+		
+		// push here
+		array_all_buttons.push(t);
+	}
+	
+	/**
+	 * function makeCont
+	 * Container for all the buttons.
+	 */
+	function makeCont() {
+		
+		var d = document.createElement('div');
+		d.setAttribute('style', 'width:100%;');
+		//~ d.setAttribute('style', 'display:inline;');
+		
+		return d;
+	}
+	
 }
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
@@ -2910,9 +2651,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	out_div.appendChild(el_div);
 	
 	// ...
-	var input_send_success = (seed_object.input_send_success) ? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
+	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
 	
-	var do_submit_callback = (seed_object.do_submit_callback) ? seed_object.do_submit_callback : doSubmit;
+	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : doSubmit;
+	
+	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
 	
 	
 	// ...
@@ -2931,36 +2674,44 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		
 		var el_div = document.createElement('div');
 		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
-		
 		//el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
 		//newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
 		
+		
+
 		el_div.innerHTML = context;
 		el_div.email = results_array.email_email;
 		el_div.complete = results_array.email_email;
+		el_div.url = url;
+
 		
 		//input_success
-		el_div.input_send_success		= input_send_success;
+		el_div.input_send_success	= input_send_success;
 		
 		//do_submit_callback
 		el_div.do_submit_callback	= do_submit_callback;
 		
 		//onclick
-		el_div.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			
+		if (!input_onclick_callback) {
+			el_div.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+					
+				this.input_send_success.value = this.email;
+				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+					
+					this.do_submit_callback();
+					//~ doSubmit();
 				
-			this.input_send_success.value = this.email;
-			if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+				}
 				
-				this.do_submit_callback();
-				//~ doSubmit();
-			
+				//this.style.border = '8px solid LightGreen';
 			}
-			
-			//this.style.border = '8px solid LightGreen';
 		}
-	
+		else
+		{
+			el_div.onclick = input_onclick_callback;
+		}
+		
 		out_div.appendChild(el_div);
 	}
 	
@@ -3111,10 +2862,10 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// br
 	out_div.appendChild(document.createElement('br'));
 }
-AMT___items_factory.prototype.create_element__textarea = function()// X: pass reference
-{
-	
-}
+//~ AMT___items_factory.prototype.create_element__textarea = function()// X: pass reference
+//~ {
+	//~ 
+//~ }
 AMT___items_factory.prototype.create__input_scrapy_button = function(short_domain,full_url,object_options,callback_function)// X: pass reference
 {
 	
@@ -3196,9 +2947,169 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
 	
 	return el_inp;
 }
-// TODO: REMOVE FROM FILE
+/**
+ * domain: x,
+ * load_file: 'austin_load_skips', 
+ * var_skip_sites: SKIP_SITES, 
+ * callback_function: false
+ * 		
+ * Returns an input element and bool()
+ * 	{}.el_btn,
+ * 	{}.isSkip
+**/
+AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_object) // X: pass reference
+{	
+	
+	var input_skips_object = input_skips_object;
+	
+	//~ input_skips_object.short_domain = '';
+	
+	// ...
+	// regular = ^http://www.site.com$
+	// subdomains = [\.\/]site.com$
+	//
+	// Submdomains, update Jul9.
+	// subdomains = period, comp name, period, any numer of 2-3 length extensions
+	var x;
+	//~ if (x = /\.([^\.]+\.[^\.]+)$/.exec(input_skips_object.domain)) {
+	//
+	//
+	
+	//http://stackoverflow.com/questions/10306690/domain-name-validation-with-regex
+	var reg_domain =
+		//~ '^' +
+		'(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))' +
+		'\\.' + 
+		'([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\\.[a-zA-Z]{2,3})' +
+		'$';
+	
+	// THIS WILL RETURN:
+	// ["www.linkedin.com", "www", undefined, undefined, undefined, undefined, "www", "linkedin.com", index: 7, input: "http://www.linkedin.com"]
+	if (x = new RegExp(reg_domain, '').exec(input_skips_object.domain)) {
+		
+		// =>8
+		if (x[7].indexOf('.') != -1)
+			input_skips_object.short_domain = x[7].trim();
+		else
+			input_skips_object.short_domain = input_skips_object.domain.trim();
+		
+	} else
+		input_skips_object.short_domain = input_skips_object.domain.trim();
+	
+	//~ input_skips_object.short_domain = x[1].trim();
+	
+	
+	// ...
+	function remove_skips(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		this.style.backgroundColor = 'LightGreen';
+		this.onclick = function(){};
+		var btn = this;
+		
+		var url = MT___host+
+			'/mturk/util.php?'+
+			encodeURIComponent(input_skips_object.load_file)+'='+
+			'&load_skips_domain_full='+
+			encodeURIComponent(input_skips_object.domain) +
+			'&load_skips_domain_short='+
+			encodeURIComponent(input_skips_object.short_domain) +
+			'&load_skips_removeMe=';
+			
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: url,
+			onload: function (response) {
+				var rs = response.responseText;
+				btn.value = '---X---';
+				
+				//skip_sites_callback(btn.id);
+			}
+		});
+		
+		return false;
+	}
+	function write_skips(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		this.style.backgroundColor = 'LightGreen';
+		this.onclick = function(){};
+		var btn = this;
+		
+		var url = MT___host+
+			'/mturk/util.php?'+
+			encodeURIComponent(input_skips_object.load_file)+'='+
+			encodeURIComponent(input_skips_object.short_domain);
+			
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: url,
+			onload: function (response) {
+				var rs = response.responseText;
+				btn.value = '---X---';
+				
+				//skip_sites_callback(btn.id);
+			}
+		});
+		
+		return false;
+	}
+	function add_button(url) {
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = ' S ';
+		//~ el_inp.className = 
+		//~ el_inp.id = url; //argv
+		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
+		el_inp.onclick = write_skips;
+		
+		return el_inp;
+	}
+	function remove_button() { //url
+		//~ 
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;background-color:#eee;border:0;cursor:pointer;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = '>' + input_skips_object.domain;
+		el_inp.className = 'input_skip_button2_rm_';
+		//~ el_inp.value = 'x>' + url;
+		//~ el_inp.id = url; //argv
+		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
+		el_inp.onclick = remove_skips;
+		
+		return el_inp;
+	}
+	
+	// ERR: SHORT_DOMAIN IS "com" !!!
+	//~ console.log(input_skips_object);
+	
+	// Is this a skip?	
+	if  (
+		input_skips_object.var_skip_sites.hasOwnProperty( input_skips_object.short_domain ) ||
+		input_skips_object.var_skip_sites.hasOwnProperty( input_skips_object.domain )
+		)
+	{
+		return {
+			el_btn: remove_button(),
+			isSkip: true
+		};
+	}
+	
+	// This is not a skip.
+	return {
+		el_btn: add_button(),
+		isSkip: false
+	};
+	
+	//~ return el_inp; // return >to append
+}
+// DONE XXTODO: REMOVE FROM FILE
 AMT___items_factory.prototype.create__input_skip_button = function(url, skips_key_php_get, skip_sites_callback) // X: pass reference
 {	
+	
 	var el_inp = document.createElement('input');
 	el_inp.setAttribute('style','width:auto;');//background-color:#efefef;
 	el_inp.setAttribute('type','button');
@@ -3240,7 +3151,9 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
 		});
 		return false;
 	}
-	return el_inp;
+	
+	
+	return el_inp; // return >to append
 }
 /**
  * AMT___xhr_PROXY_REDACTED_
@@ -3323,6 +3236,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// -> returns array of arrays
 	// -> [ [m[1],m[2]], [m[1], m[2]] ]
 	this.array_yahoo_results = function(rs) {
+				
 		//
 		var r = /yschttl spt" href="[^*"]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
 		if (!r.exec(rs)) {
@@ -3339,8 +3253,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			var arr = [];
 			while (m = r.exec(rs)) {
 				
-				// is this ri.search.yahoo.com
-				if (m[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(m[1])) {
+				// Change Jul8
+				// Coming in as r.search.yahoo.com rather than ri.search.yahoo.com.
+				//
+				//
+		
+				// Is this ri.search.yahoo.com?
+				if  (
+					/^http:\/\/ri?\.search\.yahoo\.com\//.exec(m[1]) &&
+					/\/RU=([^\/+])/.exec(m[1])
+					)
+				{
 					m[1] = (/\/RU=([^\/]+)/.exec(m[1]))[1];
 					m[1] = decodeURIComponent(m[1]);
 				}
@@ -3468,7 +3391,14 @@ function GM_xmlhttpRequest(details) {
 	//~ xhr.ontimeout = function () { // OVERWRITES THE ONTIMEOUT FUNCTION ALREADY SET
 		//~ console.log('timeout');
 	//~ }
-	xhr.open(details.method, details.url);
+	
+	if(!details.hasOwnProperty('asynchronous')) {
+		details.asynchronous = true;
+	}else
+		console.log('asynch false');
+	
+	xhr.open(details.method, details.url, details.asynchronous);
+	//~ xhr.open(details.method, details.url);
 
 	if (details.overrideMimeType) {
 		xhr.overrideMimeType(details.overrideMimeType);
@@ -3636,6 +3566,8 @@ MT__DOSUBMIT__BY_ID_THIS_ID = xid;
  * @param
  */
 function doSubmit__serverSide(form, location, callback_function, offsetTime) {
+
+	
 	
 	/**
 	 * OPTIONAL PARAMETERS. THESE ARE SET FROM doSubmit OR ELSE
@@ -3861,6 +3793,17 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
 	// form to submit, or window.location, or add to queue (with noSubmit)
 	// & return time_to_submit, offsetTime(x) > regularInterval+x
+	
+	if(!AMT__Global_Vars.isPreview) {
+		chrome.extension.sendRequest(
+			{
+				doSubmitChangeTabIcon: true
+			},
+			function(response) {
+				//Squelch response
+			});
+	}
+	
 	
 	// which form to submit
 	if (!form)
@@ -4587,7 +4530,8 @@ function MT___page1_show_jobs() {
 		'A Global Media Analytics',
 		'411Richmond',
 		'Visual Genome',
-		'p9r'
+		'p9r',
+		'mirador-tech'
 	];
 	if (u.exec(s))
 	{
@@ -5402,16 +5346,25 @@ function AMT___returnAndAcceptButton() {
 			
 			this.style.backgroundColor='#9e9e9e';
 			
+			// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
+			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
+			//
+			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
+				new AMT___core_factory().nextTab();
+			}
+			// END HOOK nextTab()
+			
 			function MT__RETURN_AND_ACCEPT(time_to_submit) {
 				setTimeout(function() {
 					GM_xmlhttpRequest({
 						method: 'GET',
 						url: MT__url_returnaccept, // url to return this HIT
 						onload: function (response) {
-							// get new
-							window.location = 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
 							
-							// XXADD AGAIN TO DOSUBMIT!
+							// get new
+							//
+							//
+							window.location = 'https://www.mturk.com/mturk/previewandaccept?groupId='+MT__gm_groupId;
 						}
 					});
 				}, time_to_submit);
@@ -5467,6 +5420,18 @@ function AMT___checkCaptchaStatus() {
 	
 	s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
 	if (s.exec(ih)) {
+		
+		/**
+		 * Change icon
+		 */
+		chrome.extension.sendRequest(
+		{
+			captchaChangeTabIcon: true
+		}, 
+		function(response) {
+			//Squelch response
+			}
+		);
 		
 		// set local
 		GM_setValue('mt_captcha','1');
