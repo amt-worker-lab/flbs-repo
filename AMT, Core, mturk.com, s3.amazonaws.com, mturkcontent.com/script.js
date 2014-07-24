@@ -2174,29 +2174,54 @@ function MT__RUN() {
 		
 		//turn detailsText into a suitable array, where spaces, dashes, and commas all break it
 		// a-b => a - b
-		detailsText = detailsText.replace(/([^\s])(,)([^\s])/g,' $1 ');
+		detailsText = detailsText.replace(/([^\s])(,)([^\s])/g,'$1 $2 $3');
 		detailsText = detailsText.replace(/([^\s])(-)([^\s])/g,'$1 $2 $3');
-		detailsText = detailsText.replace(/([^\s])(;)([^\s])/g,' $1 ');
+		detailsText = detailsText.replace(/([^\s])(;)([^\s])/g,'$1 $2 $3');
 		
 		//Take all am's and pm's and make sure they're connected to their left-most word
-		detailsText = detailsText.replace(/[\s,-]+(a?\.m?\.)/g,'$1 ');
-		detailsText = detailsText.replace(/[\s,-]+(p?\.m?\.)/g,'$1 ');
+		detailsText = detailsText.replace(/[\s,-]+(a\.*m\.*)/g,'$1 ');
+		detailsText = detailsText.replace(/[\s,-]+(p\.*m\.*)/g,'$1 ');
 
 		//Turn all a.m.'s, a.m's, am.'s into am, same for pms
-		detailsText = detailsText.replace(/a?\.m?\./g,'am');
-		detailsText = detailsText.replace(/p?\.m?\./g,'pm');
+		detailsText = detailsText.replace(/a\.*m\.*/g,'am');
+		detailsText = detailsText.replace(/p\.*m\.*/g,'pm');
 		
 		//Turn all 5pm's and 3am's into 5:00pm's and 3:00am's
-		detailsText = detailsText.replace(/([^:\d])(\d{1,2})(pm|am)/,'$1$2:00$3');
-		detailsText = detailsText.replace(/noon/,'12:00pm');
-		detailsText = detailsText.replace(/midnight/,'12:00am');
+		detailsText = detailsText.replace(/([^:\d])(\d{1,2})(pm|am)/g,'$1$2:00$3');
+		detailsText = detailsText.replace(/noon/g,'12:00pm');
+		detailsText = detailsText.replace(/midnight/g,'12:00am');
+		
+		//Turn all 14:00hrs into 14:00
+		detailsText = detailsText.replace(/([\d]{1,2}[:.][\d]{1,2})hrs?/g,'$1');
+		
+		//Turn all Monday11:00's into Monday 11:00
+		
+		detailsText= detailsText.replace(/([^\d:\.])([\d]{1,2})/g, '$1 $2');
+		
+		//Turn all 
 		
 		
 		var autosObject = {
 			autos: []
 			};
 			
-			
+		
+		//Create a button for resetting time-decision
+		var resetDecBut = document.createElement('input');
+		resetDecBut.setAttribute('type','button');
+		resetDecBut.setAttribute('style','position:absolute;top:0px;left:200px;width:80px;height:25px');
+		document.body.appendChild(resetDecBut);
+		resetDecBut.value = 'R-Decesion';
+		resetDecBut.onclick = Taste_Of_The_World_Restauarant_Hours__Reset_Text_Ui;
+		
+		var resetGuiBut = document.createElement('input');
+		resetGuiBut.setAttribute('type','button');
+		resetGuiBut.setAttribute('style','position:absolute;top:0px;left:280px;width:50px;height:25px');
+		document.body.appendChild(resetGuiBut);
+		resetGuiBut.value = 'R-GUI';
+		resetGuiBut.onclick = Taste_Of_The_World_Restauarant_Hours__Reset_GUI;
+		
+		
 		//Create a div for the auto-spans to exist
 		var autoTranslateDiv = document.createElement('div');
 		autoTranslateDiv.setAttribute('style','');
@@ -2385,13 +2410,13 @@ function MT__RUN() {
 			if(!this.isDailyBut)
 				this.style.backgroundColor = 'lightgreen';
 			if(event.ctrlKey)
-				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('pm',this);
+				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('pm',this,false);
 			else
-				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',this);
+				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',this,false);
 		}
 
 		
-		function Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(ampm,td) {
+		function Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(ampm,td,isNonInclusive) {
 			var txt = td.innerText.toLowerCase();
 			var hour;
 			var minutes;
@@ -2480,10 +2505,10 @@ function MT__RUN() {
 			
 			
 			if(type == 'day') {
-				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{day:day})
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{day:day},isNonInclusive)
 			}
 			else if(type == 'time'){
-				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{hour: hour,minutes: minutes,ampm:ampm});
+				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{hour: hour,minutes: minutes,ampm:ampm},isNonInclusive);
 			}
 		}
 		
@@ -2515,11 +2540,11 @@ function MT__RUN() {
 			
 			//Look for the most common form of scrape
 			//monday to tuesday : 12:00am to 3:00pm
-			var scrapeReg = /(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var scrapeReg = /(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*([\-:]+|to|through|thru|)[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			var rangeMatch
 			while(rangeMatch = scrapeReg.exec(scrapeTxt)) {
 					//alert(rangeMatch[0]);
-					finalText = finalText.replace(rangeMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="r' +	autosObject.rangeMatches.length + '">'+rangeMatch[0]+'</span>');
+					finalText = finalText.replace(new RegExp(__js_escape_regEx(rangeMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="r' +	autosObject.rangeMatches.length + '">'+rangeMatch[0]+'</span>$1');
 					autosObject.rangeMatches.push(rangeMatch);
 			}
 			console.log(autosObject.rangeMatches);
@@ -2537,12 +2562,13 @@ function MT__RUN() {
 			//([\d]{1,2}[\:\.][\d]{1,2})
 			//(am|pm)
 			//console.log(testScrapeTxt);
-			var scrapeReg =	/(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*(and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*((and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*)*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var scrapeReg =	/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*(and|[&,])[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*((and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w\.]*[\s]*)*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			var multiSingleMatch;
 			while(multiSingleMatch = scrapeReg.exec(scrapeTxt)) {
-				finalText = finalText.replace(multiSingleMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="m' +	autosObject.multiSingleMatches.length + '">'+multiSingleMatch[0]+'</span>');
-				autosObject.multiSingleMatches.push(rangeMatch);
+				finalText = finalText.replace(new RegExp(__js_escape_regEx(multiSingleMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="m' +	autosObject.multiSingleMatches.length + '">'+multiSingleMatch[0]+'</span>$1');
+				autosObject.multiSingleMatches.push(multiSingleMatch);
 			}
+			console.log('multisinglematches: ');
 			console.log(autosObject.multiSingleMatches);
 			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
 			console.log(scrapeTxt);
@@ -2551,9 +2577,10 @@ function MT__RUN() {
 			
 			var dayMatch;
 			var scrapeReg =
-			/(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			while(dayMatch = scrapeReg.exec(scrapeTxt)) {
-				finalText = finalText.replace(dayMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="d' +	autosObject.dayMatches.length + '">'+dayMatch[0]+'</span>');
+				finalText = finalText.replace(new RegExp(__js_escape_regEx(dayMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="d' +	autosObject.dayMatches.length + '">'+dayMatch[0]+'</span>$1');
+				console.log('finalText-dayMatch: ' + finalText);
 				autosObject.dayMatches.push(dayMatch);
 			}
 			console.log(autosObject.dayMatches);
@@ -2564,9 +2591,9 @@ function MT__RUN() {
 			
 			var dailyMatch;
 			var scrapeReg =
-			/(daily|nightly)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			/(daily|nightly|everyday|every day at| everyday at|every day)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			while(dailyMatch = scrapeReg.exec(scrapeTxt)) {
-				finalText = finalText.replace(dailyMatch[0],'<span class="exe3" style="border-bottom:1px solid gray;" id="i' +	autosObject.dailyMatches.length + '">'+dailyMatch[0]+'</span>');
+				finalText = finalText.replace(new RegExp(__js_escape_regEx(dailyMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="i' +	autosObject.dailyMatches.length + '">'+dailyMatch[0]+'</span>$1');
 				autosObject.dailyMatches.push(dailyMatch);
 			}
 			console.log(autosObject.dailyMatches);
@@ -2598,74 +2625,76 @@ function MT__RUN() {
 			}
 			
 			
-			//Build range buttons
-			/**var rangeMatches = autosObject.rangeMatches;
-			for(var i =0; i < rangeMatches.length; i++) {
-				var rangeSpan = document.createElement('span');
-				rangeSpan.className = 'rangeSpan';
-				//(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
-				rangeSpan.startDay = rangeMatches[1];
-				rangeSpan.endDay = rangeMatches[3];
-				rangeSpan.startTime = rangeMatches[4];
-				rangeSpan.startTimeAmPm = rangeMatches[5];
-				rangeSpan.endTime = rangeMatches[7];
-				rangeSpan.endTimeAmPm = rangeMatches[8];
-				rangeSpan.innerText = rangeSpan.startDay + '-' +rangeSpan.endDay
-				rangeSpan.replacementText = rangeMatches[0];
-				autosObject.allSpans.push(rangeSpan);
-			}**/
 		}
 		
 		function Taste_Of_The_World_Restauarant_Hours__Input_Auto_From_Span() {
 			var type = this.id[0];
 			var num = /([\d]+)/.exec(this.id)[1];
-			this.style.backgroundColor = 'lightgreen';
-			Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num);
+			
+			if(this.isOn) {
+				this.isOn = false;
+				this.style.backgroundColor = '';
+				Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num,true);
+			}
+			else
+			{
+				this.isOn = true;
+				this.style.backgroundColor = 'lightgreen';
+				Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num,false);
+			}
 		}
 		
 		
-		/*
-		 * 	if(type == 'day') {
-				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{day:day})
-			}
-			else if(type == 'time'){
-				Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,{hour: hour,minutes: minutes,ampm:ampm});
-			}
-		 * 
-		 * */
-		
 		//Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking
 		
-		function Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num) {
+		function Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num,isErase) {
 			switch(type) {
 				case 'r':
 						var rangeMatch = autosObject.rangeMatches[num];
 				//(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[1]}) //startDay
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[3]}) //endDay
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[5], {innerText:rangeMatch[4]}) //startTimeAmPm, startTime
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[8], {innerText:rangeMatch[7]}) //endTimeAmPm, endTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[1]},isErase) //startDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[3]},isErase) //endDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[7], {innerText:rangeMatch[6]},isErase) //startTimeAmPm, startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[10], {innerText:rangeMatch[9]},isErase) //endTimeAmPm, endTime
 				break;
-				case 'm':				
+				case 'm':
+				var multiSingleMatch = autosObject.multiSingleMatches[num]
+				var endTimeAmPm = multiSingleMatch[multiSingleMatch.length-1];
+				var endTime = multiSingleMatch[multiSingleMatch.length-2];
+				var startTimeAmPm = multiSingleMatch[multiSingleMatch.length-4];
+				var startTime = multiSingleMatch[multiSingleMatch.length-5];
+				var dayReg = /(mon|tue|wed|thu|fri|sat|sun)/
+				var day;
+				console.log('multi-single starttime: '+ startTime);
+
+				for(var i = 1; i < multiSingleMatch.length - 5; i++) {
+					if(day = dayReg.exec(multiSingleMatch[i])) {
+						console.log(day);
+						Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText: day[0]},isErase);
+						Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(startTimeAmPm, {innerText: startTime},isErase);
+						Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(endTimeAmPm,{innerText: endTime},isErase);
+					}
+				}
+								
 				break;
 				case 'd':
 							var dayMatch = autosObject.dayMatches[num];
 				///(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:dayMatch[1]})//startDay
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[3],{innerText:dayMatch[2]})//startTime
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[6],{innerText:dayMatch[5]})//endTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:dayMatch[1]},isErase)//startDay
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[5],{innerText:dayMatch[4]},isErase)//startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[8],{innerText:dayMatch[7]},isErase)//endTime
 				break;
 				case 'i': 
 							var dailyMatch = autosObject.dailyMatches[num];
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:'daily'})//startDay
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[3],{innerText:dailyMatch[2]})//startTime
-							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[6],{innerText:dailyMatch[5]})//endTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[5],{innerText:dailyMatch[4]},isErase)//startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[8],{innerText:dailyMatch[7]},isErase)//endTime
 				break;
 			}
 			
 		}
 		
-		function Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,specifier) {
+		function Taste_Of_The_World_Restauarant_Hours__Update_textUiTrack(type,specifier,isErase) {
 			if(type == 'day')
 			{
 				if(specifier.day == 'daily') {
@@ -2678,7 +2707,7 @@ function MT__RUN() {
 					textUiTrack.startDay = specifier.day;
 					
 				if(textUiTrack.startTime && textUiTrack.endTime) {
-					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack();
+					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack(isErase);
 				}
 			}
 			else if(type == 'time') {
@@ -2687,12 +2716,12 @@ function MT__RUN() {
 				else
 					textUiTrack.endTime = specifier;
 				if(textUiTrack.startTime && textUiTrack.endTime && textUiTrack.startDay) {
-					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack();			
+					Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack(isErase);			
 				}						
 			}
 		}
 		
-		function Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack() {
+		function Taste_Of_The_World_Restauarant_Hours__Process_textUiTrack(isErase) {
 				//alert(textUiTrack.startTime.hour);
 				//Determine rows/columns that will get clicked
 				var startRow; //Format, first three letters of day, lowercase
@@ -2718,6 +2747,10 @@ function MT__RUN() {
 				if(!textUiTrack.endDay) {
 					textUiTrack.endDay = textUiTrack.startDay;
 				}
+				
+				var fourtyFiveGoUp = 0;
+				var midhour = 0;
+				
 				switch(textUiTrack.endDay) {
 					case 'mon': endRow = 0;
 					break;
@@ -2741,6 +2774,10 @@ function MT__RUN() {
 				   minutes == null) {
 				   midhour = 0;
 			   }
+			   else if(minutes == '45' ||
+					   minutes == 45) {
+				   fourtyFiveGoUp = 1;
+			   }
 				else if(minutes == .5 ||
 						minutes == 30 ||
 						minutes == 'thirty' ||
@@ -2752,19 +2789,28 @@ function MT__RUN() {
 				if(textUiTrack.startTime.hour == 12 &&
 				   textUiTrack.startTime.ampm == 'pm')
 				   textUiTrack.startTime.hour = 0;
-				startCol = 1 + (textUiTrack.startTime.hour*2) + 
+				startCol = 1 + ((textUiTrack.startTime.hour*1 + fourtyFiveGoUp)*2) + 
 							   (textUiTrack.startTime.ampm == 'pm' ? 24 : 0) +
 							   midhour;
 				
+				midhour = 0;
 				var minutes = textUiTrack.endTime.minutes;
 				if(minutes == '0' || 
 				   minutes == '00' || 
 				   minutes == 0 || 
-				   minutes == null ||
+				   minutes == null) {
+						midhour = 0;
+				   }
+				 else if(
 				   minutes == '15' ||
 				   minutes == 15) {
-				   midhour = 0;
+				   midhour == 0;
 			   }
+			   else if (minutes == '45' || 
+						minutes == 45)
+				{
+				   midhour = 1;		
+				}
 				else if(minutes == .5 ||
 						minutes == 30 ||
 						minutes == 'thirty' ||
@@ -2783,17 +2829,46 @@ function MT__RUN() {
 				uiTrack.endClick.col = endCol;
 				uiTrack.endClick.row = endRow;
 				uiTrack.drawInclusive = true;
+				uiTrack.isErase = isErase;
 				Taste_Of_The_World_Restauarant_Hours__Fill();
 				uiTrack.drawInclusive = false;
 				uiTrack.startClick.col = false;
 				uiTrack.startClick.row = false;
 				uiTrack.endClick.col = false;
 				uiTrack.endClick.row = false;
+				uiTrack.isErase = false;
 				
+				Taste_Of_The_World_Restauarant_Hours__Reset_Text_Ui();
+
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Reset_Text_Ui() {
 				textUiTrack.endTime = false;
 				textUiTrack.startTime = false;
 				textUiTrack.endDay = false;
 				textUiTrack.startDay = false;
+		}
+		
+		function Taste_Of_The_World_Restauarant_Hours__Reset_GUI() {
+			console.log(uiTrack.allRows);
+			
+			for(var row = 0; row < uiTrack.allRows.length; row++) {
+				var tdRow = uiTrack.allRows[row].getElementsByTagName('td');
+				for(var col = 1; col < tdRow.length; col++) {
+					if(col == 1) {
+						tdRow[col].isClicked = true;
+						tdRow[col].style.backgroundColor = 'lightgreen';
+						//Taste_Of_The_World_Restauarant_Hours__TurnOnClosed(row);
+					}
+					else
+					{
+						//console.log(tdRow[col]);
+						tdRow[col].status = 'not-selected';
+						tdRow[col].style.backgroundColor = '';
+					}
+				}
+			}
+			
 		}
 		
 		
@@ -2824,7 +2899,7 @@ function MT__RUN() {
 			if(this.innerText == 'c') {
 				if(this.isClicked)
 				{
-					alert('hi');
+					//alert('hi');
 					this.style.backgroundColor = '';
 					this.isClicked = false;
 				}
@@ -3062,8 +3137,8 @@ function MT__RUN() {
 			 
 			var fillTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
 			if(fillTd.status == 'regular' && !uiTrack.drawInclusive && switchFillType.value == 'regular' || 
-			   fillTd.status == 'extra' && !uiTrack.drawInclusive &&
-			   switchFillType.value == 'extra'
+			   fillTd.status == 'extra' && !uiTrack.drawInclusive && switchFillType.value == 'extra' || 
+			   uiTrack.isErase
 			   )
 				fillTd.status = 'not-selected';
 			else
@@ -3092,6 +3167,11 @@ function MT__RUN() {
 		}
 		
 		function Taste_Of_The_World_Restauarant_Hours__Enter_Form() {
+			var allSelects = document.getElementsByTagName('select');
+			for(var i = 0; i < allSelects.length; i++) {
+				allSelects[i].selectedIndex = 0; 
+			}
+			
 			this.hasBeenClicked = true;
 			this.style.backgroundColor = 'lightgreen';
 			var fieldsets = document.getElementsByTagName('fieldset');
