@@ -2173,9 +2173,10 @@ function MT__RUN() {
 		detailsText = initialDetails.innerText.toLowerCase();
 		
 		//turn detailsText into a suitable array, where spaces, dashes, and commas all break it
-		detailsText = detailsText.replace(/[^\s](,)[^\s]/g,' $1 ');
-		detailsText = detailsText.replace(/[^\s](-)[^\s]/g,' $1 ');
-		detailsText = detailsText.replace(/[^\s](;)[^\s]/g,' $1 ');
+		// a-b => a - b
+		detailsText = detailsText.replace(/([^\s])(,)([^\s])/g,' $1 ');
+		detailsText = detailsText.replace(/([^\s])(-)([^\s])/g,'$1 $2 $3');
+		detailsText = detailsText.replace(/([^\s])(;)([^\s])/g,' $1 ');
 		
 		//Take all am's and pm's and make sure they're connected to their left-most word
 		detailsText = detailsText.replace(/[\s,-]+(a?\.m?\.)/g,'$1 ');
