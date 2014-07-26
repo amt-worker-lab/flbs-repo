@@ -31,8 +31,8 @@ function MT__bold(o, arr, options_object) {
 	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
 	});
 	
-	//~ console.log(o);
-	//~ console.log(arr);
+	//console.log(o);
+	//console.log(arr);
 	
 	var x = o;
 	var word;
@@ -44,8 +44,8 @@ function MT__bold(o, arr, options_object) {
 		//
 		word = arr[i].trim();
 		
-		//~ console.log(word);
-		//~ console.log(x.match(new RegExp('('+__js_escape_regEx(word)+')', 'gi')));
+		//console.log(word);
+		//console.log(x.match(new RegExp('('+__js_escape_regEx(word)+')', 'gi')));
 		
 		if (word == '') {
 			continue;
@@ -65,31 +65,34 @@ function MT__bold(o, arr, options_object) {
 		}
 		
 		// here?
-		var reg = new RegExp('('+__js_escape_regEx(word)+')', 'gi');
+		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
+		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\/b>)', 'gi');
+		// fishes</b>
+		// fish</b>
+		// fis(h)(<)
+		// fis(h)([ $])
 		
-		x = x.replace(reg, function(p0, p1) {
-			//~ var found_in_prev = false;
+		x = x.replace(reg, '<b>$1</b>');
 			
-			 // is current "word" in a past "regex matched"?
-			for (var j in found_words_bolded) {
-				var prev_match = found_words_bolded[j];
-				var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
-				if (tmp_match) {
-					//~ console.log('found in old p1:' + tmp_match);
-					//~ console.log(found_words_bolded);
-					
-					//found_in_prev = true;
-					return p1; // ends here
-				}
-				//~ else {
-					//~ 
+		//~ x = x.replace(reg, function(p0, p1) {
+			//~ console.log('p0:' + p0);
+			//~ console.log('p1:' + p1);
+			//~ console.log(found_words_bolded);
+			//~ // is current "word" in a past "regex matched"?
+			//~ for (var j in found_words_bolded) {
+				//~ var prev_match = found_words_bolded[j];
+				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
+				//~ if (tmp_match) {
+					//~ //found_in_prev = true;
+					//~ return p1; // ends here
 				//~ }
-			}
-			// Still here? Must be a new word
-			found_words_bolded.push(word); // not here
-			//~ console.log('bolding p1:' + p1);
-			return '<b>'+p1+'</b>';
-		});
+			//~ }
+			//~ // Still here? Must be a new word
+			//~ found_words_bolded.push(word); // not here
+			//~ return '<b>'+p1+'</b>';
+		//~ });
+		
+		//console.log(found_words_bolded);
 		
 		// ...
 		// The idea is to avoid bolding smaller words
@@ -164,6 +167,13 @@ function MT__bold(o, arr, options_object) {
 		return return_object;
 	}
 }
+//console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
+
+
+
+
 
 /**
  * FUNCTION MT__RUN
@@ -173,6 +183,8 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	
+	
 	
 	//
 	//Jeffrey M. Howard
@@ -2139,8 +2151,10 @@ function MT__RUN() {
 		GM_addStyle('#daily{cursor:pointer;text-align:center !important;font-size:18px !important;}');
 		GM_addStyle('body {margin-top:500px !important;}');
 		GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
-		GM_addStyle('.panel-body {position:absolute;top:4400px;}');
 		
+		GM_addStyle('table {border-collapse:separate !important;}');
+		GM_addStyle('td {border:1px solid transparent;}');
+		//~ GM_addStyle('td {border:1px solid gray;}');
 		//~ GM_addStyle('table {border:1px solid gray !important;border-collapse:separate !important;border-spacing:2px !important;}');
 		
 		GM_addStyle('.container {zoom:0.6;}');
@@ -2163,6 +2177,12 @@ function MT__RUN() {
 		hours_array.push('Closed');
 		hours_array = hours_array.concat(["12:00 midnight","12:30 am","1:00 am","1:30 am","2:00 am","2:30 am","3:00 am","3:30 am","4:00 am","4:30 am","5:00 am","5:30 am","6:00 am","6:30 am","7:00 am","7:30 am","8:00 am","8:30 am","9:00 am","9:30 am","10:00 am","10:30 am","11:00 am","11:30 am","12:00 noon","12:30 pm","1:00 pm","1:30 pm","2:00 pm","2:30 pm","3:00 pm","3:30 pm","4:00 pm","4:30 pm","5:00 pm","5:30 pm","6:00 pm","6:30 pm","7:00 pm","7:30 pm","8:00 pm","8:30 pm","9:00 pm","9:30 pm","10:00 pm","10:30 pm","11:00 pm","11:30 pm"]);
 		
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
 		
 		
 		var initialDetails = document.getElementsByTagName('span')[0];
@@ -2211,7 +2231,7 @@ function MT__RUN() {
 		resetDecBut.setAttribute('type','button');
 		resetDecBut.setAttribute('style','position:absolute;top:0px;left:200px;width:80px;height:25px');
 		document.body.appendChild(resetDecBut);
-		resetDecBut.value = 'R-Decesion';
+		resetDecBut.value = 'R-Decision';
 		resetDecBut.onclick = Taste_Of_The_World_Restauarant_Hours__Reset_Text_Ui;
 		
 		var resetGuiBut = document.createElement('input');
@@ -2264,11 +2284,14 @@ function MT__RUN() {
 		var subBut = document.getElementById('submitButton');
 		subBut.style.position = 'absolute';
 		subBut.style.top = '0';
-		subBut.style.width = '100px';
+		subBut.style.left = '40%';
+		subBut.style.width = '60%';
 		subBut.style.height = '25px';
 		subBut.onclick = function() {
 			if(enterFormButton.hasBeenClicked)
 			{
+				(new AMT___core_factory().nextTab()); 
+				//showNextTab();
 				doSubmit();
 			}
 			return false;
@@ -2422,7 +2445,9 @@ function MT__RUN() {
 			var minutes;
 			var type = 'none';
 			var txtRegDay = /(mon|tue|wed|thu|fri|sat|sun)/;
-			var textRegDaily = /(daily|nightly)/;
+			var textRegDaily = /(daily|diario|nightly)/;
+			var textRegWeekdays = /(weekday|weeknight)/;
+			var textRegWeekends = /(weekend)/;
 			var match;
 			if(match = txtRegDay.exec(txt)) {
 				var day = match[1];
@@ -2431,6 +2456,16 @@ function MT__RUN() {
 			else if(match = textRegDaily.exec(txt)) {//is this daily?
 				type = 'day';
 				day = 'daily';
+			}
+			else if(match = textRegWeekdays.exec(txt))//is this weekdays?
+			{
+				type = 'day';
+				day = 'weekday';
+			}
+			else if(match = textRegWeekends.exec(txt))//is this weekdays?
+			{
+				type = 'day';
+				day = 'weekend';
 			}
 			else {
 				//Check for whether it is a time, and if so scrape that time
@@ -2526,7 +2561,11 @@ function MT__RUN() {
 			autosObject.multiSingleMatches = [];
 			autosObject.dayMatches = [];
 			autosObject.dailyMatches = [];
+			autosObject.otherMatches = [] //Weekdays, Weekends
 			autosObject.divText = '';
+			
+			
+
 			
 			var scrapeTxt = detailsText;
 			var finalText = detailsText;
@@ -2540,7 +2579,7 @@ function MT__RUN() {
 			
 			//Look for the most common form of scrape
 			//monday to tuesday : 12:00am to 3:00pm
-			var scrapeReg = /(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*([\-:]+|to|through|thru|)[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var scrapeReg = /(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*([\-:]+|to|through|thru|till|up to|'till|until)[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|till|up to|'till|until|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			var rangeMatch
 			while(rangeMatch = scrapeReg.exec(scrapeTxt)) {
 					//alert(rangeMatch[0]);
@@ -2562,7 +2601,7 @@ function MT__RUN() {
 			//([\d]{1,2}[\:\.][\d]{1,2})
 			//(am|pm)
 			//console.log(testScrapeTxt);
-			var scrapeReg =	/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*(and|[&,])[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*((and|[&,])[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w\.]*[\s]*)*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			var scrapeReg =	/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*(and|[&,\\])[\s]*(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s]*((and|[&,\\])[\s]*(mon|thu|wed|tue|fri|sat|sun)[\w\.]*[\s]*)*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|till|up to|'till|until|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			var multiSingleMatch;
 			while(multiSingleMatch = scrapeReg.exec(scrapeTxt)) {
 				finalText = finalText.replace(new RegExp(__js_escape_regEx(multiSingleMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="m' +	autosObject.multiSingleMatches.length + '">'+multiSingleMatch[0]+'</span>$1');
@@ -2577,7 +2616,7 @@ function MT__RUN() {
 			
 			var dayMatch;
 			var scrapeReg =
-			/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			/(mon|tue|wed|thu|fri|sat|sun)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|till|up to|'till|until|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			while(dayMatch = scrapeReg.exec(scrapeTxt)) {
 				finalText = finalText.replace(new RegExp(__js_escape_regEx(dayMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="d' +	autosObject.dayMatches.length + '">'+dayMatch[0]+'</span>$1');
 				console.log('finalText-dayMatch: ' + finalText);
@@ -2591,7 +2630,7 @@ function MT__RUN() {
 			
 			var dailyMatch;
 			var scrapeReg =
-			/(daily|nightly|everyday|every day at| everyday at|every day)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			/(daily|diario|nightly|everyday|every day at| everyday at|every day)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|till|up to|'till|until|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 			while(dailyMatch = scrapeReg.exec(scrapeTxt)) {
 				finalText = finalText.replace(new RegExp(__js_escape_regEx(dailyMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="i' +	autosObject.dailyMatches.length + '">'+dailyMatch[0]+'</span>$1');
 				autosObject.dailyMatches.push(dailyMatch);
@@ -2599,12 +2638,32 @@ function MT__RUN() {
 			console.log(autosObject.dailyMatches);
 			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
 			console.log(scrapeTxt);
+			
+			
+			var otherMatch;
+			var scrapeReg =
+			/(weekday|weeknight|weekend)[\w\.]*[\s:\-,]*(breakfast|bfast|b-fast|break fast|brunch|lunch|dinner|hours|hrs|open|open from|)[\s:\-,]*(from|at|)[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|thru|till|up to|'till|until|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
+			while(otherMatch = scrapeReg.exec(scrapeTxt)) {
+				finalText = finalText.replace(new RegExp(__js_escape_regEx(otherMatch[0])+'([^<]|$)'),'<span class="exe3" style="border-bottom:1px solid gray;" id="o' +	autosObject.otherMatches.length + '">'+otherMatch[0]+'</span>$1');
+				autosObject.otherMatches.push(otherMatch);
+			}
+			console.log(autosObject.otherMatch);
+			scrapeTxt=scrapeTxt.replace(scrapeReg,'');
+			console.log(scrapeTxt);
+			
+			
+			
 			console.log('Final Txt:'+finalText);
 			
 			autosObject.leftOverText = scrapeTxt;
 			
+			Taste_Of_The_World_Restauarant_Hours__Float();
+			
 			
 			finalText = finalText.replace(/(lunch|dinner|brunch|breakfast|daily|nightly)/gi,'<br>$1');
+			
+			finalText = MT__bold(finalText, ['close','closed','closing','bar','coffee','cafe','oven','kitchen','happy','market','lounge','end','late','tavern','patio','holiday', "'s day"])
+			console.log('MT__bold: ' + finalText);
 			autosObject.divText = finalText;
 			
 			
@@ -2613,9 +2672,30 @@ function MT__RUN() {
 			
 		}
 		
+		function Taste_Of_The_World_Restauarant_Hours__Float(){
+			var length =  autosObject.leftOverText.length;
+			if(!localStorage['Taste_Of_The_World_Restauarant_Hours-num'])
+					localStorage['Taste_Of_The_World_Restauarant_Hours-num'] = '1';
+			else {
+				localStorage['Taste_Of_The_World_Restauarant_Hours-num'] = localStorage['Taste_Of_The_World_Restauarant_Hours-num']*1+1;
+			}
+			localStorage['Taste_Of_The_World_Restauarant_Hours-lengths'] = localStorage['Taste_Of_The_World_Restauarant_Hours-lengths'] + ',' +length;
+			if(localStorage['Taste_Of_The_World_Restauarant_Hours-lengths'][0] == ',')
+				localStorage['Taste_Of_The_World_Restauarant_Hours-lengths'][0] = '';
+			/*(if(length <20) {
+				if(!AMT__Global_Vars.isPreview)
+					addToTabsQ();
+				else
+					AMT___Floater.accept();
+				
+			}
+			else {
+				AMT___Floater.skip();
+			}*/
+		}
+		
 		//Creates the text for each 
 		function Taste_Of_The_World_Restauarant_Hours__Initialize_Spans() {
-			var autoAreaText = detailsText;
 			console.log(autoTranslateDiv);
 			autoTranslateDiv.innerHTML = autosObject.divText;
 			
@@ -2651,7 +2731,6 @@ function MT__RUN() {
 			switch(type) {
 				case 'r':
 						var rangeMatch = autosObject.rangeMatches[num];
-				//(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*([\s\-:]+|to|through)[\s]*(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/g;
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[1]},isErase) //startDay
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am', {innerText:rangeMatch[3]},isErase) //endDay
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(rangeMatch[7], {innerText:rangeMatch[6]},isErase) //startTimeAmPm, startTime
@@ -2666,7 +2745,7 @@ function MT__RUN() {
 				var dayReg = /(mon|tue|wed|thu|fri|sat|sun)/
 				var day;
 				console.log('multi-single starttime: '+ startTime);
-
+				console.log(multiSingleMatch);
 				for(var i = 1; i < multiSingleMatch.length - 5; i++) {
 					if(day = dayReg.exec(multiSingleMatch[i])) {
 						console.log(day);
@@ -2679,7 +2758,6 @@ function MT__RUN() {
 				break;
 				case 'd':
 							var dayMatch = autosObject.dayMatches[num];
-				///(mon|tue|wed|thur|fri|sat|sun)[\w]*[\s]*[\s:\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)[\s]*(-|to|through|)[\s\-,]*([\d]{1,2}[\:\.][\d]{1,2})(am|pm)/
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:dayMatch[1]},isErase)//startDay
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[5],{innerText:dayMatch[4]},isErase)//startTime
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dayMatch[8],{innerText:dayMatch[7]},isErase)//endTime
@@ -2690,6 +2768,13 @@ function MT__RUN() {
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[5],{innerText:dailyMatch[4]},isErase)//startTime
 							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(dailyMatch[8],{innerText:dailyMatch[7]},isErase)//endTime
 				break;
+				case 'o':
+							var otherMatch = autosObject.otherMatches[num];
+							console.log(otherMatch);
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('am',{innerText:otherMatch[1]},isErase)//weekdays,weekends, etc.
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(otherMatch[5],{innerText:otherMatch[4]},isErase)//startTime
+							Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(otherMatch[8],{innerText:otherMatch[7]},isErase)//endTime
+				break;
 			}
 			
 		}
@@ -2699,6 +2784,14 @@ function MT__RUN() {
 			{
 				if(specifier.day == 'daily') {
 					textUiTrack.startDay = 'mon';
+					textUiTrack.endDay = 'sun';
+				}
+				else if(specifier.day == 'weekday') {
+					textUiTrack.startDay = 'mon';
+					textUiTrack.endDay = 'fri';
+				}
+				else if(specifier.day == 'weekend') {
+					textUiTrack.startDay = 'sat';
 					textUiTrack.endDay = 'sun';
 				}
 				else if(textUiTrack.startDay) 
@@ -2964,7 +3057,9 @@ function MT__RUN() {
 			var r = document.getElementsByClassName('exe');
 			for (var i in r) {
 				if (i == 'length') break;
-				r[i].style.border = 0;
+				r[i].style.border = '1px solid transparent';
+				//~ r[i].style.border.zIndex = '10';
+				//~ r[i].style.border = '0';
 			}
 			// FILL MOUSE
 			if (!uiTrack.isStartClick)
@@ -2980,7 +3075,9 @@ function MT__RUN() {
 			var r = document.getElementsByClassName('exe');
 			for (var i in r) {
 				if (i == 'length') break;
-				r[i].style.border = 0;
+				r[i].style.border = '1px solid transparent';
+				//~ r[i].style.border.zIndex = '10';
+				//~ r[i].style.border = '0';
 			}
 			//~ var max_cols = uiTrack.allRows[0].getElementsByTagName('td').length - 2;
 			//~ for(var i = 0; i <= 6; i++) {
@@ -3046,6 +3143,12 @@ function MT__RUN() {
 		function Taste_Of_The_World_Restauarant_Hours__Border_Mouse(row,col) {
 			var borderTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
 			borderTd.style.border = '1px solid blue';
+			//~ borderTd.style.margin = '8px !important !important';
+			//~ borderTd.style.borderWidth = '1px !important';
+			//~ borderTd.style.borderLeft = '1px solid blue';
+			//~ borderTd.style.zIndex = '100';
+			//~ borderTd.style.borderStyle = 'solid !important';
+			//~ borderTd.style.margin = '-1px -1px';
 		}
 		
 		// Taste_Of_The_World_Restauarant_Hours__Fill
@@ -3166,14 +3269,122 @@ function MT__RUN() {
 			closedTd.style.backgroundColor = '';			
 		}
 		
+		
+		function Taste_Of_The_World_Restauarant_Hours__Auto_Extras() {
+			var startPoint = 0;
+			var secondStartPoint = 0;
+			var secondEndPoint = 0;
+			var thirdStartPoint = 0; //If this is ever true, create an alert
+			var hourGap = false;
+			
+			console.log(uiTrack.allRows[0]);
+			for(var row = 0; row < uiTrack.allRows.length; row++) {
+				startPoint = 0;	
+				thirdStartPoint = 0;
+				secondStartPoint = 0;
+				secondEndPoint = 0;
+						
+				var currentRow = uiTrack.allRows[row].getElementsByClassName('exe');
+				var lastCol;
+				var lastTwoCol;
+				var throughPointExists = currentRow[currentRow.length-1].status != 'not-selected' && 
+										 currentRow[1].status != 'not-selected';
+				
+				var firstBreak = 0;
+				
+				
+				for(var col = 1; col < currentRow.length; col++){
+					if(col == 1) {
+						lastCol = currentRow.length - 1;
+						lastTwoCol =  currentRow.length -2 //11:00pm
+					}
+					else if(col == 2) {
+						lastCol = col -1;
+						lastTwoCol = currentRow.length -2 //11:30pm
+					}
+					else {
+						lastCol = col-1;
+						lastTwoCol = col-2;
+					}
+					
+					
+					var thisTdSelected = !(currentRow[col].status == 'not-selected');
+					var lastTdSelected = !(currentRow[lastCol].status == 'not-selected');
+					var lastTwoTdSelected = !(currentRow[lastTwoCol].status == 'not-selected');
+					
+					if(thisTdSelected && !lastTdSelected && lastTwoTdSelected) {
+						hourGap = true;
+						alert('Dbl Check GUI row:' + row + ', col:' + col + ' - 30 minute gap not filled in.');
+					}
+					
+					if(!thisTdSelected && lastTdSelected && !startPoint) {
+						firstBreak = col -1;
+					}
+					else if(thisTdSelected && !lastTdSelected && !startPoint) {
+						startPoint = col;
+					}
+					else if(thisTdSelected && !lastTdSelected && startPoint && !secondStartPoint) {
+						secondStartPoint = col;
+					}
+					else if(!thisTdSelected && lastTdSelected && secondStartPoint) {
+						secondEndPoint = col-1;
+						if(secondEndPoint == -1) {
+							secondEndpoint = currentRow[currentRow.length-1]
+						}
+					}
+					else if(thisTdSelected && !lastTdSelected && startPoint && secondStartPoint) {
+						thirdStartPoint = true;
+						alert('Dbl Check GUI row:' + row + ', col:' + col +' - 3 gaps exist.');
+					}
+					
+					
+				}
+				
+				if(!thirdStartPoint && !hourGap && secondStartPoint) {
+					if(!secondEndPoint)
+						secondEndPoint = currentRow.length - 1;
+					if(throughPointExists) {
+						secondEndPoint = firstBreak;
+					}
+					if(!throughPointExists) {
+						for(var col = secondStartPoint; col <= secondEndPoint; col++) {
+							currentRow[col].status = 'extra';
+							currentRow[col].style.backgroundColor = '#CD919E';
+						}
+					}
+					else
+					{
+						for(var col = 1; col <= firstBreak; col++) {
+							currentRow[col].status = 'extra';
+							currentRow[col].style.backgroundColor = '#CD919E';
+						}
+						for(var col = secondStartPoint; col < currentRow.length; col++) {
+							currentRow[col].status = 'extra';
+							currentRow[col].style.backgroundColor = '#CD919E';
+						}
+					}
+				}
+			}
+			
+			return !thirdStartPoint && !hourGap;
+		}
+		
 		function Taste_Of_The_World_Restauarant_Hours__Enter_Form() {
 			var allSelects = document.getElementsByTagName('select');
 			for(var i = 0; i < allSelects.length; i++) {
 				allSelects[i].selectedIndex = 0; 
 			}
 			
-			this.hasBeenClicked = true;
+			
+			
+			this.hasBeenClicked = Taste_Of_The_World_Restauarant_Hours__Auto_Extras();
+			if(!this.hasBeenClicked) {
+				this.style.backgroundColor = '';
+				return;
+			}
+			
 			this.style.backgroundColor = 'lightgreen';
+						
 			var fieldsets = document.getElementsByTagName('fieldset');
 			var beginEndSwitcher = true;
 			var beginTd;
@@ -3202,7 +3413,7 @@ function MT__RUN() {
 				for(var j = 2; j < allCols.length; j++) {
 					var currentTd = allCols[j];
 					var nextTd = allCols[j+1];
-					console.log(currentTd.status);
+					//console.log(currentTd.status);
 
 					if(getStartPoint && currentTd.status == 'regular') {
 						form[0].value = currentTd.formValue;
@@ -3237,7 +3448,7 @@ function MT__RUN() {
 					for(j; j < allCols.length; j++) {
 						var currentTd = allCols[j];
 						var nextTd = allCols[j+1];
-						console.log(currentTd.status);
+						//console.log(currentTd.status);
 
 						if(currentTd.status == 'regular') {
 							form[0].value = currentTd.formValue;
@@ -3269,7 +3480,7 @@ function MT__RUN() {
 				for(var j = 2; j < allCols.length; j++) {
 					var currentTd = allCols[j];
 					var nextTd = allCols[j+1];
-					console.log(currentTd.status);
+					//console.log(currentTd.status);
 
 					if(getStartPoint && currentTd.status == 'extra') {
 						form[2].value = currentTd.formValue;
@@ -3304,7 +3515,7 @@ function MT__RUN() {
 					for(j; j < allCols.length; j++) {
 						var currentTd = allCols[j];
 						var nextTd = allCols[j+1];
-						console.log(currentTd.status);
+						//console.log(currentTd.status);
 
 						if(currentTd.status == 'extra') {
 							form[2].value = currentTd.formValue;
@@ -3318,6 +3529,10 @@ function MT__RUN() {
 					form[3].value =  '11:30 pm';
 					getStartPoint = true;
 					break;
+				}
+				//Finally, if opening and closing time are midnight and 11:30 pm, then say turn 11:30pm to midnight
+				if(form[0].selectedIndex == 2 && form[1].selectedIndex == form[0].getElementsByTagName('option').length-1) {
+					form[1].selectedIndex =2;
 				}
 			}
 		}
@@ -22508,15 +22723,18 @@ function MT__RUN() {
 	// 
 	//~ s = '<h2>Find the official image of the <u>California Federal or State level</u><b>&nbsp;</b>candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
 	s = '<h2>Find the official image of the&nbsp;<u>Federal</u><b>&nbsp;</b>candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
+	s2= '<h2>Find the official image of the <u>Congressional candidate</u>&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
 	if (
-		ih.indexOf(s) != -1
+		ih.indexOf(s)  != -1 ||
+		ih.indexOf(s2) != -1
 	) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 		GM_addStyle('body {margin-top:80px;}');
 		GM_addStyle('h3, ul {position:absolute;margin-top:200px;}');
+		GM_addStyle('#submitButton {width:100%;height:80px;}');
 		
-		var nm = document.getElementsByTagName('b')[1].innerText;
+		var nm = document.getElementsByTagName('b')[0].innerText;
 		
 		var candID = /<p>Candidate ID: <strong>(cand[\d]+|)[^<]*<\/strong>/.exec(ih)[1];
 		candID = __js_clean_html_str(candID);
@@ -22551,7 +22769,7 @@ function MT__RUN() {
 		d1 = document.createElement('input');
 		d1.setAttribute('type','text');
 		d1.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:30px;');
-		d1.value = 'California - ' + nm;
+		d1.value = o.state + ' - ' + nm;
 		document.body.appendChild(d1);
 		//
 		var d2;
@@ -22584,10 +22802,12 @@ function MT__RUN() {
 		
 		function Fernando_Velloso_Neto_convert_and_mail__complete(email_object) {
 			console.log(email_object);
-			if (email_object.responseText == 'Message has been sent.' && q.value != '') {
+			if (email_object.responseText.indexOf('Message has been sent.') != -1 && q.value != '') {
 				//doSubmit();
 				q.style.border = '8px solid LightGreen';
 			}
+			
+			//if (email_object.responseText == 'Message has been sent.' && q.value != '') {
 		}
 		// 
 		function Fernando_Velloso_Neto_convert_and_mail__mail(write_object) {// send email
@@ -22605,7 +22825,8 @@ function MT__RUN() {
 			AMT__mail__mailer_object.filename		= '/var/www/html/mturk/.cached/' + d2.value;
 			
 			// new June 18, 2014
-			AMT__mail__mailer_object.subject		= o.state + ' - ' + o.name
+			AMT__mail__mailer_object.subject		= o.state + ' - ' + o.name;
+			AMT__mail__mailer_object.body			= d2.value;
 			
 			//~ AMT__mail__mailer_object.subject		= d1.value;
 			
@@ -22642,7 +22863,8 @@ function MT__RUN() {
 				filename = d2.value;
 			} else {
 				nextStep_func = Fernando_Velloso_Neto_convert_and_mail__convert;
-				filename = rf.general_functions__md5(d3.value); // MD5!
+				filename = any_md5(d3.value, '0123456789ABCDEF');
+				//~ filename = rf.general_functions__md5(d3.value); // MD5!
 			}
 			
 			// rf.io__download_file
@@ -64660,6 +64882,450 @@ qatar,80
 	}
 	
 	/**
+	 * Yahoo search, find...
+	 * Mikhail Advena - Yelp URL
+	 * 
+	 */
+	//
+	// Mikhail Advena
+	// Find the Yelp ranking for this dealer
+	// 
+	var s = '<li>Enter the website address for this dealer Yelp page</li>';
+	var s2= '<li>Enter the Yelp ranking and numvber of Yelp reviws</li>';
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim()
+		}
+		
+		// ...
+		
+		var dyn_h = screen.height - 300;
+		
+		/* BEGINS ITEMS */
+		//
+		var na123;
+		na123 = document.createElement('input');
+		na123.setAttribute('id','na123');
+		na123.setAttribute('type','button');
+		document.body.appendChild(na123);
+		var na = document.getElementById('na123');
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='78%';
+		na.style.width='20%';
+		na.style.height='20px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.value = "N/A";
+		na.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("URL").value = "N/A";
+			//~ // nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height=dyn_h + 'px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height=dyn_h + 'px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height=dyn_h + 'px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		d1.txa = d3;
+
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		d1b.txa = d3b;
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		d1c.txa = d3c;
+		//
+		d3.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Emergo_Group_firm_name_URL__yahoo_init(d1c, this);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		d3.value = 'site:yelp.com/biz/ ' + o.name;
+		d3b.value= 'site:yelp.com/biz/ ' + '"' + o.name + '"';
+		//~ d3c.value= 'site:yelp.com/biz/' + o.name + ' "website"';
+		
+		//~ d3.initialValue = o.col1;
+		//~ d3b.initialValue = o.col2_first;
+		//~ d3c.initialValue = o.col2; //col 3
+		
+		var countSkips = 0;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		Mikhail_Advena_yelp_biz_URL__yahoo_init();
+		//~ 
+		//~ var SKIP_SITES;
+		//~ function Emergo_Group_firm_name_URL__load_skips() {
+			//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: MT___host+'/mturk/util.php?austin_load_skips=',
+				//~ onload: function (response) {
+					//~ var rs=response.responseText;
+					//~ 
+					//~ var x = rs.split("\n");
+					//~ 
+					//~ SKIP_SITES = {}; // ASSOC.
+					//~ 
+					//~ // full
+					//~ for (var i in x) {
+						//~ SKIP_SITES[x[i]] = true;
+					//~ }
+					//~ 
+					//~ // SUBDOMAINS!
+					//~ for (var i in x) {
+						//~ var y;
+						//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							//~ SKIP_SITES[y[1]] = true;
+						//~ }
+					//~ }
+					//~ 
+					//~ Emergo_Group_firm_name_URL__yahoo_init();
+			//~ 
+				//~ }
+			//~ });
+		//~ }
+		//~ Emergo_Group_firm_name_URL__load_skips();
+		
+		
+		function Mikhail_Advena_yelp_biz_URL__yahoo_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					seed_arg1: el_div,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Mikhail_Advena_yelp_biz_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3.value),
+				seed_arg1: d1,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Mikhail_Advena_yelp_biz_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3b.value),
+				seed_arg1: d1b,
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Mikhail_Advena_yelp_biz_URL__processProxyResponse
+			);
+			//3
+			//~ req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				//~ url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d3c.value),
+				//~ seed_arg1: d1c,
+				//~ yahoo_array: true
+			//~ });
+			//~ req_proxy.proxy_init();
+			//~ req_proxy.proxy_waitComplete(
+				//~ Mikhail_Advena_yelp_biz_URL__processProxyResponse
+			//~ );
+		}
+		
+		function Mikhail_Advena_yelp_biz_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				//~ 
+				//~ match[2] = match[2].replace(/<b>/g, '`');
+				//~ match[2] = match[2].replace(/<\/b>/g, '``');
+				//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+				//~ match[2] = match[2].replace(/[<>]/g, ' ');
+				//~ match[2] = match[2].replace(/``/g, '</b>');
+				//~ match[2] = match[2].replace(/`/g, '<b>');
+				
+				//~ var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				// trailing
+				//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					//~ short_domain = y[1];
+				//~ } else
+					//~ short_domain = x;
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = link.replace(/^(https?:\/\/)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = link;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				//~ d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					
+					// nextTab
+					new AMT___core_factory().nextTab();
+					
+					document.getElementsByName('web_url')[0].value = this.value;
+					
+					Mikhail_Advena_yelp_biz_URL__scrape(this.value);
+					
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == link) {
+						ARRAY_FIRST_FINDS.push(link);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(link);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+		
+		//
+		function Mikhail_Advena_yelp_biz_URL__scrape(u) {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: u,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					var sbm = true;
+					
+					var r;
+					
+					r = /<meta itemprop="ratingValue" content="([\d\.]+)">[\r\n\t\s]+<\/div>[\r\n\t\s]+<span class="review-count rating-qualifier">[\r\n\t\s]+<span itemprop="reviewCount">([\d, ]+)<\/span> review/.exec(rs);
+					if (r) {
+						
+						document.getElementsByName('Yelp_ranking')[0].value = r[1];
+						document.getElementsByName('Reviews')[0].value = r[2];
+						
+						doSubmit();
+					}
+				}
+			});
+		}
+	}
+	
+	/**
 	 * Find URL 
 	 * Brittany Graham
 	 * Laura Enstad
@@ -96941,13 +97607,17 @@ qatar,80
 						//document.getElementsByName('36 - Other Years')[0].focus();
 						
 						if (rs == 'No Sold or Delinquent Taxes for this PIN') {
-							var er = document.getElementsByName('00 - Result Type')[0];
+							var er = document.getElementsByName('0 - Result Type')[0];
+							
+							//~ var er = document.getElementsByName('00 - Result Type')[0];
 							er.selectedIndex = 1;
 							document.getElementById('submitButton').focus();
 							doSubmit(); // comment to debug
 						}
 						else if (rs == 'This is an invalid PIN for year 2010 or Prior') {
-							var er = document.getElementsByName('00 - Result Type')[0];
+							var er = document.getElementsByName('0 - Result Type')[0];
+							
+							//~ var er = document.getElementsByName('00 - Result Type')[0];
 							er.selectedIndex = 2;
 							document.getElementById('submitButton').focus();
 							doSubmit(); // comment to debug
@@ -96957,7 +97627,7 @@ qatar,80
 							
 							rs = JSON.parse(rs); // array of arrays
 							
-							//console.log(rs);
+							console.log(rs);
 							
 							var r, x;
 							var y;
@@ -96970,12 +97640,154 @@ qatar,80
 								
 								found = false;
 								
-								// sold
+								// SOLD
 								if (rs[i][0] == 'sold') {
 								
-									// YEAR
-									//r = /(\d+)/.exec(rs[i][1]);
+									// HAS TO BE YEAR + Annual|Scavenger
+									
+									// 2010 Special Assessment
+									// 2010
+									// 2010 Annual Sale
+									// 2010 Scavenger Sale
+									var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment|)$/.exec(rs[i][1]);
+									
+									if (!x) {
+										document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
+										d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
+										continue;
+									}
+									
+									var year = x[1];
+									var type_sale = (x[2] == ' Annual Sale' || x[2] == ' Scavenger Sale') ? x[2] : '';
+										
+									//~ var year = r[1];
+									//~ var type_sale = r[2];
+									
+									//non-static
+									x = document.getElementsByTagName('tr');
+									for (j in x) {
+										if (j == 'length') break;
+										if (!x[j].innerHTML) continue;
+										
+										if (x[j].innerHTML.indexOf('name="Sold ') != -1 && !x[j].isSelected) {
+											
+											x[j].isSelected = true;
+											
+											found = true;
+											
+											y = x[j].getElementsByTagName('select')[0]; // 0 TO 1
+											switch (type_sale) {
+												case ' Annual Sale':
+													y.selectedIndex = 1;
+													break;
+												case ' Scavenger Sale':
+													y.selectedIndex = 2;
+													break;
+												default:
+													//~ sbm = false;
+													break;
+											}
+											
+											y = x[j].getElementsByTagName('select')[1]; // 0 TO 1
+											if (rs[i][3] == 'Sold')
+												y.selectedIndex = 1;
+											else if (rs[i][3] == 'Redeemed')
+												y.selectedIndex = 2;
+											else if (rs[i][3] == 'Vacated')
+												y.selectedIndex = 3;
+											else if (rs[i][3] == 'Deeded')
+												y.selectedIndex = 4;
+											else
+												pause = true;
+											
+											y = x[j].getElementsByTagName('input');
+											y[0].value = year;
+											y[1].value = rs[i][4];
+											y[2].value = rs[i][5];
+											
+											// STOP HERE!
+											break;
+										}
+										
+									}
+									if (!found) {
+										rs[i].shift();
+										document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
+										d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
+									}
+								}
+								
+								// DELINQUENT
+								// Jan. 23, 2014: "Ignore results in the Delinquent table"
+								else if (rs[i][0] == 'delinquent') {
+									
+									// Jan. 23, 2014
+									//~ continue;
+									
+									//
+									var year = /(\d+)/.exec(rs[i][1]);
+									//r = /^(\d+)$/.exec(rs[i][0]);
+									
+									if (year) {
+										year = year[1];
+										
+										//non-static
+										x = document.getElementsByTagName('tr');
+										
+										// ...
+										//~ found = false;
+										
+										for (j in x) {
+											if (j == 'length') break;
+											if (!x[j].innerHTML) continue;
+											
+											if (x[j].innerHTML.indexOf('name="Delinquent ') != -1 && !x[j].isSelected) {
+												
+												x[j].isSelected = true;
+												
+												found = true;
+											
+												y = x[j].getElementsByTagName('select')[0];
+												if (rs[i][2] == 'Open')
+													y.selectedIndex = 1;
+												else if (rs[i][2] == 'Forfeited')
+													y.selectedIndex = 2;
+												else
+													pause = true;
+													
+												y = x[j].getElementsByTagName('input');
+												y[0].value = year;
+												y[1].value = rs[i][3];
+												y[2].value = rs[i][4].replace(/^\$/,''); //$
+												y[3].value = rs[i][5].replace(/^\$/,''); //$
+												
+												break;
+												
+											}
+										}
+										if (!found) {
+											rs[i].shift();
+											document.getElementsByName('1 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
+											d2.value += 'Delinquent Taxes - '+rs[i].join(' ') + "\n";
+											//~ document.getElementsByName('36 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
+										}
+									}
+								}
+								//~ else {
+									//~ document.getElementsByName('41 - Other Years')[0].value += rs[i].join(" ") + ' ';
+								//~ }
+							}
+							/*for (i in rs) {
+								
+								found = false;
+								
+								// SOLD
+								if (rs[i][0] == 'sold') {
+								
+									// HAS TO BE YEAR + Annual|Scavenger
 									r = /^(\d+) (Annual|Scavenger) Sale$/.exec(rs[i][1]);
+
+									//r = /(\d+)/.exec(rs[i][1]);
 									//~ console.log(rs[i]);
 
 									if (r) {
@@ -97039,31 +97851,18 @@ qatar,80
 											d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
 										}
 										
-										/*x = document.getElementsByName('Sold '+r+' Status');
-										if (x) {
-											if (x[0]) {
-												if (rs[i][2] == 'Sold')
-													x[0].selectedIndex = 1;
-												else if (rs[i][2] == 'Redeemed')
-													x[0].selectedIndex = 2;
-												else if (rs[i][2] == 'Vacated')
-													x[0].selectedIndex = 3;
-												//x[0].value = rs[i][2];
-												document.getElementsByName('Sold '+r+' Document #')[0].value = rs[i][3];
-												document.getElementsByName('Sold '+r+' Date')[0].value = rs[i][4];
-											} else { // other
-												document.getElementsByName('Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ");
-												//document.getElementsByName('Other Results')[0].value += rs[i].join("\t");
-											}
-										}*/
+										
 									} else {
 										rs[i].shift(); // REMOVE 0->"sold"
-										document.getElementsByName('41 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
+										document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
 										d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
+										
+										//~ document.getElementsByName('41 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
 									}
 									
 								}
-								// delinquent
+								
+								// DELINQUENT
 								// Jan. 23, 2014: "Ignore results in the Delinquent table"
 								else if (rs[i][0] == 'delinquent') {
 									
@@ -97120,7 +97919,7 @@ qatar,80
 								//~ else {
 									//~ document.getElementsByName('41 - Other Years')[0].value += rs[i].join(" ") + ' ';
 								//~ }
-							}
+							}*/
 							
 							//show
 							if (d2.value != '') {
@@ -97137,7 +97936,12 @@ qatar,80
 								}
 							}
 							if (!blank && sbm) {
-								doSubmit();
+								//~ doSubmit();
+								//~ console.log('SUBMIT');
+								if (document.getElementsByName('1 - Other Years')[0].value == '')
+								{
+									doSubmit();
+								}
 							} else if (blank && !found) { // none in 2007-2011
 								
 								// add in all of the "invalid"
@@ -106804,6 +107608,7 @@ function top_window() {
 					
 					if (rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1) {
 						d2.value = 'The image is too big, or the network connection is too slow to download it.';
+						console.log('The image is too big, or the network connection is too slow to download it.');
 						return;
 					}
 					
@@ -106818,7 +107623,7 @@ function top_window() {
 						rs = rs.split('>Pages that include matching images<');
 						rs.shift(); // remove first!
 						rs = rs.join('>Pages that include matching images<');
-						console.log(rs);
+						//~ console.log(rs);
 					}
 					//~ // replace "Best Match" !!
 					//~ if (rs.indexOf('Best guess for this image:') != -1) {
@@ -106886,9 +107691,13 @@ function top_window() {
 					//start += 10;
 					
 					//var utmp = /<a href="([^"]+)" class="pn" id="pnnext" style="text-decoration:none;text-align:left"><span[^>]{0,}><\/span><span[^>]{0,}>Next</.exec(rs);
+					/*<a class="pn" href="/search?hl=en&amp;tbs=sbi:AMhZZiu3CVrg4XSz3KNKMLCrMcnkTg1R9EvVW7sUiwr1GtylO18G4gjhzstOduehDxXuANEVbIltiGh1Pw8lP9AMOEcDF9i8JyqpyuqRd2fbyHg78yMX2sfaxu2Xjr5Udod_1pRsHAVz4xR1zV7DARFSFxJO26m3mYYodf-K7lL_1fdRZFRvZmeiM3&amp;ei=eKXSU9vHHMmxyATu0IDQCA&amp;start=10&amp;sa=N" id="pnnext" style="text-align:left"><span class="csb gbil ch" style="background:url(/images/nav_logo195.png) no-repeat;background-position:-96px 0;width:71px"></span><span style="display:block;margin-left:53px">Next</span>*/
 					
-					// New? Mar. 24, 2014.
-					var utmp = /href="([^"]+)" id="pnnext" style="text-decoration:none;text-align:left"><span[^>]{0,}><\/span><span[^>]{0,}>Next</.exec(rs);
+					// 
+					//~ var utmp = /href="([^"]+)" id="pnnext" style="text-decoration:none;text-align:left"><span[^>]{0,}><\/span><span[^>]{0,}>Next</.exec(rs);
+					
+					// NEXT BUTTON
+					var utmp = /href="([^"]+)" id="pnnext" style="[^"]+"><span[^>]{0,}><\/span><span[^>]{0,}>Next<\/span>/.exec(rs);
 					
 					if  (
 							utmp
@@ -106910,17 +107719,16 @@ function top_window() {
 					}
 					else if (rs.indexOf('>Next<') == -1) {
 						if (q.value != '') {
-							
-							
 							doSubmit('hitForm');
 						}
 						else if (d2.value == '0') {
 							document.body.style.backgroundColor = 'yellow';
 							if (q.value == '')
 								q.value = 'NONE';
-							
-							
 							//~ doSubmit('hitForm');
+						}
+						else {
+							console.log(q);
 						}
 					}
 					
