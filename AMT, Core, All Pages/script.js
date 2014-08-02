@@ -64,10 +64,11 @@ chrome.runtime.onMessage.addListener(
 	}
 );
   
- 
+var AMT__rq = function() {
+}
+	
 function load()
 {
-
 	
 	//global
 	var LOC__ = document.location.href;
@@ -117,9 +118,6 @@ function load()
 		
 		GM_addStyle('table,tr,td {border-collapse:collapse;border:1px solid #3a3a3a;white-space: nowrap;}'); //nowrap
 
-		
-		
-		
 		console.log("hello!");
 		//class='place bg-dark'
 		var table1 = document.createElement("table");
@@ -370,6 +368,14 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Leonid_check_site_advertisement(event.data);
 			}
+			if (event.data.task == 'AMT__Newline_Financial_cookcountyclerk_com__payment' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				//~ AMT__Newline_Financial_cookcountyclerk_com__payment(event.data);
+				
+				// NEW
+				new AMT__rq().AMT__Newline_Financial_cookcountyclerk_com__payment(event.data);
+			}
+			
 		}
 	}
 	/*
@@ -1352,6 +1358,9 @@ function load()
 		AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC);
 		
 		var IMAGE_SRC = IMAGE_SRC;
+		
+		console.log(IMAGE_SRC);
+		
 		var id = id;
 		GM_xmlhttpRequest({
 			method: "GET",
@@ -1427,12 +1436,16 @@ function load()
 				z = z.getElementsByTagName('td');
 				if (z) {
 					y = z[1].getElementsByTagName('input')[0];
-					var CAPTCHA_VAL = y.value;
+					
+					var CAPTCHA_VAL;
 					
 					y.addEventListener('keyup', function() {
 						//~ clearInterval(CINTV);// GLOBAL SETINT
 						
 						if (this.value.length == 5) {
+							
+							var CAPTCHA_VAL = this.value;
+							
 							chrome.extension.sendRequest({
 									nextTab: true
 								},
@@ -1453,7 +1466,6 @@ function load()
 									//rs:		rs // for callback !!
 								},
 								function() {
-									//~ var form = document.getElementsByTagName('form')[0];
 									var SUBMIT_BTN = form[0].getElementsByTagName('input')[6];
 									SUBMIT_BTN.click()
 								}
@@ -1464,48 +1476,6 @@ function load()
 			}
 		}
 		
-		//~ var xint = setInterval(function() {
-			//~ var y, z; // stage 1
-			//~ z = document.getElementsByClassName('delinquentForm');
-			//~ if (z) {
-				//~ if (z[0]) {
-					//~ z = z[0];
-					//~ z = z.getElementsByTagName('td');
-					//~ if (z) {
-						//~ y = z[1].getElementsByTagName('input')[0];
-						//~ var CAPTCHA_VAL = y.value;
-						//~ if (y.value.length == 5) {
-							//~ clearInterval(xint);
-							//~ chrome.extension.sendRequest({
-								//~ nextTab: true					
-								//~ }, function(response) {
-							//~ });
-//~ 
-							//~ 
-							//~ y = z[2].getElementsByTagName('input')[0];
-							//~ 
-							//~ var SUBMIT_BTN = y;
-							//~ 
-							//~ //
-							//~ // SAVE THE IMAGE FILE + THE CURRENT CAPTCHA HERE!
-							//~ //
-							//~ var rf = new AMT___requests_factory();
-							//~ rf.io__write_to_file(
-								//~ {
-									//~ data:	'AMT__serverSide_write__value='		+ encodeURIComponent(CAPTCHA_VAL + '|' + IMAGE_SRC) +
-											//~ '&AMT__serverSide_write__folder=.cached'+
-											//~ '&AMT__serverSide_write__file='		+ encodeURIComponent('NEWLINE_FINANCIAL_'+CAPTCHA_VAL)//,
-									//~ //rs:		rs // for callback !!
-								//~ },
-								//~ function() {
-									//~ SUBMIT_BTN.click()
-								//~ }
-							//~ );
-						//~ }
-					//~ }
-				//~ }
-			//~ }
-		//~ }, 40);
 	}
 	// FROM PARENT FRAME!
 	function AMT__Newline_Financial_cookcountyclerk_com() {
@@ -1569,6 +1539,7 @@ function load()
 					//~ im[i].style.top		= '0';
 					//~ im[i].style.left	= '0';
 					var IMAGE_SRC = im[i].src;
+					console.log(IMAGE_SRC);
 				}
 			}
 			
@@ -1616,40 +1587,50 @@ function load()
 				}
 			}
 			
-			if  (
-					/No Sold or Delinquent Taxes for this PIN as of \d+\/\d+\/\d+/.exec(ih)
-				) {
-				// save
+			// save
+			var saveStr = false;
+			if (/No Sold or Delinquent Taxes for this PIN as of \d+\/\d+\/\d+/.exec(ih))
+			{
+				saveStr = 'No Sold or Delinquent Taxes for this PIN';
+			}
+			else if (
+				ih.indexOf('This is an invalid PIN for tax year 2010 or prior. Please check your property tax bill or your property deed to verify your PIN.') != -1
+			)
+			{
+				saveStr = 'This is an invalid PIN for year 2010 or Prior';
+			}
+			if (saveStr) {
 				GM_xmlhttpRequest({
 					method: "GET",
-					url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent('No Sold or Delinquent Taxes for this PIN'),
+					url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent(saveStr),
 					onload: function(response) {
-						var rs=response.responseText;
-						
+						//var rs=response.responseText;
 					}
 				});
 				return;
 			}
-			else if (ih.indexOf('This is an invalid PIN for tax year 2010 or prior. Please check your property tax bill or your property deed to verify your PIN.') != -1) {
-				// save
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent('This is an invalid PIN for year 2010 or Prior'),
-					onload: function(response) {
-						var rs=response.responseText;
-						
-					}
-				});
-				return;
-			}
+			
+			//~ else if (
+				//~ ih.indexOf('This is an invalid PIN for tax year 2010 or prior. Please check your property tax bill or your property deed to verify your PIN.') != -1
+				//~ )
+			//~ {
+				//~ // save
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent('This is an invalid PIN for year 2010 or Prior'),
+					//~ onload: function(response) {
+						//~ var rs=response.responseText;
+						//~ 
+					//~ }
+				//~ });
+				//~ return;
+			//~ }
 			
 			var arr = [];
 			var r2;
-			//r = /<td class="row\d+" style="text-align:left;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ popup" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ statusdocumentnumber" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>/g;
-			
+
 			// sold
 			r = /<fieldset>[\r\n\t\s]+<h2>Sold Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
-			
 			if (r) {
 				
 				r = r[1];
@@ -1684,7 +1665,6 @@ function load()
 			 
 			// delinquent
 			r = /<fieldset>[\r\n\t\s]+<h2>Delinquent Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
-			
 			if (r) {
 				
 				r = r[1];
@@ -1712,15 +1692,13 @@ function load()
 					method: "GET",
 					url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent(JSON.stringify(arr)),
 					onload: function(response) {
-						var rs=response.responseText;
-						
+						//var rs=response.responseText;						
 					}
 				});
 			}
 		}
 		
-		
-		//scroll into view
+		// Scroll into view
 		setTimeout(function() { JordanAGross__scrollIntoView(); }, 400);
 		setTimeout(function() { JordanAGross__scrollIntoView(); }, 800);
 		setTimeout(function() { JordanAGross__scrollIntoView(); }, 1000);
@@ -1732,6 +1710,233 @@ function load()
 				y.scrollIntoView();
 			}
 		}
+	}
+	/**
+	 * AMT__Newline_Financial_cookcountyclerk_com__payment
+	 * 
+	 */
+	// FROM PARENT FRAME!
+	// .id
+	// .task
+	// 
+	AMT__rq.prototype.AMT__Newline_Financial_cookcountyclerk_com__payment = function(data) {
+		
+		var x = document.location.href;
+		var ih = document.body.innerHTML;
+		
+	//~ function AMT__Newline_Financial_cookcountyclerk_com__payment(data) {
+		//~ console.log('messaged');
+		//~ console.log(x);
+		//~ 
+		//~ //
+		//~ // t==0
+		//~ // on second run
+		//~ // replace this !!: <form name="aspnetForm" method="post" action="DelinquentTaxSearch.aspx?u=xxx"
+		
+		// COMPLETE
+		// http://cookcountytreasurer.com/pinsummary.aspx 
+		if  (
+			x == 'http://cookcountytreasurer.com/pinsummary.aspx' &&
+			ih.indexOf('<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year ') != -1
+			)
+		{
+			
+			//~ console.log('run complete');
+			
+			var complete = {
+				total: '',
+				amt1: '',
+				amt2: ''
+			};
+			
+			//2,455.82
+			var r = /<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year 2013 \(payable in 2014\)<\/span>[\r\n\t\s]*<\/td>[\r\n\t\s]*<td style="padding-top: 8px; width: 10px;">[\r\n\t\s]*<span id="ContentPlaceHolder1_lblCurrentTaxYearDollarSign">\$<\/span>[\r\n\t\s]*<\/td>[\r\n\t\s]*<td style="padding-top: 8px; text-align: right;">[\r\n\t\s]*<span id="ContentPlaceHolder1_lblCurrentTaxYearAmount" class="blacktextbold">([^<]+)<\/span>/.exec(document.body.innerHTML);
+			if (!r) {
+				console.log('1');
+				return;
+			}
+			complete.total = r[1];
+			
+			//1390.3200
+			var r = /<input type="hidden" name="ctl00\$ContentPlaceHolder1\$CP_TotalAmount1" id="ContentPlaceHolder1_CP_TotalAmount1" value="([^"]+)">/.exec(ih);
+			if (!r) {
+				console.log('2');
+				//~ console.log(ih);
+				return;
+			}
+			complete.amt1 = Math.round(r[1] * 100) / 100;
+			complete.amt1 = MT___numberWithCommas(complete.amt1);
+			complete.amt1 = complete.amt1.replace(/(\.\d)$/, '$1' + '0');
+			if (complete.amt1.indexOf('.') == -1)
+				complete.amt1 += '.00';
+			//
+			
+			//1390.3200
+			var r = /<input type="hidden" name="ctl00\$ContentPlaceHolder1\$CP_TotalAmount2" id="ContentPlaceHolder1_CP_TotalAmount2" value="([^"]+)">/.exec(ih);
+			if (!r) {
+				console.log('3');
+				return;
+			}
+			complete.amt2 = Math.round(r[1] * 100) / 100;
+			complete.amt2 = MT___numberWithCommas(complete.amt2);
+			complete.amt2 = complete.amt2.replace(/(\.\d)$/, '$1' + '0');
+			if (complete.amt2.indexOf('.') == -1)
+				complete.amt2 += '.00';
+			
+			console.log(complete);
+			
+			var filename = 'newline_financial_' + data.id.replace(/[^\d\-]/g, '').substr(0, 20);
+			
+			// WRITE TO FILE!
+			var rf = new AMT___requests_factory();
+			rf.io__write_to_file(
+				{
+					data:	'AMT__serverSide_write__value='	+ encodeURIComponent(JSON.stringify(complete)) +
+							'&AMT__serverSide_write__folder=.cached' +
+							'&AMT__serverSide_write__file='	+ filename
+				},
+				function() { // + object?
+					// post to parent!
+					parent.postMessage({key: 'AMT__Newline_Financial_cookcountyclerk_com__payment__complete', data: complete}, "*");
+				}
+			);
+			
+			
+			
+			// END HERE
+			return;
+		}
+		
+		// Here?
+		// data.id //
+		// http://cookcountytreasurer.com/payment.aspx?u=12-27-115-062-0000 
+		var r, id;
+		var x = data.id;
+		x = x.replace(/-/g, '');
+		x = [
+			x.substr(0,2),
+			x.substr(2,2),
+			x.substr(4,3),
+			x.substr(7,3),
+			x.substr(10,4)
+		];
+		
+		if  (
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN1')
+			)
+		{
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN1').value = x[0];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN2').value = x[1];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN3').value = x[2];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN4').value = x[3];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_PIN5').value = x[4];
+		}
+		else if (document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN1'))
+		{
+			document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN1').value = x[0];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN2').value = x[1];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN3').value = x[2];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN4').value = x[3];
+			document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_PIN5').value = x[4];
+		}
+		else
+			return;
+		
+		var input = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_EnteredSecurityCode');
+		if (!input)
+			input = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_EnteredSecurityCode');
+		input.parentNode.parentNode.style.position = 'absolute';
+		input.parentNode.parentNode.style.zoom = '2.2';
+		input.parentNode.parentNode.style.top = '0';
+		input.parentNode.parentNode.style.left = '0';
+		input.focus();
+		input.scrollIntoView(true);
+		
+		input.style.position = 'absolute';
+		input.style.top = '44px';
+		input.style.left = '2px';
+		input.style.width = '120px';
+		
+		var img = input.parentNode.parentNode.getElementsByTagName('img')[0];
+		img.scrollIntoView(true);
+		img.style.marginTop = '10px';
+		
+		var search;
+		search = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_cmdSearch');
+		if (x) {
+			//
+		} else {
+			x = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
+		}
+				
+		
+		input.addEventListener('keyup', function() {
+			if (this.value.length == 6) {
+				new AMT___core_factory().nextTab();
+				
+				
+				x.click();
+			}
+		}, false);
+	
+		
+		// STILL HERE?
+		// TRY CAPTCHA
+		// When first visiting the page the elements on the page
+		// will NOT have the word "Again" in their IDs.
+		//  > ContentPlaceHolder1_PaymentSearchBox1_cmdSearch 
+		//  > ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch
+		// Set arg GET->cookcountytreasurer.
+		
+		if (document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch'))
+			return;
+			
+		var id = data.id + 'cookcountytreasurer';
+		
+		captcha();
+		function captcha() {
+			
+			//var id
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(img.src)+'&init&cookcountytreasurer',
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					var CINTV = setInterval(function() {
+						GM_xmlhttpRequest({
+							method: "GET",
+							url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(img.src)+'&complete',
+							onload: function(response) {
+								var rs=response.responseText;
+								if (rs != '') {
+									clearInterval(CINTV);
+								}
+								else return;
+								
+								rs = rs.replace(/ /g, ''); // SPACES!
+								rs = rs.trim();
+								
+								console.log(rs);
+								
+								// TRY TO FILL IN THIS VALUE
+								// This will always be only 6 digits.
+								// However, when debug is on any value
+								// is returned here. (Closest to 6 digits
+								// is returned.) So check first.
+								if (rs.length != 6) return;
+								
+								input.value = rs;
+								search.click();
+								
+							}
+						});
+					}, 1000);
+				}
+			});
+		}
+		
 	}
 	
 	/*
@@ -8316,7 +8521,18 @@ else {
 }
 
 
+
+
+
+
+
+
+
+
 /*
+ * 
+ * 
+ * 
  * 
  * 
  * 

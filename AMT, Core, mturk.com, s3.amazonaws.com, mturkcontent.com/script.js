@@ -2161,17 +2161,23 @@ function MT__RUN() {
 		//~ GM_addStyle('ul {position:absolute;top:2000px;}');
 		
 		// buttons
-		GM_addStyle('.exe:hover {background-color:LightGreen;}');
-		GM_addStyle('.exe2:hover {background-color:LightGreen;}');
-		GM_addStyle('.exe3:hover {background-color:LightGreen;}');
-		GM_addStyle('.dayOfWeekTitle:hover {background-color:LightGreen;}');
-		GM_addStyle('#daily:hover {background-color:LightGreen;}');
+		// hover
+		function Taste_Of_The_World_Restauarant_Hours__CSS_hovers() {
+			//~ var diffHoverCol = '#AFAF93 !important'; // maroon shade
+			var diffHoverCol = '#33CCFF !important'; // maroon shade
+			GM_addStyle('.exe:hover {background-color:'+diffHoverCol+';}');
+			GM_addStyle('.exe2:hover {background-color:'+diffHoverCol+';}');
+			GM_addStyle('.exe3:hover {background-color:'+diffHoverCol+';}');
+			GM_addStyle('.dayOfWeekTitle:hover {background-color:'+diffHoverCol+';}');
+			GM_addStyle('#daily:hover {background-color:LightGreen;}');
+		}
+		Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
+		
 		
 		//Create 7 select fields with 14 
 		var daysOfWeek_array = [
 			'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'
 		];
-		
 		// Hours
 		var hours_array = [];
 		hours_array.push('Closed');
@@ -2257,16 +2263,16 @@ function MT__RUN() {
 
 		
 		var textContainer = document.createElement('div');
-		textContainer.setAttribute('style','position:absolute;top:150px');
+		textContainer.setAttribute('style','position:absolute;top:160px');
 		document.body.appendChild(textContainer);
 		
 		
 		var textTable = document.createElement('div');
-		textTable.setAttribute('style','top:150px;');
+		textTable.setAttribute('style','border-bottom:1px solid #b2b2b2;margin-bottom:20px;');//top:150px;
 		document.body.appendChild(textTable);
 		Taste_Of_The_World_Restauarant_Hours__Initialize_TextTable();
 		textContainer.appendChild(textTable);
-		textContainer.appendChild(document.createElement('hr'));
+		//~ textContainer.appendChild(document.createElement('hr'));
 		textContainer.appendChild(autoTranslateDiv);
 		
 		
@@ -2310,7 +2316,7 @@ function MT__RUN() {
 		
 		var enterFormButton = document.createElement('input');
 		enterFormButton.setAttribute('type','button');
-		enterFormButton.setAttribute('style','position:absolute;left:0;top:0;height:25px');
+		enterFormButton.setAttribute('style','position:absolute;left:330px;top:0;height:25px');
 		document.body.appendChild(enterFormButton);
 		enterFormButton.value = 'Enter Form';
 		enterFormButton.onclick = Taste_Of_The_World_Restauarant_Hours__Enter_Form;
@@ -2327,6 +2333,12 @@ function MT__RUN() {
 					this.value = 'extra';
 			}
 
+		var goBackBut = document.createElement('input');
+		goBackBut.setAttribute('type','button');
+		goBackBut.setAttribute('style','position:absolute;left:0;top:0;height:25px;35px');
+		document.body.appendChild(goBackBut);
+		goBackBut.value = 'Back';
+		goBackBut.onclick = Taste_Of_The_World_Restauarant_Hours__Go_Back;
 		
 		var table = document.createElement('table');
 		table.setAttribute('style','position:absolute;left:0;top:25px;height:125px');
@@ -2355,7 +2367,7 @@ function MT__RUN() {
 			endTime: null
 		};
 		
-		
+		var historyJSON = [];
 
 
 		
@@ -2391,6 +2403,7 @@ function MT__RUN() {
 					tdTime.innerText = 'c';
 					tdTime.isClicked = true;
 					tdTime.style.backgroundColor = 'lightgreen';
+					Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 				}
 				tdTime.onclick		= Taste_Of_The_World_Restauarant_Hours__Click;
 				tdTime.onmouseover	= Taste_Of_The_World_Restauarant_Hours__mouseover;
@@ -2401,7 +2414,7 @@ function MT__RUN() {
 		}
 		uiTrack.allRows = table.getElementsByTagName('tr');
 		
-		window.addEventListener('keypress', TasteOfTheWorld_restaurant_hours__keypress, false);
+		window.addEventListener('keypress', TasteOfTheWorld_restaurant_hours__keypress2, false);
 		
 		function Taste_Of_The_World_Restauarant_Hours__Initialize_TextTable() {			
 			var tr = document.createElement('div');
@@ -2430,8 +2443,10 @@ function MT__RUN() {
 		}
 		
 		function Taste_Of_The_World_Restauarant_Hours__Text_Click(event) {
-			if(!this.isDailyBut)
+			if(!this.isDailyBut) {
 				this.style.backgroundColor = 'lightgreen';
+				Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
+			}
 			if(event.ctrlKey)
 				Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking('pm',this,false);
 			else
@@ -2440,16 +2455,21 @@ function MT__RUN() {
 
 		
 		function Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking(ampm,td,isNonInclusive) {
-			var txt = td.innerText.toLowerCase();
+			var txt = td.innerText.trim().toLowerCase();
 			var hour;
 			var minutes;
 			var type = 'none';
 			var txtRegDay = /(mon|tue|wed|thu|fri|sat|sun)/;
+			var txtRegDay2 = /^(m|tu|w|th|f|sa|su)$/
 			var textRegDaily = /(daily|diario|nightly)/;
 			var textRegWeekdays = /(weekday|weeknight)/;
 			var textRegWeekends = /(weekend)/;
 			var match;
 			if(match = txtRegDay.exec(txt)) {
+				var day = match[1];
+				type = 'day';
+			}
+			else if(match = txtRegDay2.exec(txt)) {
 				var day = match[1];
 				type = 'day';
 			}
@@ -2659,14 +2679,13 @@ function MT__RUN() {
 			
 			Taste_Of_The_World_Restauarant_Hours__Float();
 			
+			finalText = finalText.replace(/[^^](lunch|dinner|brunch|breakfast|daily|nightly)/gi,'<br>$1');
 			
-			finalText = finalText.replace(/(lunch|dinner|brunch|breakfast|daily|nightly)/gi,'<br>$1');
+			finalText = MT__bold(finalText, ['close','closed','closing','bar','coffee','cafe','oven','kitchen','happy','market','lounge','end','late','tavern','patio','season','summer','winter','spring','fall','janu','feb','marc','apr','may','jun','jul','aug','sep','nov','dece'])
 			
-			finalText = MT__bold(finalText, ['close','closed','closing','bar','coffee','cafe','oven','kitchen','happy','market','lounge','end','late','tavern','patio','holiday', "'s day"])
 			console.log('MT__bold: ' + finalText);
+			
 			autosObject.divText = finalText;
-			
-			
 			
 			Taste_Of_The_World_Restauarant_Hours__Initialize_Spans();
 			
@@ -2697,7 +2716,7 @@ function MT__RUN() {
 		//Creates the text for each 
 		function Taste_Of_The_World_Restauarant_Hours__Initialize_Spans() {
 			console.log(autoTranslateDiv);
-			autoTranslateDiv.innerHTML = autosObject.divText;
+			autoTranslateDiv.innerHTML = autosObject.divText.trim();
 			
 			var allSpans = autoTranslateDiv.getElementsByTagName('span');
 			for(var i = 0; i < allSpans.length; i++) {
@@ -2708,6 +2727,9 @@ function MT__RUN() {
 		}
 		
 		function Taste_Of_The_World_Restauarant_Hours__Input_Auto_From_Span() {
+			
+			
+			
 			var type = this.id[0];
 			var num = /([\d]+)/.exec(this.id)[1];
 			
@@ -2721,6 +2743,11 @@ function MT__RUN() {
 				this.isOn = true;
 				this.style.backgroundColor = 'lightgreen';
 				Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num,false);
+				
+				// Re-init the hovers
+				//
+				//
+				Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 			}
 		}
 		
@@ -2728,6 +2755,14 @@ function MT__RUN() {
 		//Taste_Of_The_World_Restauarant_Hours__Text_Handle_Clicking
 		
 		function Taste_Of_The_World_Restauarant_Hours__Construct_Auto_Request(type,num,isErase) {
+			textUiTrack = 
+			{
+				startDay: null,
+				endDay: null,
+				startTime: null,
+				endTime: null
+			};
+			
 			switch(type) {
 				case 'r':
 						var rangeMatch = autosObject.rangeMatches[num];
@@ -2821,19 +2856,31 @@ function MT__RUN() {
 				var endRow;
 				var startCol; //Formate, {hour: num, minutes: num, ampm:boolean}
 				var endCol
+
+
 				switch(textUiTrack.startDay) {
+					case 'm':
+					case 'mo':
 					case 'mon': startRow = 0;
 					break;
+					case 'tu':
 					case 'tue': startRow = 1;
 					break;
+					case 'w':
+					case 'we':
 					case 'wed': startRow = 2;
 					break;
+					case 'th':
 					case 'thu': startRow = 3;
 					break;
+					case 'f':
+					case 'fr':
 					case 'fri': startRow = 4;
 					break;
+					case 'sa':
 					case 'sat': startRow = 5;
 					break;
+					case 'su':
 					case 'sun': startRow = 6;
 					break;
 				}
@@ -2845,18 +2892,28 @@ function MT__RUN() {
 				var midhour = 0;
 				
 				switch(textUiTrack.endDay) {
+					case 'm':
+					case 'mo':
 					case 'mon': endRow = 0;
 					break;
+					case 'tu':
 					case 'tue': endRow = 1;
 					break;
+					case 'w':
+					case 'we':
 					case 'wed': endRow = 2;
 					break;
+					case 'th':
 					case 'thu': endRow = 3;
 					break;
+					case 'f':
+					case 'fr':
 					case 'fri': endRow = 4;
 					break;
+					case 'sa':
 					case 'sat': endRow = 5;
 					break;
+					case 'su':
 					case 'sun': endRow = 6;
 					break;
 				}
@@ -2879,6 +2936,16 @@ function MT__RUN() {
 						minutes == 15) {
 						midhour = 1;
 				}
+				else if(minutes*1 > 0) {
+						if(minutes*1 > 30) {
+							midhour = 0;
+							fourtyFiveGoUp = 1;
+						}else if(minutes*1 < 30) {
+							midhour = 1;
+						}
+				}
+				
+				
 				if(textUiTrack.startTime.hour == 12 &&
 				   textUiTrack.startTime.ampm == 'pm')
 				   textUiTrack.startTime.hour = 0;
@@ -2909,6 +2976,13 @@ function MT__RUN() {
 						minutes == 'thirty' ||
 						minutes == '30') {
 						midhour = 1;
+				}
+				else if(minutes*1 > 0) {
+						if(minutes*1 > 30) {
+							midhour = 1;
+						}else if(minutes*1 < 30) {
+							midhour = 0;
+						}
 				}
 				if(textUiTrack.endTime.hour == 12 &&
 				   textUiTrack.endTime.ampm == 'pm')
@@ -2943,7 +3017,7 @@ function MT__RUN() {
 		}
 		
 		function Taste_Of_The_World_Restauarant_Hours__Reset_GUI() {
-			console.log(uiTrack.allRows);
+			//console.log(uiTrack.allRows);
 			
 			for(var row = 0; row < uiTrack.allRows.length; row++) {
 				var tdRow = uiTrack.allRows[row].getElementsByTagName('td');
@@ -2952,6 +3026,11 @@ function MT__RUN() {
 						tdRow[col].isClicked = true;
 						tdRow[col].style.backgroundColor = 'lightgreen';
 						//Taste_Of_The_World_Restauarant_Hours__TurnOnClosed(row);
+						
+						// Re-init the hovers
+						//
+						//
+						Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 					}
 					else
 					{
@@ -2964,7 +3043,71 @@ function MT__RUN() {
 			
 		}
 		
+		function Taste_Of_The_World_Restauarant_Hours__Go_Back() {
+			if(historyJSON.length == 0) {
+				//do nothing
+			}
+			else if(historyJSON.length == 1) {
+				historyJSON.pop();
+				Taste_Of_The_World_Restauarant_Hours__Reset_GUI();				
+			}
+			else {
+				historyJSON.pop();
+				var lastChange = historyJSON[historyJSON.length - 1];
+				console.log(historyJSON);
+				for(var row = 0; row < uiTrack.allRows.length; row++) {
+					var currentRow = uiTrack.allRows[row].getElementsByClassName('exe');
+					for(var col = 0; col < currentRow.length; col++) {
+						if(col == 0) {
+							currentRow[col].isClicked = lastChange[row][col];
+							if(currentRow[col].isClicked) {
+								currentRow[col].style.backgroundColor = 'lightgreen';
+							}
+							else
+								currentRow[col].style.backgroundColor = '';
+
+						}
+						else {
+							currentRow[col].status = lastChange[row][col];
+							if(currentRow[col].status == 'not-selected') {
+								currentRow[col].style.backgroundColor = ''
+							}
+							else if(currentRow[col].status == 'regular') {
+								currentRow[col].style.backgroundColor = 'lightgreen';
+							}
+							else if(currentRow[col].status == 'extra') {
+								currentRow[col].style.backgroundColor = '#CD919E';
+							}
+							
+						}
+					}
+				}
+			}
+		}
 		
+		function TasteOfTheWorld_restaurant_hours__keypress2(e) {
+			var k = String.fromCharCode(e.keyCode); // (Upper)
+			console.log(k);
+			console.log('cheers');
+			switch(k) {
+				case 'Z':
+				case 'z':
+				enterFormButton.click();
+				break;
+				case 'x':
+				case 'X':
+				subBut.click();
+				break;
+				case 'v':
+				case 'V':
+				Taste_Of_The_World_Restauarant_Hours__Reset_GUI();
+				break;
+				case 'c':
+				case 'C':
+				Taste_Of_The_World_Restauarant_Hours__Go_Back();
+				break;
+			}
+		}
 		
 		
 		//~ var textUiTrack = 
@@ -2989,6 +3132,15 @@ function MT__RUN() {
 		
 		
 		function Taste_Of_The_World_Restauarant_Hours__Click() {
+			
+			// RESET THE BORDERS
+			// OF ALL ELEMENTS!
+			var r = document.getElementsByClassName('exe');
+			for (var i in r) {
+				if (i == 'length') break;
+				r[i].style.border = '1px solid transparent';
+			}
+			
 			if(this.innerText == 'c') {
 				if(this.isClicked)
 				{
@@ -3004,6 +3156,11 @@ function MT__RUN() {
 						turnOffTds[i].status = 'not-selected';
 						turnOffTds[i].style.backgroundColor = '';
 					}
+					
+					// Re-init the hovers
+					//
+					//
+					Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 				}
 				uiTrack.isStartClick = true;
 				return;
@@ -3045,6 +3202,11 @@ function MT__RUN() {
 					Taste_Of_The_World_Restauarant_Hours__Fill();
 					uiTrack.isStartClick = true;
 				}
+				
+				// Re-init the hovers
+				//
+				//
+				Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 			}
 		}
 		
@@ -3053,17 +3215,25 @@ function MT__RUN() {
 		function Taste_Of_The_World_Restauarant_Hours__mouseover(e) {
 			this.parentNode.style.backgroundColor = '#ccc';
 			
-			// CLEAR ALL
-			var r = document.getElementsByClassName('exe');
-			for (var i in r) {
-				if (i == 'length') break;
-				r[i].style.border = '1px solid transparent';
-				//~ r[i].style.border.zIndex = '10';
-				//~ r[i].style.border = '0';
-			}
+			
 			// FILL MOUSE
-			if (!uiTrack.isStartClick)
+			if (!uiTrack.isStartClick) {
+				// CLEAR ALL
+				var r = document.getElementsByClassName('exe');
+				for (var i in r) {
+					if (i == 'length') break;
+					r[i].style.border = '1px solid transparent';
+				}
 				Taste_Of_The_World_Restauarant_Hours__Fill_Mouse({row: this.uiRow, col: this.uiCol});
+				
+				//~ // SET A TIMEOUT TO 
+				//~ // TURN OFF THE BORDER 
+				//~ // COLORS, IF isStartClick
+				//~ // BECOMES FALSE
+				//~ setTimeout(function() {
+					//~ 
+				//~ }, 300);
+			}
 		}
 		
 		// Taste_Of_The_World_Restauarant_Hours__mouseout
@@ -3072,23 +3242,11 @@ function MT__RUN() {
 			this.parentNode.style.backgroundColor = '';
 			
 			// CLEAR ALL
-			var r = document.getElementsByClassName('exe');
-			for (var i in r) {
-				if (i == 'length') break;
-				r[i].style.border = '1px solid transparent';
-				//~ r[i].style.border.zIndex = '10';
-				//~ r[i].style.border = '0';
-			}
-			//~ var max_cols = uiTrack.allRows[0].getElementsByTagName('td').length - 2;
-			//~ for(var i = 0; i <= 6; i++) {
-				//~ for(var j = 0; j <= ; j++) {
-					//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
-				//~ }
+			//~ var r = document.getElementsByClassName('exe');
+			//~ for (var i in r) {
+				//~ if (i == 'length') break;
+				//~ r[i].style.border = '1px solid transparent';
 			//~ }
-			
-			//uiTrack.isStartClick = false;
-			//~ if (!uiTrack.isStartClick)
-				//~ Taste_Of_The_World_Restauarant_Hours__Fill_Mouse({row: this.uiRow, col: this.uiCol});
 		}
 		
 		// Taste_Of_The_World_Restauarant_Hours__Fill
@@ -3100,10 +3258,15 @@ function MT__RUN() {
 				row: (uiTrack.startClick.row > end.row) ? 6		: end.row,
 				col: (uiTrack.startClick.col > end.col) ? max_cols	: end.col
 			}
+			//~ var tmp_array = [];
+			var tmp_object = {};
+			
 			// BASIC
 			for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
 				for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
-					Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+					//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+					//~ tmp_array.push([i, j]);
+					tmp_object[i + '_' + j] = true;
 				}
 			}
 			// ROW
@@ -3113,7 +3276,9 @@ function MT__RUN() {
 			{
 				for(var i = 0; i <= end.row; i++) {
 					for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
-						Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+						//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+						//~ tmp_array.push([i, j]);
+						tmp_object[i + '_' + j] = true;
 					}
 				}
 				
@@ -3123,7 +3288,9 @@ function MT__RUN() {
 				{
 					for(var i = 0; i <= end.row; i++) {
 						for(var j = 1; j <= end.col; j++) { // START1
-							Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+							//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+							//~ tmp_array.push([i, j]);
+							tmp_object[i + '_' + j] = true;
 						}
 					}
 				}
@@ -3135,21 +3302,29 @@ function MT__RUN() {
 			{
 				for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
 					for(var j = 1; j <= end.col; j++) { // START1
-						Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+						//~ Taste_Of_The_World_Restauarant_Hours__Border_Mouse(i,j);
+						//~ tmp_array.push([i, j]);
+						tmp_object[i + '_' + j] = true;
 					}
 				}
 			}
+			
+			// LOOP THROUGH ALL OF THE TABLE ROWS/COLS
+			// AND CHECK FOR X,Y PAIRS.
+			for (var i = 0; i < uiTrack.allRows.length; i++) {
+				var column = uiTrack.allRows[i].getElementsByTagName('td');
+				for (var j = 1; j < column.length; j++) { // START AT 1
+					if (tmp_object.hasOwnProperty(i + '_' + j)) {
+						column[j+1].style.border = '1px solid blue';
+					}
+				}
+			}
+			
 		}
-		function Taste_Of_The_World_Restauarant_Hours__Border_Mouse(row,col) {
-			var borderTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
-			borderTd.style.border = '1px solid blue';
-			//~ borderTd.style.margin = '8px !important !important';
-			//~ borderTd.style.borderWidth = '1px !important';
-			//~ borderTd.style.borderLeft = '1px solid blue';
-			//~ borderTd.style.zIndex = '100';
-			//~ borderTd.style.borderStyle = 'solid !important';
-			//~ borderTd.style.margin = '-1px -1px';
-		}
+		//~ function Taste_Of_The_World_Restauarant_Hours__Border_Mouse(row,col) {
+			//~ var borderTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
+			//~ borderTd.style.border = '1px solid blue';
+		//~ }
 		
 		// Taste_Of_The_World_Restauarant_Hours__Fill
 		function Taste_Of_The_World_Restauarant_Hours__Fill() {
@@ -3162,12 +3337,13 @@ function MT__RUN() {
 				row: (uiTrack.startClick.row > uiTrack.endClick.row) ? 6		: uiTrack.endClick.row,
 				col: (uiTrack.startClick.col > uiTrack.endClick.col) ? max_cols	: uiTrack.endClick.col
 			}
-			//~ console.log(tempEnd);
+			var tmp_object = {};
 			
 			// BASIC
 			for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
 				for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
-					Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+					//~ Taste_Of_The_World_Restauarant_Hours__Fill_ClickTaste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+					tmp_object[i+'_'+j] = true;
 				}
 			}
 			// ROW
@@ -3177,7 +3353,8 @@ function MT__RUN() {
 			{
 				for(var i = 0; i <= uiTrack.endClick.row; i++) {
 					for(var j = uiTrack.startClick.col; j <= tempEnd.col; j++) {
-						Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						tmp_object[i+'_'+j] = true;
 					}
 				}
 				
@@ -3187,7 +3364,8 @@ function MT__RUN() {
 				{
 					for(var i = 0; i <= uiTrack.endClick.row; i++) {
 						for(var j = 1; j <= uiTrack.endClick.col; j++) { // START1
-							Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+							//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+							tmp_object[i+'_'+j] = true;
 						}
 					}
 				}
@@ -3199,46 +3377,49 @@ function MT__RUN() {
 			{
 				for(var i = uiTrack.startClick.row; i <= tempEnd.row; i++) {
 					for(var j = 1; j <= uiTrack.endClick.col; j++) { // START1
-						Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
+						tmp_object[i+'_'+j] = true;
 					}
 				}
-				//~ 
-				//~ if  (
-					//~ uiTrack.startClick.row > uiTrack.endClick.row && 0==1
-					//~ )
-				//~ {
-					//~ for(var i = 0; i <= uiTrack.endClick.row; i++) {
-						//~ for(var j = 0; j <= uiTrack.endClick.col; j++) {
-							//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
-						//~ }
-					//~ }
-				//~ }
 			}
-			//~ if(!rowFlowOver || !colFlowOver) {
-				//~ console.log('got here 2');
-				//~ for(var i = uiTrack.startClick.row; i <= uiTrack.endClick.row; i++) {
-					//~ console.log('got here 3');
-					//~ for(var j = uiTrack.startClick.col; j <= uiTrack.endClick.col; j++) {
-						//~ console.log('got here 4');
-						//~ Taste_Of_The_World_Restauarant_Hours__Fill_Click(i,j);
-					//~ }
-				//~ }
-			//~ }
-			//~ else if(rowFlowOver)
-			//~ {
-				//~ 
-			//~ }
-			//~ else if(colFlowOver)
-			//~ {
-			//~ }
-			//~ else
-			//~ {
-				//~ //Do nothing, unless we want it to be meaningful
-			//~ }
+
+
+			// LOOP THROUGH ALL OF THE TABLE ROWS/COLS
+			// AND CHECK FOR X,Y PAIRS.
+			for (var i = 0; i < uiTrack.allRows.length; i++) {
+				var column = uiTrack.allRows[i].getElementsByTagName('td');
+				for (var j = 1; j < column.length; j++) { // START AT 1
+					if (tmp_object.hasOwnProperty(i + '_' + j)) {
+						//column[j+1].style.border = '1px solid blue';
+						
+						Taste_Of_The_World_Restauarant_Hours__Fill_Click( column[j+1], i );
+						
+					}
+				}
+			}
+
+
+			//Now save the table start in historyJSON
+			var lastChange = [[],[],[],[],[],[],[]];
+			for(var row = 0; row < uiTrack.allRows.length; row++) {
+				var currentRow = uiTrack.allRows[row].getElementsByClassName('exe');
+				for(var col = 0; col < currentRow.length; col++) {
+					if(col == 0) {
+						lastChange[row].push(currentRow[col].isClicked);
+					}
+					else {
+						lastChange[row].push(currentRow[col].status);
+					}
+				}
+			}
+			
+			historyJSON.push(lastChange);
 		}
-		function Taste_Of_The_World_Restauarant_Hours__Fill_Click(row,col) {
+		function Taste_Of_The_World_Restauarant_Hours__Fill_Click(fillTd, row) { //(row,col) {
 			 
-			var fillTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
+			//~ var fillTd = uiTrack.allRows[row].getElementsByTagName('td')[col+1];
+			//~ console.log(fillTd);return;
+			
 			if(fillTd.status == 'regular' && !uiTrack.drawInclusive && switchFillType.value == 'regular' || 
 			   fillTd.status == 'extra' && !uiTrack.drawInclusive && switchFillType.value == 'extra' || 
 			   uiTrack.isErase
@@ -3256,6 +3437,11 @@ function MT__RUN() {
 				{
 					Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row);
 					fillTd.style.backgroundColor = 'lightgreen';
+					
+					// Re-init the hovers
+					//
+					//
+					Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
 				}
 			}
 			else if(fillTd.status == 'not-selected') {
@@ -3263,7 +3449,7 @@ function MT__RUN() {
 			}
 		}
 		
-		function Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row) {
+		function Taste_Of_The_World_Restauarant_Hours__TurnOffClosed(row) { //(row) {
 			var closedTd = uiTrack.allRows[row].getElementsByTagName('td')[1];
 			closedTd.isClicked= false;
 			closedTd.style.backgroundColor = '';			
@@ -3314,7 +3500,7 @@ function MT__RUN() {
 					
 					if(thisTdSelected && !lastTdSelected && lastTwoTdSelected) {
 						hourGap = true;
-						alert('Dbl Check GUI row:' + row + ', col:' + col + ' - 30 minute gap not filled in.');
+						//alert('Dbl Check GUI row:' + row + ', col:' + col + ' - 30 minute gap not filled in.');
 					}
 					
 					if(!thisTdSelected && lastTdSelected && !startPoint) {
@@ -3334,7 +3520,7 @@ function MT__RUN() {
 					}
 					else if(thisTdSelected && !lastTdSelected && startPoint && secondStartPoint) {
 						thirdStartPoint = true;
-						alert('Dbl Check GUI row:' + row + ', col:' + col +' - 3 gaps exist.');
+						//alert('Dbl Check GUI row:' + row + ', col:' + col +' - 3 gaps exist.');
 					}
 					
 					
@@ -3377,14 +3563,18 @@ function MT__RUN() {
 			
 			
 			
-			this.hasBeenClicked = Taste_Of_The_World_Restauarant_Hours__Auto_Extras();
-			if(!this.hasBeenClicked) {
-				this.style.backgroundColor = '';
+			if(!Taste_Of_The_World_Restauarant_Hours__Auto_Extras())
+			{
+				this.hasBeenClicked = false;
+				this.stylebackgroundColor = '';
 				return;
 			}
-			
-			this.style.backgroundColor = 'lightgreen';
-						
+
+			// Re-init the hovers
+			//
+			//
+			Taste_Of_The_World_Restauarant_Hours__CSS_hovers();
+				
 			var fieldsets = document.getElementsByTagName('fieldset');
 			var beginEndSwitcher = true;
 			var beginTd;
@@ -3535,6 +3725,8 @@ function MT__RUN() {
 					form[1].selectedIndex =2;
 				}
 			}
+			this.hasBeenClicked = true;			
+			this.style.backgroundColor = 'lightgreen';	
 		}
 	}
 	
@@ -6249,6 +6441,77 @@ function MT__RUN() {
 	// Leonid
 	// 
 	// 
+	var s = 'To complete the HIT you should provide a number of&nbsp;monthly visitors (Example: 480K).&nbsp;See a detailed description how to check these parameters&nbsp;below:';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:500px !important;margin-left:40px !important;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;zoom:0.8;}'); //;width:100%//margin-left:-40px;
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		
+		var a = document.getElementsByTagName('a')[1].href;
+		
+		//http://www.similarweb.com/website/thestreet.mobi
+		// TO
+		//http://www.similarweb.com/website/data/thestreet.mobi
+		a = a.replace(/website\//, 'website/data/');
+		console.log(a);
+		a = a.replace(/data\/www\./, 'data/');
+		console.log(a);
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: a,
+			//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.context),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+					exit(response.status);
+				}
+				
+				console.log(rs);
+				
+				var r = /Sw\.preloadedData\.overview\.TotalLastMonthVisits = ([\d]+);/.exec(rs);
+				if (r) {
+					r = r[1]*1;
+					
+					console.log(r);
+					
+					// ends in 000
+					// >= 1000 < 1000000
+					if (r >= 1000 && r < 1000000 && /000$/.exec(r)) {
+						
+						r = r + '';
+						
+						r = r.replace(/000$/, 'K');
+						
+						//~ return;
+						// changes 999,000 to 999 K
+						
+						document.getElementsByName('Q5FreeTextInput')[0].value = r;
+						//~ doSubmit();
+					}
+				}
+				//~ var r = /<span class="value" data-type="visits">([\d,\.]+\w)<\/span>/.exec(rs);
+				//~ if (r) {
+					//~ document.getElementsByName('Q5FreeTextInput')[0].value = r[1];
+					//~ doSubmit();
+				//~ }
+			}
+		});
+	}
+	//
+	// Leonid
+	// 
+	// 
 	var s = '<p>To complete the HIT you should provide information whether the website has any advertising (Yes/No). See a detailed description how to check this&nbsp;parameters below:</p>';
 	if (ih.indexOf(s) != -1)
 	{		
@@ -6524,6 +6787,208 @@ function MT__RUN() {
 					doSubmit();
 				}
 			});
+		}
+	}
+	
+	//
+	// Hartti Suomela
+	// -SimpleSearch
+	// 
+	var s = 'The task is to find a text description for a given HCPCS (Healthcare Common Procedure Code System). Please read the instructions carefully before working on the task.';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {position:absolute;top:340px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('#long_description {width:1000px;}');
+		
+		
+		var td = document.getElementsByTagName('td');
+		var a = document.getElementsByTagName('a');
+		
+		var o = {
+			code: td[1].innerText.trim(),
+			href: a[0].href //http://private.athenahealthcare.com/medicarepricing/Report.asp?HCPCS=99150&CurrentYear=2012&PriorYear=2011&txtState=
+		}
+		if (o.href.indexOf('HCPCS=99150') == -1) return;
+		o.href = o.href.replace('HCPCS=99150', 'HCPCS=' + o.code);
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:100%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		/* END ITEMS */
+		
+		// xhr
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: o.href,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.skip();
+					//~ }
+					//~ // add to queue
+					//~ addToTabsQ();
+					exit(response.status);
+				}
+				
+				var r = /<td width="10%">\d+<\/td>[\r\n\t\s]*<td width="45%">([^<]+)<\/td>[\r\n\t\s]*<td width="45%">[^<]*<\/td>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]).trim();
+					r = r.replace(/[\r\n]/g, ' ');
+					
+					document.getElementById('long_description').value = r;
+					d1.innerText = r;
+					
+					if (r.length > 4) 
+						doSubmit();
+					else if (r.length > 0) {
+						//
+					}
+					else {
+						document.getElementById('long_description').value = 'NO TEXT';
+					}
+				}
+			}
+		});
+	}
+	
+	//
+	// Daniel Mintz
+	// -SimpleSearch
+	// 
+	var s = '<p>Record the number of unique visitors on web and mobile for the given site on the given date.</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:340px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		//~ GM_addStyle('input[type="radio"] {zoom:3;}');
+		//~ GM_addStyle('.radio {margin-left:80px;margin-bottom:40px !important;}');
+		//~ 
+		//~ GM_addStyle('b {zoom:1.6;}');
+		//~ GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var td = document.getElementsByTagName('td');
+		var a = document.getElementsByTagName('a');
+		
+		var o = {
+			date: td[5].innerText.trim(),
+			href: a[0].href, //https://www.quantcast.com/playbuzz.com?country=GLOBAL
+			domain: '',
+			ext: ''
+		}
+		o.date = new Date(o.date).getTime() - (5 * 60 * 60 * 1000); //14400000;
+		o.date = o.date / 1000; // TURN TO SECONDS
+		
+		var x = /https:\/\/www\.quantcast\.com\/([^\.]+)\.([^\?]+)\?/.exec(o.href);
+		o.domain = x[1];
+		o.ext = x[2];
+		
+		// https://www.quantcast.com/api/profile/traffic/?&wUnit=wd%3Acom.buzzfeed&country=GLOBAL&period=DAY1&countType=
+		
+		//~ new Date('July 05, 2014').getTime() - 14400000; 
+		//~ OR
+		//~ var d = new Date(2014, 7-1, 5, -4, 0, 0, 0);
+		
+		//wd%3Acom.buzzfeed
+		var x = 'wd%3A' + encodeURIComponent(o.ext) + '.' + encodeURIComponent(o.domain);
+		var url = 'https://www.quantcast.com/api/profile/traffic/?&wUnit='+x+'&country=GLOBAL&period=DAY1&countType=';
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: url,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.skip();
+					//~ }
+					//~ // add to queue
+					//~ addToTabsQ();
+					exit(response.status);
+				}
+				
+				rs = JSON.parse(rs);
+				console.log(rs);
+				console.log(o.date);
+				
+				if (o.date.length < 6 || o.date < 10000000) return;
+				
+				try {
+					
+					
+					// try [time, time + 1hr, time - 1hr]
+					
+					if (!Daniel_Mintz_try_hour(0, rs)) {
+						if (!Daniel_Mintz_try_hour(3600, rs)) {
+							if (!Daniel_Mintz_try_hour(-3600, rs)) {
+								// end
+							}
+						}
+					} 
+				}
+				catch (e)
+				{
+					
+				}
+			}
+		});
+		
+		function Daniel_Mintz_try_hour(time_offset, rs) {
+			
+			
+			console.log(o.date*1 + time_offset);
+			console.log(o.date*1);
+			console.log(time_offset);
+			
+			var n_mobile = rs[0].reach.GLOBAL.UNIQUES.MOBILE_WEB;
+			var n_online = rs[0].reach.GLOBAL.UNIQUES.ONLINE_WEB;
+			//~ var sbm = true;
+			
+			
+			//.reach
+			//.timestamp
+			var found1 = false;
+			for (var i in n_mobile) {
+				if (n_mobile[i].timestamp == o.date + time_offset) {
+					document.getElementById('mobile').value = Math.round(n_mobile[i].reach * 1);//.replace(/[^\d]/g, '');
+					found1 = true;
+					break;
+				}
+			}
+			//.reach
+			//.timestamp
+			var found2 = false;
+			for (var i in n_online) {
+				if (n_online[i].timestamp == o.date + time_offset) {
+					document.getElementById('online').value = Math.round(n_online[i].reach * 1);//.replace(/[^\d]/g, '');
+					found2 = true;
+					break;
+				}
+			}
+			
+			console.log(found1);
+			console.log(found2);
+			
+			if (found1 && found2) {
+				doSubmit();
+				return true;
+			}
+			// Here?
+			return false;
 		}
 	}
 	
@@ -12316,13 +12781,16 @@ function MT__RUN() {
 	
 	/**
 	 * rf.database__select
+	 * 
+	 * Hartti Suomela
+	 * Sol Rosenberg
 	 */
 	//
 	// Hartti Suomela
 	//
 	// AMT_Requester_Hartti_Suomela
 	s = 'The task is to find a text description for a given HCPCS (Healthcare Common Procedure Code System). Please read the instructions carefully before working on the task.';
-	if(ih.indexOf(s) != -1)
+	if(ih.indexOf(s) != -1 && 0 == 1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		
@@ -14425,12 +14893,14 @@ function MT__RUN() {
 	s3= 'Draw a complete polygon around the target&nbsp;dealer (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s4= 'Draw a complete polygon around the target store&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s5= 'Draw a complete polygon around the target restaurant&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
 		ih.indexOf(s3) != -1 ||
 		ih.indexOf(s4) != -1 ||
-		ih.indexOf(s5) != -1
+		ih.indexOf(s5) != -1 ||
+		ih.indexOf(s6) != -1
 		)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
@@ -14481,6 +14951,8 @@ function MT__RUN() {
 			}
 		}
 		
+		
+		
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];
 		x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
@@ -14513,6 +14985,27 @@ function MT__RUN() {
 		document.body.appendChild(d2);
 		d2.src = first_url;
 		
+		// Add change map button
+		var d3 = document.createElement('button');
+		d3.setAttribute('style',
+			'position:absolute;top:0;left:40%;width:59%;height:78px;'
+		);
+		d3.innerText = 'Change Map';
+		d3.onclick = function() {
+			if (this.style.backgroundColor == '') {
+				this.style.backgroundColor = 'LightGreen';
+			} else {
+				this.style.backgroundColor = '';
+			}
+			
+			if (d2.src == withNameSearch) {
+				d2.src = woutNameSearch
+			} else if (d2.src == woutNameSearch) {
+				d2.src = withNameSearch
+			}
+		}
+		document.body.appendChild(d3);
+			
 		//~ // flicker...
 		//~ d2.addEventListener('load', function() {
 			//~ this.style.visibility = 'visible';
@@ -14535,6 +15028,7 @@ function MT__RUN() {
 				}
 			);
 		
+		/*
 		// ...
 		document.body.ondblclick = function() {
 			if (d2.src == withNameSearch) {
@@ -14547,7 +15041,7 @@ function MT__RUN() {
 			// home+depot?
 			//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
 			//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
-		}
+		}*/
 		
 		// ...
 		function chios_system_geocoding__hide_show() {
@@ -65327,9 +65821,12 @@ qatar,80
 	
 	/**
 	 * Find URL 
+	 * 
+	 * Fiber Data Co.
 	 * Brittany Graham
 	 * Laura Enstad
 	 * Emergo Group
+	 * 
 	 * 
 	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
@@ -66361,6 +66858,599 @@ qatar,80
 		}
 	}
 	//
+	// Fiber Data Co.
+	// Find the homepage URL for Organizations
+	// Feb. 11, 2014
+	// Includes Hover Div scrape.
+	s ='<p style="margin-left:-49.5pt;">You will be given the name of an organization, and state (if available). <strong>You must enter the given information into</strong> <strong>google.com</strong> <strong>and find the homepage URL for each organization.&nbsp; </strong>The correct answer should be one of the top 10 results.</p>';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {margin-top:650px;}');
+		
+		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
+		GM_addStyle('.span7 {width:98%;}');
+		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
+		GM_addStyle('input {zoom:0.8;margin:0;padding:0;}');
+		
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var q = document.getElementById('Homepage URL');
+		
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		document.body.appendChild(na);
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='70%';
+		na.style.width='29%';
+		na.style.height='24px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.style.cursor='pointer';
+		na.value = "N/A"
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			q.value = "N/A";
+			
+			// showNextTab OR nextTab
+			if(FOUND_ONE_NONSKIP) {
+				//showNextTab();
+				// nextTab only when manual
+				new AMT___core_factory().nextTab();
+			} else {
+				
+			}
+			
+			doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ var host = GM_getValue('MT__torHost');
+			//~ if (!host)
+				//~ host = 'http://192.168.1.6/';
+			//~ 
+			//~ 
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
+		document.body.appendChild(d2);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height='600px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height='600px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		/*//
+		d = document.createElement('input');
+		d.setAttribute('id','d3c');
+		d.setAttribute('type','button');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='0px';
+		d3c.style.left='0%';
+		d3c.style.width='18%';
+		d3c.style.height='30px';*/
+		//
+		d3.onblur = function() {
+			Fiber_Data_Co_Find_Website_Address(d1,  this.value);
+		}
+		d3b.onblur = function() {
+			Fiber_Data_Co_Find_Website_Address(d1b, this.value);
+		}
+		d3c.onblur = function() {
+			Fiber_Data_Co_Find_Website_Address(d1c, this.value);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		// left = city
+		// middle = city/state/zip
+		// right = phone
+		var x;
+		var o = {
+			comp: '',
+			state_abbr: ''
+		}
+		
+		x = /<h2 style="margin-left: -31\.5pt;">Organization Name: ([^<]*)<\/h2>/.exec(ih);
+		o.comp = __js_clean_html_str(x[1]);
+		
+		x = /<h2 style="margin-left: -31\.5pt;">Organization State: ([^<]*)<\/h2>/.exec(ih);
+		o.state_abbr = __js_clean_html_str(x[1]);
+		
+		d3.value = o.comp;
+		d3b.value= '"' + o.comp + '" ' + o.state_abbr;
+		if (o.state_abbr != '')
+			d3c.value= '"'+o.comp+'" '+o.state_abbr.stateAbbrToFull()+'';
+		
+		console.log(o.state_abbr.stateAbbrToFull());
+		
+		// ...
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Fiber_Data_Co_Find_Website_Address_load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Fiber_Data_Co_Find_Website_Address(d1,  d3.value );
+					Fiber_Data_Co_Find_Website_Address(d1b, d3b.value);
+					
+					if (d3c.value != '')
+						Fiber_Data_Co_Find_Website_Address(d1c, d3c.value);
+				}
+			});
+		}
+		Fiber_Data_Co_Find_Website_Address_load_skips();
+		
+		function Fiber_Data_Co_Find_Website_Address__processProxyResponse(rs, out_div) {
+			//
+			var yahoo_type = 0;
+			var r = /yschttl spt" href="[^*"]+[*]{2,}([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // ** (TWO ASTERISKS) !!
+			if (!r.exec(rs)) {
+				r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+				yahoo_type = 1;
+			}
+			r.lastIndex = 0;
+			
+			if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
+				r.lastIndex = 0;
+				
+				var count = 0;
+				var x, match, out;
+				var r, m;
+				var fb = '';
+				var domain;
+				var short_domain;
+				var y;
+				
+				// add bold to result
+				// b2, b3, b4
+				var bold_array;
+				switch(out_div.id) {
+					case 'd1':
+						bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						break;
+					case 'd1b':
+						bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						break;
+					case 'd1c':
+						bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						break;
+				}
+				
+				//~ if (out_div.id == 'd1') {
+					//~ var keyword_and_index_array = {
+					//~ };
+					//~ keyword_and_index_array['C'] = o.city;
+					//~ keyword_and_index_array['S'] = o.state_abbr;
+					//~ keyword_and_index_array['*S*'] = o.state;
+					//~ //keyword_and_index_array['STATE FULL'] = o.;
+					//~ keyword_and_index_array['Z'] = o.zip;
+					//~ keyword_and_index_array['P'] = o.phone;
+					//~ keyword_and_index_array['AC'] = o.area_code;
+				//~ }
+				
+				while (match = r.exec(rs)) {
+					
+					// is this ri.search.yahoo.com
+					if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
+						match[1] = (/\/RU=([^\/]+)/.exec(match[1]))[1];
+						match[1] = decodeURIComponent(match[1]);
+					}
+					else if (yahoo_type == 0)
+						match[1] = decodeURIComponent(match[1]);
+					
+					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					match[2] = match[2].replace(/<b>/g, '`');
+					match[2] = match[2].replace(/<\/b>/g, '``');
+					match[2] = match[2].replace(/<[^>]+>/g, ' ');
+					match[2] = match[2].replace(/[<>]/g, ' ');
+					match[2] = match[2].replace(/``/g, '</b>');
+					match[2] = match[2].replace(/`/g, '<b>');
+					
+					x = match[1];
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //
+					
+					// NEW JUL 30 2014
+					// Change from http://www. to www.
+					// Per instructions.
+					//~ x = x.replace(/^https?:\/\//g, '');
+					
+					// regular = ^http://www.site.com$
+					// subdomains = [\.\/]site.com$
+					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+						short_domain = y[1];
+					} else
+						short_domain = x;
+					
+					// SKIP BUTTON CREATE 2
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2({
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						});
+					
+					// trailing (leave trailing slash)
+					x = match[1].replace(/(\w+)\/[^$]*$/, '$1/'); // leave trailing slash
+					
+					// add bold (bold_array)
+					match[2] = MT__bold(match[2], bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_url = match[1];
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						//~ count++;
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					
+					// textarea
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa.readOnly = true;
+					txa.value = match[1]; //x;
+					d.appendChild(txa);
+					// textarea2
+					var txa2 = document.createElement('textarea');
+					txa2.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa2.readOnly = true;
+					txa2.value = x;
+					d.appendChild(txa2);
+					// A
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = match[1];
+					d.appendChild(a);
+					// el_inp_skip2__obj.el_btn
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					//~ // ...
+					//~ // Scrape page
+					//~ // Only on d1
+					//~ // @assoc. array [show output (key) => scrape for keyword (value)], []
+					//~ if (count < 6 && out_div.id == 'd1') {
+						//~ var scrape_el = document.createElement('div');
+						//~ scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
+						//~ d.appendChild(scrape_el);
+						//~ new AMT___items_factory().xhr_scrape_page({
+							//~ parent_el: scrape_el,
+							//~ keyword_and_index_array: keyword_and_index_array,
+							//~ url: match[1]
+						//~ });
+					//~ }
+					
+					// Body
+					var pbody = document.createElement('p');
+					d.appendChild(pbody);
+					pbody.setAttribute('style','word-wrap:break-word;border-bottom:1px solid aeaeae;');
+					pbody.innerHTML = match[2];// + '<br>' + match[1];
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = txa2.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						q.value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						//showNextTab();
+						
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						
+						d2.value = this.full_url;
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						//~ this.el_full_url.style.diplay = 'block';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+								
+							} else {
+								x[i].style.backgroundColor = '';
+								
+							}
+						}
+					}, true);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+							}
+						}
+					}, false);
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					count++;
+				}
+				
+				if (count > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
+				}
+			} else
+				out_div.innerHTML = '0';
+
+			// All three windows have completed
+			// and none of the three have 
+			// TOTAL_CALLS AND FOUND_ONE_NONSKIP
+			TOTAL_CALLS++;
+			if (TOTAL_CALLS == 3) {
+				if (!FOUND_ONE_NONSKIP) {
+					//~ na.click(); // na button
+					//~ return;
+				}
+				// All three windows have completed
+				// and the first domain is same across all three
+				else if (ARRAY_FIRST_FINDS.length == 3) {
+					//d1, d1b, d1c
+					var divs = [d1, d1b, d1c];
+					var x;
+					for (var i in divs) {
+						x = divs[i].getElementsByTagName('textarea')[0];
+						x.style.border = '6px solid LightGreen';
+					}
+				}
+				
+				// addToTabsQ
+				//addToTabsQ();
+			}
+		}
+		function Fiber_Data_Co_Find_Website_Address(out_div, search) {
+			
+			// NEW YAHOO
+			// JUL17 2014
+			var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(search); //%2B
+			
+			// OLD YAHOO
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			
+			out_div.innerHTML = '';
+			var out_div = out_div;
+			
+			var url = HOST + 
+				'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+				'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999');
+			
+			// init
+			GM_xmlhttpRequest({ // USE "HOST" HERE!
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					//var rs = response.responseText;
+				}
+			});
+			// watch done
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: HOST+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+						
+						// IS HOST 192.168.1.2?
+						// IF NO THEN POST THIS RESPONSE TO 
+						// 192.168.1.2
+						// md5 !!
+						if (HOST == 'http://192.168.1.2') { //MT___host
+							Fiber_Data_Co_Find_Website_Address__processProxyResponse(rs, out_div);
+							return;
+						}
+						
+						// still here?
+						// save file !
+						var rf = new AMT___requests_factory();
+						var md5_url = any_md5(u, '0123456789ABCDEF');
+						var data;
+						var yahoo_rs = rs;
+						
+						data = 'AMT__serverSide_write__value='+encodeURIComponent(rs)+
+							'&AMT__serverSide_write__folder=.cached'+
+							'&AMT__serverSide_write__file='+encodeURIComponent(md5_url);
+						
+						GM_xmlhttpRequest({
+							method: "POST",
+							url: 'http://192.168.1.2/mturk/util.php',
+							data: data,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								if (response.status != 200 || rs != '') {
+									exit(response.status + ' ' + rs);
+								}
+								
+								Fiber_Data_Co_Find_Website_Address__processProxyResponse(yahoo_rs, out_div); // yahoo_rs
+							}
+						});
+						
+					}
+				})
+			}, 1000);
+		}
+	}
+	//
 	// Brittany Graham
 	// Find the Website Address for this Company
 	// Feb. 11, 2014
@@ -66622,6 +67712,7 @@ qatar,80
 			// zip
 			var z = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
 			z = (z.length == 4) ? '0' + z : z;
+			o.zip = z;
 			
 			// ...
 			o.state_abbr = b3;
@@ -66640,7 +67731,7 @@ qatar,80
 		
 		// ...
 		o.city = b2;
-		o.zip = z;
+		
 		
 		// b3, b4
 		b3 = b2 + ', ' + b3; // =>city, state(...)
@@ -66650,6 +67741,7 @@ qatar,80
 		if (x = /Zip:&nbsp;<b[^>]*>([^<]*)/.exec(ih)) {
 			x = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').trim();
 			x = (x.length == 4) ? '0' + x : x;
+			o.zip = x;
 			b3 += ' ' + x;
 		}
 		// Phone
@@ -66755,13 +67847,16 @@ qatar,80
 				var bold_array;
 				switch(out_div.id) {
 					case 'd1':
-						bold_array = (b3 + ' ' + b4).split(' ');
+						bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b3 + ' ' + b4).replace(/&/g, ' ').split(' ');
 						break;
 					case 'd1b':
-						bold_array = (b2 + ' ' + b4).split(' ');
+						bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b2 + ' ' + b4).split(' ');
 						break;
 					case 'd1c':
-						bold_array = (b2 + ' ' + b3).split(' ');
+						bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b2 + ' ' + b3).split(' ');
 						break;
 				}
 				
@@ -66804,6 +67899,11 @@ qatar,80
 					
 					// trailing
 					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// NEW JUL 30 2014
+					// Change from http://www. to www.
+					// Per instructions.
+					x = x.replace(/^https?:\/\//g, '');
 					
 					// regular = ^http://www.site.com$
 					// subdomains = [\.\/]site.com$
@@ -80020,14 +81120,19 @@ qatar,80
 	
 	//
 	// Adish
-	// 
-	// 
+	// Brandon Ramirez
+	// Input Data from Yelp
 	s = '<h3>Click on the Restaurant at the TOP OF THE SEARCH RESULTS located at the link below. &nbsp;For that restaurant, enter the following information from their Yelp Page:</h3>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:30%;margin-top:0px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:0px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:2000px;}');
 		
-		var b = /<p>Yelp Search Results: (http:\/\/www\.yelp\.com\/search\?cflt=restaurants&amp;find_loc=Austin%2C\+TX%2C\+USA#find_desc&amp;start=<b>\d+<\/b>&amp;attrs=RestaurantsTableService)<\/p>/.exec(ih)[1];
+		//<p>Yelp Search Results: http://www.yelp.com/search?cflt=restaurants&amp;find_loc=Kyle%2C+TX%2C+USA#find_desc&amp;start=<b>176</b>&amp;attrs=RestaurantsTableService</p>
+		var b = /<p>Yelp Search Results: (http:\/\/www\.yelp\.com\/search\?cflt=restaurants&amp;find_loc=[^#&]+#find_desc&amp;start=<b>\d+<\/b>&amp;attrs=RestaurantsTableService)<\/p>/.exec(ih)[1];
+		
+		//~ var b = /<p>Yelp Search Results: (http:\/\/www\.yelp\.com\/search\?cflt=restaurants&amp;find_loc=Austin%2C\+TX%2C\+USA#find_desc&amp;start=<b>\d+<\/b>&amp;attrs=RestaurantsTableService)<\/p>/.exec(ih)[1];
+		
 
 		b = b.replace(/<\/?b>/g, '');
 		b = b.replace(/#find_desc/, '&find_desc');
@@ -80044,6 +81149,10 @@ qatar,80
 				&location='+/\&find_loc=([^&]+)/.exec(url)[1]+'\
 				&limit=10&ywsid=YXBS8CWN5yhPwySyPG9o_g'; //14 1? &radius=5*/
 		
+		document.getElementById('submitButton').onclick = function() {
+			doSubmit();
+			return false;
+		}
 		
 		GM_xmlhttpRequest({
 			method: 'GET',
@@ -80056,12 +81165,16 @@ qatar,80
 				rs = JSON.parse(rs);
 				
 				rs = rs.search_results;
+				console.log(rs);
 				
 				var r;
-				r = /<span class="indexed-biz-name">\d+\. 	<a class="biz-name" href="([^"]+)"/.exec(rs);
+				r = /<span class="indexed-biz-name">\d+\.[^<]*<a class="biz-name" href="([^"]+)"/.exec(rs);
 				if (!r) return;
-					
+				
+				//<span class="indexed-biz-name">183.     <a class="biz-name" href="/biz/mariscos-seafood-austin-2" data-hovercard-id="UAHEf1TmHG1uHp8wvU9hcw">Mariscos Seafood</a>
+				
 				// /biz/fabi-rosi-austin
+				document.getElementById('YelpURL').value = 'http://www.yelp.com'+__js_clean_html_str(r[1]);
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -80073,106 +81186,171 @@ qatar,80
 						
 						var sbm = true;
 						
-						var r;
-						r = /<script type="text\/javascript">yelp\.init\.wrapper\("yelp\.init\.bizDetails\.page", ([^\r\n]+)/.exec(rs);
-						
-						if (!r) return;
-						
-						r = r[1];
-						r = r.replace(/\);<\/script>$/, '');
-						
-						r = JSON.parse(r);
-						console.log(r);
-						
-						if (!r.bizSafe) return;
-						r = r.bizSafe;
-						
-						var str_addr = '';
-						str_addr = r.address1 + ' ' + r.address2 + ' ' + r.address3;
-						str_addr = str_addr.trim();
-						
-						if (!r.name || r.name.trim() == '')
-						{
-							sbm = false;
-							console.log('0');
-						}
-						if (!r.rating)
-						{
-							sbm = false;
-							console.log('1');
-						}
-						if (!r.url || r.url.trim() == '')
-						{
-							sbm = false;
-							console.log('2');
-						}
-						if (!r.phone)// || r.phone.trim() == '') "blank" is OK
-						{
-							if (r.phone.trim() != '') {
-								sbm = false;
-								console.log('3');
-							}
-						}
+						//~ var r;
+						//~ r = /<script type="text\/javascript">yelp\.init\.wrapper\("yelp\.init\.bizDetails\.page", ([^\r\n]+)/.exec(rs);
+						//~ 
+						//~ if (!r) return;
+						//~ 
+						//~ r = r[1];
+						//~ r = r.replace(/\);<\/script>$/, '');
+						//~ 
+						//~ r = JSON.parse(r);
+						//~ console.log(r);
+						//~ 
+						//~ if (!r.bizSafe) return;
+						//~ r = r.bizSafe;
+						//~ 
+						//~ var str_addr = '';
+						//~ str_addr = r.address1 + ' ' + r.address2 + ' ' + r.address3;
+						//~ str_addr = str_addr.trim();
+						//~ 
+						//~ if (!r.name || r.name.trim() == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('0');
+						//~ }
+						//~ if (!r.rating)
+						//~ {
+							//~ sbm = false;
+							//~ console.log('1');
+						//~ }
+						//~ if (!r.url || r.url.trim() == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('2');
+						//~ }
+						//~ if (!r.phone)// || r.phone.trim() == '') "blank" is OK
+						//~ {
+							//~ if (r.phone.trim() != '') {
+								//~ sbm = false;
+								//~ console.log('3');
+							//~ }
+						//~ }
 						//if (!r.formatted_address || r.formatted_address.length != 2)
 						//{
 						//	sbm = false;
 						//	console.log('4');
 						//}
-						if (!r.city || r.city.trim() == '')
-						{
-							sbm = false;
-							console.log('5');
-						}
-						if (str_addr == '')
-						{
-							sbm = false;
-							console.log('6');
-						}
-						if (!r.state || r.state.trim() == '')
-						{
-							sbm = false;
-							console.log('7');
-						}
-						if (!r.zip || r.zip.trim() == '')
-						{
-							sbm = false;
-							console.log('8');
-						}
+						//~ if (!r.city || r.city.trim() == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('5');
+						//~ }
+						//~ if (str_addr == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('6');
+						//~ }
+						//~ if (!r.state || r.state.trim() == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('7');
+						//~ }
+						//~ if (!r.zip || r.zip.trim() == '')
+						//~ {
+							//~ sbm = false;
+							//~ console.log('8');
+						//~ }
+						//~ 
+						//~ document.getElementById('RestaurantName').value = r.name;
+						//~ document.getElementById('Rating').value = r.rating;
+						//~ document.getElementById('YelpURL').value = 'http://www.yelp.com'+r.url;
 						
-						document.getElementById('RestaurantName').value = r.name;
-						document.getElementById('Rating').value = r.rating;
-						document.getElementById('YelpURL').value = 'http://www.yelp.com'+r.url;
+						var r;
+						//~ var rating, reviews;
 						
-						var r2;
-						r2 = /<div id="bizUrl">[\r\n\t\s]+<a href="[^"]+"[^>]{0,}>([^<]+)<\/a>/.exec(rs);
-						if (!r2 && rs.indexOf('<div id="bizUrl">') != -1)
+						r = /<div class="biz-main-info embossed-text-white">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs); // span
+						if (r) {
+							
+							r = r[1];
+							
+							var r2;
+							
+							//
+							r2 = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(r);
+							if (r2) {
+								document.getElementById('Rating').value = __js_clean_html_str(r2[1]).trim();
+							} else {
+								document.getElementById('Rating').value = 'N/A';
+							}
+							//
+							r2 = /<span itemprop="reviewCount">([\d,\.]+)/.exec(r);
+							if (r2) {
+								document.getElementById('ReviewCount').value = __js_clean_html_str(r2[1]).trim();
+							} else {
+								document.getElementById('ReviewCount').value = 'N/A';
+							}
+						
+						} else
 							sbm = false;
-						if (r2)
-							document.getElementById('RestaurantURL').value = __js_clean_html_str(r2[1]).trim();
 						
-						if (r.phone == '')
+						// <h1 class="biz-page-title embossed-text-white osolong" itemprop="name">
+						r = /<h1 class="biz-page-title[^"]*" itemprop="name">([^<]+)<\/h1>/.exec(rs);
+						if (r) {
+							document.getElementById('RestaurantName').value = __js_clean_html_str(r[1]).trim();
+						} else {
+							document.getElementById('RestaurantName').value = 'N/A';
+							sbm = false;
+						}
+						//
+						r = /<span itemprop="streetAddress">([^<]+)<\/span>/.exec(rs);
+						if (r) {
+							document.getElementById('StreetAddress').value = __js_clean_html_str(r[1]).trim();
+						} else {
+							//Lakeline Mall Location<br>11200 Lakeline Mall Dr
+							r = /<span itemprop="streetAddress">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs);
+							if (r) {
+								r = r[1].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+								r = __js_clean_html_str(r);
+								document.getElementById('StreetAddress').value = r;
+								if (r.length < 2)
+									sbm = false;
+							} else {
+								document.getElementById('StreetAddress').value = 'N/A';
+							}
+						}
+						//
+						r = /<span itemprop="addressLocality">([^<]+)<\/span>/.exec(rs);
+						if (r) {
+							document.getElementById('City').value = __js_clean_html_str(r[1]).trim();
+						} else {
+							document.getElementById('City').value = 'N/A';
+						}
+						//
+						r = /<span itemprop="postalCode">([^<]+)<\/span>/.exec(rs);
+						if (r) {
+							document.getElementById('Zip').value = __js_clean_html_str(r[1]).trim();
+						} else {
+							document.getElementById('Zip').value = 'N/A';
+						}
+						//
+						r = /<span itemprop="addressRegion">([^<]+)<\/span>/.exec(rs);
+						if (r) {
+							document.getElementById('State').value = __js_clean_html_str(r[1]).trim();
+						} else {
+							document.getElementById('State').value = 'N/A';
+						}
+						//
+						r = /<span class="biz-phone" itemprop="telephone">([^<]+)<\/span>/.exec(rs);
+						if (r) {
+							document.getElementById('Phone').value = __js_clean_html_str(r[1]).trim();
+						} else {
 							document.getElementById('Phone').value = 'N/A';
-						else
-							document.getElementById('Phone').value = r.phone;
-						
-						document.getElementById('StreetAddress').value = str_addr;
-						//document.getElementById('StreetAddress').value = r.formatted_address[0];
-						
-						document.getElementById('City').value = r.city;
-						
-						//var state;
-						//state = r.formatted_address[1].replace(/^[^,]{0,},/, '');
-						//state = r.formatted_city; // city, st
-						//console.log(state);
-						//state = /^([A-Z]{2}) ([\d\-]+)$/.exec(state.trim());
-						//if (!state)
-						//	sbm = false;
-						
-						document.getElementById('State').value = r.state;
-						document.getElementById('Zip').value = r.zip;
-						
-						r2 = /<span class="price-range pseudoLink"[^>]+>(\${0,})<\/span>/.exec(rs);
+						}
+						//
+						r = /<span class="offscreen">Business website<\/span>[\r\n\t\s]+<a[^>]*>([^<]+)<\/a>/.exec(rs);
+						if (r) {
+							document.getElementById('RestaurantURL').value = __js_clean_html_str(r[1]).trim();
+							if (r[1].indexOf('…') != -1)
+								sbm = false;
+						} else {
+							document.getElementById('RestaurantURL').value = 'N/A';
+						}
+						//
+						var r2 = /<span class="business-attribute price-range" itemprop="priceRange">(\${0,})<\/span>/.exec(rs);
 						if (!r2) {
+							//~ sbm = false;
+							//~ document.getElementById('Cost').value = 'N/A';
 							if (rs.indexOf('price-range') != -1)
 								sbm = false;
 							else
@@ -80183,15 +81361,34 @@ qatar,80
 								sbm = false;
 						}
 						
-						if (r.review_count)
-							document.getElementById('ReviewCount').value = r.review_count;
-						else
-							document.getElementById('ReviewCount').value = '0';
-							
 						console.log(sbm);
 						if (sbm) {
 							doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'LightGreen';
 						}
+						
+						//~ document.getElementById('StreetAddress').value = str_addr;
+						//~ //document.getElementById('StreetAddress').value = r.formatted_address[0];
+						//~ 
+						//~ document.getElementById('City').value = r.city;
+						//~ 
+						//~ //var state;
+						//~ //state = r.formatted_address[1].replace(/^[^,]{0,},/, '');
+						//~ //state = r.formatted_city; // city, st
+						//~ //console.log(state);
+						//~ //state = /^([A-Z]{2}) ([\d\-]+)$/.exec(state.trim());
+						//~ //if (!state)
+						//~ //	sbm = false;
+						//~ 
+						//~ document.getElementById('State').value = r.state;
+						//~ document.getElementById('Zip').value = r.zip;
+						//~ 
+						//~ r2 = /<span class="price-range pseudoLink"[^>]+>(\${0,})<\/span>/.exec(rs);
+						//~ if (r.review_count)
+							//~ document.getElementById('ReviewCount').value = r.review_count;
+						//~ else
+							//~ document.getElementById('ReviewCount').value = '0';
 					}
 				});
 					
@@ -97307,7 +98504,6 @@ qatar,80
 		
 		
 		//<h3>You do not have permission to view this directory or page using the credentials that you supplied.</h3>
-		
 		GM_xmlhttpRequest({ // init
 			method: "GET",
 			url: MT___host + '/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a)+'&catch_success='+encodeURIComponent('')+'&catch_include='+encodeURIComponent('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.'),
@@ -97327,18 +98523,7 @@ qatar,80
 						clearInterval(xint);
 					} else
 						return;
-						
-					/*	
-						
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: a,
-			onload: function(response) {
-				var rs = response.responseText;
 				
-				if (response.status != 200) {
-					return;
-				}*/
 				
 					var sbm = true;
 					
@@ -97418,7 +98603,7 @@ qatar,80
 					
 				}
 			});
-		}, 200);
+		}, 1200);
 	}
 		
 	//
@@ -97467,68 +98652,59 @@ qatar,80
 		d2.style.fontSize='12px';
 		d2.style.display='none';
 		
+		document.getElementsByName('1 - Tax Year')[0].value = '2013';
+		
+		// post to child
+		var ifr_intv = setInterval(function() {
+			d1.contentWindow.postMessage({task:'AMT__Newline_Financial_cookcountyclerk_com__payment', id: b}, "*");
+		}, 400);
+		
+		// watch for complete
+		//parent.postMessage({key: 'AMT__Newline_Financial_cookcountyclerk_com__payment__complete', data: complete}, "*");
+		window.addEventListener("message", AMT__Newline_Financial_cookcountyclerk_com__payment__complete, false);
+		function AMT__Newline_Financial_cookcountyclerk_com__payment__complete(event)
+		{
+			var v = event.data;
+			if (v.key != 'AMT__Newline_Financial_cookcountyclerk_com__payment__complete')
+				return;
+			
+			console.log(v.data);
+			if  (
+				v.data.hasOwnProperty('total') &&
+				v.data.hasOwnProperty('amt1') &&
+				v.data.hasOwnProperty('amt2')
+				)
+			{
+				document.getElementsByName('01 - 1st Installment Amount')[0].value = v.data.amt1;
+				document.getElementsByName('02 - 2nd Installment Amount')[0].value = v.data.amt2;
+				document.getElementsByName('03 - Total Balance Due')[0].value = v.data.total;
+				doSubmit();
+			}
+		}
+		
 		//set int
+		//cat newline_financial_12-27-115-062-0000 
+		//{"total":"3,937.61","amt1":"3,937.61","amt2":"0.00"}
+		var filename = 'newline_financial_' + b.replace(/[^\d\-]/g, '').substr(0, 20);
 		var xint = setInterval(function() {
 			GM_xmlhttpRequest({
 				method: "GET",
-				url: 'http://localhost/mturk/JordanAGross/JordanAGross.php?u2='+encodeURIComponent(b)+'&'+Math.random()*100,
+				url: MT___host + '/mturk/.cached/' + filename,
 				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (rs.trim() != '') {
+					if (response.status == 200) {
 						clearInterval(xint);
-					} else
-						return;
 						
-					// continue
-					
-					var sbm = true;
-					
-					rs = JSON.parse(rs);
-					
-					console.log(rs);
-					console.log(rs._1);
-					
-					for (var i in rs) {
-						if (!/^_\d$/.exec(i)) continue;
-						//if (rs[i].indexOf('-') != -1) sbm = false;
-						if (/^-?\$[\d,]+\.\d+$/.exec(rs[i])) {
-							rs[i] = rs[i].replace(/^(-?)\$/, '$1');
-						} else
-							sbm = false;
-						if (rs[i].indexOf('$') != -1) sbm = false;
+						var rs = response.responseText;
+						rs = JSON.parse(rs);
+						
+						document.getElementsByName('01 - 1st Installment Amount')[0].value = rs.amt1;
+						document.getElementsByName('02 - 2nd Installment Amount')[0].value = rs.amt2;
+						document.getElementsByName('03 - Total Balance Due')[0].value = rs.total;
+						//~ doSubmit();
 					}
-					
-					if  (
-						rs._1.trim() == '' ||
-						rs._2.trim() == '' ||
-						rs._3.trim() == ''
-						)
-					{
-						//console.log('x');
-						//return;
-						sbm = false;
-					}
-					
-					// continue
-					
-					
-					
-					//var q = document.getElementsByName('Q1Url');
-					
-					document.getElementsByName('01 - 1st Installment Amount')[0].value = rs._1;
-					document.getElementsByName('02 - 2nd Installment Amount')[0].value = rs._2;
-					document.getElementsByName('03 - Total Balance Due')[0].value = rs._3;
-					
-					
-					if (sbm) {
-						//doSubmit();
-					}
-					
-					
 				}
-			});
-		}, 80);
+			})
+		}, 1000);
 	}
 	
 	//
@@ -97938,10 +99114,13 @@ qatar,80
 							if (!blank && sbm) {
 								//~ doSubmit();
 								//~ console.log('SUBMIT');
-								if (document.getElementsByName('1 - Other Years')[0].value == '')
-								{
-									doSubmit();
-								}
+								doSubmit();
+								
+								// DEBUG OVERFLOW GOES HERE
+								//~ if (document.getElementsByName('1 - Other Years')[0].value == '')
+								//~ {
+									//~ doSubmit();
+								//~ }
 							} else if (blank && !found) { // none in 2007-2011
 								
 								// add in all of the "invalid"
@@ -107984,7 +109163,8 @@ function mturk_load()
 
 		
 		// TRY show jobs
-		MT___page1_show_jobs(); // findhits?match=false
+		//~ MT___page1_show_jobs(); // findhits?match=false
+		new AMT___core_factory().amt_home_show_tasks();
 		
 		// Only run on these pages!
 		/**
@@ -108209,6 +109389,7 @@ function mturk_load()
 		
 		AMT__Global_Vars.isTopWindow = true;
 		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.initializeTabId();
 		//AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
 		

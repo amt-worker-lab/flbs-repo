@@ -413,52 +413,65 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		AMT___play_single_sound(request.fileName);
 	}
 	
+	if(request.getTabId) {
+		sendResponse({id:sender.tab.id});
+	}
+	
 	/**
 	 * request.nextTab
 	 */
 	if(request.nextTab)
 	{
-		chrome.tabs.query({active:true}, function(tab) {
-			chrome.tabs.getAllInWindow(tab.windowId, function(allTabs) {
+		console.log('Here1');
+		console.log(sender);
+			chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
+				
+				console.log('Here2');
+				console.log(sender);
+				var currentIndex = -1;
 				for(var i = 0; i < allTabs.length; i++)
 				{
-					if(allTabs[i].active)
+					if(allTabs[i].active && allTabs[i].id == sender.tab.id)
 					{
 						var currentIndex = allTabs[i].index;
 						break;
 					}
-				}			
-				console.log(currentIndex);
+				}
+				if(currentIndex == -1) {
+					//We left the tab that we wanted to switch out of
+					//Consider processing option's object even though we will not switch
+				}
+				else {
+					console.log(currentIndex);
 				
-				console.log(currentIndex);
-				var nextTab =  false;
-				for(var i = 0; i < allTabs.length; i++)
-				{
-					if( (currentIndex + 1) == allTabs[i].index)
+					console.log(currentIndex);
+					var nextTab =  false;
+					for(var i = 0; i < allTabs.length; i++)
 					{
-						var nextTab = allTabs[i].id;
+						if( (currentIndex + 1) == allTabs[i].index)
+						{
+							var nextTab = allTabs[i].id;
+						}
 					}
+					if(!nextTab)
+					{
+						nextTab = allTabs[0].id;
+					}
+					
+					chrome.tabs.update(nextTab, {active: true}, function() {
+						//~ alert('here1');
+						switch(request.option) {
+							case 'tellNextPageThatItIsOkayToRun': 
+							//~ alert('here2');
+							chrome.tabs.sendMessage(nextTab, {itsOkayToRun: true}, function(response) {
+								//squelch response
+							});
+							break;
+						}				
+					});
 				}
-				if(!nextTab)
-				{
-					nextTab = allTabs[0].id;
-				}
-				
-				chrome.tabs.update(nextTab, {active: true}, function() {
-					//~ alert('here1');
-					switch(request.option) {
-						case 'tellNextPageThatItIsOkayToRun': 
-						//~ alert('here2');
-						chrome.tabs.sendMessage(nextTab, {itsOkayToRun: true}, function(response) {
-							//squelch response
-						});
-						break;
-					}				
-				});
-
 				
 			});
-		});
 	}
 	
 	/**

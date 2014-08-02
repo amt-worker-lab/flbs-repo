@@ -149,6 +149,17 @@ AMT__Global_Vars.initializeHitId = function () {
 	}
 }
 
+AMT__Global_Vars.initializeTabId = function() {
+		chrome.extension.sendRequest(
+		{
+			getTabId: true
+		}, 
+		function(response) {
+				AMT__Global_Vars.tabId = response.id;
+			}
+		);
+}
+
 //top_window preview href
 //https://www.mturk.com/mturk/preview?groupId=20NENHMVHVKCNQ47ZIY4U79KXWE42F&requesterId=A1ZFY5DB22KCK9&hitId=2SIHFL42J1LY9YEDHND0TGFKI6Q2NR&signature=YgugC%2F6Q4KQwhUu8ydrSsjUYyg0%3D&externalHit=true&canAccept=true
 
@@ -172,6 +183,13 @@ AMT__Global_Vars.initializeHitId = function () {
  * 
  * */
 
+//Record Returning
+/**
+ * 
+ * **/
+function recordReturn() {
+	localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
+}
 
 /**
  * Tab Switching 
@@ -831,6 +849,41 @@ function FindObject(recordName,matchString, timeCutOff) {
 //~ }
 
 /**
+ * String Prototypes
+ * 
+ */
+String.prototype.stateAbbrToFull = function() {
+	
+	//~ console.log(this);
+	//~ console.log(this[0]);
+	
+	
+	// BUILD STR
+	var str = '';
+	for (var i in this) {
+		//~ console.log(this[i]);
+		if (i == 'length' || this[i].length != 1) {
+			break;
+		}
+		str += this[i];
+	}
+	
+	str = str.toLowerCase().trim();
+	
+	console.log(str);
+	
+	for (var i in MT___states) {
+		if (i.toLowerCase() == str) {
+			return MT___states[i];
+			//~ break;
+		}
+	}
+	
+	// None found?
+	return str.toUpperCase();
+}
+
+/**
  * AMT factories
  * 
  * AMT___events_factory
@@ -841,10 +894,14 @@ function FindObject(recordName,matchString, timeCutOff) {
 **/
 
 /**
- * AMT___events_factory
+ * AMT___core_factory
  *
- * @
- * @   
+ * 
+ * @func nextTab
+ * @func nextWindow
+ * @func top_window__addEventListener_iframe
+ * @func iframe2parent__postMessage
+ * @func amt_home_show_tasks
  */
 function AMT___core_factory() {
 
@@ -2262,10 +2319,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		// key -> value
 		var kw = options_object.keyword_and_index_array;
 		
-		//~ console.log(options_object.hasOwnProperty('context_len'));
-		//~ console.log(options_object.hasOwnProperty('context_len'));
-		//~ var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len.replace(/[^\d]/g, '') : 6;
-		
 		var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len : 6;
 		
 		console.log(kw);
@@ -2357,13 +2410,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		},
 		onload: function (response) {
 			var rs = response.responseText;
-			//~ console.log(err_TimeWarner.i);
-			//~ console.log(response.status);
-			//~ console.log(rs.indexOf(err_TimeWarner.i));
-			//~ console.log(response.finalUrl);
-			//~ if (response.finalUrl == 'http://www.serviceplumbingandassistant.com/') {
-				//~ console.log(rs);
-			//~ }
 			
 			// not 200 response.status
 			if (response.status > 399) { // 400 - 599
@@ -4429,173 +4475,199 @@ minimator = function(x,y,z) {
 
 
 /**
- * Function MT___page1_show_jobs_play_audio
- */
-function MT___page1_show_jobs_play_audio() {
-	if (document.getElementById('MT___page1_show_jobs_play_audio'))
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	if (document.getElementById('MT___page1_show_jobs_play_audio'))
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	
-	//MT___AUDIO_SNIPPET
-	//b64_audio =
-							
-	// play alert
-	//i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
-	var c = document.createElement('audio');
-	c.setAttribute('style','position:fixed;top:30px;left:0px;width:80px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;');
-	c.setAttribute('id','MT___page1_show_jobs_play_audio');
-	c.setAttribute('controls','');
-	c.setAttribute('src',MT___AUDIO_SNIPPET);
-	document.body.appendChild(c);
-	c = document.getElementById('MT___page1_show_jobs_play_audio');
-	c.play();
-	// remove after 10 seconds
-	setTimeout(function() {
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	}, 10000);
-}
-/**
  * Page 1 mturk.com MT___page1_show_jobs
+ * 
+ * Move into core_factory, July 30 2014.
+ * AMT___core_factory.prototype. = function() {
  */
-function MT___page1_show_jobs() {
+AMT___core_factory.prototype.amt_home_show_tasks = function() {
+	
+	// OLD
+	// JUL30 2014
+	//~ function MT___page1_show_jobs() {
+	
+	
+	// Check if the page is currently at /mturk/findhits
+	//
+	//
 	var s = location.href;
-	var u = /https:\/\/www.mturk.com\/mturk\/findhits\?match=false/;
+	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
 	
-	var ignore_requesters__ids = [
-		'A3A0N4OPTWRYPD' //Research Project
+	// Ignored
+	//
+	//
+	var ignore_requesters__ids = {
+		'A3A0N4OPTWRYPD':true //Research Project
+	};
+	var ignore_requesters = {
+		'CrowdFlower':true,
+		'CrowdSource':true,
+		'Classify AdImages':true,
+		'ClariTrans':true,
+		'RelevanceQuest':true,
+		'AMTSpeech':true,
+		'Amazon Requester Inc. (Product Ads)':true,
+		'Amazon Requester Inc.':true,
+		'Chris Callison-Burch':true,
+		'User453':true,
+		'ProductRnR':true,
+		'WSOVC COM':true,
+		'rohzit0d':true,
+		'Cardcow':true,
+		'Redwood':true,
+		'Craft Listings':true,
+		'Stanford Language and Cognition Lab':true,
+		'Brandeis NLP':true,
+		'Streema':true,
+		'Fluffy Cloud':true,
+		'Intelius Data Systems':true,
+		'Johnny Wong':true,
+		'Oscar Smith':true,
+		'Sara Rosenthal':true,
+		'Comdata IT Fuel Tax':true,
+		'Venue Quality':true,
+		'Product Listings':true,
+		'Amazon Requester Inc - browse classification':true,
+		'Classify This':true,
+		'Tagasauris':true,
+		'chinese.mturk':true,
+		'Quality Website Reviews':true,
+		'Phillip Atiba Goff':true,
+		'Catalog Choice':true,
+		'WMT Admin':true,
+		'Sebastian Darr':true,
+		'Coder of Web Apps':true,
+		'Smartsheet.com Clients':true,
+		'A-Team':true,
+		'MASC Data':true,
+		'Ad Tagger':true,
+		'Dmitry Kachaev':true,
+		'Nic Lowe':true,
+		'Nascent Visions Corp':true,
+		'RI Services':true,
+		'techlist':true,
+		'Benjamin C Lok':true,
+		'Readabl':true,
+		'NetMSi':true,
+		'Todd Dickerson':true,
+		'Jimmy Dragon':true,
+		'Jon Brelig':true,
+		//~ REMOVED JULY 30 2014
+		//~ 'Taste of the World':true,
+		'SET Master Account':true,
+		'Ignite Media Solutions':true,
+		'The Public Group':true,
+		'Turk Experiment':true,
+		'Crowdsurf Support':true,
+		'Social Media Research':true,
+		'11223344':true,
+		'A Global Media Analytics':true,
+		'411Richmond':true,
+		'Visual Genome':true,
+		'p9r':true,
+		'mirador-tech':true
+	};
+	
+	
+	// OLD
+	//~ if (u.exec(s))
+	//~ {
+	
+	
+	// OLD styles
+	GM_addStyle('.cont {height:16px;overflow:auto;}');
+	GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
+	GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
+	GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
+	GM_addStyle('.cont:hover {background-color: #e9d8e9}');
+	GM_addStyle('.cont_link {text-decoration:none;color:black;}');
+	GM_addStyle('.cont_link:hover {font-weight:bold;}');
+	
+	
+	GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
+	GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
+	GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
+	//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
+	//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
+	
+	// hosts
+	var MT___page1_hosts = [
+		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
+		'http://www.sjshpack.com/AMT/g.php'
 	];
-	var ignore_requesters = [
-		'CrowdFlower',
-		'CrowdSource',
-		'Classify AdImages',
-		'ClariTrans',
-		'RelevanceQuest',
-		'AMTSpeech',
-		'Amazon Requester Inc. (Product Ads)',
-		'Amazon Requester Inc.',
-		'Chris Callison-Burch',
-		'User453',
-		'ProductRnR',
-		'WSOVC COM',
-		'rohzit0d',
-		'Cardcow',
-		'Redwood',
-		'Craft Listings',
-		'Stanford Language and Cognition Lab',
-		'Brandeis NLP',
-		'Streema',
-		'Fluffy Cloud',
-		'Intelius Data Systems',
-		'Johnny Wong',
-		'Oscar Smith',
-		'Sara Rosenthal',
-		'Comdata IT Fuel Tax',
-		'Venue Quality',
-		'Product Listings',
-		'Amazon Requester Inc - browse classification',
-		'Classify This',
-		'Tagasauris',
-		'chinese.mturk',
-		'Quality Website Reviews',
-		'Phillip Atiba Goff',
-		'Catalog Choice',
-		'WMT Admin',
-		'Sebastian Darr',
-		'Coder of Web Apps',
-		'Smartsheet.com Clients',
-		'A-Team',
-		'MASC Data',
-		'Ad Tagger',
-		'Dmitry Kachaev',
-		'Nic Lowe',
-		'Nascent Visions Corp',
-		'RI Services',
-		'techlist',
-		'Benjamin C Lok',
-		'Readabl',
-		'NetMSi',
-		'Todd Dickerson',
-		'Jimmy Dragon',
-		'Jon Brelig',
-		'Taste of the World',
-		'SET Master Account',
-		'Ignite Media Solutions',
-		'The Public Group',
-		'Turk Experiment',
-		'Crowdsurf Support',
-		'Social Media Research',
-		'11223344',
-		'A Global Media Analytics',
-		'411Richmond',
-		'Visual Genome',
-		'p9r',
-		'mirador-tech'
-	];
-	if (u.exec(s))
-	{
-		// hosts
-		var MT___page1_hosts = [
-			MT___host+'/mturk/.scripts/AMT_Batch/g.php',
-			'http://www.sjshpack.com/AMT/g.php'
-		];
-		var MT___page1_host = MT___page1_hosts[0];
-		var MT___page1_host_num = 0;
-		// last update
-		last = 0;
-		//
-		var current_db_ids = [];
+	var MT___page1_host = MT___page1_hosts[0];
+	var MT___page1_host_num = 0;
+	
+	//~ // last update
+	//~ var last = 0;
+	
+	// tasks_obj
+	//tasks_obj.table1_row_ids: {} db_id:true
+	//tasks_obj.table2_row_ids: {} db_id:true
+	//tasks_obj.table_rows:     {} db_id:row _ element
+	tasks_obj = {
+		current_db_ids: {},
+		last_update: 0,
+		table1_row_ids:	{},	// #
+		table2_row_ids:	{},	// #
+		table_rows: 	{},	// el
 		
-		/**
-		 * Function date_format()
-		 * 
-		 */
-		function MT___page1_date_format(n) {
-						
-			var n = n*1000, // in ms
-				nt, // current time
-				nx,
-				nx_milliseconds;
-			nt = new Date();
-			nt = nt.getTime(); // linux epoch ms
-			nx = (nt - n) / 1000; // seconds difference (current - job)
-			
-			// rounding: 1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
-			// display: 6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
-			
-			if (nx < 3600) { // 1 hr
-				if (nt < n) nt = n; // is less than zero?
-				nx_milliseconds = new Date(nt - n);
-				// minutes
-				display_date = nx_milliseconds.getUTCMinutes() + 'm';
-			} else if (nx < 86400) { // 1 day
-				if (nt < n) nt = n; // is less than zero?
-				nx_milliseconds = new Date(nt - n);
-				// hours
-				display_date = nx_milliseconds.getUTCHours();
-				// minutes
-				// rounds to int.
-				// 30/60 = .5 * 10 = 5
-				// 50/60 = .83* 10 = 8.3 
-				var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
-				display_date = display_date + '.' + min + 'h';
-			} else if (nx < 86400*7) {
-				// days
-				display_date = Math.round( (nx/86400) * 10 )/10 +'d';
-			} else if (nx < 86400*365.2425) {
-				// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
-				display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
-			} else {
-				// years
-				display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
-			}
-			return display_date;
-		}
+		div_container: null,
+		table1: null,
+		table2: null,
 		
-		//
-		// Results from db
-		//
+		isFirstRun: true	// boolean: first pull from database
+	}
+	
+	// Timers intervals
+	var xint, xint2;
+	
+	// Container
+	tasks_obj.div_container = document.createElement('div');
+	tasks_obj.div_container.setAttribute('style',
+		'position:absolute;'+
+		'top:40px;'+
+		'width:98%;'+
+		'background-color:none;'+
+		'margin:0 1%;'
+	);
+	document.body.appendChild(tasks_obj.div_container);
+	
+	// Tables
+	// Table 1 = jobs (minus ignored)
+	// Table 2 = jobs ignored
+	// ...
+	tasks_obj.table1 = document.createElement('table');
+	tasks_obj.table1.setAttribute('style',
+		'width:100%'
+	);
+	tasks_obj.table1.className = 'amt_show_tasks_table';
+	tasks_obj.div_container.appendChild(tasks_obj.table1);
+	// ...
+	tasks_obj.table2 = document.createElement('table');
+	tasks_obj.table2.setAttribute('style',
+		'width:100%'
+	);
+	tasks_obj.table2.className = 'amt_show_tasks_table';
+	tasks_obj.div_container.appendChild(tasks_obj.table2);
+	
+	
+	
+	// INIT !
+	//~ control_buttons();
+	MT___page1_async_last_update();
+	interval_update_timers();
+	
+	
+	/**
+	 * function interval_update_timers()
+	 * 
+	 * Set interval for time since posted timers.
+	 * And set interval for pause timer.
+	 */
+	function interval_update_timers() {
+		
 		var d;
 		d = document.createElement('input');
 		d.setAttribute('id','input__reload');
@@ -4636,14 +4708,15 @@ function MT___page1_show_jobs() {
 			document.body.removeChild(this);
 		}
 		
-		// Set page reload
+		// Set page reload vars
 		dx.value = 'Pause 20';
 		dx.onclick = function() {
 			clearInterval(xint);
 			clearInterval(xint2);
 			dx.value = 'Press reload to continue...';
 		}
-		var xint = setInterval(function() {
+		
+		xint = setInterval(function() {
 			var x = /Pause ([\d-]+)/.exec(dx.value);
 			if (!x) return;
 			x = x[1]*1;
@@ -4655,21 +4728,11 @@ function MT___page1_show_jobs() {
 			}
 			dx.value = 'Pause '+x;
 		}, 1000);
-		
-		// styles
-		GM_addStyle('.cont {height:16px;overflow:auto;}');
-		GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
-		GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
-		GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
-		GM_addStyle('.cont:hover {background-color: #e9d8e9}');
-		GM_addStyle('.cont_link {text-decoration:none;color:black;}');
-		GM_addStyle('.cont_link:hover {font-weight:bold;}');
-		// get started
-		MT___page1_async_last_update();
-		
-		// set interval for time since posted timers
-		var xint2 = setInterval(function() {
-			var x = document.getElementsByClassName('cont');
+		xint2 = setInterval(function() {
+			//~ var x = document.getElementsByClassName('cont');
+			
+			var x = tasks_obj.table_rows;
+			
 			for (var i in x) {
 				if (!x[i]) continue;
 				if (!x[i].innerHTML) continue;
@@ -4679,333 +4742,718 @@ function MT___page1_show_jobs() {
 				if (!y[0]) continue;
 				if (!y[0].value) continue;
 
-				y = MT___page1_date_format(y[0].value);
+				y = date_format(y[0].value);
 				
 				var z = x[i].getElementsByClassName('mt__timer');
 				if (!z) continue;
 				if (!z[0]) continue;
-				if (!z[0].innerHTML) continue;
+				if (!z[0].innerText) continue;
 				
-				z[0].innerHTML = y;
+				z[0].innerText = y;
 			}
 		}, 4000);
+	}
+	
+	/**
+	 * Function date_format()
+	 * 
+	 */
+	function date_format(n) {
+	
+		// OLD
+		//~ function MT___page1_date_format(n) {
+					
+		var n = n*1000, // in ms
+			nt, // current time
+			nx,
+			nx_milliseconds;
+		nt = new Date();
+		nt = nt.getTime(); // linux epoch ms
+		nx = (nt - n) / 1000; // seconds difference (current - job)
 		
-		function MT___page1_async_last_update() {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___page1_host + '?last_update=&' + Math.random()*10000,
-				onload: function (response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						if (MT___page1_host_num === 0) {
-							MT___page1_host = MT___page1_hosts[1];
-							MT___page1_host_num = 1;
-						} else {
-							MT___page1_host = MT___page1_hosts[0];
-							MT___page1_host_num = 0;
-						}
-						
-						setTimeout(function(){ MT___page1_async_last_update(); }, 4000);
-						return;
-					}
-					
-					rs = JSON.parse(rs); // h, j
-					if (rs[0].h != last) {
-						last = rs[0].h;
-						MT___page1_async(); // run full
-					}
-				}
-			});
+		// rounding: 1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
+		// display: 6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+		
+		if (nx < 3600) { // 1 hr
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// minutes
+			display_date = nx_milliseconds.getUTCMinutes() + 'm';
+		} else if (nx < 86400) { // 1 day
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// hours
+			display_date = nx_milliseconds.getUTCHours();
+			// minutes
+			// rounds to int.
+			// 30/60 = .5 * 10 = 5
+			// 50/60 = .83* 10 = 8.3 
+			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
+			display_date = display_date + '.' + min + 'h';
+		} else if (nx < 86400*7) {
+			// days
+			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
+		} else if (nx < 86400*365.2425) {
+			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
+			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
+		} else {
+			// years
+			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
 		}
-		function MT___page1_async() {
+		return display_date;
+	}
+	
+	/**
+	 * function MT___page1_async_last_update()
+	 */
+	function MT___page1_async_last_update() {
+		// 
+		console.log('Checking for new');
+		
+		//xhr
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___page1_host + '?last_update=&' + Math.random()*10000,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				console.log('response.status:' + response.status);
+				if (response.status != 200) {
+					if (MT___page1_host_num === 0) {
+						MT___page1_host = MT___page1_hosts[1];
+						MT___page1_host_num = 1;
+					} else {
+						MT___page1_host = MT___page1_hosts[0];
+						MT___page1_host_num = 0;
+					}
+					
+					setTimeout(function(){
+						MT___page1_async_last_update();
+					}, 4000);
+					return;
+				}
+				
+				/**
+				 * Response is object
+					{
+					h: int, (hits available updated, integer)
+					j: int	(jobs updated, integer)?
+					}
+				 * 
+				 * @var tasks_obj.last_update
+				 * 
+				 */
+				rs = JSON.parse(rs);
+				//
+				console.log(tasks_obj.last_update);
+				console.log(rs[0].h);
+				//
+				if (rs[0].h != tasks_obj.last_update) {
+					// 
+					console.log('last_update != database. Begin db full.');
+					//
+					tasks_obj.last_update = rs[0].h;
+					MT___page1_async(); // run full
+				}
+			}
+		});
+	}
+	
+	/**
+	 * function has_new_alertable()
+	 * 
+	 * @return true/false
+	 */
+	function has_new_alertable(rs) {
+		// Are there new jobs?
+		// Is ordered by time_posted DESC.
+		// @var new_job
+		var new_job = false;
+		for (var i = 0; i < rs[0].length; i++)
+		{
 			
-			// load
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___page1_host + '?show_all=&' + Math.random()*10000,
-				onload: function (response) {
+			var db_id = rs[0][i];
+			
+			if (tasks_obj.current_db_ids.hasOwnProperty(db_id)) {
+				continue; // Skip
+			}
+			
+			// on page number, hits avail, !ignore_
+			if  (
+				rs[1][i] <  20 &&
+				rs[4][i] >= 80 &&
+				!ignore_requesters.hasOwnProperty(rs[3][i]) &&
+				!ignore_requesters__ids.hasOwnProperty(rs[6][i])
+				)
+			{
+				new_job = true;
+				break; // END HERE
+			}
+		}
+		// Alert
+		if (new_job) {
+			play_audio();
+		}
+		// Reset the current_db_ids
+		tasks_obj.current_db_ids = {};
+		for (var i = 0; i < rs[0].length; i++)
+		{
+			
+			var db_id = rs[0][i];
+			tasks_obj.current_db_ids[db_id] = true;
+			
+		}
+		
+		//~ if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
+			//~ continue;//break;
+		//~ }
+		
+		//~ !__js_inarray(ignore_requesters,		rs[3][i]) &&
+		//~ !__js_inarray(ignore_requesters__ids,	rs[6][i])
+		
+		//~ current_db_ids.push(rs[0][i]);
+		//~ 
+		//~ if (new_job) {
+			//~ continue;
+		//~ }
+		
+		//~ OLD
+		//~ MT___page1_show_jobs_play_audio();
+		
+		//~ current_db_ids.push(rs[0][i]);
+	}
+	
+	/**
+	 * function makeRow()
+	 * 
+	 * @param row
+	 * @param isIgnored
+	 */
+	function makeRow(row, isIgnored) {
 					
-					var rs = response.responseText;
+		// Set globals!
+		if (!isIgnored)
+			tasks_obj.table1_row_ids[row.db_id] = true;
+		else
+			tasks_obj.table2_row_ids[row.db_id] = true;
+		
+		// tr
+		//
+		//
+		
+		var tr = document.createElement('tr');
+		tr.setAttribute('style',
+			''
+		);
+		//~ 
+		//~ 
+		//~ tr.className = 'show_tasks_table_row';
+		
+		// Add to global!
+		tasks_obj.table_rows[row.db_id] = tr;
+		
+		//~ XX
+		//~ tasks_obj.table_rows[tr] = true;
+		
+		// tds
+		//
+		//
+		
+		// id
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:8px;border-right:1px solid #a4a4a4;'
+		);
+		td.innerText = row.db_id;
+		tr.appendChild(td);
+		
+		// title
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:60%;'
+		);
+		tr.appendChild(td);
+		if (row.group_id != '') {
+			var a_gid		= document.createElement('a');
+			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
+			a_gid			.setAttribute('class','cont_link');
+			a_gid.target	= '_blank';
+			a_gid.innerText = '▶' + __js_clean_html_str(row.title); // "Black right-pointing triangle"
+		} else
+			var a_gid		= document.createTextNode(__js_clean_html_str(row.title));
+		td.appendChild(a_gid);
+		
+		// name
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:22%;'
+		);
+		tr.appendChild(td);
+		if (row.requester_id != '') {
+			var a_rid		= document.createElement('a');
+			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
+			a_rid			.setAttribute('class','cont_link');
+			a_rid.target	= '_blank';
+			a_rid.innerText = __js_clean_html_str(row.requester_name);
+		} else
+			var a_rid		= document.createTextNode(__js_clean_html_str(row.requester_name));
+		td.appendChild(a_rid);
+		
+		// available
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:8%;'
+		);
+		td.innerText = row.hits_available;
+		tr.appendChild(td);
+		
+		// Set row property .hits_available (td element) here.
+		tr.hits_available = td;
+		
+		// tsp
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:8%;'//+'max-width:10px;'
+		);
+		tr.appendChild(td);
+		// hidden
+		var tsp_input = document.createElement('input');
+		tsp_input.setAttribute('type', 'hidden');
+		tsp_input.value = row.time_since_posted;
+		td.appendChild(tsp_input);
+		// createTextNode
+		var tsp_span = document.createElement('span');
+		var x = date_format(row.time_since_posted);
+		tsp_span.className = 'mt__timer';
+		tsp_span.innerText = x;
+		td.appendChild(tsp_span);
+		
+		
+		
+		
+		
+		//~ div_contain	.setAttribute('style','width:100%;');
+		//~ div_gid		.setAttribute('style','float:left;width:60%;');
+		//~ div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
+		//~ div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
+		//~ div_date	.setAttribute('style','width:8%;overflow:hidden;');
+		
+		//~ inp_tsp		.setAttribute('type', 'hidden');
+		
+		//~ div_contain	.setAttribute('class', 'cont');
+		//~ div_date	.setAttribute('class', 'mt__timer');
+		
+		//~ inp_tsp		.value = rs[5][i];
+		
+		//~ d = date_format(rs[3][i]);
+		
+		return tr;
+	}
+	
+	/**
+	 * function MT___page1_async()
+	 */
+	function MT___page1_async() {
+		
+		// load
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___page1_host + '?show_all=&' + Math.random()*10000,
+			onload: function (response) {
+				
+				var rs = response.responseText;
+				
+				// If response is not 200
+				// then try another host. Other
+				// hosts would be sjshpack.com.
+				// Etc.
+				if (response.status != 200) {
+					if (MT___page1_host_num === 0) {
+						MT___page1_host = MT___page1_hosts[1];
+						MT___page1_host_num = 1;
+					} else {
+						MT___page1_host = MT___page1_hosts[0];
+						MT___page1_host_num = 0;
+					}
+					return;
+				}
+				
+				// Parse
+				rs = JSON.parse(rs);
+				
+				
+				
+				// THIS IS WHERE THE TABLE WILL BE.
+				// FOR EACH RETURNED JOB IN "rs",
+				// CHECK FOR MATCHING JOB IN TABLE.
+				// The match is made by database ID
+				// of job. If a match is made then
+				// only UPDATE the row in the table.
+				// Else if there is no match, add
+				// a row to the table.
+				
+				// Has new alertable?
+				// Also updates current_db_ids.
+				has_new_alertable(rs);
+				
+				// First loop through all table rows and check 
+				// against current_db_ids to ensure that all rows
+				// in table are still active.
+				
+				for (var db_id in tasks_obj.table_rows) {
 					
-					if (response.status != 200) {
-						if (MT___page1_host_num === 0) {
-							MT___page1_host = MT___page1_hosts[1];
-							MT___page1_host_num = 1;
-						} else {
-							MT___page1_host = MT___page1_hosts[0];
-							MT___page1_host_num = 0;
-						}
-						return;
+					var row = tasks_obj.table_rows[db_id];
+					//~ var db_id = row.db_id;
+					
+					if (!tasks_obj.current_db_ids.hasOwnProperty(db_id))
+					{ // remove
+						row.parentNode.removeChild(row);
+						
+						delete tasks_obj.table1_row_ids[db_id]; // exists?
+						delete tasks_obj.table2_row_ids[db_id]; // exists?
+						
+						delete tasks_obj.table_rows[db_id];
+					}
+					else
+					{ //
+						
 					}
 					
-					// parse JSON
-					rs = JSON.parse(rs);
-					//console.log(rs);
+				}
+				
+				// Loop through response object and check if table elements
+				// contain this task. If so then update table entry.
+				// Else if does not exist in either table, determine which
+				// table it ought to go in and - put 'er there!
+				
+				/**
+				 *
+					rs
+					0 job DB id
+					1 on_page_number
+					2 job title
+					3 requester name
+					4 HITs avail.
+					5 time since posted
+					6 requesterid
+					7 groupid
+				*/
+				var d = {
+					db_id: '',
+					on_page_number: '',
+					title: '',
+					requester_name: '',
+					hits_available: '',
+					time_since_posted: '',
+					requester_id: '',
+					group_id: ''
+				};
+				for (var i = 0; i < rs[0].length; i++) {
+				//~ for (var i in rs) {
 					
-					// remove old
-					var x;
-					x = document.getElementById('div__main');
-					if (x) {
-						document.body.removeChild(x);
-					}
+					d.db_id				= rs[0][i];
+					d.on_page_number	= rs[1][i];
+					d.title				= rs[2][i];
+					d.requester_name	= rs[3][i];
+					d.hits_available	= rs[4][i];
+					d.time_since_posted	= rs[5][i];
+					d.requester_id		= rs[6][i];
+					d.group_id			= rs[7][i];
 					
-					var div;
-					var div_main;
-					//
-					div_main=document.createElement('div');
-					div_main.setAttribute('id','div__main');
-					div_main.setAttribute('style',
-							'position:absolute;'+
-							'top:40px;'+
-							'width:98%;'+
-							'background-color:none;'
-					);
-					//
-					div=document.createElement('div');
-					div.setAttribute('id','div__reload');
-					div.setAttribute('style',
-							'margin:0 auto;'+
-							'width:98%;'+
-							'max-width:1000px;'+
-							'height:500px;'+
-							'overflow:auto;'+
-							'background-color:#fdfdfd;'+
-							'border:4px solid #d2d2d2;'//+
-							//':;'+
-					);
-					div_main.appendChild(div);
-					//
-					div=document.createElement('div');
-					div.setAttribute('id','div__reload2');
-					div.setAttribute('style',
-							'margin:0 auto;'+
-							'width:100%;'+
-							'max-width:1000px;'+
-							'height:500px;'+
-							'overflow:auto;'+
-							'background-color:#fdfdfd;'+
-							'border:4px solid #d2d2d2;'//+
-							//':;'+
-					);
-					div_main.appendChild(div);
-					
-					document.body.appendChild(div_main);
-					var div__reload=document.getElementById('div__reload');
-					var div__reload2=document.getElementById('div__reload2');
-					
-					//~ div__reload2.style.position		= 'absolute';
-					//~ div__reload2.style.top			= '540px';
-					//~ div__reload2.style.left			= '50%';
-					//~ div__reload2.style.marginLeft = '-48%';
-					//~ div__reload2.style.width	   = '96%';
-					//~ div__reload2.style.height		= '500px';
-					//~ div__reload2.style.overflow		= 'auto';
-					//~ div__reload2.style.backgroundColor = 'white';
-					//~ div__reload2.style.border = '4px solid #d2d2d2';
-					//~ //div__reload2.style.marginLeft	= '-450px';
-					//~ 'position:absolute;'+
-					//~ 'top:40px;'+
-					//~ 'left:50%;'+
-					//~ 'transform: translate(-50%);'+
-					//~ //'margin:0 auto;'+
-					//~ 'width:100%;'+
-					//~ 'max-width:1000px;'+
-					//~ 'height:500px;'+
-					//~ 'overflow:auto;'+
-					//~ div__reload.style.position = 'absolute';
-					//~ div__reload.style.top	   = '30px';
-					//~ div__reload.style.left		= '50%';
-					//~ div__reload.style.width		= '100%';
-					//~ div__reload.style.maxWidth	= '1000px';
-					//~ div__reload.style.height	= '500px';
-					//~ div__reload.style.overflow = 'auto';
-					//~ div__reload.style.backgroundColor = 'white';
-					//~ div__reload.style.border = '4px solid #d2d2d2';
-					//~ div__reload.style.transform = 'translate(-50%)';
-					//
-					//div__reload2.style.width		= '900px';
-					//~ 
-					//~ div__reload.addEventListener('load', function() {
-						//~ var x = this.getBoundingClientRect();
-						//~ 
-						//~ this.style.marginLeft = x.left / 2 * -1;
-					//~ }, false);
-					
-					
-					/**
-					 *
-					//rs
-					//0 job DB id
-					//1 on_page_number
-					//2 job title
-					//3 requester name
-					//4 # avail.
-					//5 time since posted
-					//6 requesterid
-					//7 groupid
-					*/
-					
-					// are there new jobs?
-					// is ordered by time_posted DESC.
-					var new_job = false;
-					for (var i = 0; i < rs[0].length; i++)
+					// UPDATE THIS ROW!
+					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
 					{
-						if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
-							continue;//break;
-						}
-							
-						current_db_ids.push(rs[0][i]);
-						if (new_job) continue;
-						
-						// on page number, hits avail, !ignore_
-						if  (
-							rs[1][i] < 20 &&
-							rs[4][i] >= 80 &&
-							!__js_inarray(ignore_requesters,		rs[3][i]) &&
-							!__js_inarray(ignore_requesters__ids,	rs[6][i])
-							)
-						{
-							new_job = true;
-						}
-					}
-					// alert
-					if (new_job) {
-						MT___page1_show_jobs_play_audio();
-					}
-					// reset the current_db_ids
-					for (var i = 0; i < rs[0].length; i++)
-					{
-						current_db_ids.push(rs[0][i]);
+						var row = tasks_obj.table_rows[d.db_id]
+						row.hits_available.innerText = d.hits_available;
+						continue;
 					}
 					
-					// output
-					var div_contain;
-					var div_gid;
-					var div_rid;
-					var div_avl;
-					var div_date;
-					var inp_tsp;
-					var a_gid;
-					var a_rid;
-					var d;
-					for (var i = 0; i < rs[0].length; i++)
-					{	
-						div_contain	= document.createElement('div');
-						div_gid		= document.createElement('div');
-						div_rid		= document.createElement('div');
-						div_avl		= document.createElement('div');
-						div_date	= document.createElement('div');
+					// Here?
+					// Create a new row.
+					// And ... Append or insert?
+					// If global tasks_obj.firstRun is true,
+					// (firstRun == true) then for all rows
+					// treat them as appendChild. If firstRun
+					// is false then treat all rows as insertBefore.
+					
+					if  (
+						!ignore_requesters.hasOwnProperty(d.requester_name) &&
+						!ignore_requesters__ids.hasOwnProperty(d.requester_id)
+						)
+					{ // regular
 						
-						inp_tsp		= document.createElement('input');
-						
-						if (rs[7][i] != '') {
-							a_gid			= document.createElement('a');
-							a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
-							a_gid			.setAttribute('class','cont_link');
-							a_gid.target	= '_blank';
-							a_gid.innerText = __js_clean_html_str(rs[2][i]);
-						} else
-							a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
-						if (rs[6][i] != '') {
-							a_rid			= document.createElement('a');
-							a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
-							a_rid			.setAttribute('class','cont_link');
-							a_rid.target	= '_blank';
-							a_rid.innerText = __js_clean_html_str(rs[3][i]);
-						} else
-							a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
-						
-						div_contain	.setAttribute('style','width:100%;');
-						div_gid		.setAttribute('style','float:left;width:60%;');
-						div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-						div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-						div_date	.setAttribute('style','width:8%;overflow:hidden;');
-						
-						inp_tsp		.setAttribute('type', 'hidden');
-						
-						div_contain	.setAttribute('class', 'cont');
-						div_date	.setAttribute('class', 'mt__timer');
-						
-						inp_tsp		.value = rs[5][i];
-						
-						d = MT___page1_date_format(rs[3][i]);
-						
-						// append sm sm.
-						div_gid	.appendChild(a_gid);
-						div_rid	.appendChild(a_rid);
-						div_avl	.appendChild(document.createTextNode(rs[4][i]));
-						div_date.appendChild(document.createTextNode(d));
-						// append sm.
-						div_contain.appendChild(inp_tsp);
-						div_contain.appendChild(div_gid);
-						div_contain.appendChild(div_rid);
-						div_contain.appendChild(div_avl);
-						div_contain.appendChild(div_date);
-						
-						// Append main
-						// In top or bottom
-						// 3 == requester name
-						// 6 == requester id
-						if  (
-							!__js_inarray(ignore_requesters,		rs[3][i]) &&
-							!__js_inarray(ignore_requesters__ids,	rs[6][i])
-							)
+						// append
+						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
 						{
-							div__reload.appendChild(div_contain);
-							div__reload.appendChild(document.createElement('hr'));
-							//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;
+							console.log('inserting');
+							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
+							tasks_obj.table1.insertBefore(makeRow(d), first) // appendChild(makeRow(d), true); // true == ignored
 						}
+						// insert
 						else
 						{
-							div__reload2.appendChild(div_contain);
-							div__reload2.appendChild(document.createElement('hr'));
-							//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
+							console.log('appending');
+							tasks_obj.table1.appendChild(makeRow(d));
 						}
 						
-						
-						//~ // gid
-						//~ var gid;
-						//~ if (rs[7][i] != '') {
-							//~ gid = '\
-								//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
-								//~ '+rs[2][i]+'\
-								//~ </a>';
-						//~ } else
-							//~ gid = rs[2][i];
-							//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
-						//~ // rid
-						//~ var rid;
-						//~ if (rs[6][i] != '') {
-							//~ rid = '\
-								//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
-								//~ '+rs[3][i]+'\
-								//~ </a>';
-						//~ } else
-							//~ rid = '&nbsp;'+rs[3][i];
 						//~ 
-						//~ //490,230,98
-						//~ //<div style="overflow:hidden;">
-						//~ var st='\
-						//~ <div style="width:100%;" class="cont">\
-							//~ <input type="hidden" value="'+rs[5][i]+'">\
-							//~ <div style="float:left;width:64%;">\
-								//~ '+gid+'\
-							//~ </div>\
-							//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
-								//~ '+rid+'\
-							//~ </div>\
-							//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
-								//~ '+rs[4][i]+'\
-							//~ </div>\
-							//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
-						//~ </div>';// hidden = break;
-						//rs - Hit, Requester, #
+						//~ // Exists?
+						//~ if (tasks_obj.table1_row_ids.hasOwnProperty(d.db_id)) {
+							//~ var row = tasks_obj.table_rows[d.db_id]
+							//~ row.hits_available.innerText = d.hits_available;
+							//~ continue;
+						//~ }
+						//~ 
+						// New
+						//~ tasks_obj.table1.appendChild(makeRow(d));
 					}
-					
+					else
+					{ // ignored
+						
+						// append
+						if (!tasks_obj.isFirstRun && !tasks_obj.table2.getElementsByTagName('tr').length)
+						{
+							console.log('inserting');
+							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
+							tasks_obj.table2.insertBefore(makeRow(d, true), first) // appendChild(makeRow(d), true); // true == ignored
+						}
+						// insert
+						else
+						{
+							console.log('appending');
+							tasks_obj.table2.appendChild(makeRow(d, true)); // true == ignored
+						}
+						
+						//~ 
+						//~ // Exists?
+						//~ if (tasks_obj.table2_row_ids.hasOwnProperty(d.db_id)) {
+							//~ var row = tasks_obj.table_rows[d.db_id]
+							//~ row.hits_available.innerText = d.hits_available;
+							//~ continue;
+						//~ }
+						//~ 
+					}
 				}
-			});
-		}
+				
+				// Update tasks_obj.firstRun to false.
+				// For all future runs any new rows
+				// will be insertBefore (top of table)
+				// rather than appendChild.
+				
+				tasks_obj.isFirstRun = false;
+			}	
+		});
+				/*
+				// Remove old divs.
+				var x;
+				x = document.getElementById('div__main');
+				if (x) {
+					document.body.removeChild(x);
+				}
+				
+				// ...
+				//~ var div;
+				var div_main;
+				var div__reload, div__reload2;
+				//div_main
+				//
+				div_main=document.createElement('div');
+				div_main.setAttribute('id','div__main');
+				div_main.setAttribute('style',
+					'position:absolute;'+
+					'top:40px;'+
+					'width:98%;'+
+					'background-color:none;'
+				);
+				//div__reload
+				//
+				div__reload=document.createElement('div');
+				div__reload.setAttribute('id','div__reload');
+				div__reload.setAttribute('style',
+					'margin:0 auto;'+
+					'width:98%;'+
+					'max-width:1000px;'+
+					'height:500px;'+
+					'overflow:auto;'+
+					'background-color:#fdfdfd;'+
+					'border:4px solid #d2d2d2;'
+				);
+				div_main.appendChild(div__reload);
+				//div__reload2
+				//
+				div__reload2=document.createElement('div');
+				div__reload2.setAttribute('id','div__reload2');
+				div__reload2.setAttribute('style',
+						'margin:0 auto;'+
+						'width:100%;'+
+						'max-width:1000px;'+
+						'height:500px;'+
+						'overflow:auto;'+
+						'background-color:#fdfdfd;'+
+						'border:4px solid #d2d2d2;'
+				);
+				div_main.appendChild(div__reload2);
+				document.body.appendChild(div_main);
+				
+				has_new_alertable(rs);
+				
+				// Output
+				var div_contain;
+				var div_gid;
+				var div_rid;
+				var div_avl;
+				var div_date;
+				var inp_tsp;
+				var a_gid;
+				var a_rid;
+				var d;
+				for (var i = 0; i < rs[0].length; i++)
+				{
+					
+					div_contain	= document.createElement('div');
+					div_gid		= document.createElement('div');
+					div_rid		= document.createElement('div');
+					div_avl		= document.createElement('div');
+					div_date	= document.createElement('div');
+					
+					inp_tsp		= document.createElement('input');
+					
+					if (rs[7][i] != '') {
+						a_gid			= document.createElement('a');
+						a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
+						a_gid			.setAttribute('class','cont_link');
+						a_gid.target	= '_blank';
+						a_gid.innerText = __js_clean_html_str(rs[2][i]);
+					} else
+						a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
+					if (rs[6][i] != '') {
+						a_rid			= document.createElement('a');
+						a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
+						a_rid			.setAttribute('class','cont_link');
+						a_rid.target	= '_blank';
+						a_rid.innerText = __js_clean_html_str(rs[3][i]);
+					} else
+						a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
+					
+					div_contain	.setAttribute('style','width:100%;');
+					div_gid		.setAttribute('style','float:left;width:60%;');
+					div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
+					div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
+					div_date	.setAttribute('style','width:8%;overflow:hidden;');
+					
+					inp_tsp		.setAttribute('type', 'hidden');
+					
+					div_contain	.setAttribute('class', 'cont');
+					div_date	.setAttribute('class', 'mt__timer');
+					
+					inp_tsp		.value = rs[5][i];
+					
+					d = date_format(rs[3][i]);
+					
+					// append sm sm.
+					div_gid	.appendChild(a_gid);
+					div_rid	.appendChild(a_rid);
+					div_avl	.appendChild(document.createTextNode(rs[4][i]));
+					div_date.appendChild(document.createTextNode(d));
+					// append sm.
+					div_contain.appendChild(inp_tsp);
+					div_contain.appendChild(div_gid);
+					div_contain.appendChild(div_rid);
+					div_contain.appendChild(div_avl);
+					div_contain.appendChild(div_date);
+					
+					// Append main
+					// In top or bottom
+					// 3 == requester name
+					// 6 == requester id
+					if  (
+						!__js_inarray(ignore_requesters,		rs[3][i]) &&
+						!__js_inarray(ignore_requesters__ids,	rs[6][i])
+						)
+					{
+						div__reload.appendChild(div_contain);
+						div__reload.appendChild(document.createElement('hr'));
+					}
+					else
+					{
+						div__reload2.appendChild(div_contain);
+						div__reload2.appendChild(document.createElement('hr'));
+					}
+				}*/
+				
+				//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;					
+				//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
+				
+				//~ // gid
+				//~ var gid;
+				//~ if (rs[7][i] != '') {
+					//~ gid = '\
+						//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
+						//~ '+rs[2][i]+'\
+						//~ </a>';
+				//~ } else
+					//~ gid = rs[2][i];
+					//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
+				//~ // rid
+				//~ var rid;
+				//~ if (rs[6][i] != '') {
+					//~ rid = '\
+						//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
+						//~ '+rs[3][i]+'\
+						//~ </a>';
+				//~ } else
+					//~ rid = '&nbsp;'+rs[3][i];
+				//~ 
+				//~ //490,230,98
+				//~ //<div style="overflow:hidden;">
+				//~ var st='\
+				//~ <div style="width:100%;" class="cont">\
+					//~ <input type="hidden" value="'+rs[5][i]+'">\
+					//~ <div style="float:left;width:64%;">\
+						//~ '+gid+'\
+					//~ </div>\
+					//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
+						//~ '+rid+'\
+					//~ </div>\
+					//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
+						//~ '+rs[4][i]+'\
+					//~ </div>\
+					//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
+				//~ </div>';// hidden = break;
+				//rs - Hit, Requester, #
+	}
+	
+	/**
+	 //~ * Function MT___page1_show_jobs_play_audio
+	 * 
+	 * play_audio
+	 * 
+	 */
+	function play_audio() {
+		
+		// Remove old elements.
+		if (document.getElementById('MT___page1_show_jobs_play_audio'))
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		if (document.getElementById('MT___page1_show_jobs_play_audio'))
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		
+		//MT___AUDIO_SNIPPET
+		//b64_audio =
+								
+		// Play alert
+		// i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
+		var c = document.createElement('audio');
+		c.setAttribute('style','position:fixed;top:30px;left:0px;width:80px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;');
+		c.setAttribute('id','MT___page1_show_jobs_play_audio');
+		c.setAttribute('controls','');
+		c.setAttribute('src', MT___AUDIO_SNIPPET);
+		document.body.appendChild(c);
+		c = document.getElementById('MT___page1_show_jobs_play_audio');
+		c.play();
+		// Remove after 4 seconds
+		setTimeout(function() {
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		}, 4000);
 	}
 }
 /*
@@ -5315,6 +5763,7 @@ function AMT___returnAndAcceptButton() {
 			)
 		) // return link and group id
 	{
+
 		
 		var u;
 		u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
@@ -5331,20 +5780,22 @@ function AMT___returnAndAcceptButton() {
 		var d = document.createElement('input');
 		d.setAttribute('id','MT__gm_returnaccept');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:50%;width:120px;height:24px;margin-left:120px;z-index:1000;');
+		d.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
 		d.setAttribute('value','Return and Accept');
 		document.body.appendChild(d);
 		var d = document.createElement('input');
-		d.setAttribute('id','MT__gm_returnaccept_serverSide');
+		d.setAttribute('id','MT__gm_returnaccept_non_serverSide');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:50%;width:20px;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
-		d.setAttribute('value','SV');
+		d.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
+		d.setAttribute('value','Non-SV');
 		document.body.appendChild(d);
 		
 		// local
 		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
-			
 			this.style.backgroundColor='#9e9e9e';
+			//Record what tab we're returning on
+			recordReturn();
+
 			
 			// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
@@ -5375,9 +5826,12 @@ function AMT___returnAndAcceptButton() {
 		}, false);
 		
 		// serverSide
-		document.getElementById('MT__gm_returnaccept_serverSide').addEventListener('click', function() {
-			
+		document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
 			this.style.backgroundColor='#9e9e9e';
+			//Record what tab we're returning on
+			recordReturn();
+			
+			
 			
 			function MT__RETURN_AND_ACCEPT_serverSide(time_to_submit) {
 				setTimeout(function() {
@@ -5594,327 +6048,6 @@ function AMT___checkCaptchaStatus() {
  * END FUNCTION
  */
 
-/**
- * Other Global Variables
- * ++ instantiate them
- */
-var MT___states;
-var MT___countries;
-MT___states = {
-	"AL": "Alabama",
-	"AK": "Alaska",
-	"AS": "American Samoa",
-	"AZ": "Arizona",
-	"AR": "Arkansas",
-	"CA": "California",
-	"CO": "Colorado",
-	"CT": "Connecticut",
-	"DE": "Delaware",
-	"DC": "District Of Columbia",
-	"FM": "Federated States Of Micronesia",
-	"FL": "Florida",
-	"GA": "Georgia",
-	"GU": "Guam",
-	"HI": "Hawaii",
-	"ID": "Idaho",
-	"IL": "Illinois",
-	"IN": "Indiana",
-	"IA": "Iowa",
-	"KS": "Kansas",
-	"KY": "Kentucky",
-	"LA": "Louisiana",
-	"ME": "Maine",
-	"MH": "Marshall Islands",
-	"MD": "Maryland",
-	"MA": "Massachusetts",
-	"MI": "Michigan",
-	"MN": "Minnesota",
-	"MS": "Mississippi",
-	"MO": "Missouri",
-	"MT": "Montana",
-	"NE": "Nebraska",
-	"NV": "Nevada",
-	"NH": "New Hampshire",
-	"NJ": "New Jersey",
-	"NM": "New Mexico",
-	"NY": "New York",
-	"NC": "North Carolina",
-	"ND": "North Dakota",
-	"MP": "Northern Mariana Islands",
-	"OH": "Ohio",
-	"OK": "Oklahoma",
-	"OR": "Oregon",
-	"PW": "Palau",
-	"PA": "Pennsylvania",
-	"PR": "Puerto Rico",
-	"RI": "Rhode Island",
-	"SC": "South Carolina",
-	"SD": "South Dakota",
-	"TN": "Tennessee",
-	"TX": "Texas",
-	"UT": "Utah",
-	"VT": "Vermont",
-	"VI": "Virgin Islands",
-	"VA": "Virginia",
-	"WA": "Washington",
-	"WV": "West Virginia",
-	"WI": "Wisconsin",
-	"WY": "Wyoming"
-}
-MT___countries = [
-	{name: 'Bosnia and Herzogovina', code: 'BA'}, 
-	{name: 'Curacao', code: 'CW'}, 
-	{name: 'Cocos Islands', code: 'CC'}, 
-	{name: 'Sao Tome and Principe', code: 'ST'}, 
-	{name: 'Afghanistan', code: 'AF'}, 
-	{name: 'Aland Islands', code: 'AX'}, 
-	{name: 'Albania', code: 'AL'}, 
-	{name: 'Algeria', code: 'DZ'}, 
-	{name: 'American Samoa', code: 'AS'}, 
-	{name: 'AndorrA', code: 'AD'}, 
-	{name: 'Angola', code: 'AO'}, 
-	{name: 'Anguilla', code: 'AI'}, 
-	{name: 'Antarctica', code: 'AQ'}, 
-	{name: 'Antigua and Barbuda', code: 'AG'}, 
-	{name: 'Argentina', code: 'AR'}, 
-	{name: 'Armenia', code: 'AM'}, 
-	{name: 'Aruba', code: 'AW'}, 
-	{name: 'Australia', code: 'AU'}, 
-	{name: 'Austria', code: 'AT'}, 
-	{name: 'Azerbaijan', code: 'AZ'}, 
-	{name: 'Bahamas', code: 'BS'}, 
-	{name: 'Bahrain', code: 'BH'}, 
-	{name: 'Bangladesh', code: 'BD'}, 
-	{name: 'Barbados', code: 'BB'}, 
-	{name: 'Belarus', code: 'BY'}, 
-	{name: 'Belgium', code: 'BE'}, 
-	{name: 'Belize', code: 'BZ'}, 
-	{name: 'Benin', code: 'BJ'}, 
-	{name: 'Bermuda', code: 'BM'}, 
-	{name: 'Bhutan', code: 'BT'}, 
-	{name: 'Bolivia', code: 'BO'}, 
-	{name: 'Bosnia and Herzegovina', code: 'BA'}, 
-	{name: 'Botswana', code: 'BW'}, 
-	{name: 'Bouvet Island', code: 'BV'}, 
-	{name: 'Brazil', code: 'BR'}, 
-	{name: 'British Indian Ocean Territory', code: 'IO'}, 
-	{name: 'Brunei Darussalam', code: 'BN'}, 
-	{name: 'Bulgaria', code: 'BG'}, 
-	{name: 'Burkina Faso', code: 'BF'}, 
-	{name: 'Burundi', code: 'BI'}, 
-	{name: 'Cambodia', code: 'KH'}, 
-	{name: 'Cameroon', code: 'CM'}, 
-	{name: 'Canada', code: 'CA'}, 
-	{name: 'Cape Verde', code: 'CV'}, 
-	{name: 'Cayman Islands', code: 'KY'}, 
-	{name: 'Central African Republic', code: 'CF'}, 
-	{name: 'Chad', code: 'TD'}, 
-	{name: 'Chile', code: 'CL'}, 
-	{name: 'China', code: 'CN'}, 
-	{name: 'Christmas Island', code: 'CX'}, 
-	{name: 'Cocos (Keeling) Islands', code: 'CC'}, 
-	{name: 'Colombia', code: 'CO'}, 
-	{name: 'Comoros', code: 'KM'}, 
-	{name: 'Congo', code: 'CG'}, 
-	{name: 'Congo, The Democratic Republic of the', code: 'CD'}, 
-	{name: 'Cook Islands', code: 'CK'}, 
-	{name: 'Costa Rica', code: 'CR'}, 
-	{name: 'Cote D\'Ivoire', code: 'CI'}, 
-	{name: 'Croatia', code: 'HR'}, 
-	{name: 'Cuba', code: 'CU'}, 
-	{name: 'Cyprus', code: 'CY'}, 
-	{name: 'Czech Republic', code: 'CZ'}, 
-	{name: 'Denmark', code: 'DK'}, 
-	{name: 'Djibouti', code: 'DJ'}, 
-	{name: 'Dominica', code: 'DM'}, 
-	{name: 'Dominican Republic', code: 'DO'}, 
-	{name: 'Ecuador', code: 'EC'}, 
-	{name: 'Egypt', code: 'EG'}, 
-	{name: 'El Salvador', code: 'SV'}, 
-	{name: 'Equatorial Guinea', code: 'GQ'}, 
-	{name: 'Eritrea', code: 'ER'}, 
-	{name: 'Estonia', code: 'EE'}, 
-	{name: 'Ethiopia', code: 'ET'}, 
-	{name: 'Falkland Islands (Malvinas)', code: 'FK'}, 
-	{name: 'Faroe Islands', code: 'FO'}, 
-	{name: 'Fiji', code: 'FJ'}, 
-	{name: 'Finland', code: 'FI'}, 
-	{name: 'France', code: 'FR'}, 
-	{name: 'French Guiana', code: 'GF'}, 
-	{name: 'French Polynesia', code: 'PF'}, 
-	{name: 'French Southern Territories', code: 'TF'}, 
-	{name: 'Gabon', code: 'GA'}, 
-	{name: 'Gambia', code: 'GM'}, 
-	{name: 'Georgia', code: 'GE'}, 
-	{name: 'Germany', code: 'DE'}, 
-	{name: 'Ghana', code: 'GH'}, 
-	{name: 'Gibraltar', code: 'GI'}, 
-	{name: 'Greece', code: 'GR'}, 
-	{name: 'Greenland', code: 'GL'}, 
-	{name: 'Grenada', code: 'GD'}, 
-	{name: 'Guadeloupe', code: 'GP'}, 
-	{name: 'Guam', code: 'GU'}, 
-	{name: 'Guatemala', code: 'GT'}, 
-	{name: 'Guernsey', code: 'GG'}, 
-	{name: 'Guinea', code: 'GN'}, 
-	{name: 'Guinea-Bissau', code: 'GW'}, 
-	{name: 'Guyana', code: 'GY'}, 
-	{name: 'Haiti', code: 'HT'}, 
-	{name: 'Heard Island and Mcdonald Islands', code: 'HM'}, 
-	{name: 'Holy See (Vatican City State)', code: 'VA'}, 
-	{name: 'Honduras', code: 'HN'}, 
-	{name: 'Hong Kong', code: 'HK'}, 
-	{name: 'Hungary', code: 'HU'}, 
-	{name: 'Iceland', code: 'IS'}, 
-	{name: 'India', code: 'IN'}, 
-	{name: 'Indonesia', code: 'ID'}, 
-	{name: 'Iran, Islamic Republic Of', code: 'IR'}, 
-	{name: 'Iraq', code: 'IQ'}, 
-	{name: 'Ireland', code: 'IE'}, 
-	{name: 'Isle of Man', code: 'IM'}, 
-	{name: 'Israel', code: 'IL'}, 
-	{name: 'Italy', code: 'IT'}, 
-	{name: 'Jamaica', code: 'JM'}, 
-	{name: 'Japan', code: 'JP'}, 
-	{name: 'Jersey', code: 'JE'}, 
-	{name: 'Jordan', code: 'JO'}, 
-	{name: 'Kazakhstan', code: 'KZ'}, 
-	{name: 'Kenya', code: 'KE'}, 
-	{name: 'Kiribati', code: 'KI'}, 
-	{name: 'Korea, Democratic People\'S Republic of', code: 'KP'}, 
-	{name: 'Korea, Republic of', code: 'KR'}, 
-	{name: 'Kuwait', code: 'KW'}, 
-	{name: 'Kyrgyzstan', code: 'KG'}, 
-	{name: 'Lao People\'S Democratic Republic', code: 'LA'}, 
-	{name: 'Latvia', code: 'LV'}, 
-	{name: 'Lebanon', code: 'LB'}, 
-	{name: 'Lesotho', code: 'LS'}, 
-	{name: 'Liberia', code: 'LR'}, 
-	{name: 'Libyan Arab Jamahiriya', code: 'LY'}, 
-	{name: 'Liechtenstein', code: 'LI'}, 
-	{name: 'Lithuania', code: 'LT'}, 
-	{name: 'Luxembourg', code: 'LU'}, 
-	{name: 'Macao', code: 'MO'}, 
-	{name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK'}, 
-	{name: 'Madagascar', code: 'MG'}, 
-	{name: 'Malawi', code: 'MW'}, 
-	{name: 'Malaysia', code: 'MY'}, 
-	{name: 'Maldives', code: 'MV'}, 
-	{name: 'Mali', code: 'ML'}, 
-	{name: 'Malta', code: 'MT'}, 
-	{name: 'Marshall Islands', code: 'MH'}, 
-	{name: 'Martinique', code: 'MQ'}, 
-	{name: 'Mauritania', code: 'MR'}, 
-	{name: 'Mauritius', code: 'MU'}, 
-	{name: 'Mayotte', code: 'YT'}, 
-	{name: 'Mexico', code: 'MX'}, 
-	{name: 'Micronesia, Federated States of', code: 'FM'}, 
-	{name: 'Moldova, Republic of', code: 'MD'}, 
-	{name: 'Monaco', code: 'MC'}, 
-	{name: 'Mongolia', code: 'MN'}, 
-	{name: 'Montserrat', code: 'MS'}, 
-	{name: 'Morocco', code: 'MA'}, 
-	{name: 'Mozambique', code: 'MZ'}, 
-	{name: 'Myanmar', code: 'MM'}, 
-	{name: 'Namibia', code: 'NA'}, 
-	{name: 'Nauru', code: 'NR'}, 
-	{name: 'Nepal', code: 'NP'}, 
-	{name: 'Netherlands', code: 'NL'}, 
-	{name: 'Netherlands Antilles', code: 'AN'}, 
-	{name: 'New Caledonia', code: 'NC'}, 
-	{name: 'New Zealand', code: 'NZ'}, 
-	{name: 'Nicaragua', code: 'NI'}, 
-	{name: 'Niger', code: 'NE'}, 
-	{name: 'Nigeria', code: 'NG'}, 
-	{name: 'Niue', code: 'NU'}, 
-	{name: 'Norfolk Island', code: 'NF'}, 
-	{name: 'Northern Mariana Islands', code: 'MP'}, 
-	{name: 'Norway', code: 'NO'}, 
-	{name: 'Oman', code: 'OM'}, 
-	{name: 'Pakistan', code: 'PK'}, 
-	{name: 'Palau', code: 'PW'}, 
-	{name: 'Palestinian Territory, Occupied', code: 'PS'}, 
-	{name: 'Panama', code: 'PA'}, 
-	{name: 'Papua New Guinea', code: 'PG'}, 
-	{name: 'Paraguay', code: 'PY'}, 
-	{name: 'Peru', code: 'PE'}, 
-	{name: 'Philippines', code: 'PH'}, 
-	{name: 'Pitcairn', code: 'PN'}, 
-	{name: 'Poland', code: 'PL'}, 
-	{name: 'Portugal', code: 'PT'}, 
-	{name: 'Puerto Rico', code: 'PR'}, 
-	{name: 'Qatar', code: 'QA'}, 
-	{name: 'Reunion', code: 'RE'}, 
-	{name: 'Romania', code: 'RO'}, 
-	{name: 'Russian Federation', code: 'RU'}, 
-	{name: 'RWANDA', code: 'RW'}, 
-	{name: 'Saint Helena', code: 'SH'}, 
-	{name: 'Saint Kitts and Nevis', code: 'KN'}, 
-	{name: 'Saint Lucia', code: 'LC'}, 
-	{name: 'Saint Martin', code: 'MF'}, 
-	{name: 'Saint Pierre and Miquelon', code: 'PM'}, 
-	{name: 'Saint Vincent and the Grenadines', code: 'VC'}, 
-	{name: 'St. Vincent & Grenadines', code: 'VC'}, 
-	{name: 'Samoa', code: 'WS'}, 
-	{name: 'San Marino', code: 'SM'}, 
-	{name: 'Sao Tome and Principe', code: 'ST'}, 
-	{name: 'Saudi Arabia', code: 'SA'}, 
-	{name: 'Senegal', code: 'SN'}, 
-	{name: 'Serbia and Montenegro', code: 'CS'}, 
-	{name: 'Seychelles', code: 'SC'}, 
-	{name: 'Sierra Leone', code: 'SL'}, 
-	{name: 'Singapore', code: 'SG'}, 
-	{name: 'Slovakia', code: 'SK'}, 
-	{name: 'Slovenia', code: 'SI'}, 
-	{name: 'Solomon Islands', code: 'SB'}, 
-	{name: 'Somalia', code: 'SO'}, 
-	{name: 'South Africa', code: 'ZA'}, 
-	{name: 'South Georgia and the South Sandwich Islands', code: 'GS'}, 
-	{name: 'South Korea', code: 'KR'}, 
-	{name: 'Spain', code: 'ES'}, 
-	{name: 'Sri Lanka', code: 'LK'}, 
-	{name: 'Sudan', code: 'SD'}, 
-	{name: 'Suriname', code: 'SR'}, 
-	{name: 'Svalbard and Jan Mayen', code: 'SJ'}, 
-	{name: 'Swaziland', code: 'SZ'}, 
-	{name: 'Sweden', code: 'SE'}, 
-	{name: 'Switzerland', code: 'CH'}, 
-	{name: 'Syrian Arab Republic', code: 'SY'}, 
-	{name: 'Syria', code: 'SY'}, 
-	{name: 'Taiwan', code: 'TW'}, 
-	{name: 'Tajikistan', code: 'TJ'}, 
-	{name: 'Tanzania, United Republic of', code: 'TZ'}, 
-	{name: 'Thailand', code: 'TH'}, 
-	{name: 'Timor-Leste', code: 'TL'}, 
-	{name: 'Togo', code: 'TG'}, 
-	{name: 'Tokelau', code: 'TK'}, 
-	{name: 'Tonga', code: 'TO'}, 
-	{name: 'Trinidad and Tobago', code: 'TT'}, 
-	{name: 'Tunisia', code: 'TN'}, 
-	{name: 'Turkey', code: 'TR'}, 
-	{name: 'Turkmenistan', code: 'TM'}, 
-	{name: 'Turks and Caicos Islands', code: 'TC'}, 
-	{name: 'Tuvalu', code: 'TV'}, 
-	{name: 'Uganda', code: 'UG'}, 
-	{name: 'Ukraine', code: 'UA'}, 
-	{name: 'United Arab Emirates', code: 'AE'}, 
-	{name: 'United Kingdom', code: 'GB'}, 
-	{name: 'United States', code: 'US'}, 
-	{name: 'United States Minor Outlying Islands', code: 'UM'}, 
-	{name: 'Uruguay', code: 'UY'}, 
-	{name: 'Uzbekistan', code: 'UZ'}, 
-	{name: 'Vanuatu', code: 'VU'}, 
-	{name: 'Venezuela', code: 'VE'}, 
-	{name: 'Viet Nam', code: 'VN'}, 
-	{name: 'Virgin Islands, British', code: 'VG'}, 
-	{name: 'Virgin Islands, U.S.', code: 'VI'}, 
-	{name: 'Wallis and Futuna', code: 'WF'}, 
-	{name: 'Western Sahara', code: 'EH'}, 
-	{name: 'Yemen', code: 'YE'}, 
-	{name: 'Zambia', code: 'ZM'}, 
-	{name: 'Zimbabwe', code: 'ZW'} 
-];
-//MT__INSTANTIATE_VAR_STATES_COUNTRIES();
 /**
  * 
  * GLOBAL FUNCTIONS
@@ -6212,149 +6345,6 @@ function __js_clean_html_str(s) {
 }
 
 
-/**
- * AUDIO STRING
- */	
-var MT___AUDIO_SNIPPET = 'data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB0S511AAAAAIO/V\
-/oBHgF2b3JiaXMAAAAAAUSsAAAAAAAA4CICAAAAAAC4AU9nZ1MAAAAAAAAAAAAAdEuddQEAAAB/0qzlETv\
-///////////////////9fA3ZvcmJpcysAAABYaXBoLk9yZyBsaWJWb3JiaXMgSSAyMDEyMDIwMyAoT21uaXByZXNlbnQpAAAAAAEFdm9yYmlzK0JDVgEACAAAADFMIMWA0JBVAAAQAABgJCkO\
-k2ZJKaWUoSh5mJRISSmllMUwiZiUicUYY4wxxhhjjDHGGGOMIDRkFQAABACAKAmOo+\
-ZJas45ZxgnjnKgOWlOOKcgB4pR4DkJwvUmY26mtKZrbs4pJQgNWQUAAAIAQEghhRRSSCGFFGKIIYYYYoghhxxyyCGnnHIKKqigggoyyCCDTDLppJNOOumoo4466ii00EILLbTSSkwx1VZjrr0\
-GXXxzzjnnnHPOOeecc84JQkNWAQAgAAAEQgYZZBBCCCGFFFKIKaaYcgoyyIDQkFUAACAAgAAAAABHkRRJsRTLsRzN0SRP8ixREzXRM0VTVE1VVVVVdV1XdmXXdnXXdn1ZmIVbuH1ZuIVb2IVd\
-94VhGIZhGIZhGIZh+\
-H3f933f930gNGQVACABAKAjOZbjKaIiGqLiOaIDhIasAgBkAAAEACAJkiIpkqNJpmZqrmmbtmirtm3LsizLsgyEhqwCAAABAAQAAAAAAKBpmqZpmqZpmqZpmqZpmqZpmqZpmmZZlmVZlmVZlm\
-VZlmVZlmVZlmVZlmVZlmVZlmVZlmVZlmVZlmVZQGjIKgBAAgBAx3Ecx3EkRVIkx3IsBwgNWQUAyAAACABAUizFcjRHczTHczzHczxHdETJlEzN9EwPCA1ZBQAAAgAIAAAAAABAMRzFcRzJ0SR\
-PUi3TcjVXcz3Xc03XdV1XVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVYHQkFUAAAQAACGdZpZqgAgzkGEgNGQVAIAAAAAYoQhDDAgNWQUAAAQAAIih5CCa0JrzzTkOmuWgqRSb\
-08GJVJsnuamYm3POOeecbM4Z45xzzinKmcWgmdCac85JDJqloJnQmnPOeRKbB62p0ppzzhnnnA7GGWGcc85p0poHqdlYm3POWdCa5qi5FJtzzomUmye1uVSbc84555xzzjnnnHPOqV6czsE54\
-Zxzzonam2u5CV2cc875ZJzuzQnhnHPOOeecc84555xzzglCQ1YBAEAAAARh2BjGnYIgfY4GYhQhpiGTHnSPDpOgMcgppB6NjkZKqYNQUhknpXSC0JBVAAAgAACEEFJIIYUUUkghhRRSSCGGGG\
-KIIaeccgoqqKSSiirKKLPMMssss8wyy6zDzjrrsMMQQwwxtNJKLDXVVmONteaec645SGultdZaK6WUUkoppSA0ZBUAAAIAQCBkkEEGGYUUUkghhphyyimnoIIKCA1ZBQAAAgAIAAAA8CTPER3\
-RER3RER3RER3RER3P8RxREiVREiXRMi1TMz1VVFVXdm1Zl3Xbt4Vd2HXf133f141fF4ZlWZZlWZZlWZZlWZZlWZZlCUJDVgEAIAAAAEIIIYQUUkghhZRijDHHnINOQgmB0JBVAAAgAIAAAAAA\
-R3EUx5EcyZEkS7IkTdIszfI0T\
-/M00RNFUTRNUxVd0RV10xZlUzZd0zVl01Vl1XZl2bZlW7d9WbZ93\
-/d93/d93/d93/d939d1IDRkFQAgAQCgIzmSIimSIjmO40iSBISGrAIAZAAABACgKI7iOI4jSZIkWZImeZZniZqpmZ7pqa\
-IKhIasAgAAAQAEAAAAAACgaIqnmIqniIrniI4oiZZpiZqquaJsyq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ru\
-q7rukBoyCoAQAIAQEdyJEdyJEVSJEVyJAcIDVkFAMgAAAgAwDEcQ1Ikx7IsTfM0T/M00RM90TM9VXRFFwgNWQUAAAIACAAAAA\
-AAwJAMS7EczdEkUVIt1VI11VItVVQ9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV1TRN0zSB0JCVAAAZAAClxQghhB\
-AOg1BiDkJYDClHPfggMWSU1CCEpRRiEnsQmmKMOSa5txAqhQiiXGuMECPGcRAyY1IpyUH4kmopOQhCQ1YEAFEAAABCiDHEGGLMQcggRIwxCB2EiDEGIYOQQQglhVQyCCGVUFLEGIOQQcgghFR\
-CKR2EkFJIpQAAgAAHAIAAC6HQkBUBQJwAAIOQc4gpCJFiEDoIKXUQUooYg5A5JyVzTkoopbVQSmoRYxAyx6RkzkkJJbQUSmmtg9BSKKW1UEprqbVaU2qxdhBSCqW0FkppLbUUY2qt1ogxCJlz\
-UjLnpIRSWgulpJY5J6WDkFIHIaWSUoslpRYr56R00FHpIKRUUomtpBRjKKW1klKMJaUYW4uxthhrDaW0VlKJraQUY4qtxhZjrRFjEDLnpGTOSQmltBZKaS1zTkoHIaXOQUklpRhLSS1mzknpI\
-KTUQUippBRjSSm2UEprJaUYS0ktthhrbS3GGkppraQUY0kpxhZjri3GGjsIKYVSWgultNZaqzG1VmsopbWSUowlpRhbjDW3GGsOpbRWUomtpBRjiy3XFmPNqbVaW4y1thhzrbXWXmvuPbVWa2\
-qt1hZjzbHGXmutvXcQUgqltBZKaS21VmNqrdZQSmslpRhLSS22GHNtLcYaSmmtpBRjSSnGFmOtLcZcU2s1thhzTa3FWnPtOcYae2qt1hZjzS22XGutPdccey0AAGDAAQAgwIQyUGjISgAgCgA\
-AMQYhxiA0yCjFGITGIKUYgxApxZhzUiqlGHNOSsaYcxBSyRhzDkJJIYRSUmkphBBKSqkVAABQ4AAAEGCDpsTiAIWGrAQAQgIAGGOUYsw556SklFKDkFKMOQehlJRaaxBSijHnIJSSUmuVUow5\
-ByGEUlJqrVKKMecghFBKSq1ljDkHnYQSUmkptowx5xyEEkpJqbXYOQchhFJSSam1GDvnIIRSSkkptdZiByGEElJJqaXYYuwghBBKSSml1mKMpZRSUkmppdhirLGUUkpJKaXWYoyxppRSaqm12\
-GKssdaUUkqptdZijLHWmlprLbbYYqyx1lpTa621FmOMsdZaawEAAAcOAAABRtBJRpVF2GjChQeg0JAVAUAUAABgDGIMMYaccxAyCJFzDEIHIXLOSemkZFJCaaGlTEpIJaQWOeekdFIyKSGlUF\
-ImJaRUWikAAOzAAQDswEIoNGQlAJAHAMAgpBRjjDmHEFKKMeecQwgpxRhzzimlGGPMOeeUUowx5pxzjDHGnHPOOcYYY8455xxzzDnnnHOOOeecc84555xzzjnnIHTOOeeccxAKAAAqcAAACLB\
-RZHOCkaBCQ1YCAKkAAIQxSjHmHIRSGoUYc845CKU0SjHmnHMQSqkYY845B6GUUjHmnHPQSUglc845ByGUklLmnHPQQSglpc45CCGEUkpKnXMQQiihlJRCCKGUUkpJqYUQSiillFRaKqWUklJK\
-qbVWSikppZRaaq0AAPAEBwCgAhtWRzgpGgssNGQlAJABAIAYg5BBCCGDEEIIIYQQQggJAAAYcAAACDChDBQashIASAUAAAxSijHnpKQUKcWYcxBSaSlSijHnIJSUWsWYcxBKSam1ijHnIJSSW\
-myZcxBKSam1GDvnIJSSUmsxhhBKSam1GGsNIZSSUmsx1lpSaim2GGvNuaSUWoux1ppzai3GGnPNueeUWoyx1ppz7gUAIDQ4AIAd2LA6wknRWGChISsBgDwAAAYhpRhjjDGkFGOMMcYYUooxxh\
-hjTDHGGGOMOacYY4wxxphjjDHGmHPOMcYYY8w55xhjjjnnnHOMMcacc845xphzzjnnHGPMOeecc04AAFCBAwBAgI0imxOMBBUashIACAcAAIxhzDnHoJOQSqOUcxJCKCWVVhqlnJMSQikppZY\
-5JyWlVFpqLabMOSkplZJSazF2UlJqqaXYYquxk5BSa621FmONHYRUWootxhpr7CCU1FprMdZcayilpdhirLHWWkMprbUWY60111pSii22WmutNeeSUmsx1lpzrj2n1mKrtcZcc85BtRZjrTXn\
-mnMNBgCYPDgAQCXYOMNK0lnhaHChISsBgNwAAEYpxpxzDkIIIYQQQgiVUow55xyEEEIIIYQQIqUYcw46CCGEEEIIIWSMOecchBBCCCGEEELIGHPOOQghhBBCCCGE0DnnHIQQQgghhBBKCaVzz\
-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';
-
-/* OLD FRONT PAGE ITERATION
- * 
-*/ 
-/*function getp(p)
-{	
-	GM_xmlhttpRequest({
-		method: 'GET',
-		url: 'https://www.mturk.com/mturk/viewhits?searchWords=&selectedSearchType=hitgroups&sortType=NumHITs%3A1&pageNumber='+p+'&searchSpec=HITGroupSearch%23T%231%2310%23-1%23T%23%21%23%21NumHITs%211%21%23%21',
-		onload: function (responseDetails) {
-			
-			var rs=responseDetails.responseText;
-			
-			var div=document.getElementById('div__'+p);
-			div.innerHTML=rs;
-					
-				
-			var y=div.getElementsByTagName('table');
-			div.innerHTML='<table>'+y[6].innerHTML+'</table>';
-			
-			var x=div.getElementsByClassName('capsuletarget');
-			for (var i in x)
-			{
-				if (x[i].style)
-					x[i].style.display='none';
-			}
-			
-			var d;
-			var y=document.getElementsByTagName('a');
-			for (var i in y)
-			{
-				
-			}
-			
-		}
-	});
-}*/
-
 /*
  * old whois
  */
@@ -6437,18 +6427,6 @@ function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction)
 					
 					output_div.innerHTML += '<p>'+rs+'</p>';//
 					
-					/*x = document.getElementsByClassName('ex__whois');
-					for (var i in x) {
-						x[i].onclick = function() {
-							var y = this.value;
-							if (y.indexOf('@') != -1 && y.length >= 8) {
-								input_submit.value = y;
-								if (submit_form)
-									doSubmit();
-							}
-						}
-					}*/
-					
 					// update button clicks
 					DaveSchilling_whois_action();
 				}
@@ -6456,3 +6434,39 @@ function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction)
 		}, 2000);
 	}
 }
+/* OLD FRONT PAGE ITERATION
+ * 
+*/ 
+/*function getp(p)
+{	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: 'https://www.mturk.com/mturk/viewhits?searchWords=&selectedSearchType=hitgroups&sortType=NumHITs%3A1&pageNumber='+p+'&searchSpec=HITGroupSearch%23T%231%2310%23-1%23T%23%21%23%21NumHITs%211%21%23%21',
+		onload: function (responseDetails) {
+			
+			var rs=responseDetails.responseText;
+			
+			var div=document.getElementById('div__'+p);
+			div.innerHTML=rs;
+					
+				
+			var y=div.getElementsByTagName('table');
+			div.innerHTML='<table>'+y[6].innerHTML+'</table>';
+			
+			var x=div.getElementsByClassName('capsuletarget');
+			for (var i in x)
+			{
+				if (x[i].style)
+					x[i].style.display='none';
+			}
+			
+			var d;
+			var y=document.getElementsByTagName('a');
+			for (var i in y)
+			{
+				
+			}
+			
+		}
+	});
+}*/
