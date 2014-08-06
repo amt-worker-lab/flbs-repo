@@ -36,6 +36,8 @@ var AMT__Global_Vars = //function()
 	isPreview: null,
 	groupId: '',
 	hitId: '',
+	numSubmitQueries: 0,
+	isSubmitting: false,
 	
 	//
 	isQProduct: false,
@@ -244,6 +246,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(AMT__Global_Vars.isTopWindow)
 		{
 			sendResponse({isQProduct: isQProduct});
+		}
+	}
+	else if(request.hasSubmittedQuery) {
+		//~ console.log('hasSubmittedQuery' + ', isTopWindow:' + AMT__Global_Vars.isTopWindow);
+		//First go-around numSubmitQueries = 0
+		//~ console.log(AMT__Global_Vars.isSubmitting);
+		//~ console.log(AMT__Global_Vars.numSubmitQueries);
+		//~ console.log(!AMT__Global_Vars.isPreview);
+		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview) {
+			AMT__Global_Vars.numSubmitQueries++;
+			new AMT___core_factory().nextTab();
+			//alert('here here');
+		}else {
+			//Do nothing
 		}
 	}
 });
@@ -885,13 +901,22 @@ String.prototype.stateAbbrToFull = function() {
 
 /**
  * AMT factories
- * 
+ *
+ * AMT__rq
+ * AMT___core_factory
  * AMT___events_factory
  * AMT___requests_factory
  * AMT___huge_vars_factory
  * AMT___items_factory
- * AMT___core_factory
 **/
+
+/**
+ * AMT requester functions
+ * AMT__rq
+ * 
+ */
+var AMT__rq = function() {
+}
 
 /**
  * AMT___core_factory
@@ -969,6 +994,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			case 'return_and_accept_button__nextTab':
 				AMT__Global_Vars.core.return_accept_run_nextTab = true;
 				break;
+			case 'return_and_accept':
+				document.getElementById('MT__gm_returnaccept').click();
+				break;
 		}
 	}
 	
@@ -1028,6 +1056,28 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 		}, 40);
 		return true;
 	}
+}
+AMT___events_factory.prototype.mouseup__delete_range = function(options_object) {
+	
+	var options_object = options_object;
+	
+	options_object.element.addEventListener('mouseup', function() {
+		
+		// Only run when the selection is not blank.
+		//
+		//
+		if (window.getSelection().toString() == '') return;
+		
+		var text = this.value;
+		var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
+		this.value = new_text;
+		
+		if (options_object.hasOwnProperty('callback')) {
+			options_object.callback(options_object);
+		}
+		
+	}, false);
+	
 }
 
 /**
@@ -2160,6 +2210,9 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 	if (!r.exec(rs)) {
 		r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
 		yahoo_type = 1;
+		if (!r.exec(rs)) {
+			r = /<h3 class="title"><a href="([^"]*)"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+		}
 	}
 	
 	r.lastIndex = 0;
@@ -2171,11 +2224,12 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 		var arr = [];
 		while (m = r.exec(rs)) {
 			
-			// is this ri.search.yahoo.com
+			// Is this ri.search.yahoo.com?
 			if (m[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(m[1])) {
 				m[1] = (/\/RU=([^\/]+)/.exec(m[1]))[1];
 				m[1] = decodeURIComponent(m[1]);
 			}
+			// Or is this a URI encoded?
 			else if (yahoo_type == 0)
 				m[1] = decodeURIComponent(m[1]);
 			
@@ -3835,12 +3889,17 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 }
 /**
  * function doSubmit()
+ * 
+ * Parameters:
+ *   -Form to submit,
+ *   -or window.location,
+ *   -or add to queue (with noSubmit) & callback_function, returns time_to_submit,
+ *   -return time_to_submit, offsetTime(x) > regularInterval+x
  */
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
-	// form to submit, or window.location, or add to queue (with noSubmit)
-	// & return time_to_submit, offsetTime(x) > regularInterval+x
 	
 	if(!AMT__Global_Vars.isPreview) {
+		AMT__Global_Vars.isSubmitting = true;
 		chrome.extension.sendRequest(
 			{
 				doSubmitChangeTabIcon: true
@@ -3851,7 +3910,7 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	}
 	
 	
-	// which form to submit
+	// Which form to submit
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	else if (document.getElementById(form))
@@ -3859,13 +3918,13 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
-	// debug
+	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
 	
-	// set global vars
+	// Global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
 	
@@ -3877,10 +3936,11 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		}
 	}
 	
-	// server side?
-	if (
+	// Server side?
+	if  (
 		doServerSideSubmit
-	) {
+		)
+	{
 		doSubmit__serverSide(form, location, callback_function, offsetTime, doServerSideSubmit);
 		return;
 	}
@@ -4479,6 +4539,8 @@ minimator = function(x,y,z) {
  * 
  * Move into core_factory, July 30 2014.
  * AMT___core_factory.prototype. = function() {
+ * 
+ * TODO: CLOSE btn
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	
@@ -5741,6 +5803,49 @@ function AMT___oldTopWindowFloatStuff() {
 /*
  * END FUNCTION AMT___oldTopWindowFloatStuff
  */
+ 
+/*
+ * Causes | or \ to call click on return and accept button
+ **/
+function AMT___InitializeReturnAndAcceptKeyPress() {
+	document.addEventListener("keydown", AMT___ReturnAndAcceptKeyPress);	
+}
+function AMT___ReturnAndAcceptKeyPress(event) {
+		console.log(event.keyCode);
+		
+		switch (event.keyCode) {
+			case 220 :
+				
+				chrome.extension.sendRequest({getRAHotkey: true}, 
+				function(rs) 
+				{
+					if(rs.RAHotkey == 'On') {
+						if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
+						document.getElementById('MT__gm_returnaccept').click();
+						event.preventDefault();
+						return false;
+					}
+					else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
+					{
+						//Send a message to the top window and tell it to return and acceptfresh
+						new AMT___core_factory().
+							iframe2parent__postMessage( //
+								{
+									action: 'return_and_accept'
+								}
+							);
+							event.preventDefault();
+							return false; 
+					}
+
+					}
+				});
+				break;
+			default:
+				break;
+		}
+}
+
 /**
  * Function AMT___returnAndAcceptButton
  * // Make return/accept button

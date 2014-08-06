@@ -64,18 +64,24 @@ chrome.runtime.onMessage.addListener(
 	}
 );
   
+/**
+ * AMT requester functions
+ * AMT__rq
+ * 
+ */
 var AMT__rq = function() {
 }
 	
 function load()
 {
 	
-	//global
+	// Global
 	var LOC__ = document.location.href;
-	
 	var loc = document.location.href;
 	
-	// exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
+
+	
+	// Exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
 	if  (
 		window.top != window.self &&
 		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
@@ -103,16 +109,15 @@ function load()
 	
 	
 	
-	
 	//
 	//
 	//
 	//
-	var loc = window.location.href;
 	s="We ask you to split the postal addresses of business listings from United Kingdom into several address lines";
-	
-	if(loc.indexOf('demo-rc.crowdcomputingsystems.com/mturk-web/public') != -1 &&
-		document.body.innerHTML.indexOf(s) != -1)
+	if(
+		loc.indexOf('demo-rc.crowdcomputingsystems.com/mturk-web/public') != -1 &&
+		document.body.innerHTML.indexOf(s) != -1
+		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,tr,td,th,table {margin:0;padding:0;font-size:10px;}');
 		
@@ -374,6 +379,11 @@ function load()
 				
 				// NEW
 				new AMT__rq().AMT__Newline_Financial_cookcountyclerk_com__payment(event.data);
+			}
+			if (event.data.task == 'AMT__Gary_Gebenlian_give_addr' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().rq__Gary_Gebenlian_give_addr(event.data);
 			}
 			
 		}
@@ -1088,66 +1098,6 @@ function load()
 	 */
 	function AMT__CRE_company_contact_info(r) {
 		
-		//~ // extend
-		//~ MT___all_pages_extend();
-		//~ // href
-		//~ MT___all_pages_showhref();
-		//~ 
-		//~ // global var for textarea
-		//~ var txtarea;
-		//~ txtarea = document.createElement('textarea');
-		//~ txtarea.setAttribute('style', 'width:300px;height:400px;border:3px ridge white;visibility:hidden;');
-		//~ document.body.appendChild(txtarea);
-		//~ 
-		//~ // onkeypress
-		//~ // onkeydown
-		//~ document.body.addEventListener('keydown', function(e) {
-			//~ var k = e.keyCode;
-			//~ console.log(k);
-			//~ // add text
-			//~ if (k == 96) {
-				//~ txtarea.value += window.getSelection().toString().trim() + "\n";
-				//~ txtarea.focus();
-			//~ }
-			//~ // hide/show
-			//~ if (k == 97) {
-				//~ if (txtarea.style.visibility == 'hidden') {
-					//~ txtarea.style.visibility == 'visible';
-					//~ txtarea.style.top = Math.round(e.clientY + 20) + 'px';
-					//~ txtarea.style.left = e.clientX + 'px';
-				//~ } else { // hide
-					//~ txtarea.style.visibility == 'hidden';
-				//~ }
-			//~ }
-			//~ // complete
-			//~ if (k == 220) { 
-				//~ parent.postMessage('AMT__Jeff_Meyer_schoolDistricts__complete'+txtarea.value, "*");
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ return false;
-				//~ var msg = {
-					//~ 'key':k,
-					//~ 'msg':window.getSelection().toString().trim()
-				//~ }
-			//~ }
-		//~ }, false);
-		
-		//MT___all_pages_highlightEmailAddresses();
-		// enlarge "chem"?
-		//~ var all = document.getElementsByTagName("*");
-		//~ textMatches = [];
-		//~ var tmpStr;
-		//~ for (var i=all.length-1; i >= 0; i--) {
-			//~ tmpStr = all[i].innerText;
-			//~ for (var j in textMatches) {
-				//~ tmpStr = tmpStr.replace(textMatches[j], '');
-			//~ }
-			//~ if (tmpStr.toLowerCase().indexOf('chemistry') != -1 && all[i]) {
-				//~ console.log(all[i].innerText);
-				//~ textMatches.push(all[i].innerText);
-			//~ }
-		//~ }
-		//~ console.log(textMatches);
 	}
 	/*
 	 * Jeff Meyer
@@ -1711,6 +1661,365 @@ function load()
 			}
 		}
 	}
+	
+	AMT__rq.prototype.rq__Gary_Gebenlian_give_addr = function(data) {
+		//alert('got here');
+		//~ var scr = document.createElement('script');
+		//~ document.body.appendChild(scr);
+		//~ scr.innerHTML = 'alert("here 2!");showAddress("'+data.addr+'", 20);';
+		document.getElementsByTagName('input')[0].value = data.addr;
+		document.getElementsByTagName('input')[1].click();
+	}
+	
+	/**
+	 * Alex Jackson
+	 * rq__Alex_Jackson__all_pages__Dubai_brokers
+	 */
+	AMT__rq.prototype.rq__Alex_Jackson__all_pages__Dubai_brokers = function() {
+		
+		var o = {
+			page: 1,
+			//~ row: strong[2].innerText.replace(/^Broker Row Number: /g, '')
+			last: ''
+		}
+		
+		//debug
+		o.page = 1 ;
+		
+		
+		getPage();
+		
+		//~ // write
+		//~ var rf = new AMT___requests_factory();
+		//~ rf.io__write_to_file(
+			//~ {
+				//~ data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+						//~ '&AMT__serverSide_write__folder=.cached'+
+						//~ '&AMT__serverSide_write__file=Alex_Jackson_' + '1',
+				//~ host:	MT___host
+			//~ },
+			//~ function() {
+				//~ 
+				//~ // incr.
+				//~ o.page++;
+				//~ 
+				//~ 
+			//~ }
+		//~ );
+		
+		
+		/**
+		 * 
+		 * 
+		 **/
+		function getPage() {
+			
+			var x = document.getElementById('ContentPlaceHolder1_upRealEstate');
+			
+			var r = /<td align="center" style="[^"]+">(\d+)<\/td><td style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">[\r\n\t\s]*<a id="[^"]+" href="([^"]+)">Details<\/a>/g;
+			var num = x.innerHTML.match(r).length;
+			
+			//~ if (o.page == 141) return;
+			
+			// Loading?
+			if  (
+				x.innerHTML.indexOf('<span>'+o.page+'</span>') == -1 ||
+				x.innerHTML == o.last ||
+				num != 15
+				)
+			{ // Loading?
+				setTimeout(function() {
+					getPage();
+				}, 60);
+				return;
+			}
+			
+			// UPDATE
+			o.last = x.innerHTML;
+			
+			// write
+			var rf = new AMT___requests_factory();
+			rf.io__write_to_file(
+				{
+					data:	'AMT__serverSide_write__value='+encodeURIComponent(x.innerHTML)+
+							'&AMT__serverSide_write__folder=.cached'+
+							'&AMT__serverSide_write__file=Alex_Jackson_' + o.page,
+					host:	MT___host
+				},
+				function() {
+					
+					// incr.
+					o.page++;
+					
+					console.log('Trying to click '+o.page);
+					var x = document.getElementById('ContentPlaceHolder1_upRealEstate').getElementsByTagName('a');
+					
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].href.indexOf("'Page$"+o.page+"'") != -1) {
+							x[i].click();
+							
+							// Go back to func.
+							getPage();
+							break;
+						}
+					}
+				}
+			);
+			
+			
+		}
+	}
+	if (loc == 'http://www.dubailand.gov.ae/english/Real_Estate_Licenses/EngBrokersList.aspx' && 0 == 1) {
+		new AMT__rq().rq__Alex_Jackson__all_pages__Dubai_brokers();
+	}
+	/**
+	 * OCMP
+	 * 
+	 */
+	AMT__rq.prototype.rq__OCMP = function() {
+		
+		console.log('rq__OCMP');
+		
+		var r = document.querySelectorAll('input[type="radio"]');
+		var radios = [];
+		var d = document.getElementsByClassName('gs-snippet');
+		var divs = [];
+		var lis  = document.getElementsByClassName('ui-slider-tabs-list')[0].getElementsByTagName('li');
+		var num_na = 0;
+		
+		function getDivs() {
+			divs = [];
+			for (var i in d) {
+				if (i == 'length') break;
+				if (d[i].innerText.trim() == '')
+					continue;
+				//~ if  (
+					//~ d[i].hasOwnProperty('data-body') ||
+					//~ d[i].hasOwnProperty('data-attr')
+					//~ )
+				//~ {
+					//~ continue;
+				//~ }
+				divs.push(d[i]);
+			}
+		}
+		getDivs();
+		
+		//~ divs.shift(); // Remove first element. Div is unrelated.
+		//~ console.log(divs);
+		//~ console.log(divs.length);return;
+		
+		// If there are not 8 divs on the page
+		// then restart. Wait 0.1s before
+		// restarting.
+		if (divs.length < 6) 
+		{
+			setTimeout(function() {
+				new AMT__rq().rq__OCMP();
+			}, 100);
+			return;
+		}
+		//~ else if (lis.length != 8)
+		//~ {
+			//~ setTimeout(function() {
+				//~ new AMT__rq().rq__OCMP();
+			//~ }, 100);
+			//~ return;
+		//~ }
+		
+		// ...
+		for (var i in r) {
+			if (i == 'length') break;
+			//~ console.log(r[i].name);
+			//~ console.log(r[i].value);
+			if (r[i].value == 'on' && r[i].name == '') {
+				radios.push(r[i]);
+			} else {
+				// THESE ARE THE answer radios.
+				// Add eventlistener for onclick.
+				// After making a selection the form
+				// moves to the next tab. The next()
+				// function will check this for n/a.
+				r[i].onclick = function() {
+					setTimeout(function() {
+						next();
+					}, 800);
+					return true;
+				}
+				
+				//~ console.log(r[i]);
+				
+			}
+		}
+		radios.shift(); // Remove first radio.
+		
+		console.log(radios);
+		console.log(divs);
+		
+		// If in preview mode then determine whether to accept
+		// or to skip this job.
+		//~ console.log(AMT__Global_Vars);return;
+		//~ if (AMT__Global_Vars.isPreview) {
+			//~ 
+		//~ }
+		var current_li = null;
+		var next_li    = lis[0];
+		var num_runs = 0;
+		//~ var xint = setInterval(function() {
+			//~ 
+			//~ next();
+			//~ 
+		//~ }, 300);
+		
+		// This will begin the program.
+		//
+		//
+		next();
+		
+		/**
+		 * Function next
+		 */
+		function next() {
+			// this is plus 1, element 0 = not related
+			
+			var found = false;
+			
+			console.log('run' + num_runs);
+			console.log(next_li);
+			num_runs++;
+			
+			
+			getDivs(); // > Recreate these. Sometimes the divs are taking time to appear.
+			
+			
+			for (var i=0; i < lis.length; i++) {
+				
+				//~ if (i == 'length') break;
+				//~ console.log(i);
+				//~ console.log(next_li);
+				//~ console.log(lis[i]);
+				//~ console.log(lis[i]);
+				//~ if (lis[i].className.indexOf('complete') != -1)
+					//~ continue;
+				
+				if (next_li && next_li == lis[i] && lis[i].className.indexOf('selected') != -1) {
+					
+					found = true;
+					
+					if (lis[i + 1]) {
+						next_li = lis[i + 1];
+					} else {
+						next_li = false;
+					}
+					
+					if (divs[i] && radios[i]) {
+						
+						//~ console.log('check div:');
+						//~ console.log(divs[i]);
+						//~ console.log('check radio:');
+						//~ console.log(radios[i]);
+						
+						check(divs[i], radios[i], lis[i], lis[i+1]); // XX next LI XX, current DIV, current RADIO
+						//~ break;
+					}
+					
+					break;
+				}
+			}
+			
+			// RESTART
+			if (!found) {
+				//~ setTimeout(function() {
+					//~ next();
+				//~ }, 200);
+			}
+					//~ continue;
+				//~ }
+				
+				//~ if (lis[i].className.indexOf('selected') && current_li != lis[i]) {
+					//~ current_li = lis[i];
+					
+				//~ if (current_li != lis[i]) {
+					//~ current_li = lis[i];
+					
+					//~ if (lis[i].className.indexOf('selected') != -1) { // && current_li != lis[i]
+					
+					// ???
+					//
+					//
+					//~ current_li = (lis.hasOwnProperty(i + 1)) ? lis[i+1] : null;
+					
+					//~ console.log('selected li:');
+					//~ console.log(lis[i]);
+					//~ console.log('selected i:');
+					//~ console.log(i);
+					//~ console.log(divs[i]);
+					//~ console.log(radios[i]);
+						
+					
+					
+					//~ break;
+				//~ }
+			//~ }
+			
+		}
+		
+		/**
+		 * Function checkComplete
+		 */
+		function checkComplete() {
+			if (num_na >= divs.length) {
+				doSubmit('mainform', null, function() {
+					// click to ensure valid
+					document.getElementsByClassName('button cc-button submit-btn btn btn-primary ')[0].click();
+				});
+			}
+		}
+		
+		/**
+		 * Function check
+		 */
+		function check(div, radio, li, li_next) { // XX next LI XX, current DIV, current RADIO
+			
+			var div = div, radio = radio, li = li, li_next = li_next;
+			
+			console.log('IT:' + div.innerText);
+			if (div.innerText == 'No Results' && !radio.checked) {
+				radio.click();
+				num_na++;
+				
+				checkComplete();
+				
+				setTimeout(function() {
+					next();
+				}, 800);
+				//~ next();
+				// RESTART
+				//~ var tmp_int = setInterval(function() {
+					//~ if (li.className.indexOf('selected') == -1)
+					//~ {
+						//~ clearInterval(tmp_int);
+						//~ next();
+					//~ }
+				//~ }, 60);
+				//~ li_next.click();
+				return;
+			} else {
+				// There are results
+				//
+				//
+				console.log(next_li);
+			}
+			
+		}
+		
+	}
+	// INIT
+	if (document.location.href.indexOf('https://infogroup2.crowdcomputingsystems.com/mturk-web/public/HTMLRenderer') != -1) {
+		new AMT__rq().rq__OCMP();
+	}
+	
 	/**
 	 * AMT__Newline_Financial_cookcountyclerk_com__payment
 	 * 
@@ -1719,6 +2028,7 @@ function load()
 	// .id
 	// .task
 	// 
+	// TODO: WRITE_TO_FILE ADD HOST: = mt___host
 	AMT__rq.prototype.AMT__Newline_Financial_cookcountyclerk_com__payment = function(data) {
 		
 		var x = document.location.href;
@@ -1863,19 +2173,35 @@ function load()
 		
 		var search;
 		search = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_cmdSearch');
-		if (x) {
+		if (search) {
 			//
 		} else {
-			x = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
+			search = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
 		}
-				
+		//ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch
 		
+		var CAPTCHA_INT;
+		input.addEventListener('keydown', function() {
+			if (CAPTCHA_INT)
+				clearInterval(CAPTCHA_INT);
+		}, false);
 		input.addEventListener('keyup', function() {
 			if (this.value.length == 6) {
+				
 				new AMT___core_factory().nextTab();
 				
-				
-				x.click();
+				//~ setTimeout(function() {
+					//~ new AMT___core_factory().nextTab();
+					//~ document.getElementById('form1').submit();
+				//~ }, 40);
+				//~ var search;
+				//~ search = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_cmdSearch');
+				//~ if (search) {
+					//~ //
+				//~ } else {
+					//~ search = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
+				//~ }
+				search.click();
 			}
 		}, false);
 	
@@ -1904,14 +2230,18 @@ function load()
 				onload: function(response) {
 					var rs = response.responseText;
 					
-					var CINTV = setInterval(function() {
+					// CAPTCHA_INT
+					//
+					//
+					
+					CAPTCHA_INT = setInterval(function() {
 						GM_xmlhttpRequest({
 							method: "GET",
 							url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(img.src)+'&complete',
 							onload: function(response) {
 								var rs=response.responseText;
 								if (rs != '') {
-									clearInterval(CINTV);
+									clearInterval(CAPTCHA_INT);
 								}
 								else return;
 								

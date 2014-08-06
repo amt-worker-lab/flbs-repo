@@ -183,8 +183,60 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	//
+	//
+	//	Gary Gebenlian
+	//	Use an online map to measure the size of a property.
+	s = "Go to the menu on top and select 'Map Tools' and then 'Area Calculator'";
+	if(ih.indexOf(s) != -1) {
+		
+		var ll = {};
+
+		var addrEl = document.body.getElementsByTagName('li')[2].innerHTML;
+		addrEl = __js_clean_html_str(addrEl);
+		var addrReg = /'Go':([^&]+)/;
+		
+		var addr;
+		if(addr = addrReg.exec(addrEl)) {
+			console.log(addr);
+		}
+		else
+			alert('address scrape failed');
+		
+				
+		
+		
+		
+		var containerDiv = document.createElement('div');
+		containerDiv.setAttribute('id','containerDiv');
+		containerDiv.setAttribute('style','position:absolute;top:0px;width:100%;height:600px;z-index:1000');
+		document.body.appendChild(containerDiv);
+		
+		var ifr = document.createElement('iframe');
+		ifr.setAttribute('style', 'top:0px;width:2000px;height:1000px;z-index:1000')
+		ifr.setAttribute('id','ifr');
+		document.body.appendChild(ifr);
+		ifr = document.getElementById('ifr');
+		
+		var outDiv = document.createElement('outDiv');
+		outDiv.setAttribute('style','font-size:10pt;');
+		
+		
+		containerDiv.appendChild(ifr);
+		console.log('got here');		
 	
-	
+		ifr.src = 'http://www.mapdevelopers.com/area_calculator_adv.php?zoom=1&lat=40&lng=-73&height=800&width=800&button_color=eeeeee&text_color=000000&';
+			
+		// postMessage
+		var ifr_intv = setInterval(function() {
+			ifr.contentWindow.postMessage(
+			{
+				task:'AMT__Gary_Gebenlian_give_addr',
+				addr:addr
+			}, "*");
+		}, 1200);			
+
+	}
 	
 	//
 	//Jeffrey M. Howard
@@ -6731,6 +6783,470 @@ function MT__RUN() {
 	/*Simplesearch*/
 	
 	//
+	// Alex Jackson
+	// -SimpleSearch
+	// Create file of Dubai real estate brokers
+	AMT__rq.prototype.rq__Alex_Jackson_Dubai_brokers = function() {
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		var strong = document.getElementsByTagName('strong');
+		var table = document.getElementsByTagName('table');
+		
+		//~ var o = {
+			//~ page: strong[1].innerText.replace(/^Page Number: /g, ''),
+			//~ row: strong[2].innerText.replace(/^Broker Row Number: /g, '')
+		//~ }
+		var o = {
+			vs: null,
+			ev: null,
+			str:	'__EVENTTARGET=ctl00%24ContentPlaceHolder1%24grdbroker&__EVENTARGUMENT=Page%24&__VIEWSTATE=&__EVENTVALIDATION=&ctl00%24EnglishSearchCtrl1%24TextBox1=',
+			page: strong[1].innerText.replace(/^Page Number: /g, ''),
+			row: strong[2].innerText.replace(/^Broker Row Number: /g, ''),
+			broker_URL: null
+		}
+		// OLD FORM
+		//str:	'ctl00%24ScriptManager1=ctl00%24ContentPlaceHolder1%24upRealEstate%7Cctl00%24ContentPlaceHolder1%24EngRealEstateCtl1%24grdRealEstate&__EVENTTARGET=ctl00%24ContentPlaceHolder1%24EngRealEstateCtl1%24grdRealEstate&__EVENTARGUMENT=Page%24&__LASTFOCUS=&__VIEWSTATE=&__EVENTVALIDATION=&ctl00%24EnglishSearchCtrl1%24TextBox1=&ctl00%24ContentPlaceHolder1%24EngRealEstateCtl1%24cboSearchMethod=-1&ctl00%24ContentPlaceHolder1%24EngRealEstateCtl1%24txtSearchMethod=&__ASYNCPOST=false&',
+		
+		
+		var inputs = {
+			table1: table[0].getElementsByTagName('input'),
+			table2: table[1].getElementsByTagName('input'),
+			table3: table[2].getElementsByTagName('input')
+		}
+		
+		if (!/^\d+$/.exec(o.page) || !/^\d+$/.exec(o.row))
+			return;
+		
+		//debug
+		//~ o.page = 1;
+		
+		// INIT
+		getPage();
+		
+		/**
+		 * 
+		 * 15 brokers per pg
+		 * o.broker_URL
+		 **/
+		function getPage__details() {
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.broker_URL,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					var sbm = true;
+					
+					var r;
+					var m;
+					
+					// If using a date field then the dates are in reverse.
+					// The date field orders its value yyyy-mm-dd.
+					
+					//30-03-2007
+					r = /<span id="ContentPlaceHolder1_lbIssueDate">([^<]+)<\/span>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						r = r.split('-');
+						r = r[2] + '-' + r[1] + '-' + r[0];
+						inputs.table1[4].value = r;
+						if (inputs.table1[4].value != r)
+							sbm = false;
+					}
+					//~ else
+						//~ inputs.table1[4].value = 'N/A';
+					//30-03-2015
+					r = /<span id="ContentPlaceHolder1_lbExpiryDate">([^<]+)<\/span>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						r = r.split('-');
+						r = r[2] + '-' + r[1] + '-' + r[0];
+						inputs.table1[5].value = r;
+						
+						if (inputs.table1[5].value != r)
+							sbm = false;
+						//~ inputs.table1[5].value = __js_clean_html_str(r[1]).trim();
+					}
+					//~ else
+						//~ inputs.table1[5].value = 'N/A';
+					
+					//ContentPlaceHolder1_grdBrokerActivities
+					r = /id="ContentPlaceHolder1_grdBrokerActivities"((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1];
+						var r2 = /<td[^>]*>([^<]+)<\/td>/g;
+						var count = 0;
+						while (m = r2.exec(r)) {
+							
+							if (!inputs.table2[ count ]) break;
+							
+							inputs.table2[ count ].value = __js_clean_html_str(m[1]).trim();
+							
+							count++;
+						}
+					}// else
+						//~ inputs.table1[5].value = 'N/A';
+					
+					// N/A
+					// Probably don't need this.
+					
+					//~ for (var i in inputs.table2) {
+						//~ if (i == 'length') break;
+						//~ if (inputs.table2[i].value == '')
+							//~ inputs.table2[i].value = 'N/A'
+					//~ }
+					
+					/**
+					<tr>
+						<td align="center" style="width:100px;">1170</td><td style="width:350px;">AHMED EID AHMED ABDULLA ALSAFFAR</td><td align="center" style="width:150px;">043951117</td><td align="center" style="width:150px;">971506452261</td><td style="width:150px;">info@firsthomedubai.com</td>
+					</tr>**/
+					
+					//1170
+					//AHMED EID AHMED ABDULLA ALSAFFAR
+					//043951117
+					//971506452261
+					//info@firsthomedubai.com
+					r = /<tr[^>]*>[\r\n\t\s]*<td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td>[\r\n\t\s]*<\/tr>/g;
+					var count = 0;
+					var total = 0;
+					while (m = r.exec(rs)) {
+						
+						if (!inputs.table3[ count ]) break;
+							
+						inputs.table3[ count ].value = __js_clean_html_str(m[1]).trim();
+						count++;
+						
+						inputs.table3[ count ].value = __js_clean_html_str(m[2]).trim();
+						count++;
+						
+						inputs.table3[ count ].value = __js_clean_html_str(m[3]).trim();
+						count++;
+						
+						inputs.table3[ count ].value = __js_clean_html_str(m[4]).trim();
+						count++;
+						
+						inputs.table3[ count ].value = __js_clean_html_str(m[5]).trim();
+						count++;
+						
+						total++;
+					}
+					
+					// no.
+					inputs.table1[6].value = total;
+					
+					if (total != 15 && sbm)
+						doSubmit();
+					else if (total == 15 && rs.indexOf('>2</a>') != -1) { // pg2 exists
+						
+						getState(rs);
+						getPage__details__page2();
+						
+					} else
+						document.body.style.backgroundColor = 'LightGreen';
+				}
+			});
+		}
+		
+		/**
+		 * getPage__details__pageTotal
+		 * 
+		 **/
+		function getPage__details__pageTotal(num) {
+			
+			var n = o.str;
+			n = n.replace('Page%24', 'Page%24' + num);
+			n = n.replace('__VIEWSTATE=', '__VIEWSTATE=' + encodeURIComponent(o.vs));
+			n = n.replace('__EVENTVALIDATION=', '__EVENTVALIDATION=' + encodeURIComponent(o.ev));
+			
+			var num = num;
+			
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: o.broker_URL,
+				data: n,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						exit(response.status);
+					}
+					
+					// Total pages - 1
+					// Times 15 per page
+					// Plus amount on the final page.
+					var n = get_num_brokers_on_page(rs) + ((num-1) * 15);
+					inputs.table1[6].value = num;
+					console.log('sbm');
+					
+				}
+			});
+		}
+		/**
+		 * get_num_brokers_on_page
+		 * 
+		 **/
+		function get_num_brokers_on_page(rs) {
+			var r = /<tr[^>]*>[\r\n\t\s]*<td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td>[\r\n\t\s]*<\/tr>/g;
+			
+			if (!r.exec(rs)) return 0;
+			else r.lastIndex = 0;
+			
+			var num = rs.match(r).length;
+			return num;
+		}
+		/**
+		 * getPage__details__page2
+		 * 
+		 **/
+		function getPage__details__page2() {
+			
+			var n = o.str;
+			n = n.replace('Page%24', 'Page%24' + '2');
+			n = n.replace('__VIEWSTATE=', '__VIEWSTATE=' + encodeURIComponent(o.vs));
+			n = n.replace('__EVENTVALIDATION=', '__EVENTVALIDATION=' + encodeURIComponent(o.ev));
+			
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: o.broker_URL,
+				data: n,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						exit(response.status);
+					}
+					
+					var r =/<tr[^>]*>[\r\n\t\s]*<td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td><td[^>]*>([^<]*)<\/td>[\r\n\t\s]*<\/tr>/;
+					r = r.exec(rs);
+					
+					// assume 75th row
+					if (r) {
+						count = 15 * 5;
+						inputs.table3[ count ].value = __js_clean_html_str(r[1]).trim();
+						count++;
+						inputs.table3[ count ].value = __js_clean_html_str(r[2]).trim();
+						count++;
+						inputs.table3[ count ].value = __js_clean_html_str(r[3]).trim();
+						count++;
+						inputs.table3[ count ].value = __js_clean_html_str(r[4]).trim();
+						count++;
+						inputs.table3[ count ].value = __js_clean_html_str(r[5]).trim();
+						count++;
+						
+					} else {
+						document.body.style.backgroundColor = 'aqua';
+						return;
+					}
+					
+					// Try for next or submit?
+					r = /<a href="javascript:__doPostBack\(&#39;ctl00$ContentPlaceHolder1$grdbroker&#39;,&#39;Page\$([\d]+)&#39;\)">[^<]+<\/a>/g;
+					var m;
+					var n;
+					while (m = r.exec(rs)) {
+						//
+						n = r[1]*1;
+					}
+					// Greater than 2 pages
+					// and less than 11.
+					if (n <= 10 && n > 2) {
+						
+						getState(rs);
+						getPage__details__pageTotal(n);
+						
+					}
+					// This is the final page.
+					// So count up this.
+					else if (n <= 2) {
+						
+						var num = get_num_brokers_on_page(rs) + 15; // +pg 1
+						inputs.table1[6].value = num;
+						console.log('sbm');
+						//~ doSubmit();
+					}
+					// More than 10 pages which
+					// means it is outside of 
+					// range.
+					else {
+						document.body.style.backgroundColor = 'blue';
+					}
+					
+				}
+			});
+		}
+		/**
+		 * 
+		 * 
+		 **/
+		function getPage__details__page2() {
+			
+		}
+		
+		/**
+		 * 
+		 * 
+		 **/
+		function getPage() {
+			
+			//~ var n = o.str;
+			//~ n = n.replace('Page%24', 'Page%24' + o.page);
+			//~ n = n.replace('__VIEWSTATE=', '__VIEWSTATE=' + encodeURIComponent(o.vs));
+			//~ n = n.replace('__EVENTVALIDATION=', '__EVENTVALIDATION=' + encodeURIComponent(o.ev));
+			//~ 
+			//~ GM_xmlhttpRequest({
+				//~ method: "POST",
+				//~ url: 'http://www.dubailand.gov.ae/english/Real_Estate_Licenses/EngBrokersList.aspx',
+				//~ data: n,
+				//~ headers: {
+					//~ "Content-Type": "application/x-www-form-urlencoded"
+				//~ },
+				
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/.cached/Alex_Jackson_' + o.page,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						exit(response.status);
+					}
+					
+					//
+					//
+					//
+					//
+					//
+					//
+					
+					/**
+					 *<td align="center" style="width:100px;">11685</td><td style="width:350px;">PROPERTY HOUSE REAL ESTATE BROKERS</td><td align="center" style="width:150px;">044515555 / </td><td align="center" style="width:150px;">044515556</td><td align="center" style="width:100px;">
+                            <a id="ContentPlaceHolder1_EngRealEstateCtl1_grdRealEstate_hlActivity_0" href="Real_estate_details_En.aspx?realEstateID=11685&amp;realName=PROPERTY HOUSE REAL ESTATE BROKERS">Details</a>**/
+                    
+                    //11685
+                    //PROPERTY HOUSE REAL ESTATE BROKERS
+                    //044515555 / 
+                    //044515556
+                    //Real_estate_details_En.aspx?realEstateID=11685&amp;realName=PROPERTY HOUSE REAL ESTATE BROKERS
+					var r = /<td align="center" style="[^"]+">(\d+)<\/td><td style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">([^<]+)<\/td><td align="[^"]+" style="[^"]+">[\r\n\t\s]*<a id="[^"]+" href="([^"]+)">Details<\/a>/g;
+					
+					var num = rs.match(r).length;
+					
+					if  (
+						num != 15
+						)
+					{
+						return;
+					}
+					
+					// 1...15
+					// o.row = 1...15
+					//
+					var row = rs.match(r)[o.row - 1];
+					r.lastIndex = 0;
+					row = r.exec(row);
+					for (var i=1; i<row.length; i++) {
+						row[i] = __js_clean_html_str(row[i]).trim();
+					}
+					
+					inputs.table1[0].value = row[1];
+					inputs.table1[1].value = row[2];
+					inputs.table1[2].value = row[3];
+					inputs.table1[3].value = row[4];
+					
+					o.broker_URL = 'http://www.dubailand.gov.ae/english/Real_Estate_Licenses/' + row[5];
+					
+					getPage__details();
+					
+					//~ console.log('http://www.dubailand.gov.ae/english/Real_Estate_Licenses/' + row[5]); return;
+					//~ getPage__details(
+						//~ 'http://www.dubailand.gov.ae/english/Real_Estate_Licenses/' + row[5]
+					//~ );
+				}
+			});
+		}
+		
+		/**
+		 *
+		 **/
+		function getState(rs) {
+			
+			var r;
+			r = /id="__VIEWSTATE" value="([^"]+)"/.exec(rs);
+			if (r) {
+				o.vs = __js_clean_html_str(r[1]);
+			}
+			r = /id="__EVENTVALIDATION" value="([^"]+)"/.exec(rs);
+			if (r) {
+				o.ev = __js_clean_html_str(r[1]);
+			}
+			
+			console.log('length');
+			console.log(o.vs.length);
+			console.log(o.ev.length);
+		}
+		
+		//~ /**
+		 //~ *
+		 //~ **/
+		//~ function initValidation() {
+			//~ 
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
+				//~ url: 'http://www.dubailand.gov.ae/english/Real_Estate_Licenses/EngBrokersList.aspx',
+				//~ onload: function (response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						//~ exit(response.status);
+					//~ }
+					//~ 
+					//~ getState(rs);
+					//~ 
+					//~ if (o.vs && o.ev) {
+						//~ 
+						//~ // write
+						//~ var rf = new AMT___requests_factory();
+						//~ rf.io__write_to_file(
+							//~ {
+								//~ data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+										//~ '&AMT__serverSide_write__folder=.cached'+
+										//~ '&AMT__serverSide_write__file=Alex_Jackson_' + '1',
+								//~ host:	MT___host
+							//~ },
+							//~ function() {
+								//~ 
+								//~ // incr.
+								//~ o.page++;
+								//~ 
+								//~ getPage();
+							//~ }
+						//~ );
+						//~ 
+					//~ }
+				//~ }
+			//~ });
+			//~ 
+		//~ }
+		
+	}
+	var s = '<p>Project is getting a list of all real estate brokers in Dubai from the government website</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		new AMT__rq().rq__Alex_Jackson_Dubai_brokers();
+	}
+	
+	//
 	// Sarah Catanzaro
 	// -SimpleSearch
 	// 
@@ -8783,9 +9299,459 @@ function MT__RUN() {
 	
 	/**
 	 * Facebook company search
+	 * Chris Campbell
 	 * felix greaves
 	 * Morgan Intrator
 	 */
+	//
+	// Chris Campbell
+	// -SimpleSearch, Find the Facebook URL for the Business Reviews
+	// 
+	s = '<p>Find the local businesses Facebook URL, click on Reviews&nbsp;and then copy the URL to view their&nbsp;reviews.&nbsp;&nbsp;</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:1000px;}');
+		
+		GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			comp: td[1].innerText,
+			location: td[3].innerText,
+			comp_array: [],
+			location_array: [],
+			tmp_location: null,
+			state: null,
+			phone: td[5].innerText
+		}
+		o.comp_array		= o.comp	.replace(/[^\w\d]/g, ' ').split(' ');
+		o.location_array	= o.location.replace(/[^\w\d]/g, ' ').split(' ');
+		var x = / ([a-z]+), \d+$/i.exec(o.location); // a-z case insensitive
+		if (x)
+			o.state = x[1].stateAbbrToFull();
+		else
+			o.state = ''
+			
+		//South Beloit
+		//WI
+		//61080
+		var x = / ([^,]+), [a-z]+, \d+$/i.exec(o.location); // a-z case insensitive
+		if (x) o.tmp_location = x[1];
+		else {
+			o.tmp_location = o.location;
+			//~ var x = / ([A-Z]+), \d+$/.exec(o.location);
+			//~ if (x) o.tmp_location = x[1].stateAbbrToFull();
+			//~ else {
+				//~ o.tmp_location = o.location;
+			//~ }
+		}
+		
+		//~ var x = /[\r\n]+([^,]*, *\w+)/.exec(o.location);
+		//~ if (x) {
+			//~ o.city = x[1];
+		//~ } else o.city = o.location;
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Chris_Campbell_facebook_company_reviews(d1);
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+		d2b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Chris_Campbell_facebook_company_reviews(d1b);
+		}
+		document.body.appendChild(d2b);
+		//
+		var d2c = document.createElement('input');
+		d2c.setAttribute('type','button');
+		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+		d2c.value = 'N/A';
+		d2c.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ var x = document.getElementById('Q1Url');
+			//~ if (x.value == '' || x.value == 'http://') {
+				//~ x.value = 'not found';
+				//~ 
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			//~ }
+		}
+		document.body.appendChild(d2c);
+		/* END ITEMS */
+		
+		d2.value  = o.comp + ' ' + o.state;
+		d2b.value = o.comp + ' ' + o.tmp_location; // + ' ' + o.phone
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		ef.mouseup__delete_range({
+			element: d2,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
+		ef.mouseup__delete_range({
+			element: d2b,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
+		//~ ef.mouseup__delete_range(d2b);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		//~ // ...
+		//~ var ll = {
+			//~ lat:'',
+			//~ lng:''
+		//~ }
+		
+		// ...
+		Chris_Campbell_facebook_company_reviews(d1);
+		Chris_Campbell_facebook_company_reviews(d1b);
+		//~ Morgan_Intrator_fb_schools_geo();
+		//~ 
+		//~ function felix_greaves_fb_hospitals_geo() {
+			//~ MT___google_api_geocode(o.location, function(lat,lng) {
+				//~ 
+				//~ if  (
+					//~ !lat ||
+					//~ !lng ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lng)
+					//~ )
+				//~ {
+					//~ //
+				//~ } else {
+				//~ 
+					//~ ll.lat = lat;
+					//~ ll.lng = lng;
+				//~ }
+				//~ 
+				//~ console.log(ll);
+				//~ 
+				//~ if (d2b.value != '')
+					//~ felix_greaves_fb_hospitals(d1b);
+				//~ 
+			//~ }, false, true);
+		//~ }
+		
+		function Chris_Campbell_facebook_company_reviews(div) {
+			
+			var out = div;
+			out.innerHTML = '';
+			
+			var v;
+			if (out == d1)
+				v = d2.value;
+			else
+				v = d2b.value;
+				
+			// just type=page is used here (user ignored)
+			var u = 
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link'+
+				'&limit=10'+
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+			//~ }
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						out.innerHTML = '!r.data';
+						return;
+					}
+					
+					r = r.data;
+					
+					console.log(r);
+					
+					var c = 0;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						if (r[i].location) {
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+						out.appendChild(div);
+						
+						div.className	= r[i].link;
+						div.fblikes		= r[i].likes * 1;
+						div.bgc			= false;
+						div.pageErr_numRedirects = 0;
+						
+						//~ if (div.fblikes < 4) {
+							//~ div.style.backgroundColor = '#aaa';
+							//~ div.bgc = true;
+						//~ }
+						//~ 
+						
+						// tmp
+						var tmp = '';
+						tmp += MT__bold(r[i].name, o.comp_array);
+						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+						// loc
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								if (r[i].location[j].length > 0)
+									tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
+							}
+						}
+						// cat
+						if (r[i].category) {
+							var x = r[i].category;
+							tmp += '<br>'+x;
+						}
+						tmp += '<br>' + r[i].link;
+						// innerHTML
+						div.innerHTML = tmp;
+						// onclick
+						div.onclick = function() {
+							
+							// Turn off
+							this.onclick = function() {};
+							
+							// Get
+							Chris_Campbell_facebook_company_reviews__profile(this);
+						}
+						// onmouseover
+						div.onmouseover = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						// onmouseout
+						div.onmouseout = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = '';
+							}
+						}
+						
+						// Init this div if first!
+						//
+						//
+						if (c == 0) 
+							div.click();
+						
+						c++;
+						
+						//~ if (out == d1 && c == 0)  //XX
+						//~ if (div.fblikes >= 4) {
+						//~ }
+					}
+					
+					if (c == 0) {
+						out.innerHTML = '0';
+						return;
+					}
+					else
+					{
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:2000px;');
+						out.appendChild(div);
+					}
+				}
+			});
+		}
+		//<a class="_3wqb" href="https://www.facebook.com/CHAHVets?sk=reviews" id="u_0_1y" data-hovercard="u_0_1y" data-hovercard-instant="1" data-hovercard-offset-x="20">
+		//<a class="_g3j" href="https://www.facebook.com/CHAHVets?sk=reviews"></a><i class="_1uhg _3-9a img sp_m5zUGIMREvf sx_d83f9c"></i><div class="_1uhd"><span class="_g3i _50f7">Reviews</span>
+		function Chris_Campbell_facebook_company_reviews__profile(div) {
+			
+			var div = div;
+			
+			if (div.pageErr_numRedirects > 1) return;
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: div.className,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					//~ console.log(rs);
+					var r = /<script>window\.location\.replace\("(https:\\\/\\\/www\.facebook\.com\\\/[^"]+)"\);<\/script>/.exec(rs);
+					if (r) {
+						div.pageErr_numRedirects++;
+						div.className = r[1].replace(/\\/g, '');
+						
+						//~ console.log(div.className);
+						//~ return;
+						
+						Chris_Campbell_facebook_company_reviews__profile(div);
+						return;
+					}
+					
+					var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						var maxW = '50%';
+						if  (
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
+							)
+						{
+							//~ div.appendChild(document.createElement('br'));
+							//~ div.appendChild(document.createTextNode(' X X '));
+							div.style.border = '4px solid teal';
+							div.style.margin = '-4px -4px -4px -4px';
+							//return;
+							
+							maxW = '20%';
+						}
+						
+						var img = document.createElement('img');
+						img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
+						img.fblink = div.className;
+						
+						
+						//~ var rev = /<script>bigPipe\.onPageletArrive\(\{((.|\s)*?(?=\}\)<\/script>|$)|$)/.exec(rs);
+						//~ if (rev) {
+							//~ rev = '{' + rev[1] + '}';
+							//~ rev = JSON.parse(rev);
+							//~ console.log(rev);
+							//~ return;
+						//~ }
+						
+						
+						//CHAHVets?sk=reviews
+						//{"href":"https:\/\/www.facebook.com\/THESteakhouseCCLV\/reviews","key":"reviews","label":"Reviews"},
+						//
+						
+						var reviews = /\{"href":"https:\\\/\\\/www\.facebook\.com\\\/[^\\]+\\\/reviews","key":"reviews","label":"Reviews"\}/;
+						
+						//~ var reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+						
+						reviews = reviews.exec(rs);
+						if (!reviews) {
+							reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+							reviews = reviews.exec(rs);
+							if (reviews) {
+								reviews = __js_clean_html_str(reviews[1]);
+							}
+						} else {
+							console.log(reviews);
+							reviews = JSON.parse(reviews[0]).href;
+							console.log(reviews);
+						}
+						if (reviews) {
+							
+							//~ var x = __js_clean_html_str(reviews[1]);
+							if (/^https:\/\/www\.facebook\.com\/[^\/]+$/.exec(reviews)) {
+								reviews = reviews.replace(/\?sk=reviews/i, '/reviews');
+							}
+							
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode(reviews));
+							
+							img.reviewsURL = reviews;
+							img.style.border = '4px solid blue';
+							img.onclick = function(e) {
+								this.style.border = '4px dashed blue';
+								var i = this.reviewsURL;
+								
+								document.getElementById('web_url').value = i;
+								
+								new AMT___core_factory().nextTab();
+								doSubmit();
+								
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
+							}
+						}
+						else
+						{
+							img.onclick = function(e) {
+								this.style.border = '4px dashed blue';
+								var i = this.fblink;
+								
+								document.getElementById('web_url').value = i;
+								
+								new AMT___core_factory().nextTab();
+								doSubmit();
+								
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
+							}
+						}
+						
+						img.src = r;
+						div.appendChild(img);
+					}
+				}
+			});
+		}
+	}
+	
 	//
 	// felix greaves
 	// -SimpleSearch, Find the Facebook page of these hospitals
@@ -11307,6 +12273,99 @@ function MT__RUN() {
 	}
 	
 	//
+	// William W. Bunker
+	// -SimpleSearch
+	// Go to the given WinnCompanies link and record the property's names and addresses
+	s = '<p>Go to this link: http://www.winnco.com/winnresidential/propertysearch</p>';
+	if (ih.indexOf(s) != -1)
+	{	
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//$('#formTable tr:last').after('<tr><td><input type="text" class="name"/></td><td><input type="text" class="address"/></td></tr>');
+
+		//http://winn.prospectportal.com/Apartments/module/properties/
+		
+		var city = document.getElementsByTagName('td')[1].innerText.trim();
+		
+		var data = 'property_search%5Bproperty_type_id%5D=&property_search%5Bcountry_code%5D=&property_search%5Bstate_code%5D=&property_search%5Bcompany_region_id%5D=&property_search%5Bcity%5D=&property_search%5Bcompany_area_id%5D=&property_search%5Bmin_rent%5D=&property_search%5Bmax_rent%5D=&property_search%5Bmin_square_feet%5D=&property_search%5Bmax_square_feet%5D=&property_search%5Bnumber_of_bedrooms%5D=&property_search%5Bnumber_of_bathrooms%5D=&property_search%5Ballow_dogs%5D=&property_search%5Ballow_cats%5D=&property_search%5Bshow_available_only%5D=&property_search%5Bby_search_areas%5D=1&property_search%5Bmiles_radius%5D=&property_search%5Bpostal_code%5D=&property_search%5Bmove_in_date%5D=&property_search%5Byear_built%5D=&property_search%5Ballow_smoking_only%5D=&property_search%5Bstandard_amenity_ids%5D%5B%5D=&page_no=1&page_size=20';
+			
+		data = data.replace('state_code%5D=', 'state_code%5D=' + '');
+		data = data.replace('property_search%5Bcity%5D=', 'property_search%5Bcity%5D=' + encodeURIComponent(city));
+		
+		var table = document.getElementById('formTable');
+		
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: 'http://winn.prospectportal.com/Apartments/module/properties/',
+			data: data,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+				
+				var r = /propertiesAndAreas\[\d+\] = \{((.|\s)*?(?=\}|$)|$)/g;
+				var m;
+				var first = true;
+				while (m = r.exec(rs)) {
+					
+					console.log(m[1]);
+					
+					//~ console.log(m[1].replace(/'/g, '"'));
+					
+					m[1] = m[1].replace(/'/g, '"');
+					m[1] = m[1].replace('"listing_id":intListCount,', '');
+					m[1] = m[1].replace(/"gp":[^,]*,/, '');
+					m[1] = m[1].replace(/,[\r\n\t\s]*"phone_number":[\d\D]+/, ''); // truncate
+					m[1] = m[1].replace(/Number\([^,]*,/, '');
+					//~ m[1] = m[1].replace(/"thumbnail": [^,]*,/, '');
+					//~ m[1] = m[1].replace(/\d+\)\.src=[^,]*,/, '');
+					
+					console.log(m[1]);
+					
+					var pr = JSON.parse('{'+m[1]+'}');
+					
+					//~ var pr = JSON.parse('{'+m[1].replace(/'/g, '"')+'}');
+					
+					
+					// FIRST run?
+					if (first) {
+						first = false;
+						var t = table.getElementsByTagName('input');
+						t[0].value = pr.property_name;
+						t[1].value = pr.city;
+						continue;
+					}
+					
+					var tr = document.createElement('tr');
+					table.appendChild(tr);
+					var td = document.createElement('td');
+					tr.appendChild(td);
+					var input = document.createElement('input');
+					input.setAttribute('type', 'text');
+					input.className = 'name';
+					td.appendChild(input);
+					input.value = pr.property_name;
+					var input = document.createElement('input');
+					input.setAttribute('type', 'text');
+					input.className = 'address';
+					td.appendChild(input);
+					input.value = pr.city;
+				}
+			}
+		});
+		
+	}
+	//
 	// Amanda Webb
 	// -SimpleSearch
 	// Retrieve email addresses from AAPC Web Site
@@ -11314,10 +12373,7 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
-		//~ GM_addStyle('input {width:60%;}');
-		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
-		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
 		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
@@ -11529,6 +12585,316 @@ function MT__RUN() {
 						Amanda_Webb_charolaisusa_people__profile(__js_clean_html_str(m[1]));
 					}
 					
+				}
+			});
+		}
+	}
+	
+	//
+	// Amanda Webb
+	// -SimpleSearch
+	// 
+	s = 'Find the member data for the Gelbvieh member associated with the Member ID provided. Collect the following fields of information on EACH member, if available:';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var num = /and enter (\d+) in the/.exec(ih)[1].trim();
+		
+		// ...
+		Amanda_Webb_Gelbvieh_people();
+		
+		document.getElementById('submitButton').onclick = function() {
+			var x = document.getElementsByTagName('input');
+			for (var i in x) {
+				if (i == 'length') break;
+				x[i].value = x[i].value.trim();
+			}
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		
+		// ...
+		//~ function Amanda_Webb_Gelbvieh_people__profile(u) {
+			//~ 
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
+				//~ url: 'http://search.charolaisusa.com/' + u,
+				//~ onload: function (response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200) {
+						//~ exit(response.status);
+					//~ }
+					//~ 
+					//~ var r;
+					//~ var sbm = true;
+					//~ 
+					//~ console.log(rs);
+					//~ 
+					//~ //
+					//~ r = /Acct Name:<\/span><span id="MainContent_regname" class="memlkdata">([^<]*)<\/span>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('acctname').value = r;
+					//~ } else
+						//~ sbm = false;
+					//~ 
+					//~ //3M FARM<br/>MICHAEL R RUST<br/>976 COUNTY ROAD 2150 E<br/>SECOR, IL    61771
+					//~ r = /<span id="MainContent_address" class="memlkdata">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs); //
+					//~ if (r) {
+						//~ r = r[1].trim().split('<br/>');
+						//~ if (r.length < 1) sbm = false;
+						//~ 
+						//~ // empty fields
+						//~ for (var i = 1; i <= 4; i++) {
+							//~ document.getElementById('address' + i).value = '';
+						//~ }
+						//~ // ...
+						//~ var c = 1;
+						//~ for (var i in r) {
+							//~ 
+							//~ r[i] = __js_clean_html_str(r[i]).trim();
+							//~ 
+							//~ if (/[<>]/.exec(r[i])) sbm = false; // arrows
+							//~ 
+							//~ // city,state,zip
+							//~ if (i == r.length - 1) { // is last!
+								//~ var r2 = /^([^,]*),[\r\n\t\s]*([\w]+)[\r\n\t\s]*([\d\-]+)$/.exec(r[i]);
+								//~ if (r2) {
+									//~ document.getElementById('city').value	= __js_clean_html_str(r2[1]).trim();
+									//~ document.getElementById('state').value	= __js_clean_html_str(r2[2]).trim();
+									//~ document.getElementById('zip').value	= __js_clean_html_str(r2[3]).trim();
+								//~ } else {
+									//~ sbm = false;
+								//~ }
+								//~ break;
+							//~ }
+							//~ 
+							//~ // address
+							//~ var x = document.getElementById('address' + c);
+							//~ if (!x) sbm = false;
+							//~ else
+								//~ x.value = r[i];
+							//~ 
+							//~ c++;
+						//~ }
+					//~ } else
+						//~ sbm = false;
+					//~ 
+					//~ document.getElementById('phone').value   = '';
+					//~ document.getElementById('fax').value     = '';
+					//~ document.getElementById('email').value   = '';
+					//~ document.getElementById('webpage').value = '';
+					//~ 
+					//~ //
+					//~ r = /<span id="MainContent_phone" class="memlkdata">([^<]*)<\/span>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('phone').value = r;
+					//~ } else
+						//~ sbm = false;
+					//~ //
+					//~ r = /<span id="MainContent_fax" class="memlkdata">([^<]*)<\/span>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('fax').value = r;
+					//~ } else
+						//~ sbm = false;
+					//~ //<a id="MainContent_emaillink" class="memlkdataHyper" href="mailto:sheppard@kansas.net">
+					//~ //<a id="MainContent_emaillink" class="memlkdataHyper"></a>
+					//~ r = /<a id="MainContent_emaillink" class="memlkdataHyper"[^>]*>([^<]*)<\/a>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('email').value = r;
+					//~ } else
+						//~ sbm = false;
+					//~ //
+					//~ r = /<a id="MainContent_hpagelink" class="memlkdataHyper"[^>]*>([^<]*)<\/a>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('webpage').value = r;
+					//~ } else
+						//~ sbm = false;
+						//~ 
+					//~ 
+					//~ console.log(sbm);
+					//~ if (sbm)
+						//~ doSubmit();
+					//~ else
+						//~ document.body.style.backgroundColor = 'LightGreen';
+				//~ }
+			//~ });
+		//~ }
+		// ...
+		function Amanda_Webb_Gelbvieh_people() {
+			
+			var data = '__VIEWSTATE=%2FwEPDwUKMjA4ODU4NzY4Mw9kFgICAQ9kFgICAg9kFgICBw9kFgICAg9kFgICAg8PFgIeC05hdmlnYXRlVXJsBVZqYXZhc2NyaXB0Ol92aWV3aGVscCgnaHR0cDovL21pc2MuZ2VsYnZpZWgub3JnL2hlbHB2aWV3ZXIvdmlld2VyLmFzcHg%2FcHJvamlkPTEmaWR4PTUnKWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYBBQlzZWFyY2hidXR0VbZ%2Bq2Hjf%2FBGHAU6Y71AT1Dev1FO2RGgd7GydcRqqA%3D%3D&__EVENTVALIDATION=%2FwEdAEfNw%2Fy9mKX9h76JRG51lE1rGEYF1qZtRK%2FQ7R%2Fn%2BcdUjw5bw3QJg6Ir8sKVc07lNQ42SZyr3QOvU0iDcGGgsECDzWtGLe0C8hdiRgcv%2FEJRMcKlowCrLRLlvSjT5TK64zilVn6PZKRHrotnx8obk01vf%2F8xUop9PU%2FJBZ%2BMbGeeNFjMk92i%2FnJV7IoOZhEdDlsVf1z0grnXEeo3PqEISameUVZdFrUiW9nRs9Cin0tPnKj1OhZ%2FKrh%2BRBck6t37Cp3Cu6RBHUNOwXQ3eU3%2BJ2GP6Yw9wzzF2uOKcrMwGrW0GsRhYpGX68jSlwP7fMs7Om8zQY5oPO4nWaZ6MKk2yFexzPQ0cpHFnr0vKvY3v3CUYjBdVPgzzV65S567KQCh5lCQmczqnDgiNjfskRSEq5HsHyq7o1bbhoWf4wOTNbjvS%2BX0zMUsp4T2oSZ6%2BA7joVNWCK1W1p4WDlAHQ9D4o3MF4Wi%2FvomKnm%2B8%2FuD4evbF%2BHAkKb1NwXXtHEULaGulSemNTgMXgcIWK%2FnhDM1hoDq6nvFZU5PLpmoyYRe1Ee%2FUWezZ71DdaxwqObkq0Upz0HKeE3u1Rer2S7m1sMy0IcsNgQKjbDPzHPGR01cSwzprtq42u8thyHaCLwS9HuD5iln92i1UQoJJ8k0XNQKLfp7HyvqaB3qSTnpkDu6r7nW%2FlAD9CnO%2B%2FZb0dwt%2F%2FL9jM91SONj4%2FoNlGxqVQ%2FTD5EnAE5ZgcUlH2aQ4723cBRPzOtNY1ikZi1s9wv96HbKiCLTfQOQ2MgKMDJvgFg2IkO5cBfBeKiNw7Xz6pzS1VGQMCmblgXYnDSBk5DXhWcACG35AqAj%2BpS13FJ3WQ%2BCQU6w1XDdRJyfN2bAich9mvmceOyTiTFIbXbjTA%2FfizIy3IrDndF4HszoSirh4XxpWfHLQv8%2BqK%2FeQIVe50JBCV0JFjYsQd3dG%2BxC9tGim%2B48kl5idWh1Wd0hNi1vax6IAtNWokBQQihATgoZTe0suAjd82DPHFfk%2BwghTn%2B9Ow9iYxWALTc%2BI5Hwo50QLwppm%2F8I6AGTkJj2UWTOwueUFb2ReINxsVuabGc8T%2FC4Xgb4DAHmqJf%2B2KZ%2FosmoL2MvR%2FXogesJE%2F5GR9NfUn5mhfA%2FcjoAnFu%2Fr%2B5r7cJHFgQ8Uys59jGh0zDqNA%2FoTzgJ7U8gJq%2F83AgntpLV1k17iIGliuPO%2FYdUypEbRoKT0VizzYv05beCh1mVZaJdtsln8xwpmUebYys%2FdybwNzSxfxZioFVBc1NzCZ2EMjmvhBy0kc5gCfDcBQl1vuicfTrF%2Bkrp1%2F10lLlq%2Bv22LG5nglAQ0swDyVDW0v9Fw3UCAG7BFpyTS4WBWPsIwOh0VWFWp6CHPyAn1rOegRmsn39tZ5EIFY8lbEzH3u6H1ew5ygZaHaZ6CCkM5Jwto69uF%2F25AQeVZpiCpTcpcAdBYfNBdqG%2FnBVeYo0BryYNeE8w0V3m5M6lmVnrEp0MA1rlEH2sGxsE%2BUCdkOMCfOinRDdaOQUK%2BT%2FT%2Be3fgJCG60lGuQQxwMoRsZjsG%2FGHYexQUEFYRm4Tk&memnumsel=&Farmsel=&lastsel=&citysel=&provsel=++&lettsel=&searchbut.x=0&searchbut.y=0';
+			
+			data = data.replace('memnumsel=', 'memnumsel=' + num);
+			
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: 'http://search.gelbvieh.org/memsch.aspx',
+				data: data,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					if (rs.indexOf('Member #:</td><td>'+num+'</td>') == -1) {
+						console.log(rs);
+						return;
+					}
+					
+					var sbm = true;
+					
+					var r;
+					
+					//
+					r = />Ranch Name:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('ranchname').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					var d = document.getElementById('firstname');
+					r = />Name:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						r = r.replace(/^(\w+) \w (\w+)$/, '$1 $2');
+						r = r.split(' ');
+						
+						d.value = r[0];
+						
+						if (r.length > 1) {
+							document.getElementById('lastname').value = r.slice(1).join(' ');
+							if (r.length > 2) {
+								d.style.border = '2px solid LightGreen';
+								sbm = false;
+							}
+						} else {
+							d.style.border = '2px solid LightGreen';
+							sbm = false;
+						}
+					} else {
+						d.style.border = '2px solid LightGreen';
+						sbm = false;
+					}
+					//
+					r = />City:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('city').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />State\\Prov:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('state1').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Prefix:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('type').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Address:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('address1').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Address2:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('address2').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Zip:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('zip').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Phone:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('phone1').value = r;
+						
+						if (r.indexOf(' ') != -1 && r.length >= 16) { //931-648-0701 H
+							sbm = false;
+							console.log('1');
+						}
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Fax:<\/td><td>([^<]*)<\/td><td><\/td>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('fax').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Email:<\/td><td>(<a href='mailto:([^']*)'>[^<]*<\/a>|)<\/td><td><\/td>/i.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[2]).trim();
+						document.getElementById('email').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					//
+					r = />Home Page:<\/td><td>(<a *target *= *'[^']*' *href='([^']*)'>[^<]*<\/a>|)<\/td><td><\/td>/i.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[2]).trim();
+						document.getElementById('website').value = r;
+					} else {
+						sbm = false;
+						console.log('1');
+					}
+					
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
 				}
 			});
 		}
@@ -43525,12 +44891,15 @@ qatar,80
 	}
 	
 	/**
-	 * LI people
+	 * LinkedIn.com people search_func
+	 * 
+	 * Seth Redmore
 	 */
 	//
 	// Seth Redmore
 	// Find the physical location for each contact (i.e. country)
-	// 
+	// Includes create_annotation_to_output_fields
+	// EX: https://s3.amazonaws.com/mturk_bulk/hits/116938475/VrC4RQtpiZyUIFZKEwNAFQ.html?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=34O39PNDK68EBRNUI4ZRY3IATUTBR2?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=34O39PNDK68EBRNUI4ZRY3IATUTBR2
 	s = '	<li>Enter the City, State/Province, and Country for each contact.</li>';
 	if (ih.indexOf(s) != -1) {
 		
@@ -66862,6 +68231,7 @@ qatar,80
 	// Find the homepage URL for Organizations
 	// Feb. 11, 2014
 	// Includes Hover Div scrape.
+	// TODO: Add skip/float functionality. This will minimize R&A. Yield seems to be only about 50%-75%.
 	s ='<p style="margin-left:-49.5pt;">You will be given the name of an organization, and state (if available). <strong>You must enter the given information into</strong> <strong>google.com</strong> <strong>and find the homepage URL for each organization.&nbsp; </strong>The correct answer should be one of the top 10 results.</p>';
 	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
 		console.log('');
@@ -66894,16 +68264,17 @@ qatar,80
 			this.style.backgroundColor = 'LightGreen';
 			q.value = "N/A";
 			
-			// showNextTab OR nextTab
-			if(FOUND_ONE_NONSKIP) {
-				//showNextTab();
-				// nextTab only when manual
-				new AMT___core_factory().nextTab();
-			} else {
-				
-			}
-			
+			new AMT___core_factory().nextTab();
 			doSubmit();
+			
+			//~ // showNextTab OR nextTab
+			//~ if(FOUND_ONE_NONSKIP) {
+				//~ //showNextTab();
+				//~ // nextTab only when manual
+				//~ new AMT___core_factory().nextTab();
+			//~ } else {
+				//~ 
+			//~ }
 		}
 		//
 		var HOST = GM_getValue('MT__torHost');
@@ -67067,9 +68438,18 @@ qatar,80
 		d3.value = o.comp;
 		d3b.value= '"' + o.comp + '" ' + o.state_abbr;
 		if (o.state_abbr != '')
-			d3c.value= '"'+o.comp+'" '+o.state_abbr.stateAbbrToFull()+'';
-		
-		console.log(o.state_abbr.stateAbbrToFull());
+			d3c.value= '"'+o.comp+'" '+o.state_abbr.stateAbbrToFull()+''; // state abbr to state full
+		else { // three or more words?
+			var x = o.comp.split(' ');
+			if (x.length > 2) {
+				x = x.slice(0, 2); // start, ends at but does not include
+				
+				d3c.value = '"'+x.join(' ')+'"';
+				d3c.style.border = '4px dashed blue';
+			}
+		}
+		//~ 
+		//~ console.log(o.state_abbr.stateAbbrToFull());
 		
 		// ...
 		var load_first = true;
@@ -67175,13 +68555,27 @@ qatar,80
 					
 					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 					
+					// Replace <b> with `
+					//
 					match[2] = match[2].replace(/<b>/g, '`');
 					match[2] = match[2].replace(/<\/b>/g, '``');
 					match[2] = match[2].replace(/<[^>]+>/g, ' ');
 					match[2] = match[2].replace(/[<>]/g, ' ');
+					
+					// js clean
+					match[2] = __js_clean_html_str(match[2]);
+					
+					// Add bold (bold_array)
+					// It is OK to do this here, or it is also
+					// OK to do it after re-inserting the <b>
+					// bold elements.
+					match[2] = MT__bold(match[2], bold_array);
+					
+					// Replace ` with <b>
 					match[2] = match[2].replace(/``/g, '</b>');
 					match[2] = match[2].replace(/`/g, '<b>');
 					
+					// ...
 					x = match[1];
 					
 					// trailing
@@ -67212,9 +68606,6 @@ qatar,80
 					// trailing (leave trailing slash)
 					x = match[1].replace(/(\w+)\/[^$]*$/, '$1/'); // leave trailing slash
 					
-					// add bold (bold_array)
-					match[2] = MT__bold(match[2], bold_array);
-					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/)www\./, '$1');
 					
@@ -67238,13 +68629,13 @@ qatar,80
 					
 					// textarea
 					var txa = document.createElement('textarea');
-					txa.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa.setAttribute('style','width:100%;zoom:0.8;cursor:pointer;padding:0;margin:0;');
 					txa.readOnly = true;
 					txa.value = match[1]; //x;
 					d.appendChild(txa);
 					// textarea2
 					var txa2 = document.createElement('textarea');
-					txa2.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa2.setAttribute('style','width:100%;zoom:0.8;cursor:pointer;padding:0;margin:0;');
 					txa2.readOnly = true;
 					txa2.value = x;
 					d.appendChild(txa2);
@@ -67349,14 +68740,19 @@ qatar,80
 			// and none of the three have 
 			// TOTAL_CALLS AND FOUND_ONE_NONSKIP
 			TOTAL_CALLS++;
-			if (TOTAL_CALLS == 3) {
-				if (!FOUND_ONE_NONSKIP) {
-					//~ na.click(); // na button
+			if  (
+					(TOTAL_CALLS == 2 && d3c.value == '') ||
+					(TOTAL_CALLS == 3 && d3c.value != '')
+				)
+			{
+				if (!FOUND_ONE_NONSKIP)
+				{
+					na.click(); // na button
 					//~ return;
 				}
 				// All three windows have completed
 				// and the first domain is same across all three
-				else if (ARRAY_FIRST_FINDS.length == 3) {
+				if (ARRAY_FIRST_FINDS.length == 3 && d3c.value != '') {
 					//d1, d1b, d1c
 					var divs = [d1, d1b, d1c];
 					var x;
@@ -67365,7 +68761,17 @@ qatar,80
 						x.style.border = '6px solid LightGreen';
 					}
 				}
-				
+				// All two windows have completed
+				// and the first domain is same across all three
+				else if (ARRAY_FIRST_FINDS.length == 2 && d3c.value == '') {
+					//d1, d1b, d1c
+					var divs = [d1, d1b];
+					var x;
+					for (var i in divs) {
+						x = divs[i].getElementsByTagName('textarea')[0];
+						x.style.border = '6px solid LightGreen';
+					}
+				}
 				// addToTabsQ
 				//addToTabsQ();
 			}
@@ -67678,7 +69084,8 @@ qatar,80
 		
 		b2 = /City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
 		b3 = /State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
-		
+		var hasZipCodeOn3 = true;
+
 		if (b2 && b3) {
 			b2 = __js_clean_html_str(b2[1]).replace(/\s+/g, ' ').trim();
 			b3 = __js_clean_html_str(b3[1]).replace(/\s+/g, ' ').trim();
@@ -67705,12 +69112,42 @@ qatar,80
 					b3 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
 				}
 				else {
-					/*<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>15003 FM 529 Rd ,</b></span><b style="">Houston ,</b><b style="">TX&nbsp;,</b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">77095 ,</b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">USA</b></p>*/
+					 
+					//~ 1: "Green Street Interiors"
+					//~ 2: "5625980903"
+					//~ 3: "10660 Los Alamitos Blvd ,"
+					//~ 4: "Los Alamitos ,"
+					//~ 5: "CA"
+					//~ 6: "90720,"
+					//~ 7: "USA"
+					hasZipCodeOn3 = false;
 					
+					 x = /<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Company:&nbsp;<b>([^&]*)&nbsp;<\/b><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-family: Arial, sans-serif; font-size: 12px;">Phone:&nbsp;<\/span><b style="font-family: Arial, sans-serif; font-size: 12px;">([^<]*)<\/b><span style="font-size: 9pt; font-family: Arial, sans-serif;"><o:p><\/o:p><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>([^<]*)<\/b><\/span><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">([^<]*)<\/b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">([^&]*)&nbsp;,<\/b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">([^&]*)&nbsp;([^<]*)<\/b><\/p>/.exec(ih);
+					 
+					 
+					 if(x) {
+						console.log(x);
+						 b2 = __js_clean_html_str(x[4]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // city
+						 b3 = __js_clean_html_str(x[5]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state						 
+					 }
+					 else {
+						//Something new
+					 }
 				}
+				
+				
 			}
-			// zip
-			var z = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
+			console.log(x);
+			
+			var z;//zip
+			if(!hasZipCodeOn3) {
+				z = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
+			}
+			else {
+				//Zip code is on 6
+				z = __js_clean_html_str(x[6]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();				
+			}
+			
 			z = (z.length == 4) ? '0' + z : z;
 			o.zip = z;
 			
@@ -86009,7 +87446,8 @@ qatar,80
 		var COUNT_PROXY;// = GM_getValue('AMT__Brittany_Graham_rv_emp_proxy');
 		
 		// var max_on_regular init yahoo proxy
-		var MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
+		//~ var MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
+		var MAX_INIT_REQUESTS_WITHOUT_PROXY = 20;
 		
 		//
 		var initial_searches = {
@@ -86210,8 +87648,12 @@ qatar,80
 				doSubmit();
 			}
 		}
-		// LOAD A MANTA URL DIRECTLY !
-		// Or read it from the cache if already loaded.
+		/**
+		 * function Brittany_Graham_rv_emp__manta_direct_url
+		 * 
+		 * LOAD A MANTA URL DIRECTLY !
+		 * Or if it has already been loaded then read it from the cache variable.
+		 */
 		function Brittany_Graham_rv_emp__manta_direct_url(input, callback_function) { //
 			
 			var input = input;
@@ -86229,31 +87671,177 @@ qatar,80
 			}
 			else
 			{
-				// DIRECT LOAD !!
-				GM_xmlhttpRequest({ // init
+				// PERFORM A GOOGLE SCRAPE HERE.
+				// GOOGLE does not need a catch include as it is already in get-page.php.
+				// https://webcache.googleusercontent.com/search?q=cache:www.manta.com/c/mm7kr8m/ic-tronics-inc+&cd=10&hl=en&ct=clnk&gl=us
+				
+				var url = 'https://webcache.googleusercontent.com/' + 
+						'search?q=cache:'+encodeURIComponent(input.manta_url)+'&hl=en&gl=us';
+				
+				url = AMT___POPUP___PROXY_REDACTED_ +
+					'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(url)+
+					'&short_filename='+encodeURIComponent(input.manta_url);
+					
+				// Init
+				//
+				//
+				GM_xmlhttpRequest({
 					method: "GET",
-					url: input.manta_url,
+					url: url,
 					onload: function(response) {
-						var rs = response.responseText;
-						
-						if  (
-							response.status != 200 ||
-							rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
-							rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
-							)
-						{
-							d1.style.backgroundColor = 'yellow';
-							console.log('X');
-							return;
-						}
-						
-						pages[input.manta_url]	= rs;
-						pages[input.id]			= rs;
-						callback_function(input, rs);
-						
-						//console.log(rs);
+						//
 					}
 				});
+				// Wait complete
+				//
+				//
+				var xint = setInterval(function() {
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(input.manta_url),
+						onload: function(response) {
+							var rs = response.responseText;
+							
+							if (rs.trim() != '') {
+								clearInterval(xint);
+							} else
+								return;
+								
+							if  (
+								rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+								rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1 ||
+								rs.indexOf('was not found on this server.') != -1 ||
+								rs.indexOf('<p><b>404.</b> <ins>That’s an error.</ins>') != -1
+								)
+							{
+								d1b.style.backgroundColor = 'yellow';
+								
+								// DIRECT LOAD !!
+								GM_xmlhttpRequest({ // init
+									method: "GET",
+									url: input.manta_url,
+									onload: function(response) {
+										var rs = response.responseText;
+										
+										if  (
+											response.status != 200 ||
+											rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+											rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
+											)
+										{
+											d1.style.backgroundColor = 'yellow';
+											return;
+										}
+										
+										// SET CACHE
+										pages[input.manta_url]	= rs;
+										pages[input.id]			= rs;
+										callback_function(input, rs);
+									}
+								});
+								return;
+							}
+							
+							// SET CACHE FOR BOTH "ID" AND "MANTA_URL" !!
+							//
+							//
+							pages[input.id] = rs;
+							if (input.manta_url)
+								pages[input.manta_url] = rs;
+							
+							// ...
+							//
+							//
+							callback_function(input, rs);
+						}
+					})
+				}, 1000);
+			
+				
+				//~ var u = 'https://webcache.googleusercontent.com/' + 
+						//~ 'search?q=cache:'+encodeURIComponent(input.manta_url)+'&hl=en&gl=us';
+				//~ u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				//~ 
+				//~ GM_xmlhttpRequest({ // init
+					//~ method: "GET",
+					//~ url: u,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ if  (
+							//~ response.status != 200 ||
+								//~ (
+								//~ rs.indexOf('was not found on this server.') != -1 &&
+								//~ rs.indexOf('That’s an error.') != -1
+								//~ ) ||
+							//~ rs*1 > 200 // e.g. "400"
+							//~ )
+						//~ {
+							//~ // Did not load. Try manta.com.
+							//~ d1b.style.backgroundColor = 'LightGreen';
+							//~ 
+							//~ // DIRECT LOAD !!
+							//~ GM_xmlhttpRequest({ // init
+								//~ method: "GET",
+								//~ url: input.manta_url,
+								//~ onload: function(response) {
+									//~ var rs = response.responseText;
+									//~ 
+									//~ if  (
+										//~ response.status != 200 ||
+										//~ rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+										//~ rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
+										//~ )
+									//~ {
+										//~ d1.style.backgroundColor = 'yellow';
+										//~ console.log('X');
+										//~ return;
+									//~ }
+									//~ 
+									//~ pages[input.manta_url]	= rs;
+									//~ pages[input.id]			= rs;
+									//~ callback_function(input, rs);
+									//~ 
+									//~ //console.log(rs);
+								//~ }
+							//~ });
+							//~ return;
+						//~ }
+						//~ 
+						//~ 
+						//~ // WORKED
+						//~ pages[input.manta_url]	= rs;
+						//~ pages[input.id]			= rs;
+						//~ callback_function(input, rs);
+					//~ }
+				//~ });
+				
+				// OLD AUG5 2014
+				//~ // DIRECT LOAD !!
+				//~ GM_xmlhttpRequest({ // init
+					//~ method: "GET",
+					//~ url: input.manta_url,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ if  (
+							//~ response.status != 200 ||
+							//~ rs.indexOf('It looks like you\'ve been very active on Manta&mdash;and that\'s great! Do us a favor and confirm you are human by filling out the bold type below.') != -1 ||
+							//~ rs.indexOf('It looks like the characters you entered did not match the image. Please help us out by reentering the characters in bold type below.') != -1
+							//~ )
+						//~ {
+							//~ d1.style.backgroundColor = 'yellow';
+							//~ console.log('X');
+							//~ return;
+						//~ }
+						//~ 
+						//~ pages[input.manta_url]	= rs;
+						//~ pages[input.id]			= rs;
+						//~ callback_function(input, rs);
+						//~ 
+						//~ //console.log(rs);
+					//~ }
+				//~ });
 			}
 		}
 		/**
@@ -86434,7 +88022,8 @@ qatar,80
 
 		}
 		/**
-		 * function Brittany_Graham_rv_emp_address
+		 * function Brittany_Graham_rv_emp_cache
+		 *  XXXX function Brittany_Graham_rv_emp_address
 		 */
 		// Is this request cached?
 		// (@input or @btn)
@@ -86460,9 +88049,19 @@ qatar,80
 			//
 			//
 			if (input.id == input.manta_url) {
+				
+				// PERFORM A GOOGLE SCRAPE HERE.
+				// https://webcache.googleusercontent.com/search?q=cache:www.manta.com/c/mm7kr8m/ic-tronics-inc+&cd=10&hl=en&ct=clnk&gl=us
+				
+				// This is a direct from Manta scrape.
+				//
+				//
 				Brittany_Graham_rv_emp__manta_direct_url(input, callback_function);
+				
 				return;
 			}
+			
+			// Continue with a YAHOO cache page.
 			
 			// Continue
 			//
@@ -86585,17 +88184,21 @@ qatar,80
 			var match;
 			var o_url;
 			var manta_url;
-			//~ console.log(yahoo_rslt);
+			
+			console.log(yahoo_rslt);
 			
 			// ...
 			// loop
 			for (var i in yahoo_rslt) {
 				
-				if (count >= 10)
-					break;
+				//~ if (count >= 10)
+					//~ break;
 				
 				match		= yahoo_rslt[i];
 				manta_url	= match[1];
+				
+				
+				console.log(match);
 				
 				// UPDATE
 				// JULY 18 2014
@@ -86613,6 +88216,8 @@ qatar,80
 				}
 				
 				// Cache URL
+				// UPDATE AUG5 2014
+				//<a class="tri fc-3rd fz-2xs ml-10" href="http://cc.bingj.com/cache.aspx?q=%2bsite%3amanta.com%2f+ae+rugs+%22ca%22&d=5014444309154359&mkt=en-US&setlang=en-US&w=QbOch6YkErjoThhqUeIofHLHmHFcF9WT"
 				//
 				o_url = match[1]; // FOR CACHE ID
 				//
@@ -86638,6 +88243,7 @@ qatar,80
 						}
 					}
 				}
+				console.log(match[1]);
 				
 				// results highlight
 				// @param RESULTS_HL[]
@@ -86827,11 +88433,11 @@ qatar,80
 			var use_proxy = true;
 			// get current
 			COUNT_PROXY							= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy');
-			MAX_INIT_REQUESTS_WITHOUT_PROXY		= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests');
+			//~ MAX_INIT_REQUESTS_WITHOUT_PROXY		= GM_getValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests');
 			if (COUNT_PROXY == undefined || !COUNT_PROXY || COUNT_PROXY == NaN || !/^\d$/.exec(COUNT_PROXY))
 				COUNT_PROXY = 0;
 			if (MAX_INIT_REQUESTS_WITHOUT_PROXY == undefined || !MAX_INIT_REQUESTS_WITHOUT_PROXY || MAX_INIT_REQUESTS_WITHOUT_PROXY == NaN || !/^\d$/.exec(MAX_INIT_REQUESTS_WITHOUT_PROXY))
-				MAX_INIT_REQUESTS_WITHOUT_PROXY = 2;
+				MAX_INIT_REQUESTS_WITHOUT_PROXY = 20;
 			// COUNT_PROXY
 			if (COUNT_PROXY >= MAX_INIT_REQUESTS_WITHOUT_PROXY) {
 				COUNT_PROXY = 0;
@@ -86845,7 +88451,7 @@ qatar,80
 			GM_setValue('AMT__Brittany_Graham_rv_emp_proxy', COUNT_PROXY);
 			
 			if (use_proxy) {
-				Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out)
+				Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out);
 			}
 			else {
 				GM_xmlhttpRequest({ // init
@@ -86855,11 +88461,11 @@ qatar,80
 						var rs = response.responseText;
 						
 						if (rs.indexOf('Yahoo! - 999 Unable to process request at this time -- error 999') != -1) {
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 20);
+							//~ GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 40); // SET THIS ABOVE THE NORMAL. 
 							Brittany_Graham_rv_emp_yahoo_useProxyInitSearch(u, out);
 						}
 						else {
-							GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', 2); //2
+							//~ GM_setValue('AMT__Brittany_Graham_rv_emp_proxy_maxRequests', MAX_INIT_REQUESTS_WITHOUT_PROXY); //AS ORIGINAL
 							Brittany_Graham_rv_emp_yahoo_processResponse(rs, out);
 						}
 					}
@@ -98652,7 +100258,7 @@ qatar,80
 		d2.style.fontSize='12px';
 		d2.style.display='none';
 		
-		document.getElementsByName('1 - Tax Year')[0].value = '2013';
+		//~ document.getElementsByName('1 - Tax Year')[0].value = '2013';
 		
 		// post to child
 		var ifr_intv = setInterval(function() {
@@ -109147,18 +110753,12 @@ function mturk_load()
 	// ENSURE THAN MT_CAPTCHA IS SET!
 	if (GM_getValue('mt_captcha') == undefined)
 		GM_setValue('mt_captcha', '0');
-		
 	if (GM_getValue('mt_captcha') != 0 && GM_getValue('mt_captcha') != 1)
 		GM_setValue('mt_captcha', '0');
 		
-	/*
-	 * 
-	 *OLD, use AMT
-	// Auto accept next hit
-	s = document.getElementsByName("autoAcceptEnabled");
-	if ( s[0] )
-		s[0].checked = true;*/
-		
+	
+	// This is the top window.
+	// And the HREF is https://www.mturk.com.
 	if (window.top == window.self && /^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href)) {
 
 		
@@ -109178,6 +110778,7 @@ function mturk_load()
 			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
 			)
 		{
+			console.log('Hit the "All HITs" page. Returning.');
 			return;
 		}
 		
@@ -109365,8 +110966,6 @@ function mturk_load()
 			}
 			
 			
-			
-			
 			// return
 			return;
 		}
@@ -109376,9 +110975,8 @@ function mturk_load()
 		AMT___returnAndAcceptButton();
 		
 		/**
-		 * Scripts execute here if window.top == window.self
-		 * && href == mturk.com
-		 * return here!
+		 * Scripts execute here if window.top == window.self && href == mturk.com
+		 * Returns afterwards.
 		 * 
 		 * AMT__Global_Vars.isTopWindow
 		 * AMT__Global_Vars.isPreview
@@ -109396,6 +110994,7 @@ function mturk_load()
 		// Add event listener (will only do this if Iframe is on the page)
 		new AMT___core_factory()
 			.top_window__addEventListener_iframe();
+		AMT___InitializeReturnAndAcceptKeyPress();
 		
 		//~ var r = AMT___core_factory().top_window__addEventListener_iframe();
 		
@@ -109410,13 +111009,14 @@ function mturk_load()
 	
 	
 	
-	// still here?
-	// return if on mturk.com
+	// Still here?
+	// Return if on mturk.com
 	if (/^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href))
 		return;
 	
+	
 	// This is running at mturkcontent.com or amazonaws.com
-	// If top window or job isthen always run.
+	// If top window or job is ... then always run.
 	if  (
 		window.top == window.self ||
 		document.location.href.indexOf('assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE') == -1
@@ -109426,6 +111026,7 @@ function mturk_load()
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
+		AMT___InitializeReturnAndAcceptKeyPress();
 		console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
 			
 			
@@ -109470,7 +111071,13 @@ function mturk_load()
 					this.removeEventListener('click',arguments.callee,false)
 				}
 			}, false);
-		// run regardless
+			
+			
+		// Run regardless
+		//
+		//
+		//
+		
 		//********
 		// Tony Pavia
 		var s = 'Repeat step 2 and 3 for each contact # that you\'re shown in the HIT details above on this Staff List URL. Note that if the beginning of the contact # is the same as your previous hit (i.e. SDUSD_baypark_12,&nbsp; SDUSD_baypark_13,&nbsp; SDUSD_baypark_14, etc.), then the "URL of Staff List" remains the same.';
@@ -109532,9 +111139,12 @@ function mturk_load()
 				});
 			}
 		}
-		// return
-		return;
 		
+		// Return. End script now.
+		//
+		//
+		//
+		return;
 	}
 	// OLD //
 	/*// Page reload after request rate

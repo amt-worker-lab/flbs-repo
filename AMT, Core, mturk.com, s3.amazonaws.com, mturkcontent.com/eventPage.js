@@ -245,7 +245,27 @@ function isAQProduct(tabs, iterator) {
 	});
 }
 
+//Checks if the new activated tab is already in submission
+//If it is, then it switches it forward unless...
+//a) this is the SECOND time the user has arrived AFTER a submission has occurred
+//or b) this feature is turned off using AMT Core
+chrome.tabs.onActivated.addListener(function(tab) {
+	//~ console.log('tab changed');
+	//~ console.log(tab);
+	chrome.tabs.sendRequest(tab.tabId, {hasSubmittedQuery: true}, 
+	function(rs) {
+			//Squelch response
+		})
+});
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.toggleRAHotkey) {
+		localStorage['RAHotkey'] = request.toggleRAHotkey;
+	}
+	
+	if(request.getRAHotkey) {
+		sendResponse({RAHotkey:localStorage['RAHotkey']});
+	}
 	
 	/**
 	 * 
