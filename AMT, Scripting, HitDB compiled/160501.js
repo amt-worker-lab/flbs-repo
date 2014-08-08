@@ -3009,8 +3009,10 @@ HITStorage.indexedDB.create();
 if (document.location.href.match('https://www.mturk.com/mturk/dashboard'))
 {  
   var footer = document.getElementsByClassName('footer_separator')[0];
-  if (footer == null)
-    return;
+  if (footer == null) {
+		console.log('booter is HULL');
+		alert('footer is NULL');
+	}
  
   var extra_table = document.createElement('table');
   extra_table.width = '700';

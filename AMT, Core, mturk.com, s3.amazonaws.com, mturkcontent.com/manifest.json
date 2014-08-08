@@ -4,6 +4,7 @@
       "exclude_matches": [  ],
       "include_globs": ["https://*.mturk.com/*", "https://s3.amazonaws.com/*", "https://*.mturkcontent.com/dynamic/hit*"],
       "js": [
+		"includes/Chart.js",
 		"includes/jshash-2.2/md5.js",
 		"huge_vars.js",
 		"global.js",

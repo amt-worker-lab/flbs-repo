@@ -259,6 +259,13 @@ chrome.tabs.onActivated.addListener(function(tab) {
 });
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.getNTPassBy) {
+		sendResponse({NTPassBy:localStorage['NTPassBy']});
+	}
+	if(request.toggleNTPassBy) {
+		localStorage['NTPassBy'] = request.toggleNTPassBy;
+	}
+	
 	if(request.toggleRAHotkey) {
 		localStorage['RAHotkey'] = request.toggleRAHotkey;
 	}

@@ -55,6 +55,15 @@ var AMT__Global_Vars = //function()
 //~ console.log(AMT__Global_Vars.core);
 
 
+AMT__Global_Vars.initializeNextTabPassBy = function() {
+	chrome.extension.sendRequest({getNTPassBy: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.toggle_ntpassby = rs.NTPassBy;
+
+		});
+}
+
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
@@ -249,12 +258,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	else if(request.hasSubmittedQuery) {
-		//~ console.log('hasSubmittedQuery' + ', isTopWindow:' + AMT__Global_Vars.isTopWindow);
-		//First go-around numSubmitQueries = 0
-		//~ console.log(AMT__Global_Vars.isSubmitting);
-		//~ console.log(AMT__Global_Vars.numSubmitQueries);
-		//~ console.log(!AMT__Global_Vars.isPreview);
-		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview) {
+		console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
+		console.log(AMT__Global_Vars.isSubmitting)
+		console.log(AMT__Global_Vars.numSubmitQueries)
+		console.log(!AMT__Global_Vars.isPreview)
+		console.log(AMT__Global_Vars.toggle_ntpassby == 'On')
+		
+		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
 			AMT__Global_Vars.numSubmitQueries++;
 			new AMT___core_factory().nextTab();
 			//alert('here here');
@@ -2281,20 +2291,15 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
  * create__input_skip_button2
  * create__input_skip_button
  * 
+ * create_annotation_to_output_fields
+ * xhr_scrape_page
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function create_annotation_to_output_fields
- * 
- * @param options_object
- * 		options_object.parent_el
- * 		options_object.keyword_and_index_array
- * @optional
- * 		options_object.url
- * 		options_object.html
- * 		options_object.context_len
+ * function xhr_scrape_page
+ *
  */
 AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	
@@ -2499,10 +2504,18 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * OnMouseUp, focus to output_fields[current].
  * >> Callback function @ mouseup.
  * 
- * @param: {} options_object
+ * @return appendable inputs
+ * 
+ * @param {} options_object
  * @param options_object.textToAnnotate = String
  * @param options_object.output_fields = []
  * @param options_object.callback_mouseup = Function
+ * 
+ * @param appendToField
+ * @param appendToField_glue
+ *
+ * @param delimeter
+ * @param focusToField
  */
 AMT___items_factory.prototype.create_annotation_to_output_fields = function(options_object) {
 	
@@ -2510,7 +2523,13 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	//
 	//~ console.log(options_object);
 	
-	var s = options_object.textToAnnotate.split(' ');
+	// Delimeter
+	if (!options_object.delimeter)
+		options_object.delimeter = ' ';
+	
+	// The string
+	//
+	var s = options_object.textToAnnotate.split(options_object.delimeter);
 	var array_all_buttons = [];
 	var div = makeCont();
 	for (var i in s) {
@@ -2539,9 +2558,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		// If isDragging is true then
 		// reset the hover color!
 		if (isDragging) {
-			console.log(current_index);
-			console.log(array_all_buttons[current_index.start]);
-			array_all_buttons[current_index.start].style.backgroundColor = '';
+			
+			//~ console.log(current_index);
+			//~ console.log(array_all_buttons[current_index.start]);
+			
+			array_all_buttons[current_index.start].style.backgroundColor = '#fff';
 		}
 		isDragging = false;
 	}
@@ -2576,6 +2597,39 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		s = s.trim();
 		
+		//
+		//
+		//
+		if (options_object.hasOwnProperty('appendToField')) {
+			if (options_object.hasOwnProperty('appendToField_glue')) {
+				output_fields[0].value += options_object.appendToField_glue;
+			}
+			
+			if (options_object.hasOwnProperty('focusToField') && options_object.focusToField) {
+				output_fields[0].focus();
+			} else {
+				// It is necessary here to call blur(). The 
+				// focus() call will usually cause a *cancellation*
+				// of the "dragging" behavior. So when there is
+				// not the focus() call, blur() will also achieve
+				// *cancellation*.
+				output_fields[0].blur();
+			}
+			
+			output_fields[0].value += s;
+			output_fields[0].value = output_fields[0].value.trim();
+			
+			//~ output_fields[0].select();
+			//~ output_fields[0].focus();
+			
+			// CALLBACK
+			if (options_object.callback_mouseup) {
+				options_object.callback_mouseup(s); // THIS SENDS BACK THE STRING ADDED
+			}
+			return;
+		}
+		 
+		//
 		for (var i in output_fields) {
 			if (output_fields[i].value == '') {
 				output_fields[i].value = s;
@@ -2583,6 +2637,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				output_fields[i].select();
 				output_fields[i].select();
 				
+				// CALLBACK
 				if (options_object.callback_mouseup) {
 					options_object.callback_mouseup(output_fields[i]);
 				}
@@ -2624,7 +2679,9 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	function appendButton(div, text, index) {
 		
 		var t = document.createElement('button');
-		t.setAttribute('style', 'border-radius:2px;');
+		t.setAttribute('type', 'button');
+		t.setAttribute('style', 'border-radius:2px;border:0;zoom:1.4;background-color:#fff;cursor:pointer;');
+		//~ t.setAttribute('style', 'border-radius:2px;border:1px solid blue;zoom:1.4;background-color:#fff;');
 		t.index = index;
 		t.innerHTML = text;
 		t.full_text = text;
@@ -2632,8 +2689,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		t.onmousedown	= function() {
 			
 			this.style.backgroundColor = 'LightGreen';
-			current_index.start = this.index;
-			current_index.end   = this.index;
+			current_index.start = this.index * 1; // WOW. MAKE SURE TO MULTIPLY BY 1. AT "10" THIS BECOMES A STRING.
+			current_index.end   = this.index * 1;
 			
 			//~ isActive = true;
 			isDragging = true;
@@ -2679,6 +2736,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
 				//~ }
 			}
+			
+			else
+			{
+				
+			}
 		}
 		
 		t.onmouseout	= function() {
@@ -2687,11 +2749,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				// RESET ALL HOVER COLOR!
 				if (current_index.start <= current_index.end) {
 					for (var i = current_index.start; i <= current_index.end; i++) {
-						array_all_buttons[i].style.backgroundColor = '';
+						array_all_buttons[i].style.backgroundColor = '#fff';
 					}
 				} else {
 					for (var i = current_index.start; i >= current_index.end; i--) {
-						array_all_buttons[i].style.backgroundColor = '';
+						array_all_buttons[i].style.backgroundColor = '#fff';
 					}
 				}
 				
@@ -4670,16 +4732,34 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//tasks_obj.table_rows:     {} db_id:row _ element
 	tasks_obj = {
 		current_db_ids: {},
+		
+		// Timestamp of the last update. This matches
+		// timestamp of the database.
 		last_update: 0,
+		
+		// ...
 		table1_row_ids:	{},	// #
 		table2_row_ids:	{},	// #
 		table_rows: 	{},	// el
 		
+		// ...
 		div_container: null,
 		table1: null,
 		table2: null,
 		
-		isFirstRun: true	// boolean: first pull from database
+		// ...
+		// boolean: first pull from database
+		isFirstRun: true,
+		
+		// This will contain the TD elements
+		// which will contain the graph data.
+		// Format: tasks_obj.hash_tds[row.hash_id] = td;
+		hash_tds: {},
+		
+		// This will contain the current hash IDs.
+		// An array.
+		//
+		current_hash_ids: []
 	}
 	
 	// Timers intervals
@@ -4819,6 +4899,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	/**
 	 * Function date_format()
 	 * 
+	 * Rounding:
+	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
+	 * Display:
+	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
 	 */
 	function date_format(n) {
 	
@@ -4832,9 +4916,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		nt = new Date();
 		nt = nt.getTime(); // linux epoch ms
 		nx = (nt - n) / 1000; // seconds difference (current - job)
-		
-		// rounding: 1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
-		// display: 6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
 		
 		if (nx < 3600) { // 1 hr
 			if (nt < n) nt = n; // is less than zero?
@@ -4958,12 +5039,18 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		}
 		// Reset the current_db_ids
 		tasks_obj.current_db_ids = {};
+		// Reset the current_hash_ids
+		tasks_obj.current_hash_ids = [];
 		for (var i = 0; i < rs[0].length; i++)
 		{
 			
 			var db_id = rs[0][i];
 			tasks_obj.current_db_ids[db_id] = true;
 			
+			if (rs[8]) {
+				var hash_id = rs[8][i];
+				tasks_obj.current_hash_ids.push(hash_id);
+			}
 		}
 		
 		//~ if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
@@ -5032,7 +5119,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// title
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:60%;'
+			'width:50%;'
 		);
 		tr.appendChild(td);
 		if (row.group_id != '') {
@@ -5048,7 +5135,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// name
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:22%;'
+			'width:20%;'
 		);
 		tr.appendChild(td);
 		if (row.requester_id != '') {
@@ -5064,7 +5151,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// available
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:8%;'
+			'width:6%;'
 		);
 		td.innerText = row.hits_available;
 		tr.appendChild(td);
@@ -5075,7 +5162,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// tsp
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:8%;'//+'max-width:10px;'
+			'width:6%;'//+'max-width:10px;'
 		);
 		tr.appendChild(td);
 		// hidden
@@ -5090,26 +5177,77 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tsp_span.innerText = x;
 		td.appendChild(tsp_span);
 		
+		// Chart.js
+		// 16%
+		// Set tasks_obj[row.hash_id] = td;
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:16%;'//+'max-width:10px;'
+		);
+		if (row.hasOwnProperty('hash_id'))
+			tasks_obj.hash_tds[row.hash_id] = td;
 		
-		
-		
-		
+		//~ //OLD
 		//~ div_contain	.setAttribute('style','width:100%;');
 		//~ div_gid		.setAttribute('style','float:left;width:60%;');
 		//~ div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
 		//~ div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
 		//~ div_date	.setAttribute('style','width:8%;overflow:hidden;');
-		
 		//~ inp_tsp		.setAttribute('type', 'hidden');
-		
 		//~ div_contain	.setAttribute('class', 'cont');
 		//~ div_date	.setAttribute('class', 'mt__timer');
-		
 		//~ inp_tsp		.value = rs[5][i];
-		
 		//~ d = date_format(rs[3][i]);
 		
 		return tr;
+	}
+	
+	/**
+	 * function init_graph()
+	 * 
+	 * The hash_ids are tallied in various places, so far.
+	 * A nice place to take them from is tasks_obj.current_db_ids.
+	 * Where: tasks_obj.current_db_ids[db_id] = true;
+	 * 
+	 * Chart.js is included in manifest.json, in /includes/
+	 */
+	function init_graph() {
+		
+		// Are there any hash_ids? Only case
+		// probably is when pulling tasks from sjshpack.com.
+		if (!tasks_obj.current_hash_ids.length)
+			return;
+		
+		var obj = {
+			type: '24HOUR',
+			hash_ids: tasks_obj.current_hash_ids // array
+		};
+		
+		//~ var hash_ids = JSON.stringify(tasks_obj.current_hash_ids);
+		
+		var url = MT___page1_host;
+		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
+					
+		//~ var data =  'graph='+
+					//~ '&type=24HOUR'+
+					//~ '&hash_ids='+encodeURIComponent(hash_ids)+
+					//~ '&'+Math.random();
+		
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: url,
+			data: data,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function (response) {
+				
+				var rs = response.responseText;
+				
+				// INCLUDE GRAPH
+				
+			}
+		});
 	}
 	
 	/**
@@ -5120,7 +5258,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// load
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?show_all=&' + Math.random()*10000,
+			url: MT___page1_host + '?show_all=&' + Math.random(),
 			onload: function (response) {
 				
 				var rs = response.responseText;
@@ -5142,8 +5280,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
-				
-				
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -5221,13 +5357,23 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.time_since_posted	= rs[5][i];
 					d.requester_id		= rs[6][i];
 					d.group_id			= rs[7][i];
+					if (rs[8])
+						d.hash_id			= rs[8][i];
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
 					{
 						var row = tasks_obj.table_rows[d.db_id]
 						row.hits_available.innerText = d.hits_available;
+						
+						// UPDATE GRAPH HERE.
+						
 						continue;
+					}
+					// Else
+					else
+					{
+						
 					}
 					
 					// Here?
@@ -5249,7 +5395,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						{
 							console.log('inserting');
 							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-							tasks_obj.table1.insertBefore(makeRow(d), first) // appendChild(makeRow(d), true); // true == ignored
+							tasks_obj.table1.insertBefore(makeRow(d), first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
@@ -5257,27 +5403,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 							console.log('appending');
 							tasks_obj.table1.appendChild(makeRow(d));
 						}
-						
-						//~ 
-						//~ // Exists?
-						//~ if (tasks_obj.table1_row_ids.hasOwnProperty(d.db_id)) {
-							//~ var row = tasks_obj.table_rows[d.db_id]
-							//~ row.hits_available.innerText = d.hits_available;
-							//~ continue;
-						//~ }
-						//~ 
-						// New
-						//~ tasks_obj.table1.appendChild(makeRow(d));
 					}
 					else
 					{ // ignored
 						
 						// append
-						if (!tasks_obj.isFirstRun && !tasks_obj.table2.getElementsByTagName('tr').length)
+						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
 						{
 							console.log('inserting');
 							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-							tasks_obj.table2.insertBefore(makeRow(d, true), first) // appendChild(makeRow(d), true); // true == ignored
+							tasks_obj.table2.insertBefore(makeRow(d, true), first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
@@ -5285,204 +5420,222 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 							console.log('appending');
 							tasks_obj.table2.appendChild(makeRow(d, true)); // true == ignored
 						}
-						
-						//~ 
-						//~ // Exists?
-						//~ if (tasks_obj.table2_row_ids.hasOwnProperty(d.db_id)) {
-							//~ var row = tasks_obj.table_rows[d.db_id]
-							//~ row.hits_available.innerText = d.hits_available;
-							//~ continue;
-						//~ }
-						//~ 
 					}
+					
+					//~ OLD
+					//~ 
+					//~ // Exists?
+					//~ if (tasks_obj.table1_row_ids.hasOwnProperty(d.db_id)) {
+						//~ var row = tasks_obj.table_rows[d.db_id]
+						//~ row.hits_available.innerText = d.hits_available;
+						//~ continue;
+					//~ }
+					//~ 
+					// New
+					//~ tasks_obj.table1.appendChild(makeRow(d));
+					//~ 
+					//~ 
+					//~ // Exists?
+					//~ if (tasks_obj.table2_row_ids.hasOwnProperty(d.db_id)) {
+						//~ var row = tasks_obj.table_rows[d.db_id]
+						//~ row.hits_available.innerText = d.hits_available;
+						//~ continue;
+					//~ }
+					//~ //~ 
 				}
 				
+				// If first run ...
+				// Then load full graph data.
+				// Else...
+				//
 				// Update tasks_obj.firstRun to false.
 				// For all future runs any new rows
 				// will be insertBefore (top of table)
 				// rather than appendChild.
-				
-				tasks_obj.isFirstRun = false;
-			}	
-		});
-				/*
-				// Remove old divs.
-				var x;
-				x = document.getElementById('div__main');
-				if (x) {
-					document.body.removeChild(x);
+				if (tasks_obj.isFirstRun) {
+					tasks_obj.isFirstRun = false;
+					init_graph();
 				}
-				
-				// ...
-				//~ var div;
-				var div_main;
-				var div__reload, div__reload2;
-				//div_main
-				//
-				div_main=document.createElement('div');
-				div_main.setAttribute('id','div__main');
-				div_main.setAttribute('style',
-					'position:absolute;'+
-					'top:40px;'+
-					'width:98%;'+
-					'background-color:none;'
-				);
-				//div__reload
-				//
-				div__reload=document.createElement('div');
-				div__reload.setAttribute('id','div__reload');
-				div__reload.setAttribute('style',
-					'margin:0 auto;'+
-					'width:98%;'+
-					'max-width:1000px;'+
-					'height:500px;'+
-					'overflow:auto;'+
-					'background-color:#fdfdfd;'+
-					'border:4px solid #d2d2d2;'
-				);
-				div_main.appendChild(div__reload);
-				//div__reload2
-				//
-				div__reload2=document.createElement('div');
-				div__reload2.setAttribute('id','div__reload2');
-				div__reload2.setAttribute('style',
-						'margin:0 auto;'+
-						'width:100%;'+
-						'max-width:1000px;'+
-						'height:500px;'+
-						'overflow:auto;'+
-						'background-color:#fdfdfd;'+
-						'border:4px solid #d2d2d2;'
-				);
-				div_main.appendChild(div__reload2);
-				document.body.appendChild(div_main);
-				
-				has_new_alertable(rs);
-				
-				// Output
-				var div_contain;
-				var div_gid;
-				var div_rid;
-				var div_avl;
-				var div_date;
-				var inp_tsp;
-				var a_gid;
-				var a_rid;
-				var d;
-				for (var i = 0; i < rs[0].length; i++)
-				{
-					
-					div_contain	= document.createElement('div');
-					div_gid		= document.createElement('div');
-					div_rid		= document.createElement('div');
-					div_avl		= document.createElement('div');
-					div_date	= document.createElement('div');
-					
-					inp_tsp		= document.createElement('input');
-					
-					if (rs[7][i] != '') {
-						a_gid			= document.createElement('a');
-						a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
-						a_gid			.setAttribute('class','cont_link');
-						a_gid.target	= '_blank';
-						a_gid.innerText = __js_clean_html_str(rs[2][i]);
-					} else
-						a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
-					if (rs[6][i] != '') {
-						a_rid			= document.createElement('a');
-						a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
-						a_rid			.setAttribute('class','cont_link');
-						a_rid.target	= '_blank';
-						a_rid.innerText = __js_clean_html_str(rs[3][i]);
-					} else
-						a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
-					
-					div_contain	.setAttribute('style','width:100%;');
-					div_gid		.setAttribute('style','float:left;width:60%;');
-					div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-					div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-					div_date	.setAttribute('style','width:8%;overflow:hidden;');
-					
-					inp_tsp		.setAttribute('type', 'hidden');
-					
-					div_contain	.setAttribute('class', 'cont');
-					div_date	.setAttribute('class', 'mt__timer');
-					
-					inp_tsp		.value = rs[5][i];
-					
-					d = date_format(rs[3][i]);
-					
-					// append sm sm.
-					div_gid	.appendChild(a_gid);
-					div_rid	.appendChild(a_rid);
-					div_avl	.appendChild(document.createTextNode(rs[4][i]));
-					div_date.appendChild(document.createTextNode(d));
-					// append sm.
-					div_contain.appendChild(inp_tsp);
-					div_contain.appendChild(div_gid);
-					div_contain.appendChild(div_rid);
-					div_contain.appendChild(div_avl);
-					div_contain.appendChild(div_date);
-					
-					// Append main
-					// In top or bottom
-					// 3 == requester name
-					// 6 == requester id
-					if  (
-						!__js_inarray(ignore_requesters,		rs[3][i]) &&
-						!__js_inarray(ignore_requesters__ids,	rs[6][i])
-						)
-					{
-						div__reload.appendChild(div_contain);
-						div__reload.appendChild(document.createElement('hr'));
-					}
-					else
-					{
-						div__reload2.appendChild(div_contain);
-						div__reload2.appendChild(document.createElement('hr'));
-					}
-				}*/
-				
-				//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;					
-				//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
-				
-				//~ // gid
-				//~ var gid;
-				//~ if (rs[7][i] != '') {
-					//~ gid = '\
-						//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
-						//~ '+rs[2][i]+'\
-						//~ </a>';
-				//~ } else
-					//~ gid = rs[2][i];
-					//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
-				//~ // rid
-				//~ var rid;
-				//~ if (rs[6][i] != '') {
-					//~ rid = '\
-						//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
-						//~ '+rs[3][i]+'\
-						//~ </a>';
-				//~ } else
-					//~ rid = '&nbsp;'+rs[3][i];
-				//~ 
-				//~ //490,230,98
-				//~ //<div style="overflow:hidden;">
-				//~ var st='\
-				//~ <div style="width:100%;" class="cont">\
-					//~ <input type="hidden" value="'+rs[5][i]+'">\
-					//~ <div style="float:left;width:64%;">\
-						//~ '+gid+'\
-					//~ </div>\
-					//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
-						//~ '+rid+'\
-					//~ </div>\
-					//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
-						//~ '+rs[4][i]+'\
-					//~ </div>\
-					//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
-				//~ </div>';// hidden = break;
-				//rs - Hit, Requester, #
+			}
+		});
+		/*
+		// Remove old divs.
+		var x;
+		x = document.getElementById('div__main');
+		if (x) {
+			document.body.removeChild(x);
+		}
+		
+		// ...
+		//~ var div;
+		var div_main;
+		var div__reload, div__reload2;
+		//div_main
+		//
+		div_main=document.createElement('div');
+		div_main.setAttribute('id','div__main');
+		div_main.setAttribute('style',
+			'position:absolute;'+
+			'top:40px;'+
+			'width:98%;'+
+			'background-color:none;'
+		);
+		//div__reload
+		//
+		div__reload=document.createElement('div');
+		div__reload.setAttribute('id','div__reload');
+		div__reload.setAttribute('style',
+			'margin:0 auto;'+
+			'width:98%;'+
+			'max-width:1000px;'+
+			'height:500px;'+
+			'overflow:auto;'+
+			'background-color:#fdfdfd;'+
+			'border:4px solid #d2d2d2;'
+		);
+		div_main.appendChild(div__reload);
+		//div__reload2
+		//
+		div__reload2=document.createElement('div');
+		div__reload2.setAttribute('id','div__reload2');
+		div__reload2.setAttribute('style',
+				'margin:0 auto;'+
+				'width:100%;'+
+				'max-width:1000px;'+
+				'height:500px;'+
+				'overflow:auto;'+
+				'background-color:#fdfdfd;'+
+				'border:4px solid #d2d2d2;'
+		);
+		div_main.appendChild(div__reload2);
+		document.body.appendChild(div_main);
+		
+		has_new_alertable(rs);
+		
+		// Output
+		var div_contain;
+		var div_gid;
+		var div_rid;
+		var div_avl;
+		var div_date;
+		var inp_tsp;
+		var a_gid;
+		var a_rid;
+		var d;
+		for (var i = 0; i < rs[0].length; i++)
+		{
+			
+			div_contain	= document.createElement('div');
+			div_gid		= document.createElement('div');
+			div_rid		= document.createElement('div');
+			div_avl		= document.createElement('div');
+			div_date	= document.createElement('div');
+			
+			inp_tsp		= document.createElement('input');
+			
+			if (rs[7][i] != '') {
+				a_gid			= document.createElement('a');
+				a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
+				a_gid			.setAttribute('class','cont_link');
+				a_gid.target	= '_blank';
+				a_gid.innerText = __js_clean_html_str(rs[2][i]);
+			} else
+				a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
+			if (rs[6][i] != '') {
+				a_rid			= document.createElement('a');
+				a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
+				a_rid			.setAttribute('class','cont_link');
+				a_rid.target	= '_blank';
+				a_rid.innerText = __js_clean_html_str(rs[3][i]);
+			} else
+				a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
+			
+			div_contain	.setAttribute('style','width:100%;');
+			div_gid		.setAttribute('style','float:left;width:60%;');
+			div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
+			div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
+			div_date	.setAttribute('style','width:8%;overflow:hidden;');
+			
+			inp_tsp		.setAttribute('type', 'hidden');
+			
+			div_contain	.setAttribute('class', 'cont');
+			div_date	.setAttribute('class', 'mt__timer');
+			
+			inp_tsp		.value = rs[5][i];
+			
+			d = date_format(rs[3][i]);
+			
+			// append sm sm.
+			div_gid	.appendChild(a_gid);
+			div_rid	.appendChild(a_rid);
+			div_avl	.appendChild(document.createTextNode(rs[4][i]));
+			div_date.appendChild(document.createTextNode(d));
+			// append sm.
+			div_contain.appendChild(inp_tsp);
+			div_contain.appendChild(div_gid);
+			div_contain.appendChild(div_rid);
+			div_contain.appendChild(div_avl);
+			div_contain.appendChild(div_date);
+			
+			// Append main
+			// In top or bottom
+			// 3 == requester name
+			// 6 == requester id
+			if  (
+				!__js_inarray(ignore_requesters,		rs[3][i]) &&
+				!__js_inarray(ignore_requesters__ids,	rs[6][i])
+				)
+			{
+				div__reload.appendChild(div_contain);
+				div__reload.appendChild(document.createElement('hr'));
+			}
+			else
+			{
+				div__reload2.appendChild(div_contain);
+				div__reload2.appendChild(document.createElement('hr'));
+			}
+		}*/
+		
+		//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;					
+		//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
+		
+		//~ // gid
+		//~ var gid;
+		//~ if (rs[7][i] != '') {
+			//~ gid = '\
+				//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
+				//~ '+rs[2][i]+'\
+				//~ </a>';
+		//~ } else
+			//~ gid = rs[2][i];
+			//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
+		//~ // rid
+		//~ var rid;
+		//~ if (rs[6][i] != '') {
+			//~ rid = '\
+				//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
+				//~ '+rs[3][i]+'\
+				//~ </a>';
+		//~ } else
+			//~ rid = '&nbsp;'+rs[3][i];
+		//~ 
+		//~ //490,230,98
+		//~ //<div style="overflow:hidden;">
+		//~ var st='\
+		//~ <div style="width:100%;" class="cont">\
+			//~ <input type="hidden" value="'+rs[5][i]+'">\
+			//~ <div style="float:left;width:64%;">\
+				//~ '+gid+'\
+			//~ </div>\
+			//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
+				//~ '+rid+'\
+			//~ </div>\
+			//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
+				//~ '+rs[4][i]+'\
+			//~ </div>\
+			//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
+		//~ </div>';// hidden = break;
+		//rs - Hit, Requester, #
 	}
 	
 	/**
@@ -5811,7 +5964,7 @@ function AMT___InitializeReturnAndAcceptKeyPress() {
 	document.addEventListener("keydown", AMT___ReturnAndAcceptKeyPress);	
 }
 function AMT___ReturnAndAcceptKeyPress(event) {
-		console.log(event.keyCode);
+		//~ console.log(event.keyCode);
 		
 		switch (event.keyCode) {
 			case 220 :

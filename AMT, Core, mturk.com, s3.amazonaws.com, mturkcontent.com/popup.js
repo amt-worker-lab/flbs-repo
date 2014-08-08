@@ -3,6 +3,8 @@
 var SELECT;
 var INPUT__PROXY_REDACTED_;
 var BTN_SAVE;
+var TOGGLE_RA;
+var TOGGLE_NTPASSBY;
 
 // load localstorage values
 function init_func_doSubmit() {
@@ -60,6 +62,17 @@ function init_func_toggleRA() {
 		});
 }
 
+function init_func_toggleNTPassBy() {
+	chrome.extension.sendRequest({getNTPassBy: true}, 
+		function(rs) 
+		{
+			TOGGLE_NTPASSBY.value = rs.NTPassBy;
+		});
+}
+
+//getNTPassBy
+//toggleNAPassBy
+
 // Once the DOM is ready
 document.addEventListener("DOMContentLoaded", function() {
 	
@@ -68,12 +81,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	INPUT__PROXY_REDACTED_ = document.getElementById('input__PROXY_REDACTED_');
 	BTN_SAVE = document.getElementById('btn_save');
 	TOGGLE_RA = document.getElementById('toggleRAHotkey');
-	
+	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
 	
 	//
 	
 	init_func_doSubmit();
 	init_func_toggleRA();
+	init_func_toggleNTPassBy();
 	
 	
 	SELECT.onfocus = function() {
@@ -97,6 +111,21 @@ document.addEventListener("DOMContentLoaded", function() {
 			this.value = 'On';
 		chrome.extension.sendRequest(
 			{toggleRAHotkey: TOGGLE_RA.value}, 
+			function(rs) {
+				//squelch rs
+			}
+		);
+	}
+	
+	TOGGLE_NTPASSBY.onclick = function() {
+		this.style.border = '4px solid LightGreen';
+		if(this.value == 'On') {
+			this.value = 'Off';
+		}
+		else
+			this.value = 'On';
+		chrome.extension.sendRequest(
+			{toggleNTPassBy: TOGGLE_NTPASSBY.value}, 
 			function(rs) {
 				//squelch rs
 			}

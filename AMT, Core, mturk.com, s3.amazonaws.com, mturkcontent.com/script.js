@@ -1414,6 +1414,167 @@ function MT__RUN() {
 	
 	
 	//
+	// Big Bird
+	// 
+	//
+	s = 'Thank you for doing this HIT. This is part of a project to help computers interpret legal text. The goal of this HIT is to identify the different components of a citation. The only component that I want for this HIT is the "short name". A summary of the instructions are as follows:';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {margin-top:500px !important;}');
+		GM_addStyle('#submitButton {width:100%;height:80px;}');
+		//~ GM_addStyle('#submitButton:hover {background-color:LightGreen;}');
+	
+		var h2 = document.getElementsByTagName('h2');
+		var para = document.getElementsByTagName('p');
+		var provide_feedback_para;
+		for (var i in para) {
+			if (para[i].innerText == 'Provide feedback on our work.')
+				provide_feedback_para = para[i];
+		}
+		
+		// Paragraph with the text in it!
+		//
+		//
+		var p = document.getElementsByClassName('font_8')[6];
+		p.setAttribute('style', 'width:50%;float:left;');
+		
+		var q = document.getElementsByName('shortname_result')[0];
+		q.style.height = '100px';
+		q.style.width = '100%';
+		//~ q.style.position = '100%';
+		var q_table = q.parentNode.parentNode.parentNode.parentNode.parentNode;
+		console.log(q_table);
+		q_table.setAttribute('style', 'float:left;width:46%;');
+		// Append the previous element before "table" which is an "h2".
+		q_table.appendChild(h2[1]);
+		// Set clear:both
+		provide_feedback_para.setAttribute('style', 'clear:both;');
+		//~ var nextSib = q_table.nextSibling;
+		//~ console.log(nextSib);
+		//~ nextSib.setAttribute('style','clear:both;');
+		
+		// submitButton
+		document.getElementById('submitButton').onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		// Move
+		document.getElementsByTagName('h1')[2].appendChild(document.getElementById('submitButton'));
+		
+		// r&a
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		/** ...
+		 * @param: {} options_object
+		 * @param options_object.textToAnnotate = String
+		 * @param options_object.output_fields = []
+		 * @param options_object.callback_mouseup = Function*/
+		
+		var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+			textToAnnotate: p.innerText,
+			output_fields: [q],
+			callback_mouseup: function(addString) {
+				
+				var checkString = addString;
+				
+				// Remove trailing part of name where "reporter" begins
+				q.value = q.value.replace(/([^ ,]+),[^ ]+$/, '$1');
+				checkString = checkString.replace(/([^ ,]+),[^ ]+$/, '$1');
+				
+				// Remove trailing commas
+				q.value = q.value.replace(/ *,*$/, '');
+				checkString = checkString.replace(/ *,*$/, '');
+				
+				// Could there be an issue here?
+				// Issues are:
+				// Does not end with "." or a-z
+				// Does not start with a-z
+				if  (
+					!/^[a-z]/i.exec(checkString) ||
+					!/[a-z]\.?$/i.exec(checkString)
+					)
+				{
+					document.body.style.backgroundColor = 'orange';
+				}
+			},
+			appendToField: true,
+			appendToField_glue: '\n',
+			delimeter: '',
+			focusToField: false
+		});
+		
+		// BOLD
+		var bold_words = ['citing','cited','cite','accord','see','v.','vs.','versus','quoting']; //,'(',')' //'in', //see also
+		var n = buttons.getElementsByTagName('button');
+		for (var i in n) {
+			if (i == 'length') break;
+			n[i].innerHTML = MT__bold(n[i].innerText, bold_words);
+		}
+		// Add BR
+		var afterNext = false;
+		for (var i in n) {
+			if (i == 'length') break;
+			//~ console.log(n[i].innerText[n[i].innerText.length - 1]);
+			//~ console.log(n[i + 1]);
+			if (afterNext) {
+				buttons.insertBefore(
+					document.createElement('br'),
+					n[i]
+				);
+				afterNext = false;
+			}
+			if (n[i].innerText[n[i].innerText.length - 1] == ';') {
+				afterNext = true;
+			}
+		}
+		if (afterNext) {
+			buttons.insertBefore(
+				document.createElement('br'),
+				n[i]
+			);
+			afterNext = false;
+		}
+		// Court Reporters!
+		//
+		//
+		var cr = new AMT___huge_vars_factory().Big_Bird_court_reporters();
+		for (var i in n) {
+			if (i == 'length') break;
+			if (cr.obj_lower.hasOwnProperty(n[i].innerText.toLowerCase())) {
+				n[i].style.border = '3px dashed blue';
+			}
+		}
+		
+		// Append
+		p.innerText = '';
+		p.appendChild(buttons);
+		
+		// scroll
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 200);
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 400);
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 800);
+	}
+	
+	//
 	// Evan Marks
 	// Find the Facebook User Id of a Person
 	//
@@ -6754,20 +6915,7 @@ function MT__RUN() {
 		// ...
 		// blank + >any not N/A?
 		document.getElementById('submitButton').onclick = function() {
-			//~ var has_non_na = false;
-			//~ for (var i in q) {
-				//~ q[i].value = q[i].value.trim();
-				//~ if (q[i].value == '') {
-					//~ return false;
-				//~ } else if (q[i].value != 'N/A') {
-					//~ has_non_na = true;
-				//~ }
-			//~ }
-			//~ if (!has_non_na) {
-				//~ return false;
-			//~ }
-			//~ // any 
-			//~ showNextTab(); // next!
+			
 		}
 		
 		// ...
@@ -12594,6 +12742,175 @@ function MT__RUN() {
 	// Amanda Webb
 	// -SimpleSearch
 	// 
+	s = '<p>Find the member data for the Red Angus member.</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		var num = /and enter (\d+) in the/.exec(ih)[1].trim();
+		
+		// ...
+		Amanda_Webb_redangus_people();
+		
+		document.getElementById('submitButton').onclick = function() {
+			var x = document.getElementsByTagName('input');
+			for (var i in x) {
+				if (i == 'length') break;
+				x[i].value = x[i].value.trim();
+			}
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		
+		// [dave@localhost .scripts]$ curl 'http://search.redangus.org/member/109611' -H 'X-Requested-With: XMLHttpRequest'
+		function Amanda_Webb_redangus_people() {
+			
+			var headers = [
+				'X-Requested-With: XMLHttpRequest'
+			];
+			headers = (JSON.stringify(headers));
+			
+			//NOT
+			//
+			//
+			//~ var u = 'http://search.redangus.org/member/id/' + num;
+			
+			var u = 'http://search.redangus.org/member/' + num;
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u)+'&AMT__output_html_from_URL__headers='+headers+'&AMT__output_html_from_URL__use_cmdline=',
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					var sbm = true;
+					
+					var r;
+					
+					r = /<div class="ui-tabs-panel" id="member-details">((.|\s)*?(?=[\r\n]+    <\/div>|$)|$)/.exec(rs);
+					if (!r) return;
+					rs = r[1];
+					console.log(rs);
+					
+					//
+					r = /<h2>([^<]+)<\/h2>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim().replace(/\s+/g, ' ');
+						document.getElementById('membershipname').value = r;
+					}
+					var d = document.getElementById('firstname');
+					r = /<h3>([^<]+)<\/h3>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim().replace(/\s+/g, ' ');
+						
+						if (r.indexOf(',') != -1) sbm = false;
+						
+						r = r.replace(/^(\w+) \w (\w+)$/, '$1 $2');
+						r = r.split(' ');
+						
+						d.value = r[0];
+						
+						if (r.length > 1) {
+							document.getElementById('lastname').value = r.slice(1).join(' ');
+							if (r.length > 2) {
+								d.style.border = '2px solid LightGreen';
+								sbm = false;
+							}
+						} else {
+							d.style.border = '2px solid LightGreen';
+							sbm = false;
+						}
+					}
+					//
+					r = /<p style="float: left;">[\r\n\t\s]+([^<]+)<br \/>([^,<]+), ([^&]+) &nbsp;([\d]+)[^<]+<\/p>/.exec(rs);
+					if (r) {
+						
+						
+						for (var i = 1; i<=4; i++)
+							r[i] = __js_clean_html_str(r[i]).trim();
+						
+						document.getElementById('address1').value = r[1];
+						document.getElementById('city').value = r[2];
+						document.getElementById('state1').value = r[3];
+						document.getElementById('zip').value = r[4];
+						
+					} else {
+						document.getElementById('address1').style.border = '2px solid LightGreen';
+						sbm = false;
+					}
+					// Office: (308)547-2222<br />Home: (308)538-2293<br />Fax: (   )   -                    </p>
+					r = /Home:([^<]+)</.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						document.getElementById('home').value = r;
+					}
+					//
+					r = /Office:([^<]+)</.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						document.getElementById('office').value = r;
+					}
+					//
+					r = /Cell:([^<]+)</.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						document.getElementById('cell').value = r;
+					}
+					//
+					r = /Fax:([^<]+)</.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						document.getElementById('fax').value = r;
+					}
+					//
+					r = /<a href="mailto:([^"]+)"/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						document.getElementById('email').value = r;
+					}
+					//~ //
+					//~ if  (
+						//~ rs.indexOf('website') != -1 ||
+						//~ /(http|website|www)/i.exec(rs)
+						//~ )
+					//~ {
+						//~ sbm = false;
+					//~ }
+					// NOT START WITH /
+					// NOT START WITH m
+					r = /<a href="([^\/m][^"]+)">/i.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('website').value = r;
+					}
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+		}
+	}
+	//
+	// Amanda Webb
+	// -SimpleSearch
+	// 
 	s = 'Find the member data for the Gelbvieh member associated with the Member ID provided. Collect the following fields of information on EACH member, if available:';
 	if (ih.indexOf(s) != -1)
 	{		
@@ -12619,118 +12936,6 @@ function MT__RUN() {
 			return false;
 		}
 		
-		// ...
-		//~ function Amanda_Webb_Gelbvieh_people__profile(u) {
-			//~ 
-			//~ GM_xmlhttpRequest({
-				//~ method: "GET",
-				//~ url: 'http://search.charolaisusa.com/' + u,
-				//~ onload: function (response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ if (response.status != 200) {
-						//~ exit(response.status);
-					//~ }
-					//~ 
-					//~ var r;
-					//~ var sbm = true;
-					//~ 
-					//~ console.log(rs);
-					//~ 
-					//~ //
-					//~ r = /Acct Name:<\/span><span id="MainContent_regname" class="memlkdata">([^<]*)<\/span>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('acctname').value = r;
-					//~ } else
-						//~ sbm = false;
-					//~ 
-					//~ //3M FARM<br/>MICHAEL R RUST<br/>976 COUNTY ROAD 2150 E<br/>SECOR, IL    61771
-					//~ r = /<span id="MainContent_address" class="memlkdata">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs); //
-					//~ if (r) {
-						//~ r = r[1].trim().split('<br/>');
-						//~ if (r.length < 1) sbm = false;
-						//~ 
-						//~ // empty fields
-						//~ for (var i = 1; i <= 4; i++) {
-							//~ document.getElementById('address' + i).value = '';
-						//~ }
-						//~ // ...
-						//~ var c = 1;
-						//~ for (var i in r) {
-							//~ 
-							//~ r[i] = __js_clean_html_str(r[i]).trim();
-							//~ 
-							//~ if (/[<>]/.exec(r[i])) sbm = false; // arrows
-							//~ 
-							//~ // city,state,zip
-							//~ if (i == r.length - 1) { // is last!
-								//~ var r2 = /^([^,]*),[\r\n\t\s]*([\w]+)[\r\n\t\s]*([\d\-]+)$/.exec(r[i]);
-								//~ if (r2) {
-									//~ document.getElementById('city').value	= __js_clean_html_str(r2[1]).trim();
-									//~ document.getElementById('state').value	= __js_clean_html_str(r2[2]).trim();
-									//~ document.getElementById('zip').value	= __js_clean_html_str(r2[3]).trim();
-								//~ } else {
-									//~ sbm = false;
-								//~ }
-								//~ break;
-							//~ }
-							//~ 
-							//~ // address
-							//~ var x = document.getElementById('address' + c);
-							//~ if (!x) sbm = false;
-							//~ else
-								//~ x.value = r[i];
-							//~ 
-							//~ c++;
-						//~ }
-					//~ } else
-						//~ sbm = false;
-					//~ 
-					//~ document.getElementById('phone').value   = '';
-					//~ document.getElementById('fax').value     = '';
-					//~ document.getElementById('email').value   = '';
-					//~ document.getElementById('webpage').value = '';
-					//~ 
-					//~ //
-					//~ r = /<span id="MainContent_phone" class="memlkdata">([^<]*)<\/span>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('phone').value = r;
-					//~ } else
-						//~ sbm = false;
-					//~ //
-					//~ r = /<span id="MainContent_fax" class="memlkdata">([^<]*)<\/span>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('fax').value = r;
-					//~ } else
-						//~ sbm = false;
-					//~ //<a id="MainContent_emaillink" class="memlkdataHyper" href="mailto:sheppard@kansas.net">
-					//~ //<a id="MainContent_emaillink" class="memlkdataHyper"></a>
-					//~ r = /<a id="MainContent_emaillink" class="memlkdataHyper"[^>]*>([^<]*)<\/a>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('email').value = r;
-					//~ } else
-						//~ sbm = false;
-					//~ //
-					//~ r = /<a id="MainContent_hpagelink" class="memlkdataHyper"[^>]*>([^<]*)<\/a>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('webpage').value = r;
-					//~ } else
-						//~ sbm = false;
-						//~ 
-					//~ 
-					//~ console.log(sbm);
-					//~ if (sbm)
-						//~ doSubmit();
-					//~ else
-						//~ document.body.style.backgroundColor = 'LightGreen';
-				//~ }
-			//~ });
-		//~ }
 		// ...
 		function Amanda_Webb_Gelbvieh_people() {
 			
@@ -14151,6 +14356,187 @@ function MT__RUN() {
 	 * Hartti Suomela
 	 * Sol Rosenberg
 	 */
+	
+	
+	//
+	// Morgan Intrator
+	// -SimpleSearch, Find this school in a list
+	// 
+	//~ s = 'For each school, find it&nbsp;in the google spreadsheet here (<a href="https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914" target="_blank">https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914</a>)';
+	//~ if (ih.indexOf(s) != -1)
+	//~ {		
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+		//~ 
+		//~ var school = document.getElementsByTagName('td')[1].innerText.trim();
+		//~ var q = document.getElementById('unitid');
+		//~ 
+		//~ /* BEGIN ITEMS */
+		//~ var d1 = document.createElement('div');
+		//~ d1 .setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:10px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		//~ document.body.appendChild(d1);
+		//~ /* */
+		//~ 
+		//~ GM_xmlhttpRequest({ // init
+			//~ method: "GET",
+			//~ url: MT___host + '/mturk/.miscellaneous/Morgan Intrator.csv',
+			//~ onload: function(response) {
+				//~ var rs = response.responseText;
+				//~ if (response.status != 200) return;
+				//~ 
+				//~ var r;
+				//~ 
+				//~ r = new RegExp('\\n(\\d+), *' + __js_escape_regEx(school) + '\\n', 'i').exec(rs);
+				//~ if (r) {
+					//~ r = r[1];
+					//~ q.value = r;
+					//~ doSubmit();
+				//~ }
+			//~ }
+		//~ });
+	//~ }
+	//
+	// Morgan Intrator
+	// Find this school in a list
+	// 
+	s = 'For each school, find it&nbsp;in the google spreadsheet here (<a href="https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914" target="_blank">https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914</a>)';
+	if(ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('body {width:40%;margin-top:50px;}');
+		GM_addStyle('input {width:90%;}');
+		GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;}');
+		
+		var td = document.getElementsByTagName('td');
+		var q = document.getElementById('unitid');
+		
+		// 
+		var o = {
+			name: td[1].innerText.trim(),
+			name_to_lower: td[1].innerText.trim().toLowerCase(),
+		}
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('input');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Morgan_Intrator_school_codes();
+		}
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		// actions
+		d2.value  = o.name;
+		//~ var q = [
+			//~ document.getElementById('CISBN'),
+			//~ document.getElementById('CID')
+		//~ ];
+		
+		//
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
+		// ...
+		//~ document.getElementById('submitButton').onclick = function() {
+			//~ for (var i in q) {
+				//~ q[i].value = q[i].value.trim();
+				//~ if (q[i].value == '') {
+					//~ return false;
+				//~ }
+			//~ }
+		//~ }
+		
+		// init
+		Morgan_Intrator_school_codes();
+		
+		// ...
+		function Morgan_Intrator_school_codes() {
+			
+			d1 .innerHTML = '';
+			d1b.innerHTML = '';
+			//this.style.backgroundColor = 'LightGreen';
+			
+			var rf = new AMT___requests_factory();
+			rf.database__select(
+				{
+					query: 'AMT__Morgan_Intrator_school_codes',
+					encodeStrings: [d2.value]
+				},
+				Morgan_Intrator_school_codes__process
+			);
+		}
+		// ...
+		function Morgan_Intrator_school_codes__process(database_object) {
+			//array_push($out_arr, [ $row['title'], $row['authors'], $row['cisbn'], $row['cid'], $row['company'] ]);
+			//database_object.responseObject = JSON.parse(rs);
+			
+			if (database_object.responseObject.length == 0) {
+				d1.innerText = d2.value + "\n" + '0';
+				return;
+			}
+			
+			console.log(database_object);
+			
+			// AUTO
+			//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+			
+			//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+			
+			for (var i in database_object.responseObject) {
+				//
+				var x = database_object.responseObject[i]; // 0=code, 1=name
+				
+				// ...
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				eldiv.className = 'exe';
+				eldiv.innerText = x[0] + ':' + x[1];
+				eldiv.code = x[0];
+				eldiv.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					
+					q.value = this.code;
+					if (this.code.trim().length > 4) {
+						doSubmit();
+					}
+					
+					//tabs
+					new AMT___core_factory().nextTab();
+				}
+				
+				d1 .appendChild(eldiv);
+				
+				if (i == 0 && o.name_to_lower == x[1].toLowerCase() && o.name_to_lower.length >= 4) {
+					eldiv.click();
+				}
+			}
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1 .appendChild(eldiv);
+			var eldiv = document.createElement('div');
+			eldiv.setAttribute('style','height:2000px;');
+			d1b.appendChild(eldiv);
+		}
+	}
 	//
 	// Hartti Suomela
 	//
@@ -69076,15 +69462,17 @@ qatar,80
 			state: '',
 			zip: '',
 			phone: '',
-			area_code: ''
+			area_code: '',
+			company: ''
 		}
 		b = b2 = b3 = b4 = '';
 		
 		b  = __js_clean_html_str(/Company:&nbsp;<b[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
+		o.company = b;
 		
 		b2 = /City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
 		b3 = /State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
-		var hasZipCodeOn3 = true;
+		var zipLocation = 3;
 
 		if (b2 && b3) {
 			b2 = __js_clean_html_str(b2[1]).replace(/\s+/g, ' ').trim();
@@ -69120,18 +69508,29 @@ qatar,80
 					//~ 5: "CA"
 					//~ 6: "90720,"
 					//~ 7: "USA"
-					hasZipCodeOn3 = false;
 					
-					 x = /<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Company:&nbsp;<b>([^&]*)&nbsp;<\/b><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-family: Arial, sans-serif; font-size: 12px;">Phone:&nbsp;<\/span><b style="font-family: Arial, sans-serif; font-size: 12px;">([^<]*)<\/b><span style="font-size: 9pt; font-family: Arial, sans-serif;"><o:p><\/o:p><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>([^<]*)<\/b><\/span><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">([^<]*)<\/b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">([^&]*)&nbsp;,<\/b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1.6em;">([^&]*)&nbsp;([^<]*)<\/b><\/p>/.exec(ih);
+					 x = /<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Company:&nbsp;<b>([^&]*)&nbsp;<\/b><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-family: Arial, sans-serif; font-size: 12px;">Phone:&nbsp;<\/span><b style="font-family: Arial, sans-serif; font-size: 12px;">([^<]*)<\/b><span style="font-size: 9pt; font-family: Arial, sans-serif;"><o:p><\/o:p><\/span><\/p>[\r\n\s\t]*<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>([^<]*)<\/b><\/span><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1\.6em;">([^<]*)<\/b><b style="line-height: 1.6em; font-family: Arial, sans-serif; font-size: 12px;">([^&]*)&nbsp;,<\/b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1\.6em;">([^&]*)&nbsp;([^<]*)<\/b><\/p>/.exec(ih);
 					 
 					 
 					 if(x) {
+						zipLocation = 6;					
 						console.log(x);
 						 b2 = __js_clean_html_str(x[4]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // city
 						 b3 = __js_clean_html_str(x[5]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state						 
 					 }
 					 else {
 						//Something new
+						x = /<p class="MsoNormal"><span style="font-size: 9pt; font-family: Arial, sans-serif;">Address:&nbsp;<b>([^<]*)<\/b><\/span><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1\.6em;">([^<]*)<\/b><b style="line-height: 1\.6em; font-family: Arial, sans-serif; font-size: 12px;">([^&]*)&nbsp;,<\/b><b style="font-family: Arial, sans-serif; font-size: 9pt; line-height: 1\.6em;">([^&]*)&nbsp;([^<]*)<\/b><\/p>/.exec(ih);
+
+						if(x) {
+							zipLocation = 4;
+							b2 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // city
+							b3 = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state		
+						}
+						else {
+							alert('no scrape match');
+						}
+						
 					 }
 				}
 				
@@ -69140,13 +69539,7 @@ qatar,80
 			console.log(x);
 			
 			var z;//zip
-			if(!hasZipCodeOn3) {
-				z = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
-			}
-			else {
-				//Zip code is on 6
-				z = __js_clean_html_str(x[6]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();				
-			}
+			z = __js_clean_html_str(x[zipLocation]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
 			
 			z = (z.length == 4) ? '0' + z : z;
 			o.zip = z;
@@ -69193,7 +69586,7 @@ qatar,80
 				o.area_code = x[1];
 				b4 = o.phone;
 			}
-			b4 = b + ' ' + b4;
+			b4 = o.company.split(' ').slice(0, 2).join(' ') + ' ' + b4; // slice = index start, index end but not inclusive (0, 3 == 0, 1, 2)
 		}
 		
 		// ...
@@ -69364,7 +69757,9 @@ qatar,80
 					match[2] = MT__bold(match[2], bold_array);
 					
 					// classname is http://(www. = '')x.com (no www)
-					var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+					// Update Aug6 2014
+					var cls = x.replace(/^www\./, '');
+					//~ var cls = x.replace(/^(https?:\/\/)www\./, '$1');
 					
 					// ...
 					var d = document.createElement('p');
@@ -88185,7 +88580,7 @@ qatar,80
 			var o_url;
 			var manta_url;
 			
-			console.log(yahoo_rslt);
+			//~ console.log(yahoo_rslt);
 			
 			// ...
 			// loop
@@ -88382,7 +88777,7 @@ qatar,80
 						initial_searches.no_result_count++;
 						break;
 				}
-				console.log(initial_searches);
+				//~ console.log(initial_searches);
 				//~ console.log(initial_searches.no_result_count);
 				
 				if  (
@@ -110373,6 +110768,10 @@ function top_window() {
 		document.body.appendChild(d);
 		var d2 = document.getElementById('d2');
 		
+		var o = {
+			num_zero_pages: 0
+		};
+		
 		john_roberts_getnextpage();
 		
 		function john_roberts_getnextpage() {
@@ -110393,6 +110792,8 @@ function top_window() {
 					
 					if (rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1) {
 						d2.value = 'The image is too big, or the network connection is too slow to download it.';
+						d2.style.border = '8px dashed green';
+						d2.style.backgroundColor = 'MintCream';
 						console.log('The image is too big, or the network connection is too slow to download it.');
 						return;
 					}
@@ -110453,6 +110854,20 @@ function top_window() {
 						}
 					}
 					
+					console.log(count);
+					
+					if (count == 0) {
+						o.num_zero_pages++;
+						if (o.num_zero_pages > 6 && q.value != '') {
+							// Consider it done.
+							console.log('6 zero pages in a row');
+							doSubmit('hitForm');
+							return;
+						}
+					} else {
+						o.num_zero_pages = 0;
+					}
+					
 					//~ //save
 					//~ GM_xmlhttpRequest({
 						//~ method: 'POST',
@@ -110465,8 +110880,6 @@ function top_window() {
 							//~ //var rs=response.responseText;
 						//~ }
 					//~ });
-					
-					console.log(count);
 					
 					/*if (count === 0 && d2.value*1 > 120 && q.value != '') { // STOP SHORT here
 						//doSubmit(document.getElementsByName('hitForm')[0]);
@@ -110510,7 +110923,7 @@ function top_window() {
 							document.body.style.backgroundColor = 'yellow';
 							if (q.value == '')
 								q.value = 'NONE';
-							//~ doSubmit('hitForm');
+							doSubmit('hitForm');
 						}
 						else {
 							console.log(q);
@@ -110766,6 +111179,59 @@ function mturk_load()
 		//~ MT___page1_show_jobs(); // findhits?match=false
 		new AMT___core_factory().amt_home_show_tasks();
 		
+		// Run myHITS
+		// John Roberts
+		if  (
+				//~ (
+					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
+					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
+				//~ ) &&
+				0 == 1
+			)
+		{
+			console.log('shshsh');
+			
+			// Are we at "All HITs Available to You"?
+			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
+			
+			var myHITsNoneAvailable = ih.indexOf('There are currently no HITs assigned to you.');
+			
+			if (allHITsReg || myHITsNoneAvailable != -1)
+			{
+				var input = document.createElement('input');
+				input.setAttribute('style', 'position:absolute;top:0;left:0;width:140px;zoom:1.8;');
+				input.value = 'Checking 0';
+				document.body.appendChild(input);
+				
+				John_Roberts_xhr_check_HITs_Assigned_to_You();
+				return;
+			}
+			function John_Roberts_xhr_check_HITs_Assigned_to_You() {
+				
+				var interval = setInterval(function() {
+					GM_xmlhttpRequest({ // init
+						method: "GET",
+						url: 'https://www.mturk.com/mturk/myhits',
+						onload: function(response) {
+							var rs = response.responseText;
+							if (response.status != 200) return;
+							
+							var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
+							if (r)
+							{
+								document.location.href = r[1];
+							}
+							else
+							{
+								var x = (input.value.split(' ')[1] * 1) + 1;
+								input.value = 'Checking ' + x;
+							}
+						}
+					});
+				}, 30000);
+			}
+		}
+		
 		// Only run on these pages!
 		/**
 		 * Only run on (preview|previewandaccept|continue|accept|submit|return)
@@ -110995,6 +111461,7 @@ function mturk_load()
 		new AMT___core_factory()
 			.top_window__addEventListener_iframe();
 		AMT___InitializeReturnAndAcceptKeyPress();
+		AMT__Global_Vars.initializeNextTabPassBy();
 		
 		//~ var r = AMT___core_factory().top_window__addEventListener_iframe();
 		
@@ -111027,6 +111494,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
 		AMT___InitializeReturnAndAcceptKeyPress();
+		AMT__Global_Vars.initializeNextTabPassBy();
 		console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
 			
 			
