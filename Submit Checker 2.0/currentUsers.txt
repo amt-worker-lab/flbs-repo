@@ -1,0 +1,5 @@
+{
+	"david": {computerIds: [1,2]},
+	"ben": {computerIds: []},
+	"mom": {computerIds: [3]},
+}

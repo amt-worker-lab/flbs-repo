@@ -2516,6 +2516,8 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  *
  * @param delimeter
  * @param focusToField
+ * 
+ * @param style
  */
 AMT___items_factory.prototype.create_annotation_to_output_fields = function(options_object) {
 	
@@ -2680,7 +2682,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		
 		var t = document.createElement('button');
 		t.setAttribute('type', 'button');
-		t.setAttribute('style', 'border-radius:2px;border:0;zoom:1.4;background-color:#fff;cursor:pointer;');
+		if (options_object.hasOwnProperty('style'))
+			t.setAttribute('style', options_object.style);
+		else
+			t.setAttribute('style', 'border-radius:2px;border:0;zoom:1.4;background-color:#fff;cursor:pointer;');
+		
 		//~ t.setAttribute('style', 'border-radius:2px;border:1px solid blue;zoom:1.4;background-color:#fff;');
 		t.index = index;
 		t.innerHTML = text;
@@ -4756,10 +4762,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Format: tasks_obj.hash_tds[row.hash_id] = td;
 		hash_tds: {},
 		
-		// This will contain the current hash IDs.
+		// This will contain the current HISTORY ids.
 		// An array.
 		//
-		current_hash_ids: []
+		current_history_ids: [],
+		
+		// This will contain the history ids of the
+		// newest tasks for graph initialization.
+		//
+		current_init_history_ids: []
 	}
 	
 	// Timers intervals
@@ -5040,17 +5051,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Reset the current_db_ids
 		tasks_obj.current_db_ids = {};
 		// Reset the current_hash_ids
-		tasks_obj.current_hash_ids = [];
+		tasks_obj.current_history_ids = [];
 		for (var i = 0; i < rs[0].length; i++)
 		{
 			
 			var db_id = rs[0][i];
 			tasks_obj.current_db_ids[db_id] = true;
 			
+			// ADD TO current_history_ids
+			var history_id;
 			if (rs[8]) {
-				var hash_id = rs[8][i];
-				tasks_obj.current_hash_ids.push(hash_id);
+				history_id = rs[8][i];
+				tasks_obj.current_history_ids.push(history_id);
 			}
+			
+			// IF NOT ON PAGE THEN ADD ?? 
 		}
 		
 		//~ if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
@@ -5079,7 +5094,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * @param isIgnored
 	 */
 	function makeRow(row, isIgnored) {
-					
+		
+		//~ console.log(row);
+		
 		// Set globals!
 		if (!isIgnored)
 			tasks_obj.table1_row_ids[row.db_id] = true;
@@ -5122,7 +5139,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'width:50%;'
 		);
 		tr.appendChild(td);
-		if (row.group_id != '') {
+		if (row.group_id != '' && row.group_id != null) {
 			var a_gid		= document.createElement('a');
 			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
 			a_gid			.setAttribute('class','cont_link');
@@ -5215,15 +5232,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		// Are there any hash_ids? Only case
 		// probably is when pulling tasks from sjshpack.com.
-		if (!tasks_obj.current_hash_ids.length)
+		if (!tasks_obj.current_init_history_ids.length)
 			return;
 		
 		var obj = {
 			type: '24HOUR',
-			hash_ids: tasks_obj.current_hash_ids // array
+			history_ids: tasks_obj.current_init_history_ids // array
 		};
 		
-		//~ var hash_ids = JSON.stringify(tasks_obj.current_hash_ids);
 		
 		var url = MT___page1_host;
 		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
@@ -5280,6 +5296,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
+				console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -5335,6 +5352,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					5 time since posted
 					6 requesterid
 					7 groupid
+					* 8 histID
 				*/
 				var d = {
 					db_id: '',
@@ -5344,7 +5362,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					hits_available: '',
 					time_since_posted: '',
 					requester_id: '',
-					group_id: ''
+					group_id: '',
+					history_id: ''
 				};
 				for (var i = 0; i < rs[0].length; i++) {
 				//~ for (var i in rs) {
@@ -5357,8 +5376,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.time_since_posted	= rs[5][i];
 					d.requester_id		= rs[6][i];
 					d.group_id			= rs[7][i];
-					if (rs[8])
-						d.hash_id			= rs[8][i];
+					d.history_id		= (rs[8]) ? rs[8][i] : '';
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
@@ -5366,7 +5384,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						var row = tasks_obj.table_rows[d.db_id]
 						row.hits_available.innerText = d.hits_available;
 						
-						// UPDATE GRAPH HERE.
+						// UPDATE GRAPH.
+						//
+						//
+						//
+						
+						// Add for GRAPH here.
+						//~ if (d.history_id != '') {
+							//~ tasks_obj.current_init_history_ids.push(d.history_id);
+						//~ }
 						
 						continue;
 					}
@@ -5446,7 +5472,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// If first run ...
 				// Then load full graph data.
-				// Else...
+				// Else if there are any new tasks
+				// then get full initial history for them.
 				//
 				// Update tasks_obj.firstRun to false.
 				// For all future runs any new rows
@@ -5454,7 +5481,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// rather than appendChild.
 				if (tasks_obj.isFirstRun) {
 					tasks_obj.isFirstRun = false;
+					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
 					init_graph();
+				} else if (tasks_obj.current_init_history_ids.length) {
+					
+					//~ init_graph();
+					
 				}
 			}
 		});

@@ -385,6 +385,11 @@ function load()
 				// NEW
 				new AMT__rq().rq__Gary_Gebenlian_give_addr(event.data);
 			}
+			if (event.data.task == 'AMT__traveldata_scrape_hotels_com' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().rq__AMT__traveldata_scrape_hotels_com(event.data);
+			}
 			
 		}
 	}
@@ -1662,6 +1667,243 @@ function load()
 		}
 	}
 	
+	/**
+	 * new AMT__rq().rq__AMT__traveldata_scrape_hotels_com(event.data);
+	 */
+	AMT__rq.prototype.rq__AMT__traveldata_scrape_hotels_com = function(data) {
+		
+		// global
+		// @param data.code
+		var data = data;
+		
+		var l = document.location.href;
+		console.log(l);
+		
+		
+		if (l.indexOf('http://www.hotels.com/hotel/details.html') != -1) {
+			lowest();
+			return;
+		}
+		else if (l.indexOf('https://ssl.hotels.com/bookingInitialise.do') != -1) {
+			
+			var o = {
+				p_1: null,
+				p_2: null,
+				p_3: null,
+				p_4: null
+			}
+			
+			var intv;
+			
+			prices_1(true);
+			
+			// RESULT ???
+			intv = setInterval(function() {
+				prices_1(false);
+			}, 100);
+			
+			
+			return;
+		}
+		//ERR		//http://www.hotels.com/search/search.html?cd=08-19-14&dd=08-21-14&hid=116961&ihu=true&numberOfRooms=1&pn=1&rl=CITY%3A1633911%3APROVIDED%3APROVIDED&roomInfoList[0].numberOfAdults=1&vt=LIST
+		else if (l.indexOf('http://www.hotels.com/search/search.html') != -1) {
+			
+			var x = document.getElementsByClassName('noticeTextType1');
+			if (x && x[0].innerText.indexOf('is not available on Hotels.com for your travel dates.') != -1) {
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', notes: x[0].innerText.trim()}, "*");
+			}
+		}
+		
+		//~ function prices_2() {
+			//~ 
+			//~ var x = document.getElementsByClassName('coupon_summary');
+			//~ if  (
+				//~ x.length &&
+				//~ x.innerText.trim() != ''
+				//~ )
+			//~ {
+				//~ 
+			//~ }
+			//~ 
+		//~ }
+		function prices_1(is_first) {
+			
+			var pr = document.getElementById('totalGrossPrice');
+			if (!pr) {
+				document.body.style.backgroundColor = 'pink';
+				exit('err1');
+			}
+			pr = pr.innerText.trim();
+			//~ console.log(pr);
+			if (!/^\$[\d\.,]+$/.exec(pr)) {
+				document.body.style.backgroundColor = 'pink';
+				//~ console.log(o);
+				exit('err2');
+			}
+			if (is_first)
+				o.p_1 = pr;
+			else
+				o.p_3 = pr;
+			
+			var pr = document.getElementById('averageNightlyPrice');
+			if (!pr) {
+				document.body.style.backgroundColor = 'pink';
+				exit('err3');
+			}
+			pr = pr.innerText.trim();
+			if (!/^\$[\d\.,]+$/.exec(pr)) {
+				document.body.style.backgroundColor = 'pink';
+				exit('err4');
+			}
+			if (is_first)
+				o.p_2 = pr;
+			else
+				o.p_4 = pr;
+			
+			// click next
+			if (is_first) {
+				var pr = document.getElementById('text_discountcode');
+				var error__hmmm = ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking');
+				if (!pr || error__hmmm != -1) {
+					
+					// err or ...
+					if (ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking') != -1) {
+						// complete
+						clearInterval(intv);
+						console.log(o);
+						parent.postMessage({
+							key: 'AMT__traveldata_scrape_hotels_com__complete',
+							data: o,
+							error: 'Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking'
+						}, "*");
+						return;
+					} else {
+						document.body.style.backgroundColor = 'pink';
+						exit('err5');
+					}
+				}
+				pr.value = data.code;
+				pr.focus();
+				
+				var pr = document.getElementById('btn_applyDiscount');
+				if (!pr) {
+					document.body.style.backgroundColor = 'pink';
+					exit('err6');
+				}
+				console.log(pr);
+				pr.disabled = false;
+				pr.click();
+				return;
+			}
+			
+			// Here?
+			// !is_first
+			if  (
+				o.p_1 != o.p_3 &&
+				o.p_2 != o.p_4 &&
+				document.getElementsByClassName('message error_message')[0].innerText.trim() == ''
+				)
+			{
+				clearInterval(intv);
+				console.log(o);
+				
+				// complete
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', data: o}, "*");
+			}
+			// Error?
+			else if (
+				document.getElementsByClassName('message error_message') &&
+				document.getElementsByClassName('message error_message')[0] && 
+				document.getElementsByClassName('message error_message')[0].innerText.trim() != ''
+			) {
+				
+				clearInterval(intv);
+				console.log(o);
+				
+				var er = document.getElementsByClassName('message error_message')[0].innerText.trim();
+				
+				//~ parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', error: er}, "*");
+				
+				parent.postMessage({
+					key: 'AMT__traveldata_scrape_hotels_com__complete',
+					data: o,
+					error: er
+				}, "*");
+			}
+			
+			
+		}
+		function lowest() {
+			
+			var r = document.getElementsByClassName('room');
+			var l = 999999;
+			var button = null;
+			
+			for (var i in r) {
+				if (i == 'length') break;
+				var pr = r[i].getElementsByClassName('current-price');
+				if (!pr.length) {
+					document.body.style.backgroundColor = 'pink';
+					exit('errA');
+				}
+				pr = pr[0].getElementsByTagName('strong');
+				if (!pr.length) {
+					document.body.style.backgroundColor = 'pink';
+					exit('errB');
+				}
+				pr = pr[0].innerText;
+				if (!/^\$[\d,]+$/.exec(pr)) {
+					document.body.style.backgroundColor = 'pink';
+					exit('errC');
+				}
+				pr = pr.replace('$', '') * 1;
+				if (pr < l) {
+					l = pr;
+					button = r[i].getElementsByTagName('button');
+					
+					//~ button = r[i].getElementsByTagName('form');
+					
+					if (button.length != 1) {
+						
+						button[0].click();
+						
+						//~ document.body.style.backgroundColor = 'pink';
+						//~ exit('errD');
+						
+						// PAY NOW?
+						var forms = r[i].getElementsByTagName('form');
+						console.log(forms);
+						if (forms[1].name.indexOf('payNow') != -1) {
+							forms[1].submit();
+							return;
+						} else {
+							
+						}
+						//~ if (forms.length != 3) {
+							//~ console.log(forms);
+							//~ document.body.style.backgroundColor = 'pink';
+							//~ exit('errD');
+						//~ } else {
+							//~ forms[1].submit();
+							//~ return;
+						//~ }
+					}
+					button = button[0];
+				}
+			}
+			console.log(l);
+			console.log(button);
+			
+			if (button != null) {
+				button.click();
+			}
+				
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	AMT__rq.prototype.rq__Gary_Gebenlian_give_addr = function(data) {
 		//alert('got here');
 		//~ var scr = document.createElement('script');

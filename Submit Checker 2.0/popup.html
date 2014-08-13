@@ -1,0 +1,354 @@
+<html>
+<head>
+<script type='text/javascript' src='css.js'></script>
+<script type='text/javascript' src='common.js'></script>
+<script type='text/javascript' src='standardista-table-sorting.js'></script>	
+<style>
+	td {
+		text-align:center;
+		padding: 0;
+        margin: 0;
+        border-collapse:collapse;
+        border-spacing:0;
+        line-height:1;
+        //text-decoration:underline
+	}
+</style>
+
+</head>
+<header>
+<script src="popDisplayer.js" type="text/javascript">
+</script>
+</header>
+<body id = "w00t" style="min-width:300px;min-height:50px;width:700px;">
+
+
+<div>
+-------------------------Current Job-----------------------
+</div>
+<table class='sortable'>
+<thead>
+	<tr>
+		<th>
+			
+		</th>
+	<th>
+		Wage	
+		</th>
+		<th>
+		Submits	
+		</th>
+		<th>
+		Returns	
+		</th>
+		<th>
+		Yield	
+		</th>
+		<!--
+		<th>
+		Pool	
+		</th>
+		-->
+</thead>
+<tbody>
+	<tr id=tenMinCJ>
+		<td>
+			10 Min:
+		</td>
+		<td>
+			Wage
+		</td>
+		<td>
+			Submits
+		</td>
+		<td>
+			Returns
+		</td>
+		<td>
+			Yield
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+	<tr id=thirtyMinCJ>
+		<td>
+			30 Min:
+		</td>
+		<td>
+			Wage
+		</td>
+		<td>
+			Submits
+		</td>
+		<td>
+			Returns
+		</td>
+		<td>
+			Yield
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+	<tr id=todayMinCJ>
+		<td>
+			Today:
+		</td>
+		<td>
+			NA
+		</td>
+		<td>
+			Submits
+		</td>
+		<td>
+			Returns
+		</td>
+		<td>
+			Yield
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+	<tr id=todayAllCJ>
+		<td>
+			All Today:
+		</td>
+		<td>
+			NA
+		</td>
+		<td>
+			Submits
+		</td>
+		<td>
+			Returns
+		</td>
+		<td>
+			Yield
+		</td>
+		<td>
+			
+		</td>
+	</tr>
+	<tr id=allTimeAllCJ>
+		<td>
+			All-Time:
+		</td>
+		<td>
+			NA
+		</td>
+		<td>
+			Submits
+		</td>
+		<td>
+			Returns
+		</td>
+		<td>
+			Yield
+		</td>
+		<!--
+		<td>
+			
+		</td>
+		-->
+	</tr>
+</tbody>
+</table>
+
+
+<div id="cjTotals" style="border-bottom: 1px solid gray;">
+</div>
+<!-- 10 Min: $0/hr, 0 submissions, 0 returns, NA% yield<br>30 Min: $0/hr, 0 submissions, 0 returns, NA% yield<br>Everyone Today: $0.24 from this Hit, $21.76 from all Hits<br>Total Revenue from this HIT: $0.24<br>Account Stats<br>Em Today: 0 Submits, 0 Returns, $0<br>Ben Today: 1067 Submits, 2 Returns, $21.76<br>Mom Today: 0 Submits, 0 Returns, $0<br>Gma Today: 0 Submits, 0 Returns, $0<br>User Stats<br>Dave Today: $0, This Week: $0, This Month: $0.66, This Year: $0.66<br>Mom Today: $0, This Week: $0.2, This Month: $0.2, This Year: $0.2<br>Ben Today: $21.76, This Week: $21.76, This Month: $21.76, This Year: $21.76<br>All Today: $21.76, This Week: $21.96, This Month: $22.62, This Year: $22.62 -->
+
+
+<table class='sortable' style="border-bottom: 1px solid gray;"><!-- style="border-bottom:1px solid gray;"-->
+<thead>
+	<tr>
+		<th>
+			Acct
+		</th>
+		<th>
+			Submits
+		</th>
+		<th>
+			Returns
+		</th>
+		<th>
+			Revenue
+		</th>
+		<th>
+			Remaining
+		</th>
+	</tr>
+</thead>
+<tbody>
+	<tr id=benAccount>
+		<td>
+		Ben
+		</td>
+		<td>
+		submits
+		</td>
+		<td>
+		returns
+		</td>
+		<td>
+		revenue
+		</td>
+		<td>
+		remaining
+		</td>
+	</tr>
+	<tr id=momAccount>
+		<td>
+		Mom
+		</td>
+		<td>
+		submits
+		</td>
+		<td>
+		returns
+		</td>
+		<td>
+		revenue
+		</td>
+		<td>
+		remaining
+		</td>
+	</tr>
+	<tr id=emAccount>
+		<td>
+		Em
+		</td>
+		<td>
+		submits
+		</td>
+		<td>
+		returns
+		</td>
+		<td>
+		revenue
+		</td>
+		<td>
+		remaining
+		</td>
+	</tr>
+	<tr id=gmaAccount>
+		<td>
+		Gma
+		</td>
+		<td>
+		submits
+		</td>
+		<td>
+		returns
+		</td>
+		<td>
+		revenue
+		</td>
+		<td>
+		remaining
+		</td>
+	</tr>
+</tbody>
+</table>
+</body>
+</html>
+
+
+
+<table class='sortable' style="border-bottom:1px solid gray;">
+<thead>
+	<tr>
+		<th>
+			Usr
+		</th>
+		<th>
+			Today
+		</th>
+		<th>
+			Week
+		</th>
+		<th>
+			Month
+		</th>
+		<th>
+			Year
+		</th>
+	</tr>
+</thead>
+<tfoot>
+	<tr  id=cmbUser>
+		<td>
+			Cmb
+		</td>
+		<td>
+			Combined
+		</td>
+		<td>
+			Combined
+		</td>
+		<td>
+			Combined
+		</td>
+		<td>
+			Combined
+		</td>
+	</tr>
+</tfoot>
+<tbody>
+	<tr id=benUser>
+		<td>
+		Ben
+		</td>
+		<td>
+		Today
+		</td>
+		<td>
+		Week
+		</td>
+		<td>
+		Month
+		</td>
+		<td>
+		Year
+		</td>
+	</tr>
+	<tr id=momUser>
+		<td>
+		Mom
+		</td>
+		<td>
+		Today
+		</td>
+		<td>
+		Week
+		</td>
+		<td>
+		Month
+		</td>
+		<td>
+		Year
+		</td>	</tr>
+	<tr id=daveUser>
+		<td>
+		Dave
+		</td>
+		<td>
+		Today
+		</td>
+		<td>
+		Week
+		</td>
+		<td>
+		Month
+		</td>
+		<td>
+		Year
+		</td>	</tr>
+</tbody>
+</table>
+</body>
+</html>
+

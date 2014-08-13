@@ -1414,6 +1414,249 @@ function MT__RUN() {
 	
 	
 	//
+	// traveldata
+	// Find Hotel Discounts
+	// Do as parent to iframe
+	// ex:https://s3.amazonaws.com/mturk_bulk/hits/119737238/W2s1Yy8d_V__X_uWQDj2lQ.html?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=3R868ACW4SLF5H92PS0BFYCAA7OGZQ
+	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		
+		
+		//http://www.hotels.com/hotel/details.html?pa=1&pn=1&ps=1&tab=description&hotelId=164960&arrivalDate=2014-08-19&departureDate=2014-08-21&rooms[0].numberOfAdults=1&roomno=1&validate=false&previousDateful=false&reviewOrder=date_newest_first
+		
+		var a = document.getElementsByTagName('a');
+		var td = document.getElementsByTagName('td');
+		console.log(td);
+		
+		var o = {
+			url:  a[0].href,
+			code: td[3].innerText.trim()//,
+			
+			//~ status: 0
+		};
+		console.log(o);
+		
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
+		document.body.appendChild(d2);
+		
+		// Flicker
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+			// Tell child to zoom out & extend
+			//~ var ifr_intv = setInterval(function() {
+				//~ d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+			//~ }, 1000);
+		}, false);
+		d2.src = o.url;
+		
+		var q = [
+			document.getElementById('undiscounted_adr'),
+			document.getElementById('undiscounted_total'),
+			document.getElementById('discounted_adr'),
+			document.getElementById('discounted_total')
+		];
+		// postMessage
+		var ifr_intv = setInterval(function() {
+			d2.contentWindow.postMessage({
+				task:		'AMT__traveldata_scrape_hotels_com',
+				code:		o.code//,
+				//~ status:		o.status
+			}, "*");
+		}, 1000);
+		
+		// watch for complete
+		window.addEventListener("message", AMT__traveldata_scrape_hotels_com__complete, false);
+		function AMT__traveldata_scrape_hotels_com__complete(event)
+		{
+			var v = event.data;
+			console.log(v);
+			
+			if (!v.hasOwnProperty('key'))
+				return;
+			
+			if (!v.hasOwnProperty('data') && !v.hasOwnProperty('error') && !v.hasOwnProperty('notes') )
+				return;
+			
+			//
+			if (v.key == 'AMT__traveldata_scrape_hotels_com__complete' && v.data) {
+				
+				q[0].value = v.data.p_2.replace(/[\$,]/g, '');
+				q[1].value = v.data.p_1.replace(/[\$,]/g, '');
+				
+				if  (
+					v.data.p_3 != null &&
+					v.data.p_4 != null &&
+					!v.error
+					)
+				{
+					q[2].value = v.data.p_4.replace(/[\$,]/g, '');
+					q[3].value = v.data.p_3.replace(/[\$,]/g, '');
+					
+					for (var i in q) {
+						if (q[i].value == '')
+							return;
+					}
+					
+					// Here?
+					q[0].focus();
+					doSubmit();
+					return;
+				}
+				
+				// HERE?
+				// 
+				if (v.error) {
+					document.getElementById('discount_error').value = v.error;
+					q[0].focus();
+					doSubmit();
+				}
+			}
+			
+			else if (v.key == 'AMT__traveldata_scrape_hotels_com__complete' && v.error) {
+				document.getElementById('discount_error').value = v.error;
+				
+				if (v.error == 'That discount code isn’t valid for the hotel you want to book') {
+					q[0].focus();
+					doSubmit();
+				}
+			}
+			
+			else if (v.key == 'AMT__traveldata_scrape_hotels_com__complete' && v.notes) {
+				console.log('x');
+				document.getElementById('notes').value = v.notes;
+				
+				//~ if (v.notes == 'That discount code isn’t valid for the hotel you want to book') {
+					q[0].focus();
+					doSubmit();
+				//~ }
+			}
+		}
+		
+		/*// REQUIRES // Likely requires form value "iovationDeviceReference" key 
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: o.url,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+	
+				var r;
+				var room;
+				var low = {
+					price: 99999999,
+					form_fields: null,
+					found: false
+				};
+				
+				// <tr class="rate_0 last-rate">
+				r = /<tr class="rate_\d[^"]*">((.|\s)*?(?=<\/tr><\/tbody>|$)|$)/gi;
+				while (room = r.exec(rs)) {
+					
+					room = room[1];
+					
+					var r2;
+					
+					//$80
+					r2 = /<span class="current-price">[\r\n\t\s]*<strong>\$([^<]*)<\/strong>[\r\n\t\s]*<span class="icon_info"><\/span>[\r\n\t\s]*<\/span>/i.exec(room);
+					if (!r2) {
+						traveldata_err('price');
+					}
+					r2 = r2*1;
+					if (r2 < low.price) {
+						
+						// Reset this
+						low.form_fields = {};
+						
+						var ff = /<form action="[^"]*" method="[^"]*" class="[^"]*" id="[^"]*" name="([^"]+)">/i.exec(room); // >roomAvailabilityform_200685683_0
+						if (!ff) {
+							traveldata_err('form');
+						}
+						ff = __js_clean_html_str(ff[1]);
+						low.form_fields[ff] = ''; // "TRUE"
+						
+						var ff = /<input[^>]*>/gi;
+						var input;
+						while (input = ff.exec(room)) {
+							
+							input = input[0];
+							
+							var r3 = /name="([^"]*)"/.exec(input);
+							if (!r3) {
+								traveldata_err('input1');
+							}
+							
+							var r4 = /value="([^"]*)"/.exec(input);
+							if (!r4) {
+								//~ traveldata_err('input2');
+								r4 = new Array();
+								r4[1] = '';
+							}
+							
+							low.form_fields[ __js_clean_html_str(r3[1]) ] = __js_clean_html_str(r4[1]);
+							
+						}
+					}
+				}
+				
+				if (low.found) {
+					traveldata_hotels_com_rooms__get(
+						low.form_fields
+					);
+				}
+			}
+		});
+		
+		// skip
+		//(name.indexOf('chbox_shoppingCartOrderDetails.travelDetails[0].hotelData.roomDetails[0].roomType.roomOccupations[0].accessibilityIds[') != -1)
+		
+		// add
+		//~ paymentAndBilling.selectedPaymentType:CREDITCARD
+		//~ paymentAndBilling.googleWalletDetails.cardNumber:
+		//~ paymentAndBilling.googleWalletDetails.securityCode:
+		//~ paymentAndBilling.googleWalletDetails.fullWalletJwt:
+		//~ paymentAndBilling.googleWalletDetails.maskedWallet:
+
+		//https://ssl.hotels.com/bookingInitialise.do
+		function traveldata_hotels_com_rooms__get(fields) {
+			
+			var data = '';
+			var first = true;
+			for (var i in fields) {
+				if (first)
+					data += '?';
+				else
+					data += '&';
+				data +=  i + '=' + encodeURIComponent(fields[i]);
+			}
+			
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: 'https://ssl.hotels.com/bookingInitialise.do',
+				data: '',
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+					}
+				}
+			});
+			
+		}*/
+
+	}
+	
+	//
 	// Big Bird
 	// 
 	//
@@ -57937,7 +58180,7 @@ qatar,80
 	
 	//
 	// sam molyneux
-	// alec (aka)
+	// alec levin (aka)
 	// Researcher head shots !!
 	//
 	//s = '4) Click on&nbsp;the image of a <strong>headshot (<u>head only</u>)</strong>&nbsp;<b>of the researcher</b>&nbsp;to open the image in preview mode';
@@ -58043,6 +58286,8 @@ qatar,80
 			//dimg.setAttribute('style', 'position:absolute;top:600px;left:0;width:20%;');
 			dimg.src = x;
 			d1b.appendChild(dimg);
+		} else if (ih.toLowerCase().indexOf('can not') != -1 || ih.toLowerCase().indexOf('cannot') != -1) {
+			alert('"cannot"');
 		}
 		
 		
@@ -58050,6 +58295,8 @@ qatar,80
 		
 		var title;
 		title = b[1].innerText.trim();
+		var title_array = b[1].innerText.trim().replace(/[^a-z0-9]/gi, ' ').split(' ');
+		
 		
 		//~ title = title.replace(/Ã¼/g, 'ü'); //utf -1252
 		//~ title = title.replace(/Ã©/g, 'é'); //utf -1252
@@ -58089,9 +58336,52 @@ qatar,80
 		}
 		
 		//di2
+		
+		var strong = document.getElementsByTagName('strong');
 		var i = /<p>Institutional Affiliation: <strong>([^<]*)<\/strong>\(if blank, please ignore\)<\/p>/.exec(ih);
 		if (i) {
 			di2.innerText += __js_clean_html_str(i[1]).trim();
+		} else if (strong[12]){
+			//~ di2.innerText += strong[12].innerText;
+			
+			var buttons_div = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: strong[12].innerText,
+				output_fields: [di],
+				callback_mouseup: function(addString) {
+					
+					sam_molyneux_researcher_images();
+					
+					//~ var checkString = addString;
+					//~ 
+					//~ // Remove trailing part of name where "reporter" begins
+					//~ q.value = q.value.replace(/([^ ,]+),[^ ]+$/, '$1');
+					//~ checkString = checkString.replace(/([^ ,]+),[^ ]+$/, '$1');
+					//~ 
+					//~ // Remove trailing commas
+					//~ q.value = q.value.replace(/ *,*$/, '');
+					//~ checkString = checkString.replace(/ *,*$/, '');
+					//~ 
+					//~ // Could there be an issue here?
+					//~ // Issues are:
+					//~ // Does not end with "." or a-z
+					//~ // Does not start with a-z
+					//~ if  (
+						//~ !/^[a-z]/i.exec(checkString) ||
+						//~ !/[a-z]\.?$/i.exec(checkString)
+						//~ )
+					//~ {
+						//~ document.body.style.backgroundColor = 'orange';
+					//~ }
+				},
+				appendToField: true,
+				appendToField_glue: ' ',
+				delimeter: '',
+				focusToField: false,
+				style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;'
+			});
+			
+			di2.appendChild(buttons_div);
+		
 		}
 		var i = /<p>Website URL: <b>([^<]*)</.exec(ih);
 		if (i) {
@@ -58099,8 +58389,15 @@ qatar,80
 			di2.appendChild(document.createTextNode(__js_clean_html_str(i[1]).trim()));
 		}
 
-
-
+		
+		// NEXT
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+			
 		//di.ondblclick = function() {
 			//this.value = title_qu;
 			//this.blur(); //
@@ -58222,7 +58519,7 @@ qatar,80
 				r = /<!--m-->((.|\s)*?(?=<!--n-->|$)|$)/g;
 				while (m = r.exec(rs)) {
 					
-					if (count >= 9) break;
+					if (count >= 10) break;
 					
 					meta = /<div class="rg_meta">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[1]);
 					if (meta) {
@@ -58241,7 +58538,8 @@ qatar,80
 					//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
 					//http://www.chw.org/~/media/Images/Modules/Physician%20Directory/Physicians/F/Jordan%20N%20Fink.jpg?mw=292
 					//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
-					img = /<a class="rg_l" href="http:\/\/www\.google\.com\/imgres\?imgurl=([^&"]+)/.exec(m[1]);
+					//~ img = /<a class="rg_l" href="http:\/\/www\.google\.com\/imgres\?imgurl=([^&"]+)/.exec(m[1]);
+					img = /<a href="http:\/\/www\.google\.com\/imgres\?imgurl=([^&"]+)/.exec(m[1]);
 					if (img) {
 						img = img[1].trim();
 						img = decodeURIComponent(decodeURIComponent(img));
@@ -58251,18 +58549,38 @@ qatar,80
 					console.log(img);
 					
 					div = document.createElement('div');
-					div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:100px;height:160px;overflow:auto;');
+					div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:124px;height:200px;overflow:auto;');
 					
 					el_img = document.createElement('img');
-					el_img.setAttribute('style', 'max-width:100px;max-height:100px;');
+					el_img.setAttribute('style', 'max-width:100px;max-height:120px;');
 					el_img.src = img;
 					el_img.onclick = sam_molyneux_researcher_images__imgClick;
 					
 					div.appendChild(el_img);
 					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createTextNode(meta.s));
+					div.appendChild(
+						MT__bold(
+								meta.s,
+								title_array,
+								{
+									return_div_element: true // !
+								}
+							)
+							.div_element
+					);
+					//~ div.appendChild(document.createTextNode(meta.s));
 					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createTextNode(meta.pt));
+					div.appendChild(
+						MT__bold(
+								meta.pt,
+								title_array,
+								{
+									return_div_element: true // !
+								}
+							)
+							.div_element
+					);
+					//~ div.appendChild(document.createTextNode(meta.pt));
 					
 					d1a2.appendChild(div);
 					
@@ -58335,7 +58653,10 @@ qatar,80
 	}
 	function sam_molyneux_researcher_images__imgClick() {
 		
+		// GO TO NEXT TAB!
 		this.style.border = '4px solid LightGreen';
+		
+		new AMT___core_factory().nextTab();
 			
 		var u, v, w;
 		u = encodeURIComponent(code);
@@ -69243,6 +69564,612 @@ qatar,80
 		}
 	}
 	//
+	// Andrew Mauboussin
+	// Find the URLs of Company Websites
+	// 
+	s ='<p>Do not enter the URL of its page on Facebook, Google Plus, Hoovers or any other similar sites.</p>';
+	if (ih.indexOf(s) != -1) {
+		console.log('');
+		GM_addStyle('body {width:30%;margin-top:650px;}');
+		
+		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
+		GM_addStyle('.span7 {width:98%;}');
+		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
+		GM_addStyle('input {zoom:1;margin:0;padding:0;}');
+		
+		GM_addStyle('#DataCollection {margin-top:650px;}');
+		
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		document.body.appendChild(na);
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='70%';
+		na.style.width='29%';
+		na.style.height='24px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.style.cursor='pointer';
+		na.value = "N/A"
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "NA";
+			
+			// showNextTab OR nextTab
+			if(FOUND_ONE_NONSKIP) {
+				//showNextTab();
+				// nextTab only when manual
+				new AMT___core_factory().nextTab();
+			} else {
+				
+			}
+			
+			doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ var host = GM_getValue('MT__torHost');
+			//~ if (!host)
+				//~ host = 'http://192.168.1.6/';
+			//~ 
+			//~ 
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
+		document.body.appendChild(d2);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height='600px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height='600px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		//
+		d3.onblur = function() {
+			Andrew_Mauboussin_Find_Website_Address(d1,  this.value);
+		}
+		d3b.onblur = function() {
+			Andrew_Mauboussin_Find_Website_Address(d1b, this.value);
+		}
+		d3c.onblur = function() {
+			Andrew_Mauboussin_Find_Website_Address(d1c, this.value);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		// left = city
+		// middle = city/state/zip
+		// right = phone
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			country: td[3].innerText.trim(),
+			comp: td[1].innerText.trim(),
+			comp_short: ''
+		}
+		o.comp_short = o.comp.split(' ');
+		if (o.comp_short.length >= 3) {
+			o.comp_short = o.comp_short.slice(0, 2).join(' '); // 0, 1 but not 2
+		} else
+			o.comp_short = '';
+		
+		// ...
+		d3.value = o.comp;
+		d3b.value= (o.country != '') ? o.comp+' '+o.country : '"'+o.comp+'"';
+		if (o.comp_short != '')	{
+			d3c.value = '"' + o.comp_short + '" ' + o.country;
+		} else if (o.country != '') {
+			d3c.value = '"'+o.comp+'"';
+		}
+		
+		// ...
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Andrew_Mauboussin_Find_Website_Address_load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					//~ Brittany_Graham_Find_Website_Address(d1, d3.value);
+					//~ if (b2 != '')
+						//~ Brittany_Graham_Find_Website_Address(d1b, d3b.value, false);
+					
+					if (b2 != '')
+						Andrew_Mauboussin_Find_Website_Address(d1,  d3.value );
+					else
+						TOTAL_CALLS++;
+					if (b3 != '')
+						Andrew_Mauboussin_Find_Website_Address(d1b, d3b.value);
+					else
+						TOTAL_CALLS++;
+					if (b4 != '')
+						Andrew_Mauboussin_Find_Website_Address(d1c, d3c.value);
+					else
+						TOTAL_CALLS++;
+			
+				}
+			});
+		}
+		Andrew_Mauboussin_Find_Website_Address_load_skips();
+		
+		function Andrew_Mauboussin_Find_Website_Address__processProxyResponse(rs, out_div) {
+			//
+			var yahoo_type = 0;
+			var r = /yschttl spt" href="[^*"]+[*]{2,}([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // ** (TWO ASTERISKS) !!
+			if (!r.exec(rs)) {
+				r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+				yahoo_type = 1;
+			}
+			r.lastIndex = 0;
+			
+			if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
+				r.lastIndex = 0;
+				
+				var count = 0;
+				var x, match, out;
+				var r, m;
+				var fb = '';
+				var domain;
+				var short_domain;
+				var y;
+				
+				// add bold to result
+				// b2, b3, b4
+				var bold_array;
+				bold_array = (o.comp + ' ' + o.country).replace(/&/g, ' ').split(' ');
+				//~ switch(out_div.id) {
+					//~ case 'd1':
+						//~ bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1b':
+						//~ bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1c':
+						//~ bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						//~ break;
+				//~ }
+				//~ 
+				//~ if (out_div.id == 'd1') {
+					//~ var keyword_and_index_array = {
+					//~ };
+					//~ keyword_and_index_array['C'] = o.city;
+					//~ keyword_and_index_array['S'] = o.state_abbr;
+					//~ keyword_and_index_array['*S*'] = o.state;
+					//~ //keyword_and_index_array['STATE FULL'] = o.;
+					//~ keyword_and_index_array['Z'] = o.zip;
+					//~ keyword_and_index_array['P'] = o.phone;
+					//~ keyword_and_index_array['AC'] = o.area_code;
+				//~ }
+				
+				while (match = r.exec(rs)) {
+					//if (count >= 8)
+					//	break;
+					//console.log(x);
+					//~ console.log(match);
+					
+					// is this ri.search.yahoo.com
+					if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
+						match[1] = (/\/RU=([^\/]+)/.exec(match[1]))[1];
+						match[1] = decodeURIComponent(match[1]);
+					}
+					else if (yahoo_type == 0)
+						match[1] = decodeURIComponent(match[1]);
+					
+					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					match[2] = match[2].replace(/<b>/g, '`');
+					match[2] = match[2].replace(/<\/b>/g, '``');
+					match[2] = match[2].replace(/<[^>]+>/g, ' ');
+					match[2] = match[2].replace(/[<>]/g, ' ');
+					match[2] = match[2].replace(/``/g, '</b>');
+					match[2] = match[2].replace(/`/g, '<b>');
+					
+					x = match[1];
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// NEW JUL 30 2014
+					// Change from http://www. to www.
+					// Per instructions.
+					//~ x = x.replace(/^https?:\/\//g, '');
+					
+					// regular = ^http://www.site.com$
+					// subdomains = [\.\/]site.com$
+					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+						short_domain = y[1];
+					} else
+						short_domain = x;
+					
+					// SKIP BUTTON CREATE 2
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2({
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						});
+					
+					
+					// add bold (bold_array)
+					match[2] = MT__bold(match[2], bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					// Update Aug6 2014
+					var cls = x.replace(/\/www\./, '/');
+					//~ var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_url = match[1];
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						//~ count++;
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:0.9;cursor:pointer;padding:0;margin:0;');
+					txa.readOnly = true;
+					txa.value = x;
+					d.appendChild(txa);
+					// A
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = match[1];
+					d.appendChild(a);
+					// el_inp_skip2__obj.el_btn
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					// ...
+					// Scrape page
+					// Only on d1
+					// @assoc. array [show output (key) => scrape for keyword (value)], []
+					//~ if (count < 6 && out_div.id == 'd1') {
+						//~ var scrape_el = document.createElement('div');
+						//~ scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
+						//~ d.appendChild(scrape_el);
+						//~ new AMT___items_factory().xhr_scrape_page({
+							//~ parent_el: scrape_el,
+							//~ keyword_and_index_array: keyword_and_index_array,
+							//~ url: match[1]
+						//~ });
+					//~ }
+					
+					// Body
+					var pbody = document.createElement('p');
+					d.appendChild(pbody);
+					pbody.setAttribute('style','word-wrap:break-word;border-bottom:1px solid aeaeae;');
+					pbody.innerHTML = match[2];// + '<br>' + match[1];
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('web_url').value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						//showNextTab();
+						
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						
+						d2.value = this.full_url;
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						//~ this.el_full_url.style.diplay = 'block';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+								
+								// SHOW FULL URLS ...
+								
+							} else {
+								x[i].style.backgroundColor = '';
+								
+								//~ // HIDE FULL URLS ...
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, true);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+								
+								// HIDE FULL URLS ...
+							}
+						}
+						//~ this.id_fullURL_child.style.diplay = 'none';
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					count++;
+					
+				}
+				
+				if (count > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
+				}
+			} else
+				out_div.innerHTML = '0';
+
+			// All three windows have completed
+			// and none of the three have 
+			// TOTAL_CALLS AND FOUND_ONE_NONSKIP
+			TOTAL_CALLS++;
+			if (TOTAL_CALLS == 3) {
+				if (!FOUND_ONE_NONSKIP) {
+					//~ na.click(); // na button
+					//document.getElementById('Website').value = 
+					return;
+				}
+				// All three windows have completed
+				// and the first domain is same across all three
+				else if (ARRAY_FIRST_FINDS.length == 3) {
+					//d1, d1b, d1c
+					var divs = [d1, d1b, d1c];
+					var x;
+					for (var i in divs) {
+						x = divs[i].getElementsByTagName('textarea')[0];
+						x.style.border = '6px solid LightGreen';
+					}
+				}
+				
+				// addToTabsQ
+				//addToTabsQ();
+			}
+		}
+		function Andrew_Mauboussin_Find_Website_Address(out_div, search) {
+			
+			// NEW YAHOO
+			// JUL17 2014
+			var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(search); //%2B
+			
+			// OLD YAHOO
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			
+			out_div.innerHTML = '';
+			var out_div = out_div;
+			
+			var url = HOST + 
+				'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+				'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999');
+			
+			// init
+			GM_xmlhttpRequest({ // USE "HOST" HERE!
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					//var rs = response.responseText;
+				}
+			});
+			// watch done
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: HOST+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+						
+						// IS HOST 192.168.1.2?
+						// IF NO THEN POST THIS RESPONSE TO 
+						// 192.168.1.2
+						// md5 !!
+						if (HOST == 'http://192.168.1.2') { //MT___host
+							Andrew_Mauboussin_Find_Website_Address__processProxyResponse(rs, out_div);
+							return;
+						}
+						
+						// still here?
+						// save file !
+						var rf = new AMT___requests_factory();
+						//~ var md5_url = rf.general_functions__md5(u);
+						var md5_url = any_md5(u, '0123456789ABCDEF');
+						var data;
+						var yahoo_rs = rs;
+						
+						data = 'AMT__serverSide_write__value='+encodeURIComponent(rs)+
+							'&AMT__serverSide_write__folder=.cached'+
+							'&AMT__serverSide_write__file='+encodeURIComponent(md5_url);
+						
+						GM_xmlhttpRequest({
+							method: "POST",
+							url: 'http://192.168.1.2/mturk/util.php',
+							data: data,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								if (response.status != 200 || rs != '') {
+									exit(response.status + ' ' + rs);
+								}
+								
+								Andrew_Mauboussin_Find_Website_Address__processProxyResponse(yahoo_rs, out_div); // yahoo_rs !!
+							}
+						});
+						
+					}
+				})
+			}, 1000);
+		}
+	}
+	//
 	// Brittany Graham
 	// Find the Website Address for this Company
 	// Feb. 11, 2014
@@ -69362,22 +70289,6 @@ qatar,80
 		d1c.style.borderBottom='2px solid blue';
 		d1c.style.backgroundColor='#eee';
 		d1c.style.fontSize='10px';
-		//
-		//~ d = document.createElement('iframe');
-		//~ d.setAttribute('id','d2');
-		//~ d.setAttribute('name','d2');
-		//~ document.body.appendChild(d);
-		//~ var d2 = document.getElementById('d2');
-		//~ d2.style.position='absolute';
-		//~ d2.style.top='650px';
-		//~ d2.style.left='20%';
-		//~ d2.style.width='78%';
-		//~ d2.style.height='400px';
-		//~ d2.style.overflow='auto';
-		//~ d2.style.border='1px solid blue';
-		//~ d2.style.borderBottom='2px solid blue';
-		//~ d2.style.backgroundColor='#eee';
-		//~ d2.style.fontSize='8px';
 		//
 		d = document.createElement('textarea');
 		d.setAttribute('id','d3');
@@ -69862,24 +70773,13 @@ qatar,80
 							if (i == 'length') break;
 							if (x[i].className == this.className) {
 								x[i].style.backgroundColor = 'LightGreen';
-								//~ x[i].full_url.style.backgroundColor = 'LightGreen';
 								
-								// SHOW FULL URLS !
-								//~ var n = x[i].getElementsByTagName('div');
-								//~ n = n[n.length -1];
-								//~ n.style.display = 'block';
-								//~ if (x[i].hasOwnProperty('id_fullURL_child'))
-								//~ x[i].id_fullURL_child.style.display = 'block';
-								//~ console.log(x[i].id_fullURL_child.style.diplay);
+								// SHOW FULL URLS ...
+								
 							} else {
 								x[i].style.backgroundColor = '';
-								//~ x[i].full_url.style.backgroundColor = '';
-								//~ // HIDE FULL URLS !
-								//~ var n = x[i].getElementsByTagName('div');
-								//~ n = n[n.length -1];
-								//~ n.style.diplay = 'none';
-								//~ if (x[i].hasOwnProperty('id_fullURL_child'))
-									//~ x[i].id_fullURL_child.style.display = 'none';
+								
+								//~ // HIDE FULL URLS ...
 							}
 						}
 						// Could do this also! .getElementsByClassName('class_');
@@ -69894,13 +70794,8 @@ qatar,80
 							if (i == 'length') break;
 							if (x[i].className == this.className) {
 								x[i].style.backgroundColor = '';
-								//~ x[i].full_url.style.backgroundColor = '';
 								
-								// HIDE FULL URLS !
-								//~ var n = x[i].getElementsByTagName('div');
-								//~ n = n[n.length -1];
-								//~ n.style.diplay = 'none';
-								//~ x[i].id_fullURL_child.style.display = 'none';
+								// HIDE FULL URLS ...
 							}
 						}
 						//~ this.id_fullURL_child.style.diplay = 'none';
@@ -69921,18 +70816,6 @@ qatar,80
 					
 					count++;
 					
-					
-					// OLD JUN30 2014
-					//
-					//
-					//~ out_div.innerHTML += '\
-						//~ <p class="class_'+cls+'">\
-							//~ <textarea class="exe" style="width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;" readOnly>'+x+'</textarea>\
-							//~ <a href="'+match[1]+'" target="_blank">link</a> \
-							//~ <a href="'+match[1]+'" target="d2">ifr</a> \
-							//~ <input type="button" value=" S " id="'+x+'" class="exe-skip" style="width:auto;" > \
-							//~ <br >'+match[2]+'\
-						//~ </p>';
 				}
 				
 				if (count > 0) {
@@ -70018,7 +70901,8 @@ qatar,80
 						// still here?
 						// save file !
 						var rf = new AMT___requests_factory();
-						var md5_url = rf.general_functions__md5(u);
+						//~ var md5_url = rf.general_functions__md5(u);
+						var md5_url = any_md5(u, '0123456789ABCDEF');
 						var data;
 						var yahoo_rs = rs;
 						
