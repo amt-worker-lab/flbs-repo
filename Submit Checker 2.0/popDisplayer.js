@@ -52,6 +52,8 @@ function createSubmissionDisplay(callback) {
 		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?GetLatest=1&ComputerId='+COMPUTER_ID,
 		onload: function(response) {
 		console.log(response.responseText);
+		//alert(COMPUTER_ID);
+
 		try {
 		var iStats = JSON.parse(response.responseText);
 		}
@@ -114,8 +116,10 @@ function createSubmissionDisplay(callback) {
 		
 		
 		cjTotals = document.getElementById('cjTotals');
-		cjTotals.innerHTML = "Pool: " + cjStats.pool.apexCount + " Size, " + cjStats.pool.percentPool +"%<br>" +
-							 "ETA: " + cjStats.pool.activeETA + "hrs, Passive ETA: "+cjStats.pool.passiveETA +"hrs (last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago)";
+		cjTotals.innerHTML = "Current Pool: " + cjStats.pool.currentCount + " HITs, " + cjStats.pool.percentSoFarPool +"%, " + cjStats.pool.leftOverPoolMoney +"$<br>" +
+						     "Total Pool: " + cjStats.pool.apexCount + " HITs, " + cjStats.pool.percentPool +"%, " + cjStats.pool.totalPoolMoney + "$<br>" +
+							 "ETA: " + cjStats.pool.activeETA + "hrs<br>"+
+							 "Passive ETA: "+cjStats.pool.passiveETA +"hrs (last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago)";
 		
 		
 		var account;
@@ -231,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	function(response) {
 	
 	COMPUTER_ID = response.id;
+		
 		
 	createSubmissionDisplay(function() {
 			var centReset = document.createElement("input");

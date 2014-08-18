@@ -3,7 +3,7 @@ console.log("Submit Checker content script");
 
 MAX_PAGE_FAIL = 'You have exceeded the maximum allowed page request rate for this website';
 PROBLEM_FAIL = 'There was a problem submitting your results for this HIT';
-EXPIRED_FAIL = 'The hit you were viewing has expired';
+EXPIRED_FAIL = 'The HIT you were viewing has expired.';
 
 //Do not run during external submit. You will lose the race
 if(window.location.href != 'https://www.mturk.com/mturk/externalSubmit') {
@@ -34,6 +34,7 @@ var doc = document.body.innerHTML;
 var loc = window.location.href;
 var locReg = /mturk.com/;
 
+
 chrome.extension.sendMessage({
 			WhatsMyTab: true		
 		}, function(rs) {
@@ -48,10 +49,18 @@ chrome.extension.sendMessage({
 				}
 				else
 				{
+					if(doc.indexOf('There are no HITs available') != -1)
+					{
+							alert('If you get this alert when a job finishes, then you know you are doing great. Also, check the console for HIT. Remove the console and this alert after.');
+					}
 					var hit = JSON.parse(localStorage['tab' + tabId + 'Details']);
 					var type = localStorage['tab' + tabId + 'Type']
 					//alert(tabId);
-					
+
+					if(doc.indexOf('There are no more available HITs in this group. See more HITs available to you below.') != -1) {
+						console.log(hit);
+						console.log('type:' + type);
+					}					
 					
 					delete localStorage['tab' + tabId + 'Details'];
 					delete localStorage['tab' + tabId + 'Type'];
@@ -69,6 +78,7 @@ chrome.extension.sendMessage({
 							typeOfFail = 'Problem Submitting';
 						}
 						else if(doc.indexOf(EXPIRED_FAIL) != -1) {
+							alert('testing expired fail');
 							isFailed = true;
 							typeOfFail = 'Expired';
 						}					

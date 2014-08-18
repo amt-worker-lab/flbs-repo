@@ -1658,6 +1658,151 @@ function MT__RUN() {
 	
 	//
 	// Big Bird
+	// Reporters
+	//
+	s = 'You are looking for the needle in the haystack. There will be errors, but they will be in the minority. It is very important to find all of the errors, but do not be alarmed if you do not see one.';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		//~ GM_addStyle('body {margin-top:500px !important;}');
+		GM_addStyle('#submitButton {width:100%;height:80px;}');
+		
+		GM_addStyle('.rep {background-color:aqua;}');
+		GM_addStyle('.sh  {background-color:pink;}');
+		
+	
+		var h2 = document.getElementsByTagName('h2');
+		var para = document.getElementsByTagName('p');
+		
+		//
+		//
+		//
+		var provide_feedback_para;
+		for (var i in para) {
+			if (para[i].innerText == 'Provide feedback on our work.')
+				provide_feedback_para = para[i];
+		}
+		
+		// Paragraph with the text in it!
+		//
+		//
+		var task_para = document.getElementsByClassName('font_8')[9];
+		task_para.setAttribute('style', 'width:60%;');
+		
+		// submitButton
+		document.getElementById('submitButton').onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		// Move
+		document.getElementsByTagName('h1')[2].appendChild(document.getElementById('submitButton'));
+		
+		// r&a
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		window.addEventListener('keydown', Big_Bird_reporters__keypress, false);
+		function Big_Bird_reporters__keypress(e) {
+			//~ var k = String.fromCharCode(e.keyCode); // (Upper)
+			//~ console.log(k);
+			console.log(e.keyCode);
+			//~ if (k == '')
+			var k = e.keyCode;
+			
+			switch(k) {
+				case 0:
+				case 96:
+					document.getElementsByName('Error')[0].checked = false;
+					
+					document.getElementsByName('No error')[0].checked = true;
+					document.getElementsByName('No error')[0].click();
+					doSubmit();
+					
+					new AMT___core_factory().nextTab();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+					break;
+				case 1:
+				case 97:
+					document.getElementsByName('No error')[0].checked = false;
+					
+					document.getElementsByName('Error')[0].checked = true;
+					document.getElementsByName('Error')[0].click();
+					doSubmit();
+					
+					new AMT___core_factory().nextTab();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+					break;
+			}
+		}
+		
+		// Court Reporters!
+		//
+		//
+		var cr = new AMT___huge_vars_factory().Big_Bird_court_reporters();
+		var n;
+		n = MT__bold(task_para.innerText, cr.array);
+		//~ n = MT__bold(task_para.innerText, cr.array.concat(['{rep_}', '{/rep_}', '{sh_}', '{/sh_}']));
+		n = n.replace(/(\{(rep|sh)_\})((.|\s)*?(?=\{\/(rep|sh)_\}|$)|$)/g, function(m0, m1, m2, m3, m4, m5, m6) {
+			
+			// 2 is type
+			// 3 is body
+			
+			switch(m2) {
+				
+				case 'rep':
+					return '<span class="rep">'+m3+'</span>';
+					break;
+				
+				case 'sh':
+					return '<span class="sh">'+m3+'</span>';
+					break;
+			}
+			//~ console.log(m1);
+			//~ console.log(m2);
+			//~ console.log(m3);
+			//~ console.log(m4);
+			//~ console.log(m5);
+			//~ console.log(m6);
+			//~ return m0;
+		});
+		n = n.replace(/\{\/(rep|sh)_\}/g, '');
+		
+		task_para.innerHTML = n;
+		
+		//~ // Append
+		//~ p.innerText = '';
+		//~ p.appendChild(buttons);
+		
+		// scroll
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 200);
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 400);
+		setTimeout(function() {
+			var h1 = document.getElementsByTagName('h1')[2];
+			h1.scrollIntoView();
+		}, 800);
+		
+		document.getElementsByName('comment')[0].focus();
+	}
+	//
+	// Big Bird
 	// 
 	//
 	s = 'Thank you for doing this HIT. This is part of a project to help computers interpret legal text. The goal of this HIT is to identify the different components of a citation. The only component that I want for this HIT is the "short name". A summary of the instructions are as follows:';
@@ -1862,7 +2007,7 @@ function MT__RUN() {
 		var d1 = document.createElement('div');
 		d1.setAttribute('style', 'position:absolute;top:0;left:0;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1);
-		var d1b = document.createElement('div');
+		var d1b = document.createElement('textarea');
 		d1b.setAttribute('style', 'position:absolute;top:300px;left:0;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1b);
 		/* END ITEMS */
@@ -1870,6 +2015,7 @@ function MT__RUN() {
 		Evan_Marks_facebook_users__location();
 		
 		// Evan_Marks_facebook_users__location
+		// Search for the FB page location.
 		function Evan_Marks_facebook_users__location() {
 			
 			d1.innerText = '';
@@ -1911,6 +2057,7 @@ function MT__RUN() {
 						d1.appendChild(d);
 						
 						d.onclick = function() {
+							this.scrollIntoView();
 							this.style.backgroundColor = 'LightGreen';
 							o.fb_state_id = this.fb_id;
 							Evan_Marks_facebook_users__people();
@@ -2010,8 +2157,13 @@ function MT__RUN() {
 		function Evan_Marks_facebook_users__fail() {
 			document.getElementById('facebook_id').value = 'none';
 			
-			if (!exe.search_more_than_20)
+			if (!exe.search_more_than_20) {
 				doSubmit();
+				document.body.style.backgroundColor = 'aqua';
+				//~ alert('not found:will submit "none"');
+			} else {
+				document.body.style.backgroundColor = 'pink';
+			}
 		}
 		
 		//Evan_Marks_facebook_users__showMore
@@ -2032,8 +2184,8 @@ function MT__RUN() {
 						'?data='+encodeURIComponent(JSON.stringify(data))+
 						'&__user=613706455&__a=1&__dyn=7n8ahyj2qmvudDgDxyKBgWyBzECiq78hACF29aGEVFLFwxBxCbzESu49UJ0&__req=16&__rev=1337404';
 			
-			d1b.innerText += '(' + exe.count_show_more_friends + ')=>' + data.collection_token + ' ' + data.cursor + '\n';
-			console.log(data);
+			d1b.value = '(' + exe.count_show_more_friends + ')=>' + data.collection_token + ' ' + data.cursor + '\n' + d1b.value;
+			//~ console.log(data);
 			
 			// xhr
 			GM_xmlhttpRequest({
@@ -2117,7 +2269,7 @@ function MT__RUN() {
 			
 			document.getElementById('facebook_id').value = x;
 			document.getElementById('facebook_id').scrollIntoView();
-			doSubmit();
+			//~ doSubmit(); //
 		}
 		
 		//Evan_Marks_facebook_users__try
@@ -2156,7 +2308,7 @@ function MT__RUN() {
 						//~ return;
 						//~ exe.search_more_than_20 = true; // TRUE
 					}
-					d1b.innerText += response.finalUrl + '\nnum:' + numOnPage + '\n';
+					d1b.value = response.finalUrl + '\nnum:' + numOnPage + '\n' + d1b.value;
 					
 					var r;
 					r = rs.toLowerCase().replace(/[^\w\d]/g, '');
@@ -7913,7 +8065,7 @@ function MT__RUN() {
 		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
 		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
 		
-		GM_addStyle('.container {position:absolute;top:340px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:164px;margin-left:-40px;zoom:0.8;}'); //;width:100%
 		GM_addStyle('.panel {position:absolute;top:2000px;}');
 		
 		GM_addStyle('input[type="radio"] {zoom:3;}');
@@ -7946,11 +8098,11 @@ function MT__RUN() {
 		
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:280px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:24px;left:0%;width:80%;height:120px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:280px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:420px;left:0%;width:80%;height:280px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		//~ var d2 = document.createElement('input');
@@ -7992,8 +8144,52 @@ function MT__RUN() {
 					action: 'return_and_accept_button__nextTab'
 				}
 			);
+		
+		// Focus on a button.
+		setTimeout(function() {
+			q[0].focus();
+			document.body.scrollIntoView();
+		}, 1200);
+		
+		//...
+		window.addEventListener('keydown', Relevance_Groupon_keyword_search__keypress, false);
+		function Relevance_Groupon_keyword_search__keypress(e) {
+			//~ var k = String.fromCharCode(e.keyCode); // (Upper)
+			//~ console.log(k);
+			console.log(e.keyCode);
+			//~ if (k == '')
+			var k = e.keyCode;
 			
-			
+			switch(k) {
+				case 0:
+				case 96:
+					q[1].checked = false;
+					
+					q[0].checked = true;
+					q[0].click();
+					doSubmit();
+					
+					new AMT___core_factory().nextTab();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+					break;
+				case 1:
+				case 97:
+					q[0].checked = false;
+					
+					q[1].checked = true;
+					q[1].click();
+					doSubmit();
+					
+					new AMT___core_factory().nextTab();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+					break;
+			}
+		}
+		
 		// ...
 		Relevance_Groupon_keyword_search();
 		Relevance_Groupon_keyword_search__category();
@@ -8087,27 +8283,27 @@ function MT__RUN() {
 						d1.innerHTML += '<br>';
 					}
 					
-					//
-					r = /<h4>Choose from \w+ Options<\/h4>[\r\n\t\s]*<ul>[\r\n\t\s]*(<li>([^<]*)<\/li>)+[\r\n\t\s]*<\/ul>/.exec(rs);
-					if (r) {
-						console.log(r);
-						
-						
-						var ul = 'O:<ul>';
-						for (var i = 2; i<r.length; i++) {
-							
-							r[i] = __js_clean_html_str(r[i]).trim().replace(/[<>]/g, '');
-							
-							ul += '<li>'+MT__bold(r[i], o.reason_array)+'</li>';
-							
-						}
-						ul+= '</ul>';
-						
-						d1.innerHTML += ul;
-					} else {
-						d1.innerHTML += 'O:';
-						d1.innerHTML += '<br>';
-					}
+					//~ //
+					//~ r = /<h4>Choose from \w+ Options<\/h4>[\r\n\t\s]*<ul>[\r\n\t\s]*(<li>([^<]*)<\/li>)+[\r\n\t\s]*<\/ul>/.exec(rs);
+					//~ if (r) {
+						//~ console.log(r);
+						//~ 
+						//~ 
+						//~ var ul = 'O:<ul>';
+						//~ for (var i = 2; i<r.length; i++) {
+							//~ 
+							//~ r[i] = __js_clean_html_str(r[i]).trim().replace(/[<>]/g, '');
+							//~ 
+							//~ ul += '<li>'+MT__bold(r[i], o.reason_array)+'</li>';
+							//~ 
+						//~ }
+						//~ ul+= '</ul>';
+						//~ 
+						//~ d1.innerHTML += ul;
+					//~ } else {
+						//~ d1.innerHTML += 'O:';
+						//~ d1.innerHTML += '<br>';
+					//~ }
 					
 					//Acupressure combines with medical quigong techniques to stimulate the flow of chi and relax the face or the organs
 					r = /<div class='nutshell highlights '>[\r\n\t\s]*<h3>In a Nutshell<\/h3>[\r\n\t\s]*<p>([^<]*)/.exec(rs);
@@ -8118,22 +8314,25 @@ function MT__RUN() {
 						d1.innerHTML += 'N:';
 					}
 					
+					//r = /<article class="seven columns pitch"> <div class="discussion row">
 					//Acupressure combines with medical quigong techniques to stimulate the flow of chi and relax the face or the organs
 					var d = document.createElement('div');
 					d.setAttribute('style', 'border-top:1px solid teal;height:1400px;');
-					r = /<article class="seven columns pitch">((.|\s)*?(?=<\/article>|$)|$)/.exec(rs);
+					r = /<article class="\w+ columns pitch">((.|\s)*?(?=<\/article>|$)|$)/.exec(rs);
 					if (r) {
+						console.log(r);
 						r = r[1].replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
 						r = __js_clean_html_str(r).trim();
 						r = r.replace(/[<>]/g, '');
 						
 						d.innerHTML = MT__bold(r, o.reason_arr);
 						
+						console.log(r);
+						
 						//~ d1.innerHTML += '<div style="border">' + MT__bold(r, o.reason_arr) + '</div>';
 					} else {
 						//
 					}
-					
 					d1.appendChild(d);
 				}
 			});
@@ -11290,7 +11489,8 @@ function MT__RUN() {
 	//
 	// Emergo Group
 	// -SimpleSearch
-	// 
+	//
+	// Aug13 2014 STARTPAGE tested
 	s = 'The company below is exhibiting at a tradeshow, and we would like the website address for the <strong>official website of the company</strong>';
 	if (ih.indexOf(s) != -1 && ih.indexOf('Search Google (or any other source) for the company name') == -1)
 	{
@@ -11714,7 +11914,7 @@ function MT__RUN() {
 	// Sergey Schmidt
 	// -SimpleSearch
 	// Find YouTube News channels
-	s = 'You will be given a an online news source, such as “cnn.com”, and your task will be to find it’s official YouTube channel. ';
+	s = 'You will be given a an&nbsp;online news source, such as “http://www.jiji.com”, and your task will be to find it’s official YouTube channel.';
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');// !important
@@ -11745,8 +11945,12 @@ function MT__RUN() {
 		//~ p[2].style.marginTop = '10px !important !important !important !important !important !important';
 		
 		var o = {
-			name:		p[3].innerText.replace(/^Name of news source =/, '').trim(),
-			website:	p[4].innerText.replace(/^Official website =/, '').trim().replace(/\/$/g, '').toLowerCase().replace(/^(https?:\/\/)www*\./i, '$1')
+			name:		'',
+			website:	document.getElementsByTagName('a')[1].href
+			
+			
+			//~ name:		p[3].innerText.replace(/^Name of news source =/, '').trim(),
+			//~ website:	p[4].innerText.replace(/^Official website =/, '').trim().replace(/\/$/g, '').toLowerCase().replace(/^(https?:\/\/)www*\./i, '$1')
 		}
 		o.name_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
 		o.web_array  = o.website.replace(/[^\w\d]/g, ' ').split(' ');
@@ -19554,6 +19758,7 @@ function MT__RUN() {
 	//
 	// Scott Mackley
 	// 
+	// Change Aug14 2014: Increment "strong" elements +1
 	// 31ZZN31VRB06UBYLKT1NMDWU2LHQR1
 	s= 'For this business&nbsp;below, enter the email address for the primary contact at the business (i.e. "managername@businessname.com"). &nbsp;If that can not be found, enter the generic business contact email (i.e. "info@businessname.com")';
 	if(ih.indexOf(s) != -1)
@@ -19562,8 +19767,8 @@ function MT__RUN() {
 		GM_addStyle('body {margin-top:40px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1200px;}');
 		
-		var b = document.getElementsByTagName('strong')[2].innerText.trim();
-		var FB = document.getElementsByTagName('strong')[3].innerText.trim().toLowerCase();
+		var b = document.getElementsByTagName('strong')[3].innerText.trim();
+		var FB = document.getElementsByTagName('strong')[4].innerText.trim().toLowerCase();
 		if (FB != '') {
 			if (FB.indexOf('sk=info') == -1 || FB.indexOf('/info') == -1)
 			{
@@ -19627,9 +19832,24 @@ function MT__RUN() {
 		
 		d2.value = b;
 		
+		// ...
 		if (b == '' && FB == '' && AMT__Global_Vars.isPreview) {
 			AMT___Floater.skip();
 			return;
+		}
+		// IS PREVIEW?
+		if (!AMT__Global_Vars.isPreview) {
+			// ADD TO QUEUE !
+			addToTabsQ();
+			
+			// return button function!
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+				
 		}
 		
 		//onsubmit
@@ -19640,7 +19860,9 @@ function MT__RUN() {
 				e.preventDefault();
 				return false;
 			}
-				
+			
+			
+			
 		}
 		
 		// init
@@ -19717,10 +19939,13 @@ function MT__RUN() {
 		}
 		
 		
-		function Scott_Mackley_biz_emails__parseScrapy(jobid, object_response, seed_object) {
+		function Scott_Mackley_biz_emails__parseScrapy(object_response, seed_object) {
+			//~ console.log(jobid);
+			console.log(object_response);
+			console.log(seed_object);
 			// 
 			ALL_SCRAPES.push({
-				jobid: jobid,
+				//~ jobid: jobid,
 				object_response: object_response,
 				start_url: seed_object.start_url
 			});
@@ -19776,6 +20001,10 @@ function MT__RUN() {
 					return;
 				}
 				//if (object_response.matches[0] == '' && object_response.matches.length == 1) {
+			}
+			else {
+				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+				//alert('hi');
 			}
 			
 			// matches select
@@ -19916,13 +20145,22 @@ function MT__RUN() {
 					//this.style.border = '8px solid LightGreen';
 					document.getElementById('Q1Url').value = this.email;
 					if (this.email.length > 6 && this.email.indexOf('@') != -1) {
+						
+						// SHOW NEXT TAB
+						showNextTab();
+						
+						// TRY nextTab()
+						setTimeout(function() {
+							new AMT___core_factory().nextTab();
+						}, 100);
+						
 						doSubmit();
 					}
 				}
 				out_div.appendChild(el_div);
 			}
 			
-			//extend page
+			// Extend page
 			var el_div = document.createElement('div');
 			el_div.setAttribute('style','height:1400px;');
 			out_div.appendChild(el_div);
@@ -68171,9 +68409,12 @@ qatar,80
 			if (el_inp && el_div) { // single! (+dynamic!)
 				el_div.innerHTML = '';
 				req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(el_inp.value),
+					startPage: true,
 					seed_arg1: el_div,
-					yahoo_array: true
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+					
+					//~ seed_arg1: el_div,
+					//~ yahoo_array: true
 				});
 				req_proxy.proxy_init();
 				req_proxy.proxy_waitComplete(
@@ -68940,7 +69181,7 @@ qatar,80
 	// Includes Hover Div scrape.
 	// TODO: Add skip/float functionality. This will minimize R&A. Yield seems to be only about 50%-75%.
 	s ='<p style="margin-left:-49.5pt;">You will be given the name of an organization, and state (if available). <strong>You must enter the given information into</strong> <strong>google.com</strong> <strong>and find the homepage URL for each organization.&nbsp; </strong>The correct answer should be one of the top 10 results.</p>';
-	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
+	if (ih.indexOf(s) != -1) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {margin-top:650px;}');
@@ -69555,6 +69796,612 @@ qatar,80
 								}
 								
 								Fiber_Data_Co_Find_Website_Address__processProxyResponse(yahoo_rs, out_div); // yahoo_rs
+							}
+						});
+						
+					}
+				})
+			}, 1000);
+		}
+	}
+	//
+	// Theodore Worcester
+	// Find the URLs of Company Websites
+	// 
+	s ='	<li>Enter the website address for the <strong>official website </strong>of the college.</li>';
+	if (ih.indexOf(s) != -1) {
+		console.log('');
+		GM_addStyle('body {width:30%;margin-top:650px;}');
+		
+		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
+		GM_addStyle('.span7 {width:98%;}');
+		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
+		GM_addStyle('input {zoom:1;margin:0;padding:0;}');
+		
+		GM_addStyle('#DataCollection {margin-top:650px;}');
+		
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		document.body.appendChild(na);
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='70%';
+		na.style.width='29%';
+		na.style.height='24px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.style.cursor='pointer';
+		na.value = "N/A"
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "NA";
+			
+			// showNextTab OR nextTab
+			if(FOUND_ONE_NONSKIP) {
+				//showNextTab();
+				// nextTab only when manual
+				new AMT___core_factory().nextTab();
+			} else {
+				
+			}
+			
+			doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ var host = GM_getValue('MT__torHost');
+			//~ if (!host)
+				//~ host = 'http://192.168.1.6/';
+			//~ 
+			//~ 
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
+		document.body.appendChild(d2);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height='600px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height='600px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height='600px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		//
+		d3.onblur = function() {
+			Theodore_Worcester_Find_Website_Address(d1,  this.value);
+		}
+		d3b.onblur = function() {
+			Theodore_Worcester_Find_Website_Address(d1b, this.value);
+		}
+		d3c.onblur = function() {
+			Theodore_Worcester_Find_Website_Address(d1c, this.value);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		/**
+		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
+		 * RETURN AND ACCEPT!
+			var core = {
+				nextTab: false
+			}
+		**/
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		// left = city
+		// middle = city/state/zip
+		// right = phone
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			comp: td[1].innerText.trim(),
+			city: td[3].innerText.trim(),
+			state: td[5].innerText.trim()
+		}
+		o.comp_short = o.comp.split(' ');
+		if (o.comp_short.length >= 3) {
+			o.comp_short = o.comp_short.slice(0, 2).join(' '); // 0, 1 but not 2
+		} else
+			o.comp_short = o.comp;
+		
+		// ...
+		d3.value = o.comp;
+		d3b.value= (o.city != '') ? o.comp+' '+o.city : o.comp+' '+o.state;
+		d3c.value = '"' + o.comp_short + '" ' + o.city + ' ' + o.state;
+		//~ if (o.city != '')	{
+			//~ d3c.value = '"' + o.comp_short + '" ' + o.city + ' ' + o.state;
+		//~ } else if (o.state == '') {
+			//~ d3c.value = '"'+o.comp+'" ' + o.state;
+		//~ }
+		
+		// ...
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Theodore_Worcester_Find_Website_Address_load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// full
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					//~ Brittany_Graham_Find_Website_Address(d1, d3.value);
+					//~ if (b2 != '')
+						//~ Brittany_Graham_Find_Website_Address(d1b, d3b.value, false);
+					
+					if (b2 != '')
+						Theodore_Worcester_Find_Website_Address(d1,  d3.value );
+					else
+						TOTAL_CALLS++;
+					if (b3 != '')
+						Theodore_Worcester_Find_Website_Address(d1b, d3b.value);
+					else
+						TOTAL_CALLS++;
+					if (b4 != '')
+						Theodore_Worcester_Find_Website_Address(d1c, d3c.value);
+					else
+						TOTAL_CALLS++;
+			
+				}
+			});
+		}
+		Theodore_Worcester_Find_Website_Address_load_skips();
+		
+		function Theodore_Worcester_Find_Website_Address__processProxyResponse(rs, out_div) {
+			//
+			var yahoo_type = 0;
+			var r = /yschttl spt" href="[^*"]+[*]{2,}([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // ** (TWO ASTERISKS) !!
+			if (!r.exec(rs)) {
+				r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+				yahoo_type = 1;
+			}
+			r.lastIndex = 0;
+			
+			if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
+				r.lastIndex = 0;
+				
+				var count = 0;
+				var x, match, out;
+				var r, m;
+				var fb = '';
+				var domain;
+				var short_domain;
+				var y;
+				
+				// add bold to result
+				// b2, b3, b4
+				var bold_array;
+				bold_array = (o.comp + ' ' + o.country).replace(/&/g, ' ').split(' ');
+				//~ switch(out_div.id) {
+					//~ case 'd1':
+						//~ bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1b':
+						//~ bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1c':
+						//~ bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						//~ break;
+				//~ }
+				//~ 
+				//~ if (out_div.id == 'd1') {
+					//~ var keyword_and_index_array = {
+					//~ };
+					//~ keyword_and_index_array['C'] = o.city;
+					//~ keyword_and_index_array['S'] = o.state_abbr;
+					//~ keyword_and_index_array['*S*'] = o.state;
+					//~ //keyword_and_index_array['STATE FULL'] = o.;
+					//~ keyword_and_index_array['Z'] = o.zip;
+					//~ keyword_and_index_array['P'] = o.phone;
+					//~ keyword_and_index_array['AC'] = o.area_code;
+				//~ }
+				
+				while (match = r.exec(rs)) {
+					//if (count >= 8)
+					//	break;
+					//console.log(x);
+					//~ console.log(match);
+					
+					// is this ri.search.yahoo.com
+					if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
+						match[1] = (/\/RU=([^\/]+)/.exec(match[1]))[1];
+						match[1] = decodeURIComponent(match[1]);
+					}
+					else if (yahoo_type == 0)
+						match[1] = decodeURIComponent(match[1]);
+					
+					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					match[2] = match[2].replace(/<b>/g, '`');
+					match[2] = match[2].replace(/<\/b>/g, '``');
+					match[2] = match[2].replace(/<[^>]+>/g, ' ');
+					match[2] = match[2].replace(/[<>]/g, ' ');
+					match[2] = match[2].replace(/``/g, '</b>');
+					match[2] = match[2].replace(/`/g, '<b>');
+					
+					x = match[1];
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// Change from http://www. to www.
+					// Per instructions.
+					x = x.replace(/^https?:\/\/(www\.|)/g, '');
+					
+					// regular = ^http://www.site.com$
+					// subdomains = [\.\/]site.com$
+					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+						short_domain = y[1];
+					} else
+						short_domain = x;
+					
+					// SKIP BUTTON CREATE 2
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2({
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						});
+					
+					
+					// add bold (bold_array)
+					match[2] = MT__bold(match[2], bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					// Update Aug6 2014
+					var cls = x.replace(/^www\./, '');
+					//~ var cls = x.replace(/^(https?:\/\/)www\./, '$1');
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_url = match[1]
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						//~ count++;
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:0.9;cursor:pointer;padding:0;margin:0;');
+					txa.readOnly = true;
+					txa.value = x;
+					d.appendChild(txa);
+					// A
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = match[1];
+					d.appendChild(a);
+					// el_inp_skip2__obj.el_btn
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					// ...
+					// Scrape page
+					// Only on d1
+					// @assoc. array [show output (key) => scrape for keyword (value)], []
+					//~ if (count < 6 && out_div.id == 'd1') {
+						//~ var scrape_el = document.createElement('div');
+						//~ scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
+						//~ d.appendChild(scrape_el);
+						//~ new AMT___items_factory().xhr_scrape_page({
+							//~ parent_el: scrape_el,
+							//~ keyword_and_index_array: keyword_and_index_array,
+							//~ url: match[1]
+						//~ });
+					//~ }
+					
+					// Body
+					var pbody = document.createElement('p');
+					d.appendChild(pbody);
+					pbody.setAttribute('style','word-wrap:break-word;border-bottom:1px solid aeaeae;');
+					pbody.innerHTML = match[2];// + '<br>' + match[1];
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('web_url').value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						//showNextTab();
+						
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						
+						d2.value = this.full_url;
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						//~ this.el_full_url.style.diplay = 'block';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+								
+								// SHOW FULL URLS ...
+								
+							} else {
+								x[i].style.backgroundColor = '';
+								
+								//~ // HIDE FULL URLS ...
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, true);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						
+						//~ this.el_full_url.style.backgroundColor = 'LightGreen';
+						
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+								
+								// HIDE FULL URLS ...
+							}
+						}
+						//~ this.id_fullURL_child.style.diplay = 'none';
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					count++;
+					
+				}
+				
+				if (count > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
+				}
+			} else
+				out_div.innerHTML = '0';
+
+			// All three windows have completed
+			// and none of the three have 
+			// TOTAL_CALLS AND FOUND_ONE_NONSKIP
+			TOTAL_CALLS++;
+			if (TOTAL_CALLS == 3) {
+				if (!FOUND_ONE_NONSKIP) {
+					//~ na.click(); // na button
+					//document.getElementById('Website').value = 
+					return;
+				}
+				// All three windows have completed
+				// and the first domain is same across all three
+				else if (ARRAY_FIRST_FINDS.length == 3) {
+					//d1, d1b, d1c
+					var divs = [d1, d1b, d1c];
+					var x;
+					for (var i in divs) {
+						x = divs[i].getElementsByTagName('textarea')[0];
+						x.style.border = '6px solid LightGreen';
+					}
+				}
+				
+				// addToTabsQ
+				//addToTabsQ();
+			}
+		}
+		function Theodore_Worcester_Find_Website_Address(out_div, search) {
+			
+			// NEW YAHOO
+			// JUL17 2014
+			var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(search); //%2B
+			
+			// OLD YAHOO
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			
+			out_div.innerHTML = '';
+			var out_div = out_div;
+			
+			var url = HOST + 
+				'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+				'&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999');
+			
+			// init
+			GM_xmlhttpRequest({ // USE "HOST" HERE!
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					//var rs = response.responseText;
+				}
+			});
+			// watch done
+			var xint = setInterval(function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: HOST+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (rs.trim() != '') {
+							clearInterval(xint);
+						} else
+							return;
+						
+						// IS HOST 192.168.1.2?
+						// IF NO THEN POST THIS RESPONSE TO 
+						// 192.168.1.2
+						// md5 !!
+						if (HOST == 'http://192.168.1.2') { //MT___host
+							Theodore_Worcester_Find_Website_Address__processProxyResponse(rs, out_div);
+							return;
+						}
+						
+						// still here?
+						// save file !
+						var rf = new AMT___requests_factory();
+						//~ var md5_url = rf.general_functions__md5(u);
+						var md5_url = any_md5(u, '0123456789ABCDEF');
+						var data;
+						var yahoo_rs = rs;
+						
+						data = 'AMT__serverSide_write__value='+encodeURIComponent(rs)+
+							'&AMT__serverSide_write__folder=.cached'+
+							'&AMT__serverSide_write__file='+encodeURIComponent(md5_url);
+						
+						GM_xmlhttpRequest({
+							method: "POST",
+							url: 'http://192.168.1.2/mturk/util.php',
+							data: data,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								if (response.status != 200 || rs != '') {
+									exit(response.status + ' ' + rs);
+								}
+								
+								Theodore_Worcester_Find_Website_Address__processProxyResponse(yahoo_rs, out_div); // yahoo_rs !!
 							}
 						});
 						
@@ -107551,7 +108398,7 @@ qatar,80
 	// JasonSan (Jason Santiago)
 	// aka kronopin
 	// kronopin
-	s='1) Look at the first&nbsp;<span style="color: rgb(51, 153, 102);">company name in green</span> below, then copy and paste it into the search box at the top of the page. ';
+	s='1) Click each of the links below to search for the company on LinkedIn. &nbsp;If you don\'t see the company name&nbsp;show up in the search results,&nbsp;TYPE IT &nbsp;into the search box (many companies may not display below the box if you simply click the link).&nbsp; Then,';
 	if (ih.indexOf(s) != -1)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,b,h2,h3 {margin:0;padding:0;font-size:10px;}');
@@ -107595,7 +108442,10 @@ qatar,80
 				continue;
 
 			var regWeb = /\([^\)]*\)$/;
-			webName = regWeb.exec(COMP_ARR[i])[0];
+			webName = regWeb.exec(COMP_ARR[i])
+			if (!webName)
+				continue;
+			webName = webName[0];
 			COMP_ARR[i] = COMP_ARR[i].replace(regWeb, "").trim(); // trim this
 			webName = webName.replace(/[\(\)]/g,"");
 			WEB_ARR.push(webName);
@@ -107608,21 +108458,21 @@ qatar,80
 		//	
 		//Assumes numTask = 3
 		//
-		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 4',
+		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 5',
 								function() {
 									return COMP_ARR[1];
 									//~ return document.getElementsByTagName('span')[9].innerText.trim()
 								},
 								['Id(Q1Url)','Id(ta1)'], {'writeBlankInputIdentifier' : true}
 								);			
-		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 4', 
+		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 5', 
 								function() {
 									return COMP_ARR[2];
 									//~ return document.getElementsByTagName('span')[10].innerText.trim()
 								},
 								['Id(Q2Url)','Id(ta2)'], {'writeBlankInputIdentifier' : true}
 								);			
-		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 4',
+		AMT___addUserDecision('Krono Pin - Get LinkedIn IDs - Show 5',
 								function() {
 									return COMP_ARR[3];
 									//~ return document.getElementsByTagName('span')[11].innerText.trim()
@@ -107705,7 +108555,7 @@ qatar,80
 		
 		for(var i = 1; i < (numTask + 1); i++)
 		{
-			AMT___getMatch('Krono Pin - Get LinkedIn IDs - Show 4',
+			AMT___getMatch('Krono Pin - Get LinkedIn IDs - Show 5',
 							document.getElementsByTagName('span')[i].innerText.trim(),
 							function(match, iterator) { // , seed
 								if(match && match != "No Match")
@@ -107737,6 +108587,10 @@ qatar,80
 		// submitButton
 		document.getElementById('submitButton').onclick = function() {
 			//AMT___recordAndSubmit();
+			
+			// next
+			new AMT___core_factory().nextTab();
+			
 			doSubmit();
 			return false;
 		};
@@ -108058,6 +108912,10 @@ qatar,80
 			}
 			if (sbm) {
 				//AMT___recordAndSubmit();
+				
+				// nextTab
+				new AMT___core_factory().nextTab();
+			
 				doSubmit();
 			}
 			
@@ -108122,7 +108980,8 @@ qatar,80
 						var r;
 						r = JSON.parse(rs);
 						
-						out.innerHTML += '<br>';
+						out.appendChild(document.createElement('br'));
+						//~ out.innerHTML += '<br>';
 						
 						//if (isInitialRun)
 						//	console.log(r);
@@ -108165,13 +109024,20 @@ qatar,80
 							
 							x[i].displayName = __js_clean_html_str(x[i].displayName);
 							
-							//
-							out.innerHTML += '\
-								<div value="'+x[i].displayName+'" class="exe" id="'+count+'|'+x[i].id+'" style="font-family:arial;width:auto;margin:0;padding:2px 2px 0;font-size:0.8em;cursor:pointer;border:1px solid #3a3a3a">\
-									'+x[i].headLine+'\
-									</div>\
-								\
-							';
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'font-family:arial;width:auto;margin:0;padding:2px 2px 0;font-size:0.8em;cursor:pointer;border:1px solid #3a3a3a');
+							div.className = 'exe';
+							div.id = count+'|'+x[i].id;
+							div.innerHTML = x[i].headLine;
+							out.appendChild(div);
+							//~ //
+							//~ out.innerHTML += '\
+								//~ <div value="'+x[i].displayName+'" class="exe" id="'+count+'|'+x[i].id+'" style="font-family:arial;width:auto;margin:0;padding:2px 2px 0;font-size:0.8em;cursor:pointer;border:1px solid #3a3a3a">\
+									//~ '+x[i].headLine+'\
+									//~ </div>\
+								//~ \
+							//~ ';
 							
 							if (!found) {
 								if  (
@@ -108257,44 +109123,68 @@ qatar,80
 						COUNT_LOADED++; // increment total loaded
 						
 						var r;
-						//console.log(rs);
 						r = JSON.parse(rs);
+						//console.log(r);
 						
 						var out = document.getElementById('d'+count);
-						out.innerHTML += '<hr>';
 						
+						
+						out.appendChild(document.createElement('hr'));
+						//~ out.innerHTML += '<hr>';
+						
+						var result_count;
 						if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
-							out.innerHTML += r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+							result_count = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '');
 						else
-							out.innerHTML += r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+							result_count = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '');
+						out.appendChild(document.createTextNode(__js_clean_html_str(result_count)));
+						out.appendChild(document.createElement('br'));
 						
+						// ...
 						var x = r.content.page.voltron_unified_search_json.search.results;
 						
 						var found = false;
 						var x_;
 						var btn;
 						for (var i in x) {
-							if (!x[i].company) continue;
+							if (!x[i].company) {
+								console.log('!x[i].company>');
+								console.log(x[i]);
+								continue;
+							}
 							
 							x_ = x[i].company;
 							x_.fmt_canonicalName = x_.fmt_canonicalName.replace(/<[^>]+>/g, '');
 							x_.fmt_canonicalName = __js_clean_html_str(x_.fmt_canonicalName);
+							
+							// hidden
+							var comp_extra = x_.fmt_industry + '<br>' + x_.fmt_location + '<br>' + x_.fmt_size;
+							var hidden = document.createElement('div');
+							hidden.setAttribute('style', 'display:none;');
+							hidden.innerHTML = comp_extra;
 							
 							//
 							btn = document.createElement('input');
 							btn.setAttribute('type','button');
 							btn.setAttribute('class','exe');
 							btn.setAttribute('id', count+'|'+x_.id);
-							btn.setAttribute('style','width:auto;');
+							btn.setAttribute('style','width:auto;display:block;cursor:pointer;');
 							btn.value = x_.fmt_canonicalName;
-							//
+							btn.hiddenDiv = hidden;
+							// btn
 							out.appendChild(btn);
-							out.appendChild(document.createElement('br'));
+							// hidden
+							out.appendChild(hidden);
+							//~ out.appendChild(document.createElement('br'));
 							
-							//~ out.innerHTML += '\
-								//~ <input type="button" value="'+x_.fmt_canonicalName+'" class="exe" id="'+count+'|'+x_.id+'" style="width:auto;">\
-								//~ <br >\
-							//~ ';
+							btn.addEventListener('mouseover', function() {
+								this.style.backgroundColor = 'LightGreen';
+								this.hiddenDiv.style.display = 'block';
+							}, false);
+							btn.addEventListener('mouseout', function() {
+								this.style.backgroundColor = '';
+								this.hiddenDiv.style.display = 'none';
+							}, false);
 							
 							if (!found) {
 								if  (
@@ -108362,7 +109252,11 @@ qatar,80
 				x[i].onclick = function() {
 
 					
-					var webName = WEB_ARR[this.id*1-1].toLowerCase().trim().replace(/\.(com|edu)$/,'').replace(/[^\w\d_-]/g, '');
+					var webName = WEB_ARR[this.id*1-1];
+					if (webName)
+						webName = webName.toLowerCase().trim().replace(/\.(com|edu)$/,'').replace(/[^\w\d_-]/g, '');
+					else webName = '';
+					
 					var compName = COMP_ARR[this.id].toLowerCase().trim().replace(/[^\w\d_-]/g, '');
 					console.log('webName: ' + webName);
 					console.log('compName: ' + compName);

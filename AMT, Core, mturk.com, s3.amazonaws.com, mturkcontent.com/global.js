@@ -38,6 +38,7 @@ var AMT__Global_Vars = //function()
 	hitId: '',
 	numSubmitQueries: 0,
 	isSubmitting: false,
+	RACustomKey: false,
 	
 	//
 	isQProduct: false,
@@ -238,7 +239,11 @@ function showNextTab() {
 								});
 }
 
+
+
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
 	if(request.checkPreview)
 	{
 		if(AMT__Global_Vars.isTopWindow)
@@ -272,6 +277,19 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//Do nothing
 		}
 	}
+	else if(request.RACustomKey) {
+		AMT__Global_Vars.RACustomKey = request.RACustomKey.charCodeAt();
+	}
+	//~ // Reload the iframes.
+	//~ // This is coming from the context
+	//~ // menu click. And eventpage.js.
+	//~ else if(request.reloadScript) {
+		//~ if(!AMT__Global_Vars.isTopWindow) {
+			//~ setTimeout(function() {
+				//~ window.location.href = window.location.href;
+			//~ }, 5000);
+		//~ }
+	//~ }
 });
 /**
  * End of Tab Switching
@@ -1585,6 +1603,10 @@ AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) /
  * 
  * 
  * @callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
+ * 
+ * Necessary to deploy scrapy_amt project ... ...
+ * 1) ./home/share/Development/scrapy/start_scrapyd.sh
+ * 2) cd /home/share/Development/scrapy/scrapy_amt && scrapyd-deploy
  */
 // TODO
 // XXDONE Jun4 2014: MATCH "DOMAIN.COM" WITH "JOBID.JL" FOR CACHED FUTURE REQUESTS!
@@ -1722,6 +1744,11 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		//
 		//~ console.log(callback_obj);
 		
+		// Changed to
+		// (callback_obj, seed_object)
+		// from
+		// (jobid, callback_obj, seed_object)
+		//
 		callback_function(callback_obj, seed_object);
 		
 		//~ callback_function(jobid, callback_obj, seed_object);
@@ -3331,29 +3358,152 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
  * @AMT___POPUP___PROXY_REDACTED_ XXXX, @>AMT___POPUP__initializeGlobals  **get the @AMT___POPUP___PROXY_REDACTED_ value before continuing
  */
 function AMT___xhr_PROXY_REDACTED_(obj_vars) {
-	
 	// : url
 	// : seed_arg1
 	// : catch_include
+	// : post_request (DEFAULT=null), an object {}, {query: 'query'}
+	// : headers_array
+	// : 
+	
+	/*
+	 * obj_vars = {
+	 * 		catch_include: 'This is a string that means it is time to SKIP!',
+	 * 		post_request: {query: 'query'},
+	 * 		startPage: true
+	 * }
+	 */
+	
+	var o = {
+		local_URL_init: '',
+		local_URL_complete: ''
+	}
+	var local_URL;
 	
 	this.obj_vars = (typeof obj_vars == 'object') ? obj_vars : {};
 	
-	if (!this.obj_vars.url) // URL REQUIRED
-		return;
+	//~ if (!this.obj_vars.url) // URL REQUIRED
+		//~ return;
 		
 	if (!this.obj_vars.catch_include) // DEFAULT
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
-	this.encodedURI = encodeURIComponent(this.obj_vars.url);
+	if (this.obj_vars.startPage) {
+		
+		this.obj_vars.startPage_array = true;
+		
+		//~ this.obj_vars.url = 'https://startpage.com/do/search';
+		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';
+		//~ this.obj_vars.url = 'http://216.218.239.213:443';
+		//~ var query = this.obj_vars.post_request.query;
+		
+		/*this.obj_vars.post_request = {
+			cmd: 'process_search',
+			language: 'english',
+			
+			//~ enginecount: 1,
+			//~ pl: '',
+			//~ abp: -1,
+			//~ cdm: '',
+			//~ ff: '',
+			//~ theme: '',
+			//~ flag_ac: 0,
+			//~ cat: 'web',
+			//~ query: query//,
+			
+			//~ enginecount: 1,
+			//~ pl: '',
+			abp: -1,
+			//~ cdm: '',
+			//~ ff: '',
+			//~ theme: '',
+			//~ flag_ac: 0,
+			cat: 'web',
+			query: query,
+			engine0:'v1all'
+			
+			//~ x:0,
+			//~ y:0
+			//~ engine0:'v1all'
+			
+			//~ cat=web&cmd=process_search&language=english&engine0=v1all&query=hi+im+yousdf&abp=-1&x=0&y=0
+		}*/
+		
+		this.obj_vars.headers_array = [
+			//~ 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+			//~ 'Accept-Encoding:gzip,deflate,sdch',
+			//~ 'Accept-Language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+			//~ 'Cache-Control:max-age=0',
+			//~ 'Connection:keep-alive',
+			//~ 'Content-Length:91',
+			//~ 'Content-Type:application/x-www-form-urlencoded',
+			//~ 'Host:startpage.com',
+			//~ 'Origin:https://startpage.com',
+			//~ 'Referer:https://startpage.com/',
+			//~ 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36',
+			//~ 'Expect:     ',	
+			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
+		];
+		
+		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
+	}
+	
+	if (this.obj_vars.post_request) {
+		
+		var encodedURI = encodeURIComponent(this.obj_vars.url);
+		
+		// Generate a short filename
+		var short_filename = this.obj_vars.url + '__POST_REQUEST__';
+		for (var i in this.obj_vars.post_request) {
+			short_filename += '&' + i + '=' + this.obj_vars.post_request[i];
+		}
+		short_filename = encodeURIComponent(short_filename);
+		
+		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
+				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+				'';
+		
+		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
+						'&short_filename='+short_filename+
+						'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+						header_array;
+		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?v='+short_filename;
+		
+		//
+		
+		//~ console.log(value);//remove later
+		//~ this.obj_vars.post_request = 'Yahoo! - 999 Unable to process request at this time -- error 999';
+	}
+	else
+	{
+		var encodedURI = encodeURIComponent(this.obj_vars.url);
+		
+		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
+				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+				'';
+		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
+				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
+				'';
+				
+		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+						header_array+
+						catch_success;
+		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
+	}
 	
 	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
 	this.proxy_init = function() {
-		var this_tmp = this;
+		//~ var this_tmp = this;
 		AMT___POPUP__initializeGlobals(
 			function() {
 				GM_xmlhttpRequest({ // init
 					method: "GET",
-					url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+this_tmp.encodedURI+'&catch_include='+encodeURIComponent(this_tmp.obj_vars.catch_include),
+					url: o.local_URL_init,
 					onload: function(response) {
 						//var rs = response.responseText;
 					}
@@ -3364,11 +3514,10 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	
 	this.proxy_waitComplete = function(callback_function) {
 		var this_obj = this;
-		//console.log(this);return;
 		var xint = setInterval(function() {
 			GM_xmlhttpRequest({ // init
 				method: "GET",
-				url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+ this_obj.encodedURI,
+				url: o.local_URL_complete,
 				onload: function(response) {
 					var rs = response.responseText;
 					
@@ -3380,6 +3529,10 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					// yahoo? (yahoo_array: true)
 					if (this_obj.obj_vars.yahoo_array) {
 						rs = this_obj.array_yahoo_results(rs);
+					}
+					// startpage?
+					else if(this_obj.obj_vars.startPage_array) {
+						rs = this_obj.array_startPage_results(rs);
 					}
 					
 					// ...
@@ -3399,6 +3552,42 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				}
 			})
 		}, 1200);
+	}
+	
+	this.array_startPage_results = function(rs) {
+		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
+		var rslts;
+		if(!(rslts = r.exec(rs))) {
+			alert('No match');
+			return [];
+		}
+		else {
+			//Assume we have 1-10 results
+
+
+			//r.lastIndex = 0;	<-- no need, not testing
+			
+			var ol = rslts[0];
+			console.log(ol);
+			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+			var content;
+			var arr = [];
+			while(content = contentReg.exec(ol)) {				
+				content[2] = content[2].replace(/<b>/g, '`');
+				content[2] = content[2].replace(/<\/b>/g, '``');
+				content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+				content[2] = content[2].replace(/<[^>]+>/g, ' ');
+				content[2] = content[2].replace(/[<>]/g, ' ');
+				content[2] = content[2].replace(/``/g, '</b>');
+				content[2] = content[2].replace(/`/g, '<b>');
+				
+				arr.push([
+					content[1], content[2]
+				]);
+			}
+			console.log(arr);
+			return arr;
+		}
 	}
 	
 	// -> returns array of arrays
@@ -4770,7 +4959,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// This will contain the history ids of the
 		// newest tasks for graph initialization.
 		//
-		current_init_history_ids: []
+		current_init_history_ids: [],
+		
+		// graph_rows_by_history_id
+		// This is HTML elements. The array
+		// "key" is the jobs history_id.
+		//
+		graph_rows_by_history_id: {}
 	}
 	
 	// Timers intervals
@@ -5201,8 +5396,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.setAttribute('style',
 			'width:16%;'//+'max-width:10px;'
 		);
-		if (row.hasOwnProperty('hash_id'))
-			tasks_obj.hash_tds[row.hash_id] = td;
+		tr.appendChild(td);
+		var chart = document.createElement('canvas');
+		chart.setAttribute('style',
+			'width:100%;height:20px;'
+		);
+		chart.height = '100';
+		td.appendChild(chart);
+		if (row.hasOwnProperty('history_id'))
+			tasks_obj.graph_rows_by_history_id[row.history_id] = chart;
+		//~ if (row.hasOwnProperty('hash_id'))
+			//~ tasks_obj.hash_tds[row.hash_id] = td;
 		
 		//~ //OLD
 		//~ div_contain	.setAttribute('style','width:100%;');
@@ -5239,15 +5443,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			type: '24HOUR',
 			history_ids: tasks_obj.current_init_history_ids // array
 		};
-		
+		//~ console.log(obj);
+		obj = JSON.stringify(obj);
 		
 		var url = MT___page1_host;
 		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
-					
-		//~ var data =  'graph='+
-					//~ '&type=24HOUR'+
-					//~ '&hash_ids='+encodeURIComponent(hash_ids)+
-					//~ '&'+Math.random();
+		//~ console.log(data);
 		
 		GM_xmlhttpRequest({
 			method: "POST",
@@ -5259,8 +5460,82 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			onload: function (response) {
 				
 				var rs = response.responseText;
+				//~ console.log(response);
+				console.log(rs);
 				
-				// INCLUDE GRAPH
+				rs = JSON.parse(rs);
+				
+				// GRAPH
+				
+				// rs
+				// array [ history_id1 => data, history_id2 => data, ... ]
+				// where
+				// data = array [ 'd'=>int timestamp, 'h'=>int available ]
+				//
+				
+				var history_id;
+				for (history_id in rs) {
+					
+					var rows = rs[history_id];
+					
+					var labels = [];
+					var num_tasks = [];
+					var last_hour = null;
+					for (var i in rows) {
+						
+						var time	= rows[i]['d'];
+						var nt		= rows[i]['h'];
+						
+						var hour = new Date(time * 1000).getHours();
+						if (hour < 12)
+							hour += 'a';
+						else if (hour == 12)
+							hour += 'p'
+						else
+							hour = (hour*1 - 12) + 'p';
+						
+						if (last_hour != hour) {
+							labels.push(hour);
+							last_hour = hour;
+						} else {
+							labels.push('');
+						}
+						
+						num_tasks.push(nt);
+					}
+					
+					// data
+					var data = {
+						labels: labels,
+						datasets: [
+							{
+								label: "X",
+								fillColor: "rgba(151,187,205,0.2)",
+								strokeColor: "rgba(151,187,205,1)",
+								pointColor: "rgba(151,187,205,1)",
+								pointStrokeColor: "#fff",
+								pointHighlightFill: "#fff",
+								pointHighlightStroke: "rgba(151,187,205,1)",
+								data: num_tasks
+							}
+						]
+					}
+					
+					var options = {
+						scaleShowGridLines: false,
+						pointDot: false,
+					}
+					
+					// out element
+					var chart = tasks_obj.graph_rows_by_history_id[history_id];
+					
+					var context = chart.getContext("2d");
+					var myNewChart = new Chart(context).Line(data, options);
+
+					//~ out.appendChild();
+				
+				}
+				
 				
 			}
 		});
@@ -5296,7 +5571,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
-				console.log(rs);
+				//~ console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -5317,7 +5592,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				for (var db_id in tasks_obj.table_rows) {
 					
+					// row = HTML element
 					var row = tasks_obj.table_rows[db_id];
+					
 					//~ var db_id = row.db_id;
 					
 					if (!tasks_obj.current_db_ids.hasOwnProperty(db_id))
@@ -5326,6 +5603,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 						delete tasks_obj.table1_row_ids[db_id]; // exists?
 						delete tasks_obj.table2_row_ids[db_id]; // exists?
+						
+						//~ delete tasks_obj.table1_history_ids[db_id]; // exists?
+						//~ delete tasks_obj.table2_history_ids[db_id]; // exists?
 						
 						delete tasks_obj.table_rows[db_id];
 					}
@@ -5419,14 +5699,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
 						{
-							console.log('inserting');
+							//~ console.log('inserting');
 							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
 							tasks_obj.table1.insertBefore(makeRow(d), first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
 						{
-							console.log('appending');
+							//~ console.log('appending');
 							tasks_obj.table1.appendChild(makeRow(d));
 						}
 					}
@@ -5436,38 +5716,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
 						{
-							console.log('inserting');
+							//~ console.log('inserting');
 							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
 							tasks_obj.table2.insertBefore(makeRow(d, true), first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
 						{
-							console.log('appending');
+							//~ console.log('appending');
 							tasks_obj.table2.appendChild(makeRow(d, true)); // true == ignored
 						}
 					}
-					
-					//~ OLD
-					//~ 
-					//~ // Exists?
-					//~ if (tasks_obj.table1_row_ids.hasOwnProperty(d.db_id)) {
-						//~ var row = tasks_obj.table_rows[d.db_id]
-						//~ row.hits_available.innerText = d.hits_available;
-						//~ continue;
-					//~ }
-					//~ 
-					// New
-					//~ tasks_obj.table1.appendChild(makeRow(d));
-					//~ 
-					//~ 
-					//~ // Exists?
-					//~ if (tasks_obj.table2_row_ids.hasOwnProperty(d.db_id)) {
-						//~ var row = tasks_obj.table_rows[d.db_id]
-						//~ row.hits_available.innerText = d.hits_available;
-						//~ continue;
-					//~ }
-					//~ //~ 
 				}
 				
 				// If first run ...
@@ -5993,14 +6252,14 @@ function AMT___oldTopWindowFloatStuff() {
  * Causes | or \ to call click on return and accept button
  **/
 function AMT___InitializeReturnAndAcceptKeyPress() {
-	document.addEventListener("keydown", AMT___ReturnAndAcceptKeyPress);	
+	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
+			//~ AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
+		});
+	document.addEventListener("keypress", AMT___ReturnAndAcceptKeyPress);	
 }
 function AMT___ReturnAndAcceptKeyPress(event) {
-		//~ console.log(event.keyCode);
-		
 		switch (event.keyCode) {
-			case 220 :
-				
+			case AMT__Global_Vars.RACustomKey :
 				chrome.extension.sendRequest({getRAHotkey: true}, 
 				function(rs) 
 				{

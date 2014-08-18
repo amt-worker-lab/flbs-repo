@@ -274,6 +274,25 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({RAHotkey:localStorage['RAHotkey']});
 	}
 	
+	
+	if(request.setRACustomKey) {
+		localStorage['RACustomKey'] = request.setRACustomKey;
+		var RACustomKey = request.setRACustomKey;
+		chrome.tabs.query({}, function(allTabs) {
+				if(!allTabs.length)
+					allTabs = [allTabs];
+				for(var i = 0; i < allTabs.length; i++) {
+					chrome.tabs.sendRequest(allTabs[i].id, {RACustomKey:RACustomKey}, function(rs) {
+							//Squelch response
+						});
+				}
+			});
+	}
+	
+	if(request.getRACustomKey) {
+		sendResponse({RACustomKey:localStorage['RACustomKey']});
+	}
+	
 	/**
 	 * 
 	 * Dosubmit change tab
@@ -685,7 +704,60 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 });
 
 
-	
+
+//~ chrome.contextMenus.create({title:'Reload Scripts',contexts:['all']});
+//~ chrome.contextMenus.onClicked.addListener(function(e) {
+		//~ chrome.tabs.query({}, function(allTabs) {
+			//~ if(!allTabs.length) {
+				//~ allTabs = [allTabs];
+			//~ }
+			//~ for(var i = 0; i < allTabs.length; i++) {
+				//~ chrome.tabs.sendRequest(allTabs[i].id, {reloadScript: true});
+			//~ }
+			//~ 
+			//~ // SET TIMEOUT TO RELOAD
+			//~ // ALL EXTENSIONS
+			//~ setTimeout(function() {
+				//~ reload_all_extensions();
+			//~ }, 1000);
+		//~ });
+	//~ });
+//~ 
+//~ function reload_all_extensions() {
+	//~ console.log(" reload_all_extensions");
+	//~ chrome.management.getAll(
+		//~ function(b){
+			//~ var d={};
+			//~ for(var c=0;c<b.length;c++){
+				//~ d=b[c];
+				//~ if  (
+					//~ (d.installType=="development") &&
+					//~ (d.enabled==true) &&
+					//~ (d.name!="Extensions Reloader")
+					//~ )
+				//~ {
+					//~ console.log(d.name+" reloaded");
+					//~ 
+					//~ (
+						//~ function(a){
+							//~ chrome.management.setEnabled(
+								//~ d.id,
+								//~ false,
+								//~ function() {
+									//~ console.log("Attempting to re-enable. ID=" +a);
+									//~ console.log(a);
+									//~ chrome.management.setEnabled(a,true, function() { console.log("Hey, callback of attempt! What?"); });
+									//~ console.log("Finished attempt.");
+								//~ }
+							//~ );
+						//~ }
+					//~ )(d.id);
+				//~ }
+			//~ }
+		//~ }
+	//~ );
+//~ }
+
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {

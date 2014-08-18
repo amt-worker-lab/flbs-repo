@@ -411,9 +411,15 @@ AMT___huge_vars_factory.prototype.Big_Bird_court_reporters = function() {
 	
 	var obj_lower = JSON.parse(JSON.stringify(obj).toLowerCase());
 	
+	var array = [];
+	for (var i in obj) {
+		array.push(i);
+	}
+	
 	return {
 		obj: obj,
-		obj_lower: obj_lower
+		obj_lower: obj_lower,
+		array: array
 	};
 }
 AMT___huge_vars_factory.prototype.linkedin__industry_categories = function() {
