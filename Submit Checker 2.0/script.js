@@ -39,6 +39,8 @@ chrome.extension.sendMessage({
 			WhatsMyTab: true		
 		}, function(rs) {
 			//alert(rs);
+			
+			
 			var tabId = rs.id;
 			//alert(tabId);
 			if(localStorage['tab' + tabId + 'Details'] && localStorage['tab' + tabId + 'Details'] != '') {	
@@ -78,7 +80,7 @@ chrome.extension.sendMessage({
 							typeOfFail = 'Problem Submitting';
 						}
 						else if(doc.indexOf(EXPIRED_FAIL) != -1) {
-							alert('testing expired fail');
+							//~ alert('testing expired fail');
 							isFailed = true;
 							typeOfFail = 'Expired';
 						}					
@@ -128,17 +130,13 @@ function mturk_load()
 			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
 			)
 		{
+			AMT__Global_Vars.isTopWindow = true;
+			AMT__Global_Vars.isPreview = true;
 			return;
 		}
 		
 		AMT__Global_Vars.isTopWindow = true;
-		AMT__Global_Vars.initializeGroupId();
-		AMT__Global_Vars.initializeHitId();
-		/**
-		 * End Script Here
-		 * And do float/skip if desired
-		 * (If job is unaccepted + top window)
-		**/
+
 		var s,t,u,w;
 		s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
 		t=/you were viewing could not be accepted/; // Not accepted
@@ -148,16 +146,15 @@ function mturk_load()
 				s.exec(ih) || t.exec(ih) || w.exec(ih)
 			)
 		{
+			AMT__Global_Vars.isPreview = true;
 			return;
 		}
 						
 		// Make the return button record its returning
-		AMT___initializeReturnRecording();
-				
-		AMT__Global_Vars.isTopWindow = true;
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.initializeGroupId();
-		AMT__Global_Vars.initializeHitId();
+		AMT__Global_Vars.initializeHitId();	
+		AMT___initializeReturnRecording();			
 		AMT__Global_Vars.initializeHitRecordDetails();
 		AMT__Global_Vars.initializeTabId();
 		

@@ -92,7 +92,9 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	
 	if(request.WhatsMyTab) {
 		console.log('Tab request:' + sender.tab.id);
+		console.log('sessionID' + sender.tab.sessionId);
 		sendResponse({id: sender.tab.id});
+		
 	}
 	
 	
