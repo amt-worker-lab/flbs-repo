@@ -2072,7 +2072,7 @@ function MT__RUN() {
 						//if (i == 0 && rs.data[i].name == o.state && rs.data[i].category == 'State/province/region') {
 					}
 					
-					
+					faceb
 				}
 			});
 		}
@@ -10043,43 +10043,7 @@ function MT__RUN() {
 					action: 'return_and_accept_button__nextTab'
 				}
 			);
-		
-		//~ // ...
-		//~ var ll = {
-			//~ lat:'',
-			//~ lng:''
-		//~ }
-		
-		// ...
-		Chris_Campbell_facebook_company_reviews(d1);
-		Chris_Campbell_facebook_company_reviews(d1b);
-		//~ Morgan_Intrator_fb_schools_geo();
-		//~ 
-		//~ function felix_greaves_fb_hospitals_geo() {
-			//~ MT___google_api_geocode(o.location, function(lat,lng) {
-				//~ 
-				//~ if  (
-					//~ !lat ||
-					//~ !lng ||
-					//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
-					//~ !/^-?[\d\.]{4,}$/.exec(lng)
-					//~ )
-				//~ {
-					//~ //
-				//~ } else {
-				//~ 
-					//~ ll.lat = lat;
-					//~ ll.lng = lng;
-				//~ }
-				//~ 
-				//~ console.log(ll);
-				//~ 
-				//~ if (d2b.value != '')
-					//~ felix_greaves_fb_hospitals(d1b);
-				//~ 
-			//~ }, false, true);
-		//~ }
-		
+
 		function Chris_Campbell_facebook_company_reviews(div) {
 			
 			var out = div;
@@ -10100,10 +10064,6 @@ function MT__RUN() {
 				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 			
-			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
-				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
-			//~ }
-			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 			
 			GM_xmlhttpRequest({ // init
 				method: "GET",
@@ -10592,11 +10552,6 @@ function MT__RUN() {
 						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
 						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
 						
-						if (r[i].location) {
-							for (var j in r[i].location) {
-								tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
-							}
-						}
 						
 						if (r[i].category) {
 							var x = r[i].category;
@@ -10657,6 +10612,332 @@ function MT__RUN() {
 			});
 		}
 		function felix_greaves_fb_hospitals__profile(div) {
+			
+			var div = div;
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: div.className,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						var maxW = '50%';
+						if  (
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
+							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
+							)
+						{
+							//~ div.appendChild(document.createElement('br'));
+							//~ div.appendChild(document.createTextNode(' X X '));
+							div.style.border = '4px solid teal';
+							div.style.margin = '-4px -4px -4px -4px';
+							//return;
+							
+							maxW = '4%';
+						}
+						
+						var img = document.createElement('img');
+						img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
+						img.fblink = div.className;
+						img.onclick = function(e) {
+							this.style.border = '4px solid blue';
+							var i = this.fblink;
+							i = i.replace(/^https?:\/\//gi, '');
+							document.getElementById('Q1Url').value = i;
+							if (/^www\.facebook\.com\/[^$]+/.exec(i)) {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+						img.src = r;
+						div.appendChild(img);
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// KronoPin
+	// Enter the Facebook Company ID from a URL
+	// 
+	s = 'Then, go back to Google, copy the full link in green (it is circled above in orange), for example:';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:1000px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		
+		GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
+		
+		var a = document.getElementsByTagName('a')[2].innerText.trim();
+		var a2 = document.getElementsByTagName('a')[3].innerText.trim();
+		var a3 = document.getElementsByTagName('a')[4].innerText.trim();
+		
+		var spanWebsite = document.getElementsByTagName('span')[9].innerText.trim();
+		spanWebsite = spanWebsite.replace(/[\(\)]/g,'');
+		var spanWebsite2 = document.getElementsByTagName('span')[12].innerText.trim();
+		spanWebsite2 = spanWebsite2.replace(/[\(\)]/g,'');
+		var spanWebsite3 = document.getElementsByTagName('span')[15].innerText.trim();
+		spanWebsite3 = spanWebsite3.replace(/[\(\)]/g,'');
+		
+		
+		//var b = document.getElementsByTagName('b');
+		var o = {
+			company1: a,
+			company2: a2,
+			company3: a3,
+			website1: spanWebsite,
+			website2: spanWebsite2,
+			website3: spanWebsite3 
+		}
+		
+		
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			felix_greaves_fb_hospitals(d1);
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+		d2b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+		}
+		document.body.appendChild(d2b);
+		//
+		var d2c = document.createElement('input');
+		d2c.setAttribute('type','button');
+		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+		d2c.value = 'N/A';
+		d2c.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+		}
+		document.body.appendChild(d2c);
+		
+		d2.value  = o.company1;
+		d2b.value = o.company2;
+		
+
+		var ef = new AMT___events_factory();
+		d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// r&a nextTab
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+
+		console.log(o);
+		kronopin_fb_businesses(d1, o.company1, o.website1);
+		kronopin_fb_businesses(d1b, o.company2, o.website2);
+		
+		function kronopin_fb_businesses(div,company,website) {
+			var out = div;
+			out.innerHTML = '';
+			out.company = company;
+			out.companyLink = website;
+			console.log('company: ' + out.company + ' website: ' + out.companyLink);
+			
+			
+			var v;
+			
+			console.log('out is here');
+			console.log(out);
+			
+			if (out == d1) {
+				v = d2.value;
+			}
+			else if(out == d1b) {
+				v = d2b.value;
+			}
+			else {
+				//v = d2c.value;
+			}
+				
+			var u = 
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link'+
+				'&limit=10'+
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+			//~ }
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						out.innerHTML = '!r.data';
+						return;
+					}
+					
+					r = r.data;
+					console.log(r);
+					
+					var c = 0;
+					//~ var found		= false;
+					//~ var found_a_band= false;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						if (r[i].location) {
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+						out.appendChild(div);
+						
+						div.className	= r[i].link;
+						div.fblikes		= r[i].likes * 1;
+						div.bgc = false;
+						
+						//~ if (div.fblikes < 4) {
+							//~ div.style.backgroundColor = '#aaa';
+							//~ div.bgc = true;
+						//~ }
+						//~ 
+						var tmp = '';
+						
+						tmp += r[i].name;
+						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+						tmp += '<br>' + r[i].link;
+						
+						div.innerHTML = tmp;
+						
+						kronopin_fb_check_website(r[i].link,div,out.companyLink);
+						
+						
+						div.onclick = function() {
+							kronopin_fb_businesses__profile(this);
+						}
+						
+						// Init this div if first!
+						//
+						//
+						if (c == 0) 
+							div.click();
+
+						div.onmouseover = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						div.onmouseout = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = '';
+							}
+						}
+						
+						c++;
+					}
+					
+					
+					
+					
+					if (c == 0) {
+						out.innerHTML = '0';
+						return;
+					}
+					else
+					{
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:2000px;');
+						out.appendChild(div);
+					}
+				}
+			});
+		}
+		
+		function kronopin_fb_check_website(linkToProfile,div,companyLink) {
+			var abtPage = linkToProfile + 'info?ref=page_internal';
+			var div = div;
+			var companyLink = companyLink;
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: div.className,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						alert(abtPage + ' responded with ' + response.status + ' error');
+					}
+					//Scrape all http//wwww. off of companyLink
+					console.log('companyLink: ' + companyLink);
+					console.log(rs);
+					if(rs.indexOf(companyLink) != -1) {
+						div.style.backgroundColor = 'lightblue';
+						div.foundWebsite = true;
+					}
+				}
+			});
+		}
+		
+		function kronopin_fb_businesses__profile(div) {
 			
 			var div = div;
 			GM_xmlhttpRequest({ // init
