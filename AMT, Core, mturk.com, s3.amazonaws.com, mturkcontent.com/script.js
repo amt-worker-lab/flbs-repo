@@ -2072,7 +2072,7 @@ function MT__RUN() {
 						//if (i == 0 && rs.data[i].name == o.state && rs.data[i].category == 'State/province/region') {
 					}
 					
-					faceb
+					
 				}
 			});
 		}
@@ -6659,6 +6659,157 @@ function MT__RUN() {
 	}
 	
 	//
+	// Brandon Bennett
+	//
+	//
+	s = 'The correct Business ID&nbsp;<strong>SHOULD BE the first result</strong>. If it is not, please use the page options at the bottom to navigate to the correct page.';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {width:30%;margin-top:10px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		GM_addStyle('.container {position:absolute;top:200px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		
+		//http://www.yelp.com/search?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
+		var a = document.getElementsByTagName('a')[0].href.replace(/\/search/, '/search/snippet').replace(/#/g, '&');
+		
+		var id = document.getElementsByTagName('td')[3].innerText;
+		
+		// 0
+		// 1 = #
+		a = a.replace(/&start=(\d+)$/, function(m0, m1) {
+			//~ console.log(m1);
+			
+			// 190 needs to go to 180.
+			
+			// 190 would contain 191 - 200
+			// 193 = 193 / 10 = 19.3 = Math.round(19.3) = 19 * 10 = 190 ( #s 191-200 )
+			
+			// 19 / 10 = 1.9 = Math.round(1.9) = 2 ( #s 11-20 )
+			
+			// start = x
+			// get = x + 1
+			
+			// start = 0
+			// get = 1
+			
+			// 0 / 10 = 0
+			
+			// 190 is 189.
+			// 189 = 18.9 = 18 = 180 = #s 181 - 190
+			//~ m1 = (m1*1) - 1;
+			//~ m1 = Math.round(m1);
+			
+			// FLOOR RATHER THAN ROUND
+			// FLOOR
+			// 357 = 356 = 35.6 = 35
+			// ROUND
+			// 357 = 356 = 35.6 = 36
+			
+			// 11 = 11 - 1 = 10 / 10 = 1 * 10 = 10
+			
+			// 10 = 10 / 10 = 1 * 10 = 10 (11-20)
+			
+			// 190 = 
+			
+			
+			return '&start=' + (Math.floor( m1 / 10 ) * 10);
+		});
+		//~ return;
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(a),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) return;
+				
+				rs = JSON.parse(rs);
+				
+				console.log(rs);
+				
+				//~ var sh = rs.search_header;
+				//~ var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+				//~ if (r) {
+					//~ r = r[1];
+					//~ document.getElementById('result_count').value = r;
+					//~ doSubmit();
+				//~ }
+				
+				
+				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+				var m;
+				while (m = r.exec(rs.search_results)) {
+					
+					//~ console.log(m);
+					
+					if (m[1].indexOf('<span class="indexed-biz-name">' + id + '.' ) != -1) {
+						
+						//~ console.log(m);
+						
+						// (619) 238-4949
+						// 
+						var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+						if (ph) {
+							ph = __js_clean_html_str(ph[1]).trim();
+							document.getElementById('phone_number').value = ph;
+							
+							doSubmit();
+						}
+						
+						// END HERE
+						break;
+					}
+				}
+			}
+		});
+	}
+	//
+	// Brandon Bennett
+	//
+	//
+	s = '<li>The result will be in the upper right corner of the page and will say "Showing 1-10 of {RESULTS}"</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body {width:30%;margin-top:10px;}');
+		//~ GM_addStyle('input {width:60%;}');
+		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
+		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
+		GM_addStyle('.container {position:absolute;top:200px;margin-left:-40px;width:30%;zoom:0.6;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		
+		//http://www.yelp.com/search?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
+		var a = document.getElementsByTagName('a')[0].href.replace(/\/search/, '/search/snippet').replace(/#/g, '&');
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: a,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) return;
+				
+				rs = JSON.parse(rs);
+				
+				console.log(rs);
+				
+				//~ var sh = rs.search_header;
+				var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+				if (r) {
+					r = r[1];
+					document.getElementById('result_count').value = r;
+					doSubmit();
+				}
+			}
+		});
+	}
+	
+	//
 	// John Smith ""
 	// -SimpleSearch
 	// Android Phone Data Collection
@@ -10043,7 +10194,43 @@ function MT__RUN() {
 					action: 'return_and_accept_button__nextTab'
 				}
 			);
-
+		
+		//~ // ...
+		//~ var ll = {
+			//~ lat:'',
+			//~ lng:''
+		//~ }
+		
+		// ...
+		Chris_Campbell_facebook_company_reviews(d1);
+		Chris_Campbell_facebook_company_reviews(d1b);
+		//~ Morgan_Intrator_fb_schools_geo();
+		//~ 
+		//~ function felix_greaves_fb_hospitals_geo() {
+			//~ MT___google_api_geocode(o.location, function(lat,lng) {
+				//~ 
+				//~ if  (
+					//~ !lat ||
+					//~ !lng ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
+					//~ !/^-?[\d\.]{4,}$/.exec(lng)
+					//~ )
+				//~ {
+					//~ //
+				//~ } else {
+				//~ 
+					//~ ll.lat = lat;
+					//~ ll.lng = lng;
+				//~ }
+				//~ 
+				//~ console.log(ll);
+				//~ 
+				//~ if (d2b.value != '')
+					//~ felix_greaves_fb_hospitals(d1b);
+				//~ 
+			//~ }, false, true);
+		//~ }
+		
 		function Chris_Campbell_facebook_company_reviews(div) {
 			
 			var out = div;
@@ -10064,6 +10251,10 @@ function MT__RUN() {
 				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 			
+			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+			//~ }
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 			
 			GM_xmlhttpRequest({ // init
 				method: "GET",
@@ -10552,6 +10743,11 @@ function MT__RUN() {
 						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
 						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
 						
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
+							}
+						}
 						
 						if (r[i].category) {
 							var x = r[i].category;
@@ -10612,332 +10808,6 @@ function MT__RUN() {
 			});
 		}
 		function felix_greaves_fb_hospitals__profile(div) {
-			
-			var div = div;
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: div.className,
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) return;
-					
-					var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						
-						var maxW = '50%';
-						if  (
-							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
-							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
-							r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
-							)
-						{
-							//~ div.appendChild(document.createElement('br'));
-							//~ div.appendChild(document.createTextNode(' X X '));
-							div.style.border = '4px solid teal';
-							div.style.margin = '-4px -4px -4px -4px';
-							//return;
-							
-							maxW = '4%';
-						}
-						
-						var img = document.createElement('img');
-						img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
-						img.fblink = div.className;
-						img.onclick = function(e) {
-							this.style.border = '4px solid blue';
-							var i = this.fblink;
-							i = i.replace(/^https?:\/\//gi, '');
-							document.getElementById('Q1Url').value = i;
-							if (/^www\.facebook\.com\/[^$]+/.exec(i)) {
-								new AMT___core_factory().nextTab();
-								doSubmit();
-							}
-							e.stopPropagation();
-							e.preventDefault();
-							return false;
-						}
-						img.src = r;
-						div.appendChild(img);
-					}
-				}
-			});
-		}
-	}
-	
-	//
-	// KronoPin
-	// Enter the Facebook Company ID from a URL
-	// 
-	s = 'Then, go back to Google, copy the full link in green (it is circled above in orange), for example:';
-	if (ih.indexOf(s) != -1)
-	{		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
-		
-		GM_addStyle('body {margin-top:1000px;}');
-		//~ GM_addStyle('input {width:60%;}');
-		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
-		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
-		
-		GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
-		GM_addStyle('.panel {position:absolute;top:2000px;}');
-		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-		
-		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
-		
-		var a = document.getElementsByTagName('a')[2].innerText.trim();
-		var a2 = document.getElementsByTagName('a')[3].innerText.trim();
-		var a3 = document.getElementsByTagName('a')[4].innerText.trim();
-		
-		var spanWebsite = document.getElementsByTagName('span')[9].innerText.trim();
-		spanWebsite = spanWebsite.replace(/[\(\)]/g,'');
-		var spanWebsite2 = document.getElementsByTagName('span')[12].innerText.trim();
-		spanWebsite2 = spanWebsite2.replace(/[\(\)]/g,'');
-		var spanWebsite3 = document.getElementsByTagName('span')[15].innerText.trim();
-		spanWebsite3 = spanWebsite3.replace(/[\(\)]/g,'');
-		
-		
-		//var b = document.getElementsByTagName('b');
-		var o = {
-			company1: a,
-			company2: a2,
-			company3: a3,
-			website1: spanWebsite,
-			website2: spanWebsite2,
-			website3: spanWebsite3 
-		}
-		
-		
-		
-		/* BEGIN ITEMS */
-		var d1 = document.createElement('div');
-		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1);
-		//
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1b);
-		//
-		var d2 = document.createElement('textarea');
-		d2.setAttribute('type','text');
-		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
-		d2.onblur = function() {
-			this.value = this.value.replace(/\s+/g, ' ').trim();
-			felix_greaves_fb_hospitals(d1);
-		}
-		document.body.appendChild(d2);
-		//
-		var d2b = document.createElement('textarea');
-		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
-		d2b.onblur = function() {
-			this.value = this.value.replace(/\s+/g, ' ').trim();
-		}
-		document.body.appendChild(d2b);
-		//
-		var d2c = document.createElement('input');
-		d2c.setAttribute('type','button');
-		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
-		d2c.value = 'N/A';
-		d2c.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-		}
-		document.body.appendChild(d2c);
-		
-		d2.value  = o.company1;
-		d2b.value = o.company2;
-		
-
-		var ef = new AMT___events_factory();
-		d2. addEventListener('keydown', ef.keydown__blur_field, true);
-		d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-		
-		// r&a nextTab
-		new AMT___core_factory().
-			iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
-
-		console.log(o);
-		kronopin_fb_businesses(d1, o.company1, o.website1);
-		kronopin_fb_businesses(d1b, o.company2, o.website2);
-		
-		function kronopin_fb_businesses(div,company,website) {
-			var out = div;
-			out.innerHTML = '';
-			out.company = company;
-			out.companyLink = website;
-			console.log('company: ' + out.company + ' website: ' + out.companyLink);
-			
-			
-			var v;
-			
-			console.log('out is here');
-			console.log(out);
-			
-			if (out == d1) {
-				v = d2.value;
-			}
-			else if(out == d1b) {
-				v = d2b.value;
-			}
-			else {
-				//v = d2c.value;
-			}
-				
-			var u = 
-				'https://graph.facebook.com/search'+
-				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
-				'&fields=category,id,name,likes,talking_about_count,location,link'+
-				'&limit=10'+
-				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-			
-			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
-				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
-			//~ }
-			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-			
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					
-					var rs = response.responseText;
-					if (response.status != 200) return;
-					
-					var r = JSON.parse(rs);
-					
-					if (!r.data) {
-						out.innerHTML = '!r.data';
-						return;
-					}
-					
-					r = r.data;
-					console.log(r);
-					
-					var c = 0;
-					//~ var found		= false;
-					//~ var found_a_band= false;
-					for (var i in r) {
-						
-						if (r[i].type) {
-							if (r[i].type == 'event') continue;
-						}
-						
-						if (r[i].talking_about_count != null) {
-						} else
-							r[i].talking_about_count = '';
-						if (r[i].likes != null) {
-						} else
-							r[i].likes = '';
-						
-						if (r[i].location) {
-							if (r[i].location.latitude) {
-								delete r[i].location.latitude;
-							}
-							if (r[i].location.longitude) {
-								delete r[i].location.longitude;
-							}
-						}
-						
-						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-						
-						var div = document.createElement('div');
-						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
-						out.appendChild(div);
-						
-						div.className	= r[i].link;
-						div.fblikes		= r[i].likes * 1;
-						div.bgc = false;
-						
-						//~ if (div.fblikes < 4) {
-							//~ div.style.backgroundColor = '#aaa';
-							//~ div.bgc = true;
-						//~ }
-						//~ 
-						var tmp = '';
-						
-						tmp += r[i].name;
-						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
-						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
-						tmp += '<br>' + r[i].link;
-						
-						div.innerHTML = tmp;
-						
-						kronopin_fb_check_website(r[i].link,div,out.companyLink);
-						
-						
-						div.onclick = function() {
-							kronopin_fb_businesses__profile(this);
-						}
-						
-						// Init this div if first!
-						//
-						//
-						if (c == 0) 
-							div.click();
-
-						div.onmouseover = function() {
-							var x = document.getElementsByClassName(this.className);
-							for (var i in x) {
-								if (i == 'length') break;
-								x[i].style.backgroundColor = 'LightGreen';
-							}
-						}
-						div.onmouseout = function() {
-							var x = document.getElementsByClassName(this.className);
-							for (var i in x) {
-								if (i == 'length') break;
-								x[i].style.backgroundColor = '';
-							}
-						}
-						
-						c++;
-					}
-					
-					
-					
-					
-					if (c == 0) {
-						out.innerHTML = '0';
-						return;
-					}
-					else
-					{
-						var div = document.createElement('div');
-						div.setAttribute('style', 'height:2000px;');
-						out.appendChild(div);
-					}
-				}
-			});
-		}
-		
-		function kronopin_fb_check_website(linkToProfile,div,companyLink) {
-			var abtPage = linkToProfile + 'info?ref=page_internal';
-			var div = div;
-			var companyLink = companyLink;
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: div.className,
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) {
-						alert(abtPage + ' responded with ' + response.status + ' error');
-					}
-					//Scrape all http//wwww. off of companyLink
-					console.log('companyLink: ' + companyLink);
-					console.log(rs);
-					if(rs.indexOf(companyLink) != -1) {
-						div.style.backgroundColor = 'lightblue';
-						div.foundWebsite = true;
-					}
-				}
-			});
-		}
-		
-		function kronopin_fb_businesses__profile(div) {
 			
 			var div = div;
 			GM_xmlhttpRequest({ // init
@@ -17826,7 +17696,7 @@ function MT__RUN() {
 			var c = e.keyCode;
 			console.log(c);
 			
-			//~ // NOT THIS!!
+			//~ // NOT THIS!
 			//~ c = (c == 59)?109:c; //;
 			//~ c = (c == 39)?110:c; //'
 			
@@ -17911,25 +17781,14 @@ function MT__RUN() {
 		// scrollIntoView
 		if(!AMT__Global_Vars.isPreview) {
 			setTimeout(function() {
-				//~ out_complete[0].parent.scrollIntoView();
-				
 				turk_HPCBeauty_amazon_units__scrollIntoView_current();
 			}, 400);
 			setTimeout(function() {
-				//~ out_complete[0].parent.scrollIntoView();
-				
-				//~ document.getElementById('submitButton').scrollIntoView();
-				
 				turk_HPCBeauty_amazon_units__scrollIntoView_current();
 			}, 600);
 			setTimeout(function() {
-				//~ out_complete[0].parent.scrollIntoView();
-				
 				turk_HPCBeauty_amazon_units__scrollIntoView_current();
 			}, 800);
-			//~ out_complete[0].parent.scrollIntoView();
-			//~ out_complete[0].parent.scrollIntoView();
-			//~ out_complete[0].parent.scrollIntoView();
 		}
 		
 		
@@ -18551,6 +18410,599 @@ function MT__RUN() {
 			//~ document.getElementsByTagName('textarea')[0].scrollIntoView();
 			//~ document.getElementsByTagName('table')[0].scrollIntoView();
 		//~ }, 1400);
+	}
+	//
+	// Grocery_ROI (fork from turk-HPCBeauty)
+	// Collect Product Information
+	// 21 Aug 2014
+	s = 'In this task you will extract specific data points from a product page on the Amazon retail website.&nbsp; Read the instructions and then answer the questions below:';
+	if(ih.indexOf(s) != -1)
+	{		
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('body {min-height:4000px;}');
+		GM_addStyle('#submitButton {width:100%;height:120px;}');
+		
+		//~ GM_addStyle('.container {width:100% !important !important !important !important;}');
+		//~ GM_addStyle('.col-sm-6 {float:none;width:100%;}');
+		
+		//~ GM_addStyle('.col-sm-6 {overflow:scroll;height:2000px;}'); // Added "scroll" Jul2 2014.
+		//~ GM_addStyle('.col-sm-6>fieldset {position:;display:block;width:10%;float:left;}');
+		
+		//~ GM_addStyle('.col-sm-6>fieldset {float:left;}');
+		
+		var x = document.getElementsByClassName('container')[0];
+		x.setAttribute('style', 'width:100%;');
+		
+		//~ if (!AMT__Global_Vars.isPreview) {
+			//~ addToTabsQ();
+		//~ }
+		
+		var section = document.getElementsByTagName('section')[1];
+		section.setAttribute('style', 'float:left;width:20%;');
+		var sections = document.getElementsByTagName('section');
+		
+		// move
+		var fs = document.getElementsByTagName('fieldset');
+		for (var i in fs) {
+			if (i == 'length') break;
+			var p = fs[i].getElementsByTagName('p');
+			for (var j in p) {
+				if (j == 'length') break;
+				sections[0].appendChild(p[j]);
+			}
+			var p = fs[i].getElementsByTagName('label');
+			for (var j in p) {
+				if (j == 'length') break;
+				sections[0].appendChild(p[j]);
+			}
+			var p = fs[i].getElementsByTagName('strong');
+			for (var j in p) {
+				if (j == 'length') break;
+				sections[0].appendChild(p[j]);
+			}
+		}
+		
+		/* BEGIN items*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style', 'float:left;width:78%;margin-top:40px;');
+		section.parentNode.appendChild(d1);
+		/* END items */
+		
+		// q
+		var q = document.getElementsByName('Q5FreeTextInput');
+		q = [
+			q[0],
+			document.getElementsByName('Q2Answer')[0],
+			q[1]
+		]
+		
+		// a
+		var a = document.getElementsByTagName('a')[0].href;
+		a = a.replace('::', ':');
+		a = a.replace('////', '//');
+		
+		// out
+		var out = {
+			//~ parent: d1,
+			div: d1,
+			href: a,
+			all_inp: document.getElementsByName('Q5FreeTextInput'),
+			inp: document.getElementsByName('Q5FreeTextInput')[0],
+			
+			// out_element (init: 0)
+			out_element: q[0]
+		}
+		console.log(out);
+		
+		// scrollIntoView
+		if(!AMT__Global_Vars.isPreview) {
+			setTimeout(function() {
+				section.scrollIntoView();
+			}, 400);
+			setTimeout(function() {
+				section.scrollIntoView();
+			}, 600);
+			setTimeout(function() {
+				section.scrollIntoView();
+			}, 800);
+		}
+		
+		// ...
+		q[1].multiple = true;
+		q[1].size = 7;
+		q[1].onclick = function() {
+			q[2].focus();
+			return true;
+		}
+		
+		// onfocus
+		q[0].onfocus = q[2].onfocus = function() {
+			out.out_element = this;
+		}
+		
+		// submit onclick
+		document.getElementById('submitButton').onclick = function(e) {
+			
+			if (q[1].selectedIndex == 0)
+				return false;
+			
+			if (q[0].value.trim() == '')
+				return false;
+			
+			doSubmit();
+			return false;
+			
+			//~ e.stopPropagation();
+			//~ e.preventDefault();
+			//~ 
+			//~ for (var i in q) {
+				//~ if (i == 'length') break;
+				//~ var found = false;
+				//~ for (var j in q[i]) {
+					//~ if (q[i][j].checked) { // at least one is checked
+						//~ found = true;
+						//~ break;
+					//~ }
+				//~ }
+				//~ if (!found) {
+					//~ 
+					//~ e.stopPropagation();
+					//~ e.preventDefault();
+					//~ return false;
+				//~ }
+			//~ }
+			//~ 
+			//~ // Still here?
+			//~ showNextTab();
+			
+			//~ 
+			//~ // Still here?
+			//~ chrome.extension.sendRequest({
+					//~ nextTab: true
+				//~ },
+				//~ function(response)
+				//~ {
+				//~ }
+			//~ );
+			//~ e.stopPropagation();
+			//~ e.preventDefault();
+		}
+		
+		Grocery_ROI_amazon_units(out);
+		
+		//~ out_complete.push({
+			//~ parent: x[i],
+			//~ div: div,
+			//~ href: x[i].getElementsByTagName('a')[0].href,
+			//~ all_inp: out_inp,
+			//~ inp: out_inp[out_inp.length - 1],
+			//~ fieldset: x[i].getElementsByTagName('fieldset')[0]
+		//~ });
+		
+		// window.onkeypress
+		// 
+		window.addEventListener('keypress', function(e) {
+			var c = e.keyCode;
+			console.log(c);
+			
+			//
+			if  (
+				c == 13
+				)
+			{
+			
+				document.getElementById('submitButton').click();
+				//~ doSubmit();
+				
+				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			
+			if  (
+				c == 13
+				)
+			{
+			
+				document.getElementById('submitButton').click();
+				//~ doSubmit();
+				
+				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			
+			// 
+			if  (
+				(c >= 106 && c <= 108) ||
+				c == 59 || c == 39
+				)
+			{
+			
+				c = (c == 59)?109:c; //;
+				c = (c == 39)?110:c; //'
+				
+				e.preventDefault();
+				e.stopPropagation();
+				
+				c = (106 - c) * -1; // = 0, = 1, ...
+				c++; // = 1, = 2, ...
+				
+				q[1].selectedIndex = c;
+				
+				q[2].focus();
+				
+				return false;
+			}
+			
+		}, false);
+		
+		
+		
+		// Function 
+		function Grocery_ROI_amazon_units__appendTxt(div, text, out_inp, isHighlighted) {
+			
+			var x = document.createElement('div');
+			x.setAttribute('style', 'display:block;');
+			
+			// MAKE BUTTONS
+			
+			// array of returned buttons
+			var return_buttons_array = [];
+			
+			var text = text.split(' ');
+			for (var i in text) {
+				
+				var btn = document.createElement('button');
+				btn.setAttribute('style', 'border:0;margin:0;margin-right:2px;');
+				
+				// isHighlighted
+				if (isHighlighted)
+					btn.style.border = '2px solid teal';
+				
+				btn.innerText = text[i];
+				
+				if (text[i] == '<Size>') {
+					btn.style.borderStyle = 'double';
+					btn.style.borderWidth = '4px';
+					//~ btn.style.borderStyle = 'dashed';
+				}
+				
+				//~ btn.out_inp = out_inp;
+				//~ x.out_val = n[0].trim();
+				
+				//onclick
+				btn.onclick = function(e) {
+					//~ this.style.backgroudColor = '#000000'; // Does not work!!!
+					this.style.border = '4px solid teal'; //
+					//~ this.out_inp.value = this.innerText.replace(/[^\d\.]/g, '');
+					
+					var n = this.innerText.replace(/[^\d\.]/g, '') * 1;
+					
+					out.out_element.value = n;
+					out.out_element.focus();
+					out.out_element.select();
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+					
+					//~ this.out_inp.value = n;
+					//~ if(this.out_inp.value == '')
+					//~ {
+						//~ this.out_inp.value = n;
+					//~ }
+					//~ else
+						//~ this.out_inp.value = (Number(n)) 
+											 //~ * (Number(this.out_inp.value.replace(/[^\d\.]/g,'')));
+					//~ 
+					//~ this.out_inp.value = this.out_inp.value.replace(/(\.[^0]*)[0]{2,}[\d]*$/,'$1');
+					//~ this.out_inp.value = this.out_inp.value.replace(/\.$/,''); // TRAILING PERIOD!
+					//~ 
+					//~ 
+					//~ this.out_inp.focus();
+					//~ this.out_inp.select();
+					//~ 
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				}
+				//~ 
+				
+				x.appendChild(btn);
+				
+				return_buttons_array.push(btn);
+			}
+			
+			div.appendChild(x)
+			
+			return return_buttons_array;
+		}
+		// Function turk_HPCBeauty_amazon_units
+		//(out.div.getElementsByTagName('input'))
+		function Grocery_ROI_amazon_units__fillFirstNumber(out_input, inputs) {
+			//~ console.log(out_input);
+			//~ console.log(inputs);
+			
+			for (var i in inputs) {
+				if (i == 'length') break;
+				var n;
+				if (n = /([\d\.]+)/.exec(inputs[i].innerText)) {
+					if (!/\d/.exec(n)) continue;
+					out_input.value = n[0].trim();
+					out_input.focus(); // focus
+					out_input.select(); // focus
+					inputs[i].style.border = '4px solid teal';
+					break;
+				}
+			}
+		}
+		// Function turk_HPCBeauty_amazon_units
+		// out is the container div (1...4)
+		function Grocery_ROI_amazon_units(out) {
+			
+			var out = out;
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
+				
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status > 200 || (/^\d+$/.exec(rs) && rs*1 > 200)) {
+						exit(response.status + rs);
+					}
+					
+					if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
+						console.log('x');
+						
+						//~ out.all_inp[out.all_inp.length - 2].checked = true;
+						//~ out.parent.style.backgroundColor = 'teal';
+						//~ out.parent.style.height = '40px';
+						//~ out.parent.style.overflow = 'auto';
+						//~ out.SKIPNODE = true; // skip
+						//~ out.inp.SKIPNODE = true; // set input.SKIPNODE!!
+						//~ 
+						//~ setTimeout(function() {
+							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // IF NECESSARY, THIS WILL RESET THE VIEW !!
+						//~ }, 1000);
+						//~ 
+						//~ 
+						//~ // TOTAL_INFO_NA
+						//~ stats.TOTAL_INFO_NA++;
+						//~ 
+						//~ // RUN stats
+						//~ turk_HPCBeauty_amazon_units__totalNA();
+						return;
+					}
+					
+					// ...
+					var r;
+					var pre_selection = false;
+					
+					// title
+					r = /<span id="productTitle" class="a-size-large">([^<]*)<\/span>/.exec(rs); //Rainbow Light All-Zyme Double Strength
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						
+						// REMOVE 4T/5T, 4T-5T (pull-ups)
+						r = r.replace(/ \dt[\/\-]\dt,*/i, '');
+						
+						//return_buttons_array
+						Grocery_ROI_amazon_units__appendTxt(out.div, r, out.inp);
+						
+						
+						//~ // PUT THE FIRST NUMBER IN! (no dashes) => "\d,\. "
+						//~ var n = /[\d\.]+/.exec(r); // init \d
+						//~ if (n) {
+							//~ out.inp.value = n[0].trim();
+							//~ 
+							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // THIS WILL SELECT THE TEXT BOX
+						//~ }
+					}
+					
+					// Fields "Click to select"
+					//&&<li id="item_package_quantity_0" title="Click to select 4" data-dp-url="" class="swatchSelect">
+					r = /<li id="(size_name_|item_package_quantity_)[^"]*" title="([^"]*)" data-dp-url="[^"]*" class="([^"]*)"/g;
+					if (r.exec(rs)) {
+						r.lastIndex = 0;
+						var m;
+						while (m = r.exec(rs)) {
+							m[2] = __js_clean_html_str(m[2]).trim();
+							
+							//~ out.div.innerText += m[1] + '\n';
+							//~ console.log(m[2]);
+							
+							if (m[3] == 'swatchSelect') {
+								//~ out.div.appendChild(document.createTextNode('>**>'));
+								var rba = Grocery_ROI_amazon_units__appendTxt(out.div, m[2], out.inp, true); // TRUE-> isHighlighted
+								
+								// Pre selected refers to a row that is highlighted.
+								//
+								//
+								//~ pre_selected = 
+								
+								if (rba.length) {
+									pre_selection = true;
+									Grocery_ROI_amazon_units__fillFirstNumber(out.inp, rba);
+								}
+							} else
+								Grocery_ROI_amazon_units__appendTxt(out.div, m[2], out.inp);
+							
+						}
+					}
+					
+					/*
+					 <div id="variation_size_name" class="a-section a-spacing-small">
+						<div class="a-row a-spacing-micro singleton">
+							<label>
+								Size:
+							</label>
+							
+								<span class="selection">1 oz</span>
+							
+
+										
+						</div>
+					</div>*/
+					r = /<span class="selection">([^<]*)<\/span>/.exec(rs); //1 oz
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						Grocery_ROI_amazon_units__appendTxt(out.div, '<Size> ' + r, out.inp);
+					}
+					
+					// ITERATE THROUGH ALL INPUTS LOOKING FOR 
+					// the first instance of [digit]. This is a change from
+					// the regex (above).
+					// Pre selected refers to a row that is highlighted.
+					if (!pre_selection) {
+						Grocery_ROI_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					}
+					
+					//~ // Pre selected refers to a row that is highlighted.
+					//~ if (pre_selected) {
+						//~ turk_HPCBeauty_amazon_units__fillFirstNumber(out.inp, out.div.getElementsByTagName('button'));
+					//~ } else {
+						//~ 
+					//~ }
+					
+					
+					// The bullet points that describe the product.
+					// Append to fieldset.
+					r = /<ul class="a-vertical a-spacing-none">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
+					if (r) {
+						var d = document.createElement('div');
+						d.setAttribute('style','width:100%;');
+						d.innerHTML = r[0];
+						out.div.appendChild(d);
+					}
+					
+					// ...
+					var type_rslt = 0;
+					r = /'colorImages': (\{[^\r\n]+)/.exec(rs);
+					if (!r) {
+						type_rslt = 1;
+						r = /<script type="text\/javascript">var loadState = false; \(function\(\)\{var i=new Image; i\.onload = function\(\) \{ loadState = true; \}; i\.src = "([^"]+)";\}\)\(\);<\/script>/.exec(rs);
+					}
+					if (r) {
+						if (type_rslt == 0) {
+							r = r[1].trim();
+							r = r.replace(/,$/, '');
+							r = r.replace(/'/g, '"');
+							r = JSON.parse(r);
+						} else {
+							r = {
+								initial: [{
+									large: r[1].trim()
+								}]
+							}
+						}
+						
+						console.log(r);
+
+						var all_images_tmp;
+						
+						if (r.initial) { // is [{1},{2}, ...{n}]
+							r = r.initial;
+							
+							// images
+							
+							// image size ... ...
+							var numImages = r.length;
+							
+							
+							
+							for (var i in r) {
+								
+								var img;
+								
+								img = document.createElement('img');
+								out.div.appendChild(img); // ??
+								
+								//~ all_images_tmp.push(out.div);
+								
+								img.isSmall = false;
+								img.className = 'images_class';
+								
+								//img.equal_width = equal_width;
+								img.setAttribute('style', 'border:1px solid #a2a2a2;float:left;');
+								
+								if (r[i].hiRes) {
+									//img.src = r[i].hiRes;
+									img.tmp_src = r[i].hiRes;
+								} else if (r[i].large) {
+									//img.src = r[i].large;
+									img.tmp_src = r[i].large;
+								} else if (r[i].thumb) {
+									//img.src = r[i].thumb;
+									img.tmp_src = r[i].thumb;
+								}
+								
+								if (!AMT__Global_Vars.isPreview) {
+									img.src = img.tmp_src;
+									
+									Grocery_ROI_organic_labels__resizeImg(img);
+								}
+								
+								//
+								// Decrement total_stats.tImages if "No image available" from Amazon.
+								//
+								//
+								if (img.tmp_src == 'http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._V192198896_.gif') {
+									
+									//~ total_stats.tImages--;
+									
+									img.isSmall = true;
+									img.style.zoom = '0.05';
+									//~ td.parentNode.style.zoom = '0.1';
+								}
+								
+								img.onclick = function() {
+									if (!this.isSmall) {
+										this.style.zoom = '0.05'; //.2
+										this.isSmall = true;
+									} else {
+										this.style.zoom = this.zoomFactor; // reset zoom factor!
+										this.isSmall = false;
+									}
+									// parentNode scrollIntoView !!
+									this.parentNode.scrollIntoView();
+								}
+								
+								img.addEventListener('mousewheel', function(e) {
+									//~ console.log(e);
+									//~ console.log(e.wheelDelta * 1);
+									//~ console.log(e.wheelDelta * 1 > 0);
+									//~ console.log(this)
+									//~ console.log(this.style)
+									//~ console.log(this.style.zoom)
+									
+									if (!this.style.zoom)
+										this.style.zoom = 1;
+									
+									//~ console.log(typeof e.wheelDelta);
+									
+									if (e.wheelDelta > 0) { // "120", zoom in
+										this.style.zoom = this.style.zoom * 1 + 0.1;
+									} else { // "-120", zoom out
+										this.style.zoom = this.style.zoom * 1 - 0.1;
+									}
+									
+									e.preventDefault();
+									e.stopPropagation();
+									return false;
+								}, false);
+							}
+						}
+					}
+				}
+			});
+		}
 	}
 	
 	//
@@ -19438,7 +19890,6 @@ function MT__RUN() {
 			}, 600);
 		}
 	}
-	
 	//
 	// Grocery_ROI
 	// Gluten free
@@ -20310,7 +20761,6 @@ function MT__RUN() {
 				//if (object_response.matches[0] == '' && object_response.matches.length == 1) {
 			}
 			else {
-				
 				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 				//alert('hi');
 			}
@@ -25541,10 +25991,7 @@ function MT__RUN() {
 					if (response.status > 200) {
 						document.body.style.backgroundColor = 'pink';
 						return;
-					}// else if (/captcha/.exec(rs)) {
-					//	document.body.style.backgroundColor = 'pink';
-					//	return;
-					//}
+					}
 					
 					var r;
 					r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
@@ -109861,6 +110308,7 @@ function top_window() {
 	
 	//
 	// A9 Snaptell Visual Search Requester
+	// Visual Search Requester
 	// Find associated product information for a given barcode value
 	//
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
@@ -109868,78 +110316,789 @@ function top_window() {
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
 		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+		//GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+		
+		// MOVE "THETIME"
+		document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
+		//~ document.getElementsByTagName('img')[0].parentNode.parentNode.appendChild(document.getElementById('theTime'));
 		
 		// ...
 		var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
-		var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
+		// Remove the barcode from page
+		// so that when doing CTRL+F it
+		// won't be a false positive.
+		document.getElementsByTagName('h3')[1].parentNode.removeChild(document.getElementsByTagName('h3')[1]);
 		
 		// ...
+		AMT__Global_Vars.copyInp = upc;
+		
+		// ...
+		// and "q"
 		var x1, x2;
 		x1 = document.getElementById('Answer_1_FreeText');
 		x2 = document.getElementById('Answer_2_FreeText');
 		x2.ondblclick = function() {
 			this.style.border = '4px solid blue';
-			this.value = d1.src;
+			this.value = d1.output_url; //.output_url
+			x1.focus();
+			
+			//~ this.value = d1.src;
 		}
+		var q = [
+			x1, x2
+		];
 		
 		// ...
-		var d = document.getElementsByClassName('question-content-wrapper')[0];
-		setTimeout(function() {d.scrollIntoView();}, 200 );
-		setTimeout(function() {d.scrollIntoView();}, 1200);
-		setTimeout(function() {d.scrollIntoView();}, 2000);
+		//~ var d = document.getElementsByTagName('h3')[1];
+		var dqw = document.getElementsByClassName('question-wrapper')[0];
+		dqw.appendChild(document.createTextNode(' ' +upc));
+		var reset_dqw = document.createElement('input');
+		reset_dqw.setAttribute('style', 'cursor:pointer;');
+		reset_dqw.type = 'button';
+		reset_dqw.value = ' R ';
+		reset_dqw.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById('hit-wrapper').style.position = 'relative';
+		}
+		dqw.appendChild(reset_dqw);
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 200 );
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 1200);
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 1400);
+		//~ var d = document.getElementsByClassName('question-wrapper')[0];
 		
-		// ...
+		/* BEGIN ITEMS */
+		var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
+		x.appendChild(document.createElement('br'));
+		// iframe
+		// add .output_url
 		var d1 = document.createElement('iframe');
-		d1.setAttribute('style','width:98%;height:800px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+		d1.setAttribute('style','width:50%;float:left;height:500px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
 		// flicker...
 		d1.style.visibility = 'hidden';
+		d1.output_url = null;
 		d1.addEventListener('load', function() {
 			this.style.visibility = 'visible';
 		}, false);
-		
-		// ...
-		var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
 		x.appendChild(d1);
+		// THIS TEXTAREA MUST COME AFTER THE IFRAME.
+		// And before the following three divs.
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;left:50%;width:40%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
+		//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
+		x.appendChild(d3c);
+		d3c.onclick = function() {
+		}
+		// ...
+		var d2 = document.createElement('div');
+		d2.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+		x.appendChild(d2);
+		//...
+		var d2b = document.createElement('div');
+		d2b.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+		x.appendChild(d2b);
+		//...
+		var d2c = document.createElement('div');
+		d2c.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+		x.appendChild(d2c);
+		//...
+		//x.appendChild(document.createElement('br'));
+		var d3 = document.createElement('input');
+		d3.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3.type = 'button';
+		x.appendChild(d3);
+		//
+		var d3b = document.createElement('input');
+		d3b.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3b.type = 'button';
+		d3b.value = ' Google ';
+		x.appendChild(d3b);
+		d3b.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			A9_Snaptell_VSR__google();
+		}
+		//
+		var d3d = document.createElement('input');
+		d3d.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3d.type = 'button';
+		//~ d3d.value = ' shopsavvy ';
+		x.appendChild(d3d);
+		d3d.onclick = function() {
+			//
+		}
+		// ...
+		x.appendChild(document.createElement('br'));
+		/* END ITEMS */
 		
 		// ...
 		var x = document.getElementsByName('hitForm')[0];
 		x.onsubmit = function() {
 			x1.value = x1.value.trim();
 			x2.value = x2.value.trim();
-			if (x1.value == '' || x2.value == '')
+			x1.value = x1.value.replace(/\s+/g, ' '); // spaces
+			if  (
+					(
+					x1.value == '' || x2.value == ''
+					) &&
+					!document.getElementById('Answer_3').checked
+				)
 				return false;
+			new AMT___core_factory().nextTab();
 		}
 		
 		// ...
-		A9_Snaptell_VSR(upc);
+		AMT__Global_Vars.core.return_accept_run_nextTab = true;
+		//~ new AMT___core_factory().
+			//~ iframe2parent__postMessage( //
+				//~ {
+					//~ action: 'return_and_accept_button__nextTab'
+				//~ }
+			//~ );
+		// ...
+		var naBut = document.getElementsByClassName('question selection')[0];
+		naBut.style.zoom = '2';
+		naBut.onclick = function() {
+			for(var i = 1; i <3; i++) {
+				document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
+			}
+			this.checked = true;
+			
+			doSubmit('hitForm');
+			new AMT___core_factory().nextTab();
+		}
+	
+		
+		// Zoom
+		// Tell child to zoom out & extend
+		var ifr_intv = setInterval(function() {
+			if (d1.style.visibility == 'visible')
+				d1.contentWindow.postMessage(
+					{
+						task: 'AMT__all_pages_util',
+						MT___all_pages_extend: true,
+						MT___all_pages_zoom: true,
+						MT___text_scrollIntoView: new RegExp(upc, 'i')
+					},
+					"*"
+				);
+		}, 1000);
+		
+		// global
+		var result = {
+			digital_eyes: null,
+			startpage: null,
+			yahoo: null,
+			shopsavvy: null,
+			searchupc: null,
+			google: null,
+			array_all: ['de','sp','yh','su','ss','g'],
+			
+			// This is the first URL for iframe d1.src.
+			first_url: null
+		}
+		
+		// INIT
+		A9_Snaptell_VSR__next();
+		
+		// Always do shopsavvy.com
+		A9_Snaptell_VSR__shopsavvy();
 		
 		// ...
-		AMT___POPUP__initializeGlobals(
-			A9_Snaptell_VSR__yahoo_init
-		);
+		function A9_Snaptell_VSR__shopsavvy() {
+			
+			var ss = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+			var md5_filename = any_md5(ss, '0123456789ABCDEF');
+			//~ var u;
+			//~ u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+				//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+					//~ {
+						//~ htmlspecialchars: false,
+						//~ short_filename: md5_filename,
+						//~ replace_scripts: false
+					//~ }
+				//~ ));
+			
+			// 0 = 
+			// 1 = 
+			// 2 = 
+			var urls = [
+				MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ss) +
+					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						{
+							htmlspecialchars: false,
+							short_filename: md5_filename,
+							replace_scripts: true,
+							replace_absolute_url: true
+						}
+					)),
+				MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ss) +
+					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						{
+							htmlspecialchars: true,
+							short_filename: md5_filename,
+							replace_scripts: false,
+							replace_absolute_url: true
+						}
+					)),
+				
+				// 2 same as 0
+				MT___host + '/mturk/.cached/' + encodeURIComponent(md5_filename)
+				// Synonym w/ .cached
+				//~ MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + // 2 SAME AS 0
+					//~ encodeURIComponent(ss) +
+					//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						//~ {
+							//~ htmlspecialchars: false,
+							//~ short_filename: md5_filename,
+							//~ replace_scripts: false,
+							//~ replace_absolute_url: true
+						//~ }
+					//~ ))
+			];
+			
+			d3d.output_url = urls[0];
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: urls[0],
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200 || rs*1 > 200) {
+						
+						// CALL NEXT
+						result.shopsavvy = false;
+						A9_Snaptell_VSR__next();
+						
+						return;
+					}
+					
+					if  (
+						rs.indexOf('something went wrong') == -1 &&
+						rs.indexOf('<title>Advanced Search on ShopSavvy</title>') == -1
+						)
+					{
+						
+						// title
+						// ...
+						var r = /<h1 class="title text-caps text-condensed-bold">([^<]*)<\/h1>/.exec(rs); //5 Minute Fairytales- Big Bind Up
+						if (r) {
+							result.shopsavvy = true;
+							r = __js_clean_html_str(r[1]).trim();
+							d3d.value = r;
+							d3d.style.border = '4px solid blue';
+							d3d.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								q[0].value = this.value;
+								q[1].value = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+								q[0].focus();
+								d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+								d1.src = this.output_url;
+							}
+							
+						}
+						
+						//~ d3d.style.border = '4px solid blue';
+						//~ 
+						//~ d3d.innerHTML = '<option></option>';
+						// Give the select field options
+						//~ var opt = document.createElement('option');
+						//~ opt.innerText = 'IFR';
+						//~ opt.value = urls[0];
+						//~ d3d.appendChild(opt);
+						//~ var opt = document.createElement('option');
+						//~ opt.innerText = 'SRC';
+						//~ opt.value = urls[1];
+						//~ d3d.appendChild(opt);
+						//~ var opt = document.createElement('option');
+						//~ opt.innerText = 'LINK';
+						//~ opt.value = urls[2];
+						//~ d3d.appendChild(opt);
+						
+						// options innerText
+						// this.options[this.selectedIndex].innerText
+						//~ d3d.onblur = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ console.log(this);
+							//~ console.log(this.value);
+							//~ switch(this.options[this.selectedIndex].innerText) {
+								//~ case 'IFR':
+									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ d1.src = this.value;
+									//~ break;
+								//~ case 'SRC':
+									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ d1.src = this.value;
+									//~ break;
+								//~ case 'LINK':
+									//~ window.open(this.value, '__new__');
+									//~ break;
+							//~ }
+						//~ }
+						
+						//~ d3d.onmouseup = function() {
+							//~ switch(this.options[this.selectedIndex].innerText) {
+								//~ case 'IFR':
+									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ d1.src = this.value;
+									//~ break;
+								//~ case 'SRC':
+									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ d1.src = this.value;
+									//~ break;
+								//~ case 'LINK':
+									//~ window.open(this.value, '__new__');
+									//~ break;
+							//~ }
+						//~ }
+						
+						//~ d3d.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+							//~ d1.src = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+						//~ }
+					}
+					else
+					{
+						d3d.value = '...';
+						result.shopsavvy = false;
+					}
+					
+					// CALL NEXT
+					A9_Snaptell_VSR__next();
+				}
+			});
+		}
 		
 		// ...
-		function A9_Snaptell_VSR__yahoo_complete(rs) {
+		function A9_Snaptell_VSR__next() {
+			
+			// Done?
+			// If so, then is it auto?
+			if (!result.array_all.length) {
+				
+				return;
+			}
+			
+			// Next
+			console.log(result.array_all);
+			var next = result.array_all.shift();
+			switch(next) {
+				case 'de':
+					// ...
+					A9_Snaptell_VSR();
+					break;
+				case 'sp':
+					// ...
+					AMT___POPUP__initializeGlobals(
+						A9_Snaptell_VSR__startpage_init
+					);
+					break;
+				case 'yh':
+					// ...
+					AMT___POPUP__initializeGlobals(
+						A9_Snaptell_VSR__yahoo_init
+					);
+					break;
+				case 'su':
+					// searchupc
+					A9_Snaptell_VSR__searchUPC_com();
+					break;
+				case 'ss':
+					// shopsavvy
+					A9_Snaptell_VSR__shopsavvy();
+					break;
+				case 'g':
+					console.log(result);
+					if (result.startpage == false && result.yahoo == false) {
+						A9_Snaptell_VSR__google();
+					} else {
+						//
+					}
+					break;
+			}
+		}
+		
+		// ...
+		// d2c
+		function A9_Snaptell_VSR__google() {
+			d2c.style.backgroundColor = '#eee';
+			new AMT___requests_factory().google_search(
+				{
+					query: upc,
+					callback_error: function() {
+						d2c.style.backgroundColor = 'pink';
+					},
+					callback_success: function(result_object) {
+						var arr = result_object.results;
+						if (arr.length) {
+							A9_Snaptell_VSR__yahoo_complete(
+								arr,
+								d2c
+							);
+						} else {
+							
+							d2c.innerText = '0';
+							
+							// AUTO?
+							if  (
+								result.digital_eyes == false &&
+								result.startpage == false &&
+								result.yahoo == false &&
+								result.searchupc == false &&
+								result.shopsavvy == false
+								)
+							{
+								naBut.click();
+							}
+							else {
+								console.log(result.digital_eyes == false);
+								console.log(result.startpage == false);
+								console.log(result.yahoo == false);
+								console.log(result.searchupc == false);
+								console.log(result.shopsavvy == false);
+							}
+						}
+					}
+				}
+			);
+		}
+		// ...
+		// d3
+		function A9_Snaptell_VSR__searchUPC_com() {
+			console.log('Running through A9_Snaptell_VSR__searchUPC_com');
+			GM_xmlhttpRequest({
+				method: "GET",
+				asynchronous: false,
+				url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+				onload: function(response) {
+					//console.log('here here');
+					var rs = response.responseText;
+					if (response.status != 200) {
+						console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+						result.searchupc = false;
+						
+						return;
+					}
+					
+					var r;
+					
+					//~ console.log(rs);
+					r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
+					if (r) {
+						//Ashton & Ross HD-922 Professional Home Theatre System
+						r = __js_clean_html_str(r[1]).trim();
+						d3.value = r;
+						d3.style.border = '4px solid blue';
+						d3.onclick = function() {
+							q[0].value = this.value;
+							q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
+							q[0].focus();
+						}
+						
+						result.searchupc = true;
+					} else {
+						d3.value = '...';
+						
+						result.searchupc = false;
+					}
+					
+					// CALL NEXT
+					A9_Snaptell_VSR__next();
+				}
+			});
+		}
+		
+		// ...
+		// Button params are:
+		// @.full_url => full url OR cached url
+		// @.output_url => full url
+		// @.host => domain
+		function A9_Snaptell_VSR__handle_clicks(e) {
+			
+			this.style.backgroundColor = 'LightGreen';
+			
+			q[1].value = this.output_url;
+			
+			q[0].focus();
+			
+			// ebay
+			// using debug textarea
+			if (/[\.^]ebay\.[\w\.]+$/i.exec(this.host)) {
+				new AMT___requests_factory().ebay__get_listings_page(
+					{
+						url: this.full_url,
+						callback_error: function() {},
+						callback_success: function(result_object) {
+							d3c.value = result_object.result.title + '\n\n';
+							q[0].value = result_object.result.title;
+							
+							if (result_object.result.itemAttributes.length) {
+								var x = result_object.result.itemAttributes.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ');
+								x = __js_clean_html_str(x);
+								var reg = new RegExp('[\\d\\D]{0,20}'+__js_escape_regEx(upc)+'[\\d\\D]{0,20}', 'i').exec(x);
+								if (reg) {
+									d3c.value += reg[0];
+								}
+							}
+							d3c.value += result_object.result.title;
+							
+						}
+					}
+				);
+			}
+		}
+		
+		// ...
+		// Scrape the first two results in each div.
+		// Do this using ...
+		function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
 			
 			// 0=url
 			// 1=full
 			console.log(rs);
 			if (rs.length) {
-				d1.src = rs[0][0];
+				//d1.src = rs[0][0];
 			} else {
-				d1.style.border = '10px solid blue';
+				//~ d1.style.border = '10px solid blue';
 				//document.body.style.backgroundColor = 'blue';
 			}
-			//~ for (var i in rs) {
-				//~ 
-			//~ }
+			var out = seed_argument;
+			
+			for (var i in rs) {
+				
+				// domain, link iframe, link blank, body
+				// Max == 3
+				
+				// replace "m.target.com"
+				rs[i][0] = rs[i][0].replace(/\/\/m\.target\.com/, '//www.target.com');
+				
+				var tmp_url = rs[i][0];
+				var tmp_url_replace_scripts = rs[i][0];
+				if (i < 3) {
+					var md5_filename = any_md5(rs[i][0], '0123456789ABCDEF');
+					tmp_url = 'http://192.168.1.2/mturk/.cached/' + md5_filename;
+					
+					tmp_url_replace_scripts = 
+						MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+							{
+								htmlspecialchars: false, // FALSE!
+								short_filename: md5_filename,
+								replace_scripts: true
+							}
+						));
+				}
+				
+				
+				var host = rs[i][0].parseURL().host;
+				
+				// ...
+				var inp = document.createElement('input');
+				inp.setAttribute('style', 'text-align:left;');
+				inp.type = 'button';
+				inp.value = host;
+				//~ inp.innerText = host;
+				inp.host = host;
+				inp.full_url = tmp_url;
+				inp.output_url = rs[i][0];
+				inp.onclick = A9_Snaptell_VSR__handle_clicks;
+				out.appendChild(inp);
+				// If first two then scrape.
+				if (i < 3) {
+					
+					out.appendChild(document.createElement('br'));
+					
+					if  (
+						d1.src == '' &&
+						result.first_url == null
+						)
+					{
+						result.first_url = tmp_url_replace_scripts;
+						//~ result.first_url = tmp_url;
+						d1.output_url = rs[i][0]; //.output_url
+						
+						// Error for 21 Aug 2014 is here!
+						// The error is:
+						//		d1.output_url = rs[i];
+						// instead of:
+						//		d1.output_url = rs[i][0];
+						// This results in something like:
+						// ...
+						//
+						// http://iss.ndl.go.jp/books/R100000002-I000007677823-00,漢學堂叢書 : 1000｜書誌詳細｜国立国会図書館 ...    iss.ndl.go.jp/books/R100000002- I<b>000007677823</b>-00  タイトル: 漢學堂叢書: 著者: 清黄〓輯: 出版地（国名コード） CN: 出版年: 1000: 大きさ、容量等: 13册 (合4册) ; 24cm: 注記 ...  
+						//
+						// ... Where value is rs[i][0] + ',' + rs[i][1]
+					}
+						
+					var scrape_el = document.createElement('div');
+					scrape_el.setAttribute('style', //inline+absolute
+						//~ 'position:relative;width:1%;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
+						'display:inline-block;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
+					);
+					out.appendChild(scrape_el);
+					new AMT___items_factory().xhr_scrape_page(
+						{
+							parent_el: scrape_el,
+							keyword_and_index_array: [upc],
+							url: rs[i][0],
+							short_filename: md5_filename,
+							replace_absolute_url: true,
+							callback_loaded: function(result_object) {
+								setTimeout(function() {
+									A9_Snaptell_VSR__load_first();
+								}, 3000);
+							}
+						}
+					);
+					
+					out.appendChild(document.createElement('br'));
+				}
+				// LINKS
+				// Set link to tmp_url (OR rs[i][0])
+				// If i < 3 then load the iframe 
+				// without htmlspecialchars, with short_filename,
+				// and WITH replace_scripts.
+				var u;
+				if (i < 3)
+					u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+							{
+								htmlspecialchars: false, // FALSE!
+								short_filename: md5_filename,
+								replace_scripts: true
+							}
+						));
+				else
+					u = tmp_url;
+				var a = document.createElement('a');
+				a.href = u;
+				a.output_url = rs[i][0];
+				a.innerText = '*IFR*';
+				a.onclick = function() {
+					if (!/\.(pdf|doc|docx)[\?$]/i.exec(this.href)) {
+						d1.src = this.href;
+						d1.output_url = this.output_url; //.output_url
+					}
+					return false;
+				}
+				out.appendChild(a);
+				// ...
+				if (i < 3) {
+					out.appendChild(document.createTextNode(' '));
+					// Link for source
+					var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+								{
+									htmlspecialchars: true, // TRUE!
+									short_filename: md5_filename,
+									replace_scripts: true
+								}
+							));
+					var a = document.createElement('a');
+					a.href = u;
+					a.output_url = rs[i][0];
+					a.innerText = '*SRC*';
+					a.onclick = function() {
+						d1.src = this.href;
+						d1.output_url = this.output_url; //.output_url
+						return false;
+					}
+					out.appendChild(a);
+				}
+				// ...
+				out.appendChild(document.createTextNode(' '));
+				// ...
+				// Third link. This is ALWAYS going
+				// to be tmp_url. So it is either 
+				// the real link OR the cached link 
+				// but NOT htmlspecialchars OR replace_scripts
+				var a = document.createElement('a');
+				a.href = tmp_url;
+				a.target = '_blank';
+				a.innerText = '*LINK*';
+				out.appendChild(a);
+				// body
+				var d = document.createElement('div');
+				d.innerHTML = rs[i][1];
+				out.appendChild(d);
+				//...
+				out.appendChild(document.createElement('hr'));
+				
+				
+				//~ if  (
+					//~ d1.src == '' &&
+					//~ result.first_url == null
+					//~ )
+				//~ {
+					//~ result.first_url = a.href; // A.HREF rather than rs[i][0].
+					//~ 
+				//~ }
+			}
+			
+			// For result
+			var result_key = (out == d2) ? 'startpage' : 'yahoo';
+			
+			// Num
+			if (!rs.length) {
+				out.innerText = '0';
+				
+				result[result_key] = false;
+			} else {
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:2000px;');
+				out.appendChild(div);
+				
+				result[result_key] = true;
+			}
+			
+			// CALL NEXT
+			A9_Snaptell_VSR__next();
+		}
+		// ...
+		function A9_Snaptell_VSR__load_first() {
+			//~ console.log(result);
+			//~ console.log(d1.src);
+			if (d1.src == '' && result.first_url != null) {
+				d1.src = result.first_url;
+				
+				
+				//~ d1.output_url = this.output_url; //.output_url
+			}
+		}
+		// ...
+		function A9_Snaptell_VSR__startpage_init() {
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(upc),
+				seed_arg1: d2
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				A9_Snaptell_VSR__yahoo_complete
+			);
+			
+			//
+			//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				//~ url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(upc),
+				//~ yahoo_array: true
+			//~ });
+			//~ req_proxy.proxy_init();
+			//~ req_proxy.proxy_waitComplete(
+				//~ A9_Snaptell_VSR__yahoo_complete
+			//~ );
 		}
 		// ...
 		function A9_Snaptell_VSR__yahoo_init() {
 			//
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(upc),
-				yahoo_array: true
+				yahoo_array: true,
+				seed_arg1: d2b
 			});
 			req_proxy.proxy_init();
 			req_proxy.proxy_waitComplete(
@@ -109950,23 +111109,39 @@ function top_window() {
 		function A9_Snaptell_VSR__process(write_object) {
 			//write_object
 			
-			x1.focus();
+			//~ x1.focus();
 			
 			var r, r2;
 			var sbm = true;
 			var rs = write_object.rs;
+			var url = write_object.url;
 			
 			if (rs.indexOf('<tr><td colspan="2" align="center">Sorry, no item name was found for ') != -1) {
 				document.body.style.backgroundColor = 'LightGreen';
+				
+				// CALL NEXT
+				result.digital_eyes = false;
+				A9_Snaptell_VSR__next();
+			
 				return;
 			}
+			
+			//This is a locally-assigned code that is used for items of random weight such as meat, fish or produce.This type of code is a way of price-marking an item. This item cost 11.88.
 			
 			//
 			r = /<H2 id="description">([^<]+)<\/H2>/.exec(rs);
 			if (r) {
-				x1.value = __js_clean_html_str(r[1]).trim();
-				x1.focus();
-				//x1.blur();
+				r = __js_clean_html_str(r[1]).trim();
+				var bad = [
+					'This is a locally-assigned code.',
+					'Each store uses this number differently, so it does not have a defined value.'
+				]
+				if (r.indexOf(bad[0]) == -1 && r.indexOf(bad[1]) == -1) {
+					x1.value = r;
+					x1.focus();
+					x1.style.border = '4px solid blue';
+				} else 
+					sbm = false;
 			} else sbm = false;
 			
 			//
@@ -109994,16 +111169,23 @@ function top_window() {
 			//~ }
 			
 			// ...
-			console.log(sbm);
+			//~ console.log(sbm);
 			if (sbm) {
 				document.getElementById('Answer_2_FreeText').value = url;
+				result.digital_eyes = true;
+			} else {
+				result.digital_eyes = false;
 			}
+			
+			// CALL NEXT
+			A9_Snaptell_VSR__next();
 		}
 		// ...
-		function A9_Snaptell_VSR(upc) {
+		function A9_Snaptell_VSR() {
 			
+			var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
 			var rf = new AMT___requests_factory();
-			var md5_url = rf.general_functions__md5(url);
+			var md5_url = any_md5(url, '0123456789ABCDEF');
 			var out_num = out_num;
 			
 			GM_xmlhttpRequest({
@@ -110015,7 +111197,8 @@ function top_window() {
 					if (response.status == 200) {
 						A9_Snaptell_VSR__process({
 							rs:			rs,
-							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url
+							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+							url: url
 						});
 						return;
 					}
@@ -110040,7 +111223,8 @@ function top_window() {
 							if (rs.indexOf('An unusual pattern of access has been detected from this address.') != -1) {
 								document.body.style.backgroundColor = 'red';
 								A9_Snaptell_VSR__process({
-									rs: rs
+									rs: rs,
+									url: url
 								});
 								return;
 							}
@@ -110052,7 +111236,8 @@ function top_window() {
 												'&AMT__serverSide_write__folder=.cached'+
 												'&AMT__serverSide_write__file='	+ md5_url,
 									rs:			response.responseText,
-									debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url
+									debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+									url: url
 								},
 								A9_Snaptell_VSR__process
 							);

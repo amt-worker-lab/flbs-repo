@@ -1,3 +1,5 @@
+var turnOnAutoCopy = false;
+
 
 // NEXT WINDOW
 var next_window__windowIds = []
@@ -250,15 +252,34 @@ function isAQProduct(tabs, iterator) {
 //a) this is the SECOND time the user has arrived AFTER a submission has occurred
 //or b) this feature is turned off using AMT Core
 chrome.tabs.onActivated.addListener(function(tab) {
-	//~ console.log('tab changed');
-	//~ console.log(tab);
-	chrome.tabs.sendRequest(tab.tabId, {hasSubmittedQuery: true}, 
+	chrome.tabs.sendRequest(tab.tabId, {switchTabNotifier: true}, 
 	function(rs) {
 			//Squelch response
 		})
 });
 
+var copyInp = false;
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	
+	if(request.copyInp) {
+		copyInp = document.createElement('input');
+		copyInp.setAttribute('type','text');
+		copyInp.setAttribute('id','copyInp');
+		copyInp.value = request.copyInp;
+		console.log('inside copyInp');
+		console.log(copyInp);
+		console.log(document);
+		document.body.appendChild(copyInp);
+		//var copyInp = document.getElementById('copyInp');
+		copyInp.focus();
+
+		document.execCommand('selectAll');
+
+		//Copy Content
+		document.execCommand("Copy", false, null);
+	}
+	
 	if(request.getNTPassBy) {
 		sendResponse({NTPassBy:localStorage['NTPassBy']});
 	}
@@ -704,59 +725,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 });
 
 
-
-//~ chrome.contextMenus.create({title:'Reload Scripts',contexts:['all']});
-//~ chrome.contextMenus.onClicked.addListener(function(e) {
-		//~ chrome.tabs.query({}, function(allTabs) {
-			//~ if(!allTabs.length) {
-				//~ allTabs = [allTabs];
-			//~ }
-			//~ for(var i = 0; i < allTabs.length; i++) {
-				//~ chrome.tabs.sendRequest(allTabs[i].id, {reloadScript: true});
-			//~ }
-			//~ 
-			//~ // SET TIMEOUT TO RELOAD
-			//~ // ALL EXTENSIONS
-			//~ setTimeout(function() {
-				//~ reload_all_extensions();
-			//~ }, 1000);
-		//~ });
-	//~ });
-//~ 
-//~ function reload_all_extensions() {
-	//~ console.log(" reload_all_extensions");
-	//~ chrome.management.getAll(
-		//~ function(b){
-			//~ var d={};
-			//~ for(var c=0;c<b.length;c++){
-				//~ d=b[c];
-				//~ if  (
-					//~ (d.installType=="development") &&
-					//~ (d.enabled==true) &&
-					//~ (d.name!="Extensions Reloader")
-					//~ )
-				//~ {
-					//~ console.log(d.name+" reloaded");
-					//~ 
-					//~ (
-						//~ function(a){
-							//~ chrome.management.setEnabled(
-								//~ d.id,
-								//~ false,
-								//~ function() {
-									//~ console.log("Attempting to re-enable. ID=" +a);
-									//~ console.log(a);
-									//~ chrome.management.setEnabled(a,true, function() { console.log("Hey, callback of attempt! What?"); });
-									//~ console.log("Finished attempt.");
-								//~ }
-							//~ );
-						//~ }
-					//~ )(d.id);
-				//~ }
-			//~ }
-		//~ }
-	//~ );
-//~ }
 
 
 function GM_xmlhttpRequest(details) {

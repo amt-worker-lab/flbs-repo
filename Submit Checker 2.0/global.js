@@ -123,7 +123,7 @@ AMT__Global_Vars.initializeHitId = function () {
 			hitId = hitIdReg.exec(innerIframeSrc);
 			if(!hitId)
 			{
-				alert('Caution: Failed to get hitId from frame source. Proceeding to get hitId from topWindow instead.');
+				//~ alert('Caution: Failed to get hitId from frame source. Proceeding to get hitId from topWindow instead.');
 			}
 			else
 			{

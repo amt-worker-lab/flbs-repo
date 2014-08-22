@@ -4192,8 +4192,8 @@ function load()
 				reset_all_items.push(el[i]);
 				
 				el[i].style.fontWeight = 'bold';
-				el[i].style.zoom = '1.6';
-				el[i].style.border = '4px dashed #a2a2a2;';
+				el[i].style.zoom = '2';
+				el[i].style.border = '10px dashed #a2a2a2;';
 				//~ el[i].style.fontSize = '1.2em';
 				//~ el[i].style.zoom = '2';
 				
@@ -4225,6 +4225,7 @@ function load()
 					reset_all_items[i].style.fontWeight = '';
 					reset_all_items[i].style.zoom = '';
 					reset_all_items[i].style.border = '';
+					document.body.scrollIntoView(true); // true == align with top
 				}
 			}, false);
 		}

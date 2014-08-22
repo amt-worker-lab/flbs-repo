@@ -38,6 +38,7 @@ var AMT__Global_Vars = //function()
 	hitId: '',
 	numSubmitQueries: 0,
 	isSubmitting: false,
+	copyInp: false,
 	RACustomKey: false,
 	
 	//
@@ -262,12 +263,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			sendResponse({isQProduct: isQProduct});
 		}
 	}
-	else if(request.hasSubmittedQuery) {
-		console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
-		console.log(AMT__Global_Vars.isSubmitting)
-		console.log(AMT__Global_Vars.numSubmitQueries)
-		console.log(!AMT__Global_Vars.isPreview)
-		console.log(AMT__Global_Vars.toggle_ntpassby == 'On')
+	else if(request.switchTabNotifier) {
+		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
+		//~ console.log(AMT__Global_Vars.isSubmitting)
+		//~ console.log(AMT__Global_Vars.numSubmitQueries)
+		//~ console.log(!AMT__Global_Vars.isPreview)
+		//~ console.log(AMT__Global_Vars.toggle_ntpassby == 'On')
+		if(AMT__Global_Vars.copyInp) {
+			console.log(AMT__Global_Vars.copyInp);
+			chrome.extension.sendRequest({copyInp: AMT__Global_Vars.copyInp}, function(rs){/**squelch rs**/ AMT__Global_Vars.copyInp = false; });
+			
+		}
+		
 		
 		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
 			AMT__Global_Vars.numSubmitQueries++;
@@ -276,9 +283,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}else {
 			//Do nothing
 		}
+		
+	
 	}
 	else if(request.RACustomKey) {
 		AMT__Global_Vars.RACustomKey = request.RACustomKey.charCodeAt();
+	}
+	else if(AMT__Global_Vars.autoCopy && request.copyArea) {
+		
 	}
 	//~ // Reload the iframes.
 	//~ // This is coming from the context
@@ -895,7 +907,44 @@ function FindObject(recordName,matchString, timeCutOff) {
 /**
  * String Prototypes
  * 
+ * .parseURL
+ * .stateAbbrToFull
+ * 
  */
+//http://www.abeautifulsite.net/parsing-urls-in-javascript/
+// fork from https://gist.github.com/jlong/2428561
+String.prototype.parseURL = function() {
+	var parser = document.createElement('a'),
+		searchObject = {},
+		queries, split, i;
+	
+	// USING :: this.toString()
+	//~ console.log(this);
+	//~ console.log(this.toString());
+	//~ console.log(this.join(''));
+	//~ return;
+	
+	// Let the browser do the work
+	parser.href = this.toString() + '';
+	
+	// Convert query string to object
+	queries = parser.search.split('&'); //.replace(/^?/, '')
+	for( i = 0; i < queries.length; i++ ) {
+		split = queries[i].split('=');
+		searchObject[split[0]] = split[1];
+	}
+	
+	return {
+		protocol: parser.protocol,
+		host: parser.host,
+		hostname: parser.hostname,
+		port: parser.port,
+		pathname: parser.pathname,
+		search: parser.search,
+		searchObject: searchObject,
+		hash: parser.hash
+	};
+}
 String.prototype.stateAbbrToFull = function() {
 	
 	//~ console.log(this);
@@ -1539,6 +1588,126 @@ AMT___requests_factory.prototype.general_functions__md5 = function(str)
   var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
 
   return temp.toLowerCase();
+}
+/**
+ * 
+ * @param: options_object {}
+ * @param: .url
+ */
+// ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
+AMT___requests_factory.prototype.ebay__get_listings_page = function(options_object) //
+{
+	var opts = options_object;
+	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: opts.url,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			if (response.status > 200) {
+				if (opts.hasOwnProperty('callback_error'))
+					opts.callback_error();
+				return;
+			}
+			
+			var r;
+			opts.result = {
+				title: '',
+				itemAttributes: ''
+			};
+			
+			r = /<span id="vi-lkhdr-itmTitl" class="u-dspn">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs);
+			if (r) {
+				r = r[1].replace(/<[^>]*>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ');
+				r = __js_clean_html_str(r);
+				opts.result.title = r;
+			}
+			
+			r = /<div class="itemAttr">((.|\s)*?(?=<\/div>[\r\n]+			<\/div>|$)|$)/.exec(rs);
+			if (r) {
+				opts.result.itemAttributes = r[1].trim();
+			}
+			
+			opts.callback_success(opts);
+		}
+	});
+}
+//
+AMT___requests_factory.prototype.google_search = function(options_object) //
+{
+	
+	var opts = options_object;
+	
+	var u = 'https://www.google.com/search?'+
+		'q='+encodeURIComponent(opts.query)+
+		'&aqs=chrome..69i57.791j0j7'+
+		'&sourceid=chrome&es_sm=93&ie=UTF-8';
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			if (response.status > 200) {
+				if (opts.hasOwnProperty('callback_error'))
+					opts.callback_error();
+				return;
+			}
+			// else if (/captcha/.exec(rs)) {
+			//	document.body.style.backgroundColor = 'pink';
+			//	return;
+			//}
+			
+			var r;
+			r = /<h3 class="r"><a href="([^"]+)[^>]*>((.|\s)*?(?=<!--n-->|$)|$)/g;
+			var count = 0;
+			
+			// RESULTS array
+			opts.results = [];
+			
+			// ...
+			if (r.exec(rs)) {
+				r.lastIndex = 0;
+				while (m = r.exec(rs)) {
+					
+					m[1] = __js_clean_html_str(m[1]);
+					
+					//if (/^https?:\/\/([^\.]+\.|)google\./i.exec(m[1]))
+					//	continue;
+					
+					// replace "harm your comp."
+					m[1] = m[1].replace(/^\/interstitial\?url=/, '');
+					
+					// google.com
+					if (/^\//i.exec(m[1]))
+						continue;
+					
+					//
+					//
+					//
+					m[2] = m[2].replace(/<b>/g, '`');
+					m[2] = m[2].replace(/<\/b>/g, '``');
+					m[2] = m[2].replace(/<[^>]+>/g, ' ');
+					m[2] = m[2].replace(/[<>]/g, ' ');
+					m[2] = m[2].replace(/``/g, '</b>');
+					m[2] = m[2].replace(/`/g, '<b>');
+					
+					// Assoc. array
+					opts.results.push(
+						[
+							m[1],
+							m[2]
+						]
+					);
+				}
+			}
+			
+			opts.callback_success(
+				opts
+			);
+		}
+	});
 }
 //
 AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, callback_func) //
@@ -2327,6 +2496,12 @@ function AMT___items_factory(obj_vars) {
 /**
  * function xhr_scrape_page
  *
+ * .parent_el
+ * .keyword_and_index_array
+ * .url
+ * .short_filename (give filename)
+ * .callback_loaded (xhr complete)
+ * .replace_absolute_url (bool)
  */
 AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	
@@ -2390,9 +2565,11 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		
 		out.onmouseover = function() {
 			this.xhr_scrape_page__context.style.display = 'block';
+			//~ this.xhr_scrape_page__context.style.width = '';
 		}
 		out.onmouseout = function() {
 			this.xhr_scrape_page__context.style.display = 'none';
+			//~ this.xhr_scrape_page__context.style.width = '1%';
 		}
 		
 	}
@@ -2483,9 +2660,21 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	 * xhr
 	 */
 	//~ console.log(options_object.url);
+	
+	var url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(options_object.url);
+	if (options_object.hasOwnProperty('short_filename')) {
+		url += '&AMT__output_html_from_URL__short_filename=' + encodeURIComponent(options_object.short_filename);
+	}
+	if (options_object.hasOwnProperty('replace_absolute_url')) {
+		url += '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+			{
+				replace_absolute_url: true
+			}
+		));
+	}
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(options_object.url),
+		url: url,
 		//~ url: options_object.url,
 		timeout: 30000,
 		ontimeout: function() {
@@ -2519,6 +2708,7 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 			
 			parse(rs);
 			
+			options_object.callback_loaded(options_object);
 		}
 	});
 }
@@ -3558,7 +3748,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		if(!(rslts = r.exec(rs))) {
-			alert('No match');
+			//~ alert('No match');
 			return [];
 		}
 		else {
@@ -5440,9 +5630,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			return;
 		
 		var obj = {
-			type: '24HOUR',
+			type: '2HOUR-ALL',
 			history_ids: tasks_obj.current_init_history_ids // array
 		};
+		
 		//~ console.log(obj);
 		obj = JSON.stringify(obj);
 		
@@ -5463,6 +5654,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				//~ console.log(response);
 				console.log(rs);
 				
+				//~ return;
 				rs = JSON.parse(rs);
 				
 				// GRAPH
@@ -6332,6 +6524,7 @@ function AMT___returnAndAcceptButton() {
 		d.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
 		d.setAttribute('value','Return and Accept');
 		document.body.appendChild(d);
+		
 		var d = document.createElement('input');
 		d.setAttribute('id','MT__gm_returnaccept_non_serverSide');
 		d.setAttribute('type','button');
