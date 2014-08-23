@@ -71778,7 +71778,8 @@ qatar,80
 	// Includes Hover Div scrape.
 	s ='<li>For the given company information below, enter the website address for the official website.</li>';
 	s2='<li>For the given company information below, enter the official company website.</li>';
-	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
+	s3='For the given company information below, enter the website for the official company website.';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1 || ih.indexOf(s3) != -1) {
 		console.log('');
 		GM_addStyle('body {width:30%;margin-top:650px;}');
 		
@@ -71980,12 +71981,13 @@ qatar,80
 		}
 		b = b2 = b3 = b4 = '';
 		
-		b  = __js_clean_html_str(/Company:&nbsp;<b[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
+		b  = __js_clean_html_str(/Company:&nbsp;<[^>]*>([^<]+)/.exec(ih)[1]).replace(/\s+/g, ' ').trim();
 		o.company = b;
 		
-		b2 = /City:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
-		b3 = /State:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih);
+		b2 = /City:&nbsp;<\/span><[^>]*>([^<]*)/.exec(ih);
+		b3 = /State:&nbsp;<\/span><[^>]*>([^<]*)/.exec(ih);
 		var zipLocation = 3;
+		console.log(o);
 
 		if (b2 && b3) {
 			b2 = __js_clean_html_str(b2[1]).replace(/\s+/g, ' ').trim();
@@ -72041,13 +72043,20 @@ qatar,80
 							b3 = __js_clean_html_str(x[3]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state		
 						}
 						else {
-							alert('no scrape match');
+							zipLocation = 3
+							x = /Address:&nbsp;<[^>]*>([^<]*)<[^>]*><[^>]*>&nbsp;,<[^>]*><[^>]*>&nbsp;<[^>]*><[^>]*>([^<]*)<[^>]*><[^>]*>&nbsp;<[^>]*><[^>]*>([^,]*),&nbsp;([^,]*),&nbsp;([^<]*)<[^>]*><[^>]*>[\r\n\s\t]*/.exec(ih)
+							if(x) {
+								b2 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // city
+								b3 = __js_clean_html_str(x[4]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim(); // state		
+								
+							}
+							else {
+								alert('no scrape match');
+							}
 						}
 						
 					 }
-				}
-				
-				
+				}				
 			}
 			console.log(x);
 			
@@ -72090,8 +72099,9 @@ qatar,80
 		// Phone
 		// Last 4 digits are occasionally only 3!
 		// Ex 607-555-555 instead of 0555
-		if (x = /Phone:&nbsp;<\/span><b[^>]*>([^<]*)/.exec(ih)) {
-			b4 = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').trim();
+		if (x = /Phone[^<]*(<?[^>]*>?)<[^>]*>([^<]*)/i.exec(ih)) {
+			//alert('beans');
+			b4 = __js_clean_html_str(x[2]).replace(/\s+/g, ' ').trim();
 			var x = /^(\d{3})(\d{3})(\d+)$/.exec(b4);
 			if (x) {
 				x[3] = (x[3].length == 3) ? '0' + x[3] : x[3];
@@ -110318,7 +110328,10 @@ function top_window() {
 		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
 		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
 		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-		//GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+		
+		// ...
+		GM_addStyle('#Answer_1_FreeText,#Answer_2_FreeText {width:60%;}');
+		
 		
 		// MOVE "THETIME"
 		document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
@@ -110374,7 +110387,7 @@ function top_window() {
 		// iframe
 		// add .output_url
 		var d1 = document.createElement('iframe');
-		d1.setAttribute('style','width:50%;float:left;height:500px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+		d1.setAttribute('style','width:50%;float:left;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
 		// flicker...
 		d1.style.visibility = 'hidden';
 		d1.output_url = null;
@@ -110385,12 +110398,49 @@ function top_window() {
 		// THIS TEXTAREA MUST COME AFTER THE IFRAME.
 		// And before the following three divs.
 		var d3c = document.createElement('textarea');
-		d3c.setAttribute('style','position:absolute;left:50%;width:40%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
+		d3c.setAttribute('style','position:absolute;left:60%;width:39%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
 		//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
 		x.appendChild(d3c);
 		d3c.onclick = function() {
 		}
-		// ...
+		//...
+		//x.appendChild(document.createElement('br'));
+		var d3 = document.createElement('input');
+		d3.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3.type = 'button';
+		d3.value = 'searchupc';
+		x.appendChild(d3);
+		//
+		var d3b = document.createElement('input');
+		d3b.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3b.type = 'button';
+		d3b.value = 'google';
+		x.appendChild(d3b);
+		d3b.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			A9_Snaptell_VSR__google();
+		}
+		//
+		var d3d = document.createElement('input');
+		d3d.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3d.type = 'button';
+		d3d.value = 'shopsavvy';
+		x.appendChild(d3d);
+		//~ d3d.onclick = function() {
+			//~ //
+		//~ }
+		//
+		var d3e = document.createElement('input');
+		d3e.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3e.type = 'button';
+		d3e.value = 'smoopa';
+		x.appendChild(d3e);
+		//~ d3d.onclick = function() {
+			//~ //
+		//~ }
+		// The columns for the searches! Put these
+		// on after the buttons and the debug
+		// textarea
 		var d2 = document.createElement('div');
 		d2.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
 		x.appendChild(d2);
@@ -110402,31 +110452,7 @@ function top_window() {
 		var d2c = document.createElement('div');
 		d2c.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
 		x.appendChild(d2c);
-		//...
-		//x.appendChild(document.createElement('br'));
-		var d3 = document.createElement('input');
-		d3.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		d3.type = 'button';
-		x.appendChild(d3);
-		//
-		var d3b = document.createElement('input');
-		d3b.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
-		d3b.type = 'button';
-		d3b.value = ' Google ';
-		x.appendChild(d3b);
-		d3b.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			A9_Snaptell_VSR__google();
-		}
-		//
-		var d3d = document.createElement('input');
-		d3d.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		d3d.type = 'button';
-		//~ d3d.value = ' shopsavvy ';
-		x.appendChild(d3d);
-		d3d.onclick = function() {
-			//
-		}
+		
 		// ...
 		x.appendChild(document.createElement('br'));
 		/* END ITEMS */
@@ -110457,7 +110483,7 @@ function top_window() {
 			//~ );
 		// ...
 		var naBut = document.getElementsByClassName('question selection')[0];
-		naBut.style.zoom = '2';
+		naBut.setAttribute('style', 'zoom:2;cursor:pointer;');
 		naBut.onclick = function() {
 			for(var i = 1; i <3; i++) {
 				document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
@@ -110486,13 +110512,14 @@ function top_window() {
 		
 		// global
 		var result = {
-			digital_eyes: null,
-			startpage: null,
-			yahoo: null,
-			shopsavvy: null,
-			searchupc: null,
-			google: null,
-			array_all: ['de','sp','yh','su','ss','g'],
+			digital_eyes:	null,
+			startpage:		null,
+			yahoo:			null,
+			shopsavvy:		null,
+			searchupc:		false,
+			smoopa:			null,
+			google:			null,
+			array_all: ['de','sp','yh','ss','sm','g'],
 			
 			// This is the first URL for iframe d1.src.
 			first_url: null
@@ -110565,6 +110592,9 @@ function top_window() {
 				method: "GET",
 				url: urls[0],
 				onload: function(response) {
+					
+					d3d.value = '... shopsavvy ...';
+					
 					var rs = response.responseText;
 					if (response.status != 200 || rs*1 > 200) {
 						
@@ -110662,7 +110692,6 @@ function top_window() {
 					}
 					else
 					{
-						d3d.value = '...';
 						result.shopsavvy = false;
 					}
 					
@@ -110710,6 +110739,10 @@ function top_window() {
 					// shopsavvy
 					A9_Snaptell_VSR__shopsavvy();
 					break;
+				case 'sm':
+					// smoopa
+					A9_Snaptell_VSR__smoopa_com();
+					break;
 				case 'g':
 					console.log(result);
 					if (result.startpage == false && result.yahoo == false) {
@@ -110748,7 +110781,8 @@ function top_window() {
 								result.startpage == false &&
 								result.yahoo == false &&
 								result.searchupc == false &&
-								result.shopsavvy == false
+								result.shopsavvy == false &&
+								result.smoopa == false
 								)
 							{
 								naBut.click();
@@ -110774,7 +110808,9 @@ function top_window() {
 				asynchronous: false,
 				url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
 				onload: function(response) {
-					//console.log('here here');
+					
+					d3.value = '... searchupc ...';
+					
 					var rs = response.responseText;
 					if (response.status != 200) {
 						console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
@@ -110802,9 +110838,71 @@ function top_window() {
 						
 						result.searchupc = true;
 					} else {
-						d3.value = '...';
-						
+					
 						result.searchupc = false;
+						
+					}
+					
+					// CALL NEXT
+					A9_Snaptell_VSR__next();
+				}
+			});
+		}
+		// ...
+		// d3e
+		function A9_Snaptell_VSR__smoopa_com() {
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: 'http://www.smoopa.com/u/' + encodeURIComponent(upc),
+				onload: function(response) {
+					
+					d3e.value = '... smoopa ...';
+					
+					var rs = response.responseText;
+					if (response.status != 200) {
+						
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+						result.smoopa = false;
+						return;
+					}
+					
+					var r = {
+						title: '',
+						url: null
+					};
+					
+					var x;
+					
+					x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
+					if (x) {
+						r.title = __js_clean_html_str(x[1]).trim();
+						r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
+					}// else
+					
+					x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
+					if (x) {
+						r.url = 'http://' + __js_clean_html_str(x[1]).trim()
+					} else
+						r.url = response.finalUrl;
+					
+					if (r.title != '') {
+						d3e.value = r.title;
+						d3e.style.border = '4px solid blue';
+						d3e.sm_url = r.url;
+						d3e.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							q[0].value = this.value;
+							q[1].value = this.sm_url;
+							q[0].focus();
+						}
+						
+						result.smoopa = true;
+						
+					} else {
+						
+						result.smoopa = false;
+						
 					}
 					
 					// CALL NEXT
