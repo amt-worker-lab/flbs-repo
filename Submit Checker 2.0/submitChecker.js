@@ -4,7 +4,10 @@ console.log("COGITO ERGO SUM!");
  * on browser startup: Reset all localStorage regarding hit submissions/returns?
  * 
  * **/
- 
+ //~ 
+//~ if(!localStorage['sessionToggle'] 
+ //~ 
+//~ if(localStorage['' 
 
  
 function changeIcon(id) {

@@ -13,7 +13,8 @@
    "permissions": [
 		"http://*/",
 		"https://*/",
-		"tabs"
+		"tabs",
+		"cookies"
    ],
    "icons": {"19":"BlackMage-ff1-psp.png",
 			 "19":"FFI_PSP_White_Wizard_Map.png",

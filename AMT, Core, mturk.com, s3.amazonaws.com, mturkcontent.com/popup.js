@@ -70,6 +70,13 @@ function init_func_toggleNTPassBy() {
 		});
 }
 
+function init_func_getRACustomKey() {
+	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
+			RA_CUSTOMKEY.value = rs.RACustomKey;
+		});
+}
+
+
 //getNTPassBy
 //toggleNAPassBy
 
@@ -81,14 +88,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	INPUT__PROXY_REDACTED_ = document.getElementById('input__PROXY_REDACTED_');
 	BTN_SAVE = document.getElementById('btn_save');
 	TOGGLE_RA = document.getElementById('toggleRAHotkey');
+	RA_CUSTOMKEY = document.getElementById('rACustomKey')
 	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
-	
-	//
 	
 	init_func_doSubmit();
 	init_func_toggleRA();
+	init_func_getRACustomKey();
+
 	init_func_toggleNTPassBy();
-	
 	
 	SELECT.onfocus = function() {
 		//SELECT.style.border = '2px solid LightGreen';
@@ -115,6 +122,14 @@ document.addEventListener("DOMContentLoaded", function() {
 				//squelch rs
 			}
 		);
+	}
+	
+	RA_CUSTOMKEY.onblur = function() {
+		this.style.border = '4px solid LightGreen';
+		chrome.extension.sendRequest({
+				setRACustomKey: RA_CUSTOMKEY.value
+			}
+		);	
 	}
 	
 	TOGGLE_NTPASSBY.onclick = function() {

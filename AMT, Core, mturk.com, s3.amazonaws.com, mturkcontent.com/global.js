@@ -1,3 +1,16 @@
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * TODO:
+ * 	Home page graph memory, tallied up almost 10gib after ~1-2 days
+ * 
+ **/
+ 
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 
@@ -1116,11 +1129,48 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 /**
  * AMT___events_factory
  *
- * @
- * @   
+ * @ keydown__blur_field
+ * @ mouseup__delete_range   
+ * @ mousewheel_zoom_image
  */
 function AMT___events_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * 
+ * @param img: element
+ * @param zoom_speed: int, default 0.1
+ */
+AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) {
+	
+	var opts = options_object;
+	if (!opts.hasOwnProperty('zoom_speed')) {
+		opts.zoom_speed = 0.1;
+	}
+	
+	opts.img.addEventListener('mousewheel', function(e) {
+		//~ console.log(e);
+		//~ console.log(e.wheelDelta * 1);
+		//~ console.log(e.wheelDelta * 1 > 0);
+		//~ console.log(this)
+		//~ console.log(this.style)
+		//~ console.log(this.style.zoom)
+		
+		if (!this.style.zoom)
+			this.style.zoom = 1;
+		
+		//~ console.log(typeof e.wheelDelta);
+		
+		if (e.wheelDelta > 0) {		// "120", zoom in
+			this.style.zoom = this.style.zoom * 1 + 0.1;
+		} else {					// "-120", zoom out
+			this.style.zoom = this.style.zoom * 1 - 0.1;
+		}
+		
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}, false);
 }
 AMT___events_factory.prototype.keydown__blur_field = function(e) {
 	var k = e.keyCode;
@@ -2073,6 +2123,9 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 	});
 }
 // WRITE!
+// Returns:
+// database_object	.responseObject
+// database_object	.responseText
 AMT___requests_factory.prototype.database__write = function(database_object, callback_function) //
 {
 	var database_object = database_object;
@@ -2091,8 +2144,12 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		onload: function(response) {
-			var rs = response.responseText;
+			
 			if (response.status != 200) return;
+			
+			database_object.responseText = response.responseText;
+			
+			var rs = response.responseText;
 			
 			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
 			
@@ -2714,6 +2771,7 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 }
 /**
  * function create_annotation_to_output_fields
+ * 
  * Handles buttons/div?/p? mousedown, mouseup events.
  * Handles body.mouseup event.
  * Draggable.
@@ -2727,6 +2785,7 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * @param options_object.textToAnnotate = String
  * @param options_object.output_fields = []
  * @param options_object.callback_mouseup = Function
+ * @param options_object.callback_mouseup_pre_apply = Function
  * 
  * @param appendToField
  * @param appendToField_glue
@@ -2790,6 +2849,19 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	// return for *append*
 	return div;
 	
+	function style_mouseUpButton_success(btn) {
+		//
+		//
+		//
+		if (options_object.hasOwnProperty('style_mouseUpButton_success')) {
+			btn.setAttribute('style', options_object.style_mouseUpButton_success);
+		}
+		// Default = LightGreen
+		//
+		//
+		else
+			btn.style.backgroundColor = 'LightGreen';
+	}
 	
 	/**
 	 * function applyToOutputs
@@ -2800,12 +2872,12 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		var s = '';
 		if (current_index.start <= current_index.end) { // ++
 			for (var i = current_index.start; i <= current_index.end; i++) {
-				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				style_mouseUpButton_success(array_all_buttons[i]);
 				s += ' ' + array_all_buttons[i].full_text;
 			}
 		} else { // --
 			for (var i = current_index.end; i <= current_index.start; i++) {
-				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				style_mouseUpButton_success(array_all_buttons[i]);
 				s += ' ' + array_all_buttons[i].full_text;
 			}
 			
@@ -2816,7 +2888,14 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		s = s.trim();
 		
+		// callback_mouseup_pre_apply
 		//
+		//
+		if (options_object.hasOwnProperty('callback_mouseup_pre_apply')) {
+			options_object.callback_mouseup_pre_apply(options_object);
+		}
+		
+		// appendToField
 		//
 		//
 		if (options_object.hasOwnProperty('appendToField')) {
@@ -2936,6 +3015,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		
 		t.onmouseover	= function() {
 			
+			this.style.cursor = 'pointer'; //?
+			
 			// Highlight
 			// from index.start to index.end
 			
@@ -2995,6 +3076,320 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		
 		// push here
 		array_all_buttons.push(t);
+	}
+	
+	/**
+	 * function makeCont
+	 * Container for all the buttons.
+	 */
+	function makeCont() {
+		
+		var d = document.createElement('div');
+		d.setAttribute('style', 'width:100%;');
+		//~ d.setAttribute('style', 'display:inline;');
+		
+		return d;
+	}
+	
+}
+/**
+ * function create_annotation_from_elements
+ * 
+ * @return ?
+ * 
+ * @param options_object {}
+ * @param options_object.elements = Array
+ * @param options_object.callback_mouseup = Function
+ * 
+ * xx@param focusToField
+ * xx
+ * xx@param style
+ */
+AMT___items_factory.prototype.create_annotation_from_elements = function(options_object) {
+	
+	// vars
+	//
+	var options_object = options_object;
+	
+	// GIVE options_object A REFERENCE BACK TO THIS SCOPE.
+	options_object.tmp_scope = reset_btn_sizing;
+	
+	//~ console.log(options_object);
+	
+	// The string
+	//
+	var array_all_buttons = [];
+	var s = options_object.elements;
+	for (var i in s) {
+		
+		element_actions(s[i], i);
+	}
+	
+	
+	var current_selection = [];
+	var current_index = {
+		start: 0,
+		end: 0
+	}
+	var isDragging = false;
+	
+	/**
+	 * function body_mouse
+	 * This will set isDragging to false!
+	 * 
+	 */
+	//~ document.body.addEventListener('mousedown', body_mouse, false); // ?
+	document.body.addEventListener('mouseup', body_mouse, false);
+	function body_mouse() {
+		
+		// If isDragging is true then
+		// reset the hover color!
+		if (isDragging) {
+			
+			//~ console.log(current_index);
+			//~ console.log(array_all_buttons[current_index.start]);
+			
+			array_all_buttons[current_index.start].style.backgroundColor = '#fff';
+		}
+		isDragging = false;
+	}
+	//~ document.body.onmousedown = document.body.onmouseup = function() {
+	
+	
+	
+	
+	
+	
+	//~ // return for *append*
+	//~ //return div;
+	
+	
+	/**
+	 * function applyToOutputs
+	 *
+	 */
+	function applyToOutputs() {
+		
+		// Make an array of "hidden" elements.
+		var arr = [];
+		for (var i in array_all_buttons) {
+			if (array_all_buttons[i].toggleState == 1) {
+				arr.push(array_all_buttons[i].hiddenElement);
+			}
+		}
+		
+		// Reset these
+		if (current_index.start <= current_index.end) { // ++
+			for (var i = current_index.start; i <= current_index.end; i++) {
+				toggle_btn(array_all_buttons[i], 0);
+				
+				//~ array_all_buttons[i].style.opacity = '0';
+				//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+			}
+		} else { // --
+			for (var i = current_index.end; i <= current_index.start; i++) {
+				toggle_btn(array_all_buttons[i], 0);
+				
+				//~ array_all_buttons[i].style.opacity = '0';
+				//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+			}
+			
+			// THIS WOULD PUT IT IN REVERSE!
+			// As in "cat black the" instead of
+			// "the black cat".
+			//for (var i = current_index.start; i >= current_index.end; i--) {
+		}
+		
+		// CALLBACK
+		if (options_object.callback_mouseup) {
+			options_object.callback_mouseup(arr, options_object);
+		}
+	}
+	
+	/**
+	 * function add_index
+	 */
+	function add_index(new_index) {
+		
+		current_index.end = new_index;
+		
+		// DON'T DO THIS! ALWAYS SAY THAT THE
+		// START IS THE FIRST BUTTON CLICKED.
+		//~ // Is this less than the beginning?
+		//~ // Does this button come before .start?
+		//~ // If so then this button becomes .start
+		//~ // and .start becomes .end
+		//~ // Otherwise, set new_index to be .end.
+		//~ if (new_index < current_index.start) {
+			//~ current_index.end   = current_index.start;
+			//~ current_index.start = new_index;
+		//~ } else 
+			//~ current_index.end = new_index;
+		
+	}
+	
+	/**
+	 * function toggle_btn
+	 * 
+	 * 
+	 */
+	function toggle_btn(btn, state) {
+		
+		if (state == 1) { // Go on
+			btn.style.opacity = '0.4';
+			btn.style.backgroundColor = 'LightGreen';
+			btn.toggleState = 1;
+		} else { // It == 0, so off
+			btn.style.opacity = '0';
+			btn.style.backgroundColor = 'transparent';
+			btn.toggleState = 0;
+		}
+	}
+	
+	/**
+	 * function reset_btn_sizing
+	 * 
+	 * 
+	 */
+	function reset_btn_sizing() {
+		
+		for (var i in array_all_buttons) {
+			
+			var btn = array_all_buttons[i];
+			
+			var imgSz = btn.hiddenElement.getBoundingClientRect();
+			btn.style.width		= imgSz.width  + 'px';
+			btn.style.height	= imgSz.height + 'px';
+			btn.style.left		= (imgSz.left*1+window.pageXOffset*1) + 'px';
+			btn.style.top		= (imgSz.top*1+window.pageYOffset*1) + 'px';
+			
+		}
+		
+	}
+	
+	/**
+	 * function element_actions
+	 * 
+	 * @param: element
+	 * @param: index
+	 */
+	function element_actions(element, index) {
+		
+		//~ var t = element;
+		
+		var btn = document.createElement('button');
+		btn.setAttribute('type', 'button');
+		if (options_object.hasOwnProperty('style'))
+			btn.setAttribute('style', options_object.style);
+		else
+			btn.setAttribute('style', 'border-radius:2px;border:0;background-color:transparent;cursor:pointer;position:absolute;');
+		
+		btn.index = index;
+		btn.hiddenElement = element; // A property for element
+		btn.toggleState = 0;
+		
+		// Set the size
+		var imgSz = element.getBoundingClientRect();
+		btn.style.width		= imgSz.width  + 'px';
+		btn.style.height	= imgSz.height + 'px';
+		btn.style.left		= (imgSz.left*1+window.pageXOffset*1) + 'px';
+		btn.style.top		= (imgSz.top*1+window.pageYOffset*1) + 'px';
+		document.body.appendChild(btn);
+		
+		btn.onmousedown	= function() {
+			
+			this.style.backgroundColor = 'LightGreen';
+			current_index.start = this.index * 1; // WOW. MAKE SURE TO MULTIPLY BY 1. AT "10" THIS BECOMES A STRING.
+			current_index.end   = this.index * 1;
+			
+			//~ isActive = true;
+			isDragging = true;
+		}
+		
+		btn.onmouseup		= function() {
+			
+			// Only apply if... isDragging?
+			//
+			//
+			if (isDragging) {
+				//~ console.log('up + dragging');
+				
+				toggle_btn(this, 1); // on?
+				
+				add_index(this.index);
+				
+				isDragging = false;
+				
+				applyToOutputs();
+			}
+			
+		}
+		
+		btn.onmouseover	= function() {
+			
+			// Highlight
+			// from index.start to index.end
+			
+			if (isDragging) {
+				
+				add_index(this.index);
+				
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						toggle_btn(array_all_buttons[i], 1);
+						//~ array_all_buttons[i].style.opacity = '0.4';
+						//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						toggle_btn(array_all_buttons[i], 1);
+						//~ array_all_buttons[i].style.opacity = '0.4';
+						//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				//~ for (var i = current_index.start; i <= current_index.end; i++) {
+					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				//~ }
+			}
+			
+			else
+			{
+				
+			}
+		}
+		
+		btn.onmouseout	= function() {
+			
+			if (isDragging) {
+				// RESET ALL HOVER COLOR!
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						toggle_btn(array_all_buttons[i], 0);
+						//~ array_all_buttons[i].style.opacity = '0';
+						//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						toggle_btn(array_all_buttons[i], 0);
+						//~ array_all_buttons[i].style.opacity = '0';
+						//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+					}
+				}
+				
+				// Reset the index.end to whatever
+				// is the index.start.
+				// And then *just* the initial word
+				// is to have background color.
+				current_index.end = current_index.start;
+				toggle_btn(array_all_buttons[current_index.start], 1);
+				//~ array_all_buttons[current_index.start].style.opacity = '0.4';
+				//~ array_all_buttons[current_index.start].style.backgroundColor = 'LightGreen';
+			}
+			
+		}
+		
+		// push here
+		array_all_buttons.push(btn);
 	}
 	
 	/**
@@ -3105,6 +3500,173 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	el_div.setAttribute('style','height:1400px;');
 	out_div.appendChild(el_div);
 }
+/**
+ * .create_dashboard__powers_v2
+ * 
+ * Email table that is sortable.
+ * Columns:
+ *  Email, Page where scraped
+ * 
+ * All pages scraped table. (incl. stats?)
+ * 
+ * And all contexts.
+ */
+// 
+//
+// callback_function(jobid, callback_obj, seed_object);
+// IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
+AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_response, seed_object)// dashboard/area
+{
+	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
+	//~ var req = new AMT___requests_factory();
+	//~ AMT___POPUP__initializeGlobals(
+		//~ function() {
+			//~ req.scrapy__begin_scrape(//parameters_object, callback_function, seed_object
+				//~ s_obj,
+				//~ Max_Powers_eventbrite__showScrapyResult
+				//~ (new AMT___items_factory).create_dashboard__powers_v1
+			//~ );
+		//~ }
+	//~ );
+		
+	// jobid, object_response, seed_object
+	// RESULTS
+	//var object_response = ALL_SCRAPES[d3.selectedIndex].object_response; // [] array !!
+	
+	var out_div = seed_object.div;
+	
+	out_div.innerHTML = '';
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	return;
+	
+	// DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
+	//
+	//
+	//~ if (AMT__Global_Vars.isPreview) {
+		//~ if (object_response.matches.length == 0) {
+			//~ AMT___Floater.skip();
+			//~ return;
+		//~ } else {
+			//~ AMT___Floater.accept();
+			//~ return;
+		//~ }
+	//~ }
+	
+	// matches select
+	var el_select = document.createElement('select');
+	out_div.appendChild(el_select);
+	el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
+	el_select.multiple = 'multiple';
+	el_select.main_div = out_div;
+	el_select.seed_object = seed_object;
+	el_select.onchange = function() {
+		if (this.value == '') return;
+		
+		(new AMT___items_factory())
+			.create_dashboard__powers_v1__showScrapyResult_contexts(
+				this.options[this.selectedIndex].results_array,
+				this.main_div,
+				this.seed_object
+			);
+		//create_dashboard__powers_v1__showScrapyResult_contexts
+		//~ Max_Powers_eventbrite__showScrapyResult_contexts(
+			//~ this.options[this.selectedIndex].results_array
+		//~ );
+	}
+	for (var i in object_response.matches) {
+		rslt = object_response.matches[i];
+		// add option
+		el_option = document.createElement('option');
+		el_option.value = rslt.email_email;
+		el_option.innerText = rslt.email_email;
+		// email highlight !!
+		console.log(rslt.url);
+		if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
+			el_option.setAttribute('style', 'background-color:LightGreen;');
+		}
+		el_option.results_array = rslt;
+		el_select.appendChild(el_option);
+	}
+	for (var i = 0; i<40; i++) {// append blank lines!
+		// add option
+		el_option = document.createElement('option');
+		el_option.value = '';
+		el_option.innerText = '';
+		el_select.appendChild(el_option);
+	}
+	
+	// urls select
+	var el_select2 = document.createElement('select');
+	out_div.appendChild(el_select2);
+	el_select2.setAttribute('style','width:98%;height:120px;');
+	el_select2.multiple = 'multiple';
+	el_select2.onclick = function() {
+		if (this.value == '') return;
+		window.open(this.value,'new');
+	}
+	//for (var i in object_response.urls) {
+	//console.log(object_response.urls.complete_high_to_low);
+	for (var i in object_response.urls.complete_high_to_low) {
+		
+		rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
+		
+		// add option
+		el_option = document.createElement('option');
+		el_option.value = rslt.url;
+		el_option.innerText = rslt.url;
+		// color
+		var bg;
+		switch(rslt.priority) {
+			case 'high':
+				bg = 'LightGreen';
+				break;
+			case 'low':
+				bg = 'Orange';
+				break;
+			case 'none':
+				bg = '#fff';
+				break;
+			case 'outside':
+				bg = 'pink';
+				break;
+		}
+		el_option.setAttribute('style', 'background-color:'+bg+';');
+		el_select2.appendChild(el_option);
+	}
+	for (var i = 0; i<20; i++) {// append blank lines!
+		// add option
+		el_option = document.createElement('option');
+		el_option.value = '';
+		el_option.innerText = '';
+		el_select2.appendChild(el_option);
+	}
+	
+	// auto-click first email
+	if (object_response.matches.length > 0) {
+		(new AMT___items_factory())
+			.create_dashboard__powers_v1__showScrapyResult_contexts(
+				el_select.options[0].results_array,
+				out_div,
+				seed_object
+			);
+		//~ Max_Powers_eventbrite__showScrapyResult_contexts(
+			//~ el_select.options[0].results_array
+		//~ );
+	}
+	
+	// br
+	out_div.appendChild(document.createElement('br'));
+}
+//
 // callback_function(jobid, callback_obj, seed_object);
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
 AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
@@ -3177,7 +3739,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
 	}
-	for (var i = 0; i<20; i++) {// append blank lines!
+	for (var i = 0; i<40; i++) {// append blank lines!
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = '';
@@ -3565,11 +4127,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	
 	var o = {
 		local_URL_init: '',
-		local_URL_complete: ''
+		local_URL_complete: '',
+		obj_vars: null
 	}
+	
 	var local_URL;
+	var array_startPage_results;
 	
 	this.obj_vars = (typeof obj_vars == 'object') ? obj_vars : {};
+	o.obj_vars = this.obj_vars;
 	
 	//~ if (!this.obj_vars.url) // URL REQUIRED
 		//~ return;
@@ -3637,6 +4203,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
 	}
 	
+	
+	// POST REQUEST
 	if (this.obj_vars.post_request) {
 		
 		var encodedURI = encodeURIComponent(this.obj_vars.url);
@@ -3666,6 +4234,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		//~ console.log(value);//remove later
 		//~ this.obj_vars.post_request = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	}
+	
+	// GET REQUEST
 	else
 	{
 		var encodedURI = encodeURIComponent(this.obj_vars.url);
@@ -3686,65 +4256,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
 	}
 	
-	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
-	this.proxy_init = function() {
-		//~ var this_tmp = this;
-		AMT___POPUP__initializeGlobals(
-			function() {
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: o.local_URL_init,
-					onload: function(response) {
-						//var rs = response.responseText;
-					}
-				});
-			}
-		);
-	}
 	
-	this.proxy_waitComplete = function(callback_function) {
-		var this_obj = this;
-		var xint = setInterval(function() {
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: o.local_URL_complete,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (rs.trim() != '') {
-						clearInterval(xint);
-					} else
-						return;
-					
-					// yahoo? (yahoo_array: true)
-					if (this_obj.obj_vars.yahoo_array) {
-						rs = this_obj.array_yahoo_results(rs);
-					}
-					// startpage?
-					else if(this_obj.obj_vars.startPage_array) {
-						rs = this_obj.array_startPage_results(rs);
-					}
-					
-					// ...
-					if (this_obj.obj_vars.return_init_object) {
-						this_obj.rs = rs;
-						callback_function(this_obj);
-					}
-					else if (this_obj.obj_vars.seed_arg1)
-					{
-						callback_function(rs, this_obj.obj_vars.seed_arg1);
-					}
-					else
-						callback_function(rs);
-					
-					//alert('x');
-					//
-				}
-			})
-		}, 1200);
-	}
-	
-	this.array_startPage_results = function(rs) {
+	// function array_startPage_results
+	//
+	//
+	//~ this.array_startPage_results = function(rs) {
+	function array_startPage_results(rs) {
 		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		if(!(rslts = r.exec(rs))) {
@@ -3758,7 +4275,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			//r.lastIndex = 0;	<-- no need, not testing
 			
 			var ol = rslts[0];
-			console.log(ol);
+			//~ console.log(ol);
+			
 			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 			var content;
 			var arr = [];
@@ -3775,14 +4293,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					content[1], content[2]
 				]);
 			}
-			console.log(arr);
+			//~ console.log(arr);
 			return arr;
 		}
 	}
+	this.array_startPage_results = array_startPage_results;
 	
 	// -> returns array of arrays
 	// -> [ [m[1],m[2]], [m[1], m[2]] ]
-	this.array_yahoo_results = function(rs) {
+	function array_yahoo_results(rs) {
 				
 		//
 		var r = /yschttl spt" href="[^*"]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
@@ -3833,6 +4352,188 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			return [];
 		}
 	}
+	this.array_yahoo_results = array_yahoo_results;
+	
+	// function proxy_init
+	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
+	//~ this.proxy_init = function() {
+	function proxy_init() {
+		AMT___POPUP__initializeGlobals(
+			function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: o.local_URL_init,
+					onload: function(response) {
+						//var rs = response.responseText;
+					}
+				});
+			}
+		);
+	}
+	this.proxy_init = proxy_init;
+	
+	// function proxy_waitComplete
+	//
+	//
+	//~ this.proxy_waitComplete = function(callback_function) {
+	function proxy_waitComplete(callback_function) {
+		var this_obj = this; // legacy
+		var callback_function = callback_function;
+		
+		var xint = setInterval(function() {
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: o.local_URL_complete,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (rs.trim() != '') {
+						clearInterval(xint);
+					} else
+						return;
+					
+					// yahoo? (yahoo_array: true)
+					if (o.obj_vars.hasOwnProperty('yahoo_array')) {
+						rs = array_yahoo_results(rs);
+					}
+					// startpage?
+					else if(o.obj_vars.hasOwnProperty('startPage_array')) {
+						rs = array_startPage_results(rs);
+					}
+					
+					// ...
+					if (o.obj_vars.return_init_object) {
+						this_obj.rs = rs;
+						callback_function(this_obj);
+					}
+					else if (o.obj_vars.seed_arg1)
+					{
+						callback_function(rs, o.obj_vars.seed_arg1);
+					}
+					else
+						callback_function(rs);
+				}
+			})
+		}, 1200);
+	}
+	this.proxy_waitComplete = proxy_waitComplete;
+	
+	// callback_function
+	// AND auto-run the sub-functions here rather
+	// than in script.js.
+	if (this.obj_vars.hasOwnProperty('callback_function')) {
+		
+		proxy_init();
+		proxy_waitComplete(
+			this.obj_vars.callback_function
+		)
+		
+		//~ AMT___POPUP__initializeGlobals(
+			//~ function() {
+				//~ GM_xmlhttpRequest({ // init
+					//~ method: "GET",
+					//~ url: o.local_URL_init,
+					//~ onload: function(response) {
+						//~ //var rs = response.responseText;
+					//~ }
+				//~ });
+			//~ }
+		//~ );
+		
+		//~ this.obj_vars.callback_function
+		//~ var this_obj = this;
+		
+		//~ 
+		//~ var xint = setInterval(function() {
+			//~ GM_xmlhttpRequest({ // init
+				//~ method: "GET",
+				//~ url: o.local_URL_complete,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ console.log(array_startPage_results);
+					//~ 
+					//~ if (rs.trim() != '') {
+						//~ clearInterval(xint);
+					//~ } else
+						//~ return;
+					//~ 
+					//~ // yahoo? (yahoo_array: true)
+					//~ if (o.obj_vars.hasOwnProperty('yahoo_array')) {
+						//~ rs = array_yahoo_results(rs);
+					//~ }
+					//~ // startpage?
+					//~ else if(o.obj_vars.hasOwnProperty('startPage_array')) {
+						//~ rs = array_startPage_results(rs);
+					//~ }
+					//~ 
+					//~ // ...
+					//~ if (o.obj_vars.return_init_object) {
+						//~ o.obj_vars.rs = rs;
+						//~ o.obj_vars.callback_function(o.obj_vars);
+					//~ }
+					//~ else if (o.obj_vars.seed_arg1)
+					//~ {
+						//~ o.obj_vars.callback_function(rs, o.obj_vars.seed_arg1);
+					//~ }
+					//~ else
+						//~ o.obj_vars.callback_function(rs);
+					//~ 
+				//~ }
+			//~ })
+		//~ }, 1200);
+		
+		return;
+	}
+	
+	
+	
+	
+	// OLD ***
+	//
+	//
+	//
+	//~ this.proxy_waitComplete = function(callback_function) {
+	//~ function proxy_waitComplete(callback_function) {
+		//~ var this_obj = this;
+		//~ 
+		//~ var xint = setInterval(function() {
+			//~ GM_xmlhttpRequest({ // init
+				//~ method: "GET",
+				//~ url: o.local_URL_complete,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (rs.trim() != '') {
+						//~ clearInterval(xint);
+					//~ } else
+						//~ return;
+					//~ 
+					//~ // yahoo? (yahoo_array: true)
+					//~ if (this_obj.obj_vars.hasOwnProperty('yahoo_array')) {
+						//~ rs = this_obj.array_yahoo_results(rs);
+					//~ }
+					//~ // startpage?
+					//~ else if(this_obj.obj_vars.startPage_array) {
+						//~ rs = this_obj.array_startPage_results(rs);
+					//~ }
+					//~ 
+					//~ // ...
+					//~ if (this_obj.obj_vars.return_init_object) {
+						//~ this_obj.rs = rs;
+						//~ callback_function(this_obj);
+					//~ }
+					//~ else if (this_obj.obj_vars.seed_arg1)
+					//~ {
+						//~ callback_function(rs, this_obj.obj_vars.seed_arg1);
+					//~ }
+					//~ else
+						//~ callback_function(rs);
+				//~ }
+			//~ })
+		//~ }, 1200);
+	//~ }
+	//~ this.proxy_waitComplete = proxy_waitComplete;
 }
 
 /*
@@ -4063,7 +4764,7 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 //
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
-var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2200;
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250;
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var xid = '_';
@@ -5630,7 +6331,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			return;
 		
 		var obj = {
-			type: '2HOUR-ALL',
+			type: '30MINUTE-ALL',
+			//~ type: '2HOUR-ALL',
 			history_ids: tasks_obj.current_init_history_ids // array
 		};
 		
@@ -6440,16 +7142,17 @@ function AMT___oldTopWindowFloatStuff() {
  * END FUNCTION AMT___oldTopWindowFloatStuff
  */
  
-/*
- * Causes | or \ to call click on return and accept button
- **/
+
 function AMT___InitializeReturnAndAcceptKeyPress() {
 	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
-			//~ AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
+			AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
+			//alert('here ' + rs.RACustomKey + rs.RACustomKey.toLowerCase().charCodeAt() + AMT__Global_Vars.RACustomKey);
+			
 		});
 	document.addEventListener("keypress", AMT___ReturnAndAcceptKeyPress);	
 }
 function AMT___ReturnAndAcceptKeyPress(event) {
+		//console.log(event.keyCode);
 		switch (event.keyCode) {
 			case AMT__Global_Vars.RACustomKey :
 				chrome.extension.sendRequest({getRAHotkey: true}, 

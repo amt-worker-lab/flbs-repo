@@ -1,3 +1,153 @@
+// o is a string
+// arr is an array of strings to be bolded
+function MT__bold(o, arr, options_object) {
+	// avoid b
+	// go from longest to shortest
+	
+	// used bold matches
+	var found_words_bolded = [];
+	
+	// sort longest first
+	arr.sort(function(a, b){
+	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
+	});
+	
+	//console.log(o);
+	//console.log(arr);
+	
+	var x = o;
+	var word;
+	
+	for (var i in arr) {
+		
+		// July 2 2014, Added .trim()
+		//
+		//
+		word = arr[i].trim();
+		
+		//console.log(word);
+		//console.log(x.match(new RegExp('('+__js_escape_regEx(word)+')', 'gi')));
+		
+		if (word == '') {
+			continue;
+		}
+		//~ // is in found_words_bolded ?
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
+		//~ }
+		//
+		if (word == 'b' || word == 'B') {
+			x = x.replace(/b([^>])/, '<b>$1'); //     b>
+			x = x.replace(/([^\/<])b/, '$1</b>'); //  /<b
+			//arr[i] = 
+			continue;
+		}
+		
+		// here?
+		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
+		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\/b>)', 'gi');
+		// fishes</b>
+		// fish</b>
+		// fis(h)(<)
+		// fis(h)([ $])
+		
+		x = x.replace(reg, '<b>$1</b>');
+			
+		//~ x = x.replace(reg, function(p0, p1) {
+			//~ console.log('p0:' + p0);
+			//~ console.log('p1:' + p1);
+			//~ console.log(found_words_bolded);
+			//~ // is current "word" in a past "regex matched"?
+			//~ for (var j in found_words_bolded) {
+				//~ var prev_match = found_words_bolded[j];
+				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
+				//~ if (tmp_match) {
+					//~ //found_in_prev = true;
+					//~ return p1; // ends here
+				//~ }
+			//~ }
+			//~ // Still here? Must be a new word
+			//~ found_words_bolded.push(word); // not here
+			//~ return '<b>'+p1+'</b>';
+		//~ });
+		
+		//console.log(found_words_bolded);
+		
+		// ...
+		// The idea is to avoid bolding smaller words
+		// when larger word already has bolded. So if "Frat"
+		// is going to be bolded then don't bold "rat."
+		
+		// Below will bold "rat" regardless of whether
+		// "Frat" is bolded. (Removed)
+		//~ var found_in_prev = false;
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (tmp_match) {
+				//~ found_in_prev = true;
+				//~ break;
+			//~ } else {
+				//~ 
+			//~ }
+		//~ }
+		//~ if (!found_in_prev) {
+			//~ found_words_bolded.push(word);
+		//~ }
+		
+		//~ var str_match = false;
+		//~ if (reg.exec(x))
+			//~ str_match = true;
+		//~ reg.lastIndex = 0;
+		//x = x.replace(reg, '<b>$1</b>');
+		
+	}
+	
+	//~ console.log(found_words_bolded);
+	
+	if (!options_object)
+		return x;
+	else {
+		var return_object = {};
+		
+		if (options_object.percent_matched) {
+			var pm;
+			var xlen1 = x.length;
+			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
+			//~ var chars_removed = xlen1 - xlen2;
+			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
+			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
+			return_object.pm = {
+				bold_string: x,
+				percent_matched: pm,
+				xlen1: xlen1,
+				xlen2: xlen2
+			}
+			//~ return {
+				//~ bold_string: x,
+				//~ percent_matched: pm,
+				//~ xlen1: xlen1,
+				//~ xlen2: xlen2
+			//~ }
+			//~ return;
+		}
+		if (options_object.return_div_element) {
+			var d = document.createElement('div');
+			d.innerHTML = x;
+			return_object.div_element = d;
+		}
+		
+		return_object.options_object = options_object; // RETURN INIT !!
+		
+		//~ if (options_object.initial) {
+			//~ 
+		//~ }
+		
+		return return_object;
+	}
+}
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 

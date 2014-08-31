@@ -596,7 +596,7 @@ function load()
 		
 		console.log(r);
 		
-		// page contains r.name ?
+		// Page contains r.name ?
 		if (document.body.innerText.indexOf(r.name) != -1) {
 			
 			// zoom out
@@ -635,11 +635,9 @@ function load()
 				"*"
 			);
 				
-				
-				
 			
 			
-			// tell parent to stop talking to child!
+			// Tell parent to stop talking to child!
 			parent.postMessage(
 				{
 					key: 'AMT__Andrew_Ryan_guidestar_stats__clearInterval'

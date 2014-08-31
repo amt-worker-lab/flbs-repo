@@ -116,10 +116,12 @@ function createSubmissionDisplay(callback) {
 		
 		
 		cjTotals = document.getElementById('cjTotals');
-		cjTotals.innerHTML = "Current Pool: " + cjStats.pool.currentCount + " HITs, " + cjStats.pool.percentSoFarPool +"%, " + cjStats.pool.leftOverPoolMoney +"$<br>" +
+		cjTotals.innerHTML = "Current Pool: " + cjStats.pool.currentCount + " HITs, " + cjStats.pool.percentSoFarPool +"% ("+
+												cjStats.pool.ourTotalCount+"/"+cjStats.pool.allMturkDoneSoFar +") , " + cjStats.pool.leftOverPoolMoney +"$<br>" +
 						     "Total Pool: " + cjStats.pool.apexCount + " HITs, " + cjStats.pool.percentPool +"%, " + cjStats.pool.totalPoolMoney + "$<br>" +
-							 "ETA: " + cjStats.pool.activeETA + "hrs<br>"+
-							 "Passive ETA: "+cjStats.pool.passiveETA +"hrs (last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago)";
+							 "ETA: " + cjStats.pool.activeETA + "hrs "+ cjStats.pool.dropRatePerHour + "HITs/hr<br>" +
+							 "Pass-ETA: "+cjStats.pool.passiveETA +"hrs " + cjStats.pool.passiveDropRatePerHour +"HITs/hr<br>"+ 
+							 "(last update: " + cjStats.pool.timeSinceLastUpdate + "mins ago) (goes back " + cjStats.pool.etaTimeDiffInHours+ "h" + 						   	 	cjStats.pool.etaTimeDiffInMins + "m)";
 		
 		
 		var account;

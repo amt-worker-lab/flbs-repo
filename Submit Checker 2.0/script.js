@@ -40,6 +40,7 @@ chrome.extension.sendMessage({
 		}, function(rs) {
 			//alert(rs);
 			
+			console.log('refresh is here');
 			
 			var tabId = rs.id;
 			//alert(tabId);
@@ -51,19 +52,41 @@ chrome.extension.sendMessage({
 				}
 				else
 				{
-					if(doc.indexOf('There are no HITs available') != -1)
-					{
-							alert('If you get this alert when a job finishes, then you know you are doing great. Also, check the console for HIT. Remove the console and this alert after.');
+					var wentToDifferentAreaOnMturk = false;
+					if(loc.indexOf('/mturk/dashboard') != -1 && doc.indexOf('There are no HITs available') == -1)
+						wentToDifferentAreaOnMturk = true;
+					if(loc.indexOf('/mturk/myhits') != -1 && doc.match(/\d+ of \d+ Results/))
+						wentToDifferentAreaOnMturk = true;
+					if(loc.indexOf('/mturk/findhits') != -1 && doc.indexOf('There are no more available HITS in this group.') == -1)
+						wentToDifferentAreaOnMturk = true;
+					if(loc.indexOf('mturk/findquals') != -1 ||
+						loc.indexOf('mturk/status') != -1 ||
+						loc.indexOf('mturk/transferearnings') != -1 ||
+						loc.indexOf('mturk/youraccount') != -1 ||
+						loc.indexOf('mturk/welcome') != -1 ||
+						loc.indexOf('mturk/searchbar') != -1
+						) {
+						console.log('went to different area');
+						wentToDifferentAreaOnMturk = true;
 					}
+					
+					
+					if(wentToDifferentAreaOnMturk) {
+						delete localStorage['tab' + tabId + 'Type'];
+						delete localStorage['tab' + tabId + 'Details'];
+						return;
+					}
+					
+
+					
 					var hit = JSON.parse(localStorage['tab' + tabId + 'Details']);
 					var type = localStorage['tab' + tabId + 'Type']
 					//alert(tabId);
-
-					if(doc.indexOf('There are no more available HITs in this group. See more HITs available to you below.') != -1) {
-						console.log(hit);
-						console.log('type:' + type);
-					}					
 					
+					//Did we go to dashboard without running out of Hits?
+					
+					
+
 					delete localStorage['tab' + tabId + 'Details'];
 					delete localStorage['tab' + tabId + 'Type'];
 					//alert('here');
