@@ -222,8 +222,15 @@ AMT__Global_Vars.initializeGroupId = function () {
 		}, false);
 		
 	}
-	else
+	// Sep 18 2014
+	// Added window.top != window.self
+	// Bug: When in preview mode, not in iframe,
+	// setInterval would endlessly post message.
+	else if (window.top != window.self)
 	{
+		// Is on mt or mtc or aws
+		//~ if (!/^https?:\/\/(www\.|s3\.|)(mturk|mturkcontent|amazonaws)\.com/.exec(document.location.href)) return;
+		
 		var interval =  setInterval(function(){
 			parent.postMessage({groupIdRequest: true}, '*');
 		}

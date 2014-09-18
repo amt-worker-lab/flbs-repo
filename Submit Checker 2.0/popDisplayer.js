@@ -1,5 +1,8 @@
 var lastGroupId;
 
+COMPUTER_ID = false;
+USER_NAME = false;
+UI_INITIALIZED = false;
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {
@@ -47,9 +50,10 @@ function GM_xmlhttpRequest(details) {
 function createSubmissionDisplay(callback) {
 	//alert('here');
 	//alert(COMPUTER_ID);
+	//alert(USER_NAME);
 	GM_xmlhttpRequest({
 		method: 'Get',
-		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?GetLatest=1&ComputerId='+COMPUTER_ID,
+		url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?GetLatest=1&UserName='+USER_NAME.trim()+'&ComputerId='+COMPUTER_ID,
 		onload: function(response) {
 		console.log(response.responseText);
 		//alert(COMPUTER_ID);
@@ -173,7 +177,7 @@ function createSubmissionDisplay(callback) {
 			userRow[3].innerText = '$' + user.incomeThisMonth;
 			userRow[4].innerText = '$' + user.incomeThisYear;
 		}
-		
+
 		var cmbRow = document.getElementById('cmbUser').getElementsByTagName('td');
 		cmbRow[1].innerText = '$' +cmbStats.allIncomeToday;
 		cmbRow[2].innerText = '$' +cmbStats.allIncomeThisWeek;
@@ -183,13 +187,14 @@ function createSubmissionDisplay(callback) {
 		console.log('debug: ' + cjStats.pool.ourTotalCount);
 		
 		
-		
-		callback();
+		if(callback)
+			callback();
 		
 	}});
 }
 
 function signIn(id) {
+	var id = id;
 	chrome.extension.sendMessage(
 	{
 		signIn: true,
@@ -205,13 +210,107 @@ function signIn(id) {
 			}
 		}
 		chrome.runtime.sendMessage({ "changeIcon" : id});
+		USER_NAME = id;
+		createSubmissionDisplay();
 	}
 	);
 	
 }
 
 
+function buildUserInterface() {
+	createSubmissionDisplay(function() {
+				var centReset = document.createElement("input");
+				centReset.type = "button";
+				centReset.style.width = "25%";
+				centReset.value = "Reset";
+				document.body.appendChild(centReset);
+				centReset.onclick = function() {
+						if(localStorage["SUBMIT CHECKER HITS"]) {
+							localStorage["SUBMIT CHECKER HITS"] = JSON.stringify(new Array());
+							this.style.backgroundColor = 'lightgreen';
+						}
+					}
 
+				var timeButton = document.createElement("input");
+				timeButton.type ="button";
+				timeButton.style.width = "35%";
+				timeButton.value = "10 Minute Timer";
+				document.body.appendChild(timeButton);
+				timeButton.onclick = function() { 
+					this.style.backgroundColor = 'lightgreen';
+					chrome.extension.sendMessage({recording10: "true"},
+					   function (response) {
+					});
+				  };
+				 
+				var timeButton30 = document.createElement("input");
+				timeButton30.type ="button";
+				timeButton30.style.width = "35%";
+				timeButton30.value = "30 Minute Timer";
+				document.body.appendChild(timeButton30);
+				timeButton30.onclick = function() { 
+					this.style.backgroundColor = 'lightgreen';
+
+					chrome.extension.sendMessage({recording30: "true"},
+					   function (response) {
+					});
+				  };
+				 
+				 var signInButton = document.createElement('input');
+				 signInButton.type = 'button';
+				 signInButton.style.width = '33%';
+				 signInButton.value = 'Dave';
+				 signInButton.name = 'signin';
+				 signInButton.id = 'Dave';
+				 document.body.appendChild(signInButton);
+				 signInButton = document.getElementById('Dave');
+				 signInButton.onclick = function() {
+					 this.style.backgroundColor = 'lightgreen';
+					 signIn(this.id);
+				 };
+				 
+				 var signInButton = document.createElement('input');
+				 signInButton.type = 'button';
+				 signInButton.style.width = '33%';
+				 signInButton.value = 'Mom';
+				 signInButton.name = 'signin';
+				 signInButton.id = 'Mom';
+				 document.body.appendChild(signInButton);
+				 signInButton = document.getElementById('Mom');
+				 signInButton.onclick = function() {
+					 this.style.backgroundColor = 'lightgreen';
+					 signIn(this.id);
+				 };
+				 
+				 var signInButton = document.createElement('input');
+				 signInButton.type = 'button';
+				 signInButton.style.width = '33%';
+				 signInButton.value = 'Ben';
+				 signInButton.name = 'signin';
+				 signInButton.id = 'Ben';
+				 document.body.appendChild(signInButton);
+				 signInButton = document.getElementById('Ben');
+				 signInButton.onclick = function() {
+					 this.style.backgroundColor = 'lightgreen';
+					 signIn(this.id);
+				 };
+				 
+				//Determine who this computer is signed in as
+				chrome.extension.sendMessage(
+				{
+					getSignIn:true
+				},
+				function(response)
+				{
+					console.log(response);
+					document.getElementById(response.id).style.backgroundColor = 'lightgreen';
+					UI_INITIALIZED = true;
+				}
+				);
+
+			});
+}
 
 document.addEventListener('DOMContentLoaded', function() {
 	if(!localStorage["SUPER AWESOME RESET TIME"])
@@ -228,7 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	var body = document.getElementById("w00t");
 	
-	COMPUTER_ID = false;
 	
 	chrome.extension.sendMessage(
 	{
@@ -236,99 +334,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	},
 	function(response) {
 	
-	COMPUTER_ID = response.id;
+		COMPUTER_ID = response.id;
+		USER_NAME = response.name;
+		//alert(USER_NAME);
 		
-		
-	createSubmissionDisplay(function() {
-			var centReset = document.createElement("input");
-			centReset.type = "button";
-			centReset.style.width = "25%";
-			centReset.value = "Reset";
-			document.body.appendChild(centReset);
-			centReset.onclick = function() {
-					if(localStorage["SUBMIT CHECKER HITS"]) {
-						localStorage["SUBMIT CHECKER HITS"] = JSON.stringify(new Array());
-						this.style.backgroundColor = 'lightgreen';
-					}
-				}
-
-			var timeButton = document.createElement("input");
-			timeButton.type ="button";
-			timeButton.style.width = "35%";
-			timeButton.value = "10 Minute Timer";
-			document.body.appendChild(timeButton);
-			timeButton.onclick = function() { 
-				this.style.backgroundColor = 'lightgreen';
-				chrome.extension.sendMessage({recording10: "true"},
-				   function (response) {
-				});
-			  };
-			 
-			var timeButton30 = document.createElement("input");
-			timeButton30.type ="button";
-			timeButton30.style.width = "35%";
-			timeButton30.value = "30 Minute Timer";
-			document.body.appendChild(timeButton30);
-			timeButton30.onclick = function() { 
-				this.style.backgroundColor = 'lightgreen';
-
-				chrome.extension.sendMessage({recording30: "true"},
-				   function (response) {
-				});
-			  };
-			 
-			 var signInButton = document.createElement('input');
-  			 signInButton.type = 'button';
-  			 signInButton.style.width = '33%';
-  			 signInButton.value = 'Dave';
-  			 signInButton.name = 'signin';
-   			 signInButton.id = 'Dave';
-  			 document.body.appendChild(signInButton);
- 			 signInButton = document.getElementById('Dave');
-  			 signInButton.onclick = function() {
-				 this.style.backgroundColor = 'lightgreen';
-				 signIn(this.id);
-			 };
-			 
-			 var signInButton = document.createElement('input');
-  			 signInButton.type = 'button';
-  			 signInButton.style.width = '33%';
-  			 signInButton.value = 'Mom';
-  			 signInButton.name = 'signin';
-  			 signInButton.id = 'Mom';
-  			 document.body.appendChild(signInButton);
-			 signInButton = document.getElementById('Mom');
-  			 signInButton.onclick = function() {
-				 this.style.backgroundColor = 'lightgreen';
- 				 signIn(this.id);
-			 };
-			 
-			 var signInButton = document.createElement('input');
-  			 signInButton.type = 'button';
-  			 signInButton.style.width = '33%';
-  			 signInButton.value = 'Ben';
-  			 signInButton.name = 'signin';
-  			 signInButton.id = 'Ben';
-  			 document.body.appendChild(signInButton);
-			 signInButton = document.getElementById('Ben');
-  			 signInButton.onclick = function() {
-				 this.style.backgroundColor = 'lightgreen';
-		 		 signIn(this.id);
-			 };
-			 
-			//Determine who this computer is signed in as
-			chrome.extension.sendMessage(
-			{
-				getSignIn:true
-			},
-			function(response)
-			{
-				console.log(response);
-				document.getElementById(response.id).style.backgroundColor = 'lightgreen';
-			}
-			);
-		});
-});
+		buildUserInterface();
+	});
 
 });
 

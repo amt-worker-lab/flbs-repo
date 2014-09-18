@@ -98,12 +98,28 @@ AMT__Global_Vars.initializeGroupId = function () {
 		}, false);
 		
 	}
-	else
+	// Sep 18 2014
+	// Added window.top != window.self
+	// Bug: When in preview mode, not in iframe,
+	// setInterval would endlessly post message.
+	else if (window.top != window.self)
 	{
+		//~ console.log(window.top == window.self)
+		//~ if (window.top == window.self) { // Does not work
+			//~ alert('x');
+			//~ return; //?
+		//~ }
+		//~ return;
+		// Setting maxIntervals dnw when job is in preview
+		// mode in a new window (not in iframe).
+		//~ var maxIntervals = 30; // 30 * .2s ~= 6s
+		//~ if (!/^https?:\/\/(www\.|s3\.|)(mturk|mturkcontent|amazonaws)\.com/.exec(document.location.href)) return;
+		
 		var interval =  setInterval(function(){
 			parent.postMessage({groupIdRequest: true}, '*');
-		}
-		,200);
+		}, 200);
+		
+		
 		
 		window.addEventListener('message', function(e) {
 				if(!AMT__Global_Vars.groupId)
@@ -214,7 +230,7 @@ AMT__Global_Vars.initializeTabId = function() {
  * 
  * **/
 function recordReturn() {
-	localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
+	sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
 }
 
 /**
@@ -926,6 +942,19 @@ function FindObject(recordName,matchString, timeCutOff) {
  */
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561
+/**
+ * 
+ * 
+ {
+	hash: ""
+	host: "naturespoisons.files.wordpress.com"
+	hostname: "naturespoisons.files.wordpress.com"
+	pathname: "/2014/05/veratrum-californicum-by-dcrjsr-cc-by-sa-3-0.jpg"
+	port: ""
+	protocol: "http:"
+	search: "?w=1200"
+ }
+ */
 String.prototype.parseURL = function() {
 	var parser = document.createElement('a'),
 		searchObject = {},
@@ -998,6 +1027,7 @@ String.prototype.stateAbbrToFull = function() {
  * AMT___requests_factory
  * AMT___huge_vars_factory
  * AMT___items_factory
+ * AMT___site_scrapes
 **/
 
 /**
@@ -1017,6 +1047,8 @@ var AMT__rq = function() {
  * @func top_window__addEventListener_iframe
  * @func iframe2parent__postMessage
  * @func amt_home_show_tasks
+ * @func iframe2parent__addEventListener_child
+ * @func el_innerHeight
  */
 function AMT___core_factory() {
 
@@ -1045,6 +1077,118 @@ AMT___core_factory.prototype.nextWindow = function() {
 		}
 	);
 }
+/**
+ * .el_innerHeight
+ * 
+ * @param options {}
+ * @param 	.elements
+ * @param 	.offset
+ * 
+ * NOTES: innerHeight is always -14px because many times the bottom of page will have
+ * a horizontal scroll bar.
+ */
+AMT___core_factory.prototype.el_innerHeight = function(options) {
+	
+	// success
+	// See below (success function)
+	//
+	options.callback__success = success;
+	
+	// 
+	if (window.top == window.self) {
+		success(options, {
+			innerHeight: window.innerHeight
+		})
+		
+		// Quit here
+		return;
+	}
+	
+	// Still going?
+	// Start the child listening
+	// Then message the parent
+	
+	// Child
+	// Pass in options
+	new AMT___core_factory().childFrame__addEventListener_iframe(
+		options
+	);
+	
+	// Parent
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'window.innerHeight'
+	});
+	
+	// The success function
+	// @param : options
+	// @param : v {}
+	function success(options, v) {
+		
+		// v.action
+		// v.innerHeight
+		
+		console.log(v);
+		
+		// If callback
+		if (options.hasOwnProperty('callback_function')) {
+			options.callback_function(v.innerHeight);
+			return; //exit
+		}
+		
+		// Default ...
+		// Set element heights.
+		// options.elements
+		// options.offset
+		
+		console.log('parent innerHeight:' + v.innerHeight);
+		
+		var new_height = (v.innerHeight*1 - options.offset - 14) + 'px';
+		
+		console.log('new_height:' + new_height);
+		
+		var els = options.elements;
+		for (var i in els) {
+			var el = els[i];
+			el.style.height = new_height;
+		}
+		
+	}
+	
+}
+/**
+ * .childFrame__addEventListener_iframe
+ * 
+ * @param options {}
+ */
+AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(options) {
+	
+	var options = options;
+	
+	window.addEventListener("message", complete, false);
+	
+	function complete(event) {
+		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		var v = event.data;
+		
+		switch(v.action) {
+			
+			// window.innerHeight
+			// This is usually about 10px too tall... ?
+			case 'window.innerHeight':
+				
+				options.callback__success(options, v);
+				
+				break;
+		}
+	}
+}
+/**
+ * .top_window__addEventListener_iframe
+ * 
+ * @param v.action
+ * @param v.threshold_to_change => ChangeWindowCount
+ */
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
 	
 	// Is there an iframe on the page?
@@ -1063,6 +1207,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
+		
+		//~ console.log(v);
 		
 		switch(v.action) {
 			case 'return_button__showNextTab':
@@ -1086,6 +1232,44 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				break;
 			case 'return_and_accept':
 				document.getElementById('MT__gm_returnaccept').click();
+				break;
+			case 'changeWindowNotifier':
+				//alert('here 1');
+				if(!localStorage['ChangeWindowCount'])
+					localStorage['ChangeWindowCount'] = 0;
+				if(localStorage['ChangeWindowCount'] <= v.threshold_to_change)
+				{
+					localStorage['ChangeWindowCount']++;
+				}
+				else {
+					localStorage['ChangeWindowCount'] = 0;
+					document.body.style.backgroundColor = 'silver';
+					chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
+					//~ new AMT___core_factory().nextWindow();
+				}
+				break;
+			
+			/**
+			 * window.innerHeight
+			 * 
+			 * If offsetTop > 60 then do not use this
+			 * in the calculation.
+			 */
+			case 'window.innerHeight':
+				
+				var ifr = document.getElementsByTagName('iframe')[0];
+				
+				// Get the current offset of the iframe!
+				// Usually set by tools.
+				var ot = (ifr.offsetTop <= 60) ? ifr.offsetTop : 0;
+				//~ console.log('ot' + ot);
+				//~ console.log('ih' + window.innerHeight);
+				
+				// Send response
+				ifr.contentWindow.postMessage({
+					action: 'window.innerHeight',
+					innerHeight: window.innerHeight - ot
+				}, '*');
 				break;
 		}
 	}
@@ -1114,11 +1298,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
 	//~ console.log(options);
+	
 	parent.postMessage({
-		action: options.action //'return_button__showNextTab'
-		
-		//~ action: 'return',
-		//~ callback_function: callback_function
+		action: options.action
 	}, "*");
 	
 	//~ setInterval
@@ -1135,6 +1317,37 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
  */
 function AMT___events_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * 
+ * @param img: element
+ * @param scroll_speed: int, default 0.1
+ */
+AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object) {
+	
+	var opts = options_object;
+	if (!opts.hasOwnProperty('scroll_speed')) {
+		opts.scroll_speed = 12;
+	}
+	
+	if (!opts.img.hasOwnProperty('mousewheel_scroll_image__value')) {
+		opts.img.mousewheel_scroll_image = 0;
+	}
+	
+	opts.img.addEventListener('mousewheel', function(e) {
+		
+		if (e.wheelDelta > 0) {		// "120", upward, so take Y axis more negative
+			this.style.marginTop = (this.mousewheel_scroll_image * 1 + 12) + 'px';
+			this.mousewheel_scroll_image += 10;
+		} else {					// "-120", down, so take Y axis higher
+			this.style.marginTop = (this.mousewheel_scroll_image * 1 - 12) + 'px';
+			this.mousewheel_scroll_image -= 10;
+		}
+		
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	}, false);
 }
 /**
  * 
@@ -1224,6 +1437,20 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
+	
+	var options_object = options_object;
+	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: options_object.url,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			options_object.callback_function({status:response.status});
+		}
+	});
 }
 AMT___requests_factory.prototype.general_functions__numberFormat__numberWithCommas = function(str) {
 	var parts = (str + '').split(".");
@@ -1683,7 +1910,7 @@ AMT___requests_factory.prototype.ebay__get_listings_page = function(options_obje
 		}
 	});
 }
-//
+// google_search
 AMT___requests_factory.prototype.google_search = function(options_object) //
 {
 	
@@ -1758,6 +1985,800 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
 			);
 		}
 	});
+}
+/**
+ * function .linkedin_people_search
+ * 
+ * @params :
+ * : container = div element, append all elements to this
+ * : search_params = {}
+ * 		searches['search-key'] = value
+ * 		Where search-key = first name, last name, company, zip code, find zip (find zip code from location), job title
+ * 		This corresponds to the left-side inputs, typically d2a,d2b,d2c,d2d, etc.
+ * : callback_function
+ * : image_search : boolean (t,f)
+ * : nextTab : boolean (t,f), call nextTab() on mouse click
+ * : sortResults : boolean, sort by people by connectionCount
+ * 
+ * NOTES: companyScope and/or titleScope must follow company and title, respectively.
+ * Features:
+ * 	ef.mouseup__delete_range({
+			element: d2,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
+ */
+AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
+{
+	
+	//
+	var ps_object = ps_object;
+	
+	/*BEGIN ITEMS*/
+	//
+	var div_cx_l;
+	div_cx_l = document.createElement('div');
+	div_cx_l.setAttribute('style','float:left;width:30%;height:98%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	ps_object.container.appendChild(div_cx_l);
+	//
+	var div_cx_r;
+	div_cx_r = document.createElement('div');
+	div_cx_r.setAttribute('style','float:left;width:68%;height:98%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	ps_object.container.appendChild(div_cx_r);
+	//
+	var div_cx_debug;
+	div_cx_debug = document.createElement('div');
+	div_cx_debug.setAttribute('style','border-top:1px solid blue;overflow:auto;');
+	
+	
+	//~ ps_object.container.appendChild(div_cx_debug);
+	
+	//
+	//~ var div_cx_status; //?
+	//~ div_cx_r = document.createElement('div');
+	//~ div_cx_r.setAttribute('style','float:left;width:30%;height:30%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	//~ document.body.appendChild(div_cx_r);
+	//~ var b_cx = document.createElement('br');
+	//~ b_cx.setAttribute('style', 'clear:both;');
+	//
+	/*END ITEMS*/
+	
+	var o = {
+		cx_elements: [],
+		
+		// bolds
+		bold_nm_array: [],
+		bold_comp_array: [],
+		bold_title_array: []
+		
+	};
+	
+	
+	// Keydown
+	// & mouseup__delete_range
+	var ef = new AMT___events_factory();
+	
+	// Append the inputs that are search controllers
+	var sp = ps_object.search_params;
+	for (var input_name in sp) {
+		var input_value = sp[input_name];
+		
+		var found = false;
+		switch(input_name) {
+			case 'firstName':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				break;
+			case 'lastName':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				break;
+			case 'title':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
+				break;
+			case 'company':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
+				//~ o.bold_title_array = input_value.split(' ');
+				break;
+				
+			// Hidden elements
+			//
+			//
+			case 'titleScope': // scope
+				found = false; // not this
+				var d;
+				d = document.createElement('input');
+				d.type = 'hidden';
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// set value here
+				d.value = input_value;
+				break;
+			case 'companyScope': // scope
+				found = false; // not this
+				var d;
+				d = document.createElement('input');
+				d.type = 'hidden';
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// set value here
+				d.value = input_value;
+				break;
+		}
+		if (found) {
+			d.value = input_value;
+			d.addEventListener('keydown', ef.keydown__blur_field, true);
+			d.onblur = function() {
+				this.value = this.value.trim();
+				linkedin_people();
+			}
+			// Delete by range!
+			ef.mouseup__delete_range({
+				element: d,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+		}
+	}
+	
+	// Overwrite bold_title_array
+	if (ps_object.hasOwnProperty('bold_array_comp')) {
+		o.bold_title_array = ps_object.bold_array_comp;
+	}
+	
+	// Place all input into debug div
+	// div_cx_debug
+	//
+	div_cx_l.appendChild(div_cx_debug);
+	for (var input_name in sp) {
+		var input_value = sp[input_name];
+		
+		//~ div_cx_debug.innerText += input_name + ':' + input_value + '\n';
+		
+		var inp = document.createElement('input');
+		inp.setAttribute('style', 'background-color:none;border:0;width:30%;');
+		inp.value = input_name;
+		inp.disabled = true;
+		div_cx_debug.appendChild(inp);
+		
+		div_cx_debug.appendChild(document.createTextNode(' '+input_value));
+		div_cx_debug.appendChild(document.createElement('br'));
+	}
+	
+	// init
+	//
+	//
+	AMT___POPUP__initializeGlobals(
+		linkedin_people
+	);
+	
+	// ...
+	function linkedin_people() {
+		
+		var out;
+		out = div_cx_r;
+		
+		var url;
+		url = 'http://www.linkedin.com/vsearch/pj?openAdvancedForm=true&pt=people&locationType=I';
+		
+		// Generate the URL
+		var sp = o.cx_elements;
+		for (var i in sp) {
+			var element = sp[i];
+			var input_name = element.cx_id;
+			var input_value = element.value;
+			//~ console.log(input_name);
+			//~ console.log(input_value);
+			
+			
+			switch(input_name) {
+				case 'firstName':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'lastName':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'title':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'company':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				
+				// Hidden elements
+				//
+				//
+				case 'titleScope': // CP = current or past
+					//~ if ()
+					url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'companyScope': // CP = current or past
+					// Only if url.indexOf
+					if (url.indexOf('&company=') != -1)
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+			}
+		}
+		
+		out.innerHTML = '';
+		
+		
+		// Is cached?
+		//
+		//
+		var rf = new AMT___requests_factory();
+		var md5_url = any_md5(url, '0123456789ABCDEF');
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/.cached/'+md5_url,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status == 200 && 0==1) {
+					linkedin_people__processQuery({rs: rs});
+					return;
+				}
+				
+				// Still here?
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							out.innerHTML = response.status;
+							return;
+						}
+						
+						var r;
+						r = JSON.parse(rs);
+						//console.log(r);
+						
+						if (r.status != 'ok') return;
+						if (!r.content) {
+							return;
+						}
+						// Write to file !
+						rf.io__write_to_file(
+							{
+								data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+										'&AMT__serverSide_write__folder=.cached'+
+										'&AMT__serverSide_write__file=' + md5_url,
+								rs:		response.responseText,
+								host:	MT___host
+							},
+							linkedin_people__processQuery
+						);
+						
+					}
+				});
+			}
+		});
+		
+		
+		
+		
+		//~ url+= '&company='+encodeURIComponent(d2c.value.trim());
+		//~ url+= '&companyScope=CP'; // CP scope is current/past
+		//~ url+= '&firstName='+encodeURIComponent(d2.value.trim());
+		//~ url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
+		//~ //url+= '&keywords='+encodeURIComponent(d2.value.trim());
+		//~ url+= '&pt=people';
+		//~ url+= '&locationType=I';
+		//~ url+= '&openAdvancedForm=true';
+		//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
+		//~ 
+		//~ if (d2d.style.border != '') {
+			//~ url += '&postalCode='+encodeURIComponent(d2d.value);
+			//~ url += '&distance=200';
+			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
+		//~ } else {
+			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
+		//~ }
+	}
+	
+	/**
+	 * function linkedin_people__processQuery
+	 */
+	function linkedin_people__processQuery(write_object) {
+		
+		var out;
+		out = div_cx_r;
+		
+		var sp = o.cx_elements;
+		for (var i in sp) {
+			var element = sp[i];
+			//~ var input_name = element.cx_id;
+			var input_value = element.value;
+			out.innerText += input_value + '\n';
+		}
+		
+		var r;
+		r = JSON.parse(write_object.rs);
+		if (r.status != 'ok') return;
+		if (!r.content) {
+			return;
+		}
+		if (r.content.page.voltron_unified_search_json.search.results.length == 0) {
+			div_cx_r.innerText += '0';
+			//~ if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.skip();
+			//~ }
+			return;
+		}
+		
+		//~ // still here?
+		//~ if (AMT__Global_Vars.isPreview) { // PREVIEW ?
+			//~ AMT___Floater.accept();
+			//~ return;
+		//~ }
+		
+		if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+			out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+		else
+			out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+			
+		
+		var x = r.content.page.voltron_unified_search_json.search.results;
+		console.log(x);
+		
+		var snp,s;
+		var y;
+		
+		console.log(o);
+		
+		// Is it desirable to sort by the number of connections?
+		// 
+		//
+		if (ps_object.sortResults) {
+			x = x.sort(function(a, b) {
+				return b.person.connectionCount - a.person.connectionCount;
+			});
+		}
+		//~ if () {
+			//~ var y = y;
+			//~ 
+			//~ for (var i in x) {
+			//~ 
+			//~ if (!x[i].hasOwnProperty('person'))
+				//~ continue;
+				//~ 
+		//~ }
+		
+		//var auto_click_inp = false;
+		for (var i in x) {
+			
+			if (!x[i].hasOwnProperty('person'))
+				continue;
+			
+			y = x[i].person;
+			
+			//~ console.log(y); // this person
+			
+			if (y.hasOwnProperty('snippets')) {
+				snp = y.snippets;
+				s = '';
+				var heading;
+				var fmt_body;
+				if (snp.length) {
+					for (var j in snp) {//console.log(snp[j]);
+						heading = false;
+						fmt_body = false;
+						
+						s += '<br>';
+						s += snp[j].fieldName + ': ';
+						
+						if (snp[j].hasOwnProperty('bodyList') && snp[j].bodyList.length) {
+							for (var k in snp[j].bodyList) {
+								s += snp[j].bodyList[k] + ' | ';
+							}
+						} else if (snp[j].hasOwnProperty('fmt_heading') && snp[j].fmt_heading.trim() != '') {
+							s += snp[j].fmt_heading;
+						} else {
+							s += snp[j].fmt_body;
+						}
+					}
+				} else snp = '';
+			} else  snp = '';
+			s = s.replace(/<hr>/g, '')
+			s = s.replace(/^<br>/g, '')
+			
+			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
+			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+			
+			var z;
+			var headline;
+			var et, ec;
+			
+			y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
+			
+			z = y.fmt_headline;
+			
+			var headline_match = false;
+			if (z.indexOf(' at ') != -1) {
+				z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
+				if (z && / at /gi.exec(y.fmt_headline).length === 1) {
+					et = MT__bold(z[1], o.bold_title_array);
+					ec = MT__bold(z[3], o.bold_title_array);
+					headline = '\
+						<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="T" >\
+						<div class="exe-title" style="display:inline;">\
+							 \
+						</div>\
+						<br >\
+						<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="C" >\
+						<div class="exe-comp" style="display:inline;">\
+							 \
+						</div>\
+						<br >\
+						';
+					headline_match = true;
+				}
+			}
+			if (!headline_match) {
+				et = y.fmt_headline;
+				et = MT__bold(et, o.bold_title_array);
+				et = MT__bold(et, o.bold_title_array);
+				ec = '';
+				headline = '\
+					<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="T" >\
+					<div class="exe-title" style="display:inline;">\
+						 \
+					</div>\
+					<div class="exe-comp" style="display:none;">\
+						 \
+					</div>\
+					<br >\
+					';
+				
+			}
+			headline += '\
+				<div class="exe-headline" style="display:none;">\
+					 \
+				</div>';
+			
+			
+			
+			var dv = document.createElement('div');
+			dv.setAttribute('style', 'border-bottom:1px solid teal;');
+			dv.className = 'exe-div';
+			
+			var el_a = document.createElement('a');
+			el_a.setAttribute('style', 'position:relative;display:inline-block;margin-left:200px;');
+			el_a.target    = 'new_win';
+			el_a.innerText = ' LINK';
+			el_a.href = y.link_nprofile_view_3;
+			dv.appendChild(el_a);
+			//"https://www.linkedin.com/profile/view?id=15329492&authType=NAME_SEARCH&authToken=sKun&locale=en_US&srchid=2041448321402183517267&srchindex=1&srchtotal=57&trk=vsrp_people_res_name&trkInfo=VSRPsearchId%3A2041448321402183517267%2CVSRPtargetId%3A15329492%2CVSRPcmpt%3Aprimary"
+			
+			var el_div = document.createElement('div');
+			//~ el_div.setAttribute('style', 'display:inline;');
+			el_div.innerHTML = MT__bold(y.firstName + ' ' + y.lastName, o.bold_nm_array);
+			dv.appendChild(el_div);
+			
+			//~ dv.appendChild(document.createElement('br'));
+			
+			var el_div = document.createElement('div');
+			el_div.setAttribute('style', '');
+			el_div.innerHTML = headline;
+			dv.appendChild(el_div);
+			
+			var el_inp = document.createElement('input');
+			el_inp.setAttribute('style', 'width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+			el_inp.value = 'L';
+			dv.appendChild(el_inp);
+			
+			//~ /*
+			 //~ * Location
+			 //~ * This uses create_annotation_to_output_fields
+			 //~ */
+			//~ var el_div = document.createElement('div');
+			//~ el_div.setAttribute('style', 'display:inline');
+			//~ el_div.className = 'exe-locn';
+			//~ dv.appendChild(el_div);
+			//~ //
+			//~ el_div.appendChild(
+				//~ Seth_Redmore_linkedin_people_location__makeButtons(y.fmt_location)
+			//~ )
+			
+			dv.appendChild(document.createElement('br'));
+			
+			if (s != '') {
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', 'border-bottom:1px solid teal;');
+				el_div.innerHTML = s;
+				dv.appendChild(el_div);
+			}
+			
+			if (y.hasOwnProperty('connectionCount')) {
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe-connections');
+				btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				btn.id = '';
+				btn.value = y.connectionCount;
+				dv.appendChild(btn);
+				dv.appendChild(document.createElement('br'));
+			}
+			
+			//https://www.linkedin.com/profile/view?id=15329492
+			
+			// If not an image search
+			if (!ps_object.hasOwnProperty('image_search')) {
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe');
+				btn.setAttribute('style','width:30px;height:30px;');
+				//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3; // OLD !!
+				btn.url_li = y.link_nprofile_view_3;
+				btn.value = 'Title';
+				dv.appendChild(btn);
+			}
+			// If it is an image search
+			// XXFull = /media/ == /media/p/2/000/2cb/2f3/2e5ee90.jpg
+			// Thumb = /mpr/mpr/shrink_60_60/ == /mpr/mpr/shrink_60_60/p/2/000/2cb/2f3/2e5ee90.jpg
+			// Full = https://media.licdn.com/media/p/2/000/1a3/226/1edc521.jpg
+			else {
+				var btn = document.createElement('img');
+				btn.setAttribute('style','width:150px;height:30px;cursor:pointer;');
+				btn.url_li = y.link_nprofile_view_3;
+				dv.appendChild(btn);
+				
+				if (y.hasOwnProperty('imageUrl')) {
+					//
+					
+					btn.src = 'http://www.linkedin.com/mpr/mpr/shrink_60_60' + y.imageUrl;
+					btn.img_li = 'https://media.licdn.com/media' + y.imageUrl;
+					btn.style.width = '60px';
+					btn.style.height = '60px';
+				} else {
+					btn.img_li = null;
+				}
+			}
+			
+			/**
+			 * Result .onclick
+			 * This is a callback, ps_object.callback_function
+			 * and ps_object.image_search
+			 */
+			// onclick
+			// THIS WILL SCRAPE THE PROFILE !!
+			// HOWEVER, MAKE THE BUTTONS FOR THE LOCATION USING "y.fmt_location" **IF POSSIBLE**
+			btn.onclick = function() {
+				
+				// Go to nextTab()
+				// 
+				//
+				if (ps_object.hasOwnProperty('nextTab')) {
+					new AMT___core_factory().nextTab();
+				}
+				
+				// If not an image search
+				if (!ps_object.hasOwnProperty('image_search')) {
+					this.style.border = '4px solid LightGreen';
+					linkedin_people_location__profile(this.url_li);
+				}
+				// If it is an image search
+				// Click 1 = ...
+				else {
+					this.style.border = '4px solid LightGreen';
+					linkedin_people_location__profile_image(this);
+				}
+			}
+			
+			out.appendChild(dv);
+			
+			var z = out.getElementsByClassName('exe-div');
+			z = z[z.length - 1];
+			
+			//~ z.getElementsByClassName('exe-locn')[0].innerHTML		= y.fmt_location; //MT__bold(y.fmt_location, o.locn_array);
+			z.getElementsByClassName('exe-title')[0].innerHTML		= et;
+			z.getElementsByClassName('exe-comp')[0].innerHTML		= ec;
+			z.getElementsByClassName('exe-headline')[0].innerHTML	= y.fmt_headline;
+			
+		}
+		
+		var div = document.createElement('div');
+		div.setAttribute('style','height:1600px;');
+		out.appendChild(div);
+	}
+	
+	function linkedin_people_location__profile_image(btn) {
+		
+		var btn = btn;
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: btn.url_li,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					div_cx_r.innerHTML = response.status;
+					return;
+				}
+				
+				// URL
+				// Default is btn.url_li
+				var url = btn.url_li;
+				var found_valid_li_url = false;
+				
+				// Dashes
+				rs = rs.replace(/\\u002d/g, '-');
+				
+				// topcard
+				var found = false;
+				r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse('{'+r[1]+'}');
+					r = r.content;
+					console.log(r);
+					
+					if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+						url = r.TopCard.public_url.canonicalUrl;
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				if (!found) {
+					var r2;
+					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						url = __js_clean_html_str(r2[1]).trim();
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+					}
+				}
+				
+				
+				// CALLBACK FUNCTION
+				// Object
+				//
+				//
+				ps_object.callback_function({
+					profile_url: url,
+					found_valid_li_url: found_valid_li_url,
+					image_thumbnail_url: btn.src,
+					image_full_url: btn.img_li,
+					image: btn
+				});
+			}
+		});
+	}
+	function linkedin_people_location__profile(u) {
+		
+		// Global
+		var u = u;
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					div_cx_r.innerHTML = response.status;
+					return;
+				}
+				
+				// URL
+				// Default is btn.url_li
+				var url = u;
+				var found_valid_li_url = false;
+				
+				// Dashes
+				rs = rs.replace(/\\u002d/g, '-');
+				
+				// topcard
+				var found = false;
+				r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse('{'+r[1]+'}');
+					r = r.content;
+					console.log(r);
+					
+					if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+						url = r.TopCard.public_url.canonicalUrl;
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				if (!found) {
+					var r2;
+					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						url = __js_clean_html_str(r2[1]);
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				// Sometimes this happens...
+				//<dt>Public Profile</dt><dd><span class="view-public-profile">www.linkedin.com/pub/samuel-freitag/15/498/a46</span></dd>
+				if (!found) {
+					if (r2 = /<dt>Public Profile<\/dt><dd><span class="view-public-profile">([^<]+)<\/span><\/dd>/.exec(rs)) {
+						url = (r2[1].indexOf('http') != 0) ? 'http://' + __js_clean_html_str(r2[1]) : __js_clean_html_str(r2[1]);
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				
+				// CALLBACK FUNCTION
+				// Object
+				//
+				//
+				ps_object.callback_function({
+					profile_url: url,
+					found_valid_li_url: found_valid_li_url
+				});
+			}
+		});
+	}
 }
 //
 AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, callback_func) //
@@ -2532,6 +3553,235 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 }
 
 /**
+ * AMT___site_scrapes
+ * 
+ */
+function AMT___site_scrapes(obj_vars) {
+	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function scrape
+ *
+ * 
+ */
+AMT___site_scrapes.prototype.scrape = function(options_object) {
+	
+	var opts = options_object;
+	
+	switch (opts.site) {
+		case 'https://www.yellowpages.com/whitepages/address':
+			opts.tmp_callback = yp_reverse_addr;
+			xhr_get();
+			break;
+		case 'http://www.healthgrades.com/PROFILE/':
+			opts.tmp_callback = healthgrades_profile;
+			xhr_get();
+			break;
+	}
+	
+	/**
+	 * xhr_get
+	 */
+	function xhr_get() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: opts.url,
+			timeout: 30000,
+			ontimeout: function() {
+				
+			},
+			onerror: function() {
+				
+			},
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				// not 200 response.status
+				if (response.status > 200) { // 400 - 599
+					console.log(response.status);
+					return;
+				}
+				
+				opts.response = response;
+				
+				opts.tmp_callback(rs);
+				
+				// Callback final
+				opts.callback_function(opts);
+			}
+		});
+	}
+	
+	/**
+	 * healthgrades_profile
+	 * 
+	 * @ opts.response
+	 */
+	function healthgrades_profile() {
+		
+		opts.response.vars = {
+			result: {
+				address: null,
+				other_locations: []
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		// Main address on this profile
+		//<span class="street-address" itemprop="streetAddress">1301 Powell St Suite 123</span>
+		// OR
+		//~ <td class="summaryLocation">
+			   //~ 
+                        //~ <div></div>
+                        //~ <div>2420 W Pierce St Suite 200</div>
+		// OR
+		//~ <td class="summaryLocation">
+                            //~ <h3>Locations (<a data-hgoname="group-practice-more-offices" href="/group-directory/pennsylvania-pa/philadelphia/perelman-center-advanced-medical-0d927cb7/offices">1 more</a>)</h3>
+			   //~ 
+                        //~ <div></div>
+                        //~ <div>3400 Civic Center Blvd</div>
+
+		var r;
+		if (r = /<span class="street-address" itemprop="streetAddress">([^<]*)<\/span>/.exec(rs)) {
+			//
+		} else if (r = /<td class="summaryLocation">[\r\n\t\s]+<div>[^<]*<\/div>[\r\n\t\s]+<div>([^<]+)<\/div>/.exec(rs)) {
+			//
+		} else if (r = /<td class="summaryLocation">[\r\n\t\s]+<h3>Locations \([^\)]*\)<\/h3>[\r\n\t\s]+<div>[^<]*<\/div>[\r\n\t\s]+<div>([^<]+)<\/div>/.exec(rs)) {
+			//
+		} else if (r = /<h3><span class="icon location"><\/span>Location<\/h3>[\r\n\t\s]+<span itemprop="address" itemscope itemtype="http:\/\/schema\.org\/PostalAddress">[\r\n\t\s]+<p class="noLayoutSpacing" itemprop="streetAddress">[\r\n\t\s]+<span itemprop="streetAddress">([^<]+)<\/span>/.exec(rs)) {
+			//
+		}
+		if (r) {
+			opts.response.vars.result.address = __js_clean_html_str(r[1]).trim();
+		}
+		
+		
+		// Other locations
+		// "Appointments & Offices"
+		var container;
+		var regex;
+		
+		// This is an occasional case. It is not inside of "officeItem"
+		// but inside "componentPresentation".
+		var r = /<div class="componentPresentation" id="aboutAppointments2">((.|\s)*?(?=\n<\/div>|$)|$)/.exec(rs);
+		if (r) {
+			container = r[1];
+			
+			regex = /<dl[^>]*>((.|\s)*?(?=<\/dl>|$)|$)/g;
+		} else {
+			container = rs;
+			
+			regex = /<div class="officeItem"[^>]*>((.|\s)*?(?=\n                <\/div>|$)|$)/g;
+		}
+		
+		//
+		var m;
+		while (m = regex.exec(container)) {
+			
+			var rslt = {
+				title: null,
+				address: []
+			};
+			
+			// Title
+			var r2 = /<dt>((.|\s)*?(?=<\/dt>|$)|$)/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(
+					r2[1].replace(/<[^>]*>/g, '')
+				).trim();
+			}
+			
+			// Address
+			// Array: PossibleName, Street1, City/StateAbbr/Zip, ... could be more?
+			var r2 = /<dd>([^<]*)<\/dd>/g;
+			var m2;
+			while (m2 = r2.exec(m[1])) {
+				rslt.address.push(
+					__js_clean_html_str(m2[1]).trim()
+				);
+			}
+			
+			//~ var r3;
+			//~ if (r3 = r2.exec(m[1])) {
+				//~ rslt.street_address = __js_clean_html_str(r3[1]).trim();
+			//~ }
+			//~ 
+			//~ // city_st_zip
+			//~ var r3;
+			//~ if (r3 = r2.exec(m[1])) {
+				//~ rslt.city_st_zip = __js_clean_html_str(r3[1]).trim();
+			//~ }
+			
+			opts.response.vars.result.other_locations.push(rslt);
+		}
+	}
+	
+	/**
+	 * yp_reverse_addr
+	 * 
+	 * @ opts.response
+	 */
+	function yp_reverse_addr() {
+		
+		opts.response.vars = {
+			results: [],
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+		}
+		
+		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
+			
+			//~ console.log(m);
+			
+			var rslt = {
+				title: null,
+				address: null,
+				phone: null
+			};
+			
+			// Title
+			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Address
+			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Phone
+			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.phone = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			//~ console.log(rslt);
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		//~ // Callback final
+		//~ opts.callback_function(opts);
+	}
+}
+/**
  * 
  * AMT___items_factory
  * @
@@ -2765,7 +4015,8 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 			
 			parse(rs);
 			
-			options_object.callback_loaded(options_object);
+			if (options_object.hasOwnProperty('callback_loaded'))
+				options_object.callback_loaded(options_object);
 		}
 	});
 }
@@ -3932,19 +5183,34 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 	
 	// THIS WILL RETURN:
 	// ["www.linkedin.com", "www", undefined, undefined, undefined, undefined, "www", "linkedin.com", index: 7, input: "http://www.linkedin.com"]
+	// ["cylex-uk.co.uk", "cylex-uk", undefined, undefined, undefined, undefined, "cylex-uk", "co.uk", index: 20, input: "http://west-malling.cylex-uk.co.uk"]
+	// ["bongareevillage.com", "bongareevillage", undefined, undefined, undefined, undefined, "bongareevillage", "com", index: 7, input: "http://bongareevillage.com"]
 	if (x = new RegExp(reg_domain, '').exec(input_skips_object.domain)) {
 		
-		// =>8
-		if (x[7].indexOf('.') != -1)
-			input_skips_object.short_domain = x[7].trim();
+		// 6 and 7
+		
+		// Debug
+		//~ console.log(x);
+		
+		if (x[6] == 'www')
+			x[6] = '';
+		
+		var tmp_domain;
+		tmp_domain = (x[6] != '') ? x[6] + '.' + x[7] : x[7];
+		
+		
+		// Contains .
+		if (tmp_domain.indexOf('.') != -1)
+			input_skips_object.short_domain = tmp_domain;
 		else
 			input_skips_object.short_domain = input_skips_object.domain.trim();
+		
 		
 	} else
 		input_skips_object.short_domain = input_skips_object.domain.trim();
 	
-	//~ input_skips_object.short_domain = x[1].trim();
-	
+	// Debug
+	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
 	// ...
 	function remove_skips(e) {
@@ -4022,9 +5288,6 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		el_inp.setAttribute('type','button');
 		el_inp.value = '>' + input_skips_object.domain;
 		el_inp.className = 'input_skip_button2_rm_';
-		//~ el_inp.value = 'x>' + url;
-		//~ el_inp.id = url; //argv
-		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
 		el_inp.onclick = remove_skips;
 		
 		return el_inp;
@@ -4107,7 +5370,9 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
  * @
  * @
  * 
- * @AMT___POPUP___PROXY_REDACTED_ XXXX, @>AMT___POPUP__initializeGlobals  **get the @AMT___POPUP___PROXY_REDACTED_ value before continuing
+ * @ AMT___POPUP___PROXY_REDACTED_ XXXX, @ AMT___POPUP__initializeGlobals  **get the @ AMT___POPUP___PROXY_REDACTED_ value before continuing
+ * 
+ * 
  */
 function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// : url
@@ -4115,7 +5380,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// : catch_include
 	// : post_request (DEFAULT=null), an object {}, {query: 'query'}
 	// : headers_array
-	// : 
+	// : remove_urls_from_body, boolean, remove URLs from the result body
 	
 	/*
 	 * obj_vars = {
@@ -4281,13 +5546,26 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			var content;
 			var arr = [];
 			while(content = contentReg.exec(ol)) {				
-				content[2] = content[2].replace(/<b>/g, '`');
-				content[2] = content[2].replace(/<\/b>/g, '``');
+				content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+				content[2] = content[2].replace(/<\/b>/gi, '(``)');
 				content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
 				content[2] = content[2].replace(/<[^>]+>/g, ' ');
 				content[2] = content[2].replace(/[<>]/g, ' ');
-				content[2] = content[2].replace(/``/g, '</b>');
-				content[2] = content[2].replace(/`/g, '<b>');
+				// Clean it now
+				content[2] = __js_clean_html_str(content[2]);
+				// Replace B
+				content[2] = content[2].replace(/\(``\)/g, '</b>');
+				content[2] = content[2].replace(/\(`\)/g, '<b>');
+				
+				// URLs ?
+				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+					// http at start, to - -
+					content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+					// www at start, to - -
+					content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+					//~ //XX http at end
+					//~ content[2] = content[2].replace(/https?:\/\/[^ ]+$/g, '');
+				}
 				
 				arr.push([
 					content[1], content[2]
@@ -4820,8 +6098,10 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	/**
 	 * OPTIONAL PARAMETERS. THESE ARE SET FROM doSubmit OR ELSE
 	 * THEY MAY BE SET HERE.
+	 * 
+	 * Which form to submit
 	 */
-	// which form to submit
+	// 
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	else if (document.getElementById(form))
@@ -4829,13 +6109,13 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
-	// debug
+	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
 	
-	// set global vars
+	// Set global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
 	
@@ -4853,11 +6133,11 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: MT___host + '/mturk/util.php?AMT__doSubmit__serverSide_read=',
-		timeout: 2000,
+		timeout: 10000,
 		onload: function(response) {
 			var rs = response.responseText;
 			
-			// if status is not 200 then submit regular,
+			// If status is not 200 then submit regular,
 			// with the browser's **local storage**
 			if (response.status != 200) {
 				MT__DOSUBMIT__USER_SET_TYPE = 'regular';
@@ -4865,8 +6145,9 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 				return;
 			}
 			
-			// still here?
+			// Still here?
 			console.log(rs);
+			
 			// response is "time:\d+([:response.data:])"
 			var serverSide_currentTime;
 			var split = /^time:([\d\.]+)([^$]*)$/.exec(rs);
@@ -7145,7 +8426,9 @@ function AMT___oldTopWindowFloatStuff() {
 
 function AMT___InitializeReturnAndAcceptKeyPress() {
 	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
-			AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
+		
+			if (rs.hasOwnProperty('RACustomKey'))
+				AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
 			//alert('here ' + rs.RACustomKey + rs.RACustomKey.toLowerCase().charCodeAt() + AMT__Global_Vars.RACustomKey);
 			
 		});

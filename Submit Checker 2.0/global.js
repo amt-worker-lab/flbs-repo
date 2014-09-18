@@ -21,7 +21,7 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
 			
 			console.log('userName: ' + this.userName);
 			
-			this.computerId = AMT__Global_Vars.computerId; //Not passed in via localStorage
+			this.computerId = AMT__Global_Vars.computerId; //Not passed in via sessionStorage
 	}
 
 
@@ -80,7 +80,11 @@ AMT__Global_Vars.initializeGroupId = function () {
 		}, false);
 		
 	}
-	else
+	// Sep 18 2014
+	// Added window.top != window.self
+	// Bug: When in preview mode, not in iframe,
+	// setInterval would endlessly post message.
+	else if (window.top != window.self)
 	{
 		var interval =  setInterval(function(){
 			parent.postMessage({groupIdRequest: true}, '*');
@@ -294,7 +298,7 @@ AMT__Global_Vars.initializeTabId = function() {
  
  
 function recordReturn() {
-	localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
+	sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
 }
 
 
@@ -303,7 +307,7 @@ document.addEventListener("keydown", function(event) {
     switch (event.keyCode) {
         case 116 : // 'F5'
 			if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
-				localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'refresh';
+				sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'refresh';
             else
             {
 				//Send a message to the top window and tell it to refresh
@@ -323,7 +327,7 @@ document.addEventListener("keydown", function(event) {
             break;
         case 27: //  'Esc'
 			//alert('Esc Pressed');
-			localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = '';
+			sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = '';
 			break;
     }
 });
@@ -344,14 +348,14 @@ function AMT___initializeReturnRecording() {
 window.onbeforeunload = function() {
 	console.log(AMT__Global_Vars);
 	if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
-		if(localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] == 'refresh') {
-			delete localStorage['tab' + AMT__Global_Vars.tabId + 'Type'];
+		if(sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] == 'refresh') {
+			delete sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'];
 			return;
 		}
-		else if(localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] != 'return') {
-			localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'submit';
+		else if(sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] != 'return') {
+			sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'submit';
 		}
-		localStorage['tab' + AMT__Global_Vars.tabId + 'Details'] = JSON.stringify(
+		sessionStorage['tab' + AMT__Global_Vars.tabId + 'Details'] = JSON.stringify(
 			{
 				hitId: AMT__Global_Vars.hitRecordDetails.hitId,
 				accountName: AMT__Global_Vars.hitRecordDetails.accountName,
@@ -416,7 +420,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				AMT__Global_Vars.core.return_accept_run_nextTab = true;
 				break;
 			case 'refreshThePage' :
-				localStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'refresh';
+				sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'refresh';
 				window.location.href = window.location.href;
 				break;
 		}

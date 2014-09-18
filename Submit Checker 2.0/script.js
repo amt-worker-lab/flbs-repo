@@ -6,6 +6,7 @@ PROBLEM_FAIL = 'There was a problem submitting your results for this HIT';
 EXPIRED_FAIL = 'The HIT you were viewing has expired.';
 
 //Do not run during external submit. You will lose the race
+//Only run in top window
 if(window.location.href != 'https://www.mturk.com/mturk/externalSubmit') {
 
 function ResolvedHit(hId,type,accountName,userName,isFail,typeOfF) {
@@ -36,97 +37,107 @@ var locReg = /mturk.com/;
 
 
 chrome.extension.sendMessage({
-			WhatsMyTab: true		
-		}, function(rs) {
-			//alert(rs);
+				WhatsMyTabResolvedHitRequest: true,
+				currentUrl: loc
+			}, function(rs) {
+		
+		console.log('refresh is here');
+		
+		var tabId = rs.id;
+		var lastUrl = rs.lastUrl;
+		
+		//alert('herio');
+		console.log(sessionStorage);
+		
+		if(sessionStorage['tab' + tabId + 'Details'] && sessionStorage['tab' + tabId + 'Details'] != '') {
 			
-			console.log('refresh is here');
-			
-			var tabId = rs.id;
-			//alert(tabId);
-			if(localStorage['tab' + tabId + 'Details'] && localStorage['tab' + tabId + 'Details'] != '') {	
-				//Did we leave the site?
-				if(!loc.match(locReg)) {
-					delete localStorage['tab' + tabId + 'Type'];
-					delete localStorage['tab' + tabId + 'Details'];
-				}
-				else
-				{
-					var wentToDifferentAreaOnMturk = false;
-					if(loc.indexOf('/mturk/dashboard') != -1 && doc.indexOf('There are no HITs available') == -1)
-						wentToDifferentAreaOnMturk = true;
-					if(loc.indexOf('/mturk/myhits') != -1 && doc.match(/\d+ of \d+ Results/))
-						wentToDifferentAreaOnMturk = true;
-					if(loc.indexOf('/mturk/findhits') != -1 && doc.indexOf('There are no more available HITS in this group.') == -1)
-						wentToDifferentAreaOnMturk = true;
-					if(loc.indexOf('mturk/findquals') != -1 ||
-						loc.indexOf('mturk/status') != -1 ||
-						loc.indexOf('mturk/transferearnings') != -1 ||
-						loc.indexOf('mturk/youraccount') != -1 ||
-						loc.indexOf('mturk/welcome') != -1 ||
-						loc.indexOf('mturk/searchbar') != -1
-						) {
-						console.log('went to different area');
-						wentToDifferentAreaOnMturk = true;
-					}
-					
-					
-					if(wentToDifferentAreaOnMturk) {
-						delete localStorage['tab' + tabId + 'Type'];
-						delete localStorage['tab' + tabId + 'Details'];
-						return;
-					}
-					
-
-					
-					var hit = JSON.parse(localStorage['tab' + tabId + 'Details']);
-					var type = localStorage['tab' + tabId + 'Type']
-					//alert(tabId);
-					
-					//Did we go to dashboard without running out of Hits?
-					
-					
-
-					delete localStorage['tab' + tabId + 'Details'];
-					delete localStorage['tab' + tabId + 'Type'];
-					//alert('here');
-
-					var isFailed = false;
-					var typeOfFail = 'NA';
-					if(type == 'submit') {
-						if(doc.indexOf(MAX_PAGE_FAIL) != -1) {
-							isFailed = true;
-							typeOfFail = 'Max Page Requests';
-						}
-						else if(doc.indexOf(PROBLEM_FAIL) != -1) {
-							isFailed = true;
-							typeOfFail = 'Problem Submitting';
-						}
-						else if(doc.indexOf(EXPIRED_FAIL) != -1) {
-							//~ alert('testing expired fail');
-							isFailed = true;
-							typeOfFail = 'Expired';
-						}					
-						if(isFailed) {
-							type = 'return';
-						}
-					}
-					
-					var resolvedHit = new ResolvedHit(hit.hitId,type, hit.accountName, null, isFailed, typeOfFail);
-					console.log(resolvedHit);
-					//alert('and here');
-					chrome.extension.sendMessage({
-							resolvedHit: resolvedHit		
-						}, function(e) {
-							console.log(e);
-							//squelch response
-						});			
-				}
+			//Did we leave the site?
+			if(!loc.match(locReg) == -1 || (lastUrl.indexOf('mturk.com') == -1)) {
+				delete sessionStorage['tab' + tabId + 'Type'];
+				delete sessionStorage['tab' + tabId + 'Details'];
 			}
-			else {
-				//No hits for this tab so end script
+			else
+			{
+				//alert('made it to here');
+				var wentToDifferentAreaOnMturk = false;
+				if(loc.indexOf('/mturk/dashboard') != -1 && doc.indexOf('There are no HITs available') == -1)
+					wentToDifferentAreaOnMturk = true;
+				if(loc.indexOf('/mturk/myhits') != -1 && doc.match(/\d+ of \d+ Results/))
+					wentToDifferentAreaOnMturk = true;
+				if(loc.indexOf('/mturk/findhits') != -1 && doc.indexOf('There are no more available HITS in this group.') == -1)
+					wentToDifferentAreaOnMturk = true;
+				if(loc.indexOf('mturk/findquals') != -1 ||
+					loc.indexOf('mturk/status') != -1 ||
+					loc.indexOf('mturk/transferearnings') != -1 ||
+					loc.indexOf('mturk/youraccount') != -1 ||
+					loc.indexOf('mturk/welcome') != -1 ||
+					loc.indexOf('mturk/searchbar') != -1
+					) {
+					console.log('went to different area');
+					wentToDifferentAreaOnMturk = true;
+				}
+				
+				
+				if(wentToDifferentAreaOnMturk) {
+					delete sessionStorage['tab' + tabId + 'Type'];
+					delete sessionStorage['tab' + tabId + 'Details'];
+					return;
+				}
+				
+				//alert('and here');
+				
+				var hit = JSON.parse(sessionStorage['tab' + tabId + 'Details']);
+				var type = sessionStorage['tab' + tabId + 'Type']
+				//alert(tabId);
+				
+				console.log(hit);
+				console.log(type);
+				
+				//Did we go to dashboard without running out of Hits?
+				
+				
+
+				delete sessionStorage['tab' + tabId + 'Details'];
+				delete sessionStorage['tab' + tabId + 'Type'];
+				//alert('here');
+
+				var isFailed = false;
+				var typeOfFail = 'NA';
+				if(type == 'submit') {
+					if(doc.indexOf(MAX_PAGE_FAIL) != -1) {
+						isFailed = true;
+						typeOfFail = 'Max Page Requests';
+					}
+					else if(doc.indexOf(PROBLEM_FAIL) != -1) {
+						isFailed = true;
+						typeOfFail = 'Problem Submitting';
+					}
+					else if(doc.indexOf(EXPIRED_FAIL) != -1) {
+						//~ alert('testing expired fail');
+						isFailed = true;
+						typeOfFail = 'Expired';
+					}		
+								
+					if(isFailed && typeOfFail == 'Expired') {
+						type = 'return';
+					}
+				}
+				
+				var resolvedHit = new ResolvedHit(hit.hitId,type, hit.accountName, null, isFailed, typeOfFail);
+				console.log(resolvedHit);
+				//alert('and here');
+				chrome.extension.sendMessage({
+						resolvedHit: resolvedHit		
+					}, function(e) {
+						console.log(e);
+						//squelch response
+					});			
 			}
-		});
+		}
+		else {
+			//No hits for this tab so end script
+		}
+	});
 
 }
 
@@ -135,10 +146,11 @@ chrome.extension.sendMessage({
 
 
 
-var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
-if(document.location.href.match(locReg) != null) {
+
 function mturk_load()
 {	
+	
+	
 	if (window.top == window.self && /^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href)) {
 		
 		// Only run on these pages!
@@ -219,19 +231,21 @@ function mturk_load()
 	}
 }
 
-var ih;
-if (document.readyState == "complete" || document.readyState == "interactive") {
-	ih = document.body.innerHTML;
-	mturk_load();
-}
-else {
-	document.onreadystatechange = function () {
-		if (document.readyState == "complete" || document.readyState == "interactive") {
-			ih = document.body.innerHTML;
-			mturk_load();
+var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
+if(document.location.href.match(locReg) != null) {
+	var ih;
+	if (document.readyState == "complete" || document.readyState == "interactive") {
+		ih = document.body.innerHTML;
+		mturk_load();
+	}
+	else {
+		document.onreadystatechange = function () {
+			if (document.readyState == "complete" || document.readyState == "interactive") {
+				ih = document.body.innerHTML;
+				mturk_load();
+			}
 		}
 	}
-}
 }
 
 

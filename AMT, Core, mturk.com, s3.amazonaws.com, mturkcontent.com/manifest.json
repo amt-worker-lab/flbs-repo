@@ -4,6 +4,8 @@
       "exclude_matches": [  ],
       "include_globs": ["https://*.mturk.com/*", "https://s3.amazonaws.com/*", "https://*.mturkcontent.com/dynamic/hit*"],
       "js": [
+		"includes/pdfobject.js",
+		
 		"includes/Chart.js",
 		"includes/jshash-2.2/md5.js",
 		"huge_vars.js",
@@ -37,6 +39,9 @@
 		"default_title": "AMT, Core, mturk.com",		// optional; shown in tooltip
 		"default_popup": "popup.html"			// optional
    },
+   "web_accessible_resources": [
+		"audio/next/heavy_medic01.mp3"
+   ],
    "converted_from_user_script": false,
    "description": "",
    "key": "pF488cx8hKR9ZIhRXinp8eWvOkdWYJUvBGTDLsuivRs=",

@@ -4,12 +4,9 @@ console.log("COGITO ERGO SUM!");
  * on browser startup: Reset all localStorage regarding hit submissions/returns?
  * 
  * **/
- //~ 
-//~ if(!localStorage['sessionToggle'] 
- //~ 
-//~ if(localStorage['' 
 
- 
+
+
 function changeIcon(id) {
 	switch(id) {
 			case 'Ben':
@@ -95,9 +92,17 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 	
 	if(request.WhatsMyTab) {
 		console.log('Tab request:' + sender.tab.id);
-		console.log('sessionID' + sender.tab.sessionId);
 		sendResponse({id: sender.tab.id});
 		
+	}
+	
+	if(request.WhatsMyTabResolvedHitRequest) {
+		var lastUrl = localStorage['Tab' + sender.tab.id + 'LastUrl'];
+		console.log('Tab ResolvedHitRequest:' + sender.tab.id + 'from URL request.url' + ', lastUrl: ' +lastUrl);
+		localStorage['Tab' + sender.tab.id + 'LastUrl'] = request.currentUrl;
+		//alert(lastUrl);
+		//alert(sender.tab.id);
+		sendResponse({id: sender.tab.id, lastUrl: lastUrl});
 	}
 	
 	
@@ -119,7 +124,7 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
 						console.log(request.resolvedHit);
 						GM_xmlhttpRequest({
 						method: 'GET',
-						url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
+						url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
 						onload: function(response) {
 										console.log('Response Recieved');
 										if(response) {										

@@ -63,7 +63,116 @@ chrome.runtime.onMessage.addListener(
 		}
 	}
 );
-  
+
+function AMT___global_factory() {
+	
+}
+//AMT__global_factory.prototype.scrollIntoView(r.agent_name); = function(options_object) {
+/**
+ * .highlight_photos
+ * 
+ * @param options_object {}
+ * @param completion_key (String) This is used to send a postMessage to parent window.
+ * @param
+ */
+AMT___global_factory.prototype.highlight_photos = function(options_object) {
+	
+	// Iterate through all images and add an image "button."
+	// Background color is set from domain.
+	// (getBoundingClientRect())
+	// Remove all images from any previous runs.
+	
+	var options_object = options_object;
+	
+	// Remove old
+	remove();
+	
+	// New
+	add();
+	
+	// Send to parent/job window
+	// Write value to db
+	//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
+	//~ for (var i in a) {
+		//~ a[i].onclick = function() {
+			//~ this.style.border = '4px solid LightGreen';
+			//~ 
+			//~ parent.postMessage(
+				//~ {
+					//~ key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
+					//~ data: this.src
+				//~ },
+			//~ "*");
+		//~ }
+	//~ }
+	
+	function add() {
+		var a = document.getElementsByTagName('img');
+		for (var i in a) {
+			if (i == 'length') break;
+			if (!a[i].src || a[i].src == '') continue;
+			add_image(a[i],  200);
+			add_image(a[i], -200);
+		}
+	}
+	function remove() {
+		var a = document.getElementsByClassName('manual__exe_image_162435168649');
+		var i;
+		for (i=a.length - 1; i >= 0; i--) {
+			if (!a[i]) continue;
+			if (!a[i].href) continue;
+			a[i].parentNode.removeChild(a[i]);
+		}
+		var a = document.getElementsByClassName('manual__exe_div_162435168649');
+		for (i=a.length - 1; i >= 0; i--) {
+			if (!a[i]) continue;
+			if (!a[i].href) continue;
+			a[i].parentNode.removeChild(a[i]);
+		}
+	}
+	function add_image(page_img, pos_left) {
+		//create an image
+		//getBounding
+		var b = page_img.getBoundingClientRect();
+		var left = b.left *1;
+		//left -= 60;
+		left += pos_left;
+		var top = b.top *1;
+		top += document.body.scrollTop*1;
+		
+		var d = document.createElement('div');
+		d.setAttribute(
+			'style',
+			'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
+		);
+		d.setAttribute('class', 'manual__exe_div_162435168649');
+		var d_= document.createElement('img');
+		d_.setAttribute('class', 'manual__exe_image_162435168649');
+		d_.setAttribute(
+			'style',
+			'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
+		);
+		d_.src = page_img.src;
+		d_.onclick = function() {
+			this.style.border = '4px solid LightGreen';
+			
+			parent.postMessage(
+				{
+					key: options_object.completion_key, //'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
+					src: this.src
+				},
+			"*");
+		}
+		
+		d.appendChild(d_);
+		document.body.appendChild(d);
+		
+		//~ console.log('pos_left:'+pos_left+' left:'+left);
+		//~ console.log(d_);
+	}
+}
+
+
 /**
  * AMT requester functions
  * AMT__rq
@@ -108,6 +217,8 @@ function load()
 	}
 	
 	
+	//~ //TEST
+	//~ document.body.style.webkitTransform = 'scale(2) !important';
 	
 	//
 	//
@@ -365,6 +476,10 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Andrew_Ryan_guidestar_stats(event.data);
 			}
+			if (event.data.task == 'Andrew_Ryan_charities_ein__movePDF' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				Andrew_Ryan_charities_ein__movePDF(event.data);
+			}
 			if (event.data.task == 'AMT__Robin_Demaria_smartagora_captcha' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Robin_Demaria_smartagora_captcha(event.data);
@@ -390,6 +505,11 @@ function load()
 				// NEW
 				new AMT__rq().rq__AMT__traveldata_scrape_hotels_com(event.data);
 			}
+			if (event.data.task == 'AMT__traveldata_scrape_travelocity_com' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().rq__AMT__traveldata_scrape_travelocity_com(event.data);
+			}
 			
 		}
 	}
@@ -399,18 +519,36 @@ function load()
 	 */
 	function AMT__all_pages_util(r) {
 		
-		//extend
+		// extend
 		if ( r.MT___all_pages_extend )
 			MT___all_pages_extend();
 		
-		//zoom
+		// zoom
 		if ( r.MT___all_pages_zoom )
 			MT___all_pages_zoom();
 		
-		//scroll
+		// showhref
+		if ( r.MT___all_pages_showhref )
+			MT___all_pages_showhref();
+		
+		// scroll
 		// MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight)
 		if ( r.MT___text_scrollIntoView )
 			MT___all_pages_highlightEmailAddresses(true, r.MT___text_scrollIntoView); 
+		
+		// global__highlight_photos
+		// Pass in an options object
+		if ( r.global__highlight_photos ) {
+			new AMT___global_factory().highlight_photos(
+				r.global__highlight_photos
+			);
+		}
+		
+		// Zoom a name
+		// @param: String
+		if ( r.person_name_zoom ) {
+			KristinHowe_agent_photo_scrollIntoView( r.person_name_zoom );
+		}
 		
 		//debug_display: o.name
 		if ( r.debug_display ) {
@@ -547,6 +685,16 @@ function load()
 		
 	}
 	
+	/*
+	 * Andrew Ryan
+	 * 
+	 */
+	function Andrew_Ryan_charities_ein__movePDF() {
+		//~ console.log('x');
+		//~ document.body.style.zoom = '4';
+		//~ document.getElementsByTagName('embed')[0].style.webkitTransform = 'scale(2.5)';
+		//~ document.getElementsByTagName('iframe')[0].style.webkitTransform = 'scale(4) !important';
+	}
 	/*
 	 * Andrew Ryan
 	 * 
@@ -844,6 +992,7 @@ function load()
 			}
 		});
 	}
+	
 	/*
 	 * Kristin Howe 
 	 * 
@@ -862,26 +1011,47 @@ function load()
 		MT___all_pages_zoom();
 		KristinHowe_agent_photo_scrollIntoView(r.agent_name);
 		
-		
 		//~ var ifr_intv = setInterval(function() {
 			//~ d3.contentWindow.postMessage( {task: 'AMT__Kristin_Howe_agent_photos__yahoo_bot', agent_name: NAME}, "*"); // !!
 			//~ d3b.contentWindow.postMessage({task: 'AMT__Kristin_Howe_agent_photos__yahoo_bot', agent_name: NAME}, "*"); // !!
 		//~ }, 400);
 		
 		
-		// post to parent!
-		//~ var img = document.getElementsByTagName('img');
-		//~ for (var i in img) {
-			//~ img[i].onclick = function(e) {
-				//~ this.style.border = '4px solid LightGreen';
-				//~ 
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ return false;
-			//~ }
-		//~ }
+		
 		KristinHowe_agent_photo_activate_images__yb();
 		
+		// KristinHowe_agent_photo_images__add_image
+		function KristinHowe_agent_photo_images__add_image(page_img, pos_left) {
+			//create an image
+			//getBounding
+			var b = page_img.getBoundingClientRect();
+			var left = b.left *1;
+			//left -= 60;
+			left += pos_left;
+			var top = b.top *1;
+			top += document.body.scrollTop*1;
+			
+			var d = document.createElement('div');
+			d.setAttribute(
+				'style',
+				'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
+			);
+			d.setAttribute('class', 'manual__exe_div_162435168649');
+			var d_= document.createElement('img');
+			d_.setAttribute('class', 'manual__exe_image_162435168649');
+			d_.setAttribute(
+				'style',
+				'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
+			);
+			d_.src = page_img.src;
+			d.appendChild(d_);
+			document.body.appendChild(d);
+			
+			console.log('pos_left:'+pos_left+' left:'+left);
+			console.log(d_);
+		}
+		
+		// KristinHowe_agent_photo_activate_images__yb
 		// activate images function
 		function KristinHowe_agent_photo_activate_images__yb() {
 			// Iterate through all images and add an image "button."
@@ -925,35 +1095,6 @@ function load()
 				//~ KristinHowe_agent_photo_images__add_image(a[i], 20);
 				//~ KristinHowe_agent_photo_images__add_image(a[i], -200);
 			//~ }
-			function KristinHowe_agent_photo_images__add_image(page_img, pos_left) {
-				//create an image
-				//getBounding
-				var b = page_img.getBoundingClientRect();
-				var left = b.left *1;
-				//left -= 60;
-				left += pos_left;
-				var top = b.top *1;
-				top += document.body.scrollTop*1;
-				
-				var d = document.createElement('div');
-				d.setAttribute(
-					'style',
-					'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
-				);
-				d.setAttribute('class', 'manual__exe_div_162435168649');
-				var d_= document.createElement('img');
-				d_.setAttribute('class', 'manual__exe_image_162435168649');
-				d_.setAttribute(
-					'style',
-					'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
-				);
-				d_.src = page_img.src;
-				d.appendChild(d_);
-				document.body.appendChild(d);
-				
-				console.log('pos_left:'+pos_left+' left:'+left);
-				console.log(d_);
-			}
 			
 			// Send to parent/job window
 			// Write value to db
@@ -1666,6 +1807,289 @@ function load()
 	}
 	
 	/**
+	 * new AMT__rq().rq__AMT__traveldata_scrape_travelocity_com(event.data);
+	 */
+	AMT__rq.prototype.rq__AMT__traveldata_scrape_travelocity_com = function(data) {
+		
+		// global
+		// @param data.code
+		var data = data;
+		
+		var l = document.location.href;
+		console.log(l);
+		
+		
+		if (l.indexOf('?chkin=') != -1) {
+			lowest();
+			return;
+		}
+		else if (l.indexOf('https://www.travelocity.com/HotelCheckout?tripid=') != -1) {
+			
+			var o = {
+				p_1: null,
+				p_2: null,
+				p_3: null,
+				p_4: null
+			}
+			
+			var intv;
+			
+			prices_1(true);
+			
+			// RESULT ???
+			intv = setInterval(function() {
+				console.log(o);
+				prices_1(false);
+			}, 100);
+			
+			
+			return;
+		}
+		//ERR		//http://www.hotels.com/search/search.html?cd=08-19-14&dd=08-21-14&hid=116961&ihu=true&numberOfRooms=1&pn=1&rl=CITY%3A1633911%3APROVIDED%3APROVIDED&roomInfoList[0].numberOfAdults=1&vt=LIST
+		else if (l.indexOf('http://www.hotels.com/search/search.html') != -1) {
+			
+			var x = document.getElementsByClassName('noticeTextType1');
+			if (x && x.length && x[0] != undefined && x[0].innerText.indexOf('is not available on Hotels.com for your travel dates.') != -1) {
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', notes: x[0].innerText.trim()}, "*");
+			} else if (ih.indexOf(' has no availability for your travel dates on Hotels.com') != -1) {
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', notes: 'No availability for your travel dates on Hotels.com'}, "*");
+			}
+		}
+		
+		//~ function prices_2() {
+			//~ 
+			//~ var x = document.getElementsByClassName('coupon_summary');
+			//~ if  (
+				//~ x.length &&
+				//~ x.innerText.trim() != ''
+				//~ )
+			//~ {
+				//~ 
+			//~ }
+			//~ 
+		//~ }
+		function prices_1(is_first) {
+			
+			var pr = document.getElementsByClassName('amount-value');
+			
+			if (is_first) {
+				if (pr[0].innerText == '-$0.00')
+					pr = pr[1];
+				else
+					pr = pr[0];
+				
+			} else {
+				if (pr.length != 3)
+					return;
+				// Here?
+				pr = pr[2];
+			}
+			console.log(pr);
+			
+			if (!pr) {
+				document.body.style.backgroundColor = 'pink';
+				exit('err1');
+			}
+			pr = pr.innerText.trim();
+			if (!/^\$[\d\.,]+$/.exec(pr)) {
+				document.body.style.backgroundColor = 'pink';
+				console.log(pr);
+				exit('err2');
+			}
+			if (is_first)
+				o.p_1 = pr;
+			else
+				o.p_3 = pr;
+			
+			var pr = document.getElementsByClassName('room-total')[0];
+			if (!pr) {
+				if (document.body.innerHTML.indexOf('avg./night') == -1) {
+					pr = 'N/A'; // N/A or BLANK
+					//~ o.p_2 = '';
+					//~ o.p_4 = '';
+				} else {
+					exit('err3');
+				}
+			}
+			else {
+				pr = pr.innerText.trim();
+				if (!/^\$[\d\.,]+$/.exec(pr)) {
+					document.body.style.backgroundColor = 'pink';
+					exit('err4');
+				}
+			}
+			if (is_first)
+				o.p_2 = pr;
+			else
+				o.p_4 = pr;
+			
+			// click next
+			if (is_first) {
+				var clickToShow = document.getElementById('coupon-code');
+				if (!clickToShow) {
+					err('clickToShow');
+				} else
+					clickToShow.click();
+				
+				var pr = document.getElementsByClassName('text cko-coupon-field')[0];
+				
+				var error__hmmm = ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking');
+				
+				if (!pr || error__hmmm != -1) {
+					
+					// err or ...
+					if (ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking') != -1) {
+						// complete
+						clearInterval(intv);
+						console.log(o);
+						parent.postMessage({
+							key: 'AMT__traveldata_scrape_hotels_com__complete',
+							data: o,
+							error: 'Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking'
+						}, "*");
+						return;
+					} else {
+						document.body.style.backgroundColor = 'pink';
+						exit('err5');
+					}
+				}
+				pr.value = data.code;
+				//~ pr.focus();
+				
+				var pr = document.getElementsByTagName('button');
+				for (var i in pr) {
+					if (i == 'length') break;
+					
+					if (pr[i].innerHTML.trim() == '<span class="btn-label"> Apply Coupon </span>') {
+						pr = pr[i];
+						break;
+					}
+				}
+				if (!pr) {
+					document.body.style.backgroundColor = 'pink';
+					exit('err6');
+				}
+				console.log(pr);
+				
+				pr.disabled = false;
+				pr.click();
+				
+				return;
+			}
+			
+			// Here?
+			// !is_first
+			if  (
+				o.p_1 != o.p_3 &&
+					(
+						//~ o.p_2 != o.p_4 || // ?
+						o.p_2 == o.p_4 || // Avg. per night is not UPDATED here?
+						o.p_2 == 'N/A' && o.p_4 == 'N/A'
+					) &&
+				document.body.innerHTML.indexOf('Please provide a valid coupon code.') == -1
+				// &&
+				//document.getElementsByClassName('message error_message')[0].innerText.trim() == ''
+				)
+			{
+				clearInterval(intv);
+				console.log(o);
+				
+				// complete
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', data: o}, "*");
+			}
+			// Error?
+			else if
+			(
+				document.getElementsByClassName('message error_message') &&
+				document.getElementsByClassName('message error_message')[0] && 
+				document.getElementsByClassName('message error_message')[0].innerText.trim() != ''
+			)
+			{
+				
+				clearInterval(intv);
+				console.log(o);
+				
+				var er = document.getElementsByClassName('message error_message')[0].innerText.trim();
+				
+				//~ parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', error: er}, "*");
+				
+				parent.postMessage({
+					key: 'AMT__traveldata_scrape_hotels_com__complete',
+					data: o,
+					error: er
+				}, "*");
+			}
+			
+			
+		}
+		function lowest() {
+			
+			var r = document.getElementsByClassName('room-price');
+			var l = 999999;
+			var button = null;
+			
+			for (var i in r) {
+				if (i == 'length') break;
+				
+				var p = r[i].innerText.trim();
+				if (!/^\$[\d,\.]+$/.exec(p)) {
+					document.body.style.backgroundColor = 'pink';
+					exit('errC');
+				}
+				
+				p = p.replace('$', '') * 1;
+				if (p < l) {
+					l = p;
+					button = r[i].parentNode.parentNode.getElementsByTagName('button');
+					
+					//~ button = r[i].getElementsByTagName('form');
+					
+					//~ if (button.length == 1) {
+						//~ 
+						//~ button[0].click();
+						
+						// PAY NOW?
+						//~ var forms = r[i].getElementsByTagName('form');
+						//~ console.log(forms);
+						//~ if (forms[1].name.indexOf('payNow') != -1) {
+							//~ forms[1].submit();
+							//~ return;
+						//~ } else {
+							//~ 
+						//~ }
+						
+					//~ }
+					if (button.length == 1) {
+						button = button[0];
+					} else {
+						err('Btn');
+					}
+				}
+			}
+			//~ console.log(l);
+			//~ console.log(button);
+			
+			if (button != null) {
+				button.click();
+			}
+			
+			// Pay now button
+			var intCount = 0;
+			var interval = setInterval(function() {
+				var n = document.getElementById('deposit-pay-now-button');
+				if (n) {
+					//~ console.log(n);
+					clearInterval(interval);
+					n.click()
+				}
+				intCount++;
+				if (intCount>=40)// 8s
+					clearInterval(interval);
+			}, 200);
+		}
+	}
+	
+	/**
 	 * new AMT__rq().rq__AMT__traveldata_scrape_hotels_com(event.data);
 	 */
 	AMT__rq.prototype.rq__AMT__traveldata_scrape_hotels_com = function(data) {
@@ -1707,8 +2131,10 @@ function load()
 		else if (l.indexOf('http://www.hotels.com/search/search.html') != -1) {
 			
 			var x = document.getElementsByClassName('noticeTextType1');
-			if (x && x[0].innerText.indexOf('is not available on Hotels.com for your travel dates.') != -1) {
+			if (x && x.length && x[0] != undefined && x[0].innerText.indexOf('is not available on Hotels.com for your travel dates.') != -1) {
 				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', notes: x[0].innerText.trim()}, "*");
+			} else if (ih.indexOf(' has no availability for your travel dates on Hotels.com') != -1) {
+				parent.postMessage({key: 'AMT__traveldata_scrape_hotels_com__complete', notes: 'No availability for your travel dates on Hotels.com'}, "*");
 			}
 		}
 		
@@ -1732,10 +2158,9 @@ function load()
 				exit('err1');
 			}
 			pr = pr.innerText.trim();
-			//~ console.log(pr);
+			console.log(pr);
 			if (!/^\$[\d\.,]+$/.exec(pr)) {
 				document.body.style.backgroundColor = 'pink';
-				//~ console.log(o);
 				exit('err2');
 			}
 			if (is_first)
@@ -1745,13 +2170,21 @@ function load()
 			
 			var pr = document.getElementById('averageNightlyPrice');
 			if (!pr) {
-				document.body.style.backgroundColor = 'pink';
-				exit('err3');
+				//~ document.body.style.backgroundColor = 'pink';
+				if (document.body.innerHTML.indexOf('Average nightly rate') == -1) {
+					pr = 'N/A'; // N/A or BLANK
+					//~ o.p_2 = '';
+					//~ o.p_4 = '';
+				} else {
+					exit('err3');
+				}
 			}
-			pr = pr.innerText.trim();
-			if (!/^\$[\d\.,]+$/.exec(pr)) {
-				document.body.style.backgroundColor = 'pink';
-				exit('err4');
+			else {
+				pr = pr.innerText.trim();
+				if (!/^\$[\d\.,]+$/.exec(pr)) {
+					document.body.style.backgroundColor = 'pink';
+					exit('err4');
+				}
 			}
 			if (is_first)
 				o.p_2 = pr;
@@ -1798,7 +2231,10 @@ function load()
 			// !is_first
 			if  (
 				o.p_1 != o.p_3 &&
-				o.p_2 != o.p_4 &&
+					(
+						o.p_2 != o.p_4 ||
+						o.p_2 == 'N/A' && o.p_4 == 'N/A'
+					) &&
 				document.getElementsByClassName('message error_message')[0].innerText.trim() == ''
 				)
 			{
@@ -3674,7 +4110,16 @@ function load()
 		}
 		// scrollIntoView function
 		function KristinHowe_agent_photo_scrollIntoView(name__) {
-							
+			
+			// ADD A DOUBLE CLICK TO RESET PAGE
+			//
+			var all_elements_zoomed = [];
+			document.body.addEventListener('dblclick', function() {
+				for (var i in all_elements_zoomed) {
+					all_elements_zoomed[i].style.zoom = '';
+				}
+			}, false);
+			
 			if (name__)
 				var name__ = name__;
 			else
@@ -3710,6 +4155,9 @@ function load()
 					allElements[i].scrollIntoView(false); // true for top, false for bottom
 					allElements[i].style.fontWeight = 'bold';
 					allElements[i].style.zoom = '2';
+					
+					all_elements_zoomed.push(allElements[i]); // ADD RESET
+					
 					found = true;
 					break;
 				}
@@ -3730,6 +4178,9 @@ function load()
 						allElements[i].scrollIntoView(false); // true for top, false for bottom
 						allElements[i].style.fontWeight = 'bold';
 						allElements[i].style.zoom = '2.4';
+						
+						all_elements_zoomed.push(allElements[i]); // ADD RESET
+						
 						break;
 					}
 				}
@@ -4353,7 +4804,7 @@ function load()
 	function MT___all_pages_showhref() {
 		var d;
 		d = document.createElement('input');
-		d.setAttribute('style','position:absolute;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee');
+		d.setAttribute('style','position:fixed;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee');
 		d.value = document.location.href;
 		d.addEventListener('keydown', function(e) { //?
 			var k = e.keyCode;
@@ -4369,6 +4820,10 @@ function load()
 			document.location.href = this.value;
 		}, false);
 		document.body.appendChild(d);
+		
+		
+		
+		//~ d.setAttribute('style','position:absolute;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee');
 		
 		//~ d.addEventListener('mouseover', function() {
 			//~ this.select();
@@ -5497,6 +5952,7 @@ function load()
 					console.log(y.innerText);
 					return;
 				}
+				z[1] = (z[1].length == 4) ? '0' + z[1] : z[1];
 				zipcodes.push(z[1]);
 			}
 			//~ if (zipcodes.length != 3) {
@@ -5590,6 +6046,9 @@ function load()
 				});
 			}
 			function CrowdSource_google_locations_autocomplete__changeLocn() {
+				// 4
+				zipcodes[NUM_JOB] = (zipcodes[NUM_JOB].length == 4) ? '0' + zipcodes[NUM_JOB] : zipcodes[NUM_JOB];
+				
 				// &usg=XX !!
 				var url = 'https://www.google.com/uul?muul=4_18&luul='+encodeURIComponent(zipcodes[NUM_JOB])+'&uulo=1&usg='+USG+'&hl=en';
 				console.log('changeLocn:' + url);
