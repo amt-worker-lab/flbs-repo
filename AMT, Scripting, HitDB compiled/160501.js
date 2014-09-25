@@ -3333,8 +3333,10 @@ if (document.location.href.match('https://www.mturk.com/mturk/dashboard'))
 else if (document.location.href.match('https://www.mturk.com/mturk/preview'))
 {
   var table = document.getElementById('requester.tooltip');
-  if (table == null)
-    return;
+  if (table == null) {
+	  alert('table is null');
+    //return;
+	}
   table = table.parentNode.parentNode.parentNode;
   var title = table.parentNode.parentNode.parentNode.parentNode.getElementsByTagName('div')[0].textContent.trim();
   

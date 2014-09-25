@@ -22700,6 +22700,211 @@ function MT__RUN() {
 		//~ }, 1400);
 	}
 	//
+	// Grocery ROI
+	// 
+	// 21 Aug 2014
+	s = '<p><strong>Our goal</strong> with this project is to extract valuable data from a products ingredient table in order to provide our customers with more information. Your task is to view the product ingredient table and transcribe ingredient text to the provided text field.</p>';
+	if(ih.indexOf(s) != -1)
+	{		
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;}');
+		GM_addStyle('em {font-weight:bold;zoom:1.4;}');
+		
+		var a = document.getElementsByTagName('a')[0];
+		
+		var q = document.getElementsByName('Ingredients')[0];
+		
+		var o = {
+			tx: document.getElementsByTagName('textarea')[0]
+		}
+		
+		/*BEGIN ITEMS*/
+		//
+		var d2 = document.createElement('input');
+		d2.type = 'button';
+		d2.setAttribute('style', 'position:absolute;top:0;height:60px;left:60%;width:39%;');
+		document.body.appendChild(d2);
+		d2.value = 'clean';
+		//
+		var d3 = document.createElement('img');
+		d3.setAttribute('style', 'position:absolute;top:60px;left:0%;max-width:60%;max-height:200px;');
+		document.body.appendChild(d3);
+		d3.src = a;
+		//
+		var d4 = document.createElement('textarea');
+		d4.setAttribute('style', 'position:absolute;top:400px;left:60%;width:39%;');
+		document.body.appendChild(d4);
+		//
+		var d5 = document.createElement('div');
+		d5.setAttribute('style', 'position:absolute;top:60px;left:60%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d5);
+		//~ d4.disabled = true;
+		/*END ITEMS*/
+		
+		// ...
+		d2.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			q.value = q.value.replace(/[\r\n]/g, ' '); // new line
+			q.value = q.value.replace(/\s+/g, ' '); // multi
+			q.value = q.value.replace(/ jjjjjjjjjjjjjj /g, ''); // multi
+			
+			Grocery_ROI_text_ingredients__div(q.value);
+			
+			document.getElementById('submitButton').focus();
+		}
+		d4.onclick = function() {
+			var x = q.value;
+			q.value = this.value;
+			this.value = x;
+			//~ console.log(x);
+			
+			// focus/blur
+			q.focus();
+			q.select();
+			q.blur();
+			this.focus();
+			this.select();
+			this.blur();
+			
+			Grocery_ROI_text_ingredients__div(q.value);
+			
+		}
+		
+		// inner
+		//~ 
+			
+		new AMT___core_factory().el_innerHeight({
+			//~ // Returns innerHeight in pixels
+			callback_function: function(innerHeight) {
+				
+				//~ console.log(innerHeight);
+				//~ innerHeight -= 70; // This is offset of d1 from top.
+				//~ 
+				//~ var tx = document.getElementsByTagName('textarea')[0];
+				
+				var i = innerHeight - 60; // submit button
+				
+				var short, tall, top;
+				
+				tall = .6 * i + 'px';
+				short = .4 * i + 'px';
+				top = (.6 * i)+60 + 'px';
+				
+				d3.style.maxHeight = tall;
+				
+				o.tx.setAttribute('style', 'position:absolute;');
+				o.tx.style.height = short;
+				o.tx.style.top = top;
+				
+				
+				//~ console.log(.6 * innerHeight + 'px');
+				//~ console.log(o.tx.style.top);
+				
+				//
+				d2.style.height = (.6 * i) + 60 + 'px';
+				
+				//
+				d4.style.height = short;
+				d4.style.top = top;
+				
+				//
+				d5.style.height = tall;
+			}
+		});
+		
+		// ...
+		//~ o.tx.setAttribute('style', 'position:absolute;');
+		
+		//
+		// return/accept
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// 
+		document.getElementById('submitButton').onclick = function() {
+			//~ console.log(
+			q.value = q.value.trim();
+			if (q.value.length < 2) // blank?
+				return false;
+			
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+		// ...
+		var rf = new AMT___requests_factory().image_2_OCR({
+			url: a.href,
+			resize: '50%',
+			callback_function: Grocery_ROI_text_ingredients
+		});
+		// FULL SIZE
+		var rf = new AMT___requests_factory().image_2_OCR({
+			url: a.href,
+			CALLBACK__FULL_SIZE: true,
+			callback_function: Grocery_ROI_text_ingredients
+		});
+		
+		
+		/**
+		 * 
+		 * @response
+		 * @text
+		 */
+		function Grocery_ROI_text_ingredients__div(rs) {
+			
+			rs = rs.replace(/\./g, '<em>.</em>');
+			rs = rs.replace(/[\r\n]/g, '<br>');
+			rs = rs.replace(/(ingredients)/gi, '<em>$1</em>');
+			d5.innerHTML = rs;
+			
+		}
+		
+		/**
+		 * 
+		 * @response
+		 * @text
+		 */
+		function Grocery_ROI_text_ingredients(result_object) {
+			
+			//
+			var rs = result_object.text.trim();
+			
+			// REMOVE "ingredients:"
+			rs = rs.replace(/^ *ingredients:* */i, '');
+			
+			var out;
+			
+			console.log(result_object);
+			
+			if (result_object.hasOwnProperty('CALLBACK__FULL_SIZE')) {
+				out = d4;
+			} else
+				out = q;
+			
+			out.value = rs.trim();
+			
+			// Add a non-spelling
+			out.value += ' jjjjjjjjjjjjjj ';
+			
+			out.focus();
+			out.select();
+			out.blur();
+			
+			if (out == q) {
+				Grocery_ROI_text_ingredients__div(out.value);
+			}
+			
+		}
+	}
+	//
 	// Grocery_ROI (fork from turk-HPCBeauty)
 	// Collect Product Information
 	// 21 Aug 2014
@@ -30409,6 +30614,134 @@ function MT__RUN() {
 				//~ }
 			//~ });
 		//~ }
+	}
+	
+	//
+	// Nathan Labat
+	// Find the number of google search results
+	// 
+	s = '<p>Number of google search results (number of results from the top of the google search page):</p>';
+	s2 = '<h3><u>Click the link for the google search</u>&nbsp;then&nbsp;use the google search results page to enter the number of search results (in gray in the top left of the page),</h3>';
+	if (
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1
+	) {
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		
+		var a = document.getElementsByTagName('a')[0].innerText;
+		
+		// Does not have pound
+		if (a.indexOf('#') == -1) {
+			a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			a = a.replace(/\?q([^=])/g, '?q=$1');
+			console.log(a);
+			
+		}
+		// Has pound
+		else
+		{
+			a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			a = a.replace(/\?[^#]*#/g, '?');
+			a = a.replace(/\?q([^=])/g, '?q=$1');
+			//~ a = a.replace(/\#q([^=])/g, '?q=$1');
+			console.log(a);
+			
+			if (a.indexOf('#') != -1) {
+				alert('has #');
+				return;
+			}
+		}
+		// Add &filter=0&hl=en
+		//~ a += '&filter=0&hl=en';
+		
+		var md5_search_url = any_md5(a, '0123456789ABCDEF');
+		
+		Nathan_Labat_Google__check_cache();
+		document.body.onclick = function() {
+			//~ document.body.style.backgroundColor = '#fff';
+			document.body.style.backgroundColor = 'aqua';
+			Nathan_Labat_Google__check_cache();
+		}
+		
+		/**
+		 * function Nathan_Labat_Google__check_cache
+		 * 
+		 * exists?
+		 */
+		function Nathan_Labat_Google__check_cache() {
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/.cached/'+md5_search_url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status > 200) {
+						
+						// new
+						Nathan_Labat_Google__new_download();
+						
+					} else {
+						
+						// cached
+						Nathan_Labat_Google__process_response({
+							rs: rs
+						});
+					}
+				}
+			});
+		}
+		function Nathan_Labat_Google__process_response(complete_object) {
+			
+			var rs = complete_object.rs;
+			
+			var r;
+			
+			//3,220,000
+			r = /<div id="resultStats">(About |)([\d,]+) results?/.exec(rs);
+			if (r) {
+				document.getElementById('Q1Url').value = r[2];
+				doSubmit();
+					
+			} else {
+				
+				r = /<p style="[^"]+"> Your search - <em>[^<]*<\/em> - did not match any documents\.  <\/p>/.exec(rs);
+				if (r) {
+					document.getElementById('Q1Url').value = '0';
+					doSubmit();
+				}
+			}
+			
+			document.body.style.backgroundColor = '#fff';
+			
+		}
+		function Nathan_Labat_Google__new_download() {
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: a,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status > 200) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					var rf = new AMT___requests_factory();
+					rf.io__write_to_file(
+						{
+							data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+									'&AMT__serverSide_write__folder=.cached'+
+									'&AMT__serverSide_write__file=' + md5_search_url,
+							rs:		response.responseText
+						},
+						Nathan_Labat_Google__process_response
+					);
+				}
+			});
+		}
 	}
 	
 	//
@@ -55804,7 +56137,7 @@ qatar,80
 	// 
 	s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
 	s2 = 'Profile Picture';
-	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1) {
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1 && 0 == 1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:30%;margin-top:200px;}');
 		GM_addStyle('#submitButton {position:absolute;top:100px;left:0;width:100%;height:60px;}');
@@ -55856,6 +56189,7 @@ qatar,80
 					if (response.status != 200) {
 						//~ out.innerHTML = response.status;
 						
+						//~ document.getElementsByName('Q3ePhoto')[1].checked = true;
 						document.getElementsByName('Q3aProfilePicture')[1].checked = true;
 						doSubmit();
 						//~ 
@@ -55863,6 +56197,7 @@ qatar,80
 					}
 					else 
 					{
+						//~ document.getElementsByName('Q3ePhoto')[0].checked = true;
 						document.getElementsByName('Q3aProfilePicture')[0].checked = true;
 						doSubmit();
 					}
@@ -55934,9 +56269,12 @@ qatar,80
 	// LinkedIn Test ""
 	// Masters, linkedin URL
 	// WF 1
-	s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
-	s2 = 'Profile Picture';
-	if (ih.indexOf(s) != -1 && ih.indexOf(s2) == -1) {
+	//~ s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
+	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
+	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
+	//~ s = 'd. Email';
+	//~ s2 = '';
+	if (ih.indexOf(s) != -1) {//console.log('x');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:30%;margin-top:500px;}');
 		GM_addStyle('#submitButton {position:absolute;top:440px;left:0;width:100%;height:60px;}');
@@ -55945,8 +56283,11 @@ qatar,80
 		GM_addStyle('strong {zoom:2;}');
 		
 		// move
-		var prof_rad = document.getElementsByTagName('table')[6];
+		var prof_rad = document.getElementsByTagName('table')[5];
 		prof_rad.setAttribute('style', 'position:absolute;top:0;');
+		prof_rad = prof_rad.getElementsByTagName('input');
+		var prof_rad = document.getElementsByTagName('table')[7];
+		prof_rad.setAttribute('style', 'position:absolute;top:40;');
 		prof_rad = prof_rad.getElementsByTagName('input');
 		
 		var a = document.getElementsByTagName('a')[0].href;
@@ -55955,19 +56296,141 @@ qatar,80
 		/*  */
 		var d1;
 		d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:40px;left:0%;width:98%;height:400px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:400px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
 		document.body.appendChild(d1);
+		var d2;
+		d2 = document.createElement('img');
+		d2.setAttribute('style','position:absolute;top:80px;left:80%;width:20%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+		document.body.appendChild(d2);
 		/*  */
 		
-		var sbm = true; //GLOBAL
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1
+			],
+			offset: 80 // offset top
+		});
 		
-		prof_rad[0].onclick = prof_rad[1].onclick = function() {
-			this.checked = true;
-			if (sbm) {
-				document.body.style.backgroundColor = 'LightGreen';
-				doSubmit();
+		// GLOBAL
+		var sbm = true;
+		
+		// Elements
+		var elements = [
+			[
+				document.getElementsByName('1LinktoWebpage')[0],
+				document.getElementsByName('Q5LinktoWebpage')[0]
+			],
+			[
+				document.getElementsByName('Q3aName')[0],
+				document.getElementsByName('Q3aName')[1]
+			],
+			[
+				document.getElementsByName('Q3bAddress')[0],
+				document.getElementsByName('Q3bAddress')[1]
+			],
+			[
+				document.getElementsByName('Q3cPhone')[0],
+				document.getElementsByName('Q3cPhone')[1]
+			],
+			[
+				document.getElementsByName('Q3dEmail')[0],
+				document.getElementsByName('Q3dEmail')[1]
+			],
+			[
+				document.getElementsByName('Q3ePhoto')[0],
+				document.getElementsByName('Q3ePhoto')[1]
+			],
+			[
+				document.getElementsByName('Q3fBackground')[0],
+				document.getElementsByName('Q3fBackground')[1]
+			],
+			[
+				document.getElementsByName('Q3gFirstPersonPoV')[0],
+				document.getElementsByName('Q3gFirstPersonPoV')[1]
+			],
+			[
+				document.getElementsByName('Q3hAssociate')[0],
+				document.getElementsByName('Q3hAssociate')[1]
+			],
+			[
+				document.getElementsByName('Q3iExperience')[0],
+				document.getElementsByName('Q3iExperience')[1]
+			],
+			[
+				document.getElementsByName('Q3jEducation')[0],
+				document.getElementsByName('Q3jEducation')[1]
+			],
+			[
+				document.getElementsByName('Q3kAreasofFocus')[0],
+				document.getElementsByName('Q3kAreasofFocus')[1]
+			],
+			[
+				document.getElementsByName('Q3lCommunityInvolvement')[0],
+				document.getElementsByName('Q3lCommunityInvolvement')[1]
+			],
+			[
+				// This has only one element, b/c it's an text field
+				document.getElementById('Q2JobTitle')
+			]
+		];
+		
+		// onclick
+		// Click the submit button every time a radio
+		// button is clicked.
+		for (var i in elements) {
+			if (elements[i].length == 2) {
+				
+				elements[i][0].onclick = elements[i][1].onclick = function() {
+					this.checked = true;
+					document.getElementById('submitButton').click();
+				}
+				
 			}
 		}
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			
+			var tmp_sbm = true;
+			for (var i in elements) {
+				if (elements[i].length == 2) {
+					
+					// Either 0 or 1 must be checked
+					if (!elements[i][0].checked && !elements[i][1].checked) {
+						tmp_sbm = false;
+						console.log(elements[i]);
+					}
+					
+				} else {
+					if (elements[i][0].value.trim() == '') {
+						tmp_sbm = false;
+						console.log(elements[i]);
+					}
+				}
+			}
+			
+			if (tmp_sbm) {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			return false;
+			//~ if (sbm) {
+				//~ document.body.style.backgroundColor = 'LightGreen';
+				//~ doSubmit();
+			//~ }
+			//~ return false;
+		}
+		//~ prof_rad[0].onclick = prof_rad[1].onclick = function() {
+			//~ this.checked = true;
+			//~ if (sbm) {
+				//~ document.body.style.backgroundColor = 'LightGreen';
+				//~ doSubmit();
+			//~ }
+		//~ }
 		
 		LinkedIn_Test_Profile_Checking_WF();
 		function LinkedIn_Test_Profile_Checking_WF() {
@@ -55982,7 +56445,7 @@ qatar,80
 						return;
 					}
 					
-					console.log(rs);
+					//console.log(rs);
 					
 					var r;
 					
@@ -56024,7 +56487,16 @@ qatar,80
 						document.getElementById('Q2JobTitle').value = r;
 						if (r.length < 3)
 							sbm = false;
-					} else sbm = false;
+					} else {
+						r = /nameTitle">[^<]*<h1>[^<]*<\/h1>[\r\n\t\s]+<h2>([^<]+)<\/h2>/.exec(rs); //Financial Advisor
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							document.getElementById('Q2JobTitle').value = r;
+							if (r.length < 3)
+								sbm = false;
+						} else
+							sbm = false;
+					}
 					
 					r = /<strong>Address:<\/strong> ([^<]+) <br \/>/.exec(rs); //Financial Advisor
 					if (r) {
@@ -56069,40 +56541,38 @@ qatar,80
 					//
 					r = /<div id="myAssociates">[\r\n\s\t]*<strong>My Associate\(s\):<\/strong>/.exec(rs); //
 					if (r) {
-						document.getElementsByName('Q3gAssociate')[0].checked = true;
+						document.getElementsByName('Q3hAssociate')[0].checked = true;
 					} else {
-						document.getElementsByName('Q3gAssociate')[1].checked = true;
+						document.getElementsByName('Q3hAssociate')[1].checked = true;
 					}
 					//
 					r = /<div id="experience">[\r\n\s\t]*<h2>My Experience<\/h2>/.exec(rs); //
 					if (r) {
-						document.getElementsByName('Q3hExperience')[0].checked = true;
+						document.getElementsByName('Q3iExperience')[0].checked = true;
 					} else {
-						document.getElementsByName('Q3hExperience')[1].checked = true;
+						document.getElementsByName('Q3iExperience')[1].checked = true;
 					}
 					// 
 					r = /<h2>My Education &amp; Credentials<\/h2>[\r\n\s\t]*<ul class="bulletsNoLeftIndent">[\r\n\s\t]*<li>[^<]*<\/li>/.exec(rs); //
 					if (r) {
-						document.getElementsByName('Q3iEducation')[0].checked = true;
+						document.getElementsByName('Q3jEducation')[0].checked = true;
 					} else {
-						document.getElementsByName('Q3iEducation')[1].checked = true;
+						document.getElementsByName('Q3jEducation')[1].checked = true;
 					}
 					// 
 					r = /<div id="areasOfFocus">[\r\n\s\t]*<h2>My Areas of Focus<\/h2>/.exec(rs); //
 					if (r) {
-						document.getElementsByName('Q3jAreasofFocus')[0].checked = true;
+						document.getElementsByName('Q3kAreasofFocus')[0].checked = true;
 					} else {
-						document.getElementsByName('Q3jAreasofFocus')[1].checked = true;
+						document.getElementsByName('Q3kAreasofFocus')[1].checked = true;
 					}
 					// 
 					r = /<div id="communityInvolvement">[\r\n\s\t]*<h2>My Community Involvement<\/h2>/.exec(rs); //
 					if (r) {
-						document.getElementsByName('Q3kCommunityInvolvement')[0].checked = true;
+						document.getElementsByName('Q3lCommunityInvolvement')[0].checked = true;
 					} else {
-						document.getElementsByName('Q3kCommunityInvolvement')[1].checked = true;
+						document.getElementsByName('Q3lCommunityInvolvement')[1].checked = true;
 					}
-					
-					
 					
 					// 
 					r = /<div id="myBackground">[\r\n\t\s]*<h2>My Background<\/h2>[\r\n\t\s]*<script language="javascript" type="text\/javascript">[\r\n\t\s]*document\.write\("<p>([^<]*)<\/p>"\);[\r\n\t\s]*<\/script>/.exec(rs); //
@@ -56111,29 +56581,75 @@ qatar,80
 						r = r.replace(/\\x/g, '%');
 						r = decodeURIComponent(r).trim();
 						//~ r = JSON.parse(r); // str?
+
+						//console.log(r);
+
 						
 						var iReg = /(I )/g;
 						r = r.replace(iReg, '<strong>$1</strong>');
 						
 						d1.innerHTML += '<hr>';
 						d1.innerHTML += 'BG:' + r +'<br>';
-						document.getElementsByName('Q3eBackground')[0].checked = true;
+						document.getElementsByName('Q3fBackground')[0].checked = true;
 						if (r.length < 4) // 7/10
 							sbm = false;
 						
 					} else {
-						document.getElementsByName('Q3eBackground')[1].checked = true;
-						document.getElementsByName('Q3fFirstPersonPoV')[1].checked = true;
+						document.getElementsByName('Q3fBackground')[1].checked = true;
+						document.getElementsByName('Q3gFirstPersonPoV')[1].checked = true;
 						d1.innerText += 'BG:\n';
 						
 						// SUBMIT AUTO!!
-						if (sbm) {
-							document.body.style.backgroundColor = 'LightGreen';
-							doSubmit();
-						}
+						//~ if (sbm) {
+							//~ document.body.style.backgroundColor = 'LightGreen';
+							//~ doSubmit();
+						//~ }
 					}
 					
 					
+					
+					// img
+					//https://saf.wellsfargoadvisors.com/faphotos/Photos/75/669275.jpg
+					//url_to_status_code
+					r = /<img id="faimg" src="([^"]+)" onerror="faImg2txt\(\)" alt=""/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]);
+						
+						// Is 200
+						new AMT___requests_factory().url_to_status_code({
+							url: r,
+							callback_function: function(callback_object) {
+								console.log(callback_object);
+								if (callback_object.status == 200) {
+									document.getElementsByName('Q3ePhoto')[0].checked = true;
+								} else {
+									document.getElementsByName('Q3ePhoto')[1].checked = true;
+								}
+								
+								if (sbm) {
+									doSubmit();
+								} else {
+									document.body.style.backgroundColor = 'LightGreen';
+								}
+							}
+						});
+						//~ console.log(r);
+						//~ var img = document.createElement('img');
+						//~ img.src = __js_clean_html_str(r[1]);
+						//~ d1.appendChild(img);
+						//~ d1.appendChild(document.createElement('br'));
+						
+						d2.src = r;
+						//~ d1.innerHTML += '<img src="'+__js_clean_html_str(r[1])+'"><br>'; 
+						//~ sbm = false;
+					} else {
+						document.getElementsByName('Q3ePhoto')[1].checked = true;
+						
+						if (sbm)
+							doSubmit();
+						else
+							document.body.style.backgroundColor = 'pink';
+					}
 					
 					
 					
@@ -63676,6 +64192,111 @@ qatar,80
 	
 	//
 	// sam molyneux
+	// alec levin
+	// Categorize images
+	//
+	s = '<p><u>Does the given&nbsp;image&nbsp;of a researcher, that meets the following criteria:</u></p>';
+	if (ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+		GM_addStyle('body {margin-top:800px;}}');
+		
+		
+		
+		var b = document.getElementsByTagName('b');
+		var img = document.createElement('img');
+		var d1 = document.createElement('input');
+		
+		document.body.appendChild(img);
+		document.body.appendChild(d1);
+		
+		img.setAttribute('style', 'position:absolute;top:0;left:0;max-width:60%;max-height:400px;cursor:pointer;');
+		img.src = b[0].innerText;
+		
+		d1.type = 'button';
+		d1.value = 'no';
+		d1.setAttribute('style', 'position:absolute;top:0;left:60%;width:40%;height:400px;cursor:pointer;');
+		setTimeout(function() {
+			d1.focus();
+			d1.blur();
+		}, 1000);
+		
+		// onclick
+		img.onclick = function() {
+			this.style.border = '6px solid LightGreen';
+			q[0].checked = true;
+			document.body.style.backgroundColor = 'orange';
+			this.style.maxWidth = '10%';
+			this.style.height = '100px';
+			if (q[2].value.trim().length > 4) {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+		}
+		d1.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.body.style.backgroundColor = 'blue';
+			img.style.maxWidth = '10%';
+			img.style.height = '100px';
+			q[1].checked = true;
+			if (q[2].value.trim().length > 4) {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+		}
+		
+		// innerHeight
+		// d1
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				img, d1
+			],
+			offset: 0 // offset top
+		});
+		
+		//iframe
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// ...
+		var i = document.getElementById('imagename');
+		i.value = b[2].innerText;
+		
+		// ...
+		var q = document.getElementsByName('Q1');
+		q = [
+			q[0],
+			q[1],
+			i
+		];
+		
+		
+		
+		// keypress
+		window.addEventListener('keydown', alec_levin__key, false);
+		function alec_levin__key(e) {
+			var k = e.keyCode;
+			console.log(k);
+			switch(k) {
+				case 96:
+					console.log(img);
+					img.click();
+					break;
+				case 97:
+					d1.click();
+					break;
+			}
+		}
+	}
+	
+	//
+	// sam molyneux
 	// alec levin (aka)
 	// Researcher head shots !!
 	//
@@ -63748,6 +64369,18 @@ qatar,80
 		document.body.appendChild(d);
 		var di2 = document.getElementById('di2');
 		/*END ITEMS*/
+		
+		// innerHeight
+		// d1
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1
+			],
+			offset: 120 // offset top
+		});
 		
 		//na_btn
 		na_btn.onclick = function() {
@@ -63967,13 +64600,13 @@ qatar,80
 		//sam_molyneux_journals_yahoo();
 		
 		// google 2
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1a2');
-		d.innerHTML = '&nbsp;';
-		d1.appendChild(d);
-		d1a2 = document.getElementById('d1a2');
-		d1a2.style.width='100%';
+		//~ var d;
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1a2');
+		//~ d.innerHTML = '&nbsp;';
+		//~ d1.appendChild(d);
+		//~ d1a2 = document.getElementById('d1a2');
+		//~ d1a2.style.width='100%';
 		
 		// !??
 		//var u = 'https://www.google.com/search?q='+encodeURIComponent(di.value)+'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch&num=10&biw=&bih=&sei=&'+Math.random()*1000;
@@ -64000,7 +64633,15 @@ qatar,80
 				r = /<!--m-->((.|\s)*?(?=<!--n-->|$)|$)/g;
 				while (m = r.exec(rs)) {
 					
-					if (count >= 10) break;
+					if (count >= 14) break;
+					
+					// Link
+					// ex http://www.sdu.dk/om_sdu/.../forskningsleder
+					var link = /<a href="http:\/\/www\.google\.com\/imgres\?imgurl=[^&]+&amp;imgrefurl=([^&]+)/.exec(m[1]);
+					if (link) {
+						link = decodeURIComponent(decodeURIComponent(link[1]));
+					} else
+						link = false;
 					
 					// Meta
 					// .pt = filename (OR extended description?)
@@ -64022,6 +64663,8 @@ qatar,80
 							s: ''
 						};
 					}
+					console.log(meta);
+					
 					
 					//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
 					//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
@@ -64043,10 +64686,10 @@ qatar,80
 					
 					
 					div = document.createElement('div');
-					div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:170px;height:280px;overflow:auto;cursor:pointer;');
+					div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:200px;height:300px;overflow:auto;cursor:pointer;');
 					
 					el_img = document.createElement('img');
-					el_img.setAttribute('style', 'max-width:160px;max-height:120px;');
+					el_img.setAttribute('style', 'max-width:180px;max-height:120px;');
 					el_img.src = (meta.os > 600) ? meta.tu : img;
 					el_img.submit_src = img;
 					el_img.onclick = sam_molyneux_researcher_images__imgClick;
@@ -64063,7 +64706,7 @@ qatar,80
 					var bold_init = MT__bold(
 								meta.s,
 								o.bold_array_name
-							).bold_string;
+							);
 					div.appendChild(
 						MT__bold(
 								bold_init,
@@ -64080,7 +64723,7 @@ qatar,80
 					var bold_init = MT__bold(
 								meta.pt,
 								o.bold_array_name
-							).bold_string;
+							);
 					var d =
 						MT__bold(
 								bold_init,
@@ -64100,12 +64743,11 @@ qatar,80
 					var bold_init = MT__bold(
 								meta.fn,
 								o.bold_array_name
-							).bold_string;
+							);
 					var d =
 						MT__bold(
 								bold_init,
 								o.bold_array_company,
-								o.bold_array_name,
 								{
 									color: 'blue',
 									return_div_element: true // !
@@ -64121,12 +64763,11 @@ qatar,80
 					var bold_init = MT__bold(
 								meta.domain__,
 								o.bold_array_name
-							).bold_string;
+							);
 					var d =
 						MT__bold(
 								bold_init,
 								o.bold_array_company,
-								o.bold_array_name,
 								{
 									color: 'blue',
 									return_div_element: true // !
@@ -64138,11 +64779,29 @@ qatar,80
 						d
 					);
 					
+					// Link
+					if (link) {
+						var a = document.createElement('a');
+						a.href = link;
+						a.innerText = 'link';
+						a.onclick = function() {
+							window.open(this.href, 'new');
+							return false;
+						}
+						div.appendChild(a);
+					}
+					
 					// ...
-					d1a2.appendChild(div);
+					d1.appendChild(div);
 					count++;
 				}
 				
+				// add
+				if (count > 0) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1200px;');
+					d1.appendChild(div);
+				}
 				
 				return;
 				
@@ -76588,7 +77247,7 @@ qatar,80
 	}
 	//
 	// Andrew Mauboussin
-	// aka Crowd Task
+	// Crowd Task (aka)
 	// Find the URLs of Company Websites
 	// 
 	s ='<p>If you think the company does NOT have its own website, enter the URL of its page on <strong><u>Facebook/Yelp/Google Plus if it can be found</u></strong>.</p>';
@@ -76754,13 +77413,13 @@ qatar,80
 		d3c.style.height='50px';
 		//
 		d3.onblur = function() {
-			Andrew_Mauboussin_Find_Website_Address__SP_init(d1,  this.value);
+			Andrew_Mauboussin_Find_Website_Address__SP_init(d1,  this);
 		}
 		d3b.onblur = function() {
-			Andrew_Mauboussin_Find_Website_Address__SP_init(d1b, this.value);
+			Andrew_Mauboussin_Find_Website_Address__SP_init(d1b, this);
 		}
 		d3c.onblur = function() {
-			Andrew_Mauboussin_Find_Website_Address__SP_init(d1c, this.value);
+			Andrew_Mauboussin_Find_Website_Address__SP_init(d1c, this);
 		}
 		/*END ITEMS*/
 		
@@ -76883,7 +77542,14 @@ qatar,80
 		// ...
 		d3.value = o.comp;
 		d3b.value= (o.country != '') ? o.comp+' '+o.country : '"'+o.comp+'"';
-		d3c.value = '"' + o.comp_short + '" ' + o.country + ' ' + o.zip;
+		d3b.value += ' ' + o.zip;
+		//~ d3c.value = '"' + o.comp_short + '" ' + o.country + ' ' + o.zip;
+		
+		// d3c
+		// ?
+		// Make facebook,yelp,g+
+		d3c.value = '"' + o.comp + '" ' + o.country + ' site:facebook.com OR site:yelp.com OR site:plus.google.com';
+		
 		//~ if (o.comp_short != '')	{
 			//~ d3c.value = '"' + o.comp_short + '" ' + o.country + ' ' + o.zip;
 		//~ } else if (o.country != '') {
@@ -76926,23 +77592,6 @@ qatar,80
 						}
 					}
 					
-					//~ Brittany_Graham_Find_Website_Address(d1, d3.value);
-					//~ if (b2 != '')
-						//~ Brittany_Graham_Find_Website_Address(d1b, d3b.value, false);
-					
-					//~ if (b2 != '')
-						//~ Andrew_Mauboussin_Find_Website_Address(d1,  d3.value );
-					//~ else
-						//~ TOTAL_CALLS++;
-					//~ if (b3 != '')
-						//~ Andrew_Mauboussin_Find_Website_Address(d1b, d3b.value);
-					//~ else
-						//~ TOTAL_CALLS++;
-					//~ if (b4 != '')
-						//~ Andrew_Mauboussin_Find_Website_Address(d1c, d3c.value);
-					//~ else
-						//~ TOTAL_CALLS++;
-						
 					Andrew_Mauboussin_Find_Website_Address__SP_init();
 			
 				}
@@ -76962,7 +77611,7 @@ qatar,80
 				});
 				req_proxy.proxy_init();
 				req_proxy.proxy_waitComplete(
-					Scott_P_Sill_firm_name_URL__processProxyResponse
+					Andrew_Mauboussin_Find_Website_Address__processProxyResponse
 				);
 				return;
 			}
@@ -77039,13 +77688,15 @@ qatar,80
 				var x = rs[i][0];
 				var link = rs[i][0];
 				var full = rs[i][1];
+				
 				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				//~ console.log(link);
 				
 				// trailing
 				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
 				
-				// regular = ^http://www.site.com$
-				// subdomains = [\.\/]site.com$
+				// Regular = ^http://www.site.com$
+				// Subdomains = [\.\/]site.com$
 				if (y = /\.([^\.]{3,}\.[^\.]+)$/.exec(x)) {
 					short_domain = y[1];
 				} else
@@ -77066,6 +77717,16 @@ qatar,80
 				//~ // add bold (bold_array)
 				//~ full = MT__bold(full, bold_array);
 				
+				// fb/yelp/g+
+				if  (
+					link.indexOf('facebook.com') != -1 ||
+					link.indexOf('plus.google.com') != -1 ||
+					link.indexOf('yelp.com') != -1
+					)
+				{
+					x = link;
+				}
+				
 				// classname is http://(www. = '')x.com (no www)
 				var cls = x.replace(/^(https?:\/\/)(www\.|)/, '$1');
 				
@@ -77082,6 +77743,8 @@ qatar,80
 				} else {
 					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
 				}
+				
+				
 				
 				// IS NOT SKIP?
 				var txa = document.createElement('textarea');
@@ -116126,14 +116789,20 @@ function top_window() {
 		}
 		//...
 		//x.appendChild(document.createElement('br'));
+		var d3_de = document.createElement('input');
+		d3_de.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3_de.type = 'button';
+		d3_de.value = 'digit-eyes';
+		x.appendChild(d3_de);
+		//
 		var d3 = document.createElement('input');
-		d3.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
 		d3.type = 'button';
 		d3.value = 'searchupc';
 		x.appendChild(d3);
 		//
 		var d3b = document.createElement('input');
-		d3b.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3b.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
 		d3b.type = 'button';
 		d3b.value = 'google';
 		x.appendChild(d3b);
@@ -116143,7 +116812,7 @@ function top_window() {
 		}
 		//
 		var d3d = document.createElement('input');
-		d3d.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		d3d.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
 		d3d.type = 'button';
 		d3d.value = 'shopsavvy';
 		x.appendChild(d3d);
@@ -116152,10 +116821,18 @@ function top_window() {
 		//~ }
 		//
 		var d3e = document.createElement('input');
-		d3e.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3e.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
 		d3e.type = 'button';
 		d3e.value = 'smoopa';
 		x.appendChild(d3e);
+		//
+		var d3f = document.createElement('input');
+		d3f.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+		d3f.type = 'button';
+		d3f.value = '';
+		x.appendChild(d3f);
+		// END BUTTONS
+		
 		//~ d3d.onclick = function() {
 			//~ //
 		//~ }
@@ -116179,8 +116856,26 @@ function top_window() {
 		/* END ITEMS */
 		
 		// ...
-		var x = document.getElementsByName('hitForm')[0];
-		x.onsubmit = function() {
+		// Submit checkbox.
+		// Submit if x1 && x2 != ''.
+		//~ var x = document.getElementsByName('hitForm')[0];
+		//~ x.onsubmit = function() {
+			//~ x1.value = x1.value.trim();
+			//~ x2.value = x2.value.trim();
+			//~ x1.value = x1.value.replace(/\s+/g, ' '); // spaces
+			//~ if  (
+					//~ (
+					//~ x1.value == '' || x2.value == ''
+					//~ ) &&
+					//~ !document.getElementById('Answer_3').checked
+				//~ )
+				//~ return false;
+			//~ new AMT___core_factory().nextTab();
+		//~ }
+		
+		// Onclick
+		document.getElementsByName('/submit')[0].onclick = function() {
+
 			x1.value = x1.value.trim();
 			x2.value = x2.value.trim();
 			x1.value = x1.value.replace(/\s+/g, ' '); // spaces
@@ -116192,6 +116887,9 @@ function top_window() {
 				)
 				return false;
 			new AMT___core_factory().nextTab();
+			
+			doSubmit('hitForm'); 
+			return false;
 		}
 		
 		// ...
@@ -116237,10 +116935,10 @@ function top_window() {
 			startpage:		null,
 			yahoo:			null,
 			shopsavvy:		null,
-			searchupc:		false,
+			searchupc:		null, // Set to false for N/A, if skipping
 			smoopa:			null,
 			google:			null,
-			array_all: ['de','sp','yh','ss','sm','g'],
+			array_all: ['de','su','sp','yh','ss','sm','g'], // Remove 'su' to remove searchupc.com
 			
 			// This is the first URL for iframe d1.src.
 			first_url: null
@@ -116249,8 +116947,8 @@ function top_window() {
 		// INIT
 		A9_Snaptell_VSR__next();
 		
-		// Always do shopsavvy.com
-		A9_Snaptell_VSR__shopsavvy();
+		//~ // Always do shopsavvy.com
+		//~ A9_Snaptell_VSR__shopsavvy();
 		
 		// ...
 		function A9_Snaptell_VSR__shopsavvy() {
@@ -116349,6 +117047,22 @@ function top_window() {
 								d1.src = this.output_url;
 							}
 							
+						}
+						
+						// ADDITIONAL TERMS
+						r = /<h2 class="subtitle header-m-semibold text-italic">([^<]*)<\/h2>/.exec(rs);
+						if (r) {
+							var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
+							var div = document.createElement('div');
+							div.setAttribute('style', 'cursor:pointer');
+							div.innerText = 'sv ' + __js_clean_html_str(r[1]).trim();
+							div.sv_value = __js_clean_html_str(r[1]).trim();
+							div.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								x1.value += ' ' + this.sv_value;
+								x1.focus();
+							}
+							x3.appendChild(div);
 						}
 						
 						//~ d3d.style.border = '4px solid blue';
@@ -116477,6 +117191,7 @@ function top_window() {
 		
 		// ...
 		// d2c
+		// d3b
 		function A9_Snaptell_VSR__google() {
 			d2c.style.backgroundColor = '#eee';
 			new AMT___requests_factory().google_search(
@@ -116487,6 +117202,11 @@ function top_window() {
 					},
 					callback_success: function(result_object) {
 						var arr = result_object.results;
+						
+						// update button
+						d3b.value = '... google ...';
+						
+						// ...
 						if (arr.length) {
 							A9_Snaptell_VSR__yahoo_complete(
 								arr,
@@ -116496,7 +117216,20 @@ function top_window() {
 							
 							d2c.innerText = '0';
 							
+							console.log(result);
 							// AUTO?
+							// XX Keep this off by default.
+							/*
+							 digital_eyes: false
+							 first_url: null
+							 google: null
+							 searchupc: false
+							 shopsavvy: false
+							 smoopa: false
+							 startpage: false
+							 yahoo: false
+							 
+							 */
 							if  (
 								result.digital_eyes == false &&
 								result.startpage == false &&
@@ -116506,6 +117239,7 @@ function top_window() {
 								result.smoopa == false
 								)
 							{
+								
 								naBut.click();
 							}
 							else {
@@ -116554,6 +117288,8 @@ function top_window() {
 						d3.onclick = function() {
 							q[0].value = this.value;
 							q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
+							q[0].focus();
+							q[0].blur();
 							q[0].focus();
 						}
 						
@@ -116615,6 +117351,8 @@ function top_window() {
 							this.style.backgroundColor = 'LightGreen';
 							q[0].value = this.value;
 							q[1].value = this.sm_url;
+							q[0].focus();
+							q[0].blur();
 							q[0].focus();
 						}
 						
@@ -116716,9 +117454,13 @@ function top_window() {
 				
 				var host = rs[i][0].parseURL().host;
 				
+				// pdf
+				var isPDF = /\.(pdf|xls|doc|docx|odt|odf)/i.exec(rs[i][0]);
+				var bg_isPDF = (isPDF) ? 'background-color:pink;' : '';
+				
 				// ...
 				var inp = document.createElement('input');
-				inp.setAttribute('style', 'text-align:left;');
+				inp.setAttribute('style', 'text-align:left;' + bg_isPDF);
 				inp.type = 'button';
 				inp.value = host;
 				//~ inp.innerText = host;
@@ -116728,13 +117470,15 @@ function top_window() {
 				inp.onclick = A9_Snaptell_VSR__handle_clicks;
 				out.appendChild(inp);
 				// If first two then scrape.
-				if (i < 3) {
+				if (i < 3 && !isPDF) {
 					
 					out.appendChild(document.createElement('br'));
 					
+					// First URL
 					if  (
 						d1.src == '' &&
-						result.first_url == null
+						result.first_url == null &&
+						!isPDF
 						)
 					{
 						result.first_url = tmp_url_replace_scripts;
@@ -116783,7 +117527,7 @@ function top_window() {
 				// without htmlspecialchars, with short_filename,
 				// and WITH replace_scripts.
 				var u;
-				if (i < 3)
+				if (i < 3 && !isPDF)
 					u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 							{
@@ -116807,7 +117551,7 @@ function top_window() {
 				}
 				out.appendChild(a);
 				// ...
-				if (i < 3) {
+				if (i < 3 && !isPDF) {
 					out.appendChild(document.createTextNode(' '));
 					// Link for source
 					var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
@@ -116848,15 +117592,6 @@ function top_window() {
 				//...
 				out.appendChild(document.createElement('hr'));
 				
-				
-				//~ if  (
-					//~ d1.src == '' &&
-					//~ result.first_url == null
-					//~ )
-				//~ {
-					//~ result.first_url = a.href; // A.HREF rather than rs[i][0].
-					//~ 
-				//~ }
 			}
 			
 			// For result
@@ -116924,7 +117659,11 @@ function top_window() {
 				A9_Snaptell_VSR__yahoo_complete
 			);
 		}
-		// ...
+		/**
+		 * function A9_Snaptell_VSR__process
+		 * 
+		 * @ d3_de
+		 */
 		function A9_Snaptell_VSR__process(write_object) {
 			//write_object
 			
@@ -116936,7 +117675,9 @@ function top_window() {
 			var url = write_object.url;
 			
 			if (rs.indexOf('<tr><td colspan="2" align="center">Sorry, no item name was found for ') != -1) {
-				document.body.style.backgroundColor = 'LightGreen';
+				
+				d3_de.value = '... digit-eyes ...'
+				//document.body.style.backgroundColor = 'LightGreen';
 				
 				// CALL NEXT
 				result.digital_eyes = false;
@@ -116956,14 +117697,33 @@ function top_window() {
 					'Each store uses this number differently, so it does not have a defined value.'
 				]
 				if (r.indexOf(bad[0]) == -1 && r.indexOf(bad[1]) == -1) {
-					x1.value = r;
-					x1.focus();
-					x1.style.border = '4px solid blue';
-				} else 
-					sbm = false;
+					
+					d3_de.value = r;
+					d3_de.style.border = '4px solid blue';
+					d3_de.de_url = url;
+					
+					d3_de.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						q[0].value = this.value;
+						q[1].value = this.de_url;
+						q[0].focus();
+						q[0].blur();
+						q[0].focus();
+					}
+					
+					//~ x1.value = r;
+					//~ x1.focus();
+					//~ x1.style.border = '4px solid blue';
+				} else {
+					//sbm = false;
+					
+					d3_de.value = r;
+					d3_de.style.border = '4px dashed red';
+					
+				}
 			} else sbm = false;
 			
-			//
+			// ADDITIONAL TERMS
 			r = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
 			if (r) {
 				var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
@@ -116972,11 +117732,11 @@ function top_window() {
 				div.innerText = __js_clean_html_str(r[1]).trim();
 				div.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
-					x1.value += ' ' + this.innerText;
-					x1.focus();
+					//~ x1.value += ' ' + this.innerText;
+					//~ x1.focus();
 				}
 				x3.appendChild(div);
-			}// else sbm = false;
+			}
 			
 			//~ // whole table
 			//~ r = /<table  class="t2"><tr><td style="text-align: center;" colspan="2">((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
@@ -116988,9 +117748,9 @@ function top_window() {
 			//~ }
 			
 			// ...
-			//~ console.log(sbm);
 			if (sbm) {
-				document.getElementById('Answer_2_FreeText').value = url;
+				//document.getElementById('Answer_2_FreeText').value = url;
+				
 				result.digital_eyes = true;
 			} else {
 				result.digital_eyes = false;
@@ -116999,6 +117759,11 @@ function top_window() {
 			// CALL NEXT
 			A9_Snaptell_VSR__next();
 		}
+		/**
+		 * function A9_Snaptell_VSR
+		 * 
+		 * @ d3_de
+		 */
 		// ...
 		function A9_Snaptell_VSR() {
 			
@@ -120270,14 +121035,15 @@ function mturk_load()
 		//~ MT___page1_show_jobs(); // findhits?match=false
 		new AMT___core_factory().amt_home_show_tasks();
 		
-		// Run myHITS
+		// Run myHITs
 		// John Roberts
 		if  (
 				//~ (
 					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
 					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
 				//~ ) &&
-				1 == 0
+				0 == 1 &&
+				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
 			console.log('MyHits John Roberts');
@@ -120322,8 +121088,13 @@ function mturk_load()
 				}, 30000);
 			}
 		}
+		// End Roberts myHITs
+		//
+		//
 		
 		// Only run on these pages!
+		//
+		//
 		/**
 		 * Only run on (preview|previewandaccept|continue|accept|submit|return)
 		 * However, stop running if on the "No more HITs available" page

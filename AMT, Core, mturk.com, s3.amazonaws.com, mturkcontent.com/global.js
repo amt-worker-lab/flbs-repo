@@ -1438,6 +1438,30 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
+	
+	console.log(options_object);
+	
+	//AMT__image_2_OCR
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			// options_object
+			// RETURN options_object
+			// With new added
+			options_object.response = response;
+			options_object.text = rs;
+			
+			
+			options_object.callback_function(options_object);
+			
+			//{response:response, text: rs});
+		}
+	});
+}
 AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
 	
 	var options_object = options_object;
@@ -7137,7 +7161,25 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// This is HTML elements. The array
 		// "key" is the jobs history_id.
 		//
-		graph_rows_by_history_id: {}
+		graph_rows_by_history_id: {},
+		
+		// Chart types
+		// chart_types
+		//
+		//
+		//
+		chart_types: [
+			'',
+			'DAILY-20MIN-AVG',
+			'DAILY-30MIN-AVG',
+			'DAILY-6HOUR-AVG',
+			'24HOUR-ALL',
+			'2HOUR-ALL',
+			'30MINUTE-ALL',
+			'',
+			'',
+			''
+		]
 	}
 	
 	// Timers intervals
@@ -7561,24 +7603,72 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tsp_span.innerText = x;
 		td.appendChild(tsp_span);
 		
+		// Chart.js select controller
+		// 2% + ... there's leftover 2% = 100% = 4%
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:4%;'
+		);
+		tr.appendChild(td);
+		var select = document.createElement('select');
+		select.setAttribute('style',
+			'width:100%;'
+			//height:20px;
+		);
+		select.db_id = row.db_id; // db_id
+		select.history_id = row.history_id; // db_id
+		td.appendChild(select);
+		for (var count in tasks_obj.chart_types) {
+			var chart_type = tasks_obj.chart_types[count];
+			var option = document.createElement('option');
+			option.innerText = chart_type;
+			//~ option.innerText = count;
+			option.value = chart_type;
+			select.appendChild(option);
+		}
+		select.onchange = function() {
+			console.log(this.value);
+			console.log(this.db_id);
+			console.log(this.history_id);
+			
+			tasks_obj.current_init_history_ids = [
+				this.history_id
+			];
+			init_graph(this.value, this.chart_td); //chart_type
+			
+		}
+		select.onblur = function() {
+			
+		}
+		
 		// Chart.js
-		// 16%
+		// 14%
 		// Set tasks_obj[row.hash_id] = td;
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:16%;'//+'max-width:10px;'
+			'width:16%;'
+			//+'max-width:10px;'
 		);
 		tr.appendChild(td);
-		var chart = document.createElement('canvas');
-		chart.setAttribute('style',
-			'width:100%;height:20px;'
-		);
-		chart.height = '100';
-		td.appendChild(chart);
-		if (row.hasOwnProperty('history_id'))
-			tasks_obj.graph_rows_by_history_id[row.history_id] = chart;
+		
+		select.chart_td = td;
+		
+		
+		//
+		//~ var chart = document.createElement('canvas');
+		//~ chart.setAttribute('style',
+			//~ 'width:100%;height:20px;'
+		//~ );
+		//~ chart.height = '100';
+		//~ td.appendChild(chart);
+		//~ if (row.hasOwnProperty('history_id'))
+			//~ tasks_obj.graph_rows_by_history_id[row.history_id] = chart;
+		
+		
 		//~ if (row.hasOwnProperty('hash_id'))
 			//~ tasks_obj.hash_tds[row.hash_id] = td;
+		
+		return tr;
 		
 		//~ //OLD
 		//~ div_contain	.setAttribute('style','width:100%;');
@@ -7591,8 +7681,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//~ div_date	.setAttribute('class', 'mt__timer');
 		//~ inp_tsp		.value = rs[5][i];
 		//~ d = date_format(rs[3][i]);
-		
-		return tr;
 	}
 	
 	/**
@@ -7602,27 +7690,44 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * A nice place to take them from is tasks_obj.current_db_ids.
 	 * Where: tasks_obj.current_db_ids[db_id] = true;
 	 * 
+	 * Pass in global array of ids-to-initialize: @ current_init_history_ids
+	 * 
 	 * Chart.js is included in manifest.json, in /includes/
+	 * 
+	 * TODO:
+	 * 	- Add "remove graphs" button to clear all graphs from page. (? or just refresh page...)
+	 *  - Optional: Add 0s to graph when interval between data points is > graph type.
 	 */
-	function init_graph() {
+	function init_graph(chart_type, chart_td) {
 		
 		// Are there any hash_ids? Only case
 		// probably is when pulling tasks from sjshpack.com.
-		if (!tasks_obj.current_init_history_ids.length)
+		if  (
+			!tasks_obj.current_init_history_ids.length ||
+			chart_type == ''
+			)
 			return;
 		
-		var obj = {
-			type: '30MINUTE-ALL',
-			//~ type: '2HOUR-ALL',
-			history_ids: tasks_obj.current_init_history_ids // array
-		};
+		// Global
+		var chart_type = chart_type;
+		var chart_td = chart_td;
 		
-		//~ console.log(obj);
+		// Obj
+		var obj = {
+			type: chart_type,
+			history_ids: tasks_obj.current_init_history_ids // array
+			
+			//~ type: '30MINUTE-ALL',
+			//~ type: '2HOUR-ALL',
+		};
 		obj = JSON.stringify(obj);
 		
 		var url = MT___page1_host;
 		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
-		//~ console.log(data);
+		
+		var days_of_week = [
+			'Su','M','Tu','W','Th','F','Sa'
+		];
 		
 		GM_xmlhttpRequest({
 			method: "POST",
@@ -7648,6 +7753,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// data = array [ 'd'=>int timestamp, 'h'=>int available ]
 				//
 				
+				// Labels
+				// For more than 24 hour graphs show the day names rather
+				// than hours.
+				
+				// TODO?
+				// Fill 0s
+				// Based on the time span, check for any graph section
+				// data where time between points is greater than graph
+				// type. For example,
+				// ALL = ~4 so > ~10
+				// 20MIN = ~20 so > ~30
+				// 30MIN = ~30 so > ~40
+				// 6HR = ~6 so > ~7
+				
 				var history_id;
 				for (history_id in rs) {
 					
@@ -7655,31 +7774,70 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					
 					var labels = [];
 					var num_tasks = [];
-					var last_hour = null;
-					for (var i in rows) {
-						
-						var time	= rows[i]['d'];
-						var nt		= rows[i]['h'];
-						
-						var hour = new Date(time * 1000).getHours();
-						if (hour < 12)
-							hour += 'a';
-						else if (hour == 12)
-							hour += 'p'
-						else
-							hour = (hour*1 - 12) + 'p';
-						
-						if (last_hour != hour) {
-							labels.push(hour);
-							last_hour = hour;
-						} else {
-							labels.push('');
+					
+					
+					
+					// Is longer than 24 hours?
+					// Newest - Oldest
+					var time_span = rows[rows.length - 1]['d']*1 - rows[0]['d']*1;
+					
+					// By day
+					if (time_span > 86400) {
+					
+						var last_day = null;
+						for (var i in rows) {
+							
+							var time	= rows[i]['d']; // date
+							var nt		= rows[i]['h']; // num tasks
+							
+							var day = days_of_week[ new Date(time * 1000).getDay() ];
+							
+							if (last_day != day) {
+								labels.push(day);
+								last_day = day;
+							} else {
+								labels.push('');
+							}
+							
+							num_tasks.push(nt);
 						}
+					}
+					// By hour
+					else {
 						
-						num_tasks.push(nt);
+						var last_hour = null;
+						for (var i in rows) {
+							
+							var time	= rows[i]['d']; // date
+							var nt		= rows[i]['h']; // num tasks
+							
+							var hour = new Date(time * 1000).getHours();
+							
+							if (hour == 0)
+								hour = '12a'
+							else if (hour < 12)
+								hour += 'a';
+							else if (hour == 12)
+								hour += 'p'
+							else
+								hour = (hour*1 - 12) + 'p';
+							
+							
+							
+							if (last_hour != hour) {
+								labels.push(hour);
+								last_hour = hour;
+							} else {
+								labels.push('');
+							}
+							
+							num_tasks.push(nt);
+						}
 					}
 					
-					// data
+					
+					
+					// Data
 					var data = {
 						labels: labels,
 						datasets: [
@@ -7696,18 +7854,38 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						]
 					}
 					
+					// Options
 					var options = {
 						scaleShowGridLines: false,
 						pointDot: false,
 					}
 					
-					// out element
-					var chart = tasks_obj.graph_rows_by_history_id[history_id];
+					// Canvas & TD
+					var chart = document.createElement('canvas');
+					chart.setAttribute('style',
+						'width:100%;height:20px;'
+					);
+					chart.height = '100';
+					chart_td.innerHTML = ''; // Reset
+					chart_td.appendChild(chart);
 					
+					// ...
 					var context = chart.getContext("2d");
 					var myNewChart = new Chart(context).Line(data, options);
+					
+					// out element
+					//~ var chart = tasks_obj.graph_rows_by_history_id[history_id];
+					
+					//~ var context = chart.getContext("2d");
+					//~ var myNewChart = new Chart(context).Line(data, options);
 
-					//~ out.appendChild();
+					// Reset?
+					//~ chart.setAttribute('style',
+						//~ 'width:100%;height:20px;'
+					//~ );
+					//~ chart.height = '100';
+					//~ console.log(chart);
+					
 				
 				}
 				
@@ -7839,15 +8017,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						var row = tasks_obj.table_rows[d.db_id]
 						row.hits_available.innerText = d.hits_available;
 						
-						// UPDATE GRAPH.
-						//
+						// IF updating graphs
+						// THEN update them here (add the newest data point)
 						//
 						//
 						
-						// Add for GRAPH here.
-						//~ if (d.history_id != '') {
-							//~ tasks_obj.current_init_history_ids.push(d.history_id);
-						//~ }
 						
 						continue;
 					}
@@ -7857,49 +8031,60 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 					}
 					
-					// Here?
 					// Create a new row.
-					// And ... Append or insert?
+					// And append or insert.
 					// If global tasks_obj.firstRun is true,
 					// (firstRun == true) then for all rows
 					// treat them as appendChild. If firstRun
 					// is false then treat all rows as insertBefore.
 					
+					var new_row;
+					
+					// Regular
 					if  (
 						!ignore_requesters.hasOwnProperty(d.requester_name) &&
 						!ignore_requesters__ids.hasOwnProperty(d.requester_id)
 						)
-					{ // regular
+					{ 
+						
+						new_row = makeRow(d); // false
 						
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
 						{
 							//~ console.log('inserting');
+							
 							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-							tasks_obj.table1.insertBefore(makeRow(d), first); // appendChild(makeRow(d), true); // true == ignored
+							tasks_obj.table1.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
 						{
 							//~ console.log('appending');
-							tasks_obj.table1.appendChild(makeRow(d));
+							
+							tasks_obj.table1.appendChild(new_row);
 						}
 					}
+					// Ignored
 					else
-					{ // ignored
+					{
+						
+						new_row = makeRow(d, true);
 						
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
 						{
 							//~ console.log('inserting');
+							
 							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-							tasks_obj.table2.insertBefore(makeRow(d, true), first); // appendChild(makeRow(d), true); // true == ignored
+							tasks_obj.table2.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
 						{
 							//~ console.log('appending');
-							tasks_obj.table2.appendChild(makeRow(d, true)); // true == ignored
+							
+							tasks_obj.table2.appendChild(new_row); // true == ignored
 						}
 					}
 				}
@@ -7916,7 +8101,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				if (tasks_obj.isFirstRun) {
 					tasks_obj.isFirstRun = false;
 					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
-					init_graph();
+					
+					
+					//init_graph();
 				} else if (tasks_obj.current_init_history_ids.length) {
 					
 					//~ init_graph();
@@ -8615,7 +8802,7 @@ function AMT___checkCaptchaStatus() {
 			}
 		);
 		
-		// set local
+		// Set localstorage
 		GM_setValue('mt_captcha','1');
 		
 		// Captcha response focus 
@@ -8639,23 +8826,27 @@ function AMT___checkCaptchaStatus() {
 			!GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES')
 		   )
 			GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-		// int
-		var xint_CONTINUE_CAPTCHA = setInterval(function() {
 			
-			var d = new Date();
-			d = Math.round(d.getTime() / 1000);
+		// New 23 Sep 2014
+		// Set an eventListener for storage which will monitor other tabs.
+		// Another tab will set localStorage['mt_captcha'] = 0.
+		//
+		var reset_after_captcha = false;
+		window.addEventListener('storage', function() {
 			
-			var numt = GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES') * 1;
-			
-			if (
-				GM_getValue('mt_captcha') == '0'
-			   )
+			if  (
+				GM_getValue('mt_captcha') == '0' &&
+				!reset_after_captcha
+			    )
 			{
-				clearInterval(xint_CONTINUE_CAPTCHA);
+				// Set true
+				reset_after_captcha = true;
 				
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-				
+				// OLD.......
+				// TODO: 23 Sep 2014
+				// Ask the background page how many tabs are currently on mturk.com.
+				// (This is topWindow.) Then reload / location.href based on this amount.
+				//
 				if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
 					
 					var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
@@ -8664,55 +8855,57 @@ function AMT___checkCaptchaStatus() {
 					
 				} else
 					window.location.reload();
-				
-				/*if (ih.indexOf('Copy and paste the HTML from the links') != -1) { // amicus labs
-					//window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOOIR6U04FONQSDV7O118';
-					//window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
-					window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
-				} else
-					window.location.reload();*/
 			}
-			else if (
-				GM_getValue('MT_CAPTCHA__LAST_RELOAD') < d - 30 &&
-				numt < 30 // 20 is 10m, 30 is 15m
-			)
-			{
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', numt + 1);
-			}
-		}, ((Math.random()*20) * 100) + 100); // 100 - 2000 ms
-		// END LAST RELOAD
+			
+		}, false);
 		
-		/*
-		 * 
-		 * OLD, use AMT
-		//play sound
-		var play__ = GM_getValue('MT__CAPTCHA_PLAY_SOUND');
-		var d = new Date();
-		d = Math.round(d.getTime() / 1000);
 		
-		if (!play__) {
-			GM_setValue('MT__CAPTCHA_PLAY_SOUND', d);
-		} else {
-			if (d - 120 > play__) { // 2 min. //xx5
-				
-				GM_setValue('MT__CAPTCHA_PLAY_SOUND', d);
-
-				d=document.createElement('iframe');
-				d.setAttribute('id','MT__CAPTCHA_PLAY_SOUND');
-				document.body.appendChild(d);
-				d = document.getElementById('MT__CAPTCHA_PLAY_SOUND');
-				d.style.position='absolute';
-				d.style.top='0px';
-				d.style.left='20%';
-				d.style.width='10%';
-				d.style.height='10px';
-				d.style.overflow='auto';
-				d.style.border='1px solid blue';
-				d.style.backgroundColor='white';
-				d.src = 'http://localhost/mturk/.scripts/Music/132118_2375010-lq(box).mp3';
-			}
-		}*/
+		// int
+		//~ var xint_CONTINUE_CAPTCHA = setInterval(function() {
+			//~ 
+			//~ var d = new Date();
+			//~ d = Math.round(d.getTime() / 1000);
+			//~ 
+			//~ var numt = GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES') * 1;
+			//~ 
+			//~ if (
+				//~ GM_getValue('mt_captcha') == '0'
+			   //~ )
+			//~ {
+				//~ clearInterval(xint_CONTINUE_CAPTCHA);
+				//~ 
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
+				//~ 
+				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
+					//~ 
+					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+					//~ if (i)
+						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+					//~ 
+				//~ } else
+					//~ window.location.reload();
+				//~ 
+				//~ /*if (ih.indexOf('Copy and paste the HTML from the links') != -1) { // amicus labs
+					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOOIR6U04FONQSDV7O118';
+					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
+					//~ window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
+				//~ } else
+					//~ window.location.reload();*/
+			//~ }
+			//~ else if
+			//~ (
+				//~ GM_getValue('MT_CAPTCHA__LAST_RELOAD')*1 < d - 30 &&
+				//~ numt < 30 // 20 is 10m, 30 is 15m
+			//~ )
+			//~ {
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', numt + 1);
+			//~ }
+		//~ }, ((Math.random()*20) * 100) + 100); // 100 + 0~2000 ms
+		//~ // END LAST RELOAD
+		//~ 
+		
 	}
 	/**
 	 * No Captcha
