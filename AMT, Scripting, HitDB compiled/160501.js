@@ -2833,8 +2833,30 @@ function import_dialog_close_func(save, input, separator)
       var lines = [];
       var hits = [];
 
-      if (input.value.length > 0)
-        lines = CSVToArray(input.value, separator.value);
+		/**
+		 * ADDED JUNE 25 2014
+		 * IMPORT FROM BIGVARS.JS !!!
+		 * @PARAM BIGVAR
+		 * 
+		 * IF input.value == /^http:\/\/192\.168\.1\.2\/$/
+		 */
+		if (BIGVAR) {
+			if (BIGVAR.length > 0)
+				lines = CSVToArray(BIGVAR, ','); // , ?
+			//~ console.log('BIGVAR LEN:' + lines.length);return;
+		}
+		else
+		{
+		  
+		  if (input.value.length > 0)
+			lines = CSVToArray(input.value, separator.value);
+		}
+		
+	  // OLD
+	  // OLD
+	  // OLD
+	  //~ if (input.value.length > 0)
+        //~ lines = CSVToArray(input.value, separator.value);
 
       var errors = 0;
       for (var i = 0; i<lines.length; i++)
