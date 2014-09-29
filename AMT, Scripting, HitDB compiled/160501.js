@@ -2359,6 +2359,10 @@ HITStorage.export_xhr = function(results, doRStats)
   {
 	  name = 'Sora';
   }
+  else if(name == 'Gloria Perry')
+  {
+	  name = 'Gloria';
+  }
   else
   {
 	  alert('Error, name not properly scraped');
@@ -2372,8 +2376,7 @@ HITStorage.export_xhr = function(results, doRStats)
 	  //console.log(i);
     csvData += HITStorage.format_csv_line(results[i]);
   }
-  var xhrSendLoc = "http://192.168.1.2/mturk/.scripts/AMT_Alerts/alerter.php";
-
+  
   console.log("Sending Info. to alerter.php, updating " + name);
   if(doRStats == true)
   {
@@ -2381,21 +2384,71 @@ HITStorage.export_xhr = function(results, doRStats)
   }
   else
 	console.log('R Stats not selected');
- 
- GM_xmlhttpRequest({
-	  method: "POST",
-	  data: 'name=' + encodeURIComponent(name) + ((doRStats == true) ? '&doRStats=' + encodeURIComponent('true') : '') + "&csvData=" + encodeURIComponent(csvData),
-	  url: xhrSendLoc,
-	  headers: {
-		"Content-Type": "application/x-www-form-urlencoded"
-	  },
-	  onload: function(response) {
-		  var rs = response.responseText;
-		  //console.log(rs);
-		  //console.log("header:" + response.header);
-		  console.log("response: " + rs);
-		}  
-	});
+
+	/**
+	 * Send the file in pieces. Chrome has 32mb POST limit?
+	 * Ex: Emily is at ~78mb? 78,000,000
+	 * 
+	 * @ function(num, num_total, csvData, doRStats)
+	 * 
+	 * One day of ~3,600 HITs = 612,000 bytes, aka 612 kb. (Visual Search Requester-Find associated product information for a given barcode value)
+	 * 
+	 */
+	//~ console.log(csvData.length);//return;
+	//~ 
+	var maxLength = 20000000; // 20,000,000 bytes = 20 mb
+	var chunks; // 1 to n...
+	var filesize = csvData.length; //  / 1000;
+	var array_csvData_chunks = [];
+	var file_date = Math.round(new Date().getTime() / 1000);
+	
+	// Ex:
+	//   78,000 / 20,000 = 3.9 = 4
+	//   4,000 / 20,000 = 0.2 = 1
+	chunks = Math.ceil(filesize / maxLength);
+	if (chunks <= 0) {
+		alert('Chunks <= 0');
+		return;
+	}
+	
+	// Debug
+	console.log(chunks + ' chunks');
+	
+	// Array
+	// [0] [19,999,999] 
+	// [20,000,000] [...]
+	for (var i=0; i<chunks; i++) {
+		array_csvData_chunks.push(
+			csvData.substr(i * maxLength, maxLength) // start, length
+		);
+	}
+	//~ console.log(array_csvData_chunks);
+	//~ console.log(array_csvData_chunks[0].length);return;
+	
+	// Start the post process.
+	HITStorage.post_export_chunk(
+		1,
+		chunks,
+		array_csvData_chunks,
+		doRStats,
+		file_date,
+		name
+	);
+	
+ //~ GM_xmlhttpRequest({
+	  //~ method: "POST",
+	  //~ data: 'name=' + encodeURIComponent(name) + ((doRStats == true) ? '&doRStats=' + encodeURIComponent('true') : '') + "&csvData=" + encodeURIComponent(csvData),
+	  //~ url: xhrSendLoc,
+	  //~ headers: {
+		//~ "Content-Type": "application/x-www-form-urlencoded"
+	  //~ },
+	  //~ onload: function(response) {
+		  //~ var rs = response.responseText;
+		  //~ //console.log(rs);
+		  //~ //console.log("header:" + response.header);
+		  //~ console.log("response: " + rs);
+		//~ }  
+	//~ });
   
   
   
@@ -2403,6 +2456,68 @@ HITStorage.export_xhr = function(results, doRStats)
   //localStorage["DAVIDBENMOD_XHR_UPDATES_Last_Date"] = JSON.stringify(new Date()); 
   
   //console.log(csvData);//'data:text/csv;charset=utf8,' + encodeURIComponent(csvData));
+}
+HITStorage.post_export_chunk = function(num, num_total, array_csvData_chunks, doRStats, file_date, name) {
+	
+	var num = num,
+		num_total = num_total,
+		array_csvData_chunks = array_csvData_chunks,
+		doRStats = doRStats,
+		file_date = file_date,
+		name = name;
+	
+	var curr_chunk = array_csvData_chunks[ num-1 ];
+	//~ console.log(array_csvData_chunks);
+	//~ console.log(curr_chunk);return;
+	
+	var exp = {
+		name: name,
+		csvData: curr_chunk,
+		chunk_num: num,
+		chunk_num_total: num_total,
+		file_date: file_date
+	}
+	if (doRStats) {
+		exp.doRStats = true;
+	}
+	
+	var data = 'export_csv=' + encodeURIComponent(JSON.stringify(exp));
+		
+		//~ 'name=' + encodeURIComponent(name) +
+		//~ ((doRStats == true) ? '&doRStats=' + encodeURIComponent('true') : '') +
+		//~ '&csvData=' + encodeURIComponent( curr_chunk ) +
+		//~ '&chunk_num=' + encodeURIComponent(num) +
+		//~ '&chunk_num_total=' + encodeURIComponent(num_total)+
+		//~ '&file_date=' + encodeURIComponent(num_total)+;
+	
+	var xhrSendLoc = "http://192.168.1.2/mturk/.scripts/AMT_Alerts/alerter.php";
+	
+	GM_xmlhttpRequest({
+		method: "POST",
+		data: data,
+		url: xhrSendLoc,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		onload: function(response) {
+			var rs = response.responseText;
+			//console.log(rs);
+			//console.log("header:" + response.header);
+			console.log("response: " + rs);
+			
+			if (num < num_total) {
+				num++;
+				HITStorage.post_export_chunk(
+					num,
+					num_total,
+					array_csvData_chunks,
+					doRStats,
+					file_date,
+					name
+				);
+			}
+		}  
+	});
 }
 
 HITStorage.format_csv_line = function(hit, noFeedback)
