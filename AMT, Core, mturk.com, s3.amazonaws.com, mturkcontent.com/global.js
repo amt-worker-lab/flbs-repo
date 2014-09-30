@@ -13,7 +13,6 @@
  
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
-var CORE_ALL_PAGES_ID = 'epflnpjnljncblipaikibpjhobgkfmoh';
 
 
 /**
@@ -215,94 +214,8 @@ AMT__Global_Vars.initializeTabId = function() {
 //https://www.mturkcontent.com/dynamic/hit?assignmentId=2598MZ9O9Z6K0U2SPF8H2RLFVKG1AA&hitId=2X5TBJ3MMDX5JFATLIBHM9MDYH7CY0&workerId=_REDACTED_3_&turkSubmitTo=https%3A%2F%2Fwww.mturk.com
 
 
-/**
- * CrossScript Messaging, and Recieving Messages
- **/
-/**
-//msg is an object
-function SendMsgToCore(msg, optionalCallback) {
-	chrome.runtime.sendMessage(CORE_ALL_PAGES_ID, msg, function(response) {
-		optionalCallback(response);
-	});
-}
 
-
-
-chrome.runtime.onMessageExternal.addListener(
-	function(request, sender, sendResponse) {
-			console.log('Cross-script Sender: ');
-			console.log(sender);
-			console.log('Cross-script Request');
-			console.log(request);
-			if(request.globalInputResponse) {
-				var gir = request.globalInputRespose;
-				console.log('gir:');
-				console.log(gir);
-			}
-	}
-);
-
-/**
- * End of CrossScript Messaging, and Recieving Messages
- **/
-
-/**
- *	GlobalInputMenu 
- **/
- /**
-//InputNames is an array of strings, where each string represents a new InputEntry, which contains both a label and an input
-//Each label id will become 'label'+str
-//Each input id will become str
-//Each label value will become str
-
-
-function CreateGlobalInputMenu(GlobalInputMenuObject) {
-	
-}
-
-//Defaults
-/**
-{
-	{
-		{
-			id:'q1', 
-			labelStyle:'width:10%',
-			inputStyle:'width:20%', 
-			closeTabWriteData: (false | 'onblur' | 'ondblclick' | 'onlabelclick'), 
-			bindTo: 'q1URL', 
-			type: 'button | text | checkbox'
-		}
-	}, 
-	 { metadata, e.g. closetab iff each input either has a value or is checked }
-}
-**/
-
-/**function GlobalInputMenu(inputNames) {
-	this.allEntries = [];
-	for(var i = inputNames.length - 1; i > -1; i--) {
-		var newEntry = new InputEntry(inputNames[i]);
-		this.allEntries.push(inputNames[i], newEntry);
-	}
-}
-
-function InputEntry(inputName) {
-	this.InputName = InputName;
-}
-
-InputEntry.prototype.bindToInput(inputIdentifier) {
-	
-}
-
-InputEntry.prototype.setStyle(style) {
-
-}**/
-
-
-
-
-/**
- * End of GlobalInputMenu
- **/
+//
 
 /**
  * 

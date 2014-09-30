@@ -2092,11 +2092,24 @@ function MT__RUN() {
 	
 	
 	//
+	// This is for the MARK FORM FIELDS job.
+	// 29 Sep 2014
+	// "Are all the labels on this form on the screen and correctly assigned to each field (with tagged matching field labels in black and white in the picture)?"
+	// 
+	s = '<p>Are all the labels on this form on the screen and correctly assigned to each field (<em>with <u>tagged matching field labels in black and white</u> in the picture</em>)?</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+	}
+	
+	//
 	// traveldata
 	// Find Hotel Discounts
 	// Do as parent to iframe
 	// ex:https://s3.amazonaws.com/mturk_bulk/hits/119737238/W2s1Yy8d_V__X_uWQDj2lQ.html?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=3R868ACW4SLF5H92PS0BFYCAA7OGZQ
-	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
+	//~ s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
 	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;please do not submit HITs.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -74127,10 +74140,451 @@ qatar,80
 	 * Emergo Group
 	 * Stephen Robertson
 	 * Crowd Task/Andrew M. -> Uses new SP ... add JS scrape URL
+	 * Scott P Sill
 	 * 
 	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
+	//
+	// David Shefferman
+	// Find the Website Address for Automotive dealerships
+	// 
+	var s = '<p>Find the website address for this automotive dealership.&nbsp; Many dealerships have similar names.&nbsp;&nbsp;Sometimes in the same region, sometimes in different regions.&nbsp; <strong>You may need to include the region in your search to ensure finding the proper dealer URL</strong>.</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			brand: td[3].innerText.trim(),
+			location: td[5].innerText.trim(),
+			bold_array: []
+		}
+		o.bold_array = 
+			o.name		.replace(/[^\w\d]/g, ' ').split(' ').concat(
+			o.brand		.replace(/[^\w\d]/g, ' ').split(' ').concat(
+			o.location	.replace(/[^\w\d]/g, ' ').split(' ').concat(
+			
+			)));
+		
+		
+		// ...
+		var dyn_h = screen.height - 400;
+		
+		/* BEGINS ITEMS */
+		//
+		var na123;
+		na123 = document.createElement('input');
+		na123.setAttribute('id','na123');
+		na123.setAttribute('type','button');
+		document.body.appendChild(na123);
+		var na = document.getElementById('na123');
+		na.style.position='absolute';
+		na.style.top='0px';
+		na.style.left='78%';
+		na.style.width='20%';
+		na.style.height='20px';
+		na.style.border='1px solid';
+		na.style.fontSize='10px';
+		na.value = "N/A";
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "N/A";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		inp_tor.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			GM_setValue('MT__torHost', this.value);
+			HOST = this.value;
+		}
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d;
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='70px';
+		d1.style.left='0%';
+		d1.style.width='33%';
+		d1.style.height=dyn_h + 'px';
+		d1.style.overflow='auto';
+		d1.style.border='1px solid blue';
+		d1.style.borderBottom='2px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1b');
+		document.body.appendChild(d);
+		var d1b = document.getElementById('d1b');
+		d1b.style.position='absolute';
+		d1b.style.top='70px';
+		d1b.style.left='33%';
+		d1b.style.width='33%';
+		d1b.style.height=dyn_h + 'px';
+		d1b.style.overflow='auto';
+		d1b.style.border='1px solid blue';
+		d1b.style.borderBottom='2px solid blue';
+		d1b.style.backgroundColor='#eee';
+		d1b.style.fontSize='10px';
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1c');
+		document.body.appendChild(d);
+		var d1c = document.getElementById('d1c');
+		d1c.style.position='absolute';
+		d1c.style.top='70px';
+		d1c.style.left='66%';
+		d1c.style.width='33%';
+		d1c.style.height=dyn_h + 'px';
+		d1c.style.overflow='auto';
+		d1c.style.border='1px solid blue';
+		d1c.style.borderBottom='2px solid blue';
+		d1c.style.backgroundColor='#eee';
+		d1c.style.fontSize='10px';
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3');
+		document.body.appendChild(d);
+		var d3 = document.getElementById('d3');
+		d3.style.position='absolute';
+		d3.style.top='20px';
+		d3.style.left='0%';
+		d3.style.width='33%';
+		d3.style.height='50px';
+		d1.txa = d3;
+
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3b');
+		document.body.appendChild(d);
+		var d3b = document.getElementById('d3b');
+		d3b.style.position='absolute';
+		d3b.style.top='20px';
+		d3b.style.left='33%';
+		d3b.style.width='33%';
+		d3b.style.height='50px';
+		d1b.txa = d3b;
+		//
+		d = document.createElement('textarea');
+		d.setAttribute('id','d3c');
+		document.body.appendChild(d);
+		var d3c = document.getElementById('d3c');
+		d3c.style.position='absolute';
+		d3c.style.top='20px';
+		d3c.style.left='66%';
+		d3c.style.width='33%';
+		d3c.style.height='50px';
+		d1c.txa = d3c;
+		//
+		d3.onblur = function() {
+			David_Shefferman_dealer_name_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			David_Shefferman_dealer_name_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			David_Shefferman_dealer_name_URL__SP_init(d1c, this);
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value = o.name;
+		d3b.value= o.name + ' ' + o.brand;
+		d3c.value = o.name + ' ' + o.brand + ' ' + o.location;
+		//~ d3b.value= '"' + o.name + '" ' + o.brand;
+		//~ d3c.value = '"' + o.name + '" ' + o.location;
+		
+		//~ d3.initialValue = o.col1;
+		//~ d3b.initialValue = o.col2_first;
+		//~ d3c.initialValue = o.col2; //col 3
+		//~ 
+		//~ var countSkips = 0;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function David_Shefferman_dealer_name_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					David_Shefferman_dealer_name_URL__SP_init();
+			
+				}
+			});
+		}
+		David_Shefferman_dealer_name_URL__load_skips();
+		
+		function David_Shefferman_dealer_name_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					David_Shefferman_dealer_name_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				David_Shefferman_dealer_name_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				David_Shefferman_dealer_name_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					David_Shefferman_dealer_name_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function David_Shefferman_dealer_name_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
 	//
 	// Scott P Sill
 	// Find the Website Address for Law Firms
@@ -77844,317 +78298,6 @@ qatar,80
 				out_div.appendChild(d);
 			}
 		}
-		
-		
-		
-		
-		//~ function Andrew_Mauboussin_Find_Website_Address__processProxyResponse(rs, out_div) {
-			//~ //
-			//~ var yahoo_type = 0;
-			//~ var r = /yschttl spt" href="[^*"]+[*]{2,}([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // ** (TWO ASTERISKS) !!
-			//~ if (!r.exec(rs)) {
-				//~ r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
-				//~ yahoo_type = 1;
-			//~ }
-			//~ r.lastIndex = 0;
-			//~ 
-			//~ if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
-				//~ r.lastIndex = 0;
-				//~ 
-				//~ var count = 0;
-				//~ var x, match, out;
-				//~ var r, m;
-				//~ var fb = '';
-				//~ var domain;
-				//~ var short_domain;
-				//~ var y;
-				//~ 
-				//~ while (match = r.exec(rs)) {
-					//~ 
-					//~ // is this ri.search.yahoo.com
-					//~ if (match[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(match[1])) {
-						//~ match[1] = (/\/RU=([^\/]+)/.exec(match[1]))[1];
-						//~ match[1] = decodeURIComponent(match[1]);
-					//~ }
-					//~ else if (yahoo_type == 0)
-						//~ match[1] = decodeURIComponent(match[1]);
-					//~ 
-					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
-					//~ 
-					//~ match[2] = match[2].replace(/<b>/g, '`');
-					//~ match[2] = match[2].replace(/<\/b>/g, '``');
-					//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
-					//~ match[2] = match[2].replace(/[<>]/g, ' ');
-					//~ match[2] = match[2].replace(/``/g, '</b>');
-					//~ match[2] = match[2].replace(/`/g, '<b>');
-					//~ 
-					//~ x = match[1];
-					//~ 
-					//~ // trailing
-					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-					//~ 
-					//~ // NEW JUL 30 2014
-					//~ // Change from http://www. to www.
-					//~ // Per instructions.
-					//~ // //~ x = x.replace(/^https?:\/\//g, '');
-					//~ 
-					//~ // Regular = ^http://www.site.com$
-					//~ // Subdomains = [\.\/]site.com$
-					//~ if (y = /\.([^\.]{3,}\.[^\.]+)$/.exec(x)) {
-						//~ short_domain = y[1];
-					//~ } else
-						//~ short_domain = x;
-					//~ 
-					//~ // SKIP BUTTON CREATE 2
-					//~ // returns obj.el_button, obj.isSkip
-					//~ var el_inp_skip2__obj = new AMT___items_factory().
-						//~ create__input_skip_button2({
-							//~ domain: x,
-							//~ load_file: 'austin_load_skips', 
-							//~ var_skip_sites: SKIP_SITES, 
-							//~ callback_function: false
-						//~ });
-					//~ 
-					//~ 
-					//~ // add bold (bold_array)
-					//~ match[2] = MT__bold(match[2], bold_array);
-					//~ 
-					//~ // classname is http://(www. = '')x.com (no www)
-					//~ // Update Aug6 2014
-					////~ var cls = x.replace(/\/www\./, '/');
-					//~ var cls = x.replace(/^(https?:\/\/)(www\.|)/, '');
-					//~ 
-					//~ // ...
-					//~ var d = document.createElement('p');
-					//~ d.setAttribute('style','margin:4px 0 4px 0;');
-					//~ d.className = 'class_'+cls;
-					//~ d.full_url = match[1];
-					//~ out_div.appendChild(d);
-					//~ 
-					//~ // IS SKIP?
-					//~ if (el_inp_skip2__obj.isSkip) {
-						//~ d.appendChild(el_inp_skip2__obj.el_btn);
-						//~ continue; // END
-					//~ } else {
-						//~ FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
-					//~ }
-					//~ 
-					//~ // IS NOT SKIP?
-					//~ var txa = document.createElement('textarea');
-					//~ txa.setAttribute('style','width:100%;zoom:0.9;cursor:pointer;padding:0;margin:0;');
-					//~ txa.readOnly = true;
-					//~ txa.value = x;
-					//~ d.appendChild(txa);
-					//~ // A
-					//~ var a = document.createElement('a');
-					//~ a.setAttribute('style','margin-right:6px;');
-					//~ a.target = '_blank';
-					//~ a.innerText = 'link';
-					//~ a.href = match[1];
-					//~ d.appendChild(a);
-					//~ // el_inp_skip2__obj.el_btn
-					//~ d.appendChild(el_inp_skip2__obj.el_btn);
-					//~ // ...
-					//~ // Scrape page
-					//~ // Only on d1
-					//~ // @assoc. array [show output (key) => scrape for keyword (value)], []
-					//~ if (count < 6 && out_div.id == 'd1') {
-						//~ var scrape_el = document.createElement('div');
-						//~ scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
-						//~ d.appendChild(scrape_el);
-						//~ new AMT___items_factory().xhr_scrape_page({
-							//~ parent_el: scrape_el,
-							//~ keyword_and_index_array: keyword_and_index_array,
-							//~ url: match[1]
-						//~ });
-					//~ }
-					//~ 
-					//~ // Body
-					//~ var pbody = document.createElement('p');
-					//~ d.appendChild(pbody);
-					//~ pbody.setAttribute('style','word-wrap:break-word;border-bottom:1px solid aeaeae;');
-					//~ pbody.innerHTML = match[2];// + '<br>' + match[1];
-					//~ 
-					//~ // actions
-					//~ // ...
-					//~ 
-					//~ // onclick
-					//~ txa.onclick = function() {
-						//~ this.style.backgroundColor = 'LightGreen';
-						//~ document.getElementById('web_url').value = this.value;
-						//~ 
-						//~ // showNextTab OR nextTab
-						//~ new AMT___core_factory().nextTab();
-						//~ //showNextTab();
-						//~ 
-						//~ doSubmit();
-					//~ }
-					//~ //mouseover
-					//~ d.addEventListener('mouseover', function() {
-						//~ 
-						//~ d2.value = this.full_url;
-						////~ this.el_full_url.style.backgroundColor = 'LightGreen';
-						////~ this.el_full_url.style.diplay = 'block';
-						//~ 
-						//~ var x = document.getElementsByTagName('p');
-						//~ for (var i in x) {
-							//~ if (i == 'length') break;
-							//~ if (x[i].className == this.className) {
-								//~ x[i].style.backgroundColor = 'LightGreen';
-								//~ 
-								//~ // SHOW FULL URLS ...
-								//~ 
-							//~ } else {
-								//~ x[i].style.backgroundColor = '';
-								//~ 
-								// HIDE FULL URLS ...
-							//~ }
-						//~ }
-						//~ // Could do this also! .getElementsByClassName('class_');
-					//~ }, true);
-					//~ //mouseout
-					//~ d.addEventListener('mouseout', function() {
-						//~ 
-						////~ this.el_full_url.style.backgroundColor = 'LightGreen';
-						//~ 
-						//~ var x = document.getElementsByTagName('p');
-						//~ for (var i in x) {
-							//~ if (i == 'length') break;
-							//~ if (x[i].className == this.className) {
-								//~ x[i].style.backgroundColor = '';
-								//~ 
-								//~ // HIDE FULL URLS ...
-							//~ }
-						//~ }
-						////~ this.id_fullURL_child.style.diplay = 'none';
-						//~ // Could do this also! .getElementsByClassName('class_');
-					//~ }, false);
-					//~ 
-					//~ 
-					//~ // push first match
-					//~ // but only if array is empty
-					//~ // or all in array equal this domain
-					//~ // DO THIS AFTER BUTTONS ARE ON PAGE!
-					//~ if (count == 0) {
-						//~ if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
-							//~ ARRAY_FIRST_FINDS.push(x);
-						//~ } else if (ARRAY_FIRST_FINDS.length == 0)
-							//~ ARRAY_FIRST_FINDS.push(x);
-					//~ }
-					//~ 
-					//~ count++;
-					//~ 
-				//~ }
-				//~ 
-				//~ if (count > 0) {
-					//~ var d = document.createElement('div');
-					//~ d.setAttribute('style','height:1200px;');
-					//~ out_div.appendChild(d);
-				//~ }
-			//~ } else
-				//~ out_div.innerHTML = '0';
-//~ 
-			//~ // All three windows have completed
-			//~ // and none of the three have 
-			//~ // TOTAL_CALLS AND FOUND_ONE_NONSKIP
-			//~ TOTAL_CALLS++;
-			//~ if (TOTAL_CALLS == 3) {
-				//~ if (!FOUND_ONE_NONSKIP) {
-					////~ na.click(); // na button
-					//~ //document.getElementById('Website').value = 
-					//~ return;
-				//~ }
-				//~ // All three windows have completed
-				//~ // and the first domain is same across all three
-				//~ else if (ARRAY_FIRST_FINDS.length == 3) {
-					//~ //d1, d1b, d1c
-					//~ var divs = [d1, d1b, d1c];
-					//~ var x;
-					//~ for (var i in divs) {
-						//~ x = divs[i].getElementsByTagName('textarea')[0];
-						//~ x.style.border = '6px solid LightGreen';
-					//~ }
-				//~ }
-			//~ }
-		//~ }
-		//~ function Andrew_Mauboussin_Find_Website_Address(out_div, search) {
-			//~ 
-			//~ // NEW YAHOO
-			//~ // JUL17 2014
-			//~ var u = 'http://search.yahoo.com/search?ei=UTF-8&fr=crmas&p=%2B'+encodeURIComponent(search); //%2B
-			//~ 
-			//~ 
-			//~ out_div.innerHTML = '';
-			//~ var out_div = out_div;
-			//~ 
-			//~ var url = HOST + 
-				//~ '/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
-				//~ '&catch_include='+encodeURIComponent('Yahoo! - 999 Unable to process request at this time -- error 999');
-			//~ 
-			//~ // init
-			//~ GM_xmlhttpRequest({ // USE "HOST" HERE!
-				//~ method: "GET",
-				//~ url: url,
-				//~ onload: function(response) {
-					//~ //var rs = response.responseText;
-				//~ }
-			//~ });
-			//~ // watch done
-			//~ var xint = setInterval(function() {
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: HOST+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ 
-						//~ if (rs.trim() != '') {
-							//~ clearInterval(xint);
-						//~ } else
-							//~ return;
-						//~ 
-						//~ // IS HOST 192.168.1.2?
-						//~ // IF NO THEN POST THIS RESPONSE TO 
-						//~ // 192.168.1.2
-						//~ // md5 !!
-						//~ if (HOST == 'http://192.168.1.2') { //MT___host
-							//~ Andrew_Mauboussin_Find_Website_Address__processProxyResponse(rs, out_div);
-							//~ return;
-						//~ }
-						//~ 
-						//~ // still here?
-						//~ // save file !
-						//~ var rf = new AMT___requests_factory();
-						// //~ var md5_url = rf.general_functions__md5(u);
-						//~ var md5_url = any_md5(u, '0123456789ABCDEF');
-						//~ var data;
-						//~ var yahoo_rs = rs;
-						//~ 
-						//~ data = 'AMT__serverSide_write__value='+encodeURIComponent(rs)+
-							//~ '&AMT__serverSide_write__folder=.cached'+
-							//~ '&AMT__serverSide_write__file='+encodeURIComponent(md5_url);
-						//~ 
-						//~ GM_xmlhttpRequest({
-							//~ method: "POST",
-							//~ url: 'http://192.168.1.2/mturk/util.php',
-							//~ data: data,
-							//~ headers: {
-								//~ "Content-Type": "application/x-www-form-urlencoded"
-							//~ },
-							//~ onload: function(response) {
-								//~ var rs = response.responseText;
-								//~ 
-								//~ if (response.status != 200 || rs != '') {
-									//~ exit(response.status + ' ' + rs);
-								//~ }
-								//~ 
-								//~ Andrew_Mauboussin_Find_Website_Address__processProxyResponse(yahoo_rs, out_div); // yahoo_rs !!
-							//~ }
-						//~ });
-						//~ 
-					//~ }
-				//~ })
-			//~ }, 1000);
-		//~ }
 	}
 	//
 	// Brittany Graham

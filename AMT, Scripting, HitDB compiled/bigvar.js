@@ -5,7 +5,7 @@ var BIGVAR = false;
  * UNCOMMENT here if import
  * Example below is loaded from text file http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Emily,import HitDB.txt
  */
-if (1==1) {
+if (1==0) {
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: 'http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Sora,Wed, 06 Aug 2014 22:33:15 -0400.txt',
