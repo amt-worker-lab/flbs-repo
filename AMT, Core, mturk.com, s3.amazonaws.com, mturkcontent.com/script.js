@@ -6012,9 +6012,268 @@ function MT__RUN() {
 	/**
 	 * scrapy
 	 * 
+	 * Rachel Scott
 	 * CRE, Find this person's email address
+	 * Yin Li
 	 * SaaS, Find an alternative scholarship/financial aide contact for each university
+	 * Larry Baker
 	 */
+	
+	//
+	// Larry Baker
+	// Find the email address for businesses
+	// https://www.mturk.com/mturk/preview?groupId=31KHN7KCND0VO2EKPJDRLAHTM88A0U
+	s = '<li>Do not provide any emails that start with "press"@example.com", "marketing"@example.com, or "sales"@example.com"</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('table {zoom:0.8;}');
+		
+		// container
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;}');
+		
+		var choices = [
+			'Food product',
+			'Beverage product',
+			'Health & Beauty product',
+			'Cleaning product',
+			'Other'
+		];
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:40px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:600px;left:0%;width:98%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1b);
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:0px;left:0%;width:98%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1c);
+		//
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
+		document.body.appendChild(d2);
+		// mouseover / out
+		d2.addEventListener('mouseout', function() {
+			this.scrollIntoView();
+		}, false);
+		d2.addEventListener('mouseover', function() {
+			this.scrollIntoView();
+		}, false);
+		// Flicker
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+			}, 1000);
+		}, false);
+		// 
+		//~ var d3 = document.createElement('input');
+		//~ d3.setAttribute('style','position:absolute;top:0px;left:60%;width:38%;height:160px;');
+		//~ d3.value = 'N/A';
+		//~ d3.type = 'button';
+		//~ document.body.appendChild(d3);
+		//~ d3.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById('email').value = 'N/A';
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		//~ }
+		// d1b buttons
+		for (var i in choices) {
+			var dx = document.createElement('input');
+			dx.setAttribute('style','');
+			dx.value = choices[i];
+			dx.choice = choices[i];
+			dx.type = 'button';
+			d1b.appendChild(dx);
+			dx.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				var q = document.getElementsByName('Email');
+				q[1].value = this.choice;
+				q[0].value = q[0].value.trim();
+				
+				if (q[0].value != 'example@email.com' && q[0].value.length > 6 && q[0].value.indexOf('@') != -1) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
+			d1b.appendChild(document.createElement('br'));
+		}
+		/* END ITEMS */
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			site: td[3].innerText.trim(),
+			domain: null,
+			sd_start_urls: [],
+			sd_allowed_domains: []
+		}
+		o.domain = o.site.replace(/^(https?:\/\/|)(www\.|)/i, '');
+		o.sd_allowed_domains.push(o.domain);
+		
+		d1c.innerText = o.name + '\n' + o.domain;
+		
+		console.log(o);
+		// innerHeight
+		//~ new AMT___core_factory().el_innerHeight({
+			//~ // This set the elements d1,d1b, and d1c
+			//~ // to fill up the whole window, minus their
+			//~ // distance from page top (top:XX pixels;).
+			//~ elements: [
+				//~ d1
+			//~ ],
+			//~ offset: 0 // offset top
+		//~ });
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// Returns innerHeight in pixels
+			callback_function: function(innerHeight) {
+				
+				console.log(innerHeight);
+				
+				d1.style.height = (innerHeight - 180) + 'px'; // 20 = info box
+				
+				//~ innerHeight -= 70; // This is offset of d1 from top.
+				
+				d2.style.height = (innerHeight - 280) + 'px';
+				d2.style.top = (innerHeight - 140) + 'px';
+				
+				d1b.style.top = (innerHeight + (innerHeight - 420)) + 'px';
+				d1b.style.height = '120px';
+				
+				document.getElementsByClassName('container')[0].style.top = (innerHeight + (innerHeight - 300)) + 'px';
+				
+				
+				//~ var h1, h2;
+				//~ h1 = .6 * innerHeight;
+				//~ h2 = .4 * innerHeight;
+				//~ 
+				//~ d1.style.height = d1b.style.height = d1c.style.height = h1 + 'px';	// height
+				//~ dx1.style.height = dx2.style.height = h2 + 'px';					// height
+				//~ dx1.style.top = dx2.style.top = (h1+70) + 'px';						// top
+			}
+		});
+		
+		// Yahoo/SP top 3 for start
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			//~ seed_arg1: o.input1,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team OR "facebook.com"'),
+			callback_function: Larry_Baker_web_contact_email__startpage
+		});
+		
+		function Larry_Baker_web_contact_email__startpage(response_obj) {
+			console.log(response_obj.length);
+			var rs = response_obj;
+			
+			if (!rs.length) {
+				document.body.innerText = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				o.sd_start_urls.push(rs[i][0]);
+				if (i >= 3) break; 
+			}
+			
+			// start URLs, allowed domains
+			Larry_Baker_web_contact_email__scrapy(o.sd_start_urls, o.sd_allowed_domains);
+		}
+		
+		function Larry_Baker_web_contact_email__scrapy(start_urls, allowed_domains) {
+			//~ console.log(start_urls);
+			//~ console.log(allowed_domains);
+			//
+			var s_obj = 
+			{
+				project: 'scrapy_amt',
+				spider: 'AMTSpider',
+				arg_allowed_domains: allowed_domains,	// array
+				arg_start_urls: start_urls,		// array
+				arg_max_pages_to_fetch: 10,
+				arg_type_scrape: 'all_emails',	// all_emails or str_match
+				settings: [
+					//'DEPTH_LIMIT=4',
+					//'SCHEDULER_ORDER=BFO',
+					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+					
+					'CONCURRENT_ITEMS=200', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+					
+					'AJAXCRAWL_ENABLED=1', //true
+					'COOKIES_ENABLED=0', //false
+					//'RETRY_ENABLED=0', //false
+					//'DI=0', //false
+					'REDIRECT_MAX_TIMES=2'//,
+					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+					//'AJAXCRAWL_ENABLED=1', //true
+				]
+			}
+			
+			var req = new AMT___requests_factory();
+			AMT___POPUP__initializeGlobals(
+				function() {
+					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+						s_obj,
+						(new AMT___items_factory()).create_dashboard__powers_v1,
+						{
+							// add PREVIEW all snippets
+							div: d1,
+							input_send_success: document.getElementById('web_url'),
+							callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+								
+								
+								if (AMT__Global_Vars.isPreview) {
+									// If no email match results
+									if (!callback_obj.matches || !callback_obj.matches.length) {
+										AMT___Floater.skip();
+									}
+									else
+									{
+										AMT___Floater.accept();
+									}
+									// ENDS SCRIPT PROCESSING
+									return true;
+								}
+								
+								// Load iframe
+								if (callback_obj.matches && callback_obj.matches.length) {
+									d2.src = o.site;
+									console.log(d2);
+									console.log(d2.src);
+								}
+								
+								// CONTINUES (job is NOT in "preview" mode)
+								return false;
+							},
+							do_submit_callback: function() {
+								d2.scrollIntoView();
+							}
+							
+							//~ input_onclick_callback: function() {// OVERRIDE SUBMIT
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ this.input_send_success.value = this.email;
+								//~ if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+									//~ this.do_submit_callback();
+								//~ }
+								//~ 
+								//~ //this.style.border = '8px solid LightGreen';
+							//~ }
+						}
+					);
+				}
+			);
+		}
+	}
 	
 	//
 	// SaaS
@@ -74141,10 +74400,755 @@ qatar,80
 	 * Stephen Robertson
 	 * Crowd Task/Andrew M. -> Uses new SP ... add JS scrape URL
 	 * Scott P Sill
+	 * David Shefferman
+	 * Scott Neufeld
+	 * Andres Echenique
+	 * 
 	 * 
 	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
+	
+	//
+	// Andres Echenique
+	// Find URL
+	// 
+	var s = '<p>Find the website address for this company, which will a manufacturer or supplier&nbsp;in the Building, Energy, Construction, Plumbing, or HVAC industries.</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			name_short: null,
+			bold_array: []
+		}
+		o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.name_short = o.name.split(' ');
+		if (o.name_short.length > 2) {
+			o.name_short = o.name_short.slice(0, 2).join(' ');
+		} else o.name_short = null;
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Andres_Echenique_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Andres_Echenique_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Andres_Echenique_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("place_website").value = "NONE";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = '"' + o.name + '"';
+		d3c.value = '"' + o.name + '" manufacturing supplier Building Energy Construction Plumbing HVAC';
+		//~ d3c.value = (o.name_short) ? '"' + o.name_short + '"' : '';
+		//~ d3c.value = (o.name_short) ? '"' + o.name_short + '"' : '';
+		//~ d3b.value= '"' + o.name + '" ' + o.brand;
+		//~ d3c.value = '"' + o.name + '" ' + o.location;
+		
+		//~ d3.initialValue = o.col1;
+		//~ d3b.initialValue = o.col2_first;
+		//~ d3c.initialValue = o.col2; //col 3
+		//~ 
+		//~ var countSkips = 0;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Andres_Echenique_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Andres_Echenique_company_URL__SP_init();
+			
+				}
+			});
+		}
+		Andres_Echenique_company_URL__load_skips();
+		
+		function Andres_Echenique_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Andres_Echenique_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Andres_Echenique_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Andres_Echenique_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Andres_Echenique_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Andres_Echenique_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	//
+	// Scott Neufeld
+	// Find place URL
+	// 
+	var s = '<p>We are building a list of municiple websites (City, Town, Village, Boroughs, Counties, etc..)&nbsp;for places across the United States. &nbsp;</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			stateAbbr: td[3].innerText.trim(),
+			state: null,
+			bold_array: []
+		}
+		o.state = o.stateAbbr.stateAbbrToFull();
+		o.bold_array = 
+			o.name		.replace(/[^\w\d]/g, ' ').split(' ').concat(
+			o.stateAbbr	.replace(/[^\w\d]/g, ' ').split(' ').concat(
+			o.state		.replace(/[^\w\d]/g, ' ').split(' ')
+			));
+		
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Scott_Neufeld_place_URLs__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Scott_Neufeld_place_URLs__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Scott_Neufeld_place_URLs__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("place_website").value = "NONE";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = o.name + ' ' + o.stateAbbr;
+		d3c.value = o.name + ' ' + o.stateAbbr + ' ' + o.state;
+		//~ d3b.value= '"' + o.name + '" ' + o.brand;
+		//~ d3c.value = '"' + o.name + '" ' + o.location;
+		
+		//~ d3.initialValue = o.col1;
+		//~ d3b.initialValue = o.col2_first;
+		//~ d3c.initialValue = o.col2; //col 3
+		//~ 
+		//~ var countSkips = 0;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Scott_Neufeld_place_URLs__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Scott_Neufeld_place_URLs__SP_init();
+			
+				}
+			});
+		}
+		Scott_Neufeld_place_URLs__load_skips();
+		
+		function Scott_Neufeld_place_URLs__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Scott_Neufeld_place_URLs__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Scott_Neufeld_place_URLs__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Scott_Neufeld_place_URLs__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Scott_Neufeld_place_URLs__processProxyResponse
+				);
+			}
+		}
+		
+		function Scott_Neufeld_place_URLs__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('place_website').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	
 	//
 	// David Shefferman
 	// Find the Website Address for Automotive dealerships
@@ -74176,128 +75180,47 @@ qatar,80
 			)));
 		
 		
-		// ...
-		var dyn_h = screen.height - 400;
-		
 		/* BEGINS ITEMS */
 		//
-		var na123;
-		na123 = document.createElement('input');
-		na123.setAttribute('id','na123');
-		na123.setAttribute('type','button');
-		document.body.appendChild(na123);
-		var na = document.getElementById('na123');
-		na.style.position='absolute';
-		na.style.top='0px';
-		na.style.left='78%';
-		na.style.width='20%';
-		na.style.height='20px';
-		na.style.border='1px solid';
-		na.style.fontSize='10px';
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
 		na.value = "N/A";
-		na.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			document.getElementById("web_url").value = "N/A";
-			// nextTab
-			//~ new AMT___core_factory().nextTab();
-			//~ doSubmit();
-		}
+		//~ na.style.fontSize='10px';
 		//
-		var HOST = GM_getValue('MT__torHost');
-		if (!HOST)
-			HOST = 'http://192.168.1.2';
-		var inp_tor;
-		inp_tor = document.createElement('input');
-		inp_tor.setAttribute('id','inp_tor');
-		inp_tor.setAttribute('type','input');
-		inp_tor.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
-		inp_tor.onblur = function() {
-			this.style.backgroundColor = 'LightGreen';
-			GM_setValue('MT__torHost', this.value);
-			HOST = this.value;
-		}
-		inp_tor.value = HOST;
-		document.body.appendChild(inp_tor);
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
 		//
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='70px';
-		d1.style.left='0%';
-		d1.style.width='33%';
-		d1.style.height=dyn_h + 'px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='10px';
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
 		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='70px';
-		d1b.style.left='33%';
-		d1b.style.width='33%';
-		d1b.style.height=dyn_h + 'px';
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='10px';
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
 		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1c');
-		document.body.appendChild(d);
-		var d1c = document.getElementById('d1c');
-		d1c.style.position='absolute';
-		d1c.style.top='70px';
-		d1c.style.left='66%';
-		d1c.style.width='33%';
-		d1c.style.height=dyn_h + 'px';
-		d1c.style.overflow='auto';
-		d1c.style.border='1px solid blue';
-		d1c.style.borderBottom='2px solid blue';
-		d1c.style.backgroundColor='#eee';
-		d1c.style.fontSize='10px';
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3');
-		document.body.appendChild(d);
-		var d3 = document.getElementById('d3');
-		d3.style.position='absolute';
-		d3.style.top='20px';
-		d3.style.left='0%';
-		d3.style.width='33%';
-		d3.style.height='50px';
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
 		d1.txa = d3;
-
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3b');
-		document.body.appendChild(d);
-		var d3b = document.getElementById('d3b');
-		d3b.style.position='absolute';
-		d3b.style.top='20px';
-		d3b.style.left='33%';
-		d3b.style.width='33%';
-		d3b.style.height='50px';
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
 		d1b.txa = d3b;
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3c');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='20px';
-		d3c.style.left='66%';
-		d3c.style.width='33%';
-		d3c.style.height='50px';
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
 		d1c.txa = d3c;
+		/*END ITEMS*/
 		//
 		d3.onblur = function() {
 			David_Shefferman_dealer_name_URL__SP_init(d1,  this);
@@ -74307,6 +75230,13 @@ qatar,80
 		}
 		d3c.onblur = function() {
 			David_Shefferman_dealer_name_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "N/A";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
 		}
 		
 		// ...
@@ -75927,6 +76857,7 @@ qatar,80
 	// Determine the FIRM NAME URL, using information from two columns.
 	// 
 	var s = 'Using information provided (Row 1 &amp; Row 2), determine the FIRM URL. This FIRM URL may be found using the information provided, or may require additional research on Google. <strong>Disregard the APP NUMBER field, you will not use it.</strong>';
+	var s = 'Using information provided, determine the company website. Use the "Company" and "Company Address" fields to find the correct website address (I WILL REJECT THE HIT IF YOU GIVE THE WRONG WEBSITE).';
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
@@ -75945,28 +76876,31 @@ qatar,80
 			zip: ''
 		}
 		o.col2 = o.col2.replace(/^c\/o */gi, ' ');
+		var x = o.col2.split('|');
+		o.col2 = x.slice(0, x.length - 1). join(' ');
+		o.col2_first = x[ x.length - 1 ];
 		
-		var x;
-		o.col2_first = (x = /^([^~]+)/.exec(o.col2)) ? x[1] : o.col2.replace(/~+/g, ' ');
-		o.zip =	(x = / ([\d\-]{4,})~US$/.exec(o.col2)) ? x[1] : '';
+		//~ var x;
+		//~ o.col2_first = (x = /^([^~]+)/.exec(o.col2)) ? x[1] : o.col2.replace(/~+/g, ' ');
+		//~ o.zip =	(x = / ([\d\-]{4,})~US$/.exec(o.col2)) ? x[1] : '';
 		
 		// If blank zip
 		// then try adding "US" "AU", etc.
-		if (o.zip == '') {
-			
-		}
+		//~ if (o.zip == '') {
+			//~ 
+		//~ }
 		
 		// replace tilde
-		o.col2 = o.col2.replace(/~+/g, ' ');
+		//~ o.col2 = o.col2.replace(/~+/g, ' ');
 		
 		// JAPAN !
 		// zips
 		// 6500025 6500025 JP
-		o.col2 = o.col2.replace(/( \d+)* \d+ JP$/gi, '');
+		//~ o.col2 = o.col2.replace(/( \d+)* \d+ JP$/gi, '');
 		
 		// ...
 		
-		var dyn_h = screen.height - 300;
+		var dyn_h = 300;
 		
 		/* BEGINS ITEMS */
 		//
@@ -76125,66 +77059,76 @@ qatar,80
 		
 		// ...
 		d3.value = o.col1;
-		d3b.value= o.col2_first;
+		d3b.value= o.col1 + ' ' + o.col2;
 		//~ d3.value = o.col1 + ' ' + o.zip;
 		//~ d3b.value= o.col2_first + ' ' + o.zip;
-		d3c.value= o.col2;
+		d3c.value= o.col1 + ' ' + o.col2_first;
 		
 		d3.initialValue = o.col1;
 		d3b.initialValue = o.col2_first;
 		d3c.initialValue = o.col2; //col 3
 		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
 		
-		AMT___addUserDecision('Laura Enstad - 1',
-						function() {
-							return o.col1;
-						},
-						['Id(web_url)']
-		);
-
-
-		AMT___addUserDecision('Laura Enstad - 1',
-						function() {
-							return o.col2_first;
-						},
-						['Id(web_url)']
-		);
+		//~ AMT___addUserDecision('Laura Enstad - 1',
+						//~ function() {
+							//~ return o.col1;
+						//~ },
+						//~ ['Id(web_url)']
+		//~ );
+//~ 
+//~ 
+		//~ AMT___addUserDecision('Laura Enstad - 1',
+						//~ function() {
+							//~ return o.col2_first;
+						//~ },
+						//~ ['Id(web_url)']
+		//~ );
+		//~ 
+		//~ 
+		//~ AMT___addUserDecision('Laura Enstad - 1',
+						//~ function() {
+							//~ return o.col2; //column 3
+						//~ },
+						//~ ['Id(web_url)']
+		//~ );
 		
 		
-		AMT___addUserDecision('Laura Enstad - 1',
-						function() {
-							return o.col2; //column 3
-						},
-						['Id(web_url)']
-		);
-		
-		
-		var countSkips = 0;
-		if(AMT__Global_Vars.isPreview) {
-			AMT___doPastBehavior('Laura Enstad - 1', 3, 'Do Not Submit',
-				function(e) {
-						if(!e) {
-							countSkips++;
-							//alert(countSkips);
-							//alert(countSkips);
-							if(countSkips == 3)
-								AMT___Floater.skip();
-						}
-						else
-						{
-							AMT___Floater.accept();
-						}
-				}, true
-			);
-		}
-		else
-		{
-			AMT___doPastBehavior('Laura Enstad - 1', 3, false,
-				function(e) {
-					 document.body.style.backgroundColor = 'LightGreen';
-				}
-			);
-		}
+		//~ var countSkips = 0;
+		//~ if(AMT__Global_Vars.isPreview) {
+			//~ AMT___doPastBehavior('Laura Enstad - 1', 3, 'Do Not Submit',
+				//~ function(e) {
+						//~ if(!e) {
+							//~ countSkips++;
+							//~ //alert(countSkips);
+							//~ //alert(countSkips);
+							//~ if(countSkips == 3)
+								//~ AMT___Floater.skip();
+						//~ }
+						//~ else
+						//~ {
+							//~ AMT___Floater.accept();
+						//~ }
+				//~ }, true
+			//~ );
+		//~ }
+		//~ else
+		//~ {
+			//~ AMT___doPastBehavior('Laura Enstad - 1', 3, false,
+				//~ function(e) {
+					 //~ document.body.style.backgroundColor = 'LightGreen';
+				//~ }
+			//~ );
+		//~ }
 		//~ AMT___doPastBehavior('Laura Enstad - 1', 3, false,
 			//~ function() {
 				//~ document.body.style.backgroundColor = 'LightGreen';
@@ -76321,12 +77265,7 @@ qatar,80
 				
 				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 				//~ 
-				//~ match[2] = match[2].replace(/<b>/g, '`');
-				//~ match[2] = match[2].replace(/<\/b>/g, '``');
-				//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
-				//~ match[2] = match[2].replace(/[<>]/g, ' ');
-				//~ match[2] = match[2].replace(/``/g, '</b>');
-				//~ match[2] = match[2].replace(/`/g, '<b>');
+				//~ 
 				
 				var x = rs[i][0];
 				var link = rs[i][0];
@@ -76410,7 +77349,7 @@ qatar,80
 					// showNextTab OR nextTab
 					new AMT___core_factory().nextTab();
 						
-					AMT___addQuestionAnswer('Laura Enstad - 1', this.parent_txa.initialValue, [new OutputPair('Id(web_url)',this.value)])
+					//~ AMT___addQuestionAnswer('Laura Enstad - 1', this.parent_txa.initialValue, [new OutputPair('Id(web_url)',this.value)])
 					doSubmit();
 					
 					/*if(this.parent_div == d1 || this.parent_div == d1c)
@@ -76469,6 +77408,7 @@ qatar,80
 	// Feb. 11, 2014
 	// Includes Hover Div scrape.
 	// TODO: Add skip/float functionality. This will minimize R&A. Yield seems to be only about 50%-75%.
+	// ADD: scraper
 	s ='<p style="margin-left:-49.5pt;">You will be given the name of an organization, and state (if available). <strong>You must enter the given information into</strong> <strong>google.com</strong> <strong>and find the homepage URL for each organization.&nbsp; </strong>The correct answer should be one of the top 10 results.</p>';
 	if (ih.indexOf(s) != -1) {
 		console.log('');
@@ -76539,92 +77479,33 @@ qatar,80
 		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
 		document.body.appendChild(d2);
 		//
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='70px';
-		d1.style.left='0%';
-		d1.style.width='33%';
-		d1.style.height='600px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='10px';
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
 		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='70px';
-		d1b.style.left='33%';
-		d1b.style.width='33%';
-		d1b.style.height='600px';
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='10px';
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
 		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1c');
-		document.body.appendChild(d);
-		var d1c = document.getElementById('d1c');
-		d1c.style.position='absolute';
-		d1c.style.top='70px';
-		d1c.style.left='66%';
-		d1c.style.width='33%';
-		d1c.style.height='600px';
-		d1c.style.overflow='auto';
-		d1c.style.border='1px solid blue';
-		d1c.style.borderBottom='2px solid blue';
-		d1c.style.backgroundColor='#eee';
-		d1c.style.fontSize='10px';
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3');
-		document.body.appendChild(d);
-		var d3 = document.getElementById('d3');
-		d3.style.position='absolute';
-		d3.style.top='20px';
-		d3.style.left='0%';
-		d3.style.width='33%';
-		d3.style.height='50px';
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3b');
-		document.body.appendChild(d);
-		var d3b = document.getElementById('d3b');
-		d3b.style.position='absolute';
-		d3b.style.top='20px';
-		d3b.style.left='33%';
-		d3b.style.width='33%';
-		d3b.style.height='50px';
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
 		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3c');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='20px';
-		d3c.style.left='66%';
-		d3c.style.width='33%';
-		d3c.style.height='50px';
-		/*//
-		d = document.createElement('input');
-		d.setAttribute('id','d3c');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='0px';
-		d3c.style.left='0%';
-		d3c.style.width='18%';
-		d3c.style.height='30px';*/
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
 		//
 		d3.onblur = function() {
 			Fiber_Data_Co_Find_Website_Address(d1,  this.value);
@@ -76656,6 +77537,17 @@ qatar,80
 				}
 			);
 		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
 		// ...
 		// left = city
 		// middle = city/state/zip
@@ -76663,7 +77555,10 @@ qatar,80
 		var x;
 		var o = {
 			comp: '',
-			state_abbr: ''
+			state_abbr: '',
+			state: '',
+			bold_array_comp: null,
+			bold_array_locn: null
 		}
 		
 		x = /<h2 style="margin-left: -31\.5pt;">Organization Name: ([^<]*)<\/h2>/.exec(ih);
@@ -76672,10 +77567,20 @@ qatar,80
 		x = /<h2 style="margin-left: -31\.5pt;">Organization State: ([^<]*)<\/h2>/.exec(ih);
 		o.state_abbr = __js_clean_html_str(x[1]);
 		
-		d3.value = o.comp;
-		d3b.value= '"' + o.comp + '" ' + o.state_abbr;
+		if (o.state_abbr != '') {
+			o.state = o.state_abbr.stateAbbrToFull();
+		}
+		
+		o.bold_array_comp = o.comp.replace(/[^\w\d]/g, ' ').replace(/ /g, '         ').replace(/(^| )[\w\d]( |$)/g, ' ').replace(/\s+/g, ' ').split(' ');
+		o.bold_array_locn = o.state.split(' ').concat([o.state_abbr]);
+		
+		console.log(o);
+			
+		// Values
+		d3.value  = o.comp;
+		d3b.value = '"' + o.comp + '" ' + o.state_abbr;
 		if (o.state_abbr != '')
-			d3c.value= '"'+o.comp+'" '+o.state_abbr.stateAbbrToFull()+''; // state abbr to state full
+			d3c.value = o.comp+' '+o.state; // state abbr to state full
 		else { // three or more words?
 			var x = o.comp.split(' ');
 			if (x.length > 2) {
@@ -76685,8 +77590,6 @@ qatar,80
 				d3c.style.border = '4px dashed blue';
 			}
 		}
-		//~ 
-		//~ console.log(o.state_abbr.stateAbbrToFull());
 		
 		// ...
 		var load_first = true;
@@ -76701,7 +77604,7 @@ qatar,80
 				method: 'GET',
 				url: MT___host+'/mturk/util.php?austin_load_skips=',
 				onload: function (response) {
-					var rs=response.responseText;
+					var rs = response.responseText;
 					
 					//~ SKIP_SITES = rs.split("\n");
 					
@@ -76711,14 +77614,14 @@ qatar,80
 					
 					// full
 					for (var i in x) {
-						SKIP_SITES[x[i]] = true;
+						SKIP_SITES[ x[i] ] = true;
 					}
 					
 					// SUBDOMAINS!
 					for (var i in x) {
 						var y;
 						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
-							SKIP_SITES[y[1]] = true;
+							SKIP_SITES[ y[1] ] = true;
 						}
 					}
 					
@@ -76755,30 +77658,26 @@ qatar,80
 				
 				// add bold to result
 				// b2, b3, b4
-				var bold_array;
-				switch(out_div.id) {
-					case 'd1':
-						bold_array = d3 .value.replace(/&/g, ' ').split(' ');
-						break;
-					case 'd1b':
-						bold_array = d3b.value.replace(/&/g, ' ').split(' ');
-						break;
-					case 'd1c':
-						bold_array = d3c.value.replace(/&/g, ' ').split(' ');
-						break;
-				}
-				
-				//~ if (out_div.id == 'd1') {
-					//~ var keyword_and_index_array = {
-					//~ };
-					//~ keyword_and_index_array['C'] = o.city;
-					//~ keyword_and_index_array['S'] = o.state_abbr;
-					//~ keyword_and_index_array['*S*'] = o.state;
-					//~ //keyword_and_index_array['STATE FULL'] = o.;
-					//~ keyword_and_index_array['Z'] = o.zip;
-					//~ keyword_and_index_array['P'] = o.phone;
-					//~ keyword_and_index_array['AC'] = o.area_code;
+				//~ var bold_array;
+				//~ switch(out_div.id) {
+					//~ case 'd1':
+						//~ bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1b':
+						//~ bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1c':
+						//~ bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						//~ break;
 				//~ }
+				
+				if (out_div == d1) {
+					var keyword_and_index_array = {
+					};
+					keyword_and_index_array['*S*'] = o.state;
+					keyword_and_index_array['S']   = o.state_abbr;
+				}
+				//~ console.log(out_div);
 				
 				while (match = r.exec(rs)) {
 					
@@ -76790,14 +77689,21 @@ qatar,80
 					else if (yahoo_type == 0)
 						match[1] = decodeURIComponent(match[1]);
 					
+					var full_url = match[1];
+					
 					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 					
-					// Replace <b> with `
+					// Replace <b> with '' !
 					//
-					match[2] = match[2].replace(/<b>/g, '`');
-					match[2] = match[2].replace(/<\/b>/g, '``');
+					match[2] = match[2].replace(/<b>/g, ' ');
+					match[2] = match[2].replace(/<\/b>/g, ' ');
 					match[2] = match[2].replace(/<[^>]+>/g, ' ');
 					match[2] = match[2].replace(/[<>]/g, ' ');
+					
+					//~ match[2] = match[2].replace(/<b>/g, '`');
+					//~ match[2] = match[2].replace(/<\/b>/g, '``');
+					//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+					//~ match[2] = match[2].replace(/[<>]/g, ' ');
 					
 					// js clean
 					match[2] = __js_clean_html_str(match[2]);
@@ -76806,7 +77712,10 @@ qatar,80
 					// It is OK to do this here, or it is also
 					// OK to do it after re-inserting the <b>
 					// bold elements.
-					match[2] = MT__bold(match[2], bold_array);
+					match[2] = MT__bold(match[2], o.bold_array_comp);
+					match[2] = MT__bold(match[2], o.bold_array_locn, {
+						color: 'blue'
+					}).bold_string;
 					
 					// Replace ` with <b>
 					match[2] = match[2].replace(/``/g, '</b>');
@@ -76817,11 +77726,6 @@ qatar,80
 					
 					// trailing
 					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //
-					
-					// NEW JUL 30 2014
-					// Change from http://www. to www.
-					// Per instructions.
-					//~ x = x.replace(/^https?:\/\//g, '');
 					
 					// regular = ^http://www.site.com$
 					// subdomains = [\.\/]site.com$
@@ -76885,20 +77789,20 @@ qatar,80
 					d.appendChild(a);
 					// el_inp_skip2__obj.el_btn
 					d.appendChild(el_inp_skip2__obj.el_btn);
-					//~ // ...
-					//~ // Scrape page
-					//~ // Only on d1
-					//~ // @assoc. array [show output (key) => scrape for keyword (value)], []
-					//~ if (count < 6 && out_div.id == 'd1') {
-						//~ var scrape_el = document.createElement('div');
-						//~ scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
-						//~ d.appendChild(scrape_el);
-						//~ new AMT___items_factory().xhr_scrape_page({
-							//~ parent_el: scrape_el,
-							//~ keyword_and_index_array: keyword_and_index_array,
-							//~ url: match[1]
-						//~ });
-					//~ }
+					// ...
+					// Scrape page
+					// Only on d1
+					// @assoc. array [show output (key) => scrape for keyword (value)], []
+					if (count <= 4 && out_div == d1) {
+						var scrape_el = document.createElement('div');
+						scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
+						d.appendChild(scrape_el);
+						new AMT___items_factory().xhr_scrape_page({
+							parent_el: scrape_el,
+							keyword_and_index_array: keyword_and_index_array,
+							url: full_url
+						});
+					}
 					
 					// Body
 					var pbody = document.createElement('p');
@@ -121185,7 +122089,7 @@ function mturk_load()
 					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
 					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
 				//~ ) &&
-				0 == 1 &&
+				1 == 1 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
@@ -121408,6 +122312,9 @@ function mturk_load()
 				case '361LJMRMCQXI9QE970DP2IGD6CEURC': // Yin Li, Find emails, 27 Aug 2014
 					AMT___Floater({runMT_Run: true});
 					break;
+				case '31KHN7KCND0VO2EKPJDRLAHTM88A0U': // Larry Baker
+					AMT___Floater({runMT_Run: true});
+					break;
 
 				console.log('case ran');
 				break;
@@ -121457,6 +122364,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeTabId();
 		//AMT__Global_Vars.initializeGroupId();
 		AMT__Global_Vars.initializeHitId();
+		AMT__Global_Vars.initialize_return_accept_run_nextTab();
 
 		//var duration = new Date().getTime() - beginRunTime;
 		

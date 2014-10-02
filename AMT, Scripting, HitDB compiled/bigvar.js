@@ -8,7 +8,8 @@ var BIGVAR = false;
 if (1==0) {
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: 'http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Sora,Wed, 06 Aug 2014 22:33:15 -0400.txt',
+		url: 'http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Ben,Mon, 09 Jun 2014 18:23:01 -0400.txt',
+		//~ url: 'http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Sora,Wed, 06 Aug 2014 22:33:15 -0400.txt',
 		//~ url: 'http://192.168.1.2/mturk/.scripts/AMT_Alerts/logs/Emily,import HitDB.txt',
 		onload: function (response) {
 			BIGVAR = response.responseText;

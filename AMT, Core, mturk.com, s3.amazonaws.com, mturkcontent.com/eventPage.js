@@ -33,13 +33,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		document.execCommand("Copy", false, null);
 	}
 	
-	if(request.getNTPassBy) {
-		sendResponse({NTPassBy:localStorage['NTPassBy']});
-	}
-	if(request.toggleNTPassBy) {
-		localStorage['NTPassBy'] = request.toggleNTPassBy;
-	}
-	
+	//RA Hotkey
 	if(request.toggleRAHotkey) {
 		localStorage['RAHotkey'] = request.toggleRAHotkey;
 	}
@@ -47,6 +41,43 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.getRAHotkey) {
 		sendResponse({RAHotkey:localStorage['RAHotkey']});
 	}
+	
+	//NTPassBy
+	if(request.getNTPassBy) {
+		sendResponse({NTPassBy:localStorage['NTPassBy']});
+	}
+	if(request.toggleNTPassBy) {
+		localStorage['NTPassBy'] = request.toggleNTPassBy;
+	}
+	
+	//RA_Button_NextTab
+	if(request.toggleRA_Button_NextTab) {
+		localStorage['RA_Button_NextTab'] = request.toggleRA_Button_NextTab;
+		var RA_Button_NextTab = request.toggleRA_Button_NextTab;
+		chrome.tabs.query({}, function(allTabs) {
+				if(!allTabs.length)
+					allTabs = [allTabs];
+				for(var i = 0; i < allTabs.length; i++) {
+					chrome.tabs.sendRequest(allTabs[i].id, {RA_Button_NextTab:RA_Button_NextTab}, function(rs) {
+							//Squelch response
+						});
+				}
+			});
+	}
+	if(request.getRA_Button_NextTab) {
+		sendResponse({RA_Button_NextTab:localStorage['RA_Button_NextTab']});
+	}
+	
+	
+	//R_Button_NextTab
+	if(request.toggleR_Button_NextTab) {
+		localStorage['R_Button_NextTab'] = request.toggleR_Button_NextTab;
+	}
+	if(request.getR_Button_NextTab) {
+		sendResponse({R_Button_NextTab:localStorage['R_Button_NextTab']});
+	}
+	
+	
 	
 	
 	if(request.setRACustomKey) {
@@ -62,6 +93,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});
 	}
+
+	
 	
 	if(request.getRACustomKey) {
 		sendResponse({RACustomKey:localStorage['RACustomKey']});

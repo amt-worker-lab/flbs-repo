@@ -15,16 +15,16 @@
 -->
 </style>
 </head>
-<body id="body" style="min-width:400px;min-height:50px;">
+<body id="body" style="min-width:500px;min-height:50px;">
 
-<div style="float:left;width:100px;">Submit type:</div>
+<div style="display:inline-block;width:100px;">Submit type:</div>
 <select id="select_doSubmit" style="width:280px;clear:both;">
 	<option value="local">regular</option>
 	<option value="server side">server side</option>
 </select>
 
-
-<div style="float:left;width:100px;">_PROXY_REDACTED_: </div>
+<br />
+<div style="display:inline-block;width:100px;">_PROXY_REDACTED_: </div>
 <input type="text" value="" id="input__PROXY_REDACTED_" style="width:280px;clear:both;" alt="ex: http://localhost (no trailing slash)">
 
 <br />
@@ -32,12 +32,18 @@ Submit "account":
 <br />
 Submit offsetTime:
 <br />
-<div style="float:left;width:100px;">R&A Hotkey: </div>
-<input type="button" value="On" id="toggleRAHotkey" style="width:100;clear:both;">
-<input type="text" value="" id="rACustomKey" style="width:180px;clear:both;">
+<div style="display:inline-block;width:100px;">R&A Hotkey: </div>
+<input type="button" value="On" id="toggleRAHotkey" style="width:100;clear:both;"></input>
+<input type="text" value="" id="rACustomKey" style="width:180px;clear:both;"></input>
 <br />
-<div style="float:left;width:100px;">NextTab Passby: </div>
-<input type="button" value="On" id="toggleNTPassBy" style="width:280px;clear:both;">
+<div style="display:inline-block;width:150px;">NextTab Passby: </div>
+<input type="button" value="On" id="toggleNTPassBy" style="width:280px;clear:both;"></input>
+<br />
+<div style="display:inline-block;width:150px;">R&A NextTab: </div>
+<input type="button" value="define me" id="R&A NextTab" style="width:280px;clear:both;"></input>
+<br />
+<div style="display:inline-block;width:150px;">Return NextTab: </div>
+<input type="button" value="On" id="Return NexTab" style="width:280px;clear:both;"></input>
 <br />
 
 

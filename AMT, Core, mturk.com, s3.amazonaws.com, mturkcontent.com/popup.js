@@ -77,6 +77,22 @@ function init_func_getRACustomKey() {
 }
 
 
+function init_func_ra_button_nextTab() {
+	chrome.extension.sendRequest({getRA_Button_NextTab: true}, 
+		function(rs) 
+		{
+			TOGGLE_RA_BUTTON_NEXTTAB.value = rs.RA_Button_NextTab;
+		});	
+}
+
+function init_func_r_button_nextTab() {
+	chrome.extension.sendRequest({getR_Button_NextTab: true}, 
+		function(rs) 
+		{
+			TOGGLE_R_BUTTON_NEXTTAB.value = rs.R_Button_NextTab;
+		});	
+}
+
 //getNTPassBy
 //toggleNAPassBy
 
@@ -90,12 +106,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	TOGGLE_RA = document.getElementById('toggleRAHotkey');
 	RA_CUSTOMKEY = document.getElementById('rACustomKey')
 	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
+	TOGGLE_RA_BUTTON_NEXTTAB = document.getElementById('R&A NextTab');
+	TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab');
 	
 	init_func_doSubmit();
 	init_func_toggleRA();
 	init_func_getRACustomKey();
 
 	init_func_toggleNTPassBy();
+	
+	init_func_ra_button_nextTab();
+	init_func_r_button_nextTab();
+	
 	
 	SELECT.onfocus = function() {
 		//SELECT.style.border = '2px solid LightGreen';
@@ -141,6 +163,36 @@ document.addEventListener("DOMContentLoaded", function() {
 			this.value = 'On';
 		chrome.extension.sendRequest(
 			{toggleNTPassBy: TOGGLE_NTPASSBY.value}, 
+			function(rs) {
+				//squelch rs
+			}
+		);
+	}
+	
+	TOGGLE_RA_BUTTON_NEXTTAB.onclick = function() {
+		this.style.border = '4px solid LightGreen';
+		if(this.value == 'On') {
+			this.value = 'Off';
+		}
+		else
+			this.value = 'On';
+		chrome.extension.sendRequest(
+			{toggleRA_Button_NextTab: TOGGLE_RA_BUTTON_NEXTTAB.value}, 
+			function(rs) {
+				//squelch rs
+			}
+		);
+	}
+	
+	TOGGLE_R_BUTTON_NEXTTAB.onclick = function() {
+		this.style.border = '4px solid LightGreen';
+		if(this.value == 'On') {
+			this.value = 'Off';
+		}
+		else
+			this.value = 'On';
+		chrome.extension.sendRequest(
+			{toggleR_Button_NextTab: TOGGLE_R_BUTTON_NEXTTAB.value}, 
 			function(rs) {
 				//squelch rs
 			}
