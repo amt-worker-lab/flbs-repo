@@ -98,11 +98,12 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 					if(allAs[i].href.indexOf('/mturk/return') != -1) {
 						allAs[i].addEventListener('onclick', function() {
 							new AMT___core_factory().nextTab();
-						}
+						}, false);
 					}
-				}			
+				}
 			}
-		});
+		}
+	);
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
@@ -1042,6 +1043,16 @@ String.prototype.stateAbbrToFull = function() {
  * AMT___huge_vars_factory
  * AMT___items_factory
  * AMT___site_scrapes
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
 **/
 
 /**
@@ -1056,13 +1067,13 @@ var AMT__rq = function() {
  * AMT___core_factory
  *
  * 
- * @func nextTab
- * @func nextWindow
- * @func top_window__addEventListener_iframe
- * @func iframe2parent__postMessage
- * @func amt_home_show_tasks
- * @func iframe2parent__addEventListener_child
- * @func el_innerHeight
+ * @function nextTab
+ * @function nextWindow
+ * @function top_window__addEventListener_iframe
+ * @function iframe2parent__postMessage
+ * @function amt_home_show_tasks
+ * @function iframe2parent__addEventListener_child
+ * @function el_innerHeight
  */
 function AMT___core_factory() {
 
@@ -3624,6 +3635,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = healthgrades_profile;
 			xhr_get();
 			break;
+		case 'https://www.linkedin.com/profile/view?id=':
+		case 'https://www.linkedin.com/pub/':
+		case 'https://www.linkedin.com/in/':
+			opts.tmp_callback = linkedin_person_profile;
+			xhr_get();
+			break;
 	}
 	
 	/**
@@ -3657,6 +3674,34 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				opts.callback_function(opts);
 			}
 		});
+	}
+	
+	/**
+	 * linkedin_person_profile
+	 * 
+	 * @ opts.response
+	 */
+	function linkedin_person_profile() {
+		
+		opts.response.vars = {
+			result: {
+				//~ fmt__full_name
+				//~ memberHeadline
+				//~ numconnectionsformattable
+				//~ img_raw
+				//~ websites
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		
+		//~ <div class="summary"><p class="description">Professional Financial Management of Assets and Liabilities of Individuals and Privately Held Businesses and Business Owners.<br>
+//~ Wells Fargo Advisors, LLC, Member SIPC, is a registered broker-dealer and separate non-bank affiliate of Wells Fargo and Company. Investments and Insurance products: Not FDIC-Insured/No Bank Guarantee/May Lose Value<br>
+//~ This information is intended for use by the residents of Minnesota, Iowa, Arizona, Kansas only.<br>
+//~ &quot;Opinions and comments expressed by LinkedIn Members are those of the persons submitting them and do not necessarily represent the views of the creator of this profile or their firm.&#x201d;</p></div>
 	}
 	
 	/**

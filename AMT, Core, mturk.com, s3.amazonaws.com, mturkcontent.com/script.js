@@ -2105,6 +2105,134 @@ function MT__RUN() {
 	}
 	
 	//
+	// Lenny Fishman
+	// Given the url, input the requested information in the fields below
+	// 
+	s = 'Given the url, input the requested information in the fields below (Additional instructions above input fields). ';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		
+		GM_addStyle('.container {margin:0 !important;width:40% !important;}');
+		
+		var b = document.getElementsByTagName('b')[0].innerText;
+		
+		var q = document.getElementsByName('Q1Url');
+		
+		var values = {
+			num1: [],
+			num1: []
+		}
+		// http://www.inc.com/rest/inc5000company/24531/by_industry
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: b,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+				
+				var r;
+				var sbm = true;
+				
+				// NAME
+				// Resource Management
+				r = /<meta property="og:title" content="([^:]+): Number \d+ on the 2014 Inc\. 5000" \/>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]);
+					q[0].value = r;
+					if (r.length < 2) {
+						sbm = false;
+					}
+				} else sbm = false;
+				// DESC
+				r = /<meta property="og:description" content="([^"]+)" \/>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]);
+					q[1].value = r;
+					if (r.length < 2) {
+						sbm = false;
+					}
+				} else sbm = false;
+				// LOCATION
+				r = /- ([^<\-]+)<\/title>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]);
+					q[2].value = r;
+					if (r.length < 2) {
+						sbm = false;
+					}
+				} else sbm = false;
+				
+				// ID
+				r = /pageInfo\.profileID = ([\d]+);/.exec(rs);
+				if (r && sbm) {
+					Lenny_Fishman_inc_com(r[1]);
+				}
+				
+				
+				// GET 
+				//~ console.log(sbm);
+				//~ if (sbm) {
+					//~ 
+				//~ }
+			}
+		});
+		
+		function Lenny_Fishman_inc_com(id) {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: 'http://www.inc.com/rest/inc5000company/'+id+'/by_industry',
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					var r;
+					var sbm = true;
+					
+					r = JSON.parse(rs);
+					console.log(r);
+					
+					var city_st = r.data.ifc_city + ', ' + r.data.ifc_state;
+					if (q[0].value != r.data.ifc_company) {
+						sbm = false;
+					}
+					if (q[1].value != r.data.ifc_business_model) {
+						sbm = false;
+					}
+					if (q[2].value != city_st) {
+						sbm = false;
+					}
+					if (!r.data.app_employ_lastyear || !/^\d+$/.exec(r.data.app_employ_lastyear) ) {
+						sbm = false;
+					}
+					if (!r.data.ifc_url || !/^https?:\/\/[\d\D]{4,}$/i.exec(r.data.ifc_url)) {
+						sbm = false;
+					}
+					
+					q[0].value = r.data.ifc_company;
+					q[1].value = r.data.ifc_business_model;
+					q[2].value = city_st;
+					q[3].value = r.data.app_employ_lastyear;
+					q[4].value = r.data.ifc_url;
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+		}
+	}
+	
+	//
 	// traveldata
 	// Find Hotel Discounts
 	// Do as parent to iframe
@@ -56932,21 +57060,28 @@ qatar,80
 	
 	//
 	// LinkedIn Test ""
+	// Web Test (aka)
 	// Masters, linkedin URL
 	// 
 	//~ s = '<p>1. Were you able to find this person’s LinkedIn Profile?</p>';
 	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished with this survey)</p>';
+	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished with this survey)</p>';
+	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished and you can leave the remaining questions blank)</p>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:30%;margin-top:180px;}');
+		GM_addStyle('body {width:30%;margin-top:0px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
 		GM_addStyle('input[type="radio"] {zoom:2;}');
 		
+		//pub/david-alspach/3/b54/949
+		var a = /This URL may take you directly to their profile: (www\.linkedin\.com\/[^<]+)<\/h3>/.exec(ih)[1];
+		a = 'http://' + a;
 		
-		var a = document.getElementsByTagName('a')[0].href;
-		a = a.replace(/https:\/\/s3\.amazonaws\.com\/mturk_bulk\/hits\/\d+\//, ''); //www.linkedin.com/in/harryhendricks". 
-		a = (a.indexOf('http') == -1) ? 'http://' + a : a;
-		console.log(a);
+		//~ 
+		//~ var a = document.getElementsByTagName('a')[0].href;
+		//~ a = a.replace(/https:\/\/s3\.amazonaws\.com\/mturk_bulk\/hits\/\d+\//, ''); //www.linkedin.com/in/harryhendricks". 
+		//~ a = (a.indexOf('http') == -1) ? 'http://' + a : a;
+		//~ console.log(a);
 		
 		//
 		d = document.createElement('div');
@@ -57447,7 +57582,33 @@ qatar,80
 			var q = document.getElementById('Q3ProfileURL');
 			q.style.border = '2px dashed blue';
 			
-			//~ d1a2.innerHTML = '';
+			new AMT___site_scrapes().scrape({
+				site: 'https://www.linkedin.com/in/',
+				url: u,
+				callback_function: function(options) {
+					
+					console.log(options);
+					
+					var rs = options.response.vars.results;
+					
+					var err = options.response.vars.error;
+					
+					var errType = options.response.vars.error;
+					
+					if (err != null) {
+						d1b.innerText += errType;
+						return;
+					}
+					
+					if (rs.length == 0) {
+						d1b.innerText += 0;
+						return;
+					}
+				}
+			});
+			
+			
+			
 			
 			GM_xmlhttpRequest({
 				method: "GET",
@@ -57642,7 +57803,7 @@ qatar,80
 							// here?
 							document.getElementsByName('Q5dSummary')[0].checked = true;
 						}
-						catch (e) {console.log('xx');
+						catch (e) {
 							document.getElementsByName('Q5dSummary')[0].checked = false;
 							document.getElementsByName('Q5dSummary')[1].checked = true;
 						}
