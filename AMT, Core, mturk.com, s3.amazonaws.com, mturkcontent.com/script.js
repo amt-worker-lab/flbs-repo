@@ -6292,7 +6292,6 @@ function MT__RUN() {
 		// Yahoo/SP top 3 for start
 		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 			startPage: true,
-			//~ seed_arg1: o.input1,
 			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team OR "facebook.com"'),
 			callback_function: Larry_Baker_web_contact_email__startpage
 		});
@@ -6302,8 +6301,7 @@ function MT__RUN() {
 			var rs = response_obj;
 			
 			if (!rs.length) {
-				document.body.innerText = '0';
-				return;
+				// No URLs
 			}
 			
 			for (var i in rs) {
@@ -6316,8 +6314,6 @@ function MT__RUN() {
 		}
 		
 		function Larry_Baker_web_contact_email__scrapy(start_urls, allowed_domains) {
-			//~ console.log(start_urls);
-			//~ console.log(allowed_domains);
 			//
 			var s_obj = 
 			{
@@ -6396,6 +6392,141 @@ function MT__RUN() {
 								//~ 
 								//~ //this.style.border = '8px solid LightGreen';
 							//~ }
+						}
+					);
+				}
+			);
+		}
+	}
+	
+	//
+	// Larry Baker
+	// Find the email address for businesses
+	//
+	s = '<li>Do not provide any of the following emails:&nbsp;press"@example.com", "marketing"@example.com, "support"@example.com, "wholesale"@example.com, or "sales"@example.com"</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('table {zoom:0.8;}');
+		
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:160px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		/* END ITEMS */
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			site: td[3].innerText.trim(),
+			domain: null,
+			sd_start_urls: [],
+			sd_allowed_domains: []
+		}
+		if (o.site == '' && AMT__Global_Vars.isPreview) {	// Not accepted. No site/domain.
+			AMT___Floater.skip();
+			return;
+		} else if (!AMT__Global_Vars.isPreview) {			// Accepted
+			// add
+			addToTabsQ();
+		}
+		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
+		o.domain = o.domain.replace(/\/[\d\D]*/i, '');
+		o.sd_allowed_domains.push(o.domain);
+		
+		// Yahoo/SP top 3 for start
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			//~ seed_arg1: o.input1,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team'),
+			callback_function: Larry_Baker_emails_no_iframe__startpage
+		});
+		
+		function Larry_Baker_emails_no_iframe__startpage(response_obj) {
+			console.log(response_obj.length);
+			var rs = response_obj;
+			
+			if (!rs.length) {
+				// No URLs
+				//~ document.body.innerText = '0';
+				//~ return;
+			}
+			
+			for (var i in rs) {
+				o.sd_start_urls.push(rs[i][0]);
+				if (i >= 3) break; 
+			}
+			
+			// start URLs, allowed domains
+			Larry_Baker_emails_no_iframe__scrapy(o.sd_start_urls, o.sd_allowed_domains);
+		}
+		
+		function Larry_Baker_emails_no_iframe__scrapy(start_urls, allowed_domains) {
+			//~ console.log(start_urls);
+			//~ console.log(allowed_domains);
+			//
+			var s_obj = 
+			{
+				project: 'scrapy_amt',
+				spider: 'AMTSpider',
+				arg_allowed_domains: allowed_domains,	// array
+				arg_start_urls: start_urls,		// array
+				arg_max_pages_to_fetch: 40,
+				arg_type_scrape: 'all_emails',	// all_emails or str_match
+				settings: [
+					//'DEPTH_LIMIT=4',
+					//'SCHEDULER_ORDER=BFO',
+					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+					
+					'CONCURRENT_ITEMS=200', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+					
+					'AJAXCRAWL_ENABLED=1', //true
+					'COOKIES_ENABLED=0', //false
+					//'RETRY_ENABLED=0', //false
+					//'DI=0', //false
+					'REDIRECT_MAX_TIMES=2'//,
+					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+					//'AJAXCRAWL_ENABLED=1', //true
+				]
+			}
+			
+			var req = new AMT___requests_factory();
+			AMT___POPUP__initializeGlobals(
+				function() {
+					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+						s_obj,
+						(new AMT___items_factory()).create_dashboard__powers_v1,
+						{
+							// add PREVIEW all snippets
+							div: d1,
+							input_send_success: document.getElementById('web_url'),
+							callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+								
+								
+								if (AMT__Global_Vars.isPreview) {
+									// If no email match results
+									if (!callback_obj.matches || !callback_obj.matches.length) {
+										AMT___Floater.skip();
+									}
+									else
+									{
+										AMT___Floater.accept();
+									}
+									// ENDS SCRIPT PROCESSING
+									return true;
+								}
+								
+								// CONTINUES (job is NOT in "preview" mode)
+								return false;
+							},
+							//~ do_submit_next_tab: true
+							do_submit_add_to_tabs_queue: true
 						}
 					);
 				}
@@ -12514,14 +12645,6 @@ function MT__RUN() {
 		}
 		
 		// ...
-		// return button function!
-		new AMT___core_factory()
-			.iframe2parent__postMessage( //
-				{
-					action: 'return_button__showNextTab'
-				}
-			);
-		// ...
 		new AMT___core_factory().
 			iframe2parent__postMessage( //
 				{
@@ -12533,7 +12656,20 @@ function MT__RUN() {
 		setTimeout(function() {
 			q[0].focus();
 			q[0].blur();
-			//~ document.body.scrollIntoView();
+			
+			// MOVE THE FIRST BODY ELEMENT DOWN
+			document.getElementsByTagName('h4')[0].style.marginTop = '40px';
+		}, 1000);
+		setTimeout(function() {
+			q[0].focus();
+			q[0].blur();
+			
+			// MOVE THE FIRST BODY ELEMENT DOWN
+			document.getElementsByTagName('h4')[0].style.marginTop = '40px';
+		}, 2000);
+		setTimeout(function() {
+			q[0].focus();
+			q[0].blur();
 			
 			// MOVE THE FIRST BODY ELEMENT DOWN
 			document.getElementsByTagName('h4')[0].style.marginTop = '40px';
@@ -12549,30 +12685,36 @@ function MT__RUN() {
 				case 0:
 				case 96:
 					q[1].checked = false;
-					
 					q[0].checked = true;
 					q[0].click();
-					doSubmit();
+					
+					setTimeout(function() {
+						document.body.style.backgroundColor = 'LightGreen';
+					}, 1000);
 					
 					new AMT___core_factory().nextTab();
+					doSubmit();
+					
 					e.preventDefault();
 					e.stopPropagation();
-					
 					
 					return false;
 					break;
 				case 1:
 				case 97:
 					q[0].checked = false;
-					
 					q[1].checked = true;
 					q[1].click();
-					doSubmit();
+					
+					setTimeout(function() {
+						document.body.style.backgroundColor = 'LightGreen';
+					}, 1000);
 					
 					new AMT___core_factory().nextTab();
+					doSubmit();
+					
 					e.preventDefault();
 					e.stopPropagation();
-					
 					
 					return false;
 					break;
@@ -12584,11 +12726,22 @@ function MT__RUN() {
 		Relevance_Groupon_keyword_search__category();
 		
 		// ...
+		/**
+		 * TODO:
+		 * This is an erroneous match?: "Our deal searchers couldn't find any nearby your search deals at the moment."
+		 * http://192.168.1.2/mturk/util.php?AMT__output_html_from_URL=http%3A%2F%2Fwww.groupon.com%2Fbrowse%2Fchicago%3Fcategory%3Dhealth-and-fitness%26category3%3Dfootball
+		 */
 		function Relevance_Groupon_keyword_search__category() {
+			
+			//~ var opts = {
+				//~ AMT__output_html_from_URL__options
+			//~ };
+			//~ opts = encodeURIComponent(JSON.stringify(opts));
 			
 			GM_xmlhttpRequest({
 				method: "GET",
-				//~ url: u,
+				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + opts,
+				
 				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.context),
 				onload: function (response) {
 					var rs = response.responseText;
@@ -21958,13 +22111,15 @@ function MT__RUN() {
 	s4= 'Draw a complete polygon around the target store&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s5= 'Draw a complete polygon around the target restaurant&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
+	s7= '<li>Draw a complete polygon around the store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
 		ih.indexOf(s3) != -1 ||
 		ih.indexOf(s4) != -1 ||
 		ih.indexOf(s5) != -1 ||
-		ih.indexOf(s6) != -1
+		ih.indexOf(s6) != -1 ||
+		ih.indexOf(s7) != -1
 		)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
@@ -21997,7 +22152,22 @@ function MT__RUN() {
 		var b		= document.getElementsByTagName('b');
 		var name	= b[0].innerText.trim();
 		var addr	= b[1].innerText.trim();
-		//b = b[1].innerText.trim();
+		
+		
+
+
+		var o = {
+			lat: null,
+			lon: null
+		};
+		
+		//37.4419 -122.1419
+		var x = /new google\.maps\.LatLng\(([^,]+), ([^\)]+)\);/.exec(ih);
+		if (x) {
+			o.lat = x[1];
+			o.lon = x[2];
+		}
+		
 		
 		// ...
 		var q = document.getElementById('polygon');
@@ -22033,10 +22203,29 @@ function MT__RUN() {
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d);*/
 		
-		//...
+		//~ // Satellite
+		//~ https://maps.google.com/maps?output=&hl=en&geocode=&q=Walmart+1655+Sunset+Dr%2CGrenada+MS%2C38901&t=h&gl=us
+		//~ 
+		//~ // MAP ONLY (non-satellite) ???
+		//~ https://maps.google.com/maps?output=&hl=en&geocode=&q=Walmart+1655+Sunset+Dr%2CGrenada+MS%2C38901&gl=us
+
+		// ...
 		var l = name;
-		var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
+		if (l == 'Walmart')
+			l = 'Wal';
+		// ...
+		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
+		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		if (o.lat != null && o.lon != null)
+			withNameSearch += '&sll='+o.lat + ',' + o.lon;
+		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
+		//~ // ...
+		//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
+		// ...
 		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
+		
+		
 		
 		var first_url = woutNameSearch;
 		if (ih.indexOf('Planet Fitness') != -1)
@@ -23101,8 +23290,131 @@ function MT__RUN() {
 	}
 	//
 	// Grocery ROI
+	// Uses .mousewheel_zoom_image()
+	// 5 Oct 2014
+	s = '<strong>Our goal</strong>&nbsp;with this project is to extract valuable allergen data from product images to provide our customers with valuable information about grocery contents. Your task is to view the images and check all the allergen(s) listed as present in the product.';
+	s2= '<strong>Our goal</strong>&nbsp;with this project to extract valuable data from grocery product images to provide our customers with more product information. Your task is to view the images and check all the specialty categories that may apply.';
+	if  (
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1
+		)
+	{		
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('img {width:auto !important;height: auto !important;}');
+		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;height:60px;}');
+		
+		//~ GM_addStyle('em {font-weight:bold;zoom:1.4;}');
+		
+		
+		// return/accept
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		/**/
+		// div
+		var d1 = document.createElement('div');
+		d1.setAttribute('style', 'position:absolute !important;top:60px;left:10%;width:89%;float:none !important;');
+		document.body.appendChild(d1);
+		/**/
+		
+		var img = document.getElementsByTagName('img');
+		var img_arr = [];
+		for (var i in img) {
+			if (i == 'length') break;
+			img_arr.push(img[i]);
+			img[i].style.zoom = 2; //Zoom it
+		}
+		for (var i in img_arr) {
+			// Append to d1
+			d1.appendChild(img_arr[i]);
+		}
+		
+		
+		//
+		new AMT___events_factory().mousewheel_zoom_image({
+			img_array: img_arr,
+			add_onclick_reset: 0.4
+		});
+		
+		// remove a
+		var img = document.getElementsByTagName('a');
+		for (var i in a) {
+			if (i == 'length') break;
+			a[i].parentNode.removeChild(a[i]);
+		}
+		
+		// Buttons container
+		var b = document.getElementsByClassName('col-md-3')[0];
+		b.setAttribute('style', 'position:absolute !important;top:60px;left:0;width:10%;float:none !important;');
+		// Images container
+		var b = document.getElementsByClassName('col-md-9')[0];
+		b.setAttribute('style', 'position:absolute !important;top:600px;float:none !important;');
+		
+		// ...
+		document.getElementById('submitButton').onclick = function() {
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		
+		// button soy
+		//<label><input name="Soy" type="checkbox" value="Soy" /></label>Soy
+		var lb = document.getElementsByTagName('label');
+		for (var i in lb) {
+			if (i == 'length') break;
+			if (lb[i].innerHTML.trim() == '<input name="Soy" type="checkbox" value="Soy">') {
+				lb[i].innerHTML = '<input name="Soy" type="checkbox" value="Soy" />Soy';
+			}
+		}
+		
+		var o = {
+			checkboxes: []
+		}
+		var x = document.getElementsByTagName('input');
+		for (var i in x) {
+			if (i == 'length') break;
+			if (x[i].type == 'checkbox') {
+				o.checkboxes.push(x[i]);
+			}
+		}
+		
+		// No images
+		var q = document.getElementsByName('No images')[0];
+		q.onclick = function() {
+			for (var i in o.checkboxes) {
+				o.checkboxes[i].checked = false;
+			}
+			this.checked = true;
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+		// None of the above
+		var q = document.getElementsByName('None of the above')[0];
+		q.onclick = function() {
+			for (var i in o.checkboxes) {
+				o.checkboxes[i].checked = false;
+			}
+			this.checked = true;
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+	}
+	
+	//
+	// Grocery ROI
 	// 
-	// 21 Aug 2014
+	// USES requests_factory().image_2_OCR()
+	//
 	s = '<p><strong>Our goal</strong> with this project is to extract valuable data from a products ingredient table in order to provide our customers with more information. Your task is to view the product ingredient table and transcribe ingredient text to the provided text field.</p>';
 	if(ih.indexOf(s) != -1)
 	{		
@@ -23113,6 +23425,7 @@ function MT__RUN() {
 		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;}');
 		GM_addStyle('em {font-weight:bold;zoom:1.4;}');
+		GM_addStyle('.em2 {font-weight:bold;zoom:2;}');
 		
 		var a = document.getElementsByTagName('a')[0];
 		
@@ -23174,6 +23487,11 @@ function MT__RUN() {
 			
 		}
 		
+		// Job accepted?
+		if (!AMT__Global_Vars.isPreview) {
+			addToTabsQ();
+		}
+		
 		// inner
 		//~ 
 			
@@ -23205,7 +23523,7 @@ function MT__RUN() {
 				//~ console.log(o.tx.style.top);
 				
 				//
-				d2.style.height = (.6 * i) + 60 + 'px';
+				//~ d2.style.height = (.6 * i) + 60 + 'px';
 				
 				//
 				d4.style.height = short;
@@ -23219,14 +23537,22 @@ function MT__RUN() {
 		// ...
 		//~ o.tx.setAttribute('style', 'position:absolute;');
 		
-		//
-		// return/accept
-		new AMT___core_factory().
-			iframe2parent__postMessage( // options
+		// return button function!
+		new AMT___core_factory()
+			.iframe2parent__postMessage( // options  , XXXXX >callback_function
 				{
-					action: 'return_and_accept_button__nextTab'
+					action: 'return_button__showNextTab'
 				}
 			);
+		
+		//~ //
+		//~ // return/accept
+		//~ new AMT___core_factory().
+			//~ iframe2parent__postMessage( // options
+				//~ {
+					//~ action: 'return_and_accept_button__nextTab'
+				//~ }
+			//~ );
 		
 		// 
 		document.getElementById('submitButton').onclick = function() {
@@ -23235,22 +23561,27 @@ function MT__RUN() {
 			if (q.value.length < 2) // blank?
 				return false;
 			
-			new AMT___core_factory().nextTab();
+			// Show next
+			//~ 
+			showNextTab();
+			//~ new AMT___core_factory().nextTab();
+			
 			doSubmit();
 		}
 		
 		// ...
+		// image_2_OCR
 		var rf = new AMT___requests_factory().image_2_OCR({
 			url: a.href,
 			resize: '50%',
 			callback_function: Grocery_ROI_text_ingredients
 		});
 		// FULL SIZE
-		var rf = new AMT___requests_factory().image_2_OCR({
-			url: a.href,
-			CALLBACK__FULL_SIZE: true,
-			callback_function: Grocery_ROI_text_ingredients
-		});
+		//~ var rf = new AMT___requests_factory().image_2_OCR({
+			//~ url: a.href,
+			//~ CALLBACK__FULL_SIZE: true,
+			//~ callback_function: Grocery_ROI_text_ingredients
+		//~ });
 		
 		
 		/**
@@ -23260,7 +23591,7 @@ function MT__RUN() {
 		 */
 		function Grocery_ROI_text_ingredients__div(rs) {
 			
-			rs = rs.replace(/\./g, '<em>.</em>');
+			rs = rs.replace(/\./g, '<em class="em2">.</em>');
 			rs = rs.replace(/[\r\n]/g, '<br>');
 			rs = rs.replace(/(ingredients)/gi, '<em>$1</em>');
 			d5.innerHTML = rs;
@@ -23279,22 +23610,47 @@ function MT__RUN() {
 			
 			// REMOVE "ingredients:"
 			rs = rs.replace(/^ *ingredients:* */i, '');
+			rs = rs.replace(/\s+/i, ' ');
+			rs = rs.trim();
+			var num_words = rs.split(' ').length;
+			console.log(rs.length);
+			console.log(num_words);
+			// SKIP?
+			if (AMT__Global_Vars.isPreview) {
+				if (num_words > 20 || rs.length > 280 || rs.trim() == '') {
+					AMT___Floater.skip();
+					return;
+				} else {
+					console.log('accept!');
+					AMT___Floater.accept();
+					return;
+				}
+			}
+			
+			//~ return;
 			
 			var out;
 			
-			console.log(result_object);
+			//~ console.log(result_object);
 			
 			if (result_object.hasOwnProperty('CALLBACK__FULL_SIZE')) {
 				out = d4;
-			} else
+			} else {
 				out = q;
+			}
 			
-			out.value = rs.trim();
+			out.value = rs.trim() + ' ';
 			
 			// Add a non-spelling
-			out.value += ' jjjjjjjjjjjjjj ';
+			//~ out.value += ' jjjjjjjjjjjjjj ';
 			
-			out.focus();
+			//~ out.focus();
+			out.select();
+			out.blur();
+			
+			out.value = out.value.trim();
+			
+			//~ out.focus();
 			out.select();
 			out.blur();
 			
@@ -36902,6 +37258,196 @@ function MT__RUN() {
 		
 	}
 	
+	/**
+	 * Amazon.com
+	 * 
+	 * Benjamin Grier
+	 * Catalog ("")
+	 * 
+	 */
+	//
+	// Catalog ""
+	// Confirm the ASINs for Given Products
+	// 
+	s = '<p style="font-family: Verdana, Geneva, sans-serif; font-size: 12px; line-height: 20.7999992370605px;">Find the Product given on Amazon and give us the ASIN listed.</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		//GM_addStyle('body {width:15%;margin-top:30px;}');
+		//~ GM_addStyle('#submitButton {width:96%;height:80px;margin-top:10px;}');
+		
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;position:absolute;top:1000px;}');
+		GM_addStyle('#submitButton {position:absolute;top:900px;}');
+		GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
+		
+		//http://www.amazon.com/s/ref=sr_pg_2?rh=n%3A2350149011%2Ck%3Adrawing+apps&page=2&keywords=drawing+apps&ie=UTF8&qid=1388097948
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div'); //
+		d1.setAttribute('style','position:absolute;top:40px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('textarea'); //
+		d2.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:38px;');
+		document.body.appendChild(d2);
+		/*END ITEMS*/
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			product: td[1].innerText.trim(),
+			system:  td[3].innerText.trim()
+		};
+		
+		d2.value = o.product + ' \n' + o.system;
+		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1
+			],
+			offset: 40 // offset top
+		});
+		
+		// init
+		Catalog_amazon_product_search();
+		
+		function Catalog_amazon_product_search() {
+			
+			var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords='+encodeURIComponent(d2.value);
+			d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: 'http://localhost/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				//~ url: ',
+				onload: function(response) {
+					var rs=response.responseText;
+					
+					/*
+					<h3 class="newaps">
+					<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+					*/
+					
+					var r,m;
+					
+					// remove sponsored, to end
+					//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+					rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+					
+					// num results
+					r = /<h2 style="" class="resultCount" id="resultCount"><span>([^<]+)/.exec(rs);
+					if (r) {
+						d1.innerHTML += r[1]+' results<hr />';
+					}
+					
+					// no results
+					r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
+					if (r) {
+						d1.innerHTML += r[0]+'<hr>';
+						return;
+					}
+					
+					// images
+					// src="http://ecx.images-amazon.com/images/I/
+					var images = [];
+					r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+					while (m = r.exec(rs)) {
+						images.push(m[1]);
+					}
+					d1.innerHTML += images.length+' images<br />';
+					
+					// items
+					var dp, c = 0, multi, highlight = '';
+					
+					r = /<h3 class="newaps">[\r\n\t\s]+<a href="([^"]+)"><span class="lrg bold"[^>]{0,}>([^<]+)<((.|\s)*?(?=<\/a><\/div>|$)|$)/g;
+					
+					while (m = r.exec(rs)) {
+						
+						multi = false; // skip this -----
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
+						div.className = 'exe';
+						d1.appendChild(div);
+						
+						//offer, ratng;
+						var offer = '';
+						var ratng = '';
+						var n;
+						o = /\([\d,]+ offers\)/g;
+						if (o.exec(m[3])) {
+							o.lastIndex = 0;
+							while (n = o.exec(m[3])) {
+								offer += '<br >'+n[0];
+							}
+						}
+						//offer, ratng;
+						o = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[3]);
+						if (o) {
+							ratng += '<br >'+o[1];
+						}
+						o = /<span class="rvwCnt">\([^>]+>([\d,]+)/.exec(m[3]);
+						if (o) {
+							ratng += ' ('+o[1]+')';
+						}
+						
+						dp = /\/dp\/([^\/]+)/.exec(m[1])[1];
+						
+						div.innerHTML += m[2]+ '<br>';
+						div.asin = dp;
+						
+						if (images[c] && !multi)
+							div.innerHTML += '<img src="'+images[c]+'" style="max-width:200px;" />';
+						
+						div.innerHTML += offer + ratng;
+						//d1.innerHTML += '<ul id="'+dp+'-rank" style="display:inline;"></ul>';
+						
+						div.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							var q = document.getElementById('web_url');
+							q.value = this.asin;
+							if (q.value.length > 4) {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						
+						c++;
+						
+					}
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1800px;');
+					d1.appendChild(div);
+					
+					//~ var x = document.getElementsByClassName('exe');
+					//~ for (var i in x) {
+						//~ x[i].onclick = function() {
+							//~ if (this.id.trim() != '') {
+								//~ document.getElementById('ASIN').value = this.id;
+								//~ doSubmit();
+							//~ }
+						//~ }
+					//~ }
+				}
+			});
+		}
+	}
 	//
 	// Benjamin Grier
 	// 
@@ -57077,27 +57623,30 @@ qatar,80
 		var a = /This URL may take you directly to their profile: (www\.linkedin\.com\/[^<]+)<\/h3>/.exec(ih)[1];
 		a = 'http://' + a;
 		
+		var o = {
+			url: a
+		};
+		
 		//~ 
 		//~ var a = document.getElementsByTagName('a')[0].href;
 		//~ a = a.replace(/https:\/\/s3\.amazonaws\.com\/mturk_bulk\/hits\/\d+\//, ''); //www.linkedin.com/in/harryhendricks". 
 		//~ a = (a.indexOf('http') == -1) ? 'http://' + a : a;
 		//~ console.log(a);
 		
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1a2');
-		document.body.appendChild(d);
-		var d1a2 = document.getElementById('d1a2');
-		d1a2.style.position='absolute';
-		d1a2.style.top='0px';
-		d1a2.style.left='30%';
-		d1a2.style.width='40%';
-		d1a2.style.height='600px';
-		d1a2.style.overflow='auto';
-		d1a2.style.border='1px solid blue';
-		d1a2.style.borderBottom='2px solid blue';
-		d1a2.style.backgroundColor='#eee';
-		d1a2.style.fontSize='12px';
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0;left:30%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0;left:70%;width:29%;height:600px;');
+		document.body.appendChild(d2);
+		/*END ITEMS*/
+		
+		d2.onblur = function() {
+			var testing = true;
+			if (testing)
+				LinkedIn_Test_Profile_Checking__prof(this.value.trim());
+		}
 		
 		//
 		document.getElementsByName('Q1ProfileFound')[0].checked = true;
@@ -57109,835 +57658,1057 @@ qatar,80
 		}
 		
 		//
-		var x = document.getElementsByName('Q5bFullName');
-		for (var i in x) {
-			if (i == 'length') break;
-			x[i].onclick = function() {
-				this.checked = true;
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-		}
+		//~ var x = document.getElementsByName('Q5bFullName');
+		//~ for (var i in x) {
+			//~ if (i == 'length') break;
+			//~ x[i].onclick = function() {
+				//~ this.checked = true;
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			//~ }
+		//~ }
 		
 		//
-		LinkedIn_Test_Profile_Checking__prof(a);
-		
-		//
-		return;
+		LinkedIn_Test_Profile_Checking__prof(o.url);
 		
 		
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='0px';
-		d1.style.left='30%';
-		d1.style.width='40%';
-		d1.style.height='600px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='12px';
-		//
-		//
-		//
-		d = document.createElement('iframe'); // iframe
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='600px';
-		d1b.style.left='30%';
-		d1b.style.width='68%';
-		d1b.style.height='600px';//200
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='12px';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='0px';
-		d2.style.left='0%';
-		d2.style.width='28%';
-		d2.style.height='30px';
-		d2.onblur = function() {
-			LinkedIn_Test_Profile_Checking();
-		}
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2b');
-		document.body.appendChild(d);
-		var d2b = document.getElementById('d2b');
-		d2b.style.position='absolute';
-		d2b.style.top='30px';
-		d2b.style.left='0%';
-		d2b.style.width='28%';
-		d2b.style.height='30px';
-		d2b.onblur = function() {
-			LinkedIn_Test_Profile_Checking();
-		}
-		//d2b.value = 'recruit OR recruiter OR recruiting OR staff OR staffing';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2c');
-		document.body.appendChild(d);
-		var d2c = document.getElementById('d2c');
-		d2c.style.position='absolute';
-		d2c.style.top='60px';
-		d2c.style.left='0%';
-		d2c.style.width='28%';
-		d2c.style.height='30px';
-		d2c.onblur = function() {
-			LinkedIn_Test_Profile_Checking();
-		}
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2d');
-		document.body.appendChild(d);
-		var d2d = document.getElementById('d2d');
-		d2d.style.position='absolute';
-		d2d.style.top='90px';
-		d2d.style.left='0%';
-		d2d.style.width='28%';
-		d2d.style.height='30px';
-		//d2d.style.border = '3px solid LightGreen';
-		//
-		d = document.createElement('select');
-		d.setAttribute('id','d2e');
-		document.body.appendChild(d);
-		var d2e = document.getElementById('d2e');
-		d2e.style.position='absolute';
-		d2e.style.top='120px';
-		d2e.style.left='0%';
-		d2e.style.width='28%';
-		d2e.style.height='30px';
-		//
-		d2e.innerHTML = '<option value="us">USA</option>';
-		d2e.innerHTML+= '<option value="au">AUS</option>';
-		d2e.innerHTML+= '<option value="ca">CAN</option>';
-		//console.log(MT___countries);
-		for (var i in MT___countries) {
-			d2e.innerHTML += '<option value="'+MT___countries[i].code.toLowerCase()+'">'+MT___countries[i].name+'</option>';
-		}
-		d2e.onchange = function() {
-			LinkedIn_Test_Profile_Checking();
-		}
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2f');
-		d.setAttribute('type','button');
-		d.value = 'N/A';
-		document.body.appendChild(d);
-		var d2f = document.getElementById('d2f');
-		d2f.style.position='absolute';
-		d2f.style.top='150px';
-		d2f.style.left='0%';
-		d2f.style.width='20%';
-		d2f.style.height='30px';
-		d2f.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			var x = document.getElementsByTagName('input');
-			for (var i in x) {
-				if (i == 'length') break;
-				if (x[i].value == 'Yes' && x[i].type == 'radio')
-					x[i].checked = false;
-				else if (x[i].value == 'No' && x[i].type == 'radio')
-					x[i].checked = true;
-			}
-			document.getElementById('Q2JobTitle').value = 'N/A';
-			document.getElementById('Q3ProfileURL').value = 'N/A';
-			document.getElementById('Q4Connections').value = 'N/A';
-			doSubmit__serverSide();
-		}
-		
-		
-		
-		//var b = /<h3>Please search for Rich Morian in Clinton Township MI with Wells Fargo Advisors/.exec(ih);
-		
-		var b = /<h3>Please search for ((.|\s)*?(?= with ([^$]*) and answer a short survey about their profile<\/h3>|$)|$)/.exec(ih);
-		if (!b) {
-			exit('x');
-		}
-		//here?
-		//console.log(b);
-		d2c.value = __js_clean_html_str(b[3]).trim();// comp
-		// nm / location
-		b = __js_clean_html_str(b[1]).trim();
-		// location
-		var b2 = / in ((.|\s)*?(?= ([A-Z]{2})$|$)|$)/.exec(b);
-		if (!b2) {
-			exit('loc');
-		}
-		var location = [
-			b2[1],
-			b2[3]
-		];
-		//~ console.log(b2);
-		//~ console.log(location);
-		// nm
-		var b2 = b.split(' in ');
-		if (b2.length < 2) {
-			exit('nm');
-		}
-		var name = b2[0].split(' ');
-		
-		d2.value = name[0];
-		d2b.value = (name.length >= 2) ? name.slice(1).join(' ') : '';
-		d2d.value = '1,'+ location[0] +','+ location[1];
-		
-		//default btns
-		var x = document.getElementsByTagName('input');
-		for (var i in x) {
-			if (i == 'length') break;
-			if (x[i].value == 'Yes' && x[i].type == 'radio')
-				x[i].checked = true;
-		}
-		//loc
-		d2d.onblur = function() {
-			var x = this.style;
-			if (x.border == '') {
-				x.border = '3px solid LightGreen';
-			} else
-				x.border = '';
-			
-			if (/^\d{4,}$/.exec(this.value))
-				LinkedIn_Test_Profile_Checking();
-			else {
-				MT___google_api_geocode( //MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy)
-					this.value,
-					function(rs) {
-						console.log(rs);
-						try{
-							if (rs.results[0].address_components.length) {
-								
-							}
-							
-							for (var i in rs.results[0].address_components) {
-								var x = rs.results[0].address_components[i];console.log(x);
-								if (!x.types) continue;
-								if (!x.types.length) continue;
-								if (x.types[0] == 'postal_code') {
-									d2d.value = x.short_name;
-									break;
-								}
-							}
-							LinkedIn_Test_Profile_Checking();
-						}
-						catch(e) {
-							//
-						}
-					},
-					true
-				);
-			}
-		}
-		
-		//Q1...Q5
-		document.getElementById('mturk_form').onsubmit = function() {
-		}
-		
-		LinkedIn_Test_Profile_Checking();
-		
-		function LinkedIn_Test_Profile_Checking() {
-			
-			var url;
-			
-			url = 'http://www.linkedin.com/vsearch/pj';
-			
-			var out;
-			out = d1;
-			
-			url+= '?company='+encodeURIComponent(d2c.value.trim());
-			url+= '&companyScope=CP'; // CP scope is current/past
-			url+= '&firstName='+encodeURIComponent(d2.value.trim());
-			url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
-			//url+= '&keywords='+encodeURIComponent(d2.value.trim());
-			url+= '&pt=people';
-			url+= '&locationType=I';
-			url+= '&openAdvancedForm=true';
-			url+= '&countryCode='+encodeURIComponent(d2e.value);
-			
-			if (d2d.style.border != '') {
-				url += '&postalCode='+encodeURIComponent(d2d.value);
-				url += '&distance=100';
-			}
-				
-			out.innerHTML = '';
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: url,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						out.innerHTML = response.status;
-						return;
-					}
-					
-					out.innerHTML = d2.value+'<br>'+d2b.value+'<br>'+d2c.value;
-					
-					var r;
-					r = JSON.parse(rs);
-					console.log(r);
-					
-					if (r.status != 'ok') return;
-					if (!r.content) {
-						return;
-					}
-					if (r.content.page.voltron_unified_search_json.search.results.length === 0) {
-						return;
-					}
-					
-					//out.innerHTML = '';
-					if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
-						out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
-					else
-						out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
-						
-					
-					var x = r.content.page.voltron_unified_search_json.search.results;
-					
-					var snp,s;
-					var y;
-					
-					var y1, y2;
-					y1 =  d2.value.replace(/\s+/g, ' ').trim();
-					y2 = d2b.value.replace(/\s+/g, ' ').trim();
-					y2 = y2.replace(/ OR[ $]*/g, ' ').trim();
-					var bold_comp = y1.split(' ');
-					var bold_titl = y2.split(' '); //['market','marketing','marketer','owner'];
-					//var auto_click_inp = false;
-					for (var i in x) {
-						
-						y = x[i].person;
-						
-						console.log(y); // this person
-						
-						snp = y.snippets;
-						s = '';
-						var heading;
-						var fmt_body;
-						if (snp.length) {
-							for (var j in snp) {console.log(snp[j]);
-								heading = false;
-								fmt_body = false;
-								
-								s += '<hr>';
-								s += snp[j].fieldName + ': ';
-								if (snp[j].fmt_heading) {
-									s += snp[j].fmt_heading;
-								} else {
-									s += snp[j].fmt_body;
-								}
-							}
-						} else snp = '';
-						
-						y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
-						y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
-						y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
-						y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
-						
-						var z;
-						var headline;
-						var et, ec;
-						z = y.fmt_headline;
-						if (z.indexOf(' at ') != -1) {
-							z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
-							if (z && / at /gi.exec(y.fmt_headline).length === 1) {
-								et = MT__bold(z[1], bold_titl);
-								ec = MT__bold(z[3], bold_comp);
-								headline = '\
-									<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
-									<div class="exe-title" style="display:inline;">\
-										 \
-									</div>\
-									<br >\
-									<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Comp." >\
-									<div class="exe-comp" style="display:inline;">\
-										 \
-									</div>\
-									<br >\
-									';
-							} else {
-								et = y.fmt_headline;
-								et = MT__bold(et, bold_titl);
-								et = MT__bold(et, bold_comp);
-								ec = '';
-								headline = '\
-									<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
-									<div class="exe-title" style="display:inline;">\
-										 \
-									</div>\
-									<div class="exe-comp" style="display:none;">\
-										 \
-									</div>\
-									<br >\
-									';
-								
-							}
-						} else {
-							et = y.fmt_headline;
-							et = MT__bold(et, bold_titl);
-							et = MT__bold(et, bold_comp);
-							ec = '';
-							headline = '\
-								<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
-								<div class="exe-title" style="display:inline;">\
-									 \
-								</div>\
-								<div class="exe-comp" style="display:none;">\
-									 \
-								</div>\
-								<br >\
-								';
-						}
-						headline += '\
-							<div class="exe-headline" style="display:none;">\
-								 \
-							</div>';
-						//ec et
-						
-						out.innerHTML += '\
-							<div style="border-bottom:1px solid teal;" class="exe-div">\
-								<a href="http://linkedin.com'+y.link_nprofile_view_3+'" target="new_win" style="position:absolute;margin-left:200px;"> LINK </a>\
-								'+y.firstName+'|'+y.lastName+'\
-								<br >\
-								'+headline+'\
-								<input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="Location" >\
-								<div class="exe-locn" style="display:inline">\
-									 \
-								</div>\
-								<br >\
-								'+((s != '') ? s + '<br>' : '' )+'\
-							</div>';
-						
-						
-						
-						var z = out.getElementsByClassName('exe-div');
-						z = z[z.length - 1];
-						
-						// append
-						var btn = document.createElement('input');
-						btn.setAttribute('type','button');
-						btn.setAttribute('class','exe-connections');
-						btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
-						btn.id = '';
-						btn.value = y.connectionCount;
-						z.appendChild(btn);
-						//
-						z.appendChild(document.createElement('br'));
-						//
-						var btn = document.createElement('input');
-						btn.setAttribute('type','button');
-						btn.setAttribute('class','exe');
-						btn.setAttribute('style','width:26%;height:30px;');
-						btn.id = 'http://linkedin.com'+y.link_nprofile_view_3;
-						btn.value = 'Title';
-						z.appendChild(btn);
-						
-						// set val
-						z.getElementsByClassName('exe-locn')[0].innerHTML = y.fmt_location;
-						z.getElementsByClassName('exe-title')[0].innerHTML = et;
-						z.getElementsByClassName('exe-comp')[0].innerHTML = ec;
-						z.getElementsByClassName('exe-headline')[0].innerHTML = y.fmt_headline;
-						//z.getElementsByClassName('exe-connections')[0].value = y.connectionCount;
-						//z.getElementsByClassName('exe')[0].id = ;
-						
-						console.log(y.connectionCount);
-						//console.log(MT__bold(et, bold_titl));
-						
-					}
-					
-					out.innerHTML += '<div style="height:1000px">&nbsp;</div>';
-					
-					var x = document.getElementsByClassName('exe');
-					for (var i in x) {
-						if (!x[i]) continue;
-						x[i].onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							
-							var title = this.parentNode.getElementsByClassName('exe-title')[0].innerText;
-							var cnt   = this.parentNode.getElementsByClassName('exe-connections')[0].value;
-							
-							document.getElementById('Q2JobTitle').value = title;
-							//document.getElementById('Q4Connections').value = cnt; // below!
-							
-							LinkedIn_Test_Profile_Checking__prof(this.id);
-						}
-					}
-				}
-			});
-		}
 		function LinkedIn_Test_Profile_Checking__prof(u) {
 			
-			var q = document.getElementById('Q3ProfileURL');
-			q.style.border = '2px dashed blue';
+			//~ var q = document.getElementById('Q3ProfileURL');
+			//~ q.style.border = '2px dashed blue';
+			
+			d1.innerText = '';
 			
 			new AMT___site_scrapes().scrape({
-				site: 'https://www.linkedin.com/in/',
+				site: 'LINKEDIN_PROFILE',
 				url: u,
 				callback_function: function(options) {
 					
 					console.log(options);
-					
-					var rs = options.response.vars.results;
 					
 					var err = options.response.vars.error;
 					
 					var errType = options.response.vars.error;
 					
 					if (err != null) {
-						d1b.innerText += errType;
+						d1.innerText += errType;
 						return;
 					}
 					
-					if (rs.length == 0) {
-						d1b.innerText += 0;
-						return;
-					}
-				}
-			});
-			
-			
-			
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						d1.innerHTML = response.status;
-						return;
-					}
-					
-					// dashes
-					rs = rs.replace(/\\u002d/g, '-');
-					
-					var q = document.getElementById('Q3ProfileURL');
-						//"public_url":{"deferImg":true,"canonicalUrlToShow":"www.linkedin.com/pub/whitney\u002dblaine/9/149/192","canonicalUrl":"http://www.linkedin.com/pub/whitney\u002dblaine/9/149/192","showPublicProfileURL":true}
-					
-					// url
-					r = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs);
-					if (r) {
-						q.value = r[2];
-						q.style.border = '2px solid lime';
-						if (/^https?:\/\/www\.linkedin\.com\//.exec(r[2]) && !/\\u[\d\w]+/.exec(r[2])) {
-							//doSubmit();
-							//doSubmit__serverSide();
-						}
-						u = r[2];
-					} else {
-						q.value = u;
-						q.style.border = '2px dashed blue';
-					}
-					
-					// u is the profile URL
-					
-					//d1b.src = u;
-					
-					// scrape profile div and then send
-					// it via post to util.php, which will
-					// display it as an iframe
-					
-					r = /<div id="profile" data-target-section=""[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]+<div id="aux">$|$)|$)/.exec(rs);
-					if (!r) {
-						//
-						return;
-					}
-										
-					// here?
-					// this writes profile to file...
-					var file = 'LinkedIn_Test_Profile_Checking'+encodeURIComponent(u);
-					// post then display
-					GM_xmlhttpRequest({
-						method: "POST",
-						url: MT___host + '/mturk/util.php',
-						data: 'mt__write_cache='+file+'&mt__write_cache_value='+encodeURIComponent(r[1]),
-						headers: {
-							"Content-Type": "application/x-www-form-urlencoded"
-						},
-						onload: function(response) {
-							var rs = response.responseText;
-							
-							if (response.status != 200) {
-								d1.innerHTML = response.status;
-								return;
-							}
-						}
-					});
-					
-					// do some auto!
-					
-					// topcard
-					r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
-					if (r) {
-						//console.log(r[1]);
-						r = JSON.parse('{'+r[1]+'}');
-						r = r.content;
-						console.log(r);
-						
-						// name
-						try { //
-							if (r.TopCard.fmt__full_name != '') {
-								d1a2.appendChild(document.createTextNode(r.TopCard.fmt__full_name));
-								d1a2.appendChild(document.createElement('br'));
-							}
-						}
-						catch (e) {
-							d1a2.appendChild(document.createTextNode('>>X<<'));
-						}
-						
-						// headline
-						try { //
-							if (r.TopCard.basic_info.memberHeadline != '' && r.TopCard.basic_info.memberHeadline != undefined) {
-								document.getElementById('Q2JobTitle').value = r.TopCard.basic_info.memberHeadline;
-								document.getElementById('Q2JobTitle').style.zoom = '0.6';
-							} else {
-								document.getElementById('Q2JobTitle').value = 'N/A';
-								document.getElementById('Q2JobTitle').style.zoom = '0.6';
-							}
-						}
-						catch (e) {
-							document.getElementById('Q2JobTitle').style.border = '3px solid blue';
-						}
-						
-						// connections
-						try { //
-							if (r.TopCard.i18n_numconnectionsformattable) {
-								document.getElementById('Q4Connections').value = r.TopCard.i18n_numconnectionsformattable
-							}
-						}
-						catch (e) {
-							document.getElementById('Q4Connections').style.border = '3px solid blue';
-						}
-						
-						// img
-						try { //
-							//d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Img:</b>';
-							if (r.TopCard.img_raw.length>14) {
-								document.getElementsByName('Q5aProfilePhoto')[0].checked = true;
-								//d1b.src = r.TopCard.img_raw;
-								var y = document.createElement('img');
-								y.setAttribute('style','width:80px;');
-								y.src = r.TopCard.img_raw;
-								d1a2.appendChild(y);
-								d1a2.appendChild(document.createTextNode(' '));
-								
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5aProfilePhoto')[0].checked = false;
-							document.getElementsByName('Q5aProfilePhoto')[1].checked = true;
-						}
-						document.getElementsByName('Q5aProfilePhoto')[0].style.zoom = '0.6';
-						document.getElementsByName('Q5aProfilePhoto')[1].style.zoom = '0.6';
-						
-						//Q5cLinktoWebpage
-						try { //array
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Website:</b>';
-							if (r.TopCard.contact_info.websites.length) {
-								d1a2.innerHTML += r.TopCard.contact_info.websites.length + '';
-								document.getElementsByName('Q5cLinktoWebpage')[0].checked = true;
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5cLinktoWebpage')[0].checked = false;
-							document.getElementsByName('Q5cLinktoWebpage')[1].checked = true;
-						}
-						document.getElementsByName('Q5cLinktoWebpage')[0].style.zoom = '0.6';// always!
-						document.getElementsByName('Q5cLinktoWebpage')[1].style.zoom = '0.6';
-						
-						
-						
-					}
-					
-					// "BG CONTENT"
-					var r2 = /<code id="profile_v2_background-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
-					if (r2) {
-						r = JSON.parse('{'+r2[1]+'}');
-						r = r.content;
-						console.log(r);
-					} else {
-						
-					}
-					
-					// CONTINUE !
-					if (r) {
-						
-						//summary
-						try { //
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Summary:</b>';//specialties_lb
-							if (!r.Summary.summary) {
-								//
-							}
-							if (r.Summary.summary.summary_lb) {
-								if (r.Summary.summary.summary_lb.length) {
-									
-								}
-								d1a2.innerHTML +=  r.Summary.summary.summary_lb.replace(/<[^>]*>/g, '').substr(0,120)+' ...';
-							} else if (r.Summary.summary.specialties_lb) {
-								if (r.Summary.summary.specialties_lb.length) {
-									
-								}
-								d1a2.innerHTML +=  r.Summary.summary.specialties_lb.replace(/<[^>]*>/g, '').substr(0,120)+' ...';
-								
-							} else {
-								if (r.Summary.summary.specialties_lb.length) { // fails
-									
-								}
-							}
-							// here?
-							document.getElementsByName('Q5dSummary')[0].checked = true;
-						}
-						catch (e) {
-							document.getElementsByName('Q5dSummary')[0].checked = false;
-							document.getElementsByName('Q5dSummary')[1].checked = true;
-						}
-						document.getElementsByName('Q5dSummary')[0].style.zoom = '0.6'; // always!
-						document.getElementsByName('Q5dSummary')[1].style.zoom = '0.6';
-						
-						//experience (logo)
-						var found = false;
-						try { //
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Experience:</b>';
-							if (r.Experience.positionsMpr.positions.length) {
-								for (var i in r.Experience.positionsMpr.positions) {
-									var x = r.Experience.positionsMpr.positions[i];
-									//~ if (x.companyName == 'Wells Fargo Advisors, LLC') {
-										//~ 
-									//~ }
-									
-									if (x.media_logo) {
-										var y = document.createElement('img');
-										y.src = x.media_logo;
-										d1a2.appendChild(y);
-										//d1a2.appendChild(document.createElement('br'));
-										d1a2.appendChild(document.createTextNode(' '));
-										
-										//https://media.licdn.com/media/p/3/000/112/305/1ae94ee.png
-										//http://m.c.lnkd.licdn.com/mpr/mpr/shrink_150_150/p/3/000/112/305/1ae94ee.png
-										
-										if (x.media_logo.indexOf('/p/3/000/112/305/1ae94ee.png') != -1) {
-											document.getElementsByName('Q5eLogo')[0].checked = true;
-											document.getElementsByName('Q5eLogo')[0].style.zoom = '0.6';
-											document.getElementsByName('Q5eLogo')[1].style.zoom = '0.6';
-											found = true;
-										}
-									}
-								}
-							} else {
-								//
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5eLogo')[0].checked = false;
-							document.getElementsByName('Q5eLogo')[1].checked = true;
-						}
-						if (!found) {
-							document.getElementsByName('Q5eLogo')[0].checked = false;
-							document.getElementsByName('Q5eLogo')[1].checked = true;
-							document.getElementsByName('Q5eLogo')[0].style.zoom = '0.6';
-							document.getElementsByName('Q5eLogo')[1].style.zoom = '0.6';
-						}
-						
-						
-						//skills
-						try { //
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Skills & Exp.:</b><br>';
-							if (r.Skills.skillsMpr.skills.length) {
-								d1a2.innerHTML += r.Skills.skillsMpr.skills.length;
-								document.getElementsByName('Q5fSkillsExpertise')[0].checked = true;
-							} else {
-								//
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5fSkillsExpertise')[0].checked = false;
-							document.getElementsByName('Q5fSkillsExpertise')[1].checked = true;
-						}
-						document.getElementsByName('Q5fSkillsExpertise')[0].style.zoom = '0.6'; // always!
-						document.getElementsByName('Q5fSkillsExpertise')[1].style.zoom = '0.6';
-						
-						//education
-						try { //
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Education:</b>';
-							if (r.Education.educationsMpr.educations.length) {
-								d1a2.innerHTML += r.Education.educationsMpr.educations.length;
-								document.getElementsByName('Q5gEducation')[0].checked = true;
-							} else {
-								//
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5gEducation')[0].checked = false;
-							document.getElementsByName('Q5gEducation')[1].checked = true;
-						}
-						document.getElementsByName('Q5gEducation')[0].style.zoom = '0.6'; // always!
-						document.getElementsByName('Q5gEducation')[1].style.zoom = '0.6';
-						
-						//interests
-						try { //
-							d1a2.appendChild(document.createElement('hr'));
-							d1a2.innerHTML += '<b>Interests:</b>';
-							if (r.AdditionalInfo.additional_info.interestsList.length) {
-								d1a2.innerHTML += r.AdditionalInfo.additional_info.interestsList.length;
-								document.getElementsByName('Q5hInterests')[0].checked = true;
-							} else {
-								//
-							}
-						}
-						catch (e) {
-							document.getElementsByName('Q5hInterests')[0].checked = false;
-							document.getElementsByName('Q5hInterests')[1].checked = true;
-						}
-						document.getElementsByName('Q5hInterests')[0].style.zoom = '0.6'; // always!
-						document.getElementsByName('Q5hInterests')[1].style.zoom = '0.6';
-						
-					}
-					
-					// auto submit?
-					var sbm = true;
-					var x = document.getElementsByTagName('input');
-					for (var i in x) {
-						if (i == 'length') break;
-						if (
-							x[i].type == 'radio' &&
-							x[i].style.zoom != '0.6' && // still is large
-							x[i].name != 'Q1ProfileFound' && // is not q1/q5
-							x[i].name != 'Q5bFullName'
-						) {
-							sbm = false;
-							break;
-						}
-					}
-					if (
-						document.getElementById('Q2JobTitle').value.trim() != '' &&
-						document.getElementById('Q3ProfileURL').value.trim() != '' &&
-						document.getElementById('Q4Connections').value.trim() != '' &&
-						sbm
-					) {
-						//~ doSubmit();
-					}
+					// Finish
+					LinkedIn_Test_Profile_Checking__parse(options);
 				}
 			});
 		}
+		/**
+		 * Fields
+		 * 
+		result: {
+			profile_has_public_url: null,
+			public_url: null,
+			name: null,
+			headline: null,
+			num_connections: null,
+			image_url: null,
+			profile_has_section_contact_info: null,
+			profile_has_section_experience: null,
+			profile_has_section_summary: null,
+			profile_has_section_skills: null,
+			profile_has_section_education: null,
+			profile_has_section_interests: null,
+			contact_info: {
+				email: null,
+				im: null,
+				address: null,
+				phone: null,
+				twitter: null,
+				wechat: null,
+				company_website: null
+			},
+			experience: [
+				// Array of position objects {}: {comp_name: null, logo_url: null, current_or_past: null}
+			],
+			summary: null,
+			skills: null,
+			education: null,
+			interests: null
+		}
+		 */
+		function LinkedIn_Test_Profile_Checking__parse(options) {
+			
+			var r = options.response.vars.result;
+			var sbm = true;
+			
+			// public_url
+			var q = document.getElementById('Q3ProfileURL');
+			if (r.public_url) {
+				q.value = r.public_url;
+			} else {
+				q.value = o.url;
+				q.style.border = '4px dashed blue';
+				sbm = false;
+				// debug
+				d1.appendChild(document.createTextNode('No Public URL. Using:' + o.url));
+				d1.appendChild(document.createElement('br'));
+			}
+			
+			// headline
+			var q = document.getElementById('Q2JobTitle');
+			if (r.headline && r.headline.trim() != '') {
+				q.value = r.headline;
+			} else {
+				q.value = 'N/A';
+			}
+			
+			var q = document.getElementById('Q4Connections');
+			if (r.num_connections) {
+				q.value = r.num_connections;
+			} else {
+				q.value = 'N/A';
+			}
+			
+			// image_url
+			var q = document.getElementsByName('Q5aProfilePhoto');
+			if (r.image_url) {
+				q[0].checked = true;
+				q[1].checked = false;
+				// debug
+				var i = document.createElement('img');
+				i.src = r.image_url;
+				d1.appendChild(i);
+				d1.appendChild(document.createElement('br'));
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+			}
+			
+			// name
+			var q = document.getElementsByName('Q5bFullName');
+			var out = 'Name:';
+			if (r.name && r.name.name.toLowerCase().indexOf('linkedin') != -1 && rr.name.toLowerCase().indexOf('member') != -1 )
+			{
+				q[0].checked = true;
+				q[1].checked = false;
+				out += r.name;
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+				sbm = false;
+				out += r.name +'=HAS NO NAME! OR ONE WORD NAME sbm=false';
+			}
+			// debug
+			d1.appendChild(document.createTextNode(out));
+			d1.appendChild(document.createElement('br'));
+			
+			// company_website/personal_website
+			var q = document.getElementsByName('Q5cLinktoWebpage');
+			var out = 'Website:';
+			if (r.contact_info.company_website || r.contact_info.personal_website) {
+				q[0].checked = true;
+				q[1].checked = false;
+				out += '(CW ' + r.contact_info.company_website+')';
+				out += '(PW ' + r.contact_info.personal_website+')';
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+				out += 'N/A';
+			}
+			// debug
+			d1.appendChild(document.createTextNode(out));
+			d1.appendChild(document.createElement('br'));
+			
+			// summary
+			var out = 'Summary:';
+			var q = document.getElementsByName('Q5dSummary');
+			if (r.profile_has_section_summary) {
+				q[0].checked = true;
+				q[1].checked = false;
+				out += r.summary.substr(0, 20) + ' ...';
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+				out += 'N/A';
+			}
+			// debug
+			d1.appendChild(document.createTextNode(out));
+			d1.appendChild(document.createElement('br'));
+			
+			// experience
+			var q = document.getElementsByName('Q5eLogo');
+			q[0].checked = false;
+			q[1].checked = true;
+			for (var i in r.experience) {
+				var lg = r.experience[i].logo_url;
+				if (!lg) continue;
+				if (lg.indexOf('/p/3/000/112/305/1ae94ee.png') != -1) {
+					q[0].checked = true;
+					q[1].checked = false;
+				}
+				// debug
+				var im = document.createElement('img');
+				im.src = lg;
+				d1.appendChild(im);
+				d1.appendChild(document.createElement('br'));
+			}
+			
+			// profile_has_section_skills
+			var q = document.getElementsByName('Q5fSkillsExpertise');
+			if (r.profile_has_section_skills) {
+				q[0].checked = true;
+				q[1].checked = false;
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+			}
+			
+			// profile_has_section_education
+			var q = document.getElementsByName('Q5gEducation');
+			if (r.profile_has_section_education) {
+				q[0].checked = true;
+				q[1].checked = false;
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+			}
+			
+			// profile_has_section_interests
+			var q = document.getElementsByName('Q5hInterests');
+			if (r.profile_has_section_interests) {
+				q[0].checked = true;
+				q[1].checked = false;
+			} else {
+				q[0].checked = false;
+				q[1].checked = true;
+			}
+			
+			// Submit?
+			//~ var sbm = true;
+			//~ var x = document.getElementsByTagName('input');
+			//~ for (var i in x) {
+				//~ if (i == 'length') break;
+				//~ if  (
+					//~ x[i].type == 'radio' &&
+					//~ x[i].style.zoom != '0.6' && // still is large
+					//~ x[i].name != 'Q1ProfileFound' && // is not q1/q5
+					//~ x[i].name != 'Q5bFullName'
+					//~ )
+				//~ {
+					//~ sbm = false;
+					//~ break;
+				//~ }
+			//~ }
+			console.log(sbm);
+			if  (
+				document.getElementById('Q2JobTitle').value.trim() != '' &&
+				document.getElementById('Q3ProfileURL').value.trim() != '' &&
+				document.getElementById('Q4Connections').value.trim() != '' &&
+				sbm
+				)
+			{
+				doSubmit();
+			}
+		}
+		
+		// STOP
+		// RETURN HERE
+		//
+		//
+		//
+		//
+		return;
+		
+		// OLD XHR
+		//
+		//
+		//
+		//
+		//
+		//~ GM_xmlhttpRequest({
+			//~ method: "GET",
+			//~ url: u,
+			//~ onload: function(response) {
+				//~ var rs = response.responseText;
+				//~ 
+				//~ if (response.status != 200) {
+					//~ d1.innerHTML = response.status;
+					//~ return;
+				//~ }
+				//~ 
+				//~ // dashes
+				//~ rs = rs.replace(/\\u002d/g, '-');
+				//~ 
+				//~ var q = document.getElementById('Q3ProfileURL');
+					//~ //"public_url":{"deferImg":true,"canonicalUrlToShow":"www.linkedin.com/pub/whitney\u002dblaine/9/149/192","canonicalUrl":"http://www.linkedin.com/pub/whitney\u002dblaine/9/149/192","showPublicProfileURL":true}
+				//~ 
+				//~ // url
+				//~ r = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs);
+				//~ if (r) {
+					//~ q.value = r[2];
+					//~ q.style.border = '2px solid lime';
+					//~ if (/^https?:\/\/www\.linkedin\.com\//.exec(r[2]) && !/\\u[\d\w]+/.exec(r[2])) {
+						//~ //doSubmit();
+						//~ //doSubmit__serverSide();
+					//~ }
+					//~ u = r[2];
+				//~ } else {
+					//~ q.value = u;
+					//~ q.style.border = '2px dashed blue';
+				//~ }
+				//~ 
+				//~ // u is the profile URL
+				//~ 
+				//~ //d1b.src = u;
+				//~ 
+				//~ // scrape profile div and then send
+				//~ // it via post to util.php, which will
+				//~ // display it as an iframe
+				//~ 
+				//~ r = /<div id="profile" data-target-section=""[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]+<div id="aux">$|$)|$)/.exec(rs);
+				//~ if (!r) {
+					//~ //
+					//~ return;
+				//~ }
+									//~ 
+				//~ // here?
+				//~ // this writes profile to file...
+				//~ var file = 'LinkedIn_Test_Profile_Checking'+encodeURIComponent(u);
+				//~ // post then display
+				//~ GM_xmlhttpRequest({
+					//~ method: "POST",
+					//~ url: MT___host + '/mturk/util.php',
+					//~ data: 'mt__write_cache='+file+'&mt__write_cache_value='+encodeURIComponent(r[1]),
+					//~ headers: {
+						//~ "Content-Type": "application/x-www-form-urlencoded"
+					//~ },
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ if (response.status != 200) {
+							//~ d1.innerHTML = response.status;
+							//~ return;
+						//~ }
+					//~ }
+				//~ });
+				//~ 
+				//~ // do some auto!
+				//~ 
+				//~ // topcard
+				//~ r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				//~ if (r) {
+					//~ //console.log(r[1]);
+					//~ r = JSON.parse('{'+r[1]+'}');
+					//~ r = r.content;
+					//~ console.log(r);
+					//~ 
+					//~ // name
+					//~ try { //
+						//~ if (r.TopCard.fmt__full_name != '') {
+							//~ d1a2.appendChild(document.createTextNode(r.TopCard.fmt__full_name));
+							//~ d1a2.appendChild(document.createElement('br'));
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ d1a2.appendChild(document.createTextNode('>>X<<'));
+					//~ }
+					//~ 
+					//~ // headline
+					//~ try { //
+						//~ if (r.TopCard.basic_info.memberHeadline != '' && r.TopCard.basic_info.memberHeadline != undefined) {
+							//~ document.getElementById('Q2JobTitle').value = r.TopCard.basic_info.memberHeadline;
+							//~ document.getElementById('Q2JobTitle').style.zoom = '0.6';
+						//~ } else {
+							//~ document.getElementById('Q2JobTitle').value = 'N/A';
+							//~ document.getElementById('Q2JobTitle').style.zoom = '0.6';
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementById('Q2JobTitle').style.border = '3px solid blue';
+					//~ }
+					//~ 
+					//~ // connections
+					//~ try { //
+						//~ if (r.TopCard.i18n_numconnectionsformattable) {
+							//~ document.getElementById('Q4Connections').value = r.TopCard.i18n_numconnectionsformattable;
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementById('Q4Connections').style.border = '3px solid blue';
+					//~ }
+					//~ 
+					//~ // img
+					//~ try { //
+						//~ //d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Img:</b>';
+						//~ if (r.TopCard.img_raw.length>14) {
+							//~ document.getElementsByName('Q5aProfilePhoto')[0].checked = true;
+							//~ //d1b.src = r.TopCard.img_raw;
+							//~ var y = document.createElement('img');
+							//~ y.setAttribute('style','width:80px;');
+							//~ y.src = r.TopCard.img_raw;
+							//~ d1a2.appendChild(y);
+							//~ d1a2.appendChild(document.createTextNode(' '));
+							//~ 
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5aProfilePhoto')[0].checked = false;
+						//~ document.getElementsByName('Q5aProfilePhoto')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5aProfilePhoto')[0].style.zoom = '0.6';
+					//~ document.getElementsByName('Q5aProfilePhoto')[1].style.zoom = '0.6';
+					//~ 
+					//~ //Q5cLinktoWebpage
+					//~ try { //array
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Website:</b>';
+						//~ if (r.TopCard.contact_info.websites.length) {
+							//~ d1a2.innerHTML += r.TopCard.contact_info.websites.length + '';
+							//~ document.getElementsByName('Q5cLinktoWebpage')[0].checked = true;
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5cLinktoWebpage')[0].checked = false;
+						//~ document.getElementsByName('Q5cLinktoWebpage')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5cLinktoWebpage')[0].style.zoom = '0.6';// always!
+					//~ document.getElementsByName('Q5cLinktoWebpage')[1].style.zoom = '0.6';
+					//~ 
+					//~ 
+					//~ 
+				//~ }
+				//~ 
+				//~ // "BG CONTENT"
+				//~ var r2 = /<code id="profile_v2_background-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				//~ if (r2) {
+					//~ r = JSON.parse('{'+r2[1]+'}');
+					//~ r = r.content;
+					//~ console.log(r);
+				//~ } else {
+					//~ 
+				//~ }
+				//~ 
+				//~ // CONTINUE !
+				//~ if (r) {
+					//~ 
+					//~ //summary
+					//~ try { //
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Summary:</b>';//specialties_lb
+						//~ if (!r.Summary.summary) {
+							//~ //
+						//~ }
+						//~ if (r.Summary.summary.summary_lb) {
+							//~ if (r.Summary.summary.summary_lb.length) {
+								//~ 
+							//~ }
+							//~ d1a2.innerHTML +=  r.Summary.summary.summary_lb.replace(/<[^>]*>/g, '').substr(0,120)+' ...';
+						//~ } else if (r.Summary.summary.specialties_lb) {
+							//~ if (r.Summary.summary.specialties_lb.length) {
+								//~ 
+							//~ }
+							//~ d1a2.innerHTML +=  r.Summary.summary.specialties_lb.replace(/<[^>]*>/g, '').substr(0,120)+' ...';
+							//~ 
+						//~ } else {
+							//~ if (r.Summary.summary.specialties_lb.length) { // fails
+								//~ 
+							//~ }
+						//~ }
+						//~ // here?
+						//~ document.getElementsByName('Q5dSummary')[0].checked = true;
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5dSummary')[0].checked = false;
+						//~ document.getElementsByName('Q5dSummary')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5dSummary')[0].style.zoom = '0.6'; // always!
+					//~ document.getElementsByName('Q5dSummary')[1].style.zoom = '0.6';
+					//~ 
+					//~ //experience (logo)
+					//~ var found = false;
+					//~ try { //
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Experience:</b>';
+						//~ if (r.Experience.positionsMpr.positions.length) {
+							//~ for (var i in r.Experience.positionsMpr.positions) {
+								//~ var x = r.Experience.positionsMpr.positions[i];
+								//if (x.companyName == 'Wells Fargo Advisors, LLC') {
+								//	
+								//}
+								//~ 
+								//~ if (x.media_logo) {
+									//~ var y = document.createElement('img');
+									//~ y.src = x.media_logo;
+									//~ d1a2.appendChild(y);
+									//~ //d1a2.appendChild(document.createElement('br'));
+									//~ d1a2.appendChild(document.createTextNode(' '));
+									//~ 
+									//~ //https://media.licdn.com/media/p/3/000/112/305/1ae94ee.png
+									//~ //http://m.c.lnkd.licdn.com/mpr/mpr/shrink_150_150/p/3/000/112/305/1ae94ee.png
+									//~ 
+									//~ if (x.media_logo.indexOf('/p/3/000/112/305/1ae94ee.png') != -1) {
+										//~ document.getElementsByName('Q5eLogo')[0].checked = true;
+										//~ document.getElementsByName('Q5eLogo')[0].style.zoom = '0.6';
+										//~ document.getElementsByName('Q5eLogo')[1].style.zoom = '0.6';
+										//~ found = true;
+									//~ }
+								//~ }
+							//~ }
+						//~ } else {
+							//~ //
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5eLogo')[0].checked = false;
+						//~ document.getElementsByName('Q5eLogo')[1].checked = true;
+					//~ }
+					//~ if (!found) {
+						//~ document.getElementsByName('Q5eLogo')[0].checked = false;
+						//~ document.getElementsByName('Q5eLogo')[1].checked = true;
+						//~ document.getElementsByName('Q5eLogo')[0].style.zoom = '0.6';
+						//~ document.getElementsByName('Q5eLogo')[1].style.zoom = '0.6';
+					//~ }
+					//~ 
+					//~ 
+					//~ //skills
+					//~ try { //
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Skills & Exp.:</b><br>';
+						//~ if (r.Skills.skillsMpr.skills.length) {
+							//~ d1a2.innerHTML += r.Skills.skillsMpr.skills.length;
+							//~ document.getElementsByName('Q5fSkillsExpertise')[0].checked = true;
+						//~ } else {
+							//~ //
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5fSkillsExpertise')[0].checked = false;
+						//~ document.getElementsByName('Q5fSkillsExpertise')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5fSkillsExpertise')[0].style.zoom = '0.6'; // always!
+					//~ document.getElementsByName('Q5fSkillsExpertise')[1].style.zoom = '0.6';
+					//~ 
+					//~ //education
+					//~ try { //
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Education:</b>';
+						//~ if (r.Education.educationsMpr.educations.length) {
+							//~ d1a2.innerHTML += r.Education.educationsMpr.educations.length;
+							//~ document.getElementsByName('Q5gEducation')[0].checked = true;
+						//~ } else {
+							//~ //
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5gEducation')[0].checked = false;
+						//~ document.getElementsByName('Q5gEducation')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5gEducation')[0].style.zoom = '0.6'; // always!
+					//~ document.getElementsByName('Q5gEducation')[1].style.zoom = '0.6';
+					//~ 
+					//~ //interests
+					//~ try { //
+						//~ d1a2.appendChild(document.createElement('hr'));
+						//~ d1a2.innerHTML += '<b>Interests:</b>';
+						//~ if (r.AdditionalInfo.additional_info.interestsList.length) {
+							//~ d1a2.innerHTML += r.AdditionalInfo.additional_info.interestsList.length;
+							//~ document.getElementsByName('Q5hInterests')[0].checked = true;
+						//~ } else {
+							//~ //
+						//~ }
+					//~ }
+					//~ catch (e) {
+						//~ document.getElementsByName('Q5hInterests')[0].checked = false;
+						//~ document.getElementsByName('Q5hInterests')[1].checked = true;
+					//~ }
+					//~ document.getElementsByName('Q5hInterests')[0].style.zoom = '0.6'; // always!
+					//~ document.getElementsByName('Q5hInterests')[1].style.zoom = '0.6';
+					//~ 
+				//~ }
+				//~ 
+				//~ // auto submit?
+				//~ var sbm = true;
+				//~ var x = document.getElementsByTagName('input');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (
+						//~ x[i].type == 'radio' &&
+						//~ x[i].style.zoom != '0.6' && // still is large
+						//~ x[i].name != 'Q1ProfileFound' && // is not q1/q5
+						//~ x[i].name != 'Q5bFullName'
+					//~ ) {
+						//~ sbm = false;
+						//~ break;
+					//~ }
+				//~ }
+				//~ if  (
+					//~ document.getElementById('Q2JobTitle').value.trim() != '' &&
+					//~ document.getElementById('Q3ProfileURL').value.trim() != '' &&
+					//~ document.getElementById('Q4Connections').value.trim() != '' &&
+					//~ sbm
+					//~ )
+				//~ {
+					
+				//~ }
+			//~ }
+		//~ });
+		
+		// OLD Profile Search code
+		//
+		//
+		//
+		//
+		//
+		//
+		
+		//~ var d;
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1');
+		//~ document.body.appendChild(d);
+		//~ var d1 = document.getElementById('d1');
+		//~ d1.style.position='absolute';
+		//~ d1.style.top='0px';
+		//~ d1.style.left='30%';
+		//~ d1.style.width='40%';
+		//~ d1.style.height='600px';
+		//~ d1.style.overflow='auto';
+		//~ d1.style.border='1px solid blue';
+		//~ d1.style.borderBottom='2px solid blue';
+		//~ d1.style.backgroundColor='#eee';
+		//~ d1.style.fontSize='12px';
+		//~ //
+		//~ //
+		//~ //
+		//~ d = document.createElement('iframe'); // iframe
+		//~ d.setAttribute('id','d1b');
+		//~ document.body.appendChild(d);
+		//~ var d1b = document.getElementById('d1b');
+		//~ d1b.style.position='absolute';
+		//~ d1b.style.top='600px';
+		//~ d1b.style.left='30%';
+		//~ d1b.style.width='68%';
+		//~ d1b.style.height='600px';//200
+		//~ d1b.style.overflow='auto';
+		//~ d1b.style.border='1px solid blue';
+		//~ d1b.style.borderBottom='2px solid blue';
+		//~ d1b.style.backgroundColor='#eee';
+		//~ d1b.style.fontSize='12px';
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2');
+		//~ document.body.appendChild(d);
+		//~ var d2 = document.getElementById('d2');
+		//~ d2.style.position='absolute';
+		//~ d2.style.top='0px';
+		//~ d2.style.left='0%';
+		//~ d2.style.width='28%';
+		//~ d2.style.height='30px';
+		//~ d2.onblur = function() {
+			//~ LinkedIn_Test_Profile_Checking();
+		//~ }
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2b');
+		//~ document.body.appendChild(d);
+		//~ var d2b = document.getElementById('d2b');
+		//~ d2b.style.position='absolute';
+		//~ d2b.style.top='30px';
+		//~ d2b.style.left='0%';
+		//~ d2b.style.width='28%';
+		//~ d2b.style.height='30px';
+		//~ d2b.onblur = function() {
+			//~ LinkedIn_Test_Profile_Checking();
+		//~ }
+		//~ //d2b.value = 'recruit OR recruiter OR recruiting OR staff OR staffing';
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2c');
+		//~ document.body.appendChild(d);
+		//~ var d2c = document.getElementById('d2c');
+		//~ d2c.style.position='absolute';
+		//~ d2c.style.top='60px';
+		//~ d2c.style.left='0%';
+		//~ d2c.style.width='28%';
+		//~ d2c.style.height='30px';
+		//~ d2c.onblur = function() {
+			//~ LinkedIn_Test_Profile_Checking();
+		//~ }
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2d');
+		//~ document.body.appendChild(d);
+		//~ var d2d = document.getElementById('d2d');
+		//~ d2d.style.position='absolute';
+		//~ d2d.style.top='90px';
+		//~ d2d.style.left='0%';
+		//~ d2d.style.width='28%';
+		//~ d2d.style.height='30px';
+		//~ //d2d.style.border = '3px solid LightGreen';
+		//~ //
+		//~ d = document.createElement('select');
+		//~ d.setAttribute('id','d2e');
+		//~ document.body.appendChild(d);
+		//~ var d2e = document.getElementById('d2e');
+		//~ d2e.style.position='absolute';
+		//~ d2e.style.top='120px';
+		//~ d2e.style.left='0%';
+		//~ d2e.style.width='28%';
+		//~ d2e.style.height='30px';
+		//~ //
+		//~ d2e.innerHTML = '<option value="us">USA</option>';
+		//~ d2e.innerHTML+= '<option value="au">AUS</option>';
+		//~ d2e.innerHTML+= '<option value="ca">CAN</option>';
+		//~ //console.log(MT___countries);
+		//~ for (var i in MT___countries) {
+			//~ d2e.innerHTML += '<option value="'+MT___countries[i].code.toLowerCase()+'">'+MT___countries[i].name+'</option>';
+		//~ }
+		//~ d2e.onchange = function() {
+			//~ LinkedIn_Test_Profile_Checking();
+		//~ }
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2f');
+		//~ d.setAttribute('type','button');
+		//~ d.value = 'N/A';
+		//~ document.body.appendChild(d);
+		//~ var d2f = document.getElementById('d2f');
+		//~ d2f.style.position='absolute';
+		//~ d2f.style.top='150px';
+		//~ d2f.style.left='0%';
+		//~ d2f.style.width='20%';
+		//~ d2f.style.height='30px';
+		//~ d2f.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ var x = document.getElementsByTagName('input');
+			//~ for (var i in x) {
+				//~ if (i == 'length') break;
+				//~ if (x[i].value == 'Yes' && x[i].type == 'radio')
+					//~ x[i].checked = false;
+				//~ else if (x[i].value == 'No' && x[i].type == 'radio')
+					//~ x[i].checked = true;
+			//~ }
+			//~ document.getElementById('Q2JobTitle').value = 'N/A';
+			//~ document.getElementById('Q3ProfileURL').value = 'N/A';
+			//~ document.getElementById('Q4Connections').value = 'N/A';
+			//~ doSubmit__serverSide();
+		//~ }
+		//~ 
+		//~ 
+		//~ 
+		//~ //var b = /<h3>Please search for Rich Morian in Clinton Township MI with Wells Fargo Advisors/.exec(ih);
+		//~ 
+		//~ var b = /<h3>Please search for ((.|\s)*?(?= with ([^$]*) and answer a short survey about their profile<\/h3>|$)|$)/.exec(ih);
+		//~ if (!b) {
+			//~ exit('x');
+		//~ }
+		//~ //here?
+		//~ //console.log(b);
+		//~ d2c.value = __js_clean_html_str(b[3]).trim();// comp
+		//~ // nm / location
+		//~ b = __js_clean_html_str(b[1]).trim();
+		//~ // location
+		//~ var b2 = / in ((.|\s)*?(?= ([A-Z]{2})$|$)|$)/.exec(b);
+		//~ if (!b2) {
+			//~ exit('loc');
+		//~ }
+		//~ var location = [
+			//~ b2[1],
+			//~ b2[3]
+		//~ ];
+		//~ // nm
+		//~ var b2 = b.split(' in ');
+		//~ if (b2.length < 2) {
+			//~ exit('nm');
+		//~ }
+		//~ var name = b2[0].split(' ');
+		//~ 
+		//~ d2.value = name[0];
+		//~ d2b.value = (name.length >= 2) ? name.slice(1).join(' ') : '';
+		//~ d2d.value = '1,'+ location[0] +','+ location[1];
+		//~ 
+		//~ //default btns
+		//~ var x = document.getElementsByTagName('input');
+		//~ for (var i in x) {
+			//~ if (i == 'length') break;
+			//~ if (x[i].value == 'Yes' && x[i].type == 'radio')
+				//~ x[i].checked = true;
+		//~ }
+		//~ //loc
+		//~ d2d.onblur = function() {
+			//~ var x = this.style;
+			//~ if (x.border == '') {
+				//~ x.border = '3px solid LightGreen';
+			//~ } else
+				//~ x.border = '';
+			//~ 
+			//~ if (/^\d{4,}$/.exec(this.value))
+				//~ LinkedIn_Test_Profile_Checking();
+			//~ else {
+				//~ MT___google_api_geocode( //MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy)
+					//~ this.value,
+					//~ function(rs) {
+						//~ console.log(rs);
+						//~ try{
+							//~ if (rs.results[0].address_components.length) {
+								//~ 
+							//~ }
+							//~ 
+							//~ for (var i in rs.results[0].address_components) {
+								//~ var x = rs.results[0].address_components[i];console.log(x);
+								//~ if (!x.types) continue;
+								//~ if (!x.types.length) continue;
+								//~ if (x.types[0] == 'postal_code') {
+									//~ d2d.value = x.short_name;
+									//~ break;
+								//~ }
+							//~ }
+							//~ LinkedIn_Test_Profile_Checking();
+						//~ }
+						//~ catch(e) {
+							//~ //
+						//~ }
+					//~ },
+					//~ true
+				//~ );
+			//~ }
+		//~ }
+		//~ 
+		//~ //Q1...Q5
+		//~ document.getElementById('mturk_form').onsubmit = function() {
+		//~ }
+		//~ 
+		//~ LinkedIn_Test_Profile_Checking();
+		//~ 
+		//~ function LinkedIn_Test_Profile_Checking() {
+			//~ 
+			//~ var url;
+			//~ 
+			//~ url = 'http://www.linkedin.com/vsearch/pj';
+			//~ 
+			//~ var out;
+			//~ out = d1;
+			//~ 
+			//~ url+= '?company='+encodeURIComponent(d2c.value.trim());
+			//~ url+= '&companyScope=CP'; // CP scope is current/past
+			//~ url+= '&firstName='+encodeURIComponent(d2.value.trim());
+			//~ url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
+			//~ //url+= '&keywords='+encodeURIComponent(d2.value.trim());
+			//~ url+= '&pt=people';
+			//~ url+= '&locationType=I';
+			//~ url+= '&openAdvancedForm=true';
+			//~ url+= '&countryCode='+encodeURIComponent(d2e.value);
+			//~ 
+			//~ if (d2d.style.border != '') {
+				//~ url += '&postalCode='+encodeURIComponent(d2d.value);
+				//~ url += '&distance=100';
+			//~ }
+				//~ 
+			//~ out.innerHTML = '';
+			//~ 
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
+				//~ url: url,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200) {
+						//~ out.innerHTML = response.status;
+						//~ return;
+					//~ }
+					//~ 
+					//~ out.innerHTML = d2.value+'<br>'+d2b.value+'<br>'+d2c.value;
+					//~ 
+					//~ var r;
+					//~ r = JSON.parse(rs);
+					//~ console.log(r);
+					//~ 
+					//~ if (r.status != 'ok') return;
+					//~ if (!r.content) {
+						//~ return;
+					//~ }
+					//~ if (r.content.page.voltron_unified_search_json.search.results.length === 0) {
+						//~ return;
+					//~ }
+					//~ 
+					//~ //out.innerHTML = '';
+					//~ if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+						//~ out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+					//~ else
+						//~ out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+						//~ 
+					//~ 
+					//~ var x = r.content.page.voltron_unified_search_json.search.results;
+					//~ 
+					//~ var snp,s;
+					//~ var y;
+					//~ 
+					//~ var y1, y2;
+					//~ y1 =  d2.value.replace(/\s+/g, ' ').trim();
+					//~ y2 = d2b.value.replace(/\s+/g, ' ').trim();
+					//~ y2 = y2.replace(/ OR[ $]*/g, ' ').trim();
+					//~ var bold_comp = y1.split(' ');
+					//~ var bold_titl = y2.split(' '); //['market','marketing','marketer','owner'];
+					//~ //var auto_click_inp = false;
+					//~ for (var i in x) {
+						//~ 
+						//~ y = x[i].person;
+						//~ 
+						//~ console.log(y); // this person
+						//~ 
+						//~ snp = y.snippets;
+						//~ s = '';
+						//~ var heading;
+						//~ var fmt_body;
+						//~ if (snp.length) {
+							//~ for (var j in snp) {console.log(snp[j]);
+								//~ heading = false;
+								//~ fmt_body = false;
+								//~ 
+								//~ s += '<hr>';
+								//~ s += snp[j].fieldName + ': ';
+								//~ if (snp[j].fmt_heading) {
+									//~ s += snp[j].fmt_heading;
+								//~ } else {
+									//~ s += snp[j].fmt_body;
+								//~ }
+							//~ }
+						//~ } else snp = '';
+						//~ 
+						//~ y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
+						//~ y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
+						//~ y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
+						//~ y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+						//~ 
+						//~ var z;
+						//~ var headline;
+						//~ var et, ec;
+						//~ z = y.fmt_headline;
+						//~ if (z.indexOf(' at ') != -1) {
+							//~ z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
+							//~ if (z && / at /gi.exec(y.fmt_headline).length === 1) {
+								//~ et = MT__bold(z[1], bold_titl);
+								//~ ec = MT__bold(z[3], bold_comp);
+								//~ headline = '\
+									//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+									//~ <div class="exe-title" style="display:inline;">\
+										 //~ \
+									//~ </div>\
+									//~ <br >\
+									//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Comp." >\
+									//~ <div class="exe-comp" style="display:inline;">\
+										 //~ \
+									//~ </div>\
+									//~ <br >\
+									//~ ';
+							//~ } else {
+								//~ et = y.fmt_headline;
+								//~ et = MT__bold(et, bold_titl);
+								//~ et = MT__bold(et, bold_comp);
+								//~ ec = '';
+								//~ headline = '\
+									//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+									//~ <div class="exe-title" style="display:inline;">\
+										 //~ \
+									//~ </div>\
+									//~ <div class="exe-comp" style="display:none;">\
+										 //~ \
+									//~ </div>\
+									//~ <br >\
+									//~ ';
+								//~ 
+							//~ }
+						//~ } else {
+							//~ et = y.fmt_headline;
+							//~ et = MT__bold(et, bold_titl);
+							//~ et = MT__bold(et, bold_comp);
+							//~ ec = '';
+							//~ headline = '\
+								//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="H - Title" >\
+								//~ <div class="exe-title" style="display:inline;">\
+									 //~ \
+								//~ </div>\
+								//~ <div class="exe-comp" style="display:none;">\
+									 //~ \
+								//~ </div>\
+								//~ <br >\
+								//~ ';
+						//~ }
+						//~ headline += '\
+							//~ <div class="exe-headline" style="display:none;">\
+								 //~ \
+							//~ </div>';
+						//~ //ec et
+						//~ 
+						//~ out.innerHTML += '\
+							//~ <div style="border-bottom:1px solid teal;" class="exe-div">\
+								//~ <a href="http://linkedin.com'+y.link_nprofile_view_3+'" target="new_win" style="position:absolute;margin-left:200px;"> LINK </a>\
+								//~ '+y.firstName+'|'+y.lastName+'\
+								//~ <br >\
+								//~ '+headline+'\
+								//~ <input style="width:70px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="Location" >\
+								//~ <div class="exe-locn" style="display:inline">\
+									 //~ \
+								//~ </div>\
+								//~ <br >\
+								//~ '+((s != '') ? s + '<br>' : '' )+'\
+							//~ </div>';
+						//~ 
+						//~ 
+						//~ 
+						//~ var z = out.getElementsByClassName('exe-div');
+						//~ z = z[z.length - 1];
+						//~ 
+						//~ // append
+						//~ var btn = document.createElement('input');
+						//~ btn.setAttribute('type','button');
+						//~ btn.setAttribute('class','exe-connections');
+						//~ btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+						//~ btn.id = '';
+						//~ btn.value = y.connectionCount;
+						//~ z.appendChild(btn);
+						//~ //
+						//~ z.appendChild(document.createElement('br'));
+						//~ //
+						//~ var btn = document.createElement('input');
+						//~ btn.setAttribute('type','button');
+						//~ btn.setAttribute('class','exe');
+						//~ btn.setAttribute('style','width:26%;height:30px;');
+						//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3;
+						//~ btn.value = 'Title';
+						//~ z.appendChild(btn);
+						//~ 
+						//~ // set val
+						//~ z.getElementsByClassName('exe-locn')[0].innerHTML = y.fmt_location;
+						//~ z.getElementsByClassName('exe-title')[0].innerHTML = et;
+						//~ z.getElementsByClassName('exe-comp')[0].innerHTML = ec;
+						//~ z.getElementsByClassName('exe-headline')[0].innerHTML = y.fmt_headline;
+						//~ //z.getElementsByClassName('exe-connections')[0].value = y.connectionCount;
+						//~ //z.getElementsByClassName('exe')[0].id = ;
+						//~ 
+						//~ console.log(y.connectionCount);
+						//~ //console.log(MT__bold(et, bold_titl));
+						//~ 
+					//~ }
+					//~ 
+					//~ out.innerHTML += '<div style="height:1000px">&nbsp;</div>';
+					//~ 
+					//~ var x = document.getElementsByClassName('exe');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i].onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ 
+							//~ var title = this.parentNode.getElementsByClassName('exe-title')[0].innerText;
+							//~ var cnt   = this.parentNode.getElementsByClassName('exe-connections')[0].value;
+							//~ 
+							//~ document.getElementById('Q2JobTitle').value = title;
+							//~ //document.getElementById('Q4Connections').value = cnt; // below!
+							//~ 
+							//~ LinkedIn_Test_Profile_Checking__prof(this.id);
+						//~ }
+					//~ }
+				//~ }
+			//~ });
+		//~ }
 	}
 	//
 	// Allison Riggio
@@ -122474,6 +123245,9 @@ function mturk_load()
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '31KHN7KCND0VO2EKPJDRLAHTM88A0U': // Larry Baker
+				case '36ARV8EEI7NBH3F0SG1G637JGZMAVD': // Larry Baker
+					AMT___Floater({runMT_Run: true});
+				case '3QNALI7B3RWCD6ZM50ZF6QISKY9Z5G': // Grocery ROI, Transcribe
 					AMT___Floater({runMT_Run: true});
 					break;
 

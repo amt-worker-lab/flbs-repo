@@ -1,4 +1,5 @@
 
+
 // NEXT WINDOW
 var next_window__windowIds = []
 function __js_inarray(array, needle) // //
@@ -246,6 +247,27 @@ function isAQProduct(tabs, iterator) {
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.bingMap) {
+		chrome.tabs.executeScript(sender.tab.id, {
+					code: 
+						"(function() {console.log('green light!');var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2/83n8/+BzvL/Qbjv/4/S8v+P0vL/dMry/7Tf8//29vb/9vb2//b29v/29vb/9vb2//b29v/N5/P/gc7y/0G47/+aAQL/kQAB/48AAP+P0vL/j9Ly/6MKBf+bAAH/nQAE/3TK8v+03/P/9vb2//b29v/29vb/lAYB/5kAAv+XAAL/kwAC/40AAP+SAgH/j9Ly/4/S8v+gAgH/owgD/54BAv+fAwD/owkC/6MGBf/29vb/9vb2/5cEAf+VAQH/jQAC/4sAAf+QAQH/mAMC/4/S8v+P0vL/pA0F/6cTBP+cBQH/nAcA/6IPAP+bBQD/9vb2//b29v+zKAj/lA0A/4YBAP+IAAD/lgAC/6AHAv+P0vL/j9Ly/7UuCv+tGAX/qA8I/6cRAf+tGgH/pxEG//b29v/29vb/5JYQ/8ZjCv+gGQL/mQYB/5gDBP+kGQP/j9Ly/4/S8v+uHQT/owoF/6oZAv+4Lgn/sikL/58UCP/29vb/9vb2/81wBf/lkg7/0mMK/741Cv+mIwL/x2YM/4/S8v+P0vL/pwkB/7kjA//ENg7/ty8N/5EKAf+LAgf/9vb2//b29v+kGgP/rS8D/7s9C/+oIwP/zWsO/+60J/+P0vL/j9Ly/6QFAv+mBQL/nwUB/5UFAf+IAAL/hAAI//b29v/29vb/nwEC/58GAP+mFwT/rygE/8l2Bv/Qhgb/j9Ly/4/S8v+XAAL/nAAB/5kAA/+RAAT/iAAC/4QAAf/29vb/9vb2/50AAf+aAQL/mwMD/7IcA//Sfwj/Tr3x/8Pk9P/C4/P/Tr3x/5kJAP+SAgD/jwAD/4wAA/+JAAH/9/f3//f39/+KAQD/igAE/0698f+b1vL/3e31/9rt9v+O1/b/jtf2/9rt9v/d7fX/m9by/0698f+fBgH/kgMA//f39//39/f/nNfz/93t9f/b7vf/jtf2/zi+9//Uhgb/4ZoL/9J3Bf+zPgL/OL73/4/Y9//a7fb/3u72/5vW8v/4+Pj/+Pj4//j4+P+C1Pf/fgEE/4kJAP/HXAz/zYAD/9OEBv/GXQn/sDcH/5wDAv+RAgD/kgUB/4LU9//4+Pj/+Pj4//j4+P/5+fn/+Pj4//n5+f/L6/j/gtT3/0bC9//CXwf/pCAB/0fD+P+C1Pf/zOz5//j4+P/5+fn/+Pj4//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
+					});
+		
+		var script = document.createElement('script');
+		script.setAttribute('type', 'text/javascript');
+		script.setAttribute('src', 'bingMap.js');
+		document.body.appendChild(script);
+		
+		
+		
+		chrome.tabs.executeScript(sender.tab.id,
+				{file: "bingMap.js"}
+			);
+		sendResponse('cheers');
+		return true;
+	}
+
+
 	
 	/**
 	 * 

@@ -1348,8 +1348,9 @@ function AMT___events_factory(obj_vars) {
 }
 /**
  * 
- * @param img: element
- * @param scroll_speed: int, default 0.1
+ * @param element	img: 
+ * @param array		img_array: array of elements (optional)
+ * @param int		scroll_speed: int, default 0.1
  */
 AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object) {
 	
@@ -1362,25 +1363,33 @@ AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object
 		opts.img.mousewheel_scroll_image = 0;
 	}
 	
-	opts.img.addEventListener('mousewheel', function(e) {
-		
-		if (e.wheelDelta > 0) {		// "120", upward, so take Y axis more negative
-			this.style.marginTop = (this.mousewheel_scroll_image * 1 + 12) + 'px';
-			this.mousewheel_scroll_image += 10;
-		} else {					// "-120", down, so take Y axis higher
-			this.style.marginTop = (this.mousewheel_scroll_image * 1 - 12) + 'px';
-			this.mousewheel_scroll_image -= 10;
-		}
-		
-		e.preventDefault();
-		e.stopPropagation();
-		return false;
-	}, false);
+	if (!opts.hasOwnProperty('img_array')) {
+		opts.img_array = [img];
+	}
+	
+	for (var i in opts.img_array) {
+		opts.img_array[i].addEventListener('mousewheel', function(e) {
+			
+			if (e.wheelDelta > 0) {		// "120", upward, so take Y axis more negative
+				this.style.marginTop = (this.mousewheel_scroll_image * 1 + 12) + 'px';
+				this.mousewheel_scroll_image += 10;
+			} else {					// "-120", down, so take Y axis higher
+				this.style.marginTop = (this.mousewheel_scroll_image * 1 - 12) + 'px';
+				this.mousewheel_scroll_image -= 10;
+			}
+			
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		}, false);
+	}
 }
 /**
  * 
- * @param img: element
- * @param zoom_speed: int, default 0.1
+ * @param element	img: element
+ * @param array		img_array: array of elements (optional)
+ * @param int		zoom_speed: default 0.1
+ * @param int		onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
  */
 AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) {
 	
@@ -1389,29 +1398,46 @@ AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) 
 		opts.zoom_speed = 0.1;
 	}
 	
-	opts.img.addEventListener('mousewheel', function(e) {
-		//~ console.log(e);
-		//~ console.log(e.wheelDelta * 1);
-		//~ console.log(e.wheelDelta * 1 > 0);
-		//~ console.log(this)
-		//~ console.log(this.style)
-		//~ console.log(this.style.zoom)
+	if (!opts.hasOwnProperty('img_array')) {
+		opts.img_array = [img];
+	}
+	
+	for (var i in opts.img_array) {
+		opts.img_array[i].addEventListener('mousewheel', function(e) {
+			//~ console.log(e);
+			//~ console.log(e.wheelDelta * 1);
+			//~ console.log(e.wheelDelta * 1 > 0);
+			//~ console.log(this)
+			//~ console.log(this.style)
+			//~ console.log(this.style.zoom)
+			
+			if (!this.style.zoom)
+				this.style.zoom = 1;
+			
+			//~ console.log(typeof e.wheelDelta);
+			
+			if (e.wheelDelta > 0) {		// "120", zoom in
+				this.style.zoom = this.style.zoom * 1 + 0.1;
+			} else {					// "-120", zoom out
+				this.style.zoom = this.style.zoom * 1 - 0.1;
+			}
+			
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		}, false);
 		
-		if (!this.style.zoom)
-			this.style.zoom = 1;
-		
-		//~ console.log(typeof e.wheelDelta);
-		
-		if (e.wheelDelta > 0) {		// "120", zoom in
-			this.style.zoom = this.style.zoom * 1 + 0.1;
-		} else {					// "-120", zoom out
-			this.style.zoom = this.style.zoom * 1 - 0.1;
+		// add_onclick_reset
+		if (opts.hasOwnProperty('add_onclick_reset')) {
+			opts.img_array[i].zoom_reset_value = opts.add_onclick_reset;
+			//~ opts.img_array[i].onclick = function() {
+				//~ this.style.zoom = 1;
+			//~ }
+			opts.img_array[i].addEventListener('click', function(e) {
+				this.style.zoom = this.zoom_reset_value; // 
+			}, false);
 		}
-		
-		e.preventDefault();
-		e.stopPropagation();
-		return false;
-	}, false);
+	}
 }
 AMT___events_factory.prototype.keydown__blur_field = function(e) {
 	var k = e.keyCode;
@@ -1471,24 +1497,63 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	console.log(options_object);
 	
 	//AMT__image_2_OCR
+	
+	//~ // INIT (x 10s)
+	//~ var x_interval_init = setInterval(function() {
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
+			//~ onload: function (response) {
+				//~ var rs = response.responseText;
+				//~ 
+				// RETURN options_object
+				// Add response.
+				//~ options_object.response = response;
+				//~ options_object.text = rs;
+				//~ 
+				//~ 
+				//~ options_object.callback_function(options_object);
+			//~ }
+		//~ });
+	//~ }, 30000);
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
 		onload: function (response) {
-			var rs = response.responseText;
-			
-			// options_object
-			// RETURN options_object
-			// With new added
-			options_object.response = response;
-			options_object.text = rs;
-			
-			
-			options_object.callback_function(options_object);
-			
-			//{response:response, text: rs});
 		}
 	});
+	
+	// SET INTERVAL
+	options_object.CHECK_COMPLETE = true;
+	
+	var x_interval = setInterval(function() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (rs.indexOf('__OCR_COMPLETE__') != -1) {
+					clearInterval(x_interval);
+					//~ clearInterval(x_interval_init);
+					rs = rs.replace(/^__OCR_COMPLETE__/, '');
+				} else {
+					return;
+				}
+				
+				// Here?
+				// RETURN options_object
+				// Add response.
+				
+				options_object.response = response;
+				options_object.text = rs;
+				
+				options_object.callback_function(options_object);
+				
+				//{response:response, text: rs});
+			}
+		});
+	}, 1000);
 }
 AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
 	
@@ -1637,6 +1702,12 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
 //
 AMT___requests_factory.prototype.general_functions__md5 = function(str)
 {
+	return any_md5(str, '0123456789ABCDEF');
+	
+	//xxxxx
+	//xxxxx
+	//xxxxx
+	//xxxxx
   //  discuss at: http://phpjs.org/functions/md5/
   // original by: Webtoolkit.info (http://www.webtoolkit.info/)
   // improved by: Michael White (http://getsprink.com)
@@ -1647,278 +1718,6 @@ AMT___requests_factory.prototype.general_functions__md5 = function(str)
   //  depends on: utf8_encode
   //   example 1: md5('Kevin van Zonneveld');
   //   returns 1: '6e658d4bfcb59cc13f96c14450ac40b9'
-
-	return any_md5(str, '0123456789ABCDEF');
-//~ 
-  //~ var xl;
-//~ 
-  //~ var rotateLeft = function(lValue, iShiftBits) {
-    //~ return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
-  //~ };
-//~ 
-  //~ var addUnsigned = function(lX, lY) {
-    //~ var lX4, lY4, lX8, lY8, lResult;
-    //~ lX8 = (lX & 0x80000000);
-    //~ lY8 = (lY & 0x80000000);
-    //~ lX4 = (lX & 0x40000000);
-    //~ lY4 = (lY & 0x40000000);
-    //~ lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
-    //~ if (lX4 & lY4) {
-      //~ return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
-    //~ }
-    //~ if (lX4 | lY4) {
-      //~ if (lResult & 0x40000000) {
-        //~ return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-      //~ } else {
-        //~ return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
-      //~ }
-    //~ } else {
-      //~ return (lResult ^ lX8 ^ lY8);
-    //~ }
-  //~ };
-//~ 
-  //~ var _F = function(x, y, z) {
-    //~ return (x & y) | ((~x) & z);
-  //~ };
-  //~ var _G = function(x, y, z) {
-    //~ return (x & z) | (y & (~z));
-  //~ };
-  //~ var _H = function(x, y, z) {
-    //~ return (x ^ y ^ z);
-  //~ };
-  //~ var _I = function(x, y, z) {
-    //~ return (y ^ (x | (~z)));
-  //~ };
-//~ 
-  //~ var _FF = function(a, b, c, d, x, s, ac) {
-    //~ a = addUnsigned(a, addUnsigned(addUnsigned(_F(b, c, d), x), ac));
-    //~ return addUnsigned(rotateLeft(a, s), b);
-  //~ };
-//~ 
-  //~ var _GG = function(a, b, c, d, x, s, ac) {
-    //~ a = addUnsigned(a, addUnsigned(addUnsigned(_G(b, c, d), x), ac));
-    //~ return addUnsigned(rotateLeft(a, s), b);
-  //~ };
-//~ 
-  //~ var _HH = function(a, b, c, d, x, s, ac) {
-    //~ a = addUnsigned(a, addUnsigned(addUnsigned(_H(b, c, d), x), ac));
-    //~ return addUnsigned(rotateLeft(a, s), b);
-  //~ };
-//~ 
-  //~ var _II = function(a, b, c, d, x, s, ac) {
-    //~ a = addUnsigned(a, addUnsigned(addUnsigned(_I(b, c, d), x), ac));
-    //~ return addUnsigned(rotateLeft(a, s), b);
-  //~ };
-//~ 
-  //~ var convertToWordArray = function(str) {
-    //~ var lWordCount;
-    //~ var lMessageLength = str.length;
-    //~ var lNumberOfWords_temp1 = lMessageLength + 8;
-    //~ var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
-    //~ var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
-    //~ var lWordArray = new Array(lNumberOfWords - 1);
-    //~ var lBytePosition = 0;
-    //~ var lByteCount = 0;
-    //~ while (lByteCount < lMessageLength) {
-      //~ lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-      //~ lBytePosition = (lByteCount % 4) * 8;
-      //~ lWordArray[lWordCount] = (lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
-      //~ lByteCount++;
-    //~ }
-    //~ lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-    //~ lBytePosition = (lByteCount % 4) * 8;
-    //~ lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
-    //~ lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
-    //~ lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
-    //~ return lWordArray;
-  //~ };
-//~ 
-  //~ var wordToHex = function(lValue) {
-    //~ var wordToHexValue = '',
-      //~ wordToHexValue_temp = '',
-      //~ lByte, lCount;
-    //~ for (lCount = 0; lCount <= 3; lCount++) {
-      //~ lByte = (lValue >>> (lCount * 8)) & 255;
-      //~ wordToHexValue_temp = '0' + lByte.toString(16);
-      //~ wordToHexValue = wordToHexValue + wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
-    //~ }
-    //~ return wordToHexValue;
-  //~ };
-  //~ 
-  //~ var utf8_encode = function(argString)
-  //~ {
-	  //~ //  discuss at: http://phpjs.org/functions/utf8_encode/
-	  //~ // original by: Webtoolkit.info (http://www.webtoolkit.info/)
-	  //~ // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	  //~ // improved by: sowberry
-	  //~ // improved by: Jack
-	  //~ // improved by: Yves Sucaet
-	  //~ // improved by: kirilloid
-	  //~ // bugfixed by: Onno Marsman
-	  //~ // bugfixed by: Onno Marsman
-	  //~ // bugfixed by: Ulrich
-	  //~ // bugfixed by: Rafal Kukawski
-	  //~ // bugfixed by: kirilloid
-	  //~ //   example 1: utf8_encode('Kevin van Zonneveld');
-	  //~ //   returns 1: 'Kevin van Zonneveld'
-//~ 
-	  //~ if (argString === null || typeof argString === 'undefined') {
-		//~ return '';
-	  //~ }
-//~ 
-	  //~ var string = (argString + ''); // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-	  //~ var utftext = '',
-		//~ start, end, stringl = 0;
-//~ 
-	  //~ start = end = 0;
-	  //~ stringl = string.length;
-	  //~ for (var n = 0; n < stringl; n++) {
-		//~ var c1 = string.charCodeAt(n);
-		//~ var enc = null;
-//~ 
-		//~ if (c1 < 128) {
-		  //~ end++;
-		//~ } else if (c1 > 127 && c1 < 2048) {
-		  //~ enc = String.fromCharCode(
-			//~ (c1 >> 6) | 192, (c1 & 63) | 128
-		  //~ );
-		//~ } else if ((c1 & 0xF800) != 0xD800) {
-		  //~ enc = String.fromCharCode(
-			//~ (c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-		  //~ );
-		//~ } else { // surrogate pairs
-		  //~ if ((c1 & 0xFC00) != 0xD800) {
-			//~ throw new RangeError('Unmatched trail surrogate at ' + n);
-		  //~ }
-		  //~ var c2 = string.charCodeAt(++n);
-		  //~ if ((c2 & 0xFC00) != 0xDC00) {
-			//~ throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
-		  //~ }
-		  //~ c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
-		  //~ enc = String.fromCharCode(
-			//~ (c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-		  //~ );
-		//~ }
-		//~ if (enc !== null) {
-		  //~ if (end > start) {
-			//~ utftext += string.slice(start, end);
-		  //~ }
-		  //~ utftext += enc;
-		  //~ start = end = n + 1;
-		//~ }
-	  //~ }
-//~ 
-	  //~ if (end > start) {
-		//~ utftext += string.slice(start, stringl);
-	  //~ }
-//~ 
-	  //~ return utftext;
-  //~ }
-//~ 
-  //~ var x = [],
-    //~ k, AA, BB, CC, DD, a, b, c, d, S11 = 7,
-    //~ S12 = 12,
-    //~ S13 = 17,
-    //~ S14 = 22,
-    //~ S21 = 5,
-    //~ S22 = 9,
-    //~ S23 = 14,
-    //~ S24 = 20,
-    //~ S31 = 4,
-    //~ S32 = 11,
-    //~ S33 = 16,
-    //~ S34 = 23,
-    //~ S41 = 6,
-    //~ S42 = 10,
-    //~ S43 = 15,
-    //~ S44 = 21;
-//~ 
-  //~ str = utf8_encode(str);
-  //~ x = convertToWordArray(str);
-  //~ a = 0x67452301;
-  //~ b = 0xEFCDAB89;
-  //~ c = 0x98BADCFE;
-  //~ d = 0x10325476;
-//~ 
-  //~ xl = x.length;
-  //~ for (k = 0; k < xl; k += 16) {
-    //~ AA = a;
-    //~ BB = b;
-    //~ CC = c;
-    //~ DD = d;
-    //~ a = _FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
-    //~ d = _FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
-    //~ c = _FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
-    //~ b = _FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
-    //~ a = _FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
-    //~ d = _FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
-    //~ c = _FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
-    //~ b = _FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
-    //~ a = _FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
-    //~ d = _FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
-    //~ c = _FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
-    //~ b = _FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
-    //~ a = _FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
-    //~ d = _FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
-    //~ c = _FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
-    //~ b = _FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
-    //~ a = _GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
-    //~ d = _GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
-    //~ c = _GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
-    //~ b = _GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
-    //~ a = _GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
-    //~ d = _GG(d, a, b, c, x[k + 10], S22, 0x2441453);
-    //~ c = _GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
-    //~ b = _GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
-    //~ a = _GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
-    //~ d = _GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
-    //~ c = _GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
-    //~ b = _GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
-    //~ a = _GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
-    //~ d = _GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
-    //~ c = _GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
-    //~ b = _GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
-    //~ a = _HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
-    //~ d = _HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
-    //~ c = _HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
-    //~ b = _HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
-    //~ a = _HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
-    //~ d = _HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
-    //~ c = _HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
-    //~ b = _HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
-    //~ a = _HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
-    //~ d = _HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
-    //~ c = _HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
-    //~ b = _HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
-    //~ a = _HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
-    //~ d = _HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
-    //~ c = _HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
-    //~ b = _HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
-    //~ a = _II(a, b, c, d, x[k + 0], S41, 0xF4292244);
-    //~ d = _II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
-    //~ c = _II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
-    //~ b = _II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
-    //~ a = _II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
-    //~ d = _II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
-    //~ c = _II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
-    //~ b = _II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
-    //~ a = _II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
-    //~ d = _II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
-    //~ c = _II(c, d, a, b, x[k + 6], S43, 0xA3014314);
-    //~ b = _II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
-    //~ a = _II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
-    //~ d = _II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
-    //~ c = _II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
-    //~ b = _II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
-    //~ a = addUnsigned(a, AA);
-    //~ b = addUnsigned(b, BB);
-    //~ c = addUnsigned(c, CC);
-    //~ d = addUnsigned(d, DD);
-  //~ }
-//~ 
-  //~ var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
-//~ 
-  //~ return temp.toLowerCase();
 }
 /**
  * 
@@ -3613,6 +3412,8 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 /**
  * AMT___site_scrapes
  * 
+ * TODO: linkedin.com/Web Test
+ * 
  */
 function AMT___site_scrapes(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
@@ -3620,10 +3421,12 @@ function AMT___site_scrapes(obj_vars) {
 /**
  * function scrape
  *
+ * TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
  * 
  */
 AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
+	// Global
 	var opts = options_object;
 	
 	switch (opts.site) {
@@ -3635,9 +3438,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = healthgrades_profile;
 			xhr_get();
 			break;
-		case 'https://www.linkedin.com/profile/view?id=':
-		case 'https://www.linkedin.com/pub/':
-		case 'https://www.linkedin.com/in/':
+		case 'LINKEDIN_PROFILE':
+		//~ case 'https://www.linkedin.com/profile/view?id=':
+		//~ case 'https://www.linkedin.com/pub/':
+		//~ case 'https://www.linkedin.com/in/':
 			opts.tmp_callback = linkedin_person_profile;
 			xhr_get();
 			break;
@@ -3668,7 +3472,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				
 				opts.response = response;
 				
-				opts.tmp_callback(rs);
+				if (!opts.tmp_callback(rs)) {
+					console.log('Returned False');
+					return;
+				}
 				
 				// Callback final
 				opts.callback_function(opts);
@@ -3680,28 +3487,482 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 * linkedin_person_profile
 	 * 
 	 * @ opts.response
+	 * 
+	 * NOTE: Sections, Boolean. Showing="background-education edit-default ". Hidden="background-skills edit-default hidden".
+	 * 
+			* Web Test Required fields
+			* 
+			* public url
+			* name
+			* headline
+			* # connections
+			* image
+			* website / personal website
+			* experience + logo for each
+			*
+			* bool has summary 
+			* bool has skills 
+			* bool has education 
+			* bool has interests 
 	 */
 	function linkedin_person_profile() {
 		
 		opts.response.vars = {
 			result: {
-				//~ fmt__full_name
-				//~ memberHeadline
-				//~ numconnectionsformattable
-				//~ img_raw
-				//~ websites
+				profile_has_public_url: null,
+				public_url: null,
+				name: null,
+				headline: null,
+				num_connections: null,
+				image_url: null,
+				profile_has_section_contact_info: false, // default=false
+				profile_has_section_experience: false,
+				profile_has_section_summary: false,
+				profile_has_section_skills: false,
+				profile_has_section_education: false,
+				profile_has_section_interests: false,
+				contact_info: {
+					email: null,
+					im: null,
+					address: null,
+					phone: null,
+					twitter: null,
+					wechat: null,
+					company_website: null,
+					personal_website: null
+				},
+				experience: [
+					// Array of position objects {}: {comp_name: null, logo_url: null, current_or_past: null}
+				],
+				summary: null,
+				skills: null,
+				education: null,
+				interests: null,
+				
+				profile_is_in_preview_mode: false // default=false
 			},
 			error: null,
 			error_type: null
 		}
 		
 		var rs = opts.response.responseText;
+		var r;
+		
+		/**
+		 * Public Profile URL
+		EX:
+www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
+		 */ 
+		r = /<span class="view-public-profile">(\w+\.linkedin\.com\/[^<]+)<\/span>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.public_url = 'https://' + __js_clean_html_str(r.exec(rs)[1]);
+			opts.response.vars.result.profile_has_public_url = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * Name
+		EX:
+James Strate, CFP®
+		 */ 
+		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name">([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * Headline
+		EX:
+Investment Representative at Fidelity Investments
+Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
+ 		 */ 
+		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title ">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
+		if (r.exec(rs)) {
+			var hd = r.exec(rs)[1];
+			hd = hd.replace(/<[^>]*>/g, '');
+			hd = __js_clean_html_str(hd);
+			opts.response.vars.result.headline = hd;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * num_connections
+		EX:
+302
+OR <div class="member-connections"><strong><a href="#connections" class="connections-link">104</a></strong>connections</div>
+		 */ 
+		r = /<div class="member-connections"><strong>(<a href="#connections" class="connections-link">|)([^<]*)(<\/a>|)<\/strong>connections<\/div>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.num_connections = __js_clean_html_str(r.exec(rs)[2]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Has different match?
+			r = />connections</;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Image
+		EX:
+https://media.licdn.com/media/p/3/000/031/13c/113ad79.jpg
+		 */ 
+		r = /<div class="profile-picture">[\r\n\t\s]*(<a href="javascript:void\(0\)">|) *<img src='([^']+)'/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.image_url = __js_clean_html_str(r.exec(rs)[2]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Has different image?
+			r = /<div class="profile-picture">/
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+			//~ r = /https:\/\/media\.licdn\.com\/mpr\/mpr\/shrink_/;
+		}
+		/**
+		 * Contact info
+		 * 
+		 * <table summary="Online Contact Info"
+		 * <table summary="Contact Info"
+		 * <table summary="Internet Presence
+		 */
+		/**
+		 * Has website
+		EX:
+http%3A%2F%2Fdeancdawson%2Ecom
+		 */
+		// Company
+		// test //~ console.log(/[\d\D]{200}>Company Website<[\d\D]{200}/.exec(rs));
+		r = /<a target='_blank' href='\/redir\/redirect\?url=([^&]+)[^']*'>Company Website<\/a>/;
+		if (r.exec(rs)) {
+			var wb = __js_clean_html_str(r.exec(rs)[1]);
+			wb = decodeURIComponent(wb);
+			opts.response.vars.result.contact_info.company_website = wb;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Double check
+			// EX <span class="contact">Contact Info</span>
+			//~ r = />Contact Info</;
+			//~ if (r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Has contact info?:'+r);
+				//~ return false;
+			//~ }
+		}
+		// Personal
+		r = /<a target='_blank' href='\/redir\/redirect\?url=([^&]+)[^']*'>Personal Website<\/a>/;
+		if (r.exec(rs)) {
+			var wb = __js_clean_html_str(r.exec(rs)[1]);
+			wb = decodeURIComponent(wb);
+			opts.response.vars.result.contact_info.personal_website = wb;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Double check
+			// EX <span class="contact">Contact Info</span>
+			//~ r = />Contact Info</;
+			//~ if (r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Has contact info?:'+r);
+				//~ return false;
+			//~ }
+		}
+		
+		// THIS IS WHERE A "BLOCKED" PROFILE WILL BE OFF.
+		// Blocked is missing from here on out.
+		// STOP HERE.
+		//
+		if  (
+			rs.indexOf('<p>Profile summaries for members outside your network are available only to premium account holders.</p>') != -1 ||
+			rs.indexOf('<p>Full profiles for 3rd-degree connections are available only to premium account holders.</p>') != -1
+			)
+		{
+			opts.response.vars.result.profile_is_in_preview_mode = true; // !
+			return true;
+		}
 		
 		
-		//~ <div class="summary"><p class="description">Professional Financial Management of Assets and Liabilities of Individuals and Privately Held Businesses and Business Owners.<br>
-//~ Wells Fargo Advisors, LLC, Member SIPC, is a registered broker-dealer and separate non-bank affiliate of Wells Fargo and Company. Investments and Insurance products: Not FDIC-Insured/No Bank Guarantee/May Lose Value<br>
-//~ This information is intended for use by the residents of Minnesota, Iowa, Arizona, Kansas only.<br>
-//~ &quot;Opinions and comments expressed by LinkedIn Members are those of the persons submitting them and do not necessarily represent the views of the creator of this profile or their firm.&#x201d;</p></div>
+		/**
+		 * Experience
+		 * .experience {comp_name: null, logo_url: null, current_or_past: null}
+		 * .profile_has_section_contact_info
+		EX:
+<h3>Experience</h3>
+		 */
+		r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_contact_info = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+			
+			// Experience container
+			// This must be present.
+			r = /<div id="background-experience-container"[^>]*>((.|\s)*?(?=<\/div><\/div><script>|$)|$)/
+			if (r.exec(rs)) {
+				r = r.exec(rs)[1];
+				
+				// current-position OR past-position
+				var rg_items = /<div id="experience-\d+" class="editable-item section-item ([^"]+)">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+				if (rg_items.exec(rs)) {
+					rg_items.lastIndex = 0;
+					var item;
+					while (item = rg_items.exec(r)) {
+						
+						var i = item[2];
+						//~ console.log(item);
+						
+						// Item
+						var itm = {
+							comp_name: null,
+							logo_url: null,
+							current_or_past: null
+						};
+						
+						var rg_it;
+						
+						// Name
+						//EX Fidelity Investments
+						rg_it = /<a href="\/company\/[^"]*">([^<]*)<\/a>/;
+						var rg_m;
+						if (rg_m = rg_it.exec(i)) {
+							itm.comp_name = __js_clean_html_str(rg_m[1]);
+						} else {
+							//EX Kleinmann Family Investments, LLC
+							rg_it = /<a href="\/vsearch\/p\?company=[^"]*" name="company" title="Find others who have worked at this company">([^<]*)<\/a>/;
+							if (rg_m = rg_it.exec(i)) {
+								itm.comp_name = __js_clean_html_str(rg_m[1]);
+							}
+						}
+						// Img
+						//https://media.licdn.com/media/p/8/000/22c/122/29e1504.png
+						var rg_it = /<img class="lazy-load" src="[^"]*" data-li-src="([^"]*)" alt="[^"]*"\/>/
+						var rg_m;
+						if (rg_m = rg_it.exec(i)) {
+							itm.logo_url = __js_clean_html_str(rg_m[1]);
+						}
+						// current_or_past
+						itm.current_or_past = __js_clean_html_str(item[1]);
+						// Must be...
+						if (itm.current_or_past != 'current-position' && itm.current_or_past != 'past-position') {
+							console.log(rs.match(r));
+							console.log(r);
+							alert('Match:'+r);
+							return false;
+						}
+						
+						// Push
+						opts.response.vars.result.experience.push(itm);
+					}
+				} else {
+					// No items?
+					// This must be present.
+					console.log(rs.match(r));
+					console.log(r);
+					alert('None:'+r);
+					return false;
+				}
+			} else {
+				// This must be present.
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<div id="background-experience" class="background-experience edit-default hidden"><div class="hd"><h3>Experience<\/h3>/;
+			if (!r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Summary
+		EX:
+Professional Financial Management of Assets and Liabilities of Individuals and  ......
+		 */ 
+		r = /<div class="summary"><p class="description">((.|\s)*?(?=<\/p><\/div>|$)|$)/;
+		if (r.exec(rs)) {
+			var sm = r.exec(rs)[1];
+			sm = sm.replace(/<[^>]*>/g, '');
+			sm = __js_clean_html_str(sm);
+			opts.response.vars.result.summary = sm;
+			opts.response.vars.result.profile_has_section_summary = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			r = /<h3>Summary<\/h3>/;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Skills
+		EX:
+Professional Financial Management of Assets and Liabilities of Individuals and  ......
+		 */ 
+		//~ r = /<h3>Skills<\/h3>/;
+		r = /<div id="background-skills" class="background-skills edit-default ">(<div class="hd">|)<h3>Skills<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_skills = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<div id="background-skills" class="background-skills edit-default hidden">(<div class="hd">|)<h3>Skills<\/h3>/;
+			if (!r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Education
+		EX:
+
+		 */ 
+		//~ r = /<h3>Education<\/h3>/;
+		r = /<div id="background-education" class="background-education edit-default "><h3>Education<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_education = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<h3>Education<\/h3>/;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Interests
+		SHOWING:
+<li id="interests" class="section-item editable-item ">
+		HIDDEN: ???
+<li id="interests" class="section-item editable-item no-additional-info">
+		 */ 
+		r = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_interests = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			var x;
+			r = /<li id="interests" class="section-item editable-item no-additional-info"><h4>Interests<\/h4>/;
+			x = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4><\/li>/; // BLANK
+			if (!r.test(rs) && !x.exec(rs) && rs.indexOf('>Interests<') != -1) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+			//~ r = /<h4>Interests<\/h4>/;
+		}
+		
+		/**
+		 * return true
+		 */
+		return true;
 	}
 	
 	/**
@@ -4753,6 +5014,10 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
 	//var out_div = d1;
 	
+	//~ console.log(results_array);
+	//~ console.log(out_div);
+	//~ console.log(seed_object);return;
+	
 	var old_divs = out_div.getElementsByTagName('div');
 	for (var i = old_divs.length - 1; i>=0; i--) {
 		old_divs[i].parentNode.removeChild(old_divs[i]);
@@ -4776,10 +5041,27 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	// ...
 	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
 	
-	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : doSubmit;
+	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : default__doSubmit;
 	
 	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
 	
+	var do_submit_next_tab			= (seed_object.do_submit_next_tab)			? seed_object.do_submit_next_tab : false;
+	
+	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
+	
+	// default ds
+	function default__doSubmit(next_tab, add_to_tabs_queue) {
+		
+		if (next_tab)
+		{
+			new AMT___core_factory().nextTab();
+		}
+		if (add_to_tabs_queue)
+		{
+			showNextTab();
+		}
+		doSubmit();
+	}
 	
 	// ...
 	for (var j in email_contexts) {
@@ -4814,6 +5096,12 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		//do_submit_callback
 		el_div.do_submit_callback	= do_submit_callback;
 		
+		//do_submit_callback
+		el_div.do_submit_next_tab	= do_submit_next_tab;
+		
+		//do_submit_callback
+		el_div.do_submit_add_to_tabs_queue	= do_submit_add_to_tabs_queue;
+		
 		//onclick
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
@@ -4822,7 +5110,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 				this.input_send_success.value = this.email;
 				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
 					
-					this.do_submit_callback();
+					this.do_submit_callback(this.do_submit_next_tab, this.do_submit_add_to_tabs_queue);
 					//~ doSubmit();
 				
 				}
@@ -4892,110 +5180,15 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 	
 	
 	return;
-	//~ 
-	//~ // matches select
-	//~ var el_select = document.createElement('select');
-	//~ out_div.appendChild(el_select);
-	//~ el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
-	//~ el_select.multiple = 'multiple';
-	//~ el_select.main_div = out_div;
-	//~ el_select.seed_object = seed_object;
-	//~ el_select.onchange = function() {
-		//~ if (this.value == '') return;
-		//~ 
-		//~ (new AMT___items_factory())
-			//~ .create_dashboard__powers_v1__showScrapyResult_contexts(
-				//~ this.options[this.selectedIndex].results_array,
-				//~ this.main_div,
-				//~ this.seed_object
-			//~ );
-	//~ }
-	//~ for (var i in object_response.matches) {
-		//~ rslt = object_response.matches[i];
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = rslt.email_email;
-		//~ el_option.innerText = rslt.email_email;
-		//~ // email highlight !!
-		//~ console.log(rslt.url);
-		//~ if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
-			//~ el_option.setAttribute('style', 'background-color:LightGreen;');
-		//~ }
-		//~ el_option.results_array = rslt;
-		//~ el_select.appendChild(el_option);
-	//~ }
-	//~ for (var i = 0; i<40; i++) {// append blank lines!
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = '';
-		//~ el_option.innerText = '';
-		//~ el_select.appendChild(el_option);
-	//~ }
-	//~ 
-	//~ // urls select
-	//~ var el_select2 = document.createElement('select');
-	//~ out_div.appendChild(el_select2);
-	//~ el_select2.setAttribute('style','width:98%;height:120px;');
-	//~ el_select2.multiple = 'multiple';
-	//~ el_select2.onclick = function() {
-		//~ if (this.value == '') return;
-		//~ window.open(this.value,'new');
-	//~ }
-	//~ //for (var i in object_response.urls) {
-	//~ //console.log(object_response.urls.complete_high_to_low);
-	//~ for (var i in object_response.urls.complete_high_to_low) {
-		//~ 
-		//~ rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
-		//~ 
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = rslt.url;
-		//~ el_option.innerText = rslt.url;
-		//~ // color
-		//~ var bg;
-		//~ switch(rslt.priority) {
-			//~ case 'high':
-				//~ bg = 'LightGreen';
-				//~ break;
-			//~ case 'low':
-				//~ bg = 'Orange';
-				//~ break;
-			//~ case 'none':
-				//~ bg = '#fff';
-				//~ break;
-			//~ case 'outside':
-				//~ bg = 'pink';
-				//~ break;
-		//~ }
-		//~ el_option.setAttribute('style', 'background-color:'+bg+';');
-		//~ el_select2.appendChild(el_option);
-	//~ }
-	//~ for (var i = 0; i<20; i++) {// append blank lines!
-		//~ // add option
-		//~ el_option = document.createElement('option');
-		//~ el_option.value = '';
-		//~ el_option.innerText = '';
-		//~ el_select2.appendChild(el_option);
-	//~ }
-	//~ 
-	//~ // auto-click first email
-	//~ if (object_response.matches.length > 0) {
-		//~ (new AMT___items_factory())
-			//~ .create_dashboard__powers_v1__showScrapyResult_contexts(
-				//~ el_select.options[0].results_array,
-				//~ out_div,
-				//~ seed_object
-			//~ );
-	//~ }
-	//~ 
-	//~ // br
-	//~ out_div.appendChild(document.createElement('br'));
 }
 //
 // callback_function(jobid, callback_obj, seed_object);
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
 AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
 {
+	//~ console.log(object_response);
+	//~ console.log(seed_object);return;
+	
 	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
 	//~ var req = new AMT___requests_factory();
 	//~ AMT___POPUP__initializeGlobals(
@@ -5016,7 +5209,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	
 	out_div.innerHTML = '';
 	
-	// DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
+	// xx
+	// THIS WOULD BE DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
 	//
 	//
 	//~ if (AMT__Global_Vars.isPreview) {
