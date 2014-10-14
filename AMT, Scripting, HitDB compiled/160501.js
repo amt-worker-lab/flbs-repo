@@ -428,6 +428,10 @@ HITStorage.check_update = function()
       }
       else
       {
+		  // THIS IS THE ERROR THAT HAS BEEN SHOWING ON BEN'S ACCOUNT.
+		  //
+		  //
+		  //
         if (confirm("😞 ERROR! Number of HITs in DataBase does not match number of HITs available! (" + count + " != " + submitted_hits + ")\n"
                    + "Would you like to refetch all status pages now?"))
         {
@@ -1748,6 +1752,18 @@ HITStorage.getHITData = function(day_to_fetch, hitData, page, days_to_update)
     }
     else
     {
+		// AN ERROR HERE?
+		// 
+		console.log('BEGIN CONSOLE');
+		console.log(day_to_fetch.submitted);
+		console.log(day_to_fetch);
+		console.log(hitData);
+		console.log(page);
+		console.log(days_to_update);
+		console.log(detailed_status_page_link);
+		console.log( HITStorage.process_page(detailed_status_page_link, dataDate, hitData) );
+		console.log('END CONSOLE');
+		
       alert("There was an error while fetching HITs for date: " + day_to_fetch.date + ".\n" +
             "Script monkeys expected " + day_to_fetch.submitted + " bananas, but got " + hitData.length + "! 😞");
       HITStorage.update_done();

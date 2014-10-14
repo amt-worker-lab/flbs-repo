@@ -226,96 +226,55 @@ function load()
 	 
 	 
 	 */
-	function bingMapEmbed(paramsObj) {
-		var bingMapIfr = document.createElement('iframe');
-		bingMapIfr.setAttribute('style', 'width:2000px;height:2000px;frameborder:0;');
-		bingMapIfr.setAttribute('id', 'bingMapIfr');
-		document.body.appendChild(bingMapIfr);
-		bingMapIfr = document.getElementById('bingMapIfr');
-		bingMapIfr.src  = "http://www.bing.com/maps/embed/viewer.aspx?v=3&cp=40.748441~-73.985664&lvl=18&w=800&h=1000&sty=b&typ=d&pp=&ps=&dir=0&mkt=en-us&form=BMEMJS"
-		//37.4419 -122.1419
-	}
 	
 	
-	if(loc.indexOf('bing.com/maps') != -1) {
-		//var options = bingMapIfr.getOptions();
-		//console.log('inside bing map');
-		//console.log(document.body.innerHTML);
-	}
+	//Draws a bing map based on the parameters object
+	//Creates a div with the id "myMap"
+	//Returns that div
+	//parameter attributes:
+	//style (a standard css style) (default: 'width:650px;height:450px;')
+	//zoom (1-20) (default: 18)
+	//lat (default: 40.748441)  
+	//lng (default: -73.985664) 
+	//  ^------------------------------------------Empire State Building
+	//~ function drawBingMap(params) {
+		//~ if(!params.style)
+			//~ params.style = 'width:650px;height:450px;';
+		//~ if(!params.lat)
+			//~ params.lat = 40.748441
+		//~ if(!params.lng)
+			//~ params.lng = -73.985664
+		//~ if(!params.zoom)
+			//~ params.zoom = 20;
+		//~ 
+		//~ var paramsDiv = document.createElement('div');
+		//~ paramsDiv.id = 'paramsDiv';
+		//~ console.log(params);
+		//~ paramsDiv.innerText = JSON.stringify(params);
+		//~ document.body.appendChild(paramsDiv);
+		//~ 
+		//~ 
+		//~ var script = document.createElement('script');
+		//~ script.setAttribute('type', 'text/javascript');
+		//~ script.setAttribute('src', 'bingMap.js');
+		//~ document.body.appendChild(script);
+		//~ 
+	//~ }
+	
+	
 	
 	if(loc.indexOf('bingImageTest.html') != -1) {
-		//bingMapEmbed({});
-		
-		//var meta = document.createElement('meta');
-		//meta.setAttribute('id', 'meta');
-		//document.body.appendChild(meta);
-		//meta = document.getElementById('meta');
-		//meta.charset = 'UTF-8';
-		//meta.content = 'text/html';
-		
-		var myMapDiv = document.createElement('div');
-		myMapDiv.setAttribute('id','myMapDiv');
-		myMapDiv.setAttribute('style','width:400px;height:400px;position:absolute;');
-		document.body.appendChild(myMapDiv);
-		myMapDiv = document.getElementById('myMapDiv');
-		
-
-		//~ var bingScript2 = document.createElement('script');
-		//~ bingScript2.setAttribute('id','bingScript2');
-		//~ document.head.appendChild(bingScript2);
-		//~ bingScript2 = document.getElementById('bingScript2');
-		//~ bingScript2.type = 'text/javascript';
-		//~ bingScript2.charset = 'UTF-8';
-		//~ bingScript2.src = "ms-appx:///Bing.Maps.JavaScript//js/veapicore.js";
-
-		
-		//~ var bingScript = document.createElement('script');
-		//~ bingScript.setAttribute('id','bingScript');
-		//~ document.head.appendChild(bingScript);
-		//~ bingScript = document.getElementById('bingScript');
-		//~ bingScript.type = 'text/javascript';
-		//~ bingScript.charset = 'UTF-8';
-		//~ bingScript.src = 'http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&onscriptload=DrawMap';
-		function DrawMap() {
-		   //console.log('hi');
-		   try {
-			   console.log(Microsoft);
-			   console.info(Microsoft.Maps);
-			   console.info(Microsoft.Maps.Map);
-		   }
-		   catch(Ex) {
-				console.log(Ex);
-				setTimeout(DrawMap,1000);
-		   }
-		}
-		
-		//~ chrome.extension.sendRequest({bingMap:true}, function(rs) {
-				//~ console.log('got back from eventPage');
-				//~ //setTimeout(DrawMap,1000);
-			//~ })
-		
-		var paramsDiv = document.createElement('div');
-		paramsDiv.id = 'paramsDiv';
-		paramsDiv.innerText = '{"Hello": "1"}'
-		document.body.appendChild(paramsDiv);
-		
-		
-		var script = document.createElement('script');
-		script.setAttribute('type', 'text/javascript');
-		script.setAttribute('src', 'bingMap.js');
-		document.body.appendChild(script);
-		
-
-		//script.onload = DrawMap;
-		
-		
-		//console.log(document.getElementById('bingMapIfr'));
+		//drawBingMap({style:'width:650px;height:450px;', lat:'42.394496', lng: '-76.511503', zoom: '19'});		
 	}
 
+	console.log('GOT HERE');
 	
-	//~ //TEST
-	//~ document.body.style.webkitTransform = 'scale(2) !important';
-	
+	//~ MT___google_api_geocode('67 Comfort Road Apt 6, Ithaca, NY, 14850', function(lat, lng) {
+		//~ console.log('drawing');
+		//~ console.log(drawBingMap({style:'width:650px;height:450px;', lat:lat, lng: lng, zoom: '19'}));		
+		//~ console.log('drawn');
+	//~ }, false, true)
+
 	//
 	//
 	//

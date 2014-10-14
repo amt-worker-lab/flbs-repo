@@ -2663,34 +2663,10 @@ function MT__RUN() {
 		var n;
 		n = MT__bold(task_para.innerText, cr.array);
 		//~ n = MT__bold(task_para.innerText, cr.array.concat(['{rep_}', '{/rep_}', '{sh_}', '{/sh_}']));
-		n = n.replace(/(\{(rep|sh|pg)_\})((.|\s)*?(?=\{\/(rep|sh|pg)_\}|$)|$)/g, function(m0, m1, m2, m3, m4, m5, m6) {
-			
-			// 2 is type
-			// 3 is body
-			
-			switch(m2) {
-				
-				case 'rep':
-					return '<span class="rep">'+m3+'</span>';
-					//~ break;
-				
-				case 'sh':
-					return '<span class="sh">'+m3+'</span>';
-					//~ break;
-				
-				case 'pg':
-					return '<span class="pg">'+m3+'</span>';
-					//~ break;
-			}
-			//~ console.log(m1);
-			//~ console.log(m2);
-			//~ console.log(m3);
-			//~ console.log(m4);
-			//~ console.log(m5);
-			//~ console.log(m6);
-			//~ return m0;
-		});
-		n = n.replace(/\{\/(rep|sh|pg)_\}/g, '');
+		
+		// Func.
+		n = Big_Bird_law_tasks__replace_tags(n);
+		
 		
 		task_para.innerHTML = n;
 		
@@ -2713,12 +2689,49 @@ function MT__RUN() {
 		}, 800);
 		
 		document.getElementsByName('comment')[0].focus();
+		
+		/**
+		 * Big_Bird_law_tasks__replace_tags
+		 */
+		function Big_Bird_law_tasks__replace_tags(str) {
+			str = str.replace(/(\{(rep|sh|pg|yr)_\})((.|\s)*?(?=\{\/(rep|sh|pg|yr)_\}|$)|$)/g, function(m0, m1, m2, m3, m4, m5, m6) {
+				
+				// 2 is type
+				// 3 is body
+				
+				switch(m2) {
+					
+					case 'rep':
+						return '<span class="rep">'+m3+'</span>';
+					
+					case 'sh':
+						return '<span class="sh">'+m3+'</span>';
+					
+					case 'pg':
+						return '<span class="pg">'+m3+'</span>';
+					
+					case 'yr':
+						return '<span class="yr">'+m3+'</span>';
+				}
+				//~ console.log(m1);
+				//~ console.log(m2);
+				//~ console.log(m3);
+				//~ console.log(m4);
+				//~ console.log(m5);
+				//~ console.log(m6);
+				//~ return m0;
+			});
+			str = str.replace(/\{\/(rep|sh|pg|yr)_\}/g, '');
+			
+			return str;
+		}
 	}
 	//
 	// Big Bird
 	// Case short names
 	//
-	s = 'Thank you for doing this HIT. This is part of a project to help computers interpret legal text. The goal of this HIT is to identify the different components of a citation. The only component that I want for this HIT is the "short name". A summary of the instructions are as follows:';
+	//~ s = 'Thank you for doing this HIT. This is part of a project to help computers interpret legal text. The goal of this HIT is to identify the different components of a citation. The only component that I want for this HIT is the "short name". A summary of the instructions are as follows:';
+	s = 'Thank you for doing this HIT. This is part of a project to help computers interpret legal text. The goal of this HIT is to identify the different components of a citation. The only component that I want for this HIT is the "short name".';
 	if (ih.indexOf(s) != -1)
 	{
 		console.log('');
@@ -2727,7 +2740,13 @@ function MT__RUN() {
 		//~ GM_addStyle('body {margin-top:500px !important;}');
 		GM_addStyle('#submitButton {width:100%;height:80px;}');
 		//~ GM_addStyle('#submitButton:hover {background-color:LightGreen;}');
-	
+		
+		// TAG colors
+		GM_addStyle('.rep {background-color:aqua   !important;}');
+		GM_addStyle('.sh  {background-color:pink   !important;}');
+		GM_addStyle('.pg  {background-color:orange !important;}');
+		GM_addStyle('.yr  {background-color:yellow !important;}');
+		
 		var h2 = document.getElementsByTagName('h2');
 		var para = document.getElementsByTagName('p');
 		var provide_feedback_para;
@@ -2739,9 +2758,14 @@ function MT__RUN() {
 		// Paragraph with the text in it!
 		//
 		//
-		var p = document.getElementsByClassName('font_8')[6];
+		var p = document.getElementsByClassName('font_8')[4];
 		p.setAttribute('style', 'width:50%;float:left;');
+		// Remove tags?
+		//~ p.innerHTML = Big_Bird_law_tasks__replace_tags(p.innerText);
 		
+		// The output textarea
+		//
+		//
 		var q = document.getElementsByName('shortname_result')[0];
 		q.style.height = '100px';
 		q.style.width = '100%';
@@ -2757,14 +2781,14 @@ function MT__RUN() {
 		//~ console.log(nextSib);
 		//~ nextSib.setAttribute('style','clear:both;');
 		
-		// submitButton
+		// Submit btn
 		document.getElementById('submitButton').onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			new AMT___core_factory().nextTab();
 			doSubmit();
 			return false;
 		}
-		// Move
+		// Move submit btn
 		document.getElementsByTagName('h1')[2].appendChild(document.getElementById('submitButton'));
 		
 		// r&a
@@ -2783,6 +2807,7 @@ function MT__RUN() {
 		
 		var buttons = new AMT___items_factory().create_annotation_to_output_fields({
 			textToAnnotate: p.innerText,
+			//~ textToAnnotate: p.innerHTML,
 			output_fields: [q],
 			callback_mouseup: function(addString) {
 				
@@ -2815,13 +2840,133 @@ function MT__RUN() {
 		});
 		
 		// BOLD
+		//
 		var bold_words = ['citing','cited','cite','accord','see','v.','vs.','versus','quoting']; //,'(',')' //'in', //see also
+		bold_words.push('supra'); // ADD supra! Oct10 2014.
 		var n = buttons.getElementsByTagName('button');
 		for (var i in n) {
 			if (i == 'length') break;
 			n[i].innerHTML = MT__bold(n[i].innerText, bold_words);
 		}
-		// Add BR
+		
+		// Tags, v1 try all
+		// Loop through all buttons replacing tags
+		// Classes are: tags__ -> .rep, .sh, .pg, .yr
+		var n = buttons.getElementsByTagName('button');
+		var curr_bg = '';
+		var all_tags = ['rep', 'sh', 'yr', 'pg']; // {no_}, {sp_}
+		for (var i in n) {
+			if (i == 'length') break;
+			
+			if (curr_bg != '') {
+				n[i].className = curr_bg;
+			}
+			
+			var reg = /(\{\/?(rep|sh|pg|yr)_\})/g;
+			while (m = reg.exec(n[i].innerText)) {
+				
+				// RESET THIS
+				reg.lastIndex = 0;
+				
+				// Open
+				if (m[1].indexOf('/') == -1) {
+					curr_bg = 'rep';
+					n[i].className = 'rep';
+				}
+				// Close
+				else {
+					curr_bg = '';
+				}
+				
+				// Replace one instance of a tag (open or close).
+				//
+				n[i].innerText = n[i].innerText.replace(m[1], '');
+				//~ n[i].innerText = n[i].innerText.replace(
+					//~ new RegExp(__js_escape_regEx(m[1]), ''),
+					//~ ''
+				//~ );
+			}
+		}
+		/*// Tags, v1 try all
+		// Loop through all buttons replacing tags
+		// Classes are: tags__ -> .rep, .sh, .pg, .yr
+		var n = buttons.getElementsByTagName('button');
+		var curr_bg = '';
+		var all_tags = ['rep', 'sh', 'yr', 'pg'];
+		for (var i in n) {
+			if (i == 'length') break;
+			
+			if (curr_bg != '') {
+				n[i].className = curr_bg;
+				console.log(curr_bg);
+			}
+			
+			// Twice. ??
+			//
+			for (var j in all_tags) {
+				var t1 = '{'  + all_tags[j] + '_}';
+				var t2 = '{/' + all_tags[j] + '_}';
+				if  (
+					n[i].innerText.indexOf(t1) != -1
+					)
+				{
+					curr_bg = 'tags__' + all_tags[j];
+					n[i].className = curr_bg;
+					n[i].innerText = n[i].innerText.replace(
+						new RegExp(__js_escape_regEx(t1), ''),
+						''
+					);
+					
+					break;
+				}
+				if  (
+					n[i].innerText.indexOf(t2) != -1
+					)
+				{
+					curr_bg = '';
+					n[i].innerText = n[i].innerText.replace(
+						new RegExp(__js_escape_regEx(t2), ''),
+						''
+					);
+					
+					break;
+				}
+			}
+			for (var j in all_tags) {
+				var t1 = '{'  + all_tags[j] + '_}';
+				var t2 = '{/' + all_tags[j] + '_}';
+				if  (
+					n[i].innerText.indexOf('{'  + all_tags[j] + '_}') != -1
+					)
+				{
+					curr_bg = 'tags__' + all_tags[j];
+					n[i].className = curr_bg;
+					n[i].innerText = n[i].innerText.replace(
+						new RegExp(__js_escape_regEx(t1), ''),
+						''
+					);
+				}
+				if  (
+					n[i].innerText.indexOf('{/'  + all_tags[j] + '_}') != -1
+					)
+				{
+					curr_bg = '';
+					n[i].innerText = n[i].innerText.replace(
+						new RegExp(__js_escape_regEx(t2), ''),
+						''
+					);
+				}
+			}
+		}*/
+		/*var all_tags = {
+			'rep':true,
+			'sh':true,
+			'yr':true
+		};*/
+		
+		// Add BRs
+		//
+		var n = buttons.getElementsByTagName('button');
 		var afterNext = false;
 		for (var i in n) {
 			if (i == 'length') break;
@@ -2845,6 +2990,7 @@ function MT__RUN() {
 			);
 			afterNext = false;
 		}
+		
 		// Court Reporters!
 		//
 		//
@@ -22150,15 +22296,14 @@ function MT__RUN() {
 		
 		//...
 		var b		= document.getElementsByTagName('b');
-		var name	= b[0].innerText.trim();
-		var addr	= b[1].innerText.trim();
+		var name	= b[1].innerText.trim();
+		var addr	= b[2].innerText.trim();
 		
-		
-
-
 		var o = {
 			lat: null,
-			lon: null
+			lon: null,
+			name: null,
+			addr: null
 		};
 		
 		//37.4419 -122.1419
@@ -22213,19 +22358,23 @@ function MT__RUN() {
 		var l = name;
 		if (l == 'Walmart')
 			l = 'Wal';
+		if (l == 'Macy\'s')
+			l = 'Macy';
 		// ...
 		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
 		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		if (o.lat != null && o.lon != null)
-			withNameSearch += '&sll='+o.lat + ',' + o.lon;
+		//&sll=41.021458,-80.660332
+		//~ if (o.lat != null && o.lon != null)
+			//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
 		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
 		//~ // ...
 		//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
 		// ...
 		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
 		
-		
+		console.log(withNameSearch);
+		console.log(woutNameSearch);
 		
 		var first_url = woutNameSearch;
 		if (ih.indexOf('Planet Fitness') != -1)
@@ -23670,8 +23819,10 @@ function MT__RUN() {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		
-		GM_addStyle('body {min-height:4000px;}');
+		GM_addStyle('body {min-height:4000px;margin-top:60px !important;}');
 		GM_addStyle('#submitButton {width:100%;height:120px;}');
+		
+		GM_addStyle('.panel-primary {position:absolute;top:1400px;}');
 		
 		//~ GM_addStyle('.container {width:100% !important !important !important !important;}');
 		//~ GM_addStyle('.col-sm-6 {float:none;width:100%;}');
@@ -23717,7 +23868,31 @@ function MT__RUN() {
 		var d1 = document.createElement('div');
 		d1.setAttribute('style', 'float:left;width:78%;margin-top:40px;');
 		section.parentNode.appendChild(d1);
+		var d2 = document.createElement('input');
+		d2.type = 'text';
+		d2.setAttribute('style', 'position:absolute;top:0;left:0;height:24px;');
+		document.body.appendChild(d2);
+		var d2b = document.createElement('input');
+		d2b.type = 'text';
+		d2b.setAttribute('style', 'position:absolute;top:26px;left:0;height:24px;');
+		document.body.appendChild(d2b);
 		/* END items */
+		
+		// a
+		var a = document.getElementsByTagName('a')[0].href;
+		a = a.replace('::', ':');
+		a = a.replace('////', '//');
+		
+		d2.onblur = function() {
+			//~ out.href = this.value;
+			Grocery_ROI_amazon_units();
+		}
+		d2.value = a;
+		d2b.onblur = function() {
+			this.style.backgroundColor = 'LightGreen';
+			this.value = this.value.trim();
+			localStorage['groi_si'] = (/^[1-5]$/.exec(this.value)) ? this.value*1 : 1; // default 1
+		}
 		
 		// q
 		var q = document.getElementsByName('Q5FreeTextInput');
@@ -23729,11 +23904,6 @@ function MT__RUN() {
 		
 		// Set pack size placeholder. Default is "3".
 		q[2].placeholder = '';
-		
-		// a
-		var a = document.getElementsByTagName('a')[0].href;
-		a = a.replace('::', ':');
-		a = a.replace('////', '//');
 		
 		// out
 		var out = {
@@ -23751,13 +23921,17 @@ function MT__RUN() {
 		console.log(out);
 		
 		// o
+		if (!localStorage.hasOwnProperty('groi_si')) {
+			localStorage['groi_si'] = 1;
+		}
+		d2b.value = localStorage['groi_si'];
 		o = {
 			// starting_index
 			// 1 = fluid ounce
 			// 3 = ounce
 			// 5 = count
-			starting_index: 3,
-			keyboard_profile: 'right'//'left'
+			starting_index: localStorage['groi_si'],
+			//~ keyboard_profile: 'right'//'left'
 		}
 		
 		// scrollIntoView
@@ -23767,11 +23941,15 @@ function MT__RUN() {
 			}, 400);
 			setTimeout(function() {
 				section.scrollIntoView();
-			}, 600);
+			}, 800);
 			setTimeout(function() {
 				section.scrollIntoView();
-			}, 800);
+			}, 2000);
+			setTimeout(function() {
+				section.scrollIntoView();
+			}, 3000);
 		}
+		
 		
 		// ...
 		q[1].multiple = true;
@@ -23789,6 +23967,8 @@ function MT__RUN() {
 		q[0].onfocus = q[2].onfocus = function() {
 			out.out_element = this;
 		}
+		// focus init
+		q[0].focus();
 		
 		// return/accept
 		new AMT___core_factory().
@@ -23804,62 +23984,22 @@ function MT__RUN() {
 			if (q[1].selectedIndex == 0)
 				return false;
 			
-			if (q[0].value.trim() == '')
+			if (q[0].value.trim() == '' && q[1].value != 'Information Unavailable')
 				return false;
+			
+			setTimeout(function() {
+				document.body.style.backgroundColor = 'blue';
+			}, 1000);
 			
 			new AMT___core_factory().nextTab();
 			doSubmit();
 			return false;
 			
-			//~ e.stopPropagation();
-			//~ e.preventDefault();
-			//~ 
-			//~ for (var i in q) {
-				//~ if (i == 'length') break;
-				//~ var found = false;
-				//~ for (var j in q[i]) {
-					//~ if (q[i][j].checked) { // at least one is checked
-						//~ found = true;
-						//~ break;
-					//~ }
-				//~ }
-				//~ if (!found) {
-					//~ 
-					//~ e.stopPropagation();
-					//~ e.preventDefault();
-					//~ return false;
-				//~ }
-			//~ }
-			//~ 
-			//~ // Still here?
-			//~ showNextTab();
-			
-			//~ 
-			//~ // Still here?
-			//~ chrome.extension.sendRequest({
-					//~ nextTab: true
-				//~ },
-				//~ function(response)
-				//~ {
-				//~ }
-			//~ );
-			//~ e.stopPropagation();
-			//~ e.preventDefault();
 		}
 		
 		AMT___POPUP__initializeGlobals(
 			Grocery_ROI_amazon_units
 		);
-		//~ Grocery_ROI_amazon_units(out);
-		
-		//~ out_complete.push({
-			//~ parent: x[i],
-			//~ div: div,
-			//~ href: x[i].getElementsByTagName('a')[0].href,
-			//~ all_inp: out_inp,
-			//~ inp: out_inp[out_inp.length - 1],
-			//~ fieldset: x[i].getElementsByTagName('fieldset')[0]
-		//~ });
 		
 		// window.onkeypress
 		// 
@@ -23896,56 +24036,106 @@ function MT__RUN() {
 				return false;
 			}
 			
-			// Type of profile
-			switch (o.keyboard_profile) {
-				case 'right':
-					if  (
-						(c >= 106 && c <= 108) ||
-						c == 59 || c == 39 ||
-						c == 111
-						)
-					{
-					
-						c = (c == 59) ?109:c; //;
-						c = (c == 39) ?110:c; //'
-						c = (c == 111)?110:c; //'
-						
-						e.preventDefault();
-						e.stopPropagation();
-						
-						c = (106 - c) * -1; // = 0, = 1, ...
-						c++; // = 1, = 2, ...
-						
-						q[1].selectedIndex = c;
-						
-						q[2].focus();
-						
-						return false;
-					}
-					break;
-				case 'left':
-					if  (
-						(c >= 100 && c <= 104) ||
-						 c == 109
-						)
-					{
-						c = (c == 100) ? 101: c;
-						c = (c == 109) ? 105 : c;  
-						
-						e.preventDefault();
-						e.stopPropagation();
-						
-						c = (101 - c) * -1; // = 0, = 1, ...
-						c++; // = 1, = 2, ...
-						
-						q[1].selectedIndex = c;
-						
-						q[2].focus();
-						
-						return false;
-					}
-					break;
+			if  (
+				(c >= 106 && c <= 108) ||
+				c == 59 || c == 39 ||
+				c == 111 ||
+				c == 105
+				)
+			{
+			
+				c = (c == 59) ?109:c; //;
+				c = (c == 39) ?110:c; //'
+				
+				c = (c == 111)?110:c; //
+				c = (c == 105)?109:c; //
+				
+				e.preventDefault();
+				e.stopPropagation();
+				
+				c = (106 - c) * -1; // = 0, = 1, ...
+				c++; // = 1, = 2, ...
+				
+				q[1].selectedIndex = c;
+				
+				q[2].focus();
+				
+				return false;
 			}
+			if  (
+				(c >= 100 && c <= 104) ||
+				 c == 109
+				)
+			{
+				c = (c == 100) ? 101: c;
+				c = (c == 109) ? 105 : c;  
+				
+				e.preventDefault();
+				e.stopPropagation();
+				
+				c = (101 - c) * -1; // = 0, = 1, ...
+				c++; // = 1, = 2, ...
+				
+				q[1].selectedIndex = c;
+				
+				q[2].focus();
+				
+				return false;
+			}
+			
+			//~ // Type of profile
+			//~ switch (o.keyboard_profile) {
+				//~ case 'right':
+					//~ if  (
+						//~ (c >= 106 && c <= 108) ||
+						//~ c == 59 || c == 39 ||
+						//~ c == 111 ||
+						//~ c == 105
+						//~ )
+					//~ {
+					//~ 
+						//~ c = (c == 59) ?109:c; //;
+						//~ c = (c == 39) ?110:c; //'
+						//~ 
+						//~ c = (c == 111)?110:c; //
+						//~ c = (c == 105)?109:c; //
+						//~ 
+						//~ e.preventDefault();
+						//~ e.stopPropagation();
+						//~ 
+						//~ c = (106 - c) * -1; // = 0, = 1, ...
+						//~ c++; // = 1, = 2, ...
+						//~ 
+						//~ q[1].selectedIndex = c;
+						//~ 
+						//~ q[2].focus();
+						//~ 
+						//~ return false;
+					//~ }
+					//~ break;
+				//~ case 'left':
+					//~ if  (
+						//~ (c >= 100 && c <= 104) ||
+						 //~ c == 109
+						//~ )
+					//~ {
+						//~ c = (c == 100) ? 101: c;
+						//~ c = (c == 109) ? 105 : c;  
+						//~ 
+						//~ e.preventDefault();
+						//~ e.stopPropagation();
+						//~ 
+						//~ c = (101 - c) * -1; // = 0, = 1, ...
+						//~ c++; // = 1, = 2, ...
+						//~ 
+						//~ q[1].selectedIndex = c;
+						//~ 
+						//~ q[2].focus();
+						//~ 
+						//~ return false;
+					//~ }
+					//~ break;
+			//~ }
 			
 		}, false);
 		
@@ -24053,18 +24243,37 @@ function MT__RUN() {
 		// out is the container div (1...4)
 		function Grocery_ROI_amazon_units() {
 			
-			//~ var out = out;
+			var opts = {
+				url: d2.value,
+				'strings_do_not_save_to_file': [
+					'Sorry, we just need to make sure you\'re not a robot. For best results, please make sure your browser is accepting cookies.'
+				]
+			}
+			opts = encodeURIComponent(JSON.stringify(opts));
+			
+			
 			
 			GM_xmlhttpRequest({
 				method: 'GET',
-				url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
+				url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options='+opts,
+				
+				//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(d2.value),
 				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
 				
 				onload: function (response) {
 					var rs = response.responseText;
 					
 					if (response.status > 200 || (/^\d+$/.exec(rs) && rs*1 > 200)) {
-						exit(response.status + rs);
+						
+						if (rs == '404') {
+							q[1].value = 'Information Unavailable';
+							//~ alert('404');
+							document.getElementById('submitButton').click();
+						}
+						return;
+						//~ alert(response.status);
+						//~ console.log(rs);
+						//~ exit(response.status + rs);
 					}
 					
 					if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
@@ -37263,8 +37472,236 @@ function MT__RUN() {
 	 * 
 	 * Benjamin Grier
 	 * Catalog ("")
+	 * karthik ramachandran
 	 * 
 	 */
+	//
+	// karthik ramachandran
+	// 
+	// 
+	s = 'Find the customer review website addresses of the video game on a particular video game platform seen below on <a href="http://amazon.com/games">http://amazon.com/games</a>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		//GM_addStyle('body {width:15%;margin-top:30px;}');
+		//~ GM_addStyle('#submitButton {width:96%;height:80px;margin-top:10px;}');
+		
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;position:absolute;top:1000px;}');
+		GM_addStyle('#submitButton {position:absolute;top:900px;}');
+		GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div'); //
+		d1.setAttribute('style','position:absolute;top:40px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('textarea'); //
+		d2.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:38px;');
+		document.body.appendChild(d2);
+		var d2b = document.createElement('input'); //
+		d2b.type = 'button';
+		d2b.setAttribute('style','position:absolute;top:0px;left:60%;width:38%;height:38px;');
+		document.body.appendChild(d2b);
+		d2b.value = 'NA';
+		/*END ITEMS*/
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			product: td[1].innerText.trim(),
+			bold_array: []
+		};
+		
+		d2.value = o.product;
+		o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
+		d2.onblur = function() {
+			karthik_ramachandran_amazon_product_search();
+		}
+		d2b.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			var q = document.getElementById('web_url');
+			q.value = 'na';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+		// ...
+		new AMT___core_factory().
+			iframe2parent__postMessage( //
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// ...
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1
+			],
+			offset: 40 // offset top
+		});
+		
+		// init
+		karthik_ramachandran_amazon_product_search();
+		
+		function karthik_ramachandran_amazon_product_search() {
+			
+			// url=search-alias%3Dvideogames
+			var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dvideogames&field-keywords='+encodeURIComponent(d2.value);
+			d1.innerText = '';
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+				//~ url: ',
+				onload: function(response) {
+					var rs=response.responseText;
+					
+					/*
+					<h3 class="newaps">
+					<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+					*/
+					
+					var r,m;
+					
+					// remove sponsored, to end
+					//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+					rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+					
+					// num results
+					r = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+					if (r) {
+						d1.innerHTML += r[1]+' results<br>';
+					}
+					//old
+					//r = /<h2 style="" class="resultCount" id="resultCount"><span>([^<]+)/.exec(rs);
+					
+					// no results
+					r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
+					r2= /<h1 id="noResultsTitle" class="a-size-medium a-spacing-base a-spacing-top-small a-color-secondary a-text-normal">Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+					if (r || r2) {
+						d1.innerHTML += 'No results';
+						return;
+					}
+					
+					// images
+					// src="http://ecx.images-amazon.com/images/I/
+					var images = [];
+					r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+					while (m = r.exec(rs)) {
+						images.push(m[1]);
+					}
+					d1.innerHTML += images.length+' images<br>';
+					
+					// items
+					var dp, c = 0, multi, highlight = '';
+					
+					r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+					
+					while (m = r.exec(rs)) {
+						
+						//~ console.log(m);
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
+						div.className = 'exe';
+						d1.appendChild(div);
+						
+						// link
+						// stars
+						// reviews
+						
+						//offer, ratng;
+						var offer = '';
+						var ratng = '';
+						var link;
+						var title;
+						var n;
+						var reg;
+						var asin;
+						
+						//link/title
+						// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
+						reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+						if (reg) {
+							link = __js_clean_html_str(reg[1]);
+							asin = /\/dp\/([^\/]+)/.exec(link);
+							if (asin) {
+								asin = asin[1];
+							} else {
+								alert('asin' + asin);
+							}
+							link = 'http://www.amazon.com/ss/customer-reviews/'+asin+'/';
+							
+							// DIV.LINK
+							div.link = link;
+							
+							title = __js_clean_html_str(reg[3]);
+							
+							//~ if (link.indexOf('/dp/') == -1) {
+								//~ alert('link ! /dp/');
+								//~ console.log('x');
+							//~ }
+							//~ link = link.replace(/\/dp\//, '/product-reviews/');
+							//~ link = link.replace(/\/ref=[^\/]+/, '/');
+						} else {
+							alert(reg);
+							console.log('!reg link');
+						}
+							
+						// offers
+						reg = /\([\d,]+ offers\)/g;
+						if (reg.exec(m[1])) {
+							reg.lastIndex = 0;
+							while (n = reg.exec(m[1])) {
+								offer += n[0] + '<br >';
+							}
+						}
+						// rating
+						reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
+						if (reg) {
+							ratng += reg[1] + '<br >';
+						}
+						// reviews
+						reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
+						if (reg) {
+							ratng += ' (<B>'+reg[1]+'</B> ratings)';
+						}
+						
+						// ...
+						div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
+						div.innerHTML += offer + ratng + '<br>' + link + '<br>';
+						if (images[c] && !multi)
+							div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" />';
+						
+						
+						div.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							var q = document.getElementById('web_url');
+							q.value = this.link;
+							if (this.link.length > 8) {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						
+						c++;
+						
+					}
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1800px;');
+					d1.appendChild(div);
+				}
+			});
+		}
+	}
 	//
 	// Catalog ""
 	// Confirm the ASINs for Given Products
@@ -37434,16 +37871,6 @@ function MT__RUN() {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1800px;');
 					d1.appendChild(div);
-					
-					//~ var x = document.getElementsByClassName('exe');
-					//~ for (var i in x) {
-						//~ x[i].onclick = function() {
-							//~ if (this.id.trim() != '') {
-								//~ document.getElementById('ASIN').value = this.id;
-								//~ doSubmit();
-							//~ }
-						//~ }
-					//~ }
 				}
 			});
 		}
@@ -49078,12 +49505,14 @@ qatar,80
 	
 	//
 	// Peter Heyneman
+	// Signpost (aka)
 	// Find the phone numbers for businesses
 	// 
 	//~ s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
-	s = '<li>For the business below, enter the official 10 digit phone number.</li>';
+	//~ s = '<li>For the business below, enter the official 10 digit phone number.</li>';
+	s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	if (ih.indexOf(s) != -1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 		
 		GM_addStyle('body {margin-top:460px;}');
 		
@@ -49094,10 +49523,11 @@ qatar,80
 		
 		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
 		
-		var q;
-		q = document.getElementById('Q1Url');
+		var q  = document.getElementById('Q1Url');
+		var q2 = document.getElementById('Q1Url2');
 		
 		var b = document.getElementsByTagName('b');
+		var strong = document.getElementsByTagName('strong');
 		
 		document.getElementById('mturk_form').onsubmit = function() {
 			q.value = q.value.trim();
@@ -49108,20 +49538,13 @@ qatar,80
 		}
 		
 		/* BEGIN ITEMS */
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='62px';
-		d1.style.left='0%';
-		d1.style.width='98%';
-		d1.style.height='400px';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='1px solid blue';
-		d1.style.overflow = 'auto';
-		d1.style.backgroundColor='#eee';
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;left:0%;top:62px;width:50%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+		document.body.appendChild(d1);
+		// d1b
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;left:50%;top:62px;width:49%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+		document.body.appendChild(d1b);
 		//
 		d = document.createElement('input');
 		d.setAttribute('id','d2');
@@ -49155,8 +49578,8 @@ qatar,80
 		
 		if (!by_phone) {
 			var o = {
-				name:		b[0].innerText.trim(),
-				locn:		b[1].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				name: b[0].innerText.trim(),
+				locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
 				
 				//~ bad_phone:	b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
 				
@@ -49183,15 +49606,6 @@ qatar,80
 		}
 		
 		console.log(o);
-		
-		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var name = b[0].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var zip  = b[1].innerText.replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var city = b[2].innerText.trim();//replace(/[^\d\w_]/g, '').toLowerCase().trim();
-		//~ var state= b[3].innerText.trim();
-		//~ 
-		//~ city = city.replace(/\s*,$/, '');
 		
 		d2.value  = o.name;
 		d2b.value = o.locn;
@@ -49233,11 +49647,12 @@ qatar,80
 			}
 		}
 		function Peter_Heyneman_find_phone__FB() {
-			//d1.innerHTML = '';
 			
-			var dv = document.createElement('div');
-			d1.appendChild(dv);
-			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+			d1b.innerHTML = '';
+			
+			//~ var dv = document.createElement('div');
+			//~ d1b.appendChild(dv);
+			//~ dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
 		
 			var u = 
 				
@@ -49267,7 +49682,7 @@ qatar,80
 					var r = JSON.parse(rs);
 					
 					if (!r.data) {
-						d1.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+						d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
 						return;
 					}
 					
@@ -49276,7 +49691,7 @@ qatar,80
 					
 					if (r.length == 0) {
 						var dv = document.createElement('div');
-						d1.appendChild(dv);
+						d1b.appendChild(dv);
 						dv.innerText = '0';
 						
 						
@@ -49340,11 +49755,12 @@ qatar,80
 						
 						// ...
 						var dv = document.createElement('div');
-						d1.appendChild(dv);
+						d1b.appendChild(dv);
 						
 						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 						dv.className = 'exe';
 						dv.phone = r[i].phone;
+						dv.fblink = r[i].link;
 						dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
 						dv.innerHTML += '<br>likes:'+r[i].likes;
 						dv.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
@@ -49365,16 +49781,15 @@ qatar,80
 							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
 							
 							q.value = p;
+							q2.value = this.fblink;
 							
-							if (p == o.bad_phone || p.length != 10) {
+							if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
 								d2.value = 'bad phone!';
 								q.style.border = '4px solid teal';
 								return;
 							}
 						
 							if (p.length == 10 && q.value == p) {
-								//~ q.value = this.phone;
-								
 								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
@@ -49389,11 +49804,10 @@ qatar,80
 						
 					}
 					
-					if (d1.innerHTML != '') {
+					if (d1b.innerHTML != '') {
 						var dv = document.createElement('div');
-						d1.appendChild(dv);
-						
 						dv.setAttribute('style', 'height:1400px;');
+						d1b.appendChild(dv);
 					}
 				}
 			});
@@ -49507,6 +49921,7 @@ qatar,80
 						dv.className = 'exe';
 						dv.isAuto = false;
 						dv.greference = x.reference;
+						//~ dv.gurl = x.url.replace(/about\?hl=en-US/, '');
 						
 						var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
 						var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
@@ -49556,7 +49971,11 @@ qatar,80
 						}
 						count++;
 					}
-					
+
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'height:1400px;');
+					d1.appendChild(dv);
+						
 					// Always run this here.
 					//
 					//
@@ -49574,7 +49993,13 @@ qatar,80
 				}
 			});
 		}
-		//
+		
+		/**
+		 * Function Peter_Heyneman_google_find_phone__profile
+		 * 
+		 * Update Oct10 2014:
+		 * Add .url from response.
+		 */
 		function Peter_Heyneman_google_find_phone__profile(div) {
 			
 			//greference
@@ -49611,9 +50036,9 @@ qatar,80
 					if (r) {
 						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
 						
-						// here?
 						div.innerText  += '\n' + r;
 						div.gphone		=  r;
+						div.gurl		= rs.result.url.replace(/about\?hl=en-US/, '');
 						
 						console.log('div:');
 						console.log(div);
@@ -49624,8 +50049,9 @@ qatar,80
 							this.style.backgroundColor = 'teal';
 							
 							q.value = this.gphone;
+							q2.value = this.gurl;
 							
-							if (this.gphone == o.bad_phone || this.gphone.length != 10) {
+							if (this.gphone == o.bad_phone || this.gphone.length != 10 || !/^https?:\/\/[^\/]+/.exec(this.gurl)) {
 								d2.value = 'bad phone!';
 								d2.style.backgroundColor = 'LightGreen';
 								q.style.border = '4px solid teal';
@@ -49633,20 +50059,16 @@ qatar,80
 							}
 							
 							// Here?
-							// isAuto?
-							if (!this.isAuto)
-								new AMT___core_factory().nextTab();
-							
+							new AMT___core_factory().nextTab();
 							doSubmit();
+							
+							//~ // isAuto?
+							//~ if (!this.isAuto)
+								//~ new AMT___core_factory().nextTab();
 						}
 						
 						// is good?
 						div.click();
-						
-						//~ var x = r;
-						//~ if (x[0] != '8' && x[0] != '9') { // NOT 8XX 9XX !!
-							//~ div.click();
-						//~ }
 					}
 				}
 			});
@@ -75335,11 +75757,373 @@ qatar,80
 	 * David Shefferman
 	 * Scott Neufeld
 	 * Andres Echenique
+	 * Brice Englert
 	 * 
 	 * 
 	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
+	
+	//
+	// Brice Englert
+	// Find the Website Address for Auto Dealers
+	// 
+	var s = '	<li>Enter the website address for the <strong>official website </strong>of the auto dealership.</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			city: td[5].innerText.trim(),
+			state_abbr: td[7].innerText.trim(),
+			state: null,
+			bold_array: []
+		}
+		o.state = o.state_abbr.stateAbbrToFull();
+		o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.bold_array = o.bold_array.concat(o.city.replace(/[^\w\d]/g, ' ').split(' '));
+		o.bold_array = o.bold_array.concat([o.state_abbr, o.state]);
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Brice_Englert_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Brice_Englert_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Brice_Englert_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("place_website").value = "NONE";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = '"' + o.name + '" ' + o.city;
+		d3c.value = '"' + o.name + '" ' + o.city + ' ' + o.state;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Brice_Englert_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Brice_Englert_company_URL__SP_init();
+			
+				}
+			});
+		}
+		Brice_Englert_company_URL__load_skips();
+		
+		function Brice_Englert_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Brice_Englert_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Brice_Englert_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Brice_Englert_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Brice_Englert_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Brice_Englert_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
 	
 	//
 	// Andres Echenique

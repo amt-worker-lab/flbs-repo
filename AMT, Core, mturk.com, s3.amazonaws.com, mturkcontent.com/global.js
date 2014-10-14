@@ -7361,10 +7361,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//~ // last update
 	//~ var last = 0;
 	
-	// tasks_obj
-	//tasks_obj.table1_row_ids: {} db_id:true
-	//tasks_obj.table2_row_ids: {} db_id:true
-	//tasks_obj.table_rows:     {} db_id:row _ element
+	/**
+	 * tasks_obj
+	 //tasks_obj.table1_row_ids: {} db_id:true
+	 //tasks_obj.table2_row_ids: {} db_id:true
+	 //tasks_obj.table_rows:     {} db_id:row _ element
+	 */ 
 	tasks_obj = {
 		current_db_ids: {},
 		
@@ -7720,24 +7722,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			
 			// IF NOT ON PAGE THEN ADD ?? 
 		}
-		
-		//~ if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
-			//~ continue;//break;
-		//~ }
-		
-		//~ !__js_inarray(ignore_requesters,		rs[3][i]) &&
-		//~ !__js_inarray(ignore_requesters__ids,	rs[6][i])
-		
-		//~ current_db_ids.push(rs[0][i]);
-		//~ 
-		//~ if (new_job) {
-			//~ continue;
-		//~ }
-		
-		//~ OLD
-		//~ MT___page1_show_jobs_play_audio();
-		
-		//~ current_db_ids.push(rs[0][i]);
 	}
 	
 	/**
@@ -7805,7 +7789,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// name
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:20%;'
+			'width:18%;'
 		);
 		tr.appendChild(td);
 		if (row.requester_id != '') {
@@ -7821,13 +7805,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// available
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:6%;'
+			'width:4%;'
 		);
 		td.innerText = row.hits_available;
 		tr.appendChild(td);
 		
 		// Set row property .hits_available (td element) here.
 		tr.hits_available = td;
+		
+		// reward
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:4%;'
+		);
+		td.innerText = row.reward.replace(/^\$/, '');
+		tr.appendChild(td);
 		
 		// tsp
 		var td = document.createElement('td');
@@ -8230,6 +8222,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					6 requesterid
 					7 groupid
 					* 8 histID
+					* 9 reward
 				*/
 				var d = {
 					db_id: '',
@@ -8240,10 +8233,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					time_since_posted: '',
 					requester_id: '',
 					group_id: '',
-					history_id: ''
+					history_id: '',
+					reward: ''
 				};
 				for (var i = 0; i < rs[0].length; i++) {
-				//~ for (var i in rs) {
 					
 					d.db_id				= rs[0][i];
 					d.on_page_number	= rs[1][i];
@@ -8254,6 +8247,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.requester_id		= rs[6][i];
 					d.group_id			= rs[7][i];
 					d.history_id		= (rs[8]) ? rs[8][i] : '';
+					d.reward			= (rs[9]) ? rs[9][i] : '';
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
@@ -8346,193 +8340,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					tasks_obj.isFirstRun = false;
 					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
 					
+					// init graph?
 					
-					//init_graph();
 				} else if (tasks_obj.current_init_history_ids.length) {
-					
-					//~ init_graph();
-					
+					// init graph?
 				}
 			}
 		});
-		/*
-		// Remove old divs.
-		var x;
-		x = document.getElementById('div__main');
-		if (x) {
-			document.body.removeChild(x);
-		}
-		
-		// ...
-		//~ var div;
-		var div_main;
-		var div__reload, div__reload2;
-		//div_main
-		//
-		div_main=document.createElement('div');
-		div_main.setAttribute('id','div__main');
-		div_main.setAttribute('style',
-			'position:absolute;'+
-			'top:40px;'+
-			'width:98%;'+
-			'background-color:none;'
-		);
-		//div__reload
-		//
-		div__reload=document.createElement('div');
-		div__reload.setAttribute('id','div__reload');
-		div__reload.setAttribute('style',
-			'margin:0 auto;'+
-			'width:98%;'+
-			'max-width:1000px;'+
-			'height:500px;'+
-			'overflow:auto;'+
-			'background-color:#fdfdfd;'+
-			'border:4px solid #d2d2d2;'
-		);
-		div_main.appendChild(div__reload);
-		//div__reload2
-		//
-		div__reload2=document.createElement('div');
-		div__reload2.setAttribute('id','div__reload2');
-		div__reload2.setAttribute('style',
-				'margin:0 auto;'+
-				'width:100%;'+
-				'max-width:1000px;'+
-				'height:500px;'+
-				'overflow:auto;'+
-				'background-color:#fdfdfd;'+
-				'border:4px solid #d2d2d2;'
-		);
-		div_main.appendChild(div__reload2);
-		document.body.appendChild(div_main);
-		
-		has_new_alertable(rs);
-		
-		// Output
-		var div_contain;
-		var div_gid;
-		var div_rid;
-		var div_avl;
-		var div_date;
-		var inp_tsp;
-		var a_gid;
-		var a_rid;
-		var d;
-		for (var i = 0; i < rs[0].length; i++)
-		{
-			
-			div_contain	= document.createElement('div');
-			div_gid		= document.createElement('div');
-			div_rid		= document.createElement('div');
-			div_avl		= document.createElement('div');
-			div_date	= document.createElement('div');
-			
-			inp_tsp		= document.createElement('input');
-			
-			if (rs[7][i] != '') {
-				a_gid			= document.createElement('a');
-				a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
-				a_gid			.setAttribute('class','cont_link');
-				a_gid.target	= '_blank';
-				a_gid.innerText = __js_clean_html_str(rs[2][i]);
-			} else
-				a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
-			if (rs[6][i] != '') {
-				a_rid			= document.createElement('a');
-				a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
-				a_rid			.setAttribute('class','cont_link');
-				a_rid.target	= '_blank';
-				a_rid.innerText = __js_clean_html_str(rs[3][i]);
-			} else
-				a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
-			
-			div_contain	.setAttribute('style','width:100%;');
-			div_gid		.setAttribute('style','float:left;width:60%;');
-			div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-			div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-			div_date	.setAttribute('style','width:8%;overflow:hidden;');
-			
-			inp_tsp		.setAttribute('type', 'hidden');
-			
-			div_contain	.setAttribute('class', 'cont');
-			div_date	.setAttribute('class', 'mt__timer');
-			
-			inp_tsp		.value = rs[5][i];
-			
-			d = date_format(rs[3][i]);
-			
-			// append sm sm.
-			div_gid	.appendChild(a_gid);
-			div_rid	.appendChild(a_rid);
-			div_avl	.appendChild(document.createTextNode(rs[4][i]));
-			div_date.appendChild(document.createTextNode(d));
-			// append sm.
-			div_contain.appendChild(inp_tsp);
-			div_contain.appendChild(div_gid);
-			div_contain.appendChild(div_rid);
-			div_contain.appendChild(div_avl);
-			div_contain.appendChild(div_date);
-			
-			// Append main
-			// In top or bottom
-			// 3 == requester name
-			// 6 == requester id
-			if  (
-				!__js_inarray(ignore_requesters,		rs[3][i]) &&
-				!__js_inarray(ignore_requesters__ids,	rs[6][i])
-				)
-			{
-				div__reload.appendChild(div_contain);
-				div__reload.appendChild(document.createElement('hr'));
-			}
-			else
-			{
-				div__reload2.appendChild(div_contain);
-				div__reload2.appendChild(document.createElement('hr'));
-			}
-		}*/
-		
-		//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;					
-		//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
-		
-		//~ // gid
-		//~ var gid;
-		//~ if (rs[7][i] != '') {
-			//~ gid = '\
-				//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
-				//~ '+rs[2][i]+'\
-				//~ </a>';
-		//~ } else
-			//~ gid = rs[2][i];
-			//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
-		//~ // rid
-		//~ var rid;
-		//~ if (rs[6][i] != '') {
-			//~ rid = '\
-				//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
-				//~ '+rs[3][i]+'\
-				//~ </a>';
-		//~ } else
-			//~ rid = '&nbsp;'+rs[3][i];
-		//~ 
-		//~ //490,230,98
-		//~ //<div style="overflow:hidden;">
-		//~ var st='\
-		//~ <div style="width:100%;" class="cont">\
-			//~ <input type="hidden" value="'+rs[5][i]+'">\
-			//~ <div style="float:left;width:64%;">\
-				//~ '+gid+'\
-			//~ </div>\
-			//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
-				//~ '+rid+'\
-			//~ </div>\
-			//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
-				//~ '+rs[4][i]+'\
-			//~ </div>\
-			//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
-		//~ </div>';// hidden = break;
-		//rs - Hit, Requester, #
 	}
 	
 	/**
@@ -9395,7 +9209,11 @@ function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) 
 }
 /*
  * MT___google_api_geocode
- * return lat/lng or full response object
+ * 
+ * Returns lat/lng or full response object
+ * 
+ * On lat/lng: callback_function(lat, lon)
+ * 
  * http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
 **/
 function MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy) {
