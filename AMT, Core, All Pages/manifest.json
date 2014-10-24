@@ -3,7 +3,7 @@
       "exclude_globs": [  ],
       "exclude_matches": [  ],
       "include_globs": [ "*" ],
-      "js": [ "global.js", "script.js" ],
+      "js": [ "global.js","global_all_pages_local.js", "script.js" ],
       "matches": ["http://*/*","https://*/*"],
       "run_at": "document_idle",
       "all_frames": true

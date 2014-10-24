@@ -69,6 +69,8 @@ var AMT__Global_Vars = //function()
 //~ console.log(AMT__Global_Vars.core);
 
 
+
+
 AMT__Global_Vars.initializeNextTabPassBy = function() {
 	chrome.extension.sendRequest({getNTPassBy: true}, 
 		function(rs) 
@@ -117,13 +119,20 @@ AMT__Global_Vars.initializeGroupId = function () {
 		}
 		AMT__Global_Vars.groupId = groupId;		
 		
-		//Now that we have the groupId, listen for whether the child frame wants to learn it as well.
-		window.addEventListener('message', function(e) {
-			var ifr = document.getElementsByTagName('iframe')[0];
-			ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
-			this.removeEventListener('click',arguments.callee,false);
-		}, false);
-		
+		// Now that we have the groupId, listen for whether the child frame wants to learn it as well.
+		// OCT19 2014. In some cases top window does not have an iframe.
+		// Added case for this.
+		if (document.getElementsByTagName('iframe').length) {
+			window.addEventListener('message', function(e) {
+				var ifr = document.getElementsByTagName('iframe')[0];
+				ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
+				this.removeEventListener('click',arguments.callee,false);
+			}, false);
+		}
+		// TESTING.........
+		//~ window.addEventListener('message', function(e) {
+			//~ console.log(e);
+		//~ }, false);
 	}
 	// Sep 18 2014
 	// Added window.top != window.self
@@ -938,23 +947,52 @@ function FindObject(recordName,matchString, timeCutOff) {
  * 
  * */
 
-//~ 
-//~ /**
- //~ * AMT___functions_factory
- //~ * @
- //~ * @ AMT___requests_factory.prototype.scrapy__begin_scrape
- //~ */
-//~ function AMT___generic_factory(obj_vars) {
-	//~ // this.___SKIP_SITES = ''; // would this work?
-//~ }
-
 /**
  * String Prototypes
  * 
  * .parseURL
  * .stateAbbrToFull
+ * .clean_string_to_array
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  */
+/**
+ * .clean_string_to_array
+ * 
+ * @param options						object
+ * @param .string						str		String to clean.
+ * @param .least_characters_per_word	int		Number of least amount of characters allowed per word. 0 is no limit. Default=1.
+ * 
+ * Returns string
+ */
+String.prototype.clean_string_to_array = function(options) {
+	
+	//~ console.log(this);
+	
+	var s = this.toString(); // this['[[PrimitiveValue]]']; //options.string;
+	var min;
+	
+	if (options && typeof options == 'object')
+		min = (options.hasOwnProperty('least_characters_per_word')) ? options.least_characters_per_word : 1;
+	else
+		min = 1
+	
+	var reg = new RegExp('(^| )[\\w\\d]{'+min+'}($| )', 'g');
+	
+	s = s.replace(/[^\w\d]/g, '  ');
+	
+	s = s.replace(reg, '  ');
+	
+	s = s.replace(/[\r\n\t\s]+/g, ' ');
+	
+	s = s.split(' ');
+	
+	return s;
+}
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561
 /**
@@ -1043,6 +1081,7 @@ String.prototype.stateAbbrToFull = function() {
  * AMT___huge_vars_factory
  * AMT___items_factory
  * AMT___site_scrapes
+ * AMT___gen_functions
  * 
  * 
  * 
@@ -3410,6 +3449,24 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 }
 
 /**
+ * AMT___gen_functions
+ * 
+ * 
+ * 
+ */
+function AMT___gen_functions(obj_vars) {
+	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function 
+ *
+ * 
+ * 
+ */
+//~ AMT___gen_functions.prototype. = function(options_object) {
+	//~ 
+//~ }
+/**
  * AMT___site_scrapes
  * 
  * TODO: linkedin.com/Web Test
@@ -4146,12 +4203,898 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
  * create__input_scrapy_button
  * create__input_skip_button2
  * create__input_skip_button
+ * create_dashboard_find_address
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function create_dashboard_find_address
+ *
+ * @param options_object						object	
+ * @param "".parent								element	
+ * @param "".parent_controller_el				element	
+ * @param "".submitButton_onclick_callback		function	
+ * @param "".output_elements					object	
+ * @param "".first_element						element		Default is false. This is the box focused on by default. Also gets "debug" addresses, if present.	
+ * @param ""."". city							element
+ * @param ""."". state							element
+ * @param ""."". country						element
+ */
+AMT___items_factory.prototype.create_dashboard_find_address = function(options_object) {
+	
+	var options_object = opts = options_object;
+	
+	// First element
+	// This is mostly for debug purposes, e.g. when 
+	// an address scrape fails and finds a different address.
+	// This is also used for *focus* when selecting an
+	// address!
+	for (var i in opts.output_elements) {
+		opts.first_element = opts.output_elements[i];
+		break;
+	}
+	
+	
+	
+	/* BEGIN ITEMS */
+	if (!opts.hasOwnProperty('parent_controller_el')) {
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','width:99%;height:18px;');
+		opts.parent.appendChild(d2);
+	} else {
+		var d2 = opts.parent_controller_el;
+	}
+	//
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1);
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1b);
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1c);
+	var d1d = document.createElement('div');
+	d1d.setAttribute('style','float:left;width:24%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1d);
+	var x = document.createElement('br');
+	x.setAttribute('style','clear:both;');
+	opts.parent.appendChild(x);
+	/* END ITEMS */
+	
+	
+	//~ //
+	//~ d = document.createElement('input');
+	//~ d.setAttribute('id','d2b');
+	//~ document.body.appendChild(d);
+	//~ var d2b = document.getElementById('d2b');
+	//~ d2b.style.position='absolute';
+	//~ d2b.style.top='500px';
+	//~ d2b.style.left='0%';
+	//~ d2b.style.width='18%';
+	//~ d2b.style.height='30px';
+	//~ d2b.type = "button";
+	//~ d2b.value = "United States";
+	//~ d2b.onclick = function() {
+		//~ this.style.backgroundColor = 'LightGreen';
+		//~ document.getElementById("Country").value = "US";
+		//~ //document.getElementById("Country").value = "United States";
+	//~ }
+	//
+	//~ d = document.createElement('textarea');
+	//~ d.setAttribute('id','d2c');
+	//~ document.body.appendChild(d);
+	//~ var d2c = document.getElementById('d2c');
+	//~ d2c.style.position='absolute';
+	//~ d2c.style.top='50px';
+	//~ d2c.style.left='0%';
+	//~ d2c.style.width='18%';
+	//~ d2c.style.height='40px';
+	//~ d2c.value = "Street Address\nCity, State Zip"; //800 S Main St Canandaigua, NY 14424
+	//~ //
+	//~ var d2d = document.createElement('a');
+	//~ document.body.appendChild(d2d);
+	//~ d2d.style.position='absolute';
+	//~ d2d.style.top='110px';
+	//~ d2d.style.left='0%';
+	//~ d2d.style.width='18%';
+	//~ d2d.style.height='20px';
+	//~ d2d.target='_blank';
+	//~ //
+	
+	
+	
+	//~ var d2e = document.createElement('button');
+	//~ d2e.setAttribute('style','position:absolute;top:90px;left:0;width:18%;height:20px;');
+	//~ document.body.appendChild(d2e);
+	//~ d2e.innerText = 'N/A';
+	
+	
+	
+	//~ //
+	//~ d = document.createElement('textarea');
+	//~ d.setAttribute('id','d2d');
+	//~ d.setAttribute('style','position:absolute;top:500px;left:0;width:18%;height:98px;');
+	//~ document.body.appendChild(d);
+	//~ var d2d = document.getElementById('d2d');
+	//~ d2d.value = '';
+	//~ d2d.onblur = Data_Cleansing_find_company_addr__skips_write;
+	//~ d2d.onfocus = function() {
+		//~ Data_Cleansing_find_company_addr__skips_init(false);
+	//~ }
+	/* END ITEMS */
+	
+	//~ // ...
+	//~ var b;
+	//~ b = /<h2 style="[^"]*">Organization Name: ([^<]+)<\/h2>/.exec(ih)[1];
+	//~ b = __js_clean_html_str(b).trim();
+	//~ var COMP = b;
+	//~ var location = '';
+	
+	var COMP = d2.value.trim();
+	
+	//~ // ...
+	//~ var location;
+	//~ location = /<p><span style="font-family: Arial;">Suggested Location:&nbsp;<b>([^<]+)<\/b><\/span><\/p>/.exec(ih);
+	//~ if (location) {
+		//~ location = __js_clean_html_str(location).trim();
+		//~ location = location.replace(/ +[A-Z]{2}$/, '');
+	//~ } else location = '';
+	//var b = document.getElementsByTagName('b')[0].innerText.trim();
+	
+	// ...
+	var match_o = COMP;
+	match_o = match_o.replace(/&/g, 'and');
+	match_o = match_o.replace(/^the /i, '');
+	match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+	
+	// ...
+	//~ d2.value = b.replace(/"/g, '') + ' ' + location;
+	//~ d2.value = d2.value.trim();
+	
+	//Turn the company name into a google search
+	//~ d2d.href = 'http://www.google.com/search?q='+encodeURIComponent(COMP);
+	//~ d2d.innerText = COMP;
+	
+	// ...
+	d2.onblur = function() {
+		this.value = this.value.trim();
+		FB_addr();
+		hoovers_addr();
+		businessweek_addr(false);
+		google_addr();
+	}
+	//~ d2c.onclick = function() {
+		//~ this.value = '';
+		//~ this.onclick = function() {};
+	//~ }
+	//~ d2c.onblur = function() {
+		//~ // blanks
+		//~ document.getElementById('address1').value =		'';
+		//~ document.getElementById('address2').value =		'';
+		//~ document.getElementById('city').value =			'';
+		//~ document.getElementById('state').value =		'';
+		//~ document.getElementById('postalcode').value =	'';
+		//~ 
+		//~ this.value = this.value.replace(/ +/g, ' ');
+		//~ this.value = this.value.replace(/\n +/g, "\n");
+		//~ this.value = this.value.replace(/^ +/g, '');
+		//~ this.value = this.value.trim();
+		//~ 
+		//~ var x = this.value.split("\n");
+		//~ 
+		//~ document.getElementById('address1').value = x[0].trim();
+		//~ 
+		//~ if (x[1]) {
+			//~ x[1] = x[1].trim();
+			//~ var y = /^([^,]*),([ a-z]+)([\d\-]*)$/i.exec(x[1]);
+			//~ if (y) {
+				//~ document.getElementById('city').value		= y[1].trim();
+				//~ document.getElementById('state').value		= y[2].toUpperCase().trim();
+				//~ document.getElementById('postalcode').value	= y[3];
+				//~ if (y[2].trim().length != 2) {
+					//~ document.getElementById('state').style.border = '3px solid teal';
+				//~ }
+			//~ }
+		//~ }
+	//~ }
+	//~ d2e.onclick = function() {
+		//~ this.style.backgroundColor = 'LightGreen';
+		//~ document.getElementById('address1').value =		'N/A';
+		//~ document.getElementById('address2').value =		'N/A';
+		//~ document.getElementById('city').value =			'N/A';
+		//~ document.getElementById('state').value =		'N/A';
+		//~ document.getElementById('postalcode').value =	'N/A';
+		//~ doSubmit();
+		//~ new AMT___core_factory().nextTab();
+	//~ }
+	
+	// ...
+	var ef = new AMT___events_factory();
+	d2.addEventListener('keydown', ef.keydown__blur_field, true);
+	
+	// onsubmit
+	if (opts.hasOwnProperty('submitButton_onclick_callback')) {
+		//~ document.getElementById('submitButton').onclick = opts.submitButton_onclick_callback;
+	} else {
+		document.getElementById('submitButton').onclick = function() {
+			//...
+			alert('x');
+			//~ new AMT___core_factory().nextTab();
+		}
+	}
+	
+	
+	
+	
+	// ...
+	AMT___POPUP__initializeGlobals(
+		addr__init
+	);
+	
+	// function Fiber_Data_Co_find_company_addr__init
+	function addr__init() {
+		FB_addr();
+		hoovers_addr();
+		businessweek_addr(false); // initial
+		google_addr();
+	}
+	
+	// function Fiber_Data_Co_find_company_addr__country2abbr
+	function Fiber_Data_Co_find_company_addr__country2abbr(country) {
+		var abbr = new AMT___requests_factory().general_functions__countryToAbbreviatedCountry(country);
+		if (!abbr) {
+			alert(country + ' not in MT___countries!');
+			return;
+		}
+		// here?
+		return abbr;
+	}
+	
+	// function Fiber_Data_Co_find_company_addr__google_addr_prof
+	function google_addr_prof(el) {
+		
+		// update button bgc
+		el.style.backgroundColor = 'MintCream';
+		
+		// obj
+		var id = JSON.parse(el.json_response); // obj -> prediction
+		
+		var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+			id.reference+
+			'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+			
+		//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(gu);
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var s = rs;
+				
+				rs = JSON.parse(rs);
+				
+				if (rs.status != 'OK') {
+					console.log(rs.status);
+					return;
+				}
+				
+				console.log(rs);
+				
+				// update button id/value
+				//~ el.innerText += "\n"+rs.result.formatted_address;
+				
+				el.appendChild(document.createElement('br'));
+				el.appendChild(document.createTextNode(rs.result.formatted_address));
+				el.json_response = s; // JSON!
+			}
+		});
+	}
+	
+	function clear_output_elements() {
+		for (var i in opts.output_elements) {
+			opts.output_elements[i].value = '';
+		}
+	}
+	
+	// function google_addr
+	//
+	// 100 000 requests per 24 hour period	
+	// The Text Search service is subject to a 10-times multiplier.
+	// The Radar Search Service is subject to a 5-times multiplier
+	//
+	// 0,0 20000000 = world search
+	//
+	function google_addr() {
+	
+		d1d.innerHTML = '';
+		
+		var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+			encodeURIComponent(d2.value)+
+			'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+		
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				rs = JSON.parse(rs);
+				
+				if (rs.status != 'OK') {
+					console.log(rs.status);
+					d1d.innerText = rs.status;
+					return;
+				}
+				
+				rs = rs.predictions;
+				
+				for (var i in rs) { //obj
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
+					div.innerText = rs[i].description;
+					div.json_response = JSON.stringify(rs[i]);
+					
+					div.onclick = function() {
+						
+						//~ console.log(this.style.backgroundColor);
+						
+						// focus
+						opts.first_element.focus();
+						
+						if  (
+							this.style.backgroundColor != 'LightGreen' &&
+							this.style.backgroundColor != 'rgb(245, 255, 250)' // MintCream
+							)
+						{
+							this.style.backgroundColor = 'LightGreen';
+							google_addr_prof(this);
+						}
+						else {
+							// fill in details
+							
+							// clear
+							clear_output_elements();
+							
+							//~ document.getElementById('address1').value =	'';
+							//~ document.getElementById('city').value =		'';
+							//~ document.getElementById('state').value =	'';
+							//~ document.getElementById('postalcode').value =		'';
+							
+							var id = JSON.parse(this.json_response); // obj -> place detail
+							//~ console.log(id);
+							
+							var j;
+							var type;
+							
+							for (var i in id.result.address_components) {
+								type = id.result.address_components[i].types[0];
+								j = id.result.address_components[i].long_name;
+								
+								if (opts.output_elements.hasOwnProperty('street') && type == 'street_number')
+									opts.output_elements.street.value = (j + ' ' + opts.output_elements.street.value).trim();
+								
+								if (opts.output_elements.hasOwnProperty('street') && type == 'route')
+									opts.output_elements.street.value = (opts.output_elements.street.value+' '+j).trim();
+								
+								if (opts.output_elements.hasOwnProperty('city') && (type == 'locality' || type == 'sublocality_level_1'))
+									opts.output_elements.city.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('state') && type == 'administrative_area_level_1')
+									opts.output_elements.state.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('zip') && type == 'postal_code')
+									opts.output_elements.zip.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('country') && type == 'country')
+									opts.output_elements.country.value = j;
+							}
+						}
+					}
+					
+					d1d.appendChild(div);
+				}
+				
+				if (rs.length) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1200px;');
+					d1d.appendChild(div);
+				}
+			}
+		});
+	}
+	
+	// function
+	function businessweek_addr_prof(u) {
+		
+		// clear
+		clear_output_elements();
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				//12050 West Broad Street
+				//
+				//United States
+				var r, r1, r2, r3;
+				r1 = /<div itemprop="address">((<p>[^<]+<\/p>)*)<p>([^,]+), ([A-Z]{2})&nbsp;([\d\-]+)<\/p><p style="[^"]*">([^<]+)<\/p><\/div>/.exec(rs);
+				//~ r2 = /<div itemprop="address">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+				r3 = /<div itemprop="address">((<p[^>]*>[^<]+<\/p>)*)/.exec(rs);
+				//~ console.log(r1);
+				//~ console.log(r2);
+				//~ console.log(r3);
+				
+				if (r1) {
+					r = r1;
+					for (var i = 1; i<= r.length - 1; i++) {
+						r[i] = r[i].replace(/<[^>]*>/g, ' ');
+						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+					}
+					
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value = r[1];
+					
+					if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value = r[2];
+					
+					if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value = r[3];
+					
+					if (opts.output_elements.hasOwnProperty('zip'))
+						opts.output_elements.zip.value = r[4];
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = r[5];
+					
+					//~ document.getElementById('address1').value = r[1];
+					//~ // in reverse
+					//~ document.getElementById('city').value = r[r.length - 4];
+					//~ document.getElementById('state').value = r[r.length - 3];
+					//~ document.getElementById('postalcode').value = r[r.length - 2];
+				}
+				
+				//~ if (!r1 && r2) {
+					//~ r = r2;
+					//~ // First el?
+					//~ opts.output_elements.value = __js_clean_html_str(
+						//~ r[1].replace(/<[^>]*>/g,'')
+					//~ );
+				//~ }
+				
+				// <div itemprop="address"><p>Via Pian Scairolo 9</p><p>Pazzallo</p><p>Lugano, &nbsp;6912</p><p style="margin:5px 0;">Switzerland</p></div>
+				if (!r1 && !r2 && r3) {
+					r = r3;
+					console.log(r);
+					delete r.index;
+					delete r.input;
+					for (var i = 0; i<r.length; i++) {
+						console.log(r[i]);
+						r[i] = __js_clean_html_str(r[i].replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+					}
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = r[r.length - 1];
+					
+					// DEBUG
+					var dbg = r.slice(0, r.length - 1).join(' ');
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value	= dbg;
+					else if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value		= dbg;
+					else if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value	= dbg;
+				}
+			}
+		});
+	}
+	function businessweek_addr(first) {
+		d1c.innerHTML = '';
+		//if (first) {
+		//	d1c.innerHTML = '';
+		//}
+		//
+		var u = 'http://investing.businessweek.com/research/common/symbollookup/symbollookup.asp?region=all&textIn='+encodeURIComponent(d2.value);
+		//
+		if (first) {
+			u += '&lookuptype=';
+		}
+		else {
+			u += '&lookuptype=private';
+		}
+		//
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = /<div id="resultCaption">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+				if (r) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+					div.innerHTML = r[1].replace(/<[^>]+>/g, '');
+					d1c.appendChild(div);
+					//~ d1c.innerHTML +=  r[1].replace(/<[^>]+>/g, '');
+					//~ d1c.innerHTML += '<hr>';
+				}
+				
+				//
+				// Dominion Auto Group
+				// United States
+				// Specialty Retail
+				var r = /<tr>\s*<td><a href="([^"]+)">([^<]+)<\/a><\/td>\s*<td>([^<]+)<\/td>\s*<td>([^<]*)<\/td>\s*<\/tr>/g;
+				
+				if (!r.exec(rs)) {
+					// SHOUGANG GENERACION ELECT-C
+					//
+				}
+				
+				r.lastIndex = 0;
+				
+				var m;
+				var c = 0;
+				while (m = r.exec(rs)) {
+					for (var i = 1; i<= 4; i++) {
+						m[i] = __js_clean_html_str(m[i]).trim();
+					}
+					
+					m[1] = m[1].replace(/\.\.\//g,'');
+					m[1] = 'http://investing.businessweek.com/research/' + m[1];
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = m[2];
+					inp.url_bw = m[1];
+					inp.name_bw = m[2];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						businessweek_addr_prof(this.url_bw);
+					}
+					
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[3]));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[4]));
+					
+					d1b.appendChild(div);
+					
+					c++;
+				}
+				if (c == 0) {
+					d1c.appendChild(document.createTextNode('0'));
+				}	
+				if (!first) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1c.appendChild(div);
+				}
+				
+				if (first) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+					d1c.appendChild(div);
+					businessweek_addr(false);
+					return;
+				}
+			}
+		});
+	}
+	function hoovers_addr_prof(u) {
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			timeout:10000,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				console.log('x');
+				// clear
+				clear_output_elements();
+				
+				console.log('x');
+				
+				// ZIP [\d\-]+ REPLACE WITH [^<]+
+				var r, r1, r2;//, r3;
+				r1 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]+)<span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
+				r2 = /<p div itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
+				console.log(r1);
+				console.log(r2);
+				//~ console.log(r3);
+				
+				if (r1) {
+					r = r1;
+					for (var i = 1; i<= 5; i++) {
+						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+					}
+					
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value = r[1];
+					
+					if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value = r[2];
+					
+					if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value = r[3];
+					
+					if (opts.output_elements.hasOwnProperty('zip'))
+						opts.output_elements.zip.value = r[4];
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = r[5];
+						
+					//~ document.getElementById('address1').value = r[1];
+					//~ document.getElementById('city').value = r[2];
+					//~ document.getElementById('state').value = r[3];
+					//~ document.getElementById('postalcode').value = r[4];
+					
+					
+				}
+				
+				if (!r1 && r2) {
+					r = r2;
+					r[1] = r[1]
+						.replace(/<span itemprop="telephone">[^<]*/g, '')
+						.replace(/<[^>]*>/g, ' ')
+						.replace(/\s+/g, ' ')
+						.trim();
+					r[1] = __js_clean_html_str(r[1]);
+					
+					// First el?
+					opts.output_elements[0].value = r[1];
+				}
+			}
+		});
+	}
+	function hoovers_addr() {
+		d1b.innerHTML = '';
+		//
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
+			//~ timeout:30000,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				// /company-information/cs/company-profile.Cap_Gemini_SA.6af800b9fd01669c.html
+				// Cap Gemini S.A.
+				// Paris, France
+				// $13563.88M
+				var r = /<td><a href="([^"]+)">([^<]*)<\/a><\/td>[\r\n\t\s]+<td>([^<]*)<\/td>[\r\n\t\s]+<td>([^<]*)<\/td>/g;
+				var m;
+				while (m = r.exec(rs)) {
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = m[2];
+					inp.url_hv = 'http://www.hoovers.com' + m[1];
+					inp.name_hv = m[2];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						hoovers_addr_prof(this.url_hv);
+					}
+					
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[3]));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[4]));
+					
+					d1b.appendChild(div);
+				}
+				if (d1b.innerHTML == '') {
+					d1b.innerHTML = '0';
+				} else {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1b.appendChild(div);
+				}
+			}
+		});
+	}
+	function FB_addr() {
+		d1.innerHTML = '';
+		
+		var u = 
+			'https://graph.facebook.com/search'+
+			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+			'&fields=category,id,name,likes,talking_about_count,location,link'+
+			'&limit=6'+
+			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+		
+		// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = JSON.parse(rs);
+				
+				if (!r.data) {
+					d1.innerHTML = '!r.data';
+					return;
+				}
+				
+				r = r.data;
+				
+				var c = 0;
+				for (var i in r) {
+					
+					if (r[i].type) {
+						if (r[i].type == 'event') continue;
+					}
+					
+					if (r[i].talking_about_count != null) {
+					} else
+						r[i].talking_about_count = '';
+					if (r[i].likes != null) {
+					} else
+						r[i].likes = '';
+					
+					if (r[i].location) {
+						if (r[i].location.latitude) {
+							delete r[i].location.latitude;
+						}
+						if (r[i].location.longitude) {
+							delete r[i].location.longitude;
+						}
+					}
+					
+					//~ 
+					//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+					//~ 
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = r[i].name;
+					inp.json_object = r[i];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						// clear
+						clear_output_elements();
+							
+						//~ console.log(this.id);
+						//~ var i = JSON.parse(this.id);
+						//~ 
+						//~ console.log(i);
+						
+						var i = this.json_object;
+						
+						if (i.name) {
+							//~ document.getElementById('OtherNames').value = i.name;
+						}
+						if (i.link) {
+							//~ document.getElementById('SourceURL').value = i.link;
+						}
+						if (i.location) {
+							i = i.location;
+							if (i.street && opts.output_elements.hasOwnProperty('street')) {
+								i.street = i.street.replace(/\s+/g, ' ');
+								opts.output_elements.street.value = i.street;
+							}
+							if (i.city && opts.output_elements.hasOwnProperty('city')) {
+								opts.output_elements.city.value = i.city;
+							}
+							if (i.state && opts.output_elements.hasOwnProperty('state')) {
+								opts.output_elements.state.value = i.state;
+							}
+							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
+								opts.output_elements.zip.value = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+							}
+							if (i.country && opts.output_elements.hasOwnProperty('country')) {
+								opts.output_elements.country.value = i.country;
+							}
+						}
+						//~ document.getElementById('OtherNames').focus();
+						//~ document.getElementById('OtherNames').select();
+					}
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode('L:'+r[i].likes));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode('T:'+r[i].talking_about_count));
+					
+					if (r[i].category) {
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('C:'+r[i].category));
+					}
+					
+					if (r[i].location) {
+						for (var j in r[i].location) {
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode('A::'+r[i].location[j]));
+						}
+					}
+					
+					d1.appendChild(div);
+					
+					if (c==0) { // && !found
+						
+						var match__ = r[i].name;
+						match__ = match__.replace(/&/g, 'and');
+						match__ = match__.replace(/^the /i, '');
+						match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+						match__ = match__.replace(/(official|music)$/i, '');
+						
+						console.log(match__);
+						console.log(match_o);
+						
+						if  (
+							match_o == match__ &&
+							match_o.length >= 3
+							)
+						{
+							//~ found = true;
+							//~ 
+							//~ var x = d1.getElementsByTagName('input');
+							//~ x = x[x.length - 1];
+							//~ x.style.backgroundColor = 'LightGreen';
+						}
+					}
+					c++;
+				}
+				
+				if (c == 0) {
+					d1.innerHTML = '0';
+					return;
+				}
+				
+				// Here?
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:1400px;');
+				d1.appendChild(div);
+			}
+		});
+	}
 }
 /**
  * function xhr_scrape_page
@@ -4249,6 +5192,10 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		var foundMatch = false;
 		
 		for (var index in kw) {
+			
+			// IF BLANK THEN CONTINUE
+			if (kw[index].trim() == '')
+				continue;
 			
 			var keyword = kw[index];
 			var keyword_reg = kw[index];
@@ -5661,7 +6608,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	var o = {
 		local_URL_init: '',
 		local_URL_complete: '',
-		obj_vars: null
+		obj_vars: null,
+		
 	}
 	
 	var local_URL;
@@ -5797,11 +6745,19 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function array_startPage_results(rs) {
 		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
+		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
 		if(!(rslts = r.exec(rs))) {
 			//~ alert('No match');
 			return [];
 		}
 		else {
+			
+			// Not enough results.
+			// not_enough_results_str
+			// Returns []
+			if (rs.indexOf(not_enough_results_str) != -1)
+				return [];
+			
 			//Assume we have 1-10 results
 
 
@@ -5949,15 +6905,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					
 					// ...
 					if (o.obj_vars.return_init_object) {
-						this_obj.rs = rs;
-						callback_function(this_obj);
+						o.obj_vars.rs = rs;
+						callback_function(o.obj_vars);
 					}
 					else if (o.obj_vars.seed_arg1)
 					{
 						callback_function(rs, o.obj_vars.seed_arg1);
 					}
 					else
+					{
 						callback_function(rs);
+					}
 				}
 			})
 		}, 1200);
@@ -6310,7 +7268,7 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 //
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
-var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250;
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var xid = '_';
@@ -7424,6 +8382,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'30MINUTE-ALL',
 			'',
 			'',
+			'',
 			''
 		]
 	}
@@ -7559,7 +8518,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				z[0].innerText = y;
 			}
-		}, 4000);
+		}, 6000);
 	}
 	
 	/**
@@ -7732,8 +8691,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 */
 	function makeRow(row, isIgnored) {
 		
-		//~ console.log(row);
-		
 		// Set globals!
 		if (!isIgnored)
 			tasks_obj.table1_row_ids[row.db_id] = true;
@@ -7748,15 +8705,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tr.setAttribute('style',
 			''
 		);
+		
 		//~ 
 		//~ 
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Add to global!
 		tasks_obj.table_rows[row.db_id] = tr;
-		
-		//~ XX
-		//~ tasks_obj.table_rows[tr] = true;
 		
 		// tds
 		//
@@ -7905,18 +8860,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//~ tasks_obj.hash_tds[row.hash_id] = td;
 		
 		return tr;
-		
-		//~ //OLD
-		//~ div_contain	.setAttribute('style','width:100%;');
-		//~ div_gid		.setAttribute('style','float:left;width:60%;');
-		//~ div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-		//~ div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-		//~ div_date	.setAttribute('style','width:8%;overflow:hidden;');
-		//~ inp_tsp		.setAttribute('type', 'hidden');
-		//~ div_contain	.setAttribute('class', 'cont');
-		//~ div_date	.setAttribute('class', 'mt__timer');
-		//~ inp_tsp		.value = rs[5][i];
-		//~ d = date_format(rs[3][i]);
 	}
 	
 	/**
@@ -8070,7 +9013,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 							num_tasks.push(nt);
 						}
 					}
-					
 					
 					
 					// Data
@@ -8290,16 +9232,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
 						{
-							//~ console.log('inserting');
-							
 							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
 							tasks_obj.table1.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
 						{
-							//~ console.log('appending');
-							
 							tasks_obj.table1.appendChild(new_row);
 						}
 					}

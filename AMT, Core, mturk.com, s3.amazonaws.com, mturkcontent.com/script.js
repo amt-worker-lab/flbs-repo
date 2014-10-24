@@ -2550,6 +2550,375 @@ function MT__RUN() {
 	}
 	
 	//
+	// Michael D Karp
+	// Copy information from a webpage
+	// https://www.mturk.com/mturk/previewandaccept?groupId=369VX4MEOJB8RWM5YP8KBVH9Y9WGI4
+	s = '<p>Copy data from a webpage about a Casting Director Company.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.container {margin-top:200px !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:2200px;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			locn: td[3].innerText.trim(),
+			url:  td[5].innerText.trim(),
+			name_cln: null
+		};
+		o.name_cln = o.name.replace(/&/g, '&amp;');
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style', 'position:absolute;top:0;left:0;width:99%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style', 'position:absolute;top:100px;left:0;width:99%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1b);
+		/*END ITEMS*/
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.url),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || /^\d+$/.exec(rs)) {
+					console.log(rs);
+					return;
+				}
+				
+				var r = rs;
+				
+				r = r.replace(/<li><span>Casts: <\/span>[^<]*<\/li>/g, '');
+				r = r.replace(/<li><span>Affiliations: <\/span>[^<]*<\/li>/g, '');
+				
+				// /resources/detail/castingdirector/aaron-jacobs-casting-81494/
+				// Aaron Jacobs Casting
+				// Tacoma, WA
+				var reg = new RegExp('<p class="title"><a href="([^"]+)">'+__js_escape_regEx(o.name_cln)+'<\\/a><\\/p>', 'i');
+				// Location or any
+				var regLocn = new RegExp('<p class="title"><a href="([^"]+)">'+__js_escape_regEx(o.name_cln)+'<\\/a><\\/p>[\\r\\n\\t\\s]+<ul class="resourceInformation">[\\r\\n\\t\\s]+<li><span>Office Locations: <\\/span>('+__js_escape_regEx(o.locn)+'|[^<]+)<\\/li>', 'i');
+				// Only location
+				var regLocn2= new RegExp('<p class="title"><a href="([^"]+)">'+__js_escape_regEx(o.name_cln)+'<\\/a><\\/p>[\\r\\n\\t\\s]+<ul class="resourceInformation">[\\r\\n\\t\\s]+<li><span>Office Locations: <\\/span>('+__js_escape_regEx(o.locn)+')<\\/li>', 'i');
+				
+				var m;
+				//~ m = regLocn.exec(r);
+				if (o.locn != '') {
+					m = regLocn2.exec(r);
+				} else { // SCRAPES FOR LOCATION
+					m = regLocn.exec(r);
+				}
+				
+				if (m) {
+					// locn
+					var el = document.getElementsByName('city')[0];
+					if (el) {
+						el.value = __js_clean_html_str(m[2]).trim();
+						//~ if (el.value == '') {
+							//~ el.value = __js_clean_html_str(m[2]).trim();
+						//~ } else {
+							//~ return;
+						//~ }
+					}
+					
+					// auto
+					var url = 'http://www.backstage.com' + __js_clean_html_str(m[1]);
+					Michael_D_Karp_backstage_com(url);
+					
+					
+				} else {
+					// manual
+					console.log('x');
+				}
+			}
+		});
+		
+		function Michael_D_Karp_backstage_com(u) {
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					//~ console.log(rs);
+					
+					var r, reg, m;
+					var sbm = true;
+					
+					// Links
+					r = /<div class="text">[\r\n\t\s]+<p class="title">Links:<\/p>((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1];
+						console.log(r);
+						//https://www.facebook.com/4StarCasting
+						//Facebook Page
+						reg = /<p><a href="([^"]+)">([^<]+)<\/a><\/p>/g;
+						while (m = reg.exec(r)) {
+							
+							m[1] = __js_clean_html_str(m[1]);
+							m[2] = __js_clean_html_str(m[2]);
+							
+							var found = false;
+							switch(m[2].toLowerCase().replace(/ *page$/, '')) {
+								case 'facebook':
+									document.getElementById('facebook_url').value = m[1];
+									found = true;
+									break;
+								case 'twitter':
+									document.getElementById('twitter_url').value = m[1];
+									found = true;
+									break;
+								case 'linkedin':
+									document.getElementById('linkedin_url').value = m[1];
+									found = true;
+									break;
+								default:
+									sbm = false;
+									d1b.innerHTML += '<b>' + m[2] + ':' + m[1] + '</b><br>';
+									// WHAT???
+									//~ d1b.innerHTML += '<b>' + m[2] + ':' + m[1] '<\b><br>';
+							}
+							
+							if (!found) {
+								
+							}
+						}
+					}
+					// Debug
+					if (rs.indexOf('>Links:<') != -1) {
+						document.body.style.backgroundColor = 'LightGreen';
+					}
+					
+					
+					
+					// Personnel
+					r = /<div class="text">[\r\n\t\s]+<p class="title">Personnel:<\/p>((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					if (!r) {
+						d1b.innerText = 'No Personnel';
+					}
+					r = r[1];
+					reg = /<p>([^<]+)<\/p>/g;
+					var count = 1;
+					while (m = reg.exec(r)) {
+						
+						if (count > 6) break;
+						
+						var name, fn, ln, title;
+						var x;
+						var out = '';
+						var tmp_sbm = true;
+						
+						x = m[1].split(',');
+						//~ console.log(m[1]);
+						if (x.length != 2) {
+							console.log(x.length);
+							tmp_sbm = false;
+							out += 'commas!=1 ';
+							name = __js_clean_html_str(x[0]);
+							title = __js_clean_html_str(x.slice(1).join(',')).trim();
+						} else {
+							name = __js_clean_html_str(x[0]);
+							title = __js_clean_html_str(x[1]).trim();
+						}
+						//~ console.log(title);
+						x = name.split(' ');
+						if (x.length == 1) {
+							fn = name;
+							ln = '';
+						} else if (x.length == 2) {
+							fn = x[0];
+							ln = x[1];
+						} else { // >= 3
+							out += 'name>2 '
+							fn = x.slice(0, x.length - 1).join(' ');
+							ln = x[ x.length - 1 ];
+							tmp_sbm = false;
+						}
+						
+						if (tmp_sbm == false) {
+							sbm = false;
+							var str = '<b>' + out + fn + ' | ' + ln + ' | ' + title + '</b><br>';
+							//~ console.log(str);
+							d1b.innerHTML += str
+							
+							document.getElementsByName('FirstName' + count)[0].style.border = '4px solid blue';
+							
+						} else {
+							d1b.innerHTML += out + fn + ' | ' + ln + ' | ' + title + '<br>';
+						}
+						
+						// Values
+						document.getElementsByName('FirstName' + count)[0]	.value = fn;
+						document.getElementsByName('LastName' + count)[0]	.value = ln;
+						document.getElementsByName('Title' + count)[0]		.value = title;
+						
+						count++;
+					}
+					
+					
+					console.log(sbm);
+					if (sbm) {
+						//
+					}
+				}
+			});
+		}
+	}
+	
+	//
+	// Prospect Smarter
+	// Angela Medlar aka?
+	//
+	s = '<p>3. Copy and paste all the info next to "Industries"&nbsp;in this box&nbsp;<input name="industry"></p>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		// Such as https://connect.data.com/search?p=searchresult&&ss=singleboxsearch&&q={"freeText":"ehscommerce.net"}
+		
+		var a = document.getElementsByTagName('a')[0].href;
+		var domain = /freeText%22%3A%22([^%]+)%22%7D/.exec(a);
+		if (!domain) {
+			console.log('!domain');
+			console.log(a);
+			return;
+		} else domain = domain[1];// e.g. ehscommerce.net
+		
+		var post_obj = {
+			callCount:'1',
+			windowName:'DDC:us:search:Search',
+			'c0-scriptName':'SearchDWR',
+			'c0-methodName':'singleBoxSearch',
+			'c0-id':'0',
+			'c0-param0':'string:' + encodeURIComponent(domain),
+			batchId:'0',
+			instanceId:'0',
+			page:'%2Fsearch',
+			scriptSessionId:'LCc1omeYYjVUysRjVZrAy7fhgAk/OVVhgAk-C41R$W$n5'//ENTER A VALID SESSION ID HERE e.g. kfpApKw1ukEnx5kx9zVgz4b5gAk/BW96gAk-Z2ySQuEiv
+		};
+		post_str = '';
+		for (var i in post_obj) {
+			if (post_str == '') {
+				//post_str += '?';
+			} else {
+				post_str += '&';
+			}
+			post_str += i + '=' + post_obj[i];//encodeURIComponent
+		}
+		console.log(post_str);
+		
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: 'https://connect.data.com/dwr/call/plaincall/SearchDWR.singleBoxSearch.dwr',
+			data: post_str,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+					exit(response.status);
+				}
+				
+				console.log(rs);
+				
+				var r = /r\.handleCallback\("0","0",\{((.|\s)*?(?=\}\);|$)|$)/.exec(rs);
+				if (!r) {
+					return;
+				}
+				//~ console.log(r);
+				
+				r = r[1];
+				
+				r = r.replace(/company_domains:/g, '~~~~');
+				
+				r = r.replace(/([a-z_]+):/gi, '"$1":');
+				
+				r = r.replace(/~~~~/g, 'company_domains:');
+				
+				//~ console.log(r);
+				
+				r = JSON.parse('{' + r + '}');
+				
+				console.log(r);
+				
+				if (r.resultList.length == 0) {
+					console.log('!Length:' + r.resultList.length);
+					return;
+				} else if (r.resultList.length > 1) {
+					console.log('!Length:' + r.resultList.length);
+					return;
+				}
+				
+				Prospect_Smarter_data_com_industries(r.resultList[0].guid);
+			}
+		});
+		
+		function Prospect_Smarter_data_com_industries(guid) {
+			// e.g. Telecommunications, Telecommunications Equipment and Accessories
+			
+			var u = 'https://connect.data.com/company/view/' + encodeURIComponent(guid);
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+						exit(response.status);
+					}
+					
+					console.log(rs);
+					
+					/*<td class="form-section-label">Industries</td>
+						<td class="company-info-data">
+	                        
+	                        
+	                           Telecommunications, Telecommunications Equipment and Accessories<br/>
+	                        
+	                        
+	                            Telecommunications, Video and Teleconferencing<br/>
+	                        
+	                        
+	                            Computers &amp; Electronics, Networking Equipment and Systems
+	                        
+	                    </td>
+					*/
+					
+					var r = /<td class="form-section-label">Industries<\/td>[\r\n\t\s]*<td class="company-info-data">((.|\s)*?(?=<\/td>|$)|$)/.exec(rs);
+					if (!r) {
+						return;
+					}
+					
+					// Here?
+					r = r[1];
+					r = r.replace(/<br\/?>/g, ' ');
+					console.log(r);
+					r = __js_clean_html_str(r);
+					r = r.replace(/\s+/g, ' ').trim();
+					
+					document.getElementsByName('industry')[0].value = r;
+					
+					if (r.length > 6) {
+						doSubmit();
+					}
+				}
+			});
+			
+		}
+	}
+	
+	//
 	// Big Bird
 	// Case reporter tags / case page tags
 	//
@@ -5857,6 +6226,673 @@ function MT__RUN() {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * Startpage search + Iframe
+	 * 
+	 * 
+	 * Andrew Ryan
+	 * Evan J
+	 *  Search on pictures
+	 *  Search for company news URL
+	 * 
+	 */
+	
+	//
+	// Andrew Ryan
+	// Find the Name/Email of Key People in Specific Companies
+	//
+	s = 'The goal of this task is to collect the name, email address, and phone number for the <strong>';
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
+		
+		GM_addStyle('body {width:16%}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('td {padding:0 important!;}');
+		
+		// container
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
+		GM_addStyle('table {border: 1px solid #a2a2a2;}');
+		// ...
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		
+		// 
+		//~ GM_addStyle('td {width:50% !important;min-width:50% !important;max-width:50% !important;}');
+		
+		//~ GM_addStyle('.highlight-box {position:absolute;top:3000px;}');
+		//~ GM_addStyle('h2 {margin-top: 1000px !important;}');
+		//~ GM_addStyle('#Q1URLNews {height:60px;position:absolute;top:300px;left:0;width:19%;}');
+		//~ GM_addStyle('#Q2___ {height:60px;position:absolute;top:360px;left:0;width:19%;}');
+		//~ GM_addStyle('#submitButton {height:60px;position:absolute;top:500px;left:0;width:19%;}');
+		//~ GM_addStyle('img {display:none;}');
+		
+		
+		
+		
+		//~ var b = document.getElementsByTagName('b');
+		
+		var a = document.getElementsByTagName('a')[0].href.trim();
+		var p = document.getElementsByTagName('p');
+		var t = document.getElementsByTagName('table');
+		var td= document.getElementsByTagName('td');
+		var tr= document.getElementsByTagName('td');
+		
+		t[1].style.marginTop = '-18px';
+		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);
+		
+		t[0].style.width = '16%';
+		t[1].style.width = '16%';
+		
+		// Make td[0]'s display none
+		for (var i in td) {
+			if (i == 'length') break;
+			//~ console.log(i);
+			//~ console.log(i % 2);
+			if (i % 2 == 0) {
+				td[i].style.width = '4px';
+				td[i].style.maxWidth = '4px';
+				td[i].style.height = '14px';
+				td[i].style.maxHeight = '14px';
+				td[i].style.overflow = 'hidden';
+				//~ td[i].style.display = 'none';
+			}
+		}
+		//~ for (var i in tr) {
+			//~ if (i == 'length') break;
+			//~ var tds_ = tr[i].getElementsByTagName('td');
+			//~ if (tds_.length && tds_[0]) {
+				//~ tds_[0].style.display = 'none !important';
+			//~ }
+		//~ }
+		
+		/*// Float left
+		t[0].style.float = 'left';
+		t[1].style.float = 'left';
+		t[1].style.marginTop = '-20px';
+		//~ p[p.length - 1].style.float = 'left';
+		//~ p[p.length - 2].style.float = 'left';
+		//~ p[p.length - 2].style.marginTop = '-20px';
+		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);*/
+		
+		// o
+		var o = {
+			//~ comp: a[1].innerText.trim(),
+			site: a,
+			domain: null,
+			query: null,
+			query_by_role: null,
+			bold_strings: [], //'news','press','media','blog','investor','relations']
+			role: td[11].innerText.trim(),
+			tmp_role_to_array: td[11].innerText.trim().replace(/[^\w\d]/g, ' ').split(' '),
+			role_to_array: [],
+			
+			CSS_d2_min_height: null,
+			CSS_d2_max_height: null
+		}
+		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
+		o.domain = o.domain.replace(/\/[\d\D]*/i, ''); // trailing
+		o.query			= 'site:'+o.domain+' "about us"|"about"|"our staff"|"staff"|"staff directory"|"personnel"|"contact us"|"contact"|"leadership"|"governance"|"who we are"|"our people"|"officers"|"executives"';
+		//~ console.log(o);
+		
+		// Add to roles
+		switch(o.role) {
+			case 'IT Director':
+				o.role_to_array = [
+					'information technology director',
+					'information technology',
+					'digital',
+					'information',
+					'info',
+					'technology',
+					'tech'
+				];
+				break;
+			case 'Executive Director/CEO':
+				o.role_to_array = [
+					'executive director',
+					'chief executive officer',
+					'chief executive',
+					'chief',
+					'president'
+				];
+				break;
+			case 'Deputy Executive Director/COO':
+				o.role_to_array = [
+					'chief operating officer',
+					'operations',
+					'chief',
+					'vice president'
+				];
+				break;
+			case 'Membership Director':
+				o.role_to_array = [
+					'membership director',
+					'members',
+					'member',
+					
+					//~ 'ceo',
+					//~ 'chief executive officer',
+					//~ 'chief executive',
+					//~ 'chief',
+					//~ 'president'
+				];
+				break;
+		}
+		o.role_to_array = o.role_to_array.concat(o.tmp_role_to_array);
+		// Role Query
+		// Becomes e.g. "membership director" OR "membership" OR "members" OR "member" OR "Director"
+		o.query_by_role	= 'site:'+o.domain+' "'+o.role_to_array.join('" OR "') + '"';
+		
+		// Float
+		if (AMT__Global_Vars.isPreview) {
+			switch(o.role) {
+				case 'Executive Director/CEO':
+				case 'Deputy Executive Director/COO':
+					AMT___Floater.accept();
+					break;
+				case 'IT Director':
+				case 'Membership Director':
+					AMT___Floater.skip();
+					break;
+			}
+			return;
+		}
+		
+		/* BEGIN ITEMS */
+		// d1, d1b
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;  left:16%;width:42%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:0px;  left:58%;width:41%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1b);
+		// Iframe
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+		document.body.appendChild(d2);
+		/* END ITEMS */
+		
+		
+		// d1 events
+		var d1_hover = d1b_hover = function() {
+			// CSS RESIZE
+			d2.style.height = o.CSS_d2_min_height;
+			d2.style.marginTop = '0';
+			d1 .style.height = '300px';
+			d1b.style.height = '300px';
+		}
+		d1 .addEventListener('mouseover', d1_hover, false);
+		d1b.addEventListener('mouseover', d1_hover, false);
+		// Iframe events
+		d2.addEventListener('mouseover', function() {
+			// CSS RESIZE
+			d2.style.height = o.CSS_d2_max_height;
+			d2.style.marginTop = '-200px';
+			d1 .style.height = '100px';
+			d1b.style.height = '100px';
+		}, false);
+		//~ d2.addEventListener('mouseout', function() {
+		//~ }, false);
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage({
+					task: 'AMT__all_pages_util',
+					MT___all_pages_extend: true,
+					MT___all_pages_zoom: true,
+					MT___all_pages_showhref: true,
+					highlight_range_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+					highlight_strings_in_page: {
+						strings: o.role_to_array
+					},
+					email_links_remove_mailto: true,
+					show_remove_links_button: true
+					//~ global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+					//~ person_name_zoom: o.fn + ' ' + o.ln
+				}, "*");
+			}, 1000);
+			// Watch for complete
+			window.addEventListener("message", Andrew_Ryan_people_search__iframe_complete, false);
+		}, false);
+		function Andrew_Ryan_people_search__iframe_complete(event) {
+			
+			var v = event.data;
+			
+			// clear intv search
+			if (v.key == 'Andrew_Ryan_people_search__iframe_complete' && v.text_range != '') {
+				for (var i in q) {
+					if (q[i].value.trim() == '') {
+						q[i].value = v.text_range;
+						q[i].focus();
+						break;
+					}
+				}
+			}
+		}
+		
+		// q
+		var q = [
+			document.getElementsByName('FirstName')[0],
+			document.getElementsByName('LastName')[0],
+			document.getElementsByName('EmailAddress')[0],
+			document.getElementsByName('DirectPhone')[0]
+		];
+		// Placeholders
+		q[0].placeholder = 'F';
+		q[1].placeholder = 'L';
+		q[2].placeholder = 'E';
+		q[3].placeholder = 'P';
+		
+		//
+		//~ var x = document.createElement('div');
+		//~ x.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+		//~ x.innerText = o.comp;
+		//~ d1.appendChild(x);
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			//~ // This set the elements d1,d1b, and d1c
+			//~ // to fill up the whole window, minus their
+			//~ // distance from page top (top:XX pixels;).
+			//~ elements: [
+				//~ d2
+			//~ ],
+			//~ offset: 300 // offset top
+			
+			callback_function: function(innerHeight) {
+				
+				// Normal
+				o.CSS_d2_min_height = (innerHeight - 300) + 'px';
+				
+				// Window minus d1 smallest (100)
+				o.CSS_d2_max_height = (innerHeight - 100) + 'px';
+				
+				// Set initial
+				d2.style.height = o.CSS_d2_min_height;
+				
+			}
+		});
+		
+		// submitButton
+		document.getElementById('submitButton').onclick = function() {
+			
+			// Fail
+			// Do not warn about blank fields
+			if (document.getElementById('ReasonForFailure').selectedIndex != 0) {
+				//
+				//~ for (var i in q) {
+					//~ 
+				//~ }
+			}
+			// Success
+			// Warn about blank fields
+			else {
+				
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value == '' && q[i].name != 'DirectPhone') {
+						var c = confirm(q[i].name + ' is blank.\nPress OK to ignore and submit task.');
+						if (c == true) {
+							// do nothing
+						} else {
+							return false;
+						}
+					}
+				}
+				//~ return false;
+				//~ confirm('x');return false;
+				//~ if (!sbm) {
+					//~ 
+				//~ }
+				//~ if  (
+					//~ document.getElementById('Q1URLNews').value.trim() == '' &&
+					//~ document.getElementsByName('Q2Answer')[0].value != 'NONE'
+					//~ )
+					//~ return false;
+				//~ 
+			}
+			
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		
+		/**
+		 * Init
+		 */
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
+			seed: d1,
+			callback_function: Andrew_Ryan_people_search,
+			return_init_object: true
+		});
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query_by_role),
+			seed: d1b,
+			callback_function: Andrew_Ryan_people_search,
+			return_init_object: true
+		});
+		
+		/**
+		 * 
+		 */
+		function Andrew_Ryan_people_search(response_object) {
+			
+			console.log(response_object);
+			
+			var rs = response_object.rs;
+			
+			var out = response_object.seed;
+			
+			if (!rs.length) {
+				out.innerText += o.query + '\n0';
+				d2.src = o.site;
+				return;
+			}
+			
+			// Here?
+			// 0 = url
+			// 1 = body
+			var first = true;
+			for (var i in rs) {
+				
+				var domain = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+				
+				// Container
+				x = document.createElement('div');
+				x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				x.className = 'exe';
+				x.url = rs[i][0];
+				
+				// return_div_element
+				var b1 = MT__bold(domain,   o.bold_strings, {return_div_element:true}).div_element;
+				var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+				x.appendChild(b1);
+				x.appendChild(b2);
+				
+				//~ // submit this one
+				//~ var b = document.createElement('button');
+				//~ b.url = rs[i][0];
+				//~ b.innerHTML = MT__bold(rs[i][0], o.bold_strings);
+				//~ b.onclick = function(e) {
+					//~ this.style.backgroundColor = 'LightGreen';
+					//~ 
+					//~ e.stopPropagation();
+					//~ e.preventDefault();
+					//~ return false;
+				//~ }
+				//~ x.appendChild(b);
+				
+				// link
+				var a = document.createElement('a');
+				a.href = rs[i][0];
+				a.target = '_blank';
+				a.innerText = '_link_';
+				a.onclick = function(e) {
+					window.open(this.href, 'new_window');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				b1.appendChild(a);
+				
+				//~ // Body
+				//~ var b = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+				//~ x.appendChild(b);
+				
+				
+				//~ x.innerHTML = 
+					//~ MT__bold(rs[i][0], o.bold_strings) +
+					//~ '<br>' +
+					//~ MT__bold(rs[i][1], o.bold_strings);
+				//~ 
+				
+				// APPEND
+				out.appendChild(x);
+				
+				// .onclick
+				x.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					d2.src = this.url;
+					//~ d2.scrollIntoView();
+					
+					// Remove Listener
+					d1 .removeEventListener('mouseover', d1_hover, false);
+					d1b.removeEventListener('mouseover', d1b_hover, false);
+					setTimeout(function() {
+						d1 .addEventListener('mouseover', d1_hover, false);
+						d1b.addEventListener('mouseover', d1b_hover, false);
+					}, 3000);
+					
+					// CSS RESIZE
+					//~ d2.style.height = (d2.style.height.replace(/px/, ''))*1 + 200 + 'px';
+					d2.style.height = o.CSS_d2_max_height;
+					d2.style.marginTop = '-200px';
+					d1 .style.height = '100px';
+					d1b.style.height = '100px';
+				}
+				
+				// First
+				if (first && out == d1) {
+					first = false;
+					x.click();
+				}
+			}
+			var x = document.createElement('div');
+			x.setAttribute('style','height:2000px;');
+			out.appendChild(x);
+		}
+	}
+	
+	//
+	// Evan J 
+	// Search for company news URL
+	//
+	s = '	<h3>Search the Company News/Blog/Press Release/Investor Relations Page of the company\'s website.</h3>';
+	if(ih.indexOf(s) != -1)
+	{
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+		GM_addStyle('.highlight-box {position:absolute;top:3000px;}');
+		GM_addStyle('h2 {margin-top: 1000px !important;}');
+		GM_addStyle('#Q1URLNews {height:60px;position:absolute;top:300px;left:0;width:19%;}');
+		GM_addStyle('#Q2___ {height:60px;position:absolute;top:360px;left:0;width:19%;}');
+		GM_addStyle('#submitButton {height:60px;position:absolute;top:500px;left:0;width:19%;}');
+		//~ GM_addStyle('.form-control {height:60px;}');
+		GM_addStyle('img {display:none;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		
+		
+		var b = document.getElementsByTagName('b');
+		
+		var o = {
+			comp: b[1].innerText.trim(),
+			site: b[2].innerText.trim(),
+			domain: null,
+			query: null,
+			bold_strings: ['news','press','media','blog','investor','relations']
+		}
+		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '')
+		o.query = 'site:'+o.domain+' "news" | "press releases"  | "media room"  | "blog"  | "press" | "investor relations"';
+		
+		/* BEGIN ITEMS */
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		d1.addEventListener('mouseover', function() {
+		}, false);
+		// Iframe
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style','position:absolute;top:300px;left:19%;width:80%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+		document.body.appendChild(d2);
+		d2.addEventListener('mouseover', function() {
+			//~ this.scrollIntoView();
+		}, false);
+		d2.addEventListener('mouseout', function() {
+			//~ d1.scrollIntoView();
+		}, false);
+		d2.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				d2.contentWindow.postMessage({
+					task: 'AMT__all_pages_util',
+					MT___all_pages_extend: true,
+					MT___all_pages_zoom: true,
+					MT___all_pages_showhref: true,
+					//~ global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+					//~ person_name_zoom: o.fn + ' ' + o.ln
+				}, "*");
+			}, 1000);
+			// Watch for complete
+			//~ window.addEventListener("message", Evan_J_Emp_company_news__iframe_complete, false);
+		}, false);
+		/* END ITEMS */
+		
+		//
+		var x = document.createElement('div');
+		x.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+		x.innerText = o.comp;
+		d1.appendChild(x);
+		
+		// ...
+		document.getElementsByName('Q2Answer')[0].value = 'News Section Found';
+		document.getElementsByName('Q2Answer')[0].id = 'Q2___';
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d2
+			],
+			offset: 300 // offset top
+		});
+		
+		//
+		document.getElementById('submitButton').onclick = function() {
+			if  (
+				document.getElementById('Q1URLNews').value.trim() == '' &&
+				document.getElementsByName('Q2Answer')[0].value != 'NONE'
+				)
+				return false;
+			
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+		
+		/**
+		 * Init
+		 */
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
+			callback_function: Evan_J_Emp_company_news
+		});
+		
+		/**
+		 * 
+		 */
+		function Evan_J_Emp_company_news(response_object) {
+			
+			var rs = response_object;
+			if (!rs.length) {
+				d1.innerText += o.query + '\n0';
+				d2.src = o.site;
+				return;
+			}
+			
+			//~ d1.appendChild(document.createElement('hr'));
+			
+			// Here?
+			// 0 = url
+			// 1 = body
+			var first = true;
+			for (var i in rs) {
+				
+				//~ var domain = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+				
+				x = document.createElement('div');
+				x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				x.className = 'exe';
+				x.url = rs[i][0];
+				
+				//return_div_element
+				//~ var b1 = MT__bold(rs[i][0], o.bold_strings, {return_div_element:true}).div_element;
+				//~ var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+				//~ x.appendChild(b1);
+				//~ x.appendChild(b2);
+				
+				// submit this one
+				var b = document.createElement('button');
+				b.url = rs[i][0];
+				b.innerHTML = MT__bold(rs[i][0], o.bold_strings);
+				b.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					
+					document.getElementById('Q1URLNews').value = this.url;
+					document.getElementsByName('Q2Answer')[0].value = 'News Section Found';
+					
+					document.getElementById('submitButton').click();
+					
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				x.appendChild(b);
+				
+				// link
+				var a = document.createElement('a');
+				a.href = rs[i][0];
+				a.target = '_blank';
+				a.innerText = '_link_';
+				a.onclick = function(e) {
+					window.open(this.href, 'new_window');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				x.appendChild(a);
+				
+				// Body
+				var b = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+				x.appendChild(b);
+				
+				
+				//~ x.innerHTML = 
+					//~ MT__bold(rs[i][0], o.bold_strings) +
+					//~ '<br>' +
+					//~ MT__bold(rs[i][1], o.bold_strings);
+				//~ 
+				
+				
+				d1.appendChild(x);
+				x.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					d2.src = this.url;
+					//~ d2.scrollIntoView();
+				}
+				
+				// First
+				// & not PDF
+				if (first) {
+					first = false;
+					x.click();
+				}
+				//if (first && rs[i][0].toLowerCase().indexOf('.pdf') == -1) {
+			}
+			var x = document.createElement('div');
+			x.setAttribute('style','height:2000px;');
+			d1.appendChild(x);
+		}
 	}
 	
 	//
@@ -10447,6 +11483,408 @@ function MT__RUN() {
 			}
 		});
 		
+	}
+	
+	//
+	// karmerm A1TOHN39UKBEUT GID-3U6BJ3K2CAW39TB1DJA0I3OQL4EEM1
+	// -SimpleScrape
+	// Write up information from the URL.
+	s = '<h5><strong>Note: All the information we are collecting can be found from the URL.&nbsp;For more detailed instructions';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('.container {margin:0 !important;margin-top:700px !important;}');
+		
+		var a = document.getElementsByTagName('a')[1].href;
+		var d = new Date();
+		var q1 = document.getElementsByName('Q1')[0];
+		var m = d.getMonth() + 1;
+		var day = d.getDate();
+		m = (m < 10) ? '0' + m : m;
+		day = (day < 10) ? '0' + day : day;
+		q1.value = d.getFullYear() + '-' + m+ '-' + day;
+		
+		//~ var o = {
+			//~ 
+		//~ }
+		
+		function karmerm_process() {
+		}
+		karmerm_process.prototype.check_submit = function(o) {
+			
+		}
+		karmerm_process.prototype.debug = function(element, value) {
+			element.innerText += '\n' + value;
+		}
+		karmerm_process.prototype.err = function(submit, element, value) {
+			submit = false;
+			element.style.border = '2px solid red';
+			element.value = value;
+		}
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1. setAttribute('style','position:absolute;top:0px;left:0%;width:98%;height:500px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		/*END ITEMS*/
+		
+		// Move the items around...
+		var fs = document.getElementsByTagName('fieldset')[28];
+		fs.setAttribute('style', 'position:absolute;top:-200px;left:0;');
+		
+		function karmerm_ted__get_transcript(sbm) {
+			// Trans...
+			// http://www.ted.com/talks/richard_resnick_welcome_to_the_genomic_revolution/transcript?language=en&talkarticle=true
+			// http://www.ted.com/talks/richard_resnick_welcome_to_the_genomic_revolution?language=en
+			var sbm = sbm;
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: a + '/transcript?language=en&talkarticle=true',
+				//~ url: a.replace(/\?language=en/, '/transcript?language=en&talkarticle=true'),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+						exit(response.status);
+					}
+					
+					var p = new karmerm_process();
+					
+					//
+					var r = /<p class='talk-transcript__para'>((.|\s)*?(?=<\/p>|$)|$)/g;
+					var q13 = document.getElementsByName('Q13')[0];
+					if (r.exec(rs)) {
+						
+						
+						r.lastIndex = 0;
+						var trans = '';
+						while (m = r.exec(rs)) {
+							
+							var num;
+							
+							//3:33
+							var r2 = /<data class='talk-transcript__para__time'>[\r\n\t\s]*([\d:]+)[\r\n\t\s]*<\/data>/.exec(m[1]);
+							if (r2) {
+								trans += r2[1] + '\n';
+								num = r2[1];
+							} else
+								p.err(sbm, q13, '3');
+							
+							var div = document.createElement('div');
+							div.innerHTML = m[1];
+							div.innerText = div.innerText.replace(num, '').trim().replace(/\n/g, ' ').trim(); // First instance
+							
+							trans += div.innerText + '\n';
+							
+							//~ //3:33
+							//~ var r2 = /<data class='talk-transcript__para__time'>[\r\n\t\s]*([\d:]+)[\r\n\t\s]*<\/data>/.exec(m[1]);
+							//~ if (r2) {
+								//~ trans += r2[1] + '\n';
+							//~ } else
+								//~ p.err(sbm, q13);
+							
+						}
+						
+						q13.value = trans.trim();
+						
+						if (q13.value == '')
+							p.err(sbm, q13, '2');
+					} else
+						p.err(sbm, q13, '1');
+						
+					
+					
+					// SUBMIT???
+					console.log(sbm);
+					if (sbm) {
+						d1.style.backgroundColor = 'LightGreen';
+					}
+				}
+			});
+		}
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: a,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+					exit(response.status);
+				}
+				
+				var p = new karmerm_process();
+				var sbm = true;
+				
+				var months = {
+					'jan':'01',
+					'feb':'02',
+					'mar':'03',
+					'apr':'04',
+					'may':'05',
+					'jun':'06',
+					'jul':'07',
+					'aug':'08',
+					'sep':'09',
+					'oct':'10',
+					'nov':'11',
+					'dec':'12'
+				};
+				//~ var p = new process(rs);
+				//p.check();
+				
+				// TEDxBoston 2011
+				// 11:02
+				// Jul 2011
+				// 35
+				var r = /<div class='talk-hero__meta'>[\r\n\t\s]*<strong>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/strong>[\r\n\t\s]*&middot;[\r\n\t\s]*<span>[\r\n\t\s]*([\d:]+)[\r\n\t\s]*<\/span>[\r\n\t\s]*&middot;[\r\n\t\s]*<span>[\r\n\t\s]*<strong class='talk-hero__meta__label'>Filmed<\/strong>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/span>[\r\n\t\s]*<br>[\r\n\t\s]*Subtitles available in[\r\n\t\s]*(\d+) language/.exec(rs);
+				if (r) {
+					
+					var type = __js_clean_html_str(r[1]);
+					
+					// dbg
+					p.debug(d1,type);
+					p.debug(d1,r[2]);
+					p.debug(d1,r[3]);
+					p.debug(d1,r[4]);
+					
+					// type
+					var q2 = document.getElementsByName('Q2');
+					if (/^TED\d+$/.exec(type)) {
+						q2[0].checked = true;
+					} else if (/^TEDGlobal \d+$/.exec(type)) {
+						q2[1].checked = true;
+					} else if (/^TEDx/.exec(type)) {
+						q2[2].checked = true;
+					} else {
+						q2[3].checked = true;
+					}
+					
+					
+					// rt
+					var q3 = document.getElementsByName('Q3')[0];
+					var runtime = r[2].split(':');
+					if (runtime.length != 2) p.err(sbm, q4, r[2]);
+					else
+						q3.value = runtime[0] + '; ' + runtime[1];
+					
+					// filmed
+					var q4 = document.getElementsByName('Q4')[0];
+					var dt = r[3].split(' ');
+					if (dt.length != 2) p.err(sbm, q4, r[3]);
+					else {
+						dt[0] = dt[0].toLowerCase();
+						if (!months.hasOwnProperty(dt[0])) p.err(sbm, q4, r[3]);
+						else if (!/^\d{4}$/.exec(dt[1])) p.err(sbm, q4, r[3]);
+						else {
+							q4.value = dt[1] + '-' + months[ dt[0] ];
+						}
+					}
+					
+					// lang
+					var q5 = document.getElementsByName('Q5')[0];
+					q5.value = r[4];
+				} else {
+					sbm = false;
+				}
+				
+				// 718,845
+				var r = /<span class='talk-sharing__value'>[\r\n\t\s]*([\d,]+)[\r\n\t\s]*<\/span>/.exec(rs);
+				if (r) {
+					var q6 = document.getElementsByName('Q6')[0];
+					q6.value = r[1].replace(/,/g, '');
+					p.debug(d1,r[1]);
+				} else 
+					sbm = false;
+				
+				// js obj
+				//q("talkPage.initBreakdown",[{"label":"TED.com","value":36},{"label":"TED apps","value":3},{"label":"iTunes","value":3},{"label":"YouTube","value":19},{"label":"Other","value":39}])
+				var r = /<script>q\("talkPage\.initBreakdown",((.|\s)*?(?=\)<\/script>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse(r[1]); // []
+					var qs = [
+						document.getElementsByName('Q7_1')[0],
+						document.getElementsByName('Q7_2')[0],
+						document.getElementsByName('Q7_3')[0],
+						document.getElementsByName('Q7_4')[0],
+						document.getElementsByName('Q7_5')[0]
+					];
+					var dbg = '';
+					for (var i in r) {
+						switch(r[i].label) {
+							case 'TED.com':
+								qs[0].value = r[i].value;
+								break;
+							case 'TED apps':
+								qs[1].value = r[i].value;
+								break;
+							case 'iTunes':
+								qs[2].value = r[i].value;
+								break;
+							case 'YouTube':
+								qs[3].value = r[i].value;
+								break;
+							case 'Other':
+								qs[4].value = r[i].value;
+								break;
+						}
+						dbg += ' '+r[i].value;
+					}
+					p.debug(d1,dbg);
+					
+				} else 
+					sbm = false;
+					
+				// js obj
+				var r = /<script>q\("talkPage\.init",((.|\s)*?(?=\)<\/script>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse(r[1]); // {}
+					// .ratings = []
+					
+					//~ console.log(r);
+					//var ratings = r.ratings;
+					var qs = [
+					];
+					
+					for (var i = 1; i<=14; i++) {
+						qs.push(document.getElementsByName('Q8_' + i)[0]);
+					}
+					
+					if (!r.hasOwnProperty('ratings') || r.ratings.length == 0) {
+						p.err(sbm, qs[0], 'XXX');
+					}
+					
+					var total = 0;
+					for (var i in r.ratings) {
+						var rt = r.ratings[i];
+						total += rt.count * 1;
+					}
+					p.debug(d1,'R Total:' + total);
+					
+					for (var i in r.ratings) {
+						var rt = r.ratings[i];
+						var pct = Math.round((rt.count*1 / total) * 100); // no decimals
+						switch(rt.name.substr(0, 3)) { // index, howmany
+							case 'Jaw':
+								qs[0].value = pct;
+								break;
+							case 'Ins':
+								qs[1].value = pct;
+								break;
+							case 'Fas':
+								qs[2].value = pct;
+								break;
+							case 'Ing':
+								qs[3].value = pct;
+								break;
+							case 'Cou':
+								qs[4].value = pct;
+								break;
+							case 'Bea':
+								qs[5].value = pct;
+								break;
+							case 'Inf':
+								qs[6].value = pct;
+								break;
+							case 'Per':
+								qs[7].value = pct;
+								break;
+							case 'Fun':
+								qs[8].value = pct;
+								break;
+							case 'OK':
+								qs[9].value = pct;
+								break;
+							case 'Con':
+								qs[10].value = pct;
+								break;
+							case 'Unc':
+								qs[11].value = pct;
+								break;
+							case 'Obn':
+								qs[12].value = pct;
+								break;
+							case 'Lon':
+								qs[13].value = pct;
+								break;
+							default:
+								alert('No match for rating-'+rt.name);
+								sbm = false;
+						}
+					}
+				} else 
+					sbm = false;
+				
+				// Speaker
+				var r = /<div class='talk-speaker media'>((.|\s)*?(?=[\r\n\t\s]+<\/div>[\r\n\t\s]+<\/div>|$)|$)/g;
+				var m;
+				var q9  = document.getElementsByName('Q9');
+				var q10 = document.getElementsByName('Q10');
+				q9[0] .checked = true; // Default
+				q10[0].checked = true; // Default
+				if (r.exec(rs)) {
+					
+					r.lastIndex = 0;
+					var count = 0;
+					while (m = r.exec(rs)) {
+						
+						var div = document.createElement('div');
+						div.style.border = '4px solid blue';
+						div.innerHTML = m[1];
+						d1.appendChild(div);
+						
+						count++;
+					}
+					
+					if (count == 0)
+						p.err(sbm, q10[0], '');
+					else if (count < 4) {
+						q10[ count-1 ].checked = true;
+						if (!q10[ count-1 ]) p.err(sbm, q10[ count-1 ], '');
+					} else {
+						q10[3].checked = true;
+					}
+					
+				} else {
+					p.err(sbm, q9[0], '');
+					p.err(sbm, q10[0], '');
+				}
+				
+				// Comments
+				// 148
+				var r = /<p class='talk-section__description'>[\r\n\t\s]*<div class='h11'>[\r\n\t\s]*([\d,]+) comments?[\r\n\t\s]*<\/div>[\r\n\t\s]*<\/p>/.exec(rs);
+				var q11 = document.getElementsByName('Q11')[0];
+				if (r) {
+					q11.value = r[1].replace(/,/g, '');
+				} else 
+					p.err(sbm, q11, '');
+				
+				// Related
+				var r = /<a class='l3 talk-topics__link ga-link' data-ga-category='talk\.relatedTopic' href='[^']+'>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/a>/g;
+				var q12 = document.getElementsByName('Q12')[0];
+				if (r.exec(rs)) {
+					
+					r.lastIndex = 0;
+					var m;
+					var rel = [];
+					while (m = r.exec(rs)) {
+						rel.push(__js_clean_html_str(m[1]).trim());
+					}
+					
+					q12.value = rel.join('; ').trim();
+					
+					if (q12.value == '') p.err(sbm, q12, '');
+				} else 
+					p.err(sbm, q12, '');
+					
+				// Trans...
+				// http://www.ted.com/talks/richard_resnick_welcome_to_the_genomic_revolution/transcript?language=en&talkarticle=true
+				// http://www.ted.com/talks/richard_resnick_welcome_to_the_genomic_revolution?language=en
+				karmerm_ted__get_transcript(sbm);
+			}
+		});
 	}
 	
 	//
@@ -22295,9 +23733,12 @@ function MT__RUN() {
 		document.getElementById('map').style.height = tmp_h;
 		
 		//...
+		// This will change occasionally.
+		// Sometimes the first <b> on the page will be
+		// a note rather than the name!
 		var b		= document.getElementsByTagName('b');
-		var name	= b[1].innerText.trim();
-		var addr	= b[2].innerText.trim();
+		var name	= b[0].innerText.trim();
+		var addr	= b[1].innerText.trim();
 		
 		var o = {
 			lat: null,
@@ -24140,12 +25581,15 @@ function MT__RUN() {
 		}, false);
 		
 		
-		
-		// Function 
+		/**
+		 * Grocery_ROI_amazon_units__appendTxt
+		 * 
+		 * NOTE: Added Oct22 2014: max-width 450px;
+		 */
 		function Grocery_ROI_amazon_units__appendTxt(div, text, out_inp, isHighlighted) {
 			
 			var x = document.createElement('div');
-			x.setAttribute('style', 'display:block;');
+			x.setAttribute('style', 'display:block;max-width:450px;');
 			
 			// MAKE BUTTONS
 			
@@ -24243,19 +25687,25 @@ function MT__RUN() {
 		// out is the container div (1...4)
 		function Grocery_ROI_amazon_units() {
 			
-			var opts = {
-				url: d2.value,
-				'strings_do_not_save_to_file': [
-					'Sorry, we just need to make sure you\'re not a robot. For best results, please make sure your browser is accepting cookies.'
-				]
-			}
-			opts = encodeURIComponent(JSON.stringify(opts));
+			// THIS RUNS OVER LOCAL CACHE
+			//~ var opts = {
+				//~ url: d2.value,
+				//~ 'strings_do_not_save_to_file': [
+					//~ 'Sorry, we just need to make sure you\'re not a robot. For best results, please make sure your browser is accepting cookies.'
+				//~ ]
+			//~ }
+			//~ opts = encodeURIComponent(JSON.stringify(opts));
 			
 			
 			
 			GM_xmlhttpRequest({
 				method: 'GET',
-				url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options='+opts,
+				
+				// THIS RUNS OVER LOCAL CACHE
+				//url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options='+opts,
+				
+				// THIS IS DIRECT
+				url: d2.value,
 				
 				//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(d2.value),
 				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
@@ -24265,37 +25715,23 @@ function MT__RUN() {
 					
 					if (response.status > 200 || (/^\d+$/.exec(rs) && rs*1 > 200)) {
 						
-						if (rs == '404') {
-							q[1].value = 'Information Unavailable';
-							//~ alert('404');
+						q[1].value = 'Information Unavailable';
+						if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1) {
+							console.log('x');
 							document.getElementById('submitButton').click();
 						}
+						
+						
+						if (rs == '404') {
+							//~ q[1].value = 'Information Unavailable';
+							//~ alert('404');
+							//~ document.getElementById('submitButton').click();
+						}
 						return;
-						//~ alert(response.status);
-						//~ console.log(rs);
-						//~ exit(response.status + rs);
 					}
 					
 					if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
 						console.log('x');
-						
-						//~ out.all_inp[out.all_inp.length - 2].checked = true;
-						//~ out.parent.style.backgroundColor = 'teal';
-						//~ out.parent.style.height = '40px';
-						//~ out.parent.style.overflow = 'auto';
-						//~ out.SKIPNODE = true; // skip
-						//~ out.inp.SKIPNODE = true; // set input.SKIPNODE!!
-						//~ 
-						//~ setTimeout(function() {
-							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // IF NECESSARY, THIS WILL RESET THE VIEW !!
-						//~ }, 1000);
-						//~ 
-						//~ 
-						//~ // TOTAL_INFO_NA
-						//~ stats.TOTAL_INFO_NA++;
-						//~ 
-						//~ // RUN stats
-						//~ turk_HPCBeauty_amazon_units__totalNA();
 						return;
 					}
 					
@@ -24316,15 +25752,17 @@ function MT__RUN() {
 						//return_buttons_array
 						Grocery_ROI_amazon_units__appendTxt(out.div, r, out.inp);
 						
-						// Check for "(Pack of \d)" in the title
+						// Check for "(Pack of \d)" in the title.
+						// And (\d Pack).
+						//
 						var r = /\((Pack|Case|Pk) of (\d+)\)/i.exec(title__);
-						var r2 = /\((\d+)[ \-]*(Pack|Case|Pk)\)/i;
+						var r2 = /\(?(\d+)[ \-]*(Pack|Case|Pk)\)?/i;
 						if (r) {
 							q[2].value = r[2];
 							q[2].style.border = '4px solid blue';
 						}
 						else if (r2.exec(title__)) {
-							q[2].value = r2[1].exec(title__);
+							q[2].value = r2.exec(title__)[1];
 							q[2].style.border = '4px solid blue';
 						}
 						
@@ -24335,6 +25773,62 @@ function MT__RUN() {
 							//~ 
 							//~ turk_HPCBeauty_amazon_units__scrollIntoView_current(); // THIS WILL SELECT THE TEXT BOX
 						//~ }
+						
+						// Check for (x count), (x fl oz), (x oz), (x lbs) or (x lb), (x g)
+						// e.g. ["4.2 Ounce", "4.2", "Ounce", index: 28, input: "Triderma Psoriasis Control, 4.2 Ounce"]
+						//
+						var r = /(\.?\d[\d,\.]*)[ \-]*(fl[\. ]*oz|fluid[\. ]*ounce|fluid[\. ]*oz|floz|oz|ounce|ounces|lb|lbs|pound|pounds|gram|g\.? |count|ct)/i.exec(title__);
+						if (r) {
+							// Debug div
+							var debug_title = document.createElement('div');
+							debug_title.setAttribute('style', 'border:1px solid blue;width:80px;margin-top:4px;');
+							out.div.appendChild(debug_title);
+						
+							//~ console.log(r);
+							q[1].style.border = '4px solid blue';
+							q[0].value = r[1];
+							q[0].select();
+							pre_selection = true; // SET THIS TO TRUE!!
+							
+							debug_title.innerText = r[1];
+							
+							switch(r[2].toLowerCase().replace(/[^a-z]/gi, '')) {
+								case 'floz':
+								case 'fluidounce':
+								case 'fluidoz':
+									q[1].selectedIndex = 1;
+									debug_title.innerText += '\nFLOZ';
+									debug_title.style.backgroundColor = 'LightGreen';
+									break;
+								case 'oz':
+								case 'ounce':
+								case 'ounces':
+									q[1].selectedIndex = 1;
+									debug_title.innerText += '\nFLOZ';
+									//~ q[1].selectedIndex = 3;
+									//~ debug_title.innerText += '\nOZ';
+									break;
+								case 'lb':
+								case 'lbs':
+								case 'pound':
+								case 'pounds':
+									q[1].selectedIndex = 4;
+									debug_title.innerText += '\nLBS';
+									break;
+								case 'g ':
+								case 'g. ':
+								case 'gram':
+									q[1].selectedIndex = 2;
+									debug_title.innerText += '\nGR';
+									break;
+								case 'count':
+								case 'ct':
+									q[1].selectedIndex = 5;
+									debug_title.innerText += '\nCOUNT';
+									break;
+							}
+							
+						}
 					}
 					
 					// Fields "Click to select"
@@ -31661,22 +33155,44 @@ function MT__RUN() {
 			
 			var rs = complete_object.rs;
 			
-			var r;
+			var r, r1, r2, r3;
 			
+			r1 = rs.indexOf('>No results found for ');
+			r2 = /<p style="[^"]+"> Your search - <em>[^<]*<\/em> - did not match any documents\.  <\/p>/.exec(rs);
 			//3,220,000
-			r = /<div id="resultStats">(About |)([\d,]+) results?/.exec(rs);
-			if (r) {
-				document.getElementById('Q1Url').value = r[2];
+			r3 = /<div id="resultStats">(About |)([\d,]+) results?/.exec(rs);
+			
+			if (r1 != -1) {
+				//~ alert('x');
+				document.getElementById('Q1Url').value = '0';
 				doSubmit();
-					
-			} else {
-				
-				r = /<p style="[^"]+"> Your search - <em>[^<]*<\/em> - did not match any documents\.  <\/p>/.exec(rs);
-				if (r) {
-					document.getElementById('Q1Url').value = '0';
-					doSubmit();
-				}
+				return;
+			} else if (r2) {
+				document.getElementById('Q1Url').value = '0';
+				doSubmit();
+				return;
+			} else if (r3) {
+				document.getElementById('Q1Url').value = r3[2].replace(/,/g, '');
+				doSubmit();
 			}
+			
+			//~ 
+			//~ var r;
+			//~ 
+			//~ //3,220,000
+			//~ r = /<div id="resultStats">(About |)([\d,]+) results?/.exec(rs);
+			//~ if (r) {
+				//~ document.getElementById('Q1Url').value = r[2];
+				//~ doSubmit();
+					//~ 
+			//~ } else {
+				//~ 
+				//~ r = /<p style="[^"]+"> Your search - <em>[^<]*<\/em> - did not match any documents\.  <\/p>/.exec(rs);
+				//~ if (r) {
+					//~ document.getElementById('Q1Url').value = '0';
+					//~ doSubmit();
+				//~ }
+			//~ }
 			
 			document.body.style.backgroundColor = '#fff';
 			
@@ -46044,6 +47560,8 @@ qatar,80
 	
 	//
 	// Trever Faden
+	// Gopi Parikh
+	// Janet Lee
 	//
 	//Credit Union Data Collection- Enter CAPCHA and Download File
 	s='Credit Union Data Collection- Enter CAPCHA and Download File';
@@ -46149,7 +47667,8 @@ qatar,80
 									// begin watch for upload of PDF !!
 									// new May 7
 									//~ filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_March-2014_' + rs.trim() + '.pdf';
-									filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_June-2014_' + rs.trim() + '.pdf';
+									//~ filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_June-2014_' + rs.trim() + '.pdf';
+									filename = '/var/www/html/mturk/TrevorFaden/done/CallReport5300_September-2014_' + rs.trim() + '.pdf';
 									AMT___POPUP__initializeGlobals(
 										trever_faden_credit_unions_file_exists
 									);
@@ -49510,7 +51029,8 @@ qatar,80
 	// 
 	//~ s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
 	//~ s = '<li>For the business below, enter the official 10 digit phone number.</li>';
-	s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
+	//~ s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
+	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 		
@@ -49650,10 +51170,11 @@ qatar,80
 			
 			d1b.innerHTML = '';
 			
-			//~ var dv = document.createElement('div');
-			//~ d1b.appendChild(dv);
-			//~ dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
-		
+			var dv = document.createElement('div');
+			d1b.appendChild(dv);
+			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+			dv.innerText = d2.value;
+			
 			var u = 
 				
 				'https://graph.facebook.com/search'+
@@ -49781,7 +51302,8 @@ qatar,80
 							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
 							
 							q.value = p;
-							q2.value = this.fblink;
+							if (q2)
+								q2.value = this.fblink;
 							
 							if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
 								d2.value = 'bad phone!';
@@ -49822,8 +51344,6 @@ qatar,80
 		
 		
 		function Peter_Heyneman_google_find_phone() {
-			
-			//~ d1.innerHTML = d2.value + '<br>';
 			
 			d1.innerHTML = '';
 			var dv = document.createElement('div');
@@ -49949,11 +51469,6 @@ qatar,80
 						m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
 						m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
 						
-						//~ console.log(m_comp);
-						//~ console.log(o.name_cln);
-						//~ console.log(m_locn);
-						//~ console.log(o.locn_cln.indexOf(m_locn));
-						
 						if  (
 							count <= 1 &&
 							o.name_cln == m_comp &&
@@ -49981,15 +51496,6 @@ qatar,80
 					//
 					//
 					Peter_Heyneman_find_phone__FB();
-					//~ if (!found) {
-						//~ Peter_Heyneman_find_phone__FB();
-					//~ }
-					//~ if (d1.innerHTML != '') {
-						//~ var dv = document.createElement('div');
-						//~ d1.appendChild(dv);
-						//~ 
-						//~ dv.setAttribute('style', 'height:1400px;');
-					//~ }
 				}
 			});
 		}
@@ -50049,7 +51555,8 @@ qatar,80
 							this.style.backgroundColor = 'teal';
 							
 							q.value = this.gphone;
-							q2.value = this.gurl;
+							if (q2)
+								q2.value = this.gurl;
 							
 							if (this.gphone == o.bad_phone || this.gphone.length != 10 || !/^https?:\/\/[^\/]+/.exec(this.gurl)) {
 								d2.value = 'bad phone!';
@@ -67972,7 +69479,138 @@ qatar,80
 	 * Find the address
 	 * Data Cleansing
 	 * Fiber Data
+	 * Pharm3r
 	 */
+	//
+	// Pharm3r
+	// Find the Location of a Business
+	// 
+	s = '	<li>Enter the country&nbsp;and city of each business. If it is located in the USA, also enter&nbsp;the state.</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		GM_addStyle('body {width:18%;margin-top:160px !important;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+		GM_addStyle('input {width:18% !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1800px;margin-left:100px;width:80%;}');
+		//~ GM_addStyle('.panel-heading {position:absolute;top:1800px;margin-left:100px;width:80%;}');
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			comp: td[1].innerText.trim()
+		};
+		
+		/*BEGIN ITEMS*/
+		var dx1 = document.createElement('div');
+		dx1.setAttribute('style','position:absolute;top:0px;left:20%;width:79%;height:500px;border:2px dashed blue;');
+		document.body.appendChild(dx1);
+		var dx2 = document.createElement('textarea');
+		dx2.setAttribute('style','position:absolute;top:0px;left:0%;width:18%;height:160px;');
+		document.body.appendChild(dx2);
+		dx2.value = o.comp;
+		/*END ITEMS*/
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				dx1
+			],
+			offset: 0 // offset top
+		});
+		
+		var opts = {
+			parent: dx1,
+			parent_controller_el: dx2,
+			output_elements: {
+				city:	document.getElementById('city'),
+				state:	document.getElementById('state'),
+				country:document.getElementById('country')
+			},
+			submitButton_onclick_callback: function(e) {
+				//~ // All blank
+				//~ var found_one = false;
+				//~ for (var i in output_elements) {
+					//~ if (output_elements[i].value.trim() != '') {
+						//~ found_one = true;
+						//~ break;
+					//~ }
+				//~ }
+				//~ if (!found_one) {
+					//~ return false;
+				//~ }
+				//~ 
+				//~ // Submit
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+				//~ 
+				//~ e.preventDefault();
+				//~ e.stopPropagation();
+				//~ return false;
+			}
+		};
+		
+		// onsubmit
+		document.getElementById('submitButton').onclick = function() {
+			// All blank
+			var found_one = false;
+			for (var i in opts.output_elements) {
+				if (opts.output_elements[i].value.trim() != '') {
+					found_one = true;
+					break;
+				}
+			}
+			if (!found_one) {
+				return false;
+			}
+			
+			// Country
+			if (opts.output_elements.country.value.trim() == '')
+				return false;
+			
+			// Submit
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			
+			return false;
+		}
+		
+		new AMT___items_factory().create_dashboard_find_address(opts);
+		
+		//~ document.getElementById('mturk_form').onsubmit = function() {
+			//~ 
+			//~ 
+			//~ var x = document.getElementById('address1');
+			//~ x.value = x.value.trim();
+			//~ if (x.value.length < 1) {
+				//~ x.style.border = '2px solid orange';
+				//~ return false;
+			//~ }
+			//~ var x = document.getElementById('city');
+			//~ x.value = x.value.trim();
+			//~ if (x.value.length < 1) {
+				//~ x.style.border = '2px solid orange';
+				//~ return false;
+			//~ }
+			//~ var x = document.getElementById('state');
+			//~ x.value = x.value.trim();
+			//~ if (x.value.length != 2) {
+				//~ x.style.border = '2px solid orange';
+				//~ return false;
+			//~ }
+			//~ var x = document.getElementById('postalcode');
+			//~ x.value = x.value.trim();
+			//~ if (x.value.length < 1 || x.value.length > 10) {
+				//~ x.style.border = '2px solid orange';
+				//~ return false;
+			//~ }
+			//~ 
+			//~ new AMT___core_factory().nextTab();
+		//~ }
+	}
 	//
 	// Fiber Data Co.
 	// 
@@ -68240,66 +69878,6 @@ qatar,80
 			Fiber_Data_Co_find_company_addr__init
 			//~ Data_Cleansing_find_company_addr__skips_init
 		);
-		
-		//~ // function Data_Cleansing_find_company_addr__skips_init()
-		//~ // this will re-populate the textarea when/if !start (textarea.onclick)
-		//~ function Data_Cleansing_find_company_addr__skips_init(start, callback) {
-			//~ 
-			//~ var start = start;
-			//~ var callback = callback;
-			//~ 
-			//~ GM_xmlhttpRequest({ // load the list of synonyms from the browser cache!
-				//~ method: "GET",
-				//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/.miscellaneous/AMT__Data_Cleansing_find_company__skips?'+Math.random()*10000,
-				//~ //url: u,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ if (response.status != 200) return;
-					//~ 
-					//~ d2d.value = rs.trim() + "\n"; // re-populate
-					//~ 
-					//~ // skip this task?
-					//~ if (!start && AMT__Global_Vars.isPreview) {
-						//~ var x = d2d.value.trim().split("\n");
-						//~ for (var i in x) {
-							//~ if (COMP == x[i]) {
-								//~ AMT___Floater.skip();
-								//~ return;
-								//~ //break;
-							//~ }
-						//~ }
-					//~ }
-					//~ 
-					//~ // here?
-					//~ if (AMT__Global_Vars.isPreview) {
-						//~ AMT___Floater.accept();
-						//~ return;
-					//~ }
-					//~ 
-					//~ // here?
-					//~ if (!start)
-						//~ Data_Cleansing_find_company_addr__init();
-				//~ }
-			//~ });
-		//~ }
-		//~ // WRITE TO FILE !
-		//~ function Data_Cleansing_find_company_addr__skips_write(e) {
-			//~ 
-			//~ var el = el;
-			//~ 
-			//~ requests_fty.io__write_to_file(
-				//~ {
-					//~ data:	'AMT__serverSide_write__value='+encodeURIComponent(this.value)+
-							//~ '&AMT__serverSide_write__folder=.miscellaneous'+
-							//~ '&AMT__serverSide_write__file=AMT__Data_Cleansing_find_company__skips',
-					//~ el: this
-				//~ },
-				//~ function (write_object) {
-					//~ write_object.el.style.border = '2px dashed LightGreen';
-				//~ }
-			//~ );
-		//~ }
-		
 		
 		// function Fiber_Data_Co_find_company_addr__init
 		function Fiber_Data_Co_find_company_addr__init() {
@@ -75757,6 +77335,7 @@ qatar,80
 	 * David Shefferman
 	 * Scott Neufeld
 	 * Andres Echenique
+	 * Nathan Labat
 	 * Brice Englert
 	 * 
 	 * 
@@ -76081,6 +77660,429 @@ qatar,80
 				}
 				//mouseover
 				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	
+	//
+	// Nathan Labat
+	// Find the Website Address for comapnies
+	// 
+	var s = '<h3><span style="line-height: 1.2em; font-size: 13px;">2. Look at the search page opened: you will find <strong>the company name in the search bar tool</strong></span></h3>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+		
+		GM_addStyle('body {margin-top:1200px;}'); //;width:100%
+		//~ GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+		//~ GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		//~ GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		//~ 
+		//~ var td = document.getElementsByTagName('td');
+		
+		// ...
+		// e.g. https://www.google.com/?qAgrifirm+Belgium+NV#q=Agrifirm+Belgium+NV
+		// i.e. Agrifirm+Belgium+NV
+		var a = document.getElementsByTagName('a')[1].innerText;
+		a = /https?:\/\/www\.google\.com\/\?q([^=#]+)/.exec(a);
+		if (!a) {
+			alert('a');
+			return;
+		} else {
+			a = decodeURIComponent(a[1]).replace(/\+/g, ' ').trim();
+		}
+		o = {
+			comp: a,
+			comp_short: null,
+			bold_array: []
+		}
+		o.bold_array = o.comp.clean_string_to_array();
+		o.comp_short = o.bold_array.slice(0, 2).join(' ');
+		//~ 
+		//~ // Does not have pound
+		//~ if (a.indexOf('#') == -1) {
+			//~ a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			//~ a = a.replace(/\?q([^=])/g, '?q=$1');
+			//~ console.log(a);
+		//~ }
+		//~ // Has pound
+		//~ else
+		//~ {
+			//~ a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			//~ a = a.replace(/\?[^#]*#/g, '?');
+			//~ a = a.replace(/\?q([^=])/g, '?q=$1');
+			//a = a.replace(/\#q([^=])/g, '?q=$1');
+			//~ console.log(a);
+			//~ 
+			//~ if (a.indexOf('#') != -1) {
+				//~ alert('has #');
+				//~ return;
+			//~ }
+		//~ }
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ 
+		//~ var o = {
+			//~ name: td[1].innerText.trim(),
+			//~ city: td[5].innerText.trim(),
+			//~ state_abbr: td[7].innerText.trim(),
+			//~ state: null,
+			//~ bold_array: []
+		//~ }
+		//~ o.state = o.state_abbr.stateAbbrToFull();
+		//~ o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		//~ o.bold_array = o.bold_array.concat(o.city.replace(/[^\w\d]/g, ' ').split(' '));
+		//~ o.bold_array = o.bold_array.concat([o.state_abbr, o.state]);
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:24px;border:1px solid;cursor:pointer;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var txt_top = document.createElement('textarea');
+		txt_top.setAttribute('style','position:absolute;top:0px;left:0%;width:40%;height:24px;');
+		document.body.appendChild(txt_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:74px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:74px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:74px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:24px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:24px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:24px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Nathan_Labat_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Nathan_Labat_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Nathan_Labat_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("Q1Url").value = "0";
+			// nextTab
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.comp;
+		d3b.value = '"' + o.comp + '"';
+		if (o.bold_array.length > 2) {
+			d3c.value = '"' + o.comp.split(' ').slice(0, 2).join(' ') + '"';
+		} else {
+			d3c.value = o.comp + ' "contact" OR "about" ';
+		}
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Nathan_Labat_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Nathan_Labat_company_URL__SP_init();
+			
+				}
+			});
+		}
+		Nathan_Labat_company_URL__load_skips();
+		
+		function Nathan_Labat_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Nathan_Labat_company_URL__processProxyResponse
+				);
+				FOUND_ONE_NONSKIP = true; // Set this to true, on any manual search. This prevents auto 0s from running.
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Nathan_Labat_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Nathan_Labat_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Nathan_Labat_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Nathan_Labat_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				// TODO
+				// CHECK STARTPAGE FOR TOR ERROR. 
+				// OTHERWISE THIS IS NOT VALID AUTO 0!
+				NUM_COMPLETED++;
+				if (!FOUND_ONE_NONSKIP && NUM_COMPLETED == 3) {
+					//~ na.click();
+				}
+				return;
+			} else {
+				FOUND_ONE_NONSKIP = true;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				//~ console.log(out_div);
+				//~ console.log(x);
+				// regular = ^http://www.site.com$
+				//~ // subdomains = [\.\/]site.com$
+				//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					//~ short_domain = y[1];
+				//~ } else
+					//~ short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				d.link = link;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('Q1Url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					txt_top.value = this.link;
 					var x = document.getElementsByTagName('p');
 					for (var i in x) {
 						if (i == 'length') break;
@@ -80934,29 +82936,73 @@ qatar,80
 		GM_addStyle('#wrapper {width:30%;position:absolute;left:0;}');
 		GM_addStyle('.span7 {width:98%;}');
 		GM_addStyle('ul {position:absolute;top:1000px;width:30%;}');
-		GM_addStyle('input {zoom:0.8;margin:0;padding:0;}');
+		GM_addStyle('input {zoom:1;margin:0;padding:0;}');
 		
 		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 		
-		//
+		/*BEGIN ITEMS*/
 		var na = document.createElement('input');
 		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:30px;border:1px solid;cursor:pointer;');
+		na.value = "N/A";
 		document.body.appendChild(na);
-		na.style.position='absolute';
-		na.style.top='0px';
-		na.style.left='70%';
-		na.style.width='29%';
-		na.style.height='24px';
-		na.style.border='1px solid';
-		na.style.fontSize='10px';
-		na.style.cursor='pointer';
-		na.value = "N/A"
+		//
+		var HOST = GM_getValue('MT__torHost');
+		if (!HOST)
+			HOST = 'http://192.168.1.2';
+		var inp_tor;
+		inp_tor = document.createElement('input');
+		inp_tor.setAttribute('id','inp_tor');
+		inp_tor.setAttribute('type','input');
+		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:30px;');
+		inp_tor.value = HOST;
+		document.body.appendChild(inp_tor);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:30px;font-size:0.6em;');
+		document.body.appendChild(d2);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:80px;left:0;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:80px;left:33%;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:80px;left:66%;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:30px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:30px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:30px;left:66%;width:33%;height:50px;');
+		document.body.appendChild(d3c);
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Brittany_Graham_Find_Website_Address(d1,  this.value);
+		}
+		d3b.onblur = function() {
+			Brittany_Graham_Find_Website_Address(d1b, this.value);
+		}
+		d3c.onblur = function() {
+			Brittany_Graham_Find_Website_Address(d1c, this.value);
+		}
+		//
 		na.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			document.getElementById("Website").value = "N/A";
 			
-			if(document.getElementById("Notes"))
-				document.getElementById("Notes").value = "I could not find an official website for this company.";
+			//~ if(document.getElementById("Notes"))
+				//~ document.getElementById("Notes").value = "I could not find an official website for this company.";
 			
 			// showNextTab OR nextTab
 			if(FOUND_ONE_NONSKIP) {
@@ -80970,14 +83016,6 @@ qatar,80
 			doSubmit();
 		}
 		//
-		var HOST = GM_getValue('MT__torHost');
-		if (!HOST)
-			HOST = 'http://192.168.1.2';
-		var inp_tor;
-		inp_tor = document.createElement('input');
-		inp_tor.setAttribute('id','inp_tor');
-		inp_tor.setAttribute('type','input');
-		inp_tor.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:20px;');
 		inp_tor.onblur = function() {
 			this.style.backgroundColor = 'LightGreen';
 			//~ var host = GM_getValue('MT__torHost');
@@ -80986,110 +83024,7 @@ qatar,80
 			//~ 
 			//~ 
 			GM_setValue('MT__torHost', this.value);
-			HOST = this.value
-		}
-		inp_tor.value = HOST;
-		document.body.appendChild(inp_tor);
-		//
-		var d2 = document.createElement('textarea');
-		d2.setAttribute('style','position:absolute;top:0px;left:10%;width:60%;height:24px;font-size:0.6em;');
-		document.body.appendChild(d2);
-		//
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='70px';
-		d1.style.left='0%';
-		d1.style.width='33%';
-		d1.style.height='600px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='10px';
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='70px';
-		d1b.style.left='33%';
-		d1b.style.width='33%';
-		d1b.style.height='600px';
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='10px';
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1c');
-		document.body.appendChild(d);
-		var d1c = document.getElementById('d1c');
-		d1c.style.position='absolute';
-		d1c.style.top='70px';
-		d1c.style.left='66%';
-		d1c.style.width='33%';
-		d1c.style.height='600px';
-		d1c.style.overflow='auto';
-		d1c.style.border='1px solid blue';
-		d1c.style.borderBottom='2px solid blue';
-		d1c.style.backgroundColor='#eee';
-		d1c.style.fontSize='10px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3');
-		document.body.appendChild(d);
-		var d3 = document.getElementById('d3');
-		d3.style.position='absolute';
-		d3.style.top='20px';
-		d3.style.left='0%';
-		d3.style.width='33%';
-		d3.style.height='50px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3b');
-		document.body.appendChild(d);
-		var d3b = document.getElementById('d3b');
-		d3b.style.position='absolute';
-		d3b.style.top='20px';
-		d3b.style.left='33%';
-		d3b.style.width='33%';
-		d3b.style.height='50px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3c');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='20px';
-		d3c.style.left='66%';
-		d3c.style.width='33%';
-		d3c.style.height='50px';
-		/*//
-		d = document.createElement('input');
-		d.setAttribute('id','d3c');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='0px';
-		d3c.style.left='0%';
-		d3c.style.width='18%';
-		d3c.style.height='30px';*/
-		//
-		d3.onblur = function() {
-			Brittany_Graham_Find_Website_Address(d1,  this.value);
-		}
-		d3b.onblur = function() {
-			Brittany_Graham_Find_Website_Address(d1b, this.value);
-		}
-		d3c.onblur = function() {
-			Brittany_Graham_Find_Website_Address(d1c, this.value);
+			HOST = this.value;
 		}
 		
 		// ...
@@ -81097,6 +83032,17 @@ qatar,80
 		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
 		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
 		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		// inner
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 80 // offset top
+		});
 		
 		/**
 		 * LET'S TELL THE PARENT WINDOW TO DO NEXTTAB() ON
@@ -81125,7 +83071,8 @@ qatar,80
 			zip: '',
 			phone: '',
 			area_code: '',
-			company: ''
+			company: '',
+			bold_array: []
 		}
 		b = b2 = b3 = b4 = '';
 		
@@ -81135,7 +83082,7 @@ qatar,80
 		b2 = /City:&nbsp;<\/span><[^>]*>([^<]*)/.exec(ih);
 		b3 = /State:&nbsp;<\/span><[^>]*>([^<]*)/.exec(ih);
 		var zipLocation = 3;
-		console.log(o);
+		//~ console.log(o);
 
 		if (b2 && b3) {
 			b2 = __js_clean_html_str(b2[1]).replace(/\s+/g, ' ').trim();
@@ -81208,41 +83155,49 @@ qatar,80
 			}
 			console.log(x);
 			
-			var z;//zip
+			// zip
+			var z;
 			z = __js_clean_html_str(x[zipLocation]).replace(/\s+/g, ' ').replace(/, *$/g, '').trim();
-			
 			z = (z.length == 4) ? '0' + z : z;
 			o.zip = z;
 			
-			// ...
-			o.state_abbr = b3;
-			
-			// Determine .state
-			for (var i in MT___states) {
-				if (i.toLowerCase() == b3.toLowerCase()) {
-					o.state = MT___states[i];
-					break;
-				}
-			}
+			//~ // Determine .state
+			//~ for (var i in MT___states) {
+				//~ if (i.toLowerCase() == b3.toLowerCase()) {
+					//~ o.state = MT___states[i];
+					//~ break;
+				//~ }
+			//~ }
 			
 			// ...
-			b3 += ' ' + z;
+			//~ b3 += ' ' + z;
 		}
 		
-		// ...
+		// city
 		o.city = b2;
 		
+		// state
+		o.state_abbr = b3;
+		o.state = o.state_abbr.stateAbbrToFull();
+		
+		//~ // zip continued...
+		//~ if (o.zip == '') {
+			//~ var reg = /Postal Code:&nbsp;<\/span><strong[^>]*>([^<]+)<\/strong>/.exec(ih);
+			//~ if (reg) 
+				//~ o.zip = __js_clean_html_str(reg[1]).trim();
+		//~ }
 		
 		// b3, b4
-		b3 = b2 + ', ' + b3; // =>city, state(...)
-		b4 = '"' + b + '" ' + b3; // =>"company" state(nc,ny,...)
+		//~ b3 = b2 + ', ' + b3; // =>city, state(...)
+		
+		b4 = '"' + b + '" ' + o.city + ', ' + o.state_abbr; // =>"company" state(nc,ny,...)
 		
 		// zip
-		if (x = /Zip:&nbsp;<b[^>]*>([^<]*)/.exec(ih)) {
-			x = __js_clean_html_str(x[1]).replace(/\s+/g, ' ').trim();
+		var x;
+		if (x = /(Zip|Postal Code):&nbsp;(<\/span>|)(<strong|<b)[^>]*>([^<]*)/.exec(ih)) {
+			x = __js_clean_html_str(x[4]).replace(/\s+/g, ' ').trim();
 			x = (x.length == 4) ? '0' + x : x;
 			o.zip = x;
-			b3 += ' ' + x;
 		}
 		// Phone
 		// Last 4 digits are occasionally only 3!
@@ -81263,9 +83218,20 @@ qatar,80
 		// ...
 		//d3.value = (b2 != '') ? b + ' ' + b2 : '';
 		d3.value = b + ' ' + b2;
-		d3b.value= (b3 != '') ? b + ' ' + b3 : '';
+		d3b.value= b + ' ' + o.city + ', ' + o.state_abbr;
 		d3c.value= (b4 != '') ? b4 : '';
 		
+		// bold
+		o.bold_array = 	o.bold_array.concat(
+						o.city		.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.state_abbr.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.state		.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.zip		.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.phone		.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.area_code	.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' ')).concat(
+						o.company	.replace(/[^\w\d]/g, '  ').replace(/(^| )[\w\d]{1}( |$)/g, '  ').split(' '));
+		
+			
 		// ...
 		var load_first = true;
 		var FOUND_ONE_NONSKIP = false;
@@ -81343,35 +83309,48 @@ qatar,80
 				var short_domain;
 				var y;
 				
-				// add bold to result
-				// b2, b3, b4
-				var bold_array;
-				switch(out_div.id) {
-					case 'd1':
-						bold_array = d3 .value.replace(/&/g, ' ').split(' ');
-						//~ bold_array = (b3 + ' ' + b4).replace(/&/g, ' ').split(' ');
-						break;
-					case 'd1b':
-						bold_array = d3b.value.replace(/&/g, ' ').split(' ');
-						//~ bold_array = (b2 + ' ' + b4).split(' ');
-						break;
-					case 'd1c':
-						bold_array = d3c.value.replace(/&/g, ' ').split(' ');
-						//~ bold_array = (b2 + ' ' + b3).split(' ');
-						break;
-				}
+				// Bold
+				var bold_array = o.bold_array;
+				console.log(o);
 				
-				if (out_div.id == 'd1') {
-					var keyword_and_index_array = {
-					};
-					keyword_and_index_array['C'] = o.city;
-					keyword_and_index_array['S'] = o.state_abbr;
-					keyword_and_index_array['*S*'] = o.state;
-					//keyword_and_index_array['STATE FULL'] = o.;
-					keyword_and_index_array['Z'] = o.zip;
-					keyword_and_index_array['P'] = o.phone;
-					keyword_and_index_array['AC'] = o.area_code;
-				}
+				// keyword_and_index_array
+				var keyword_and_index_array = {
+				};
+				keyword_and_index_array['C'] = o.city;
+				keyword_and_index_array['S'] = o.state_abbr;
+				keyword_and_index_array['*S*'] = o.state;
+				//keyword_and_index_array['STATE FULL'] = o.;
+				keyword_and_index_array['Z'] = o.zip;
+				keyword_and_index_array['P'] = o.phone;
+				keyword_and_index_array['AC'] = o.area_code;
+				
+				//~ var bold_array;
+				//~ switch(out_div) {
+					//~ case 'd1':
+						//~ bold_array = d3 .value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b3 + ' ' + b4).replace(/&/g, ' ').split(' ');
+						//~ break;
+					//~ case 'd1b':
+						//~ bold_array = d3b.value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b2 + ' ' + b4).split(' ');
+						//~ break;
+					//~ case 'd1c':
+						//~ bold_array = d3c.value.replace(/&/g, ' ').split(' ');
+						//~ bold_array = (b2 + ' ' + b3).split(' ');
+						//~ break;
+				//~ }
+				//~ 
+				//~ if (out_div == d1) {
+					//~ var keyword_and_index_array = {
+					//~ };
+					//~ keyword_and_index_array['C'] = o.city;
+					//~ keyword_and_index_array['S'] = o.state_abbr;
+					//~ keyword_and_index_array['*S*'] = o.state;
+					//~ //keyword_and_index_array['STATE FULL'] = o.;
+					//~ keyword_and_index_array['Z'] = o.zip;
+					//~ keyword_and_index_array['P'] = o.phone;
+					//~ keyword_and_index_array['AC'] = o.area_code;
+				//~ }
 				
 				while (match = r.exec(rs)) {
 					//if (count >= 8)
@@ -81450,7 +83429,7 @@ qatar,80
 					
 					// IS NOT SKIP?
 					var txa = document.createElement('textarea');
-					txa.setAttribute('style','width:100%;zoom:0.6;cursor:pointer;padding:0;margin:0;');
+					txa.setAttribute('style','width:100%;zoom:0.8;cursor:pointer;padding:0;margin:0;');
 					txa.readOnly = true;
 					txa.value = x;
 					d.appendChild(txa);
@@ -81467,7 +83446,7 @@ qatar,80
 					// Scrape page
 					// Only on d1
 					// @assoc. array [show output (key) => scrape for keyword (value)], []
-					if (count < 6 && out_div.id == 'd1') {
+					if (count < 3) { // && out_div == d1
 						var scrape_el = document.createElement('div');
 						scrape_el.setAttribute('style','display:inline;position:absolute;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;');
 						d.appendChild(scrape_el);
@@ -116743,10 +118722,16 @@ qatar,80
 	//
 	s='*PREREQUISITES* - to complete these hits, you must first be LOGGED IN TO LINKED IN. &nbsp;To sign up for an account is free, simply requires email validation. &nbsp;You will only have to log in once, at which point&nbsp;you will be able to complete tasks at a fast pace.';
 	if (ih.indexOf(s) != -1) {
+		console.log('');
 		
 		var a,id;
-		a = /<td>LinkedIn Profile:<\/td>[\r\n\t\s]*<td>(http:\/\/www\.linkedin\.com\/company\/[^<]*)<\/td>/.exec(ih)[1];
-		console.log(a);
+		//~ a = /<td>LinkedIn Profile:<\/td>[\r\n\t\s]*<td>(http:\/\/www\.linkedin\.com\/company\/[^<]*)<\/td>/.exec(ih)[1];
+		var td = document.getElementsByTagName('td');
+		var o = {
+			url: td[3].innerText.trim()
+		}
+		a = o.url;
+		//~ console.log(a);
 		
 		var rf = new AMT___requests_factory();
 		id = rf.general_functions__md5(a);
@@ -119460,8 +121445,451 @@ function top_window() {
 		ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') != -1
 		)
 		return;
-	
 	var s, s2, s3;
+	
+	
+	//
+	// Crowd Task
+	// Top window find URL
+	// 
+	var s = 'Find this company\'s website and enter the URL below. Country and industry are for reference and do not need to match exactly with what\'s shown on the website.';
+	if (ih.indexOf(s) != -1)
+	{		
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+		
+		// ...
+		GM_addStyle('#Answer_1_FreeText,#Answer_2_FreeText {width:60%;}');
+		
+		//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		//~ GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var li = document.getElementsByClassName('-list-item');
+		
+		var o = {
+			comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
+			industry: li[1].innerText.	replace(/^Industry: /g, '').trim(),
+			country: li[2].innerText.	replace(/^Country: /g, '').trim(),
+			bold_array: [],
+			bold_array_etc: [],
+			industry_short: null,
+			industries_quoted: null,
+			yelp_country: 'com',
+			comp_quoted: null
+		}
+		o.bold_array		= o.comp.clean_string_to_array();
+		o.bold_array_etc	= o.country.clean_string_to_array();
+		o.bold_array_etc	= o.bold_array_etc.concat(o.industry.clean_string_to_array());
+		o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
+		o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
+		o.industries_quoted	= '"' + o.industry.clean_string_to_array().join('" OR "') + '"';
+		switch(o.country) {
+			case 'United Kingdom':
+				o.yelp_country = 'co.uk';
+				break;
+		}
+		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;cursor:pointer;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var txt_top = document.createElement('textarea');
+		txt_top.setAttribute('style','position:absolute;top:0px;left:0%;width:40%;height:80px;');
+		document.body.appendChild(txt_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:80px;left:25%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:80px;left:50%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d1d = document.createElement('div');
+		d1d.setAttribute('style','position:absolute;top:80px;left:75%;width:24%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1d);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:30px;left:0%;width:25%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:30px;left:25%;width:25%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:30px;left:50%;width:25%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		//
+		var d3d = document.createElement('textarea');
+		d3d.setAttribute('style','position:absolute;top:30px;left:75%;width:24%;height:50px;');
+		document.body.appendChild(d3d);
+		d1d.txa = d3d;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Crowd_Task_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Crowd_Task_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Crowd_Task_company_URL__SP_init(d1c, this);
+		}
+		d3d.onblur = function() {
+			Crowd_Task_company_URL__SP_init(d1d, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			q.value = 'NA';
+			new AMT___core_factory().nextTab();
+			doSubmit('hitForm');
+			//~ document.getElementById("place_website").value = "NONE";
+			// nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		//
+		var q = document.getElementById('Answer_1_FreeText');
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3d. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c, d1d
+			],
+			offset: 80 // offset top
+		});
+		new AMT___core_factory().el_innerHeight({
+			// Returns innerHeight in pixels
+			callback_function: function(innerHeight) {
+				document.getElementById('hit-wrapper').style.top = innerHeight + 'px';
+			}
+		});
+		
+		// ...
+		d3.value  = o.comp;
+		d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
+		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
+		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
+		d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+		d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
+		
+		// Not US?
+		if (o.country != 'United States') {
+			d3b.value += ' ' + o.country;
+			d3b.style.border = '4px solid blue';
+		}
+			
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Crowd_Task_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						// Skip Yelp
+						if (x[i].indexOf('yelp') == -1)
+							SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					//~ for (var i in x) {
+						//~ var y;
+						//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							//~ SKIP_SITES[y[1]] = true;
+						//~ }
+					//~ }
+					
+					Crowd_Task_company_URL__SP_init();
+			
+				}
+			});
+		}
+		Crowd_Task_company_URL__load_skips();
+		
+		function Crowd_Task_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + ' -"Is This Your Business"')
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Crowd_Task_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = d1d.innerHTML ='';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + ' -"Is This Your Business"')
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Crowd_Task_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + ' -"Is This Your Business"')
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Crowd_Task_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + ' -"Is This Your Business"')
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Crowd_Task_company_URL__processProxyResponse
+				);
+			}
+			//3
+			if (d3d.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1d,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3d.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Crowd_Task_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Crowd_Task_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			var count = 0;
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				var isYelpURL = /^https?:\/\/(\w+\.|)yelp\./.exec(link);
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				if (!isYelpURL)
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				else
+					x = link;
+				
+				//~ if (out_div != d1c && out_div != d1d)
+					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// beginning
+				// http
+				//~ x = x.replace(/^https?:\/\//, '');
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				// Add Yelp.com/etc/etc/ to mouseovers
+				var cls;
+				if (!isYelpURL)
+					cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				else
+					cls = link;
+				
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				d.full_URL = link;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					q.value = this.value;
+					
+					// showNextTab OR nextTab
+					if (q && q.value.trim() != '') {
+						new AMT___core_factory().nextTab();
+						doSubmit('hitForm');
+					}
+				}
+				
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					txt_top.value = this.full_URL;
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
 	
 	//
 	// A9 Snaptell Visual Search Requester
@@ -119571,7 +121999,7 @@ function top_window() {
 		x.appendChild(d3b);
 		d3b.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
-			A9_Snaptell_VSR__google();
+			A9_Snaptell_VSR__google();;
 		}
 		//
 		var d3d = document.createElement('input');
@@ -119686,11 +122114,26 @@ function top_window() {
 						task: 'AMT__all_pages_util',
 						MT___all_pages_extend: true,
 						MT___all_pages_zoom: true,
-						MT___text_scrollIntoView: new RegExp(upc, 'i')
+						MT___text_scrollIntoView: new RegExp(upc, 'i'),
+						highlight_range_to_parent: {completion_key: 'A9_Snaptell_VSR__iframe_complete'},
 					},
 					"*"
 				);
 		}, 1000);
+		// Watch for complete
+		window.addEventListener("message", A9_Snaptell_VSR__iframe_complete, false);
+		// Function A9_Snaptell_VSR__iframe_complete
+		function A9_Snaptell_VSR__iframe_complete(event) {
+			var v = event.data;
+			console.log(v);
+			// 
+			if (v.key == 'A9_Snaptell_VSR__iframe_complete' && v.text_range != '') {
+				
+				q[0].value = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
+				q[1].value = d1.output_url; //d1.src; src and output_url almostsynonymous
+				q[0].focus();
+			}
+		}
 		
 		// global
 		var result = {
@@ -120025,6 +122468,14 @@ function top_window() {
 				method: "GET",
 				asynchronous: false,
 				url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+				onerror: function(response) {
+					d3.value = '... searchupc ...';
+					console.log('error');
+					console.log(response);
+					// CALL NEXT
+					A9_Snaptell_VSR__next();
+					result.searchupc = false;
+				},
 				onload: function(response) {
 					
 					d3.value = '... searchupc ...';
@@ -120035,7 +122486,6 @@ function top_window() {
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 						result.searchupc = false;
-						
 						return;
 					}
 					
@@ -120176,18 +122626,27 @@ function top_window() {
 		// ...
 		// Scrape the first two results in each div.
 		// Do this using ...
+		// 0=url
+		// 1=full
 		function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
 			
-			// 0=url
-			// 1=full
-			console.log(rs);
-			if (rs.length) {
+			//~ console.log(rs);
+			//~ if (rs.length) {
 				//d1.src = rs[0][0];
-			} else {
+			//~ } else {
 				//~ d1.style.border = '10px solid blue';
 				//document.body.style.backgroundColor = 'blue';
-			}
+			//~ }
+			
 			var out = seed_argument;
+			
+			// Bad sites...
+			// 
+			var bad_sites = {
+				'werruftan.info':true,
+				'werwares.de':true,
+				'numberconnection.com':true
+			}
 			
 			for (var i in rs) {
 				
@@ -120196,6 +122655,21 @@ function top_window() {
 				
 				// replace "m.target.com"
 				rs[i][0] = rs[i][0].replace(/\/\/m\.target\.com/, '//www.target.com');
+				
+				// Domain
+				var domain = rs[i][0];
+				domain = domain.replace(/https?:\/\/(www\.|)/i, '');
+				domain = domain.replace(/\/[\d\D]*/, '');
+				
+				// Is a "bad" / "skip" URL?
+				// werruftan.info
+				if (bad_sites.hasOwnProperty(domain)) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+					div.innerText = domain;
+					out.appendChild(div);
+					continue;
+				}
 				
 				var tmp_url = rs[i][0];
 				var tmp_url_replace_scripts = rs[i][0];
@@ -120336,17 +122810,22 @@ function top_window() {
 					}
 					out.appendChild(a);
 				}
-				// ...
-				out.appendChild(document.createTextNode(' '));
-				// ...
 				// Third link. This is ALWAYS going
 				// to be tmp_url. So it is either 
 				// the real link OR the cached link 
 				// but NOT htmlspecialchars OR replace_scripts
+				out.appendChild(document.createTextNode(' '));
 				var a = document.createElement('a');
 				a.href = tmp_url;
 				a.target = '_blank';
 				a.innerText = '*LINK*';
+				out.appendChild(a);
+				// External Link
+				out.appendChild(document.createTextNode(' '));
+				var a = document.createElement('a');
+				a.href = rs[i][0];
+				a.innerText = 'EX';
+				a.target = '_blank';
 				out.appendChild(a);
 				// body
 				var d = document.createElement('div');
@@ -123987,6 +126466,7 @@ function mturk_load()
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '372VRO63KW1OI73UUZL6YKEXJPCHBE': //Andrew Ryan
+				case '3ED2P6N3JY6YYZVT3IGYKJGTO6HF6H': //Andrew Ryan, Find people in companies
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3U2H1DGWNO9OGD2AJATPPHECAAIF48': //Paul Graham, find company name

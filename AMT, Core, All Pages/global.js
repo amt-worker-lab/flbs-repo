@@ -1,153 +1,16 @@
-// o is a string
-// arr is an array of strings to be bolded
-function MT__bold(o, arr, options_object) {
-	// avoid b
-	// go from longest to shortest
-	
-	// used bold matches
-	var found_words_bolded = [];
-	
-	// sort longest first
-	arr.sort(function(a, b){
-	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
-	});
-	
-	//console.log(o);
-	//console.log(arr);
-	
-	var x = o;
-	var word;
-	
-	for (var i in arr) {
-		
-		// July 2 2014, Added .trim()
-		//
-		//
-		word = arr[i].trim();
-		
-		//console.log(word);
-		//console.log(x.match(new RegExp('('+__js_escape_regEx(word)+')', 'gi')));
-		
-		if (word == '') {
-			continue;
-		}
-		//~ // is in found_words_bolded ?
-		//~ for (var j in found_words_bolded) {
-			//~ var prev_match = found_words_bolded[j];
-			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
-			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
-		//~ }
-		//
-		if (word == 'b' || word == 'B') {
-			x = x.replace(/b([^>])/, '<b>$1'); //     b>
-			x = x.replace(/([^\/<])b/, '$1</b>'); //  /<b
-			//arr[i] = 
-			continue;
-		}
-		
-		// here?
-		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
-		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\/b>)', 'gi');
-		// fishes</b>
-		// fish</b>
-		// fis(h)(<)
-		// fis(h)([ $])
-		
-		x = x.replace(reg, '<b>$1</b>');
-			
-		//~ x = x.replace(reg, function(p0, p1) {
-			//~ console.log('p0:' + p0);
-			//~ console.log('p1:' + p1);
-			//~ console.log(found_words_bolded);
-			//~ // is current "word" in a past "regex matched"?
-			//~ for (var j in found_words_bolded) {
-				//~ var prev_match = found_words_bolded[j];
-				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
-				//~ if (tmp_match) {
-					//~ //found_in_prev = true;
-					//~ return p1; // ends here
-				//~ }
-			//~ }
-			//~ // Still here? Must be a new word
-			//~ found_words_bolded.push(word); // not here
-			//~ return '<b>'+p1+'</b>';
-		//~ });
-		
-		//console.log(found_words_bolded);
-		
-		// ...
-		// The idea is to avoid bolding smaller words
-		// when larger word already has bolded. So if "Frat"
-		// is going to be bolded then don't bold "rat."
-		
-		// Below will bold "rat" regardless of whether
-		// "Frat" is bolded. (Removed)
-		//~ var found_in_prev = false;
-		//~ for (var j in found_words_bolded) {
-			//~ var prev_match = found_words_bolded[j];
-			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
-			//~ if (tmp_match) {
-				//~ found_in_prev = true;
-				//~ break;
-			//~ } else {
-				//~ 
-			//~ }
-		//~ }
-		//~ if (!found_in_prev) {
-			//~ found_words_bolded.push(word);
-		//~ }
-		
-		//~ var str_match = false;
-		//~ if (reg.exec(x))
-			//~ str_match = true;
-		//~ reg.lastIndex = 0;
-		//x = x.replace(reg, '<b>$1</b>');
-		
-	}
-	
-	//~ console.log(found_words_bolded);
-	
-	if (!options_object)
-		return x;
-	else {
-		var return_object = {};
-		
-		if (options_object.percent_matched) {
-			var pm;
-			var xlen1 = x.length;
-			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
-			//~ var chars_removed = xlen1 - xlen2;
-			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
-			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
-			return_object.pm = {
-				bold_string: x,
-				percent_matched: pm,
-				xlen1: xlen1,
-				xlen2: xlen2
-			}
-			//~ return {
-				//~ bold_string: x,
-				//~ percent_matched: pm,
-				//~ xlen1: xlen1,
-				//~ xlen2: xlen2
-			//~ }
-			//~ return;
-		}
-		if (options_object.return_div_element) {
-			var d = document.createElement('div');
-			d.innerHTML = x;
-			return_object.div_element = d;
-		}
-		
-		return_object.options_object = options_object; // RETURN INIT !!
-		
-		//~ if (options_object.initial) {
-			//~ 
-		//~ }
-		
-		return return_object;
-	}
-}
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * TODO:
+ * 	Home page graph memory, tallied up almost 10gib after ~1-2 days
+ * 
+ **/
+ 
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 
@@ -186,7 +49,10 @@ var AMT__Global_Vars = //function()
 	isPreview: null,
 	groupId: '',
 	hitId: '',
-	
+	numSubmitQueries: 0,
+	isSubmitting: false,
+	copyInp: false,
+	RACustomKey: false,
 	//
 	isQProduct: false,
 	//~ var AMT__Queue = {
@@ -202,6 +68,43 @@ var AMT__Global_Vars = //function()
 //~ console.log(AMT__Global_Vars.isTopWindow);
 //~ console.log(AMT__Global_Vars.core);
 
+
+AMT__Global_Vars.initializeNextTabPassBy = function() {
+	chrome.extension.sendRequest({getNTPassBy: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.toggle_ntpassby = rs.NTPassBy;
+
+		});
+}
+
+AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
+	chrome.extension.sendRequest({getRA_Button_NextTab: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.core.return_accept_run_nextTab = rs.RA_Button_NextTab == 'On' ? true : false;
+		});
+}
+
+//var allAs = document.getElementsByTagName('a');
+	
+
+AMT__Global_Vars.initializeR_Button_NextTab = function() {
+	chrome.extension.sendRequest({getR_Button_NextTab: true}, 
+		function(rs) 
+		{
+			if(rs.R_Button_NextTab == rs.R_Button_NextTab == 'On') {
+				for(var i = 0; i < allAs.length; i++) {
+					if(allAs[i].href.indexOf('/mturk/return') != -1) {
+						allAs[i].addEventListener('onclick', function() {
+							new AMT___core_factory().nextTab();
+						}, false);
+					}
+				}
+			}
+		}
+	);
+}
 
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
@@ -228,13 +131,22 @@ AMT__Global_Vars.initializeGroupId = function () {
 	// setInterval would endlessly post message.
 	else if (window.top != window.self)
 	{
-		// Is on mt or mtc or aws
+		//~ console.log(window.top == window.self)
+		//~ if (window.top == window.self) { // Does not work
+			//~ alert('x');
+			//~ return; //?
+		//~ }
+		//~ return;
+		// Setting maxIntervals dnw when job is in preview
+		// mode in a new window (not in iframe).
+		//~ var maxIntervals = 30; // 30 * .2s ~= 6s
 		//~ if (!/^https?:\/\/(www\.|s3\.|)(mturk|mturkcontent|amazonaws)\.com/.exec(document.location.href)) return;
 		
 		var interval =  setInterval(function(){
 			parent.postMessage({groupIdRequest: true}, '*');
-		}
-		,200);
+		}, 200);
+		
+		
 		
 		window.addEventListener('message', function(e) {
 				if(!AMT__Global_Vars.groupId)
@@ -306,18 +218,80 @@ AMT__Global_Vars.initializeHitId = function () {
 	}
 }
 
-//top_window preview href
-//https://www.mturk.com/mturk/preview?groupId=20NENHMVHVKCNQ47ZIY4U79KXWE42F&requesterId=A1ZFY5DB22KCK9&hitId=2SIHFL42J1LY9YEDHND0TGFKI6Q2NR&signature=YgugC%2F6Q4KQwhUu8ydrSsjUYyg0%3D&externalHit=true&canAccept=true
+AMT__Global_Vars.initializeTabId = function() {
+		chrome.extension.sendRequest(
+		{
+			getTabId: true
+		}, 
+		function(response) {
+				AMT__Global_Vars.tabId = response.id;
+			}
+		);
+}
 
-//Inner Iframe preview src
-//"https://www.mturkcontent.com/dynamic/hit?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=2X5TBJ3MMDX5JFATLIBHM9MDYH7CY0"
-
-//top_window preview accepted https://www.mturk.com/mturk/accept?hitId=2X5TBJ3MMDX5JFATLIBHM9MDYH7CY0&prevHitSubmitted=false&prevRequester=aditya+sudhakar&requesterId=A1ZFY5DB22KCK9&prevReward=USD0.02&hitAutoAppDelayInSeconds=3600&groupId=20NENHMVHVKCNQ47ZIY4U79KXWE42F&signature=pPP49ZuO0ZYQYgk5N3ng4jgy0DQ%3D&%2Faccept.x=45&%2Faccept.y=6
-
-//Inner Iframe accepted src
-//https://www.mturkcontent.com/dynamic/hit?assignmentId=2598MZ9O9Z6K0U2SPF8H2RLFVKG1AA&hitId=2X5TBJ3MMDX5JFATLIBHM9MDYH7CY0&workerId=_REDACTED_3_&turkSubmitTo=https%3A%2F%2Fwww.mturk.com
-
-
+//LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.checkPreview)
+	{
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			//Only have the top window send back the response
+			console.log('Commanded to tell if idle');
+			sendResponse({isPreview: AMT__Global_Vars.isPreview});
+		}
+	}	
+	else if(request.isQProduct)
+	{
+		//Only have the top window sending back the response
+		console.log('Commanded to tell if isQProduct: ' + isQProduct);
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			sendResponse({isQProduct: isQProduct});
+		}
+	}
+	else if(request.switchTabNotifier) {
+		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
+		//~ console.log(AMT__Global_Vars.isSubmitting)
+		//~ console.log(AMT__Global_Vars.numSubmitQueries)
+		//~ console.log(!AMT__Global_Vars.isPreview)
+		//~ console.log(AMT__Global_Vars.toggle_ntpassby == 'On')
+		if(AMT__Global_Vars.copyInp) {
+			console.log(AMT__Global_Vars.copyInp);
+			chrome.extension.sendRequest({copyInp: AMT__Global_Vars.copyInp}, function(rs){/**squelch rs**/ AMT__Global_Vars.copyInp = false; });
+			
+		}
+		
+		
+		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
+			AMT__Global_Vars.numSubmitQueries++;
+			new AMT___core_factory().nextTab();
+			//alert('here here');
+		}else {
+			//Do nothing
+		}
+		
+	
+	}
+	else if(request.RACustomKey) {
+		AMT__Global_Vars.RACustomKey = request.RACustomKey.charCodeAt();
+	}
+	else if(request.RA_Button_NextTab) {
+		AMT__Global_Vars.core.return_accept_run_nextTab = request.RA_Button_NextTab == 'On' ? true : false;
+	}
+	else if(request.R_Button_NextTab) {
+		//Implement Later
+	}
+	//~ // Reload the iframes.
+	//~ // This is coming from the context
+	//~ // menu click. And eventpage.js.
+	//~ else if(request.reloadScript) {
+		//~ if(!AMT__Global_Vars.isTopWindow) {
+			//~ setTimeout(function() {
+				//~ window.location.href = window.location.href;
+			//~ }, 5000);
+		//~ }
+	//~ }
+});
 
 //
 
@@ -329,6 +303,13 @@ AMT__Global_Vars.initializeHitId = function () {
  * 
  * */
 
+//Record Returning
+/**
+ * 
+ * **/
+function recordReturn() {
+	sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] = 'return';
+}
 
 /**
  * Tab Switching 
@@ -366,26 +347,6 @@ function showNextTab() {
 								});
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	if(request.checkPreview)
-	{
-		if(AMT__Global_Vars.isTopWindow)
-		{
-			//Only have the top window send back the response
-			console.log('Commanded to tell if idle');
-			sendResponse({isPreview: AMT__Global_Vars.isPreview});
-		}
-	}	
-	else if(request.isQProduct)
-	{
-		//Only have the top window sending back the response
-		console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow)
-		{
-			sendResponse({isQProduct: isQProduct});
-		}
-	}
-});
 /**
  * End of Tab Switching
  * 
@@ -988,39 +949,152 @@ function FindObject(recordName,matchString, timeCutOff) {
 //~ }
 
 /**
- * AMT factories
+ * String Prototypes
  * 
+ * .parseURL
+ * .stateAbbrToFull
+ * 
+ */
+//http://www.abeautifulsite.net/parsing-urls-in-javascript/
+// fork from https://gist.github.com/jlong/2428561
+/**
+ * 
+ * 
+ {
+	hash: ""
+	host: "naturespoisons.files.wordpress.com"
+	hostname: "naturespoisons.files.wordpress.com"
+	pathname: "/2014/05/veratrum-californicum-by-dcrjsr-cc-by-sa-3-0.jpg"
+	port: ""
+	protocol: "http:"
+	search: "?w=1200"
+ }
+ */
+String.prototype.parseURL = function() {
+	var parser = document.createElement('a'),
+		searchObject = {},
+		queries, split, i;
+	
+	// USING :: this.toString()
+	//~ console.log(this);
+	//~ console.log(this.toString());
+	//~ console.log(this.join(''));
+	//~ return;
+	
+	// Let the browser do the work
+	parser.href = this.toString() + '';
+	
+	// Convert query string to object
+	queries = parser.search.split('&'); //.replace(/^?/, '')
+	for( i = 0; i < queries.length; i++ ) {
+		split = queries[i].split('=');
+		searchObject[split[0]] = split[1];
+	}
+	
+	return {
+		protocol: parser.protocol,
+		host: parser.host,
+		hostname: parser.hostname,
+		port: parser.port,
+		pathname: parser.pathname,
+		search: parser.search,
+		searchObject: searchObject,
+		hash: parser.hash
+	};
+}
+String.prototype.stateAbbrToFull = function() {
+	
+	//~ console.log(this);
+	//~ console.log(this[0]);
+	
+	
+	// BUILD STR
+	var str = '';
+	for (var i in this) {
+		//~ console.log(this[i]);
+		if (i == 'length' || this[i].length != 1) {
+			break;
+		}
+		str += this[i];
+	}
+	
+	str = str.toLowerCase().trim();
+	
+	console.log(str);
+	
+	for (var i in MT___states) {
+		if (i.toLowerCase() == str) {
+			return MT___states[i];
+			//~ break;
+		}
+	}
+	
+	// None found?
+	return str.toUpperCase();
+}
+
+/**
+ * AMT factories
+ *
+ * AMT__rq
+ * AMT___core_factory
  * AMT___events_factory
  * AMT___requests_factory
  * AMT___huge_vars_factory
  * AMT___items_factory
- * AMT___core_factory
+ * AMT___site_scrapes
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
 **/
 
 /**
- * AMT___events_factory
+ * AMT requester functions
+ * AMT__rq
+ * 
+ */
+var AMT__rq = function() {
+}
+
+/**
+ * AMT___core_factory
  *
- * @
- * @   
+ * 
+ * @function nextTab
+ * @function nextWindow
+ * @function top_window__addEventListener_iframe
+ * @function iframe2parent__postMessage
+ * @function amt_home_show_tasks
+ * @function iframe2parent__addEventListener_child
+ * @function el_innerHeight
  */
 function AMT___core_factory() {
 
 }
-//Shows the tab on the right of the curren tab
+//Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function() {
-	chrome.extension.sendRequest({
-					nextTab: true
-				},
-				function(response)
-				{
-				}
-			);
+	chrome.extension.sendRequest(
+		{
+			nextTab: true
+		},
+		function(response)
+		{
+		}
+	);
 }
 //
 AMT___core_factory.prototype.nextWindow = function() {
 	console.log('core_nextWindow');
-	chrome.extension.sendRequest({
+	chrome.extension.sendRequest(
+		{
 			core_nextWindow: true
 		},
 		function(response)
@@ -1028,6 +1102,118 @@ AMT___core_factory.prototype.nextWindow = function() {
 		}
 	);
 }
+/**
+ * .el_innerHeight
+ * 
+ * @param options {}
+ * @param 	.elements
+ * @param 	.offset
+ * 
+ * NOTES: innerHeight is always -14px because many times the bottom of page will have
+ * a horizontal scroll bar.
+ */
+AMT___core_factory.prototype.el_innerHeight = function(options) {
+	
+	// success
+	// See below (success function)
+	//
+	options.callback__success = success;
+	
+	// 
+	if (window.top == window.self) {
+		success(options, {
+			innerHeight: window.innerHeight
+		})
+		
+		// Quit here
+		return;
+	}
+	
+	// Still going?
+	// Start the child listening
+	// Then message the parent
+	
+	// Child
+	// Pass in options
+	new AMT___core_factory().childFrame__addEventListener_iframe(
+		options
+	);
+	
+	// Parent
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'window.innerHeight'
+	});
+	
+	// The success function
+	// @param : options
+	// @param : v {}
+	function success(options, v) {
+		
+		// v.action
+		// v.innerHeight
+		
+		console.log(v);
+		
+		// If callback
+		if (options.hasOwnProperty('callback_function')) {
+			options.callback_function(v.innerHeight);
+			return; //exit
+		}
+		
+		// Default ...
+		// Set element heights.
+		// options.elements
+		// options.offset
+		
+		console.log('parent innerHeight:' + v.innerHeight);
+		
+		var new_height = (v.innerHeight*1 - options.offset - 14) + 'px';
+		
+		console.log('new_height:' + new_height);
+		
+		var els = options.elements;
+		for (var i in els) {
+			var el = els[i];
+			el.style.height = new_height;
+		}
+		
+	}
+	
+}
+/**
+ * .childFrame__addEventListener_iframe
+ * 
+ * @param options {}
+ */
+AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(options) {
+	
+	var options = options;
+	
+	window.addEventListener("message", complete, false);
+	
+	function complete(event) {
+		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		var v = event.data;
+		
+		switch(v.action) {
+			
+			// window.innerHeight
+			// This is usually about 10px too tall... ?
+			case 'window.innerHeight':
+				
+				options.callback__success(options, v);
+				
+				break;
+		}
+	}
+}
+/**
+ * .top_window__addEventListener_iframe
+ * 
+ * @param v.action
+ * @param v.threshold_to_change => ChangeWindowCount
+ */
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
 	
 	// Is there an iframe on the page?
@@ -1046,6 +1232,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
+		
+		//~ console.log(v);
 		
 		switch(v.action) {
 			case 'return_button__showNextTab':
@@ -1066,6 +1254,50 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			// AMT___returnAndAcceptButton()
 			case 'return_and_accept_button__nextTab':
 				AMT__Global_Vars.core.return_accept_run_nextTab = true;
+				break;
+			case 'return_button__nextTab':
+				AMT__Global_Vars.core.return_run_nextTab = true;
+				break;
+			case 'return_and_accept':
+				document.getElementById('MT__gm_returnaccept').click();
+				break;
+			case 'changeWindowNotifier':
+				//alert('here 1');
+				if(!localStorage['ChangeWindowCount'])
+					localStorage['ChangeWindowCount'] = 0;
+				if(localStorage['ChangeWindowCount'] <= v.threshold_to_change)
+				{
+					localStorage['ChangeWindowCount']++;
+				}
+				else {
+					localStorage['ChangeWindowCount'] = 0;
+					document.body.style.backgroundColor = 'silver';
+					chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
+					//~ new AMT___core_factory().nextWindow();
+				}
+				break;
+			
+			/**
+			 * window.innerHeight
+			 * 
+			 * If offsetTop > 60 then do not use this
+			 * in the calculation.
+			 */
+			case 'window.innerHeight':
+				
+				var ifr = document.getElementsByTagName('iframe')[0];
+				
+				// Get the current offset of the iframe!
+				// Usually set by tools.
+				var ot = (ifr.offsetTop <= 60) ? ifr.offsetTop : 0;
+				//~ console.log('ot' + ot);
+				//~ console.log('ih' + window.innerHeight);
+				
+				// Send response
+				ifr.contentWindow.postMessage({
+					action: 'window.innerHeight',
+					innerHeight: window.innerHeight - ot
+				}, '*');
 				break;
 		}
 	}
@@ -1094,11 +1326,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
 	//~ console.log(options);
+	
 	parent.postMessage({
-		action: options.action //'return_button__showNextTab'
-		
-		//~ action: 'return',
-		//~ callback_function: callback_function
+		action: options.action
 	}, "*");
 	
 	//~ setInterval
@@ -1109,11 +1339,105 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 /**
  * AMT___events_factory
  *
- * @
- * @   
+ * @ keydown__blur_field
+ * @ mouseup__delete_range   
+ * @ mousewheel_zoom_image
  */
 function AMT___events_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * 
+ * @param element	img: 
+ * @param array		img_array: array of elements (optional)
+ * @param int		scroll_speed: int, default 0.1
+ */
+AMT___events_factory.prototype.mousewheel_scroll_image = function(options_object) {
+	
+	var opts = options_object;
+	if (!opts.hasOwnProperty('scroll_speed')) {
+		opts.scroll_speed = 12;
+	}
+	
+	if (!opts.img.hasOwnProperty('mousewheel_scroll_image__value')) {
+		opts.img.mousewheel_scroll_image = 0;
+	}
+	
+	if (!opts.hasOwnProperty('img_array')) {
+		opts.img_array = [img];
+	}
+	
+	for (var i in opts.img_array) {
+		opts.img_array[i].addEventListener('mousewheel', function(e) {
+			
+			if (e.wheelDelta > 0) {		// "120", upward, so take Y axis more negative
+				this.style.marginTop = (this.mousewheel_scroll_image * 1 + 12) + 'px';
+				this.mousewheel_scroll_image += 10;
+			} else {					// "-120", down, so take Y axis higher
+				this.style.marginTop = (this.mousewheel_scroll_image * 1 - 12) + 'px';
+				this.mousewheel_scroll_image -= 10;
+			}
+			
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		}, false);
+	}
+}
+/**
+ * 
+ * @param element	img: element
+ * @param array		img_array: array of elements (optional)
+ * @param int		zoom_speed: default 0.1
+ * @param int		onclick_reset_zoom: default 1 (NOTE: if not present then no reset is made.)
+ */
+AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) {
+	
+	var opts = options_object;
+	if (!opts.hasOwnProperty('zoom_speed')) {
+		opts.zoom_speed = 0.1;
+	}
+	
+	if (!opts.hasOwnProperty('img_array')) {
+		opts.img_array = [img];
+	}
+	
+	for (var i in opts.img_array) {
+		opts.img_array[i].addEventListener('mousewheel', function(e) {
+			//~ console.log(e);
+			//~ console.log(e.wheelDelta * 1);
+			//~ console.log(e.wheelDelta * 1 > 0);
+			//~ console.log(this)
+			//~ console.log(this.style)
+			//~ console.log(this.style.zoom)
+			
+			if (!this.style.zoom)
+				this.style.zoom = 1;
+			
+			//~ console.log(typeof e.wheelDelta);
+			
+			if (e.wheelDelta > 0) {		// "120", zoom in
+				this.style.zoom = this.style.zoom * 1 + 0.1;
+			} else {					// "-120", zoom out
+				this.style.zoom = this.style.zoom * 1 - 0.1;
+			}
+			
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		}, false);
+		
+		// add_onclick_reset
+		if (opts.hasOwnProperty('add_onclick_reset')) {
+			opts.img_array[i].zoom_reset_value = opts.add_onclick_reset;
+			//~ opts.img_array[i].onclick = function() {
+				//~ this.style.zoom = 1;
+			//~ }
+			opts.img_array[i].addEventListener('click', function(e) {
+				this.style.zoom = this.zoom_reset_value; // 
+			}, false);
+		}
+	}
 }
 AMT___events_factory.prototype.keydown__blur_field = function(e) {
 	var k = e.keyCode;
@@ -1126,6 +1450,28 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 		}, 40);
 		return true;
 	}
+}
+AMT___events_factory.prototype.mouseup__delete_range = function(options_object) {
+	
+	var options_object = options_object;
+	
+	options_object.element.addEventListener('mouseup', function() {
+		
+		// Only run when the selection is not blank.
+		//
+		//
+		if (window.getSelection().toString() == '') return;
+		
+		var text = this.value;
+		var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
+		this.value = new_text;
+		
+		if (options_object.hasOwnProperty('callback')) {
+			options_object.callback(options_object);
+		}
+		
+	}, false);
+	
 }
 
 /**
@@ -1145,6 +1491,83 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
+	
+	console.log(options_object);
+	
+	//AMT__image_2_OCR
+	
+	//~ // INIT (x 10s)
+	//~ var x_interval_init = setInterval(function() {
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
+			//~ onload: function (response) {
+				//~ var rs = response.responseText;
+				//~ 
+				// RETURN options_object
+				// Add response.
+				//~ options_object.response = response;
+				//~ options_object.text = rs;
+				//~ 
+				//~ 
+				//~ options_object.callback_function(options_object);
+			//~ }
+		//~ });
+	//~ }, 30000);
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
+		onload: function (response) {
+		}
+	});
+	
+	// SET INTERVAL
+	options_object.CHECK_COMPLETE = true;
+	
+	var x_interval = setInterval(function() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (rs.indexOf('__OCR_COMPLETE__') != -1) {
+					clearInterval(x_interval);
+					//~ clearInterval(x_interval_init);
+					rs = rs.replace(/^__OCR_COMPLETE__/, '');
+				} else {
+					return;
+				}
+				
+				// Here?
+				// RETURN options_object
+				// Add response.
+				
+				options_object.response = response;
+				options_object.text = rs;
+				
+				options_object.callback_function(options_object);
+				
+				//{response:response, text: rs});
+			}
+		});
+	}, 1000);
+}
+AMT___requests_factory.prototype.url_to_status_code = function(options_object) {
+	
+	var options_object = options_object;
+	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: options_object.url,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			options_object.callback_function({status:response.status});
+		}
+	});
 }
 AMT___requests_factory.prototype.general_functions__numberFormat__numberWithCommas = function(str) {
 	var parts = (str + '').split(".");
@@ -1279,6 +1702,12 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
 //
 AMT___requests_factory.prototype.general_functions__md5 = function(str)
 {
+	return any_md5(str, '0123456789ABCDEF');
+	
+	//xxxxx
+	//xxxxx
+	//xxxxx
+	//xxxxx
   //  discuss at: http://phpjs.org/functions/md5/
   // original by: Webtoolkit.info (http://www.webtoolkit.info/)
   // improved by: Michael White (http://getsprink.com)
@@ -1289,276 +1718,920 @@ AMT___requests_factory.prototype.general_functions__md5 = function(str)
   //  depends on: utf8_encode
   //   example 1: md5('Kevin van Zonneveld');
   //   returns 1: '6e658d4bfcb59cc13f96c14450ac40b9'
-
-  var xl;
-
-  var rotateLeft = function(lValue, iShiftBits) {
-    return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
-  };
-
-  var addUnsigned = function(lX, lY) {
-    var lX4, lY4, lX8, lY8, lResult;
-    lX8 = (lX & 0x80000000);
-    lY8 = (lY & 0x80000000);
-    lX4 = (lX & 0x40000000);
-    lY4 = (lY & 0x40000000);
-    lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
-    if (lX4 & lY4) {
-      return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
-    }
-    if (lX4 | lY4) {
-      if (lResult & 0x40000000) {
-        return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-      } else {
-        return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
-      }
-    } else {
-      return (lResult ^ lX8 ^ lY8);
-    }
-  };
-
-  var _F = function(x, y, z) {
-    return (x & y) | ((~x) & z);
-  };
-  var _G = function(x, y, z) {
-    return (x & z) | (y & (~z));
-  };
-  var _H = function(x, y, z) {
-    return (x ^ y ^ z);
-  };
-  var _I = function(x, y, z) {
-    return (y ^ (x | (~z)));
-  };
-
-  var _FF = function(a, b, c, d, x, s, ac) {
-    a = addUnsigned(a, addUnsigned(addUnsigned(_F(b, c, d), x), ac));
-    return addUnsigned(rotateLeft(a, s), b);
-  };
-
-  var _GG = function(a, b, c, d, x, s, ac) {
-    a = addUnsigned(a, addUnsigned(addUnsigned(_G(b, c, d), x), ac));
-    return addUnsigned(rotateLeft(a, s), b);
-  };
-
-  var _HH = function(a, b, c, d, x, s, ac) {
-    a = addUnsigned(a, addUnsigned(addUnsigned(_H(b, c, d), x), ac));
-    return addUnsigned(rotateLeft(a, s), b);
-  };
-
-  var _II = function(a, b, c, d, x, s, ac) {
-    a = addUnsigned(a, addUnsigned(addUnsigned(_I(b, c, d), x), ac));
-    return addUnsigned(rotateLeft(a, s), b);
-  };
-
-  var convertToWordArray = function(str) {
-    var lWordCount;
-    var lMessageLength = str.length;
-    var lNumberOfWords_temp1 = lMessageLength + 8;
-    var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
-    var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
-    var lWordArray = new Array(lNumberOfWords - 1);
-    var lBytePosition = 0;
-    var lByteCount = 0;
-    while (lByteCount < lMessageLength) {
-      lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-      lBytePosition = (lByteCount % 4) * 8;
-      lWordArray[lWordCount] = (lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
-      lByteCount++;
-    }
-    lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-    lBytePosition = (lByteCount % 4) * 8;
-    lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
-    lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
-    lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
-    return lWordArray;
-  };
-
-  var wordToHex = function(lValue) {
-    var wordToHexValue = '',
-      wordToHexValue_temp = '',
-      lByte, lCount;
-    for (lCount = 0; lCount <= 3; lCount++) {
-      lByte = (lValue >>> (lCount * 8)) & 255;
-      wordToHexValue_temp = '0' + lByte.toString(16);
-      wordToHexValue = wordToHexValue + wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
-    }
-    return wordToHexValue;
-  };
-  
-  var utf8_encode = function(argString)
-  {
-	  //  discuss at: http://phpjs.org/functions/utf8_encode/
-	  // original by: Webtoolkit.info (http://www.webtoolkit.info/)
-	  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	  // improved by: sowberry
-	  // improved by: Jack
-	  // improved by: Yves Sucaet
-	  // improved by: kirilloid
-	  // bugfixed by: Onno Marsman
-	  // bugfixed by: Onno Marsman
-	  // bugfixed by: Ulrich
-	  // bugfixed by: Rafal Kukawski
-	  // bugfixed by: kirilloid
-	  //   example 1: utf8_encode('Kevin van Zonneveld');
-	  //   returns 1: 'Kevin van Zonneveld'
-
-	  if (argString === null || typeof argString === 'undefined') {
-		return '';
-	  }
-
-	  var string = (argString + ''); // .replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-	  var utftext = '',
-		start, end, stringl = 0;
-
-	  start = end = 0;
-	  stringl = string.length;
-	  for (var n = 0; n < stringl; n++) {
-		var c1 = string.charCodeAt(n);
-		var enc = null;
-
-		if (c1 < 128) {
-		  end++;
-		} else if (c1 > 127 && c1 < 2048) {
-		  enc = String.fromCharCode(
-			(c1 >> 6) | 192, (c1 & 63) | 128
-		  );
-		} else if ((c1 & 0xF800) != 0xD800) {
-		  enc = String.fromCharCode(
-			(c1 >> 12) | 224, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-		  );
-		} else { // surrogate pairs
-		  if ((c1 & 0xFC00) != 0xD800) {
-			throw new RangeError('Unmatched trail surrogate at ' + n);
-		  }
-		  var c2 = string.charCodeAt(++n);
-		  if ((c2 & 0xFC00) != 0xDC00) {
-			throw new RangeError('Unmatched lead surrogate at ' + (n - 1));
-		  }
-		  c1 = ((c1 & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
-		  enc = String.fromCharCode(
-			(c1 >> 18) | 240, ((c1 >> 12) & 63) | 128, ((c1 >> 6) & 63) | 128, (c1 & 63) | 128
-		  );
+}
+/**
+ * 
+ * @param: options_object {}
+ * @param: .url
+ */
+// ie http://www.ebay.com/itm/SPEEDO-SWIMMING-GOGGLE-BOOMERANG-MIRRORED-UV-LATES-FREE-ANTI-FOG-SOFT-FLEX-FRAME-/231229466737?pt=LH_DefaultDomain_0
+AMT___requests_factory.prototype.ebay__get_listings_page = function(options_object) //
+{
+	var opts = options_object;
+	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: opts.url,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			if (response.status > 200) {
+				if (opts.hasOwnProperty('callback_error'))
+					opts.callback_error();
+				return;
+			}
+			
+			var r;
+			opts.result = {
+				title: '',
+				itemAttributes: ''
+			};
+			
+			r = /<span id="vi-lkhdr-itmTitl" class="u-dspn">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs);
+			if (r) {
+				r = r[1].replace(/<[^>]*>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ');
+				r = __js_clean_html_str(r);
+				opts.result.title = r;
+			}
+			
+			r = /<div class="itemAttr">((.|\s)*?(?=<\/div>[\r\n]+			<\/div>|$)|$)/.exec(rs);
+			if (r) {
+				opts.result.itemAttributes = r[1].trim();
+			}
+			
+			opts.callback_success(opts);
 		}
-		if (enc !== null) {
-		  if (end > start) {
-			utftext += string.slice(start, end);
-		  }
-		  utftext += enc;
-		  start = end = n + 1;
+	});
+}
+// google_search
+AMT___requests_factory.prototype.google_search = function(options_object) //
+{
+	
+	var opts = options_object;
+	
+	var u = 'https://www.google.com/search?'+
+		'q='+encodeURIComponent(opts.query)+
+		'&aqs=chrome..69i57.791j0j7'+
+		'&sourceid=chrome&es_sm=93&ie=UTF-8';
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			if (response.status > 200) {
+				if (opts.hasOwnProperty('callback_error'))
+					opts.callback_error();
+				return;
+			}
+			// else if (/captcha/.exec(rs)) {
+			//	document.body.style.backgroundColor = 'pink';
+			//	return;
+			//}
+			
+			var r;
+			r = /<h3 class="r"><a href="([^"]+)[^>]*>((.|\s)*?(?=<!--n-->|$)|$)/g;
+			var count = 0;
+			
+			// RESULTS array
+			opts.results = [];
+			
+			// ...
+			if (r.exec(rs)) {
+				r.lastIndex = 0;
+				while (m = r.exec(rs)) {
+					
+					m[1] = __js_clean_html_str(m[1]);
+					
+					//if (/^https?:\/\/([^\.]+\.|)google\./i.exec(m[1]))
+					//	continue;
+					
+					// replace "harm your comp."
+					m[1] = m[1].replace(/^\/interstitial\?url=/, '');
+					
+					// google.com
+					if (/^\//i.exec(m[1]))
+						continue;
+					
+					//
+					//
+					//
+					m[2] = m[2].replace(/<b>/g, '`');
+					m[2] = m[2].replace(/<\/b>/g, '``');
+					m[2] = m[2].replace(/<[^>]+>/g, ' ');
+					m[2] = m[2].replace(/[<>]/g, ' ');
+					m[2] = m[2].replace(/``/g, '</b>');
+					m[2] = m[2].replace(/`/g, '<b>');
+					
+					// Assoc. array
+					opts.results.push(
+						[
+							m[1],
+							m[2]
+						]
+					);
+				}
+			}
+			
+			opts.callback_success(
+				opts
+			);
 		}
-	  }
-
-	  if (end > start) {
-		utftext += string.slice(start, stringl);
-	  }
-
-	  return utftext;
-  }
-
-  var x = [],
-    k, AA, BB, CC, DD, a, b, c, d, S11 = 7,
-    S12 = 12,
-    S13 = 17,
-    S14 = 22,
-    S21 = 5,
-    S22 = 9,
-    S23 = 14,
-    S24 = 20,
-    S31 = 4,
-    S32 = 11,
-    S33 = 16,
-    S34 = 23,
-    S41 = 6,
-    S42 = 10,
-    S43 = 15,
-    S44 = 21;
-
-  str = utf8_encode(str);
-  x = convertToWordArray(str);
-  a = 0x67452301;
-  b = 0xEFCDAB89;
-  c = 0x98BADCFE;
-  d = 0x10325476;
-
-  xl = x.length;
-  for (k = 0; k < xl; k += 16) {
-    AA = a;
-    BB = b;
-    CC = c;
-    DD = d;
-    a = _FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
-    d = _FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
-    c = _FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
-    b = _FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
-    a = _FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
-    d = _FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
-    c = _FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
-    b = _FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
-    a = _FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
-    d = _FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
-    c = _FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
-    b = _FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
-    a = _FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
-    d = _FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
-    c = _FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
-    b = _FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
-    a = _GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
-    d = _GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
-    c = _GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
-    b = _GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
-    a = _GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
-    d = _GG(d, a, b, c, x[k + 10], S22, 0x2441453);
-    c = _GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
-    b = _GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
-    a = _GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
-    d = _GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
-    c = _GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
-    b = _GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
-    a = _GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
-    d = _GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
-    c = _GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
-    b = _GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
-    a = _HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
-    d = _HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
-    c = _HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
-    b = _HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
-    a = _HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
-    d = _HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
-    c = _HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
-    b = _HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
-    a = _HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
-    d = _HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
-    c = _HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
-    b = _HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
-    a = _HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
-    d = _HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
-    c = _HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
-    b = _HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
-    a = _II(a, b, c, d, x[k + 0], S41, 0xF4292244);
-    d = _II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
-    c = _II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
-    b = _II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
-    a = _II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
-    d = _II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
-    c = _II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
-    b = _II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
-    a = _II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
-    d = _II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
-    c = _II(c, d, a, b, x[k + 6], S43, 0xA3014314);
-    b = _II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
-    a = _II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
-    d = _II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
-    c = _II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
-    b = _II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
-    a = addUnsigned(a, AA);
-    b = addUnsigned(b, BB);
-    c = addUnsigned(c, CC);
-    d = addUnsigned(d, DD);
-  }
-
-  var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
-
-  return temp.toLowerCase();
+	});
+}
+/**
+ * function .linkedin_people_search
+ * 
+ * @params :
+ * : container = div element, append all elements to this
+ * : search_params = {}
+ * 		searches['search-key'] = value
+ * 		Where search-key = first name, last name, company, zip code, find zip (find zip code from location), job title
+ * 		This corresponds to the left-side inputs, typically d2a,d2b,d2c,d2d, etc.
+ * : callback_function
+ * : image_search : boolean (t,f)
+ * : nextTab : boolean (t,f), call nextTab() on mouse click
+ * : sortResults : boolean, sort by people by connectionCount
+ * 
+ * NOTES: companyScope and/or titleScope must follow company and title, respectively.
+ * Features:
+ * 	ef.mouseup__delete_range({
+			element: d2,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
+ */
+AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
+{
+	
+	//
+	var ps_object = ps_object;
+	
+	/*BEGIN ITEMS*/
+	//
+	var div_cx_l;
+	div_cx_l = document.createElement('div');
+	div_cx_l.setAttribute('style','float:left;width:30%;height:98%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	ps_object.container.appendChild(div_cx_l);
+	//
+	var div_cx_r;
+	div_cx_r = document.createElement('div');
+	div_cx_r.setAttribute('style','float:left;width:68%;height:98%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	ps_object.container.appendChild(div_cx_r);
+	//
+	var div_cx_debug;
+	div_cx_debug = document.createElement('div');
+	div_cx_debug.setAttribute('style','border-top:1px solid blue;overflow:auto;');
+	
+	
+	//~ ps_object.container.appendChild(div_cx_debug);
+	
+	//
+	//~ var div_cx_status; //?
+	//~ div_cx_r = document.createElement('div');
+	//~ div_cx_r.setAttribute('style','float:left;width:30%;height:30%;border:1px solid blue;background-color:#eee;overflow:auto;');
+	//~ document.body.appendChild(div_cx_r);
+	//~ var b_cx = document.createElement('br');
+	//~ b_cx.setAttribute('style', 'clear:both;');
+	//
+	/*END ITEMS*/
+	
+	var o = {
+		cx_elements: [],
+		
+		// bolds
+		bold_nm_array: [],
+		bold_comp_array: [],
+		bold_title_array: []
+		
+	};
+	
+	
+	// Keydown
+	// & mouseup__delete_range
+	var ef = new AMT___events_factory();
+	
+	// Append the inputs that are search controllers
+	var sp = ps_object.search_params;
+	for (var input_name in sp) {
+		var input_value = sp[input_name];
+		
+		var found = false;
+		switch(input_name) {
+			case 'firstName':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				break;
+			case 'lastName':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				break;
+			case 'title':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
+				break;
+			case 'company':
+				found = true;
+				var d;
+				d = document.createElement('textarea');
+				d.setAttribute('style', 'width:99%;height:40px;');
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
+				//~ o.bold_title_array = input_value.split(' ');
+				break;
+				
+			// Hidden elements
+			//
+			//
+			case 'titleScope': // scope
+				found = false; // not this
+				var d;
+				d = document.createElement('input');
+				d.type = 'hidden';
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// set value here
+				d.value = input_value;
+				break;
+			case 'companyScope': // scope
+				found = false; // not this
+				var d;
+				d = document.createElement('input');
+				d.type = 'hidden';
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// set value here
+				d.value = input_value;
+				break;
+		}
+		if (found) {
+			d.value = input_value;
+			d.addEventListener('keydown', ef.keydown__blur_field, true);
+			d.onblur = function() {
+				this.value = this.value.trim();
+				linkedin_people();
+			}
+			// Delete by range!
+			ef.mouseup__delete_range({
+				element: d,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+		}
+	}
+	
+	// Overwrite bold_title_array
+	if (ps_object.hasOwnProperty('bold_array_comp')) {
+		o.bold_title_array = ps_object.bold_array_comp;
+	}
+	
+	// Place all input into debug div
+	// div_cx_debug
+	//
+	div_cx_l.appendChild(div_cx_debug);
+	for (var input_name in sp) {
+		var input_value = sp[input_name];
+		
+		//~ div_cx_debug.innerText += input_name + ':' + input_value + '\n';
+		
+		var inp = document.createElement('input');
+		inp.setAttribute('style', 'background-color:none;border:0;width:30%;');
+		inp.value = input_name;
+		inp.disabled = true;
+		div_cx_debug.appendChild(inp);
+		
+		div_cx_debug.appendChild(document.createTextNode(' '+input_value));
+		div_cx_debug.appendChild(document.createElement('br'));
+	}
+	
+	// init
+	//
+	//
+	AMT___POPUP__initializeGlobals(
+		linkedin_people
+	);
+	
+	// ...
+	function linkedin_people() {
+		
+		var out;
+		out = div_cx_r;
+		
+		var url;
+		url = 'http://www.linkedin.com/vsearch/pj?openAdvancedForm=true&pt=people&locationType=I';
+		
+		// Generate the URL
+		var sp = o.cx_elements;
+		for (var i in sp) {
+			var element = sp[i];
+			var input_name = element.cx_id;
+			var input_value = element.value;
+			//~ console.log(input_name);
+			//~ console.log(input_value);
+			
+			
+			switch(input_name) {
+				case 'firstName':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'lastName':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'title':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'company':
+					if (input_value != '')
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				
+				// Hidden elements
+				//
+				//
+				case 'titleScope': // CP = current or past
+					//~ if ()
+					url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+				case 'companyScope': // CP = current or past
+					// Only if url.indexOf
+					if (url.indexOf('&company=') != -1)
+						url += '&' + input_name + '=' + encodeURIComponent(input_value);
+					break;
+			}
+		}
+		
+		out.innerHTML = '';
+		
+		
+		// Is cached?
+		//
+		//
+		var rf = new AMT___requests_factory();
+		var md5_url = any_md5(url, '0123456789ABCDEF');
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/.cached/'+md5_url,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status == 200 && 0==1) {
+					linkedin_people__processQuery({rs: rs});
+					return;
+				}
+				
+				// Still here?
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							out.innerHTML = response.status;
+							return;
+						}
+						
+						var r;
+						r = JSON.parse(rs);
+						//console.log(r);
+						
+						if (r.status != 'ok') return;
+						if (!r.content) {
+							return;
+						}
+						// Write to file !
+						rf.io__write_to_file(
+							{
+								data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+										'&AMT__serverSide_write__folder=.cached'+
+										'&AMT__serverSide_write__file=' + md5_url,
+								rs:		response.responseText,
+								host:	MT___host
+							},
+							linkedin_people__processQuery
+						);
+						
+					}
+				});
+			}
+		});
+		
+		
+		
+		
+		//~ url+= '&company='+encodeURIComponent(d2c.value.trim());
+		//~ url+= '&companyScope=CP'; // CP scope is current/past
+		//~ url+= '&firstName='+encodeURIComponent(d2.value.trim());
+		//~ url+= '&lastName=' +encodeURIComponent(d2b.value.trim());
+		//~ //url+= '&keywords='+encodeURIComponent(d2.value.trim());
+		//~ url+= '&pt=people';
+		//~ url+= '&locationType=I';
+		//~ url+= '&openAdvancedForm=true';
+		//~ url+= '&countryCode='+encodeURIComponent(d2e.value); //?
+		//~ 
+		//~ if (d2d.style.border != '') {
+			//~ url += '&postalCode='+encodeURIComponent(d2d.value);
+			//~ url += '&distance=200';
+			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
+		//~ } else {
+			//~ url += '&countryCode='+encodeURIComponent(d2e.value);
+		//~ }
+	}
+	
+	/**
+	 * function linkedin_people__processQuery
+	 */
+	function linkedin_people__processQuery(write_object) {
+		
+		var out;
+		out = div_cx_r;
+		
+		var sp = o.cx_elements;
+		for (var i in sp) {
+			var element = sp[i];
+			//~ var input_name = element.cx_id;
+			var input_value = element.value;
+			out.innerText += input_value + '\n';
+		}
+		
+		var r;
+		r = JSON.parse(write_object.rs);
+		if (r.status != 'ok') return;
+		if (!r.content) {
+			return;
+		}
+		if (r.content.page.voltron_unified_search_json.search.results.length == 0) {
+			div_cx_r.innerText += '0';
+			//~ if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.skip();
+			//~ }
+			return;
+		}
+		
+		//~ // still here?
+		//~ if (AMT__Global_Vars.isPreview) { // PREVIEW ?
+			//~ AMT___Floater.accept();
+			//~ return;
+		//~ }
+		
+		if (r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n)
+			out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_with_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+		else
+			out.innerHTML = r.content.page.voltron_unified_search_json.search.results_count_without_keywords_i18n.replace(/<[^>]+>/g, '') + '<br>';
+			
+		
+		var x = r.content.page.voltron_unified_search_json.search.results;
+		console.log(x);
+		
+		var snp,s;
+		var y;
+		
+		console.log(o);
+		
+		// Is it desirable to sort by the number of connections?
+		// 
+		//
+		if (ps_object.sortResults) {
+			x = x.sort(function(a, b) {
+				return b.person.connectionCount - a.person.connectionCount;
+			});
+		}
+		//~ if () {
+			//~ var y = y;
+			//~ 
+			//~ for (var i in x) {
+			//~ 
+			//~ if (!x[i].hasOwnProperty('person'))
+				//~ continue;
+				//~ 
+		//~ }
+		
+		//var auto_click_inp = false;
+		for (var i in x) {
+			
+			if (!x[i].hasOwnProperty('person'))
+				continue;
+			
+			y = x[i].person;
+			
+			//~ console.log(y); // this person
+			
+			if (y.hasOwnProperty('snippets')) {
+				snp = y.snippets;
+				s = '';
+				var heading;
+				var fmt_body;
+				if (snp.length) {
+					for (var j in snp) {//console.log(snp[j]);
+						heading = false;
+						fmt_body = false;
+						
+						s += '<br>';
+						s += snp[j].fieldName + ': ';
+						
+						if (snp[j].hasOwnProperty('bodyList') && snp[j].bodyList.length) {
+							for (var k in snp[j].bodyList) {
+								s += snp[j].bodyList[k] + ' | ';
+							}
+						} else if (snp[j].hasOwnProperty('fmt_heading') && snp[j].fmt_heading.trim() != '') {
+							s += snp[j].fmt_heading;
+						} else {
+							s += snp[j].fmt_body;
+						}
+					}
+				} else snp = '';
+			} else  snp = '';
+			s = s.replace(/<hr>/g, '')
+			s = s.replace(/^<br>/g, '')
+			
+			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
+			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+			
+			var z;
+			var headline;
+			var et, ec;
+			
+			y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
+			
+			z = y.fmt_headline;
+			
+			var headline_match = false;
+			if (z.indexOf(' at ') != -1) {
+				z = /^((.|\s)*?(?= at ([\d\D]+)|$)|$)/.exec(z);
+				if (z && / at /gi.exec(y.fmt_headline).length === 1) {
+					et = MT__bold(z[1], o.bold_title_array);
+					ec = MT__bold(z[3], o.bold_title_array);
+					headline = '\
+						<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="T" >\
+						<div class="exe-title" style="display:inline;">\
+							 \
+						</div>\
+						<br >\
+						<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="C" >\
+						<div class="exe-comp" style="display:inline;">\
+							 \
+						</div>\
+						<br >\
+						';
+					headline_match = true;
+				}
+			}
+			if (!headline_match) {
+				et = y.fmt_headline;
+				et = MT__bold(et, o.bold_title_array);
+				et = MT__bold(et, o.bold_title_array);
+				ec = '';
+				headline = '\
+					<input style="width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;" value="T" >\
+					<div class="exe-title" style="display:inline;">\
+						 \
+					</div>\
+					<div class="exe-comp" style="display:none;">\
+						 \
+					</div>\
+					<br >\
+					';
+				
+			}
+			headline += '\
+				<div class="exe-headline" style="display:none;">\
+					 \
+				</div>';
+			
+			
+			
+			var dv = document.createElement('div');
+			dv.setAttribute('style', 'border-bottom:1px solid teal;');
+			dv.className = 'exe-div';
+			
+			var el_a = document.createElement('a');
+			el_a.setAttribute('style', 'position:relative;display:inline-block;margin-left:200px;');
+			el_a.target    = 'new_win';
+			el_a.innerText = ' LINK';
+			el_a.href = y.link_nprofile_view_3;
+			dv.appendChild(el_a);
+			//"https://www.linkedin.com/profile/view?id=15329492&authType=NAME_SEARCH&authToken=sKun&locale=en_US&srchid=2041448321402183517267&srchindex=1&srchtotal=57&trk=vsrp_people_res_name&trkInfo=VSRPsearchId%3A2041448321402183517267%2CVSRPtargetId%3A15329492%2CVSRPcmpt%3Aprimary"
+			
+			var el_div = document.createElement('div');
+			//~ el_div.setAttribute('style', 'display:inline;');
+			el_div.innerHTML = MT__bold(y.firstName + ' ' + y.lastName, o.bold_nm_array);
+			dv.appendChild(el_div);
+			
+			//~ dv.appendChild(document.createElement('br'));
+			
+			var el_div = document.createElement('div');
+			el_div.setAttribute('style', '');
+			el_div.innerHTML = headline;
+			dv.appendChild(el_div);
+			
+			var el_inp = document.createElement('input');
+			el_inp.setAttribute('style', 'width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+			el_inp.value = 'L';
+			dv.appendChild(el_inp);
+			
+			//~ /*
+			 //~ * Location
+			 //~ * This uses create_annotation_to_output_fields
+			 //~ */
+			//~ var el_div = document.createElement('div');
+			//~ el_div.setAttribute('style', 'display:inline');
+			//~ el_div.className = 'exe-locn';
+			//~ dv.appendChild(el_div);
+			//~ //
+			//~ el_div.appendChild(
+				//~ Seth_Redmore_linkedin_people_location__makeButtons(y.fmt_location)
+			//~ )
+			
+			dv.appendChild(document.createElement('br'));
+			
+			if (s != '') {
+				var el_div = document.createElement('div');
+				el_div.setAttribute('style', 'border-bottom:1px solid teal;');
+				el_div.innerHTML = s;
+				dv.appendChild(el_div);
+			}
+			
+			if (y.hasOwnProperty('connectionCount')) {
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe-connections');
+				btn.setAttribute('style','width:auto;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
+				btn.id = '';
+				btn.value = y.connectionCount;
+				dv.appendChild(btn);
+				dv.appendChild(document.createElement('br'));
+			}
+			
+			//https://www.linkedin.com/profile/view?id=15329492
+			
+			// If not an image search
+			if (!ps_object.hasOwnProperty('image_search')) {
+				var btn = document.createElement('input');
+				btn.setAttribute('type','button');
+				btn.setAttribute('class','exe');
+				btn.setAttribute('style','width:30px;height:30px;');
+				//~ btn.id = 'http://linkedin.com'+y.link_nprofile_view_3; // OLD !!
+				btn.url_li = y.link_nprofile_view_3;
+				btn.value = 'Title';
+				dv.appendChild(btn);
+			}
+			// If it is an image search
+			// XXFull = /media/ == /media/p/2/000/2cb/2f3/2e5ee90.jpg
+			// Thumb = /mpr/mpr/shrink_60_60/ == /mpr/mpr/shrink_60_60/p/2/000/2cb/2f3/2e5ee90.jpg
+			// Full = https://media.licdn.com/media/p/2/000/1a3/226/1edc521.jpg
+			else {
+				var btn = document.createElement('img');
+				btn.setAttribute('style','width:150px;height:30px;cursor:pointer;');
+				btn.url_li = y.link_nprofile_view_3;
+				dv.appendChild(btn);
+				
+				if (y.hasOwnProperty('imageUrl')) {
+					//
+					
+					btn.src = 'http://www.linkedin.com/mpr/mpr/shrink_60_60' + y.imageUrl;
+					btn.img_li = 'https://media.licdn.com/media' + y.imageUrl;
+					btn.style.width = '60px';
+					btn.style.height = '60px';
+				} else {
+					btn.img_li = null;
+				}
+			}
+			
+			/**
+			 * Result .onclick
+			 * This is a callback, ps_object.callback_function
+			 * and ps_object.image_search
+			 */
+			// onclick
+			// THIS WILL SCRAPE THE PROFILE !!
+			// HOWEVER, MAKE THE BUTTONS FOR THE LOCATION USING "y.fmt_location" **IF POSSIBLE**
+			btn.onclick = function() {
+				
+				// Go to nextTab()
+				// 
+				//
+				if (ps_object.hasOwnProperty('nextTab')) {
+					new AMT___core_factory().nextTab();
+				}
+				
+				// If not an image search
+				if (!ps_object.hasOwnProperty('image_search')) {
+					this.style.border = '4px solid LightGreen';
+					linkedin_people_location__profile(this.url_li);
+				}
+				// If it is an image search
+				// Click 1 = ...
+				else {
+					this.style.border = '4px solid LightGreen';
+					linkedin_people_location__profile_image(this);
+				}
+			}
+			
+			out.appendChild(dv);
+			
+			var z = out.getElementsByClassName('exe-div');
+			z = z[z.length - 1];
+			
+			//~ z.getElementsByClassName('exe-locn')[0].innerHTML		= y.fmt_location; //MT__bold(y.fmt_location, o.locn_array);
+			z.getElementsByClassName('exe-title')[0].innerHTML		= et;
+			z.getElementsByClassName('exe-comp')[0].innerHTML		= ec;
+			z.getElementsByClassName('exe-headline')[0].innerHTML	= y.fmt_headline;
+			
+		}
+		
+		var div = document.createElement('div');
+		div.setAttribute('style','height:1600px;');
+		out.appendChild(div);
+	}
+	
+	function linkedin_people_location__profile_image(btn) {
+		
+		var btn = btn;
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: btn.url_li,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					div_cx_r.innerHTML = response.status;
+					return;
+				}
+				
+				// URL
+				// Default is btn.url_li
+				var url = btn.url_li;
+				var found_valid_li_url = false;
+				
+				// Dashes
+				rs = rs.replace(/\\u002d/g, '-');
+				
+				// topcard
+				var found = false;
+				r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse('{'+r[1]+'}');
+					r = r.content;
+					console.log(r);
+					
+					if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+						url = r.TopCard.public_url.canonicalUrl;
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				if (!found) {
+					var r2;
+					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						url = __js_clean_html_str(r2[1]).trim();
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+					}
+				}
+				
+				
+				// CALLBACK FUNCTION
+				// Object
+				//
+				//
+				ps_object.callback_function({
+					profile_url: url,
+					found_valid_li_url: found_valid_li_url,
+					image_thumbnail_url: btn.src,
+					image_full_url: btn.img_li,
+					image: btn
+				});
+			}
+		});
+	}
+	function linkedin_people_location__profile(u) {
+		
+		// Global
+		var u = u;
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					div_cx_r.innerHTML = response.status;
+					return;
+				}
+				
+				// URL
+				// Default is btn.url_li
+				var url = u;
+				var found_valid_li_url = false;
+				
+				// Dashes
+				rs = rs.replace(/\\u002d/g, '-');
+				
+				// topcard
+				var found = false;
+				r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				if (r) {
+					r = JSON.parse('{'+r[1]+'}');
+					r = r.content;
+					console.log(r);
+					
+					if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+						url = r.TopCard.public_url.canonicalUrl;
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				if (!found) {
+					var r2;
+					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						url = __js_clean_html_str(r2[1]);
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				// Sometimes this happens...
+				//<dt>Public Profile</dt><dd><span class="view-public-profile">www.linkedin.com/pub/samuel-freitag/15/498/a46</span></dd>
+				if (!found) {
+					if (r2 = /<dt>Public Profile<\/dt><dd><span class="view-public-profile">([^<]+)<\/span><\/dd>/.exec(rs)) {
+						url = (r2[1].indexOf('http') != 0) ? 'http://' + __js_clean_html_str(r2[1]) : __js_clean_html_str(r2[1]);
+						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							found_valid_li_url = true;
+						}
+						found = true;
+					}
+				}
+				
+				// CALLBACK FUNCTION
+				// Object
+				//
+				//
+				ps_object.callback_function({
+					profile_url: url,
+					found_valid_li_url: found_valid_li_url
+				});
+			}
+		});
+	}
 }
 //
 AMT___requests_factory.prototype.linkedin_company_search = function(cs_object, callback_func) //
@@ -1622,7 +2695,15 @@ AMT___requests_factory.prototype.scrapy__cancel_job = function(jobid, timeout) /
 /**
  * 
  * 
- * @callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
+ * @callback_function:
+ * Returns 
+ * 		1) scrapyd jobid,
+ * 		2) response_object,
+ * 		3) seed_object 
+ * 
+ * Necessary to deploy scrapy_amt project ... ...
+ * 1) ./home/share/Development/scrapy/start_scrapyd.sh
+ * 2) cd /home/share/Development/scrapy/scrapy_amt && scrapyd-deploy
  */
 // TODO
 // XXDONE Jun4 2014: MATCH "DOMAIN.COM" WITH "JOBID.JL" FOR CACHED FUTURE REQUESTS!
@@ -1760,6 +2841,11 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		//
 		//~ console.log(callback_obj);
 		
+		// Changed to
+		// (callback_obj, seed_object)
+		// from
+		// (jobid, callback_obj, seed_object)
+		//
 		callback_function(callback_obj, seed_object);
 		
 		//~ callback_function(jobid, callback_obj, seed_object);
@@ -1768,7 +2854,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 	
 	// CACHE !! //
 	var rf		= new AMT___requests_factory();
-	var md5_url	= rf.general_functions__md5(data);//console.log(md5_url);
+	var md5_url	= any_md5(data, '0123456789ABCDEF'); //rf.general_functions__md5(data);//console.log(md5_url);
 	
 	GM_xmlhttpRequest({
 		method: "GET",
@@ -1915,6 +3001,9 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 	});
 }
 // WRITE!
+// Returns:
+// database_object	.responseObject
+// database_object	.responseText
 AMT___requests_factory.prototype.database__write = function(database_object, callback_function) //
 {
 	var database_object = database_object;
@@ -1933,8 +3022,12 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		onload: function(response) {
-			var rs = response.responseText;
+			
 			if (response.status != 200) return;
+			
+			database_object.responseText = response.responseText;
+			
+			var rs = response.responseText;
 			
 			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
 			
@@ -2258,6 +3351,9 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 	if (!r.exec(rs)) {
 		r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
 		yahoo_type = 1;
+		if (!r.exec(rs)) {
+			r = /<h3 class="title"><a href="([^"]*)"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+		}
 	}
 	
 	r.lastIndex = 0;
@@ -2269,11 +3365,12 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 		var arr = [];
 		while (m = r.exec(rs)) {
 			
-			// is this ri.search.yahoo.com
+			// Is this ri.search.yahoo.com?
 			if (m[1].indexOf('http://ri.search.yahoo.com') != -1 && /\/RU=([^\/+])/.exec(m[1])) {
 				m[1] = (/\/RU=([^\/]+)/.exec(m[1]))[1];
 				m[1] = decodeURIComponent(m[1]);
 			}
+			// Or is this a URI encoded?
 			else if (yahoo_type == 0)
 				m[1] = decodeURIComponent(m[1]);
 			
@@ -2313,6 +3410,731 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 }
 
 /**
+ * AMT___site_scrapes
+ * 
+ * TODO: linkedin.com/Web Test
+ * 
+ */
+function AMT___site_scrapes(obj_vars) {
+	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function scrape
+ *
+ * TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
+ * 
+ */
+AMT___site_scrapes.prototype.scrape = function(options_object) {
+	
+	// Global
+	var opts = options_object;
+	
+	switch (opts.site) {
+		case 'https://www.yellowpages.com/whitepages/address':
+			opts.tmp_callback = yp_reverse_addr;
+			xhr_get();
+			break;
+		case 'http://www.healthgrades.com/PROFILE/':
+			opts.tmp_callback = healthgrades_profile;
+			xhr_get();
+			break;
+		case 'LINKEDIN_PROFILE':
+		//~ case 'https://www.linkedin.com/profile/view?id=':
+		//~ case 'https://www.linkedin.com/pub/':
+		//~ case 'https://www.linkedin.com/in/':
+			opts.tmp_callback = linkedin_person_profile;
+			xhr_get();
+			break;
+	}
+	
+	/**
+	 * xhr_get
+	 */
+	function xhr_get() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: opts.url,
+			timeout: 30000,
+			ontimeout: function() {
+				
+			},
+			onerror: function() {
+				
+			},
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				// not 200 response.status
+				if (response.status > 200) { // 400 - 599
+					console.log(response.status);
+					return;
+				}
+				
+				opts.response = response;
+				
+				if (!opts.tmp_callback(rs)) {
+					console.log('Returned False');
+					return;
+				}
+				
+				// Callback final
+				opts.callback_function(opts);
+			}
+		});
+	}
+	
+	/**
+	 * linkedin_person_profile
+	 * 
+	 * @ opts.response
+	 * 
+	 * NOTE: Sections, Boolean. Showing="background-education edit-default ". Hidden="background-skills edit-default hidden".
+	 * 
+			* Web Test Required fields
+			* 
+			* public url
+			* name
+			* headline
+			* # connections
+			* image
+			* website / personal website
+			* experience + logo for each
+			*
+			* bool has summary 
+			* bool has skills 
+			* bool has education 
+			* bool has interests 
+	 */
+	function linkedin_person_profile() {
+		
+		opts.response.vars = {
+			result: {
+				profile_has_public_url: null,
+				public_url: null,
+				name: null,
+				headline: null,
+				num_connections: null,
+				image_url: null,
+				profile_has_section_contact_info: false, // default=false
+				profile_has_section_experience: false,
+				profile_has_section_summary: false,
+				profile_has_section_skills: false,
+				profile_has_section_education: false,
+				profile_has_section_interests: false,
+				contact_info: {
+					email: null,
+					im: null,
+					address: null,
+					phone: null,
+					twitter: null,
+					wechat: null,
+					company_website: null,
+					personal_website: null
+				},
+				experience: [
+					// Array of position objects {}: {comp_name: null, logo_url: null, current_or_past: null}
+				],
+				summary: null,
+				skills: null,
+				education: null,
+				interests: null,
+				
+				profile_is_in_preview_mode: false // default=false
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		var r;
+		
+		/**
+		 * Public Profile URL
+		EX:
+www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
+		 */ 
+		r = /<span class="view-public-profile">(\w+\.linkedin\.com\/[^<]+)<\/span>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.public_url = 'https://' + __js_clean_html_str(r.exec(rs)[1]);
+			opts.response.vars.result.profile_has_public_url = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * Name
+		EX:
+James Strate, CFP®
+		 */ 
+		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name">([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * Headline
+		EX:
+Investment Representative at Fidelity Investments
+Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
+ 		 */ 
+		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title ">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
+		if (r.exec(rs)) {
+			var hd = r.exec(rs)[1];
+			hd = hd.replace(/<[^>]*>/g, '');
+			hd = __js_clean_html_str(hd);
+			opts.response.vars.result.headline = hd;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			
+		}
+		/**
+		 * num_connections
+		EX:
+302
+OR <div class="member-connections"><strong><a href="#connections" class="connections-link">104</a></strong>connections</div>
+		 */ 
+		r = /<div class="member-connections"><strong>(<a href="#connections" class="connections-link">|)([^<]*)(<\/a>|)<\/strong>connections<\/div>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.num_connections = __js_clean_html_str(r.exec(rs)[2]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Has different match?
+			r = />connections</;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Image
+		EX:
+https://media.licdn.com/media/p/3/000/031/13c/113ad79.jpg
+		 */ 
+		r = /<div class="profile-picture">[\r\n\t\s]*(<a href="javascript:void\(0\)">|) *<img src='([^']+)'/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.image_url = __js_clean_html_str(r.exec(rs)[2]);
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Has different image?
+			r = /<div class="profile-picture">/
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+			//~ r = /https:\/\/media\.licdn\.com\/mpr\/mpr\/shrink_/;
+		}
+		/**
+		 * Contact info
+		 * 
+		 * <table summary="Online Contact Info"
+		 * <table summary="Contact Info"
+		 * <table summary="Internet Presence
+		 */
+		/**
+		 * Has website
+		EX:
+http%3A%2F%2Fdeancdawson%2Ecom
+		 */
+		// Company
+		// test //~ console.log(/[\d\D]{200}>Company Website<[\d\D]{200}/.exec(rs));
+		r = /<a target='_blank' href='\/redir\/redirect\?url=([^&]+)[^']*'>Company Website<\/a>/;
+		if (r.exec(rs)) {
+			var wb = __js_clean_html_str(r.exec(rs)[1]);
+			wb = decodeURIComponent(wb);
+			opts.response.vars.result.contact_info.company_website = wb;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Double check
+			// EX <span class="contact">Contact Info</span>
+			//~ r = />Contact Info</;
+			//~ if (r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Has contact info?:'+r);
+				//~ return false;
+			//~ }
+		}
+		// Personal
+		r = /<a target='_blank' href='\/redir\/redirect\?url=([^&]+)[^']*'>Personal Website<\/a>/;
+		if (r.exec(rs)) {
+			var wb = __js_clean_html_str(r.exec(rs)[1]);
+			wb = decodeURIComponent(wb);
+			opts.response.vars.result.contact_info.personal_website = wb;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Double check
+			// EX <span class="contact">Contact Info</span>
+			//~ r = />Contact Info</;
+			//~ if (r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Has contact info?:'+r);
+				//~ return false;
+			//~ }
+		}
+		
+		// THIS IS WHERE A "BLOCKED" PROFILE WILL BE OFF.
+		// Blocked is missing from here on out.
+		// STOP HERE.
+		//
+		if  (
+			rs.indexOf('<p>Profile summaries for members outside your network are available only to premium account holders.</p>') != -1 ||
+			rs.indexOf('<p>Full profiles for 3rd-degree connections are available only to premium account holders.</p>') != -1
+			)
+		{
+			opts.response.vars.result.profile_is_in_preview_mode = true; // !
+			return true;
+		}
+		
+		
+		/**
+		 * Experience
+		 * .experience {comp_name: null, logo_url: null, current_or_past: null}
+		 * .profile_has_section_contact_info
+		EX:
+<h3>Experience</h3>
+		 */
+		r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_contact_info = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+			
+			// Experience container
+			// This must be present.
+			r = /<div id="background-experience-container"[^>]*>((.|\s)*?(?=<\/div><\/div><script>|$)|$)/
+			if (r.exec(rs)) {
+				r = r.exec(rs)[1];
+				
+				// current-position OR past-position
+				var rg_items = /<div id="experience-\d+" class="editable-item section-item ([^"]+)">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+				if (rg_items.exec(rs)) {
+					rg_items.lastIndex = 0;
+					var item;
+					while (item = rg_items.exec(r)) {
+						
+						var i = item[2];
+						//~ console.log(item);
+						
+						// Item
+						var itm = {
+							comp_name: null,
+							logo_url: null,
+							current_or_past: null
+						};
+						
+						var rg_it;
+						
+						// Name
+						//EX Fidelity Investments
+						rg_it = /<a href="\/company\/[^"]*">([^<]*)<\/a>/;
+						var rg_m;
+						if (rg_m = rg_it.exec(i)) {
+							itm.comp_name = __js_clean_html_str(rg_m[1]);
+						} else {
+							//EX Kleinmann Family Investments, LLC
+							rg_it = /<a href="\/vsearch\/p\?company=[^"]*" name="company" title="Find others who have worked at this company">([^<]*)<\/a>/;
+							if (rg_m = rg_it.exec(i)) {
+								itm.comp_name = __js_clean_html_str(rg_m[1]);
+							}
+						}
+						// Img
+						//https://media.licdn.com/media/p/8/000/22c/122/29e1504.png
+						var rg_it = /<img class="lazy-load" src="[^"]*" data-li-src="([^"]*)" alt="[^"]*"\/>/
+						var rg_m;
+						if (rg_m = rg_it.exec(i)) {
+							itm.logo_url = __js_clean_html_str(rg_m[1]);
+						}
+						// current_or_past
+						itm.current_or_past = __js_clean_html_str(item[1]);
+						// Must be...
+						if (itm.current_or_past != 'current-position' && itm.current_or_past != 'past-position') {
+							console.log(rs.match(r));
+							console.log(r);
+							alert('Match:'+r);
+							return false;
+						}
+						
+						// Push
+						opts.response.vars.result.experience.push(itm);
+					}
+				} else {
+					// No items?
+					// This must be present.
+					console.log(rs.match(r));
+					console.log(r);
+					alert('None:'+r);
+					return false;
+				}
+			} else {
+				// This must be present.
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<div id="background-experience" class="background-experience edit-default hidden"><div class="hd"><h3>Experience<\/h3>/;
+			if (!r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Summary
+		EX:
+Professional Financial Management of Assets and Liabilities of Individuals and  ......
+		 */ 
+		r = /<div class="summary"><p class="description">((.|\s)*?(?=<\/p><\/div>|$)|$)/;
+		if (r.exec(rs)) {
+			var sm = r.exec(rs)[1];
+			sm = sm.replace(/<[^>]*>/g, '');
+			sm = __js_clean_html_str(sm);
+			opts.response.vars.result.summary = sm;
+			opts.response.vars.result.profile_has_section_summary = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			r = /<h3>Summary<\/h3>/;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Skills
+		EX:
+Professional Financial Management of Assets and Liabilities of Individuals and  ......
+		 */ 
+		//~ r = /<h3>Skills<\/h3>/;
+		r = /<div id="background-skills" class="background-skills edit-default ">(<div class="hd">|)<h3>Skills<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_skills = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<div id="background-skills" class="background-skills edit-default hidden">(<div class="hd">|)<h3>Skills<\/h3>/;
+			if (!r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Education
+		EX:
+
+		 */ 
+		//~ r = /<h3>Education<\/h3>/;
+		r = /<div id="background-education" class="background-education edit-default "><h3>Education<\/h3>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_education = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			r = /<h3>Education<\/h3>/;
+			if (r.test(rs)) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+		}
+		/**
+		 * Interests
+		SHOWING:
+<li id="interests" class="section-item editable-item ">
+		HIDDEN: ???
+<li id="interests" class="section-item editable-item no-additional-info">
+		 */ 
+		r = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>/;
+		if (r.exec(rs)) {
+			opts.response.vars.result.profile_has_section_interests = true;
+			// Must have only one match
+			r = new RegExp(r.source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length:'+r);
+				return false;
+			}
+		} else {
+			// Bool. match.
+			var x;
+			r = /<li id="interests" class="section-item editable-item no-additional-info"><h4>Interests<\/h4>/;
+			x = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4><\/li>/; // BLANK
+			if (!r.test(rs) && !x.exec(rs) && rs.indexOf('>Interests<') != -1) {
+				console.log(r.exec(rs));
+				console.log(r);
+				alert('Bool:'+r);
+				return false;
+			}
+			//~ r = /<h4>Interests<\/h4>/;
+		}
+		
+		/**
+		 * return true
+		 */
+		return true;
+	}
+	
+	/**
+	 * healthgrades_profile
+	 * 
+	 * @ opts.response
+	 */
+	function healthgrades_profile() {
+		
+		opts.response.vars = {
+			result: {
+				address: null,
+				other_locations: []
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		// Main address on this profile
+		//<span class="street-address" itemprop="streetAddress">1301 Powell St Suite 123</span>
+		// OR
+		//~ <td class="summaryLocation">
+			   //~ 
+                        //~ <div></div>
+                        //~ <div>2420 W Pierce St Suite 200</div>
+		// OR
+		//~ <td class="summaryLocation">
+                            //~ <h3>Locations (<a data-hgoname="group-practice-more-offices" href="/group-directory/pennsylvania-pa/philadelphia/perelman-center-advanced-medical-0d927cb7/offices">1 more</a>)</h3>
+			   //~ 
+                        //~ <div></div>
+                        //~ <div>3400 Civic Center Blvd</div>
+
+		var r;
+		if (r = /<span class="street-address" itemprop="streetAddress">([^<]*)<\/span>/.exec(rs)) {
+			//
+		} else if (r = /<td class="summaryLocation">[\r\n\t\s]+<div>[^<]*<\/div>[\r\n\t\s]+<div>([^<]+)<\/div>/.exec(rs)) {
+			//
+		} else if (r = /<td class="summaryLocation">[\r\n\t\s]+<h3>Locations \([^\)]*\)<\/h3>[\r\n\t\s]+<div>[^<]*<\/div>[\r\n\t\s]+<div>([^<]+)<\/div>/.exec(rs)) {
+			//
+		} else if (r = /<h3><span class="icon location"><\/span>Location<\/h3>[\r\n\t\s]+<span itemprop="address" itemscope itemtype="http:\/\/schema\.org\/PostalAddress">[\r\n\t\s]+<p class="noLayoutSpacing" itemprop="streetAddress">[\r\n\t\s]+<span itemprop="streetAddress">([^<]+)<\/span>/.exec(rs)) {
+			//
+		}
+		if (r) {
+			opts.response.vars.result.address = __js_clean_html_str(r[1]).trim();
+		}
+		
+		
+		// Other locations
+		// "Appointments & Offices"
+		var container;
+		var regex;
+		
+		// This is an occasional case. It is not inside of "officeItem"
+		// but inside "componentPresentation".
+		var r = /<div class="componentPresentation" id="aboutAppointments2">((.|\s)*?(?=\n<\/div>|$)|$)/.exec(rs);
+		if (r) {
+			container = r[1];
+			
+			regex = /<dl[^>]*>((.|\s)*?(?=<\/dl>|$)|$)/g;
+		} else {
+			container = rs;
+			
+			regex = /<div class="officeItem"[^>]*>((.|\s)*?(?=\n                <\/div>|$)|$)/g;
+		}
+		
+		//
+		var m;
+		while (m = regex.exec(container)) {
+			
+			var rslt = {
+				title: null,
+				address: []
+			};
+			
+			// Title
+			var r2 = /<dt>((.|\s)*?(?=<\/dt>|$)|$)/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(
+					r2[1].replace(/<[^>]*>/g, '')
+				).trim();
+			}
+			
+			// Address
+			// Array: PossibleName, Street1, City/StateAbbr/Zip, ... could be more?
+			var r2 = /<dd>([^<]*)<\/dd>/g;
+			var m2;
+			while (m2 = r2.exec(m[1])) {
+				rslt.address.push(
+					__js_clean_html_str(m2[1]).trim()
+				);
+			}
+			
+			//~ var r3;
+			//~ if (r3 = r2.exec(m[1])) {
+				//~ rslt.street_address = __js_clean_html_str(r3[1]).trim();
+			//~ }
+			//~ 
+			//~ // city_st_zip
+			//~ var r3;
+			//~ if (r3 = r2.exec(m[1])) {
+				//~ rslt.city_st_zip = __js_clean_html_str(r3[1]).trim();
+			//~ }
+			
+			opts.response.vars.result.other_locations.push(rslt);
+		}
+	}
+	
+	/**
+	 * yp_reverse_addr
+	 * 
+	 * @ opts.response
+	 */
+	function yp_reverse_addr() {
+		
+		opts.response.vars = {
+			results: [],
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+		}
+		
+		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
+			
+			//~ console.log(m);
+			
+			var rslt = {
+				title: null,
+				address: null,
+				phone: null
+			};
+			
+			// Title
+			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Address
+			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Phone
+			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.phone = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			//~ console.log(rslt);
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		//~ // Callback final
+		//~ opts.callback_function(opts);
+	}
+}
+/**
  * 
  * AMT___items_factory
  * @
@@ -2325,20 +4147,21 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
  * create__input_skip_button2
  * create__input_skip_button
  * 
+ * create_annotation_to_output_fields
+ * xhr_scrape_page
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function create_annotation_to_output_fields
- * 
- * @param options_object
- * 		options_object.parent_el
- * 		options_object.keyword_and_index_array
- * @optional
- * 		options_object.url
- * 		options_object.html
- * 		options_object.context_len
+ * function xhr_scrape_page
+ *
+ * .parent_el
+ * .keyword_and_index_array
+ * .url
+ * .short_filename (give filename)
+ * .callback_loaded (xhr complete)
+ * .replace_absolute_url (bool)
  */
 AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	
@@ -2402,9 +4225,11 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		
 		out.onmouseover = function() {
 			this.xhr_scrape_page__context.style.display = 'block';
+			//~ this.xhr_scrape_page__context.style.width = '';
 		}
 		out.onmouseout = function() {
 			this.xhr_scrape_page__context.style.display = 'none';
+			//~ this.xhr_scrape_page__context.style.width = '1%';
 		}
 		
 	}
@@ -2416,10 +4241,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		
 		// key -> value
 		var kw = options_object.keyword_and_index_array;
-		
-		//~ console.log(options_object.hasOwnProperty('context_len'));
-		//~ console.log(options_object.hasOwnProperty('context_len'));
-		//~ var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len.replace(/[^\d]/g, '') : 6;
 		
 		var len = (options_object.hasOwnProperty('context_len')) ? options_object.context_len : 6;
 		
@@ -2499,9 +4320,21 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	 * xhr
 	 */
 	//~ console.log(options_object.url);
+	
+	var url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(options_object.url);
+	if (options_object.hasOwnProperty('short_filename')) {
+		url += '&AMT__output_html_from_URL__short_filename=' + encodeURIComponent(options_object.short_filename);
+	}
+	if (options_object.hasOwnProperty('replace_absolute_url')) {
+		url += '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+			{
+				replace_absolute_url: true
+			}
+		));
+	}
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(options_object.url),
+		url: url,
 		//~ url: options_object.url,
 		timeout: 30000,
 		ontimeout: function() {
@@ -2512,13 +4345,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		},
 		onload: function (response) {
 			var rs = response.responseText;
-			//~ console.log(err_TimeWarner.i);
-			//~ console.log(response.status);
-			//~ console.log(rs.indexOf(err_TimeWarner.i));
-			//~ console.log(response.finalUrl);
-			//~ if (response.finalUrl == 'http://www.serviceplumbingandassistant.com/') {
-				//~ console.log(rs);
-			//~ }
 			
 			// not 200 response.status
 			if (response.status > 399) { // 400 - 599
@@ -2542,11 +4368,14 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 			
 			parse(rs);
 			
+			if (options_object.hasOwnProperty('callback_loaded'))
+				options_object.callback_loaded(options_object);
 		}
 	});
 }
 /**
  * function create_annotation_to_output_fields
+ * 
  * Handles buttons/div?/p? mousedown, mouseup events.
  * Handles body.mouseup event.
  * Draggable.
@@ -2554,10 +4383,21 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * OnMouseUp, focus to output_fields[current].
  * >> Callback function @ mouseup.
  * 
- * @param: {} options_object
+ * @return appendable inputs
+ * 
+ * @param {} options_object
  * @param options_object.textToAnnotate = String
  * @param options_object.output_fields = []
  * @param options_object.callback_mouseup = Function
+ * @param options_object.callback_mouseup_pre_apply = Function
+ * 
+ * @param appendToField
+ * @param appendToField_glue
+ *
+ * @param delimeter
+ * @param focusToField
+ * 
+ * @param style
  */
 AMT___items_factory.prototype.create_annotation_to_output_fields = function(options_object) {
 	
@@ -2565,7 +4405,13 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	//
 	//~ console.log(options_object);
 	
-	var s = options_object.textToAnnotate.split(' ');
+	// Delimeter
+	if (!options_object.delimeter)
+		options_object.delimeter = ' ';
+	
+	// The string
+	//
+	var s = options_object.textToAnnotate.split(options_object.delimeter);
 	var array_all_buttons = [];
 	var div = makeCont();
 	for (var i in s) {
@@ -2594,9 +4440,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		// If isDragging is true then
 		// reset the hover color!
 		if (isDragging) {
-			console.log(current_index);
-			console.log(array_all_buttons[current_index.start]);
-			array_all_buttons[current_index.start].style.backgroundColor = '';
+			
+			//~ console.log(current_index);
+			//~ console.log(array_all_buttons[current_index.start]);
+			
+			array_all_buttons[current_index.start].style.backgroundColor = '#fff';
 		}
 		isDragging = false;
 	}
@@ -2605,6 +4453,19 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	// return for *append*
 	return div;
 	
+	function style_mouseUpButton_success(btn) {
+		//
+		//
+		//
+		if (options_object.hasOwnProperty('style_mouseUpButton_success')) {
+			btn.setAttribute('style', options_object.style_mouseUpButton_success);
+		}
+		// Default = LightGreen
+		//
+		//
+		else
+			btn.style.backgroundColor = 'LightGreen';
+	}
 	
 	/**
 	 * function applyToOutputs
@@ -2615,12 +4476,12 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		var s = '';
 		if (current_index.start <= current_index.end) { // ++
 			for (var i = current_index.start; i <= current_index.end; i++) {
-				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				style_mouseUpButton_success(array_all_buttons[i]);
 				s += ' ' + array_all_buttons[i].full_text;
 			}
 		} else { // --
 			for (var i = current_index.end; i <= current_index.start; i++) {
-				array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				style_mouseUpButton_success(array_all_buttons[i]);
 				s += ' ' + array_all_buttons[i].full_text;
 			}
 			
@@ -2631,6 +4492,46 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		s = s.trim();
 		
+		// callback_mouseup_pre_apply
+		//
+		//
+		if (options_object.hasOwnProperty('callback_mouseup_pre_apply')) {
+			options_object.callback_mouseup_pre_apply(options_object);
+		}
+		
+		// appendToField
+		//
+		//
+		if (options_object.hasOwnProperty('appendToField')) {
+			if (options_object.hasOwnProperty('appendToField_glue')) {
+				output_fields[0].value += options_object.appendToField_glue;
+			}
+			
+			if (options_object.hasOwnProperty('focusToField') && options_object.focusToField) {
+				output_fields[0].focus();
+			} else {
+				// It is necessary here to call blur(). The 
+				// focus() call will usually cause a *cancellation*
+				// of the "dragging" behavior. So when there is
+				// not the focus() call, blur() will also achieve
+				// *cancellation*.
+				output_fields[0].blur();
+			}
+			
+			output_fields[0].value += s;
+			output_fields[0].value = output_fields[0].value.trim();
+			
+			//~ output_fields[0].select();
+			//~ output_fields[0].focus();
+			
+			// CALLBACK
+			if (options_object.callback_mouseup) {
+				options_object.callback_mouseup(s); // THIS SENDS BACK THE STRING ADDED
+			}
+			return;
+		}
+		 
+		//
 		for (var i in output_fields) {
 			if (output_fields[i].value == '') {
 				output_fields[i].value = s;
@@ -2638,6 +4539,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				output_fields[i].select();
 				output_fields[i].select();
 				
+				// CALLBACK
 				if (options_object.callback_mouseup) {
 					options_object.callback_mouseup(output_fields[i]);
 				}
@@ -2679,7 +4581,13 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	function appendButton(div, text, index) {
 		
 		var t = document.createElement('button');
-		t.setAttribute('style', 'border-radius:2px;');
+		t.setAttribute('type', 'button');
+		if (options_object.hasOwnProperty('style'))
+			t.setAttribute('style', options_object.style);
+		else
+			t.setAttribute('style', 'border-radius:2px;border:0;zoom:1.4;background-color:#fff;cursor:pointer;');
+		
+		//~ t.setAttribute('style', 'border-radius:2px;border:1px solid blue;zoom:1.4;background-color:#fff;');
 		t.index = index;
 		t.innerHTML = text;
 		t.full_text = text;
@@ -2687,8 +4595,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		t.onmousedown	= function() {
 			
 			this.style.backgroundColor = 'LightGreen';
-			current_index.start = this.index;
-			current_index.end   = this.index;
+			current_index.start = this.index * 1; // WOW. MAKE SURE TO MULTIPLY BY 1. AT "10" THIS BECOMES A STRING.
+			current_index.end   = this.index * 1;
 			
 			//~ isActive = true;
 			isDragging = true;
@@ -2710,6 +4618,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		
 		t.onmouseover	= function() {
+			
+			this.style.cursor = 'pointer'; //?
 			
 			// Highlight
 			// from index.start to index.end
@@ -2734,6 +4644,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
 				//~ }
 			}
+			
+			else
+			{
+				
+			}
 		}
 		
 		t.onmouseout	= function() {
@@ -2742,11 +4657,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				// RESET ALL HOVER COLOR!
 				if (current_index.start <= current_index.end) {
 					for (var i = current_index.start; i <= current_index.end; i++) {
-						array_all_buttons[i].style.backgroundColor = '';
+						array_all_buttons[i].style.backgroundColor = '#fff';
 					}
 				} else {
 					for (var i = current_index.start; i >= current_index.end; i--) {
-						array_all_buttons[i].style.backgroundColor = '';
+						array_all_buttons[i].style.backgroundColor = '#fff';
 					}
 				}
 				
@@ -2781,9 +4696,327 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	}
 	
 }
+/**
+ * function create_annotation_from_elements
+ * 
+ * @return ?
+ * 
+ * @param options_object {}
+ * @param options_object.elements = Array
+ * @param options_object.callback_mouseup = Function
+ * 
+ * xx@param focusToField
+ * xx
+ * xx@param style
+ */
+AMT___items_factory.prototype.create_annotation_from_elements = function(options_object) {
+	
+	// vars
+	//
+	var options_object = options_object;
+	
+	// GIVE options_object A REFERENCE BACK TO THIS SCOPE.
+	options_object.tmp_scope = reset_btn_sizing;
+	
+	//~ console.log(options_object);
+	
+	// The string
+	//
+	var array_all_buttons = [];
+	var s = options_object.elements;
+	for (var i in s) {
+		
+		element_actions(s[i], i);
+	}
+	
+	
+	var current_selection = [];
+	var current_index = {
+		start: 0,
+		end: 0
+	}
+	var isDragging = false;
+	
+	/**
+	 * function body_mouse
+	 * This will set isDragging to false!
+	 * 
+	 */
+	//~ document.body.addEventListener('mousedown', body_mouse, false); // ?
+	document.body.addEventListener('mouseup', body_mouse, false);
+	function body_mouse() {
+		
+		// If isDragging is true then
+		// reset the hover color!
+		if (isDragging) {
+			
+			//~ console.log(current_index);
+			//~ console.log(array_all_buttons[current_index.start]);
+			
+			array_all_buttons[current_index.start].style.backgroundColor = '#fff';
+		}
+		isDragging = false;
+	}
+	//~ document.body.onmousedown = document.body.onmouseup = function() {
+	
+	
+	
+	
+	
+	
+	//~ // return for *append*
+	//~ //return div;
+	
+	
+	/**
+	 * function applyToOutputs
+	 *
+	 */
+	function applyToOutputs() {
+		
+		// Make an array of "hidden" elements.
+		var arr = [];
+		for (var i in array_all_buttons) {
+			if (array_all_buttons[i].toggleState == 1) {
+				arr.push(array_all_buttons[i].hiddenElement);
+			}
+		}
+		
+		// Reset these
+		if (current_index.start <= current_index.end) { // ++
+			for (var i = current_index.start; i <= current_index.end; i++) {
+				toggle_btn(array_all_buttons[i], 0);
+				
+				//~ array_all_buttons[i].style.opacity = '0';
+				//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+			}
+		} else { // --
+			for (var i = current_index.end; i <= current_index.start; i++) {
+				toggle_btn(array_all_buttons[i], 0);
+				
+				//~ array_all_buttons[i].style.opacity = '0';
+				//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+			}
+			
+			// THIS WOULD PUT IT IN REVERSE!
+			// As in "cat black the" instead of
+			// "the black cat".
+			//for (var i = current_index.start; i >= current_index.end; i--) {
+		}
+		
+		// CALLBACK
+		if (options_object.callback_mouseup) {
+			options_object.callback_mouseup(arr, options_object);
+		}
+	}
+	
+	/**
+	 * function add_index
+	 */
+	function add_index(new_index) {
+		
+		current_index.end = new_index;
+		
+		// DON'T DO THIS! ALWAYS SAY THAT THE
+		// START IS THE FIRST BUTTON CLICKED.
+		//~ // Is this less than the beginning?
+		//~ // Does this button come before .start?
+		//~ // If so then this button becomes .start
+		//~ // and .start becomes .end
+		//~ // Otherwise, set new_index to be .end.
+		//~ if (new_index < current_index.start) {
+			//~ current_index.end   = current_index.start;
+			//~ current_index.start = new_index;
+		//~ } else 
+			//~ current_index.end = new_index;
+		
+	}
+	
+	/**
+	 * function toggle_btn
+	 * 
+	 * 
+	 */
+	function toggle_btn(btn, state) {
+		
+		if (state == 1) { // Go on
+			btn.style.opacity = '0.4';
+			btn.style.backgroundColor = 'LightGreen';
+			btn.toggleState = 1;
+		} else { // It == 0, so off
+			btn.style.opacity = '0';
+			btn.style.backgroundColor = 'transparent';
+			btn.toggleState = 0;
+		}
+	}
+	
+	/**
+	 * function reset_btn_sizing
+	 * 
+	 * 
+	 */
+	function reset_btn_sizing() {
+		
+		for (var i in array_all_buttons) {
+			
+			var btn = array_all_buttons[i];
+			
+			var imgSz = btn.hiddenElement.getBoundingClientRect();
+			btn.style.width		= imgSz.width  + 'px';
+			btn.style.height	= imgSz.height + 'px';
+			btn.style.left		= (imgSz.left*1+window.pageXOffset*1) + 'px';
+			btn.style.top		= (imgSz.top*1+window.pageYOffset*1) + 'px';
+			
+		}
+		
+	}
+	
+	/**
+	 * function element_actions
+	 * 
+	 * @param: element
+	 * @param: index
+	 */
+	function element_actions(element, index) {
+		
+		//~ var t = element;
+		
+		var btn = document.createElement('button');
+		btn.setAttribute('type', 'button');
+		if (options_object.hasOwnProperty('style'))
+			btn.setAttribute('style', options_object.style);
+		else
+			btn.setAttribute('style', 'border-radius:2px;border:0;background-color:transparent;cursor:pointer;position:absolute;');
+		
+		btn.index = index;
+		btn.hiddenElement = element; // A property for element
+		btn.toggleState = 0;
+		
+		// Set the size
+		var imgSz = element.getBoundingClientRect();
+		btn.style.width		= imgSz.width  + 'px';
+		btn.style.height	= imgSz.height + 'px';
+		btn.style.left		= (imgSz.left*1+window.pageXOffset*1) + 'px';
+		btn.style.top		= (imgSz.top*1+window.pageYOffset*1) + 'px';
+		document.body.appendChild(btn);
+		
+		btn.onmousedown	= function() {
+			
+			this.style.backgroundColor = 'LightGreen';
+			current_index.start = this.index * 1; // WOW. MAKE SURE TO MULTIPLY BY 1. AT "10" THIS BECOMES A STRING.
+			current_index.end   = this.index * 1;
+			
+			//~ isActive = true;
+			isDragging = true;
+		}
+		
+		btn.onmouseup		= function() {
+			
+			// Only apply if... isDragging?
+			//
+			//
+			if (isDragging) {
+				//~ console.log('up + dragging');
+				
+				toggle_btn(this, 1); // on?
+				
+				add_index(this.index);
+				
+				isDragging = false;
+				
+				applyToOutputs();
+			}
+			
+		}
+		
+		btn.onmouseover	= function() {
+			
+			// Highlight
+			// from index.start to index.end
+			
+			if (isDragging) {
+				
+				add_index(this.index);
+				
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						toggle_btn(array_all_buttons[i], 1);
+						//~ array_all_buttons[i].style.opacity = '0.4';
+						//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						toggle_btn(array_all_buttons[i], 1);
+						//~ array_all_buttons[i].style.opacity = '0.4';
+						//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				//~ for (var i = current_index.start; i <= current_index.end; i++) {
+					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
+				//~ }
+			}
+			
+			else
+			{
+				
+			}
+		}
+		
+		btn.onmouseout	= function() {
+			
+			if (isDragging) {
+				// RESET ALL HOVER COLOR!
+				if (current_index.start <= current_index.end) {
+					for (var i = current_index.start; i <= current_index.end; i++) {
+						toggle_btn(array_all_buttons[i], 0);
+						//~ array_all_buttons[i].style.opacity = '0';
+						//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+					}
+				} else {
+					for (var i = current_index.start; i >= current_index.end; i--) {
+						toggle_btn(array_all_buttons[i], 0);
+						//~ array_all_buttons[i].style.opacity = '0';
+						//~ array_all_buttons[i].style.backgroundColor = 'transparent';
+					}
+				}
+				
+				// Reset the index.end to whatever
+				// is the index.start.
+				// And then *just* the initial word
+				// is to have background color.
+				current_index.end = current_index.start;
+				toggle_btn(array_all_buttons[current_index.start], 1);
+				//~ array_all_buttons[current_index.start].style.opacity = '0.4';
+				//~ array_all_buttons[current_index.start].style.backgroundColor = 'LightGreen';
+			}
+			
+		}
+		
+		// push here
+		array_all_buttons.push(btn);
+	}
+	
+	/**
+	 * function makeCont
+	 * Container for all the buttons.
+	 */
+	function makeCont() {
+		
+		var d = document.createElement('div');
+		d.setAttribute('style', 'width:100%;');
+		//~ d.setAttribute('style', 'display:inline;');
+		
+		return d;
+	}
+	
+}
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
 	//var out_div = d1;
+	
+	//~ console.log(results_array);
+	//~ console.log(out_div);
+	//~ console.log(seed_object);return;
 	
 	var old_divs = out_div.getElementsByTagName('div');
 	for (var i = old_divs.length - 1; i>=0; i--) {
@@ -2808,10 +5041,27 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	// ...
 	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
 	
-	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : doSubmit;
+	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : default__doSubmit;
 	
 	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
 	
+	var do_submit_next_tab			= (seed_object.do_submit_next_tab)			? seed_object.do_submit_next_tab : false;
+	
+	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
+	
+	// default ds
+	function default__doSubmit(next_tab, add_to_tabs_queue) {
+		
+		if (next_tab)
+		{
+			new AMT___core_factory().nextTab();
+		}
+		if (add_to_tabs_queue)
+		{
+			showNextTab();
+		}
+		doSubmit();
+	}
 	
 	// ...
 	for (var j in email_contexts) {
@@ -2846,6 +5096,12 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		//do_submit_callback
 		el_div.do_submit_callback	= do_submit_callback;
 		
+		//do_submit_callback
+		el_div.do_submit_next_tab	= do_submit_next_tab;
+		
+		//do_submit_callback
+		el_div.do_submit_add_to_tabs_queue	= do_submit_add_to_tabs_queue;
+		
 		//onclick
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
@@ -2854,7 +5110,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 				this.input_send_success.value = this.email;
 				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
 					
-					this.do_submit_callback();
+					this.do_submit_callback(this.do_submit_next_tab, this.do_submit_add_to_tabs_queue);
 					//~ doSubmit();
 				
 				}
@@ -2875,9 +5131,24 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	el_div.setAttribute('style','height:1400px;');
 	out_div.appendChild(el_div);
 }
+/**
+ * .create_dashboard__powers_v2
+ * 
+ * TODO.......
+ * 
+ * Email table that is sortable.
+ * Columns:
+ *  Email, Page where scraped
+ * 
+ * All pages scraped table. (incl. stats?)
+ * 
+ * And all contexts.
+ */
+// 
+//
 // callback_function(jobid, callback_obj, seed_object);
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
-AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
+AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_response, seed_object)// dashboard/area
 {
 	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
 	//~ var req = new AMT___requests_factory();
@@ -2899,7 +5170,47 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	
 	out_div.innerHTML = '';
 	
-	// DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	return;
+}
+//
+// callback_function(jobid, callback_obj, seed_object);
+// IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
+AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
+{
+	//~ console.log(object_response);
+	//~ console.log(seed_object);return;
+	
+	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
+	//~ var req = new AMT___requests_factory();
+	//~ AMT___POPUP__initializeGlobals(
+		//~ function() {
+			//~ req.scrapy__begin_scrape(//parameters_object, callback_function, seed_object
+				//~ s_obj,
+				//~ Max_Powers_eventbrite__showScrapyResult
+				//~ (new AMT___items_factory).create_dashboard__powers_v1
+			//~ );
+		//~ }
+	//~ );
+		
+	// jobid, object_response, seed_object
+	// RESULTS
+	//var object_response = ALL_SCRAPES[d3.selectedIndex].object_response; // [] array !!
+	
+	var out_div = seed_object.div;
+	
+	out_div.innerHTML = '';
+	
+	// xx
+	// THIS WOULD BE DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
 	//
 	//
 	//~ if (AMT__Global_Vars.isPreview) {
@@ -2947,7 +5258,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
 	}
-	for (var i = 0; i<20; i++) {// append blank lines!
+	for (var i = 0; i<40; i++) {// append blank lines!
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = '';
@@ -3140,19 +5451,34 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 	
 	// THIS WILL RETURN:
 	// ["www.linkedin.com", "www", undefined, undefined, undefined, undefined, "www", "linkedin.com", index: 7, input: "http://www.linkedin.com"]
+	// ["cylex-uk.co.uk", "cylex-uk", undefined, undefined, undefined, undefined, "cylex-uk", "co.uk", index: 20, input: "http://west-malling.cylex-uk.co.uk"]
+	// ["bongareevillage.com", "bongareevillage", undefined, undefined, undefined, undefined, "bongareevillage", "com", index: 7, input: "http://bongareevillage.com"]
 	if (x = new RegExp(reg_domain, '').exec(input_skips_object.domain)) {
 		
-		// =>8
-		if (x[7].indexOf('.') != -1)
-			input_skips_object.short_domain = x[7].trim();
+		// 6 and 7
+		
+		// Debug
+		//~ console.log(x);
+		
+		if (x[6] == 'www')
+			x[6] = '';
+		
+		var tmp_domain;
+		tmp_domain = (x[6] != '') ? x[6] + '.' + x[7] : x[7];
+		
+		
+		// Contains .
+		if (tmp_domain.indexOf('.') != -1)
+			input_skips_object.short_domain = tmp_domain;
 		else
 			input_skips_object.short_domain = input_skips_object.domain.trim();
+		
 		
 	} else
 		input_skips_object.short_domain = input_skips_object.domain.trim();
 	
-	//~ input_skips_object.short_domain = x[1].trim();
-	
+	// Debug
+	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
 	// ...
 	function remove_skips(e) {
@@ -3230,9 +5556,6 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		el_inp.setAttribute('type','button');
 		el_inp.value = '>' + input_skips_object.domain;
 		el_inp.className = 'input_skip_button2_rm_';
-		//~ el_inp.value = 'x>' + url;
-		//~ el_inp.id = url; //argv
-		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
 		el_inp.onclick = remove_skips;
 		
 		return el_inp;
@@ -3315,82 +5638,216 @@ AMT___items_factory.prototype.create__input_skip_button = function(url, skips_ke
  * @
  * @
  * 
- * @AMT___POPUP___PROXY_REDACTED_ XXXX, @>AMT___POPUP__initializeGlobals  **get the @AMT___POPUP___PROXY_REDACTED_ value before continuing
+ * @ AMT___POPUP___PROXY_REDACTED_ XXXX, @ AMT___POPUP__initializeGlobals  **get the @ AMT___POPUP___PROXY_REDACTED_ value before continuing
+ * 
+ * 
  */
 function AMT___xhr_PROXY_REDACTED_(obj_vars) {
-	
 	// : url
 	// : seed_arg1
 	// : catch_include
+	// : post_request (DEFAULT=null), an object {}, {query: 'query'}
+	// : headers_array
+	// : remove_urls_from_body, boolean, remove URLs from the result body
+	
+	/*
+	 * obj_vars = {
+	 * 		catch_include: 'This is a string that means it is time to SKIP!',
+	 * 		post_request: {query: 'query'},
+	 * 		startPage: true
+	 * }
+	 */
+	
+	var o = {
+		local_URL_init: '',
+		local_URL_complete: '',
+		obj_vars: null
+	}
+	
+	var local_URL;
+	var array_startPage_results;
 	
 	this.obj_vars = (typeof obj_vars == 'object') ? obj_vars : {};
+	o.obj_vars = this.obj_vars;
 	
-	if (!this.obj_vars.url) // URL REQUIRED
-		return;
+	//~ if (!this.obj_vars.url) // URL REQUIRED
+		//~ return;
 		
 	if (!this.obj_vars.catch_include) // DEFAULT
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
-	this.encodedURI = encodeURIComponent(this.obj_vars.url);
-	
-	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
-	this.proxy_init = function() {
-		var this_tmp = this;
-		AMT___POPUP__initializeGlobals(
-			function() {
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+this_tmp.encodedURI+'&catch_include='+encodeURIComponent(this_tmp.obj_vars.catch_include),
-					onload: function(response) {
-						//var rs = response.responseText;
-					}
-				});
-			}
-		);
+	if (this.obj_vars.startPage) {
+		
+		this.obj_vars.startPage_array = true;
+		
+		//~ this.obj_vars.url = 'https://startpage.com/do/search';
+		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';
+		//~ this.obj_vars.url = 'http://216.218.239.213:443';
+		//~ var query = this.obj_vars.post_request.query;
+		
+		/*this.obj_vars.post_request = {
+			cmd: 'process_search',
+			language: 'english',
+			
+			//~ enginecount: 1,
+			//~ pl: '',
+			//~ abp: -1,
+			//~ cdm: '',
+			//~ ff: '',
+			//~ theme: '',
+			//~ flag_ac: 0,
+			//~ cat: 'web',
+			//~ query: query//,
+			
+			//~ enginecount: 1,
+			//~ pl: '',
+			abp: -1,
+			//~ cdm: '',
+			//~ ff: '',
+			//~ theme: '',
+			//~ flag_ac: 0,
+			cat: 'web',
+			query: query,
+			engine0:'v1all'
+			
+			//~ x:0,
+			//~ y:0
+			//~ engine0:'v1all'
+			
+			//~ cat=web&cmd=process_search&language=english&engine0=v1all&query=hi+im+yousdf&abp=-1&x=0&y=0
+		}*/
+		
+		this.obj_vars.headers_array = [
+			//~ 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+			//~ 'Accept-Encoding:gzip,deflate,sdch',
+			//~ 'Accept-Language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+			//~ 'Cache-Control:max-age=0',
+			//~ 'Connection:keep-alive',
+			//~ 'Content-Length:91',
+			//~ 'Content-Type:application/x-www-form-urlencoded',
+			//~ 'Host:startpage.com',
+			//~ 'Origin:https://startpage.com',
+			//~ 'Referer:https://startpage.com/',
+			//~ 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36',
+			//~ 'Expect:     ',	
+			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
+		];
+		
+		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
 	}
 	
-	this.proxy_waitComplete = function(callback_function) {
-		var this_obj = this;
-		//console.log(this);return;
-		var xint = setInterval(function() {
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+ this_obj.encodedURI,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (rs.trim() != '') {
-						clearInterval(xint);
-					} else
-						return;
-					
-					// yahoo? (yahoo_array: true)
-					if (this_obj.obj_vars.yahoo_array) {
-						rs = this_obj.array_yahoo_results(rs);
-					}
-					
-					// ...
-					if (this_obj.obj_vars.return_init_object) {
-						this_obj.rs = rs;
-						callback_function(this_obj);
-					}
-					else if (this_obj.obj_vars.seed_arg1)
-					{
-						callback_function(rs, this_obj.obj_vars.seed_arg1);
-					}
-					else
-						callback_function(rs);
-					
-					//alert('x');
-					//
+	
+	// POST REQUEST
+	if (this.obj_vars.post_request) {
+		
+		var encodedURI = encodeURIComponent(this.obj_vars.url);
+		
+		// Generate a short filename
+		var short_filename = this.obj_vars.url + '__POST_REQUEST__';
+		for (var i in this.obj_vars.post_request) {
+			short_filename += '&' + i + '=' + this.obj_vars.post_request[i];
+		}
+		short_filename = encodeURIComponent(short_filename);
+		
+		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
+				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+				'';
+		
+		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
+						'&short_filename='+short_filename+
+						'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+						header_array;
+		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?v='+short_filename;
+		
+		//
+		
+		//~ console.log(value);//remove later
+		//~ this.obj_vars.post_request = 'Yahoo! - 999 Unable to process request at this time -- error 999';
+	}
+	
+	// GET REQUEST
+	else
+	{
+		var encodedURI = encodeURIComponent(this.obj_vars.url);
+		
+		var header_array = (this.obj_vars.hasOwnProperty('headers_array')) ?
+				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
+				'';
+		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
+				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
+				'';
+				
+		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+						header_array+
+						catch_success;
+		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
+	}
+	
+	
+	// function array_startPage_results
+	//
+	//
+	//~ this.array_startPage_results = function(rs) {
+	function array_startPage_results(rs) {
+		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
+		var rslts;
+		if(!(rslts = r.exec(rs))) {
+			//~ alert('No match');
+			return [];
+		}
+		else {
+			//Assume we have 1-10 results
+
+
+			//r.lastIndex = 0;	<-- no need, not testing
+			
+			var ol = rslts[0];
+			//~ console.log(ol);
+			
+			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+			var content;
+			var arr = [];
+			while(content = contentReg.exec(ol)) {				
+				content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
+				content[2] = content[2].replace(/<\/b>/gi, '(``)');
+				content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+				content[2] = content[2].replace(/<[^>]+>/g, ' ');
+				content[2] = content[2].replace(/[<>]/g, ' ');
+				// Clean it now
+				content[2] = __js_clean_html_str(content[2]);
+				// Replace B
+				content[2] = content[2].replace(/\(``\)/g, '</b>');
+				content[2] = content[2].replace(/\(`\)/g, '<b>');
+				
+				// URLs ?
+				if (o.obj_vars.hasOwnProperty('remove_urls_from_body')) {
+					// http at start, to - -
+					content[2] = content[2].replace(/https?:\/\/((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+					// www at start, to - -
+					content[2] = content[2].replace(/www\.((.|\s)*?(?=- *-|$)|$)/g, ''); // - - 
+					//~ //XX http at end
+					//~ content[2] = content[2].replace(/https?:\/\/[^ ]+$/g, '');
 				}
-			})
-		}, 1200);
+				
+				arr.push([
+					content[1], content[2]
+				]);
+			}
+			//~ console.log(arr);
+			return arr;
+		}
 	}
+	this.array_startPage_results = array_startPage_results;
 	
 	// -> returns array of arrays
 	// -> [ [m[1],m[2]], [m[1], m[2]] ]
-	this.array_yahoo_results = function(rs) {
+	function array_yahoo_results(rs) {
 				
 		//
 		var r = /yschttl spt" href="[^*"]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
@@ -3441,6 +5898,188 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			return [];
 		}
 	}
+	this.array_yahoo_results = array_yahoo_results;
+	
+	// function proxy_init
+	// INITIALIZE AMT___POPUP___PROXY_REDACTED_ BEFORE!
+	//~ this.proxy_init = function() {
+	function proxy_init() {
+		AMT___POPUP__initializeGlobals(
+			function() {
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: o.local_URL_init,
+					onload: function(response) {
+						//var rs = response.responseText;
+					}
+				});
+			}
+		);
+	}
+	this.proxy_init = proxy_init;
+	
+	// function proxy_waitComplete
+	//
+	//
+	//~ this.proxy_waitComplete = function(callback_function) {
+	function proxy_waitComplete(callback_function) {
+		var this_obj = this; // legacy
+		var callback_function = callback_function;
+		
+		var xint = setInterval(function() {
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: o.local_URL_complete,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (rs.trim() != '') {
+						clearInterval(xint);
+					} else
+						return;
+					
+					// yahoo? (yahoo_array: true)
+					if (o.obj_vars.hasOwnProperty('yahoo_array')) {
+						rs = array_yahoo_results(rs);
+					}
+					// startpage?
+					else if(o.obj_vars.hasOwnProperty('startPage_array')) {
+						rs = array_startPage_results(rs);
+					}
+					
+					// ...
+					if (o.obj_vars.return_init_object) {
+						this_obj.rs = rs;
+						callback_function(this_obj);
+					}
+					else if (o.obj_vars.seed_arg1)
+					{
+						callback_function(rs, o.obj_vars.seed_arg1);
+					}
+					else
+						callback_function(rs);
+				}
+			})
+		}, 1200);
+	}
+	this.proxy_waitComplete = proxy_waitComplete;
+	
+	// callback_function
+	// AND auto-run the sub-functions here rather
+	// than in script.js.
+	if (this.obj_vars.hasOwnProperty('callback_function')) {
+		
+		proxy_init();
+		proxy_waitComplete(
+			this.obj_vars.callback_function
+		)
+		
+		//~ AMT___POPUP__initializeGlobals(
+			//~ function() {
+				//~ GM_xmlhttpRequest({ // init
+					//~ method: "GET",
+					//~ url: o.local_URL_init,
+					//~ onload: function(response) {
+						//~ //var rs = response.responseText;
+					//~ }
+				//~ });
+			//~ }
+		//~ );
+		
+		//~ this.obj_vars.callback_function
+		//~ var this_obj = this;
+		
+		//~ 
+		//~ var xint = setInterval(function() {
+			//~ GM_xmlhttpRequest({ // init
+				//~ method: "GET",
+				//~ url: o.local_URL_complete,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ console.log(array_startPage_results);
+					//~ 
+					//~ if (rs.trim() != '') {
+						//~ clearInterval(xint);
+					//~ } else
+						//~ return;
+					//~ 
+					//~ // yahoo? (yahoo_array: true)
+					//~ if (o.obj_vars.hasOwnProperty('yahoo_array')) {
+						//~ rs = array_yahoo_results(rs);
+					//~ }
+					//~ // startpage?
+					//~ else if(o.obj_vars.hasOwnProperty('startPage_array')) {
+						//~ rs = array_startPage_results(rs);
+					//~ }
+					//~ 
+					//~ // ...
+					//~ if (o.obj_vars.return_init_object) {
+						//~ o.obj_vars.rs = rs;
+						//~ o.obj_vars.callback_function(o.obj_vars);
+					//~ }
+					//~ else if (o.obj_vars.seed_arg1)
+					//~ {
+						//~ o.obj_vars.callback_function(rs, o.obj_vars.seed_arg1);
+					//~ }
+					//~ else
+						//~ o.obj_vars.callback_function(rs);
+					//~ 
+				//~ }
+			//~ })
+		//~ }, 1200);
+		
+		return;
+	}
+	
+	
+	
+	
+	// OLD ***
+	//
+	//
+	//
+	//~ this.proxy_waitComplete = function(callback_function) {
+	//~ function proxy_waitComplete(callback_function) {
+		//~ var this_obj = this;
+		//~ 
+		//~ var xint = setInterval(function() {
+			//~ GM_xmlhttpRequest({ // init
+				//~ method: "GET",
+				//~ url: o.local_URL_complete,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (rs.trim() != '') {
+						//~ clearInterval(xint);
+					//~ } else
+						//~ return;
+					//~ 
+					//~ // yahoo? (yahoo_array: true)
+					//~ if (this_obj.obj_vars.hasOwnProperty('yahoo_array')) {
+						//~ rs = this_obj.array_yahoo_results(rs);
+					//~ }
+					//~ // startpage?
+					//~ else if(this_obj.obj_vars.startPage_array) {
+						//~ rs = this_obj.array_startPage_results(rs);
+					//~ }
+					//~ 
+					//~ // ...
+					//~ if (this_obj.obj_vars.return_init_object) {
+						//~ this_obj.rs = rs;
+						//~ callback_function(this_obj);
+					//~ }
+					//~ else if (this_obj.obj_vars.seed_arg1)
+					//~ {
+						//~ callback_function(rs, this_obj.obj_vars.seed_arg1);
+					//~ }
+					//~ else
+						//~ callback_function(rs);
+				//~ }
+			//~ })
+		//~ }, 1200);
+	//~ }
+	//~ this.proxy_waitComplete = proxy_waitComplete;
 }
 
 /*
@@ -3671,7 +6310,7 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 //
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
-var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2200;
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var xid = '_';
@@ -3727,8 +6366,10 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	/**
 	 * OPTIONAL PARAMETERS. THESE ARE SET FROM doSubmit OR ELSE
 	 * THEY MAY BE SET HERE.
+	 * 
+	 * Which form to submit
 	 */
-	// which form to submit
+	// 
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	else if (document.getElementById(form))
@@ -3736,13 +6377,13 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
-	// debug
+	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
 	
-	// set global vars
+	// Set global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
 	
@@ -3760,11 +6401,11 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: MT___host + '/mturk/util.php?AMT__doSubmit__serverSide_read=',
-		timeout: 2000,
+		timeout: 10000,
 		onload: function(response) {
 			var rs = response.responseText;
 			
-			// if status is not 200 then submit regular,
+			// If status is not 200 then submit regular,
 			// with the browser's **local storage**
 			if (response.status != 200) {
 				MT__DOSUBMIT__USER_SET_TYPE = 'regular';
@@ -3772,8 +6413,9 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 				return;
 			}
 			
-			// still here?
+			// Still here?
 			console.log(rs);
+			
 			// response is "time:\d+([:response.data:])"
 			var serverSide_currentTime;
 			var split = /^time:([\d\.]+)([^$]*)$/.exec(rs);
@@ -3944,12 +6586,17 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 }
 /**
  * function doSubmit()
+ * 
+ * Parameters:
+ *   -Form to submit,
+ *   -or window.location,
+ *   -or add to queue (with noSubmit) & callback_function, returns time_to_submit,
+ *   -return time_to_submit, offsetTime(x) > regularInterval+x
  */
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
-	// form to submit, or window.location, or add to queue (with noSubmit)
-	// & return time_to_submit, offsetTime(x) > regularInterval+x
 	
 	if(!AMT__Global_Vars.isPreview) {
+		AMT__Global_Vars.isSubmitting = true;
 		chrome.extension.sendRequest(
 			{
 				doSubmitChangeTabIcon: true
@@ -3960,7 +6607,7 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	}
 	
 	
-	// which form to submit
+	// Which form to submit
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	else if (document.getElementById(form))
@@ -3968,13 +6615,13 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
 	
-	// debug
+	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
 	
-	// set global vars
+	// Global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
 	
@@ -3986,10 +6633,11 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		}
 	}
 	
-	// server side?
-	if (
+	// Server side?
+	if  (
 		doServerSideSubmit
-	) {
+		)
+	{
 		doSubmit__serverSide(form, location, callback_function, offsetTime, doServerSideSubmit);
 		return;
 	}
@@ -4584,173 +7232,251 @@ minimator = function(x,y,z) {
 
 
 /**
- * Function MT___page1_show_jobs_play_audio
- */
-function MT___page1_show_jobs_play_audio() {
-	if (document.getElementById('MT___page1_show_jobs_play_audio'))
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	if (document.getElementById('MT___page1_show_jobs_play_audio'))
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	
-	//MT___AUDIO_SNIPPET
-	//b64_audio =
-							
-	// play alert
-	//i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
-	var c = document.createElement('audio');
-	c.setAttribute('style','position:fixed;top:30px;left:0px;width:80px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;');
-	c.setAttribute('id','MT___page1_show_jobs_play_audio');
-	c.setAttribute('controls','');
-	c.setAttribute('src',MT___AUDIO_SNIPPET);
-	document.body.appendChild(c);
-	c = document.getElementById('MT___page1_show_jobs_play_audio');
-	c.play();
-	// remove after 10 seconds
-	setTimeout(function() {
-		document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-	}, 10000);
-}
-/**
  * Page 1 mturk.com MT___page1_show_jobs
+ * 
+ * Move into core_factory, July 30 2014.
+ * AMT___core_factory.prototype. = function() {
+ * 
+ * TODO: CLOSE btn
  */
-function MT___page1_show_jobs() {
+AMT___core_factory.prototype.amt_home_show_tasks = function() {
+	
+	// OLD
+	// JUL30 2014
+	//~ function MT___page1_show_jobs() {
+	
+	
+	// Check if the page is currently at /mturk/findhits
+	//
+	//
 	var s = location.href;
-	var u = /https:\/\/www.mturk.com\/mturk\/findhits\?match=false/;
+	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
 	
-	var ignore_requesters__ids = [
-		'A3A0N4OPTWRYPD' //Research Project
+	// Ignored
+	//
+	//
+	var ignore_requesters__ids = {
+		'A3A0N4OPTWRYPD':true //Research Project
+	};
+	var ignore_requesters = {
+		'CrowdFlower':true,
+		'CrowdSource':true,
+		'Classify AdImages':true,
+		'ClariTrans':true,
+		'RelevanceQuest':true,
+		'AMTSpeech':true,
+		'Amazon Requester Inc. (Product Ads)':true,
+		'Amazon Requester Inc.':true,
+		'Chris Callison-Burch':true,
+		'User453':true,
+		'ProductRnR':true,
+		'WSOVC COM':true,
+		'rohzit0d':true,
+		'Cardcow':true,
+		'Redwood':true,
+		'Craft Listings':true,
+		'Stanford Language and Cognition Lab':true,
+		'Brandeis NLP':true,
+		'Streema':true,
+		'Fluffy Cloud':true,
+		'Intelius Data Systems':true,
+		'Johnny Wong':true,
+		'Oscar Smith':true,
+		'Sara Rosenthal':true,
+		'Comdata IT Fuel Tax':true,
+		'Venue Quality':true,
+		'Product Listings':true,
+		'Amazon Requester Inc - browse classification':true,
+		'Classify This':true,
+		'Tagasauris':true,
+		'chinese.mturk':true,
+		'Quality Website Reviews':true,
+		'Phillip Atiba Goff':true,
+		'Catalog Choice':true,
+		'WMT Admin':true,
+		'Sebastian Darr':true,
+		'Coder of Web Apps':true,
+		'Smartsheet.com Clients':true,
+		'A-Team':true,
+		'MASC Data':true,
+		'Ad Tagger':true,
+		'Dmitry Kachaev':true,
+		'Nic Lowe':true,
+		'Nascent Visions Corp':true,
+		'RI Services':true,
+		'techlist':true,
+		'Benjamin C Lok':true,
+		'Readabl':true,
+		'NetMSi':true,
+		'Todd Dickerson':true,
+		'Jimmy Dragon':true,
+		'Jon Brelig':true,
+		//~ REMOVED JULY 30 2014
+		//~ 'Taste of the World':true,
+		'SET Master Account':true,
+		'Ignite Media Solutions':true,
+		'The Public Group':true,
+		'Turk Experiment':true,
+		'Crowdsurf Support':true,
+		'Social Media Research':true,
+		'11223344':true,
+		'A Global Media Analytics':true,
+		'411Richmond':true,
+		'Visual Genome':true,
+		'p9r':true,
+		'mirador-tech':true
+	};
+	
+	
+	// OLD
+	//~ if (u.exec(s))
+	//~ {
+	
+	
+	// OLD styles
+	GM_addStyle('.cont {height:16px;overflow:auto;}');
+	GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
+	GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
+	GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
+	GM_addStyle('.cont:hover {background-color: #e9d8e9}');
+	GM_addStyle('.cont_link {text-decoration:none;color:black;}');
+	GM_addStyle('.cont_link:hover {font-weight:bold;}');
+	
+	
+	GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
+	GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
+	GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
+	//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
+	//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
+	
+	// hosts
+	var MT___page1_hosts = [
+		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
+		'http://www.sjshpack.com/AMT/g.php'
 	];
-	var ignore_requesters = [
-		'CrowdFlower',
-		'CrowdSource',
-		'Classify AdImages',
-		'ClariTrans',
-		'RelevanceQuest',
-		'AMTSpeech',
-		'Amazon Requester Inc. (Product Ads)',
-		'Amazon Requester Inc.',
-		'Chris Callison-Burch',
-		'User453',
-		'ProductRnR',
-		'WSOVC COM',
-		'rohzit0d',
-		'Cardcow',
-		'Redwood',
-		'Craft Listings',
-		'Stanford Language and Cognition Lab',
-		'Brandeis NLP',
-		'Streema',
-		'Fluffy Cloud',
-		'Intelius Data Systems',
-		'Johnny Wong',
-		'Oscar Smith',
-		'Sara Rosenthal',
-		'Comdata IT Fuel Tax',
-		'Venue Quality',
-		'Product Listings',
-		'Amazon Requester Inc - browse classification',
-		'Classify This',
-		'Tagasauris',
-		'chinese.mturk',
-		'Quality Website Reviews',
-		'Phillip Atiba Goff',
-		'Catalog Choice',
-		'WMT Admin',
-		'Sebastian Darr',
-		'Coder of Web Apps',
-		'Smartsheet.com Clients',
-		'A-Team',
-		'MASC Data',
-		'Ad Tagger',
-		'Dmitry Kachaev',
-		'Nic Lowe',
-		'Nascent Visions Corp',
-		'RI Services',
-		'techlist',
-		'Benjamin C Lok',
-		'Readabl',
-		'NetMSi',
-		'Todd Dickerson',
-		'Jimmy Dragon',
-		'Jon Brelig',
-		'Taste of the World',
-		'SET Master Account',
-		'Ignite Media Solutions',
-		'The Public Group',
-		'Turk Experiment',
-		'Crowdsurf Support',
-		'Social Media Research',
-		'11223344',
-		'A Global Media Analytics',
-		'411Richmond',
-		'Visual Genome',
-		'p9r',
-		'mirador-tech'
-	];
-	if (u.exec(s))
-	{
-		// hosts
-		var MT___page1_hosts = [
-			MT___host+'/mturk/.scripts/AMT_Batch/g.php',
-			'http://www.sjshpack.com/AMT/g.php'
-		];
-		var MT___page1_host = MT___page1_hosts[0];
-		var MT___page1_host_num = 0;
-		// last update
-		last = 0;
-		//
-		var current_db_ids = [];
+	var MT___page1_host = MT___page1_hosts[0];
+	var MT___page1_host_num = 0;
+	
+	//~ // last update
+	//~ var last = 0;
+	
+	/**
+	 * tasks_obj
+	 //tasks_obj.table1_row_ids: {} db_id:true
+	 //tasks_obj.table2_row_ids: {} db_id:true
+	 //tasks_obj.table_rows:     {} db_id:row _ element
+	 */ 
+	tasks_obj = {
+		current_db_ids: {},
 		
-		/**
-		 * Function date_format()
-		 * 
-		 */
-		function MT___page1_date_format(n) {
-						
-			var n = n*1000, // in ms
-				nt, // current time
-				nx,
-				nx_milliseconds;
-			nt = new Date();
-			nt = nt.getTime(); // linux epoch ms
-			nx = (nt - n) / 1000; // seconds difference (current - job)
-			
-			// rounding: 1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
-			// display: 6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
-			
-			if (nx < 3600) { // 1 hr
-				if (nt < n) nt = n; // is less than zero?
-				nx_milliseconds = new Date(nt - n);
-				// minutes
-				display_date = nx_milliseconds.getUTCMinutes() + 'm';
-			} else if (nx < 86400) { // 1 day
-				if (nt < n) nt = n; // is less than zero?
-				nx_milliseconds = new Date(nt - n);
-				// hours
-				display_date = nx_milliseconds.getUTCHours();
-				// minutes
-				// rounds to int.
-				// 30/60 = .5 * 10 = 5
-				// 50/60 = .83* 10 = 8.3 
-				var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
-				display_date = display_date + '.' + min + 'h';
-			} else if (nx < 86400*7) {
-				// days
-				display_date = Math.round( (nx/86400) * 10 )/10 +'d';
-			} else if (nx < 86400*365.2425) {
-				// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
-				display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
-			} else {
-				// years
-				display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
-			}
-			return display_date;
-		}
+		// Timestamp of the last update. This matches
+		// timestamp of the database.
+		last_update: 0,
 		
+		// ...
+		table1_row_ids:	{},	// #
+		table2_row_ids:	{},	// #
+		table_rows: 	{},	// el
+		
+		// ...
+		div_container: null,
+		table1: null,
+		table2: null,
+		
+		// ...
+		// boolean: first pull from database
+		isFirstRun: true,
+		
+		// This will contain the TD elements
+		// which will contain the graph data.
+		// Format: tasks_obj.hash_tds[row.hash_id] = td;
+		hash_tds: {},
+		
+		// This will contain the current HISTORY ids.
+		// An array.
 		//
-		// Results from db
+		current_history_ids: [],
+		
+		// This will contain the history ids of the
+		// newest tasks for graph initialization.
 		//
+		current_init_history_ids: [],
+		
+		// graph_rows_by_history_id
+		// This is HTML elements. The array
+		// "key" is the jobs history_id.
+		//
+		graph_rows_by_history_id: {},
+		
+		// Chart types
+		// chart_types
+		//
+		//
+		//
+		chart_types: [
+			'',
+			'DAILY-20MIN-AVG',
+			'DAILY-30MIN-AVG',
+			'DAILY-6HOUR-AVG',
+			'24HOUR-ALL',
+			'2HOUR-ALL',
+			'30MINUTE-ALL',
+			'',
+			'',
+			'',
+			''
+		]
+	}
+	
+	// Timers intervals
+	var xint, xint2;
+	
+	// Container
+	tasks_obj.div_container = document.createElement('div');
+	tasks_obj.div_container.setAttribute('style',
+		'position:absolute;'+
+		'top:40px;'+
+		'width:98%;'+
+		'background-color:none;'+
+		'margin:0 1%;'
+	);
+	document.body.appendChild(tasks_obj.div_container);
+	
+	// Tables
+	// Table 1 = jobs (minus ignored)
+	// Table 2 = jobs ignored
+	// ...
+	tasks_obj.table1 = document.createElement('table');
+	tasks_obj.table1.setAttribute('style',
+		'width:100%'
+	);
+	tasks_obj.table1.className = 'amt_show_tasks_table';
+	tasks_obj.div_container.appendChild(tasks_obj.table1);
+	// ...
+	tasks_obj.table2 = document.createElement('table');
+	tasks_obj.table2.setAttribute('style',
+		'width:100%'
+	);
+	tasks_obj.table2.className = 'amt_show_tasks_table';
+	tasks_obj.div_container.appendChild(tasks_obj.table2);
+	
+	
+	
+	// INIT !
+	//~ control_buttons();
+	MT___page1_async_last_update();
+	interval_update_timers();
+	
+	
+	/**
+	 * function interval_update_timers()
+	 * 
+	 * Set interval for time since posted timers.
+	 * And set interval for pause timer.
+	 */
+	function interval_update_timers() {
+		
 		var d;
 		d = document.createElement('input');
 		d.setAttribute('id','input__reload');
@@ -4791,14 +7517,15 @@ function MT___page1_show_jobs() {
 			document.body.removeChild(this);
 		}
 		
-		// Set page reload
+		// Set page reload vars
 		dx.value = 'Pause 20';
 		dx.onclick = function() {
 			clearInterval(xint);
 			clearInterval(xint2);
 			dx.value = 'Press reload to continue...';
 		}
-		var xint = setInterval(function() {
+		
+		xint = setInterval(function() {
 			var x = /Pause ([\d-]+)/.exec(dx.value);
 			if (!x) return;
 			x = x[1]*1;
@@ -4810,21 +7537,11 @@ function MT___page1_show_jobs() {
 			}
 			dx.value = 'Pause '+x;
 		}, 1000);
-		
-		// styles
-		GM_addStyle('.cont {height:16px;overflow:auto;}');
-		GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
-		GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
-		GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
-		GM_addStyle('.cont:hover {background-color: #e9d8e9}');
-		GM_addStyle('.cont_link {text-decoration:none;color:black;}');
-		GM_addStyle('.cont_link:hover {font-weight:bold;}');
-		// get started
-		MT___page1_async_last_update();
-		
-		// set interval for time since posted timers
-		var xint2 = setInterval(function() {
-			var x = document.getElementsByClassName('cont');
+		xint2 = setInterval(function() {
+			//~ var x = document.getElementsByClassName('cont');
+			
+			var x = tasks_obj.table_rows;
+			
 			for (var i in x) {
 				if (!x[i]) continue;
 				if (!x[i].innerHTML) continue;
@@ -4834,333 +7551,831 @@ function MT___page1_show_jobs() {
 				if (!y[0]) continue;
 				if (!y[0].value) continue;
 
-				y = MT___page1_date_format(y[0].value);
+				y = date_format(y[0].value);
 				
 				var z = x[i].getElementsByClassName('mt__timer');
 				if (!z) continue;
 				if (!z[0]) continue;
-				if (!z[0].innerHTML) continue;
+				if (!z[0].innerText) continue;
 				
-				z[0].innerHTML = y;
+				z[0].innerText = y;
 			}
-		}, 4000);
+		}, 6000);
+	}
+	
+	/**
+	 * Function date_format()
+	 * 
+	 * Rounding:
+	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
+	 * Display:
+	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+	 */
+	function date_format(n) {
+	
+		// OLD
+		//~ function MT___page1_date_format(n) {
+					
+		var n = n*1000, // in ms
+			nt, // current time
+			nx,
+			nx_milliseconds;
+		nt = new Date();
+		nt = nt.getTime(); // linux epoch ms
+		nx = (nt - n) / 1000; // seconds difference (current - job)
 		
-		function MT___page1_async_last_update() {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___page1_host + '?last_update=&' + Math.random()*10000,
-				onload: function (response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						if (MT___page1_host_num === 0) {
-							MT___page1_host = MT___page1_hosts[1];
-							MT___page1_host_num = 1;
-						} else {
-							MT___page1_host = MT___page1_hosts[0];
-							MT___page1_host_num = 0;
-						}
-						
-						setTimeout(function(){ MT___page1_async_last_update(); }, 4000);
-						return;
-					}
-					
-					rs = JSON.parse(rs); // h, j
-					if (rs[0].h != last) {
-						last = rs[0].h;
-						MT___page1_async(); // run full
-					}
-				}
-			});
+		if (nx < 3600) { // 1 hr
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// minutes
+			display_date = nx_milliseconds.getUTCMinutes() + 'm';
+		} else if (nx < 86400) { // 1 day
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// hours
+			display_date = nx_milliseconds.getUTCHours();
+			// minutes
+			// rounds to int.
+			// 30/60 = .5 * 10 = 5
+			// 50/60 = .83* 10 = 8.3 
+			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
+			display_date = display_date + '.' + min + 'h';
+		} else if (nx < 86400*7) {
+			// days
+			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
+		} else if (nx < 86400*365.2425) {
+			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
+			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
+		} else {
+			// years
+			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
 		}
-		function MT___page1_async() {
+		return display_date;
+	}
+	
+	/**
+	 * function MT___page1_async_last_update()
+	 */
+	function MT___page1_async_last_update() {
+		// 
+		console.log('Checking for new');
+		
+		//xhr
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___page1_host + '?last_update=&' + Math.random()*10000,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				console.log('response.status:' + response.status);
+				if (response.status != 200) {
+					if (MT___page1_host_num === 0) {
+						MT___page1_host = MT___page1_hosts[1];
+						MT___page1_host_num = 1;
+					} else {
+						MT___page1_host = MT___page1_hosts[0];
+						MT___page1_host_num = 0;
+					}
+					
+					setTimeout(function(){
+						MT___page1_async_last_update();
+					}, 4000);
+					return;
+				}
+				
+				/**
+				 * Response is object
+					{
+					h: int, (hits available updated, integer)
+					j: int	(jobs updated, integer)?
+					}
+				 * 
+				 * @var tasks_obj.last_update
+				 * 
+				 */
+				rs = JSON.parse(rs);
+				//
+				console.log(tasks_obj.last_update);
+				console.log(rs[0].h);
+				//
+				if (rs[0].h != tasks_obj.last_update) {
+					// 
+					console.log('last_update != database. Begin db full.');
+					//
+					tasks_obj.last_update = rs[0].h;
+					MT___page1_async(); // run full
+				}
+			}
+		});
+	}
+	
+	/**
+	 * function has_new_alertable()
+	 * 
+	 * @return true/false
+	 */
+	function has_new_alertable(rs) {
+		// Are there new jobs?
+		// Is ordered by time_posted DESC.
+		// @var new_job
+		var new_job = false;
+		for (var i = 0; i < rs[0].length; i++)
+		{
 			
-			// load
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___page1_host + '?show_all=&' + Math.random()*10000,
-				onload: function (response) {
+			var db_id = rs[0][i];
+			
+			if (tasks_obj.current_db_ids.hasOwnProperty(db_id)) {
+				continue; // Skip
+			}
+			
+			// on page number, hits avail, !ignore_
+			if  (
+				rs[1][i] <  20 &&
+				rs[4][i] >= 80 &&
+				!ignore_requesters.hasOwnProperty(rs[3][i]) &&
+				!ignore_requesters__ids.hasOwnProperty(rs[6][i])
+				)
+			{
+				new_job = true;
+				break; // END HERE
+			}
+		}
+		// Alert
+		if (new_job) {
+			play_audio();
+		}
+		// Reset the current_db_ids
+		tasks_obj.current_db_ids = {};
+		// Reset the current_hash_ids
+		tasks_obj.current_history_ids = [];
+		for (var i = 0; i < rs[0].length; i++)
+		{
+			
+			var db_id = rs[0][i];
+			tasks_obj.current_db_ids[db_id] = true;
+			
+			// ADD TO current_history_ids
+			var history_id;
+			if (rs[8]) {
+				history_id = rs[8][i];
+				tasks_obj.current_history_ids.push(history_id);
+			}
+			
+			// IF NOT ON PAGE THEN ADD ?? 
+		}
+	}
+	
+	/**
+	 * function makeRow()
+	 * 
+	 * @param row
+	 * @param isIgnored
+	 */
+	function makeRow(row, isIgnored) {
+		
+		//~ console.log(row);
+		
+		// Set globals!
+		if (!isIgnored)
+			tasks_obj.table1_row_ids[row.db_id] = true;
+		else
+			tasks_obj.table2_row_ids[row.db_id] = true;
+		
+		// tr
+		//
+		//
+		
+		var tr = document.createElement('tr');
+		tr.setAttribute('style',
+			''
+		);
+		//~ 
+		//~ 
+		//~ tr.className = 'show_tasks_table_row';
+		
+		// Add to global!
+		tasks_obj.table_rows[row.db_id] = tr;
+		
+		//~ XX
+		//~ tasks_obj.table_rows[tr] = true;
+		
+		// tds
+		//
+		//
+		
+		// id
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:8px;border-right:1px solid #a4a4a4;'
+		);
+		td.innerText = row.db_id;
+		tr.appendChild(td);
+		
+		// title
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:50%;'
+		);
+		tr.appendChild(td);
+		if (row.group_id != '' && row.group_id != null) {
+			var a_gid		= document.createElement('a');
+			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
+			a_gid			.setAttribute('class','cont_link');
+			a_gid.target	= '_blank';
+			a_gid.innerText = '▶' + __js_clean_html_str(row.title); // "Black right-pointing triangle"
+		} else
+			var a_gid		= document.createTextNode(__js_clean_html_str(row.title));
+		td.appendChild(a_gid);
+		
+		// name
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:18%;'
+		);
+		tr.appendChild(td);
+		if (row.requester_id != '') {
+			var a_rid		= document.createElement('a');
+			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
+			a_rid			.setAttribute('class','cont_link');
+			a_rid.target	= '_blank';
+			a_rid.innerText = __js_clean_html_str(row.requester_name);
+		} else
+			var a_rid		= document.createTextNode(__js_clean_html_str(row.requester_name));
+		td.appendChild(a_rid);
+		
+		// available
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:4%;'
+		);
+		td.innerText = row.hits_available;
+		tr.appendChild(td);
+		
+		// Set row property .hits_available (td element) here.
+		tr.hits_available = td;
+		
+		// reward
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:4%;'
+		);
+		td.innerText = row.reward.replace(/^\$/, '');
+		tr.appendChild(td);
+		
+		// tsp
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:6%;'//+'max-width:10px;'
+		);
+		tr.appendChild(td);
+		// hidden
+		var tsp_input = document.createElement('input');
+		tsp_input.setAttribute('type', 'hidden');
+		tsp_input.value = row.time_since_posted;
+		td.appendChild(tsp_input);
+		// createTextNode
+		var tsp_span = document.createElement('span');
+		var x = date_format(row.time_since_posted);
+		tsp_span.className = 'mt__timer';
+		tsp_span.innerText = x;
+		td.appendChild(tsp_span);
+		
+		// Chart.js select controller
+		// 2% + ... there's leftover 2% = 100% = 4%
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:4%;'
+		);
+		tr.appendChild(td);
+		var select = document.createElement('select');
+		select.setAttribute('style',
+			'width:100%;'
+			//height:20px;
+		);
+		select.db_id = row.db_id; // db_id
+		select.history_id = row.history_id; // db_id
+		td.appendChild(select);
+		for (var count in tasks_obj.chart_types) {
+			var chart_type = tasks_obj.chart_types[count];
+			var option = document.createElement('option');
+			option.innerText = chart_type;
+			//~ option.innerText = count;
+			option.value = chart_type;
+			select.appendChild(option);
+		}
+		select.onchange = function() {
+			console.log(this.value);
+			console.log(this.db_id);
+			console.log(this.history_id);
+			
+			tasks_obj.current_init_history_ids = [
+				this.history_id
+			];
+			init_graph(this.value, this.chart_td); //chart_type
+			
+		}
+		select.onblur = function() {
+			
+		}
+		
+		// Chart.js
+		// 14%
+		// Set tasks_obj[row.hash_id] = td;
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'width:16%;'
+			//+'max-width:10px;'
+		);
+		tr.appendChild(td);
+		
+		select.chart_td = td;
+		
+		
+		//
+		//~ var chart = document.createElement('canvas');
+		//~ chart.setAttribute('style',
+			//~ 'width:100%;height:20px;'
+		//~ );
+		//~ chart.height = '100';
+		//~ td.appendChild(chart);
+		//~ if (row.hasOwnProperty('history_id'))
+			//~ tasks_obj.graph_rows_by_history_id[row.history_id] = chart;
+		
+		
+		//~ if (row.hasOwnProperty('hash_id'))
+			//~ tasks_obj.hash_tds[row.hash_id] = td;
+		
+		return tr;
+		
+		//~ //OLD
+		//~ div_contain	.setAttribute('style','width:100%;');
+		//~ div_gid		.setAttribute('style','float:left;width:60%;');
+		//~ div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
+		//~ div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
+		//~ div_date	.setAttribute('style','width:8%;overflow:hidden;');
+		//~ inp_tsp		.setAttribute('type', 'hidden');
+		//~ div_contain	.setAttribute('class', 'cont');
+		//~ div_date	.setAttribute('class', 'mt__timer');
+		//~ inp_tsp		.value = rs[5][i];
+		//~ d = date_format(rs[3][i]);
+	}
+	
+	/**
+	 * function init_graph()
+	 * 
+	 * The hash_ids are tallied in various places, so far.
+	 * A nice place to take them from is tasks_obj.current_db_ids.
+	 * Where: tasks_obj.current_db_ids[db_id] = true;
+	 * 
+	 * Pass in global array of ids-to-initialize: @ current_init_history_ids
+	 * 
+	 * Chart.js is included in manifest.json, in /includes/
+	 * 
+	 * TODO:
+	 * 	- Add "remove graphs" button to clear all graphs from page. (? or just refresh page...)
+	 *  - Optional: Add 0s to graph when interval between data points is > graph type.
+	 */
+	function init_graph(chart_type, chart_td) {
+		
+		// Are there any hash_ids? Only case
+		// probably is when pulling tasks from sjshpack.com.
+		if  (
+			!tasks_obj.current_init_history_ids.length ||
+			chart_type == ''
+			)
+			return;
+		
+		// Global
+		var chart_type = chart_type;
+		var chart_td = chart_td;
+		
+		// Obj
+		var obj = {
+			type: chart_type,
+			history_ids: tasks_obj.current_init_history_ids // array
+			
+			//~ type: '30MINUTE-ALL',
+			//~ type: '2HOUR-ALL',
+		};
+		obj = JSON.stringify(obj);
+		
+		var url = MT___page1_host;
+		var data =  'graph='+encodeURIComponent(obj)+'&'+Math.random();
+		
+		var days_of_week = [
+			'Su','M','Tu','W','Th','F','Sa'
+		];
+		
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: url,
+			data: data,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function (response) {
+				
+				var rs = response.responseText;
+				//~ console.log(response);
+				console.log(rs);
+				
+				//~ return;
+				rs = JSON.parse(rs);
+				
+				// GRAPH
+				
+				// rs
+				// array [ history_id1 => data, history_id2 => data, ... ]
+				// where
+				// data = array [ 'd'=>int timestamp, 'h'=>int available ]
+				//
+				
+				// Labels
+				// For more than 24 hour graphs show the day names rather
+				// than hours.
+				
+				// TODO?
+				// Fill 0s
+				// Based on the time span, check for any graph section
+				// data where time between points is greater than graph
+				// type. For example,
+				// ALL = ~4 so > ~10
+				// 20MIN = ~20 so > ~30
+				// 30MIN = ~30 so > ~40
+				// 6HR = ~6 so > ~7
+				
+				var history_id;
+				for (history_id in rs) {
 					
-					var rs = response.responseText;
+					var rows = rs[history_id];
 					
-					if (response.status != 200) {
-						if (MT___page1_host_num === 0) {
-							MT___page1_host = MT___page1_hosts[1];
-							MT___page1_host_num = 1;
-						} else {
-							MT___page1_host = MT___page1_hosts[0];
-							MT___page1_host_num = 0;
-						}
-						return;
-					}
-					
-					// parse JSON
-					rs = JSON.parse(rs);
-					//console.log(rs);
-					
-					// remove old
-					var x;
-					x = document.getElementById('div__main');
-					if (x) {
-						document.body.removeChild(x);
-					}
-					
-					var div;
-					var div_main;
-					//
-					div_main=document.createElement('div');
-					div_main.setAttribute('id','div__main');
-					div_main.setAttribute('style',
-							'position:absolute;'+
-							'top:40px;'+
-							'width:98%;'+
-							'background-color:none;'
-					);
-					//
-					div=document.createElement('div');
-					div.setAttribute('id','div__reload');
-					div.setAttribute('style',
-							'margin:0 auto;'+
-							'width:98%;'+
-							'max-width:1000px;'+
-							'height:500px;'+
-							'overflow:auto;'+
-							'background-color:#fdfdfd;'+
-							'border:4px solid #d2d2d2;'//+
-							//':;'+
-					);
-					div_main.appendChild(div);
-					//
-					div=document.createElement('div');
-					div.setAttribute('id','div__reload2');
-					div.setAttribute('style',
-							'margin:0 auto;'+
-							'width:100%;'+
-							'max-width:1000px;'+
-							'height:500px;'+
-							'overflow:auto;'+
-							'background-color:#fdfdfd;'+
-							'border:4px solid #d2d2d2;'//+
-							//':;'+
-					);
-					div_main.appendChild(div);
-					
-					document.body.appendChild(div_main);
-					var div__reload=document.getElementById('div__reload');
-					var div__reload2=document.getElementById('div__reload2');
-					
-					//~ div__reload2.style.position		= 'absolute';
-					//~ div__reload2.style.top			= '540px';
-					//~ div__reload2.style.left			= '50%';
-					//~ div__reload2.style.marginLeft = '-48%';
-					//~ div__reload2.style.width	   = '96%';
-					//~ div__reload2.style.height		= '500px';
-					//~ div__reload2.style.overflow		= 'auto';
-					//~ div__reload2.style.backgroundColor = 'white';
-					//~ div__reload2.style.border = '4px solid #d2d2d2';
-					//~ //div__reload2.style.marginLeft	= '-450px';
-					//~ 'position:absolute;'+
-					//~ 'top:40px;'+
-					//~ 'left:50%;'+
-					//~ 'transform: translate(-50%);'+
-					//~ //'margin:0 auto;'+
-					//~ 'width:100%;'+
-					//~ 'max-width:1000px;'+
-					//~ 'height:500px;'+
-					//~ 'overflow:auto;'+
-					//~ div__reload.style.position = 'absolute';
-					//~ div__reload.style.top	   = '30px';
-					//~ div__reload.style.left		= '50%';
-					//~ div__reload.style.width		= '100%';
-					//~ div__reload.style.maxWidth	= '1000px';
-					//~ div__reload.style.height	= '500px';
-					//~ div__reload.style.overflow = 'auto';
-					//~ div__reload.style.backgroundColor = 'white';
-					//~ div__reload.style.border = '4px solid #d2d2d2';
-					//~ div__reload.style.transform = 'translate(-50%)';
-					//
-					//div__reload2.style.width		= '900px';
-					//~ 
-					//~ div__reload.addEventListener('load', function() {
-						//~ var x = this.getBoundingClientRect();
-						//~ 
-						//~ this.style.marginLeft = x.left / 2 * -1;
-					//~ }, false);
+					var labels = [];
+					var num_tasks = [];
 					
 					
-					/**
-					 *
-					//rs
-					//0 job DB id
-					//1 on_page_number
-					//2 job title
-					//3 requester name
-					//4 # avail.
-					//5 time since posted
-					//6 requesterid
-					//7 groupid
-					*/
 					
-					// are there new jobs?
-					// is ordered by time_posted DESC.
-					var new_job = false;
-					for (var i = 0; i < rs[0].length; i++)
-					{
-						if (__js_inarray(current_db_ids, rs[0][i])) { // OLD
-							continue;//break;
-						}
+					// Is longer than 24 hours?
+					// Newest - Oldest
+					var time_span = rows[rows.length - 1]['d']*1 - rows[0]['d']*1;
+					
+					// By day
+					if (time_span > 86400) {
+					
+						var last_day = null;
+						for (var i in rows) {
 							
-						current_db_ids.push(rs[0][i]);
-						if (new_job) continue;
-						
-						// on page number, hits avail, !ignore_
-						if  (
-							rs[1][i] < 20 &&
-							rs[4][i] >= 80 &&
-							!__js_inarray(ignore_requesters,		rs[3][i]) &&
-							!__js_inarray(ignore_requesters__ids,	rs[6][i])
-							)
-						{
-							new_job = true;
+							var time	= rows[i]['d']; // date
+							var nt		= rows[i]['h']; // num tasks
+							
+							var day = days_of_week[ new Date(time * 1000).getDay() ];
+							
+							if (last_day != day) {
+								labels.push(day);
+								last_day = day;
+							} else {
+								labels.push('');
+							}
+							
+							num_tasks.push(nt);
 						}
 					}
-					// alert
-					if (new_job) {
-						MT___page1_show_jobs_play_audio();
-					}
-					// reset the current_db_ids
-					for (var i = 0; i < rs[0].length; i++)
-					{
-						current_db_ids.push(rs[0][i]);
+					// By hour
+					else {
+						
+						var last_hour = null;
+						for (var i in rows) {
+							
+							var time	= rows[i]['d']; // date
+							var nt		= rows[i]['h']; // num tasks
+							
+							var hour = new Date(time * 1000).getHours();
+							
+							if (hour == 0)
+								hour = '12a'
+							else if (hour < 12)
+								hour += 'a';
+							else if (hour == 12)
+								hour += 'p'
+							else
+								hour = (hour*1 - 12) + 'p';
+							
+							
+							
+							if (last_hour != hour) {
+								labels.push(hour);
+								last_hour = hour;
+							} else {
+								labels.push('');
+							}
+							
+							num_tasks.push(nt);
+						}
 					}
 					
-					// output
-					var div_contain;
-					var div_gid;
-					var div_rid;
-					var div_avl;
-					var div_date;
-					var inp_tsp;
-					var a_gid;
-					var a_rid;
-					var d;
-					for (var i = 0; i < rs[0].length; i++)
-					{	
-						div_contain	= document.createElement('div');
-						div_gid		= document.createElement('div');
-						div_rid		= document.createElement('div');
-						div_avl		= document.createElement('div');
-						div_date	= document.createElement('div');
+					
+					// Data
+					var data = {
+						labels: labels,
+						datasets: [
+							{
+								label: "X",
+								fillColor: "rgba(151,187,205,0.2)",
+								strokeColor: "rgba(151,187,205,1)",
+								pointColor: "rgba(151,187,205,1)",
+								pointStrokeColor: "#fff",
+								pointHighlightFill: "#fff",
+								pointHighlightStroke: "rgba(151,187,205,1)",
+								data: num_tasks
+							}
+						]
+					}
+					
+					// Options
+					var options = {
+						scaleShowGridLines: false,
+						pointDot: false,
+					}
+					
+					// Canvas & TD
+					var chart = document.createElement('canvas');
+					chart.setAttribute('style',
+						'width:100%;height:20px;'
+					);
+					chart.height = '100';
+					chart_td.innerHTML = ''; // Reset
+					chart_td.appendChild(chart);
+					
+					// ...
+					var context = chart.getContext("2d");
+					var myNewChart = new Chart(context).Line(data, options);
+					
+					// out element
+					//~ var chart = tasks_obj.graph_rows_by_history_id[history_id];
+					
+					//~ var context = chart.getContext("2d");
+					//~ var myNewChart = new Chart(context).Line(data, options);
+
+					// Reset?
+					//~ chart.setAttribute('style',
+						//~ 'width:100%;height:20px;'
+					//~ );
+					//~ chart.height = '100';
+					//~ console.log(chart);
+					
+				
+				}
+				
+				
+			}
+		});
+	}
+	
+	/**
+	 * function MT___page1_async()
+	 */
+	function MT___page1_async() {
+		
+		// load
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___page1_host + '?show_all=&' + Math.random(),
+			onload: function (response) {
+				
+				var rs = response.responseText;
+				
+				// If response is not 200
+				// then try another host. Other
+				// hosts would be sjshpack.com.
+				// Etc.
+				if (response.status != 200) {
+					if (MT___page1_host_num === 0) {
+						MT___page1_host = MT___page1_hosts[1];
+						MT___page1_host_num = 1;
+					} else {
+						MT___page1_host = MT___page1_hosts[0];
+						MT___page1_host_num = 0;
+					}
+					return;
+				}
+				
+				// Parse
+				rs = JSON.parse(rs);
+				//~ console.log(rs);
+				
+				// THIS IS WHERE THE TABLE WILL BE.
+				// FOR EACH RETURNED JOB IN "rs",
+				// CHECK FOR MATCHING JOB IN TABLE.
+				// The match is made by database ID
+				// of job. If a match is made then
+				// only UPDATE the row in the table.
+				// Else if there is no match, add
+				// a row to the table.
+				
+				// Has new alertable?
+				// Also updates current_db_ids.
+				has_new_alertable(rs);
+				
+				// First loop through all table rows and check 
+				// against current_db_ids to ensure that all rows
+				// in table are still active.
+				
+				for (var db_id in tasks_obj.table_rows) {
+					
+					// row = HTML element
+					var row = tasks_obj.table_rows[db_id];
+					
+					//~ var db_id = row.db_id;
+					
+					if (!tasks_obj.current_db_ids.hasOwnProperty(db_id))
+					{ // remove
+						row.parentNode.removeChild(row);
 						
-						inp_tsp		= document.createElement('input');
+						delete tasks_obj.table1_row_ids[db_id]; // exists?
+						delete tasks_obj.table2_row_ids[db_id]; // exists?
 						
-						if (rs[7][i] != '') {
-							a_gid			= document.createElement('a');
-							a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+rs[7][i];
-							a_gid			.setAttribute('class','cont_link');
-							a_gid.target	= '_blank';
-							a_gid.innerText = __js_clean_html_str(rs[2][i]);
-						} else
-							a_gid			= document.createTextNode(__js_clean_html_str(rs[2][i]));
-						if (rs[6][i] != '') {
-							a_rid			= document.createElement('a');
-							a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i];
-							a_rid			.setAttribute('class','cont_link');
-							a_rid.target	= '_blank';
-							a_rid.innerText = __js_clean_html_str(rs[3][i]);
-						} else
-							a_rid			= document.createTextNode(__js_clean_html_str(rs[3][i]));
+						//~ delete tasks_obj.table1_history_ids[db_id]; // exists?
+						//~ delete tasks_obj.table2_history_ids[db_id]; // exists?
 						
-						div_contain	.setAttribute('style','width:100%;');
-						div_gid		.setAttribute('style','float:left;width:60%;');
-						div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-						div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-						div_date	.setAttribute('style','width:8%;overflow:hidden;');
+						delete tasks_obj.table_rows[db_id];
+					}
+					else
+					{ //
 						
-						inp_tsp		.setAttribute('type', 'hidden');
+					}
+					
+				}
+				
+				// Loop through response object and check if table elements
+				// contain this task. If so then update table entry.
+				// Else if does not exist in either table, determine which
+				// table it ought to go in and - put 'er there!
+				
+				/**
+				 *
+					rs
+					0 job DB id
+					1 on_page_number
+					2 job title
+					3 requester name
+					4 HITs avail.
+					5 time since posted
+					6 requesterid
+					7 groupid
+					* 8 histID
+					* 9 reward
+				*/
+				var d = {
+					db_id: '',
+					on_page_number: '',
+					title: '',
+					requester_name: '',
+					hits_available: '',
+					time_since_posted: '',
+					requester_id: '',
+					group_id: '',
+					history_id: '',
+					reward: ''
+				};
+				for (var i = 0; i < rs[0].length; i++) {
+					
+					d.db_id				= rs[0][i];
+					d.on_page_number	= rs[1][i];
+					d.title				= rs[2][i];
+					d.requester_name	= rs[3][i];
+					d.hits_available	= rs[4][i];
+					d.time_since_posted	= rs[5][i];
+					d.requester_id		= rs[6][i];
+					d.group_id			= rs[7][i];
+					d.history_id		= (rs[8]) ? rs[8][i] : '';
+					d.reward			= (rs[9]) ? rs[9][i] : '';
+					
+					// UPDATE THIS ROW!
+					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
+					{
+						var row = tasks_obj.table_rows[d.db_id]
+						row.hits_available.innerText = d.hits_available;
 						
-						div_contain	.setAttribute('class', 'cont');
-						div_date	.setAttribute('class', 'mt__timer');
+						// IF updating graphs
+						// THEN update them here (add the newest data point)
+						//
+						//
 						
-						inp_tsp		.value = rs[5][i];
 						
-						d = MT___page1_date_format(rs[3][i]);
+						continue;
+					}
+					// Else
+					else
+					{
 						
-						// append sm sm.
-						div_gid	.appendChild(a_gid);
-						div_rid	.appendChild(a_rid);
-						div_avl	.appendChild(document.createTextNode(rs[4][i]));
-						div_date.appendChild(document.createTextNode(d));
-						// append sm.
-						div_contain.appendChild(inp_tsp);
-						div_contain.appendChild(div_gid);
-						div_contain.appendChild(div_rid);
-						div_contain.appendChild(div_avl);
-						div_contain.appendChild(div_date);
+					}
+					
+					// Create a new row.
+					// And append or insert.
+					// If global tasks_obj.firstRun is true,
+					// (firstRun == true) then for all rows
+					// treat them as appendChild. If firstRun
+					// is false then treat all rows as insertBefore.
+					
+					var new_row;
+					
+					// Regular
+					if  (
+						!ignore_requesters.hasOwnProperty(d.requester_name) &&
+						!ignore_requesters__ids.hasOwnProperty(d.requester_id)
+						)
+					{ 
 						
-						// Append main
-						// In top or bottom
-						// 3 == requester name
-						// 6 == requester id
-						if  (
-							!__js_inarray(ignore_requesters,		rs[3][i]) &&
-							!__js_inarray(ignore_requesters__ids,	rs[6][i])
-							)
+						new_row = makeRow(d); // false
+						
+						// append
+						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
 						{
-							div__reload.appendChild(div_contain);
-							div__reload.appendChild(document.createElement('hr'));
-							//div__reload.innerHTML = div__reload.innerHTML + '<hr style="margin:0;" />' + st;
+							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
+							tasks_obj.table1.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
+						// insert
 						else
 						{
-							div__reload2.appendChild(div_contain);
-							div__reload2.appendChild(document.createElement('hr'));
-							//div__reload2.innerHTML = div__reload2.innerHTML + '<hr style="margin:0;" />' + st;
+							tasks_obj.table1.appendChild(new_row);
 						}
-						
-						
-						//~ // gid
-						//~ var gid;
-						//~ if (rs[7][i] != '') {
-							//~ gid = '\
-								//~ <a href="https://www.mturk.com/mturk/preview?groupId='+rs[7][i]+'" target="_blank" class="cont_link">\
-								//~ '+rs[2][i]+'\
-								//~ </a>';
-						//~ } else
-							//~ gid = rs[2][i];
-							//~ //gid = '<span style="color:purple;font-weight:bold;">'+rs[0][i]+'</span>';
-						//~ // rid
-						//~ var rid;
-						//~ if (rs[6][i] != '') {
-							//~ rid = '\
-								//~ <a href="https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+rs[6][i]+'" target="_blank" class="cont_link">\
-								//~ '+rs[3][i]+'\
-								//~ </a>';
-						//~ } else
-							//~ rid = '&nbsp;'+rs[3][i];
-						//~ 
-						//~ //490,230,98
-						//~ //<div style="overflow:hidden;">
-						//~ var st='\
-						//~ <div style="width:100%;" class="cont">\
-							//~ <input type="hidden" value="'+rs[5][i]+'">\
-							//~ <div style="float:left;width:64%;">\
-								//~ '+gid+'\
-							//~ </div>\
-							//~ <div style="float:left;min-width:20%;max-width:20%;overflow:hidden">\
-								//~ '+rid+'\
-							//~ </div>\
-							//~ <div style="float:left;min-width:6%;max-width:6%;overflow:hidden">\
-								//~ '+rs[4][i]+'\
-							//~ </div>\
-							//~ <div style="min-width:6%;max-width:6%;overflow:hidden;" class="mt__timer">' +d+ '</div>\
-						//~ </div>';// hidden = break;
-						//rs - Hit, Requester, #
 					}
-					
+					// Ignored
+					else
+					{
+						
+						new_row = makeRow(d, true);
+						
+						// append
+						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
+						{
+							//~ console.log('inserting');
+							
+							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
+							tasks_obj.table2.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
+						}
+						// insert
+						else
+						{
+							//~ console.log('appending');
+							
+							tasks_obj.table2.appendChild(new_row); // true == ignored
+						}
+					}
 				}
-			});
-		}
+				
+				// If first run ...
+				// Then load full graph data.
+				// Else if there are any new tasks
+				// then get full initial history for them.
+				//
+				// Update tasks_obj.firstRun to false.
+				// For all future runs any new rows
+				// will be insertBefore (top of table)
+				// rather than appendChild.
+				if (tasks_obj.isFirstRun) {
+					tasks_obj.isFirstRun = false;
+					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
+					
+					// init graph?
+					
+				} else if (tasks_obj.current_init_history_ids.length) {
+					// init graph?
+				}
+			}
+		});
+	}
+	
+	/**
+	 //~ * Function MT___page1_show_jobs_play_audio
+	 * 
+	 * play_audio
+	 * 
+	 */
+	function play_audio() {
+		
+		// Remove old elements.
+		if (document.getElementById('MT___page1_show_jobs_play_audio'))
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		if (document.getElementById('MT___page1_show_jobs_play_audio'))
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		
+		//MT___AUDIO_SNIPPET
+		//b64_audio =
+								
+		// Play alert
+		// i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
+		var c = document.createElement('audio');
+		c.setAttribute('style','position:fixed;top:30px;left:0px;width:80px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;');
+		c.setAttribute('id','MT___page1_show_jobs_play_audio');
+		c.setAttribute('controls','');
+		c.setAttribute('src', MT___AUDIO_SNIPPET);
+		document.body.appendChild(c);
+		c = document.getElementById('MT___page1_show_jobs_play_audio');
+		c.play();
+		// Remove after 4 seconds
+		setTimeout(function() {
+			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
+		}, 4000);
 	}
 }
 /*
@@ -5448,6 +8663,52 @@ function AMT___oldTopWindowFloatStuff() {
 /*
  * END FUNCTION AMT___oldTopWindowFloatStuff
  */
+ 
+
+function AMT___InitializeReturnAndAcceptKeyPress() {
+	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
+		
+			if (rs.hasOwnProperty('RACustomKey'))
+				AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
+			//alert('here ' + rs.RACustomKey + rs.RACustomKey.toLowerCase().charCodeAt() + AMT__Global_Vars.RACustomKey);
+			
+		});
+	document.addEventListener("keypress", AMT___ReturnAndAcceptKeyPress);	
+}
+function AMT___ReturnAndAcceptKeyPress(event) {
+		//console.log(event.keyCode);
+		switch (event.keyCode) {
+			case AMT__Global_Vars.RACustomKey :
+				chrome.extension.sendRequest({getRAHotkey: true}, 
+				function(rs) 
+				{
+					if(rs.RAHotkey == 'On') {
+						if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
+						document.getElementById('MT__gm_returnaccept').click();
+						event.preventDefault();
+						return false;
+					}
+					else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
+					{
+						//Send a message to the top window and tell it to return and acceptfresh
+						new AMT___core_factory().
+							iframe2parent__postMessage( //
+								{
+									action: 'return_and_accept'
+								}
+							);
+							event.preventDefault();
+							return false; 
+					}
+
+					}
+				});
+				break;
+			default:
+				break;
+		}
+}
+
 /**
  * Function AMT___returnAndAcceptButton
  * // Make return/accept button
@@ -5470,6 +8731,7 @@ function AMT___returnAndAcceptButton() {
 			)
 		) // return link and group id
 	{
+
 		
 		var u;
 		u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
@@ -5486,20 +8748,23 @@ function AMT___returnAndAcceptButton() {
 		var d = document.createElement('input');
 		d.setAttribute('id','MT__gm_returnaccept');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:50%;width:120px;height:24px;margin-left:120px;z-index:1000;');
+		d.setAttribute('style','position:fixed;top:0px;left:40%;width:120px;height:24px;margin-left:120px;z-index:1000;');
 		d.setAttribute('value','Return and Accept');
 		document.body.appendChild(d);
+		
 		var d = document.createElement('input');
-		d.setAttribute('id','MT__gm_returnaccept_serverSide');
+		d.setAttribute('id','MT__gm_returnaccept_non_serverSide');
 		d.setAttribute('type','button');
-		d.setAttribute('style','position:fixed;top:0px;left:50%;width:20px;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
-		d.setAttribute('value','SV');
+		d.setAttribute('style','position:fixed;top:0px;left:40%;height:24px;margin-left:240px;z-index:1000;padding-left:0;padding-right:0;');
+		d.setAttribute('value','Non-SV');
 		document.body.appendChild(d);
 		
 		// local
 		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
-			
 			this.style.backgroundColor='#9e9e9e';
+			//Record what tab we're returning on
+			recordReturn();
+
 			
 			// HOOK GOES HERE> RETURN & ACCEPT + showNextTab, nextTab
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
@@ -5530,9 +8795,12 @@ function AMT___returnAndAcceptButton() {
 		}, false);
 		
 		// serverSide
-		document.getElementById('MT__gm_returnaccept_serverSide').addEventListener('click', function() {
-			
+		document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
 			this.style.backgroundColor='#9e9e9e';
+			//Record what tab we're returning on
+			recordReturn();
+			
+			
 			
 			function MT__RETURN_AND_ACCEPT_serverSide(time_to_submit) {
 				setTimeout(function() {
@@ -5588,7 +8856,7 @@ function AMT___checkCaptchaStatus() {
 			}
 		);
 		
-		// set local
+		// Set localstorage
 		GM_setValue('mt_captcha','1');
 		
 		// Captcha response focus 
@@ -5612,23 +8880,27 @@ function AMT___checkCaptchaStatus() {
 			!GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES')
 		   )
 			GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-		// int
-		var xint_CONTINUE_CAPTCHA = setInterval(function() {
 			
-			var d = new Date();
-			d = Math.round(d.getTime() / 1000);
+		// New 23 Sep 2014
+		// Set an eventListener for storage which will monitor other tabs.
+		// Another tab will set localStorage['mt_captcha'] = 0.
+		//
+		var reset_after_captcha = false;
+		window.addEventListener('storage', function() {
 			
-			var numt = GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES') * 1;
-			
-			if (
-				GM_getValue('mt_captcha') == '0'
-			   )
+			if  (
+				GM_getValue('mt_captcha') == '0' &&
+				!reset_after_captcha
+			    )
 			{
-				clearInterval(xint_CONTINUE_CAPTCHA);
+				// Set true
+				reset_after_captcha = true;
 				
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-				
+				// OLD.......
+				// TODO: 23 Sep 2014
+				// Ask the background page how many tabs are currently on mturk.com.
+				// (This is topWindow.) Then reload / location.href based on this amount.
+				//
 				if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
 					
 					var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
@@ -5637,55 +8909,57 @@ function AMT___checkCaptchaStatus() {
 					
 				} else
 					window.location.reload();
-				
-				/*if (ih.indexOf('Copy and paste the HTML from the links') != -1) { // amicus labs
-					//window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOOIR6U04FONQSDV7O118';
-					//window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
-					window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
-				} else
-					window.location.reload();*/
 			}
-			else if (
-				GM_getValue('MT_CAPTCHA__LAST_RELOAD') < d - 30 &&
-				numt < 30 // 20 is 10m, 30 is 15m
-			)
-			{
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', numt + 1);
-			}
-		}, ((Math.random()*20) * 100) + 100); // 100 - 2000 ms
-		// END LAST RELOAD
+			
+		}, false);
 		
-		/*
-		 * 
-		 * OLD, use AMT
-		//play sound
-		var play__ = GM_getValue('MT__CAPTCHA_PLAY_SOUND');
-		var d = new Date();
-		d = Math.round(d.getTime() / 1000);
 		
-		if (!play__) {
-			GM_setValue('MT__CAPTCHA_PLAY_SOUND', d);
-		} else {
-			if (d - 120 > play__) { // 2 min. //xx5
-				
-				GM_setValue('MT__CAPTCHA_PLAY_SOUND', d);
-
-				d=document.createElement('iframe');
-				d.setAttribute('id','MT__CAPTCHA_PLAY_SOUND');
-				document.body.appendChild(d);
-				d = document.getElementById('MT__CAPTCHA_PLAY_SOUND');
-				d.style.position='absolute';
-				d.style.top='0px';
-				d.style.left='20%';
-				d.style.width='10%';
-				d.style.height='10px';
-				d.style.overflow='auto';
-				d.style.border='1px solid blue';
-				d.style.backgroundColor='white';
-				d.src = 'http://localhost/mturk/.scripts/Music/132118_2375010-lq(box).mp3';
-			}
-		}*/
+		// int
+		//~ var xint_CONTINUE_CAPTCHA = setInterval(function() {
+			//~ 
+			//~ var d = new Date();
+			//~ d = Math.round(d.getTime() / 1000);
+			//~ 
+			//~ var numt = GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES') * 1;
+			//~ 
+			//~ if (
+				//~ GM_getValue('mt_captcha') == '0'
+			   //~ )
+			//~ {
+				//~ clearInterval(xint_CONTINUE_CAPTCHA);
+				//~ 
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
+				//~ 
+				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
+					//~ 
+					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+					//~ if (i)
+						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+					//~ 
+				//~ } else
+					//~ window.location.reload();
+				//~ 
+				//~ /*if (ih.indexOf('Copy and paste the HTML from the links') != -1) { // amicus labs
+					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOOIR6U04FONQSDV7O118';
+					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
+					//~ window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
+				//~ } else
+					//~ window.location.reload();*/
+			//~ }
+			//~ else if
+			//~ (
+				//~ GM_getValue('MT_CAPTCHA__LAST_RELOAD')*1 < d - 30 &&
+				//~ numt < 30 // 20 is 10m, 30 is 15m
+			//~ )
+			//~ {
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
+				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', numt + 1);
+			//~ }
+		//~ }, ((Math.random()*20) * 100) + 100); // 100 + 0~2000 ms
+		//~ // END LAST RELOAD
+		//~ 
+		
 	}
 	/**
 	 * No Captcha
@@ -5749,327 +9023,6 @@ function AMT___checkCaptchaStatus() {
  * END FUNCTION
  */
 
-/**
- * Other Global Variables
- * ++ instantiate them
- */
-var MT___states;
-var MT___countries;
-MT___states = {
-	"AL": "Alabama",
-	"AK": "Alaska",
-	"AS": "American Samoa",
-	"AZ": "Arizona",
-	"AR": "Arkansas",
-	"CA": "California",
-	"CO": "Colorado",
-	"CT": "Connecticut",
-	"DE": "Delaware",
-	"DC": "District Of Columbia",
-	"FM": "Federated States Of Micronesia",
-	"FL": "Florida",
-	"GA": "Georgia",
-	"GU": "Guam",
-	"HI": "Hawaii",
-	"ID": "Idaho",
-	"IL": "Illinois",
-	"IN": "Indiana",
-	"IA": "Iowa",
-	"KS": "Kansas",
-	"KY": "Kentucky",
-	"LA": "Louisiana",
-	"ME": "Maine",
-	"MH": "Marshall Islands",
-	"MD": "Maryland",
-	"MA": "Massachusetts",
-	"MI": "Michigan",
-	"MN": "Minnesota",
-	"MS": "Mississippi",
-	"MO": "Missouri",
-	"MT": "Montana",
-	"NE": "Nebraska",
-	"NV": "Nevada",
-	"NH": "New Hampshire",
-	"NJ": "New Jersey",
-	"NM": "New Mexico",
-	"NY": "New York",
-	"NC": "North Carolina",
-	"ND": "North Dakota",
-	"MP": "Northern Mariana Islands",
-	"OH": "Ohio",
-	"OK": "Oklahoma",
-	"OR": "Oregon",
-	"PW": "Palau",
-	"PA": "Pennsylvania",
-	"PR": "Puerto Rico",
-	"RI": "Rhode Island",
-	"SC": "South Carolina",
-	"SD": "South Dakota",
-	"TN": "Tennessee",
-	"TX": "Texas",
-	"UT": "Utah",
-	"VT": "Vermont",
-	"VI": "Virgin Islands",
-	"VA": "Virginia",
-	"WA": "Washington",
-	"WV": "West Virginia",
-	"WI": "Wisconsin",
-	"WY": "Wyoming"
-}
-MT___countries = [
-	{name: 'Bosnia and Herzogovina', code: 'BA'}, 
-	{name: 'Curacao', code: 'CW'}, 
-	{name: 'Cocos Islands', code: 'CC'}, 
-	{name: 'Sao Tome and Principe', code: 'ST'}, 
-	{name: 'Afghanistan', code: 'AF'}, 
-	{name: 'Aland Islands', code: 'AX'}, 
-	{name: 'Albania', code: 'AL'}, 
-	{name: 'Algeria', code: 'DZ'}, 
-	{name: 'American Samoa', code: 'AS'}, 
-	{name: 'AndorrA', code: 'AD'}, 
-	{name: 'Angola', code: 'AO'}, 
-	{name: 'Anguilla', code: 'AI'}, 
-	{name: 'Antarctica', code: 'AQ'}, 
-	{name: 'Antigua and Barbuda', code: 'AG'}, 
-	{name: 'Argentina', code: 'AR'}, 
-	{name: 'Armenia', code: 'AM'}, 
-	{name: 'Aruba', code: 'AW'}, 
-	{name: 'Australia', code: 'AU'}, 
-	{name: 'Austria', code: 'AT'}, 
-	{name: 'Azerbaijan', code: 'AZ'}, 
-	{name: 'Bahamas', code: 'BS'}, 
-	{name: 'Bahrain', code: 'BH'}, 
-	{name: 'Bangladesh', code: 'BD'}, 
-	{name: 'Barbados', code: 'BB'}, 
-	{name: 'Belarus', code: 'BY'}, 
-	{name: 'Belgium', code: 'BE'}, 
-	{name: 'Belize', code: 'BZ'}, 
-	{name: 'Benin', code: 'BJ'}, 
-	{name: 'Bermuda', code: 'BM'}, 
-	{name: 'Bhutan', code: 'BT'}, 
-	{name: 'Bolivia', code: 'BO'}, 
-	{name: 'Bosnia and Herzegovina', code: 'BA'}, 
-	{name: 'Botswana', code: 'BW'}, 
-	{name: 'Bouvet Island', code: 'BV'}, 
-	{name: 'Brazil', code: 'BR'}, 
-	{name: 'British Indian Ocean Territory', code: 'IO'}, 
-	{name: 'Brunei Darussalam', code: 'BN'}, 
-	{name: 'Bulgaria', code: 'BG'}, 
-	{name: 'Burkina Faso', code: 'BF'}, 
-	{name: 'Burundi', code: 'BI'}, 
-	{name: 'Cambodia', code: 'KH'}, 
-	{name: 'Cameroon', code: 'CM'}, 
-	{name: 'Canada', code: 'CA'}, 
-	{name: 'Cape Verde', code: 'CV'}, 
-	{name: 'Cayman Islands', code: 'KY'}, 
-	{name: 'Central African Republic', code: 'CF'}, 
-	{name: 'Chad', code: 'TD'}, 
-	{name: 'Chile', code: 'CL'}, 
-	{name: 'China', code: 'CN'}, 
-	{name: 'Christmas Island', code: 'CX'}, 
-	{name: 'Cocos (Keeling) Islands', code: 'CC'}, 
-	{name: 'Colombia', code: 'CO'}, 
-	{name: 'Comoros', code: 'KM'}, 
-	{name: 'Congo', code: 'CG'}, 
-	{name: 'Congo, The Democratic Republic of the', code: 'CD'}, 
-	{name: 'Cook Islands', code: 'CK'}, 
-	{name: 'Costa Rica', code: 'CR'}, 
-	{name: 'Cote D\'Ivoire', code: 'CI'}, 
-	{name: 'Croatia', code: 'HR'}, 
-	{name: 'Cuba', code: 'CU'}, 
-	{name: 'Cyprus', code: 'CY'}, 
-	{name: 'Czech Republic', code: 'CZ'}, 
-	{name: 'Denmark', code: 'DK'}, 
-	{name: 'Djibouti', code: 'DJ'}, 
-	{name: 'Dominica', code: 'DM'}, 
-	{name: 'Dominican Republic', code: 'DO'}, 
-	{name: 'Ecuador', code: 'EC'}, 
-	{name: 'Egypt', code: 'EG'}, 
-	{name: 'El Salvador', code: 'SV'}, 
-	{name: 'Equatorial Guinea', code: 'GQ'}, 
-	{name: 'Eritrea', code: 'ER'}, 
-	{name: 'Estonia', code: 'EE'}, 
-	{name: 'Ethiopia', code: 'ET'}, 
-	{name: 'Falkland Islands (Malvinas)', code: 'FK'}, 
-	{name: 'Faroe Islands', code: 'FO'}, 
-	{name: 'Fiji', code: 'FJ'}, 
-	{name: 'Finland', code: 'FI'}, 
-	{name: 'France', code: 'FR'}, 
-	{name: 'French Guiana', code: 'GF'}, 
-	{name: 'French Polynesia', code: 'PF'}, 
-	{name: 'French Southern Territories', code: 'TF'}, 
-	{name: 'Gabon', code: 'GA'}, 
-	{name: 'Gambia', code: 'GM'}, 
-	{name: 'Georgia', code: 'GE'}, 
-	{name: 'Germany', code: 'DE'}, 
-	{name: 'Ghana', code: 'GH'}, 
-	{name: 'Gibraltar', code: 'GI'}, 
-	{name: 'Greece', code: 'GR'}, 
-	{name: 'Greenland', code: 'GL'}, 
-	{name: 'Grenada', code: 'GD'}, 
-	{name: 'Guadeloupe', code: 'GP'}, 
-	{name: 'Guam', code: 'GU'}, 
-	{name: 'Guatemala', code: 'GT'}, 
-	{name: 'Guernsey', code: 'GG'}, 
-	{name: 'Guinea', code: 'GN'}, 
-	{name: 'Guinea-Bissau', code: 'GW'}, 
-	{name: 'Guyana', code: 'GY'}, 
-	{name: 'Haiti', code: 'HT'}, 
-	{name: 'Heard Island and Mcdonald Islands', code: 'HM'}, 
-	{name: 'Holy See (Vatican City State)', code: 'VA'}, 
-	{name: 'Honduras', code: 'HN'}, 
-	{name: 'Hong Kong', code: 'HK'}, 
-	{name: 'Hungary', code: 'HU'}, 
-	{name: 'Iceland', code: 'IS'}, 
-	{name: 'India', code: 'IN'}, 
-	{name: 'Indonesia', code: 'ID'}, 
-	{name: 'Iran, Islamic Republic Of', code: 'IR'}, 
-	{name: 'Iraq', code: 'IQ'}, 
-	{name: 'Ireland', code: 'IE'}, 
-	{name: 'Isle of Man', code: 'IM'}, 
-	{name: 'Israel', code: 'IL'}, 
-	{name: 'Italy', code: 'IT'}, 
-	{name: 'Jamaica', code: 'JM'}, 
-	{name: 'Japan', code: 'JP'}, 
-	{name: 'Jersey', code: 'JE'}, 
-	{name: 'Jordan', code: 'JO'}, 
-	{name: 'Kazakhstan', code: 'KZ'}, 
-	{name: 'Kenya', code: 'KE'}, 
-	{name: 'Kiribati', code: 'KI'}, 
-	{name: 'Korea, Democratic People\'S Republic of', code: 'KP'}, 
-	{name: 'Korea, Republic of', code: 'KR'}, 
-	{name: 'Kuwait', code: 'KW'}, 
-	{name: 'Kyrgyzstan', code: 'KG'}, 
-	{name: 'Lao People\'S Democratic Republic', code: 'LA'}, 
-	{name: 'Latvia', code: 'LV'}, 
-	{name: 'Lebanon', code: 'LB'}, 
-	{name: 'Lesotho', code: 'LS'}, 
-	{name: 'Liberia', code: 'LR'}, 
-	{name: 'Libyan Arab Jamahiriya', code: 'LY'}, 
-	{name: 'Liechtenstein', code: 'LI'}, 
-	{name: 'Lithuania', code: 'LT'}, 
-	{name: 'Luxembourg', code: 'LU'}, 
-	{name: 'Macao', code: 'MO'}, 
-	{name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK'}, 
-	{name: 'Madagascar', code: 'MG'}, 
-	{name: 'Malawi', code: 'MW'}, 
-	{name: 'Malaysia', code: 'MY'}, 
-	{name: 'Maldives', code: 'MV'}, 
-	{name: 'Mali', code: 'ML'}, 
-	{name: 'Malta', code: 'MT'}, 
-	{name: 'Marshall Islands', code: 'MH'}, 
-	{name: 'Martinique', code: 'MQ'}, 
-	{name: 'Mauritania', code: 'MR'}, 
-	{name: 'Mauritius', code: 'MU'}, 
-	{name: 'Mayotte', code: 'YT'}, 
-	{name: 'Mexico', code: 'MX'}, 
-	{name: 'Micronesia, Federated States of', code: 'FM'}, 
-	{name: 'Moldova, Republic of', code: 'MD'}, 
-	{name: 'Monaco', code: 'MC'}, 
-	{name: 'Mongolia', code: 'MN'}, 
-	{name: 'Montserrat', code: 'MS'}, 
-	{name: 'Morocco', code: 'MA'}, 
-	{name: 'Mozambique', code: 'MZ'}, 
-	{name: 'Myanmar', code: 'MM'}, 
-	{name: 'Namibia', code: 'NA'}, 
-	{name: 'Nauru', code: 'NR'}, 
-	{name: 'Nepal', code: 'NP'}, 
-	{name: 'Netherlands', code: 'NL'}, 
-	{name: 'Netherlands Antilles', code: 'AN'}, 
-	{name: 'New Caledonia', code: 'NC'}, 
-	{name: 'New Zealand', code: 'NZ'}, 
-	{name: 'Nicaragua', code: 'NI'}, 
-	{name: 'Niger', code: 'NE'}, 
-	{name: 'Nigeria', code: 'NG'}, 
-	{name: 'Niue', code: 'NU'}, 
-	{name: 'Norfolk Island', code: 'NF'}, 
-	{name: 'Northern Mariana Islands', code: 'MP'}, 
-	{name: 'Norway', code: 'NO'}, 
-	{name: 'Oman', code: 'OM'}, 
-	{name: 'Pakistan', code: 'PK'}, 
-	{name: 'Palau', code: 'PW'}, 
-	{name: 'Palestinian Territory, Occupied', code: 'PS'}, 
-	{name: 'Panama', code: 'PA'}, 
-	{name: 'Papua New Guinea', code: 'PG'}, 
-	{name: 'Paraguay', code: 'PY'}, 
-	{name: 'Peru', code: 'PE'}, 
-	{name: 'Philippines', code: 'PH'}, 
-	{name: 'Pitcairn', code: 'PN'}, 
-	{name: 'Poland', code: 'PL'}, 
-	{name: 'Portugal', code: 'PT'}, 
-	{name: 'Puerto Rico', code: 'PR'}, 
-	{name: 'Qatar', code: 'QA'}, 
-	{name: 'Reunion', code: 'RE'}, 
-	{name: 'Romania', code: 'RO'}, 
-	{name: 'Russian Federation', code: 'RU'}, 
-	{name: 'RWANDA', code: 'RW'}, 
-	{name: 'Saint Helena', code: 'SH'}, 
-	{name: 'Saint Kitts and Nevis', code: 'KN'}, 
-	{name: 'Saint Lucia', code: 'LC'}, 
-	{name: 'Saint Martin', code: 'MF'}, 
-	{name: 'Saint Pierre and Miquelon', code: 'PM'}, 
-	{name: 'Saint Vincent and the Grenadines', code: 'VC'}, 
-	{name: 'St. Vincent & Grenadines', code: 'VC'}, 
-	{name: 'Samoa', code: 'WS'}, 
-	{name: 'San Marino', code: 'SM'}, 
-	{name: 'Sao Tome and Principe', code: 'ST'}, 
-	{name: 'Saudi Arabia', code: 'SA'}, 
-	{name: 'Senegal', code: 'SN'}, 
-	{name: 'Serbia and Montenegro', code: 'CS'}, 
-	{name: 'Seychelles', code: 'SC'}, 
-	{name: 'Sierra Leone', code: 'SL'}, 
-	{name: 'Singapore', code: 'SG'}, 
-	{name: 'Slovakia', code: 'SK'}, 
-	{name: 'Slovenia', code: 'SI'}, 
-	{name: 'Solomon Islands', code: 'SB'}, 
-	{name: 'Somalia', code: 'SO'}, 
-	{name: 'South Africa', code: 'ZA'}, 
-	{name: 'South Georgia and the South Sandwich Islands', code: 'GS'}, 
-	{name: 'South Korea', code: 'KR'}, 
-	{name: 'Spain', code: 'ES'}, 
-	{name: 'Sri Lanka', code: 'LK'}, 
-	{name: 'Sudan', code: 'SD'}, 
-	{name: 'Suriname', code: 'SR'}, 
-	{name: 'Svalbard and Jan Mayen', code: 'SJ'}, 
-	{name: 'Swaziland', code: 'SZ'}, 
-	{name: 'Sweden', code: 'SE'}, 
-	{name: 'Switzerland', code: 'CH'}, 
-	{name: 'Syrian Arab Republic', code: 'SY'}, 
-	{name: 'Syria', code: 'SY'}, 
-	{name: 'Taiwan', code: 'TW'}, 
-	{name: 'Tajikistan', code: 'TJ'}, 
-	{name: 'Tanzania, United Republic of', code: 'TZ'}, 
-	{name: 'Thailand', code: 'TH'}, 
-	{name: 'Timor-Leste', code: 'TL'}, 
-	{name: 'Togo', code: 'TG'}, 
-	{name: 'Tokelau', code: 'TK'}, 
-	{name: 'Tonga', code: 'TO'}, 
-	{name: 'Trinidad and Tobago', code: 'TT'}, 
-	{name: 'Tunisia', code: 'TN'}, 
-	{name: 'Turkey', code: 'TR'}, 
-	{name: 'Turkmenistan', code: 'TM'}, 
-	{name: 'Turks and Caicos Islands', code: 'TC'}, 
-	{name: 'Tuvalu', code: 'TV'}, 
-	{name: 'Uganda', code: 'UG'}, 
-	{name: 'Ukraine', code: 'UA'}, 
-	{name: 'United Arab Emirates', code: 'AE'}, 
-	{name: 'United Kingdom', code: 'GB'}, 
-	{name: 'United States', code: 'US'}, 
-	{name: 'United States Minor Outlying Islands', code: 'UM'}, 
-	{name: 'Uruguay', code: 'UY'}, 
-	{name: 'Uzbekistan', code: 'UZ'}, 
-	{name: 'Vanuatu', code: 'VU'}, 
-	{name: 'Venezuela', code: 'VE'}, 
-	{name: 'Viet Nam', code: 'VN'}, 
-	{name: 'Virgin Islands, British', code: 'VG'}, 
-	{name: 'Virgin Islands, U.S.', code: 'VI'}, 
-	{name: 'Wallis and Futuna', code: 'WF'}, 
-	{name: 'Western Sahara', code: 'EH'}, 
-	{name: 'Yemen', code: 'YE'}, 
-	{name: 'Zambia', code: 'ZM'}, 
-	{name: 'Zimbabwe', code: 'ZW'} 
-];
-//MT__INSTANTIATE_VAR_STATES_COUNTRIES();
 /**
  * 
  * GLOBAL FUNCTIONS
@@ -6252,7 +9205,11 @@ function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) 
 }
 /*
  * MT___google_api_geocode
- * return lat/lng or full response object
+ * 
+ * Returns lat/lng or full response object
+ * 
+ * On lat/lng: callback_function(lat, lon)
+ * 
  * http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
 **/
 function MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy) {
@@ -6367,149 +9324,6 @@ function __js_clean_html_str(s) {
 }
 
 
-/**
- * AUDIO STRING
- */	
-var MT___AUDIO_SNIPPET = 'data:audio/ogg;base64,T2dnUwACAAAAAAAAAAB0S511AAAAAIO/V\
-/oBHgF2b3JiaXMAAAAAAUSsAAAAAAAA4CICAAAAAAC4AU9nZ1MAAAAAAAAAAAAAdEuddQEAAAB/0qzlETv\
-///////////////////9fA3ZvcmJpcysAAABYaXBoLk9yZyBsaWJWb3JiaXMgSSAyMDEyMDIwMyAoT21uaXByZXNlbnQpAAAAAAEFdm9yYmlzK0JDVgEACAAAADFMIMWA0JBVAAAQAABgJCkO\
-k2ZJKaWUoSh5mJRISSmllMUwiZiUicUYY4wxxhhjjDHGGGOMIDRkFQAABACAKAmOo+\
-ZJas45ZxgnjnKgOWlOOKcgB4pR4DkJwvUmY26mtKZrbs4pJQgNWQUAAAIAQEghhRRSSCGFFGKIIYYYYoghhxxyyCGnnHIKKqigggoyyCCDTDLppJNOOumoo4466ii00EILLbTSSkwx1VZjrr0\
-GXXxzzjnnnHPOOeecc84JQkNWAQAgAAAEQgYZZBBCCCGFFFKIKaaYcgoyyIDQkFUAACAAgAAAAABHkRRJsRTLsRzN0SRP8ixREzXRM0VTVE1VVVVVdV1XdmXXdnXXdn1ZmIVbuH1ZuIVb2IVd\
-94VhGIZhGIZhGIZh+\
-H3f933f930gNGQVACABAKAjOZbjKaIiGqLiOaIDhIasAgBkAAAEACAJkiIpkqNJpmZqrmmbtmirtm3LsizLsgyEhqwCAAABAAQAAAAAAKBpmqZpmqZpmqZpmqZpmqZpmqZpmmZZlmVZlmVZlm\
-VZlmVZlmVZlmVZlmVZlmVZlmVZlmVZlmVZlmVZQGjIKgBAAgBAx3Ecx3EkRVIkx3IsBwgNWQUAyAAACABAUizFcjRHczTHczzHczxHdETJlEzN9EwPCA1ZBQAAAgAIAAAAAABAMRzFcRzJ0SR\
-PUi3TcjVXcz3Xc03XdV1XVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVYHQkFUAAAQAACGdZpZqgAgzkGEgNGQVAIAAAAAYoQhDDAgNWQUAAAQAAIih5CCa0JrzzTkOmuWgqRSb\
-08GJVJsnuamYm3POOeecbM4Z45xzzinKmcWgmdCac85JDJqloJnQmnPOeRKbB62p0ppzzhnnnA7GGWGcc85p0poHqdlYm3POWdCa5qi5FJtzzomUmye1uVSbc84555xzzjnnnHPOqV6czsE54\
-Zxzzonam2u5CV2cc875ZJzuzQnhnHPOOeecc84555xzzglCQ1YBAEAAAARh2BjGnYIgfY4GYhQhpiGTHnSPDpOgMcgppB6NjkZKqYNQUhknpXSC0JBVAAAgAACEEFJIIYUUUkghhRRSSCGGGG\
-KIIaeccgoqqKSSiirKKLPMMssss8wyy6zDzjrrsMMQQwwxtNJKLDXVVmONteaec645SGultdZaK6WUUkoppSA0ZBUAAAIAQCBkkEEGGYUUUkghhphyyimnoIIKCA1ZBQAAAgAIAAAA8CTPER3\
-RER3RER3RER3RER3P8RxREiVREiXRMi1TMz1VVFVXdm1Zl3Xbt4Vd2HXf133f141fF4ZlWZZlWZZlWZZlWZZlWZZlCUJDVgEAIAAAAEIIIYQUUkghhZRijDHHnINOQgmB0JBVAAAgAIAAAAAA\
-R3EUx5EcyZEkS7IkTdIszfI0T\
-/M00RNFUTRNUxVd0RV10xZlUzZd0zVl01Vl1XZl2bZlW7d9WbZ93\
-/d93/d93/d93/d939d1IDRkFQAgAQCgIzmSIimSIjmO40iSBISGrAIAZAAABACgKI7iOI4jSZIkWZImeZZniZqpmZ7pqa\
-IKhIasAgAAAQAEAAAAAACgaIqnmIqniIrniI4oiZZpiZqquaJsyq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ruq7ru\
-q7rukBoyCoAQAIAQEdyJEdyJEVSJEVyJAcIDVkFAMgAAAgAwDEcQ1Ikx7IsTfM0T/M00RM90TM9VXRFFwgNWQUAAAIACAAAAA\
-AAwJAMS7EczdEkUVIt1VI11VItVVQ9VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV1TRN0zSB0JCVAAAZAAClxQghhB\
-AOg1BiDkJYDClHPfggMWSU1CCEpRRiEnsQmmKMOSa5txAqhQiiXGuMECPGcRAyY1IpyUH4kmopOQhCQ1YEAFEAAABCiDHEGGLMQcggRIwxCB2EiDEGIYOQQQglhVQyCCGVUFLEGIOQQcgghFR\
-CKR2EkFJIpQAAgAAHAIAAC6HQkBUBQJwAAIOQc4gpCJFiEDoIKXUQUooYg5A5JyVzTkoopbVQSmoRYxAyx6RkzkkJJbQUSmmtg9BSKKW1UEprqbVaU2qxdhBSCqW0FkppLbUUY2qt1ogxCJlz\
-UjLnpIRSWgulpJY5J6WDkFIHIaWSUoslpRYr56R00FHpIKRUUomtpBRjKKW1klKMJaUYW4uxthhrDaW0VlKJraQUY4qtxhZjrRFjEDLnpGTOSQmltBZKaS1zTkoHIaXOQUklpRhLSS1mzknpI\
-KTUQUippBRjSSm2UEprJaUYS0ktthhrbS3GGkppraQUY0kpxhZjri3GGjsIKYVSWgultNZaqzG1VmsopbWSUowlpRhbjDW3GGsOpbRWUomtpBRjiy3XFmPNqbVaW4y1thhzrbXWXmvuPbVWa2\
-qt1hZjzbHGXmutvXcQUgqltBZKaS21VmNqrdZQSmslpRhLSS22GHNtLcYaSmmtpBRjSSnGFmOtLcZcU2s1thhzTa3FWnPtOcYae2qt1hZjzS22XGutPdccey0AAGDAAQAgwIQyUGjISgAgCgA\
-AMQYhxiA0yCjFGITGIKUYgxApxZhzUiqlGHNOSsaYcxBSyRhzDkJJIYRSUmkphBBKSqkVAABQ4AAAEGCDpsTiAIWGrAQAQgIAGGOUYsw556SklFKDkFKMOQehlJRaaxBSijHnIJSSUmuVUow5\
-ByGEUlJqrVKKMecghFBKSq1ljDkHnYQSUmkptowx5xyEEkpJqbXYOQchhFJSSam1GDvnIIRSSkkptdZiByGEElJJqaXYYuwghBBKSSml1mKMpZRSUkmppdhirLGUUkpJKaXWYoyxppRSaqm12\
-GKssdaUUkqptdZijLHWmlprLbbYYqyx1lpTa621FmOMsdZaawEAAAcOAAABRtBJRpVF2GjChQeg0JAVAUAUAABgDGIMMYaccxAyCJFzDEIHIXLOSemkZFJCaaGlTEpIJaQWOeekdFIyKSGlUF\
-ImJaRUWikAAOzAAQDswEIoNGQlAJAHAMAgpBRjjDmHEFKKMeecQwgpxRhzzimlGGPMOeeUUowx5pxzjDHGnHPOOcYYY8455xxzzDnnnHOOOeecc84555xzzjnnIHTOOeeccxAKAAAqcAAACLB\
-RZHOCkaBCQ1YCAKkAAIQxSjHmHIRSGoUYc845CKU0SjHmnHMQSqkYY845B6GUUjHmnHPQSUglc845ByGUklLmnHPQQSglpc45CCGEUkpKnXMQQiihlJRCCKGUUkpJqYUQSiillFRaKqWUklJK\
-qbVWSikppZRaaq0AAPAEBwCgAhtWRzgpGgssNGQlAJABAIAYg5BBCCGDEEIIIYQQQggJAAAYcAAACDChDBQashIASAUAAAxSijHnpKQUKcWYcxBSaSlSijHnIJSUWsWYcxBKSam1ijHnIJSSW\
-myZcxBKSam1GDvnIJSSUmsxhhBKSam1GGsNIZSSUmsx1lpSaim2GGvNuaSUWoux1ppzai3GGnPNueeUWoyx1ppz7gUAIDQ4AIAd2LA6wknRWGChISsBgDwAAAYhpRhjjDGkFGOMMcYYUooxxh\
-hjTDHGGGOMOacYY4wxxphjjDHGmHPOMcYYY8w55xhjjjnnnHOMMcacc845xphzzjnnHGPMOeecc04AAFCBAwBAgI0imxOMBBUashIACAcAAIxhzDnHoJOQSqOUcxJCKCWVVhqlnJMSQikppZY\
-5JyWlVFpqLabMOSkplZJSazF2UlJqqaXYYquxk5BSa621FmONHYRUWootxhpr7CCU1FprMdZcayilpdhirLHWWkMprbUWY60111pSii22WmutNeeSUmsx1lpzrj2n1mKrtcZcc85BtRZjrTXn\
-mnMNBgCYPDgAQCXYOMNK0lnhaHChISsBgNwAAEYpxpxzDkIIIYQQQgiVUow55xyEEEIIIYQQIqUYcw46CCGEEEIIIWSMOecchBBCCCGEEELIGHPOOQghhBBCCCGE0DnnHIQQQgghhBBKCaVzz\
-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';
-
-/* OLD FRONT PAGE ITERATION
- * 
-*/ 
-/*function getp(p)
-{	
-	GM_xmlhttpRequest({
-		method: 'GET',
-		url: 'https://www.mturk.com/mturk/viewhits?searchWords=&selectedSearchType=hitgroups&sortType=NumHITs%3A1&pageNumber='+p+'&searchSpec=HITGroupSearch%23T%231%2310%23-1%23T%23%21%23%21NumHITs%211%21%23%21',
-		onload: function (responseDetails) {
-			
-			var rs=responseDetails.responseText;
-			
-			var div=document.getElementById('div__'+p);
-			div.innerHTML=rs;
-					
-				
-			var y=div.getElementsByTagName('table');
-			div.innerHTML='<table>'+y[6].innerHTML+'</table>';
-			
-			var x=div.getElementsByClassName('capsuletarget');
-			for (var i in x)
-			{
-				if (x[i].style)
-					x[i].style.display='none';
-			}
-			
-			var d;
-			var y=document.getElementsByTagName('a');
-			for (var i in y)
-			{
-				
-			}
-			
-		}
-	});
-}*/
-
 /*
  * old whois
  */
@@ -6592,18 +9406,6 @@ function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction)
 					
 					output_div.innerHTML += '<p>'+rs+'</p>';//
 					
-					/*x = document.getElementsByClassName('ex__whois');
-					for (var i in x) {
-						x[i].onclick = function() {
-							var y = this.value;
-							if (y.indexOf('@') != -1 && y.length >= 8) {
-								input_submit.value = y;
-								if (submit_form)
-									doSubmit();
-							}
-						}
-					}*/
-					
 					// update button clicks
 					DaveSchilling_whois_action();
 				}
@@ -6611,3 +9413,39 @@ function mturk_whois(t, input_submit, output_div, submit_form, callbackFunction)
 		}, 2000);
 	}
 }
+/* OLD FRONT PAGE ITERATION
+ * 
+*/ 
+/*function getp(p)
+{	
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: 'https://www.mturk.com/mturk/viewhits?searchWords=&selectedSearchType=hitgroups&sortType=NumHITs%3A1&pageNumber='+p+'&searchSpec=HITGroupSearch%23T%231%2310%23-1%23T%23%21%23%21NumHITs%211%21%23%21',
+		onload: function (responseDetails) {
+			
+			var rs=responseDetails.responseText;
+			
+			var div=document.getElementById('div__'+p);
+			div.innerHTML=rs;
+					
+				
+			var y=div.getElementsByTagName('table');
+			div.innerHTML='<table>'+y[6].innerHTML+'</table>';
+			
+			var x=div.getElementsByClassName('capsuletarget');
+			for (var i in x)
+			{
+				if (x[i].style)
+					x[i].style.display='none';
+			}
+			
+			var d;
+			var y=document.getElementsByTagName('a');
+			for (var i in y)
+			{
+				
+			}
+			
+		}
+	});
+}*/

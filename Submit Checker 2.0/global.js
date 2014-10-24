@@ -73,12 +73,13 @@ AMT__Global_Vars.initializeGroupId = function () {
 		AMT__Global_Vars.groupId = groupId;		
 		
 		//Now that we have the groupId, listen for whether the child frame wants to learn it as well.
-		window.addEventListener('message', function(e) {
-			var ifr = document.getElementsByTagName('iframe')[0];
-			ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
-			this.removeEventListener('click',arguments.callee,false);
-		}, false);
-		
+		if (document.getElementsByTagName('iframe').length) {
+			window.addEventListener('message', function(e) {
+				var ifr = document.getElementsByTagName('iframe')[0];
+				ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
+				this.removeEventListener('click',arguments.callee,false);
+			}, false);
+		}
 	}
 	// Sep 18 2014
 	// Added window.top != window.self

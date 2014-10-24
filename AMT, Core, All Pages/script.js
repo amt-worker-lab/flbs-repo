@@ -28,20 +28,21 @@ var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
 var RUN__ALL_PAGES_TEXTAREA = false;
 
+/**
+ * Trevor Faden / Gopi Parikh / Janet Lee
+ * 
+ */
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		
 		//JANET LEE
 		if(request.itsOkayToRun) {
-			//~ console.log('loc ' + loc);
 			if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
-				//alert('hi hi');
 				
 				new AMT___core_factory().nextWindow();
 				
 				var theForm = document.forms['aspnetForm'];
 				if (theForm) {
-					//~ console.log(document.location.href);
 					var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
 					if (rg) {
 						document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
@@ -53,132 +54,13 @@ chrome.runtime.onMessage.addListener(
 						//~ 
 						//~ // GO TO NEXT 
 						//~ 
-						//~ 
 						//~ // submit
-						
 					}
 				}
 			}
 		}
 	}
 );
-
-function AMT___global_factory() {
-	
-}
-//AMT__global_factory.prototype.scrollIntoView(r.agent_name); = function(options_object) {
-/**
- * .highlight_photos
- * 
- * @param options_object {}
- * @param completion_key (String) This is used to send a postMessage to parent window.
- * @param
- */
-AMT___global_factory.prototype.highlight_photos = function(options_object) {
-	
-	// Iterate through all images and add an image "button."
-	// Background color is set from domain.
-	// (getBoundingClientRect())
-	// Remove all images from any previous runs.
-	
-	var options_object = options_object;
-	
-	// Remove old
-	remove();
-	
-	// New
-	add();
-	
-	// Send to parent/job window
-	// Write value to db
-	//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
-	//~ for (var i in a) {
-		//~ a[i].onclick = function() {
-			//~ this.style.border = '4px solid LightGreen';
-			//~ 
-			//~ parent.postMessage(
-				//~ {
-					//~ key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
-					//~ data: this.src
-				//~ },
-			//~ "*");
-		//~ }
-	//~ }
-	
-	function add() {
-		var a = document.getElementsByTagName('img');
-		for (var i in a) {
-			if (i == 'length') break;
-			if (!a[i].src || a[i].src == '') continue;
-			add_image(a[i],  200);
-			add_image(a[i], -200);
-		}
-	}
-	function remove() {
-		var a = document.getElementsByClassName('manual__exe_image_162435168649');
-		var i;
-		for (i=a.length - 1; i >= 0; i--) {
-			if (!a[i]) continue;
-			if (!a[i].href) continue;
-			a[i].parentNode.removeChild(a[i]);
-		}
-		var a = document.getElementsByClassName('manual__exe_div_162435168649');
-		for (i=a.length - 1; i >= 0; i--) {
-			if (!a[i]) continue;
-			if (!a[i].href) continue;
-			a[i].parentNode.removeChild(a[i]);
-		}
-	}
-	function add_image(page_img, pos_left) {
-		//create an image
-		//getBounding
-		var b = page_img.getBoundingClientRect();
-		var left = b.left *1;
-		//left -= 60;
-		left += pos_left;
-		var top = b.top *1;
-		top += document.body.scrollTop*1;
-		
-		var d = document.createElement('div');
-		d.setAttribute(
-			'style',
-			'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
-		);
-		d.setAttribute('class', 'manual__exe_div_162435168649');
-		var d_= document.createElement('img');
-		d_.setAttribute('class', 'manual__exe_image_162435168649');
-		d_.setAttribute(
-			'style',
-			'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
-		);
-		d_.src = page_img.src;
-		d_.onclick = function() {
-			this.style.border = '4px solid LightGreen';
-			
-			parent.postMessage(
-				{
-					key: options_object.completion_key, //'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
-					src: this.src
-				},
-			"*");
-		}
-		
-		d.appendChild(d_);
-		document.body.appendChild(d);
-		
-		//~ console.log('pos_left:'+pos_left+' left:'+left);
-		//~ console.log(d_);
-	}
-}
-
-
-/**
- * AMT requester functions
- * AMT__rq
- * 
- */
-var AMT__rq = function() {
-}
 	
 function load()
 {
@@ -261,20 +143,16 @@ function load()
 		//~ 
 	//~ }
 	
-	
-	
 	if(loc.indexOf('bingImageTest.html') != -1) {
 		//drawBingMap({style:'width:650px;height:450px;', lat:'42.394496', lng: '-76.511503', zoom: '19'});		
 	}
-
 	console.log('GOT HERE');
-	
 	//~ MT___google_api_geocode('67 Comfort Road Apt 6, Ithaca, NY, 14850', function(lat, lng) {
 		//~ console.log('drawing');
 		//~ console.log(drawBingMap({style:'width:650px;height:450px;', lat:lat, lng: lng, zoom: '19'}));		
 		//~ console.log('drawn');
 	//~ }, false, true)
-
+	
 	//
 	//
 	//
@@ -434,27 +312,19 @@ function load()
 	 * USE THIS SECTION AND THE SUBSEQUENT FUNCTIONS
 	 * TO SPEAK TO/RECEIVE MESSAGES FROM PARENT WINDOWS
 	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 */
 	var AMT__iframeReceiveMessage_done = false;
 	var AMT__iframeReceiveMessage_done2= false;
 	window.addEventListener("message", AMT__iframeReceiveMessage, false);
 	function AMT__iframeReceiveMessage(event)
 	{
-		//console.log(event);
-		//q.value = '';
-		//doSubmit();
-		//clearInterval(ifr_intv);
-		
-		//~ var event_obj;
-		//~ console.log(typeof event.data);
-		//~ if (typeof event.data == 'object') {
-			//~ event_obj = event.data;
-			//~ //delete event.data;
-			//~ //event.data = '';
-		//~ }
-		//~ if (AMT__iframeReceiveMessage_done)
-			//~ return;
-		
 		if (typeof event.data != 'object') {
 			if (event.data == 'AMT__Ed_Hallen_CEO_or_Marketing' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
@@ -574,6 +444,17 @@ function load()
 	 */
 	function AMT__all_pages_util(r) {
 		
+		// Add a panel in top left if the following types are present:
+		//		.MT___all_pages_showhref
+		//		.show_remove_links_button
+		if  (
+			r.hasOwnProperty('MT___all_pages_showhref') ||
+			r.hasOwnProperty('show_remove_links_button')
+			)
+		{
+			new AMT___global_factory().add_panel();
+		}
+		
 		// extend
 		if ( r.MT___all_pages_extend )
 			MT___all_pages_extend();
@@ -599,11 +480,55 @@ function load()
 			);
 		}
 		
+		// highlight_ranges_to_parent
+		// e.g. highlight_ranges_to_parent: {completion_key: 'Dan_Shaffer_site_eval'}
+		// Pass in an options object
+		if ( r.highlight_range_to_parent ) {
+			//~ console.log('highlight range is on');
+			new AMT___global_factory().highlight_range_to_parent(
+				r.highlight_range_to_parent
+			);
+		}
+		
 		// Zoom a name
 		// @param: String
 		if ( r.person_name_zoom ) {
 			KristinHowe_agent_photo_scrollIntoView( r.person_name_zoom );
 		}
+		
+		// Highlight strings
+		// @param highlight_strings_in_page 		object
+		// @param highlight_strings_in_page.strings	array
+		if ( r.highlight_strings_in_page ) {
+			new AMT___global_factory().highlight_strings_in_page(
+				r.highlight_strings_in_page
+			);
+		}
+		
+		// email_links_remove_mailto
+		// @param 
+		if ( r.email_links_remove_mailto ) {
+			new AMT___global_factory().email_links_remove_mailto(
+			);
+		}
+		
+		// show_remove_links_button
+		// @param 
+		if ( r.show_remove_links_button ) {
+			new AMT___global_factory().show_remove_links_button(
+			);
+		}
+		
+		// make_element_words_click
+		// @param 
+		if ( r.make_element_words_click ) {
+			//~ new AMT___global_factory().make_element_words_click({
+				//~ element: document.body
+			//~ });
+		}
+		//~ new AMT___global_factory().make_element_words_click({
+			//~ element: document.body
+		//~ });
 		
 		//debug_display: o.name
 		if ( r.debug_display ) {
@@ -619,7 +544,7 @@ function load()
 			document.body.appendChild(d);
 		}
 			
-			
+		
 		
 	}
 	/*
@@ -4857,35 +4782,171 @@ function load()
 		//~ MT___all_pages_showhref();
 	//~ }
 	function MT___all_pages_showhref() {
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('style','position:fixed;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee');
-		d.value = document.location.href;
-		d.addEventListener('keydown', function(e) { //?
-			var k = e.keyCode;
-			console.log(k);
-			if (k == 27) {
-				this.parentNode.removeChild(this);
-				e.preventDefault();
-				e.stopPropagation();
-				return false;
+		
+		// Does "add_panel" div exist?
+		// If it does then add to div. Else
+		// if it does not then add to page.
+		var add_panel = document.getElementById('DIV_ADD_PANEL__RANDOM_71765847293864762532874523764');
+		if (add_panel) {
+			MT___all_pages_showhref__input(add_panel);
+		} else {
+			MT___all_pages_showhref__input(false);
+		}
+		
+		function MT___all_pages_showhref__input(div) {
+			var d = document.createElement('input');
+			d.value = document.location.href;
+			d.addEventListener('keydown', function(e) { //?
+				var k = e.keyCode;
+				console.log(k);
+				if (k == 27) {
+					this.parentNode.removeChild(this);
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+			}, false);
+			d.addEventListener('blur', function() { // change src
+				document.location.href = this.value;
+			}, false);
+			
+			if (!div) {
+				d.setAttribute('style','position:fixed;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee;');
+				document.body.appendChild(d);
+			} else {
+				d.setAttribute('style','width:100%;height:30px;z-index:1000000000;');
+				div.appendChild(d);
 			}
-		}, false);
-		d.addEventListener('blur', function() { // change src
-			document.location.href = this.value;
-		}, false);
-		document.body.appendChild(d);
-		
-		
+		}
 		
 		//~ d.setAttribute('style','position:absolute;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee');
-		
 		//~ d.addEventListener('mouseover', function() {
 			//~ this.select();
 		//~ }, false);
 		//~ d.addEventListener('dblclick', function(e) {
 			//~ this.parentNode.removeChild(this);
 		//~ }, false);
+	}
+	
+	/**
+	 * REQUESTER TASKS
+	 * 
+	 * NOTES:
+	 * 
+	 * 
+	 * 
+	 */
+	
+	/**
+	 * Dan Shaffer
+	 * Website Evaluation Task
+	 * aka Google?
+	 */
+	var loc = document.location.href;
+	if (
+			(
+			loc.indexOf('https://www.google.com/evaluation/endor/mturk') != -1 ||
+			loc.indexOf('http://localhost/mturk/.dev/HITs/Dan_Shaffer_mturk') != -1 
+			)
+		&&
+		1 == 1
+		)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		
+		var a = document.getElementsByTagName('a')[0].href;
+		var o = {
+			domain: null,
+			url: null,
+			name: null
+		}
+		//~ o.domain = /var url = '([^']+)';/.exec(document.body.innerHTML)[1]; //tycois.com
+		//~ o.url = 'http://'+domain;
+		o.url = a;
+		o.name = o.url.replace(/(www\.|\.\w{1,3})/g, '');
+		
+		
+		/*BEGIN ITEMS*/
+		// Iframe
+		var d1 = document.createElement('iframe');
+		d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+		document.body.appendChild(d1);
+		d1.addEventListener('mouseover', function() {
+			this.scrollIntoView();
+		}, false);
+		d1.addEventListener('mouseout', function() {
+			document.body.scrollIntoView();
+		}, false);
+		d1.addEventListener('load', function() {
+			this.style.visibility = 'visible';
+		}, false);
+		d1.src = o.url;
+		/*END ITEMS*/
+		
+		// Tell child to zoom out & extend
+		var ifr_intv = setInterval(function() {
+			d1.contentWindow.postMessage({
+				task: 'AMT__all_pages_util',
+				MT___all_pages_extend: true,
+				MT___all_pages_zoom: true,
+				MT___all_pages_showhref: true,
+				highlight_range_to_parent: {completion_key: 'Dan_Shaffer_site_eval'},
+				//~ highlight_ranges_to_parent: {task: 'Dan_Shaffer_site_eval'},
+				//~ global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+				//~ person_name_zoom: o.name
+			}, "*");
+		}, 1000);
+		// Watch for complete
+		window.addEventListener("message", Dan_Shaffer_site_eval__iframe_complete, false);
+		/**
+		 * Function Dan_Shaffer_site_eval__iframe_complete
+		 */
+		function Dan_Shaffer_site_eval__iframe_complete(event) {
+			var v = event.data;
+			
+			if (v.key == 'Dan_Shaffer_site_eval' && v.hasOwnProperty('text_range')) {
+				// Text = v.text_range
+				document.getElementById('sitename').value = v.text_range.trim();
+				document.getElementById('sitename').focus();
+				document.body.scrollIntoView();
+			}
+		}
+		
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1
+			],
+			offset: 40 // offset top
+		});
+		
+		//
+		var inputs = document.querySelectorAll('input[type="radio"]');
+		for (var i in inputs) {
+			if (i == 'length') break;
+			if (inputs[i].value == 'no') inputs[i].checked = true;
+			inputs[i].onclick = function(e){
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			// ParentNode
+			var pn = inputs[i].parentNode;
+			pn.className = 'exe';
+			pn.el = inputs[i];
+			pn.onclick = function(e) {
+				this.el.checked = true;
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			};
+		}
 	}
 	
 	//
@@ -4896,8 +4957,8 @@ function load()
 	//
 	var loc = document.location.href;
 	if  (
-			/http:\/\/www\.ahridirectory\.org\/ahridirectory\/pages\/ac\/defaultSearch\.aspx\?id=/.exec(loc) &&
-			1 == 1
+			loc.indexOf('http://www.ahridirectory.org/ahridirectory/pages/ac/defaultSearch.aspx?id=') != -1 &&
+		1 == 1
 		)
 	{
 		if (ih.indexOf('AHRI Certified Reference Number') != -1) {
@@ -4956,7 +5017,7 @@ function load()
 	var loc = document.location.href;
 	if  (
 			loc.indexOf('https://www.google.com/hotels/#search;l=') != -1 &&
-			1 == 1
+			0 == 1
 		)
 	{
 		
@@ -5062,7 +5123,7 @@ function load()
 	}
 	
 	//
-	// 
+	// Some MIT Task
 	// 
 	//
 	//
@@ -6439,265 +6500,15 @@ function load()
 				}
 			},400);
 		}
-		
-		
-		
-		
-		/*// OLD CROWDSOURCE (in style of AMICUS LABS)//
-		// Search: Keyword on Google.com (US)
-		//
-		//
-		var s,s2;
-		s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on Google\.[\w\.]+<\/h1>/;
-		s2=/<div id="assignment"><h1 class="projectTitle">Keyword Search on Google\.[\w\.]+<\/h1>/;
-		//s =/<div id="assignment"><h1 class="projectTitle">Search: 11 Keywords on Google\.com<\/h1>/;
-		//s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on Google\.com<\/h1>/;
-		//s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on Google\.(com|co\.uk|ca)<\/h1>/;// Google.co.uk
-		//s2=/<div id="assignment"><h1 class="projectTitle">Keyword Search on Google\.(com|co\.uk|ca)<\/h1>/;// Google.co.uk
-		if  (
-				s.exec(ih) ||
-				s2.exec(ih)
-			)
-		{
-			
-			//console.log(ih);
-			
-			var NUMLINKS;
-			//var NUMLINKS=11;
-			//var NUMLINKS=4;
-			//var NUMLINKS=3;
-			
-			GM_addStyle('body {margin:0;padding:0;}');
-			GM_addStyle('p {margin:0;padding:0;}');
-			GM_addStyle('ul {margin:0;padding:0;}');
-			
-			
-			var domain;
-			var s, s2;
-			s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on (Google\.[\w\.]+)<\/h1>/.exec(ih);
-			s2=/<div id="assignment"><h1 class="projectTitle">Keyword Search on (Google\.[\w\.]+)<\/h1>/.exec(ih);
-			if (s) {
-				domain = 'http://'+s[2].toLowerCase();
-			}
-			else if (s2) {
-				domain = 'http://'+s2[1].toLowerCase();
-			}
-			
-			var type;
-			
-			if (document.getElementById('URL-1')) {
-				type = 1;
-			} else type = 2;
-			
-			var a, count, array_urls, global_count;
-			
-			//a = /<h2 class="text-rep">Keyword: ([^<]+)/g;
-			
-			a = /h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;">Keyword: ([^<]+)/g;
-			
-			if (ih.indexOf('<cufontext>') != -1) {
-				type = 3;
-				a = /<h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;"><cufon class="cufon cufon-canvas" alt="Keyword: " style="width: 78px; height: 16px;"><canvas width="89" height="17" style="width: 89px; height: 17px; top: -1px; left: -1px;"><\/canvas><cufontext>Keyword: <\/cufontext>((.|\s)*?(?=<\/h2>|$)|$)/g;
-			}
-			
-			//a = /<h2 class="text-rep"[^>]{0,}>Keyword: ([^<]+)/g;
-			
-			array_urls = new Array();
-			
-			if (a.exec(ih)) {
-				
-				a.lastIndex = 0;
-				
-				count=1;
-				
-				global_count=1;
-				
-				if (type === 1 || type == 2) {
-					while (match = a.exec(ih)) {
-						match[1] = match[1].replace(/&amp;/g,'&');
-						match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8&num=1';
-						array_urls.push(match[1]);
-						count++;
-					}
-				}
-				else if (type == 3) {
-					var a2, match2, string;
-					while (match = a.exec(ih)) {
-						
-						string = '';
-						a2 = /<cufontext>([^<]+)<\/cufontext>/g;
-						if (a2.exec(match[1])) {
-							
-							a2.lastIndex = 0;
-							while (match2 = a2.exec(match[1])) {
-								match2[1] = match2[1].replace(/&amp;/g,'&');
-								string += match2[1];
-							}
-							
-							string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
-							//string = 'https://www.google.com/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
-							
-							array_urls.push(string);
-						}
-						
-						count++;
-						
-					}
-				}
-				
-				NUMLINKS = array_urls.length;
-				
-				console.log(NUMLINKS);
-				console.log(array_urls);
-				
-				cs_post();
-			}
-			
-			function cs_post() {
-				
-				if (array_urls[global_count-1]) {
-					GM_xmlhttpRequest({ //do blank
-						method: "GET",
-						url: MT___host+'/mturk/CrowdSource/CrowdSource.php?u='+encodeURIComponent(array_urls[global_count-1]),
-						//timeout: 40, //ms
-						onload: function(response) {
-							//var rs=response.responseText;
-						}
-					});
-				}
-				
-				if (global_count < NUMLINKS) { // load next
-					
-					global_count++;
-					setTimeout(function() {cs_post();}, 200);
-					
-				} else {
-					
-					// check for finished
-					// check items 1-N (NUMLINKS) in array done.
-					// If undone, check for done from localhost -> u=url & id=#textarea.
-					// If undone, just in case not started, send to start (restart if needed).
-					// Check all undone at interval = ? ==> NUMLINKS * 2 (14s)
-					
-					var xint, id, clearInt, done, tmpIntv;
-					tmpIntv=2000;
-					done = new Array();
-					xint = setInterval(function() {
-						
-						count = 1;
-						
-						clearInt = true;
-						
-						for (var i in array_urls) {
-
-							if (!__js_inarray(done, count) && array_urls[count-1] != undefined) {
-								
-								clearInt = false;
-								
-								id = array_urls[i].replace(/\//gi,'');
-								
-								GM_xmlhttpRequest({
-									method: "GET",
-									
-									//url: 'http://localhost/mturk/CrowdSource/CrowdSource.php?u='+encodeURIComponent(array_urls[global_count-1])+'&id='+count,
-									
-									url: MT___host+'/mturk/CrowdSource/CrowdSource.php?u='+encodeURIComponent(array_urls[i])+'&id='+count,
-									
-									onload: function(response) {
-										var rs,rg;
-										rs=response.responseText;
-										rg = /^([\d]+)/;
-										
-										var v,x,sbm;
-										if (rg.exec(rs)) {
-											rg = rg.exec(rs)[1]*1;
-											
-											v = /<h3 class="r"><a href="\/url\?q=([^"]+)/.exec(rs);
-											if (v) {
-												v = v[1];
-												v = v.replace(/&amp;rct=j&amp;sa=U&amp;[\d\D]+$/, '');
-												v = v.replace(/&amp;sa=U&amp;[\d\D]+$/, '');
-												v = decodeURIComponent(v);
-											} else {
-												v = /<h3 class="r"><a href="http([^"]+)/.exec(rs);
-												if (v) {
-													
-													v = 'http'+v[1];
-													
-													//v = decodeURIComponent(v);
-													//v = __js_clean_html_str(v); //?
-													
-												} else {
-													
-													//<h3 class="r"><a href="/url?url=http://newmexico.watchdog.org/16573/saul-meyer-avoids-jail/&amp;rct=j&amp;sa=U&amp;ei=sCKBUdvQNoeu4AOw_oGQAg&amp;ved=0CAcQFjAA&amp;q=saul+meyer+aldus&amp;usg=AFQjCNG9rUWP8qJ1wR6rxcgfNnkQIwVOrQ"
-													
-													v = /<h3 class="r"><a href="\/url\?url=([^"]+)/.exec(rs);
-													if (v) {
-														v = v[1];
-														v = v.replace(/&amp;rct=j&amp;sa=U&amp;[\d\D]+$/, '');
-														v = v.replace(/&amp;sa=U&amp;[\d\D]+$/, '');
-														v = decodeURIComponent(v);
-													} else v = '';
-												}
-											}
-											
-											if (type === 1 || type == 3)
-												x = document.getElementById('URL-'+rg);
-											else
-												x = document.getElementById('URL'+rg+'-1');
-											
-											x.value = v;
-											x.focus();
-											x.blur();
-											done.push(rg);
-											
-										} else {
-											// if do blank
-										}
-									}
-								});
-							}
-							count++;	
-						}
-						if (clearInt)
-							clearInterval(xint);
-					}, tmpIntv);
-					//}, 6000);
-				}
-			}
-			var xint2 = setInterval(function() {
-				var subm=true;
-				var x;
-				for (var i = 1; i <= NUMLINKS; i++) {
-					if (type === 1 || type == 3)
-						x = document.getElementById('URL-'+i);
-					else
-						x = document.getElementById('URL'+i+'-1');
-					if (!x || x == undefined) {
-						sbm = false;
-						break;
-					}
-					if (x.value.trim() == '' || x.value.trim() == 'http://')
-						subm = false;
-				}
-				if (subm) {
-					clearInterval(xint2);
-					document.getElementById('submitButton').click();
-				}
-			},400);
-		}*/
 	}
 	
 	
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 *
+	/**
+	 * THOMAS MURPHY
+	 * LINKEDIN.COM IMAGES CHANGE SIZE
 	 * 
 	 */
-	if (1 == 1) {
+	if (0 == 1) {
 		var loc = document.location.href;
 		if  (
 				/^http:\/\/m\.c\.\w+\.licdn\.com\/mpr\/mpr\/shrink_\d+_\d+\//.exec(loc)
@@ -6719,7 +6530,7 @@ function load()
 	
 	
 	
-	/*
+	/**
 	 * Hostmysite.com
 	 * 
 	 * 
@@ -6872,10 +6683,7 @@ function load()
 		});
 	}*/
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * HealthDetail
 	 * Sep. 24, 2013
 	 * https://localhelp.healthcare.gov/#address=NORTH CAROLINA&start=0&num=10&filter=off&lang_filter=0&shop_filter=0&chip_filter=0&navc_filter=0
@@ -6990,8 +6798,7 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
+	/**
 	 * Jason Yu
 	 * 
 	 * Requester?
@@ -7188,10 +6995,7 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * Linda Dowling
 	 * Aug. 22, 2013
 	 * oDesk
@@ -7243,10 +7047,7 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * Linda Dowling
 	 * Aug. 22, 2013
 	 * oDesk
@@ -7398,10 +7199,7 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * Alireza Mansoori
 	 * Aug. 21, 2013
 	 * Names, sabteahval.ir, oDesk
@@ -7681,12 +7479,8 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * Matt
-	 // Matt
 	 * 
 	 */
 	var loc = document.location.href;
@@ -8138,10 +7932,7 @@ function load()
 		}
 	}
 	
-	/*
-	 * 
-	 * 
-	 * 
+	/**
 	 * Timothy Simcoe
 	 * ietf.org
 	 */
@@ -8422,7 +8213,7 @@ function load()
 		// RETURN HERE SO THAT FIVE STAR DOES NOT RUN
 		return;
 	}
-	/*
+	/**
 	 * Brokercheck
 	 * Five Star Professional
 	 * 
@@ -8932,7 +8723,7 @@ function load()
 		return;
 	}
 	
-	/*
+	/**
 	 * Regulations.gov
 	 * Brendan J. Babb
 	 * 
