@@ -1,3 +1,14 @@
+/**
+ * TODO
+ * bgp localStorage['CAPTCHA_staggered__stagger_is_active']
+ * bgp localStorage['CAPTCHA_staggered__min_tabs_to_initiate_staggered']
+ * bgp localStorage['CAPTCHA_staggered__staggered_timeout_per_tab']
+ * 
+ * NOTES
+ * CAPTCHA_staggered__min_tabs_to_initiate_staggered:
+ * This is greater than or equal to. So a value of 4 is greater than or equal to 4 tabs means turn on.
+ * 
+ */ 
 
 // global
 var SELECT;
@@ -5,9 +16,26 @@ var INPUT__PROXY_REDACTED_;
 var BTN_SAVE;
 var TOGGLE_RA;
 var TOGGLE_NTPASSBY;
+var EL_STG_ACTIVE, EL_STG_MIN, EL_STG_TO;
 
 // load localstorage values
 function init_func_doSubmit() {
+	//~ // Send with "keys" to recieve an object of key/value pairs.
+	//~ chrome.extension.sendRequest(
+		//~ {
+			//~ method: "getLocalStorage",
+			//~ keys: [
+				//~ "MT__DOSUBMIT__USER_SET_TYPE"
+			//~ ]
+		//~ },
+		//~ function(response) {
+			//~ if (response.data) {
+				//~ 
+			//~ }
+		//~ }
+	//~ );
+	//~ console.log('init_func_doSubmit');
+	// GET SINGLE
 	chrome.extension.sendRequest(
 		{
 			method: "getLocalStorage",
@@ -25,9 +53,25 @@ function init_func_doSubmit() {
 				} else {
 					INPUT__PROXY_REDACTED_.value = 'http://192.168.1.6';
 				}
-				
-			} else {
-				
+				if (r.CAPTCHA_staggered__stagger_is_active) {
+					EL_STG_ACTIVE.checked = true;
+					EL_STG_MIN.disabled = false;
+					EL_STG_TO.disabled = false;
+				} else if (!r.hasOwnProperty('CAPTCHA_staggered__stagger_is_active')) {
+					EL_STG_ACTIVE.checked = false; // Default is Off. But could be On.
+				} else {
+					EL_STG_ACTIVE.checked = false;
+				}
+				if (r.CAPTCHA_staggered__min_tabs_to_initiate_staggered) {
+					EL_STG_MIN.value = r.CAPTCHA_staggered__min_tabs_to_initiate_staggered;
+				} else {
+					EL_STG_MIN.value = 4;
+				}
+				if (r.CAPTCHA_staggered__staggered_timeout_per_tab) {
+					EL_STG_TO.value = r.CAPTCHA_staggered__staggered_timeout_per_tab;
+				} else {
+					EL_STG_TO.value = 200;
+				}
 			}
 		}
 	);
@@ -36,10 +80,12 @@ function init_func_doSubmit() {
 function save_doSubmit() {
 	var d = {
 		"type": SELECT.value,
-		"_PROXY_REDACTED_": INPUT__PROXY_REDACTED_.value
+		"_PROXY_REDACTED_": INPUT__PROXY_REDACTED_.value,
+		"CAPTCHA_staggered__stagger_is_active":					EL_STG_ACTIVE.checked,
+		"CAPTCHA_staggered__min_tabs_to_initiate_staggered":	EL_STG_MIN.value,
+		"CAPTCHA_staggered__staggered_timeout_per_tab":			EL_STG_TO.value
 	};
-	//alert(d);
-	
+	// THIS IS FOR SENDING A SINGLE KEY
 	chrome.extension.sendRequest(
 		{
 			method: "saveLocalStorage",
@@ -52,7 +98,45 @@ function save_doSubmit() {
 			}, 600);
 		}
 	);
+	
+	//~ // Send multiple key/value pairs.
+	//~ chrome.extension.sendRequest(
+		//~ {
+			//~ method: "saveLocalStorage",
+			//~ keys: [
+				//~ {
+					//~ key: "MT__DOSUBMIT__USER_SET_TYPE",
+					//~ data: JSON.stringify(d)
+				//~ },
+				//~ {
+					//~ key: "CAPTCHA_staggered__stagger_is_active",
+					//~ data: EL_STG_ACTIVE.checked
+				//~ },
+				//~ {
+					//~ key: "CAPTCHA_staggered__min_tabs_to_initiate_staggered",
+					//~ data: EL_STG_MIN.value
+				//~ },
+				//~ {
+					//~ key: "CAPTCHA_staggered__staggered_timeout_per_tab",
+					//~ data: EL_STG_TO.value
+				//~ }
+			//~ ]
+		//~ },
+		//~ function(response) {
+			//~ window.setTimeout(function() {
+				//~ BTN_SAVE.style.border = '';
+			//~ }, 600);
+		//~ }
+	//~ );
 }
+
+//~ function init_func_toggleRA() {
+	//~ chrome.extension.sendRequest({getRAHotkey: true}, 
+		//~ function(rs) 
+		//~ {
+			//~ TOGGLE_RA.value = rs.RAHotkey;
+		//~ });
+//~ }
 
 function init_func_toggleRA() {
 	chrome.extension.sendRequest({getRAHotkey: true}, 
@@ -108,6 +192,9 @@ document.addEventListener("DOMContentLoaded", function() {
 	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
 	TOGGLE_RA_BUTTON_NEXTTAB = document.getElementById('R&A NextTab');
 	TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab');
+	EL_STG_ACTIVE	= document.getElementById('CAPTCHA_stagger_is_active');
+	EL_STG_MIN		= document.getElementById('CAPTCHA_min_tabs_to_initiate_staggered');
+	EL_STG_TO		= document.getElementById('CAPTCHA_staggered_timeout_per_tab');
 	
 	init_func_doSubmit();
 	init_func_toggleRA();
@@ -197,6 +284,23 @@ document.addEventListener("DOMContentLoaded", function() {
 				//squelch rs
 			}
 		);
+	}
+	
+	SELECT.onchange = SELECT.onblur = EL_STG_MIN.onchange = EL_STG_MIN.onblur = EL_STG_TO.onchange = EL_STG_TO.onblur = function() {
+		BTN_SAVE.click();
+	}
+	EL_STG_ACTIVE.onclick = function(e) {
+		if (!this.checked) {
+			EL_STG_MIN.disabled = true;
+			EL_STG_TO.disabled = true;
+		} else {
+			EL_STG_MIN.disabled = false;
+			EL_STG_TO.disabled = false;
+		}
+		BTN_SAVE.click();
+		//~ e.stopPropagation();
+		//~ e.preventDefault();
+		//~ return false; // stop prop.
 	}
 	
 });

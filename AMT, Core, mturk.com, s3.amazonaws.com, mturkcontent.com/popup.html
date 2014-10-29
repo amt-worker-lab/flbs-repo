@@ -17,14 +17,14 @@
 </head>
 <body id="body" style="min-width:500px;min-height:50px;">
 
-<div style="float:left;width:100px;">Submit type:</div>
+<div style="float:left;width:150px;">Submit type:</div>
 <select id="select_doSubmit" style="width:280px;clear:both;">
 	<option value="local">regular</option>
 	<option value="server side">server side</option>
 </select>
 
 
-<div style="float:left;width:100px;">_PROXY_REDACTED_: </div>
+<div style="float:left;width:150px;">_PROXY_REDACTED_: </div>
 <input type="text" value="" id="input__PROXY_REDACTED_" style="width:280px;clear:both;" alt="ex: http://localhost (no trailing slash)">
 
 <br />
@@ -44,6 +44,15 @@ Submit offsetTime:
 <br />
 <div style="display:inline-block;width:150px;">Return NextTab: </div>
 <input type="button" value="On" id="Return NexTab" style="width:280px;clear:both;"></input>
+<br />
+<div style="display:inline-block;width:150px;">Stagger CAPTCHA reload: </div>
+<input type="checkbox" value="On" id="CAPTCHA_stagger_is_active" style="width:280px;clear:both;"></input>
+<br />
+<div style="display:inline-block;width:150px;">Stagger, Min. Tabs Init.: </div>
+<input type="number" value="On" id="CAPTCHA_min_tabs_to_initiate_staggered" style="width:280px;clear:both;" disabled></input>
+<br />
+<div style="display:inline-block;width:150px;">Stagger, Reload Per Tab (ms): </div>
+<input type="number" value="On" id="CAPTCHA_staggered_timeout_per_tab" style="width:280px;clear:both;" disabled></input>
 <br />
 
 

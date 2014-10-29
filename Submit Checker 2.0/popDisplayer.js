@@ -62,7 +62,7 @@ function createSubmissionDisplay(callback) {
 		var iStats = JSON.parse(response.responseText);
 		}
 		catch(e) {
-			document.body.innerHTML = response.responseText;
+			document.body.innerText = response.responseText;
 			callback();
 		}
 		console.log(iStats);

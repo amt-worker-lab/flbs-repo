@@ -519,6 +519,14 @@ function load()
 			);
 		}
 		
+		// email_links_click_to_parent
+		// @param 
+		if ( r.email_links_click_to_parent ) {
+			new AMT___global_factory().email_links_click_to_parent({
+				completion_key: r.email_links_click_to_parent.completion_key
+			});
+		}
+		
 		// make_element_words_click
 		// @param 
 		if ( r.make_element_words_click ) {
@@ -4837,6 +4845,92 @@ function load()
 	 * 
 	 */
 	
+	/**
+	 * Router block domains list
+	 * http://192.168.1.1/keyword.cgi?id=340797201
+	 */
+	var loc = document.location.href;
+	if (
+			(
+			loc.indexOf('192.168.1.1/keyword.cgi') != -1
+			)
+		&&
+		1 == 0
+		)
+	{
+		console.log('');
+		
+		// Load file of domains
+		// Scrape page for existing domains?
+		// Iterate through file with POST requests (check 200)
+		
+		//~ // Choose the first as TO ADD
+		//~ // Remove TO ADD and save to file
+		//~ // Enter TO ADD and submit form
+		
+		var list = [];
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: 'http://192.168.1.2/development/.misc/hosts',
+			onload: function(response) {
+				var rs=response.responseText;
+				
+				if (response.status != 200) {
+					console.log('x1');
+					return;
+				}
+				
+				list = rs.trim();
+				list = list.replace(/\n#[^\n]*/g, '\n');
+				list = list.replace(/127\.0\.0\.1 */g, '');
+				list = list.replace(/ *#[^\n]*/g, '');
+				list = list.replace(/\n+/g, '\n');
+				list = list.trim();
+				
+				list = list.split('\n');
+				console.log(list.length + ' domains');
+				
+				set_domain_and_make_post();
+			}
+		});
+		
+		function set_domain_and_make_post() {
+			
+			var domain = list.shift().trim();
+			while(domain.indexOf('#') == 0 || domain.trim() == '') {
+				domain = list.shift().trim();
+				domain = domain.replace(/ [^\r\n]*/, '');
+				domain = domain.replace(/^(www2?\.)/, '');
+				if (list.length == 0) break;
+				//localhost.localdomain localhost 
+			}
+			
+			if (domain.indexOf('#') == 0 || domain.trim() == '') {
+				return;
+			}
+			
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: 'http://192.168.1.1/keyword.cgi?id=140132133',
+				data: 'skeyword=never&cfKeyWord_Domain='+encodeURIComponent(domain)+'&cfKeyWord_AddKeyword=Add+Keyword&bs_enable=0&bs_trustedip_enable=0&bs_trustedip=192.168.1.0',
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function(response) {
+					var rs=response.responseText;
+					
+					if (response.status != 200) {
+						console.log('x2');
+						return;
+					}
+					
+					console.log('success ' + domain + ' ' + list.length);
+					set_domain_and_make_post();
+				}
+			});
+		}
+	}
 	/**
 	 * Dan Shaffer
 	 * Website Evaluation Task

@@ -320,6 +320,37 @@ AMT___global_factory.prototype.document_add_range = function(options) {
 	
 }
 /**
+ * .email_links_click_to_parent
+ * 
+ * @param options			object
+ * @param "".completion_key	string
+ * 
+ * @return 
+ */
+AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
+	
+	var options = options;
+	var a = document.getElementsByTagName('a');
+	for (var i in a) {
+		if (i == 'length') break;
+		if (/^ *mailto *:/i.exec(a[i].href)) {
+			a[i].addEventListener('mouseup', function(e) {
+				parent.postMessage(
+					{
+						key: options.completion_key, // e.g. Dan_Shaffer_site_eval
+						email_address: this.href.replace(/^ *mailto *:/, '')
+					},
+					"*"
+				);
+				
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}, false);
+		}
+	}
+}
+/**
  * .email_links_remove_mailto
  * 
  * @param 
@@ -405,11 +436,12 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 /**
  * .highlight_range_to_parent
  * 
- * @param options_object	object
- * @param .completion_key	string	This is used to send a postMessage to parent window.
- * @param
+ * @param options_object		object
+ * @param "".completion_key		string	This is used to send a postMessage to parent window.
+ * XXXXXXXXXXX@param "".control_key_append	boolean	Enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
  * 
- * @return text_range		string
+ * @return text_range				string
+ * @return control_key_is_active	boolean
  */
 AMT___global_factory.prototype.highlight_range_to_parent = function(options_object) {
 	
@@ -426,12 +458,12 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 		// Remove all ranges
 		window.getSelection().removeAllRanges();
 		
-		//~ console.log(str);
 		if (str.length > 0) {
 			parent.postMessage(
 				{
 					key: options_object.completion_key, // e.g. Dan_Shaffer_site_eval
-					text_range: str
+					text_range: str,
+					control_key_is_active: e.ctrlKey	// Is control key down?
 				},
 				"*"
 			);

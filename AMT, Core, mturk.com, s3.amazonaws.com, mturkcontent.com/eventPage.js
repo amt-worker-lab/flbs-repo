@@ -7,6 +7,39 @@
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
+	//~ /**
+	 //~ * request.count_number_of_captcha_tabs
+	 //~ * 
+	 //~ * NOTE:
+	 //~ * query: match title=CAPTCHA, url=*://*.mturk.com/, status:complete
+	 //~ */
+	//~ if(request.count_number_of_captcha_tabs) {
+		//~ chrome.tabs.query({title: 'CAPTCHA', url: ['*://*.mturk.com/'], status: 'complete'}, function(tabs) {
+			//~ sendResponse({count_number_of_captcha_tabs: tabs.length});
+		//~ });
+	//~ }
+	
+	/**
+	 * 
+	 */
+	if (request.add_tab_to_captcha_queue) {
+		if (!sender.tab.incognito)
+			CAPTCHA_tab_queue.add(sender.tab.id);
+		else
+			CAPTCHA_tab_queue__incognito.add(sender.tab.id);
+	}
+	
+	/**
+	 * 
+	 */
+	if (request.CAPTCHA_tab_queue_process) {
+		if (!sender.tab.incognito)
+			CAPTCHA_tab_queue.init_process();
+		else
+			CAPTCHA_tab_queue__incognito.init_process();
+	}
+	
+	
 	if(request.play_random_next_sound) {
 		
 		playRandomNextSound();
@@ -37,7 +70,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.toggleRAHotkey) {
 		localStorage['RAHotkey'] = request.toggleRAHotkey;
 	}
-	
 	if(request.getRAHotkey) {
 		sendResponse({RAHotkey:localStorage['RAHotkey']});
 	}
@@ -226,7 +258,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.match)
 	{
-		console.log("\n Inside match");
+		//~ console.log("\n Inside match");
 		var match = JSON.stringify(request.match);
 		//~ console.log(match);
 		//alert("recieved match");
@@ -242,9 +274,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				
 				onload: function(response) {
 					var rs=response.responseText;
-					console.log("result below");
-					console.log(rs);
-					console.log("here here");
+					//~ console.log("result below");
+					//~ console.log(rs);
+					//~ console.log("here here");
 					
 					//kick it back via localStorage, sending a message to global, or sending a response to global?
 					//Let's try it as a response
@@ -270,12 +302,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.nextTab)
 	{
-		console.log('Here1');
-		console.log(sender);
+		//~ console.log('Here1');
+		//~ console.log(sender);
+		
 			chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
 				
-				console.log('Here2');
-				console.log(sender);
+				//~ console.log('Here2');
+				//~ console.log(sender);
+				
 				var currentIndex = -1;
 				for(var i = 0; i < allTabs.length; i++)
 				{
@@ -290,9 +324,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					//Consider processing option's object even though we will not switch
 				}
 				else {
-					console.log(currentIndex);
-				
-					console.log(currentIndex);
+					//~ console.log(currentIndex);
+					//~ console.log(currentIndex);
+					
 					var nextTab =  false;
 					for(var i = 0; i < allTabs.length; i++)
 					{
@@ -407,6 +441,30 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 * The incognito boolean must be known for these
 	 */
 	/*functions*/
+	/**
+	 * get_multiple
+	 * 
+	 * @param id
+	 * @param request		object
+	 * @param request.keys	array	Array of desired keys (strings)
+	 * 
+	 * @Returns return_obj	object	An object of requested key/value pairs.
+	 */
+	function storage__get_multiple(id, request) {
+		chrome.tabs.getSelected(id, function(tab) {
+			var return_obj = {};
+			for (var i in request.keys) {
+				var key = request.keys[i];
+				if (tab.incognito === true) {
+					return_obj[ key ] = localStorage[key + '____INCOGNITO_SESSION'];
+				} else {
+					return_obj[ key ] = localStorage[key];
+				}
+			}
+			sendResponse({data: return_obj});
+		});
+	}
+	/*functions*/
 	// get
 	function storage__get(id, request) {
 		chrome.tabs.getSelected(id, function(tab) {
@@ -419,6 +477,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
 	}
 	// save
+	// request is a key/data pair. 
 	function storage__save(id, request) {
 		chrome.tabs.getSelected(id, function(tab) {
 			if (tab.incognito) {
@@ -453,26 +512,51 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var id = (sender.tab) ? sender.tab.windowId : sender.id;
 		
 		if (type == 'tab') { // tab
-			storage__get(id, request);
+			if (!request.hasOwnProperty('keys'))
+				storage__get(id, request);
+			else
+				storage__get_multiple(id, request);
 		}
 		else { // window
 			chrome.windows.getCurrent(function(w) {
-				storage__get(w.id, request);
+				if (!request.hasOwnProperty('keys'))
+					storage__get(w.id, request);
+				else
+					storage__get_multiple(id, request);
 			});
 		}
 	}
 	// save
-	else if (request.method == "saveLocalStorage" && request.key && request.data) {
+	else if (request.method == "saveLocalStorage" && (request.key || request.keys) && request.data) {
 		
 		var type = (sender.tab) ? 'tab' : 'window';
 		var id = (sender.tab) ? sender.tab.windowId : sender.id;
 		
 		if (type == 'tab') { // tab
-			storage__save(id, request);
+			if (request.hasOwnProperty('key'))
+				storage__save(id, request);
+			else if (request.hasOwnProperty('keys')) {
+				for (var i in request.keys) {
+					storage__save(id, {
+						key:	i,
+						data:	request.keys[i]
+					});
+				}
+			}
 		}
 		else { // window
 			chrome.windows.getCurrent(function(w) {
-				storage__save(w.id, request);
+				if (request.hasOwnProperty('key'))
+					storage__save(w.id, request);
+				else if (request.hasOwnProperty('keys')) {
+					for (var i in request.keys) {
+						storage__save(id, {
+							key:	w.id,
+							data:	request.keys[i]
+						});
+					}
+				}
+				
 			});
 		}
 	}
@@ -504,6 +588,273 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ }
 	//~ }
 });
+/**
+ * End of onRequest
+ */
+ 
+
+
+/**
+ * CAPTCHA_tab_queue
+ *
+ * localStorage:
+ *  CAPTCHA_staggered__stagger_is_active
+ *  CAPTCHA_staggered__min_tabs_to_initiate_staggered
+ *  CAPTCHA_staggered__staggered_timeout_per_tab
+ * 
+ * TODO?
+ * .getStaggerVars is only called with each new run of the queue. It is called
+ * at the start with init_process. In cases where the queue persists, a user
+ * could set different stagger localStorage vars. And these would not appear until the 
+ * queue resets. Fix?
+ */
+var CAPTCHA_tab_queue_obj = function(is_incognito) {
+	this.queue = [];
+	this.queue__obj = {};
+	this.is_incognito = (is_incognito) ? '____INCOGNITO_SESSION' : ''; //MT__DOSUBMIT__USER_SET_TYPE____INCOGNITO_SESSION
+	this.process_in_progress = false;
+	this.num_tabs_at_start = null;
+	
+	this.is_test = null;
+	this.test_url = null;
+	this.debug = true;
+	this.dbg_ic = (is_incognito) ? '(i) ' : '';
+	
+	
+	this.svars = {
+		is_active: null,
+		min_tb: null,
+		timeout: null
+	}
+	//~ this.is_test2 = null;
+	
+}
+CAPTCHA_tab_queue_obj.prototype.getQueueLength = function (tabId) {
+	this.num_tabs_at_start = this.queue.length;
+}
+CAPTCHA_tab_queue_obj.prototype.getStaggerVars = function (tabId) {
+	if (!localStorage.hasOwnProperty('MT__DOSUBMIT__USER_SET_TYPE' + this.is_incognito)) {
+		this.svars.is_active = false;
+		this.svars.min_tb = 4;
+		this.svars.timeout = 200;
+		return; // Done
+	}
+	try {
+		var x = JSON.parse(localStorage['MT__DOSUBMIT__USER_SET_TYPE' + this.is_incognito]);
+		this.svars.is_active = x.CAPTCHA_staggered__stagger_is_active;
+		this.svars.min_tb = x.CAPTCHA_staggered__min_tabs_to_initiate_staggered;
+		this.svars.timeout = x.CAPTCHA_staggered__staggered_timeout_per_tab;
+	} catch(e) {
+		console.log(e);
+		this.svars.is_active = false;
+		this.svars.min_tb = 4;
+		this.svars.timeout = 200;
+	}
+}
+CAPTCHA_tab_queue_obj.prototype.add = function (tabId) {
+	if (!this.queue__obj.hasOwnProperty(tabId)) {
+		this.queue__obj[tabId] = true;
+		this.queue.push(tabId);
+		if (this.debug) {
+			console.log('Adding tabId '+this.dbg_ic+''+tabId);
+		}
+	} else {
+		if (this.debug) {
+			console.log('TabId already in queue '+this.dbg_ic+'('+tabId+')');
+		}
+	}
+	
+	if (this.debug) {
+		//~ console.log(this.queue);
+		console.log('Queue'+this.dbg_ic+':' + this.queue.join(','));
+		console.log('Process in progress'+this.dbg_ic+':' + this.process_in_progress);
+	}
+}
+CAPTCHA_tab_queue_obj.prototype.init_process = function () {
+	if (this.process_in_progress) {
+		if (this.debug) {
+			console.log('Command recieved to process - In progress!');
+		}
+	} else {
+		if (this.debug) {
+			console.log('Command recieved to process - Starting!');
+		}
+		this.process_in_progress = true;
+		this.getQueueLength();
+		this.getStaggerVars();
+		this.process();
+	}
+}
+CAPTCHA_tab_queue_obj.prototype.process = function () {
+	
+	var next_tab = null;
+	while (this.queue && this.queue.length && next_tab == null) {
+		var next_tab = this.queue.shift();
+		//~ chrome.tabs.get(x, function() {
+			//~ 
+		//~ });
+	}
+	// Done?
+	if (next_tab == null) {
+		this.process_in_progress = false;
+		if (this.debug) {
+			console.log('There are no more tabs. this.process_in_progress=false.'+this.dbg_ic+'');
+		}
+		return;
+	}
+	
+	if (this.debug) {
+		console.log('Trying tabId '+this.dbg_ic+'' + next_tab);
+	}
+	if (this.is_test) {
+		chrome.tabs.query({url: this.test_url, currentWindow:true}, function(tabs) {
+			if(!tabs.length)
+			{
+				return;
+			}
+			console.log(tabs[0].id);
+			chrome.tabs.sendMessage(tabs[0].id, {CAPTCHA_queue_reload:true}, this.check_response.bind(this));
+			//~ chrome.tabs.insertCSS(tabs[0].id, {code:'body{zoom:4;}'});//document.body.style.zoom = 4;
+			//~ return;
+		}.bind(this));
+		return;
+	}
+	
+	// Remove tabId in obj
+	delete this.queue__obj[next_tab];
+	
+	// Next
+	// Bind
+	chrome.tabs.sendMessage(next_tab, {CAPTCHA_queue_reload:true}, this.check_response.bind(this));
+}
+CAPTCHA_tab_queue_obj.prototype.check_response = function(response) {
+	// @test
+	if (this.is_test) {
+		alert('test');
+	}
+	if (this.debug) {
+		console.log('Finished processing a page!'+this.dbg_ic+'');
+		//~ console.log(this);
+		//~ console.log(this.queue);
+		console.log('Queue'+this.dbg_ic+':' + this.queue.join(','));
+		console.log('Queue length'+this.dbg_ic+':' + this.queue.length);
+		console.log('Process in progress'+this.dbg_ic+':' + this.process_in_progress);
+		
+		//~ return;
+	}
+	
+	//CAPTCHA_queue_reload__tab_recieved
+	//"If an error occurs while connecting to the specified tab, the callback will be called with no arguments..."
+	// Err?
+	if (!response) {
+		
+		if (this.debug) {
+			console.log('no response from tab');
+		}
+		if (this.is_test) {
+			return;
+		}
+		
+		this.process();
+		return;
+	} else {
+		if (this.is_test) {
+			return;
+		}
+	}
+	
+	// Success
+	if (this.debug) {
+		console.log('is_active '+this.dbg_ic+''+ this.svars.is_active);
+		console.log('min tabs '+this.dbg_ic+''+ this.svars.min_tb);
+		console.log('timeout '+this.dbg_ic+''+ this.svars.timeout);
+		console.log('.num_tabs_at_start '+this.dbg_ic+''+ this.num_tabs_at_start);
+	}
+	
+	// Is staggering active?
+	if  (
+		this.svars.is_active &&
+		this.svars.min_tb <= this.num_tabs_at_start //this.queue.length
+		)
+	{
+		if (this.debug) {
+			console.log('Staggering the reload. '+this.dbg_ic+'Pause... ' + this.svars.timeout + ' ms');
+		}
+		setTimeout(this.process.bind(this), this.svars.timeout);//.bind(this)
+	}
+	else {
+		if (this.debug) {
+			console.log('No stagger.'+this.dbg_ic+'');
+		}
+		this.process();
+	}
+}
+CAPTCHA_tab_queue_obj.prototype.test = function(type) {
+	this.queue.push(1);
+	this.queue.push(1);
+	this.test_url = 'https://www.mturk.com/mturk/preview?groupId=372YDQ1UKENNIZ3KVPDWH39HKIU8C4&requesterId=&hitId=307FVKVSYQEFIHNAA04X9MGH9DB74J&externalHit=true&canAccept=true';
+	this.is_test = true;
+	this.process();
+	//~ setTimeout(function() {
+		//~ CAPTCHA_tab_queue.process();
+	//~ }, 10000);
+	//~ setTimeout(function() {
+		//~ CAPTCHA_tab_queue.process();
+	//~ }, 20000);
+}
+var CAPTCHA_tab_queue = new CAPTCHA_tab_queue_obj(false);
+var CAPTCHA_tab_queue__incognito = new CAPTCHA_tab_queue_obj(true);
+
+
+//~ CAPTCHA_tab_queue.test();
+//~ var CAPTCHA_tab_queue = new CAPTCHA_tab_queue_obj();
+//~ CAPTCHA_tab_queue.test();
+//~ var CAPTCHA_tab_queue2= new CAPTCHA_tab_queue_obj();
+//~ CAPTCHA_tab_queue2.test(true);
+
+//~ console.log(this);
+	//~ //
+	//~ var tabs = {};
+//~ 
+	//~ // Get all existing tabs
+	//~ chrome.tabs.query({}, function(results) {
+		//~ results.forEach(function(tab) {
+			//~ tabs[tab.id] = tab;
+		//~ });
+	//~ });
+//~ 
+	//~ // Create tab event listeners
+	//~ function onUpdatedListener(tabId, changeInfo, tab) {
+		//~ tabs[tab.id] = tab;
+		//~ console.log(tab);
+		//~ alert(tab.id);
+	//~ }
+	//~ function onRemovedListener(tabId) {
+		//~ delete tabs[tabId];
+	//~ }
+//~ 
+	//~ // Subscribe to tab events
+	//~ chrome.tabs.onUpdated.addListener(onUpdatedListener);
+	//~ chrome.tabs.onRemoved.addListener(onRemovedListener);
+//~ 
+	//~ /* 
+	 //~ * --------------------------------------------------
+	 //~ * Request callback
+	 //~ * --------------------------------------------------
+	 //~ */
+	//~ // Create request event listener
+	//~ function onBeforeRequestListener(details) {
+		//~ // *** Remember that tabId can be set to -1 ***
+		//~ var tab = tabs[details.tabId];
+//~ 
+		//~ // Respond to tab information
+	//~ }
+//~ 
+	//~ // Subscribe to request event
+	//~ chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestListener, {
+		//~ urls: ["<all_urls>"],
+		//~ types: ["main_frame"]
+	//~ }, ["blocking"]);
 
 
 var turnOnAutoCopy = false;

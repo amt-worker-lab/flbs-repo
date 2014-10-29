@@ -60,7 +60,18 @@ var AMT__Global_Vars = //function()
 	//~ };
 	
 	core: {
-		return_accept_run_nextTab: false
+		return_accept_run_nextTab: false,
+		// AMT__Global_Vars.core.captcha_string
+		captcha_string: 'In order to accept your next HIT, please type this word into the text box below'
+	},
+	
+	num_amt_tabs: null,
+	
+	// Defaults are false, 4, 200
+	CAPTCHA_staggered: {				// defaults
+		stagger_is_active:				false,
+		min_tabs_to_initiate_staggered:	4,
+		staggered_timeout_per_tab:		200
 	}
 }
 //~ AMT__Global_Vars();
@@ -70,6 +81,26 @@ var AMT__Global_Vars = //function()
 
 
 
+
+AMT__Global_Vars.initialize_num_amt_tabs = function() {
+	chrome.extension.sendRequest({get_num_amt_tabs: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.num_amt_tabs = rs.num_amt_tabs;
+
+		}
+	);
+}
+AMT__Global_Vars.initialize_CAPTCHA_staggered_vars = function() {
+	chrome.extension.sendRequest({getNTPassBy: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.CAPTCHA_staggered.min_tabs_to_initiate_staggered	= rs.min_tabs_to_initiate_staggered;
+			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
+			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
+		}
+	);
+}
 
 AMT__Global_Vars.initializeNextTabPassBy = function() {
 	chrome.extension.sendRequest({getNTPassBy: true}, 
@@ -300,9 +331,39 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ }, 5000);
 		//~ }
 	//~ }
+	
+	
 });
 
 //
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	/**
+	 * request.CAPTCHA_queue_reload
+	 */
+	// Must set false tmp?
+	console.log(request);
+	var test=false;
+	if  (request.CAPTCHA_queue_reload) {
+		// Send success 
+		// This could be sendResponse(true); As long as it is not sendResponse() or sendResponse(false) or No Response.
+		sendResponse({CAPTCHA_queue_reload__tab_recieved: true});
+		
+		if  (
+			document.body.innerHTML.indexOf(AMT__Global_Vars.core.captcha_string) != -1 ||
+			test
+			)
+		{
+			// Go to new href or window.reload()
+			if (document.location.href == 'https://www.mturk.com/mturk/submit') { //
+				var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+				if (i)
+					window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			} else
+				window.location.reload();
+		}
+	}
+});
+
 
 /**
  * 
@@ -1531,30 +1592,46 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+/**
+ * load_precache_urls 
+ * 
+ * @param options		object
+ * @param "".urls_array	object	Array of URLs.
+ * 
+ * @return Does not return
+ */
+AMT___requests_factory.prototype.load_precache_urls = function(options) {
+	
+	var options = options;
+	
+	load();
+	
+	function load() {
+		
+		// Complete?
+		if (options.urls_array.length < 1)
+			return;
+		
+		// Get next
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.urls_array.shift(),
+			onload: function (response) {
+				load();
+			}
+		});
+	}
+	
+}
+/**
+ * image_2_OCR 
+ */
 AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	
 	console.log(options_object);
 	
 	//AMT__image_2_OCR
 	
-	//~ // INIT (x 10s)
-	//~ var x_interval_init = setInterval(function() {
-		//~ GM_xmlhttpRequest({
-			//~ method: 'GET',
-			//~ url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
-			//~ onload: function (response) {
-				//~ var rs = response.responseText;
-				//~ 
-				// RETURN options_object
-				// Add response.
-				//~ options_object.response = response;
-				//~ options_object.text = rs;
-				//~ 
-				//~ 
-				//~ options_object.callback_function(options_object);
-			//~ }
-		//~ });
-	//~ }, 30000);
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
@@ -5473,7 +5550,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			
 			// CALLBACK
 			if (options_object.callback_mouseup) {
-				options_object.callback_mouseup(s); // THIS SENDS BACK THE STRING ADDED
+				options_object.callback_mouseup(s);						// THIS SENDS BACK THE STRING ADDED
 			}
 			return;
 		}
@@ -5488,7 +5565,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				
 				// CALLBACK
 				if (options_object.callback_mouseup) {
-					options_object.callback_mouseup(output_fields[i]);
+					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
 				}
 				break;
 			}
@@ -7196,7 +7273,7 @@ function GM_addStyle(css) {
 var MT__DOSUBMIT__USER_SET_TYPE = 'regular'; // var to set by user! Types are "regular" and "server side"; default "regular".
 //
 var AMT___POPUP___PROXY_REDACTED_			= MT___host; // default is MT___host!
-var AMT___POPUP__doSubmitServerHost	= MT___host; // // !! THIS IS AS OF YET UNDEFINED !! // //
+//~ var AMT___POPUP__doSubmitServerHost	= MT___host; // // !! THIS IS AS OF YET UNDEFINED !! // //
 
 function AMT___POPUP__initializeGlobals(callback_function) {
 	chrome.extension.sendRequest(
@@ -7205,12 +7282,8 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 			key: "MT__DOSUBMIT__USER_SET_TYPE"
 		},
 		function(response) {
-			if (response) {
+			if (response && response.hasOwnProperty('data')) {
 				try {
-					if (!response.data)
-					{
-						//
-					}
 					
 					var r = JSON.parse(response.data); // { data: "{}" } or { data: "{ type: "" }" }
 				
@@ -7226,20 +7299,25 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
 						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
 					}
-					if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
-						AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+					//~ if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
 						//~ AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+					//~ }
+					
+					if (r.hasOwnProperty('CAPTCHA_staggered__stagger_is_active')) {
+						AMT__Global_Vars.CAPTCHA_staggered.stagger_is_active = r.CAPTCHA_staggered__stagger_is_active;
 					}
+					if (r.hasOwnProperty('CAPTCHA_staggered__min_tabs_to_initiate_staggered')) {
+						AMT__Global_Vars.CAPTCHA_staggered.min_tabs_to_initiate_staggered = r.CAPTCHA_staggered__min_tabs_to_initiate_staggered;
+					}
+					if (r.hasOwnProperty('CAPTCHA_staggered__staggered_timeout_per_tab')) {
+						AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab = r.CAPTCHA_staggered__staggered_timeout_per_tab;
+					}
+					
 				}
 				catch(e)
 				{
 					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 				}
-			} else {
-				if (!response)
-					console.log('Alert, AMT___POPUP__initializeGlobals :: !response');
-				else
-					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 			}
 			
 			if (callback_function)
@@ -9769,22 +9847,78 @@ function AMT___returnAndAcceptButton() {
  */
 /**
  * Function AMT___checkCaptchaStatus()
- * // Check the captcha status
-   // Set var -> GM_setValue('mt_captcha','1'). No captcha == "0".
-   // Plus -> some interesting captcha behavior.
+ * 
+ * Check the captcha status
+ * Set var -> GM_setValue('mt_captcha','1'). No captcha == "0".
+ * Plus -> some interesting captcha behavior.
  */
 function AMT___checkCaptchaStatus() {
-	/**
-	 * Captcha & more
-	 * 
-	 */
+	
 	var s,t,u,w;
 	t=/you were viewing could not be accepted/; // Not accepted
 	u=/The HIT you were viewing has expired/; // Not accepted
 	w=/Want to work on this HIT/; // Not accepted
 	
-	s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
-	if (s.exec(ih)) {
+	var test=false;
+	var test2=false;
+	var test3=false;
+	if (test) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				add_tab_to_captcha_queue: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+			//~ chrome.extension.sendRequest(
+			//~ {
+				//~ add_tab_to_captcha_queue: true
+			//~ }, 
+			//~ function(response) {
+				//~ //Squelch response
+				//~ }
+			//~ );
+			chrome.extension.sendRequest(
+			{
+				CAPTCHA_tab_queue_process: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	if (test2) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				CAPTCHA_tab_queue_process: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	if (test3) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				add_tab_to_captcha_queue: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	
+	//AMT__Global_Vars.core.captcha_string
+	// s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
+	
+	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
 		
 		/**
 		 * Change icon
@@ -9792,6 +9926,18 @@ function AMT___checkCaptchaStatus() {
 		chrome.extension.sendRequest(
 		{
 			captchaChangeTabIcon: true
+		}, 
+		function(response) {
+			//Squelch response
+			}
+		);
+		
+		/**
+		 * Add this tab to reload captcha queue
+		 */
+		chrome.extension.sendRequest(
+		{
+			add_tab_to_captcha_queue: true
 		}, 
 		function(response) {
 			//Squelch response
@@ -9822,38 +9968,43 @@ function AMT___checkCaptchaStatus() {
 			!GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES')
 		   )
 			GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-			
-		// New 23 Sep 2014
-		// Set an eventListener for storage which will monitor other tabs.
-		// Another tab will set localStorage['mt_captcha'] = 0.
-		//
-		var reset_after_captcha = false;
-		window.addEventListener('storage', function() {
-			
-			if  (
-				GM_getValue('mt_captcha') == '0' &&
-				!reset_after_captcha
-			    )
-			{
-				// Set true
-				reset_after_captcha = true;
-				
-				// OLD.......
-				// TODO: 23 Sep 2014
-				// Ask the background page how many tabs are currently on mturk.com.
-				// (This is topWindow.) Then reload / location.href based on this amount.
-				//
-				if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
-					
-					var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-					if (i)
-						window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-					
-				} else
-					window.location.reload();
-			}
-			
-		}, false);
+		
+		// AS OF OCT28 THIS IS NO LONGER USED. THE METHOD USED IS EVENT PAGE QUEUEING.
+		//~ // New 23 Sep 2014
+		//~ // Set an eventListener for storage which will monitor other tabs.
+		//~ // Another tab will set localStorage['mt_captcha'] = 0.
+		//~ //
+		//~ // New 17 Oct 2014
+		//~ // Read localStorage value (later, global value) for CAPTCHA vars (CAPTCHA_staggered__min_tabs_to_initiate_staggered, CAPTCHA_staggered__staggered_timeout_per_tab)
+		//~ //
+		//~ //
+		//~ var reset_after_captcha = false;
+		//~ window.addEventListener('storage', function() {
+			//~ 
+			//~ if  (
+				//~ GM_getValue('mt_captcha') == '0' &&
+				//~ !reset_after_captcha
+			    //~ )
+			//~ {
+				//~ // Set true
+				//~ reset_after_captcha = true;
+				//~ 
+				//~ // OLD.......
+				//~ // TODO: 23 Sep 2014
+				//~ // Ask the background page how many tabs are currently on mturk.com.
+				//~ // (This is topWindow.) Then reload / location.href based on this amount.
+				//~ //
+				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
+					//~ 
+					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+					//~ if (i)
+						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+					//~ 
+				//~ } else
+					//~ window.location.reload();
+			//~ }
+			//~ 
+		//~ }, false);
 		
 		
 		// int
@@ -9905,51 +10056,71 @@ function AMT___checkCaptchaStatus() {
 	}
 	/**
 	 * No Captcha
-	 * (not ?continue)
+	 * Begin background page -> CAPTCHA_tab_queue.queue
+	 * CAPTCHA_tab_queue_process
+	 * 
+	 * NOTE:
+	 * This is where mt_captcha is set to 0.
+	 * 
+	 * 
 	 */
 	else if (!/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href))
 	{
 		//
 		GM_setValue('mt_captcha','0');
 		
-		if  (
-				ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				ih.indexOf('Copy and paste a webpage\'s HTML (Chrome and Firefox only, please)') != -1 &&
-				ih.indexOf('Automan LLC') != -1
-			)
+		/**
+		 * CAPTCHA_tab_queue_process
+		 */
+		chrome.extension.sendRequest(
 		{
-			var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			if (i) {
-				window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			CAPTCHA_tab_queue_process: true
+		}, 
+		function(response) {
+			//Squelch response
 			}
-		}
-		if  (
-				ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				ih.indexOf('KronoPin') != -1
-			)
-		{
-			var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			if (i) {
-				var xint_dup = setInterval(function() {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: 'http://www.linkedin.com/nhome/',
-						onload: function (response) {
-							if (response.status < 400) {
-								
-								clearInterval(xint_dup);
-								
-								// get new
-								var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-								window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-								
-							}
-						}
-					});
-				}, 60000);
-			}
-		}
-		// reload after captcha, /mturk/submit
+		);
+		
+		//~ 
+		//~ if  (
+				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
+				//~ ih.indexOf('Copy and paste a webpage\'s HTML (Chrome and Firefox only, please)') != -1 &&
+				//~ ih.indexOf('Automan LLC') != -1
+			//~ )
+		//~ {
+			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+			//~ if (i) {
+				//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			//~ }
+		//~ }
+		//~ if  (
+				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
+				//~ ih.indexOf('KronoPin') != -1
+			//~ )
+		//~ {
+			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+			//~ if (i) {
+				//~ var xint_dup = setInterval(function() {
+					//~ GM_xmlhttpRequest({
+						//~ method: 'GET',
+						//~ url: 'http://www.linkedin.com/nhome/',
+						//~ onload: function (response) {
+							//~ if (response.status < 400) {
+								//~ 
+								//~ clearInterval(xint_dup);
+								//~ 
+								//~ // get new
+								//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+								//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+								//~ 
+							//~ }
+						//~ }
+					//~ });
+				//~ }, 60000);
+			//~ }
+		//~ }
+		
+		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
 			// Amicus Labs
 			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';

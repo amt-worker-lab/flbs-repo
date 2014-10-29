@@ -2105,6 +2105,125 @@ function MT__RUN() {
 	}
 	
 	//
+	// David Shefferman
+	// Log the final landing page domain after clicking the link
+	// 
+	s = '<li>Enter the website DOMAIN for the <strong>official website </strong>that loads in your browser.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		
+		GM_addStyle('.container {margin:0 !important;width:40% !important;}');
+		
+		var a = document.getElementsByTagName('a')[3].href;
+		
+		MT___resolveURL(a, function(rs) {
+			console.log(rs);
+			
+			rs = rs.replace(/^(https?:\/\/[^\/]+)[\d\D]*/i, '$1');
+			
+			console.log(rs);
+			
+			document.getElementById('web_url').value = rs;
+			
+			if  (
+				rs.indexOf('localhost') == -1 &&
+				rs.indexOf('192.168.1.') == -1 &&
+				rs.indexOf('127.0.0.1') == -1 &&
+				rs.indexOf('http') == 0
+				)
+			{
+				//
+				doSubmit();
+				//~ if () {
+					//~ 
+				//~ }
+			}
+		});
+	}
+	//
+	// Leonard Fishman
+	// Given the url, input the requested information in the fields below (annotate fields)
+	// 
+	s = '<h3>Given the speaker information given (name, company, title), please separate this information into the fields below. USE COPY/PASTE TO AVOID TYPOS. I may create private HITs for the best Turkers. Email lenf@outlook.com with questions.';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('ul {position:absolute;top:1400px;}');
+		
+		var b = document.getElementsByTagName('b')[0];
+		var f = document.getElementsByName('Q1Url');
+		var fields = [
+			f[0],
+			f[1],
+			f[2],
+			f[3]
+		];
+		var o = {
+			out: document.getElementsByTagName('div')[2],
+			cb: document.getElementsByName('Q3Answer')[0],
+			sb: document.getElementById('submitButton')
+		};
+		o.out.innerText = '';
+		o.out.style.width = '60%';
+		//~ o.out.style.maxWidth = '60%';
+		o.cb.style.cursor = 'pointer';
+		
+		
+		var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+			textToAnnotate: b.innerText,
+			output_fields: fields,
+			callback_mouseup: function(addField) {
+				
+				// Remove trailing commas
+				addField.value = addField.value.replace(/ *,*$/, '');
+			}
+			//~ appendToField: true,
+			//~ appendToField_glue: '\n',
+			//~ delimeter: '',
+			//~ focusToField: false
+		});
+		o.out.appendChild(buttons);
+		
+		o.cb.onclick = function() {
+			o.sb.click();
+		}
+		o.sb.onclick = function() {
+			console.log('Checkbox checked:' + o.cb.checked);
+			var found = false;
+			for (var i in fields) {
+				fields[i].value = fields[i].value.trim();
+				if (fields[i].value != '') {
+					found = true;
+					break;
+				}
+			}
+			if (found) { // blanks?
+				for (var i in fields) {
+					if (fields[i].value == '') {
+						fields[i].value = '-';
+					}
+				}
+			}
+			if (o.cb.checked) { //
+				for (var i in fields) {
+					fields[i].value = '';
+				}
+			}
+			if (!found && !o.cb.checked) {
+				return false;
+			}
+			
+			// Here?
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
+	}
+	//
 	// Lenny Fishman
 	// Given the url, input the requested information in the fields below
 	// 
@@ -6242,19 +6361,21 @@ function MT__RUN() {
 	//
 	// Andrew Ryan
 	// Find the Name/Email of Key People in Specific Companies
+	// Oct25, Add _PROXY_REDACTED_. 
 	//
 	s = 'The goal of this task is to collect the name, email address, and phone number for the <strong>';
 	if(ih.indexOf(s) != -1)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 		
-		GM_addStyle('body {width:16%}');
+		//~ GM_addStyle('body {width:16%}');
 		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 		GM_addStyle('td {padding:0 important!;}');
 		
 		// container
-		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
-		GM_addStyle('table {border: 1px solid #a2a2a2;}');
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:16% !important !important;}');
+		//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
+		GM_addStyle('table {border: 1px solid #a2a2a2;}');//max-width:10% !important !important !important !important !important !important;
 		// ...
 		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 		
@@ -6272,6 +6393,7 @@ function MT__RUN() {
 		
 		
 		
+		
 		//~ var b = document.getElementsByTagName('b');
 		
 		var a = document.getElementsByTagName('a')[0].href.trim();
@@ -6284,6 +6406,7 @@ function MT__RUN() {
 		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);
 		
 		t[0].style.width = '16%';
+		//~ t[0].style.maxWidth = '10% !important !important !important !important !important !important !important !important ';
 		t[1].style.width = '16%';
 		
 		// Make td[0]'s display none
@@ -6297,25 +6420,14 @@ function MT__RUN() {
 				td[i].style.height = '14px';
 				td[i].style.maxHeight = '14px';
 				td[i].style.overflow = 'hidden';
-				//~ td[i].style.display = 'none';
+				td[i].style.display = 'none';
+			} else {
+				//~ td[i].style.width = '60%';
+				//~ td[i].style.maxWidth = '60%';
+				td[i].style.width = '180px';
+				td[i].style.maxWidth = '180px';
 			}
 		}
-		//~ for (var i in tr) {
-			//~ if (i == 'length') break;
-			//~ var tds_ = tr[i].getElementsByTagName('td');
-			//~ if (tds_.length && tds_[0]) {
-				//~ tds_[0].style.display = 'none !important';
-			//~ }
-		//~ }
-		
-		/*// Float left
-		t[0].style.float = 'left';
-		t[1].style.float = 'left';
-		t[1].style.marginTop = '-20px';
-		//~ p[p.length - 1].style.float = 'left';
-		//~ p[p.length - 2].style.float = 'left';
-		//~ p[p.length - 2].style.marginTop = '-20px';
-		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);*/
 		
 		// o
 		var o = {
@@ -6330,12 +6442,22 @@ function MT__RUN() {
 			role_to_array: [],
 			
 			CSS_d2_min_height: null,
-			CSS_d2_max_height: null
+			CSS_d2_max_height: null,
+			
+			top_z_index: 11, // This is the z-index for iframes. It will increase with each iframe click.
+			
+			// scrapyd
+			scrapy_start_urls: [],
+			scrapy_allowed_domains: []
 		}
 		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
 		o.domain = o.domain.replace(/\/[\d\D]*/i, ''); // trailing
 		o.query			= 'site:'+o.domain+' "about us"|"about"|"our staff"|"staff"|"staff directory"|"personnel"|"contact us"|"contact"|"leadership"|"governance"|"who we are"|"our people"|"officers"|"executives"';
 		//~ console.log(o);
+		
+		// scrapy
+		o.scrapy_allowed_domains.push(o.domain);
+		o.scrapy_start_urls.push(o.site);
 		
 		// Add to roles
 		switch(o.role) {
@@ -6344,10 +6466,18 @@ function MT__RUN() {
 					'information technology director',
 					'information technology',
 					'digital',
+					'database',
+					'data',
 					'information',
 					'info',
 					'technology',
-					'tech'
+					'tech',
+					'computer',
+					'web',
+					'internet',
+					'cto',
+					'officer',
+					'chief'
 				];
 				break;
 			case 'Executive Director/CEO':
@@ -6363,8 +6493,13 @@ function MT__RUN() {
 				o.role_to_array = [
 					'chief operating officer',
 					'operations',
+					'operating',
+					'operate',
 					'chief',
-					'vice president'
+					'vice president',
+					'associate',
+					'vice',
+					'officer'
 				];
 				break;
 			case 'Membership Director':
@@ -6372,6 +6507,9 @@ function MT__RUN() {
 					'membership director',
 					'members',
 					'member',
+					'development',
+					'outreach',
+					'constituent'
 					
 					//~ 'ceo',
 					//~ 'chief executive officer',
@@ -6404,75 +6542,47 @@ function MT__RUN() {
 		/* BEGIN ITEMS */
 		// d1, d1b
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;  left:16%;width:42%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1.setAttribute('style','position:absolute;top:0px; left:16%;width:40%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1);
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:0px;  left:58%;width:41%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1b.setAttribute('style','position:absolute;top:0px;left:56%;width:20%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1b);
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:0px;left:76%;width:23%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1c);
 		// Iframe
+		// Iframes go from ifr__0 to ifr__5
+		// d2 is for other.
+		// xx visibility:hidden;
 		var d2 = document.createElement('iframe');
-		d2.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+		d2.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:9;background-color:#fff;');
 		document.body.appendChild(d2);
+		//~ d2.id = 'ifr__0';
+		//
+		var zid = 10;
+		for (var i = 0; i<=5; i++) {
+			var dx = document.createElement('iframe');
+			dx.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:'+zid+';background-color:#fff;');
+			document.body.appendChild(dx);
+			dx.id = 'ifr__' + i;
+			zid = 9;
+			dx.addEventListener('mouseover', Andrew_Ryan_people_search__resize_iframes, false);
+			dx.addEventListener('load', Andrew_Ryan_people_search__iframes_load, false);
+		}
 		/* END ITEMS */
 		
-		
 		// d1 events
-		var d1_hover = d1b_hover = function() {
-			// CSS RESIZE
-			d2.style.height = o.CSS_d2_min_height;
-			d2.style.marginTop = '0';
-			d1 .style.height = '300px';
-			d1b.style.height = '300px';
+		var d1_hover = d1b_hover = d1c_hover = function() {
+			
+			Andrew_Ryan_people_search__resize_iframes(false);
+			
 		}
 		d1 .addEventListener('mouseover', d1_hover, false);
 		d1b.addEventListener('mouseover', d1_hover, false);
+		d1c.addEventListener('mouseover', d1_hover, false);
 		// Iframe events
-		d2.addEventListener('mouseover', function() {
-			// CSS RESIZE
-			d2.style.height = o.CSS_d2_max_height;
-			d2.style.marginTop = '-200px';
-			d1 .style.height = '100px';
-			d1b.style.height = '100px';
-		}, false);
-		//~ d2.addEventListener('mouseout', function() {
-		//~ }, false);
-		d2.addEventListener('load', function() {
-			this.style.visibility = 'visible';
-			// Tell child to zoom out & extend
-			var ifr_intv = setInterval(function() {
-				d2.contentWindow.postMessage({
-					task: 'AMT__all_pages_util',
-					MT___all_pages_extend: true,
-					MT___all_pages_zoom: true,
-					MT___all_pages_showhref: true,
-					highlight_range_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
-					highlight_strings_in_page: {
-						strings: o.role_to_array
-					},
-					email_links_remove_mailto: true,
-					show_remove_links_button: true
-					//~ global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
-					//~ person_name_zoom: o.fn + ' ' + o.ln
-				}, "*");
-			}, 1000);
-			// Watch for complete
-			window.addEventListener("message", Andrew_Ryan_people_search__iframe_complete, false);
-		}, false);
-		function Andrew_Ryan_people_search__iframe_complete(event) {
-			
-			var v = event.data;
-			
-			// clear intv search
-			if (v.key == 'Andrew_Ryan_people_search__iframe_complete' && v.text_range != '') {
-				for (var i in q) {
-					if (q[i].value.trim() == '') {
-						q[i].value = v.text_range;
-						q[i].focus();
-						break;
-					}
-				}
-			}
-		}
+		d2.addEventListener('mouseover', Andrew_Ryan_people_search__resize_iframes, false);
+		d2.addEventListener('load', Andrew_Ryan_people_search__iframes_load, false);
 		
 		// q
 		var q = [
@@ -6486,12 +6596,6 @@ function MT__RUN() {
 		q[1].placeholder = 'L';
 		q[2].placeholder = 'E';
 		q[3].placeholder = 'P';
-		
-		//
-		//~ var x = document.createElement('div');
-		//~ x.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-		//~ x.innerText = o.comp;
-		//~ d1.appendChild(x);
 		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
@@ -6513,9 +6617,18 @@ function MT__RUN() {
 				
 				// Set initial
 				d2.style.height = o.CSS_d2_min_height;
-				
+				for (var i=0; i<=5; i++) {
+					var iframe = document.getElementById('ifr__' + i);
+					iframe.style.height = o.CSS_d2_max_height;
+					iframe.style.marginTop = '-200px';
+				}
 			}
 		});
+		
+		// select ReasonForFailure
+		document.getElementById('ReasonForFailure').onchange = function() {
+			q[0].focus();
+		}
 		
 		// submitButton
 		document.getElementById('submitButton').onclick = function() {
@@ -6523,10 +6636,28 @@ function MT__RUN() {
 			// Fail
 			// Do not warn about blank fields
 			if (document.getElementById('ReasonForFailure').selectedIndex != 0) {
-				//
-				//~ for (var i in q) {
-					//~ 
-				//~ }
+				// Warn about non-blank?
+				var found = false;
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value != '') {
+						q[i].style.border = '2px solid blue';
+						found = true;
+						//~ var c = confirm(q[i].name + ' is not blank.');
+						//~ if (c == true) {
+							//~ // do nothing
+							//~ 
+						//~ } else {
+							//~ return false;
+						//~ }
+						//~ break;
+					} else {
+						q[i].style.border = '';
+					}
+				}
+				if (found) {
+					return false;
+				}
 			}
 			// Success
 			// Warn about blank fields
@@ -6543,17 +6674,6 @@ function MT__RUN() {
 						}
 					}
 				}
-				//~ return false;
-				//~ confirm('x');return false;
-				//~ if (!sbm) {
-					//~ 
-				//~ }
-				//~ if  (
-					//~ document.getElementById('Q1URLNews').value.trim() == '' &&
-					//~ document.getElementsByName('Q2Answer')[0].value != 'NONE'
-					//~ )
-					//~ return false;
-				//~ 
 			}
 			
 			new AMT___core_factory().nextTab();
@@ -6580,6 +6700,165 @@ function MT__RUN() {
 		});
 		
 		/**
+		 * START SCRAPYD
+		 */
+		/**
+		 * function Andrew_Ryan_people_search__scrapy
+		 */
+		function Andrew_Ryan_people_search__scrapy(start_urls, allowed_domains) {
+			
+			console.log(start_urls);
+			console.log(allowed_domains);
+			
+			// If no website then return.
+			if (o.domain.indexOf('amazonaws') != -1)
+				return;
+			
+			console.log('init');
+			//
+			var s_obj = 
+			{
+				project: 'scrapy_amt',
+				spider: 'AMTSpider',
+				arg_allowed_domains: allowed_domains,	// array
+				arg_start_urls: start_urls,		// array
+				arg_max_pages_to_fetch: 60,
+				arg_type_scrape: 'all_emails',	// all_emails or str_match
+				settings: [
+					//'DEPTH_LIMIT=4',
+					//'SCHEDULER_ORDER=BFO',
+					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+					
+					'CONCURRENT_ITEMS=40', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+					
+					'AJAXCRAWL_ENABLED=1', //true
+					'COOKIES_ENABLED=0', //false
+					//'RETRY_ENABLED=0', //false
+					//'DI=0', //false
+					'REDIRECT_MAX_TIMES=1'//,
+					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+					//'AJAXCRAWL_ENABLED=1', //true
+				]
+			}
+			
+			var req = new AMT___requests_factory();
+			AMT___POPUP__initializeGlobals(
+				function() {
+					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+						s_obj,
+						(new AMT___items_factory()).create_dashboard__powers_v1,
+						{
+							div: d1c,
+							input_send_success: q[2],
+							do_submit_callback: function() {
+								
+								// ...
+								//~ showNextTab();
+								//~ doSubmit();
+							}//,
+							// RUNS BEFORE DASHBOARD IS FILLED IN !
+							//~ callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+								//~ console.log(callback_obj);
+								//~ return;
+								//~ return true;
+							//~ }
+						}
+					);
+				}
+			);
+		}
+		
+		/**
+		 * Andrew_Ryan_people_search__iframes_load
+		 */
+		function Andrew_Ryan_people_search__iframes_load() {
+			//~ this.style.visibility = 'visible';
+			
+			var el = this;
+			
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				el.contentWindow.postMessage({
+					task: 'AMT__all_pages_util',
+					MT___all_pages_extend: true,
+					MT___all_pages_zoom: true,
+					MT___all_pages_showhref: true,
+					highlight_range_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+					highlight_strings_in_page: {
+						strings: o.role_to_array
+					},
+					email_links_remove_mailto: true,
+					show_remove_links_button: true,
+					email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'}
+					//~ global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+					//~ person_name_zoom: o.fn + ' ' + o.ln
+				}, "*");
+			}, 1000);
+		}
+		// Watch for complete
+		// Only add this once
+		window.addEventListener("message", Andrew_Ryan_people_search__iframe_complete, false);
+		/**
+		 * Andrew_Ryan_people_search__iframe_complete
+		 */
+		function Andrew_Ryan_people_search__iframe_complete(event) {
+			
+			var v = event.data;
+			
+			if (v.key == 'Andrew_Ryan_people_search__iframe_complete') {
+				if (v.hasOwnProperty('text_range') && v.text_range != '') {
+					for (var i in q) {
+						if (q[i].value.trim() == '') {
+							q[i].value = v.text_range;
+							q[i].focus();
+							break;
+						}
+					}
+				} else if (v.hasOwnProperty('email_address') && v.email_address != '') {
+					q[2].value = v.email_address.trim();
+					q[2].focus();
+				}
+			}
+		}
+		/**
+		 * 
+		 */
+		function Andrew_Ryan_people_search__resize_iframes(make_iframes_taller) {
+			// Make ifr taller
+			if (make_iframes_taller) {
+				d2.style.height = o.CSS_d2_max_height;
+				d2.style.marginTop = '-200px';
+				for (var i=0; i<=5; i++) {
+					var iframe = document.getElementById('ifr__' + i);
+					iframe.style.height = o.CSS_d2_max_height;
+					iframe.style.marginTop = '-200px';
+				}
+				
+				d1 .style.height = '100px';
+				d1b.style.height = '100px';
+				d1c.style.height = '100px';
+			}
+			// Make ifr smaller
+			else {
+				
+				d2.style.height = o.CSS_d2_min_height;
+				d2.style.marginTop = '0';
+				for (var i=0; i<=5; i++) {
+					var iframe = document.getElementById('ifr__' + i);
+					iframe.style.height = o.CSS_d2_min_height;
+					iframe.style.marginTop = '0';
+				}
+				
+				
+				d1 .style.height = '300px';
+				d1b.style.height = '300px';
+				d1c.style.height = '300px';
+			}
+		}
+		/**
 		 * 
 		 */
 		function Andrew_Ryan_people_search(response_object) {
@@ -6593,6 +6872,10 @@ function MT__RUN() {
 			if (!rs.length) {
 				out.innerText += o.query + '\n0';
 				d2.src = o.site;
+				
+				if (out == d1) {
+					Andrew_Ryan_people_search__scrapy(o.scrapy_start_urls, o.scrapy_allowed_domains);
+				}
 				return;
 			}
 			
@@ -6600,34 +6883,57 @@ function MT__RUN() {
 			// 0 = url
 			// 1 = body
 			var first = true;
+			
+			//~ var precache_urls = []; // This is a list of URLs to cache.
+			//~ var rf = new AMT___requests_factory(); // rf
+			
+			var count = 0;
+			
+			// Loop
 			for (var i in rs) {
 				
 				var domain = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+				
+				if (out == d1) {
+					o.scrapy_start_urls.push(rs[i][0]);
+				}
+				
+				//~ var cache_url;
+				//~ cache_url = MT___host +
+					//~ '/mturk/util.php?AMT__output_html_from_URL=' +
+					//~ encodeURIComponent(rs[i][0]) +
+					//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						//~ {
+							//~ _PROXY_REDACTED__use_proxy: true
+						//~ }
+					//~ ));
+				//~ if (count < 4) {
+					//~ if (out == d1 && count == 0) {
+						//~ // Nothing
+					//~ } else
+						//~ precache_urls.push(cache_url);
+				//~ }
+				
+				
+				// Iframe precache
+				var iframe;
+				if (out == d1 && count <= 5) {
+					iframe = document.getElementById('ifr__' + count);
+					iframe.src = rs[i][0];
+				} else iframe = false;
 				
 				// Container
 				x = document.createElement('div');
 				x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 				x.className = 'exe';
-				x.url = rs[i][0];
+				x.url = rs[i][0]; // // cache_url; // //rs[i][0];
+				x.iframe = iframe;
 				
 				// return_div_element
 				var b1 = MT__bold(domain,   o.bold_strings, {return_div_element:true}).div_element;
 				var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
 				x.appendChild(b1);
 				x.appendChild(b2);
-				
-				//~ // submit this one
-				//~ var b = document.createElement('button');
-				//~ b.url = rs[i][0];
-				//~ b.innerHTML = MT__bold(rs[i][0], o.bold_strings);
-				//~ b.onclick = function(e) {
-					//~ this.style.backgroundColor = 'LightGreen';
-					//~ 
-					//~ e.stopPropagation();
-					//~ e.preventDefault();
-					//~ return false;
-				//~ }
-				//~ x.appendChild(b);
 				
 				// link
 				var a = document.createElement('a');
@@ -6642,52 +6948,69 @@ function MT__RUN() {
 				}
 				b1.appendChild(a);
 				
-				//~ // Body
-				//~ var b = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
-				//~ x.appendChild(b);
-				
-				
-				//~ x.innerHTML = 
-					//~ MT__bold(rs[i][0], o.bold_strings) +
-					//~ '<br>' +
-					//~ MT__bold(rs[i][1], o.bold_strings);
-				//~ 
-				
 				// APPEND
 				out.appendChild(x);
 				
 				// .onclick
 				x.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					d2.src = this.url;
-					//~ d2.scrollIntoView();
 					
+					this.style.backgroundColor = 'LightGreen';
+					
+					if (!this.iframe) {
+						d2.src = this.url;
+						d2.style.zIndex = o.top_z_index;
+						o.top_z_index++;
+					} else {
+						this.iframe.style.zIndex = o.top_z_index;
+						o.top_z_index++;
+						// Reset src?
+						if (this.iframe.src != this.url) {
+							this.iframe.src = this.url;
+						}
+						//~ console.log(this.iframe);
+						//~ console.log(this.iframe.zIndex);
+						//~ console.log(d2.zIndex);
+					}
+											
 					// Remove Listener
 					d1 .removeEventListener('mouseover', d1_hover, false);
 					d1b.removeEventListener('mouseover', d1b_hover, false);
+					d1c.removeEventListener('mouseover', d1c_hover, false);
 					setTimeout(function() {
 						d1 .addEventListener('mouseover', d1_hover, false);
 						d1b.addEventListener('mouseover', d1b_hover, false);
-					}, 3000);
+						d1c.addEventListener('mouseover', d1c_hover, false);
+					}, 1000);
 					
 					// CSS RESIZE
 					//~ d2.style.height = (d2.style.height.replace(/px/, ''))*1 + 200 + 'px';
-					d2.style.height = o.CSS_d2_max_height;
-					d2.style.marginTop = '-200px';
-					d1 .style.height = '100px';
-					d1b.style.height = '100px';
+					Andrew_Ryan_people_search__resize_iframes(true);
 				}
 				
 				// First
 				if (first && out == d1) {
 					first = false;
-					x.click();
+					x.style.backgroundColor = 'LightGreen';
+					//~ x.click();
 				}
+				
+				count++;
 			}
 			var x = document.createElement('div');
 			x.setAttribute('style','height:2000px;');
 			out.appendChild(x);
+			
+			// scrapy
+			if (out == d1) {
+				Andrew_Ryan_people_search__scrapy(o.scrapy_start_urls, o.scrapy_allowed_domains);
+			}
 		}
+		
+		//~ if (precache_urls.length > 1) {
+			//~ rf.load_precache_urls({
+				//~ urls_array: precache_urls
+			//~ });
+		//~ }
 	}
 	
 	//
@@ -8555,7 +8878,7 @@ function MT__RUN() {
 		Amazon_Requester_Inc_EPS_Marketing__scrapy([o.url], [o.domain]);
 		
 		/**
-		 * function
+		 * function Amazon_Requester_Inc_EPS_Marketing__scrapy
 		 */
 		function Amazon_Requester_Inc_EPS_Marketing__scrapy(start_urls, allowed_domains) {
 			//
@@ -31745,6 +32068,59 @@ function MT__RUN() {
 	}
 	
 	/**
+	 * 
+	 
+	 1)Adult/Adults 
+	 2)Adult/Adults::Wedding
+	 <form name="mturk_form" method="post" id="mturk_form" action="https://www.mturk.com/mturk/externalSubmit" class="ng-pristine ng-valid">
+              <input type="hidden" name="assignmentId" id="assignmentId" value="37UEWGM5HUKQWNMH862UQJTNFQMR1O">
+              <input type="hidden" name="Category" value="">
+              <ul>
+                <li>
+                  <input ng-show="assignmentId | isSet" id="submit_button" type="submit" class="btn btn-primary" value="Submit">
+                  <div ng-hide="assignmentId | isSet" class="btn btn-primary" style="display: none;">Submit <small>(disabled for demo)</small></div>
+                </li>
+              </ul>
+            </form>
+	 */
+	//
+	// Dustin Smith
+	// Categorization, Masters
+	// Pictures
+	s = '  <p>\nAn image will load below. <br/>\nChoose the best description of what\'s in the image. <br/>\nYour answer to the question will be compared against others to ensure that the tagging is accurate. \n</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		console.log('');
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		GM_addStyle('.container {margin:0 !important;}');
+		
+		
+		document.getElementsByClassName('well')[0].addEventListener('mouseup', function() {
+			setTimeout(function() {
+				var inp = document.getElementsByName('Category')[0];
+				console.log(inp);
+				console.log(inp.value);
+				if (inp.value.trim() == '')
+					return;
+				if  (
+						(
+						inp.value.indexOf('Adult/Adults') != -1 ||
+						inp.value.indexOf('Animal/Pet') != -1
+						) &&
+					inp.value.indexOf('::') == -1
+					)
+				{
+					return;
+				}
+				// Here?
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}, 60);
+		}, false);
+	}
+	/**
 	 * Chris Anderson
 	 * Categorization Masters
 	 */
@@ -33100,10 +33476,15 @@ function MT__RUN() {
 		// Has pound
 		else
 		{
-			a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			if (a.indexOf('/?') != -1)
+				a = a.replace(/google\.com\/\?/g, 'google.com/search?');
+			else if (a.indexOf('/#') != -1)
+				a = a.replace(/google\.com\/#/g, 'google.com/search?');
+			
 			a = a.replace(/\?[^#]*#/g, '?');
 			a = a.replace(/\?q([^=])/g, '?q=$1');
 			//~ a = a.replace(/\#q([^=])/g, '?q=$1');
+			
 			console.log(a);
 			
 			if (a.indexOf('#') != -1) {
@@ -121940,8 +122321,18 @@ function top_window() {
 		
 		// ...
 		//~ var d = document.getElementsByTagName('h3')[1];
+		
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 200 );
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 1200);
+		//~ setTimeout(function() {dqw.scrollIntoView();}, 1400);
+		//~ var d = document.getElementsByClassName('question-wrapper')[0];
+		
+		/* BEGIN ITEMS */
+		// Wrapper for top
 		var dqw = document.getElementsByClassName('question-wrapper')[0];
+		// Add UPC text
 		dqw.appendChild(document.createTextNode(' ' +upc));
+		// Reset button
 		var reset_dqw = document.createElement('input');
 		reset_dqw.setAttribute('style', 'cursor:pointer;');
 		reset_dqw.type = 'button';
@@ -121951,12 +122342,20 @@ function top_window() {
 			document.getElementById('hit-wrapper').style.position = 'relative';
 		}
 		dqw.appendChild(reset_dqw);
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 200 );
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 1200);
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 1400);
-		//~ var d = document.getElementsByClassName('question-wrapper')[0];
-		
-		/* BEGIN ITEMS */
+		// Button to change title to mixed case
+		var case_btn_dqw = document.createElement('input');
+		case_btn_dqw.setAttribute('style', 'cursor:pointer;');
+		case_btn_dqw.type = 'button';
+		case_btn_dqw.value = 'case';
+		case_btn_dqw.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
+			document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
+			document.getElementById('Answer_1_FreeText').focus();
+		}
+		dqw.appendChild(case_btn_dqw);
+		// Wrapper
+		// This is the element in the body that contains the HIT. 
 		var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
 		x.appendChild(document.createElement('br'));
 		// iframe
@@ -122007,9 +122406,6 @@ function top_window() {
 		d3d.type = 'button';
 		d3d.value = 'shopsavvy';
 		x.appendChild(d3d);
-		//~ d3d.onclick = function() {
-			//~ //
-		//~ }
 		//
 		var d3e = document.createElement('input');
 		d3e.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
@@ -122020,8 +122416,14 @@ function top_window() {
 		var d3f = document.createElement('input');
 		d3f.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
 		d3f.type = 'button';
-		d3f.value = '';
+		d3f.value = 'upcindex';
 		x.appendChild(d3f);
+		//
+		//~ var d3f = document.createElement('input');
+		//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+		//~ d3f.type = 'button';
+		//~ d3f.value = '';
+		//~ x.appendChild(d3f);
 		// END BUTTONS
 		
 		//~ d3d.onclick = function() {
@@ -122063,6 +122465,20 @@ function top_window() {
 				//~ return false;
 			//~ new AMT___core_factory().nextTab();
 		//~ }
+		
+		// onkeypress
+		window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
+		function A9_Snaptell_VSR__keypress_submit(e) {
+			console.log(e.keyCode);
+			
+			if (e.keyCode == 96 && String.fromCharCode(e.keyCode) == '`') {
+				e.preventDefault();
+				e.stopPropagation();
+				document.getElementsByName('/submit')[0].click();
+				return false;
+			}
+		}
+			
 		
 		// Onclick
 		document.getElementsByName('/submit')[0].onclick = function() {
@@ -122115,7 +122531,10 @@ function top_window() {
 						MT___all_pages_extend: true,
 						MT___all_pages_zoom: true,
 						MT___text_scrollIntoView: new RegExp(upc, 'i'),
-						highlight_range_to_parent: {completion_key: 'A9_Snaptell_VSR__iframe_complete'},
+						highlight_range_to_parent: {
+							completion_key: 'A9_Snaptell_VSR__iframe_complete'
+							//~ control_key_append: true // enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
+						},
 					},
 					"*"
 				);
@@ -122129,8 +122548,18 @@ function top_window() {
 			// 
 			if (v.key == 'A9_Snaptell_VSR__iframe_complete' && v.text_range != '') {
 				
-				q[0].value = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
+				// IS CONTROL KEY PRESSED?
+				v.text_range = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
+				
+				if (v.control_key_is_active) {
+					q[0].value += ' ' + v.text_range;
+				} else {
+					q[0].value = v.text_range;
+				}
+				q[0].value = q[0].value.replace(/[\r\n\t\s]+/g, ' ');
+					
 				q[1].value = d1.output_url; //d1.src; src and output_url almostsynonymous
+				
 				q[0].focus();
 			}
 		}
@@ -122143,8 +122572,9 @@ function top_window() {
 			shopsavvy:		null,
 			searchupc:		null, // Set to false for N/A, if skipping
 			smoopa:			null,
+			upcindex:		null, // upcindex.com
 			google:			null,
-			array_all: ['de','su','sp','yh','ss','sm','g'], // Remove 'su' to remove searchupc.com
+			array_all: ['de','su','sp','yh','ss','sm','up','g'], // Remove 'su' to remove searchupc.com
 			
 			// This is the first URL for iframe d1.src.
 			first_url: null
@@ -122384,10 +122814,14 @@ function top_window() {
 					// smoopa
 					A9_Snaptell_VSR__smoopa_com();
 					break;
+				case 'up':
+					// upcindex
+					A9_Snaptell_VSR__upcindex_com();
+					break;
 				case 'g':
 					console.log(result);
 					if (result.startpage == false && result.yahoo == false) {
-						A9_Snaptell_VSR__google();
+						//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 					} else {
 						//
 					}
@@ -122442,7 +122876,8 @@ function top_window() {
 								result.yahoo == false &&
 								result.searchupc == false &&
 								result.shopsavvy == false &&
-								result.smoopa == false
+								result.smoopa == false &&
+								result.upcindex == false
 								)
 							{
 								
@@ -122454,6 +122889,7 @@ function top_window() {
 								console.log(result.yahoo == false);
 								console.log(result.searchupc == false);
 								console.log(result.shopsavvy == false);
+								console.log(result.upcindex == false);
 							}
 						}
 					}
@@ -122574,6 +123010,73 @@ function top_window() {
 					} else {
 						
 						result.smoopa = false;
+						
+					}
+					
+					// CALL NEXT
+					A9_Snaptell_VSR__next();
+				}
+			});
+		}
+		// ...
+		// d3g
+		function A9_Snaptell_VSR__upcindex_com() {
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: 'http://www.upcindex.com/' + encodeURIComponent(upc),
+				onload: function(response) {
+					
+					d3f.value = '... upcindex ...';
+					
+					var rs = response.responseText;
+					if (response.status != 200) {
+						
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+						result.upcindex = false;
+						return;
+					}
+					
+					var r = {
+						title: '',
+						url: null
+					};
+					
+					var x;
+					
+					// e.g. My Friend Huggles 3+ Years 2 Ft 9 Inches (ELLA(I&#039;m patient))
+					x = /<p class="lead">[\r\n\t\s]*UPC number \d+ is associated with <strong>([^<]+)<\/strong><\/p>/.exec(rs);
+					if (x) {
+						r.title = __js_clean_html_str(x[1]).trim();
+						r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
+					}
+					
+					r.url = response.finalUrl;
+					
+					//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
+					//~ if (x) {
+						//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
+					//~ } else
+						//~ r.url = response.finalUrl;
+					
+					if (r.title != '') {
+						d3f.value = r.title;
+						d3f.style.border = '4px solid blue';
+						d3f.sm_url = r.url;
+						d3f.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							q[0].value = this.value;
+							q[1].value = this.sm_url;
+							q[0].focus();
+							q[0].blur();
+							q[0].focus();
+						}
+						
+						result.upcindex = true;
+						
+					} else {
+						
+						result.upcindex = false;
 						
 					}
 					
@@ -123024,7 +123527,7 @@ function top_window() {
 						A9_Snaptell_VSR__process({
 							rs:			rs,
 							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
-							url: url
+							url:		url
 						});
 						return;
 					}
@@ -123063,7 +123566,7 @@ function top_window() {
 												'&AMT__serverSide_write__file='	+ md5_url,
 									rs:			response.responseText,
 									debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
-									url: url
+									url:		url
 								},
 								A9_Snaptell_VSR__process
 							);
@@ -126284,7 +126787,7 @@ function mturk_load()
 					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
 					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
 				//~ ) &&
-				1 == 1 &&
+				1 == 0 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
@@ -126403,8 +126906,6 @@ function mturk_load()
 					//var showPermanentSkipButton	//Not Yet Implemented: Creates a button (if pushed) that tells the skipper to always skip this HIT regardless
 					//var autoSkip					//Default false, will add itself to the queue regardless, and attempt to skip unless something tells it otherwise.
 					//var playSound					//Plays a sound if one is found.
-			
-			
 			
 			
 			switch(AMT__Global_Vars.groupId)
@@ -126549,7 +127050,6 @@ function mturk_load()
 			// return
 			return;
 		}
-		
 				
 		/**
 		 * Scripts execute here if window.top == window.self && href == mturk.com
@@ -126557,41 +127057,32 @@ function mturk_load()
 		 * 
 		 * AMT___core_factory().top_window__addEventListener_iframe();
 		 */
-
-		AMT__Global_Vars.isTopWindow = true;
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.initializeTabId();
-		//AMT__Global_Vars.initializeGroupId();
-		AMT__Global_Vars.initializeHitId();
 		AMT__Global_Vars.initialize_return_accept_run_nextTab();
-
-		//var duration = new Date().getTime() - beginRunTime;
 		
-		
-		//~ alert('Runtime took: ' + duration);
-		
-				
 		// Make return/accept button
 		// AMT___returnAndAcceptButton
 		AMT___returnAndAcceptButton();
-
-		
-
 		
 		// Add event listener (will only do this if Iframe is on the page)
-		new AMT___core_factory()
-			.top_window__addEventListener_iframe();
+		new AMT___core_factory().top_window__addEventListener_iframe();
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
 		
-		//~ var r = AMT___core_factory().top_window__addEventListener_iframe();
 		
+		
+		//var duration = new Date().getTime() - beginRunTime;
+		//~ alert('Runtime took: ' + duration);
+		//~ AMT__Global_Vars.isTopWindow = true;
+		//AMT__Global_Vars.initializeGroupId();
+		//~ AMT__Global_Vars.initializeHitId();
 
 		
-		// run jobs in top window
+		// Run jobs in top window
 		top_window();
 		
-		// return
+		// Return
 		return;
 	}
 	
@@ -126603,6 +127094,12 @@ function mturk_load()
 		return;
 	
 	
+	// Set some global vars
+	AMT__Global_Vars.isTopWindow = false;
+	AMT__Global_Vars.initializeGroupId();
+	AMT__Global_Vars.initializeHitId();
+		
+		
 	// This is running at mturkcontent.com or amazonaws.com
 	// If top window or job is ... then always run.
 	if  (
@@ -126610,10 +127107,12 @@ function mturk_load()
 		document.location.href.indexOf('assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE') == -1
 		)
 	{
-		AMT__Global_Vars.isTopWindow = false;
 		AMT__Global_Vars.isPreview = false;
-		AMT__Global_Vars.initializeGroupId();
-		AMT__Global_Vars.initializeHitId();
+		
+		//~ AMT__Global_Vars.isTopWindow = false;
+		//~ AMT__Global_Vars.initializeGroupId();
+		//~ AMT__Global_Vars.initializeHitId();
+		
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
 		console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
@@ -126625,10 +127124,12 @@ function mturk_load()
 	// when job has been accepted.
 	else
 	{
-		AMT__Global_Vars.isTopWindow = false;
 		AMT__Global_Vars.isPreview = true;
-		AMT__Global_Vars.initializeGroupId();
-		AMT__Global_Vars.initializeHitId();
+		
+		//~ AMT__Global_Vars.isTopWindow = false;
+		//~ AMT__Global_Vars.initializeGroupId();
+		//~ AMT__Global_Vars.initializeHitId();
+		
 		// inside of iframe that is not accepted
 		// unaccepted
 		
