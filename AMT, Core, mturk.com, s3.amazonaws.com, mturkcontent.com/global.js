@@ -3087,7 +3087,14 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		//~ var rf = new AMT___requests_factory();
 		//~ rf.scrapy__cancel_job(jobid, 40000);
 }
-//
+/**
+ * database__select
+ * 
+ * @param database_object
+ * @param callback_function
+ * 
+ * @returns
+ */
 AMT___requests_factory.prototype.database__select = function(database_object, callback_function) //
 {
 	var database_object = database_object;
@@ -3105,9 +3112,8 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 			var rs = response.responseText;
 			if (response.status != 200) return;
 			
-			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
+			database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
 			
-			//~ console.log(rs);
 			if (rs == '') //
 				rs = '[]'; // blank!!
 				
@@ -3141,7 +3147,7 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 			
 			if (response.status != 200) return;
 			
-			database_object.responseText = response.responseText;
+			database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
 			
 			var rs = response.responseText;
 			

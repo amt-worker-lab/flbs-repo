@@ -449,10 +449,6 @@ function MT__RUN() {
 		}
 	}
 	
-
-	
-	
-	
 	//
 	//
 	// DHG
@@ -2314,20 +2310,251 @@ function MT__RUN() {
 		a[1].click();
 	}
 	
+	// 
+	// AABOSS
+	// Determine if App Exists in Search Results
+	//
+	s = 'Our goal is&nbsp;to determine if the iOS app provided&nbsp;is also available on Google Play as well as the Amazon Appstore for Android based on icon, title, developer, and screenshots of the app. If the app has a match on the platform in question, please input the matching app\'s&nbsp;Google Play or Amazon&nbsp;URL.&nbsp;';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		
+		
+		GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;}');
+		GM_addStyle('.panel-default {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		
+		
+	}
+	// 
+	// Collectrium
+	// Find the birth date & death date of each artist
+	//
+	s = '<li>Enter the <span style="color:#FF0000;"><strong>YEAR ONLY</strong></span> for the date of birth, date of death</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		
+		
+		GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:600px !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			name: td[1].innerText.trim()
+		};
+		// bad
+		o.name = o.name.replace(/^Attributed to /g, '');
+		o.name = o.name.replace(/^Circle of /g, '');
+		o.name = o.name.replace(/^After /g, '');
+		o.name = o.name.replace(/^Studio of /g, '');
+		o.name = o.name.replace(/^Style of /g, '');
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('textarea');
+		d2.type = 'button';
+		d2.value = '"' + o.name + '" site:blouinartinfo.com';
+		d2.value = o.name + ' site:blouinartinfo.com';
+		d2.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:80px;');
+		document.body.appendChild(d2);
+		/*END ITEMS*/
+		// Actions
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		d2.onblur = function() {
+			Collectrium_blouinartinfo();
+		}
+		
+		
+		// Init.
+		Collectrium_blouinartinfo();
+		
+		/**
+		 * Collectrium_blouinartinfo
+		 * http://www.blouinartinfo.com/blouinsearch?query=william+formby+halsall&pg=1
+		 */
+		function Collectrium_blouinartinfo() {
+			d1.innerText = '';
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				//~ url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d2.value),
+				// ADDED "&fr2=sb-top-search"
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(d2.value)+'&fr2=sb-top-search',
+				yahoo_array: true,
+				callback_function: Collectrium_blouinartinfo_Yahoo
+			});
+		}
+		function Collectrium_blouinartinfo_Yahoo(response) {
+			console.log(response);
+			var rs = response;
+			if (!rs.length) {
+				d1.innerText = '0 results';
+				return;
+			}
+			var first = true;
+			for (var i in rs) {
+				
+				// e.g. (American,1841-1919)
+				var check = /\(([^,]*),([\d]*)-([\d]*)\)/.exec(rs[i][1]);
+				var bgc = (!check) ? 'background-color:aqua;' : '';
+				
+				var dv = document.createElement('div');
+				d1.appendChild(dv);
+				
+				dv.setAttribute('style', 'border-top:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;' + bgc);
+				dv.innerHTML = rs[i][0] + '<br>' + rs[i][1]
+				
+				if (check) {
+					for (var j=1; j<check.length; j++) {
+						if (j == 'length') break;
+						check[j] = check[j].trim();
+						if (check[j] == '')
+							check[j] = 'N/A';
+					}
+					console.log(check);
+					dv.check = check;
+							
+					dv.className = 'exe';
+					dv.onclick = function() {
+						
+						this.style.backgroundColor = 'orange';
+						
+						if  (
+							this.check[1] == 'N/A' &&
+							this.check[2] == 'N/A' &&
+							this.check[3] == 'N/A'
+							)
+						{
+							return false;
+						}
+						
+						// .check
+						document.getElementById('nationality').value	= this.check[1];
+						document.getElementById('birth_date').value		= this.check[2];
+						document.getElementById('death_date').value		= this.check[3];
+						
+						if  (
+							!/^\d{4}$/.exec(this.check[2]) &&
+							this.check[2] != 'N/A'
+							)
+						{
+							// do not submit
+							document.getElementById('birth_date').focus();
+						}
+						else if
+							(
+							!/^\d{4}$/.exec(this.check[3]) &&
+							this.check[3] != 'N/A'
+							)
+						{
+							// do not submit
+							document.getElementById('death_date').focus();
+						} else {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+						}
+					}
+					
+					// Auto
+					// If name is URL, with spaces replaced by dashes. E.g. http://www.blouinartinfo.com/artists/70313-benedetto-ghivarello
+					// And if check==true.
+					if (first) {
+						if  (
+								(
+								new RegExp('http:\\/\\/www\\.blouinartinfo\\.com\\/artists\\/\\d+-' + o.name.replace(/ /g, '-'), 'i').exec(rs[i][0]) ||
+								new RegExp('http:\\/\\/www\\.blouinartinfo\\.com\\/artists\\/' + o.name.replace(/ /g, '-') + '-\\d+', 'i').exec(rs[i][0])
+								) &&
+							rs[i][0].indexOf('/artwork/for-sale') == -1 &&
+							o.name.length > 6
+							)
+						{
+							dv.click();
+						}
+					}
+				}
+				first = false;
+			}
+			var dv = document.createElement('div');
+			dv.setAttribute('style', 'height:1400px;');
+			d1.appendChild(dv);
+		}
+		
+		/**
+		 * Collectrium_blouinartinfo
+		 * http://www.blouinartinfo.com/blouinsearch?query=william+formby+halsall&pg=1
+		 * 
+		 * This is a bad site search.
+		 * e.g. An error occurred while processing your request.
+		 */
+		//~ function Collectrium_blouinartinfo() {
+			//~ d2.innerText = '';
+			//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: 'http://www.blouinartinfo.com/blouinsearch?query='+encodeURIComponent(d2.value)+'&pg=1',
+				//~ onload: function (response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200) {
+						//~ exit(response.status);
+					//~ }
+					//~ 
+					//~ //
+					//~ var r = /<h2><a href="[^"]*">([\d,]+) ARTISTS?<\/a><\/h2>/.exec(rs);
+					//~ if (r) {
+						//~ d2.innerText = r[1] + ' results';
+					//~ }
+					//~ 
+					//~ // William Formby Halsall
+					//~ // (American,&nbsp b. &nbsp1841&nbsp - d.&nbsp1919)
+					//~ var r = /<div class="title"><a href="[^"]+">([^<]+)<\/a><\/div>([^<]+)<div class="summary">&hellip; <a href="http://www.blouinartinfo.com/artists/79177-william-formby-halsall">More&gt;&gt;</a></div>/
+					//~ if (r) {
+						//~ 
+					//~ }
+				//~ }
+			//~ });
+		//~ }
+	}
+	
 	//
 	// Stephanie Hass
 	// Complete Data Set info for Hotels
 	// 
-	// BUG IN EXTENSIONS RELOADER!
+	/**
+	// SELECT amt_hit_id FROM AMT_Alerts.tasks_accomplished where fk_requesterUserId='A1XQS7YLZXG8FE' && date_inserted > UNIX_TIMESTAMP()-1000 && fk_amt_reward=0.25;
+	// assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN'
+	// Convert this task to use a database queue (based on assignment_id).
+	 *
+	 *
+	INSERT INTO AMT_batch_correct.assignment_ids_to_correct SET assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN', requester_name='Stephanie Hass';
+	LOAD DATA LOCAL INFILE '/var/www/html/development/AMT_batch_correct/tasks_accomplished.csv'
+		INTO TABLE AMT_batch_correct.HIT_ids_to_correct
+		FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+		(@hit_id) set hit_id=@hit_id,assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN'; 
 	
-	// Booking
-	// http://www.booking.com/searchresults.en-gb.html?src=searchresults&nflt=&ss_raw=&from_autocomplete=1&ssne=&ssne_untouched=&error_url=http%3A%2F%2Fwww.booking.com%2Fsearchresults.en-gb.html%3Fsid%3D18f755a06163e7bb450749cb84539604%3Bdcid%3D4%3Bcheckin_monthday%3D1%3Bcheckin_year_month%3D2015-9%3Bcheckout_monthday%3D8%3Bcheckout_year_month%3D2015-9%3Bclass_interval%3D1%3Bcsflt%3D%257B%257D%3Bdtdisc%3D0%3Bfrom_autocomplete%3D1%3Bhyb_red%3D0%3Binac%3D0%3Binterval_of_time%3Dundef%3Bnha_red%3D0%3Bno_rooms%3D1%3Boffset%3D0%3Bredirected_from_city%3D0%3Bredirected_from_landmark%3D0%3Bredirected_from_region%3D0%3Breview_score_group%3Dempty%3Bscore_min%3D0%3Bsi%3Dai%252Cco%252Cci%252Cre%252Cdi%3Bsrc%3Dindex%3Bss%3DFamiana%2520Resort%2520%2526%2520Spa%2520vietnam%3Bss_all%3D0%3Bssb%3Dempty%3Bsshis%3D0%26%3B&dcid=4&lang=en-gb&sid=18f755a06163e7bb450749cb84539604&si=ai%2Cco%2Cci%2Cre%2Cdi&ss=Famiana+Resort+%26+Spa+&checkin_monthday=1&checkin_year_month=2015-9&checkout_monthday=8&checkout_year_month=2015-9&no_rooms=1&group_adults=1&group_children=0
-	// /<div class="book-this-room-price">[\r\n\t\s]*<strong>US$1,055.60 for 7 nights<\/strong>[\r\n\t\s]*<\/div>/
-	// /<a href="#" class="search_summary_toggle_button">[\r\n\t\s]*7 nights <em>\(1 Sept - 8 Sept\)<\/em>[\r\n\t\s]*<\/a>/
+	id	int(10) UN PK AI
+	hit_id	varchar(60) 
+	locked_timestamp	int(10) UN 
+	correct_value	text 
+	assignment_id	varchar(60) 
+	 * 
+	 * 
+	 * NOTE: Change all references "Stephanie_Hass_Hotel_Data__correct__next_row();" back to "doSubmit();" when complete. (Done.)
+	 */
+	//
+	// BUG IN EXTENSIONS RELOADER!
 	
 	//s = '<p>2. For pricing, try the official site for the property. Booking.com, Agoda, Hotels.com, Expedia and Kayak are also good resources for star rating.</p>';
 	s = '<p>Using the property\'s&nbsp;official website or TripAdvisor, please find the following data:</p>';
-	s2= '2. The star rating would usually appear under or next to the hotel name. &nbsp;<strong>On TripAdvisor, the green “bubble” rating is the user review rating which does NOT reflect the star level of the hotel.';
+	s2= '2. The star rating would usually appear under or next to the hotel name. &nbsp;**<strong>On TripAdvisor, the green “bubble” rating is the user review rating which does NOT reflect the star level of the hotel.**';
 	if (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2) != -1
@@ -2346,19 +2573,50 @@ function MT__RUN() {
 			country: null,
 			city: td[3].innerText.trim(),
 			state: td[5].innerText.trim(),
-			bold_array: []
+			bold_array: [],
+			
+			debug_correct: false
 		};
 		o.country = (td[7]) ? td[7].innerText.trim() : o.state;
 		o.bold_array = (o.name + ' ' + o.city + ' ' + o.state + ' ' + o.country).clean_string_to_array();
 		
+		// CORRECT
+		o.correct_next_row = /hitId=([^&]+)/.exec(document.location.href)[1];
+		var rf = new AMT___requests_factory();
+		
 		/*BEGIN ITEMS*/
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:33%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1);
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:80px;left:33%;width:33%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1b);
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:80px;left:66%;width:33%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1c);
+		var d2 = document.createElement('div');
+		d2.setAttribute('style','position:absolute;top:0px;left:0%;width:80%;height:80px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d2);
+		var d2b = document.createElement('input');
+		d2b.type = 'button';
+		d2b.value = 'C0';
+		d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:80px;');
+		document.body.appendChild(d2b);
 		/*END ITEMS*/
 		
-		var url = 'http://www.tripadvisor.com/Search?q='+encodeURIComponent(o.name + ' ' + o.country)+'&geo=1&pid=&returnTo=__2F__';
-		//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+		d2.innerText = o.name +'\n'+ o.city +'\n'+ o.state +'\n'+o.country;
+		
+		// CORRECT
+		if (o.debug_correct) {
+			d2b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				new AMT___core_factory().nextTab();
+				Stephanie_Hass_Hotel_Data__correct__write('0'); // Write a 0 to DB !
+			}
+		}
+		
+		// TRIPADVISOR
+		////~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					//~ encodeURIComponent(url) +
 					//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 						//~ {
@@ -2367,14 +2625,400 @@ function MT__RUN() {
 							//~ ]
 						//~ }
 					//~ ));
+		//~ var url = 'http://www.tripadvisor.com/Search?q='+encodeURIComponent(o.name + ' ' + o.country)+'&geo=1&pid=&returnTo=__2F__';	
+		//~ new AMT___site_scrapes().scrape({
+			//~ site: 'http://www.tripadvisor.com/Search',
+			//~ url: url,
+			//~ callback_function: Stephanie_Hass_Hotel_Data
+		//~ });
+		
+		// Init
+		//
+		//
+		Stephanie_Hass_Hotel_Data__booking_com();
+		Stephanie_Hass_Hotel_Data__SP();
+		
+		// Tasks Correction
+		// Nov5 2014
+		// 
+		//
+		//~ Stephanie_Hass_Hotel_Data__correct__select();
+		function Stephanie_Hass_Hotel_Data__correct__select() {
+			rf.database__select(
+				{
+					query: 'AMT_Requester__Stephanie_Hass_select'
+					//encodeStrings: [m, c]
+				},
+				function(response) {
 					
-		new AMT___site_scrapes().scrape({
-			site: 'http://www.tripadvisor.com/Search',
-			url: url,
-			//~ url: u,
-			//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url),
-			callback_function: Stephanie_Hass_Hotel_Data
-		});
+					var hi = response.responseObject.hit_id;
+					
+					// Go to this URL
+					window.location.href = 'https://www.mturkcontent.com/dynamic/hit?assignmentId=3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN&hitId='+
+						encodeURIComponent(hi)+
+						'&workerId=_REDACTED_3_&turkSubmitTo=https%3A%2F%2Fwww.mturk.com';
+				}
+			);
+		}
+		// WRITE
+		// Send to db "rating,rating_url" as 1 field.
+		// Send {hit_id, correct_value}
+		function Stephanie_Hass_Hotel_Data__correct__write(write_value) {
+			
+			if (!write_value) {
+				
+				// This is already proofed
+				var write_value = document.getElementById('star').value + ',' + document.getElementById('starsource').value;
+			}
+			rf.database__write(
+				{
+					query: 'AMT_Requester__Stephanie_Hass_write',
+					encodeStrings: {
+						hit_id:			o.correct_next_row,
+						correct_value:	write_value
+					}
+				},
+				function(response) {
+					console.log(response);
+					if (response.responseText != '') {
+						alert(response.responseText);
+						return;
+					}
+					// next
+					Stephanie_Hass_Hotel_Data__correct__select();
+				}
+			);
+		}
+		
+		/**
+		 * Stephanie_Hass_Hotel_Data__hotels_com_profile
+		 */
+		function Stephanie_Hass_Hotel_Data__hotels_com_profile(div) {
+			var div = div;
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: div.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					// Replace lat/long span for faster regex match (r2)
+					var rs2 = rs.replace(/<span class="hidden geo">((.|\s)*?(?=[\r\n]    <\/span>|$)|$)/g, '').replace(/<\/span>/g, '');
+					
+					//
+					// Wyndham Garden Panama City
+					// 3.5
+					var r = /<div class="hotel-name">[\r\n\t\s]*<h3>([^<]*)<\/h3>[\r\n\t\s]*<div class="star-rating">[\r\n\t\s]*<a class="hcomPopup" href="\/customer_care\/star_rating\.html#star\d" title="([\d\.]+) /.exec(rs); // xx stars?">
+					// HOTEL BAREISS - Baiersbronn
+					var r2= /<div class="vcard item">[\r\n\t\s]*<h1 class="fn org">([^<]+)<\/h1>[\r\n\t\s]*<div class="star-rating">[\r\n\t\s]*<a class="hcomPopup" href="\/customer_care\/star_rating\.html#star\d" title="([\d\.]+) /.exec(rs2);
+					
+					if (r) {
+						div.innerText = __js_clean_html_str(r[1]) +'\n'+ r[2];
+						document.getElementById('star').value = r[2];
+						document.getElementById('starsource').value = response.finalUrl;
+						if (/^http:\/\//.exec(response.finalUrl)) {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+							
+							//~ Stephanie_Hass_Hotel_Data__correct__write();
+						}
+					} else if (r2) {
+						r = r2;
+						div.innerText = __js_clean_html_str(r[1]) +'\n'+ r[2];
+						document.getElementById('star').value = r[2];
+						document.getElementById('starsource').value = response.finalUrl;
+						if (/^http:\/\//.exec(response.finalUrl)) {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+							
+							//~ Stephanie_Hass_Hotel_Data__correct__write();
+						}
+					} else {
+						div.style.border = '4px solid blue';
+						div.innerText += '\n**NO RATING**';
+					}
+				}
+			});
+		}
+		/**
+		 * Stephanie_Hass_Hotel_Data__agoda_profile
+		 */
+		function Stephanie_Hass_Hotel_Data__agoda_profile(div) {
+			var div = div;
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: div.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					//
+					// Daluyon Beach and Mountain Resort
+					// #
+					var r = /<h1 itemprop="name">[\r\n\t\s]*<span id="[^"]*" class="fontxlargeb">([^<]+)<\/span><span id="[^"]*" class="fontxlargeb"><\/span>[\r\n\t\s]*<i class='icon hstars([\d]+) sprite_sec'><\/i>/.exec(rs);
+					
+					if (r) {
+						div.innerText = __js_clean_html_str(r[1]) +'\n'+ r[2];
+						document.getElementById('star').value = r[2];
+						document.getElementById('starsource').value = response.finalUrl;
+						if (/^http:\/\/www\./.exec(response.finalUrl)) {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+							
+							//~ Stephanie_Hass_Hotel_Data__correct__write();
+						}
+					} else {
+						div.style.border = '4px solid blue';
+					}
+				}
+			});
+		}
+		//site:agoda.com Daluyon Beach and Mountain Resort "philippines" inurl:/hotel/
+		function Stephanie_Hass_Hotel_Data__SP_process(object) {
+			
+			console.log(object);
+			
+			var rs = object.rs;
+			var out = object.seed;
+			
+			if (rs.length == 0) {
+				out.innerText = '0 results';
+				return;
+			}
+			
+			// Agoda.com
+			if (out == d1b) {
+				var found = false;
+				// 0=url
+				// 1=body
+				for (var i in rs) {
+					
+					if (/\/\w{2}-\w{2}\//.exec(rs[i][0])) continue; // foreign language versions
+					if (!/\/hotel\//.exec(rs[i][0])) continue; // inurl:/hotel/
+					found = true; // true
+					
+					var dv = document.createElement('div');
+					out.appendChild(dv);
+					
+					dv.setAttribute('style', 'border-top:1px solid #a2a2a2;border-bottom:border-top:1px solid #a2a2a2;');
+					dv.innerHTML = MT__bold(rs[i][1], o.bold_array) + '<br>';
+					dv.innerHTML+= MT__bold(rs[i][0], o.bold_array);
+					dv.url = rs[i][0];
+					dv.className = 'exe';
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						Stephanie_Hass_Hotel_Data__agoda_profile(this);
+					}
+				}
+				if (!found)
+					out.innerText = '0 results';
+			}
+			
+			// Hotels.com
+			if (out == d1c) {
+				var found = false;
+				// 0=url
+				// 1=body
+				for (var i in rs) {
+					
+					if (!/\/ho\d+/.exec(rs[i][0])) continue; // inurl:/ho , e.g. /ho32487623
+					found = true; // true
+					
+					// Remove "Book " from title/body
+					rs[i][1] = rs[i][1].replace(/^Book /, '');
+					
+					var dv = document.createElement('div');
+					out.appendChild(dv);
+					
+					dv.setAttribute('style', 'border-top:1px solid #a2a2a2;border-bottom:border-top:1px solid #a2a2a2;');
+					dv.innerHTML = MT__bold(rs[i][1], o.bold_array) + '<br>';
+					dv.innerHTML+= MT__bold(rs[i][0], o.bold_array);
+					dv.url = rs[i][0];
+					dv.className = 'exe';
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						Stephanie_Hass_Hotel_Data__hotels_com_profile(this);
+					}
+				}
+				if (!found)
+					out.innerText = '0 results';
+			}
+		}
+		function Stephanie_Hass_Hotel_Data__SP() {
+			
+			// Remove & for agoda.com URLs
+			// e.g. "sheraton-maldives-full-moon-resort-spa" site:agoda.com/
+			var u = 'site:agoda.com "'+o.name.replace(/[^ \w]/g, '').replace(/\s+/g, '-')+'" ' + o.country;
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+				seed: d1b,
+				callback_function: Stephanie_Hass_Hotel_Data__SP_process,
+				return_init_object: true
+			});
+			
+			// Remove & for agoda.com URLs
+			// e.g. "sheraton-maldives-full-moon-resort-spa" site:agoda.com/
+			var u = 'site:hotels.com '+o.name+' ' + o.country;
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+				seed: d1c,
+				callback_function: Stephanie_Hass_Hotel_Data__SP_process,
+				return_init_object: true
+			});
+		}
+		
+		function Stephanie_Hass_Hotel_Data__booking_com() {
+			// e.g. Casa+Boutique+Veranera+colombia
+			//
+			//~ var url = 'http://www.booking.com/searchresults.en-gb.html?src=searchresults&nflt=&ss_raw=&from_autocomplete=1&ssne=&ssne_untouched=&error_url=http%3A%2F%2Fwww.booking.com%2Fsearchresults.en-gb.html%3Fsid%3D18f755a06163e7bb450749cb84539604%3Bdcid%3D4%3Bclass_interval%3D1%3Bcsflt%3D%257B%257D%3Bdtdisc%3D0%3Bfrom_autocomplete%3D1%3Bhyb_red%3D0%3Bidf%3D1%3Binac%3D0%3Binterval_of_time%3Dundef%3Bnha_red%3D0%3Bno_rooms%3D1%3Boffset%3D0%3Bredirected_from_city%3D0%3Bredirected_from_landmark%3D0%3Bredirected_from_region%3D0%3Breview_score_group%3Dempty%3Bscore_min%3D0%3Bsi%3Dai%252Cco%252Cci%252Cre%252Cdi%3Bsrc%3Dsearchresults%3Bss%3DCasa%2520Boutique%2520Veranera%2520colombia%3Bss_all%3D0%3Bssb%3Dempty%3Bsshis%3D0%26%3B&dcid=4&lang=en-gb&sid=18f755a06163e7bb450749cb84539604&si=ai%2Cco%2Cci%2Cre%2Cdi&ss='+encodeURIComponent(o.name + ' ' + o.country)+'&checkin_monthday=0&checkin_year_month=0&checkout_monthday=0&checkout_year_month=0&idf=on&no_rooms=1&group_adults=2&group_children=0';
+			var url = 'http://www.booking.com/searchresults.en-gb.html?src=searchresults&nflt=&ss_raw=&from_autocomplete=1&ssne=&ssne_untouched=&error_url=&dcid=4&lang=en-gb&sid=18f755a06163e7bb450749cb84539604&si=ai%2Cco%2Cci%2Cre%2Cdi&ss='+encodeURIComponent(o.name + ' ' + o.country)+'&checkin_monthday=0&checkin_year_month=0&checkout_monthday=0&checkout_year_month=0&idf=on&no_rooms=1&group_adults=2&group_children=0';
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					
+					d1.innerText = '';
+					
+					
+					
+					// THIS IS THE SEARCH PAGE.
+					// IT DOES NOT SEEM TO WORK... INSTEAD
+					// ALL SEARCHES ARE FORWARDED TO A PROFILE
+					// PAGE.
+					//
+					
+					// /hotel/co/casa-gloria.en-gb.html?sid=18f755a06163e7bb450749cb84539604;dcid=4;origin=disamb;srhash=1677598958;srpos=2
+					// Hotel Casa Gloria Boutique
+					// (3,4)
+					// Cartagena de Indias, Colombia
+					var r= /<a[\r\n\t\s]*class="destination_name item_name_link"[\r\n\t\s]*href="([^"]+)"[\r\n\t\s]*>([^<]*)<\/a>[\r\n\t\s]*(<i class="[^"]*" title="([\d\.]+) stars?"  ><\/i>[\r\n\t\s]*|)<p class="item_address bigger_item_address">[\r\n\t\s]*([^<]+)/g
+					var m;
+					var found= false;
+					while (m = r.exec(rs)) {
+						found = true;
+						var bgc = (m[1].indexOf('/hotel/') == -1) ? 'background-color:aqua;' : '';
+						if (m.length != 6) {
+							bgc = 'background-color:aqua;';
+						}
+						
+						var url = 'http://www.booking.com' + __js_clean_html_str(m[1]).trim();
+						
+						var dv = document.createElement('div');
+						d1.appendChild(dv);
+						
+						dv.setAttribute('style', 'border-top:1px solid #a2a2a2;' + bgc);
+						dv.innerHTML =  MT__bold(m[2], o.bold_array) + '<br>';
+						if (m.length == 6) // Address
+							dv.innerHTML += 'A:' + MT__bold(m[5], o.bold_array) + '<br>';
+						else
+							dv.innerHTML += 'A:' + MT__bold(m[3], o.bold_array) + '<br>';
+						if (m.length == 6) {
+							dv.innerHTML += 'R:' + m[4] + '<br>';
+							dv.rating = m[4];
+						} else
+							dv.rating = null;
+						dv.innerHTML += 'U:' + MT__bold(url.replace(/^http:\/\/www\.booking\.com/, ''), ['hotel']) + '<br>';
+						dv.profile_url = url;
+						dv.className = 'exe';
+						dv.onclick = Stephanie_Hass_Hotel_Data__click;
+					}
+					
+					// Not Search BUT profile
+					//
+					//
+					//
+					
+					if (!found) {
+						
+						
+						// Elk Mountain Hotel and Restaurant
+						var r = /<span class="fn" id="hp_hotel_name">([^<]*)<\/span>[\r\n\t\s]*<span class="nowrap hp__hotel_ratings">[\r\n\t\s]*<span class="hp__hotel_ratings__stars">[\r\n\t\s]*<i class="[^"]*" title="([\d\.]+)[- ]*star/.exec(rs);
+						if (!r) {
+							d1.innerText = 'Hotel does not have star rating.'
+						}
+						else {
+							
+							// ex hotel/us/elk-mountain-and-restraunt.en-gb.htm
+							var link = /<link rel="canonical" href="(http:\/\/www\.booking\.com\/[^"]+)" \/>/.exec(rs)[1];
+							link = __js_clean_html_str(link).trim();
+							
+							var addr = /<span id="hp_address_subtitle"[^>]*>[\r\n\t\s]*([^<]+)<\/span>/.exec(rs);
+							addr = (addr) ? __js_clean_html_str(addr[1]).trim() : '';
+							
+							var bgc = (link.indexOf('/hotel/') == -1) ? 'background-color:aqua;' : '';
+							
+							var name = __js_clean_html_str(r[1]).trim();
+							var rating = __js_clean_html_str(r[2]).trim();
+							
+							var dv = document.createElement('div');
+							d1.appendChild(dv);
+							
+							dv.setAttribute('style', 'border-top:1px solid #a2a2a2;' + bgc);
+							dv.innerHTML =  MT__bold(name, o.bold_array) + '<br>';
+							dv.innerHTML += 'R:' + rating + '<br>';
+							dv.innerHTML += 'A:' + MT__bold(addr, o.bold_array) + '<br>';
+							dv.rating = rating;
+							
+							dv.innerHTML += 'U:' + MT__bold(link.replace(/^http:\/\/www\.booking\.com/, ''), ['hotel']) + '<br>';
+							dv.profile_url = link;
+							dv.className = 'exe';
+							dv.onclick = Stephanie_Hass_Hotel_Data__click;
+						}
+					}
+				}
+			});
+		}
+		
+		// Click
+		function Stephanie_Hass_Hotel_Data__click(e) {
+			
+			this.style.backgroundColor = 'LightGreen';
+			this.onclick = false; // clear click
+			
+			console.log(this.rating);
+			console.log(this.profile_url);
+			
+			if (!/^[\d\.]+$/.exec(this.rating))
+				return;
+			
+			if (!/^http:\/\/www\./.exec(this.profile_url))
+				return;
+			
+			document.getElementById('star').value = this.rating;
+			document.getElementById('starsource').value = this.profile_url;
+			//~ document.getElementById('starsource').value = 'TA';
+			
+			if (document.getElementById('price') || document.getElementById('pricesource')) {
+				// Get profile
+				// THIS IS IF $ PRICE IS REQUIRED !!!
+				//~ new AMT___site_scrapes().scrape({
+					//~ site: 'TripAdvisor_profile',
+					//~ url: this.profile_url,
+					//~ callback_function: Stephanie_Hass_Hotel_Data__profile,
+					//~ 
+					//~ callback__this__div: this
+				//~ });
+			} else {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				
+				//~ Stephanie_Hass_Hotel_Data__correct__write();
+			}
+		}
 		
 		function Stephanie_Hass_Hotel_Data(object) {
 			
@@ -2443,6 +3087,8 @@ function MT__RUN() {
 					} else {
 						new AMT___core_factory().nextTab();
 						doSubmit();
+						
+						//~ Stephanie_Hass_Hotel_Data__correct__write();
 					}
 				}
 			}
@@ -6915,7 +7561,7 @@ function MT__RUN() {
 		
 		//~ var b = document.getElementsByTagName('b');
 		
-		var a = document.getElementsByTagName('a')[0].href.trim();
+		var a = document.getElementsByTagName('a')[1].href.trim();
 		var p = document.getElementsByTagName('p');
 		var t = document.getElementsByTagName('table');
 		var td= document.getElementsByTagName('td');

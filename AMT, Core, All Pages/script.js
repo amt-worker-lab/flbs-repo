@@ -4883,16 +4883,23 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				var x = document.getElementsByTagName('div');
 				for (var i in x) {if (i == 'length') break; if (x[i].innerText == 'Yes') { el = x[i]; } }
 				if (!el) {
-					clearInterval(intv);
+					
+					// NEVER STOP THE INTERVAL
+					//~ clearInterval(intv);
+					
 					// Go to next stage?
 					return;
 				}
 				
-				console.log('Confirm button is here?');
+				//~ console.log('Confirm button is here?');
 				
 				// Important: Does it say "free"?
-				if (document.body.innerHTML.indexOf('Would you like to make the call? This call is free.') == -1) {
-					
+				// Is this the CONFIRM BUTTON?
+				if  (
+					document.body.innerHTML.indexOf('Would you like to make the call? This call is free.') == -1 ||
+					document.body.innerHTML.indexOf('The application Hangout App is attempting to make a telephone call ') == -1
+					)
+				{	
 					return;
 				}
 					
@@ -4913,8 +4920,9 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				);
 				el.dispatchEvent(myEvt);
 				
-				console.log('Tried to dispatch event.');
-			}.bind(this), 60);
+				//~ console.log('Tried to dispatch event.');
+			}.bind(this), 300);
+			//~ }.bind(this), 60);
 		}
 		ARH.prototype.watch_confirm_btn = function() {
 			console.log('Watch confirm');
@@ -4983,7 +4991,9 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 			}.bind(this), 60);
 		}
-		new ARH().run();
+		//~ new ARH().run();
+		//~ new ARH().run();
+		new ARH().click_confirm_btn();
 		return;
 	}
 	//~ /**
@@ -5431,7 +5441,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 	
 	
 	//
-	// Trevor Faden - Gopi
+	// Trevor Faden - Gopi Parikh - Janet Lee
 	// 
 	//
 	//
@@ -5475,14 +5485,18 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 									//document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
 									document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
 									
-									// SET A TIMEOUT TO CLICK
-									// This is just in case it does not go though. (Bug)
-									setTimeout(function() {
-										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
-									}, 10000);
-									setTimeout(function() {
-										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
-									}, 20000);
+									// Do this here.
+									this.blur();
+									
+									//~ 
+									//~ // SET A TIMEOUT TO CLICK
+									//~ // This is just in case it does not go though. (Bug)
+									//~ setTimeout(function() {
+										//~ document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									//~ }, 10000);
+									//~ setTimeout(function() {
+										//~ document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									//~ }, 20000);
 									
 									//new AMT___core_factory().nextTab();
 									chrome.extension.sendRequest({nextTab: true, option:'tellNextPageThatItIsOkayToRun'},
@@ -5495,8 +5509,8 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 										//squelch response
 									});**/
 
-									//this.focus();
-									this.blur(); // remove focus!
+									//~ //this.focus();
+									//~ this.blur(); // remove focus!
 									
 								}
 							}
