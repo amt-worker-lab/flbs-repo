@@ -255,7 +255,14 @@ function MT__RUN() {
 		document.getElementsByTagName('section')[1].style.position = 'absolute';
 		document.getElementsByTagName('section')[1].style.top = '0';
 		document.getElementsByTagName('section')[1].style.left = '0';
-
+		
+		
+		document.getElementsByTagName('fieldset')[1].style.position = 'absolute';
+		document.getElementsByTagName('fieldset')[1].style.top = '0px';
+		document.getElementsByTagName('fieldset')[1].style.left = '500px';
+		document.getElementsByTagName('fieldset')[1].style.width = '400px';
+		document.getElementsByTagName('fieldset')[1].style.zIndex = '1000';
+		
 		document.getElementsByTagName('section')[2].style.position = 'absolute';
 		document.getElementsByTagName('section')[2].style.top  = '1000px';
 		document.getElementsByTagName('section')[2].style.width = '100px';
@@ -272,14 +279,20 @@ function MT__RUN() {
 
 		
 		
-		document.getElementsByTagName('select')[0].multiple = true;
-		document.getElementsByTagName('select')[0].style.height = '1000px';
+		//document.getElementsByTagName('select')[0].multiple = true;
+		//document.getElementsByTagName('select')[0].style.height = '3000px';
+		document.getElementsByTagName('select')[0].style.width = '300px';
 	
 		document.getElementById('submitButton').style.position = 'absolute';
 		document.getElementById('submitButton').style.top = '800px';
 		document.getElementById('submitButton').style.left = '0';
 		document.getElementById('submitButton').style.width = '100%';
 		document.getElementById('submitButton').style.height = '200px';
+		
+		document.getElementsByTagName('h3')[0].style.position = 'absolute';
+		document.getElementsByTagName('h3')[0].style.top = '2000px';
+		document.getElementsByTagName('h3')[0].style.left = '500px';
+		
 		
 		var selectsDiv = document.createElement('div');
 		selectsDiv.setAttribute('id','selectsDiv');
@@ -288,7 +301,47 @@ function MT__RUN() {
 		selectsDiv.style.top = '100px';
 		selectsDiv.style.left = '500px';
 		selectsDiv.style.zIndex = '1000';
-		selectsDiv.style.width = '70%';
+		selectsDiv.style.width = '60%';
+		
+		var naBut = document.createElement('input');
+		naBut.setAttribute('id','naBut');
+		naBut.setAttribute('style','position:absolute;top:600px;left:0px;width:10%;height:50px;');
+		document.body.appendChild(naBut);
+		naBut.type = 'button';
+		naBut.value = 'N/A'
+		naBut.onclick = function() {
+			document.getElementsByName('Q2Answer')[0].click();
+			this.style.backgroundColor = 'green';
+			tictail_operations_validateAndSubmit()
+		}
+		
+		
+		var menBut = document.createElement('input');
+		menBut.setAttribute('id','menBut');
+		menBut.setAttribute('style','position:absolute;top:650px;left:0px;width:10%;height:50px;');
+		document.body.appendChild(menBut);
+		menBut.type = 'button';
+		menBut.value = 'Women'
+		menBut.onclick = function() {
+			document.getElementsByName('Q2Answer')[1].click();
+			this.style.backgroundColor = 'green';
+			tictail_operations_validateAndSubmit()
+		}
+		
+		
+		var womenBut = document.createElement('input');
+		womenBut.setAttribute('id','womenBut');
+		womenBut.setAttribute('style','position:absolute;top:700px;left:0px;width:10%;height:50px;');
+		document.body.appendChild(womenBut);
+		womenBut.type = 'button';
+		womenBut.value = 'Men'
+		womenBut.onclick = function() {
+			document.getElementsByName('Q2Answer')[2].click();
+			this.style.backgroundColor = 'green';
+			tictail_operations_validateAndSubmit()
+		}
+
+	
 		
 		var categories = tictail_operations_get_all_categories();
 		console.log(categories);
@@ -351,9 +404,16 @@ function MT__RUN() {
 				var size = 1;
 				for(var j = 0; j < categories[i].length; j++) {
 					var option = document.createElement('option');
-					option.value = categories[i][j];
+					option.value = i.replace(/\([\w\W]*/, '') + ' - ' +categories[i][j];
 					option.text = categories[i][j];
 					groupName.appendChild(option);
+					
+					option.onclick = function() {
+						console.log(this.value);
+						document.getElementsByTagName('select')[0].value = this.value;
+						tictail_operations_validateAndSubmit();
+					}
+					
 					size++;
 				}
 				group.size = size;
@@ -365,6 +425,27 @@ function MT__RUN() {
 				col++;
 			}
 
+		}
+		
+		function tictail_operations_validateAndSubmit() {
+			//Make sure at least one of the checkboxes is checked
+			var allCheckboxes = document.getElementsByName('Q2Answer')
+			var isChecked = false;
+			for(var i = 0; i < allCheckboxes.length; i++) {
+				if(allCheckboxes[i].checked == true) {
+					isChecked = true;
+				}
+			}
+			if(isChecked == false) {
+				return;
+			}
+			
+			//Make sure one of the select field boxes is cliccked
+			var selection = document.getElementsByTagName('select')[0].value;
+			if(selection != '' && selection != null && selection != 'select one') {
+				alert('submit');
+				//submit
+			}
 		}
 	}
 	
