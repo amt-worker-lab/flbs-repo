@@ -6289,7 +6289,7 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 		}
 	);
 }
-AMT___POPUP__initializeGlobals();
+//~ AMT___POPUP__initializeGlobals();
 /**
  * function doSubmit() 
  * & global vars

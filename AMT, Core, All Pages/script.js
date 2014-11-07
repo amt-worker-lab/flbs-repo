@@ -22,6 +22,8 @@ var RUN__ALL_PAGES_TEXTAREA__Jordan_Mills = true;
 var RUN__ALL_PAGES_TEXTAREA__Jordan_Mills = false;
 // Matt Tarjeft
 var RUN__ALL_PAGES__Matt_Tarjeft = false;
+// See "* REQUESTER TASKS" below for more tasks.
+var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 
 // scripts
 var RUN__ALL_PAGES_ZOOM = false;
@@ -4839,12 +4841,167 @@ function load()
 	/**
 	 * REQUESTER TASKS
 	 * 
+	 * Andrew Ryan
+	 * Router
+	 * Dan Shaffer
+	 * Adam Montgomery
+	 * 
 	 * NOTES:
 	 * 
 	 * 
 	 * 
 	 */
 	
+	/**
+	 * Andrew Ryan Hangouts
+	 * RUN__ALL_PAGES__Andrew_Ryan_Hangouts
+https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=135569030656&gd={"number":"6072385144"}
+https:// ....>> .googleusercontent.com/gadgets/ifr
+	 */
+	var loc = document.location.href;
+	if (
+			(
+			loc.indexOf('https://hangoutsapi.talkgadget.google.com/hangouts/_/') != -1
+			)
+		&&
+		RUN__ALL_PAGES__Andrew_Ryan_Hangouts
+		)
+	{
+		var ARH = function() {
+		}
+		ARH.prototype.run = function() {
+			
+			console.log('Run');
+			this.watch_close_btn();
+			
+		}
+		ARH.prototype.click_confirm_btn = function() {
+			var intv = setInterval(function() {
+				
+				//~ var el = document.getElementById(':yr.bs');
+				var el = null;
+				var x = document.getElementsByTagName('div');
+				for (var i in x) {if (i == 'length') break; if (x[i].innerText == 'Yes') { el = x[i]; } }
+				if (!el) {
+					clearInterval(intv);
+					// Go to next stage?
+					return;
+				}
+				
+				console.log('Confirm button is here?');
+				
+				// Important: Does it say "free"?
+				if (document.body.innerHTML.indexOf('Would you like to make the call? This call is free.') == -1) {
+					
+					return;
+				}
+					
+				// Still here
+				// Fire event
+				var myEvt = document.createEvent('MouseEvents');
+				myEvt.initEvent(
+				   'mousedown'      // event type
+				   ,true      // can bubble?
+				   ,true      // cancelable?
+				);
+				el.dispatchEvent(myEvt);
+				var myEvt = document.createEvent('MouseEvents');
+				myEvt.initEvent(
+				   'mouseup'      // event type
+				   ,true      // can bubble?
+				   ,true      // cancelable?
+				);
+				el.dispatchEvent(myEvt);
+				
+				console.log('Tried to dispatch event.');
+			}.bind(this), 60);
+		}
+		ARH.prototype.watch_confirm_btn = function() {
+			console.log('Watch confirm');
+			var intv = setInterval(function() {
+				var el = null;
+				var x = document.getElementsByTagName('div');
+				for (var i in x) {if (i == 'length') break; if (x[i].innerText == 'Yes') { el = x[i]; } }
+				//~ var el = document.getElementById(':yr.bs');
+				if (el) {
+					clearInterval(intv);
+					this.click_confirm_btn();
+				} else {
+					return;
+				}
+			}.bind(this), 60);
+		}
+		ARH.prototype.click_close_btn = function() {
+			var intv = setInterval(function() {
+				
+				//~ var el = document.getElementById(':sd.zf');
+				var el = null;
+				var x = document.getElementsByTagName('div');
+				for (var i in x) {if (i == 'length') break; if (x[i].innerText == 'Close') { el = x[i]; } }
+				if (!el) {
+					clearInterval(intv);
+					// Go to next stage
+					// Watch for OK button
+					this.watch_confirm_btn();
+					return;
+				}
+				
+				console.log('Close button is here?');
+				
+				// Still here
+				// Fire event
+				var myEvt = document.createEvent('MouseEvents');
+				myEvt.initEvent(
+				   'mousedown'      // event type
+				   ,true      // can bubble?
+				   ,true      // cancelable?
+				);
+				el.dispatchEvent(myEvt);
+				var myEvt = document.createEvent('MouseEvents');
+				myEvt.initEvent(
+				   'mouseup'      // event type
+				   ,true      // can bubble?
+				   ,true      // cancelable?
+				);
+				el.dispatchEvent(myEvt);
+				
+				console.log('Tried to dispatch event.');
+			}.bind(this), 60);
+		}
+		ARH.prototype.watch_close_btn = function() {
+			console.log('Watch close');
+			var intv = setInterval(function() {
+				//~ var el = document.getElementById(':sd.zf');
+				var el = null;
+				var x = document.getElementsByTagName('div');
+				for (var i in x) {if (i == 'length') break; if (x[i].innerText == 'Close') { el = x[i]; } }
+				if (el) {
+					clearInterval(intv);
+					this.click_close_btn();
+				} else {
+					return;
+				}
+			}.bind(this), 60);
+		}
+		new ARH().run();
+		return;
+	}
+	//~ /**
+	 //~ * Andrew Ryan Hangouts
+	 //~ * RUN__ALL_PAGES__Andrew_Ryan_Hangouts
+//~ https:// ....>> .googleusercontent.com/gadgets/ifr
+	 //~ */
+	//~ var loc = document.location.href;
+	//~ if (
+			//~ (
+			//~ loc.indexOf('.googleusercontent.com/gadgets/ifr') != -1
+			//~ )
+		//~ &&
+		//~ RUN__ALL_PAGES__Andrew_Ryan_Hangouts
+		//~ )
+	//~ {
+		//~ 
+	//~ }
 	/**
 	 * Router block domains list
 	 * http://192.168.1.1/keyword.cgi?id=340797201
@@ -5315,8 +5472,17 @@ function load()
 								//console.log(this.value);
 								if (this.value.length >= 5) {
 									document.getElementById('ctl00_MainContent_MyCaptcha1_TxtCpatcha').onkeyup = function() {};
-								//	document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
+									//document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
 									document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									
+									// SET A TIMEOUT TO CLICK
+									// This is just in case it does not go though. (Bug)
+									setTimeout(function() {
+										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									}, 10000);
+									setTimeout(function() {
+										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									}, 20000);
 									
 									//new AMT___core_factory().nextTab();
 									chrome.extension.sendRequest({nextTab: true, option:'tellNextPageThatItIsOkayToRun'},
@@ -7575,6 +7741,7 @@ function load()
 	
 	/**
 	 * Matt
+	 // Matt
 	 * 
 	 */
 	var loc = document.location.href;
@@ -9343,8 +9510,54 @@ function load__allPages_AMT_combo__btn() {
 /**
  * load__allPages_AMT_combo()
  * 
+ * This function runs when a job is accepted on mturk.com/mturkcontent.com/s3.amazonaws.com.
+ * It is also run in PREVIEW if the button is clicked.
  */
 function load__allPages_AMT_combo() {
+	
+	//
+	// Andrew Ryan
+	//
+	//
+	s = 'The goal of this task is to collect the name, email address, and phone number for the <strong>';
+	if(ih.indexOf(s) != -1)
+	{
+		var td = document.getElementsByTagName('td');
+		var o = {
+			// phone td
+			td_phone: td[7],
+			phone: td[7].innerText.trim()
+		}
+		// Phone
+		o.td_phone.innerHTML = '';
+		var a = document.createElement('a');
+		a.innerText = o.phone;
+		a.setAttribute('style', 'cursor:pointer;');
+		//~ a.href = 'https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=135569030656&gd={"number":"6072385144"}';
+		//~ a.target = '_blank';
+		a.onclick = function(e) {
+			
+			console.log('Clicked phone link. Sending request phone:' + this.innerText);
+			
+			// Load this phone number into the phone number window.
+			// Send a message to the background script.
+			// 
+			chrome.extension.sendRequest({
+				method:'google_hangouts_load_phone',
+				phone_number:this.innerText,
+				details: null,
+				task_name: "Andrew Ryan"
+			});
+			
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		o.td_phone.appendChild(a);
+		
+		
+		
+	}
 	
 	//
 	// Matt Tarjeft

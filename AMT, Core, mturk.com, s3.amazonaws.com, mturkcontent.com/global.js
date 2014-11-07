@@ -3555,6 +3555,30 @@ function AMT___site_scrapes(obj_vars) {
 /**
  * function scrape
  *
+ * Yellow Pages
+ * 
+ * @param options_object					object	
+ * @param options_object.site				string	
+ * @param options_object.url				string	
+ * @param options_object.callback_function	string	
+ * 
+ * Site:
+ * @site
+ * 	http://www.yellowpages.com/search
+ * @site
+ *	https://www.yellowpages.com/whitepages/address
+ * @site
+ *	http://www.healthgrades.com/PROFILE/
+ * @site
+ *	LINKEDIN_PROFILE
+ * 
+ * @returns ...
+ * 
+ * Typically returns ...
+ * @return opts.response.vars.result{} OR results[{rslt}, {rslt}, ... ]
+ * @return opts.response.vars.error?
+ * @return opts.response.vars.error_type?
+ * 
  * TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
  * 
  */
@@ -3562,8 +3586,26 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
 	// Global
 	var opts = options_object;
+	console.log('------------.scrape OPTS-------------');
+	console.log(opts);
 	
 	switch (opts.site) {
+		// TripAdvisor profile page
+		// e.g. 
+		case 'TripAdvisor_profile': 
+			opts.tmp_callback = tripadvisor_profile_page;
+			xhr_get();
+			break;
+		// e.g. http://www.tripadvisor.com/Search?q=Lotte+City+Hotel+Daejeon&geo=1&pid=3826&returnTo=__2F__
+		case 'http://www.tripadvisor.com/Search': 
+			opts.tmp_callback = tripadvisor_search_page;
+			xhr_get();
+			break;
+		// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+		case 'http://www.yellowpages.com/search': 
+			opts.tmp_callback = yp_search;
+			xhr_get();
+			break;
 		case 'https://www.yellowpages.com/whitepages/address':
 			opts.tmp_callback = yp_reverse_addr;
 			xhr_get();
@@ -3573,11 +3615,11 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			xhr_get();
 			break;
 		case 'LINKEDIN_PROFILE':
+			opts.tmp_callback = linkedin_person_profile;
+			xhr_get();
 		//~ case 'https://www.linkedin.com/profile/view?id=':
 		//~ case 'https://www.linkedin.com/pub/':
 		//~ case 'https://www.linkedin.com/in/':
-			opts.tmp_callback = linkedin_person_profile;
-			xhr_get();
 			break;
 	}
 	
@@ -3615,6 +3657,389 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				opts.callback_function(opts);
 			}
 		});
+	}
+	
+	/**
+	 * tripadvisor_profile_page
+	 * 
+	 * e.g. http://www.tripadvisor.com/Hotel_Review-g297887-d6378639-Reviews-Lotte_City_Hotel_Daejeon-Daejeon.html
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function tripadvisor_profile_page() {
+		
+		opts.response.vars = {
+			result: {
+				prices: [],		// objects {price, fees, source}
+				date_ci: null,	// string, check in
+				date_co: null	// string, check out
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		//~ console.log(rs);
+		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
+		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+		
+		if (r) {
+			r = r[1].replace(/\\/g, '\n');
+			console.log(r);
+			
+			// price
+			// e.g. BookingCom, 121, 12
+			var r2 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)\nPF:([^\n]+)/g;
+			var m;
+			while (m = r2.exec(r)) {
+				opts.response.vars.result.prices.push({
+					price:	m[2],
+					fees:	m[3],
+					source:	m[1]
+				});
+			}
+			
+			//~ // price
+			//~ // e.g. BookingCom, 121, 12
+			//~ var r2 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)\nPF:([^\n]+)/.exec(r);
+			//~ var r3 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)/.exec(r);
+			//~ if (r2) {
+				//~ opts.response.vars.result.prices.push({
+					//~ price:	r2[2],
+					//~ fees:	r2[3],
+					//~ source:	r2[1]
+				//~ });
+			//~ } else if (r3) {
+				//~ opts.response.vars.result.prices.push({
+					//~ price:	r2[2],
+					//~ fees:	null,
+					//~ source:	r2[1]
+				//~ });
+			//~ }
+			
+			// dates
+			// e.g. 2014-11-29
+			var r2 = /CI:([\d\-]+)/.exec(r);
+			if (r2) {
+				opts.response.vars.result.date_ci = r2[1];
+			}
+			var r2 = /CO:([\d\-]+)/.exec(r);
+			if (r2) {
+				opts.response.vars.result.date_co = r2[1];
+			}
+			
+			
+		}
+		return true;
+	}
+	/**
+	 * tripadvisor_search_page
+	 * 
+	 * e.g. http://www.tripadvisor.com/Search?q=Lotte+City+Hotel+Daejeon&geo=1&pid=3826&returnTo=__2F__
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function tripadvisor_search_page() {
+		
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText; //console.log(rs);
+		
+		var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
+		if (r) {
+			opts.response.vars.num_search_results = r[1];
+		}
+		
+		// Listings
+		//
+		//
+		
+		var r = /<div class="searchResult ([^ ]*)[^"]*">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		//~ var r = /<div class="searchResult([^"]*)">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//console.log(m);
+			
+			// Type of... Skip "srREVIEWS" type, which are at bottom of page.
+			// Main types are: srLODGING, srEATERY
+			var type_of_searchResult = m[1];
+			console.log(type_of_searchResult);
+			//~ if (type_of_searchResult.indexOf('srREVIEWS') != -1)
+				//~ continue;
+			if (type_of_searchResult == 'srREVIEWS')
+				continue;
+			if (type_of_searchResult == 'srFORUMS')
+				continue;
+			
+			var rslt = {
+				name:			null,	// string
+				address:		null,	// string
+				rating:			null,	// string
+				profile_url:	null,	// string
+				result_type:	null	// string
+			};
+			
+			// result_type
+			rslt.result_type = type_of_searchResult;
+			
+			// href & name
+			// e.g. Lotte City Hotel Daejeon
+			// e.g. /Hotel_Review-g297887-d6378639-Reviews-Lotte_City_Hotel_Daejeon-Daejeon.html
+			//
+			// e.g. <a target="_blank" href="/Restaurant_Review-g806325-d4594024-Reviews-New_Acropol_restaurant-Morogoro_Morogoro_Region.html" onclick="setOneTimeCookie('NORDINAL','B2'); ta.call('ta.servlet.SearchPage.recordSelection', event, this, 'B2', 'EATERY');">\n<b>New Acropol</b> restaurant</a>
+			//
+			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*(<b>[^<]+<\/b>[^<]*)<\/a>/.exec(m[2]);
+			if (r2) {
+				rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
+				rslt.name = __js_clean_html_str(
+					r2[2].replace(/<\/?b>/g, '')
+				);
+			}
+			
+			// address
+			var r2 = /<div class="srAddress inline">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[2]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// rating
+			var r2 = /<span class="rate[^"]*">[\r\n\t\s]*<img class="sprite-ratings" src="[^"]*" alt="([\d\.]+) of 5 stars">[\r\n\t\s]*<\/span>/.exec(m[2]);
+			if (r2) {
+				rslt.rating = r2[1];
+			}
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		return true;
+	}
+	/**
+	 * yp_search
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function yp_search() {
+		
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+			opts.response.vars.num_search_results = 0;
+			return;
+		}
+		
+		var str = '<div id="no-results-main" class="no-results-term-error"><h4>No results found for <strong>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.num_search_results = 0;
+			return; // Quit here
+		}
+		var str = '<header>We did not find any business listings for&nbsp;<strong>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.num_search_results = 0;
+			return; // Quit here
+		}
+		
+		// Distances
+		// distance_from_address_object & dfao_listings
+		//
+		// e.g. if href=>http://www.yellowpages.com/ithaca-ny/mip/wings-over-ithaca-2590867?lid=2590867
+		//{"listingID":"2590867","ypid":"2590867","latitude":42.436546,"longitude":-76.46467,"addressLine1":"335 Pine Tree Rd","city":"Ithaca","state":"NY","zip":"14850","omitAddress":"N","name":"Wings Over Ithaca","distance":2.7685942611732415,"assumedGeoFlag":"","position":4,"rank":4,"impressionID":"4c4aa949-44b2-4a34-a262-71a3f9b438af","srid":"L-webyp-887b5b46-4d90-4eb8-be3a-68ed6c38769f-2590867"}
+		//
+		var r = /YPU *= *\{((.|\s)*?(?=\};|$)|$)/.exec(rs);
+		var distance_from_address_object = null;
+		var dfao_listings = null;
+		if (r) {
+			try {
+				r = JSON.parse('{' + r[1] + '}');
+				if (r) {
+					distance_from_address_object = r;
+					dfao_listings = {};
+					// distance_from_address_object.expandedMapListings is an array of objects
+					if (distance_from_address_object.hasOwnProperty('expandedMapListings') && distance_from_address_object.expandedMapListings.length) {
+						for (var i in distance_from_address_object.expandedMapListings) {
+							var x = distance_from_address_object.expandedMapListings[i];
+							dfao_listings[x.listingID] = x;
+						}
+					}
+				}
+			} catch(e) {
+				console.log(e);
+				console.log('Could not parse coordinates object!');
+			}
+		}
+			
+		
+		//<div class="info"><h3 class="n">
+		var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="media-thumbnail">|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			// Only use the listings that are not ads. For the time being these are listed
+			// as results 1-30. I.e. 1., 2., 3. ... etc.
+			// There may be listings on the page that are ads but these are not currently
+			// listed with the other numerical results.
+			
+			// Skip if does not contain "\d.".
+			//<span class="index">5</span><span class="index-dot">.</span>
+			if (!/<span class="index">\d+<\/span><span class="index-dot">\.<\/span>/.exec(m[1])) continue;
+			
+			
+			var rslt = {
+				name:					null,	// string
+				address:				null,	// string
+				phones:					[],		// array of strings
+				profile_url:			null,	// string
+				distance_from_address:	null,	// float
+				
+				listing_id:				null	// string, private
+			};
+			
+			// href & name
+			// e.g. /ithaca-ny/mip/wings-over-ithaca-2590867?lid=2590867
+			// e.g. LongHorn Steakhouse
+			var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" class="business-name"><span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
+			//~ var r = /<span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
+			if (reg) {
+				rslt.profile_url	= 'http://www.yellowpages.com' + __js_clean_html_str(reg[1]).trim();
+				rslt.name			= __js_clean_html_str(reg[2]).trim();
+				
+				var r2 = /lid=(\d+)/.exec(rslt.profile_url);
+				if (r2) {
+					rslt.listing_id = r2[1];
+					if  (
+						dfao_listings &&
+						dfao_listings.hasOwnProperty(rslt.listing_id) &&
+						dfao_listings[ rslt.listing_id ].hasOwnProperty('distance') &&
+						typeof dfao_listings[ rslt.listing_id ].distance == 'number'
+						)
+					{
+						rslt.distance_from_address = dfao_listings[rslt.listing_id].distance;
+					}
+				}
+			}
+			
+			// address
+			// e.g. <span itemprop="streetAddress" class="street-address">400 N Meadow St</span><span itemprop="addressLocality" class="locality">Ithaca, </span><span itemprop="addressRegion">NY</span>&nbsp;<span itemprop="postalCode">14850</span>
+			var reg = /<p itemscope itemtype="http:\/\/schema\.org\/PostalAddress" itemprop="address" class="adr">((.|\s)*?(?=<\/p>|$)|$)/.exec(m[1]);
+			if (reg) {
+				reg = reg[1];
+				reg = reg.replace(/<[^>]*>/g, ' ');
+				reg = __js_clean_html_str(reg);
+				reg = reg.replace(/\s+/g, ' ');
+				reg = reg.trim();
+				rslt.address = reg;
+			}
+			
+			// phones
+			// <ul class="phones"><li itemprop="telephone" class="phone primary">(607) 273-7110</li></ul>
+			var reg = /<ul class="phones">((.|\s)*?(?=<\/ul>|$)|$)/.exec(m[1]);
+			if (reg) {
+				reg = reg[1];
+				// e.g. (607) 273-7110
+				var r2 = /<li[^>]*>([^<]+)<\/li>/g;
+				var m2;
+				while (m2 = r2.exec(reg)) {
+					rslt.phones.push(
+						__js_clean_html_str(m2[1]).trim()
+					);
+				}
+			}
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		// UPDATE opts.response.vars.num_search_results
+		// It must be greater than 0 at this point!
+		if (opts.response.vars.results.length == 0) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = 'num_search_results==0 but search did not specify 0! Is the scrape regexp broken?';
+			opts.response.vars.num_search_results = 0;
+			return;
+		}
+		else {
+			opts.response.vars.num_search_results = opts.response.vars.results.length;
+		}
+		
+		return true;
+	}
+	/**
+	 * yp_reverse_addr
+	 * 
+	 * @ opts.response
+	 */
+	function yp_reverse_addr() {
+		
+		opts.response.vars = {
+			results: [],
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+		}
+		
+		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
+			
+			//~ console.log(m);
+			
+			var rslt = {
+				title: null,
+				address: null,
+				phone: null
+			};
+			
+			// Title
+			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Address
+			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Phone
+			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.phone = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			//~ console.log(rslt);
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		//~ // Callback final
+		//~ opts.callback_function(opts);
 	}
 	
 	/**
@@ -4206,67 +4631,7 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 		}
 	}
 	
-	/**
-	 * yp_reverse_addr
-	 * 
-	 * @ opts.response
-	 */
-	function yp_reverse_addr() {
-		
-		opts.response.vars = {
-			results: [],
-			error: null,
-			error_type: null
-		}
-		
-		var rs = opts.response.responseText;
-		
-		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
-		if (rs.indexOf(str) != -1) {
-			opts.response.vars.error = true;
-			opts.response.vars.error_type = str;
-		}
-		
-		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
-		var m;
-		while (m = r.exec(rs)) {
-			
-			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
-			
-			//~ console.log(m);
-			
-			var rslt = {
-				title: null,
-				address: null,
-				phone: null
-			};
-			
-			// Title
-			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
-			if (r2) {
-				rslt.title = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			// Address
-			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
-			if (r2) {
-				rslt.address = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			// Phone
-			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
-			if (r2) {
-				rslt.phone = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			//~ console.log(rslt);
-			
-			opts.response.vars.results.push(rslt);
-		}
-		
-		//~ // Callback final
-		//~ opts.callback_function(opts);
-	}
+	
 }
 /**
  * 

@@ -9,7 +9,7 @@
       "all_frames": true
    } ],
    "background": {
-      "scripts": ["eventPage.js"]
+      "scripts": ["eventPage.js", "eventPage_all_pages_local.js"]
    },
    "permissions": [
 		"http://*/",

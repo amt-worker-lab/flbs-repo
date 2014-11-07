@@ -7,11 +7,14 @@
  * @ MT__bold
  * @ AMT__rq
  * @ AMT___global_factory
+ * @ onMessage (message passing from eventPage.js
  * @
  * 
+ * NOTE:
+ * THE FOLLOWING IS REMOVED FROM global.js. This file is addition. There are subtractions in global.js though.
  * 
- * 
- * 
+ * REMOVE THE FOLLOWING function call from root scope (initial call):
+ * AMT___POPUP__initializeGlobals();
  * 
  * 
  */
@@ -167,6 +170,51 @@ function MT__bold(o, arr, options_object) {
 	}
 }
 
+/**
+ * chrome.runtime.onMessage.addListener
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+		
+		console.log('Recieved onMessage request.');
+		console.log(request);
+		
+		/**
+		 * request.google_hangouts_load_phone
+		 * 
+		 * This tab is currently on ... Load the passed in
+		 * phone number into "hidden" div.
+		 * 
+		 * @param	request.google_hangouts_load_phone	string	Phone number
+		 * 
+		 * @returns
+		 */
+		if (request.hasOwnProperty('google_hangouts_load_phone') && document.location.href.indexOf('googleusercontent.com/gadgets/') != -1) {
+			
+			// Put JSON object into a new div with class name 'MakePhoneCommands'
+			var pcDiv = document.createElement('div');
+			pcDiv.setAttribute('class', 'MakePhoneCommands');
+			pcDiv.setAttribute('hasProcessed', false);
+			document.getElementById('ProcessCommandsDebug').appendChild(pcDiv);
+			console.log(request);
+			pcDiv.innerText = JSON.stringify(
+				{
+					callNums: [request.google_hangouts_load_phone],
+					details: request.google_hangouts_details,
+					taskName: request.google_hangouts_task_name
+				}
+			)
+			document.getElementById('ProcessCommands').click();
+			
+			//~ var hidden_div = document.getElementById('MakePhoneCommands');
+			//~ if (hidden_div) {
+				//~ var obj = {
+					//~ callNums: [request.google_hangouts_load_phone]
+				//~ }
+				//~ hidden_div.innerText = JSON.stringify(obj);
+			//~ }
+		}
+	}
+);
 /**
  * AMT__rq
  * 

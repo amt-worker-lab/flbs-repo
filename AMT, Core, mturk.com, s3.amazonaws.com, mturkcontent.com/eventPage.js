@@ -285,9 +285,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			});	
 	}
 	
-
-	
-	
+	/**
+	 * play_single_sound
+	 */
 	if(request.method == "play_single_sound")
 	{
 		AMT___play_single_sound(request.fileName);

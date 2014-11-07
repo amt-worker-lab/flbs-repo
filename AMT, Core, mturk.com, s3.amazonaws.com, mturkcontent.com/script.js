@@ -239,6 +239,141 @@ function MT__bold(o, arr, options_object) {
 function MT__RUN() {
 	//
 	//
+	//
+	//Tictail Operations
+	s = 'Given an image and and a description (not always in English), categorize the product as well as possible.'
+	if(ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,section {margin:0 !important; padding:0 !important;font-size:14px;}');
+		//GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		
+		//document.getElementsByClassName('container')[0].style.margin = '';
+		//document.getElementsByClassName('container')[0].style.padding = '';
+		
+		document.getElementsByClassName('panel panel-primary')[0].style.position = 'absolute';
+		document.getElementsByClassName('panel panel-primary')[0].style.top = '3000px';
+		
+		document.getElementsByTagName('section')[1].style.position = 'absolute';
+		document.getElementsByTagName('section')[1].style.top = '0';
+		document.getElementsByTagName('section')[1].style.left = '0';
+
+		document.getElementsByTagName('section')[2].style.position = 'absolute';
+		document.getElementsByTagName('section')[2].style.top  = '1000px';
+		document.getElementsByTagName('section')[2].style.width = '100px';
+		document.getElementsByTagName('section')[2].style.left = '0px';
+		document.getElementsByTagName('section')[2].style.height = '1000px';
+		
+		document.getElementsByTagName('h3')[0].style.width = '500px';
+		
+		document.getElementsByTagName('p')[2].style.position = 'absolute';
+		document.getElementsByTagName('p')[2].style.top = '0px';
+		document.getElementsByTagName('p')[2].style.left = '500px';
+		document.getElementsByTagName('p')[2].style.width = '700px';
+
+
+		
+		
+		document.getElementsByTagName('select')[0].multiple = true;
+		document.getElementsByTagName('select')[0].style.height = '1000px';
+	
+		document.getElementById('submitButton').style.position = 'absolute';
+		document.getElementById('submitButton').style.top = '800px';
+		document.getElementById('submitButton').style.left = '0';
+		document.getElementById('submitButton').style.width = '100%';
+		document.getElementById('submitButton').style.height = '200px';
+		
+		var selectsDiv = document.createElement('div');
+		selectsDiv.setAttribute('id','selectsDiv');
+		document.body.appendChild(selectsDiv);
+		selectsDiv.style.position = 'absolute';
+		selectsDiv.style.top = '100px';
+		selectsDiv.style.left = '500px';
+		selectsDiv.style.zIndex = '1000';
+		selectsDiv.style.width = '80%';
+		
+		var categories = tictail_operations_get_all_categories();
+		console.log(categories);
+		
+		tictail_operations_build_selects();
+		
+		
+		function tictail_operations_get_all_categories() {
+			var catSelect = document.getElementsByTagName('select')[0];
+			var catGroups = catSelect.getElementsByTagName('optgroup');
+			var allCategories = [];
+			
+			for(var i = 0; i < catGroups.length; i++) {
+				
+				var currentGroup = catGroups[i].label
+				allCategories[currentGroup] = [];
+				var options = catGroups[i].getElementsByTagName('option');
+				for(var j = 0; j < options.length; j++) {
+					allCategories[currentGroup].push(options[j].text);
+				}
+				if(currentGroup == 'Fashion') {
+					allCategories['Fashion(H)'] = [];
+					for(var j = allCategories['Fashion'].length -1; j > 10; j--) {
+						allCategories['Fashion(H)'].push(allCategories['Fashion'].pop());
+					}
+					allCategories['Fashion(Su)'] = [];
+					for(var k = allCategories['Fashion(H)'].length -1; k > 10; k--) {
+						allCategories['Fashion(Su)'].push(allCategories['Fashion(H)'].pop());	
+					}
+				}
+				if(currentGroup == 'Home') {
+					allCategories['Home(O)'] = [];
+					for(var l = allCategories['Home'].length -1; l > 10; l--) {
+						allCategories['Home(O)'].push(allCategories['Home'].pop());
+					}
+				}
+			}
+			
+			
+			return allCategories;
+		}
+		
+		function tictail_operations_build_selects() {
+			//var allWidths = [182,181,148,160,167,156,88,149,153,166,85,79,103,179,237,130,174,61];
+			var col = 0;
+			var currentLeft = 500;
+			for(var i in categories) {
+				var group = document.createElement('select');
+				group.setAttribute('multiple',true);
+				group.setAttribute('id',i);
+				group.setAttribute('style', 'z-index:1000;display:inline;vertical-align:top;')//position:absolute;')//left:'+currentLeft+'px;top:0px');
+				
+				//currentLeft += allWidths[col];
+				
+				
+				var groupName = document.createElement('optgroup');
+				groupName.label = i;
+				group.appendChild(groupName);
+				
+				var size = 1;
+				for(var j = 0; j < categories[i].length; j++) {
+					var option = document.createElement('option');
+					option.value = categories[i][j];
+					option.text = categories[i][j];
+					groupName.appendChild(option);
+					size++;
+				}
+				group.size = size;
+				
+				document.getElementById('selectsDiv').appendChild(group);
+				
+				
+				
+				col++;
+			}
+
+		}
+	}
+	
+
+	
+	
+	
+	//
+	//
 	// DHG
 	// Select images without watermark
 	/**
@@ -2041,6 +2176,14 @@ function MT__RUN() {
 	d2.src = "https://www.google.com/search?q=" + r[2] + " "+ r2[2];
 	}*/
 
+	
+	/**
+	 * SMALL TASKS
+	 * SMALL & SHORT TASKS
+	 * 
+	 * TRY TO PUT THEM HERE
+	 */
+	
 	//
 	// Andy K
 	// 
@@ -2090,8 +2233,183 @@ function MT__RUN() {
 		a[1].click();
 	}
 	
+	//
+	// Stephanie Hass
+	// Complete Data Set info for Hotels
+	// 
+	// BUG IN EXTENSIONS RELOADER!
+	
+	// Booking
+	// http://www.booking.com/searchresults.en-gb.html?src=searchresults&nflt=&ss_raw=&from_autocomplete=1&ssne=&ssne_untouched=&error_url=http%3A%2F%2Fwww.booking.com%2Fsearchresults.en-gb.html%3Fsid%3D18f755a06163e7bb450749cb84539604%3Bdcid%3D4%3Bcheckin_monthday%3D1%3Bcheckin_year_month%3D2015-9%3Bcheckout_monthday%3D8%3Bcheckout_year_month%3D2015-9%3Bclass_interval%3D1%3Bcsflt%3D%257B%257D%3Bdtdisc%3D0%3Bfrom_autocomplete%3D1%3Bhyb_red%3D0%3Binac%3D0%3Binterval_of_time%3Dundef%3Bnha_red%3D0%3Bno_rooms%3D1%3Boffset%3D0%3Bredirected_from_city%3D0%3Bredirected_from_landmark%3D0%3Bredirected_from_region%3D0%3Breview_score_group%3Dempty%3Bscore_min%3D0%3Bsi%3Dai%252Cco%252Cci%252Cre%252Cdi%3Bsrc%3Dindex%3Bss%3DFamiana%2520Resort%2520%2526%2520Spa%2520vietnam%3Bss_all%3D0%3Bssb%3Dempty%3Bsshis%3D0%26%3B&dcid=4&lang=en-gb&sid=18f755a06163e7bb450749cb84539604&si=ai%2Cco%2Cci%2Cre%2Cdi&ss=Famiana+Resort+%26+Spa+&checkin_monthday=1&checkin_year_month=2015-9&checkout_monthday=8&checkout_year_month=2015-9&no_rooms=1&group_adults=1&group_children=0
+	// /<div class="book-this-room-price">[\r\n\t\s]*<strong>US$1,055.60 for 7 nights<\/strong>[\r\n\t\s]*<\/div>/
+	// /<a href="#" class="search_summary_toggle_button">[\r\n\t\s]*7 nights <em>\(1 Sept - 8 Sept\)<\/em>[\r\n\t\s]*<\/a>/
+	
+	//s = '<p>2. For pricing, try the official site for the property. Booking.com, Agoda, Hotels.com, Expedia and Kayak are also good resources for star rating.</p>';
+	s = '<p>Using the property\'s&nbsp;official website or TripAdvisor, please find the following data:</p>';
+	s2= '2. The star rating would usually appear under or next to the hotel name. &nbsp;<strong>On TripAdvisor, the green “bubble” rating is the user review rating which does NOT reflect the star level of the hotel.';
+	if (
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1
+		)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:400px !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			country: null,
+			city: td[3].innerText.trim(),
+			state: td[5].innerText.trim(),
+			bold_array: []
+		};
+		o.country = (td[7]) ? td[7].innerText.trim() : o.state;
+		o.bold_array = (o.name + ' ' + o.city + ' ' + o.state + ' ' + o.country).clean_string_to_array();
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		/*END ITEMS*/
+		
+		var url = 'http://www.tripadvisor.com/Search?q='+encodeURIComponent(o.name + ' ' + o.country)+'&geo=1&pid=&returnTo=__2F__';
+		//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					//~ encodeURIComponent(url) +
+					//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						//~ {
+							//~ headers_array: [
+								//~ 'User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31'
+							//~ ]
+						//~ }
+					//~ ));
+					
+		new AMT___site_scrapes().scrape({
+			site: 'http://www.tripadvisor.com/Search',
+			url: url,
+			//~ url: u,
+			//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url),
+			callback_function: Stephanie_Hass_Hotel_Data
+		});
+		
+		function Stephanie_Hass_Hotel_Data(object) {
+			
+			var rs = object.response.vars;
+			
+			d1.innerText = o.name +'\n'+ o.city +'\n'+ o.state +'\n'+o.country+'\n';
+			
+			// If 0 return
+			if (rs.num_search_results == null || rs.num_search_results == '0') {
+				d1.innerText = '0 results';
+				return;
+			} else {
+				d1.innerText += rs.num_search_results + ' results';
+			}
+			
+			// Here?
+			//~ console.log(object);
+			//~ console.log(rs.results);
+			for (var i in rs.results) {
+				var rslt = rs.results[i];
+				console.log(rslt);
+				var bgc = (rslt.result_type != 'srLODGING') ? 'background-color:aqua;' : '';
+				
+				var dv = document.createElement('div');
+				d1.appendChild(dv);
+				
+				dv.setAttribute('style', 'border-top:1px solid #a2a2a2;' + bgc);
+				dv.innerHTML =  MT__bold(rslt.name, o.bold_array) + '<br>';
+				if (rslt.address != null)
+					dv.innerHTML += MT__bold(rslt.address, o.bold_array) + '<br>';
+				if (rslt.rating != null)
+					dv.innerHTML += 'R:' + rslt.rating + '<br>';
+				if (rslt.profile_url != null)
+					dv.innerHTML += 'U:' + MT__bold(rslt.profile_url.replace(/^http:\/\/www\.tripadvisor\.com/, ''), ['hotel']) + '<br>';
+				dv.rating = rslt.rating;
+				dv.profile_url = rslt.profile_url;
+				dv.className = 'exe';
+				dv.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					this.onclick = false; // clear click
+					
+					console.log(this.rating);
+					console.log(this.profile_url);
+					
+					
+					
+					if (!/^[\d\.]+$/.exec(this.rating))
+						return;
+					if (!/^http:\/\/www\.tripadvisor\.com\//.exec(this.profile_url))
+						return;
+					
+					document.getElementById('star').value = this.rating;
+					document.getElementById('starsource').value = this.profile_url;
+					//~ document.getElementById('starsource').value = 'TA';
+					
+					if (document.getElementById('price') || document.getElementById('pricesource')) {
+						// Get profile
+						// THIS IS IF $ PRICE IS REQUIRED !!!
+						//~ new AMT___site_scrapes().scrape({
+							//~ site: 'TripAdvisor_profile',
+							//~ url: this.profile_url,
+							//~ callback_function: Stephanie_Hass_Hotel_Data__profile,
+							//~ 
+							//~ callback__this__div: this
+						//~ });
+					} else {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				}
+			}
+		}
+		function Stephanie_Hass_Hotel_Data__profile(object) {
+			
+			var rs = object.response.vars.result;
+			//~ console.log(object);
+			//~ console.log(rs);
+			
+			// No price?
+			if (!rs.prices.length) {
+				object.callback__this__div.style.border = '4px solid blue';
+				object.callback__this__div.innerHTML += 'No price';
+				return;
+			}
+			
+			// Prices
+			//~ var x = rs.prices[0];
+			
+			// Dates
+			if (rs.date_ci == '2015-09-01' && rs.date_co == '2015-10-01') {
+				object.callback__this__div.innerHTML += '<b>CI:'+rs.date_ci+'</b><br>';
+				object.callback__this__div.innerHTML += '<b>CO:'+rs.date_co+'</b><br>';
+			} else {
+				object.callback__this__div.innerHTML += 'CI:'+rs.date_ci+'<br>';
+				object.callback__this__div.innerHTML += 'CO:'+rs.date_co+'<br>';
+			}
+			
+			if (rs.prices[0].hasOwnProperty('price') && rs.prices[0].price) {
+				document.getElementById('price').value = rs.prices[0].price;
+				document.getElementById('pricesource').value = 'TA';
+			}
+			
+			for (var i in rs.prices) {
+				var x = rs.prices[i];
+				object.callback__this__div.innerHTML += 'P:<b>'+x.price+'</b><br>';
+				object.callback__this__div.innerHTML += 'F:'+x.fees+'<br>';
+				object.callback__this__div.innerHTML += 'S:'+x.source+'<br>';
+			}
+			
+			document.getElementById('star').focus();
+		}
+	}
 	
 	//
+	// Machine Learning
+	// Are the fields in this screenshot correctly labeled? (yes/no)
 	// This is for the MARK FORM FIELDS job.
 	// 29 Sep 2014
 	// "Are all the labels on this form on the screen and correctly assigned to each field (with tagged matching field labels in black and white in the picture)?"
@@ -2104,6 +2422,125 @@ function MT__RUN() {
 		
 	}
 	
+	//
+	// Scott Sill
+	// Google Finance check
+	// 
+	s = '<li>First make sure the company is still active. &nbsp;In the upper left portion of the screen you should see the company\'s stock&nbsp;closing price and last trading date. &nbsp;<strong><em>If the price is $0.00 or the trading date is well in the past</em></strong>, the company is&nbsp;probably not active. &nbsp;<em><strong>Enter Inactive</strong></em>&nbsp;in&nbsp;the Website address field.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('#submitButton {height:200px;width:100%;}');
+		
+		var a = document.getElementsByTagName('a');
+		
+		var o = {
+			url: a[0].href.trim()
+		}
+		console.log(o);
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:20px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d1);
+		/*END ITEMS*/
+		
+		var q = document.getElementById('web_url');
+		
+		document.getElementById('submitButton').onclick = function() {
+			if (q.value.trim() != '') {
+				document.body.style.backgroundColor = 'LightGreen';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			return false;
+		}
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: o.url,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+				
+				//
+				var r = '<meta itemprop="price"\n        content="0.0000" />';
+				if (rs.indexOf(r) != -1) {
+					q.value = 'Inactive';
+					document.body.style.backgroundColor = 'LightGreen';
+					doSubmit();
+					return;
+				}
+				
+				// Get website
+				// XXXhttp://www.rextv.com/
+				// http%3A%2F%2Fwww.brookfieldofficeproperties.com
+				var found_site = false;
+				var r = /<div class=sfe-section><div class=item>[\r\n\t\s]*<a id=fs-chome href="\/\/www\.google\.com\/url\?source=finance&q=([^&]+)&[^"]*" *>[\r\n\t\s]*(https?:\/\/[^\/]{4,}[^\r\n]*)[\r\n\t\s]*<\/a>[\r\n\t\s]*<\/div>/.exec(rs);
+				if (r) {
+					r = decodeURIComponent(__js_clean_html_str(r[1]).trim());
+					q.value = r;
+					if (r.length > 6)
+						found_site = true;
+				}
+				
+				//Oct 31 - Close
+				var r = /<span class=nwp>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/span>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]).trim();
+					if (found_site && q.value.trim() != '' && r == 'Oct 31 - Close') {
+						document.body.style.backgroundColor = 'LightGreen';
+						doSubmit();
+					}
+					d1.innerText = r;
+				}
+				
+			}
+		});
+		
+	}
+	//
+	// Rishi Mathew
+	// Find the member count for neighborhoods
+	// 
+	s = '	<li>Enter the number of verified neighbors (first bullet point below the map on the right)</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			url: td[1].innerText.trim()
+		}
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: o.url,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+				
+				// 1 or more digits
+				var r = /"id": \d+, "member_count": ([\d]+), "name": /.exec(rs);
+				if (r) {
+					document.getElementById('web_url').value = r[1].trim();
+					doSubmit();
+				}
+			}
+		});
+		
+	}
 	//
 	// David Shefferman
 	// Log the final landing page domain after clicking the link
@@ -6361,7 +6798,8 @@ function MT__RUN() {
 	//
 	// Andrew Ryan
 	// Find the Name/Email of Key People in Specific Companies
-	// Oct25, Add _PROXY_REDACTED_. 
+	// Oct25, Add iframes switching.
+	// Oct30, Add call button click
 	//
 	s = 'The goal of this task is to collect the name, email address, and phone number for the <strong>';
 	if(ih.indexOf(s) != -1)
@@ -6401,6 +6839,7 @@ function MT__RUN() {
 		var t = document.getElementsByTagName('table');
 		var td= document.getElementsByTagName('td');
 		var tr= document.getElementsByTagName('td');
+		var span= document.getElementsByTagName('span');
 		
 		t[1].style.marginTop = '-18px';
 		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);
@@ -6449,6 +6888,10 @@ function MT__RUN() {
 			// scrapyd
 			scrapy_start_urls: [],
 			scrapy_allowed_domains: []
+			
+			//~ // phone span
+			//~ td_phone: td[7],
+			//~ phone: td[7].innerText.trim()
 		}
 		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
 		o.domain = o.domain.replace(/\/[\d\D]*/i, ''); // trailing
@@ -6637,10 +7080,11 @@ function MT__RUN() {
 			// Do not warn about blank fields
 			if (document.getElementById('ReasonForFailure').selectedIndex != 0) {
 				// Warn about non-blank?
+				// And stop submission.
 				var found = false;
 				for (var i in q) {
 					q[i].value = q[i].value.trim();
-					if (q[i].value != '') {
+					if (q[i].value != '' && q[i].name != 'DirectPhone') {
 						q[i].style.border = '2px solid blue';
 						found = true;
 						//~ var c = confirm(q[i].name + ' is not blank.');
@@ -24011,7 +24455,10 @@ function MT__RUN() {
 	// Chios System
 	// Lowe's store search, Home Depot
 	// 
-	//
+	/**
+	 * This is an example of using Street View images.
+	 * https://maps.googleapis.com/maps/api/streetview?size=600x600&location=1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095&heading=-80&key=_GOOGLE_API_KEY_REDACTED_
+	 */
 	s = 'Draw a complete polygon around the target&nbsp;store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s2= 'Draw a complete polygon around all the building(s) of a&nbsp;target&nbsp;mall (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s3= 'Draw a complete polygon around the target&nbsp;dealer (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
@@ -24019,6 +24466,7 @@ function MT__RUN() {
 	s5= 'Draw a complete polygon around the target restaurant&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
 	s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
 	s7= '<li>Draw a complete polygon around the store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	s8= '<li>Draw a complete polygon around the hospital/medical facility&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
@@ -24026,7 +24474,8 @@ function MT__RUN() {
 		ih.indexOf(s4) != -1 ||
 		ih.indexOf(s5) != -1 ||
 		ih.indexOf(s6) != -1 ||
-		ih.indexOf(s7) != -1
+		ih.indexOf(s7) != -1 ||
+		ih.indexOf(s8) != -1
 		)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
@@ -24232,6 +24681,42 @@ function MT__RUN() {
 				d2.src = '';
 			}
 		}
+		
+		/**
+		 * window.onkeypress
+		 */
+		window.addEventListener('keypress', function(e) {
+			
+			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
+      //~ + "charCode: " + e.charCode);
+      
+			var char = String.fromCharCode(e.charCode);
+			
+			if (char == 'z' || char == 'Z') {
+				console.log('Exit:' + char);
+				var x = document.getElementsByTagName('div');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
+						x[i].click();
+						break;
+					}
+				};
+			}
+		}, false);
+		
+		// Zoom map exit button
+		var xintv = setInterval(function() {
+			var x = document.getElementsByTagName('div');
+			for (var i in x) {
+				if (i == 'length') break;
+				if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
+					x[i].style.zoom = 2.4;
+					clearInterval(xintv);
+					break;
+				}
+			};
+		}, 1000);
 	}
 	
 	// Rob Bertholf
@@ -51412,17 +51897,22 @@ qatar,80
 	//~ s = '<li>For the business below, enter the official 10 digit phone number.</li>';
 	//~ s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
-	if (ih.indexOf(s) != -1) {
+	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
+	if  (
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2)!= -1
+		)
+	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 		
-		GM_addStyle('body {margin-top:460px;}');
+		GM_addStyle('body {margin-top:1000px;}');
 		
 		//GM_addStyle('input {width:96%;}');
 		//GM_addStyle('#submitButton {width:96%;height:80px;}');
 		
-		GM_addStyle('.exe:hover {cursor:pointer;background-color:aqua;}');
+		GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
 		
-		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
 		
 		var q  = document.getElementById('Q1Url');
 		var q2 = document.getElementById('Q1Url2');
@@ -51440,12 +51930,16 @@ qatar,80
 		
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;left:0%;top:62px;width:50%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+		d1.setAttribute('style','position:absolute;left:0%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 		document.body.appendChild(d1);
 		// d1b
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;left:50%;top:62px;width:49%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+		d1b.setAttribute('style','position:absolute;left:33%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 		document.body.appendChild(d1b);
+		// d1c
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;left:66%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+		document.body.appendChild(d1c);
 		//
 		d = document.createElement('input');
 		d.setAttribute('id','d2');
@@ -51454,7 +51948,7 @@ qatar,80
 		d2.style.position='absolute';
 		d2.style.top='0px';
 		d2.style.left='0%';
-		d2.style.width='98%';
+		d2.style.width='99%';
 		d2.style.height='30px';
 		//
 		var d2b = document.createElement('input');
@@ -51462,21 +51956,21 @@ qatar,80
 		d2b.style.position='absolute';
 		d2b.style.top='30px';
 		d2b.style.left='0%';
-		d2b.style.width='98%';
+		d2b.style.width='99%';
 		d2b.style.height='30px';
 		/* END ITEMS */
 		
-		// actions
+		// Actions
 		d2.onblur = function() {
 			this.value = this.value.trim();
 			Peter_Heyneman_google_find_phone();
+			Peter_Heyneman_find_phone__YellowPages();
 		}
 		
 		var by_phone = false;
 		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
 			by_phone = true;
 		}
-		
 		if (!by_phone) {
 			var o = {
 				name: b[0].innerText.trim(),
@@ -51505,16 +51999,28 @@ qatar,80
 			
 			if (o.bad_phone.length != 10) alert(o.bad_phone);
 		}
-		
 		console.log(o);
 		
+		// Values
 		d2.value  = o.name;
 		d2b.value = o.locn;
 		
+		// ef
 		var ef = new AMT___events_factory();
 		d2.addEventListener('keydown', ef.keydown__blur_field, true);
 		
-		// global
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 80 // offset top
+		});
+		
+		// global lat long
 		var ll = {};
 		
 		// var skip
@@ -51531,8 +52037,8 @@ qatar,80
 		
 		//
 		// INIT
-		//
-		
+		// Init yellow pages. Wait for Lat/Long for Google & FB.
+		Peter_Heyneman_find_phone__YellowPages();
 		
 		// google places api
 		MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll, false, true);
@@ -51664,9 +52170,9 @@ qatar,80
 						dv.phone = r[i].phone;
 						dv.fblink = r[i].link;
 						dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
-						dv.innerHTML += '<br>likes:'+r[i].likes;
-						dv.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
-						dv.innerHTML += '<br>phone:'+r[i].phone+'<br>';
+						dv.innerHTML += '<br>Like:'+r[i].likes;
+						dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
+						dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
 						//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
 						
 						dv.onclick = function() {
@@ -51698,13 +52204,10 @@ qatar,80
 							}
 						}
 						
-						
-						
 						//~ if (r[i].category) {
 							//~ var x = r[i].category;
 							//~ d1.innerHTML += '<br>'+x;
 						//~ }
-						
 					}
 					
 					if (d1b.innerHTML != '') {
@@ -51713,6 +52216,136 @@ qatar,80
 						d1b.appendChild(dv);
 					}
 				}
+			});
+		}
+		/**
+		 * 
+		 * Peter_Heyneman_find_phone__YellowPages_process
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		 
+		var rslt = {
+			name:					null,	// string
+			address:				null,	// string
+			phones:					[],		// array of strings
+			profile_url:			null,	// string
+			distance_from_address:	null,	// float
+			
+			listing_id:				null	// string, private
+		};
+		*/
+		function Peter_Heyneman_find_phone__YellowPages_process(opts) {
+			
+			console.log(opts);
+			
+			if (!opts || !opts.response || !opts.response.vars) return;
+			
+			if (opts.response.vars.error != null) {
+				d1c.style.backgroundColor = 'pink';
+				return;
+			}
+			
+			var dv = document.createElement('div');
+			dv.setAttribute('style', 'border-bottom:1px solid teal');
+			d1c.appendChild(dv);
+			dv.innerText = opts.response.vars.num_search_results + ' results';
+			
+			if (opts.response.vars.num_search_results == 0) {
+				return;
+			}
+						
+			var c = 0;
+			var found = false;
+			var r = opts.response.vars.results;
+			
+			for (var i in r) {
+				
+				//r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
+				
+				var dist = '-';
+				var dist_bgc = '';
+				if (r[i].distance_from_address) {
+					dist = Math.round(r[i].distance_from_address*100) / 100;
+					if (dist*1 > 4)
+						dist_bgc = 'background-color:aqua;';
+				}
+				
+				// ...
+				var dv = document.createElement('div');
+				d1c.appendChild(dv);
+				
+				dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+				dv.className = 'exe';
+				dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
+				dv.link = r[i].profile_url;
+				dv.innerHTML  = MT__bold(r[i].name, o.name_arr);
+				dv.innerHTML += '('+dist+')<br>';
+				if (r[i].address != null)
+					dv.innerHTML += MT__bold(r[i].address, o.locn_arr);
+				else
+					dv.innerHTML += '-';
+				dv.innerHTML += '<br>P:'+r[i].phones.join(',');
+				
+				dv.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					
+					var p = this.phone;
+					if (p == null) return;
+					
+					//~ if (/[a-z]/i.exec(p)) {
+						//~ q.value = p;
+						//~ q.style.border = '4px solid teal';
+						//~ return;
+					//~ }
+					
+					p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+					
+					q.value = p;
+					if (q2)
+						q2.value = this.link;
+					
+					if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
+						d2.value = 'bad phone!';
+						q.style.border = '4px solid teal';
+						return;
+					}
+				
+					if (p.length == 10 && q.value == p) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				}
+			}
+			
+			if (d1c.innerHTML != '') {
+				var dv = document.createElement('div');
+				dv.setAttribute('style', 'height:1400px;');
+				d1c.appendChild(dv);
+			}
+		}
+		function Peter_Heyneman_find_phone__YellowPages() {
+			
+			d1c.innerHTML = '';
+			
+			var dv = document.createElement('div');
+			d1c.appendChild(dv);
+			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+			dv.innerText = d2.value;
+			
+			// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+			var u = 'http://www.yellowpages.com/search'+
+				'?search_terms='+encodeURIComponent(d2.value)+
+				'&geo_location_terms='+encodeURIComponent(d2b.value);
+				
+			//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+			new AMT___site_scrapes().scrape({
+				site: 'http://www.yellowpages.com/search',
+				url: u,
+				callback_function: Peter_Heyneman_find_phone__YellowPages_process
 			});
 		}
 		//
@@ -77718,12 +78351,727 @@ qatar,80
 	 * Andres Echenique
 	 * Nathan Labat
 	 * Brice Englert
+	 * Carol Chen
+	 * Jordan Burke
 	 * 
 	 * 
-	 * Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
+	 * ......OLD...... Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
 	
+	//
+	// Jordan Burke
+	// Find the Website Address for Companies
+	// 
+	var s = '<p>Find the website address for this company. The company is headquartered in Utah, USA or has a significant office in Utah.</p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			name_short: null,
+			bold_array: []
+		}
+		o.bold_array = o.name.clean_string_to_array();
+		if (o.name.split(' ').length > 2) {
+			o.name_short = o.name.split(' ').slice(0, 2).join(' ');
+		}
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Jordan_Burke_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Jordan_Burke_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Jordan_Burke_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("web_url").value = "N/A";
+			//~ // nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = '"' + o.name + '" utah';
+		d3c.value = (o.name_short) ? '"' + o.name_short + '" utah' : '';
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Jordan_Burke_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Jordan_Burke_company_URL__SP_init();
+				}
+			});
+		}
+		Jordan_Burke_company_URL__load_skips();
+		
+		function Jordan_Burke_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Jordan_Burke_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Jordan_Burke_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Jordan_Burke_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Jordan_Burke_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Jordan_Burke_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
+	//
+	// Carol Chen
+	// Find the Website Address for Companies
+	// 
+	var s = '<p>Find the website address for this company.</p>\n\n<ul>\n	<li>Enter the website address for the <strong>official website </strong>of the company.</li>\n	<li>Include the full address, e.g. http://www.thecheesecakefactory.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>\n</ul>';
+	if (ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			name_short: null,
+			bold_array: []
+		}
+		o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		if (o.bold_array.length > 2) {
+			o.name_short = o.bold_array.slice(0, 2).join(' ');
+		}
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Carol_Chen_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Carol_Chen_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Carol_Chen_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			document.getElementById("web_url").value = "N/A";
+			// nextTab
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = '"' + o.name + '"';
+		d3c.value = (o.name_short) ? '"' + o.name_short + '"' : '';
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Carol_Chen_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Carol_Chen_company_URL__SP_init();
+			
+				}
+			});
+		}
+		Carol_Chen_company_URL__load_skips();
+		
+		function Carol_Chen_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Carol_Chen_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Carol_Chen_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Carol_Chen_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Carol_Chen_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Carol_Chen_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
 	//
 	// Brice Englert
 	// Find the Website Address for Auto Dealers
@@ -94915,7 +96263,8 @@ qatar,80
 	// 
 	// 
 	s = /<h3>Please read the following (tweet|post) and (comment|reply\/mention), and answer the 2 questions below\.<\/h3>[\r\n\t\s]+<p>&nbsp;<b>/;
-	if (s.exec(ih)) {console.log('x');
+	if (s.exec(ih)) {
+		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('img {max-width:200px;}}');
 		GM_addStyle('#submitButton {width:400px;height:80px;margin-top:20px;}}');
@@ -122298,7 +123647,13 @@ function top_window() {
 		// Remove the barcode from page
 		// so that when doing CTRL+F it
 		// won't be a false positive.
-		document.getElementsByTagName('h3')[1].parentNode.removeChild(document.getElementsByTagName('h3')[1]);
+		var h3 = document.getElementsByTagName('h3');
+		if (h3[0] && h3[0].innerText.indexOf('Product barcode value: ') != -1)
+			h3[0].parentNode.removeChild(h3[0]);
+		else if (h3[1] && h3[1].innerText.indexOf('Product barcode value: ') != -1)
+			h3[1].parentNode.removeChild(h3[1]);
+		else if (h3[2] && h3[2].innerText.indexOf('Product barcode value: ') != -1)
+			h3[2].parentNode.removeChild(h3[2]);
 		
 		// ...
 		AMT__Global_Vars.copyInp = upc;
@@ -122582,6 +123937,8 @@ function top_window() {
 		
 		// INIT
 		A9_Snaptell_VSR__next();
+		// LOADS SHOPSAVVY INITIALLY
+		A9_Snaptell_VSR__shopsavvy();
 		
 		//~ // Always do shopsavvy.com
 		//~ A9_Snaptell_VSR__shopsavvy();
@@ -122646,6 +124003,13 @@ function top_window() {
 			GM_xmlhttpRequest({
 				method: "GET",
 				url: urls[0],
+				timeout: 10000,
+				ontimeout: function() {
+					A9_Snaptell_VSR__shopsavvy()
+				},
+				onerror: function() {
+					alert('error shopsavvy');
+				},
 				onload: function(response) {
 					
 					d3d.value = '... shopsavvy ...';
@@ -122839,6 +124203,7 @@ function top_window() {
 					query: upc,
 					callback_error: function() {
 						d2c.style.backgroundColor = 'pink';
+						window.open('https://www.google.com/search?q='+Math.random()+'&ie=UTF-8');
 					},
 					callback_success: function(result_object) {
 						var arr = result_object.results;
@@ -126787,7 +128152,7 @@ function mturk_load()
 					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
 					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
 				//~ ) &&
-				1 == 0 &&
+				1 == 1 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
