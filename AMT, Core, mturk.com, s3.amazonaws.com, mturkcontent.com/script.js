@@ -288,7 +288,7 @@ function MT__RUN() {
 		selectsDiv.style.top = '100px';
 		selectsDiv.style.left = '500px';
 		selectsDiv.style.zIndex = '1000';
-		selectsDiv.style.width = '80%';
+		selectsDiv.style.width = '50%';
 		
 		var categories = tictail_operations_get_all_categories();
 		console.log(categories);
