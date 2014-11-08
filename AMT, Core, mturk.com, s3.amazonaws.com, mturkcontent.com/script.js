@@ -2255,10 +2255,8 @@ function MT__RUN() {
 
 	
 	/**
-	 * SMALL TASKS
-	 * SMALL & SHORT TASKS
+	 * SMALL TASKS...
 	 * 
-	 * TRY TO PUT THEM HERE
 	 */
 	
 	//
@@ -2311,8 +2309,385 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Ward Loving
+	// Look up historical property values according to Zillow
+	// Uses rf.general_functions__numberFormat__numberWithCommas
+	//
+	s = '<fieldset><label>1. Are the subject\'s eyes closed? Select only ONE of the following:</label>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			
+			// Set top of .container 40px so that it avoids R&A button :)?
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;z-index:2;width:100% !important;}'); // width=1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			
+			GM_addStyle('input[type="radio"] {zoom:1.6;cursor:pointer;}');
+			GM_addStyle('fieldset {float:left;width:30%;padding:0 !important;border:1px solid #a2a2a2 !important;cursor:pointer;z-index:5;}');
+			GM_addStyle('fieldset:hover {background-color:LightGreen;}');
+			GM_addStyle('select {height:300px !important;position:absolute;top:-400px;}'); // SET THIS TO NEGATIVE SO THAT SELECT.ONCHANGE DOES NOT .SCROLL TO BOTTOM !!!!
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			// Move image
+			var im = document.getElementsByTagName('img')[0];
+			//~ document.body.appendChild(im);
+			//~ im.setAttribute('style', 'position:absolute;top:0;left:0;z-index:1;');
+			var cont = document.getElementsByClassName('container')[0];
+			cont.insertBefore(im, cont.firstChild); //firstChild
+			im.setAttribute('style', 'float:left;');
+			//~ im.setAttribute('style', 'float:left;width:20%;');
+			// Float first div
+			var dv = cont.getElementsByTagName('div')[0];
+			dv.setAttribute('style', 'float:left;width:76%;');
+			
+			// Clicking a fieldset will toggle the radio.
+			var fs = document.getElementsByTagName('fieldset');
+			for (var i in fs) {
+				if (i == 'length') break;
+				var inp = fs[i].getElementsByTagName('input');
+				if (inp.length != 2) continue;
+				fs[i].onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					var inp = this.getElementsByTagName('input');
+					if (inp[0].checked)
+						inp[1].checked = true;
+					else
+						inp[0].checked = true;
+					
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			}
+			
+			//Change Label's to more abrupt title's
+			var allLabels = document.getElementsByTagName('label');
+			for(i = 0; i < allLabels.length; i +=3) {
+				switch(i) {
+					case 0:
+						allLabels[i].innerText = 'Eyes Closed'
+					break;
+					case 3:
+						allLabels[i].innerText = 'Wearing Glasses'
+					break;					
+					case 6:
+						allLabels[i].innerText = 'Mustache'
+					break;					
+					case 9:
+						allLabels[i].innerText = 'Beard'
+					break;					
+					case 12:
+						allLabels[i].innerText = 'Mouth Open'
+					break;					
+					case 15:
+						allLabels[i].innerText = 'Male'
+					break;
+				}
+			}
+			
+			/*//~ // Set timeout for this stuff to avoid select scrolling.
+			//~ setTimeout(function() {
+			
+			var i = document.getElementsByTagName('select');
+			for (var j in i) {
+				if (j == 'length') break;
+				j[i].setAttribute('style', 'position:absolute;top:-400px;');
+				
+				//~ j[i].addEventListener('click', function(e){
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				//~ }, false);
+				//~ j[i].addEventListener('change', function(e){
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				//~ }, false);
+			}
+			// body.scroll
+			//~ document.body.firstChild.scrollIntoView();*/
+			
+			// Change selects to multiple
+			// And set default value
+			document.getElementsByName('age')[0].multiple = true;
+			document.getElementsByName('age')[0].value = 30;
+			document.getElementsByName('emotion')[0].multiple = true;
+			document.getElementsByName('emotion')[0].value = 'neutral';
+			document.getElementsByName('beauty')[0].multiple = true;
+			document.getElementsByName('beauty')[0].value = 5;
+			
+			// Change inputs to initial
+			//~ var inp = fs[i].getElementsByTagName('input');
+			
+			document.getElementsByName('eyes_closed')[1].checked = true; //N
+			document.getElementsByName('have_glasses')[1].checked = true; //N
+			document.getElementsByName('has_mustache')[1].checked = true; //N
+			document.getElementsByName('has_beard')[1].checked = true; //N
+			document.getElementsByName('mouth_open')[1].checked = true; //N
+			document.getElementsByName('gender')[0].checked = true; //M ???
+			
+			// RESET THIS NOW!!!!
+			GM_addStyle('select {height:300px !important;position:inherit;top:;}'); 
+			
+			// onclick
+			document.getElementById('submitButton').onclick = function() {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+		}
+		new run().f();
+	}
+	// 
+	// Chris Milner
+	// Look up historical property values according to Zillow
+	// Uses rf.general_functions__numberFormat__numberWithCommas
+	//
+	s = '<p>Use Zillow (www.zillow.com) to determine what a property was worth (according to Zillow) at a month in the past.</p>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.run = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-default {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('ins {color:blue;font-weight:bold;}');
+			GM_addStyle('del {color:brown;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				address: td[1].innerText.trim(),
+				date: td[3].innerText.trim(),
+				address_auto_clean: null,
+				bold: null,
+				
+				zpid: null,
+				zillow_response_address: null,
+				url: null
+			};
+			// 4 zip to 5
+			o.address = o.address.replace(/ (\d{4})$/, ' 0$1');
+			// 20060517 //?
+			// 20060524 
+			var x = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(o.date); // mm/dd/yyyy
+			if (!x) {
+				var y = /^(200\d)(\d{2})(\d{2})$/.exec(o.date); // yyyy mm dd
+				x = [
+					'', y[2], y[3], y[1] // '', m, d, y
+				]
+			}
+			o.date = {
+				m: x[1],
+				d: x[2],
+				y: x[3]
+			};
+			o.address_auto_clean = o.address.replace(/[^\w\d]/g, '').toLowerCase();
+			o.bold = o.address.clean_string_to_array();
+			o.url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.address.replace(/\s+/g, '-'))+'_rb/';
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// Init.
+			zillow();
+			/**
+			 * function zillow
+			 */
+			function zillow() {
+				
+				
+				
+				// e.g. http://www.zillow.com/homes/3462-FLAIR-DRIVE-DALLAS-TX-75229_rb/
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'LightGreen';
+							return;
+						}
+						
+						// bad str
+						var badstr = [
+							'No matching homes found; showing homes in the region you searched. Add it to our database by',
+							'We could not find this area. Please check your spelling or enter a valid ZIP code.',
+							'<div><p><strong> Showing:<br\\/><\\/strong>' // "Were you looking for ...[?]"
+						];
+						for (var i in badstr) {
+							if (rs.indexOf(badstr[i]) != -1) {
+								d1.innerText = badstr[i].replace(/<[^>]*>/g, '');
+								document.getElementById('prop_val').value = 'NF';
+								
+								new AMT___core_factory().nextTab();
+								doSubmit();
+								
+								return;
+							}
+						}
+						
+						// Id?
+						//62817646
+						//33 S 2nd St, Wheeler, OR 97147 \- Zillow
+						var r = /<div id="initial-hdp-jsonp-([\d]+)" class="template hide">&nbsp;<!-- \{  "zpid" : "\d+", "propertyType" : "homes", "title" : "([^"]+)"/.exec(rs);
+						if (!r) {
+							// Second type?
+							//430 Mill Pond Dr, Fenton, MI
+							//73969739
+							r = /<h1 class="selected-addr zsg-h3 zsg-content_collapsed">Your search at ([^:]+):<\/h1><article id="zpid_(\d+)" statusType="1" class="property-listing zsg-media"[^>]*>/.exec(rs);
+							if (r) {
+								// Re-order this.
+								r = [
+									'', r[2], r[1]
+								];
+							}
+						}
+						if (r) {
+							o.zpid = r[1];
+							o.zillow_response_address = __js_clean_html_str(r[2]).trim();
+							o.zillow_response_address = o.zillow_response_address.replace(/ \\- [^$]+$/, '');
+							
+							d1.innerHTML = MT__bold(o.zillow_response_address, o.bold) + '<br>';
+							
+							d1.innerHTML += MT___diffString(
+								o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
+								o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case()
+							);
+							//~ var x = MT___diffString2(
+								//~ o.zillow_response_address,
+								//~ o.address
+							//~ );
+							//~ d1.innerHTML += '<br>' + x.n + '<br>' + x.o;
+							
+							d1.onclick = zillow_render;
+							
+							if  (o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase() == o.address_auto_clean && o.address_auto_clean.length > 6) {
+								d1.click();
+							}
+						}
+					}
+				});
+			}
+			/**
+			 * function zillow_render
+			 */
+			function zillow_render(e) {
+				//~ console.log(this);
+				//~ console.log(e);
+				//~ console.log(e.target);
+				this.style.backgroundColor = 'LightGreen';
+				
+				var u = 'http://ppz.zillowstatic.com/hdp_chart/render.json?v=2&h=&zpid='+o.zpid+'&m=1&t=tenYears&jsonp=YUI.Env.JSONP.paparazzi'+o.zpid+'&size=standard&showForecast=true&signedIn=false';
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						var r = new RegExp('YUI\\.Env\\.JSONP\\.paparazzi'+o.zpid+'\\(\\{((.|\\s)*?(?=\\}\\);|$)|$)', '').exec(rs);
+						if (r) {
+							r = '{'+r[1]+'}';
+							r = JSON.parse(r);
+							
+							// e.g. 
+							/**
+								{
+									"y": 139,
+									"x": 612,
+									"xValue": 1415260800000,
+									"yValue": 151997
+								}
+							],
+							"name": "This home"*/
+							// xValue is in milliseconds.
+							// Timestamp, e.g. 11 / 30 / 04 @ 7:00:00am UTC, 12 / 31 / 04 @ 7:00:00am UTC
+							
+							if (!r.hasOwnProperty('paparazziData'))
+								return;
+							r = r.paparazziData;
+							if (!r.length)
+								return;
+							
+							// {}
+							var found_this_home_graph = false;
+							for (var i in r) {
+								
+								if (r[i].name != 'This home')
+									continue;
+								
+								// Must be the home. So find the date then value.
+								// {}
+								for (var j in r[i].data) {
+									
+									var d = r[i].data[j];
+									
+									var dt = new Date(d.xValue); // ms
+									
+									var dt_m = dt.getMonth() + 1;
+									var dt_y = dt.getFullYear();
+									
+									// o.date.(m,d,y)
+									if (dt_m == o.date.m && dt_y == o.date.y) {
+										// Round to the nearest thousand. E.g. 202,342=202,000.
+										var y = Math.round(d.yValue / 1000)*1000;
+										
+										var rf = new AMT___requests_factory();
+										y = rf.general_functions__numberFormat__numberWithCommas(y);
+										document.getElementById('prop_val').value = y;
+										document.getElementById('web_url').value = o.url;
+										
+										new AMT___core_factory().nextTab();
+										doSubmit();
+										
+										found_this_home_graph = true;
+										break;
+										
+									}
+								}
+								
+								// Done here (This home)
+								break;
+							}
+							
+							if (!found_this_home_graph) {
+								d1.innerText = 'No "This Home" on graph.';
+							}
+						}
+						
+					}
+				});
+			}
+			
+		}
+		new run().run();
+	}
+	
+	// 
 	// AABOSS
 	// Determine if App Exists in Search Results
+	// TODO NOT COMPLETE
 	//
 	s = 'Our goal is&nbsp;to determine if the iOS app provided&nbsp;is also available on Google Play as well as the Amazon Appstore for Android based on icon, title, developer, and screenshots of the app. If the app has a match on the platform in question, please input the matching app\'s&nbsp;Google Play or Amazon&nbsp;URL.&nbsp;';
 	if (
@@ -7571,9 +7946,12 @@ function MT__RUN() {
 		t[1].style.marginTop = '-18px';
 		p[p.length - 2].parentNode.removeChild(p[p.length - 2]);
 		
-		t[0].style.width = '16%';
-		//~ t[0].style.maxWidth = '10% !important !important !important !important !important !important !important !important ';
-		t[1].style.width = '16%';
+		// 
+		t[0].style.width = '70%';
+		t[1].style.width = '70%';
+		// DEFAULT
+		//~ t[0].style.width = '16%';
+		//~ t[1].style.width = '16%';
 		
 		// Make td[0]'s display none
 		for (var i in td) {
@@ -7710,29 +8088,30 @@ function MT__RUN() {
 		}
 		
 		/* BEGIN ITEMS */
+		// DEFAULT IS D1=40 D1B=20 D1C=23, IFRAME=83
 		// d1, d1b
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px; left:16%;width:40%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1.setAttribute('style','position:absolute;top:0px; left:70%;width:10%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1);
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:0px;left:56%;width:20%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:10%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1b);
 		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:0px;left:76%;width:23%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		d1c.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 		document.body.appendChild(d1c);
 		// Iframe
 		// Iframes go from ifr__0 to ifr__5
 		// d2 is for other.
 		// xx visibility:hidden;
 		var d2 = document.createElement('iframe');
-		d2.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:9;background-color:#fff;');
+		d2.setAttribute('style','position:absolute;top:300px;left:70%;width:29%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:9;background-color:#fff;');
 		document.body.appendChild(d2);
 		//~ d2.id = 'ifr__0';
 		//
 		var zid = 10;
 		for (var i = 0; i<=5; i++) {
 			var dx = document.createElement('iframe');
-			dx.setAttribute('style','position:absolute;top:300px;left:16%;width:83%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:'+zid+';background-color:#fff;');
+			dx.setAttribute('style','position:absolute;top:300px;left:70%;width:29%;height:500px;border:1px solid blue;sandbox:allow-scripts allow-same-origin;z-index:'+zid+';background-color:#fff;');
 			document.body.appendChild(dx);
 			dx.id = 'ifr__' + i;
 			zid = 9;
@@ -20011,40 +20390,40 @@ function MT__RUN() {
 	// -SimpleSearch
 	// Find YouTube News channels
 	s = 'You will be given a an&nbsp;online news source, such as “http://www.jiji.com”, and your task will be to find it’s official YouTube channel.';
+	s = 'You will be given a online news source, such as “http://www.jiji.com”, and your task will be to find it’s official YouTube channel. ';
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');// !important
-		//~ GM_addStyle('body {position:absolute;top:400px;}');
-		
-		//~ GM_addStyle('form {position:absolute;top:430px;}');
 		
 		GM_addStyle('form {margin-top:10px;}');
 		GM_addStyle('#submitButton {position:absolute;top:0;left:0;height:30px;width:10%;}');
 		
-		//~ GM_addStyle('input {width:60%;}');
-		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
-		//~ GM_addStyle('.container {position:absolute;top:1000px;margin-left:-40px;width:30%;zoom:0.6;}');
-		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
-		
 		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-		
+		GM_addStyle('ul {position:absolute;top:1600px;}');
+		GM_addStyle('input[type="radio"] {zoom:1.4;}');
 		//~ GM_addStyle('hr {border:0;border-bottom:1px solid #a2a2a2;}');
 		
-		// hide 0,1
+		// hide ...
 		// 3,4 = ...
 		var p = document.getElementsByTagName('p');
-		p[0].style.position = 'absolute';
-		p[0].style.top = '1200px';
-		p[1].style.position = 'absolute';
-		p[1].style.top = '1400px';
+		for (var i=0; i<=3; i++) {
+			p[i].style.position = 'absolute';
+			p[i].style.top = (1200 + (i*30)) +'px';
+		}
+		for (var i=5; i<=6; i++) {
+			p[i].style.position = 'absolute';
+			p[i].style.top = (1200 + (i*30)) +'px';
+		}
 		
-		//~ p[2].style.marginTop = '10px !important !important !important !important !important !important';
+		// pre-check 1st radio
+		var x = document.getElementsByName('cats')[0];
+		x.checked = true;
 		
+		var x = /<p><strong>Given this&nbsp;o<\/strong><span style="line-height: 1\.6em;"><strong>fficial website<\/strong> =([^<]+)<\/span>/.exec(ih)[1];
 		var o = {
 			name:		'',
-			website:	document.getElementsByTagName('a')[1].href
-			
-			
+			website:	x
+			//~ website:	document.getElementsByTagName('a')[1].href
 			//~ name:		p[3].innerText.replace(/^Name of news source =/, '').trim(),
 			//~ website:	p[4].innerText.replace(/^Official website =/, '').trim().replace(/\/$/g, '').toLowerCase().replace(/^(https?:\/\/)www*\./i, '$1')
 		}
@@ -20054,11 +20433,11 @@ function MT__RUN() {
 		
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:120px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:300px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		//
 		var d2 = document.createElement('iframe');
-		d2.setAttribute('style','position:absolute;top:520px;width:98%;height:800px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+		d2.setAttribute('style','position:absolute;top:700px;width:98%;height:800px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
 		document.body.appendChild(d2);
 		// flicker...
 		d2.style.visibility = 'hidden';
@@ -20115,27 +20494,24 @@ function MT__RUN() {
 		var q = document.getElementsByName('comment')[0];
 		document.getElementById('submitButton').onclick = function(e) {
 			this.style.backgroundColor = 'LightGreen';
-			if (q.value.trim().length < 10) {
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ return false;
-			} else {
-				doSubmit();
-				//~ e.stopPropagation();
-				//~ e.preventDefault();
-				//~ return false;
+			var cats = document.getElementsByName('cats');
+			if (q.value.trim().length < 10 && cats[0].checked) {
+				return false;
+			}
+			if (!cats[0].checked && !cats[1].checked && !cats[2].checked) {
+				return false;
 			}
 			
-			showNextTab(); // next!
+			//~ showNextTab(); // next!
+			new AMT___core_factory().nextTab();
+			doSubmit();
 			
-			e.stopPropagation();
-			e.preventDefault();
 			return false;
 		}
 		
-		// if accepted add to tabs queue!
-		if (!AMT__Global_Vars.isPreview)
-			addToTabsQ();
+		//~ // if accepted add to tabs queue!
+		//~ if (!AMT__Global_Vars.isPreview)
+			//~ addToTabsQ();
 		
 		// ...
 		// global
@@ -20173,8 +20549,9 @@ function MT__RUN() {
 					var r;
 					
 					//~ r = /<li class="yt-lockup clearfix yt-uix-tile yt-lockup-channel yt-lockup-tile[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+					//~ r = /<li class="yt-lockup clearfix yt-uix-tile yt-lockup-channel yt-lockup-tile[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]*<\/li>|$)|$)/g;
 					
-					r = /<li class="yt-lockup clearfix yt-uix-tile yt-lockup-channel yt-lockup-tile[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]*<\/li>|$)|$)/g;
+					r = /<li><div class="yt-lockup yt-lockup-tile yt-lockup-channel vve-check clearfix yt-uix-tile[^>]*>((.|\s)*?(?=<\/div>[\r\n\t\s]*<\/li>|$)|$)/g;
 					
 					if (!r.exec(rs)) {
 						d1.innerText = '0';
@@ -20183,15 +20560,10 @@ function MT__RUN() {
 						}
 						return;
 					} else if (AMT__Global_Vars.isPreview) {
-						
 						// NOT HERE
 						//~ AMT___Floater.accept();
 						//~ return;
-						
 					}
-					//~ if (AMT__Global_Vars.isPreview) { //DEBUG
-						//~ AMT___Floater.skip();
-					//~ }
 						
 					// ...
 					r.lastIndex = 0;
@@ -20224,10 +20596,20 @@ function MT__RUN() {
 						// /user/ConstructionCitizen OR https://www.youtube.com/channel/UC58rLtNFyCMbdbn8_hTK6ZQ
 						// OR <a class="yt-uix-sessionlink yt-uix-tile-link  spf-link  yt-ui-ellipsis yt-ui-ellipsis-2" dir="ltr" title="Fightline.com » News - Topic" data-sessionlink="ved=CBMQvxs&amp;ei=50CqU7uTIIWH8wb8koDQAg" href="/channel/UCAyFP0tPi1db11Dtircc8gQ">Fightline.com » News - Topic<span class="qualified-channel-title-badge"><img src="https://s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" class="yt-uix-tooltip yt-channel-title-autogenerated" alt="" title="Auto-generated by YouTube"></span></a>
 						m[1] = m[1].replace(/<span class="qualified-channel-title-badge"><img src=[^>]*><\/span>/g, '');
+						
+						// Name & Link
 						r2 = /<a class="[^"]*" dir="ltr" title="([^"]*)" data-sessionlink="[^"]*" href="([^"]*)">[^<]*<\/a>/.exec(m[1]);
 						if (r2) {
-							chan.lk = 'https://www.youtube.com' + __js_clean_html_str(r2[2]).trim(); //NOT !!! toLowerCase
+							chan.lk = 'https://www.youtube.com' + __js_clean_html_str(r2[2]).trim();
 							chan.nm = __js_clean_html_str(r2[1]).trim();
+						}else{
+							// /user/OurBribieIsland
+							// OurBribie.com
+							r2 = /<a href="([^"]+)" class="yt-uix-tile-link yt-ui-ellipsis yt-ui-ellipsis-2 yt-uix-sessionlink     spf-link  g-hovercard"[^>]*>([^<]+)<\/a>/.exec(m[1]);
+							if (r2) {
+								chan.lk = 'https://www.youtube.com' + __js_clean_html_str(r2[1]).trim();
+								chan.nm = __js_clean_html_str(r2[2]).trim();
+							}
 						}
 						
 						// VERIFIED?
@@ -20241,7 +20623,7 @@ function MT__RUN() {
 						//Active 5 days ago
 						//99 videos
 						//~ r2 = /<div class="yt-lockup-meta"><ul class="yt-lockup-meta-info"><li>[\r\n\t\s]*by <a href="[^"]*" class="[^"]*" data-sessionlink="[^"]*" dir="ltr" data-ytid="[^"]*" data-name="">([^<]*)<\/a><\/li><li>([^<]*)<\/li><li>([^<]*)<\/li><\/ul><\/div>/.exec(m[1]);
-						r2 = /<ul class="yt-lockup-meta-info"><li>[\r\n\t\s]*by <a href="[^"]*" class="[^"]*" data-sessionlink="[^"]*" dir="ltr" data-ytid="[^"]*" data-name="">([^<]*)<\/a><\/li><li>([^<]*)<\/li>(<li>([^<]*)<\/li>|)/.exec(m[1]);
+						r2 = /<ul class="yt-lockup-meta-info"><li>[\r\n\t\s]*by <a href="[^"]*"[^>]*>([^<]*)<\/a><\/li><li>([^<]*)<\/li>(<li>([^<]*)<\/li>|)/.exec(m[1]);
 						if (r2) {
 							chan.by = __js_clean_html_str(r2[1]).trim();
 							chan.av = __js_clean_html_str(r2[2]).trim().replace(/^Active */, '');
@@ -20287,7 +20669,7 @@ function MT__RUN() {
 						x.setAttribute('style', 'width:40%;background-color:#dedeed');
 						chan.ds = x;
 						
-						r2 = /<span class="yt-subscription-button-subscriber-count-unbranded-horizontal" title="[^"]*">([^<]*)<\/span>/.exec(m[1]);
+						r2 = /<span class="yt-subscription-button-subscriber-count-unbranded-horizontal" title="[^"]*"[^>]*>([^<]*)<\/span>/.exec(m[1]);
 						if (r2) {
 							chan.sb = __js_clean_html_str(r2[1]).trim();
 						}
@@ -20300,7 +20682,8 @@ function MT__RUN() {
 						x.yt_link = chan.lk;
 						x.div_desc = chan.ds;
 						x.innerHTML = 
-							bold_name + ' -BY- ' + chan.by + '<br>' +
+							'Name:' + bold_name + '<br>' +
+							'By:' + chan.by + '<br>' +
 							'Active:'+chan.av + '<br>' +
 							'Videos:'+chan.vd + '<br>' +
 							'Subscr:'+chan.sb + '<br>' +
@@ -20316,11 +20699,13 @@ function MT__RUN() {
 							this.onclick = function() {
 								
 								// UPDATE THIS.ONCLICK !!
-								this.onclick = function() {}
+								this.onclick = function() {};
 								
 								this.style.backgroundColor = 'LightGreen';	
 								q.value += ', ' + this.yt_link;
 								q.value = q.value.replace(/^, /, '');
+								
+								document.getElementsByName('cats')[0].checked = true;
 								
 								document.getElementById('submitButton').focus();
 							}
@@ -20374,6 +20759,7 @@ function MT__RUN() {
 		function Sergey_Schmidt_find_youtube__profile(div) {
 			
 			var u = div.yt_link + '/about'; // /ABOUT !
+			var div = div;
 			
 			GM_xmlhttpRequest({
 				method: "GET",
@@ -20381,12 +20767,12 @@ function MT__RUN() {
 				onload: function (response) {
 					var rs = response.responseText;
 					
-					if (response.status != 200) {
-						if (AMT__Global_Vars.isPreview) {
-							AMT___Floater.skip();
-						}
-						exit(response.status);
-					}
+					//~ if (response.status != 200) {
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+						//~ exit(response.status);
+					//~ }
 					
 					var r;
 					
@@ -20400,10 +20786,10 @@ function MT__RUN() {
 					if (r) {
 						var desc = r[1].replace(/<[^>]*>/g, '');
 						desc = __js_clean_html_str(desc);
-						desc = desc   .replace(/<[^>]*>/g, '');
-						desc = desc   .replace(/[\t\s]+/g, ' ');
-						desc = desc   .replace(/[\r\n]+/g, '\n');
-						desc = desc   .substr(0,400);
+						desc = desc.replace(/<[^>]*>/g, '');
+						desc = desc.replace(/[\t\s]+/g, ' ');
+						desc = desc.replace(/[\r\n]+/g, '\n');
+						desc = desc.substr(0,400);
 						
 						div.div_desc.innerText = desc;
 					} else {

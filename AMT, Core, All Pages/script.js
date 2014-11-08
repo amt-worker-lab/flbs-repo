@@ -4897,7 +4897,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				// Is this the CONFIRM BUTTON?
 				if  (
 					document.body.innerHTML.indexOf('Would you like to make the call? This call is free.') == -1 ||
-					document.body.innerHTML.indexOf('The application Hangout App is attempting to make a telephone call ') == -1
+					document.body.innerHTML.indexOf('is attempting to make a telephone call ') == -1
 					)
 				{	
 					return;

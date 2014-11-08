@@ -1022,6 +1022,19 @@ function FindObject(recordName,matchString, timeCutOff) {
  * 
  */
 /**
+ * .string_to_mixed_case
+ */
+String.prototype.string_to_mixed_case = function(options) {
+	var s = this.toString();
+	s = s.replace(
+		/(^| )([a-z])/g,
+		function(match0, match1, match2) {
+			return match1 + match2.toUpperCase();
+		}
+	);
+	return s;
+}
+/**
  * .clean_string_to_array
  * 
  * @param options						object
