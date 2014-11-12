@@ -2329,7 +2329,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			
 			GM_addStyle('input[type="radio"] {zoom:1.6;cursor:pointer;}');
-			GM_addStyle('fieldset {float:left;width:30%;padding:0 !important;border:1px solid #a2a2a2 !important;cursor:pointer;z-index:5;}');
+			GM_addStyle('fieldset {float:left;width:15%;padding:0 !important;border:1px solid #a2a2a2 !important;cursor:pointer;z-index:5;}');
 			GM_addStyle('fieldset:hover {background-color:LightGreen;}');
 			GM_addStyle('select {height:300px !important;position:absolute;top:-400px;}'); // SET THIS TO NEGATIVE SO THAT SELECT.ONCHANGE DOES NOT .SCROLL TO BOTTOM !!!!
 			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
@@ -2351,67 +2351,88 @@ function MT__RUN() {
 			for (var i in fs) {
 				if (i == 'length') break;
 				var inp = fs[i].getElementsByTagName('input');
-				if (inp.length != 2) continue;
-				fs[i].onclick = function(e) {
-					this.style.backgroundColor = 'LightGreen';
-					var inp = this.getElementsByTagName('input');
-					if (inp[0].checked)
-						inp[1].checked = true;
-					else
-						inp[0].checked = true;
-					
-					e.stopPropagation();
-					e.preventDefault();
-					return false;
+				
+				if (inp.length == 2) {
+					fs[i].onclick = function(e) {
+						this.style.backgroundColor = 'LightGreen';
+						var inp = this.getElementsByTagName('input');
+						if (inp[0].checked)
+							inp[1].checked = true;
+						else
+							inp[0].checked = true;
+						
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+				}
+				
+				//
+				console.log(fs[i]);
+				console.log(i);
+				//
+				//~ if (i == 5) {
+				if (i % 3 == 0) {
+					fs[i].style.clear = 'both';
 				}
 			}
 			
 			//Change Label's to more abrupt title's
 			var allLabels = document.getElementsByTagName('label');
-			for(i = 0; i < allLabels.length; i +=3) {
-				switch(i) {
-					case 0:
-						allLabels[i].innerText = 'Eyes Closed'
-					break;
-					case 3:
-						allLabels[i].innerText = 'Wearing Glasses'
-					break;					
-					case 6:
-						allLabels[i].innerText = 'Mustache'
-					break;					
-					case 9:
-						allLabels[i].innerText = 'Beard'
-					break;					
-					case 12:
-						allLabels[i].innerText = 'Mouth Open'
-					break;					
-					case 15:
-						allLabels[i].innerText = 'Male'
-					break;
+			for(i = 0; i < allLabels.length; i ++) {
+				switch(allLabels[i].innerText.trim()) {
+					case '1. Are the subject\'s eyes closed? Select only ONE of the following:':
+						allLabels[i].innerText = 'Eyes Closed';
+						break;
+					case '2. Does the person shown wearing glasses? Select only ONE of the following:':
+						allLabels[i].innerText = 'Wearing Glasses';
+						break;					
+					case '3. Does the person shown have a mustache? Select only ONE of the following:':
+						allLabels[i].innerText = 'Mustache';
+						break;					
+					case '4. Does the person shown have a beard? Select only ONE of the following:':
+						allLabels[i].innerText = 'Beard';
+						break;					
+					case '5. Does the person shown have their mouth open? Select only ONE of the following:':
+						allLabels[i].innerText = 'Mouth Open';
+						break;					
+					case '6. Is the person shown male or female? Select only ONE of the following:':
+						allLabels[i].innerText = 'Gender';
+						break;
+					case '7. Please guess the age of the person shown in the picture. You are not expected to know or research the exact age of the person. Select only ONE of the following.':
+						allLabels[i].innerText = 'Age';
+						break;
+					case '8. Please select the emotion of the person shown in the picture. Select only ONE of the following.':
+						allLabels[i].innerText = 'Emotion';
+						break;
+					case '9. Please rate the beauty or handsomeness of the person shown in the picture. A "10" would represent the most beautiful people and "1" the least attractive. Select only ONE of the following.':
+						allLabels[i].innerText = 'Beauty/Handsomeness';
+						break;
 				}
 			}
-			
-			/*//~ // Set timeout for this stuff to avoid select scrolling.
-			//~ setTimeout(function() {
-			
-			var i = document.getElementsByTagName('select');
-			for (var j in i) {
-				if (j == 'length') break;
-				j[i].setAttribute('style', 'position:absolute;top:-400px;');
-				
-				//~ j[i].addEventListener('click', function(e){
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					//~ return false;
-				//~ }, false);
-				//~ j[i].addEventListener('change', function(e){
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					//~ return false;
-				//~ }, false);
-			}
-			// body.scroll
-			//~ document.body.firstChild.scrollIntoView();*/
+			//~ var allLabels = document.getElementsByTagName('label');
+			//~ for(i = 0; i < allLabels.length; i +=3) {
+				//~ switch(i) {
+					//~ case 0:
+						//~ allLabels[i].innerText = 'Eyes Closed'
+					//~ break;
+					//~ case 3:
+						//~ allLabels[i].innerText = 'Wearing Glasses'
+					//~ break;					
+					//~ case 6:
+						//~ allLabels[i].innerText = 'Mustache'
+					//~ break;					
+					//~ case 9:
+						//~ allLabels[i].innerText = 'Beard'
+					//~ break;					
+					//~ case 12:
+						//~ allLabels[i].innerText = 'Mouth Open'
+					//~ break;					
+					//~ case 15:
+						//~ allLabels[i].innerText = 'Gender'
+					//~ break;
+				//~ }
+			//~ }
 			
 			// Change selects to multiple
 			// And set default value
