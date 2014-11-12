@@ -8161,6 +8161,11 @@ function MT__RUN() {
 			document.getElementsByName('EmailAddress')[0],
 			document.getElementsByName('DirectPhone')[0]
 		];
+		for(var i = 0; i < q.length; i++) {
+			if(q[i].value == 'NULL')
+				q[i].value = '';
+		}
+		
 		// Placeholders
 		q[0].placeholder = 'F';
 		q[1].placeholder = 'L';
