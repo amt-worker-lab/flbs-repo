@@ -8226,7 +8226,7 @@ function MT__RUN() {
 		
 		// submitButton
 		document.getElementById('submitButton').onclick = function() {
-			for(var i = 0; i < q[i].length; i++) {
+			for(var i = 0; i < q.length; i++) {
 				if(q[i].value == '') {
 					q[i].value = 'NULL';
 				}
