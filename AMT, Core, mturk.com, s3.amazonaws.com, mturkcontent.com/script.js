@@ -8223,6 +8223,8 @@ function MT__RUN() {
 		document.getElementById('ReasonForFailure').onchange = function() {
 			q[0].focus();
 		}
+		document.getElementById('ReasonForFailure').multiple = true;
+		document.getElementById('ReasonForFailure').size = 5;
 		
 		// submitButton
 		document.getElementById('submitButton').onclick = function() {
@@ -8240,24 +8242,12 @@ function MT__RUN() {
 				// And stop submission.
 				var found = false;
 				for (var i in q) {
-					q[i].value = q[i].value.trim();
-					if(q[i].value == '') {
-						q[i].value = 'NULL';
-					}
-					if (q[i].value != '' && q[i].name != 'DirectPhone') {
-						q[i].style.border = '2px solid blue';
-						found = true;
-						//~ var c = confirm(q[i].name + ' is not blank.');
-						//~ if (c == true) {
-							//~ // do nothing
-							//~ 
-						//~ } else {
-							//~ return false;
-						//~ }
-						//~ break;
-					} else {
-						q[i].style.border = '';
-					}
+					//~ if (q[i].value != '' && q[i].name != 'DirectPhone') {
+						//~ q[i].style.border = '2px solid blue';
+						//~ found = true;
+					//~ } else {
+						//~ q[i].style.border = '';
+					//~ }
 				}
 				if (found) {
 					return false;
