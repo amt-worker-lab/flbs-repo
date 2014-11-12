@@ -8108,6 +8108,17 @@ function MT__RUN() {
 			return;
 		}
 		
+		window.addEventListener('keydown', function(e) {
+			console.log(e.keyCode)
+			if (e == 13) {
+				document.getElementById('submitButton').click();
+				event.preventDefault();
+				event.stopPropogation();
+				return false;
+			}
+		}, true);
+		
+		
 		/* BEGIN ITEMS */
 		// DEFAULT IS D1=40 D1B=20 D1C=23, IFRAME=83
 		// d1, d1b
@@ -8215,6 +8226,12 @@ function MT__RUN() {
 		
 		// submitButton
 		document.getElementById('submitButton').onclick = function() {
+			for(var i = 0; i < q[i].length; i++) {
+				if(q[i].value == '') {
+					q[i].value = 'NULL';
+				}
+			}
+			
 			
 			// Fail
 			// Do not warn about blank fields
@@ -8249,10 +8266,12 @@ function MT__RUN() {
 			// Success
 			// Warn about blank fields
 			else {
+
 				
 				for (var i in q) {
 					q[i].value = q[i].value.trim();
-					if (q[i].value == '' && q[i].name != 'DirectPhone') {
+					
+					if ((q[i].value == '' || q[i].value == 'NULL') && q[i].name != 'DirectPhone') {
 						var c = confirm(q[i].name + ' is blank.\nPress OK to ignore and submit task.');
 						if (c == true) {
 							// do nothing
