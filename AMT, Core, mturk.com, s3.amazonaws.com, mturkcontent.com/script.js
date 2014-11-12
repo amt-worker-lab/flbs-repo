@@ -8162,8 +8162,16 @@ function MT__RUN() {
 			document.getElementsByName('DirectPhone')[0]
 		];
 		for(var i = 0; i < q.length; i++) {
-			if(q[i].value == 'NULL')
-				q[i].value = '';
+			q[i].onfocus = function() {
+				if(this.value == 'NULL')
+					this.value = '';
+			}
+			
+			q[i].onblur = function() {
+				if(this.value == '')
+					this.value = 'NULL';
+			}
+			
 		}
 		
 		// Placeholders
@@ -8216,6 +8224,9 @@ function MT__RUN() {
 				var found = false;
 				for (var i in q) {
 					q[i].value = q[i].value.trim();
+					if(q[i].value == '') {
+						q[i].value = 'NULL';
+					}
 					if (q[i].value != '' && q[i].name != 'DirectPhone') {
 						q[i].style.border = '2px solid blue';
 						found = true;
