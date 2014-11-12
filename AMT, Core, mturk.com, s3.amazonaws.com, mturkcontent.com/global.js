@@ -1088,10 +1088,6 @@ String.prototype.parseURL = function() {
 		queries, split, i;
 	
 	// USING :: this.toString()
-	//~ console.log(this);
-	//~ console.log(this.toString());
-	//~ console.log(this.join(''));
-	//~ return;
 	
 	// Let the browser do the work
 	parser.href = this.toString() + '';
@@ -1115,10 +1111,6 @@ String.prototype.parseURL = function() {
 	};
 }
 String.prototype.stateAbbrToFull = function() {
-	
-	//~ console.log(this);
-	//~ console.log(this[0]);
-	
 	
 	// BUILD STR
 	var str = '';
@@ -1148,6 +1140,7 @@ String.prototype.stateAbbrToFull = function() {
 /**
  * AMT factories
  *
+ * run
  * AMT__rq
  * AMT___core_factory
  * AMT___events_factory
@@ -1168,6 +1161,20 @@ String.prototype.stateAbbrToFull = function() {
  * 
 **/
 
+/**
+ * run
+ * 
+ * Puts every task into a prototype function
+ * 
+ * 
+ */
+var run = function() {
+}
+/**
+ * This is just a placeholder. run.prototype.f is re-defined in each task.
+ */
+run.prototype.f = function() {
+}
 /**
  * AMT requester functions
  * AMT__rq
