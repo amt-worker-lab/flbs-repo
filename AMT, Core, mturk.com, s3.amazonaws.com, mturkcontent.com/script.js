@@ -8185,6 +8185,13 @@ function MT__RUN() {
 			
 		}
 		
+		q[2].ondblclick = function() {
+			var website = document.getElementsByTagName('a')[2].href
+			website = website.replace(/https?:\/\/(www\.|)/,'')
+			website = website.replace(/\/[\d\D]*/, '');
+			this.value += website;
+		}
+		
 		// Placeholders
 		q[0].placeholder = 'F';
 		q[1].placeholder = 'L';
