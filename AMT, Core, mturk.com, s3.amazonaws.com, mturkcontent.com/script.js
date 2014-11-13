@@ -25839,6 +25839,8 @@ function MT__RUN() {
 		x.style.fontSize = '24px';
 		x.innerText = name + '\n' + x.innerText;
 		
+		
+		
 		/** // ... script
 		var d = document.createElement('script');
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
@@ -25883,10 +25885,13 @@ function MT__RUN() {
 		document.body.appendChild(d2);
 		d2.src = first_url;
 		
-		// Add change map button
+
+		
+		
+		// Add change map button, for google
 		var d3 = document.createElement('button');
 		d3.setAttribute('style',
-			'position:absolute;top:0;left:40%;width:59%;height:78px;'
+			'position:absolute;top:0;left:40%;width:28%;height:78px;'
 		);
 		d3.innerText = 'Change Map';
 		d3.onclick = function() {
@@ -25903,7 +25908,31 @@ function MT__RUN() {
 			}
 		}
 		document.body.appendChild(d3);
+		
+		withNameSearchBing = 'http://www.bing.com';
+		woutNameSearchBing = 'http://www.bing.com';
+		
+		//Add change map button, for bing
+		var d4 = document.createElement('button');
+		d4.setAttribute('style', 'position:absolute;top:0;left:68%;width:28%;height:78px');
+		document.body.appendChild(d4);
+		d4.type = 'button';
+		d4.value = 'Change Map (Bing)'
+		d4.onclick = function() {
+			if (this.style.backgroundColor == '') {
+				this.style.backgroundColor = 'LightGreen';
+			} else {
+				this.style.backgroundColor = '';
+			}
 			
+			if (d2.src == withNameSearchBing) {
+				d2.src = woutNameSearchBing
+			} else if (d2.src == woutNameSearchBing) {
+				d2.src = withNameSearchBing
+			}
+		}
+		
+		
 		//~ // flicker...
 		//~ d2.addEventListener('load', function() {
 			//~ this.style.visibility = 'visible';
