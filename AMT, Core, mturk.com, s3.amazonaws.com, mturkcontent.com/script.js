@@ -2309,6 +2309,55 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Jon Staff
+	// Review customer requests and categorize them
+	//
+	s = '	<li>Review the given text and/or image and select the most appropriate&nbsp;category from the drop-down menu.</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width=1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}'); // width=1100px=default
+			
+			var q = document.getElementsByName('Q1Answer')[0];
+			q.multiple = true;
+			q.setAttribute('style', 'height:400px;');
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				img_td: td[3],
+				img_url: td[3].innerText.trim()
+			}
+			if (o.img_url != '' && /\.(jpg|jpeg|gif|png|bmp|tif)$/i.exec(o.img_url)) {
+				var x = document.createElement('img');
+				x.setAttribute('style','position:absolute;top:0;left:69%;width:30%;');
+				x.src = o.img_url;
+				document.body.appendChild(x);
+			}
+			
+			document.getElementById('submitButton').onclick = function() {
+				
+				if (q.selectedIndex == 0)
+					return false;
+				
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				
+				return false;
+			}
+			
+		}
+		new run().f();
+	}
+	// 
 	// Ward Loving
 	// Look up historical property values according to Zillow
 	// Uses rf.general_functions__numberFormat__numberWithCommas
@@ -8013,7 +8062,15 @@ function MT__RUN() {
 			
 			// scrapyd
 			scrapy_start_urls: [],
-			scrapy_allowed_domains: []
+			scrapy_allowed_domains: [],
+			
+			// is_iframe_task
+			// Set this to true to run the iframes task.
+			// For the phone only task set to false.
+			is_iframe_task: false,
+			lat: null,
+			lng: null,
+			location: td[3].innerText.trim()
 			
 			//~ // phone span
 			//~ td_phone: td[7],
@@ -8095,21 +8152,25 @@ function MT__RUN() {
 		
 		// Float
 		if (AMT__Global_Vars.isPreview) {
-			switch(o.role) {
-				case 'Executive Director/CEO':
-				case 'Deputy Executive Director/COO':
-					AMT___Floater.accept();
-					break;
-				case 'IT Director':
-				case 'Membership Director':
-					AMT___Floater.skip();
-					break;
-			}
-			return;
+			
+			// THIS IS FOR SKIPPING BASED ON PERSON'S JOB ROLE.
+			//
+			//
+			//~ switch(o.role) {
+				//~ case 'Executive Director/CEO':
+				//~ case 'Deputy Executive Director/COO':
+					//~ AMT___Floater.accept();
+					//~ break;
+				//~ case 'IT Director':
+				//~ case 'Membership Director':
+					//~ AMT___Floater.skip();
+					//~ break;
+			//~ }
+			//~ return;
 		}
 		
 		window.addEventListener('keydown', function(e) {
-			console.log(e.keyCode)
+			//~ console.log(e.keyCode)
 			if (e == 13) {
 				document.getElementById('submitButton').click();
 				event.preventDefault();
@@ -8289,20 +8350,74 @@ function MT__RUN() {
 		/**
 		 * Init
 		 */
-		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-			startPage: true,
-			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
-			seed: d1,
-			callback_function: Andrew_Ryan_people_search,
-			return_init_object: true
-		});
-		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-			startPage: true,
-			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query_by_role),
-			seed: d1b,
-			callback_function: Andrew_Ryan_people_search,
-			return_init_object: true
-		});
+		if (o.is_iframe_task) {
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
+				seed: d1,
+				callback_function: Andrew_Ryan_people_search,
+				return_init_object: true
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query_by_role),
+				seed: d1b,
+				callback_function: Andrew_Ryan_people_search,
+				return_init_object: true
+			});
+		}
+		// Init not iframe
+		// Google lat/lng followed by Google Timezone
+		if (!o.is_iframe_task) {
+			// Google lat/long
+			MT___google_api_geocode('1,'+o.location, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng
+					)
+				{
+					// Skip here
+					AMT___Floater.skip();
+					return;
+				} else {
+					o.lat = lat;
+					o.lng = lng;
+				}
+				// Get time zone
+				new AMT___requests_factory().google_api_timezone({
+					lat: o.lat,
+					lng: o.lng,
+					callback_function: function(response_obj) {
+						
+						console.log('CURR HOUR:' + response_obj.response.local_hour);
+						//~ console.log(response_obj.response.offset);
+						//~ console.log(response_obj.response.offset <= -7);
+						//~ console.log(response_obj.response.local_hour);return;
+						
+						if (!response_obj) {
+							// Skip here
+							AMT___Floater.skip();
+							return;
+						}
+						
+						// -7 = Mountain
+						// -8 = Pacific
+						//~ if (response_obj.response.offset <= -7) {
+						if (response_obj.response.local_hour < 16) {
+							// Accept here
+							console.log('accept');
+							AMT___Floater.accept();
+							return;
+						} else {
+							// Skip here
+							AMT___Floater.skip();
+							return;
+						}
+					}
+				});
+			}, false, true);
+		}
 		
 		/**
 		 * START SCRAPYD
@@ -129501,6 +129616,7 @@ function mturk_load()
 					break;
 				case '372VRO63KW1OI73UUZL6YKEXJPCHBE': //Andrew Ryan
 				case '3ED2P6N3JY6YYZVT3IGYKJGTO6HF6H': //Andrew Ryan, Find people in companies
+				case '3MU03ZNWUDO2FVVFYZ6TSD2TT95F5X': //Andrew Ryan, Find people in companies (2? Call...)
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3U2H1DGWNO9OGD2AJATPPHECAAIF48': //Paul Graham, find company name
@@ -129558,12 +129674,8 @@ function mturk_load()
 			{
 				AMT___Floater.float();
 			}
-			//AllFloaters.push({groupId: '2FH56XBAT2D5TIXJBDUQ4JH8YYQ40Y'})); //Crowdsource, Search: Keywords on Google.com (US)
-			//AllFloaters.push(new AMT___Floater({groupId: '20NENHMVHVKCLJS7U9Y4U79KW1C245', runMT_Run: true})); //Rhyeal Shadowblade, Testing
-			//AllFloaters.push(new AMT___Floater({groupId: '26VVVOK5UFJ9LUD9RPQF7QS3IUT58I', runTop_Window: true})); //Fiber Data, Testing, Find the Private Organization's webpage URL
-			//AllFloaters.push(new AMT___Floater({groupId: '20NENHMVHVKCNQ47ZIY4U79KXWE42F', runMT_Run: true, skipOnReturnedHits:true})); //aditya sudhakar, Categorization, testing
-			//AllFloaters.push(new AMT___Floater({groupId: '2C4PHMVHVKCOKJWBOEVJI9KQ36235K', runMT_Run: true, skipSpeed: 15000})); //Max Powers
-			//AllFloaters.push(new AMT___Floater({groupId: '2C4PHMVHVKCOKJWBOEVJI9KQ36935R ', runMT_Run: true, skipSpeed: 15000})); //Max Powers
+			
+
 			
 			var numActiveFloaters = 0;
 			for(var i = 0; i < AllFloaters.length; i++)

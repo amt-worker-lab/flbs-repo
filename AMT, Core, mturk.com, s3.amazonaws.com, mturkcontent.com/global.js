@@ -433,7 +433,7 @@ function showNextTab() {
 //This is the Constructer Function
 //Call new on this function and pass in the options to initialize the floater's variables!
 var AMT___Floater = function (options) {
-		AMT___Floater.acceptCondition = options.acceptCondition;							//done
+		AMT___Floater.acceptCondition = options.acceptCondition ? options.acceptCondition : null;							//done
 		AMT___Floater.runMT_Run = options.runMT_Run;										//done
 		AMT___Floater.runTop_Window = options.runTop_Window;								//done
 		AMT___Floater.forceTopCondition = options.forceTopCondition;
@@ -1611,6 +1611,82 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * google_api_timezone 
+ * 
+ * @param options				object
+ * @param .lat					float
+ * @param .lng					float
+ * @param .callback_function	function
+ * 
+ * @return options.reseponse.offset		integer		Returns the time zone as an integer, offset of UTC. So Eastern would be -5. Pacific would be -8.
+ * 
+ * NOTE: "The 7 numbers specify the year, month, day, hour, minute, second, and millisecond, in that order:"
+ * 
+ * E.g.:
+ *{
+   "dstOffset" : 0,
+   "rawOffset" : -28800,
+   "status" : "OK",
+   "timeZoneId" : "America/Los_Angeles",
+   "timeZoneName" : "Pacific Standard Time"
+ *}
+ */
+AMT___requests_factory.prototype.google_api_timezone = function(options) {
+	
+	var d = new Date();
+	var ts = new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/1000; // 1999,0,31=Jan.31,1999
+	ts = Math.round(ts);
+	
+	var u= 'https://maps.googleapis.com/maps/api/timezone/json?location='+options.lat+','+options.lng+'&timestamp='+ts;
+	
+	u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+	
+	// Get next
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		onload: function (response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				options.callback_function(false);
+				return;
+			}
+			
+			// ...
+			// rawOffset / 3600s
+			rs = JSON.parse(rs);
+			if (rs.status != 'OK') {
+				console.log('rs.status=' + rs.status);
+				options.callback_function(false);
+				return;
+			}
+			
+			// This is in Eastern Time Zone
+			var curr_local_hour = new Date().getTime();
+			
+			//~ var curr_local_hour = Date.UTC();
+			//~ console.log(new Date(curr_local_hour).getHours()); // This is 0-23 and it is in Eastern Time zone.
+			//~ console.log(curr_local_hour);
+			//~ console.log(rs.rawOffset);
+			
+			// Offset by UTC offset + Eastern Time Zone offset
+			curr_local_hour += rs.rawOffset*1000 + (5*3600*1000); // seconds to ms
+			
+			//~ console.log(curr_local_hour);
+			
+			curr_local_hour = new Date(curr_local_hour).getHours();
+			
+			//~ console.log(curr_local_hour);
+			
+			options.response = rs;
+			options.response.responseText = response.responseText;
+			options.response.offset = Math.round(rs.rawOffset/3600);
+			options.response.local_hour = curr_local_hour;
+			options.callback_function(options);
+		}
+	});
 }
 /**
  * load_precache_urls 
