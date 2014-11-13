@@ -25912,8 +25912,8 @@ function MT__RUN() {
 		}
 		document.body.appendChild(d3);
 		
-		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=o&lvl=15';
-		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=o&lvl=15';
+		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=18';
+		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=18';
 
 		
 		//Add change map button, for bing
