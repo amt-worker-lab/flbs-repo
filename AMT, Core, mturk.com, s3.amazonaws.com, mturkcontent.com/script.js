@@ -25926,10 +25926,12 @@ function MT__RUN() {
 				this.style.backgroundColor = '';
 			}
 			
-			if (d2.src == withNameSearchBing) {
-				d2.src = woutNameSearchBing
-			} else if (d2.src == woutNameSearchBing) {
+			if (this.innerText == 'Change Map (Bing)') {
 				d2.src = withNameSearchBing
+				this.innerText = 'Change Map (Bing+Name)'
+			} else if (this.innerText == 'Change Map (Bing+Name)') {
+				d2.src = woutNameSearchBing
+				this.innerText = 'Change Map (Bing)';
 			}
 		}
 		
