@@ -53256,12 +53256,25 @@ qatar,80
 			by_phone = true;
 		}
 		if (!by_phone) {
-			var o = {
-				name: b[0].innerText.trim(),
-				locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-				
-				//~ bad_phone:	b[0].innerText.trim().replace(' . IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.', '').replace(/[^\d]/g, '')
-				
+			
+			// New Method?
+			//
+			//Charlestown Yoga
+			//Charlestown MA
+			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \([^\)]*\)<\/b><\/p>/.exec(ih);
+			if (reg) {
+				var o = {
+					name: __js_clean_html_str(reg[1]).trim(),
+					locn: __js_clean_html_str(reg[2]).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				}
+			} else {
+			
+				// Regular / old method
+				//
+				var o = {
+					name: b[0].innerText.trim(),
+					locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				}
 			}
 			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
 			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
@@ -53281,7 +53294,10 @@ qatar,80
 			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
 			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 			
-			if (o.bad_phone.length != 10) alert(o.bad_phone);
+			if (o.bad_phone.length != 10) {
+				alert('Initial phone is bad:' + o.bad_phone);
+				return;
+			}
 		}
 		console.log(o);
 		
