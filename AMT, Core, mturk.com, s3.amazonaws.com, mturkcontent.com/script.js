@@ -25885,7 +25885,6 @@ function MT__RUN() {
 		document.body.appendChild(d2);
 		d2.src = first_url;
 		
-
 		
 		
 		// Add change map button, for google
@@ -25893,7 +25892,7 @@ function MT__RUN() {
 		d3.setAttribute('style',
 			'position:absolute;top:0;left:40%;width:28%;height:78px;'
 		);
-		d3.innerText = 'Change Map';
+		d3.innerText = 'Change Map (Google+Name)';
 		d3.onclick = function() {
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
@@ -25901,10 +25900,12 @@ function MT__RUN() {
 				this.style.backgroundColor = '';
 			}
 			
-			if (d2.src == withNameSearch) {
+			if (this.innerText == 'Change Map (Google)') {
 				d2.src = woutNameSearch
-			} else if (d2.src == woutNameSearch) {
+				this.innerText = 'Change Map (Google+Name)'
+			} else if (this.innerText == 'Change Map (Google+Name)') {
 				d2.src = withNameSearch
+				this.innerText = 'Change Map (Google)';
 			}
 		}
 		document.body.appendChild(d3);
@@ -25916,9 +25917,9 @@ function MT__RUN() {
 		var d4 = document.createElement('button');
 		d4.setAttribute('style', 'position:absolute;top:0;left:68%;width:28%;height:78px');
 		document.body.appendChild(d4);
-		d4.type = 'button';
-		d4.value = 'Change Map (Bing)'
+		d4.innerText = 'Change Map (Bing)';
 		d4.onclick = function() {
+			this.innerText = 'Change Map (Bing+Name)'
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
