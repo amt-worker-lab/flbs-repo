@@ -53261,7 +53261,7 @@ qatar,80
 			//
 			//Charlestown Yoga
 			//Charlestown MA
-			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \([^\)]*\)<\/b><\/p>/.exec(ih);
+			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \(([^\)]*)\)<\/b><\/p>/.exec(ih);
 			if (reg) {
 				var o = {
 					name: __js_clean_html_str(reg[1]).trim(),
