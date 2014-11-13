@@ -25894,6 +25894,8 @@ function MT__RUN() {
 		);
 		d3.innerText = 'Change Map (Google+Name)';
 		d3.onclick = function() {
+			d2.style.width='30%';
+			
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
@@ -25910,23 +25912,25 @@ function MT__RUN() {
 		}
 		document.body.appendChild(d3);
 		
-		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=17';
-		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=17';
+		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=o&lvl=15';
+		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=o&lvl=15';
 
 		
 		//Add change map button, for bing
 		var d4 = document.createElement('button');
 		d4.setAttribute('style', 'position:absolute;top:0;left:68%;width:28%;height:78px');
 		document.body.appendChild(d4);
-		d4.innerText = 'Change Map (Bing)';
+		d4.innerText = 'Change Map (Bing+Name)';
 		d4.onclick = function() {
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
 				this.style.backgroundColor = '';
 			}
+			d2.style.width='90%';
 			
 			if (this.innerText == 'Change Map (Bing)') {
+				
 				d2.src = woutNameSearchBing
 				this.innerText = 'Change Map (Bing+Name)'
 			} else if (this.innerText == 'Change Map (Bing+Name)') {
