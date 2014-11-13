@@ -25839,8 +25839,6 @@ function MT__RUN() {
 		x.style.fontSize = '24px';
 		x.innerText = name + '\n' + x.innerText;
 		
-		
-		
 		/** // ... script
 		var d = document.createElement('script');
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
@@ -25861,7 +25859,7 @@ function MT__RUN() {
 		// ...
 		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
 		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' near ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
 		//&sll=41.021458,-80.660332
 		//~ if (o.lat != null && o.lon != null)
 			//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
@@ -25885,61 +25883,27 @@ function MT__RUN() {
 		document.body.appendChild(d2);
 		d2.src = first_url;
 		
-		
-		
-		// Add change map button, for google
+		// Add change map button
 		var d3 = document.createElement('button');
 		d3.setAttribute('style',
-			'position:absolute;top:0;left:40%;width:28%;height:78px;'
+			'position:absolute;top:0;left:40%;width:59%;height:78px;'
 		);
-		d3.innerText = 'Change Map (Google+Name)';
+		d3.innerText = 'Change Map';
 		d3.onclick = function() {
-			d2.style.width='30%';
-			
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
 				this.style.backgroundColor = '';
 			}
 			
-			if (this.innerText == 'Change Map (Google)') {
+			if (d2.src == withNameSearch) {
 				d2.src = woutNameSearch
-				this.innerText = 'Change Map (Google+Name)'
-			} else if (this.innerText == 'Change Map (Google+Name)') {
+			} else if (d2.src == woutNameSearch) {
 				d2.src = withNameSearch
-				this.innerText = 'Change Map (Google)';
 			}
 		}
 		document.body.appendChild(d3);
-		
-		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-
-		
-		//Add change map button, for bing
-		var d4 = document.createElement('button');
-		d4.setAttribute('style', 'position:absolute;top:0;left:68%;width:28%;height:78px');
-		document.body.appendChild(d4);
-		d4.innerText = 'Change Map (Bing+Name)';
-		d4.onclick = function() {
-			if (this.style.backgroundColor == '') {
-				this.style.backgroundColor = 'LightGreen';
-			} else {
-				this.style.backgroundColor = '';
-			}
-			d2.style.width='90%';
 			
-			if (this.innerText == 'Change Map (Bing)') {
-				
-				d2.src = woutNameSearchBing
-				this.innerText = 'Change Map (Bing+Name)'
-			} else if (this.innerText == 'Change Map (Bing+Name)') {
-				d2.src = withNameSearchBing
-				this.innerText = 'Change Map (Bing)';
-			}
-		}
-		
-		
 		//~ // flicker...
 		//~ d2.addEventListener('load', function() {
 			//~ this.style.visibility = 'visible';
@@ -53217,6 +53181,7 @@ qatar,80
 	//~ s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
 	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
+	s2= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1
