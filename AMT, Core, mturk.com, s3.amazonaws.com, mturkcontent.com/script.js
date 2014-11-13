@@ -25910,8 +25910,9 @@ function MT__RUN() {
 		}
 		document.body.appendChild(d3);
 		
-		withNameSearchBing = 'http://www.bing.com';
-		woutNameSearchBing = 'http://www.bing.com';
+		woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=17';
+		withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=17';
+
 		
 		//Add change map button, for bing
 		var d4 = document.createElement('button');
@@ -25919,7 +25920,6 @@ function MT__RUN() {
 		document.body.appendChild(d4);
 		d4.innerText = 'Change Map (Bing)';
 		d4.onclick = function() {
-			this.innerText = 'Change Map (Bing+Name)'
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
@@ -25927,10 +25927,10 @@ function MT__RUN() {
 			}
 			
 			if (this.innerText == 'Change Map (Bing)') {
-				d2.src = withNameSearchBing
+				d2.src = woutNameSearchBing
 				this.innerText = 'Change Map (Bing+Name)'
 			} else if (this.innerText == 'Change Map (Bing+Name)') {
-				d2.src = woutNameSearchBing
+				d2.src = withNameSearchBing
 				this.innerText = 'Change Map (Bing)';
 			}
 		}
