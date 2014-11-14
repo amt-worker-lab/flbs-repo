@@ -25976,7 +25976,8 @@ function MT__RUN() {
 				d4.style.height = d4_height + 'px';
 				
 				// Max Streetview image height
-				o.max_streetview_height = Math.floor(d4_height / 4);
+				// Double it then set zoom=0.5
+				o.max_streetview_height = Math.floor((d4_height / 4) * 4);
 				
 				//~ console.log('ih:' + innerHeight);
 				
@@ -26047,7 +26048,7 @@ function MT__RUN() {
 				for (var i in hds) {
 					
 					var img = document.createElement('img');
-					img.setAttribute('style','cursor:pointer;display:block;');
+					img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
 					img.src = 'https://maps.googleapis.com/maps/api/streetview' +
 							'?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
 							'&location='+encodeURIComponent(o.addr)+
@@ -26057,13 +26058,17 @@ function MT__RUN() {
 					
 					// Actions
 					img.onclick = function() {
-						if (this.style.zoom == '') {
-							this.style.zoom = '2';
+						if (this.style.zoom != '0.5') {
+							this.style.zoom = '0.5';
 						} else {
-							this.style.zoom = '';
+							this.style.zoom = '0.25';
 						}
 					}
 				}
+				// Append an extend div
+				var dv = document.createElement('div');
+				dv.setAttribute('style','height:1400px;');
+				d4.appendChild(dv);
 				
 				//~ document.getElementById('lat').value = lat;
 				//~ document.getElementById('lon').value = lng;
