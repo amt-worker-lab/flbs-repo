@@ -9559,7 +9559,7 @@ function load__allPages_AMT_combo() {
 			chrome.extension.sendRequest({
 				method:'google_hangouts_load_phone',
 				phone_number:this.innerText,
-				details: null,
+				details: {hangupAllButPickup:true, dial0AtStart:true},
 				task_name: "Andrew Ryan"
 			});
 			

@@ -27,7 +27,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 * 
 	 * @returns
 	 */
-	console.log('TEST TEST TEST');
 	if (request.method == 'google_hangouts_load_phone')
 	{
 		console.log('Recieved phone request');
