@@ -25769,8 +25769,6 @@ function MT__RUN() {
 		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
 		GM_addStyle('h3 {width:40%;}');
-		
-		// h3
 		var x = document.getElementsByTagName('h3')[0];
 		x.innerText = x.innerText.replace(/\n/g, ' ');
 		
@@ -25780,12 +25778,12 @@ function MT__RUN() {
 		
 		//...
 		document.getElementById('map').style.width = '100%';
+		document.getElementById('map').style.height = tmp_h;
 		//~ document.getElementById('map').style.width = '10%';
 		//~ document.getElementById('map').style.width = '100%';
 		//~ document.getElementById('map').style.width = '10%';
 		//~ document.getElementById('map').style.width = '100%';
 		//~ GM_addStyle('#map {width:100%;}'); // map 100% !
-		document.getElementById('map').style.height = tmp_h;
 		
 		//...
 		// This will change occasionally.
@@ -25794,13 +25792,30 @@ function MT__RUN() {
 		var b		= document.getElementsByTagName('b');
 		var name	= b[1].innerText.trim();
 		var addr	= b[2].innerText.trim();
+		var btns	= document.getElementsByTagName('button');
 		
+		// vars
 		var o = {
 			lat: null,
 			lon: null,
 			name: null,
-			addr: null
+			addr: null,
+			button_cannot_find: btns[0]
 		};
+		
+		// ...
+		var q = document.getElementById('polygon');
+		
+		// o.button_cannot_find
+		o.button_cannot_find.addEventListener('click', function(e) {
+			var r = document.getElementById('reasons');
+			if (r) {
+				r.focus();
+				r.value = 'cannot find it';
+			} else if (q) { // input polygon
+				q.focus();
+			}
+		}, false);
 		
 		//37.4419 -122.1419
 		var x = /new google\.maps\.LatLng\(([^,]+), ([^\)]+)\);/.exec(ih);
@@ -25808,10 +25823,6 @@ function MT__RUN() {
 			o.lat = x[1];
 			o.lon = x[2];
 		}
-		
-		
-		// ...
-		var q = document.getElementById('polygon');
 		
 		// hide Ps
 		var p = document.getElementsByTagName('p');
@@ -25826,8 +25837,6 @@ function MT__RUN() {
 			}
 		}
 		
-		
-		
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];
 		x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
@@ -25839,17 +25848,11 @@ function MT__RUN() {
 		x.style.fontSize = '24px';
 		x.innerText = name + '\n' + x.innerText;
 		
-		/** // ... script
+		/** TESTING // ... script
 		var d = document.createElement('script');
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d);*/
 		
-		//~ // Satellite
-		//~ https://maps.google.com/maps?output=&hl=en&geocode=&q=Walmart+1655+Sunset+Dr%2CGrenada+MS%2C38901&t=h&gl=us
-		//~ 
-		//~ // MAP ONLY (non-satellite) ???
-		//~ https://maps.google.com/maps?output=&hl=en&geocode=&q=Walmart+1655+Sunset+Dr%2CGrenada+MS%2C38901&gl=us
-
 		// ...
 		var l = name;
 		if (l == 'Walmart')
@@ -25857,52 +25860,145 @@ function MT__RUN() {
 		if (l == 'Macy\'s')
 			l = 'Macy';
 		// ...
+		// Removed "near"
+		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		
 		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
 		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
 		//&sll=41.021458,-80.660332
 		//~ if (o.lat != null && o.lon != null)
 			//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
 		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
 		//~ // ...
 		//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
+		
 		// ...
 		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
 		
-		console.log(withNameSearch);
-		console.log(woutNameSearch);
+		// BING
+		var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+		var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
 		
+		// First URL ...
 		var first_url = woutNameSearch;
 		if (ih.indexOf('Planet Fitness') != -1)
 			first_url = withNameSearch;
 		
+		/* BEGIN ITEMS */
+		// Left iframe
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
-			'position:absolute;top:80px;left:0;width:30%;height:'+tmp_h+';border:1px solid blue;background-color:#eee;visibility:visible;'
+			'position:absolute;top:80px;left:0;width:30%;border:1px solid blue;background-color:#eee;visibility:visible;'//height:'+tmp_h+';
 		);//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d2);
 		d2.src = first_url;
+		// Change map button, for google
+ 		var d3 = document.createElement('button');
+ 		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:78px;');
+		d3.innerText = 'Change Map (Google+Name)';
+		document.body.appendChild(d3);
+		// Change map button, for bing
+		var d3b = document.createElement('button');
+		d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:78px;');
+		document.body.appendChild(d3b);
+		d3b.innerText = 'Change Map (Bing+Name)';
+		// Hide/show street view images
+		var d3c = document.createElement('button');
+		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:78px;');
+		document.body.appendChild(d3c);
+		d3c.innerText = 'Hide/Show Street View';
+		// Images div
+		var d4 = document.createElement('div');
+		d4.setAttribute('style', 'position:absolute;top:100px;left:80%;width:19%;'); // This is 20px lower than "map" and "iframe".
+		document.body.appendChild(d4);
+		/*END ITEMS*/
 		
-		// Add change map button
-		var d3 = document.createElement('button');
-		d3.setAttribute('style',
-			'position:absolute;top:0;left:40%;width:59%;height:78px;'
-		);
-		d3.innerText = 'Change Map';
-		d3.onclick = function() {
+		/*ACTIONS*/
+ 		d3.onclick = function() {
+			d2.style.width='30%';
+ 			if (this.style.backgroundColor == '') {
+ 				this.style.backgroundColor = 'LightGreen';
+ 			} else {
+ 				this.style.backgroundColor = '';
+ 			}
+			if (this.innerText == 'Change Map (Google)') {
+ 				d2.src = woutNameSearch;
+				this.innerText = 'Change Map (Google+Name)'
+			} else if (this.innerText == 'Change Map (Google+Name)') {
+ 				d2.src = withNameSearch
+				this.innerText = 'Change Map (Google)';
+ 			}
+ 		}
+		d3b.onclick = function() {
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
 			} else {
 				this.style.backgroundColor = '';
 			}
-			
-			if (d2.src == withNameSearch) {
-				d2.src = woutNameSearch
-			} else if (d2.src == woutNameSearch) {
-				d2.src = withNameSearch
+			d2.style.width='90%';
+			if (this.innerText == 'Change Map (Bing)') {
+				
+				d2.src = woutNameSearchBing
+				this.innerText = 'Change Map (Bing+Name)'
+			} else if (this.innerText == 'Change Map (Bing+Name)') {
+				d2.src = withNameSearchBing
+				this.innerText = 'Change Map (Bing)';
 			}
 		}
-		document.body.appendChild(d3);
+		d3c.onclick = function() {
+			if (this.style.backgroundColor == '') {
+				this.style.backgroundColor = 'LightGreen';
+				d4.style.display = 'none';
+			} else {
+				this.style.backgroundColor = '';
+				d4.style.display = '';
+			}
+		}
+		/*END ACTIONS*/
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			// XX OFFSET NOT HERE XX //offset: 80, // offset top
+			callback_function: function(innerHeight) {
+				
+				var new_h = (innerHeight-240) + 'px';
+				// 100 px offset from bottom
+				d2.style.height = new_h;
+				
+				document.getElementById('map').style.height = new_h;
+				
+				// d4 is 20px lower and so 20px shorter.
+				d4.style.height = (innerHeight-260) + 'px';
+				
+				//~ console.log('ih:' + innerHeight);
+				
+				
+			}
+		});
+		
+		//~ var d3 = document.createElement('button');
+		//~ d3.setAttribute('style',
+			//~ 'position:absolute;top:0;left:40%;width:59%;height:78px;'
+		//~ );
+		//~ d3.innerText = 'Change Map';
+		//~ d3.onclick = function() {
+			//~ if (this.style.backgroundColor == '') {
+				//~ this.style.backgroundColor = 'LightGreen';
+			//~ } else {
+				//~ this.style.backgroundColor = '';
+			//~ }
+			//~ 
+			//~ if (d2.src == withNameSearch) {
+				//~ d2.src = woutNameSearch
+			//~ } else if (d2.src == woutNameSearch) {
+				//~ d2.src = withNameSearch
+			//~ }
+		//~ }
+		//~ document.body.appendChild(d3);
 			
 		//~ // flicker...
 		//~ d2.addEventListener('load', function() {
@@ -25918,28 +26014,41 @@ function MT__RUN() {
 			(new AMT___core_factory()).nextTab();
 		}
 		
-		// r&a
-		new AMT___core_factory()
-			.iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
-		
-		/*
-		// ...
-		document.body.ondblclick = function() {
-			if (d2.src == withNameSearch) {
-				d2.src = woutNameSearch
-			} else if (d2.src == woutNameSearch) {
-				d2.src = withNameSearch
+		// Get the lat/long.
+		// 
+		//
+		MT___google_api_geocode(o.addr, function(lat,lng) {
+			
+			if  (
+				!lat ||
+				!lng ||
+				!/^-?[\d\.]{4,}$/.exec(lat) ||
+				!/^-?[\d\.]{4,}$/.exec(lng)
+				)
+			{
+				d5.style.display = 'none';
+				return;
 			}
 			
+			console.log(lat +','+ lng);
 			
-			// home+depot?
-			//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
-			//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
-		}*/
+			// UPDATE
+			withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l)+'&ll='+lng+','+lat+'&output=embed&t=h&z=17'; //&iwloc=A
+			//~ withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&ll='+lng+','+lat+'&output=embed&t=h&z=17'; //&iwloc=A
+			
+			//~ document.getElementById('lat').value = lat;
+			//~ document.getElementById('lon').value = lng;
+			//~ 
+			//~ doSubmit();
+		}, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		
+		//~ // r&a
+		//~ new AMT___core_factory()
+			//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
+				//~ {
+					//~ action: 'return_and_accept_button__nextTab'
+				//~ }
+			//~ );
 		
 		// ...
 		function chios_system_geocoding__hide_show() {
@@ -26000,6 +26109,23 @@ function MT__RUN() {
 				}
 			};
 		}, 1000);
+		
+		
+		
+		/* OLD ........ BODY.ONDBLCLICK ........
+		// ...
+		document.body.ondblclick = function() {
+			if (d2.src == withNameSearch) {
+				d2.src = woutNameSearch
+			} else if (d2.src == woutNameSearch) {
+				d2.src = withNameSearch
+			}
+			
+			
+			// home+depot?
+			//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
+			//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
+		}*/
 	}
 	
 	// Rob Bertholf
@@ -53255,17 +53381,26 @@ qatar,80
 		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
 			by_phone = true;
 		}
+		// Not by phone
 		if (!by_phone) {
 			
 			// New Method?
 			//
-			//Charlestown Yoga
-			//Charlestown MA
-			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \(([^\)]*)\)<\/b><\/p>/.exec(ih);
+			//Charlestown Yoga (Charlestown MA)
+			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
+			//~ var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \(([^\)]*)\)<\/b><\/p>/.exec(ih);
 			if (reg) {
+				reg = reg[1];
+				var reg2 = / \(([^\)]*)\)$/.exec(reg);
+				if (reg2) {
+					reg2 = reg2[1];
+					reg = reg.replace(reg2, '');
+				} else {
+					reg2 = '';
+				}
 				var o = {
-					name: __js_clean_html_str(reg[1]).trim(),
-					locn: __js_clean_html_str(reg[2]).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+					name: __js_clean_html_str(reg) .trim(),
+					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
 				}
 			} else {
 			
@@ -53281,6 +53416,7 @@ qatar,80
 			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
 			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 		}
+		// Is by phone
 		if (by_phone) {
 			var o = {
 				name:		b[2].innerText.trim(),
