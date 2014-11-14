@@ -53518,13 +53518,13 @@ qatar,80
 		// This is when no FB match and no 20% or higher google matches
 		var no_good_match = 0; // 2 signifies skip
 		
-		// ...
-		new AMT___core_factory().
-			iframe2parent__postMessage( //
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
+		//~ // ...
+		//~ new AMT___core_factory().
+			//~ iframe2parent__postMessage( //
+				//~ {
+					//~ action: 'return_and_accept_button__nextTab'
+				//~ }
+			//~ );
 		
 		//
 		// INIT
@@ -53559,7 +53559,7 @@ qatar,80
 				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
 				//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
 				'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
-				'&limit=6'+
+				'&limit=8'+
 				'&center='+ll.lat+','+ll.lng+ //
 				'&distance=30000'+ // 30k ~ 19mi
 				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
@@ -53581,7 +53581,10 @@ qatar,80
 					var r = JSON.parse(rs);
 					
 					if (!r.data) {
-						d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+						//~ d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+						var dv = document.createElement('div');
+						d1b.appendChild(dv);
+						dv.innerText = '0';
 						return;
 					}
 					
