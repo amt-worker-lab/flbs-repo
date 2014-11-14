@@ -53412,6 +53412,8 @@ qatar,80
 			Peter_Heyneman_find_phone__YellowPages();
 		}
 		
+		//
+		// IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED. THIS NUMBER CHANGES WITH EVERY NEW HIT.
 		var by_phone = false;
 		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
 			by_phone = true;
@@ -53423,13 +53425,12 @@ qatar,80
 			//
 			//Charlestown Yoga (Charlestown MA)
 			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
-			//~ var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^\(]+) \(([^\)]*)\)<\/b><\/p>/.exec(ih);
 			if (reg) {
 				reg = reg[1];
-				var reg2 = / \(([^\)]*)\)$/.exec(reg);
+				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
 				if (reg2) {
 					reg2 = reg2[1];
-					reg = reg.replace(reg2, '');
+					reg = reg.replace('(' + reg2 + ')', '');
 				} else {
 					reg2 = '';
 				}
@@ -53453,13 +53454,32 @@ qatar,80
 		}
 		// Is by phone
 		if (by_phone) {
-			var o = {
-				name:		b[2].innerText.trim(),
-				locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
-				
-				bad_phone:	b[0].innerText.trim().replace(/[^\d]/g, '')
-				
+			
+			// New Method?
+			//
+			//Charlestown Yoga (Charlestown MA)
+			// REMOVED U\.S\. 
+			var reg = /<p>Business Name \(City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
+			if (reg) {
+				reg = reg[1];
+				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
+				if (reg2) {
+					reg2 = reg2[1];
+					reg = reg.replace('(' + reg2 + ')', '');
+				} else {
+					reg2 = '';
+				}
+				var o = {
+					name: __js_clean_html_str(reg) .trim(),
+					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				}
+			} else {
+				var o = {
+					name:		b[2].innerText.trim(),
+					locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+				}
 			}
+			o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
 			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
 			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
 			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
