@@ -25798,8 +25798,8 @@ function MT__RUN() {
 		var o = {
 			lat: null,
 			lon: null,
-			name: null,
-			addr: null,
+			name: name,
+			addr: addr,
 			button_cannot_find: btns[0]
 		};
 		
@@ -25818,11 +25818,11 @@ function MT__RUN() {
 		}, false);
 		
 		//37.4419 -122.1419
-		var x = /new google\.maps\.LatLng\(([^,]+), ([^\)]+)\);/.exec(ih);
-		if (x) {
-			o.lat = x[1];
-			o.lon = x[2];
-		}
+		//~ var x = /new google\.maps\.LatLng\(([^,]+), ([^\)]+)\);/.exec(ih);
+		//~ if (x) {
+			//~ o.lat = x[1];
+			//~ o.lon = x[2];
+		//~ }
 		
 		// hide Ps
 		var p = document.getElementsByTagName('p');
@@ -25861,7 +25861,7 @@ function MT__RUN() {
 			l = 'Macy';
 		// ...
 		// Removed "near"
-		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +o.addr)+'&output=embed&t=h&z=17'; //&iwloc=A
 		
 		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
 		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
@@ -25874,11 +25874,11 @@ function MT__RUN() {
 		//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
 		
 		// ...
-		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
+		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(o.addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(o.addr)+'&hnear='+encodeURIComponent(o.addr)+'&z=17&iwloc=A&output=embed';
 		
 		// BING
-		var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+		var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+		var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
 		
 		// First URL ...
 		var first_url = woutNameSearch;
@@ -25910,7 +25910,7 @@ function MT__RUN() {
 		d3c.innerText = 'Hide/Show Street View';
 		// Images div
 		var d4 = document.createElement('div');
-		d4.setAttribute('style', 'position:absolute;top:100px;left:80%;width:19%;'); // This is 20px lower than "map" and "iframe".
+		d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
 		document.body.appendChild(d4);
 		/*END ITEMS*/
 		
@@ -25971,12 +25971,17 @@ function MT__RUN() {
 				
 				document.getElementById('map').style.height = new_h;
 				
-				// d4 is 20px lower and so 20px shorter.
-				d4.style.height = (innerHeight-260) + 'px';
+				// d4 is 40px lower and so 40px shorter.
+				var d4_height = innerHeight-280;
+				d4.style.height = d4_height + 'px';
+				
+				// Max Streetview image height
+				o.max_streetview_height = Math.floor(d4_height / 4);
 				
 				//~ console.log('ih:' + innerHeight);
 				
-				
+				// Start the lat long func.
+				chios_system_geocoding__lat_lng();
 			}
 		});
 		
@@ -26014,33 +26019,58 @@ function MT__RUN() {
 			(new AMT___core_factory()).nextTab();
 		}
 		
+		
 		// Get the lat/long.
-		// 
-		//
-		MT___google_api_geocode(o.addr, function(lat,lng) {
-			
-			if  (
-				!lat ||
-				!lng ||
-				!/^-?[\d\.]{4,}$/.exec(lat) ||
-				!/^-?[\d\.]{4,}$/.exec(lng)
-				)
-			{
-				d5.style.display = 'none';
-				return;
-			}
-			
-			console.log(lat +','+ lng);
-			
-			// UPDATE
-			withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l)+'&ll='+lng+','+lat+'&output=embed&t=h&z=17'; //&iwloc=A
-			//~ withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&ll='+lng+','+lat+'&output=embed&t=h&z=17'; //&iwloc=A
-			
-			//~ document.getElementById('lat').value = lat;
-			//~ document.getElementById('lon').value = lng;
-			//~ 
-			//~ doSubmit();
-		}, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		function chios_system_geocoding__lat_lng() {
+			// 
+			//
+			MT___google_api_geocode(o.addr, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng ||
+					!/^-?[\d\.]{4,}$/.exec(lat) ||
+					!/^-?[\d\.]{4,}$/.exec(lng)
+					)
+				{
+					d5.style.display = 'none';
+					return;
+				}
+				
+				console.log(lat +','+ lng);
+				
+				// UPDATE
+				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
+				
+				// Get street view images
+				var hds = [0, 90, 180, 270];
+				for (var i in hds) {
+					
+					var img = document.createElement('img');
+					img.setAttribute('style','cursor:pointer;display:block;');
+					img.src = 'https://maps.googleapis.com/maps/api/streetview' +
+							'?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
+							'&location='+encodeURIComponent(o.addr)+
+							//'&location='+lat+','+lng+
+							'&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
+					d4.appendChild(img);
+					
+					// Actions
+					img.onclick = function() {
+						if (this.style.zoom == '') {
+							this.style.zoom = '2';
+						} else {
+							this.style.zoom = '';
+						}
+					}
+				}
+				
+				//~ document.getElementById('lat').value = lat;
+				//~ document.getElementById('lon').value = lng;
+				//~ 
+				//~ doSubmit();
+			}, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
+		}
 		
 		//~ // r&a
 		//~ new AMT___core_factory()
