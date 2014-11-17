@@ -1112,19 +1112,18 @@ String.prototype.parseURL = function() {
 }
 String.prototype.stateAbbrToFull = function() {
 	
-	// BUILD STR
-	var str = '';
-	for (var i in this) {
-		//~ console.log(this[i]);
-		if (i == 'length' || this[i].length != 1) {
-			break;
-		}
-		str += this[i];
-	}
+	//~ // BUILD STR
+	//~ var str = '';
+	//~ for (var i in this) {
+		//~ if (i == 'length' || this[i].length != 1) {
+			//~ break;
+		//~ }
+		//~ str += this[i];
+	//~ }
 	
-	str = str.toLowerCase().trim();
+	str = this.toString().toLowerCase().trim();
 	
-	console.log(str);
+	//~ console.log(str);
 	
 	for (var i in MT___states) {
 		if (i.toLowerCase() == str) {
@@ -6501,6 +6500,20 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
 	}
 	
 }
+/**
+ * function create_dashboard__powers_v1__showScrapyResult_contexts
+ * 
+ * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1
+ * 
+ * @param results_array
+ * @param out_div
+ * @param seed_object.{}
+ * @param seed_object.input_send_success
+ * @param seed_object.do_submit_callback
+ * @param seed_object.input_onclick_callback
+ * @param seed_object.do_submit_next_tab
+ * @param seed_object.do_submit_add_to_tabs_queue
+ */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
 	//var out_div = d1;
@@ -7171,6 +7184,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	if (this.obj_vars.startPage) {
 		
 		this.obj_vars.startPage_array = true;
+		
+		this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
 		
 		//~ this.obj_vars.url = 'https://startpage.com/do/search';
 		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';

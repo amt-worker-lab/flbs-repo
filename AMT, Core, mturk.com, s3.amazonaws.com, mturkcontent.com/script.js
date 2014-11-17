@@ -9406,7 +9406,7 @@ function MT__RUN() {
 			return;
 		} else if (!AMT__Global_Vars.isPreview) {			// Accepted
 			// add
-			//addToTabsQ();
+			addToTabsQ();
 		}
 		
 		// FB 
@@ -9560,8 +9560,8 @@ function MT__RUN() {
 								// CONTINUES (job is NOT in "preview" mode)
 								return false;
 							},
-							do_submit_next_tab: true
-							//do_submit_add_to_tabs_queue: true
+							//~ do_submit_next_tab: true
+							do_submit_add_to_tabs_queue: true
 						}
 					);
 				}
@@ -80049,12 +80049,373 @@ qatar,80
 	 * Brice Englert
 	 * Carol Chen
 	 * Jordan Burke
-	 * 
+	 * Derek Vansant
 	 * 
 	 * ......OLD...... Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
 	
+	//
+	// Derek Vansant
+	// Find the Website Address for Companies
+	// 
+	var s = '	<li>Click on "Google Search Link" to be taken directly to Google search page for company.</li>';
+	if (ih.indexOf(s) != -1)
+	{		
+		console.log('');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body {margin-top:900px;}'); //;width:100%
+		GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		GM_addStyle('.panel {position:absolute;top:2000px;}');
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+		
+		var td = document.getElementsByTagName('td');
+		
+		var o = {
+			name: td[1].innerText.trim(),
+			name_short: null,
+			locn: td[3].innerText.trim(),
+			full_locn: null,
+			bold_array: []
+		}
+		o.full_locn = o.locn.stateAbbrToFull();
+		o.bold_array = o.name.clean_string_to_array().concat([o.locn].concat(o.full_locn.clean_string_to_array()));
+		if (o.name.split(' ').length > 2) {
+			o.name_short = o.name.split(' ').slice(0, 2).join(' ');
+		}
+		console.log(o);
+		
+		/* BEGINS ITEMS */
+		//
+		var na = document.createElement('input');
+		na.setAttribute('type','button');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+		document.body.appendChild(na);
+		na.value = "N/A";
+		//~ na.style.fontSize='10px';
+		//
+		var inp_top = document.createElement('input');
+		inp_top.setAttribute('type','input');
+		inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+		document.body.appendChild(inp_top);
+		//
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1b);
+		//
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1c);
+		//
+		var d3 = document.createElement('textarea');
+		d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+		document.body.appendChild(d3);
+		d1.txa = d3;
+		//
+		var d3b = document.createElement('textarea');
+		d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+		document.body.appendChild(d3b);
+		d1b.txa = d3b;
+		//
+		var d3c = document.createElement('textarea');
+		d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+		document.body.appendChild(d3c);
+		d1c.txa = d3c;
+		/*END ITEMS*/
+		//
+		d3.onblur = function() {
+			Derek_Vansant_company_URL__SP_init(d1,  this);
+		}
+		d3b.onblur = function() {
+			Derek_Vansant_company_URL__SP_init(d1b, this);
+		}
+		d3c.onblur = function() {
+			Derek_Vansant_company_URL__SP_init(d1c, this);
+		}
+		na.onclick = function() {
+			//~ this.style.backgroundColor = 'LightGreen';
+			//~ document.getElementById("web_url").value = "N/A";
+			//~ // nextTab
+			//~ new AMT___core_factory().nextTab();
+			//~ doSubmit();
+		}
+		
+		// ...
+		var ef = new AMT___events_factory();
+		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+		//
+		new AMT___core_factory().
+			iframe2parent__postMessage( // options  , XXXXX >callback_function
+				{
+					action: 'return_and_accept_button__nextTab'
+				}
+			);
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				d1, d1b, d1c
+			],
+			offset: 70 // offset top
+		});
+		
+		// ...
+		d3.value  = o.name;
+		d3b.value = '"' + o.name + '" ' + o.locn;
+		d3c.value = (o.name_short) ? '"' + o.name_short + '" ' + o.full_locn : o.name + ' ' + o.full_locn;
+		
+		var load_first = true;
+		var FOUND_ONE_NONSKIP = false;
+		var TOTAL_CALLS = 0;
+		var ARRAY_FIRST_FINDS = [];
+		var NUM_FOUND_SEARCH = 0;
+		
+		var SKIP_SITES;
+		function Derek_Vansant_company_URL__load_skips() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host+'/mturk/util.php?austin_load_skips=',
+				onload: function (response) {
+					var rs=response.responseText;
+					
+					//~ SKIP_SITES = rs.split("\n");
+					
+					var x = rs.split("\n");
+					
+					SKIP_SITES = {}; // ASSOC.
+					
+					// FULL
+					for (var i in x) {
+						SKIP_SITES[x[i]] = true;
+					}
+					
+					// SUBDOMAINS!
+					for (var i in x) {
+						var y;
+						if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+							SKIP_SITES[y[1]] = true;
+						}
+					}
+					
+					Derek_Vansant_company_URL__SP_init();
+				}
+			});
+		}
+		Derek_Vansant_company_URL__load_skips();
+		
+		function Derek_Vansant_company_URL__SP_init(el_div, el_inp) {
+			var req_proxy;
+			//
+			if (el_inp && el_div) { // single! (+dynamic!)
+				el_div.innerHTML = '';
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: el_div,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Derek_Vansant_company_URL__processProxyResponse
+				);
+				return;
+			}
+			
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			
+			//1
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Derek_Vansant_company_URL__processProxyResponse
+			);
+			//2
+			req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				seed_arg1: d1b,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				Derek_Vansant_company_URL__processProxyResponse
+			);
+			//3
+			if (d3c.value != '') {
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1c,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					Derek_Vansant_company_URL__processProxyResponse
+				);
+			}
+		}
+		
+		function Derek_Vansant_company_URL__processProxyResponse(rs, seed_arg) {
+			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = seed_arg;
+			//~ console.log(seed_arg);
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// regular = ^http://www.site.com$
+				// subdomains = [\.\/]site.com$
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+					short_domain = y[1];
+				} else
+					short_domain = x;
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = '';
+						}
+					}
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = '';
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				
+				// push first match
+				// but only if array is empty
+				// or all in array equal this domain
+				// DO THIS AFTER BUTTONS ARE ON PAGE!
+				if (count == 0) {
+					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+						ARRAY_FIRST_FINDS.push(x);
+					} else if (ARRAY_FIRST_FINDS.length == 0)
+						ARRAY_FIRST_FINDS.push(x);
+				}
+				
+				count++;
+			}
+			if (rs.length > 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out_div.appendChild(d);
+			}
+		}
+	}
 	//
 	// Jordan Burke
 	// Find the Website Address for Companies
