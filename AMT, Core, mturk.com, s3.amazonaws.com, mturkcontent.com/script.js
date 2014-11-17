@@ -130035,7 +130035,7 @@ function top_window() {
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-		GM_addStyle('body {width:20%}');
+		//~ GM_addStyle('body {width:20%}');
 		
 		var run = function() {};
 		run.prototype.f = function() {
@@ -130046,8 +130046,10 @@ function top_window() {
 			d2.setAttribute('style','position:absolute;top:0px;left:0%;');
 			document.body.appendChild(d2);
 		
-			var a = document.getElementsByTagName('a')[0].href;
-			a += '&hl=en';
+			var a = document.getElementsByClassName('overview-wrapper')[0].getElementsByTagName('a')[0].href;
+			//~ a += '&hl=en';
+			//~ var a = document.getElementsByTagName('a')[0].href;
+			//~ a += '&hl=en';
 			
 			// Init.
 			page();
@@ -130079,23 +130081,24 @@ function top_window() {
 						}
 						
 						//<div id=resultStats>About 3 results<nobr>
+						//<div id="resultStats">About 2 results<nobr>
 						
-						var r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
-						var r2= /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
+						var r = /<div id="?resultStats"?>About ([\d,]+) results<nobr>/.exec(rs);
+						var r2= /<div id="?resultStats"?>([\d,]+) result<nobr>/.exec(rs);
 						
 						if (r) {
-							r = r[1];
-							document.getElementById('Q1').value = r;
+							r = r[1].replace(/,/g, '');
+							document.getElementById('Answer_1_FreeText').value = r;
 						} else if (r2) {
-							r2 = r2[1];
-							document.getElementById('Q1').value = r2;
+							r2 = r2[1].replace(/,/g, '');
+							document.getElementById('Answer_1_FreeText').value = r2;
 						} else {
 							if  (
 									rs.indexOf('No other sizes of this image found.') != -1 ||
 									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
 								)
 							{
-								document.getElementById('Q1').value = 0;
+								document.getElementById('Answer_1_FreeText').value = 0;
 							} else {
 								console.log('x');
 							}
