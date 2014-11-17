@@ -2538,7 +2538,7 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				address: td[1].innerText.trim(),
+				address: td[1].innerText.trim().replace(/^(\d+)([a-z])/i, '$1 $2'), // ADD A SPACE BETWEEN e.g. "2124323Westmont"
 				date: td[3].innerText.trim(),
 				address_auto_clean: null,
 				address_clean_reg: null,
@@ -2588,7 +2588,14 @@ function MT__RUN() {
 				.replace(/ (ln|lane)([\.,]* )/g,		' (ln|lane)$2')
 				.replace(/ (hwy|highway)([\.,]* )/g,		' (hwy|highway)$2')
 				.replace(/ (ter|terrace)([\.,]* )/g,		' (ter|terrace)$2')
+				.replace(/ (cv|cove)([\.,]* )/g,		' (cv|cove)$2')
+				.replace(/ (blvd|boulevard)([\.,]* )/g,		' (blvd|boulevard)$2')
+				.replace(/ (apt|unit|apartment|#)([\.,]* )/g,		' (apt|unit|apartment|#)$2')
 			;
+			//cove
+			//
+			//
+			//
 			o.address_clean_reg  = new RegExp(
 				x,
 				''
@@ -2666,10 +2673,21 @@ function MT__RUN() {
 							
 							d1.innerHTML = MT__bold(o.zillow_response_address, o.bold) + '<br>';
 							
-							d1.innerHTML += MT___diffString(
-								o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
-								o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case()
-							);
+							// Zillow With Address
+							if (/\d{4,5}$/.exec(o.zillow_response_address)) {
+								d1.innerHTML += MT___diffString(
+									o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
+									o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case()
+								);
+							}
+							// Zillow w/o Address
+							else {
+								d1.innerHTML += MT___diffString(
+									o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
+									o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+								);
+							}
+							
 							//~ var x = MT___diffString2(
 								//~ o.zillow_response_address,
 								//~ o.address
