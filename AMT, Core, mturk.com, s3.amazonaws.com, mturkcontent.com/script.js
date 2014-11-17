@@ -130089,16 +130089,19 @@ function top_window() {
 						if (r) {
 							r = r[1].replace(/,/g, '');
 							document.getElementById('Answer_1_FreeText').value = r;
+							doSubmit('hitForm');
 						} else if (r2) {
 							r2 = r2[1].replace(/,/g, '');
 							document.getElementById('Answer_1_FreeText').value = r2;
+							doSubmit('hitForm');
 						} else {
 							if  (
-									rs.indexOf('No other sizes of this image found.') != -1 ||
+									rs.indexOf('No other sizes of this image found.') != -1 &&
 									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
 								)
 							{
 								document.getElementById('Answer_1_FreeText').value = 0;
+								doSubmit('hitForm');
 							} else {
 								console.log('x');
 							}
