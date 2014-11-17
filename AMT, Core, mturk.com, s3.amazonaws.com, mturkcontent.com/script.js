@@ -9406,7 +9406,7 @@ function MT__RUN() {
 			return;
 		} else if (!AMT__Global_Vars.isPreview) {			// Accepted
 			// add
-			addToTabsQ();
+			//addToTabsQ();
 		}
 		
 		// FB 
@@ -9561,7 +9561,7 @@ function MT__RUN() {
 								return false;
 							},
 							//~ do_submit_next_tab: true
-							do_submit_add_to_tabs_queue: true
+							do_submit_add_to_tabs_queue: false
 						}
 					);
 				}
