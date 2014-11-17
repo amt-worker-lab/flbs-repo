@@ -9560,8 +9560,8 @@ function MT__RUN() {
 								// CONTINUES (job is NOT in "preview" mode)
 								return false;
 							},
-							//~ do_submit_next_tab: true
-							do_submit_add_to_tabs_queue: false
+							do_submit_next_tab: true
+							//do_submit_add_to_tabs_queue: true
 						}
 					);
 				}
