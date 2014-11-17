@@ -53661,9 +53661,9 @@ qatar,80
 			//
 			//Charlestown Yoga (Charlestown MA)
 			// REMOVED U\.S\. 
-			var reg = /<p>Business Name \(City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
+			var reg = /<p>Business Name \((U\.S\. *|)City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
 			if (reg) {
-				reg = reg[1];
+				reg = reg[2];
 				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
 				if (reg2) {
 					reg2 = reg2[1];
