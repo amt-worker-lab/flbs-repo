@@ -129739,7 +129739,6 @@ function top_window() {
 	//
 	s = '<p class=" text">Click the link, wait for the page to load, then copy the URL from your web browser address bar and paste it into the text box below on a line by itself.</p>';
 	//s = '<li>For each result in English, click the link and <b>go to that web page in your browser</b></li>';
-	
 	//s = 'For each web page that is in English, click each search result link  (the underlined blue text) and';
 	//s = '<li>When all URLs are added, (#4) copy and paste this list into the text box below</li>';
 	if  (
@@ -129758,7 +129757,7 @@ function top_window() {
 		
 		var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0&num=10';
 		
-		console.log(url);//return;
+		console.log(url);
 		
 		var start = 0;
 		
@@ -129768,27 +129767,19 @@ function top_window() {
 		
 		var url_current = url;
 		
-		var d;
-		d=document.createElement('input'); //
-		d.setAttribute('id','d1');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='0px';
-		d1.style.left='0';
-		d1.style.width='10%';
+		var d1=document.createElement('input'); //
+		d1.setAttribute('type','button');
+		d1.setAttribute('style','position:absolute;top:0px;left:0;width:10%;');
+		document.body.appendChild(d1);
 		d1.onclick = function() {
 			document.body.style.backgroundColor = 'white';
 			john_roberts_getnextpage();
 		}
-		d=document.createElement('input'); //
-		d.setAttribute('id','d2');
-		d.setAttribute('type','text');
-		d.setAttribute('value','0');
-		d.setAttribute('style','position:absolute;top:0px;left:10%;');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
+		var d2=document.createElement('input'); //
+		d2.setAttribute('type','text');
+		d2.setAttribute('value','0');
+		d2.setAttribute('style','position:absolute;top:0px;left:10%;');
+		document.body.appendChild(d2);
 		
 		var o = {
 			num_zero_pages: 0
@@ -130032,7 +130023,7 @@ function top_window() {
 		
 	//
 	// John Roberts
-	//
+	// Get number of search results
 	//
 	//s = 'Near the top left of the search results page, there is a number, which is the quantity of search results found. The number is in gray text and usually says ';
 	s = 'Near the top of the search results page is a piece of gray text that says "About X results..." Enter the number represented by X.';
@@ -130045,13 +130036,78 @@ function top_window() {
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 		GM_addStyle('body {width:20%}');
-		var a = document.getElementsByTagName('a')[0].href;
 		
-		a += '&hl=en';
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			
+			var d2=document.createElement('input'); //
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;');
+			document.body.appendChild(d2);
 		
-		GM_xmlhttpRequest({
+			var a = document.getElementsByTagName('a')[0].href;
+			a += '&hl=en';
+			
+			// Init.
+			page();
+			
+			// ...
+			document.body.addEventListener('dblclick', page, false);
+			
+			function page() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: a,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						} else if (/captcha/.exec(rs)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						if (rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1) {
+							d2.value = 'The image is too big, or the network connection is too slow to download it.';
+							d2.style.border = '8px dashed green';
+							d2.style.backgroundColor = 'MintCream';
+							console.log('The image is too big, or the network connection is too slow to download it.');
+							return;
+						}
+						
+						//<div id=resultStats>About 3 results<nobr>
+						
+						var r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
+						var r2= /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
+						
+						if (r) {
+							r = r[1];
+							document.getElementById('Q1').value = r;
+						} else if (r2) {
+							r2 = r2[1];
+							document.getElementById('Q1').value = r2;
+						} else {
+							if  (
+									rs.indexOf('No other sizes of this image found.') != -1 ||
+									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
+								)
+							{
+								document.getElementById('Q1').value = 0;
+							} else {
+								console.log('x');
+							}
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		/*GM_xmlhttpRequest({
 			method: 'GET',
-url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a)+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
+			url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a)+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
 			onload: function (response) {
 				//var rs=response.responseText;
 			}
@@ -130067,107 +130123,105 @@ url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent
 						clearInterval(xint1);
 						
 						//<div id=resultStats>About 3 results<nobr>
-						var r;
-						r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
+						
+						var r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
+						var r2= /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
+						
 						if (r) {
 							r = r[1];
 							document.getElementById('Q1').value = r;
+						} else if (r2) {
+							r2 = r2[1];
+							document.getElementById('Q1').value = r2;
 						} else {
-							r = /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
-							if (r) {
-								r = r[1];
-								document.getElementById('Q1').value = r;
+							if  (
+									rs.indexOf('No other sizes of this image found.') != -1 ||
+									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
+								)
+							{
+								document.getElementById('Q1').value = 0;
 							} else {
-								if  (
-										rs.indexOf('No other sizes of this image found.') != -1 &&
-										rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
-									)
-								{
-									document.getElementById('Q1').value = 0;
-								}
-								else {
-									console.log('x');
-								}
+								console.log('x');
 							}
 						}
 						
 						return;
 						
-						if (rs.indexOf('&amp;start=10') != -1) {
-							GM_xmlhttpRequest({
-								method: 'GET',
-url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a+'&start=10')+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
-								onload: function (response) {
-									//var rs = response.responseText;
-								}
-							});
-							
-							var xint2 = setInterval(function() {
-								GM_xmlhttpRequest({
-									method: 'GET',
-									url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(a+'&start=10'),
-									onload: function (response) {
-										var rs = response.responseText;
-										if (rs.trim() != '') {
-											clearInterval(xint2);
-											//console.log('int2');
-											
-											var r;
-											r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
-											if (r) {
-												r = r[1];
-												document.getElementById('Q2').value = r;
-											} else {
-												r = /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
-												if (r) {
-													r = r[1];
-													document.getElementById('Q2').value = r;
-												} else {
-													r = /<div id=resultStats>Page 2 of about ([^ ]+) results<nobr>/.exec(rs);
-													if (r) {
-														r = r[1];
-														document.getElementById('Q2').value = r;
-													} else {
-														r = /<div id=resultStats>Page 2 of ([^ ]+) results<nobr>/.exec(rs);
-														if (r) {
-															r = r[1];
-															document.getElementById('Q2').value = r;
-														}
-													}
-												}
-											}
-											
-											//ds
-											if  (
-													document.getElementById('Q1').value != '' &&
-													document.getElementById('Q2').value != ''
-												)
-											{
-												//doSubmit();
-											}
-										}
-									}
-								});
-							}, 2000);
-						} else {
-							document.getElementById('Q2').value = 0;
-						}
-						
-						//ds
-						if  (
-								document.getElementById('Q1').value != '' &&
-								document.getElementById('Q2').value != ''
-							)
-						{
-							//doSubmit();
-						} else {
-							console.log(document.getElementById('Q1').value);
-							console.log(document.getElementById('Q2').value);
-						}
+						//~ if (rs.indexOf('&amp;start=10') != -1) {
+							//~ GM_xmlhttpRequest({
+								//~ method: 'GET',
+//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a+'&start=10')+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
+								//~ onload: function (response) {
+									//~ //var rs = response.responseText;
+								//~ }
+							//~ });
+							//~ 
+							//~ var xint2 = setInterval(function() {
+								//~ GM_xmlhttpRequest({
+									//~ method: 'GET',
+									//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(a+'&start=10'),
+									//~ onload: function (response) {
+										//~ var rs = response.responseText;
+										//~ if (rs.trim() != '') {
+											//~ clearInterval(xint2);
+											//~ //console.log('int2');
+											//~ 
+											//~ var r;
+											//~ r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
+											//~ if (r) {
+												//~ r = r[1];
+												//~ document.getElementById('Q2').value = r;
+											//~ } else {
+												//~ r = /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
+												//~ if (r) {
+													//~ r = r[1];
+													//~ document.getElementById('Q2').value = r;
+												//~ } else {
+													//~ r = /<div id=resultStats>Page 2 of about ([^ ]+) results<nobr>/.exec(rs);
+													//~ if (r) {
+														//~ r = r[1];
+														//~ document.getElementById('Q2').value = r;
+													//~ } else {
+														//~ r = /<div id=resultStats>Page 2 of ([^ ]+) results<nobr>/.exec(rs);
+														//~ if (r) {
+															//~ r = r[1];
+															//~ document.getElementById('Q2').value = r;
+														//~ }
+													//~ }
+												//~ }
+											//~ }
+											//~ 
+											//~ //ds
+											//~ if  (
+													//~ document.getElementById('Q1').value != '' &&
+													//~ document.getElementById('Q2').value != ''
+												//~ )
+											//~ {
+												//~ //doSubmit();
+											//~ }
+										//~ }
+									//~ }
+								//~ });
+							//~ }, 2000);
+						//~ } else {
+							//~ document.getElementById('Q2').value = 0;
+						//~ }
+						//~ 
+						//~ //ds
+						//~ if  (
+								//~ document.getElementById('Q1').value != '' &&
+								//~ document.getElementById('Q2').value != ''
+							//~ )
+						//~ {
+							//~ //doSubmit();
+						//~ } else {
+							//~ console.log(document.getElementById('Q1').value);
+							//~ console.log(document.getElementById('Q2').value);
+						//~ }
 					}
 				}
 			});
-		}, 2000);
+		}, 2000);*/
 	}
 }
 /*
