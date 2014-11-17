@@ -2541,6 +2541,7 @@ function MT__RUN() {
 				address: td[1].innerText.trim(),
 				date: td[3].innerText.trim(),
 				address_auto_clean: null,
+				address_clean_reg: null,
 				bold: null,
 				
 				zpid: null,
@@ -2564,6 +2565,33 @@ function MT__RUN() {
 				y: x[3]
 			};
 			o.address_auto_clean = o.address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase(); // remove zip
+			
+			// NOT //Joel_A_Folkerts_company__SP_replace(str)
+			// but...
+			var x = __js_escape_regEx( o.address.replace(/ \d+$/, '').replace(/[^\w\d ]/g, '').toLowerCase() ); // remove zip
+			x = x
+				.replace(/ (av|ave|avenue)([\.,]* )/g,	' (av|ave|avenue)$2')
+				.replace(/ (e|east)([\.,]* )/g,			' (e|east)$2')
+				.replace(/ (w|west)([\.,]* )/g,			' (w|west)$2')
+				.replace(/ (n|north)([\.,]* )/g,			' (w|north)$2')
+				.replace(/ (s|south)([\.,]* )/g,			' (w|)$2')
+				.replace(/ (sw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+				.replace(/ (nw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+				.replace(/ (se|southeast)([\.,]* )/g,	' (se|southeast)$2')
+				.replace(/ (ne|northeast)([\.,]* )/g,	' (ne|northeast)$2')
+				.replace(/ (rd|road)([\.,]* )/g,			' (rd|road)$2')
+				.replace(/ (st|street)([\.,]* )/g,		' (st|street)$2')
+				.replace(/ (pl|place)([\.,]* )/g,		' (pl|place)$2')
+				.replace(/ (ct|court)([\.,]* )/g,		' (ct|court)$2')
+				.replace(/ (dr|drive)([\.,]* )/g,		' (dr|drive)$2')
+				.replace(/ (trl|trail)([\.,]* )/g,		' (trl|trail)$2')
+			;
+			o.address_clean_reg  = new RegExp(
+				x,
+				''
+			);
+			
+			
 			o.bold = o.address.clean_string_to_array();
 			o.url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.address.replace(/\s+/g, '-'))+'_rb/';
 			
@@ -2647,11 +2675,38 @@ function MT__RUN() {
 							
 							d1.onclick = zillow_render;
 							
-							console.log(o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase());
-							console.log(o.address_auto_clean);
+							
+							var addr_tmp = o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d ]/g, '').toLowerCase(); //.replace(/[^\w\d]/g, '')
+							
+							//~ addr_tmp = __js_escape_regEx( addr_tmp ); // remove zip
+							//~ addr_tmp = addr_tmp
+								//~ .replace(/ (av|ave|avenue)([\.,]* )/g,	' (av|ave|avenue)$2')
+								//~ .replace(/ (e|east)([\.,]* )/g,			' (e|east)$2')
+								//~ .replace(/ (w|west)([\.,]* )/g,			' (w|west)$2')
+								//~ .replace(/ (n|north)([\.,]* )/g,			' (w|north)$2')
+								//~ .replace(/ (s|south)([\.,]* )/g,			' (w|)$2')
+								//~ .replace(/ (sw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+								//~ .replace(/ (nw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+								//~ .replace(/ (se|southeast)([\.,]* )/g,	' (se|southeast)$2')
+								//~ .replace(/ (ne|northeast)([\.,]* )/g,	' (ne|northeast)$2')
+								//~ .replace(/ (rd|road)([\.,]* )/g,			' (rd|road)$2')
+								//~ .replace(/ (st|street)([\.,]* )/g,		' (st|street)$2')
+								//~ .replace(/ (pl|place)([\.,]* )/g,		' (pl|place)$2')
+							//~ ;
+							//~ o.address_clean_reg  = new RegExp(
+								//~ x,
+								//~ ''
+							//~ );
+							
+							//~ console.log(o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase());
+							//~ console.log(o.address_auto_clean);
 							if  (
-								o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase() == o.address_auto_clean &&
-								o.address_auto_clean.length > 6
+									(
+									addr_tmp == o.address_auto_clean ||
+									o.address_clean_reg.exec(addr_tmp)
+									)
+									&&
+									o.address_auto_clean.length > 6
 								)
 							{
 								d1.click();
