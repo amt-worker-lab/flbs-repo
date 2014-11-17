@@ -2647,6 +2647,8 @@ function MT__RUN() {
 							
 							d1.onclick = zillow_render;
 							
+							console.log(o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, ''));
+							console.log(o.address_auto_clean);
 							if  (
 								o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, '') == o.address_auto_clean &&
 								o.address_auto_clean.length > 6
@@ -2668,6 +2670,9 @@ function MT__RUN() {
 				this.style.backgroundColor = 'LightGreen';
 				
 				var u = 'http://ppz.zillowstatic.com/hdp_chart/render.json?v=2&h=&zpid='+o.zpid+'&m=1&t=tenYears&jsonp=YUI.Env.JSONP.paparazzi'+o.zpid+'&size=standard&showForecast=true&signedIn=false';
+				
+				// NEXT
+				new AMT___core_factory().nextTab();
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -2747,6 +2752,12 @@ function MT__RUN() {
 							
 							if (!found_this_home_graph) {
 								d1.innerText = 'No "This Home" on graph.';
+								
+								document.getElementById('prop_val').value = 'NF';
+								document.getElementById('web_url').value = '';
+								
+								new AMT___core_factory().nextTab();
+								doSubmit();
 							}
 						}
 						
