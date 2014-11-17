@@ -2563,7 +2563,7 @@ function MT__RUN() {
 				d: x[2],
 				y: x[3]
 			};
-			o.address_auto_clean = o.address.replace(/[^\w\d]/g, '').toLowerCase();
+			o.address_auto_clean = o.address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, '');
 			o.bold = o.address.clean_string_to_array();
 			o.url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.address.replace(/\s+/g, '-'))+'_rb/';
 			
@@ -2579,8 +2579,6 @@ function MT__RUN() {
 			 * function zillow
 			 */
 			function zillow() {
-				
-				
 				
 				// e.g. http://www.zillow.com/homes/3462-FLAIR-DRIVE-DALLAS-TX-75229_rb/
 				GM_xmlhttpRequest({
@@ -2613,6 +2611,7 @@ function MT__RUN() {
 						}
 						
 						// Id?
+						//<h1 class="selected-addr zsg-h3 zsg-content_collapsed">Your search at 150 Zellwood Dr, Brunswick, GA:</h1><article id="zpid_99930041" 
 						//62817646
 						//33 S 2nd St, Wheeler, OR 97147 \- Zillow
 						var r = /<div id="initial-hdp-jsonp-([\d]+)" class="template hide">&nbsp;<!-- \{  "zpid" : "\d+", "propertyType" : "homes", "title" : "([^"]+)"/.exec(rs);
@@ -2620,7 +2619,8 @@ function MT__RUN() {
 							// Second type?
 							//430 Mill Pond Dr, Fenton, MI
 							//73969739
-							r = /<h1 class="selected-addr zsg-h3 zsg-content_collapsed">Your search at ([^:]+):<\/h1><article id="zpid_(\d+)" statusType="1" class="property-listing zsg-media"[^>]*>/.exec(rs);
+							//<h1 class="selected-addr zsg-h3 zsg-content_collapsed">Your search at 150 Zellwood Dr, Brunswick, GA:</h1><article id="zpid_99930041" 
+							r = /<h1 class="selected-addr zsg-h3 zsg-content_collapsed">Your search at ([^:]+):<\/h1><article id="zpid_(\d+)"/.exec(rs); // statusType="1" class="property-listing zsg-media"[^>]*>
 							if (r) {
 								// Re-order this.
 								r = [
@@ -2647,7 +2647,11 @@ function MT__RUN() {
 							
 							d1.onclick = zillow_render;
 							
-							if  (o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase() == o.address_auto_clean && o.address_auto_clean.length > 6) {
+							if  (
+								o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, '') == o.address_auto_clean &&
+								o.address_auto_clean.length > 6
+								)
+							{
 								d1.click();
 							}
 						}
