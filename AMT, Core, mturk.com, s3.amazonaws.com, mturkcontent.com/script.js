@@ -2585,6 +2585,9 @@ function MT__RUN() {
 				.replace(/ (ct|court)([\.,]* )/g,		' (ct|court)$2')
 				.replace(/ (dr|drive)([\.,]* )/g,		' (dr|drive)$2')
 				.replace(/ (trl|trail)([\.,]* )/g,		' (trl|trail)$2')
+				.replace(/ (ln|lane)([\.,]* )/g,		' (ln|lane)$2')
+				.replace(/ (hwy|highway)([\.,]* )/g,		' (hwy|highway)$2')
+				.replace(/ (ter|terrace)([\.,]* )/g,		' (ter|terrace)$2')
 			;
 			o.address_clean_reg  = new RegExp(
 				x,
