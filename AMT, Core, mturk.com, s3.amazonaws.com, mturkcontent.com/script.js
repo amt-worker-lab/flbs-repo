@@ -2563,7 +2563,7 @@ function MT__RUN() {
 				d: x[2],
 				y: x[3]
 			};
-			o.address_auto_clean = o.address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, '');
+			o.address_auto_clean = o.address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase(); // remove zip
 			o.bold = o.address.clean_string_to_array();
 			o.url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.address.replace(/\s+/g, '-'))+'_rb/';
 			
@@ -2647,10 +2647,10 @@ function MT__RUN() {
 							
 							d1.onclick = zillow_render;
 							
-							console.log(o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, ''));
+							console.log(o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase());
 							console.log(o.address_auto_clean);
 							if  (
-								o.zillow_response_address.replace(/[^\w\d]/g, '').toLowerCase().replace(/ \d+$/, '') == o.address_auto_clean &&
+								o.zillow_response_address.replace(/ \d+$/, '').replace(/[^\w\d]/g, '').toLowerCase() == o.address_auto_clean &&
 								o.address_auto_clean.length > 6
 								)
 							{
