@@ -125542,7 +125542,7 @@ function top_window() {
 		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
 		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
 		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-		GM_addStyle('input[type="radio"] {zoom:2;}');
+		GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
 		GM_addStyle('b {zoom:1.2;}');
 		GM_addStyle('.text {margin-top:10px;}'); // ?
 		
@@ -125574,7 +125574,8 @@ function top_window() {
 			
 			// bold
 			// Replace all instances of word
-			var els = qcw.getElementsByTagName('*');
+			var els = qcw.getElementsByTagName('p');
+			console.log(els);
 			for (var i in els) {
 				if (i == 'length') break;
 				els[i].innerHTML = els[i].innerHTML.replace(new RegExp('(' + __js_escape_regEx(word) + ')', 'gi'), '<b>$1</b>');
