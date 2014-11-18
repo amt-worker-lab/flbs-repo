@@ -2339,7 +2339,10 @@ function MT__RUN() {
 			for (var i in inputs) {
 				if (i == 'length') continue;
 				if (inputs[i].type != 'radio') continue;
-				if (inputs[i].value == '3') inputs[i].click();
+				if (inputs[i].value == '3') {
+					inputs[i].focus(); //?
+					inputs[i].click();
+				}
 			}
 			
 			// Scroll first input
