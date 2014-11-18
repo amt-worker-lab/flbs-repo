@@ -125503,13 +125503,22 @@ qatar,80
 
 
 
-/*
- * FUNCTION
+/**
+ * function top_window
  * TOP_WINDOW
+ * 
+ * 
+ * 
+ * 
  */
  
 function top_window() {
-
+	
+	/**
+	 * Check job is accepted;
+	 * Check no captcha;
+	 * Check signed in;
+	 */
 	if  (
 		GM_getValue('mt_captcha') != '0' ||
 		ih.indexOf('Want to work on this') != -1 ||
@@ -125519,6 +125528,54 @@ function top_window() {
 	var s, s2, s3;
 	
 	
+	
+	//
+	// Sentimeta
+	// Rate an aspect of a hotel on a 1-5 scale, from very negative to very positive
+	// 
+	var s = '<p class="overview title">Is the word used in the same sense, or different sense in the two sentences, given below? </p>';
+	if (ih.indexOf(s) != -1)
+	{		
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+		GM_addStyle('input[type="radio"] {zoom:2;}');
+		GM_addStyle('b {zoom:1.2;}');
+		
+		var run = function() {}
+		run.prototype.f = function() {
+			
+			var hw = document.getElementById('hit-wrapper');
+			
+			var radios = document.getElementsByName('Answer_1');
+			
+			var qcw = document.getElementsByClassName('question-content-wrapper')[0];
+			
+			var word = /<p class=" text">Word: ([^<]+)<\/p>/.exec(qcw.innerHTML)[1];//e.g. picture
+			word = __js_clean_html_str(word).trim();
+			console.log(word);
+			
+			// .onclick
+			for (var i in radios) {
+				if (i == 'length') break;
+				radios[i].onclick = function(e) {
+					if (this.checked) {
+						new AMT___core_factory().nextTab();
+						doSubmit('hitForm');
+					}
+				}
+			}
+			
+			// bold
+			// Replace all instances of word
+			qcw.innerHTML = qcw.innerHTML.replace(new RegExp('(' + __js_escape_regEx(word) + ')', 'gi'), '<b>$1</b>');
+			
+		}
+		new run().f();
+	}
 	//
 	// Crowd Task
 	// Top window find URL
