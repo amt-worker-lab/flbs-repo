@@ -53910,9 +53910,9 @@ qatar,80
 			// New Method?
 			//
 			//Charlestown Yoga (Charlestown MA)
-			var reg = /<p>Business Name \(U\.S\. City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
+			var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):(&nbsp;| )<b>([^<]+)<\/b><\/p>/.exec(ih);
 			if (reg) {
-				reg = reg[1];
+				reg = reg[2];
 				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
 				if (reg2) {
 					reg2 = reg2[1];
@@ -125544,9 +125544,12 @@ function top_window() {
 		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 		GM_addStyle('input[type="radio"] {zoom:2;}');
 		GM_addStyle('b {zoom:1.2;}');
+		GM_addStyle('.text {margin-top:10px;}'); // ?
 		
 		var run = function() {}
 		run.prototype.f = function() {
+			
+			// className(' text')
 			
 			var hw = document.getElementById('hit-wrapper');
 			
@@ -125571,7 +125574,12 @@ function top_window() {
 			
 			// bold
 			// Replace all instances of word
-			qcw.innerHTML = qcw.innerHTML.replace(new RegExp('(' + __js_escape_regEx(word) + ')', 'gi'), '<b>$1</b>');
+			var els = qcw.getElementsByTagName('*');
+			for (var i in els) {
+				if (i == 'length') break;
+				els[i].innerHTML = els[i].innerHTML.replace(new RegExp('(' + __js_escape_regEx(word) + ')', 'gi'), '<b>$1</b>');
+			}
+			//~ qcw.innerHTML = qcw.innerHTML.replace(new RegExp('(' + __js_escape_regEx(word) + ')', 'gi'), '<b>$1</b>');
 			
 		}
 		new run().f();
