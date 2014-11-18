@@ -2309,6 +2309,196 @@ function MT__RUN() {
 	}
 	
 	// 
+	// OpenDoor
+	// Photo ranking
+	//
+	s = 'Each row contains images from a home. Compare the <b>interior quality</b> of each home against the baseline using the\n    following scale:';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('input[type="radio"] {zoom:1.6}');
+			
+			// baseline
+			//~ "https://mls-crawler-results-production.s3.amazonaws.com/residential_photos/5051259/20140109165728326668000000-o.jpg" style="height: 220px"></td>
+                //~ <td><img src="https://mls-crawler-results-production.s3.amazonaws.com/residential_photos/5066851/20140207175405753423000000-o.jpg" style="height: 220px"></td>
+                //~ <td><img src="https://mls-crawler-results-production.s3.amazonaws.com/residential_photos/5066851/20140207175204880282000000-o.jpg"
+			
+			var o = {
+				current: null,
+				current_name: null
+			}
+			
+			// Click all where value=3
+			var inputs = document.getElementsByTagName('input');
+			for (var i in inputs) {
+				if (i == 'length') continue;
+				if (inputs[i].type != 'radio') continue;
+				if (inputs[i].value == '3') inputs[i].click();
+			}
+			
+			// Scroll first input
+			var inputs = document.getElementsByTagName('input');
+			for (var i in inputs) {
+				if (i == 'length') continue;
+				if (inputs[i].type != 'radio') continue;
+				o.current = inputs[i];
+				//~ var init = inputs[i];
+				//~ console.log(inputs[i].type);
+				// Set current
+				
+				// Timeout scroll into view
+				setTimeout(function() {
+					o.current.scrollIntoView();
+				}, 4000);
+				break;
+			}
+			
+			// .onclick
+			var inputs = document.getElementsByTagName('input');
+			for (var i in inputs) {
+				if (i == 'length') continue;
+				if (inputs[i].type != 'radio') continue;
+				inputs[i].addEventListener('click', function() {
+					this.style.zoom = '0.8';
+					o.current = this;
+				}, false);
+			}
+			
+			// keypress
+			window.addEventListener('keypress', keypress, false);
+			function keypress(e) {
+				var k = String.fromCharCode(e.keyCode); // (Upper)
+				console.log(k);
+				
+				// Not enough
+				//<input type="radio" id="936320-no-info" name="mls_listing_id-936320"
+				if (k == 'e' || k == 'E') {
+					var inputs = document.getElementsByName(o.current.name);
+					var count = 1;
+					for (var i in inputs) {
+						if (i == 'length') continue;
+						if (inputs[i].type != 'radio') continue;
+						if (inputs[i].id.indexOf('-no-info') != -1) {
+							// Click
+							// This will set o.current to inputs[i] as well
+							// as check it.
+							inputs[i].click();
+							// Goto next
+							scrollNext(inputs[i]);
+							break;
+						}
+					}
+					return;
+				}
+				
+				// K IS THE OFFSET
+				k = k*1;
+				if (k < 1 || k > 5) return;
+				
+				var inputs = document.getElementsByName(o.current.name);
+				var count = 1;
+				for (var i in inputs) {
+					if (i == 'length') continue;
+					if (inputs[i].type != 'radio') continue;
+					if (count == k) {// Click
+						// This will set o.current to inputs[i] as well
+						// as check it.
+						inputs[i].click();
+						// Goto next
+						scrollNext(inputs[i]);
+						break;
+					}
+					// Increment
+					count++;
+				}
+			}
+			
+			function add_bgc_parent(input) {
+				input.parentNode.parentNode.style.backgroundColor = 'LightGreen';
+			}
+			
+			function scrollNext(lastInput) {
+				
+				// Set parent row to color !
+				//
+				//
+				add_bgc_parent(lastInput);
+				
+				// ...
+				//
+				//
+				var inputs = document.getElementsByTagName('input');
+				var curr_name = null;
+				for (var i in inputs) {
+					if (i == 'length') continue;
+					if (inputs[i].type != 'radio' && inputs[i].type != 'submit') continue;
+					
+					// Is at the end? (The next is a submit?)
+					// Then it is at the end!
+					if (inputs[i].type == 'submit') {
+						inputs[i].scrollIntoView();
+						inputs[i].focus();
+						inputs[i].style.zoom = '2';
+						break;
+					}
+					
+					// Else Continuing...
+					if (inputs[i].name == lastInput.name) {
+						curr_name = inputs[i].name;
+					}
+					if (curr_name && curr_name != inputs[i].name) {
+						// break here
+						inputs[i].scrollIntoView();
+						// Set current
+						o.current = inputs[i];
+						break;
+					}
+				}
+			}
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function() {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			//~ var o = {
+				//~ radio_groups: {}
+			//~ }
+			//~ 
+			//~ var inputs = document.getElementsByTagName('input');
+			//~ var last = false;
+			//~ var list = [];
+			//~ for (var i in inputs) {
+				//~ if (i == 'length') continue;
+				//~ if (inputs[i].type != 'radio') continue;
+				//~ if (o.radio_groups.hasOwnProperty(inputs[i].name)) continue; // ERROR SO SKIP HERE
+				//~ 
+				//~ // .name, e.g. "mls_listing_id-1085556"
+				//~ if (inputs[i].name != last) {
+					//~ if (list.length != 0 && !o.radio_groups.hasOwnProperty(inputs[i].name)) { // ADD AS A PROPERTY, B/C OF AN ERROR WHERE THERE ARE 11 HOUSES RATHER THAN ONLY 6!
+						//~ o.radio_groups[ inputs[i].name ] = list;
+						//o.radio_groups.push(list);
+					//~ }
+					//~ // Reset this
+					//~ list = [];
+					//~ // Reset last
+					//~ last = inputs[i].name;
+				//~ }
+				//~ list.push(inputs[i]);
+			//~ }
+			//~ 
+			//~ console.log(o);
+		}
+		new run().f();
+	}
+	// 
 	// Jon Staff
 	// Review customer requests and categorize them
 	//
