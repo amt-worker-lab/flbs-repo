@@ -5047,6 +5047,13 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var rs = response.responseText;
 				if (response.status != 200) return;
 				
+				
+				// WORKS
+				//"<span itemprop="streetAddress">1 N Field Ct</span><br /><span itemprop="addressLocality">Lake Forest</span>, <span itemprop="addressRegion">IL</span>, 60045 <span itemprop="addressCountry">United States</span>"
+				// DOES NOT WORK (DOUBLES 1ST)
+				//"<div itemprop="address"><p>919A Bay Ridge Road</p><p>Annapolis, MD&nbsp;21403</p><p style="margin:5px 0;">United States</p></div>"
+				
+				//
 				//12050 West Broad Street
 				//
 				//United States
@@ -5064,6 +5071,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						r[i] = r[i].replace(/<[^>]*>/g, ' ');
 						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
 					}
+					
+					console.log(r);
+					console.log(r[0]);
+					console.log(r.length);
 					
 					if (opts.output_elements.hasOwnProperty('street'))
 						opts.output_elements.street.value = r[1];
@@ -5095,6 +5106,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					//~ );
 				//~ }
 				
+				// Bug: This doubles street.
 				// <div itemprop="address"><p>Via Pian Scairolo 9</p><p>Pazzallo</p><p>Lugano, &nbsp;6912</p><p style="margin:5px 0;">Switzerland</p></div>
 				if (!r1 && !r2 && r3) {
 					r = r3;
@@ -5102,7 +5114,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					delete r.index;
 					delete r.input;
 					for (var i = 0; i<r.length; i++) {
-						console.log(r[i]);
+						//~ console.log(r[i]);
 						r[i] = __js_clean_html_str(r[i].replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 					}
 					
@@ -5201,7 +5213,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode(m[4]));
 					
-					d1b.appendChild(div);
+					d1c.appendChild(div);
 					
 					c++;
 				}
@@ -5224,21 +5236,32 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			}
 		});
 	}
-	function hoovers_addr_prof(u) {
+	/**
+	 * function hoovers_addr_prof
+	 * 
+	 * @param	btn		element
+	 * @returns	none	
+	 */
+	function hoovers_addr_prof(btn) {
+		
+		//~ this.url_hv
+		var btn = btn;
 		
 		GM_xmlhttpRequest({ // init
 			method: "GET",
-			url: u,
-			timeout:10000,
+			url: btn.url_hv,
+			timeout: 20000,
 			onload: function(response) {
 				var rs = response.responseText;
+				
+				btn.style.border = '2px solid teal';
+				
 				if (response.status != 200) return;
-				console.log('x');
 				// clear
 				clear_output_elements();
 				
-				console.log('x');
-				
+				// <div itemprop="address"><p>639 Front Street</p><p>Floor 4</p><p>San Francisco, CA&nbsp;94111</p><p style="margin:5px 0;">United States</p></div>
+
 				// ZIP [\d\-]+ REPLACE WITH [^<]+
 				var r, r1, r2;//, r3;
 				r1 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]+)<span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
@@ -5249,6 +5272,13 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				
 				if (r1) {
 					r = r1;
+					
+					// ...
+					delete r.index;
+					delete r.input;
+					delete r.length;
+					
+					// ...
 					for (var i = 1; i<= 5; i++) {
 						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
 					}
@@ -5325,7 +5355,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						// focus
 						opts.first_element.focus();
 						
-						hoovers_addr_prof(this.url_hv);
+						hoovers_addr_prof(this);
 					}
 					
 					div.appendChild(inp);
