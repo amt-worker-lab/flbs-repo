@@ -1,3 +1,20 @@
+chrome.windows.getAll({}, function(allWindows) {
+	if(allWindows.length == 1) {
+		localStorage['UTILITY_WINDOW'] = 'unset';
+	}
+	else {
+		var found = false;
+		for(var i = 0; i < allWindows.length; i++) {
+			if(allWindows[i].id == localStorage['UTILITY_WINDOW']) {
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+			localStorage['UTILITY_WINDOW'] = 'unset';			
+	}
+})
+
 /**
  * chrome.extension.onRequest.addListener
  * 
@@ -84,9 +101,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	//isUtilityWindow
 	if(request.getIsUtilityWindow) {
-		
-		sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
+		if(localStorage['UTILITY_WINDOW' == 'unset' || undefined)
+			sendResponse({UTILITY_WINDOW:'unset'}
+		else {
+			chrome.windows.get(localStorage['UTILITY_WINDOW'] *1 , function(window) {
+				alert(window);
+				if(!window || window.length == 0) {
+					localStorage[UTILITY_WINDOW] = 'unset';
+					sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
+				}
+			});
+			return false;
+		}
 	}
+	
 	if(request.setUTILITY_WINDOW) {
 		//console.log(sender.tab.window);
 		//console.log(sender.window);
