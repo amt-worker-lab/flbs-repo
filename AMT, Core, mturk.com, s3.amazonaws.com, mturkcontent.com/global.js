@@ -4809,85 +4809,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	opts.parent.appendChild(x);
 	/* END ITEMS */
 	
-	
-	//~ //
-	//~ d = document.createElement('input');
-	//~ d.setAttribute('id','d2b');
-	//~ document.body.appendChild(d);
-	//~ var d2b = document.getElementById('d2b');
-	//~ d2b.style.position='absolute';
-	//~ d2b.style.top='500px';
-	//~ d2b.style.left='0%';
-	//~ d2b.style.width='18%';
-	//~ d2b.style.height='30px';
-	//~ d2b.type = "button";
-	//~ d2b.value = "United States";
-	//~ d2b.onclick = function() {
-		//~ this.style.backgroundColor = 'LightGreen';
-		//~ document.getElementById("Country").value = "US";
-		//~ //document.getElementById("Country").value = "United States";
-	//~ }
-	//
-	//~ d = document.createElement('textarea');
-	//~ d.setAttribute('id','d2c');
-	//~ document.body.appendChild(d);
-	//~ var d2c = document.getElementById('d2c');
-	//~ d2c.style.position='absolute';
-	//~ d2c.style.top='50px';
-	//~ d2c.style.left='0%';
-	//~ d2c.style.width='18%';
-	//~ d2c.style.height='40px';
-	//~ d2c.value = "Street Address\nCity, State Zip"; //800 S Main St Canandaigua, NY 14424
-	//~ //
-	//~ var d2d = document.createElement('a');
-	//~ document.body.appendChild(d2d);
-	//~ d2d.style.position='absolute';
-	//~ d2d.style.top='110px';
-	//~ d2d.style.left='0%';
-	//~ d2d.style.width='18%';
-	//~ d2d.style.height='20px';
-	//~ d2d.target='_blank';
-	//~ //
-	
-	
-	
-	//~ var d2e = document.createElement('button');
-	//~ d2e.setAttribute('style','position:absolute;top:90px;left:0;width:18%;height:20px;');
-	//~ document.body.appendChild(d2e);
-	//~ d2e.innerText = 'N/A';
-	
-	
-	
-	//~ //
-	//~ d = document.createElement('textarea');
-	//~ d.setAttribute('id','d2d');
-	//~ d.setAttribute('style','position:absolute;top:500px;left:0;width:18%;height:98px;');
-	//~ document.body.appendChild(d);
-	//~ var d2d = document.getElementById('d2d');
-	//~ d2d.value = '';
-	//~ d2d.onblur = Data_Cleansing_find_company_addr__skips_write;
-	//~ d2d.onfocus = function() {
-		//~ Data_Cleansing_find_company_addr__skips_init(false);
-	//~ }
-	/* END ITEMS */
-	
-	//~ // ...
-	//~ var b;
-	//~ b = /<h2 style="[^"]*">Organization Name: ([^<]+)<\/h2>/.exec(ih)[1];
-	//~ b = __js_clean_html_str(b).trim();
-	//~ var COMP = b;
-	//~ var location = '';
-	
+	// ...
 	var COMP = d2.value.trim();
-	
-	//~ // ...
-	//~ var location;
-	//~ location = /<p><span style="font-family: Arial;">Suggested Location:&nbsp;<b>([^<]+)<\/b><\/span><\/p>/.exec(ih);
-	//~ if (location) {
-		//~ location = __js_clean_html_str(location).trim();
-		//~ location = location.replace(/ +[A-Z]{2}$/, '');
-	//~ } else location = '';
-	//var b = document.getElementsByTagName('b')[0].innerText.trim();
 	
 	// ...
 	var match_o = COMP;
@@ -4911,50 +4834,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		businessweek_addr(false);
 		google_addr();
 	}
-	//~ d2c.onclick = function() {
-		//~ this.value = '';
-		//~ this.onclick = function() {};
-	//~ }
-	//~ d2c.onblur = function() {
-		//~ // blanks
-		//~ document.getElementById('address1').value =		'';
-		//~ document.getElementById('address2').value =		'';
-		//~ document.getElementById('city').value =			'';
-		//~ document.getElementById('state').value =		'';
-		//~ document.getElementById('postalcode').value =	'';
-		//~ 
-		//~ this.value = this.value.replace(/ +/g, ' ');
-		//~ this.value = this.value.replace(/\n +/g, "\n");
-		//~ this.value = this.value.replace(/^ +/g, '');
-		//~ this.value = this.value.trim();
-		//~ 
-		//~ var x = this.value.split("\n");
-		//~ 
-		//~ document.getElementById('address1').value = x[0].trim();
-		//~ 
-		//~ if (x[1]) {
-			//~ x[1] = x[1].trim();
-			//~ var y = /^([^,]*),([ a-z]+)([\d\-]*)$/i.exec(x[1]);
-			//~ if (y) {
-				//~ document.getElementById('city').value		= y[1].trim();
-				//~ document.getElementById('state').value		= y[2].toUpperCase().trim();
-				//~ document.getElementById('postalcode').value	= y[3];
-				//~ if (y[2].trim().length != 2) {
-					//~ document.getElementById('state').style.border = '3px solid teal';
-				//~ }
-			//~ }
-		//~ }
-	//~ }
-	//~ d2e.onclick = function() {
-		//~ this.style.backgroundColor = 'LightGreen';
-		//~ document.getElementById('address1').value =		'N/A';
-		//~ document.getElementById('address2').value =		'N/A';
-		//~ document.getElementById('city').value =			'N/A';
-		//~ document.getElementById('state').value =		'N/A';
-		//~ document.getElementById('postalcode').value =	'N/A';
-		//~ doSubmit();
-		//~ new AMT___core_factory().nextTab();
-	//~ }
 	
 	// ...
 	var ef = new AMT___events_factory();
@@ -4970,9 +4849,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			//~ new AMT___core_factory().nextTab();
 		}
 	}
-	
-	
-	
 	
 	// ...
 	AMT___POPUP__initializeGlobals(

@@ -72476,6 +72476,112 @@ qatar,80
 	 * Pharm3r
 	 */
 	//
+	// Carol Chen
+	// Find headquarter of the company
+	// 
+	s = '<p>Find the company headquarter.</p>';
+	if(ih.indexOf(s) != -1)
+	{
+		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		GM_addStyle('body {width:18%;margin-top:160px !important;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+		GM_addStyle('input {width:18% !important;}');
+		GM_addStyle('.panel-primary {position:absolute;top:1800px;margin-left:100px;width:80%;}');
+		//~ GM_addStyle('.panel-heading {position:absolute;top:1800px;margin-left:100px;width:80%;}');
+		
+		var td = document.getElementsByTagName('td');
+		var o = {
+			comp: td[1].innerText.trim()
+		};
+		
+		/*BEGIN ITEMS*/
+		var dx1 = document.createElement('div');
+		dx1.setAttribute('style','position:absolute;top:0px;left:20%;width:79%;height:500px;border:2px dashed blue;');
+		document.body.appendChild(dx1);
+		var dx2 = document.createElement('textarea');
+		dx2.setAttribute('style','position:absolute;top:0px;left:0%;width:18%;height:160px;');
+		document.body.appendChild(dx2);
+		dx2.value = o.comp;
+		/*END ITEMS*/
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [
+				dx1
+			],
+			offset: 0 // offset top
+		});
+		
+		var qs = document.getElementsByName('web_url');
+		var opts = {
+			parent: dx1,
+			parent_controller_el: dx2,
+			output_elements: {
+				//~ city:	document.getElementById('city'),
+				//~ state:	document.getElementById('state'),
+				//~ country:document.getElementById('country')
+				
+				street:	qs[0],
+				city:	qs[1],
+				state:	qs[2],
+				zip:	qs[3],
+				country:qs[4]
+			},
+			submitButton_onclick_callback: function(e) {
+				//~ // All blank
+				//~ var found_one = false;
+				//~ for (var i in output_elements) {
+					//~ if (output_elements[i].value.trim() != '') {
+						//~ found_one = true;
+						//~ break;
+					//~ }
+				//~ }
+				//~ if (!found_one) {
+					//~ return false;
+				//~ }
+				//~ 
+				//~ // Submit
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+				//~ 
+				//~ e.preventDefault();
+				//~ e.stopPropagation();
+				//~ return false;
+			}
+		};
+		
+		// onsubmit
+		document.getElementById('submitButton').onclick = function() {
+			// All blank
+			var found_one = false;
+			for (var i in opts.output_elements) {
+				if (opts.output_elements[i].value.trim() != '') {
+					found_one = true;
+					break;
+				}
+			}
+			if (!found_one) {
+				return false;
+			}
+			
+			// Country
+			if (opts.output_elements.country.value.trim() == '')
+				return false;
+			
+			// Submit
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			
+			return false;
+		}
+		
+		new AMT___items_factory().create_dashboard_find_address(opts);
+	}
+	//
 	// Pharm3r
 	// Find the Location of a Business
 	// 
