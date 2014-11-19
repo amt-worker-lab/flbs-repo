@@ -637,12 +637,12 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
       return;  // don't allow this extension access*/
       
       
-    else if (request.getTargetData)
+    /*else if (request.getTargetData)
       sendResponse({targetData: targetData});
     else if (request.activateLasers) {
       var success = activateLasers();
       sendResponse({activateLasers: success});
-    }
+    }*/
 
 });
 
@@ -1247,7 +1247,6 @@ chrome.windows.getAll({}, function(allWindows) {
 	}
 	else {
 		var found = false;
-		var 
 		for(var i = 0; i < allWindows.length; i++) {
 			if(allWindows[i].id == localStorage['UTILITY_WINDOW']) {
 				found = true;
