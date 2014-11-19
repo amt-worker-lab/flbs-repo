@@ -5061,35 +5061,51 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				r1 = /<div itemprop="address">((<p>[^<]+<\/p>)*)<p>([^,]+), ([A-Z]{2})&nbsp;([\d\-]+)<\/p><p style="[^"]*">([^<]+)<\/p><\/div>/.exec(rs);
 				//~ r2 = /<div itemprop="address">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
 				r3 = /<div itemprop="address">((<p[^>]*>[^<]+<\/p>)*)/.exec(rs);
-				//~ console.log(r1);
-				//~ console.log(r2);
-				//~ console.log(r3);
 				
+				// e.g. "<div itemprop="address"><p>34 west 17th street</p><p>3rd Floor</p><p>New York, NY&nbsp;10011</p><p style="margin:5px 0;">United States</p></div>"
 				if (r1) {
 					r = r1;
+					var addr = [];
 					for (var i = 1; i<= r.length - 1; i++) {
 						r[i] = r[i].replace(/<[^>]*>/g, ' ');
 						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+						
+						if (i == 2) continue;
+						addr.push(r[i]);
 					}
 					
-					console.log(r);
-					console.log(r[0]);
-					console.log(r.length);
+					// 0=...
+					// 1= Street address (including suite)
+					// 2= A duplicate of 1 or JUST the suite number, which is also part of 1 already
+					// 3= City
+					// 4= State abbr
+					// 5= Zip
+					// 6= Country
+					
+					// BECOMES
+					
+					// 0=Street
+					// 1=City
+					// 2=State
+					// 3=Zip
+					// 4=Country
+					
+					console.log(addr);
 					
 					if (opts.output_elements.hasOwnProperty('street'))
-						opts.output_elements.street.value = r[1];
+						opts.output_elements.street.value = addr[0];
 					
 					if (opts.output_elements.hasOwnProperty('city'))
-						opts.output_elements.city.value = r[2];
+						opts.output_elements.city.value = addr[1];
 					
 					if (opts.output_elements.hasOwnProperty('state'))
-						opts.output_elements.state.value = r[3];
+						opts.output_elements.state.value = addr[2];
 					
 					if (opts.output_elements.hasOwnProperty('zip'))
-						opts.output_elements.zip.value = r[4];
+						opts.output_elements.zip.value = addr[3];
 					
 					if (opts.output_elements.hasOwnProperty('country'))
-						opts.output_elements.country.value = r[5];
+						opts.output_elements.country.value = addr[4];
 					
 					//~ document.getElementById('address1').value = r[1];
 					//~ // in reverse
