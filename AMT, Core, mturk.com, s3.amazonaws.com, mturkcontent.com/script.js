@@ -26276,8 +26276,8 @@ function MT__RUN() {
 		// Sometimes the first <b> on the page will be
 		// a note rather than the name!
 		var b		= document.getElementsByTagName('b');
-		var name	= b[1].innerText.trim();
-		var addr	= b[2].innerText.trim();
+		var name	= b[0].innerText.trim();
+		var addr	= b[1].innerText.trim();
 		var btns	= document.getElementsByTagName('button');
 		
 		// vars
