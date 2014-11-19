@@ -101,11 +101,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	//isUtilityWindow
 	if(request.getIsUtilityWindow) {
-		if(localStorage['UTILITY_WINDOW' == 'unset' || undefined)
-			sendResponse({UTILITY_WINDOW:'unset'}
+		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined){
+			sendResponse({UTILITY_WINDOW:'unset'});
+		}
 		else {
 			chrome.windows.get(localStorage['UTILITY_WINDOW'] *1 , function(window) {
-				alert(window);
+				
 				if(!window || window.length == 0) {
 					localStorage[UTILITY_WINDOW] = 'unset';
 					sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});

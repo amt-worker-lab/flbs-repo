@@ -181,6 +181,8 @@ function init_func_getIsUtilityWindow() {
 	chrome.extension.sendRequest({getIsUtilityWindow: true}, 
 		function(rs) 
 		{
+			console.log('got utility window?');
+			console.log(rs);
 			TOGGLE_IS_UTILITY_WINDOW.value = rs.UTILITY_WINDOW;
 		});	
 }
