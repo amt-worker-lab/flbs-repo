@@ -88,8 +88,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 	if(request.setUTILITY_WINDOW) {
 		//console.log(sender.tab.window);
-		console.log(sender.window);
-		localStorage['UTILITY_WINDOW'] = request.setUTILITY_WINDOW;
+		//console.log(sender.window);
+		chrome.windows.getLastFocused({}, function(window) {
+			console.log(window);
+			chrome.windows.update(window.id, {state:'fullscreen'});
+			localStorage['UTILITY_WINDOW'] = request.setUTILITY_WINDOW;
+		});
 	}
 	
 	
