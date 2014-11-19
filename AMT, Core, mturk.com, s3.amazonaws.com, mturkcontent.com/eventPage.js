@@ -82,6 +82,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		localStorage['NTPassBy'] = request.toggleNTPassBy;
 	}
 	
+	//isUtilityWindow
+	if(request.getIsUtilityWindow) {
+		sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
+	}
+	if(request.setUTILITY_WINDOW) {
+		console.log(request.sender.tab);
+		localStorage['UTILITY_WINDOW'] = request.setUTILITY_WINDOW;
+	}
+	
+	
 	//RA_Button_NextTab
 	if(request.toggleRA_Button_NextTab) {
 		localStorage['RA_Button_NextTab'] = request.toggleRA_Button_NextTab;

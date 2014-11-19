@@ -177,6 +177,15 @@ function init_func_r_button_nextTab() {
 		});	
 }
 
+function init_func_getIsUtilityWindow() {
+	chrome.extension.sendRequest({getIsUtilityWindow: true}, 
+		function(rs) 
+		{
+			TOGGLE_IS_UTILITY_WINDOW.value = rs.UTILITY_WINDOW;
+		});	
+}
+
+
 //getNTPassBy
 //toggleNAPassBy
 
@@ -192,9 +201,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
 	TOGGLE_RA_BUTTON_NEXTTAB = document.getElementById('R&A NextTab');
 	TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab');
+	TOGGLE_IS_UTILITY_WINDOW = document.getElementById('isUtilityWindow');
 	EL_STG_ACTIVE	= document.getElementById('CAPTCHA_stagger_is_active');
 	EL_STG_MIN		= document.getElementById('CAPTCHA_min_tabs_to_initiate_staggered');
 	EL_STG_TO		= document.getElementById('CAPTCHA_staggered_timeout_per_tab');
+	
+	
 	
 	init_func_doSubmit();
 	init_func_toggleRA();
@@ -204,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	init_func_ra_button_nextTab();
 	init_func_r_button_nextTab();
-	
+	init_func_getIsUtilityWindow();
 	
 	SELECT.onfocus = function() {
 		//SELECT.style.border = '2px solid LightGreen';
@@ -285,6 +297,22 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		);
 	}
+	
+	TOGGLE_IS_UTILITY_WINDOW.onclick = function() {
+		this.style.border = '4px solid LightGreen';
+		if(this.value == 'On') {
+			this.value = 'Off';
+		}
+		else
+			this.value = 'On';
+		chrome.extension.sendRequest(
+			{setUTILITY_WINDOW: TOGGLE_IS_UTILITY_WINDOW.value}, 
+			function(rs) {
+				//squelch rs
+			}
+		);
+	}
+	
 	
 	SELECT.onchange = SELECT.onblur = EL_STG_MIN.onchange = EL_STG_MIN.onblur = EL_STG_TO.onchange = EL_STG_TO.onblur = function() {
 		BTN_SAVE.click();
