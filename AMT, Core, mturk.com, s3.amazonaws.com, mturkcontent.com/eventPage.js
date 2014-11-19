@@ -1,23 +1,6 @@
-chrome.windows.getAll({}, function(allWindows) {
-	if(allWindows.length == 1) {
-		localStorage['UTILITY_WINDOW'] = 'unset';
-	}
-	else {
-		var found = false;
-		for(var i = 0; i < allWindows.length; i++) {
-			if(allWindows[i].id == localStorage['UTILITY_WINDOW']) {
-				found = true;
-				break;
-			}
-		}
-		if(!found)
-			localStorage['UTILITY_WINDOW'] = 'unset';			
-	}
-})
-
 /**
  * chrome.extension.onRequest.addListener
- * 
+ * Listen for messages from core-mturk scripts
  * 
  * 
  * 
@@ -646,6 +629,23 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  * End of onRequest
  */
  
+/**
+ * Listen for messages from OTHER scripts
+ * */
+chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
+	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
+      return;  // don't allow this extension access*/
+      
+      
+    else if (request.getTargetData)
+      sendResponse({targetData: targetData});
+    else if (request.activateLasers) {
+      var success = activateLasers();
+      sendResponse({activateLasers: success});
+    }
+
+});
+
 
 
 /**
@@ -1235,6 +1235,29 @@ function playRandomNextSound() {
  */
 //~ playRandomNextSound();
 
+
+/**
+ * 
+ * Does out Utility Window exist? If not, let localStorage know this.
+ **/
+chrome.windows.getAll({}, function(allWindows) {
+	var utilityWindow = null;
+	if(allWindows.length == 1) {
+		localStorage['UTILITY_WINDOW'] = 'unset';
+	}
+	else {
+		var found = false;
+		var 
+		for(var i = 0; i < allWindows.length; i++) {
+			if(allWindows[i].id == localStorage['UTILITY_WINDOW']) {
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+			localStorage['UTILITY_WINDOW'] = 'unset';			
+	}
+})
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {
