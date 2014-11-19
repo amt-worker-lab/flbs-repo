@@ -87,7 +87,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
 	}
 	if(request.setUTILITY_WINDOW) {
-		console.log(request.sender.tab);
+		//console.log(sender.tab.window);
+		console.log(sender.window);
 		localStorage['UTILITY_WINDOW'] = request.setUTILITY_WINDOW;
 	}
 	
