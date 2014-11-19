@@ -84,6 +84,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	//isUtilityWindow
 	if(request.getIsUtilityWindow) {
+		
 		sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
 	}
 	if(request.setUTILITY_WINDOW) {
@@ -92,8 +93,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		chrome.windows.getLastFocused({}, function(window) {
 			console.log(window);
 			chrome.windows.update(window.id, {state:'fullscreen'});
-			localStorage['UTILITY_WINDOW'] = request.setUTILITY_WINDOW;
+			localStorage['UTILITY_WINDOW'] = window.id;
+			sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
 		});
+		return true;
 	}
 	
 	

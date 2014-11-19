@@ -300,15 +300,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	TOGGLE_IS_UTILITY_WINDOW.onclick = function() {
 		this.style.border = '4px solid LightGreen';
-		if(this.value == 'On') {
-			this.value = 'Off';
-		}
-		else
-			this.value = 'On';
 		chrome.extension.sendRequest(
 			{setUTILITY_WINDOW: TOGGLE_IS_UTILITY_WINDOW.value}, 
 			function(rs) {
-				//squelch rs
+				if(rs.UTILITY_WINDOW) {
+					TOGGLE_IS_UTILITY_WINDOW.value =rs.UTILITY_WINDOW;
+				}
 			}
 		);
 	}
