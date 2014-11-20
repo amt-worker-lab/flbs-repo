@@ -55998,14 +55998,21 @@ qatar,80
 			function linkedin_biz__init() {
 				d1.innerText = '';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
-					//~ seed_arg1: d1,
-					yahoo_array: true
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+					//~ seed: d1b,
+					callback_function: linkedin_biz__complete,
+					//~ return_init_object: true
 				});
-				req_proxy.proxy_init();
-				req_proxy.proxy_waitComplete(
-					linkedin_biz__complete
-				);
+				
+				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					//~ url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+					//~ yahoo_array: true
+				//~ });
+				//~ req_proxy.proxy_init();
+				//~ req_proxy.proxy_waitComplete(
+					//~ linkedin_biz__complete
+				//~ );
 			}
 			function linkedin_biz__li_profile(div) {
 				
@@ -56027,7 +56034,7 @@ qatar,80
 						var sbm = true;
 						
 						// e.g. 222
-						r = /<li><a class="density" href="[^"]*">([\d,]+)<\/a> <span>Employees on LinkedIn<\/span><\/li>/.exec(rs);
+						r = /<li><a class="density" href="[^"]*">([\d,]+)<\/a> <span>Employees? on LinkedIn<\/span><\/li>/.exec(rs);
 						if (r) {
 							r = __js_clean_html_str(r[1]).trim();
 							document.getElementsByName('web_url')[0].value = r;
