@@ -237,6 +237,14 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	s = 'DO NOT provide links to contact forms, this is not acceptable, and'
+	if(ih.indexOf(s) != -1) {
+		console.log('RUNNING TEST OF UTILITY WINDOW');
+		chrome.extension.sendRequest({setUtilityTabs: [{url: 'http://www.google.com', active:true}]},function(rs){
+				//squelch rs
+			});
+	}
+	
 	//
 	//
 	//
