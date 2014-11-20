@@ -14,13 +14,25 @@ function AMTUtilitiesObj(options){
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	if(request.setUtilityTabs) {
+		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+			alert('no utility window set');
+			return false;
+		}
+
 		var senderId = sender.tab.id;
-		if(!UtilityAMTPairs[senderId]) {
-			if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
-				alert('no utility window set');
-				return false;
+		if(UtilityAMTPairs[senderId] &&
+		   UtilityAMTPairs[senderId].utilities &&
+		   UtilityAMTPairs[senderId].utilities.length > 0) {
+			//Remove all of the old utility tabs
+			var tabIdsToRemove = []
+			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
-			UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
+			chrome.tabs.remove(tabIdsToRemove);
+		}
+		
+		
+		UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
 															ownerTabId:senderId,
 															utilities: request.setUtilityTabs
 														});
@@ -30,12 +42,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//~ 
 				//~ });
 			
-			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 				//Create a tab for each utilityTab in utilities
 				currentUtility = UtilityAMTPairs[senderId].utilities[i];
 				var tabIdentifier = '###tabId'+senderId+'###at'+i;
 				currentUtility.url += tabIdentifier;
-				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : true)}, 
+				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : false)}, 
 					function(newTab) {
 						console.log('New Tab Created with url:' +newTab.url);
 						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
@@ -45,7 +57,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
 						console.log(UtilityAMTPairs[senderId]);
 					});
-			}
 		}
 	}
 	
