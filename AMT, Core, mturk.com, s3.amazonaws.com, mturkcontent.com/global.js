@@ -7107,7 +7107,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		
 		this.obj_vars.startPage_array = true;
 		
-		this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
+		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
+		
+		this.obj_vars.catch_include_array = [
+			'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.',
+			
+			// CAPTCHA, 2 DIFFERENT STRINGS FROM THE CAPTCHA ENTER PAGE.
+			'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.',
+			'<h2 >Please enter the text below to continue using StartPage.</h2>'
+		]
+		// UPDATE
+		// As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
 		
 		//~ this.obj_vars.url = 'https://startpage.com/do/search';
 		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';
@@ -7182,12 +7192,22 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
 				'';
 		
-		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
-						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
-						'&short_filename='+short_filename+
-						'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-						header_array;
+		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
+			o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+							'&short_filename='+short_filename+
+							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+							header_array;
+		} else {
+			o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
+							'&short_filename='+short_filename+
+							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+							header_array;
+		}
+		
 		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
 						'/mturk/.scripts/google/get-page.php?v='+short_filename;
 		
@@ -8678,6 +8698,7 @@ minimator = function(x,y,z) {
  * AMT___core_factory.prototype. = function() {
  * 
  * TODO: CLOSE btn
+ * TODO: ratings
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	
@@ -8803,9 +8824,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	
 	/**
 	 * tasks_obj
-	 //tasks_obj.table1_row_ids: {} db_id:true
-	 //tasks_obj.table2_row_ids: {} db_id:true
-	 //tasks_obj.table_rows:     {} db_id:row _ element
+	   tasks_obj.table1_row_ids: {} db_id:true
+	   tasks_obj.table2_row_ids: {} db_id:true
+	   tasks_obj.table_rows:     {} db_id:row _ element
 	 */ 
 	tasks_obj = {
 		current_db_ids: {},
@@ -8823,6 +8844,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		div_container: null,
 		table1: null,
 		table2: null,
+		
+		// ...
+		close_btn: null,
+		timer_btn: null,
+		user_select: null,
+		
+		// ...
+		db_users: [
+			'Ben','Dave','Sora'
+		],
 		
 		// ...
 		// boolean: first pull from database
@@ -8906,77 +8937,86 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	// INIT !
 	//~ control_buttons();
 	MT___page1_async_last_update();
+	
+	// Creates the Pause and Close buttons.
+	// Starts the update intervals.
 	interval_update_timers();
 	
 	
 	/**
 	 * function interval_update_timers()
 	 * 
-	 * Set interval for time since posted timers.
-	 * And set interval for pause timer.
+	 * Sets interval for time since posted timers.
+	 * Sets interval for pause timer.
+	 * Creates the Pause and Close buttons.
+	 * Creates the "user" select field (tasks_obj.user_select)
 	 */
 	function interval_update_timers() {
 		
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('id','input__reload');
+		// timer
+		var d = document.createElement('input');
+		//~ d.setAttribute('id','input__reload');
 		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:60px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;cursor:pointer;');
 		document.body.appendChild(d);
-		var dx = document.getElementById('input__reload');
-		dx.style.position = 'absolute';
-		dx.style.top = '0px';
-		dx.style.left = '60px';
-		dx.style.height = '30px';
-		dx.style.border = '2px solid #3b3b3b';
-		dx.style.borderTop = '0';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','input2__reload');
+		tasks_obj.timer_btn = d;
+		// close
+		var d = document.createElement('input');
+		//~ d.setAttribute('id','input2__reload');
 		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:0px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		document.body.appendChild(d);
-		var dx2 = document.getElementById('input2__reload');
-		dx2.style.position = 'absolute';
-		dx2.style.top = '0px';
-		dx2.style.left = '0px';
-		dx2.style.height = '30px';
-		dx2.style.width = '60px';
-		dx2.style.textAlign = 'center'; 
-		dx2.style.border = '2px solid #3b3b3b';
-		dx2.style.borderLeft = '0';
-		dx2.style.borderTop = '0';
-		dx2.value = 'Close!'; 
-		dx2.onclick = function() {
-			clearInterval(xint);
-			var x;
-			x = document.getElementById('div__main');
-			if (x) {
-				document.body.removeChild(x);
-			}if (dx) {
-				document.body.removeChild(dx);
-			}
-			document.body.removeChild(this);
-		}
+		tasks_obj.close_btn = d;
+		// tasks_obj.user_select
+		// .onchange?
+		var d = document.createElement('select');
+		d.setAttribute('style','position:absolute;top:0px;left:120px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
+		d.innerHTML = '<option value="Ben">Ben</option><option value="Dave">Dave</option><option value="Sora">Sora</option>';
+		document.body.appendChild(d);
+		tasks_obj.user_select = d;
 		
-		// Set page reload vars
-		dx.value = 'Pause 20';
-		dx.onclick = function() {
+		// Value, onclick
+		// timer_btn
+		tasks_obj.timer_btn.value = '20';
+		tasks_obj.timer_btn.onclick = function() {
+			//~ clearInterval(xint);
+			//~ clearInterval(xint2);
+			//~ dx.value = 'Press reload to continue...';
+		}
+		// close_btn
+		tasks_obj.close_btn.value = 'Close!'; 
+		tasks_obj.close_btn.onclick = function() {
 			clearInterval(xint);
 			clearInterval(xint2);
-			dx.value = 'Press reload to continue...';
+			//~ if (dx) {
+				//~ document.body.removeChild(dx);
+			//~ }
+			// this
+			this.parentNode.removeChild(this);
+			// timer_btn
+			tasks_obj.timer_btn.parentNode.removeChild(tasks_obj.timer_btn);
+			// tasks_obj.div_container
+			if (tasks_obj.div_container) {
+				tasks_obj.div_container.parentNode.removeChild(tasks_obj.div_container);
+			}
 		}
+		//
 		
+		//
 		xint = setInterval(function() {
-			var x = /Pause ([\d-]+)/.exec(dx.value);
-			if (!x) return;
-			x = x[1]*1;
+			var x = tasks_obj.timer_btn.value * 1;
+			//~ if (!x) return;
+			//~ x = x[1]*1;
 			x = Math.floor(x - 1);
 			if (x <= 0) {
 				// next
 				x = 20;
 				MT___page1_async_last_update();
 			}
-			dx.value = 'Pause '+x;
+			tasks_obj.timer_btn.value = x;
 		}, 1000);
+		
+		//
 		xint2 = setInterval(function() {
 			//~ var x = document.getElementsByClassName('cont');
 			
@@ -9166,10 +9206,34 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
+	 * function rate_show_hide_button()
+	 * 
+	 * @param	event
+	 */
+	function rate_show_hide_button(e) {
+		
+		if (this.isHidden) {
+			this.isHidden = false;
+			this.style.backgroundColor = 'LightGreen';
+		} else if (!this.isHidden) {
+			this.isHidden = false;
+			this.style.backgroundColor = '';
+		}
+		
+	}
+	//~ function ()
+	
+	/**
 	 * function makeRow()
 	 * 
-	 * @param row
-	 * @param isIgnored
+	 * @param 	row			object	DB row.
+	 * @param 	isIgnored	bool	Local object of ignored requesters.
+	 * 
+	 * @returns	TR			element	Returns an HTML TR
+	 * 
+	 * Note:	tasks_obj.table1_row_ids[row.db_id] = true;
+	 * Note 2:	tasks_obj.table_rows[row.db_id] = tr;
+	 * Note 3:	Ratings are 0-4, i.e 0,1,2,3,4, where middle=2, good=4, bad=0.
 	 */
 	function makeRow(row, isIgnored) {
 		
@@ -9179,51 +9243,142 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		else
 			tasks_obj.table2_row_ids[row.db_id] = true;
 		
-		// tr
+		// TR
 		//
 		//
-		
 		var tr = document.createElement('tr');
 		tr.setAttribute('style',
 			''
 		);
-		
-		//~ 
-		//~ 
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Add to global!
 		tasks_obj.table_rows[row.db_id] = tr;
 		
-		// tds
-		//
-		//
+		/**
+		 * TDs ... ...
+		 * ID
+		 * Title
+		 * 		-> comment/vote
+		 * Req. Name
+		 * 		-> comment/vote
+		 * Available
+		 * Reward
+		 * Time Since Posted
+		 * Chart Controller
+		 * Chart
+		 */
 		
-		// id
+		
+		// ID
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:8px;border-right:1px solid #a4a4a4;'
+			'border-right:1px solid #a4a4a4;'//width:8px;
 		);
 		td.innerText = row.db_id;
 		tr.appendChild(td);
 		
-		// title
+		// Rate TD
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'border-right:1px solid #a4a4a4;'//width:8px;
+		);
+		td.innerText = row.db_id;
+		tr.appendChild(td);
+		// Rate btn
+		var btn = document.createElement('button');
+		btn.value = 'R';
+		btn.rating = {
+			isHidden: true, // default=hidden
+			requester_id: row.requester_id,
+			db_id: row.history_id
+		}
+		btn.onclick = rate_show_hide_button;
+		td.appendChild(btn);
+		
+		/**
+		 * Title Rating & Comment 
+		 * Does this title have ratings/comments?
+		 * Has the user rated or commented the title?
+		 * */
+		//>> Title Rating
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		/** 
+		 * DB Ratings 
+		 * Displays the current rating (if any) as a decimal, e.g. 2 or 3.5.
+		 * Displays a rating select multiple field for each user, with the value set to "" (blank) or DB value.
+		 * 
+		 * Note:	tasks_obj.db_users
+		 * Note 2:
+		 * This is the .value table:
+					id	int(10) UN PK AI
+					value	smallint(6) 
+					fk_user_name	varchar(10) 
+					fk_id_jobs_history_index	int(11) UN 
+		 * */
+		if (row.hasOwnProperty('title_ratings') && row.title_ratings.hasOwnProperty( row.history_id )) {
+			var title_ratings = row.title_ratings[ row.history_id ];
+			var tmp_users_obj = {};
+			for (var i in title_ratings) {
+				//~ tmp_users_obj[ title_ratings[i].fk_user_name ] = 
+			}
+		}
+		//>> Title Comments
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		
+		// Title
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:50%;'
 		);
 		tr.appendChild(td);
+		var a_gid;
 		if (row.group_id != '' && row.group_id != null) {
-			var a_gid		= document.createElement('a');
+			a_gid			= document.createElement('a');
 			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
-			a_gid			.setAttribute('class','cont_link');
+			a_gid.setAttribute('class','cont_link');
 			a_gid.target	= '_blank';
 			a_gid.innerText = '▶' + __js_clean_html_str(row.title); // "Black right-pointing triangle"
 		} else
-			var a_gid		= document.createTextNode(__js_clean_html_str(row.title));
+			a_gid			= document.createTextNode(__js_clean_html_str(row.title));
 		td.appendChild(a_gid);
+		/**
+		// TODO
+		Add comment(s) notification (if comment(s))
+		Add rating(s) notification (if ratings(s))
 		
-		// name
+		Add controller button>
+			> .onclick shows/hides:
+				> select.dropdown ratings 0-4
+					>(.onclick = .onkeyup = .onfocus = .onblur = ) write_to_db / update_db
+				> comment textarea (drag to expand)
+					>(.onclick = .onkeyup = .onfocus = .onblur = ) write_to_db / update_db
+		 */
+		
+		/* Req. Rating & Comment */
+		// Req. Rating
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		// Req. Comments
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		
+		
+		// Req. name
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:18%;'
@@ -9232,14 +9387,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		if (row.requester_id != '') {
 			var a_rid		= document.createElement('a');
 			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
-			a_rid			.setAttribute('class','cont_link');
+			a_rid.setAttribute('class','cont_link');
 			a_rid.target	= '_blank';
 			a_rid.innerText = __js_clean_html_str(row.requester_name);
 		} else
 			var a_rid		= document.createTextNode(__js_clean_html_str(row.requester_name));
 		td.appendChild(a_rid);
 		
-		// available
+		// Available
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:4%;'
@@ -9250,7 +9405,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Set row property .hits_available (td element) here.
 		tr.hits_available = td;
 		
-		// reward
+		// Reward
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:4%;'
@@ -9258,7 +9413,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.innerText = row.reward.replace(/^\$/, '');
 		tr.appendChild(td);
 		
-		// tsp
+		// Time since posted
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:6%;'//+'max-width:10px;'
@@ -9269,7 +9424,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tsp_input.setAttribute('type', 'hidden');
 		tsp_input.value = row.time_since_posted;
 		td.appendChild(tsp_input);
-		// createTextNode
 		var tsp_span = document.createElement('span');
 		var x = date_format(row.time_since_posted);
 		tsp_span.className = 'mt__timer';
@@ -9289,7 +9443,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//height:20px;
 		);
 		select.db_id = row.db_id; // db_id
-		select.history_id = row.history_id; // db_id
+		select.history_id = row.history_id; // history_id. This will be "null" if unavailable.
 		td.appendChild(select);
 		for (var count in tasks_obj.chart_types) {
 			var chart_type = tasks_obj.chart_types[count];
@@ -9304,11 +9458,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			console.log(this.db_id);
 			console.log(this.history_id);
 			
-			tasks_obj.current_init_history_ids = [
-				this.history_id
-			];
-			init_graph(this.value, this.chart_td); //chart_type
-			
+			if (this.history_id != null) {
+				tasks_obj.current_init_history_ids = [
+					this.history_id
+				];
+				init_graph(this.value, this.chart_td); //chart_type
+			}
 		}
 		select.onblur = function() {
 			
@@ -9584,6 +9739,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
+				
 				//~ console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
@@ -9635,7 +9791,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// table it ought to go in and - put 'er there!
 				
 				/**
-				 *
+				 * Set history_id=null if not available.
+				 * Set reward=null if not available.
 					rs
 					0 job DB id
 					1 on_page_number
@@ -9647,6 +9804,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					7 groupid
 					* 8 histID
 					* 9 reward
+					* 10 title_ratings
+					* 11 title_comments
+					* 12 requester_ratings
+					* 13 requester_comments
+				 * 10-13 are objects.
+				 * 
 				*/
 				var d = {
 					db_id: '',
@@ -9658,7 +9821,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					requester_id: '',
 					group_id: '',
 					history_id: '',
-					reward: ''
+					reward: '',
+					title_ratings: null,
+					title_comments: null,
+					requester_ratings: null,
+					requester_comments: null
 				};
 				for (var i = 0; i < rs[0].length; i++) {
 					
@@ -9670,8 +9837,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.time_since_posted	= rs[5][i];
 					d.requester_id		= rs[6][i];
 					d.group_id			= rs[7][i];
-					d.history_id		= (rs[8]) ? rs[8][i] : '';
-					d.reward			= (rs[9]) ? rs[9][i] : '';
+					d.history_id		= (rs[8]) ? rs[8][i]	: null;
+					d.reward			= (rs[9]) ? rs[9][i]	: null;
+					d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
+					d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
+					d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
+					d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))

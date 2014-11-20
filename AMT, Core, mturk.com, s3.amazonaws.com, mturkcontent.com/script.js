@@ -55992,6 +55992,8 @@ qatar,80
 					//
 					btn.y_url =  'http://www.linkedin.com/company/' + x_.id // .id 786639
 					btn.onclick = function(){
+						this.style.backgroundColor = 'LightGreen';
+						new AMT___core_factory().nextTab();
 						linkedin_biz__li_profile(this);
 					}
 					//
