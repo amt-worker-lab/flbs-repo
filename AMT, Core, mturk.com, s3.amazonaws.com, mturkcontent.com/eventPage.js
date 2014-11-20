@@ -40,7 +40,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 														});
 		UtilityAMTPairs.options = request.setUtilityTabs.options;
 		console.log(UtilityAMTPairs);
-		console.log(a.b.c);
+		//console.log(a.b.c);
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
 				//~ 
@@ -61,7 +61,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
 						console.log('utTabPos:' + utTabPos);
 						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-						console.log(UtilityAMTPairs[senderId]);
+						console.log(UtilityAMTPairs);
 					});
 		}
 	}

@@ -40,6 +40,7 @@ function MT__RUN() {
 														},
 													   {url: 'http://www.youtube.com'}], {placeholder:'placeholder for options lol'});
 	}
+	exit('123');
 	//
 	//
 	//
