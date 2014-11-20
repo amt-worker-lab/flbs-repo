@@ -56048,7 +56048,7 @@ qatar,80
 							if (r) {
 								r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').trim();
 								document.getElementsByName('web_url')[0].value = r;
-								if (/[^\d,+]/.exec(r) || r.length < 1) {
+								if (/[^\d,+\-]/.exec(r) || r.length < 1) {
 									sbm = false;
 								}
 							} else {
