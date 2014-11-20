@@ -56041,6 +56041,20 @@ qatar,80
 							//~ if (r.length < 3) {
 								//~ sbm = false;
 							//~ }
+						} else if (!/Employees? on LinkedIn/.exec(rs)){
+							
+							// e.g. 10,001+ employees
+							r = /<li class="company-size">[\r\n\t\s]*<h4>Company Size<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+							if (r) {
+								r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').trim();
+								document.getElementsByName('web_url')[0].value = r;
+								if (/[^\d,+]/.exec(r) || r.length < 1) {
+									sbm = false;
+								}
+							} else {
+								sbm = false;
+							}
+							
 						} else {
 							sbm = false;
 						}
@@ -56101,6 +56115,12 @@ qatar,80
 			function linkedin_biz__complete(rs) {
 				if (rs.length == 0) {
 					d1.innerText = '0';
+					
+					// Try with .com removed?
+					if (d2.value.indexOf('.') != -1) {
+						d2.value = d2.value.replace(/\.[^\.]*$/, '');
+						linkedin_biz__init();
+					}
 					return;
 				}
 				for (var i in rs) {
@@ -56127,6 +56147,10 @@ qatar,80
 						//~ document.getElementById('companypage').value = this.y_url;
 						if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
 							
+							// Go next
+							new AMT___core_factory().nextTab();
+							
+							// ...
 							linkedin_biz__li_profile(this);
 							
 							//~ linkedin_biz__li_profile(this.y_url);
