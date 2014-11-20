@@ -26629,6 +26629,18 @@ function MT__RUN() {
 					}
 				};
 			}
+			
+			// Go to satellite
+			else if (char == 'c' || char == 'C') {
+				var x=document.getElementsByTagName('div');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+						x[i].click();
+						break;
+					}
+				};
+			}
 		}, false);
 		
 		// Zoom map exit button
