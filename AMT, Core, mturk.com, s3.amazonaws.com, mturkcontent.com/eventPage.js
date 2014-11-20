@@ -1318,12 +1318,12 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 	})
 
 
-chrome.tabs.onActivated.addListener(function (tabId,activeInfo) {
-		if(removeInfo.windowId != localStorage['UTILITY_WINDOW']) {
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+		if(activeInfo.windowId != localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {
 				console.log(i);
 				console.log(UtilityAMTPairs[i]);
-				if(UtilityAMTPairs[i].ownerTabId == tabId) {
+				if(UtilityAMTPairs[i].ownerTabId == activeInfo.tabId) {
 					if(UtilityAMTPairs[i].utilities &&
 					   UtilityAMTPairs[i].utilities.length > 0) {
 						chrome.tabs.update(UtilityAMTPairs[i].utilities[0].tabId, {active:true});
