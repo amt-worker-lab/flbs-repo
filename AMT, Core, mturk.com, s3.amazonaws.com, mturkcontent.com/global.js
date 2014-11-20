@@ -379,20 +379,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  */
 //utilityTabs  [{
 //					url: "string",
-//					specificOptions: {} 					
+//					options: {} //These options are specific to the tab, and overwrite any options set in the options parameter below				
 //				}]
 //			
-//	optionsObj
+//	options
 //			{
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
-function AMT__setUtilityTabs(utilityTabs, optionsObj) {
+function AMT__setUtilityTabs(utilityTabs, options) {
 	var utilityTabsAndOptions = {};
 	utilityTabsAndOptions.utilities = utilityTabs;
-	utilityTabsAndOptions.options = optionsObj;
+	utilityTabsAndOptions.options = options;
 	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 			function(rs){
-				
+
 			});
 }
 

@@ -31,8 +31,11 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		console.log('RUNNING TEST OF UTILITY WINDOW');
 		AMT__setUtilityTabs([{url: 'http://www.google.com'},
-													   {url: 'http://www.wikipedia.org'},
-													   {url: 'http://www.youtube.com'}], {options:'placeholder for options lol'});
+													   {
+														   url: 'http://www.wikipedia.org',
+														   options: {placeholder:'123'}
+														},
+													   {url: 'http://www.youtube.com'}], {placeholder:'placeholder for options lol'});
 	}
 	//
 	//

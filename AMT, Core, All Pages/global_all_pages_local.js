@@ -27,6 +27,8 @@ if(window.top == window.self) {
 			   response.isUtilityTab) {
 				//We are a utility tab! :D
 				//the response is an options obj
+				console.log('Got options from Core-Mturk:');
+				console.log(response);
 				if(response.util_options) {
 					AMT__all_pages_util(response.util_options);
 				}
