@@ -55988,6 +55988,12 @@ qatar,80
 					//~ btn.setAttribute('id', count+'|'+x_.id);
 					btn.setAttribute('style','width:auto;');
 					btn.value = x_.fmt_canonicalName;
+					// onclick
+					//
+					btn.y_url =  'http://www.linkedin.com/company/' + x_.id // .id 786639
+					btn.onclick = function(){
+						linkedin_biz__li_profile(this);
+					}
 					//
 					out.appendChild(btn);
 					out.appendChild(document.createElement('br'));
