@@ -30,6 +30,15 @@ var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
 var RUN__ALL_PAGES_TEXTAREA = false;
 
+/***
+ * Messaging with core-mturk
+ ***/
+
+
+/**
+ * End of messages with core-mturk
+ **/
+
 /**
  * Trevor Faden / Gopi Parikh / Janet Lee
  * 
@@ -440,123 +449,7 @@ function load()
 			
 		}
 	}
-	/*
-	 * AMT__all_pages_util
-	 * 
-	 */
-	function AMT__all_pages_util(r) {
-		
-		// Add a panel in top left if the following types are present:
-		//		.MT___all_pages_showhref
-		//		.show_remove_links_button
-		if  (
-			r.hasOwnProperty('MT___all_pages_showhref') ||
-			r.hasOwnProperty('show_remove_links_button')
-			)
-		{
-			new AMT___global_factory().add_panel();
-		}
-		
-		// extend
-		if ( r.MT___all_pages_extend )
-			MT___all_pages_extend();
-		
-		// zoom
-		if ( r.MT___all_pages_zoom )
-			MT___all_pages_zoom();
-		
-		// showhref
-		if ( r.MT___all_pages_showhref )
-			MT___all_pages_showhref();
-		
-		// scroll
-		// MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight)
-		if ( r.MT___text_scrollIntoView )
-			MT___all_pages_highlightEmailAddresses(true, r.MT___text_scrollIntoView); 
-		
-		// global__highlight_photos
-		// Pass in an options object
-		if ( r.global__highlight_photos ) {
-			new AMT___global_factory().highlight_photos(
-				r.global__highlight_photos
-			);
-		}
-		
-		// highlight_ranges_to_parent
-		// e.g. highlight_ranges_to_parent: {completion_key: 'Dan_Shaffer_site_eval'}
-		// Pass in an options object
-		if ( r.highlight_range_to_parent ) {
-			//~ console.log('highlight range is on');
-			new AMT___global_factory().highlight_range_to_parent(
-				r.highlight_range_to_parent
-			);
-		}
-		
-		// Zoom a name
-		// @param: String
-		if ( r.person_name_zoom ) {
-			KristinHowe_agent_photo_scrollIntoView( r.person_name_zoom );
-		}
-		
-		// Highlight strings
-		// @param highlight_strings_in_page 		object
-		// @param highlight_strings_in_page.strings	array
-		if ( r.highlight_strings_in_page ) {
-			new AMT___global_factory().highlight_strings_in_page(
-				r.highlight_strings_in_page
-			);
-		}
-		
-		// email_links_remove_mailto
-		// @param 
-		if ( r.email_links_remove_mailto ) {
-			new AMT___global_factory().email_links_remove_mailto(
-			);
-		}
-		
-		// show_remove_links_button
-		// @param 
-		if ( r.show_remove_links_button ) {
-			new AMT___global_factory().show_remove_links_button(
-			);
-		}
-		
-		// email_links_click_to_parent
-		// @param 
-		if ( r.email_links_click_to_parent ) {
-			new AMT___global_factory().email_links_click_to_parent({
-				completion_key: r.email_links_click_to_parent.completion_key
-			});
-		}
-		
-		// make_element_words_click
-		// @param 
-		if ( r.make_element_words_click ) {
-			//~ new AMT___global_factory().make_element_words_click({
-				//~ element: document.body
-			//~ });
-		}
-		//~ new AMT___global_factory().make_element_words_click({
-			//~ element: document.body
-		//~ });
-		
-		//debug_display: o.name
-		if ( r.debug_display ) {
-			// 1 //
-			var d = document.createElement('div');
-			d.setAttribute('style', 'position:absolute;top:0;margin:0 auto;width:40%;background-color:#fefeff;border:2px dashed #a2a2a2;z-index:99999999;zoom:2;font-weight:bold;');
-			d.innerText = r.debug_display;
-			document.body.appendChild(d);
-			// 2 //
-			var d = document.createElement('div');
-			d.setAttribute('style', 'position:fixed;top:0;margin:0 auto;width:40%;background-color:#fefeff;border:2px dashed #a2a2a2;z-index:99999999;zoom:2;font-weight:bold;');
-			d.innerText = r.debug_display;
-			document.body.appendChild(d);
-		}
-			
-		
-		
-	}
+	
 	/*
 	 * Leonid
 	 * 

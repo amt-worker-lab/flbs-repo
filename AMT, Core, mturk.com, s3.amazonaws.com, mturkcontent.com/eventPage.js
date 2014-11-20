@@ -20,7 +20,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			alert('no utility window set');
 			return false;
 		}
-
+		
 		var senderId = sender.tab.id;
 		if(UtilityAMTPairs[senderId] &&
 		   UtilityAMTPairs[senderId].utilities &&
@@ -36,9 +36,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 		UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
 															ownerTabId:senderId,
-															utilities: request.setUtilityTabs
+															utilities: request.setUtilityTabs.utilityTabs
 														});
-			
+		UtilityAMTPairs.options = request.setUtilityTabs.options;
+		
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
 				//~ 
@@ -694,9 +695,25 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
       return;  // don't allow this extension access*/
       
-    if(request.letsTest) {
-		console.log(request);
-		console.log(sender);
+    if(request.amIUtilityTab) {
+		console.log('recieved msg from:' + sender.tab);
+		if(sender.tab.windowId == localStorage['UTILITY_WINDOW']) {
+
+			//Set all the global options that every utility tab should have
+			var optionsToSet = UtilityAMTPairs.options
+
+			//Set any options specific to This tab
+			for(var i in UtilityAMTPairs) {
+				if(UtilityAMTPairs[i].utilities &&
+				   UtilityAMTPairs[i].utilities.length > 0) {
+					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+							
+						}
+					}
+				}
+			}
+		}
 	}
     
       
@@ -1284,7 +1301,8 @@ chrome.windows.getAll({populate:true}, function(allWindows) {
 chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 		if(removeInfo.windowId == localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {
-				if(UtilityAMTPairs[i].utilities &&
+				if(
+				   UtilityAMTPairs[i].utilities &&
 				   UtilityAMTPairs[i].utilities.length > 0) {
 				   var hasRemoved = false;
 				   for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
@@ -1305,7 +1323,7 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 			for(var i in UtilityAMTPairs) {
 				console.log(i);
 				console.log(UtilityAMTPairs[i]);
-				if(UtilityAMTPairs[i].ownerTabId == tabId) {
+				if( UtilityAMTPairs[i].ownerTabId == tabId) {
 					var tabIdsToRemove = []
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						tabIdsToRemove.push(UtilityAMTPairs[i].utilities[j].tabId);

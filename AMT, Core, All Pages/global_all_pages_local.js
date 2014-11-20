@@ -21,7 +21,7 @@
 
 //Ask Core-mturk whether we are a utility window and, if so, run the options
 if(window.top == window.self) {
-	chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityWindow: true},  
+	chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
 	  function(response) {
 			if(response) {
 				//We are a utility window! :D
