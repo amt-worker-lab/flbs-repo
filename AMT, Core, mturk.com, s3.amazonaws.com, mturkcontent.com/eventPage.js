@@ -1308,14 +1308,32 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 					}
 					chrome.tabs.remove(tabIdsToRemove);
 					delete UtilityAMTPairs[i]; 
-					break;
 					console.log(UtilityAMTPairs);
+					break;
 				}
 			}
 		}
 	
 	
 	})
+
+
+chrome.tabs.onActivated.addListener(function (tabId,activeInfo) {
+		if(removeInfo.windowId != localStorage['UTILITY_WINDOW']) {
+			for(var i in UtilityAMTPairs) {
+				console.log(i);
+				console.log(UtilityAMTPairs[i]);
+				if(UtilityAMTPairs[i].ownerTabId == tabId) {
+					if(UtilityAMTPairs[i].utilities &&
+					   UtilityAMTPairs[i].utilities.length > 0) {
+						chrome.tabs.update(UtilityAMTPairs[i].utilities[0].tabId, {active:true});
+						break;
+					}
+				}
+			}
+		}
+	})
+
 
 
 function GM_xmlhttpRequest(details) {
