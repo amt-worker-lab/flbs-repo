@@ -26,7 +26,9 @@ if(window.top == window.self) {
 			if(response) {
 				//We are a utility window! :D
 				//the response is an options obj
+				console.log(rs);
 				if(response.util_options) {
+
 					AMT__all_pages_util(response.util_options);
 				}
 			}

@@ -38,7 +38,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 															ownerTabId:senderId,
 															utilities: request.setUtilityTabs.utilityTabs
 														});
-		UtilityAMTPairs.options = request.setUtilityTabs.options;
+		UtilityAMTPairs.options = request.setUtilityTabs.optionsObj;
 		
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
@@ -696,9 +696,10 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
       return;  // don't allow this extension access*/
       
     if(request.amIUtilityTab) {
-		console.log('recieved msg from:' + sender.tab);
+		console.log('recieved msg from:');
+		console.log(sender.tab);
 		if(sender.tab.windowId == localStorage['UTILITY_WINDOW']) {
-
+			console.log(UtilityAMTPairs);
 			//Set all the global options that every utility tab should have
 			var optionsToSet = UtilityAMTPairs.options
 
@@ -708,12 +709,22 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 				   UtilityAMTPairs[i].utilities.length > 0) {
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
-							
+							if(UtilityAMTPairs[i].utilities[j].specificOptions) {
+								for(var i in specificOptions) {
+									optionsToSet[i] = specificOptions[i];
+								}
+								break;
+							}
 						}
 					}
 				}
 			}
+			console.log('sending:')			
+			console.log(optionsToSet);
+			if(optionsToSet)
+				sendResponse(optionsToSet);
 		}
+		return false;
 	}
     
       
