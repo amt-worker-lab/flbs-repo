@@ -30,12 +30,9 @@ function MT__RUN() {
 	s = 'DO NOT provide links to contact forms, this is not acceptable, and'
 	if(ih.indexOf(s) != -1) {
 		console.log('RUNNING TEST OF UTILITY WINDOW');
-		chrome.extension.sendRequest({setUtilityTabs: [{url: 'http://www.google.com'},
+		AMT__setUtilityTabs([{url: 'http://www.google.com'},
 													   {url: 'http://www.wikipedia.org'},
-													   {url: 'http://www.youtube.com'}
-														]},function(rs){
-				//squelch rs
-			});
+													   {url: 'http://www.youtube.com'}]);
 	}
 	//
 	//

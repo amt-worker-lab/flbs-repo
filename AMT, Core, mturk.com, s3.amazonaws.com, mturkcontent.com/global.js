@@ -373,6 +373,34 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * 
  * */
 
+/**
+ * Utility Tabs
+ * 
+ */
+//utilityTabs  [{
+//					url: "string",
+//										
+//				}]
+//			
+//	optionsObj
+function AMT__setUtilityTabs(utilityTabs, optionsObj) {
+	var utilityTabsAndOptions = utilityTabs;
+	if(optionsObj) {
+		for(var i in optionsObj) {
+			utilityTabsAndOptions[i] = optionsObj[i];
+		}
+	}
+	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
+			function(rs){
+				
+			});
+} 
+
+/**
+ * End of Utility Tabs
+ * 
+ **/
+
 //Record Returning
 /**
  * 

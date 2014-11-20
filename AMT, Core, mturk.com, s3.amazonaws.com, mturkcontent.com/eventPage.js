@@ -1319,6 +1319,7 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
+		//If we click on a tab that owns a utility tab, switch to its first utility tab
 		if(activeInfo.windowId != localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {
 				console.log(i);
