@@ -690,6 +690,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
       return;  // don't allow this extension access*/
       
+    if(request.letsTest) {
+		console.log(request);
+		console.log(sender);
+	}
+    
       
     /*else if (request.getTargetData)
       sendResponse({targetData: targetData});
@@ -1270,6 +1275,32 @@ chrome.windows.getAll({populate:true}, function(allWindows) {
 		}
 	}
 })
+
+
+chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
+		if(removeInfo.windowId == localStorage['UTILITY_WINDOW']) {
+			for(var i in UtilityAMTPairs) {
+				if(UtilityAMTPairs[i].utilities &&
+				   UtilityAMTPairs[i].utilities.length > 0) {
+				   var hasRemoved = false;
+				   for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+						if(UtilityAMTPairs[i].utilities[j].tabId == tabId) {
+							UtilityAMTPairs[i].utilities.splice(j,1);
+							console.log('remove tabId'+tabId+ ' from UtilityAMTPairs');
+							console.log(UtilityAMTPairs);
+							var hasRemoved = true;
+							break;
+						}
+				   }
+				   if(hasRemoved)
+						break;
+				}
+			}
+		}
+	
+	
+	})
+
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {
