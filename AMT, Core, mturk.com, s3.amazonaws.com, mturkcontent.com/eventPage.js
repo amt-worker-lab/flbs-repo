@@ -35,7 +35,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				currentUtility = UtilityAMTPairs[senderId].utilities[i];
 				var tabIdentifier = '###tabId'+senderId+'###at'+i;
 				currentUtility.url += tabIdentifier;
-				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW'], url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : true)}, 
+				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : true)}, 
 					function(newTab) {
 						console.log('New Tab Created with url:' +newTab.url);
 						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
