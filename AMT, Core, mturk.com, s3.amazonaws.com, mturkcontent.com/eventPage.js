@@ -25,7 +25,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 															utilities: request.setUtilityTabs
 														});
 			
-			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {getInfo:true}, function() { 
+			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
 				//~ 
 				//~ });
@@ -1230,8 +1230,10 @@ function playRandomNextSound() {
 /**
  * 
  * Does out Utility Window exist? If not, let localStorage know this.
+ * Also, if a Utility Window exists, refresh it
+ * 
  **/
-chrome.windows.getAll({}, function(allWindows) {
+chrome.windows.getAll({populate:true}, function(allWindows) {
 	var utilityWindow = null;
 	if(allWindows.length == 1) {
 		localStorage['UTILITY_WINDOW'] = 'unset';
@@ -1241,11 +1243,20 @@ chrome.windows.getAll({}, function(allWindows) {
 		for(var i = 0; i < allWindows.length; i++) {
 			if(allWindows[i].id == localStorage['UTILITY_WINDOW']) {
 				found = true;
+				utilityWindow = allWindows[i];
 				break;
 			}
 		}
 		if(!found)
 			localStorage['UTILITY_WINDOW'] = 'unset';			
+		if(found) {
+			chrome.tabs.update(utilityWindow.tabs[0].id, {url: 'http://www.google.com/search?q=hahaha'});			
+			var allCloseTabIds = [];
+			for(i = 1; i < utilityWindow.tabs.length; i++) {
+				allCloseTabIds.push(utilityWindow.tabs[i].id)
+			}
+			chrome.tabs.remove(allCloseTabIds);
+		}
 	}
 })
 
