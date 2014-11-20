@@ -14,6 +14,8 @@ function AMTUtilitiesObj(options){
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	if(request.setUtilityTabs) {
+		console.log('sender');
+		console.log(sender.tab);
 		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
 			alert('no utility window set');
 			return false;
@@ -47,7 +49,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				currentUtility = UtilityAMTPairs[senderId].utilities[i];
 				var tabIdentifier = '###tabId'+senderId+'###at'+i;
 				currentUtility.url += tabIdentifier;
-				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : false)}, 
+				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
+																				active: (currentUtility.active != null ? currentUtility.active : 
+																														 (sender.tab.active && i == 0 ? true :false))}, 
 					function(newTab) {
 						console.log('New Tab Created with url:' +newTab.url);
 						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
