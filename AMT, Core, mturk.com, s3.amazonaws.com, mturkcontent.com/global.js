@@ -387,9 +387,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
 function AMT__setUtilityTabs(utilityTabs, options) {
+	alert('hi');
 	var utilityTabsAndOptions = {};
 	utilityTabsAndOptions.utilities = utilityTabs;
 	utilityTabsAndOptions.options = options;
+	console.log('utilityTabsAndOptions');
+	console.log(utilityTabsAndOptions);
 	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 			function(rs){
 

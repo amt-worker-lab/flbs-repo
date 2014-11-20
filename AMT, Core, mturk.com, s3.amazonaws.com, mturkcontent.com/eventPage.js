@@ -704,6 +704,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			var optionsToSet = UtilityAMTPairs.options
 			
 
+//UtilityAMTPairs
+
 			//Set any options specific to This tab
 			for(var i in UtilityAMTPairs) {
 				if(UtilityAMTPairs[i] &&
