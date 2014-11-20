@@ -36,9 +36,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 		UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
 															ownerTabId:senderId,
-															utilities: request.setUtilityTabs.utilityTabs
+															utilities: request.setUtilityTabs.utilities
 														});
-		UtilityAMTPairs.options = request.setUtilityTabs.optionsObj;
+		UtilityAMTPairs.options = request.setUtilityTabs.options;
 		
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
@@ -702,10 +702,12 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			console.log(UtilityAMTPairs);
 			//Set all the global options that every utility tab should have
 			var optionsToSet = UtilityAMTPairs.options
+			optionsToSet.isUtilityTab = true;
 
 			//Set any options specific to This tab
 			for(var i in UtilityAMTPairs) {
-				if(UtilityAMTPairs[i].utilities &&
+				if(UtilityAMTPairs[i] &&
+				   UtilityAMTPairs[i].utilities &&
 				   UtilityAMTPairs[i].utilities.length > 0) {
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
@@ -1313,6 +1315,7 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 		if(removeInfo.windowId == localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {
 				if(
+				   UtilityAMTPairs[i] &&
 				   UtilityAMTPairs[i].utilities &&
 				   UtilityAMTPairs[i].utilities.length > 0) {
 				   var hasRemoved = false;
@@ -1334,7 +1337,9 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 			for(var i in UtilityAMTPairs) {
 				console.log(i);
 				console.log(UtilityAMTPairs[i]);
-				if( UtilityAMTPairs[i].ownerTabId == tabId) {
+				if( UtilityAMTPairs[i] &&
+					UtilityAMTPairs[i].ownerTabId  &&
+					UtilityAMTPairs[i].ownerTabId == tabId) {
 					var tabIdsToRemove = []
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						tabIdsToRemove.push(UtilityAMTPairs[i].utilities[j].tabId);
@@ -1357,7 +1362,9 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 			for(var i in UtilityAMTPairs) {
 				console.log(i);
 				console.log(UtilityAMTPairs[i]);
-				if(UtilityAMTPairs[i].ownerTabId == activeInfo.tabId) {
+				if(UtilityAMTPairs[i] &&
+				   UtilityAMTPairs[i].ownerTabId &&
+				   UtilityAMTPairs[i].ownerTabId == activeInfo.tabId) {
 					if(UtilityAMTPairs[i].utilities &&
 					   UtilityAMTPairs[i].utilities.length > 0) {
 						chrome.tabs.update(UtilityAMTPairs[i].utilities[0].tabId, {active:true});

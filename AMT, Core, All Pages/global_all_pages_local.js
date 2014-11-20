@@ -23,12 +23,11 @@
 if(window.top == window.self) {
 	chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
 	  function(response) {
-			if(response) {
-				//We are a utility window! :D
+			if(response &&
+			   response.isUtilityTab) {
+				//We are a utility tab! :D
 				//the response is an options obj
-				console.log(rs);
 				if(response.util_options) {
-
 					AMT__all_pages_util(response.util_options);
 				}
 			}
