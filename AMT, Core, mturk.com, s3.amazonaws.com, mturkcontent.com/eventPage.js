@@ -39,7 +39,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 															utilities: request.setUtilityTabs.utilities
 														});
 		UtilityAMTPairs.options = request.setUtilityTabs.options;
-		
+		console.log(UtilityAMTPairs);
+		console.log(a.b.c);
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
 				//~ 
@@ -715,7 +716,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
 							console.log('Checking specific options for');
 							console.log(UtilityAMTPairs[i].utilities[j]);
-							if(UtilityAMTPairs[i].utilities[j].options) {
+							if(UtilityAMTPairs[i].utilities[j].options != undefined) {
+								console.log('specific tab options detected!');
 								for(var k in UtilityAMTPairs[i].utilities[j].options) {
 									optionsToSet[i] = UtilityAMTPairs[i].utilities[j].options[k];
 								}
