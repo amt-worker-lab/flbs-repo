@@ -5,7 +5,49 @@
  * 
  * 
  */
+var UtilityAMTPairs = [];
+function AMTUtilitiesObj(options){
+	this.ownerTabId = options.ownerTabId;
+	this.utilities = options.utilities;
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	
+	if(request.setUtilityTabs) {
+		var senderId = sender.tab.id;
+		if(!UtilityAMTPairs[senderId]) {
+			if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+				alert('no utility window set');
+			}
+			UtilityAMTPairs[senderId] = new utilityAMTPair({
+															ownerTabId:senderId,
+															utilities: request.utilities
+														});
+			
+			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {getInfo:true}, function() { 
+					//~ //Get the latest index of what's here
+				//~ 
+				//~ });
+			
+			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+				//Create a tab for each utilityTab in utilities
+				currentUtility = request.utilities[i];
+				var tabIdentifier = '###tabId'+senderId+'###at'+i;
+				currentUtility.url += tabIdentifier;
+				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW'], url:currentUtility.url, active: (currentUtility.active != null ? currentUtility.active : true)}, 
+					function(newTab) {
+						console.log('New Tab Created with url:' +newTab.url);
+						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+						console.log('ownerTabId:' + ownerTabId);
+						var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+						console.log('utTabPos:' + utTabPos);
+						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
+						console.log(UtilityAMTPairs[senderId]);
+					});
+			}
+		}
+	}
+	
 	
 	//~ /**
 	 //~ * request.count_number_of_captcha_tabs
@@ -858,58 +900,6 @@ CAPTCHA_tab_queue_obj.prototype.test = function(type) {
 }
 var CAPTCHA_tab_queue = new CAPTCHA_tab_queue_obj(false);
 var CAPTCHA_tab_queue__incognito = new CAPTCHA_tab_queue_obj(true);
-
-
-//~ CAPTCHA_tab_queue.test();
-//~ var CAPTCHA_tab_queue = new CAPTCHA_tab_queue_obj();
-//~ CAPTCHA_tab_queue.test();
-//~ var CAPTCHA_tab_queue2= new CAPTCHA_tab_queue_obj();
-//~ CAPTCHA_tab_queue2.test(true);
-
-//~ console.log(this);
-	//~ //
-	//~ var tabs = {};
-//~ 
-	//~ // Get all existing tabs
-	//~ chrome.tabs.query({}, function(results) {
-		//~ results.forEach(function(tab) {
-			//~ tabs[tab.id] = tab;
-		//~ });
-	//~ });
-//~ 
-	//~ // Create tab event listeners
-	//~ function onUpdatedListener(tabId, changeInfo, tab) {
-		//~ tabs[tab.id] = tab;
-		//~ console.log(tab);
-		//~ alert(tab.id);
-	//~ }
-	//~ function onRemovedListener(tabId) {
-		//~ delete tabs[tabId];
-	//~ }
-//~ 
-	//~ // Subscribe to tab events
-	//~ chrome.tabs.onUpdated.addListener(onUpdatedListener);
-	//~ chrome.tabs.onRemoved.addListener(onRemovedListener);
-//~ 
-	//~ /* 
-	 //~ * --------------------------------------------------
-	 //~ * Request callback
-	 //~ * --------------------------------------------------
-	 //~ */
-	//~ // Create request event listener
-	//~ function onBeforeRequestListener(details) {
-		//~ // *** Remember that tabId can be set to -1 ***
-		//~ var tab = tabs[details.tabId];
-//~ 
-		//~ // Respond to tab information
-	//~ }
-//~ 
-	//~ // Subscribe to request event
-	//~ chrome.webRequest.onBeforeRequest.addListener(onBeforeRequestListener, {
-		//~ urls: ["<all_urls>"],
-		//~ types: ["main_frame"]
-	//~ }, ["blocking"]);
-
 
 var turnOnAutoCopy = false;
 
