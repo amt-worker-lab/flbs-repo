@@ -33,7 +33,10 @@ function MT__RUN() {
 		AMT__setUtilityTabs([{url: 'http://www.google.com'},
 													   {
 														   url: 'http://www.wikipedia.org',
-														   options: {placeholder:'123'}
+														   options: 
+																{
+																placeholder:'123'
+															   }
 														},
 													   {url: 'http://www.youtube.com'}], {placeholder:'placeholder for options lol'});
 	}

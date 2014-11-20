@@ -711,9 +711,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 				   UtilityAMTPairs[i].utilities.length > 0) {
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+							console.log('Checking specific options for');
+							console.log(UtilityAMTPairs[i].utilities[j]);
 							if(UtilityAMTPairs[i].utilities[j].options) {
-								for(var i in UtilityAMTPairs[i].utilities[j].options) {
-									optionsToSet[i] = UtilityAMTPairs[i].utilities[j].options[i];
+								for(var k in UtilityAMTPairs[i].utilities[j].options) {
+									optionsToSet[i] = UtilityAMTPairs[i].utilities[j].options[k];
 								}
 								break;
 							}
