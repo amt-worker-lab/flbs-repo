@@ -1250,7 +1250,7 @@ chrome.windows.getAll({populate:true}, function(allWindows) {
 		if(!found)
 			localStorage['UTILITY_WINDOW'] = 'unset';			
 		if(found) {
-			chrome.tabs.update(utilityWindow.tabs[0].id, {url: 'http://www.google.com/search?q=hahaha'});			
+			chrome.tabs.update(utilityWindow.tabs[0].id, {url: 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random='+Math.random()});			
 			var allCloseTabIds = [];
 			for(i = 1; i < utilityWindow.tabs.length; i++) {
 				allCloseTabIds.push(utilityWindow.tabs[i].id)
