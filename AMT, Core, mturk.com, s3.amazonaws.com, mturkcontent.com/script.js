@@ -247,7 +247,6 @@ function MT__RUN() {
 				//squelch rs
 			});
 	}
-	
 	//
 	//
 	//
@@ -55836,9 +55835,328 @@ qatar,80
 	 * LinkedIn->Find company LinkedIn URL based on company's 
 	 * website URL.
 	 * 
+	 * @ Steve Sears
 	 * @ Mike Rocha
 	 * @ Kyle Morris
+	 * @ Matthew Kennedy
+	 * @ Oceanos Research
 	 */
+	//
+	// Steve Sears
+	// Find the Number of Employees and Postal Code
+	// 
+	s = '<p>Find the Number of Employees and Postal Code&nbsp;for this website:<b style="font-family: Verdana, Geneva, sans-serif; font-size: 12px;">&nbsp;';
+	if (ih.indexOf(s) != -1) {
+		
+		console.log('x');
+		
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:160px !important;}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			
+			//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
+			//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var strong = document.getElementsByTagName('strong');
+			
+			var o = {
+				comp: strong[1].innerText.trim(), // Seems to be a domain
+				comp_name: '',
+				href: a
+			}
+			o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*\/$/i, '$1');
+			o.href = 'http://' + o.comp;
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:300px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			var d1c = document.createElement('iframe');
+			d1c.setAttribute('style','position:absolute;top:600px;left:0%;width:90%;height:800px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1c);
+			d1c.sandbox = 'allow-forms allow-scripts'; //XX allow-top-navigation
+			//
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
+			document.body.appendChild(d2);
+			//
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+			document.body.appendChild(d3);
+			/* END ITEMS */
+			
+			// actions
+			d2.value = o.comp;
+			d2.onblur = function() {
+				linkedin_biz__init();
+				linkedin_biz__init();
+			}
+			
+			//
+			d1c.src = o.href;
+			d1c.onmouseover = function() {
+				this.scrollIntoView();
+			}
+			d1c.onmouseout = function() {
+				d2.scrollIntoView();
+			}
+			var ifr_intv = setInterval(function() {// zoom out!
+				d1c.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+			}, 600);
+			
+			//
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			// ...
+			new AMT___core_factory().
+				iframe2parent__postMessage( //
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+				
+			//
+			d3.value = 'N/A';
+			d3.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementById('company_size').value = 'N/A';
+				document.getElementById('industry').value = 'N/A';
+				document.getElementById('type').value = 'N/A';
+				document.getElementById('companypage').value = 'N/A';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				//~ 
+				//~ document.getElementById('web_url').value = 'N/A';
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+			
+			
+			// ...
+			linkedin_biz__init();
+			linkedin_biz__li_init();
+			
+			// ...
+			function linkedin_biz__li_init() {
+				d1b.innerText = '';
+				var rf = new AMT___requests_factory();
+				rf.linkedin_company_search(
+					{
+						//~ keywords: o.comp_name
+						keywords: d2.value
+					},
+					linkedin_biz__li_process
+				);
+			}
+			// ({results:x, results_count:y, result: r});
+			function linkedin_biz__li_process(response_obj) {
+				
+				var ro = response_obj;
+				
+				var out = d1b;
+				
+				var x = ro.results;
+				
+				console.log(x);
+				
+				out.innerText = ro.results_count + '\n';
+				
+				var found = false;
+				var x_;
+				var btn;
+				for (var i in x) {
+					if (!x[i].company) continue;
+					
+					x_ = x[i].company;
+					x_.fmt_canonicalName = x_.fmt_canonicalName.replace(/<[^>]+>/g, '');
+					x_.fmt_canonicalName = __js_clean_html_str(x_.fmt_canonicalName);
+					
+					//
+					btn = document.createElement('input');
+					btn.setAttribute('type','button');
+					//~ btn.setAttribute('class','exe');
+					//~ btn.setAttribute('id', count+'|'+x_.id);
+					btn.setAttribute('style','width:auto;');
+					btn.value = x_.fmt_canonicalName;
+					//
+					out.appendChild(btn);
+					out.appendChild(document.createElement('br'));
+					
+					
+				}
+			}
+			function linkedin_biz__init() {
+				d1.innerText = '';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+					//~ seed_arg1: d1,
+					yahoo_array: true
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					linkedin_biz__complete
+				);
+			}
+			function linkedin_biz__li_profile(div) {
+				
+				//~ d1.innerText = '';
+				var div = div;
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: div.y_url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.innerHTML = response.status;
+							return;
+						}
+						
+						var r;
+						var sbm = true;
+						
+						// e.g. 222
+						r = /<li><a class="density" href="[^"]*">([\d,]+)<\/a> <span>Employees on LinkedIn<\/span><\/li>/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							document.getElementsByName('web_url')[0].value = r;
+							//~ if (r.length < 3) {
+								//~ sbm = false;
+							//~ }
+						} else {
+							sbm = false;
+						}
+						
+						// HQ
+						r = /<h4>Headquarters<\/h4>[\r\n\t\s]*<p class="adr" itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
+						if (r) {
+							var full = r[1].replace(/<[^>]*>/g, '').replace(/[\r\n\t\s]+/g, ' ').trim();
+							
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode(full));
+							
+							// Auto?
+							var r2 = /<span class="postal-code" itemprop="postalCode">([^<]+)<\/span>/.exec(rs);
+							if (r2) {
+								r2 = __js_clean_html_str(r2[1]).trim();
+								document.getElementsByName('web_url')[1].value = r2;
+								//~ if (r2.length == 0)
+							} else sbm = false;
+						} else if (rs.indexOf('<h4>Headquarters</h4>') == -1) {
+							document.getElementsByName('web_url')[1].value = 'N/A';
+						} else {
+							sbm = false;
+						}
+						
+						//~ // e.g. Internet
+						//~ r = /<li class="industry">[\r\n\t\s]*<h4>Industry<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+						//~ if (r) {
+							//~ r = __js_clean_html_str(r[1]).trim();
+							//~ document.getElementById('industry').value = r;
+							//~ if (r.length < 3) {
+								//~ sbm = false;
+							//~ }
+						//~ } else {
+							//~ sbm = false;
+						//~ }
+						
+						//~ // e.g. Public Company
+						//~ r = /<li class="type">[\r\n\t\s]*<h4>Type<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+						//~ if (r) {
+							//~ r = __js_clean_html_str(r[1]).trim();
+							//~ document.getElementById('type').value = r;
+							//~ if (r.length < 3) {
+								//~ sbm = false;
+							//~ }
+						//~ } else {
+							//~ sbm = false;
+						//~ }
+						
+						console.log(sbm);
+						if (sbm) {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+						}
+					}
+				});
+			}
+			function linkedin_biz__complete(rs) {
+				if (rs.length == 0) {
+					d1.innerText = '0';
+					return;
+				}
+				for (var i in rs) {
+					
+					var short;
+					var extra = '';
+					var x = /^(https?:\/\/\w+\.linkedin\.com\/company\/[^\/]+)([^$]*)/.exec(rs[i][0]);
+					if (x) {
+						short = (x) ? x[1] : rs[i][0];
+						short = short.replace(/^https?:\/\/\w+\./i, 'http://www.')
+						if (x[2])
+							extra = '<b>' +x[2]+ '</b><br>';
+					} else {
+						short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
+					}
+					
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.y_url = short;
+					//d.y_url = rs[i][0];
+					d.className = 'exe';
+					d.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						//~ document.getElementById('companypage').value = this.y_url;
+						if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
+							
+							linkedin_biz__li_profile(this);
+							
+							//~ linkedin_biz__li_profile(this.y_url);
+							//~ new AMT___core_factory().nextTab();
+							//~ doSubmit();
+						}
+					}
+					d.innerHTML = short + '<br>' + extra + rs[i][1];
+					d1.appendChild(d);
+					
+					var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
+					//~ var x = new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i');
+					//~ console.log(isMatch);
+					//~ console.log(x);
+					if (isMatch) {
+						d.style.border = '6px solid LightGreen';
+					}
+					
+					// ...
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.innerText = 'L';
+					a.setAttribute('style','font-weight:bold;zoom:1.4;');
+					a.onclick = function(e) {
+						this.style.backgroundColor = 'LightGreen';
+						window.open(this.href, 'new');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					d.appendChild(a);
+				}
+			}
+		}
+		new run().f();
+		return;
+	}
 	//
 	// Mike Rocha
 	//  ... ...
@@ -55847,12 +56165,6 @@ qatar,80
 	if (ih.indexOf(s) != -1) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		
-		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
-		//~ GM_addStyle('body {width:30%;margin-top:50px;}');
-		//~ GM_addStyle('input {width:60%;}');
-		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
-		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
 		
 		GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
 		GM_addStyle('.panel {position:absolute;top:2000px;}');
