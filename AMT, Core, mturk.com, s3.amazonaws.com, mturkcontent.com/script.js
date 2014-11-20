@@ -26601,16 +26601,29 @@ function MT__RUN() {
 		window.addEventListener('keypress', function(e) {
 			
 			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
-      //~ + "charCode: " + e.charCode);
+			//~ + "charCode: " + e.charCode);
       
 			var char = String.fromCharCode(e.charCode);
 			
+			// Exit Steet View
 			if (char == 'z' || char == 'Z') {
 				console.log('Exit:' + char);
 				var x = document.getElementsByTagName('div');
 				for (var i in x) {
 					if (i == 'length') break;
 					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
+						x[i].click();
+						break;
+					}
+				};
+			}
+			
+			// Go to map view
+			else if (char == 'x' || char == 'X') {
+				var x=document.getElementsByTagName('div');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
 						x[i].click();
 						break;
 					}
