@@ -5,7 +5,7 @@
  * 
  * 
  */
-var UtilityAMTPairs = [];
+var UtilityAMTPairs = {};
 function AMTUtilitiesObj(options){
 	this.ownerTabId = options.ownerTabId;
 	this.utilities = options.utilities;
@@ -1280,7 +1280,10 @@ chrome.windows.getAll({populate:true}, function(allWindows) {
 chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 		if(removeInfo.windowId == localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {
-				if(UtilityAMTPairs[i].utilities &&
+				if(UtilityAMTPairs[i].ownerTabId == tabId) {
+					
+				}
+				else if(UtilityAMTPairs[i].utilities &&
 				   UtilityAMTPairs[i].utilities.length > 0) {
 				   var hasRemoved = false;
 				   for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {

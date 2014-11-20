@@ -19,6 +19,14 @@
  * 
  */
 
+if(window.top == window.self) {
+	chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {letsTest: true},  
+	  function(response) {
+			/*squelch response*/
+	  });
+}
+
+
 // o is a string
 // arr is an array of strings to be bolded
 function MT__bold(o, arr, options_object) {
