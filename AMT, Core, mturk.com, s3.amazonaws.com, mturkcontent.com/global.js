@@ -7269,14 +7269,14 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				'';
 		
 		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
-			o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+			o.local_URL_init		= 
 							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
 							'&short_filename='+short_filename+
 							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
 							header_array;
 		} else {
-			o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+			o.local_URL_init		= 
 							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
 							'&short_filename='+short_filename+
@@ -7284,7 +7284,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 							header_array;
 		}
 		
-		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+		o.local_URL_complete	= 
 						'/mturk/.scripts/google/get-page.php?v='+short_filename;
 		
 		//
@@ -7305,12 +7305,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
 				'';
 				
-		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
+		o.local_URL_init		=
 						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
 						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
 						header_array+
 						catch_success;
-		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+		o.local_URL_complete	= 
 						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
 	}
 	
@@ -7439,6 +7439,12 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function proxy_init() {
 		AMT___POPUP__initializeGlobals(
 			function() {
+				
+				console.log('AMT___POPUP___PROXY_REDACTED_:');
+				console.log(AMT___POPUP___PROXY_REDACTED_);
+				o.local_URL_init = AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
+				o.local_URL_complete = AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
+
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: o.local_URL_init,
