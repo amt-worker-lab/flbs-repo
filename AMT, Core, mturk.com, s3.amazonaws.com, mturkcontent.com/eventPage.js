@@ -52,6 +52,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//Create a tab for each utilityTab in utilities
 				currentUtility = UtilityAMTPairs[senderId].utilities[i];
 				var tabIdentifier = '###tabId'+senderId+'###at'+i;
+				if(!currentUtility.url || currentUtility.url.trim() == '') {
+					currentUtility.url = 'index/blankUtilityTab.html';
+				}
 				currentUtility.url += tabIdentifier;
 				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
 																				active: (currentUtility.active != null ? currentUtility.active : 
