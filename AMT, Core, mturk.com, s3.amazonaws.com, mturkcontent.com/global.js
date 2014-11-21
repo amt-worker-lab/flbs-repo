@@ -321,6 +321,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.R_Button_NextTab) {
 		//Implement Later
 	}
+	else if(request.removeUtilityTab) {
+		var containerDiv = document.body.getElementById('AMT__UtilityContainer');
+		containerDiv.removeChild(document.body.getElementById('utilityTabBtn' + request.removeUtilityTab));
+	}
 	//~ // Reload the iframes.
 	//~ // This is coming from the context
 	//~ // menu click. And eventpage.js.
@@ -422,7 +426,10 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
 		utilityTabBtn.utilityTab = utilityTabs[i];
 		utilityTabBtn.onclick = function() {
 			var switchToId = this.id.replace(/utilityTabBtn/, '');
-			chrome.extension.sendRequest(switchToUtilityTab:switchToId);
+			chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
+				function(rs) {
+					/*squelch response*/
+				});
 		}
 	}
 }

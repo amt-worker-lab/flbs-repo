@@ -13,6 +13,8 @@ function AMTUtilitiesObj(options){
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
+	
+	
 	if(request.setUtilityTabs) {
 		console.log('sender');
 		console.log(sender.tab);
@@ -68,6 +70,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	
+	if(request.switchToUtilityTab) {
+		for(var i in UtilityAMTPairs) {
+			if(UtilityAMTPairs[i] && UtilityAMTPairs[i].utilities && UtilityAMTPairs[i].utilities.length) {
+				for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+					if(UtilityAMTPairs[i].utilities[j].id == request.switchToUtilityTab) {
+						chrome.tabs.update(UtilityAMTPairs[i].utilities[j].tabId, {active:true});
+						break;
+					}
+				}
+			}
+		}
+	}
 	
 	//~ /**
 	 //~ * request.count_number_of_captcha_tabs
