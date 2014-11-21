@@ -1349,6 +1349,9 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 				   var hasRemoved = false;
 				   for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						if(UtilityAMTPairs[i].utilities[j].tabId == tabId) {
+							console.log(UtilityAMTPairs[i].utilities[j]);
+							chrome.tabs.sendRequest(UtilityAMTPairs[i].ownerTabId, 
+													{removeUtilityTab: UtilityAMTPairs[i].utilities[j].id})
 							UtilityAMTPairs[i].utilities.splice(j,1);
 							console.log('remove tabId'+tabId+ ' from UtilityAMTPairs');
 							console.log(UtilityAMTPairs);

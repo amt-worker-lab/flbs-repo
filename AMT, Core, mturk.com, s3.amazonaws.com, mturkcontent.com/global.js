@@ -271,6 +271,7 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	return;
 	if(request.checkPreview)
 	{
 		if(AMT__Global_Vars.isTopWindow)
@@ -323,20 +324,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 	else if(request.removeUtilityTab) {
 		var containerDiv = document.body.getElementById('AMT__UtilityContainer');
-		containerDiv.removeChild(document.body.getElementById('utilityTabBtn' + request.removeUtilityTab));
+		console.log('utilityTabBtn' + request.removeUtilityTab);
+		//containerDiv.removeChild(document.body.getElementById('utilityTabBtn' + request.removeUtilityTab));
 	}
-	//~ // Reload the iframes.
-	//~ // This is coming from the context
-	//~ // menu click. And eventpage.js.
-	//~ else if(request.reloadScript) {
-		//~ if(!AMT__Global_Vars.isTopWindow) {
-			//~ setTimeout(function() {
-				//~ window.location.href = window.location.href;
-			//~ }, 5000);
-		//~ }
-	//~ }
-	
-	
 });
 
 //
