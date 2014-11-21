@@ -382,20 +382,42 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //					options: {} //These options are specific to the tab, and overwrite any options set in the options parameter below				
 //				}]
 //			
-//	options
+//	globalTabOptions
 //			{
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
-function AMT__setUtilityTabs(utilityTabs, options) {
+function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions) {
 	var utilityTabsAndOptions = {};
 	utilityTabsAndOptions.utilities = utilityTabs;
-	utilityTabsAndOptions.options = options;
+	utilityTabsAndOptions.options = globalTabOptions;
 	console.log('utilityTabsAndOptions');
 	console.log(utilityTabsAndOptions);
 	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 			function(rs){
 
 			});
+	return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions);
+}
+
+
+function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
+	var containerDiv = document.createElement('div');
+	if(utilityPanelOptions &&
+	   utilityPanelOptions.style)
+		containerDiv.setAttribute('style',utilityPanelOptions.style);
+	else	
+		containerDiv.setAttribute('style','position:absolute;top:0px;height:27px;right:80%;background-color:gray;border: 1px solid green');
+	containerDiv.setAttribute('id','AMT__UtilityContainer');
+	document.body.appendChild(containerDiv);
+	for(var i = 0; i < utilityTabs.length; i++) {
+		var utilityTabBtn = document.createElement('input');
+		utilityTabBtn.setAttribute('style','float:left;width:25px;height:25px');
+		utilityTabBtn.setAttribute('id','utilityTabBtn'+id);
+		utilityTabBtn.setAttribute('type','button');
+		containerDiv.appendChild(utilityTabBtn);
+		utilityTabBtn.value = 'Tab' + i;
+		utilityTabBtn.utilityTab = utilityTabs[i];
+	}
 }
 
 /**
