@@ -4398,7 +4398,6 @@ function MT__RUN() {
 					//~ }
 					
 					// Here?
-					//~ q[0].focus();
 					doSubmit();
 					return;
 				}
@@ -4414,7 +4413,15 @@ function MT__RUN() {
 							q[3].value == ''
 						)
 					{
-						q[3].value = q[1].value
+						q[3].value = q[1].value;
+					}
+					// SET THE END DATE AVG. TO START AVG.
+					if  (
+							q[0].value != '' &&
+							q[2].value == ''
+						)
+					{
+						q[2].value = q[0].value;
 					}
 					
 					var errs = {
@@ -4425,7 +4432,7 @@ function MT__RUN() {
 					};
 					//~ console.log(errs.hasOwnProperty(v.error.trim()));
 					if (errs.hasOwnProperty(v.error.trim())) {
-						//~ doSubmit();
+						doSubmit();
 					}
 				}
 			}
