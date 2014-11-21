@@ -271,7 +271,6 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	return;
 	if(request.checkPreview)
 	{
 		if(AMT__Global_Vars.isTopWindow)
@@ -323,9 +322,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//Implement Later
 	}
 	else if(request.removeUtilityTab) {
-		var containerDiv = document.body.getElementById('AMT__UtilityContainer');
-		console.log('utilityTabBtn' + request.removeUtilityTab);
-		//containerDiv.removeChild(document.body.getElementById('utilityTabBtn' + request.removeUtilityTab));
+		var containerDiv = document.getElementById('AMT__UtilityContainer');
+		var removeDiv = document.getElementById('utilityTabBtn' + request.removeUtilityTab)
+		if(containerDiv && removeDiv)
+			containerDiv.removeChild(removeDiv);
 	}
 });
 
