@@ -9727,7 +9727,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:180px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:98%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d2.setAttribute('style','position:absolute;top:80px;left:0%;width:98%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d2);
 			/* END ITEMS */
 			
@@ -9820,8 +9820,15 @@ function MT__RUN() {
 					
 					// Add to d2
 					var dv = document.createElement('div');
-					dv.setAttribute('style', 'border-bottom:1px solid teal;');
-					dv.innerHTML = rs[i][0] + '<br>' + rs[i][0];
+					dv.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
+					dv.innerHTML = rs[i][0] + '<br>' + rs[i][1].substr(0,40);
+					dv.url = rs[i][0]
+					dv.onclick = function() {
+						this.style.backgroundColor = 'yellow';
+						document.getElementById('web_url').value = this.url;
+						if(this.url.length > 10)
+							doSubmit();
+					}
 					d2.appendChild(dv);
 					// Utility window?
 					//AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions)
