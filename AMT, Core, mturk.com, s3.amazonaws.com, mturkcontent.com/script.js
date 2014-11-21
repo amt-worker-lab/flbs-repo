@@ -19,6 +19,216 @@
 
 var beginRunTime = new Date().getTime();
 
+// MT__bold
+// o is a string
+// arr is an array of strings to be bolded
+// avoid b
+// go from longest to shortest
+
+/**
+ * 
+ * 
+ * 
+
+Ex:
+
+MT__bold('test <b hahaha>test test test test a</b>', ['test']));
+	<b>test</b> <b hahaha><b>test</b>1 <b>test</b> <b>test</b> <b>test</b> a</b> 
+MT__bold('test <b hahaha>test1</b>', ['test1']));
+	test <b hahaha>test1</b> 
+ */
+function MT__bold(o, arr, options_object) {
+	
+	
+	// THIS is old
+	// The older way of doing it.
+	//
+	//~ // used bold matches
+	//~ var found_words_bolded = [];
+	//~ console.log(arr);
+	
+	// Sort longest first
+	arr.sort(function(a, b){
+	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
+	});
+	
+	//~ console.log(o);
+	//~ console.log(arr);
+	
+	var x = o;
+	var word;
+	
+	for (var i in arr) {
+		
+		// July 2 2014, Added .trim()
+		//
+		//
+		word = arr[i].trim();
+		
+		//console.log(word);
+		
+		if (word == '') {
+			continue;
+		}
+		
+		// Is word "b" or "B"?
+		// Replace all cases where it is not b> AND/OR <b OR </b
+		// Encapsulate in bold element.
+		if (word == 'b' || word == 'B') {
+			x = x.replace(/b([^>])/i, '<b>$1'); //     b>
+			x = x.replace(/([^\/<])b/i, '$1</b>'); //  /<b
+			continue;
+		}
+		
+		// Here?
+		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
+		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\\/b>)', 'gi');
+		// fishes</b>
+		// fish</b>
+		// fis(h)(<)
+		// fis(h)([ $])
+		//~ console.log(reg);
+		//~ console.log(options_object);
+		
+		if (options_object && options_object.hasOwnProperty('color'))
+			x = x.replace(reg, '<b style="color:'+options_object.color+';">$1</b>');
+		else {
+			//~ console.log(x);
+			//~ console.log('x');
+			x = x.replace(reg, '<b>$1</b>');
+		}
+		
+	}
+	
+	if (!options_object)
+		return x;
+	else {
+		var return_object = {};
+		return_object.bold_string = x;
+		
+		//~ if (x == undefined) x = '';
+		
+		if (options_object.percent_matched) {
+			var pm;
+			var xlen1 = x.length;
+			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
+			//~ var chars_removed = xlen1 - xlen2;
+			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
+			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
+			return_object.pm = {
+				bold_string: x,
+				percent_matched: pm,
+				xlen1: xlen1,
+				xlen2: xlen2
+			}
+			//~ return {
+				//~ bold_string: x,
+				//~ percent_matched: pm,
+				//~ xlen1: xlen1,
+				//~ xlen2: xlen2
+			//~ }
+			//~ return;
+		}
+		if (options_object.return_div_element) {
+			var d = document.createElement('div');
+			d.innerHTML = x;
+			return_object.div_element = d;
+		}
+		
+		return_object.options_object = options_object; // RETURN INIT !!
+		
+		//~ if (options_object.initial) {
+			//~ 
+		//~ }
+		
+		return return_object;
+	}
+	
+	// old
+	//
+	//
+	//~ for (var i in arr) {
+		//~ 
+		//~ // July 2 2014, Added .trim()
+		//~ //
+		//~ //
+		//~ word = arr[i].trim();
+		//~ 
+		//~ //console.log(word);
+		//~ 
+		//~ if (word == '') {
+			//~ continue;
+		//~ }
+		//~ 
+		//~ // is in found_words_bolded ?
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
+		//~ }
+		
+		
+		// THIS is old
+		// The older way of doing it.
+		//
+		//~ x = x.replace(reg, function(p0, p1) {
+			//~ console.log('p0:' + p0);
+			//~ console.log('p1:' + p1);
+			//~ console.log(found_words_bolded);
+			//~ // is current "word" in a past "regex matched"?
+			//~ for (var j in found_words_bolded) {
+				//~ var prev_match = found_words_bolded[j];
+				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
+				//~ if (tmp_match) {
+					//~ //found_in_prev = true;
+					//~ return p1; // ends here
+				//~ }
+			//~ }
+			//~ // Still here? Must be a new word
+			//~ found_words_bolded.push(word); // not here
+			//~ return '<b>'+p1+'</b>';
+		//~ });
+		
+		//console.log(found_words_bolded);
+		
+		// ...
+		// The idea is to avoid bolding smaller words
+		// when larger word already has bolded. So if "Frat"
+		// is going to be bolded then don't bold "rat."
+		
+		// Below will bold "rat" regardless of whether
+		// "Frat" is bolded. (Removed)
+		//~ var found_in_prev = false;
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (tmp_match) {
+				//~ found_in_prev = true;
+				//~ break;
+			//~ } else {
+				//~ 
+			//~ }
+		//~ }
+		//~ if (!found_in_prev) {
+			//~ found_words_bolded.push(word);
+		//~ }
+		
+		//~ var str_match = false;
+		//~ if (reg.exec(x))
+			//~ str_match = true;
+		//~ reg.lastIndex = 0;
+		//x = x.replace(reg, '<b>$1</b>');
+		//~ 
+	//~ }
+}
+//console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
+
+
+
+
+
 /**
  * FUNCTION MT__RUN
  * Scripts execute here, amazonaws.com, mturkcontent.com
@@ -40,8 +250,6 @@ function MT__RUN() {
 														},
 													   {url: 'http://www.youtube.com'}], {placeholder:'placeholder for options lol'});
 	}
-	
-	
 	//
 	//
 	//
@@ -4055,7 +4263,8 @@ function MT__RUN() {
 	// Do as parent to iframe
 	// ex:https://s3.amazonaws.com/mturk_bulk/hits/119737238/W2s1Yy8d_V__X_uWQDj2lQ.html?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=3R868ACW4SLF5H92PS0BFYCAA7OGZQ
 	//~ s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
-	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;please do not submit HITs.</p>';
+	//~ s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;please do not submit HITs.</p>';
+	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
 	if (ih.indexOf(s) != -1)
 	{
 		console.log('');
@@ -4211,11 +4420,12 @@ function MT__RUN() {
 					var errs = {
 						'Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking':true,
 						'That discount code isn’t valid for the hotel you want to book':true,
-						'Sorry, this booking doesn’t meet the minimum price required for that discount code':true
+						'Sorry, this booking doesn’t meet the minimum price required for that discount code':true,
+						'Sorry, this discount code can only be used in certain regions':true
 					};
 					//~ console.log(errs.hasOwnProperty(v.error.trim()));
 					if (errs.hasOwnProperty(v.error.trim())) {
-						doSubmit();
+						//~ doSubmit();
 					}
 				}
 			}
@@ -8131,6 +8341,8 @@ function MT__RUN() {
 				td[i].style.maxWidth = '180px';
 			}
 		}
+		var t1_last_td = t[0].getElementsByTagName('td');
+		t1_last_td = t1_last_td[ t1_last_td.length - 1];
 		
 		// o
 		var o = {
@@ -8159,11 +8371,14 @@ function MT__RUN() {
 			is_iframe_task: false,
 			lat: null,
 			lng: null,
-			location: td[3].innerText.trim()
+			location: td[3].innerText.trim(),
 			
 			//~ // phone span
 			//~ td_phone: td[7],
 			//~ phone: td[7].innerText.trim()
+			
+			//
+			table1_last_td: t1_last_td
 		}
 		o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
 		o.domain = o.domain.replace(/\/[\d\D]*/i, ''); // trailing
@@ -8261,9 +8476,9 @@ function MT__RUN() {
 		window.addEventListener('keydown', function(e) {
 			//~ console.log(e.keyCode)
 			if (e == 13) {
-				document.getElementById('submitButton').click();
-				event.preventDefault();
-				event.stopPropogation();
+				//~ document.getElementById('submitButton').click();
+				//~ event.preventDefault();
+				//~ event.stopPropogation();
 				return false;
 			}
 		}, true);
@@ -8322,18 +8537,21 @@ function MT__RUN() {
 			document.getElementsByName('EmailAddress')[0],
 			document.getElementsByName('DirectPhone')[0]
 		];
-		for(var i = 0; i < q.length; i++) {
-			q[i].onfocus = function() {
-				if(this.value == 'NULL')
-					this.value = '';
-			}
-			
-			q[i].onblur = function() {
-				if(this.value == '')
-					this.value = 'NULL';
-			}
-			
-		}
+		// THIS IS IF "NULL".
+		// 
+		// 
+		//~ for(var i = 0; i < q.length; i++) {
+			//~ q[i].onfocus = function() {
+				//~ if(this.value == 'NULL')
+					//~ this.value = '';
+			//~ }
+			//~ 
+			//~ q[i].onblur = function() {
+				//~ if(this.value == '')
+					//~ this.value = 'NULL';
+			//~ }
+			//~ 
+		//~ }
 		
 		q[2].ondblclick = function() {
 			console.log('here?');
@@ -8345,10 +8563,14 @@ function MT__RUN() {
 		}
 		
 		// Placeholders
-		q[0].placeholder = 'F';
-		q[1].placeholder = 'L';
-		q[2].placeholder = 'E';
-		q[3].placeholder = 'P';
+		if (q[0].placeholder == 'First' || q[0].placeholder == '')
+			q[0].placeholder = 'F';
+		if (q[0].placeholder == 'Last' || q[0].placeholder == '')
+			q[1].placeholder = 'L';
+		if (q[0].placeholder == 'Email' || q[0].placeholder == '')
+			q[2].placeholder = 'E';
+		if (q[0].placeholder == 'Phone' || q[0].placeholder == '')
+			q[3].placeholder = 'P';
 		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
@@ -8389,6 +8611,10 @@ function MT__RUN() {
 		document.getElementById('submitButton').onclick = function() {
 			for(var i = 0; i < q.length; i++) {
 				if(q[i].value == '') {
+					q[i].value = 'N/A';
+					
+					 
+					// NULL
 					q[i].value = 'NULL';
 				}
 			}
@@ -8420,7 +8646,7 @@ function MT__RUN() {
 				for (var i in q) {
 					q[i].value = q[i].value.trim();
 					
-					if ((q[i].value == '' || q[i].value == 'NULL') && q[i].name != 'DirectPhone') {
+					if ((q[i].value == '' || q[i].value == 'NULL' || q[i].value == 'N/A') && q[i].name != 'DirectPhone') {
 						var c = confirm(q[i].name + ' is blank.\nPress OK to ignore and submit task.');
 						if (c == true) {
 							// do nothing
@@ -8497,12 +8723,23 @@ function MT__RUN() {
 							// Accept here
 							console.log('accept');
 							AMT___Floater.accept();
-							return;
+							//~ return;
 						} else {
 							// Skip here
 							AMT___Floater.skip();
-							return;
+							//~ return;
 						}
+						
+						// Fill in the local hour in the table
+						var tmp_hr = response_obj.response.local_hour;
+						var tmp_dm = 'am';
+						if (tmp_hr == 12) {
+							tmp_dm = 'pm';
+						} else if (tmp_hr > 12) {
+							tmp_dm = 'pm';
+							tmp_hr -= 12;
+						}
+						o.table1_last_td.appendChild(document.createTextNode('Time:' + tmp_hr + tmp_dm));
 					}
 				});
 			}, false, true);
@@ -55656,16 +55893,21 @@ qatar,80
 			//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
 			//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('b {zoom:1.2 !important;}');
 			
 			var strong = document.getElementsByTagName('strong');
 			
 			var o = {
 				comp: strong[1].innerText.trim(), // Seems to be a domain
 				comp_name: '',
-				href: a
+				href: a,
+				comp_array: null
 			}
-			o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*\/$/i, '$1');
+			o.comp_name = o.comp.replace(/([\w\d\-]{3,})((\.[^\.]{2,3})*)$/i, '$1');
 			o.href = 'http://' + o.comp;
+			o.comp_array = [o.comp].concat(o.comp_name.clean_string_to_array());
+			console.log(o.comp_array);
+			console.log(o.comp_name.clean_string_to_array());
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -55920,14 +56162,18 @@ qatar,80
 					d1.innerText = '0';
 					
 					// Try with .com removed?
+					// Add a border.
 					if (d2.value.indexOf('.') != -1) {
 						d2.value = d2.value.replace(/\.[^\.]*$/, '');
+						d2.style.border = '2px solid blue';
 						linkedin_biz__init();
 					}
 					return;
 				}
 				for (var i in rs) {
 					
+					// Get rid of extraneous text on links.
+					// E.g. /company/389583?blahblbahalbahlabhlbhalhb = /company/389583.
 					var short;
 					var extra = '';
 					var x = /^(https?:\/\/\w+\.linkedin\.com\/company\/[^\/]+)([^$]*)/.exec(rs[i][0]);
@@ -55961,9 +56207,12 @@ qatar,80
 							//~ doSubmit();
 						}
 					}
-					d.innerHTML = short + '<br>' + extra + rs[i][1];
+					d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.comp_array );
+					//~ d.innerHTML = short + '<br>' + extra + rs[i][1]; //MT__bold(rs[i][1].replace(/<\/?b>/g, ''), )
 					d1.appendChild(d);
 					
+					// isMatch
+					// This will only work with yahoo.com searches? At least not startpage?
 					var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
 					//~ var x = new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i');
 					//~ console.log(isMatch);
@@ -131411,211 +131660,61 @@ else {
 		}
 	}
 }
-
-
-// MT__bold
-// o is a string
-// arr is an array of strings to be bolded
-// avoid b
-// go from longest to shortest
-
-/**
+/*
  * 
- * 
- * 
+ * OLD iframe sizing
+ *
+// 
+if (window.top == window.self) {
+	var MT__IFRAME_MARGIN_TOP = (GM_getValue('MT__IFRAME_MARGIN_TOP') != null) ? GM_getValue('MT__IFRAME_MARGIN_TOP') : '100';
 
-Ex:
-
-MT__bold('test <b hahaha>test test test test a</b>', ['test']));
-	<b>test</b> <b hahaha><b>test</b>1 <b>test</b> <b>test</b> <b>test</b> a</b> 
-MT__bold('test <b hahaha>test1</b>', ['test1']));
-	test <b hahaha>test1</b> 
- */
-function MT__bold(o, arr, options_object) {
-	
-	
-	// THIS is old
-	// The older way of doing it.
-	//
-	//~ // used bold matches
-	//~ var found_words_bolded = [];
-	//~ console.log(arr);
-	
-	// Sort longest first
-	arr.sort(function(a, b){
-	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
-	});
-	
-	//~ console.log(o);
-	//~ console.log(arr);
-	
-	var x = o;
-	var word;
-	
-	for (var i in arr) {
-		
-		// July 2 2014, Added .trim()
-		//
-		//
-		word = arr[i].trim();
-		
-		//console.log(word);
-		
-		if (word == '') {
-			continue;
-		}
-		
-		// Is word "b" or "B"?
-		// Replace all cases where it is not b> AND/OR <b OR </b
-		// Encapsulate in bold element.
-		if (word == 'b' || word == 'B') {
-			x = x.replace(/b([^>])/i, '<b>$1'); //     b>
-			x = x.replace(/([^\/<])b/i, '$1</b>'); //  /<b
-			continue;
-		}
-		
-		// Here?
-		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
-		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\\/b>)', 'gi');
-		// fishes</b>
-		// fish</b>
-		// fis(h)(<)
-		// fis(h)([ $])
-		//~ console.log(reg);
-		//~ console.log(options_object);
-		
-		if (options_object && options_object.hasOwnProperty('color'))
-			x = x.replace(reg, '<b style="color:'+options_object.color+';">$1</b>');
-		else {
-			//~ console.log(x);
-			//~ console.log('x');
-			x = x.replace(reg, '<b>$1</b>');
-		}
-		
+	var x = document.createElement('select');
+	x.setAttribute('style','position:absolute;top:0;left:0;z-index:10000;width:10px;');
+	//var sel;
+	for (var i = 0; i <= 200; i += 20) {
+		if (MT__IFRAME_MARGIN_TOP == i)
+			x.innerHTML += '<option value="'+i+'" selected>'+i+'</option>';
+		else
+			x.innerHTML += '<option value="'+i+'">'+i+'</option>';
 	}
-	
-	if (!options_object)
-		return x;
-	else {
-		var return_object = {};
-		return_object.bold_string = x;
-		
-		//~ if (x == undefined) x = '';
-		
-		if (options_object.percent_matched) {
-			var pm;
-			var xlen1 = x.length;
-			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
-			//~ var chars_removed = xlen1 - xlen2;
-			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
-			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
-			return_object.pm = {
-				bold_string: x,
-				percent_matched: pm,
-				xlen1: xlen1,
-				xlen2: xlen2
-			}
-			//~ return {
-				//~ bold_string: x,
-				//~ percent_matched: pm,
-				//~ xlen1: xlen1,
-				//~ xlen2: xlen2
-			//~ }
-			//~ return;
+	x.onchange = function() {
+		var i;
+		i = document.getElementsByName('HTMLQuestionIFrame');
+		if (!i || !i[0]) {
+			i = document.getElementsByName('ExternalQuestionIFrame');
 		}
-		if (options_object.return_div_element) {
-			var d = document.createElement('div');
-			d.innerHTML = x;
-			return_object.div_element = d;
-		}
-		
-		return_object.options_object = options_object; // RETURN INIT !!
-		
-		//~ if (options_object.initial) {
-			//~ 
-		//~ }
-		
-		return return_object;
+		if (i[0])
+			i[0].style.top = this.value + 'px';
+		GM_setValue('MT__IFRAME_MARGIN_TOP', this.value);
 	}
-	
-	// old
-	//
-	//
-	//~ for (var i in arr) {
-		//~ 
-		//~ // July 2 2014, Added .trim()
-		//~ //
-		//~ //
-		//~ word = arr[i].trim();
-		//~ 
-		//~ //console.log(word);
-		//~ 
-		//~ if (word == '') {
-			//~ continue;
-		//~ }
-		//~ 
-		//~ // is in found_words_bolded ?
-		//~ for (var j in found_words_bolded) {
-			//~ var prev_match = found_words_bolded[j];
-			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
-			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
-		//~ }
-		
-		
-		// THIS is old
-		// The older way of doing it.
-		//
-		//~ x = x.replace(reg, function(p0, p1) {
-			//~ console.log('p0:' + p0);
-			//~ console.log('p1:' + p1);
-			//~ console.log(found_words_bolded);
-			//~ // is current "word" in a past "regex matched"?
-			//~ for (var j in found_words_bolded) {
-				//~ var prev_match = found_words_bolded[j];
-				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
-				//~ if (tmp_match) {
-					//~ //found_in_prev = true;
-					//~ return p1; // ends here
-				//~ }
-			//~ }
-			//~ // Still here? Must be a new word
-			//~ found_words_bolded.push(word); // not here
-			//~ return '<b>'+p1+'</b>';
-		//~ });
-		
-		//console.log(found_words_bolded);
-		
-		// ...
-		// The idea is to avoid bolding smaller words
-		// when larger word already has bolded. So if "Frat"
-		// is going to be bolded then don't bold "rat."
-		
-		// Below will bold "rat" regardless of whether
-		// "Frat" is bolded. (Removed)
-		//~ var found_in_prev = false;
-		//~ for (var j in found_words_bolded) {
-			//~ var prev_match = found_words_bolded[j];
-			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
-			//~ if (tmp_match) {
-				//~ found_in_prev = true;
-				//~ break;
-			//~ } else {
-				//~ 
-			//~ }
-		//~ }
-		//~ if (!found_in_prev) {
-			//~ found_words_bolded.push(word);
-		//~ }
-		
-		//~ var str_match = false;
-		//~ if (reg.exec(x))
-			//~ str_match = true;
-		//~ reg.lastIndex = 0;
-		//x = x.replace(reg, '<b>$1</b>');
-		//~ 
-	//~ }
-}
-//console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
-//console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
-//console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
+	x.onclick = function() {
+		this.style.width = '200px';
+	}
+	document.body.appendChild(x);
 
+	var i;
+	i = document.getElementsByName('HTMLQuestionIFrame');
+	if (!i || !i[0]) {
+		i = document.getElementsByName('ExternalQuestionIFrame');
+	}
+	if (i[0]) {
+		i[0].style.height = '4000px';
+		i[0].style.width = '100%';
+		i[0].style.margin = '0px';
+		i[0].style.padding = '0px';
+		//i[0].style.marginLeft = '-0px';
+		
+		i[0].style.position = 'absolute';
+		i[0].style.top = MT__IFRAME_MARGIN_TOP+'px';
+		i[0].style.left = '0px';
+		i[0].style.backgroundColor = 'white';
+	}
+	i = document.getElementsByName('hitForm');
+	if (i) {
+		if (i[0]) {
+			i[0].style.width = '100%';
+			i[0].style.margin = '0px';
+			i[0].style.padding = '0px';
+		}
+	}
+}*/
