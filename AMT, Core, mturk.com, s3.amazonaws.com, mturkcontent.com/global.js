@@ -394,20 +394,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //			{
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
-function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions) {
-	var utilityTabsAndOptions = {};
-	utilityTabsAndOptions.utilities = utilityTabs;
-	utilityTabsAndOptions.options = globalTabOptions;
-	console.log('utilityTabsAndOptions');
-	console.log(utilityTabsAndOptions);
-	for(var i = 0; i < utilityTabs.length; i++) {
-		utilityTabs[i].id = "" + i + ":" + Math.random();
-	}
-	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
-			function(rs){
+function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode) {
+	if(!AMT__Global_Vars.isPreview && !runInPreviewMode) {
+		var utilityTabsAndOptions = {};
+		utilityTabsAndOptions.utilities = utilityTabs;
+		utilityTabsAndOptions.options = globalTabOptions;
+		console.log('utilityTabsAndOptions');
+		console.log(utilityTabsAndOptions);
+		for(var i = 0; i < utilityTabs.length; i++) {
+			utilityTabs[i].id = "" + i + ":" + Math.random();
+		}
+		chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
+				function(rs){
 
-			});
-	return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions);
+				});
+		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions);
+	}
 }
 
 
