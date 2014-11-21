@@ -327,6 +327,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(containerDiv && removeDiv)
 			containerDiv.removeChild(removeDiv);
 	}
+	//~ // Reload the iframes.
+	//~ // This is coming from the context
+	//~ // menu click. And eventpage.js.
+	//~ else if(request.reloadScript) {
+		//~ if(!AMT__Global_Vars.isTopWindow) {
+			//~ setTimeout(function() {
+				//~ window.location.href = window.location.href;
+			//~ }, 5000);
+		//~ }
+	//~ }
+	
+	
 });
 
 //
@@ -366,6 +378,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * 
  * 
  * */
+
+
 
 /**
  * Utility Tabs
@@ -428,6 +442,10 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
  * End of Utility Tabs
  * 
  **/
+
+
+
+
 
 //Record Returning
 /**
@@ -1095,7 +1113,7 @@ String.prototype.string_to_mixed_case = function(options) {
  * 
  * @param options						object
  * @param .string						str		String to clean.
- * @param .least_characters_per_word	int		Number of least amount of characters allowed per word. 0 is no limit. Default=1.
+ * @param .least_characters_per_word	int		Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
  * 
  * Returns string
  */
@@ -9376,7 +9394,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					fk_user_name	varchar(10) 
 					fk_id_jobs_history_index	int(11) UN 
 		 * */
-		if (row.hasOwnProperty('title_ratings') && row.title_ratings.hasOwnProperty( row.history_id )) {
+		if (row.title_ratings != null && row.title_ratings.hasOwnProperty( row.history_id )) {
 			var title_ratings = row.title_ratings[ row.history_id ];
 			var tmp_users_obj = {};
 			for (var i in title_ratings) {
@@ -9793,10 +9811,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					return;
 				}
 				
+				console.log(rs);
 				// Parse
 				rs = JSON.parse(rs);
 				
-				//~ console.log(rs);
+				console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -9895,10 +9914,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.group_id			= rs[7][i];
 					d.history_id		= (rs[8]) ? rs[8][i]	: null;
 					d.reward			= (rs[9]) ? rs[9][i]	: null;
-					d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
-					d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
-					d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
-					d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
+					d.title_ratings			= (rs[10]) ? null	: null;
+					d.title_comments		= (rs[11]) ? null	: null;
+					d.requester_ratings		= (rs[12]) ? null	: null;
+					d.requester_comments	= (rs[13]) ? null	: null;
+					//~ d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
+					//~ d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
+					//~ d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
+					//~ d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
@@ -10319,7 +10342,7 @@ function AMT___oldTopWindowFloatStuff() {
 function AMT___InitializeReturnAndAcceptKeyPress() {
 	chrome.extension.sendRequest({getRACustomKey:true}, function(rs) {
 		
-			if (rs && rs.hasOwnProperty('RACustomKey'))
+			if (rs.hasOwnProperty('RACustomKey'))
 				AMT__Global_Vars.RACustomKey = rs.RACustomKey.toLowerCase().charCodeAt();
 			//alert('here ' + rs.RACustomKey + rs.RACustomKey.toLowerCase().charCodeAt() + AMT__Global_Vars.RACustomKey);
 			
