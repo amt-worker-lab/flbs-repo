@@ -1985,11 +1985,18 @@ function load()
 		console.log(l);
 		
 		
-		if (l.indexOf('http://www.hotels.com/hotel/details.html') != -1) {
+		// NON UK
+		//~ if (l.indexOf('http://www.hotels.com/hotel/details.html') != -1) {
+		
+		
+		if (l.indexOf('hotels.com/hotel/details.html') != -1) {
 			lowest();
 			return;
 		}
-		else if (l.indexOf('https://ssl.hotels.com/bookingInitialise.do') != -1) {
+		else if (l.indexOf('hotels.com/bookingInitialise.do') != -1) {
+		
+		// NON UK
+		//else if (l.indexOf('https://ssl.hotels.com/bookingInitialise.do') != -1) {
 			
 			var o = {
 				p_1: null,
@@ -2011,7 +2018,10 @@ function load()
 			return;
 		}
 		//ERR		//http://www.hotels.com/search/search.html?cd=08-19-14&dd=08-21-14&hid=116961&ihu=true&numberOfRooms=1&pn=1&rl=CITY%3A1633911%3APROVIDED%3APROVIDED&roomInfoList[0].numberOfAdults=1&vt=LIST
-		else if (l.indexOf('http://www.hotels.com/search/search.html') != -1) {
+		else if (l.indexOf('hotels.com/search/search.html') != -1) {
+		
+		// NON UK
+		//~ else if (l.indexOf('http://www.hotels.com/search/search.html') != -1) {
 			
 			var x = document.getElementsByClassName('noticeTextType1');
 			if (x && x.length && x[0] != undefined && x[0].innerText.indexOf('is not available on Hotels.com for your travel dates.') != -1) {
