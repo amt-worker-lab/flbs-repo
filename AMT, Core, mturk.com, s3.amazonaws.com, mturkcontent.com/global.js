@@ -392,6 +392,9 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions)
 	utilityTabsAndOptions.options = globalTabOptions;
 	console.log('utilityTabsAndOptions');
 	console.log(utilityTabsAndOptions);
+	for(var i = 0; i < utilityTabs.length; i++) {
+		utilityTabs[i].id = "" + i + ":" + Math.random();
+	}
 	chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 			function(rs){
 
@@ -406,17 +409,21 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
 	   utilityPanelOptions.style)
 		containerDiv.setAttribute('style',utilityPanelOptions.style);
 	else	
-		containerDiv.setAttribute('style','position:absolute;top:0px;height:27px;right:80%;background-color:gray;border: 1px solid green');
+		containerDiv.setAttribute('style','position:absolute;top:0px;height:27px;left:80%;background-color:gray;border: 1px solid green');
 	containerDiv.setAttribute('id','AMT__UtilityContainer');
 	document.body.appendChild(containerDiv);
 	for(var i = 0; i < utilityTabs.length; i++) {
 		var utilityTabBtn = document.createElement('input');
-		utilityTabBtn.setAttribute('style','float:left;width:25px;height:25px');
-		utilityTabBtn.setAttribute('id','utilityTabBtn'+id);
+		utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
+		utilityTabBtn.setAttribute('id','utilityTabBtn'+utilityTabs[i].id);
 		utilityTabBtn.setAttribute('type','button');
 		containerDiv.appendChild(utilityTabBtn);
 		utilityTabBtn.value = 'Tab' + i;
 		utilityTabBtn.utilityTab = utilityTabs[i];
+		utilityTabBtn.onclick = function() {
+			var switchToId = this.id.replace(/utilityTabBtn/, '');
+			chrome.extension.sendRequest(switchToUtilityTab:switchToId);
+		}
 	}
 }
 
