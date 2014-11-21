@@ -39,8 +39,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 															utilities: request.setUtilityTabs.utilities
 														});
 		UtilityAMTPairs.options = request.setUtilityTabs.options;
-		console.log('here is 1066:');
-		console.log(UtilityAMTPairs.options[1066]);
 		console.log(UtilityAMTPairs);
 		//console.log(a.b.c);
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
@@ -65,8 +63,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
 						console.log(UtilityAMTPairs);
 						
-						console.log('here is 1066:');
-						console.log(UtilityAMTPairs.options[1066]);
 
 					});
 		}
@@ -713,8 +709,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			for(var i in UtilityAMTPairs.options) {
 				optionsToSet[i] = UtilityAMTPairs.options[i]
 			}
-			console.log('here is 1066:');
-			console.log(UtilityAMTPairs.options[1066]);
 			
 
 //UtilityAMTPairs
