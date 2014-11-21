@@ -9726,6 +9726,9 @@ function MT__RUN() {
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:180px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:98%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d2);
 			/* END ITEMS */
 			
 			var a = /<p>Go to ([^<]+)<\/p>/.exec(ih)[1];
@@ -9803,6 +9806,7 @@ function MT__RUN() {
 			function startpage(response_obj) {
 				console.log(response_obj.length);
 				var rs = response_obj;
+				console.log(rs);
 				
 				if (!rs.length) {
 					// No URLs
@@ -9810,10 +9814,29 @@ function MT__RUN() {
 					//~ return;
 				}
 				
+				var uw = [];
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
-					if (i >= 3) break; 
+					
+					// Add to d2
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'border-bottom:1px solid teal;');
+					dv.innerHTML = rs[i][0] + '<br>' + rs[i][0];
+					d2.appendChild(dv);
+					// Utility window?
+					//AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions)
+					uw.push({
+						url: rs[i][0]
+					});
+					//~ if (i == 0) {
+						//~ 
+					//~ }
+					
+					console.log(i);
+					if (i >= 2) break; 
 				}
+				
+				AMT__setUtilityTabs(uw);
 				
 				// Push 
 				//~ o.sd_start_urls.push();
