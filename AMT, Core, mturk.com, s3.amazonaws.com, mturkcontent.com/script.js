@@ -9708,6 +9708,193 @@ function MT__RUN() {
 	 */
 	
 	//
+	// Andrew Scherer
+	// Find the e-mail of the webmaster.
+	//
+	s = '	<li>Find the e-mail or the contact page URL. whois.domaintools.com may reveal the webmaster e-mail but please use this as a last resort because it is often outdated.</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.container {position:absolute;top:0px;left:0;margin:0 !important;padding:0 !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {zoom:0.8;}');
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:180px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			var a = /<p>Go to ([^<]+)<\/p>/.exec(ih)[1];
+			a = __js_clean_html_str(a);
+			
+			var o = {
+				site: a,
+				domain: null,
+				sd_start_urls: [a],
+				sd_allowed_domains: []
+			}
+			if (o.site == '' && AMT__Global_Vars.isPreview) {	// Not accepted. No site/domain.
+				AMT___Floater.skip();
+				return;
+			} else if (!AMT__Global_Vars.isPreview) {			// Accepted
+				// add
+				addToTabsQ();
+			}
+			o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '').replace(/\/[\d\D]*$/, '');
+			o.sd_allowed_domains.push( o.domain );
+			
+			
+			// Yahoo/SP top 3 for start
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team OR webmaster'),
+				callback_function: startpage
+			});
+			
+			//~ if (o.domain != '' ) {
+				//~ 
+			//~ } else {
+				//~ scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			//~ }
+			
+			//~ if (o.domain != '' && o.domain.indexOf('mturkcontent.com') == -1) {
+				//~ if (/^http/i.exec(o.domain)) { // Push start url
+					//~ o.sd_start_urls.push(o.domain); // 
+				//~ } else {
+					//~ o.sd_start_urls.push('http://' + o.domain); // 
+				//~ }
+				//~ o.domain = o.domain.replace(/^https?:\/\/(www\.|)/i, '');
+				//o.domain = o.domain.replace(/\/[\d\D]*/i, '');
+				//~ o.sd_allowed_domains.push(o.domain);
+				//~ 
+				//~ // Yahoo/SP top 3 for start
+				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					//~ startPage: true,
+					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team'),
+					//~ callback_function: Nicolas_Cazagou_FB_emails__startpage
+				//~ });
+			//~ } else {
+				//~ // Go straight to scrapy
+				//o.sd_start_urls.push('http://localhost'); //?
+				//~ 
+				//~ // start URLs, allowed domains
+				//~ Nicolas_Cazagou_FB_emails__scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			//~ }
+			
+			//
+			console.log(o);
+			//
+			//Fan Page website:	http://www.chaikenclothing.com http://www.twitter.com/chaikenclothing
+			
+			
+			// return button function!
+			//~ var cf = new AMT___core_factory()
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+			
+			function startpage(response_obj) {
+				console.log(response_obj.length);
+				var rs = response_obj;
+				
+				if (!rs.length) {
+					// No URLs
+					//~ document.body.innerText = '0';
+					//~ return;
+				}
+				
+				for (var i in rs) {
+					o.sd_start_urls.push(rs[i][0]);
+					if (i >= 3) break; 
+				}
+				
+				// Push 
+				//~ o.sd_start_urls.push();
+				
+				// start URLs, allowed domains
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			
+			function scrapy(start_urls, allowed_domains) {
+				//~ console.log(start_urls);
+				//~ console.log(allowed_domains);
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1,
+								input_send_success: document.getElementById('web_url'),
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									
+									
+									if (AMT__Global_Vars.isPreview) {
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											AMT___Floater.skip();
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								},
+								do_submit_next_tab: true
+								//~ do_submit_add_to_tabs_queue: true
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+	}
+	
+	//
 	// Nicolas Cazagou
 	// Find the email contact of Facebook Page owners/managers
 	//
