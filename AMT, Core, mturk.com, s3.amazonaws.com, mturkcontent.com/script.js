@@ -81267,7 +81267,7 @@ qatar,80
 			});
 			
 			// ...
-			d3.value  = o.name + ' school district';
+			d3.value  = o.name + ' school district ' + o.state;
 			d3b.value = '"' + o.name + '" district ' + o.state_abbr;
 			d3c.value = '"' + o.name + '" district ' + o.state;
 			
@@ -81425,6 +81425,7 @@ qatar,80
 				
 				// seed_arg
 				var out_div = response.seed;
+				out_div.innerHTML = '';
 				//~ console.log(seed_arg);
 				
 				if (!rs.length) {
