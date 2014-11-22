@@ -7189,7 +7189,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.',
 			
 			// CAPTCHA, 2 DIFFERENT STRINGS FROM THE CAPTCHA ENTER PAGE.
-			'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.',
+			'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user.', // Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
 			'<h2 >Please enter the text below to continue using StartPage.</h2>'
 		]
 		// UPDATE
@@ -7304,13 +7304,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
 				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
 				'';
-				
-		o.local_URL_init		=
-						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
-						header_array+
-						catch_success;
-		o.local_URL_complete	= 
+		
+		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
+			
+			o.local_URL_init =
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+							header_array+
+							catch_success;
+		} else {
+			o.local_URL_init =
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+							header_array+
+							catch_success;
+		}
+		
+		o.local_URL_complete = 
 						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
 	}
 	
@@ -7440,10 +7450,11 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		AMT___POPUP__initializeGlobals(
 			function() {
 				
-				console.log('AMT___POPUP___PROXY_REDACTED_:');
-				console.log(AMT___POPUP___PROXY_REDACTED_);
-				o.local_URL_init = AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
-				o.local_URL_complete = AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
+				//~ console.log('AMT___POPUP___PROXY_REDACTED_:');
+				//~ console.log(AMT___POPUP___PROXY_REDACTED_);
+				
+				o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
+				o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
 
 				GM_xmlhttpRequest({ // init
 					method: "GET",
