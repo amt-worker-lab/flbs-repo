@@ -26552,7 +26552,8 @@ function MT__RUN() {
 			lon: null,
 			name: name,
 			addr: addr,
-			button_cannot_find: btns[0]
+			button_cannot_find: btns[0],
+			max_streetview_height: 600 // default=600
 		};
 		
 		// ...
@@ -26660,10 +26661,10 @@ function MT__RUN() {
 		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:78px;');
 		document.body.appendChild(d3c);
 		d3c.innerText = 'Hide/Show Street View';
-		// Images div
-		var d4 = document.createElement('div');
-		d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
-		document.body.appendChild(d4);
+		//~ // Images div
+		//~ var d4 = document.createElement('div');
+		//~ d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
+		//~ document.body.appendChild(d4);
 		/*END ITEMS*/
 		
 		/*ACTIONS*/
@@ -26709,6 +26710,8 @@ function MT__RUN() {
 		}
 		/*END ACTIONS*/
 		
+		console.log('XXX');
+		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
 			// This set the elements d1,d1b, and d1c
@@ -26717,21 +26720,28 @@ function MT__RUN() {
 			// XX OFFSET NOT HERE XX //offset: 80, // offset top
 			callback_function: function(innerHeight) {
 				
+				console.log('x');
+				
 				var new_h = (innerHeight-240) + 'px';
+				
 				// 100 px offset from bottom
 				d2.style.height = new_h;
 				
+				//~ document.getElementById('map').style.height = new_h + ' !important';
+				
 				document.getElementById('map').style.height = new_h;
 				
-				// d4 is 40px lower and so 40px shorter.
-				var d4_height = innerHeight-280;
-				d4.style.height = d4_height + 'px';
+				//~ console.log(new_h);
 				
+				// DO NOT USE THIS (IMAGES WINDOW)
+				//~ // d4 is 40px lower and so 40px shorter.
+				//~ var d4_height = innerHeight-280;
+				//~ d4.style.height = d4_height + 'px';
+				
+				// DO NOT USE THIS
 				// Max Streetview image height
 				// Double it then set zoom=0.5
-				o.max_streetview_height = Math.floor((d4_height / 4) * 4);
-				
-				//~ console.log('ih:' + innerHeight);
+				//o.max_streetview_height = Math.floor((d4_height / 4) * 4);
 				
 				// Start the lat long func.
 				chios_system_geocoding__lat_lng();
@@ -26795,32 +26805,70 @@ function MT__RUN() {
 				// UPDATE
 				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
 				
-				// Get street view images
-				var hds = [0, 90, 180, 270];
-				for (var i in hds) {
+				// Send street view URLs to Utility Window
+				var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
+				
+				// postMessage
+				var ifr_intv = setInterval(function() {
 					
-					var img = document.createElement('img');
-					img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
-					img.src = 'https://maps.googleapis.com/maps/api/streetview' +
+					
+					d2.contentWindow.postMessage({
+						task: task,
+						code: o.code//,
+						//~ status:		o.status
+					}, "*");
+				}, 600);
+				
+				var hds = [0, 45, 90, 135, 180, 225, 270, 315];
+				var img_urls = [];
+				for (var i in hds) {
+					img_urls.push(
+						'https://maps.googleapis.com/maps/api/streetview' +
 							'?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
 							'&location='+encodeURIComponent(o.addr)+
 							//'&location='+lat+','+lng+
-							'&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
-					d4.appendChild(img);
-					
-					// Actions
-					img.onclick = function() {
-						if (this.style.zoom != '0.5') {
-							this.style.zoom = '0.5';
-						} else {
-							this.style.zoom = '0.25';
+							'&heading='+hds[i]+
+							'&key=_GOOGLE_API_KEY_REDACTED_'
+					);
+				}
+				
+				AMT__setUtilityTabs([
+					{
+						//~ url: '',
+						options:
+						{
+							task:'AMT__chios_system_draw_polygon__utility_window',
+							images: img_urls // []
 						}
 					}
-				}
-				// Append an extend div
-				var dv = document.createElement('div');
-				dv.setAttribute('style','height:1400px;');
-				d4.appendChild(dv);
+				]);
+				
+				//~ // Get street view images
+				//~ var hds = [0, 90, 180, 270];
+				//~ for (var i in hds) {
+					//~ 
+					//~ var img = document.createElement('img');
+					//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
+					//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
+							//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
+							//~ '&location='+encodeURIComponent(o.addr)+
+							//~ //'&location='+lat+','+lng+
+							//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
+					//~ d4.appendChild(img);
+					//~ 
+					//~ // Actions
+					//~ img.onclick = function() {
+						//~ if (this.style.zoom != '0.5') {
+							//~ this.style.zoom = '0.5';
+						//~ } else {
+							//~ this.style.zoom = '0.25';
+						//~ }
+					//~ }
+				//~ }
+				//~ // Append an extend div
+				//~ var dv = document.createElement('div');
+				//~ dv.setAttribute('style','height:1400px;');
+				//~ d4.appendChild(dv);
 				
 				//~ document.getElementById('lat').value = lat;
 				//~ document.getElementById('lon').value = lng;

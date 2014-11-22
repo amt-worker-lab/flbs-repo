@@ -19,25 +19,12 @@
  * 
  */
 
-//Ask Core-mturk whether we are a utility window and, if so, run the options
-if(window.top == window.self) {
-	chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
-	  function(response) {
-			if(response &&
-			   response.isUtilityTab) {
-				//We are a utility tab! :D
-				//the response is an options obj
-				console.log('Got options from Core-Mturk:');
-				console.log(response);
-				AMT__iframeReceiveMessage(response);
-			}
-	  });
-}
+
 
 
 //
 
-/*
+/**
  * AMT__all_pages_util
  * 
  */
@@ -150,9 +137,6 @@ function AMT__all_pages_util(r) {
 		d.innerText = r.debug_display;
 		document.body.appendChild(d);
 	}
-		
-	
-	
 }
 
 // o is a string

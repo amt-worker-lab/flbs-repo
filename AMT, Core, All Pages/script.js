@@ -80,8 +80,10 @@ function load()
 	var LOC__ = document.location.href;
 	var loc = document.location.href;
 	
-	
-	
+	// Var to show if this has run.
+	this.global_vars = {
+		is_running_on_amt: true // default=true
+	}
 	
 	// Exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
 	if  (
@@ -93,6 +95,9 @@ function load()
 		load__allPages_AMT_combo__btn();
 		// stop
 		console.log('stop all pages');
+		
+		this.global_vars.is_running_on_amt = false;
+		
 		return;
 	}
 	
@@ -106,6 +111,9 @@ function load()
 	{ // run any dual mode content here!
 		//if (window.top == window.self)
 			load__allPages_AMT_combo();
+		
+		this.global_vars.is_running_on_amt = false;
+		
 		return;
 	}
 	
@@ -446,11 +454,36 @@ function load()
 				// NEW
 				new AMT__rq().rq__AMT__traveldata_scrape_travelocity_com(event.data);
 			}
-			
+			if (event.data.task == 'AMT__chios_system_draw_polygon__utility_window' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().AMT__chios_system_draw_polygon__utility_window(event.data);
+			}
+		}
+	}
+	this.blaaaaaah = 'xxxxxxxsdfsdfsdavdfs';
+	// Ask Core-mturk whether we are a utility window and, if so, run the options
+	this.AMT__init_utility_window = function() {
+		if(window.top == window.self) {
+			chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
+				function(response) {
+					if(response &&
+					   response.isUtilityTab) {
+						//We are a utility tab! :D
+						//the response is an options obj
+						console.log('Got options from Core-Mturk:');
+						console.log(response);
+						AMT__iframeReceiveMessage({
+							data: response // Pass this in as ".data"
+						});
+					}
+				}
+			);
 		}
 	}
 	
-	/*
+	
+	/**
 	 * Leonid
 	 * 
 	 */
@@ -481,7 +514,7 @@ function load()
 		);
 		return;
 	}
-	/*
+	/**
 	 * Robin Demaria
 	 * 
 	 */
@@ -533,7 +566,7 @@ function load()
 			
 		}, false);
 	}
-	/*
+	/**
 	 * AMT__x8_Data_find_executives
 	 * 
 	 */
@@ -568,7 +601,7 @@ function load()
 		
 	}
 	
-	/*
+	/**
 	 * Andrew Ryan
 	 * 
 	 */
@@ -578,7 +611,7 @@ function load()
 		//~ document.getElementsByTagName('embed')[0].style.webkitTransform = 'scale(2.5)';
 		//~ document.getElementsByTagName('iframe')[0].style.webkitTransform = 'scale(4) !important';
 	}
-	/*
+	/**
 	 * Andrew Ryan
 	 * 
 	 */
@@ -1687,6 +1720,42 @@ function load()
 				y.scrollIntoView();
 			}
 		}
+	}
+	
+	/**
+	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
+	 * 
+	 * This is inside of a utility window. The passed in object is:
+		{
+			task:'AMT__chios_system_draw_polygon__utility_window',
+			images: img_urls // []
+		}
+	 * 
+	 * @param	
+	 * @returns	
+	 */
+	AMT__rq.prototype.AMT__chios_system_draw_polygon__utility_window = function(data) {
+		
+		document.body.innerHTML = '';
+		
+		var img_el_array = [];
+		
+		for (i in data.images) {
+			
+			var img = document.createElement('img');
+			img.setAttribute('style','cursor:pointer;display:block;zoom:1;float:left;');
+			img.src = data.images[i];
+			document.body.appendChild(img);
+			
+			img_el_array.push(img);
+			
+		}
+		
+		// Add mouse zoom
+		new AMT___events_factory().mousewheel_zoom_image({
+			img_array: img_el_array,
+			add_onclick_reset: 0.4
+		});
 	}
 	
 	/**
@@ -9609,13 +9678,20 @@ var SCRIPT_NAME = 'sBjbERoTskUbPjSsoQcZksMjxFobkapd';
 
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
-	load();
+	var loader = new load();
+	
+	if (loader.global_vars.is_running_on_amt) {
+		loader.AMT__init_utility_window();
+	}
 }
 else {
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete" || document.readyState == "interactive") {
 			ih = document.body.innerHTML;
-			load();
+			var loader = new load();
+			if (loader.global_vars.is_running_on_amt) {
+				loader.AMT__init_utility_window();
+			}
 		}
 	}
 }
