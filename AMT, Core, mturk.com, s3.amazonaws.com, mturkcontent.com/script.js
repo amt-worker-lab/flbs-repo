@@ -81238,8 +81238,8 @@ qatar,80
 				this.style.backgroundColor = 'LightGreen';
 				document.getElementById("web_url").value = "N/A";
 				//~ // nextTab
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
+				new AMT___core_factory().nextTab();
+				doSubmit();
 			}
 			
 			// ...
