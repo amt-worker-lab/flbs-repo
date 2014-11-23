@@ -126844,7 +126844,7 @@ function top_window() {
 		var o = {
 			comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
 			industry: li[1].innerText.	replace(/^Industry: /g, '').trim(),
-			country: li[2].innerText.	replace(/^Country: /g, '').trim(),
+			country: li[2].innerText.	replace(/^Country: */g, '').trim(),
 			bold_array: [],
 			bold_array_etc: [],
 			industry_short: null,
@@ -126869,7 +126869,7 @@ function top_window() {
 		//
 		var na = document.createElement('input');
 		na.setAttribute('type','button');
-		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;cursor:pointer;');
+		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:30px;border:1px solid;cursor:pointer;');
 		document.body.appendChild(na);
 		na.value = "N/A";
 		//~ na.style.fontSize='10px';
@@ -126975,9 +126975,11 @@ function top_window() {
 		
 		// ...
 		d3.value  = o.comp;
-		d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
+		d3b.value = '' + o.comp + ' ' + o.industries_quoted;
+		//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
+		
 		d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
 		d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
 		
