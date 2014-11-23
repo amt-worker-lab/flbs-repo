@@ -1186,6 +1186,26 @@ String.prototype.parseURL = function() {
 		hash: parser.hash
 	};
 }
+/**
+ * .country_code_to_country_name
+ * 
+ * MT___countries = [
+	{name: 'Bosnia and Herzogovina', code: 'BA'}, 
+ */
+String.prototype.country_code_to_country_name = function() {
+	
+	str = this.toString().toLowerCase().trim();
+	
+	for (var i in MT___countries) {
+		var c = MT___countries[i];
+		if (c.code.toLowerCase() == str) {
+			return c.name;
+		}
+	}
+	
+	// None found?
+	return str.toUpperCase();
+}
 String.prototype.stateAbbrToFull = function() {
 	
 	//~ // BUILD STR

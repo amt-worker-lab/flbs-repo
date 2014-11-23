@@ -126845,6 +126845,7 @@ function top_window() {
 			comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
 			industry: li[1].innerText.	replace(/^Industry: /g, '').trim(),
 			country: li[2].innerText.	replace(/^Country: */g, '').trim(),
+			country_full: null,
 			bold_array: [],
 			bold_array_etc: [],
 			industry_short: null,
@@ -126852,9 +126853,16 @@ function top_window() {
 			yelp_country: 'com',
 			comp_quoted: null
 		}
+		o.country_full		= o.country.country_code_to_country_name();
+		
 		o.bold_array		= o.comp.clean_string_to_array();
+		o.bold_array		= o.bold_array.concat(o.country.clean_string_to_array());
+		o.bold_array		= o.bold_array.concat(o.country_full.clean_string_to_array());
+		
 		o.bold_array_etc	= o.country.clean_string_to_array();
 		o.bold_array_etc	= o.bold_array_etc.concat(o.industry.clean_string_to_array());
+		o.bold_array_etc	= o.bold_array_etc.concat(o.country_full.clean_string_to_array());
+		
 		o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
 		o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
 		o.industries_quoted	= '"' + o.industry.clean_string_to_array().join('" OR "') + '"';
@@ -126864,6 +126872,8 @@ function top_window() {
 				break;
 		}
 		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
+		
+		console.log(o);
 		
 		/* BEGINS ITEMS */
 		//
@@ -126987,9 +126997,17 @@ function top_window() {
 		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
 		
 		// Not US?
-		if (o.country != 'United States' && o.country != 'US') {
-			d3c.value += ' ' + o.country;
+		if (o.country != 'United States' && o.country != 'US' && o.country != '') {
+			d3b.style.border = '4px solid blue';
 			d3c.style.border = '4px solid blue';
+			d3b.value += ' ' + o.country;
+			
+			// Country code to country name
+			if (o.country != o.country_full) {
+				d3c.value += ' ' + o.country_full;
+			} else {
+				//
+			}
 		}
 			
 		var load_first = true;
