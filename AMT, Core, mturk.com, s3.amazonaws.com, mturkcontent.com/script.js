@@ -126987,7 +126987,7 @@ function top_window() {
 		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
 		
 		// Not US?
-		if (o.country != 'United States') {
+		if (o.country != 'United States' && o.country != 'US') {
 			d3c.value += ' ' + o.country;
 			d3c.style.border = '4px solid blue';
 		}
