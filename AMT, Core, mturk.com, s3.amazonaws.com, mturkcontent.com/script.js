@@ -126975,18 +126975,21 @@ function top_window() {
 		
 		// ...
 		d3.value  = o.comp;
-		d3b.value = '' + o.comp + ' ' + o.industries_quoted;
+		d3b.value = '"' + o.comp + '"';
+		d3c.value = '' + o.comp + ' ' + o.industries_quoted;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
 		
-		d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
-		d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
+		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+		
+		//~ d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
 		
 		// Not US?
 		if (o.country != 'United States') {
-			d3b.value += ' ' + o.country;
-			d3b.style.border = '4px solid blue';
+			d3c.value += ' ' + o.country;
+			d3c.style.border = '4px solid blue';
 		}
 			
 		var load_first = true;
