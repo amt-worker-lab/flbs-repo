@@ -81178,7 +81178,7 @@ qatar,80
 				city: td[5].innerText.trim(),
 				state_abbr: td[7].innerText.trim(),
 				state: null,
-				country: td[11].innerText.trim(),
+				country: td[11].innerText.trim().country_code_to_country_name(), // CHANGE THIS TO COUNTRY NAME
 				bold_array: []
 			}
 			o.state = o.state_abbr.stateAbbrToFull();
@@ -81205,31 +81205,40 @@ qatar,80
 			document.body.appendChild(inp_top);
 			//
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1b.setAttribute('style','position:absolute;top:70px;left:25%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1b);
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1c.setAttribute('style','position:absolute;top:70px;left:50%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1c);
 			//
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style','position:absolute;top:70px;left:75%;width:24%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1d);
+			//
 			var d3 = document.createElement('textarea');
-			d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+			d3.setAttribute('style','position:absolute;top:20px;left:0%;width:25%;height:50px;');
 			document.body.appendChild(d3);
 			d1.txa = d3;
 			//
 			var d3b = document.createElement('textarea');
-			d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+			d3b.setAttribute('style','position:absolute;top:20px;left:25%;width:25%;height:50px;');
 			document.body.appendChild(d3b);
 			d1b.txa = d3b;
 			//
 			var d3c = document.createElement('textarea');
-			d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+			d3c.setAttribute('style','position:absolute;top:20px;left:50%;width:25%;height:50px;');
 			document.body.appendChild(d3c);
 			d1c.txa = d3c;
+			//
+			var d3d = document.createElement('textarea');
+			d3d.setAttribute('style','position:absolute;top:20px;left:75%;width:24%;height:50px;');
+			document.body.appendChild(d3d);
+			d1d.txa = d3d;
 			/*END ITEMS*/
 			//
 			d3.onblur = function() {
@@ -81240,6 +81249,9 @@ qatar,80
 			}
 			d3c.onblur = function() {
 				company_URL__SP_init(d1c, this);
+			}
+			d3d.onblur = function() {
+				company_URL__SP_init(d1d, this);
 			}
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
@@ -81269,7 +81281,7 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b, d1c
+					d1, d1b, d1c, d1d
 				],
 				offset: 70 // offset top
 			});
@@ -81277,7 +81289,9 @@ qatar,80
 			// ...
 			d3.value  = o.name + ' ' + o.city;
 			d3b.value = '"' + o.name + '" ' + o.city + ' ' + o.state;
-			d3c.value = '"' + o.name + '" ' + o.street + ' ' + o.state;
+			d3c.value = '"' + o.name + '" ' + o.street;
+			d3c.value += (o.country != 'United States') ? ' ' + o.country : ''; // Add country
+			d3d.value = o.name + ' ' + o.city;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -81322,7 +81336,7 @@ qatar,80
 				var req_proxy;
 				var st = 'site:orbitz.com/hotel/ ';
 				//
-				if (el_inp && el_div) { // single! (+dynamic!)
+				if (el_inp && el_div && el_inp != d3d) { // single! (+dynamic!)
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
 						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(st + el_inp.value),
@@ -81333,7 +81347,7 @@ qatar,80
 					return;
 				}
 				
-				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = d1d.innerHTML = '';
 				
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
@@ -81355,7 +81369,15 @@ qatar,80
 					seed: d1c,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
-				});					
+				});
+				// Yahoo
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					yahoo_array: true,
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(st + d3d.value),
+					seed: d1d,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
 			}
 			
 			/**

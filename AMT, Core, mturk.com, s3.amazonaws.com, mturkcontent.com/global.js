@@ -7408,6 +7408,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	}
 	this.array_startPage_results = array_startPage_results;
 	
+	// array_yahoo_results
 	// -> returns array of arrays
 	// -> [ [m[1],m[2]], [m[1], m[2]] ]
 	function array_yahoo_results(rs) {
