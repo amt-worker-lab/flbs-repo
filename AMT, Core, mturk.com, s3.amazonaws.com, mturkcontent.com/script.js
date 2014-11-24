@@ -81437,12 +81437,21 @@ qatar,80
 					full = 
 						MT__bold(
 							decodeURIComponent( // Decode URI
-								link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, '').replace(/_/g, ' ').replace(/\.h\d+\//, '').replace(/\//g, '<br>')
+								link
+									.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, '')
+									.replace(/_/g, ' ')
+									.replace(/\.h\d+\//, '')
+									.replace(/\//g, '<br>')
 							),
 							o.bold_array
 							)
 						+ '<br><br>' +
-						MT__bold(full, o.bold_array); // Add link to top of body
+						MT__bold(
+							full
+								.replace(/<\/?b>/g, '')
+								.replace(/ *www\.orbitz\.com\/ *hotel\/[^\/]+\/[^\/]+\/[^\/]+\/[^-]+- *- */, ' '),
+							o.bold_array
+						); // Add link to top of body
 					//~ full = MT__bold(full, o.bold_array);
 					
 					// classname is http://(www. = '')x.com (no www)
