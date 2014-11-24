@@ -81276,7 +81276,7 @@ qatar,80
 			// ...
 			d3.value  = o.name + ' ' + o.city;
 			d3b.value = '"' + o.name + '" ' + o.city + ' ' + o.state;
-			d3c.value = '' + o.name + ' ' + o.street + ' ' + o.city + ' ' + o.state + ' ' + o.country;
+			d3c.value = '"' + o.name + '" ' + o.street + ' ' + o.state;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -81438,7 +81438,7 @@ qatar,80
 							link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, ''),
 							o.bold_array
 							)
-						+ '<br>' +
+						+ '<br><br>' +
 						MT__bold(full, o.bold_array); // Add link to top of body
 					//~ full = MT__bold(full, o.bold_array);
 					
