@@ -81435,7 +81435,9 @@ qatar,80
 					// Add bold (bold_array)
 					full = 
 						MT__bold(
-							link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, '').replace(/_/g, ' ').replace(/\.h\d+\//, '').replace(/\//g, '<br>'),
+							decodeURIComponent( // Decode URI
+								link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, '').replace(/_/g, ' ').replace(/\.h\d+\//, '').replace(/\//g, '<br>')
+							),
 							o.bold_array
 							)
 						+ '<br><br>' +
