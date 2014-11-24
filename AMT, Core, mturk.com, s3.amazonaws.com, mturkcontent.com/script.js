@@ -81156,7 +81156,7 @@ qatar,80
 	// traveldata
 	// Hotel on orbitz.com
 	// 
-	var s = '<p><strong>For the hotel listed below, find the Primary Orbitz.com Hotel Page and provide its URL.</strong></p>';console.log('xx');
+	var s = '<p><strong>For the hotel listed below, find the Primary Orbitz.com Hotel Page and provide its URL.</strong></p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -81274,9 +81274,9 @@ qatar,80
 			});
 			
 			// ...
-			d3.value  = o.name + ' school district ' + o.state;
-			d3b.value = '"' + o.name + '" school district ' + o.city + ' ' + o.state_abbr;
-			d3c.value = '"' + o.name + '" school district ' + o.state;
+			d3.value  = o.name + ' ' + o.city;
+			d3b.value = '"' + o.name + '" ' + o.city + ' ' + o.state;
+			d3c.value = '' + o.name + ' ' + o.street + ' ' + o.city + ' ' + o.state + ' ' + o.country;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -81403,17 +81403,17 @@ qatar,80
 					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 					
 					// trailing
-					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
 					
 					// http
 					//~ x = x.replace(/^https?:\/\//, ''); // beginning
 					
-					// regular = ^http://www.site.com$
-					// subdomains = [\.\/]site.com$
-					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
-						short_domain = y[1];
-					} else
-						short_domain = x;
+					//~ // regular = ^http://www.site.com$
+					//~ // subdomains = [\.\/]site.com$
+					//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x)) {
+						//~ short_domain = y[1];
+					//~ } else
+						//~ short_domain = x;
 					
 					// SKIP BUTTON CREATE
 					// returns obj.el_button, obj.isSkip
@@ -81427,7 +81427,8 @@ qatar,80
 							}
 						);
 					
-					// add bold (bold_array)
+					// Add bold (bold_array)
+					full = link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, ''); // Add link to top of body
 					full = MT__bold(full, o.bold_array);
 					
 					// classname is http://(www. = '')x.com (no www)
