@@ -241,7 +241,8 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,section {margin:0 !important; padding:0 !important;font-size:14px;}');
 		var url = document.getElementsByTagName('b')[0].innerText;
-		url = 'http://wwww.'+url;
+		url = 'http://'+url;
+		console.log(url);
 		AMT__setUtilityTabs([{url: url}]);
 		
 	}
