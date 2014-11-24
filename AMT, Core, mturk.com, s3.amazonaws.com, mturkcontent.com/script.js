@@ -4265,7 +4265,8 @@ function MT__RUN() {
 	//~ s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
 	//~ s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;please do not submit HITs.</p>';
 	s = 'Visit the travel website via the URL shown below. &nbsp; You will <strong>not</strong> be reserving a room. &nbsp;No credit card is required. &nbsp; &nbsp;Make sure that all prices displayed are in USD. &nbsp;If any other currency is shown, &nbsp;use the site\'s top of page controls to indicate USD as your currency.';
-	if (ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1)
 	{
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
