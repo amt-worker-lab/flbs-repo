@@ -81244,6 +81244,7 @@ qatar,80
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
 				document.getElementById("web_url").value = "N/A";
+				document.getElementById("notes").value = "I could not find this hotel on orbitz.com.";
 				//~ // nextTab
 				new AMT___core_factory().nextTab();
 				doSubmit();
