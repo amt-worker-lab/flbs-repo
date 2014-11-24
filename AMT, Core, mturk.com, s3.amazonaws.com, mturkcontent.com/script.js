@@ -81157,6 +81157,7 @@ qatar,80
 	// Find the Website URL for School Districts
 	// 
 	var s = '	<li>Enter the website&nbsp;for the <strong>official website </strong>of the school district.</li>';
+	var s = '<p>Find the <strong>website address</strong> for this school district.</p>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -81268,8 +81269,8 @@ qatar,80
 			
 			// ...
 			d3.value  = o.name + ' school district ' + o.state;
-			d3b.value = '"' + o.name + '" district ' + o.state_abbr;
-			d3c.value = '"' + o.name + '" district ' + o.state;
+			d3b.value = '"' + o.name + '" school district ' + o.city + ' ' + o.state_abbr;
+			d3c.value = '"' + o.name + '" school district ' + o.state;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
