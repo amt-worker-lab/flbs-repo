@@ -81396,9 +81396,14 @@ qatar,80
 				
 				for (var i in rs) {
 					
+					// Remove ?
+					rs[i][0] = rs[i][0].replace(/\/\?[\d\D]*/g, '/');
+					
 					var x = rs[i][0];
 					var link = rs[i][0];
 					var full = rs[i][1];
+					
+					
 					
 					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 					
@@ -81428,8 +81433,14 @@ qatar,80
 						);
 					
 					// Add bold (bold_array)
-					full = link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, ''); // Add link to top of body
-					full = MT__bold(full, o.bold_array);
+					full = 
+						MT__bold(
+							link.replace(/^https?:\/\/(www\.|)orbitz\.com\/hotel\//, ''),
+							o.bold_array
+							)
+						+ '<br>' +
+						MT__bold(full, o.bold_array); // Add link to top of body
+					//~ full = MT__bold(full, o.bold_array);
 					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
