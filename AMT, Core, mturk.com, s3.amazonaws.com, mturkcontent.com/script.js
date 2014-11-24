@@ -237,6 +237,17 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	s = 'Include the complete street address, e.g. 100 Main St, Suite A, San Francisco, CA 94103'
+	if(ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,section {margin:0 !important; padding:0 !important;font-size:14px;}');
+		var url = document.getElementsByTagName('b')[0].innerText;
+		
+		AMT__setUtilityTabs([{url: 'http://www.google.com'}]);
+		
+	}
+	
+	
+	
 	s = 'DO NOT provide links to contact forms, this is not acceptable, and'
 	if(ih.indexOf(s) != -1) {
 		console.log('RUNNING TEST OF UTILITY WINDOW');
