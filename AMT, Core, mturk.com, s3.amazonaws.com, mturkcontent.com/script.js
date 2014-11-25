@@ -2671,6 +2671,70 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Jan Falkowski
+	// Mark the Walls
+	//
+	s = 'In this HIT your are asked to mark the walls of the buildings in the foreground. To work on this HIT you need a recent version of Google Chrome or Firefox. If when you click on Add left line or Add right line and the click on the image a vertical line doesn\'t appear then your browser is not supported.';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			var img = document.getElementById('container').getElementsByTagName('img')[0];
+			img.scrollIntoView();
+			img.scrollIntoView();
+			img.scrollIntoView();
+			
+			//
+			var o = {
+				btns:[
+					document.getElementById('add-left-line'),
+					document.getElementById('add-right-line'),
+					document.getElementById('remove-line'),
+					document.getElementById('submit-hit')
+				]
+			}
+			
+			// keypress
+			window.addEventListener('keypress', keypress, false);
+			function keypress(e) {
+				var k = String.fromCharCode(e.keyCode); // (Upper)
+				console.log(k);
+				
+				if (k == 1) {
+					o.btns[0].click();
+				} else if (k == 2) {
+					o.btns[1].click();
+				} else if (k == 3) {
+					new AMT___core_factory().nextTab();
+					o.btns[3].style.backgroundColor = 'LightGreen';
+					o.btns[3].click();
+				}
+			}
+			
+			// onclick
+			o.btns[0].onclick = o.btns[1].onclick = function() {
+				o.btns[0].style.backgroundColor = '';
+				o.btns[1].style.backgroundColor = '';
+				this.style.backgroundColor = 'LightGreen';
+			}
+			
+			// click first
+			o.btns[0].click();
+			o.btns[0].focus(); // focus, nextTab needs this for window.keypress
+			
+			// remove "remove line" !!
+			// It seems to be broken!
+			o.btns[2].parentNode.removeChild(o.btns[2]);
+		}
+		new run().f();
+		return;
+	}
+	// 
 	// OpenDoor
 	// Photo ranking
 	//
@@ -120988,6 +121052,7 @@ qatar,80
 	// real estate agent photos
 	//
 	s = '<h3>Find the largest possible image of the given real estate agent, then copy the IMAGE URL and paste it into the provided field.</h3>';
+	s = '<li>Find the <strong>largest possible image</strong> for the given mortgage broker next to "Broker Name:" below the instructions.</li>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 		GM_addStyle('body {width:20%;margin-top:60px;}');
@@ -120997,69 +121062,34 @@ qatar,80
 		GM_addStyle('#image_url {position:absolute;top:30px;left:120px;width:58%;zoom:1.4;}');
 		GM_addStyle('table {position:absolute;top:30px;width:120px;background-color:#fff;}');
 		
-		// LET'S MOVE THE INPUTS TO THE TOP!
+		// LET'S MOVE THE INPUTS TO THE TOP! ....
 		
-		// THESE ARE ELEMENTS FOR DEFAULT
-		var d;
-		d=document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='130px';
-		d1.style.left='0%';
-		d1.style.width='98%';
-		d1.style.height='700px';//160/700
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
+		
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:130px;left:0%;width:98%;height:700px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		document.body.appendChild(d1);
 		//
-		d=document.createElement('input');
-		d.setAttribute('id','d2a');
-		d.setAttribute('type','text');
-		document.body.appendChild(d);
-		var d2a = document.getElementById('d2a');
-		d2a.style.position='absolute';
-		d2a.style.top='0px';
-		d2a.style.left='20%';
-		d2a.style.width='40%';
-		d2a.style.height='30px';
-		d2a.style.overflow='auto';
-		d2a.style.border='1px solid blue';
+		var d2a = document.createElement('textarea');
+		d2a.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:30px;');
+		d2a.setAttribute('type','text');
+		document.body.appendChild(d2a);
 		//
-		d=document.createElement('input');
-		d.setAttribute('id','d2b');
-		d.setAttribute('type','text');
-		document.body.appendChild(d);
-		var d2b = document.getElementById('d2b');
-		d2b.style.position='absolute';
-		d2b.style.top='0px';
-		d2b.style.left='60%';
-		d2b.style.width='39%';
-		d2b.style.height='30px';
-		d2b.style.overflow='auto';
-		d2b.style.border='1px solid blue';
-		// make a button that will cycle and save the layouts
-		d=document.createElement('input');
-		d.setAttribute('id','d2c');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d2c = document.getElementById('d2c');
-		d2c.style.position='absolute';
-		d2c.style.top='0px';
-		d2c.style.left='4%';
-		//d2b.style.width='39%';
-		d2c.style.height='30px';
-		//d2b.style.overflow='auto';
-		//d2b.style.border='1px solid blue';
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
+		d2b.setAttribute('type','text');
+		document.body.appendChild(d2b);
+		// A button that will cycle and save the layouts
+		var d2c=document.createElement('input');
+		d2c.setAttribute('style','position:absolute;top:0px;left:4%;height:30px;');
+		d2c.setAttribute('type','button');
+		document.body.appendChild(d2c);
 		
 		// create iframe (from code below)
 		//160/700
 		//d3
-		var d=document.createElement('iframe');
-		d.setAttribute('id','d3');
-		d.setAttribute('style',
+		var d3 = document.createElement('iframe');
+		d3.setAttribute('style',
 			'position:absolute;'+
 			'top:160px;'+
 			'left:0%;'+
@@ -121068,16 +121098,14 @@ qatar,80
 			'border:1px solid blue;'+
 			'visibility:hidden;'
 		);
-		d.sandbox = 'allow-forms allow-same-origin allow-scripts';
-		d.onload = function() {
+		d3.sandbox = 'allow-forms allow-same-origin allow-scripts';
+		d3.onload = function() {
 			this.style.visibility='visible';
 		}
-		document.body.appendChild(d);
-		var d3 = document.getElementById('d3');
+		document.body.appendChild(d3);
 		//d3b
-		var d=document.createElement('iframe');
-		d.setAttribute('id','d3b');
-		d.setAttribute('style',
+		var d3b = document.createElement('iframe');
+		d3b.setAttribute('style',
 			'position:absolute;'+
 			'top:160px;'+
 			'left:50%;'+
@@ -121086,30 +121114,30 @@ qatar,80
 			'border:1px solid blue;'+
 			'visibility:hidden;'
 		);
-		d.sandbox = 'allow-forms allow-same-origin allow-scripts';
-		d.onload = function() {
+		d3b.sandbox = 'allow-forms allow-same-origin allow-scripts';
+		d3b.onload = function() {
 			this.style.visibility='visible';
 		}
-		document.body.appendChild(d);
-		var d3b = document.getElementById('d3b');
+		document.body.appendChild(d3b);
+		/*END ITEMS*/
 		
-		
-		
-		
-		// @var SITE, SITEFULL
-		var SITE, SITEFULL;
+		// @vars
+		var SITE, SITEFULL, NAME;//, d3;
 		
 		var b = /<h3>Office Website: ([^<]+)/.exec(ih)[1];
 		b = __js_clean_html_str(b).trim().toLowerCase();
 		//b = b.replace('http://www.', '');
 		b = b.replace(/https?:\/\/(www\.|)/i, '');
 		b = b.replace(/\/$/, '');
-		
 		SITEFULL = b;
 		
-		var name = /<h3>Real Estate Agent:&nbsp;([^<]+)/.exec(ih)[1];
-		name = __js_clean_html_str(name).trim();
-		var NAME = name; // !!
+		var n = /<h3>Broker Name:&nbsp;([^<]+)<\/h3>/.exec(ih)[1];
+		n = __js_clean_html_str(n).trim();
+		NAME = n; // !!
+		//~ console.log('');
+		
+		// Old ....
+		//var n = /<h3>Real Estate Agent:&nbsp;([^<]+)/.exec(ih)[1];
 		
 		// switch
 		if (b == 'prudentialcarruthers.com')
@@ -121118,32 +121146,18 @@ qatar,80
 			b = 'realtyonegroup.com';
 		if (b == 'solidsource.com')
 			b = 'solidsourcerealty.com';
-		
 		SITE = b;
 		
 		// inputs
-		d2a.value = name;
+		d2a.value = NAME;
 		d2b.value = b;
 		d2c.value = 'cycle';
-		
-		// SET GLOBAL VARIABLE D3
-		var d3;
-		
-		/*// manual
-		manual__domain = document.getElementById('manual__domain');
-		manual__type0 = document.getElementById('manual__type0');
-		manual__type1 = document.getElementById('manual__type1');
-		manual__type2 = document.getElementById('manual__type2');
-		//
-		manual__domain.value = SITE;*/
-		
 		d2a.onblur = function() {
 			kristin_howe_photos();
 		}
 		d2b.onblur = function() {
 			kristin_howe_photos();
 		}
-		
 		/**
 		 * d2c "cycle" button
 		 * for d1 display setting (div 1)
@@ -121165,6 +121179,44 @@ qatar,80
 			this.style.backgroundColor = 'LightGreen';
 			KristinHowe_agent_photo_layoutChangeType(true);
 		}
+		
+		/*// manual
+		manual__domain = document.getElementById('manual__domain');
+		manual__type0 = document.getElementById('manual__type0');
+		manual__type1 = document.getElementById('manual__type1');
+		manual__type2 = document.getElementById('manual__type2');
+		//
+		manual__domain.value = SITE;*/
+		
+		// init layout
+		KristinHowe_agent_photo_layoutChangeType(false);
+		
+		// TEST STRING
+		// @globalvar mt___kh_test_str
+		
+		// radios onclick
+		var a = document.getElementsByTagName('input');
+		for (var i in a) {
+			if (!a[i]) continue;
+			if (a[i].type == 'radio') {
+				a[i].style.zoom = '2.0';
+				a[i].onclick = function() {
+					this.checked = true;
+					this.click();
+					document.body.style.backgroundColor = '#aaeecc';
+					doSubmit();
+					return true;
+				}
+			}
+		}
+		
+		// INIT
+		// !!
+		kristin_howe_photos();
+		
+		/**
+		 * function KristinHowe_agent_photo_layoutChangeType
+		 */
 		function KristinHowe_agent_photo_layoutChangeType(cycle_to_next) {
 			//
 			var x = GM_getValue('MT___KristinHowe_agent_photos_layoutChangeType');
@@ -121193,32 +121245,9 @@ qatar,80
 			d2c.value = 'cycle'+x;
 			//d2c.value = 'cycle'+GM_getValue('MT___KristinHowe_agent_photos_layoutChangeType');
 		}
-		// init layout
-		KristinHowe_agent_photo_layoutChangeType(false);
-		
-		// TEST STRING
-		// @globalvar mt___kh_test_str
-		
-		// radios onclick
-		var a = document.getElementsByTagName('input');
-		for (var i in a) {
-			if (!a[i]) continue;
-			if (a[i].type == 'radio') {
-				a[i].style.zoom = '2.0';
-				a[i].onclick = function() {
-					this.checked = true;
-					this.click();
-					document.body.style.backgroundColor = '#aaeecc';
-					doSubmit();
-					return true;
-				}
-			}
-		}
-		
-		// !!
-		kristin_howe_photos();
-		// !!
-		
+		/**
+		 * function kristin_howe_photos_yahoo_bot
+		 */
 		function kristin_howe_photos_yahoo_bot() {
 			
 			this.visited_urls_array = [];
@@ -121266,7 +121295,6 @@ qatar,80
 				//
 				req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('"' + tmp_name + '" site:' + SITE),
-					//seed_arg1: KH_YAHOO_BOT,
 					yahoo_array: true
 				});
 				req_proxy.proxy_init();
@@ -121418,16 +121446,11 @@ qatar,80
 				}, 400);
 			}
 		}
+		
+		// INIT
+		// !!
 		var KH_YAHOO_BOT = new kristin_howe_photos_yahoo_bot();
 		KH_YAHOO_BOT.__init_globals();
-		
-		//~ var KH_YAHOO_BOT = new kristin_howe_photos_yahoo_bot();
-		//~ KH_YAHOO_BOT.__init_globals();
-		
-		//~ kristin_howe_photos_yahoo_bot.prototype. = function() {
-			//~ 
-		//~ }
-		
 		
 		function kristin_howe_photos_photoIs200(u, submit_) {
 			GM_xmlhttpRequest({
@@ -121553,8 +121576,7 @@ qatar,80
 										}
 										
 										// output for display
-										var d;
-										d = document.createElement('textarea');
+										var d = document.createElement('textarea');
 										d.setAttribute('id','kh_skips');
 										document.body.appendChild(d);
 										var kh_skips = document.getElementById('kh_skips');
@@ -121576,8 +121598,7 @@ qatar,80
 										}
 										// (selector) output for "skips" type "MT___KristinHowe_agent_photos_skip"
 										var x = GM_getValue('MT___KristinHowe_agent_photos_skipHard');
-										var d;
-										d = document.createElement('input');
+										var d = document.createElement('input');
 										d.setAttribute('id','kh_skips_skipHard');
 										d.setAttribute('type','button');
 										d.setAttribute('value','s'+x);
@@ -121595,7 +121616,6 @@ qatar,80
 											this.value = 's'+GM_getValue('MT___KristinHowe_agent_photos_skipHard');
 										}
 										document.body.appendChild(d);
-										//~ var k = document.getElementById('kh_skips_skipHard');
 										
 										// Is this hid in current tracking?
 										// If hid not in tracking, add to array as "1",
@@ -121689,23 +121709,6 @@ qatar,80
 												{
 													AMT___Floater.accept();
 												}
-												
-												//~ // OLD
-												//~ chrome.extension.sendRequest(
-													//~ {
-														//~ method: "saveLocalStorage",
-														//~ key: "MT___VAR___KristinHowe_Skip_HID_"+id,
-														//~ data: '1'
-													//~ }
-												//~ );
-												//~ // OLD
-												//~ chrome.extension.sendRequest(
-													//~ {
-														//~ method: "saveLocalStorage",
-														//~ key: "MT___VAR___KristinHowe_Accept_HID_"+id,
-														//~ data: '1'
-													//~ }
-												//~ );
 											}
 										);
 									}
@@ -121812,12 +121815,10 @@ qatar,80
 						return;
 					}
 					
-					
-					
-					//
-					//
-					// JOB IS ACCEPTED
-					//
+					/**
+					 * JOB IS ACCEPTED
+					 * 
+					 */
 					//~ setTimeout(function() {
 						//~ window.location = 'https://www.mturk.com/mturk/preview?groupId=2FH56XBAT2D55ZCE7LUQ8JGAYZV04Z';
 					//~ }, (Math.random() * 30 + 180)*1000); // 3 minutes
@@ -121896,8 +121897,9 @@ qatar,80
 								}
 							}
 						}
-						
-						
+					}
+					// End Job Accepted Code
+					
 						/**
 						 * 
 						 * NO LONGER DO MANUAL SITES CODE!
@@ -122027,9 +122029,6 @@ qatar,80
 								//~ }	
 							//~ }
 						//~ });
-					}
-					// End Job Accepted Code
-					
 				}
 			});
 		}
@@ -132731,6 +132730,7 @@ function mturk_load()
 					break;
 				case '2FH56XBAT2D55ZCE7LUQ8JGAYZV04Z':
 				case '30959048Z1SSJMWP5D5TCMCKH3TACO':
+				case '3S82SNMR1ZQZMYGZWFVUKSXPBHGAFX': // New as of Nov22 2014
 					AMT___Floater({runMT_Run: true}); //Kristin Howe, Find Images of these Real Estate Agents
 					break;
 				case '30VZHLSOXST5SF5CAVZFBXC2WMD9HD':
