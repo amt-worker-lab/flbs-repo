@@ -2546,11 +2546,11 @@ function MT__RUN() {
 							div = document.createElement('div');
 							div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:200px;height:300px;overflow:auto;cursor:pointer;');
 							
-							// If image size is greater than 600 then show the Google
+							// If image size is greater than 600kb (changed 1200kb) then show the Google
 							// thumbnail image instead.
 							el_img = document.createElement('img');
 							el_img.setAttribute('style', 'max-width:180px;max-height:120px;');
-							el_img.src = (meta.os > 600) ? meta.tu : img;
+							el_img.src = (meta.os > 1200) ? meta.tu : img;
 							el_img.submit_src = img;
 							el_img.onclick = images__imgClick;
 							
