@@ -2645,6 +2645,11 @@ function MT__RUN() {
 								div.appendChild(a);
 							}
 							
+							// bgc
+							if (meta.ow < 300 || meta.oh < 300) {
+								div.style.backgroundColor = 'aqua';
+							}
+							
 							// ...
 							d1.appendChild(div);
 							count++;
