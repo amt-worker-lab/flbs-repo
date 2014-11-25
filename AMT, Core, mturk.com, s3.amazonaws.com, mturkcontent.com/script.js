@@ -17,6 +17,12 @@
 // @grant			GM_xmlhttpRequest
 // ==/UserScript==
 
+/**
+ * Document Changes
+ * 
+ * Format: Date tab-tab Description
+ * 
+ */
 var beginRunTime = new Date().getTime();
 
 // MT__bold
@@ -2331,6 +2337,327 @@ function MT__RUN() {
 		// open link
 		var a = document.getElementsByTagName('a');
 		a[1].click();
+	}
+	
+	// 
+	// Daniel D Preiss
+	// Find the Correct Image for University Campuses
+	//
+	s = '<p>Find the best image for this university using Google Image (http://images.google.com/).</p>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			// Name
+			// Emerson College campus"
+			var a = /<label>Campus Image URL for&nbsp;"<\/label>([^<]+)<label>/.exec(ih)[1].trim();
+			
+			// ...
+			o = {
+				school: __js_clean_html_str(a).replace(/"$/, '').trim(),
+				bold_array: null
+			}
+			o.bold_array = o.school.clean_string_to_array();
+			console.log(o);
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:100px;left:0%;width:80%;height:40px;');
+			document.body.appendChild(d2);
+			d2.value = o.school;
+			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 140 // offset top
+			});
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = function() {
+				google_image_search();
+			}
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				var x = document.getElementById('web_url');
+				x.value = x.value.trim();
+				if (x.value == '') return false;
+			}
+			
+			// INIT
+			google_image_search();
+			
+			function images__imgClick(e) {
+				//~ el_img = document.createElement('img');
+				//~ el_img.setAttribute('style', 'max-width:180px;max-height:120px;');
+				//~ el_img.src = (meta.os > 600) ? meta.tu : img;
+				//~ el_img.submit_src = img;
+				//~ el_img.onclick = images__imgClick;
+				console.log(this);
+				
+				// Set value
+				document.getElementById('web_url').value = this.submit_src;
+				
+				// Do src and submit_src match?
+				// If no then set src and do not submit.
+				// On next run will submit.
+				
+				if (this.src != this.submit_src) {
+					this.src = this.submit_src;
+					this.style.border = '4px dashed blue';
+					return;
+				}
+				
+				// Here?
+				if (document.getElementById('web_url').value.length > 16) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				
+			}
+			function google_image_search() {
+		
+				// small & large
+				// https://www.google.com/search?q='++'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch
+				
+				d1.innerHTML = '';
+				
+				// Reset
+				d1.style.backgroundColor = '#eee';
+				
+				//~ d1b.innerHTML = '';
+				
+				//~ D1_HIDDEN = '';
+				
+				// yahoo
+				//sam_molyneux_journals_yahoo();
+				
+				// google 2
+				//~ var d;
+				//~ d = document.createElement('div');
+				//~ d.setAttribute('id','d1a2');
+				//~ d.innerHTML = '&nbsp;';
+				//~ d1.appendChild(d);
+				//~ d1a2 = document.getElementById('d1a2');
+				//~ d1a2.style.width='100%';
+				
+				// !??
+				//var u = 'https://www.google.com/search?q='+encodeURIComponent(di.value)+'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch&num=10&biw=&bih=&sei=&'+Math.random()*1000;
+				//var u = 'https://www.google.com/search?biw=1152&bih=720&tbm=isch&sa=1&q='+encodeURIComponent(di.value)+'&oq='+encodeURIComponent(di.value)+'&gs_l=';
+				//console.log(u);
+				
+				// Add tbs= to set size > 300x400
+				// ?!! encode (&) breaks
+				var u = 'https://www.google.com/search?q='+
+						encodeURIComponent(o.school.replace(/&/g, 'and'))+
+						'&aq=f&um=1&ie=UTF-8&hl=en&tbm=isch&num=20&biw=&bih=&sei=&tbs=isz:lt,islt:qsvga&'+
+						Math.random()*1000;
+				
+				// Google
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.style.backgroundColor = 'pink';
+							window.open(u, 'new');
+							return;
+						}
+						
+						//<div class="rg_meta">
+						var r, m, meta, img, div, el_img, count = 0;
+						r = /<!--m-->((.|\s)*?(?=<!--n-->|$)|$)/g;
+						while (m = r.exec(rs)) {
+							
+							if (count >= 14) break;
+							
+							// Link
+							// ex http://www.sdu.dk/om_sdu/.../forskningsleder
+							var link = /<a href="http:\/\/www\.google\.com\/imgres\?imgurl=[^&]+&amp;imgrefurl=([^&]+)/.exec(m[1]);
+							if (link) {
+								link = decodeURIComponent(decodeURIComponent(link[1]));
+							} else
+								link = false;
+							
+							// Meta
+							// .pt = filename (OR extended description?)
+							// .s = description
+							// .os = file size, either "4KB" or "1.4MB"
+							// .tu = Google thumbnail image full URL
+							// .fn = filename (e.g. file.jpg)
+							meta = /<div class="rg_meta">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[1]);
+							if (meta) {
+								meta = __js_clean_html_str(meta[1]).trim();
+								meta = JSON.parse(meta);
+								meta.pt = (meta.pt) ? meta.pt : '';
+								meta.s  = (meta.s)  ? meta.s  : '';
+								meta.fn  = (meta.fn)  ? meta.fn  : '';
+								meta.os  = (meta.os.indexOf('MB') != -1)  ? meta.os.replace(/[^\d]/g, '')*1000 : meta.os.replace(/[^\d]/g, '')*1;
+							} else {
+								meta = {
+									pt: '',
+									s: ''
+								};
+							}
+							console.log(meta);
+							
+							
+							//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
+							//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
+							//http://www.chw.org/~/media/Images/Modules/Physician%20Directory/Physicians/F/Jordan%20N%20Fink.jpg?mw=292
+							//http://www.chw.org/~/media/Images/Modules/Physician%2520Directory/Physicians/F/Jordan%2520N%2520Fink.jpg%3Fmw%3D292
+							//~ img = /<a class="rg_l" href="http:\/\/www\.google\.com\/imgres\?imgurl=([^&"]+)/.exec(m[1]);
+							img = /<a href="http:\/\/www\.google\.com\/imgres\?imgurl=([^&"]+)/.exec(m[1]);
+							if (img) {
+								img = img[1].trim();
+								img = decodeURIComponent(decodeURIComponent(img));
+								//img = __js_clean_html_str(img);
+							} else
+								img = '';
+							
+							//~ console.log(img);
+							
+							// Get the domain of full img URL
+							meta.domain__ = img.parseURL().host.replace(/^www\./, '');
+							
+							
+							div = document.createElement('div');
+							div.setAttribute('style', 'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:200px;height:300px;overflow:auto;cursor:pointer;');
+							
+							// If image size is greater than 600 then show the Google
+							// thumbnail image instead.
+							el_img = document.createElement('img');
+							el_img.setAttribute('style', 'max-width:180px;max-height:120px;');
+							el_img.src = (meta.os > 600) ? meta.tu : img;
+							el_img.submit_src = img;
+							el_img.onclick = images__imgClick;
+							
+							div.appendChild(el_img);
+							div.appendChild(document.createElement('br'));
+							//~ div.appendChild(document.createTextNode(meta.os));	//DEBUG .os
+							//~ div.appendChild(document.createElement('br'));		//DEBUG .os
+							
+							// o.bold_array_name
+							// o.bold_array_company
+							
+							
+							// Title
+							div.appendChild(
+								MT__bold(
+										meta.s,
+										o.bold_array,
+										{
+											return_div_element: true // !
+										}
+									)
+									.div_element
+							);
+							
+							// Desc.
+							var d =
+								MT__bold(
+										meta.pt,
+										o.bold_array,
+										{
+											return_div_element: true // !
+										}
+									)
+									.div_element;
+							d.setAttribute('style', 'border-top:1px dashed #a2a2a2;width:100%;');
+							div.appendChild(
+								d
+							);
+							
+							// fn
+							var d =
+								MT__bold(
+										meta.fn,
+										o.bold_array,
+										{
+											return_div_element: true // !
+										}
+									)
+									.div_element;
+							d.setAttribute('style', 'border-top:1px dashed #a2a2a2;width:100%;');
+							div.appendChild(
+								d
+							);
+							
+							// Domain
+							var d =
+								MT__bold(
+										meta.domain__,
+										o.bold_array,
+										{
+											return_div_element: true // !
+										}
+									)
+									.div_element;
+							d.setAttribute('style', 'border-top:1px dashed #a2a2a2;width:100%;');
+							div.appendChild(
+								d
+							);
+							
+							// Size
+							var d = document.createElement('div');
+							d.setAttribute('style', 'border-top:1px dashed #a2a2a2;width:100%;');
+							d.innerText = meta.ow + 'x' + meta.oh;
+							div.appendChild(
+								d
+							);
+							
+							// Link
+							if (link) {
+								var a = document.createElement('a');
+								a.href = link;
+								a.innerText = 'link';
+								a.onclick = function() {
+									window.open(this.href, 'new');
+									return false;
+								}
+								div.appendChild(a);
+							}
+							
+							// ...
+							d1.appendChild(div);
+							count++;
+						}
+						
+						// add
+						if (count > 0) {
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:2200px;');
+							d1.appendChild(div);
+						}
+						
+						return;
+					}
+				});
+			}
+		}
+		new run().f(); return;
 	}
 	
 	// 
@@ -71646,71 +71973,6 @@ qatar,80
 				}
 				
 				return;
-				
-				
-				// OLD
-				//
-				//
-				//
-				//~ //
-				//~ //
-				//~ //
-				//~ //
-				//~ //
-				//~ 
-				//~ 
-				//~ 
-				//~ var r, m, full = [], c = 0;
-				//~ 
-				//~ // full
-				//~ // imgurl=([^&]+)
-				//~ r = /imgurl=([^&]+)/g;
-				//~ if (r.exec(rs)) {
-					//~ r.lastIndex = 0;
-					//~ while (m = r.exec(rs)) {
-						//~ full[c] = m[1];
-						//~ c++;
-					//~ }
-				//~ }
-				//~ 
-				//~ // thumb
-				//~ c = 0;
-				//~ r = /\{e\.src='([^']+)/g;
-				//~ var f;
-				//~ if (r.exec(rs)) {
-					//~ r.lastIndex = 0;
-					//~ while (m = r.exec(rs)) {
-						//~ m[1] = m[1].replace(/\\x3d/g, '=');
-						//~ f = (full[c]) ? full[c] : '';
-						//~ f = (f.indexOf('x-raw-image://') === 0) ? m[1] : f;
-						//~ 
-						//~ // XX THUMBNAIL, OCT. 10 //
-						//~ //d1.innerHTML += '<img src="'+m[1]+'" id="" class="exe" style="border:1px solid lime;">';
-						//~ 
-						//~ d1.innerHTML += '<img src="'+m[1]+'" id="'+f+'" class="exe-yahoo" style="border:1px solid lime;">';
-						//~ 
-						//~ c++;
-					//~ }
-				//~ } else {
-					//~ c = 0;
-					//~ r = /,"tu":"([^"]+)/g;
-					//~ if (r.exec(rs)) {
-						//~ r.lastIndex = 0;
-						//~ while (m = r.exec(rs)) {
-							//~ f = (full[c]) ? full[c] : '';
-							//~ f = (f.indexOf('x-raw-image://') === 0) ? m[1] : f;
-							//~ 
-							//~ d1.innerHTML += '<img src="'+m[1]+'" id="'+f+'" class="exe-yahoo" style="border:1px solid lime;">';
-							//~ //d1.innerHTML += '<img src="'+m[1]+'" id="'+f+'" class="exe" style="border:1px solid lime;">';
-							//~ 
-							//~ if (c >= 20) break; // 20?
-							//~ c++;
-						//~ }
-					//~ }
-				//~ }
-				//~ 
-				//~ sam_molyneux_researcher_images__update();
-				//~ //sam_molyneux_journals_update();
 			}
 		});
 	}
