@@ -2357,6 +2357,8 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
 			
+			GM_addStyle('em {zoom:2;}');
+			
 			// Name
 			// Emerson College campus"
 			var a = /<label>Campus Image URL for&nbsp;"<\/label>([^<]+)<label>/.exec(ih)[1].trim();
@@ -2623,7 +2625,10 @@ function MT__RUN() {
 							// Size
 							var d = document.createElement('div');
 							d.setAttribute('style', 'border-top:1px dashed #a2a2a2;width:100%;');
-							d.innerText = meta.ow + 'x' + meta.oh;
+							d.innerHTML = 
+								((meta.ow < 300) ? '<em>'+meta.ow+'</em>': meta.ow) +
+								'x' +
+								((meta.oh < 300) ? '<em>'+meta.oh+'</em>': meta.oh);
 							div.appendChild(
 								d
 							);
