@@ -2723,6 +2723,12 @@ function MT__RUN() {
 				this.style.backgroundColor = 'LightGreen';
 			}
 			
+			// submit btn
+			o.btns[3].onclick = function() {
+				new AMT___core_factory().nextTab();
+				o.btns[3].style.backgroundColor = 'LightGreen';
+			}
+			
 			// click first
 			o.btns[0].click();
 			o.btns[0].focus(); // focus, nextTab needs this for window.keypress
