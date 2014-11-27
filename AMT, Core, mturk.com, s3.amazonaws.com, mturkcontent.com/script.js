@@ -127705,7 +127705,7 @@ function top_window() {
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
 		
-		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/ -"is this your business"';
 		
 		//~ d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
 		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
