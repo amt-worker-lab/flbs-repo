@@ -127705,7 +127705,7 @@ function top_window() {
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
 		
-		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/ -"is this your business"';
+		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
 		
 		//~ d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
 		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
@@ -127774,7 +127774,7 @@ function top_window() {
 				req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					seed_arg1: el_div,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + ' -"Is This Your Business"')
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + ' -"Is This Your Business" -"Claim this business"')
 				});
 				req_proxy.proxy_init();
 				req_proxy.proxy_waitComplete(
@@ -127789,7 +127789,7 @@ function top_window() {
 			req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
 				seed_arg1: d1,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + ' -"Is This Your Business"')
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + ' -"Is This Your Business" -"Claim this business"')
 			});
 			req_proxy.proxy_init();
 			req_proxy.proxy_waitComplete(
@@ -127799,7 +127799,7 @@ function top_window() {
 			req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
 				seed_arg1: d1b,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + ' -"Is This Your Business"')
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + ' -"Is This Your Business" -"Claim this business"')
 			});
 			req_proxy.proxy_init();
 			req_proxy.proxy_waitComplete(
@@ -127810,7 +127810,7 @@ function top_window() {
 				req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					seed_arg1: d1c,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + ' -"Is This Your Business"')
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + ' -"Is This Your Business" -"Claim this business"')
 				});
 				req_proxy.proxy_init();
 				req_proxy.proxy_waitComplete(
