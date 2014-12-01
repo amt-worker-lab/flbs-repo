@@ -52614,9 +52614,9 @@ qatar,80
 		d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21&output=embed&t=h&iwloc=near';
 		
 		var d2 = document.createElement('img');
-		d2.setAttribute('style','position:absolute;top:200px;left:70%;width:400px;height:600px;border:2px solid blue;');
+		d2.setAttribute('style','position:absolute;top:200px;left:70%;width:500px;height:600px;border:2px solid blue;');
 		document.body.appendChild(d2);
-		d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(o.addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.addr)+'&zoom=20&size=500x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(o.addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 		
 		/*d2.innerHTML = '\
 			<option value=""></option>\
