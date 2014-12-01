@@ -10124,8 +10124,262 @@ function MT__RUN() {
 	 * SaaS, Find an alternative scholarship/financial aide contact for each university
 	 * Larry Baker
 	 * Nicolas Cazagou
+	 * Andrew Scherer
+	 * 
 	 * 
 	 */
+	
+	//
+	// Justin Kline
+	// Find the Emails Addresses Associated with the Website Below
+	//
+	s = '	<li>If the website is not a domain, then just search google and go to the site that way and add it to the field below</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+			
+			//~ GM_addStyle('.container {position:absolute;top:0px;left:0;margin:0 !important;padding:0 !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {zoom:0.8;}');
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:220px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:120px;left:0%;width:98%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			
+			var b = document.getElementsByTagName('b');
+			
+			var o = {
+				site: null,
+				domain: b[0].innerText.trim(),
+				sd_start_urls: [],
+				sd_allowed_domains: []
+			}
+			if (o.domain == '' && AMT__Global_Vars.isPreview) {	// Not accepted. No site/domain.
+				AMT___Floater.skip();
+				return;
+			} else if (!AMT__Global_Vars.isPreview) {			// Accepted
+				// add
+				//~ addToTabsQ();
+			}
+			if (/^https?:/i.exec(o.domain)) {
+				o.site = o.domain;
+				o.domain = o.domain.replace(/^https?:\/\/(www\.|)/i, '').replace(/\/[\d\D]*/g, '');
+			} else {
+				o.site = 'http://' + o.domain;
+			}
+			o.sd_start_urls.push(o.site);
+			o.sd_allowed_domains.push(o.domain);
+			
+			
+			// Yahoo/SP top 3 for start
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team OR webmaster OR owner OR email'),
+				callback_function: startpage
+			});
+			console.log(o);
+			
+			// ...
+			document.getElementById('Q1Url').value = 'EXISTS';
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				
+				var q = [
+					document.getElementById('Q1Email'),
+					document.getElementById('Q1Url')
+				];
+				q[0] = q[0].trim();
+				q[1] = q[1].trim();
+				if (q[0].value == '' || q[1].value == '')
+					return false;
+				
+				// Here?
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			//~ if (o.domain != '' ) {
+				//~ 
+			//~ } else {
+				//~ scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			//~ }
+			
+			//~ if (o.domain != '' && o.domain.indexOf('mturkcontent.com') == -1) {
+				//~ if (/^http/i.exec(o.domain)) { // Push start url
+					//~ o.sd_start_urls.push(o.domain); // 
+				//~ } else {
+					//~ o.sd_start_urls.push('http://' + o.domain); // 
+				//~ }
+				//~ o.domain = o.domain.replace(/^https?:\/\/(www\.|)/i, '');
+				//o.domain = o.domain.replace(/\/[\d\D]*/i, '');
+				//~ o.sd_allowed_domains.push(o.domain);
+				//~ 
+				//~ // Yahoo/SP top 3 for start
+				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					//~ startPage: true,
+					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team'),
+					//~ callback_function: Nicolas_Cazagou_FB_emails__startpage
+				//~ });
+			//~ } else {
+				//~ // Go straight to scrapy
+				//o.sd_start_urls.push('http://localhost'); //?
+				//~ 
+				//~ // start URLs, allowed domains
+				//~ Nicolas_Cazagou_FB_emails__scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			//~ }
+			
+			
+			// return button function!
+			//~ var cf = new AMT___core_factory()
+			//~ new AMT___core_factory()
+				//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
+					//~ {
+						//~ action: 'return_button__showNextTab'
+					//~ }
+				//~ );
+			
+			/**
+			 * function startpage
+			 */
+			function startpage(response_obj) {
+				
+				console.log(response_obj.length);
+				var rs = response_obj;
+				console.log(rs);
+				
+				if (!rs.length) {
+					// No URLs
+					//~ document.body.innerText = '0';
+					//~ return;
+				} else {
+					/*([{
+						url: rs[0][0]
+					}]);*/
+				}
+				
+				// MANY WINDOWS
+				var uw = [];
+				for (var i in rs) {
+					o.sd_start_urls.push(rs[i][0]);
+					
+					// Add to d2
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
+					dv.innerHTML = rs[i][0] + '<br>' + rs[i][1].substr(0,40);
+					dv.url = rs[i][0]
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('Q1Url').value = this.url;
+						document.getElementById('Q1Email').value = 'NOT FOUND';
+						if(this.url.length > 10)
+							doSubmit();
+					}
+					d2.appendChild(dv);
+					// Utility window?
+					//AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions)
+					uw.push({
+						url: rs[i][0]
+					});
+					
+					console.log(i);
+					if (i >= 2) break; 
+				}
+				console.log(uw);
+				AMT__setUtilityTabs(uw);
+				
+				
+				
+				// Push 
+				//~ o.sd_start_urls.push();
+				
+				// start URLs, allowed domains
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			
+			function scrapy(start_urls, allowed_domains) {
+				//~ console.log(start_urls);
+				//~ console.log(allowed_domains);
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1,
+								input_send_success: document.getElementById('Q1Email'),
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									
+									
+									if (AMT__Global_Vars.isPreview) {
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											AMT___Floater.skip();
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								},
+								// What to do onclick
+								input_onclick_callback: function() {
+									document.getElementById('submitButton').click();
+								},
+								do_submit_next_tab: true
+								//~ do_submit_add_to_tabs_queue: true
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+	}
 	
 	//
 	// Andrew Scherer

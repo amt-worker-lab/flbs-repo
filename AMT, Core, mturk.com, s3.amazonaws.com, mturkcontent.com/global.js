@@ -6628,7 +6628,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-					
+				
 				this.input_send_success.value = this.email;
 				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
 					
