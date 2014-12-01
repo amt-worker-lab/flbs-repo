@@ -52619,6 +52619,12 @@ qatar,80
 			var x = document.getElementsByName('other_notes')[0];
 			x.value = this.options[this.selectedIndex].innerText;
 		}*/
+		document.getElementsByName('submitButton')[0].ondblclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			new AMT___core_factory().nextTab();
+			doSubmit();
+		}
+		
 		document.getElementsByName('other_notes')[0].ondblclick = function() {
 			if (this.value == '') {
 				this.value = 'They have solar panels';
