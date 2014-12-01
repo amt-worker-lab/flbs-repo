@@ -4847,7 +4847,8 @@ function MT__RUN() {
 						'Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking':true,
 						'That discount code isn’t valid for the hotel you want to book':true,
 						'Sorry, this booking doesn’t meet the minimum price required for that discount code':true,
-						'Sorry, this discount code can only be used in certain regions':true
+						'Sorry, this discount code can only be used in certain regions':true,
+						'Sorry, you can’t redeem coupons, Welcome Rewards™ nights, or pay with a gift card for this booking.':true
 					};
 					//~ console.log(errs.hasOwnProperty(v.error.trim()));
 					if (errs.hasOwnProperty(v.error.trim())) {

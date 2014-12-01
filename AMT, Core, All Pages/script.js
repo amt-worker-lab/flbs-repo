@@ -1886,10 +1886,11 @@ function load()
 				var pr = document.getElementsByClassName('text cko-coupon-field')[0];
 				
 				var error__hmmm = ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking');
+				var error__2 = ih.indexOf('Sorry, you can’t redeem coupons, Welcome Rewards™ nights, or pay with a gift card for this booking.');
 				
-				if (!pr || error__hmmm != -1) {
+				if (!pr || error__hmmm != -1 || error__2 != -1) {
 					
-					// err or ...
+					// err
 					if (ih.indexOf('Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking') != -1) {
 						// complete
 						clearInterval(intv);
@@ -1898,6 +1899,18 @@ function load()
 							key: 'AMT__traveldata_scrape_hotels_com__complete',
 							data: o,
 							error: 'Sorry, but you cannot redeem coupons or Welcome Rewards™ nights for this booking'
+						}, "*");
+						return;
+					}
+					// err
+					else if (ih.indexOf('Sorry, you can’t redeem coupons, Welcome Rewards™ nights, or pay with a gift card for this booking.') != -1) {
+						// complete
+						clearInterval(intv);
+						console.log(o);
+						parent.postMessage({
+							key: 'AMT__traveldata_scrape_hotels_com__complete',
+							data: o,
+							error: 'Sorry, you can’t redeem coupons, Welcome Rewards™ nights, or pay with a gift card for this booking.'
 						}, "*");
 						return;
 					} else {
