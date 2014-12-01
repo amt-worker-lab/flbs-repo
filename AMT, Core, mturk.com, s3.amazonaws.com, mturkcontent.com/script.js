@@ -52625,6 +52625,12 @@ qatar,80
 			doSubmit();
 		}
 		
+		document.getElementsByName('roofshade')[0].onmouseup = function() {
+			if (this.value.indexOf('A Lot') != -1) {
+				document.getElementById('solaryesno_no').parentNode.click();
+			}
+		}
+		
 		document.getElementsByName('other_notes')[0].ondblclick = function() {
 			if (this.value == '') {
 				this.value = 'They have solar panels';
