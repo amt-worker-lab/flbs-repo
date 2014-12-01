@@ -52564,6 +52564,10 @@ qatar,80
 		
 		var b = document.getElementsByTagName('b')[0].innerText;
 		
+		var o = {
+			addr: b
+		}
+		
 		document.getElementById('solaryesno_yes').checked = true;
 		document.getElementsByName('roofdirection')[0].selectedIndex = 2;
 		document.getElementsByName('roofpitch')[0].selectedIndex = 1;
@@ -52598,18 +52602,21 @@ qatar,80
 		d1.style.position='absolute';
 		d1.style.top='200px';
 		d1.style.left='0%';
-		d1.style.width='98%';
+		d1.style.width='70%';
 		d1.style.height='600px';
 		d1.style.border='1px solid blue';
 		d1.style.borderBottom='2px solid blue';
 		d1.style.overflow = 'auto';
 		d1.style.backgroundColor='#eee';
-		
 		//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&hq=&hnear=&gl=us&ei=&ved=';
 		//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21'; // OLD
-		
 		// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
 		d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21&output=embed&t=h&iwloc=near';
+		
+		var d2 = document.createElement('img');
+		d2.setAttribute('style','position:absolute;top:200px;left:70%;width:400px;height:600px;border:2px solid blue;');
+		document.body.appendChild(d2);
+		d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(o.addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 		
 		/*d2.innerHTML = '\
 			<option value=""></option>\
