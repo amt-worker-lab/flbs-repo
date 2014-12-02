@@ -42983,7 +42983,28 @@ function MT__RUN() {
 								alert(reg);
 								console.log('!reg title');
 							}
+							
+							// Link + ASIN +
+							// DVD or Blu-Ray
+							// ex B004EPZ06G
+							reg = /<a class="a-link-normal a-text-normal" title="(DVD|Blu-ray)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">(DVD|Blu-Ray)</gi;
+							var m2;
+							var movs_array = [];
+							while (m2 = reg.exec(m[1])) {
 								
+								movs_array.push({
+									mov_type:	 m2[1],
+									asin:		__js_clean_html_str(m2[2])
+								});
+								//~ if (reg) {
+									//~ div.mov_type = reg[1];
+									//~ div.asin = __js_clean_html_str(reg[2]);
+									//~ //div.
+								//~ } else {
+									//~ 
+								//~ }
+							}
+							
 							// offers
 							reg = /\([\d,]+ offers\)/g;
 							if (reg.exec(m[1])) {
@@ -43002,13 +43023,43 @@ function MT__RUN() {
 							if (reg) {
 								ratng += ' (<B>'+reg[1]+'</B> ratings)';
 							}
+							// image
+							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i;
+							if (reg) {
+								div.image = __js_clean_html_str(reg[1]).trim();
+							}
 							
 							// ...
 							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
-							div.innerHTML += offer + ratng + '<br>' + link + '<br>';
-							if (images[c] && !multi)
-								div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" />';
+							div.innerHTML += offer + ratng + '<br>';
 							
+							if (div.hasOwnProperty('image')) {
+								var img = document.createElement('img');
+								img.setAttribute('style', 'max-width:140px;');
+								img.src = div.image;
+								div.appendChild(img);
+							}
+							//~ if (images[c] && !multi)
+								//~ div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" /><br>';
+							
+							// Add Buttons for clicking
+							for (var i in movs_array) {
+								var btn = document.createElement('button');
+								btn.setAttribute('style', 'width:80px;height:80px;');
+								btn.innerText	= movs_array[i].mov_type;
+								btn.asin		= movs_array[i].asin;
+								btn.className	= 'exe'
+								div.appendChild(btn);
+								btn.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									var q = document.getElementsByName('ASIN')[0];
+									q.value = this.asin;
+									if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
+										new AMT___core_factory().nextTab();
+										doSubmit();
+									}
+								}
+							}
 							
 							div.onclick = function() {
 								//~ this.style.backgroundColor = 'LightGreen';
