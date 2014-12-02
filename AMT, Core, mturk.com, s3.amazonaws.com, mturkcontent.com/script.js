@@ -57741,7 +57741,7 @@ qatar,80
 						doSubmit();
 					}
 				}
-				d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.bold_array );
+				d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1], o.bold_array ); //.replace(/<\/?b>/g, '')
 				d1c.appendChild(d);
 				
 				// ...
@@ -57823,7 +57823,7 @@ qatar,80
 						doSubmit();
 					}
 				}
-				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1].replace(/<[^>]*>/g, ''), o.bold_array);
+				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1], o.bold_array); //.replace(/<[^>]*>/g, '')
 				d1.appendChild(d);
 				
 				var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
