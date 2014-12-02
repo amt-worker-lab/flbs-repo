@@ -56910,7 +56910,8 @@ qatar,80
 			d2.value = o.comp;
 			d2.onblur = function() {
 				linkedin_biz__init();
-				linkedin_biz__init();
+				linkedin_biz__li_init();
+				//linkedin_biz__init();//ARE YOU RUNNING THIS JOB RIGHT NOW, MAKE SURE HAVING TWO IS OKAY
 			}
 			
 			//
@@ -57603,8 +57604,8 @@ qatar,80
 			var rf = new AMT___requests_factory();
 			rf.linkedin_company_search(
 				{
-					keywords: o.comp_name
-					//~ keywords: d2.value
+					//keywords: o.comp_name
+					keywords: d2.value
 				},
 				kyle_morris_linkedin_biz__li_process
 			);
