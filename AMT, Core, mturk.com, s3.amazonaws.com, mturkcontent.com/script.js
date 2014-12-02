@@ -57676,7 +57676,7 @@ qatar,80
 			}
 		}
 		function kyle_morris_linkedin_biz__SP_init() {
-			d1.innerText = '';
+			d1c.innerText = '';
 			
 			// Add to bold array ...
 			o.bold_array = o.bold_array.concat(d2.value.replace(/\.\w+$/g, '').clean_string_to_array());
@@ -57684,13 +57684,11 @@ qatar,80
 			
 			//
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
-				yahoo_array: true
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+				callback_function: kyle_morris_linkedin_biz__SP_complete,
+				//~ return_init_object: true
 			});
-			req_proxy.proxy_init();
-			req_proxy.proxy_waitComplete(
-				kyle_morris_linkedin_biz__SP_complete
-			);
 		}
 		function kyle_morris_linkedin_biz__SP_complete(rs) {
 			if (rs.length == 0) {
@@ -57700,7 +57698,9 @@ qatar,80
 				
 				// 0 Results???
 				// Both sides
-				if (d1.innerText == c && /\.\w+$/.exec(d2.value)) {
+				//~ console.log(d1.innerText == v);
+				//~ console.log(/\.\w+$/.exec(d2.value));
+				if (d1.innerText == v && /\.\w+$/.exec(d2.value)) {
 					d2.value = d2.value.replace(/\.\w+$/, '');
 					kyle_morris_linkedin_biz__init();
 					kyle_morris_linkedin_biz__SP_init();
@@ -57760,7 +57760,6 @@ qatar,80
 			
 			// Add to bold array ...
 			o.bold_array = o.bold_array.concat(d2.value.replace(/\.\w+$/g, '').clean_string_to_array());
-			//~ o.bold_array = o.bold_array.concat(d2.value);
 			
 			//
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
@@ -57781,7 +57780,7 @@ qatar,80
 				
 				// 0 Results???
 				// Both sides
-				if (d1c.innerText == c && /\.\w+$/.exec(d2.value)) {
+				if (d1c.innerText == v && /\.\w+$/.exec(d2.value)) {
 					d2.value = d2.value.replace(/\.\w+$/, '');
 					kyle_morris_linkedin_biz__init();
 					kyle_morris_linkedin_biz__SP_init();
