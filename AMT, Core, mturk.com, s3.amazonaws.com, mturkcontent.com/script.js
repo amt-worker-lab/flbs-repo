@@ -57542,11 +57542,14 @@ qatar,80
 		
 		//BEGIN ITEMS
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:35%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d1b = document.createElement('div');
 		d1b.setAttribute('style','position:absolute;top:300px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
+		var d1c = document.createElement('div');
+		d1c.setAttribute('style','position:absolute;top:0px;left:65%;width:34%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1c);
 		//
 		var d2 = document.createElement('textarea');
 		d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
@@ -57591,6 +57594,7 @@ qatar,80
 		// ...
 		kyle_morris_linkedin_biz__init();
 		kyle_morris_linkedin_biz__li_init();
+		kyle_morris_linkedin_biz__SP_init();
 		
 		// ...
 		function kyle_morris_linkedin_biz__li_init() {
@@ -57671,6 +57675,86 @@ qatar,80
 				out.appendChild(d);
 			}
 		}
+		function kyle_morris_linkedin_biz__SP_init() {
+			d1.innerText = '';
+			
+			// Add to bold array ...
+			o.bold_array = o.bold_array.concat(d2.value.replace(/\.\w+$/g, '').clean_string_to_array());
+			//~ o.bold_array = o.bold_array.concat(d2.value);
+			
+			//
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+				yahoo_array: true
+			});
+			req_proxy.proxy_init();
+			req_proxy.proxy_waitComplete(
+				kyle_morris_linkedin_biz__SP_complete
+			);
+		}
+		function kyle_morris_linkedin_biz__SP_complete(rs) {
+			if (rs.length == 0) {
+				var v = '0\n'+d2.value;
+				
+				d1c.innerText = v;
+				
+				// 0 Results???
+				// Both sides
+				if (d1.innerText == c && /\.\w+$/.exec(d2.value)) {
+					d2.value = d2.value.replace(/\.\w+$/, '');
+					kyle_morris_linkedin_biz__init();
+					kyle_morris_linkedin_biz__SP_init();
+				} else {
+					d2.style.border = '2px solid blue';
+				}
+				return;
+			}
+			for (var i in rs) {
+				
+				// Get rid of extraneous text on links.
+				// E.g. /company/389583?blahblbahalbahlabhlbhalhb = /company/389583.
+				var short;
+				var extra = '';
+				var x = /^(https?:\/\/\w+\.linkedin\.com\/company\/[^\/]+)([^$]*)/.exec(rs[i][0]);
+				if (x) {
+					short = (x) ? x[1] : rs[i][0];
+					short = short.replace(/^https?:\/\/\w+\./i, 'http://www.')
+					if (x[2])
+						extra = '<b>' +x[2]+ '</b><br>';
+				} else {
+					short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
+				}
+				
+				var d = document.createElement('div');
+				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				d.y_url = short;
+				d.className = 'exe';
+				d.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.y_url;
+					if (/^http:\/\/www\.linkedin\.com\/company\/[^\/$]+/.exec(this.y_url)) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				}
+				d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.bold_array );
+				d1c.appendChild(d);
+				
+				// ...
+				var a = document.createElement('a');
+				a.href = rs[i][0];
+				a.innerText = 'L';
+				a.setAttribute('style','font-weight:bold;zoom:1.4;');
+				a.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					window.open(this.href, 'new');
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				d.appendChild(a);
+			}
+		}
 		function kyle_morris_linkedin_biz__init() {
 			d1.innerText = '';
 			
@@ -57690,13 +57774,17 @@ qatar,80
 		}
 		function kyle_morris_linkedin_biz__complete(rs) {
 			if (rs.length == 0) {
-				d1.innerText = '0\n'+d2.value;
+				var v = '0\n'+d2.value;
+				
+				//~ d1.innerText = '0';
+				d1.innerText = v;
 				
 				// 0 Results???
-				if (/\.\w+$/.exec(d2.value)) {
+				// Both sides
+				if (d1c.innerText == c && /\.\w+$/.exec(d2.value)) {
 					d2.value = d2.value.replace(/\.\w+$/, '');
 					kyle_morris_linkedin_biz__init();
-					//~ d2.blur();
+					kyle_morris_linkedin_biz__SP_init();
 				} else {
 					d2.style.border = '2px solid blue'
 				}
