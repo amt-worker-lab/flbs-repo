@@ -43024,19 +43024,22 @@ function MT__RUN() {
 								ratng += ' (<B>'+reg[1]+'</B> ratings)';
 							}
 							// image
-							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i;
+							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
+							var image;
 							if (reg) {
-								div.image = __js_clean_html_str(reg[1]).trim();
+								image = __js_clean_html_str(reg[1]).trim();
+								//~ console.log(reg);
+								console.log(image);
 							}
 							
 							// ...
 							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
 							div.innerHTML += offer + ratng + '<br>';
 							
-							if (div.hasOwnProperty('image')) {
+							if (image) {
 								var img = document.createElement('img');
 								img.setAttribute('style', 'max-width:140px;');
-								img.src = div.image;
+								img.src = image;
 								div.appendChild(img);
 							}
 							//~ if (images[c] && !multi)
