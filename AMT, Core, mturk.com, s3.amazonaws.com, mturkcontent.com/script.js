@@ -57561,8 +57561,9 @@ qatar,80
 		document.body.appendChild(d3);
 		
 		var d4 = document.createElement('div');
-		d4.setAttribute('style','position:absolute;top:420px;height:400px;width:28%');
+		d4.setAttribute('style','position:absolute;top:420px;height:400px;width:28%;background-color:yellow;');
 		document.body.appendChild(d4);
+		d4.id = 'd4ID';
 		//END ITEMS
 		
 				
@@ -57874,10 +57875,13 @@ qatar,80
 				onload: function (response) {
 					var rs = response.responseText;
 					rs = rs.replace(/[\r\n\s\t]{2,}/g,'');
-					var copyRightReg = /{0,200}[\d\D](copyright|copy|&#169;|©)[\d\D]{0,200}]/g;
+					var copyRightReg = /[\d\D]{0,200}(copyright|copy|&#169;|©)[\d\D]{0,200}]/g;
 					var rslt;
 					var allCopyRights = []
+					console.log('kyle morris scrapy copy right ongoing');
+				
 					while(rslt = copyRightReg.exec(rs)) {
+						console.log('kyle morris scrapy copy right ongoing2');
 						//Remove any <....>
 						rslt = rslt.replace(/<[\d\D]*>/g,'');
 						//Remove any ^...>
@@ -57893,6 +57897,8 @@ qatar,80
 						d4.appendChild(copyRightDiv);
 						copyRightDiv.innerHTML = allCopyRights[i]
 					}
+					console.log('kyle morris scrapy copy right results');
+					console.log(allCopyRights);
 			}
 		});
 		}
