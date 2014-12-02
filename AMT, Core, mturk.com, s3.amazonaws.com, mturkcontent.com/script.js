@@ -57559,7 +57559,12 @@ qatar,80
 		d3.type = 'button';
 		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
 		document.body.appendChild(d3);
+		
+		var d4 = document.createElement('div');
+		d4.setAttribute('style','position:absolute;top:420px;height:400px;width:28%');
+		document.body.appendChild(d4);
 		//END ITEMS
+		
 				
 		// actions
 		d2.value = td;
@@ -57570,6 +57575,8 @@ qatar,80
 			kyle_morris_linkedin_biz__li_init();
 			kyle_morris_linkedin_biz__SP_init();
 		}
+		
+		
 		
 		//
 		var ef = new AMT___events_factory();
@@ -57591,6 +57598,8 @@ qatar,80
 			new AMT___core_factory().nextTab();
 			doSubmit();
 		}
+		
+		kyle_morris_linkedin_biz__scrapeCopyRight();
 		
 		// NEW TW
 		
@@ -57856,6 +57865,36 @@ qatar,80
 				d.setAttribute('style','height:1200px;');
 				d1.appendChild(d);
 			}
+		}
+		
+		function kyle_morris_linkedin_biz__scrapeCopyRight() {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: o.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					rs = rs.replace(/[\r\n\s\t]{2,}/g,'');
+					var copyRightReg = /{0,200}[\d\D](copyright|copy|&#169;|©)[\d\D]{0,200}]/g;
+					var rslt;
+					var allCopyRights = []
+					while(rslt = copyRightReg.exec(rs)) {
+						//Remove any <....>
+						rslt = rslt.replace(/<[\d\D]*>/g,'');
+						//Remove any ^...>
+						rslt = rslt.replace(/^[\d\D]*>/,'');
+						//Remove any <..$
+						rslt = rslt.replace(/<[\d\D]*$/,'');
+						allCopyRights.push(rslt);
+						//bold any copyright|copy|&#169;|©
+					}
+					for(var i = 0; i < allCopyRights.length; i++) {
+						var copyRightDiv = document.createElement('div');
+						copyRightDiv.setAttribute('style','width:100%;border:1px solid blue;');
+						d4.appendChild(copyRightDiv);
+						copyRightDiv.innerHTML = allCopyRights[i]
+					}
+			}
+		});
 		}
 	}
 
