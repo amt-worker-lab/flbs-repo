@@ -57564,6 +57564,8 @@ qatar,80
 		// actions
 		d2.value = td;
 		d2.onblur = function() {
+			new AMT___core_factory().nextTab();
+			document.body.style.backgroundColor = 'lightgreen';
 			kyle_morris_linkedin_biz__init();
 			kyle_morris_linkedin_biz__li_init();
 			kyle_morris_linkedin_biz__SP_init();
