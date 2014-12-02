@@ -42971,31 +42971,17 @@ function MT__RUN() {
 							
 							//link/title
 							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
-							reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+							reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							if (reg) {
-								link = __js_clean_html_str(reg[1]);
-								asin = /\/dp\/([^\/]+)/.exec(link);
-								if (asin) {
-									asin = asin[1];
-								} else {
-									alert('asin' + asin);
-								}
-								link = 'http://www.amazon.com/ss/customer-reviews/'+asin+'/';
+								title = __js_clean_html_str(reg[1]);
 								
-								// DIV.LINK
-								div.link = link;
+								// div.title
+								div.title = title;
 								
-								title = __js_clean_html_str(reg[3]);
-								
-								//~ if (link.indexOf('/dp/') == -1) {
-									//~ alert('link ! /dp/');
-									//~ console.log('x');
-								//~ }
-								//~ link = link.replace(/\/dp\//, '/product-reviews/');
-								//~ link = link.replace(/\/ref=[^\/]+/, '/');
 							} else {
 								alert(reg);
-								console.log('!reg link');
+								console.log('!reg title');
 							}
 								
 							// offers
@@ -43025,13 +43011,13 @@ function MT__RUN() {
 							
 							
 							div.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								var q = document.getElementsByName('ASIN')[0];
-								q.value = this.link;
-								if (this.link.length > 8) {
-									new AMT___core_factory().nextTab();
-									doSubmit();
-								}
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ var q = document.getElementsByName('ASIN')[0];
+								//~ q.value = this.link;
+								//~ if (this.link.length > 8) {
+									//~ new AMT___core_factory().nextTab();
+									//~ doSubmit();
+								//~ }
 							}
 							
 							c++;
