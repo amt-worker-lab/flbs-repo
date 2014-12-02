@@ -42908,19 +42908,21 @@ function MT__RUN() {
 						<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
 						*/
 						
-						var r,m;
+						var r,m,r2;
 						
 						// remove sponsored, to end
 						//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
 						rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
 						
 						// num results
-						r = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
 						if (r) {
 							d1.innerHTML += r[1]+' results<br>';
+						} else if (r2) {
+							r = r2;
+							d1.innerHTML += r[1]+' results<br>';
 						}
-						//old
-						//r = /<h2 style="" class="resultCount" id="resultCount"><span>([^<]+)/.exec(rs);
 						
 						// no results
 						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
@@ -42943,6 +42945,7 @@ function MT__RUN() {
 						var dp, c = 0, multi, highlight = '';
 						
 						r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+						r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 						
 						while (m = r.exec(rs)) {
 							
