@@ -57586,6 +57586,7 @@ qatar,80
 			doSubmit();
 		}
 		
+		// NEW TW
 		
 		// ...
 		kyle_morris_linkedin_biz__init();
@@ -57604,7 +57605,7 @@ qatar,80
 				kyle_morris_linkedin_biz__li_process
 			);
 		}
-		// ({results:x, results_count:y, result: r});
+
 		/**
 		 * 
 		 * 
@@ -57617,6 +57618,7 @@ qatar,80
 			length: 1
 			__proto__: Array[0]
 		 */
+		// ({results:x, results_count:y, result: r});
 		function kyle_morris_linkedin_biz__li_process(response_obj) {
 			
 			var ro = response_obj;
@@ -57625,8 +57627,8 @@ qatar,80
 			
 			var x = ro.results;
 			
-			console.log('linkedin');
-			console.log(x);
+			//~ console.log('linkedin');
+			//~ console.log(x);
 			
 			out.innerText = ro.results_count + '\n';
 			
@@ -57661,7 +57663,12 @@ qatar,80
 				out.appendChild(btn);
 				out.appendChild(document.createElement('br'));
 				
-				
+			}
+			
+			if (ro.results_count != 0) {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				out.appendChild(d);
 			}
 		}
 		function kyle_morris_linkedin_biz__init() {
@@ -57684,7 +57691,16 @@ qatar,80
 		}
 		function kyle_morris_linkedin_biz__complete(rs) {
 			if (rs.length == 0) {
-				d1.innerText = '0';
+				d1.innerText = '0\n'+d2.value;
+				
+				// 0 Results???
+				if (/\.\w+$/.exec(d2.value)) {
+					d2.value = d2.value.replace(/\.\w+$/, '');
+					kyle_morris_linkedin_biz__init();
+					//~ d2.blur();
+				} else {
+					d2.style.border = '2px solid blue'
+				}
 				return;
 			}
 			for (var i in rs) {
@@ -57738,6 +57754,12 @@ qatar,80
 					return false;
 				}
 				d.appendChild(a);
+			}
+			
+			if (d1.innerText != '0') {
+				var d = document.createElement('div');
+				d.setAttribute('style','height:1200px;');
+				d1.appendChild(d);
 			}
 		}
 	}

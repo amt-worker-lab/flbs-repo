@@ -1712,12 +1712,12 @@ function AMT___requests_factory(obj_vars) {
  * Check For Broken Link, sends back the following
  * {
  * 	address: the address you checked
- *  redirectSite: the site it failed (if it failed, otherwise null
+ *  brokenType: the site it failed (if it failed, otherwise null), e.g. 'TimeWarner'
  *  passbackParams: Any parameters you want to persist when calling the function
  *  broken: true if the site is broken, false otherwise
  * }
  ***/
-AMT___requests_factory.prototype.checkForBrokenLink = checkForBrokenLink(address, callback, passbackParams) {
+AMT___requests_factory.prototype.checkForBrokenLink = function(address, callback, passbackParams) {
 	var address = address;
 	var passbackParams = passbackParams;
 	GM_xmlhttpRequest({
@@ -1728,15 +1728,23 @@ AMT___requests_factory.prototype.checkForBrokenLink = checkForBrokenLink(address
 			if (response.status != 200) {
 				//Search for strings from common parked/broken websites
 				var broken = false;
-				var redirectSite = null
+				var brokenType = null
 				
-				if(rs.indexOf('Why Am I Here?</div><p>You entered an unknown web address that was used to present site suggestions that you may find useful. Clicking any of these suggestions provides you with search results, which may include relevant sponsored links.')) {
-					redirectSite = 'www.dnsrsearch.com';
+				if(rs.indexOf('Why Am I Here?</div><p>You entered an unknown web address that was used to present site suggestions that you may find useful. Clicking any of these suggestions provides you with search results, which may include relevant sponsored links.') != -1) {
+					brokenType = 'TimeWarner';
 					broken = true;
 				}
+				
+				if(rs.indexOf('<a href=//www.google.com/><span id=logo aria-label=Google></span></a>') != -1 &&
+				   rs.indexOf('<p><b>404.</b> <ins>That’s an error.</ins>') != -1 &&
+				   rs.indexOf('<p>The requested URL <code>/</code> was not found on this server.') != -1) {
+				   brokenType = 'GoogleHost';
+				   broken = true;
+				}
+				
 				var parms = {
 							address: address,
-							redirectSite: reditectSite,
+							brokenType: brokenType,
 							passbackParams: passbackParams,
 							broken: broken
 						};
