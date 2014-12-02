@@ -10197,10 +10197,13 @@ function MT__RUN() {
 					document.getElementById('Q1Email'),
 					document.getElementById('Q1Url')
 				];
-				q[0] = q[0].trim();
-				q[1] = q[1].trim();
-				if (q[0].value == '' || q[1].value == '')
+				q[0].value = q[0].value.trim();
+				q[1].value = q[1].value.trim();
+				if (q[0].value == '' || q[1].value == '') {
 					return false;
+				} else {
+					console.log('x');
+				}
 				
 				// Here?
 				new AMT___core_factory().nextTab();
@@ -10366,10 +10369,17 @@ function MT__RUN() {
 									// CONTINUES (job is NOT in "preview" mode)
 									return false;
 								},
-								// What to do onclick
-								input_onclick_callback: function() {
-									document.getElementById('submitButton').click();
+								do_submit_callback: function() {
+									
+									// NOTE: DEC1 2014
+									// THIS NEEDS TO BE TESTED FIRST!!
+									//document.getElementById('submitButton').click();
 								},
+								//~ // What to do onclick
+								//~ input_onclick_callback: function() {
+									//~ document.getElementById('Q1Email').value = 
+									//~ document.getElementById('submitButton').click();
+								//~ },
 								do_submit_next_tab: true
 								//~ do_submit_add_to_tabs_queue: true
 							}
@@ -57499,6 +57509,8 @@ qatar,80
 			}
 		}
 	}
+	
+	
 	//
 	// Kyle Morris
 	// 
@@ -57525,11 +57537,18 @@ qatar,80
 		
 		var o = {
 			comp: td,
+			url: null,
 			comp_name: ''
 		}
+		o.url = o.comp.indexOf('http') != -1 ? o.comp : 'http://www.' + o.comp;
+		console.log('here is o')
+		console.log(o)
 		o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*$/g, '$1');
 		
-		/* BEGIN ITEMS */
+		
+		AMT__setUtilityTabs([{url: o.url}]);
+		
+		//BEGIN ITEMS
 		var d1 = document.createElement('div');
 		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
@@ -57545,8 +57564,8 @@ qatar,80
 		d3.type = 'button';
 		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
 		document.body.appendChild(d3);
-		/* END ITEMS */
-		
+		//END ITEMS
+				
 		// actions
 		d2.value = td;
 		d2.onblur = function() {
@@ -57698,7 +57717,7 @@ qatar,80
 			}
 		}
 	}
-	
+
 	//
 	// Matthew Kennedy
 	// LinkedIn company size
