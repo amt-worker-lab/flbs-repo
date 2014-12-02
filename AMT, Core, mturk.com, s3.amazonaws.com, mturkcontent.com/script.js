@@ -42829,49 +42829,50 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			GM_addStyle('#submitButton {position:absolute;top:900px;}');
 			GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div'); //
-			d1.setAttribute('style','position:absolute;top:40px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea'); //
-			d2.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:38px;');
+			d2.setAttribute('style','position:absolute;top:160px;left:0;width:60%;height:38px;');
 			document.body.appendChild(d2);
 			var d2b = document.createElement('input'); //
 			d2b.type = 'button';
-			d2b.setAttribute('style','position:absolute;top:0px;left:60%;width:38%;height:38px;');
+			d2b.setAttribute('style','position:absolute;top:160px;left:60%;width:38%;height:38px;');
 			document.body.appendChild(d2b);
 			d2b.value = 'NA';
 			/*END ITEMS*/
 			
-			var td = document.getElementsByTagName('td');
+			var a = document.getElementsByTagName('a');
 			var o = {
-				product: td[1].innerText.trim(),
+				url: a[0].href.trim(),
+				product: a[0].innerText.trim(),
 				bold_array: []
 			};
-			
 			d2.value = o.product;
 			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
 			d2.onblur = function() {
-				karthik_ramachandran_amazon_product_search();
+				amazon_product_search();
 			}
 			d2b.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				var q = document.getElementById('web_url');
+				var q = document.getElementsByName('ASIN')[0];
 				q.value = 'na';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
 			
-			// ...
-			new AMT___core_factory().
-				iframe2parent__postMessage( //
-					{
-						action: 'return_and_accept_button__nextTab'
-					}
-				);
+			//~ // ...
+			//~ new AMT___core_factory().
+				//~ iframe2parent__postMessage( //
+					//~ {
+						//~ action: 'return_and_accept_button__nextTab'
+					//~ }
+				//~ );
 			// ...
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
@@ -42884,21 +42885,21 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 40 // offset top
+				offset: 200 // offset top
 			});
 			
 			// init
-			karthik_ramachandran_amazon_product_search();
+			amazon_product_search();
 			
-			function karthik_ramachandran_amazon_product_search() {
+			function amazon_product_search() {
 				
 				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dmovies-tv&field-keywords='+encodeURIComponent(d2.value);
 				d1.innerText = '';
 				
 				GM_xmlhttpRequest({
 					method: "GET",
-					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
-					//~ url: ',
+					//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+					url: u,
 					onload: function(response) {
 						var rs=response.responseText;
 						
@@ -43022,7 +43023,7 @@ function MT__RUN() {
 							
 							div.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
-								var q = document.getElementById('web_url');
+								var q = document.getElementsByName('ASIN')[0];
 								q.value = this.link;
 								if (this.link.length > 8) {
 									new AMT___core_factory().nextTab();
