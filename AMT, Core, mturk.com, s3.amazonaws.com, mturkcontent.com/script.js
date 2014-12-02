@@ -42808,8 +42808,242 @@ function MT__RUN() {
 	 * Benjamin Grier
 	 * Catalog ("")
 	 * karthik ramachandran
+	 * Jonathan Huston
 	 * 
 	 */
+	
+	//
+	// Jonathan Huston
+	// Find the Matching ASIN for a Series of DVDs and Blu-rays
+	// 
+	s = '<p>You must provide the ASIN from Amazon.com that matches the product image and name. Please read the full instructions.</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('#submitButton {position:absolute;top:900px;}');
+			GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div'); //
+			d1.setAttribute('style','position:absolute;top:40px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea'); //
+			d2.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:38px;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('input'); //
+			d2b.type = 'button';
+			d2b.setAttribute('style','position:absolute;top:0px;left:60%;width:38%;height:38px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'NA';
+			/*END ITEMS*/
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				product: td[1].innerText.trim(),
+				bold_array: []
+			};
+			
+			d2.value = o.product;
+			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
+			d2.onblur = function() {
+				karthik_ramachandran_amazon_product_search();
+			}
+			d2b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				var q = document.getElementById('web_url');
+				q.value = 'na';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			// ...
+			new AMT___core_factory().
+				iframe2parent__postMessage( //
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+			// ...
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 40 // offset top
+			});
+			
+			// init
+			karthik_ramachandran_amazon_product_search();
+			
+			function karthik_ramachandran_amazon_product_search() {
+				
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dmovies-tv&field-keywords='+encodeURIComponent(d2.value);
+				d1.innerText = '';
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+					//~ url: ',
+					onload: function(response) {
+						var rs=response.responseText;
+						
+						/*
+						<h3 class="newaps">
+						<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+						*/
+						
+						var r,m;
+						
+						// remove sponsored, to end
+						//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+						rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+						
+						// num results
+						r = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+						if (r) {
+							d1.innerHTML += r[1]+' results<br>';
+						}
+						//old
+						//r = /<h2 style="" class="resultCount" id="resultCount"><span>([^<]+)/.exec(rs);
+						
+						// no results
+						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
+						r2= /<h1 id="noResultsTitle" class="a-size-medium a-spacing-base a-spacing-top-small a-color-secondary a-text-normal">Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						if (r || r2) {
+							d1.innerHTML += 'No results';
+							return;
+						}
+						
+						// images
+						// src="http://ecx.images-amazon.com/images/I/
+						var images = [];
+						r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+						while (m = r.exec(rs)) {
+							images.push(m[1]);
+						}
+						d1.innerHTML += images.length+' images<br>';
+						
+						// items
+						var dp, c = 0, multi, highlight = '';
+						
+						r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+						
+						while (m = r.exec(rs)) {
+							
+							//~ console.log(m);
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
+							div.className = 'exe';
+							d1.appendChild(div);
+							
+							// link
+							// stars
+							// reviews
+							
+							//offer, ratng;
+							var offer = '';
+							var ratng = '';
+							var link;
+							var title;
+							var n;
+							var reg;
+							var asin;
+							
+							//link/title
+							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
+							reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+							if (reg) {
+								link = __js_clean_html_str(reg[1]);
+								asin = /\/dp\/([^\/]+)/.exec(link);
+								if (asin) {
+									asin = asin[1];
+								} else {
+									alert('asin' + asin);
+								}
+								link = 'http://www.amazon.com/ss/customer-reviews/'+asin+'/';
+								
+								// DIV.LINK
+								div.link = link;
+								
+								title = __js_clean_html_str(reg[3]);
+								
+								//~ if (link.indexOf('/dp/') == -1) {
+									//~ alert('link ! /dp/');
+									//~ console.log('x');
+								//~ }
+								//~ link = link.replace(/\/dp\//, '/product-reviews/');
+								//~ link = link.replace(/\/ref=[^\/]+/, '/');
+							} else {
+								alert(reg);
+								console.log('!reg link');
+							}
+								
+							// offers
+							reg = /\([\d,]+ offers\)/g;
+							if (reg.exec(m[1])) {
+								reg.lastIndex = 0;
+								while (n = reg.exec(m[1])) {
+									offer += n[0] + '<br >';
+								}
+							}
+							// rating
+							reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
+							if (reg) {
+								ratng += reg[1] + '<br >';
+							}
+							// reviews
+							reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
+							if (reg) {
+								ratng += ' (<B>'+reg[1]+'</B> ratings)';
+							}
+							
+							// ...
+							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
+							div.innerHTML += offer + ratng + '<br>' + link + '<br>';
+							if (images[c] && !multi)
+								div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" />';
+							
+							
+							div.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								var q = document.getElementById('web_url');
+								q.value = this.link;
+								if (this.link.length > 8) {
+									new AMT___core_factory().nextTab();
+									doSubmit();
+								}
+							}
+							
+							c++;
+							
+						}
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1800px;');
+						d1.appendChild(div);
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	//
 	// karthik ramachandran
 	// 
