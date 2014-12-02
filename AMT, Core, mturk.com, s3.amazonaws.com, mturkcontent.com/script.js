@@ -57681,7 +57681,6 @@ qatar,80
 			//
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
-				//~ seed_arg1: d1,
 				yahoo_array: true
 			});
 			req_proxy.proxy_init();
