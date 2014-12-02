@@ -57878,6 +57878,7 @@ qatar,80
 					var copyRightReg = /[\d\D]{0,200}(copyright|copy|&#169;|©)[\d\D]{0,200}]/g;
 					var rslt;
 					var allCopyRights = []
+					console.log(rs);
 					console.log('kyle morris scrapy copy right ongoing');
 				
 					while(rslt = copyRightReg.exec(rs)) {
@@ -57949,7 +57950,7 @@ qatar,80
 		d.setAttribute('id','d1b');
 		document.body.appendChild(d);
 		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
+		d1b.style.position='absolute';melbourne
 		d1b.style.top='600px';
 		d1b.style.left='30%';
 		d1b.style.width='68%';
