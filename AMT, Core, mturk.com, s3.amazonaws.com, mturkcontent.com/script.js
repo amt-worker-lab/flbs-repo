@@ -57165,11 +57165,9 @@ qatar,80
 					var d = document.createElement('div');
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 					d.y_url = short;
-					//d.y_url = rs[i][0];
 					d.className = 'exe';
 					d.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						//~ document.getElementById('companypage').value = this.y_url;
 						if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
 							
 							// Go next
@@ -57177,22 +57175,14 @@ qatar,80
 							
 							// ...
 							linkedin_biz__li_profile(this);
-							
-							//~ linkedin_biz__li_profile(this.y_url);
-							//~ new AMT___core_factory().nextTab();
-							//~ doSubmit();
 						}
 					}
 					d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.comp_array );
-					//~ d.innerHTML = short + '<br>' + extra + rs[i][1]; //MT__bold(rs[i][1].replace(/<\/?b>/g, ''), )
 					d1.appendChild(d);
 					
 					// isMatch
 					// This will only work with yahoo.com searches? At least not startpage?
 					var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
-					//~ var x = new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i');
-					//~ console.log(isMatch);
-					//~ console.log(x);
 					if (isMatch) {
 						d.style.border = '6px solid LightGreen';
 					}
@@ -57539,12 +57529,13 @@ qatar,80
 		var o = {
 			comp: td,
 			url: null,
-			comp_name: ''
+			comp_name: '',
+			bold_array: []
 		}
 		o.url = o.comp.indexOf('http') != -1 ? o.comp : 'http://www.' + o.comp;
-		console.log('here is o')
-		console.log(o)
+		console.log(o);
 		o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*$/g, '$1');
+		o.bold_array = o.comp.replace(/\.\w+$/g, '').clean_string_to_array();
 		
 		
 		AMT__setUtilityTabs([{url: o.url}]);
@@ -57691,7 +57682,7 @@ qatar,80
 						doSubmit();
 					}
 				}
-				d.innerHTML = short + '<br>' + extra + rs[i][1];
+				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1], o.bold_array); //.replace(/<[^>]*>/g, '')
 				d1.appendChild(d);
 				
 				var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
