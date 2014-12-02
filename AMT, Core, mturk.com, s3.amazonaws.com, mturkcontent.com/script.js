@@ -57504,7 +57504,7 @@ qatar,80
 	
 	//
 	// Kyle Morris
-	// 
+	// copyright, copy, &#169; © copy right
 	// 
 	s = '	<li><strong>Do not </strong>include URLs for individuals or urls that include https:, /pub/, /dir/, /group/</li>';
 	if (ih.indexOf(s) != -1) {
