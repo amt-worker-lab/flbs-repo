@@ -447,8 +447,6 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
 
 
 
-
-
 //Record Returning
 /**
  * 
@@ -1707,6 +1705,49 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+
+
+
+/**
+ * Check For Broken Link, sends back the following
+ * {
+ * 	address: the address you checked
+ *  redirectSite: the site it failed (if it failed, otherwise null
+ *  passbackParams: Any parameters you want to persist when calling the function
+ *  broken: true if the site is broken, false otherwise
+ * }
+ ***/
+AMT___requests_factory.prototype.checkForBrokenLink = checkForBrokenLink(address, callback, passbackParams) {
+	var address = address;
+	var passbackParams = passbackParams;
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		onload: function (response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				//Search for strings from common parked/broken websites
+				var broken = false;
+				var redirectSite = null
+				
+				if(rs.indexOf('Why Am I Here?</div><p>You entered an unknown web address that was used to present site suggestions that you may find useful. Clicking any of these suggestions provides you with search results, which may include relevant sponsored links.')) {
+					redirectSite = 'www.dnsrsearch.com';
+					broken = true;
+				}
+				var parms = {
+							address: address,
+							redirectSite: reditectSite,
+							passbackParams: passbackParams,
+							broken: broken
+						};
+				options.callback(params);
+				return;
+			}
+		}
+	});
+}
+
+
 /**
  * google_api_timezone 
  * 

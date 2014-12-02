@@ -57535,7 +57535,7 @@ qatar,80
 		o.url = o.comp.indexOf('http') != -1 ? o.comp : 'http://www.' + o.comp;
 		console.log(o);
 		o.comp_name = o.comp.replace(/([\w\d\-]{4,})\.[\d\D]*$/g, '$1');
-		o.bold_array = o.comp.replace(/\.\w+$/g, '').clean_string_to_array();
+		//o.bold_array = o.comp.replace(/\.\w+$/g, '').clean_string_to_array();
 		
 		
 		AMT__setUtilityTabs([{url: o.url}]);
@@ -57562,6 +57562,7 @@ qatar,80
 		d2.value = td;
 		d2.onblur = function() {
 			kyle_morris_linkedin_biz__init();
+			kyle_morris_linkedin_biz__li_init();
 		}
 		
 		//
@@ -57592,6 +57593,8 @@ qatar,80
 		
 		// ...
 		function kyle_morris_linkedin_biz__li_init() {
+			d1b.innerText = '';
+			
 			var rf = new AMT___requests_factory();
 			rf.linkedin_company_search(
 				{
@@ -57602,6 +57605,18 @@ qatar,80
 			);
 		}
 		// ({results:x, results_count:y, result: r});
+		/**
+		 * 
+		 * 
+		 * TODO:
+		 * snippets: Array[1]
+		 * 0: Object
+			body: "<B>Dick</B> Smith is a leading retailer of consumer... <B>Dick</B> Smith stores, 29 David Jones Electronics..."fieldName: "About"
+			fmt_body: "<B>Dick</B> Smith is a leading retailer of consumer... <B>Dick</B> Smith stores, 29 David Jones Electronics..."
+			__proto__: Object
+			length: 1
+			__proto__: Array[0]
+		 */
 		function kyle_morris_linkedin_biz__li_process(response_obj) {
 			
 			var ro = response_obj;
@@ -57610,6 +57625,7 @@ qatar,80
 			
 			var x = ro.results;
 			
+			console.log('linkedin');
 			console.log(x);
 			
 			out.innerText = ro.results_count + '\n';
@@ -57631,6 +57647,16 @@ qatar,80
 				//~ btn.setAttribute('id', count+'|'+x_.id);
 				btn.setAttribute('style','width:auto;');
 				btn.value = x_.fmt_canonicalName;
+				btn.y_url =  'http://www.linkedin.com/company/' + x_.id; // #
+				//
+				btn.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('web_url').value = this.y_url;
+					if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				}
 				//
 				out.appendChild(btn);
 				out.appendChild(document.createElement('br'));
@@ -57640,6 +57666,12 @@ qatar,80
 		}
 		function kyle_morris_linkedin_biz__init() {
 			d1.innerText = '';
+			
+			// Add to bold array ...
+			o.bold_array = o.bold_array.concat(d2.value.replace(/\.\w+$/g, '').clean_string_to_array());
+			//~ o.bold_array = o.bold_array.concat(d2.value);
+			
+			//
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
 				//~ seed_arg1: d1,
@@ -57682,7 +57714,7 @@ qatar,80
 						doSubmit();
 					}
 				}
-				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1], o.bold_array); //.replace(/<[^>]*>/g, '')
+				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1].replace(/<[^>]*>/g, ''), o.bold_array);
 				d1.appendChild(d);
 				
 				var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
