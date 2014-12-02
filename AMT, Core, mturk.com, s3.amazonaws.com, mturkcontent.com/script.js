@@ -57522,7 +57522,7 @@ qatar,80
 		
 		//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
 		//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
-		GM_addStyle('.div-yahoo:hover {background-color:LightGreen;cursor:pointer;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		var td = document.getElementsByTagName('td')[1].innerText.trim();
 		
@@ -57566,6 +57566,7 @@ qatar,80
 		d2.onblur = function() {
 			kyle_morris_linkedin_biz__init();
 			kyle_morris_linkedin_biz__li_init();
+			kyle_morris_linkedin_biz__SP_init();
 		}
 		
 		//
@@ -57725,6 +57726,9 @@ qatar,80
 					short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
 				}
 				
+				// Get rid of extraneous rs[i][1] BODY
+				rs[i][1] = rs[i][1].replace(/(http:\/\/|)\w+\.linkedin\.[^\/]+\/ *company/, '');
+				
 				var d = document.createElement('div');
 				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 				d.y_url = short;
@@ -57803,11 +57807,14 @@ qatar,80
 					short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
 				}
 				
+				// Get rid of extraneous rs[i][1] BODY
+				rs[i][1] = rs[i][1].replace(/(http:\/\/|)\w+\.linkedin\.[^\/]+\/ *company/, '');
+				
 				var d = document.createElement('div');
 				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 				d.y_url = short;
 				//d.y_url = rs[i][0];
-				d.className = 'div-yahoo';
+				d.className = 'exe';
 				d.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
 					document.getElementById('web_url').value = this.y_url;
