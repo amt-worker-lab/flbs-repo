@@ -43378,7 +43378,7 @@ function MT__RUN() {
 			d2b.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
 				var q = document.getElementsByName('ASIN')[0];
-				q.value = 'na';
+				q.value = 'NOASIN';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -43443,8 +43443,9 @@ function MT__RUN() {
 						
 						// no results
 						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
-						r2= /<h1 id="noResultsTitle" class="a-size-medium a-spacing-base a-spacing-top-small a-color-secondary a-text-normal">Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
-						if (r || r2) {
+						//~ r2= /<h1[^>]*>Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						if (r || r3) {
 							d1.innerHTML += 'No results';
 							return;
 						}
@@ -43498,7 +43499,7 @@ function MT__RUN() {
 								div.title = title;
 								
 							} else {
-								alert(reg);
+								//~ alert(reg);
 								console.log('!reg title');
 							}
 							
@@ -43553,13 +43554,15 @@ function MT__RUN() {
 							reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
 							if (reg) {
 								prime = true;
-								prime_bgc = 'border:3px solid teal;';
+								prime_bgc = 'border:4px solid teal;';
 								console.log(reg);
 								console.log(prime_bgc);
 							} else {
 								prime = false;
 								prime_bgc = '';
 							}
+							//
+							// Try <i class="a-icon a-icon-prime a-icon-small s-align-text-bottom"></i>
 							
 							// ...
 							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
@@ -43567,7 +43570,7 @@ function MT__RUN() {
 							
 							if (image) {
 								var img = document.createElement('img');
-								img.setAttribute('style', 'max-width:140px;');
+								img.setAttribute('style', 'max-width:140px;'+prime_bgc);
 								img.src = image;
 								div.appendChild(img);
 							}
@@ -43577,7 +43580,7 @@ function MT__RUN() {
 							// Add Buttons for clicking
 							for (var i in movs_array) {
 								var btn = document.createElement('button');
-								btn.setAttribute('style', 'width:80px;height:80px;'+prime_bgc);
+								btn.setAttribute('style', 'width:80px;height:80px;');
 								btn.innerText	= movs_array[i].mov_type;
 								btn.asin		= movs_array[i].asin;
 								btn.className	= 'exe'
