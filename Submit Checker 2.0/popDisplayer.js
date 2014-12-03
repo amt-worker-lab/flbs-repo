@@ -79,7 +79,7 @@ function createSubmissionDisplay(callback) {
 		var emStats = iStats.allAccountStats['Em'];
 		var benStats = iStats.allAccountStats['Ben'];
 		var gmaStats = iStats.allAccountStats['Gma'];
-		var sauravStats = iStat.allAccountStats['Saurav'];
+		var sauravStats = iStats.allAccountStats['Saurav'];
 		
 		//All Userstats
 		var daveUserStats = iStats.allUserStats['Dave'];
@@ -143,6 +143,7 @@ function createSubmissionDisplay(callback) {
 				case 'Gma': account = gmaStats;
 				break;
 				case 'Saurav': account = sauravStats;
+				break;
 				default:
 					alert('undefined account');
 				break;
