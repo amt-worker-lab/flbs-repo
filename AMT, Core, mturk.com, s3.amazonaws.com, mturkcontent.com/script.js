@@ -29012,6 +29012,531 @@ function MT__RUN() {
 		}
 	}
 	//
+	// Grocery_ROI (fork from turk-HPCBeauty) (fork from Collect Product Information)
+	// Determine if a product is Kosher
+	// Dec2 2014
+	s = '	<li>Please follow the hyperlink below and browse <strong>all available images</strong> in search of any of the logos shown below, if you see any explicit matches between the product page and the images below, please mark the corresponding check box.</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			
+			//~ GM_addStyle('body {min-height:4000px;margin-top:60px !important;}');
+			GM_addStyle('#submitButton {width:10%;height:10px;position:absolute;top:0px;left:50%;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:beige;cursor:pointer;}');
+			
+			//~ GM_addStyle('.main {float:left !important;}');
+			//~ GM_addStyle('.table1 {float:left !important;}');
+			
+			//~ if (!AMT__Global_Vars.isPreview) {
+				//~ addToTabsQ();
+			//~ }
+			
+			var o = {
+				inp_none_of_the_above: null,
+				inp_sbm: document.getElementById('submitButton'),
+				cbs: [],
+				radios: []
+			};
+			
+			var section = document.getElementsByTagName('section')[1];
+			var sections = document.getElementsByTagName('section');
+			
+			var table = document.getElementsByTagName('table');
+			table[0].setAttribute('style', 'float:left;width:20%;');
+			table[0].className = 'table1';
+			table[1].setAttribute('style', 'float:left;width:20%;');
+			table[1].className = 'table1';
+			table[5].setAttribute('style', 'position:absolute;top:1600px;');
+			//~ table[1].style.width = '100%';
+			//~ table[0].style.width = '100%';
+			//~ table[5].style.width = '100%';
+			
+			/**
+			 * Checkboxes and Radios
+			 */
+			
+			// checkboxes
+			var img = document.getElementsByTagName('img');
+			var c = 3;
+			var cb;
+			for (var i in img) {
+				if (i == 'length') break;
+				if (img[i].src.indexOf('tinypic') != -1) continue; // SKIP THIS
+				cb = document.getElementsByName('Kosher_' + c)[0];
+				if (!cb) break;
+				o.cbs.push(cb); // PUSH THIS
+				
+				img[i].cb = cb;
+				img[i].onclick = function() {
+					this.cb.click();
+				}
+				
+				// checkbox onclick
+				cb.onclick = function() {
+					if (this.checked) {
+						this.parentNode.style.backgroundColor = 'LightGreen';
+					} else {
+						this.parentNode.style.backgroundColor = '';
+					}
+					// focus
+					o.inp_sbm.focus();
+					// Uncheck "None of the above"?
+					auto_check_none_of_the_above();
+				}
+				
+				// **DECREMENT**
+				// Lol rather than increment.
+				c--;
+			}
+			function auto_check_none_of_the_above() {
+				var found = false;
+				for (var i in o.cbs) {
+					if (o.cbs[i].checked) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					o.radios[1].checked = false;
+				} else {
+					o.radios[1].checked = true;
+				}
+			}
+			
+			// radios
+			var radios = document.getElementsByClassName('radio');
+			var rd;
+			for (var i in radios) {
+				if (i == 'length') break;
+				rd = radios[i].getElementsByTagName('input')[0];
+				
+				// Push
+				o.radios.push(rd);
+				
+				// Get the parentNode that is necessary for clicks.
+				// It is a TD
+				// e.g. document.getElementsByClassName('radio')[0].parentNode.parentNode.parentNode.parentNode.parentNode;
+				var pn = radios[i].parentNode.parentNode.parentNode.parentNode.parentNode;
+				
+				// pn.radio
+				pn.radio = rd;
+				pn.className = 'exe';
+				
+				// Default
+				if (pn.radio.name == 'None of the above') {
+					pn.radio.checked = true;
+					o.inp_none_of_the_above = pn.radio;
+				}
+				
+				// onclick
+				pn.onclick = function(e) {
+					// checked
+					if (this.radio.checked) {
+						this.radio.checked = false;
+					} else {
+						this.radio.checked = true;
+					}
+					// focus
+					o.inp_sbm.focus();
+					//~ this.radio.focus();
+					// ...
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				
+			}
+			console.log(o);
+			
+			/* BEGIN items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'float:left;width:78%;margin-top:40px;');
+			section.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style', 'position:absolute;top:0;left:0;height:24px;');
+			document.body.appendChild(d2);
+			/* END items */
+			
+			// a
+			var a = document.getElementsByTagName('a')[1].href;
+			a = a.replace('::', ':');
+			a = a.replace('////', '//');
+			
+			d2.onblur = function() {
+				amazon_images();
+			}
+			d2.value = a;
+			
+			// q
+			//~ var q = document.getElementsByName('Q5FreeTextInput');
+			var q = [
+				//~ q[0],
+				//~ document.getElementsByName('Q2Answer')[0],
+				//~ q[1]
+			];
+			
+			// out
+			var out = {
+				//~ parent: d1,
+				div: d1,
+				href: a//,
+				//~ all_inp: document.getElementsByName('Q5FreeTextInput'),
+				//~ inp: document.getElementsByName('Q5FreeTextInput')[0],
+				
+				// out_element (init: 0)
+				//~ out_element: q[0]
+				
+				//~ section_fieldsets: sections[1]
+			}
+			console.log(out);
+			
+			//~ // o
+			//~ if (!localStorage.hasOwnProperty('groi_si')) {
+				//~ localStorage['groi_si'] = 1;
+			//~ }
+			//~ d2b.value = localStorage['groi_si'];
+			//~ o = {
+				//~ 
+			//~ }
+			//~ // ...
+			//~ q[1].multiple = true;
+			//~ q[1].size = 7;
+			//~ q[1].onclick = function() {
+				//~ q[2].focus();
+				//~ return true;
+			//~ }
+			//~ q[1].selectedIndex = o.starting_index;
+			//~ 
+			//~ // zoom
+			//~ q[2].style.zoom = 3;
+			//~ 
+			//~ // onfocus
+			//~ q[0].onfocus = q[2].onfocus = function() {
+				//~ out.out_element = this;
+			//~ }
+			//~ // focus init
+			//~ q[0].focus();
+			
+			//~ // return/accept
+			//~ new AMT___core_factory().
+				//~ iframe2parent__postMessage( // options
+					//~ {
+						//~ action: 'return_and_accept_button__nextTab'
+					//~ }
+				//~ );
+			
+			// submit onclick
+			document.getElementById('submitButton').onclick = function(e) {
+				
+				//~ if (q[1].selectedIndex == 0)
+					//~ return false;
+				//~ 
+				//~ if (q[0].value.trim() == '' && q[1].value != 'Information Unavailable')
+					//~ return false;
+				//~ 
+				//~ setTimeout(function() {
+					//~ document.body.style.backgroundColor = 'blue';
+				//~ }, 1000);
+				//~ 
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+				//~ return false;
+				
+			}
+			
+			AMT___POPUP__initializeGlobals(
+				amazon_images
+			);
+			
+			// window.onkeypress
+			// 
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				
+				switch(c) {
+					case 44:
+						o.cbs[0].click();
+						break;
+					case 46:
+						o.cbs[1].click();
+						break;
+					case 47:
+						o.cbs[2].click();
+						break;
+				}
+				//~ //
+				//~ if  (
+					//~ c == 13
+					//~ )
+				//~ {
+				//~ 
+					//~ document.getElementById('submitButton').click();
+					//doSubmit();
+					//~ 
+					//~ 
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				//~ }
+				//~ 
+				//~ if  (
+					//~ c == 13
+					//~ )
+				//~ {
+				//~ 
+					//~ document.getElementById('submitButton').click();
+					//doSubmit();
+					//~ 
+					//~ 
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				//~ }
+				//~ 
+				//~ if  (
+					//~ (c >= 106 && c <= 108) ||
+					//~ c == 59 || c == 39 ||
+					//~ c == 111 ||
+					//~ c == 105
+					//~ )
+				//~ {
+				//~ 
+					//~ c = (c == 59) ?109:c; //;
+					//~ c = (c == 39) ?110:c; //'
+					//~ 
+					//~ c = (c == 111)?110:c; //
+					//~ c = (c == 105)?109:c; //
+					//~ 
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ 
+					//~ c = (106 - c) * -1; // = 0, = 1, ...
+					//~ c++; // = 1, = 2, ...
+					//~ 
+					//~ q[1].selectedIndex = c;
+					//~ 
+					//~ q[2].focus();
+					//~ 
+					//~ return false;
+				//~ }
+				//~ if  (
+					//~ (c >= 100 && c <= 104) ||
+					 //~ c == 109
+					//~ )
+				//~ {
+					//~ c = (c == 100) ? 101: c;
+					//~ c = (c == 109) ? 105 : c;  
+					//~ 
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ 
+					//~ c = (101 - c) * -1; // = 0, = 1, ...
+					//~ c++; // = 1, = 2, ...
+					//~ 
+					//~ q[1].selectedIndex = c;
+					//~ 
+					//~ q[2].focus();
+					//~ 
+					//~ return false;
+				//~ }
+				//~ 
+			//~ 
+				
+			}, false);
+			
+			
+			// Function amazon_images
+			function amazon_images() {
+				
+				// THIS RUNS OVER LOCAL CACHE
+				//~ var opts = {
+					//~ url: d2.value,
+					//~ 'strings_do_not_save_to_file': [
+						//~ 'Sorry, we just need to make sure you\'re not a robot. For best results, please make sure your browser is accepting cookies.'
+					//~ ]
+				//~ }
+				//~ opts = encodeURIComponent(JSON.stringify(opts));
+				
+				
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					
+					// THIS RUNS OVER LOCAL CACHE
+					//url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options='+opts,
+					
+					// THIS IS DIRECT
+					url: d2.value,
+					
+					//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(d2.value),
+					//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
+					
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200 || (/^\d+$/.exec(rs) && rs*1 > 200)) {
+							
+							//~ q[1].value = 'Information Unavailable';
+							//~ if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1) {
+								//~ console.log('x');
+								//~ document.getElementById('submitButton').click();
+							//~ }
+							//~ 
+							//~ 
+							//~ if (rs == '404') {
+							//~ }
+							return;
+						}
+						
+						if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
+							//~ console.log('x');
+							return;
+						}
+						
+						// ...
+						var r;
+						
+						// IMAGES
+						// ...
+						var type_rslt = 0;
+						r = /'colorImages': (\{[^\r\n]+)/.exec(rs);
+						if (!r) {
+							type_rslt = 1;
+							r = /<script type="text\/javascript">var loadState = false; \(function\(\)\{var i=new Image; i\.onload = function\(\) \{ loadState = true; \}; i\.src = "([^"]+)";\}\)\(\);<\/script>/.exec(rs);
+						}
+						if (r) {
+							if (type_rslt == 0) {
+								r = r[1].trim();
+								r = r.replace(/,$/, '');
+								r = r.replace(/'/g, '"');
+								r = JSON.parse(r);
+							} else {
+								r = {
+									initial: [{
+										large: r[1].trim()
+									}]
+								}
+							}
+							
+							console.log(r);
+							
+
+							var all_images_tmp;
+							
+							if (r.initial) { // is [{1},{2}, ...{n}]
+								
+								r = r.initial;
+								
+								// images
+								
+								// image size ... ...
+								var numImages = r.length;
+								
+								
+								
+								for (var i in r) {
+									
+									// BUNDLE image
+									var tmp_src;
+									//~ console.log(r[i].main);
+									if (r[i].main && JSON.stringify(r[i].main).indexOf('bundle') != -1) {// && r[i].main.length
+										//~ console.log(r[i].main);
+										// Get first
+										// main[key == img URL == ex http://ecx.images-amazon.com/images/I/6 ... ... .jpg] = array [width, height]
+										for (var j in r[i].main) {
+											tmp_src = j;
+											break;
+										}
+									}
+									if (tmp_src)
+										addImage(tmp_src, out);
+										
+									// Regular images
+									var tmp_src;
+									if (r[i].hiRes) {
+										tmp_src = r[i].hiRes;
+									} else if (r[i].large) {
+										tmp_src = r[i].large;
+									} else if (r[i].thumb) {
+										tmp_src = r[i].thumb;
+									} 
+									if (tmp_src)
+										addImage(tmp_src, out);
+								}
+							}
+						}
+					}
+				});
+			}
+			function addImage(tmp_src, out) {
+				
+				var img = document.createElement('img');
+				out.div.appendChild(img);
+				img.isSmall = false;
+				img.className = 'images_class';
+				img.setAttribute('style', 'border:1px solid #a2a2a2;float:left;');
+				//img.equal_width = equal_width;
+				
+				if (!AMT__Global_Vars.isPreview) {
+					img.src = tmp_src;
+					Grocery_ROI_organic_labels__resizeImg(img, 600);
+				}
+				
+				//
+				// Decrement total_stats.tImages if "No image available" from Amazon.
+				//
+				//
+				if (tmp_src == 'http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._V192198896_.gif') {
+					img.isSmall = true;
+					img.style.zoom = '0.05';
+				}
+				
+				img.onclick = function() {
+					if (!this.isSmall) {
+						this.style.zoom = '0.05'; //.2
+						this.isSmall = true;
+					} else {
+						this.style.zoom = this.zoomFactor; // reset zoom factor!
+						this.isSmall = false;
+					}
+					
+					//~ // section_fieldsets scrollIntoView !!
+					//~ // out element 0 focus
+					//~ q[0].focus();
+					//~ q[0].select();
+					//~ out.section_fieldsets.scrollIntoView();
+				}
+				
+				img.addEventListener('mousewheel', function(e) {
+					
+					if (!this.style.zoom)
+						this.style.zoom = 1;
+					
+					//~ console.log(typeof e.wheelDelta);
+					
+					if (e.wheelDelta > 0) { // "120", zoom in
+						this.style.zoom = this.style.zoom * 1 + 0.1;
+					} else { // "-120", zoom out
+						this.style.zoom = this.style.zoom * 1 - 0.1;
+					}
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}, false);
+			}
+		}
+		new run().f();
+	}
+	//
 	// Grocery_ROI (fork from turk-HPCBeauty)
 	// Collect Product Information
 	// 21 Aug 2014
@@ -29025,14 +29550,6 @@ function MT__RUN() {
 		GM_addStyle('#submitButton {width:100%;height:120px;}');
 		
 		GM_addStyle('.panel-primary {position:absolute;top:1400px;}');
-		
-		//~ GM_addStyle('.container {width:100% !important !important !important !important;}');
-		//~ GM_addStyle('.col-sm-6 {float:none;width:100%;}');
-		
-		//~ GM_addStyle('.col-sm-6 {overflow:scroll;height:2000px;}'); // Added "scroll" Jul2 2014.
-		//~ GM_addStyle('.col-sm-6>fieldset {position:;display:block;width:10%;float:left;}');
-		
-		//~ GM_addStyle('.col-sm-6>fieldset {float:left;}');
 		
 		var x = document.getElementsByClassName('container')[0];
 		x.setAttribute('style', 'width:100%;');
@@ -42968,6 +43485,7 @@ function MT__RUN() {
 							var n;
 							var reg;
 							var asin;
+							var prime, prime_bgc;
 							
 							//link/title
 							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
@@ -43031,10 +43549,21 @@ function MT__RUN() {
 								//~ console.log(reg);
 								console.log(image);
 							}
+							// Prime?
+							reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
+							if (reg) {
+								prime = true;
+								prime_bgc = 'border:3px solid teal;';
+								console.log(reg);
+								console.log(prime_bgc);
+							} else {
+								prime = false;
+								prime_bgc = '';
+							}
 							
 							// ...
 							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
-							div.innerHTML += offer + ratng + '<br>';
+							div.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
 							
 							if (image) {
 								var img = document.createElement('img');
@@ -43048,7 +43577,7 @@ function MT__RUN() {
 							// Add Buttons for clicking
 							for (var i in movs_array) {
 								var btn = document.createElement('button');
-								btn.setAttribute('style', 'width:80px;height:80px;');
+								btn.setAttribute('style', 'width:80px;height:80px;'+prime_bgc);
 								btn.innerText	= movs_array[i].mov_type;
 								btn.asin		= movs_array[i].asin;
 								btn.className	= 'exe'
@@ -57782,7 +58311,7 @@ qatar,80
 	
 	//
 	// Kyle Morris
-	// copyright, copy, &#169; © copy right
+	// 
 	// 
 	s = '	<li><strong>Do not </strong>include URLs for individuals or urls that include https:, /pub/, /dir/, /group/</li>';
 	if (ih.indexOf(s) != -1) {
@@ -57837,25 +58366,15 @@ qatar,80
 		d3.type = 'button';
 		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
 		document.body.appendChild(d3);
-		
-		var d4 = document.createElement('div');
-		d4.setAttribute('style','position:absolute;top:420px;height:400px;width:28%;background-color:yellow;');
-		document.body.appendChild(d4);
-		d4.id = 'd4ID';
 		//END ITEMS
-		
 				
 		// actions
 		d2.value = td;
 		d2.onblur = function() {
-			new AMT___core_factory().nextTab();
-			document.body.style.backgroundColor = 'lightgreen';
 			kyle_morris_linkedin_biz__init();
 			kyle_morris_linkedin_biz__li_init();
 			kyle_morris_linkedin_biz__SP_init();
 		}
-		
-		
 		
 		//
 		var ef = new AMT___events_factory();
@@ -57877,8 +58396,6 @@ qatar,80
 			new AMT___core_factory().nextTab();
 			doSubmit();
 		}
-		
-		kyle_morris_linkedin_biz__scrapeCopyRight();
 		
 		// NEW TW
 		
@@ -58145,42 +58662,6 @@ qatar,80
 				d1.appendChild(d);
 			}
 		}
-		
-		function kyle_morris_linkedin_biz__scrapeCopyRight() {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: o.url,
-				onload: function (response) {
-					var rs = response.responseText;
-					rs = rs.replace(/[\r\n\s\t]{2,}/g,'');
-					var copyRightReg = /[\d\D]{0,200}(copyright|copy|&#169;|©)[\d\D]{0,200}]/g;
-					var rslt;
-					var allCopyRights = []
-					console.log(rs);
-					console.log('kyle morris scrapy copy right ongoing');
-				
-					while(rslt = copyRightReg.exec(rs)) {
-						console.log('kyle morris scrapy copy right ongoing2');
-						//Remove any <....>
-						rslt = rslt.replace(/<[\d\D]*>/g,'');
-						//Remove any ^...>
-						rslt = rslt.replace(/^[\d\D]*>/,'');
-						//Remove any <..$
-						rslt = rslt.replace(/<[\d\D]*$/,'');
-						allCopyRights.push(rslt);
-						//bold any copyright|copy|&#169;|©
-					}
-					for(var i = 0; i < allCopyRights.length; i++) {
-						var copyRightDiv = document.createElement('div');
-						copyRightDiv.setAttribute('style','width:100%;border:1px solid blue;');
-						d4.appendChild(copyRightDiv);
-						copyRightDiv.innerHTML = allCopyRights[i]
-					}
-					console.log('kyle morris scrapy copy right results');
-					console.log(allCopyRights);
-			}
-		});
-		}
 	}
 
 	//
@@ -58228,7 +58709,7 @@ qatar,80
 		d.setAttribute('id','d1b');
 		document.body.appendChild(d);
 		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';melbourne
+		d1b.style.position='absolute';
 		d1b.style.top='600px';
 		d1b.style.left='30%';
 		d1b.style.width='68%';
