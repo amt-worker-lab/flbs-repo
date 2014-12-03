@@ -43506,13 +43506,14 @@ function MT__RUN() {
 							// Link + ASIN +
 							// DVD or Blu-Ray
 							// ex B004EPZ06G
-							reg = /<a class="a-link-normal a-text-normal" title="(DVD|Blu-ray)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">(DVD|Blu-Ray)</gi;
+							// Go to end of H3. End of line. This includes additional info. Ex "Full screen".
+							reg = /<a class="a-link-normal a-text-normal" title="(DVD|Blu-ray)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">(DVD|Blu-Ray)((.|\s)*?(?=<\/h3>|$)|$)/gi;
 							var m2;
 							var movs_array = [];
 							while (m2 = reg.exec(m[1])) {
 								
 								movs_array.push({
-									mov_type:	 m2[1],
+									mov_type:	 m2[3] + __js_clean_html_str(m2[4].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
 									asin:		__js_clean_html_str(m2[2])
 								});
 								//~ if (reg) {
