@@ -43507,7 +43507,10 @@ function MT__RUN() {
 							// DVD or Blu-Ray
 							// ex B004EPZ06G
 							// Go to end of H3. End of line. This includes additional info. Ex "Full screen".
-							reg = /<a class="a-link-normal a-text-normal" title="(DVD|Blu-ray)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">(DVD|Blu-Ray)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							// 1=Ex: DVD|Blu-ray|DVD-R
+							// 2=DP/ASIN
+							// 3=Ex: DVD|Blu-Ray|DVD-R
+							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
 							var m2;
 							var movs_array = [];
 							while (m2 = reg.exec(m[1])) {
