@@ -8645,10 +8645,10 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			//
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:40px;left:0%;width:50%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style','position:absolute;top:160px;left:0%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:40px;left:50%;width:50%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
 			var d2 = document.createElement('input');
 			d2.type = 'button';
@@ -8704,7 +8704,7 @@ function MT__RUN() {
 				elements: [
 					d1, d1b
 				],
-				offset: 40 // offset top
+				offset: 160 // offset top
 			});
 			
 			// Do a LinkedIn search 1
