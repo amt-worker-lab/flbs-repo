@@ -2340,6 +2340,100 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Warren Edwards
+	// Find employment information from an online resume
+	// Indeed.com scrape
+	s = 'Use the link below to open an online resume. Copy the requested information from the resume into the appropriate text field.</span>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var o = {
+				url: document.getElementsByTagName('a')[0].href
+			};
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: o.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					// sbm
+					var sbm = true;
+					
+					// Replace all "Highlight" from indeed.com
+					// E.g. <span class="hl">IT</span>
+					rs = rs.replace(/<span class="hl">([^<]*)<\/span>/g, '$1');
+					
+					// Reg...
+					//  Software Engineer OR <p class="work_title title"><span class="hl">IT</span> Consultant</p>
+					//  Panasas, Inc
+					//  Sunnyvale, CA
+					//  April 2012 to Present
+					var reg = /<h2>Work Experience<\/h2><\/div><\/div><div id="work-experience-items"[^>]*><div id="[^"]+" class="work-experience-section *"><div class="data_display"><p class="work_title title">([^<]+)<\/p><div class="work_company"[^>]*><span class="bold"[^>]*>([^<]+)<\/span> *<div class="separator-hyphen">-<\/div> <div class="inline-block"[^>]*><span[^>]*>([^<]*)<\/span><\/div><\/div><div class="separator-hyphen">-<\/div><p class="work_dates">([^<]+)<\/p>/.exec(rs);
+					//<h2>Work Experience</h2></div></div><div id="work-experience-items" class="items-container"><div id="workExperience-EeRulqqVeqizSiqNhg4j1Q" class="work-experience-section "><div class="data_display"><p class="work_title title"><span class="hl">IT</span> Consultant</p><div class="work_company"><span class="bold">Axiom Consulting</span> <div class="separator-hyphen">-</div> <div class="inline-block"><span>Endicott, NY</span></div></div><div class="separator-hyphen">-</div><p class="work_dates">2001 to Present</p>
+					
+					if (reg) {
+						
+						var r = [
+							__js_clean_html_str(reg[1]).trim(),
+							__js_clean_html_str(reg[4]).trim()
+						];
+						
+						// Title length?
+						if (r[0].length < 2) {
+							sbm = false;
+							document.getElementsByName('CurrentJobTitle')[0].style.border = '2px solid blue';
+						}
+						
+						// Date
+						// 2001 to Present
+						// April 2001 to Present
+						// 1999 to 2001
+						// March 2011 to November 2014
+						var date_reg = /^([\w ]*\d{4}) to ([\w ]*\d{4}|Present)$/.exec(r[1]);
+						if (date_reg) {
+							r[1] = __js_clean_html_str(date_reg[1]);
+							r[2] = __js_clean_html_str(date_reg[2]);
+						} else {
+							sbm = false;
+							r[2] = '';
+							document.getElementsByName('CurrentJobStart')[0].style.border	= '2px solid blue';
+							document.getElementsByName('CurrentJobEnd')[0].style.border		= '2px solid blue';
+						}
+						
+						// Fill values
+						document.getElementsByName('CurrentJobTitle')[0].value	= r[0];
+						document.getElementsByName('CurrentJobStart')[0].value	= r[1];
+						document.getElementsByName('CurrentJobEnd')[0].value	= r[2];
+						
+						if (sbm) {
+							doSubmit();
+						}
+					} else {
+						// NO REG. MATCH!
+						document.body.style.backgroundColor = 'aqua';
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// Daniel D Preiss
 	// Find the Correct Image for University Campuses
 	//
@@ -8505,6 +8599,238 @@ function MT__RUN() {
 				}
 			}
 		}
+	}
+	
+	//
+	// Andrew Angus
+	// Find the URL of a Linkedin Profile Image
+	//
+	s = '<p>Given the contact information provided, please locate the url for each contacts Linkedin <strong>profile image</strong>. We have provided name, last known company, last known title and last known email for many of the contacts.</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				fn:		null,
+				ln:		null,
+				name:	td[1].innerText.trim(),
+				company:td[3].innerText.trim(),
+				email:	td[5].innerText.trim(),
+				//website:td[5].innerText.trim(),
+				bold_array_comp: []
+				
+			};
+			o.bold_array_comp = o.company.clean_string_to_array().concat(
+				o.email.clean_string_to_array()
+			);
+			var x = o.name.split(' ');
+			if (x.length == 1) {
+				o.fn = x[0];
+				o.ln = '';
+			} else if (x.length == 2) {
+				o.fn = x[0];
+				o.ln = x[1];
+			} else if (x.length > 2) {
+				o.fn = x[0];
+				o.ln = x.slice(1).join(' ');
+			}
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:40px;left:0%;width:50%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:40px;left:50%;width:50%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('input');
+			d2.type = 'button';
+			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
+			document.body.appendChild(d2);
+			d2.value = 'no image';
+			var d2b = document.createElement('input');
+			d2b.type = 'button';
+			d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'no profile';
+			var d3 = document.createElement('img');
+			d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
+			document.body.appendChild(d3);
+			/*END ITEMS*/
+			
+			//~ // ...
+			//~ new AMT___core_factory().
+				//~ iframe2parent__postMessage( //
+					//~ {
+						//~ action: 'return_and_accept_button__nextTab'
+					//~ }
+				//~ );
+				
+			// ...
+			d2.onclick = d2b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				q.value = this.value;
+				if (q.value == this.value && q.value.trim() != '') {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
+			
+			// ...
+			var q = document.getElementById('web_url');
+			q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;');
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				if (q.value.length > 10) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				return false;
+			}
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 40 // offset top
+			});
+			
+			// Do a LinkedIn search 1
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					//~ titleScope: 'CP', // TITLE current or past
+					company: o.company, // blank
+					companyScope: 'CP'//, // blank
+					//~ website: o.website // DEBUG
+				},
+				sortResults: true,
+				nextTab: true, // nextTab()
+				image_search: true,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					var rs = comp_object;
+					
+					//~ rs.image_full_url = rs.image_full_url.replace(/shrink_60_60/, 'shrink_200_200');
+					
+					q.value = rs.image_full_url;
+					d3.src = rs.image_full_url;
+					
+					// Is 200
+					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
+						new AMT___core_factory().nextTab(); // Next Tab
+						new AMT___requests_factory().url_to_status_code({
+							url: rs.image_full_url,
+							callback_function: function(callback_object) {
+								if (callback_object.status == 200) {
+									doSubmit();
+								} else {
+									
+								}
+							}
+						});
+					}
+					//~ 
+					//~ 
+					//~ q.value = rs.profile_url;
+					//~ 
+					//~ if (rs.found_valid_li_url) {
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+					//~ } else {
+						//~ q.style.border = '2px dashed blue';
+						//~ q.focus();
+					//~ }
+				}
+			});
+			// Do a LinkedIn search 2
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1b,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					//~ titleScope: 'CP', // TITLE current or past
+					//~ company: o.company, // blank
+					//~ companyScope: 'CP', // blank
+					//~ website: o.website // DEBUG
+				},
+				bold_array_comp: o.bold_array_comp, // bold_array_comp
+				sortResults: true,
+				nextTab: true, // nextTab()
+				image_search: true,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					var rs = comp_object;
+				
+					q.value = rs.image_full_url;
+					d3.src = rs.image_full_url;
+					
+					// Is 200
+					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
+						new AMT___core_factory().nextTab(); // Next Tab
+						new AMT___requests_factory().url_to_status_code({
+							url: rs.image_full_url,
+							callback_function: function(callback_object) {
+								if (callback_object.status == 200) {
+									doSubmit();
+								} else {
+									
+								}
+							}
+						});
+					}
+					
+					//~ var rs = comp_object;
+					//~ console.log(comp_object);
+					//~ 
+					//~ q.value = rs.profile_url;
+					//~ 
+					//~ if (rs.found_valid_li_url) {
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+					//~ } else {
+						//~ q.style.border = '2px dashed blue';
+						//~ q.focus();
+					//~ }
+				}
+			});
+		}
+		new run().f();
+		return;
 	}
 	
 	//
