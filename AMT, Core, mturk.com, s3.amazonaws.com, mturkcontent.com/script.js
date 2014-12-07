@@ -29426,6 +29426,8 @@ function MT__RUN() {
 				if (!cb) break;
 				o.cbs.push(cb); // PUSH THIS
 				
+				img[i].className = 'exe';
+				
 				img[i].cb = cb;
 				img[i].onclick = function() {
 					this.cb.click();
@@ -29503,7 +29505,17 @@ function MT__RUN() {
 						o.inp_none_of_the_above.checked = false;
 					}
 					// Uncheck others
-					
+					else if (this.radio.name == 'None of the above' && this.radio.checked) {
+						
+						// Radios
+						o.radios[0].checked = false;
+						o.radios[2].checked = false;
+						// CBs
+						for (var i in o.cbs) {
+							o.cbs[i].checked = false;
+							o.cbs[i].parentNode.style.backgroundColor = '';
+						}
+					}
 					
 					// focus
 					o.inp_sbm.focus();
@@ -29597,6 +29609,25 @@ function MT__RUN() {
 			// submit onclick
 			document.getElementById('submitButton').onclick = function(e) {
 				
+				// Any checked?
+				var found = false;
+				for (var i in o.cbs) {
+					if (o.cbs[i].checked) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					for (var i in o.radios) {
+						if (o.radios[i].checked) {
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found) return false;
+				
+				// Here?
 				new AMT___core_factory().nextTab();
 				doSubmit();
 				
