@@ -2379,54 +2379,82 @@ function MT__RUN() {
 					// E.g. <span class="hl">IT</span>
 					rs = rs.replace(/<span class="hl">([^<]*)<\/span>/g, '$1');
 					
+					// Name
+					// ex Arthur Taulbee
+					var reg = /<h1 id="resume-contact" class="fn *" *>([^<]+)<\/h1>/.exec(rs);
+					if (reg) {
+						var r = __js_clean_html_str(reg[1]).trim();
+						
+						document.getElementsByName('CandidateFullName')[0].value = r;
+						
+						if (r.length < 2) {
+							sbm = false;
+						}
+					} else {
+						sbm = false;
+					}
+					
 					// Reg...
 					//  Software Engineer OR <p class="work_title title"><span class="hl">IT</span> Consultant</p>
 					//  Panasas, Inc
 					//  Sunnyvale, CA
 					//  April 2012 to Present
-					var reg = /<h2>Work Experience<\/h2><\/div><\/div><div id="work-experience-items"[^>]*><div id="[^"]+" class="work-experience-section *"><div class="data_display"><p class="work_title title">([^<]+)<\/p><div class="work_company"[^>]*><span class="bold"[^>]*>([^<]+)<\/span> *<div class="separator-hyphen">-<\/div> <div class="inline-block"[^>]*><span[^>]*>([^<]*)<\/span><\/div><\/div><div class="separator-hyphen">-<\/div><p class="work_dates">([^<]+)<\/p>/.exec(rs);
+					var reg = /<h2>Work Experience<\/h2><\/div><\/div><div id="work-experience-items"[^>]*><div id="[^"]+" class="work-experience-section[^"]*"><div class="data_display"><p class="work_title title">([^<]+)<\/p><div class="work_company"[^>]*><span class="bold"[^>]*>([^<]+)<\/span> *<div class="separator-hyphen">-<\/div> <div class="inline-block"[^>]*><span[^>]*>([^<]*)<\/span><\/div><\/div><div class="separator-hyphen">-<\/div><p class="work_dates">([^<]+)<\/p>/.exec(rs);
 					//<h2>Work Experience</h2></div></div><div id="work-experience-items" class="items-container"><div id="workExperience-EeRulqqVeqizSiqNhg4j1Q" class="work-experience-section "><div class="data_display"><p class="work_title title"><span class="hl">IT</span> Consultant</p><div class="work_company"><span class="bold">Axiom Consulting</span> <div class="separator-hyphen">-</div> <div class="inline-block"><span>Endicott, NY</span></div></div><div class="separator-hyphen">-</div><p class="work_dates">2001 to Present</p>
 					
 					if (reg) {
 						
-						var r = [
-							__js_clean_html_str(reg[1]).trim(),
-							__js_clean_html_str(reg[4]).trim()
-						];
+						var r = __js_clean_html_str(reg[3]).trim();
 						
-						// Title length?
-						if (r[0].length < 2) {
+						document.getElementsByName('CandidateLocation')[0].value = r;
+						
+						if (r.length < 2) {
 							sbm = false;
-							document.getElementsByName('CurrentJobTitle')[0].style.border = '2px solid blue';
 						}
 						
-						// Date
-						// 2001 to Present
-						// April 2001 to Present
-						// 1999 to 2001
-						// March 2011 to November 2014
-						var date_reg = /^([\w ]*\d{4}) to ([\w ]*\d{4}|Present)$/.exec(r[1]);
-						if (date_reg) {
-							r[1] = __js_clean_html_str(date_reg[1]);
-							r[2] = __js_clean_html_str(date_reg[2]);
-						} else {
-							sbm = false;
-							r[2] = '';
-							document.getElementsByName('CurrentJobStart')[0].style.border	= '2px solid blue';
-							document.getElementsByName('CurrentJobEnd')[0].style.border		= '2px solid blue';
-						}
 						
-						// Fill values
-						document.getElementsByName('CurrentJobTitle')[0].value	= r[0];
-						document.getElementsByName('CurrentJobStart')[0].value	= r[1];
-						document.getElementsByName('CurrentJobEnd')[0].value	= r[2];
-						
-						if (sbm) {
-							doSubmit();
-						}
+						//~ var r = [
+							//~ __js_clean_html_str(reg[1]).trim(),
+							//~ __js_clean_html_str(reg[4]).trim()
+						//~ ];
+						//~ 
+						//~ // Title length?
+						//~ if (r[0].length < 2) {
+							//~ sbm = false;
+							//~ document.getElementsByName('CurrentJobTitle')[0].style.border = '2px solid blue';
+						//~ }
+						//~ 
+						//~ // Date
+						//~ // 2001 to Present
+						//~ // April 2001 to Present
+						//~ // 1999 to 2001
+						//~ // March 2011 to November 2014
+						//~ var date_reg = /^([\w ]*\d{4}) to ([\w ]*\d{4}|Present)$/.exec(r[1]);
+						//~ if (date_reg) {
+							//~ r[1] = __js_clean_html_str(date_reg[1]);
+							//~ r[2] = __js_clean_html_str(date_reg[2]);
+						//~ } else {
+							//~ sbm = false;
+							//~ r[2] = '';
+							//~ document.getElementsByName('CurrentJobStart')[0].style.border	= '2px solid blue';
+							//~ document.getElementsByName('CurrentJobEnd')[0].style.border		= '2px solid blue';
+						//~ }
+						//~ 
+						//~ // Fill values
+						//~ document.getElementsByName('CurrentJobTitle')[0].value	= r[0];
+						//~ document.getElementsByName('CurrentJobStart')[0].value	= r[1];
+						//~ document.getElementsByName('CurrentJobEnd')[0].value	= r[2];
+						//~ 
+						//~ if (sbm) {
+							//~ doSubmit();
+						//~ }
 					} else {
 						// NO REG. MATCH!
 						document.body.style.backgroundColor = 'aqua';
+					}
+					
+					if (sbm) {
+						doSubmit();
 					}
 				}
 			});
@@ -29468,9 +29496,17 @@ function MT__RUN() {
 					} else {
 						this.radio.checked = true;
 					}
+					
+					// On "None of the above" ...
+					// Uncheck 
+					if (this.radio.name != 'None of the above' && o.inp_none_of_the_above.checked) {
+						o.inp_none_of_the_above.checked = false;
+					}
+					// Uncheck others
+					
+					
 					// focus
 					o.inp_sbm.focus();
-					//~ this.radio.focus();
 					// ...
 					e.stopPropagation();
 					e.preventDefault();
@@ -29560,6 +29596,9 @@ function MT__RUN() {
 			
 			// submit onclick
 			document.getElementById('submitButton').onclick = function(e) {
+				
+				new AMT___core_factory().nextTab();
+				doSubmit();
 				
 				//~ if (q[1].selectedIndex == 0)
 					//~ return false;
