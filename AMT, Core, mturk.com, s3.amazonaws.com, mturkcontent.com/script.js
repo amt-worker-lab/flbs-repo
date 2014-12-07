@@ -29411,6 +29411,7 @@ function MT__RUN() {
 			//~ table[0].style.width = '100%';
 			//~ table[5].style.width = '100%';
 			
+			
 			/**
 			 * Checkboxes and Radios
 			 */
@@ -29650,6 +29651,24 @@ function MT__RUN() {
 			AMT___POPUP__initializeGlobals(
 				amazon_images
 			);
+			
+			/**
+			 * Focus on submit button to begin with so that
+			 * window.onkeypress is active when switching between
+			 * tabs.
+			 */
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+			}, 1000);
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+			}, 2000);
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+			}, 4000);
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+			}, 8000);
 			
 			// window.onkeypress
 			// 
