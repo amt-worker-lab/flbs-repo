@@ -29547,7 +29547,8 @@ function MT__RUN() {
 			var a = document.getElementsByTagName('a')[1].href;
 			a = a.replace('::', ':');
 			a = a.replace('////', '//');
-			a = a.replace('http://http://', 'http://');
+			a = a.replace('http://http://', 'http://'); // http://http://www.amazon.com/dp/B000RY8FZ6
+			a = a.replace('http://http//', 'http://'); // http://http://www.amazon.com/dp/B000RY8FZ6
 			
 			d2.onblur = function() {
 				amazon_images();
