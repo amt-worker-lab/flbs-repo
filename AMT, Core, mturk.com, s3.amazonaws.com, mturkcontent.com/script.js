@@ -29632,6 +29632,9 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				doSubmit();
 				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
 				//~ if (q[1].selectedIndex == 0)
 					//~ return false;
 				//~ 
