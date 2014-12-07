@@ -29668,21 +29668,21 @@ function MT__RUN() {
 						o.cbs[2].click();
 						break;
 				}
-				//~ //
-				//~ if  (
-					//~ c == 13
-					//~ )
-				//~ {
-				//~ 
-					//~ document.getElementById('submitButton').click();
-					//doSubmit();
-					//~ 
-					//~ 
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					//~ return false;
-				//~ }
-				//~ 
+				//
+				if  (
+					c == 13
+					)
+				{
+				
+					document.getElementById('submitButton').click();
+					//~ //doSubmit();
+					
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				
 				//~ if  (
 					//~ c == 13
 					//~ )
