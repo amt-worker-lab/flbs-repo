@@ -8148,7 +8148,10 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 		// add this
 		if (addThis) {
 			// push
-			arr_all_submits.push({'id' : MT__DOSUBMIT__BY_ID_THIS_ID, 'time_to_submit' : MT__DOSUBMIT__TIME_TO_SUBMIT}); // add this
+			arr_all_submits.push({
+				'id': MT__DOSUBMIT__BY_ID_THIS_ID,
+				'time_to_submit': MT__DOSUBMIT__TIME_TO_SUBMIT
+			}); // add one
 		}
 		
 		// change to seconds until submit
@@ -8177,7 +8180,8 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 			},
 			function(response) {
 				//Squelch response
-			});
+			}
+		);
 	}
 	
 	

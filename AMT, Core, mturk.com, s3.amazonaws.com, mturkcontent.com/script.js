@@ -29539,10 +29539,15 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			/* END items */
 			
+			//
+			// http://http://www.amazon.com/dp/B000RY8FZ6
+			
 			// a
+			//
 			var a = document.getElementsByTagName('a')[1].href;
 			a = a.replace('::', ':');
 			a = a.replace('////', '//');
+			a = a.replace('http://http://', 'http://');
 			
 			d2.onblur = function() {
 				amazon_images();
@@ -29628,6 +29633,8 @@ function MT__RUN() {
 				}
 				if (!found) return false;
 				
+				// 
+				document.body.style.backgroundColor = 'LightGreen';
 				// Here?
 				new AMT___core_factory().nextTab();
 				doSubmit();
