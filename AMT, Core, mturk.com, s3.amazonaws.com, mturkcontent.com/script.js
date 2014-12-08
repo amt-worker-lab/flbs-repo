@@ -2340,6 +2340,141 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Steve Sears
+	// Find the Company Headquarters' Postal Code
+	// startpage + utility window
+	s = '<li>The postal code&nbsp;should follow the standard Canadian format (example: H2H 1A8), please enter it in this format including the space after the third character.</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var b = document.getElementsByTagName('b')[0].innerText.trim().replace(/^Website: /, '');
+			var o = {
+				domain: b,
+				url: null,
+				
+				// q
+				q: document.getElementById('web_url')
+			};
+			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				if (o.q.value == '') return false;
+				
+				if (!/^[a-z0-9]{3} [a-z0-9]{3}$/i.exec(o.q.value)) {
+					if (o.q.value == 'NR' || o.q.value == 'NA' || o.q.value == 'NC') {
+						// Submit here.
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					} else {
+						o.q.style.border = '3px solid blue';
+						return false;
+					}
+				} else {
+					// VALID POSTAL
+					// Submit here.
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				
+				return false;
+			}
+			
+			// Init
+			SP_init();
+			//
+			function SP_init() {
+				var u = 'site:'+b+' "contact" OR "about us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt"';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					callback_function: SP_process
+					//~ return_init_object: true
+				});
+			}
+			//
+			function SP_process(object) {
+			
+				console.log(object);
+				//~ console.log(object[0]);
+				
+				var rs = object;
+				//~ var rs = object.rs;
+				var out = d1;
+				var uw = [];
+				
+				if (rs.length == 0) {
+					out.innerText = '0 results';
+					uw.push({
+						url: o.url
+					});
+				} else {
+					var tmp_domain = rs[0][0].replace(/^https?:\/\/w*\.*/i, '').replace(/\/$/, '');
+					console.log(o.domain);
+					console.log(tmp_domain);
+					if (tmp_domain != o.domain.toLowerCase()) {
+						uw.push({
+							url: rs[0][0]
+						});
+					}
+					uw.push({
+						url: o.url
+					});
+					//~ AMT__setUtilityTabs([
+						//~ {
+							//~ url: rs[0][0]
+						//~ },
+						//~ {
+							//~ url: o.url
+						//~ }
+					//~ ]);
+				}
+				// AMT__setUtilityTabs
+				AMT__setUtilityTabs(uw);
+				
+				for (var i in rs) {
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'); //height:40px;overflow:auto;
+					div.className = 'exe';
+					div.innerHTML = '<b>' + rs[i][0] + '</b><br>' + rs[i][1];
+					div.url = rs[i][0];
+					out.appendChild(div);
+					div.onclick = function() {
+						this.style.backgroundColor = 'aqua';
+						AMT__setUtilityTabs([{
+							url: this.url
+						}]);
+					}
+					
+				}
+				
+				// Length
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:2000px;');
+				out.appendChild(div);
+			}
+		}
+		new run().f();
+	}
+	
+	// 
 	// Warren Edwards
 	// Find employment information from an online resume
 	// Indeed.com scrape
