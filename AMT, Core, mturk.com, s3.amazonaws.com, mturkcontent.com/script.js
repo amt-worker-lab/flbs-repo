@@ -2366,10 +2366,49 @@ function MT__RUN() {
 			};
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
 			
+			
+			
+			document.getElementById('web_url').select();
+			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
+			
+			var naBut = document.createElement('input');
+			naBut.setAttribute('style','position:absolute;top:150px;left:0;width:50px;height:50px;border:1px solid blue;');
+			naBut.setAttribute('type','button');	
+			document.body.appendChild(naBut);
+			naBut.value = 'NA';
+			naBut.onclick = function() {
+				document.getElementById('web_url').value = 'NA';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			var nrBut = document.createElement('input');
+			nrBut.setAttribute('style','position:absolute;top:150px;left:50px;width:50px;height:50px;border:1px solid blue;');
+			document.body.appendChild(nrBut);
+			nrBut.setAttribute('type','button');	
+			nrBut.value = 'NR';
+			nrBut.onclick = function() {
+				document.getElementById('web_url').value = 'NR';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+
+			}
+			var ncBut = document.createElement('input');
+			ncBut.setAttribute('style','position:absolute;top:150px;left:100px;width:50px;height:50px;border:1px solid blue;');
+			ncBut.setAttribute('type','button');
+			document.body.appendChild(ncBut);
+			ncBut.value = 'NC';
+			ncBut.onclick = function() {
+				document.getElementById('web_url').value = 'NC';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			
+			
 			/*END ITEMS*/
 			
 			// ...
