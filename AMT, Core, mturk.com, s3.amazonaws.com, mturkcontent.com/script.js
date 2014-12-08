@@ -2366,49 +2366,10 @@ function MT__RUN() {
 			};
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
 			
-			
-			
-			document.getElementById('web_url').select();
-			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
-			
-			var naBut = document.createElement('input');
-			naBut.setAttribute('style','position:absolute;top:150px;left:0;width:50px;height:50px;border:1px solid blue;');
-			naBut.setAttribute('type','button');	
-			document.body.appendChild(naBut);
-			naBut.value = 'NA';
-			naBut.onclick = function() {
-				document.getElementById('web_url').value = 'NA';
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-			var nrBut = document.createElement('input');
-			nrBut.setAttribute('style','position:absolute;top:150px;left:50px;width:50px;height:50px;border:1px solid blue;');
-			document.body.appendChild(nrBut);
-			nrBut.setAttribute('type','button');	
-			nrBut.value = 'NR';
-			nrBut.onclick = function() {
-				document.getElementById('web_url').value = 'NR';
-				new AMT___core_factory().nextTab();
-				doSubmit();
-
-			}
-			var ncBut = document.createElement('input');
-			ncBut.setAttribute('style','position:absolute;top:150px;left:100px;width:50px;height:50px;border:1px solid blue;');
-			ncBut.setAttribute('type','button');
-			document.body.appendChild(ncBut);
-			ncBut.value = 'NC';
-			ncBut.onclick = function() {
-				document.getElementById('web_url').value = 'NC';
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-			
-			
-			
 			/*END ITEMS*/
 			
 			// ...
@@ -75408,6 +75369,14 @@ qatar,80
 		dx2.value = o.comp;
 		/*END ITEMS*/
 		
+		// Get rid of blank divs
+		var div = document.getElementsByTagName('div');
+		for (var i = div.length; i>=0; i--) {
+			if (typeof div[i] == 'object' && div[i].innerHTML && div[i].innerHTML == '&nbsp;') {
+				div[i].parentNode.removeChild(div[i]);
+			}
+		}
+		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
 			// This set the elements d1,d1b, and d1c
@@ -75435,25 +75404,25 @@ qatar,80
 				country:qs[4]
 			},
 			submitButton_onclick_callback: function(e) {
-				//~ // All blank
-				//~ var found_one = false;
-				//~ for (var i in output_elements) {
-					//~ if (output_elements[i].value.trim() != '') {
-						//~ found_one = true;
-						//~ break;
-					//~ }
-				//~ }
-				//~ if (!found_one) {
-					//~ return false;
-				//~ }
-				//~ 
-				//~ // Submit
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
-				//~ 
-				//~ e.preventDefault();
-				//~ e.stopPropagation();
-				//~ return false;
+				// All blank
+				var found_one = false;
+				for (var i in output_elements) {
+					if (output_elements[i].value.trim() != '') {
+						found_one = true;
+						break;
+					}
+				}
+				if (!found_one) {
+					return false;
+				}
+				
+				// Submit
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
 			}
 		};
 		
