@@ -28117,6 +28117,10 @@ function MT__RUN() {
 				};
 			}
 			
+			if(char == 'b') {
+				document.getElementById('submitButton').click();
+			}
+			
 			// Go to satellite
 			else if (char == 'c' || char == 'C') {
 				var x=document.getElementsByTagName('div');
