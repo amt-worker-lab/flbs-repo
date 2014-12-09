@@ -56529,7 +56529,11 @@ qatar,80
 					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
 				}
 			} else {
-				if(true) {
+				if(!b[3]) {
+					var o = {
+						name: b[2].innerText.trim().replace(/([\d\D]*)$/, ''),
+						locn: b[2].innerText.trim().replace(/(\d{4})$/, ' 0$1') //Do we want to keep the 0? Is the 1st number of a zip code unimportant?
+					}
 					console.log(b);
 					console.log(o);
 					exit('123');
