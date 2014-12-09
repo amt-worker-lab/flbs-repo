@@ -56529,9 +56529,16 @@ qatar,80
 					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
 				}
 			} else {
-				var o = {
-					name:		b[2].innerText.trim(),
-					locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+				if(true) {
+					console.log(b);
+					console.log(o);
+					exit('123');
+				}
+				else {
+					var o = {
+						name:		b[2].innerText.trim(),
+						locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+					}
 				}
 			}
 			o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
