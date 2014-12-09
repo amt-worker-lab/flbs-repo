@@ -28143,7 +28143,14 @@ function MT__RUN() {
 			};
 		}, 1000);
 		
-		
+		/**
+		 * Do a map resize
+		 * Script embed
+		 * .....?
+		 */
+		var sc = document.createElement('script');
+		sc.innerText = 'google.maps.event.trigger(map, "resize");';
+		document.body.appendChild(sc);
 		
 		/* OLD ........ BODY.ONDBLCLICK ........
 		// ...
