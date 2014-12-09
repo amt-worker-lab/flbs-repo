@@ -56539,8 +56539,6 @@ qatar,80
 						name: b[2].innerText.trim().replace(/(\([\d\D]*)\)$/, '').trim(),
 						locn: locn.replace(/ (\d{4})$/, ' 0$1')
 					}
-					console.log(b);
-					console.log(o);
 					//exit('123');
 				}
 				else {
@@ -56555,7 +56553,6 @@ qatar,80
 			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
 			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
 			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
-			
 			if (o.bad_phone.length != 10) {
 				alert('Initial phone is bad:' + o.bad_phone);
 				return;
