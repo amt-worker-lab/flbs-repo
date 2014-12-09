@@ -56394,10 +56394,13 @@ qatar,80
 	//~ s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
 	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
-	s2= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
+	s3= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
+	s4= '<strong>For the U.S. Business below, enter the official 10 digit phone number AND the website that you obtained';
 	if  (
 		ih.indexOf(s) != -1 ||
-		ih.indexOf(s2)!= -1
+		ih.indexOf(s2) != -1 ||
+		ih.indexOf(s3) != -1 ||
+		ih.indexOf(s4) != -1
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
