@@ -56416,6 +56416,7 @@ qatar,80
 		
 		var q  = document.getElementById('Q1Url');
 		var q2 = document.getElementById('Q1Url2');
+		var q3 = document.getElementById('Q2Url');
 		
 		var b = document.getElementsByTagName('b');
 		var strong = document.getElementsByTagName('strong');
@@ -56424,7 +56425,10 @@ qatar,80
 			q.value = q.value.trim();
 			var x = q.value.replace(/[^\d]/g,'');
 			if (x.length != 10) return false;
-			if (q1.value == '' || q2.value == '')
+			if (q1.value == '' || 
+				(q2 && q2.value == '') ||
+				(q3 && q3.value == '')
+			   )
 				return false;
 		}
 		
@@ -56753,7 +56757,8 @@ qatar,80
 							q.value = p;
 							if (q2)
 								q2.value = this.fblink;
-							
+							else if(q3)
+								q3.value = this.fblink;
 							if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
 								d2.value = 'bad phone!';
 								q.style.border = '4px solid teal';
@@ -56869,6 +56874,8 @@ qatar,80
 					q.value = p;
 					if (q2)
 						q2.value = this.link;
+					else if(q3)
+						q3.value = this.link;
 					
 					if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
 						d2.value = 'bad phone!';
