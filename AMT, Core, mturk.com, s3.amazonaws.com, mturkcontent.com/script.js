@@ -27715,8 +27715,8 @@ function MT__RUN() {
 		// Sometimes the first <b> on the page will be
 		// a note rather than the name!
 		var b		= document.getElementsByTagName('b');
-		var name	= b[1].innerText.trim();
-		var addr	= b[2].innerText.trim();
+		var name	= b[0].innerText.trim();
+		var addr	= b[1].innerText.trim();
 		var btns	= document.getElementsByTagName('button');
 		
 		// vars
@@ -56395,12 +56395,10 @@ qatar,80
 	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
 	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	s3= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
-	s4= '<strong>For the U.S. Business below, enter the official 10 digit phone number AND the website that you obtained';
 	if  (
 		ih.indexOf(s) != -1 ||
-		ih.indexOf(s2) != -1 ||
-		ih.indexOf(s3) != -1 ||
-		ih.indexOf(s4) != -1
+		ih.indexOf(s2)!= -1 ||
+		ih.indexOf(s3) != -1
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
@@ -56416,7 +56414,6 @@ qatar,80
 		
 		var q  = document.getElementById('Q1Url');
 		var q2 = document.getElementById('Q1Url2');
-		var q3 = document.getElementById('Q2Url');
 		
 		var b = document.getElementsByTagName('b');
 		var strong = document.getElementsByTagName('strong');
@@ -56425,10 +56422,7 @@ qatar,80
 			q.value = q.value.trim();
 			var x = q.value.replace(/[^\d]/g,'');
 			if (x.length != 10) return false;
-			if (q1.value == '' || 
-				(q2 && q2.value == '') ||
-				(q3 && q3.value == '')
-			   )
+			if (q1.value == '' || q2.value == '')
 				return false;
 		}
 		
@@ -56533,30 +56527,24 @@ qatar,80
 					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
 				}
 			} else {
-				if(!b[3] && s4) {
-					var reg3 = /\(([\d\D]*)\)$/
-					var locn = reg3.exec(b[2].innerText.trim());
-					locn = locn[1];
-					
-
-					var o = {
-						name: b[2].innerText.trim().replace(/(\([\d\D]*)\)$/, '').trim(),
-						locn: locn.replace(/ (\d{4})$/, ' 0$1')
-					}
-					//exit('123');
+				if(true) {
+					console.log(b);
+					console.log(o);
+					exit('123');
 				}
 				else {
 					var o = {
 						name:		b[2].innerText.trim(),
 						locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
 					}
-				}
-			}
+				}				
+			} 
 			o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
 			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
 			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
 			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
 			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+			
 			if (o.bad_phone.length != 10) {
 				alert('Initial phone is bad:' + o.bad_phone);
 				return;
@@ -56757,8 +56745,7 @@ qatar,80
 							q.value = p;
 							if (q2)
 								q2.value = this.fblink;
-							else if(q3)
-								q3.value = this.fblink;
+							
 							if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
 								d2.value = 'bad phone!';
 								q.style.border = '4px solid teal';
@@ -56874,8 +56861,6 @@ qatar,80
 					q.value = p;
 					if (q2)
 						q2.value = this.link;
-					else if(q3)
-						q3.value = this.link;
 					
 					if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
 						d2.value = 'bad phone!';
