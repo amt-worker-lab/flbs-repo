@@ -1614,7 +1614,7 @@ AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) 
 	}
 	
 	if (!opts.hasOwnProperty('img_array')) {
-		opts.img_array = [img];
+		opts.img_array = [opts.img];
 	}
 	
 	for (var i in opts.img_array) {

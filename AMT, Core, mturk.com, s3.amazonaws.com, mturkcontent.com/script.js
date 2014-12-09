@@ -29502,6 +29502,202 @@ function MT__RUN() {
 	}
 	//
 	// Grocery_ROI (fork from turk-HPCBeauty) (fork from Collect Product Information)
+	// Product logos
+	// Dec8 2014
+	s = '<li>The task is to determine if the product image on the left contains logos shown on the right. Please select check box displayed below the logo if that logo image is present in the product image.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function(){};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,strong {margin:0;padding:0;font-size:14px;}');
+			
+			//~ GM_addStyle('body {min-height:4000px;margin-top:60px !important;}');
+			GM_addStyle('#submitButton {width:10%;height:10px;position:absolute;top:0px;left:50%;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2400px;}');
+			GM_addStyle('.exe:hover {border:2px solid LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('.exe:hover {background-color:beige;cursor:pointer;}');
+			
+			var o = {
+				inp_none_of_the_above: document.getElementsByName('None of the above')[0],
+				inp_sbm: document.getElementById('submitButton'),
+				cbs: [],
+				radios: []
+			};
+			o.inp_none_of_the_above.checked = true;
+			setTimeout(function() { //?
+				o.inp_none_of_the_above.checked = true;
+			}, 1000);
+			setTimeout(function() { //?
+				o.inp_none_of_the_above.checked = true;
+			}, 2000);
+			
+			// focus for next tab
+			o.inp_sbm.focus();
+			
+			/**
+			 * Checkboxes and Radios
+			 */
+			
+			// cbs
+			var inp = document.getElementsByTagName('input');
+			for (var i in inp) {
+				if (i == 'length') break;
+				if (inp[i].type != 'checkbox') continue;
+				o.cbs.push(inp[i]);
+				inp[i].checked = false; // (Default)
+				
+				inp[i].onclick = function() {
+					if (this.checked) {
+						this.parentNode.style.backgroundColor = 'LightGreen';
+					} else {
+						this.parentNode.style.backgroundColor = '';
+					}
+					//~ // focus
+					//~ o.inp_sbm.focus();
+					// Uncheck "None of the above"?
+					auto_check_none_of_the_above();
+				}
+				
+				if (this.name == 'None of the above') {
+					//
+				}
+			}
+			
+			// checkboxes
+			var img = document.getElementsByTagName('img');
+			var c = 3;
+			var cb;
+			for (var i in img) {
+				if (i == 'length') break;
+				if (img[i].src.indexOf('amazon') != -1) {
+					// max size
+					Grocery_ROI_organic_labels__resizeImg(img[i], 600);
+					// zoom
+					new AMT___events_factory().mousewheel_zoom_image({
+						img: img[i],
+						add_onclick_reset: 0.4
+					});
+					continue; // SKIP THIS // THIS IS THE FIRST IMAGE
+				}
+				//~ cb = document.getElementsByName('Kosher_' + c)[0];
+				//~ if (!cb) break;
+				//~ o.cbs.push(cb); // PUSH THIS
+				
+				img[i].className = 'exe';
+				img[i].cb = o.cbs[i - 1];
+				img[i].onclick = function() {
+					this.cb.click();
+				}
+				
+				
+			}
+			function auto_check_none_of_the_above() {
+				var found = false;
+				for (var i in o.cbs) {
+					if (o.cbs[i].checked) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					o.inp_none_of_the_above.checked = false;
+				} else {
+					o.inp_none_of_the_above.checked = true;
+				}
+				
+					//~ o.radios[1].checked = false;
+				//~ } else {
+					//~ o.radios[1].checked = true;
+				//~ }
+			}
+			console.log(o);
+			
+			/* BEGIN items*/
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style', 'float:left;width:78%;margin-top:40px;');
+			//~ section.appendChild(d1);
+			//~ var d2 = document.createElement('input');
+			//~ d2.type = 'text';
+			//~ d2.setAttribute('style', 'position:absolute;top:0;left:0;height:24px;');
+			//~ document.body.appendChild(d2);
+			/* END items */
+						// out
+			var out = {
+				//~ div: d1,
+				//~ href: a
+			}
+			console.log(out);
+			
+			// submit onclick
+			document.getElementById('submitButton').onclick = function(e) {
+				
+				//
+				console.log('sb click');
+				
+				// Any checked?
+				var found = false;
+				for (var i in o.cbs) {
+					if (o.cbs[i].checked) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					if (o.inp_none_of_the_above.checked) {
+						found = true;
+					}
+				}
+				console.log(found);
+				if (!found) return false;
+				
+				// 
+				document.body.style.backgroundColor = 'LightGreen';
+				// Here?
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			
+			//
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				console.log(c);
+				//~ 
+				//~ switch(c) {
+					//~ case 44:
+						//~ o.cbs[0].click();
+						//~ break;
+					//~ case 46:
+						//~ o.cbs[1].click();
+						//~ break;
+					//~ case 47:
+						//~ o.cbs[2].click();
+						//~ break;
+				//~ }
+				//
+				if  (
+						c == 13
+					)
+				{
+					console.log('enter key sb');
+					document.getElementById('submitButton').click();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+			}, false);
+		}
+		new run().f();
+		return;
+	}
+	//
+	// Grocery_ROI (fork from turk-HPCBeauty) (fork from Collect Product Information)
 	// Determine if a product is Kosher
 	// Dec2 2014
 	s = '	<li>Please follow the hyperlink below and browse <strong>all available images</strong> in search of any of the logos shown below, if you see any explicit matches between the product page and the images below, please mark the corresponding check box.</li>';
@@ -29691,62 +29887,15 @@ function MT__RUN() {
 			d2.value = a;
 			
 			// q
-			//~ var q = document.getElementsByName('Q5FreeTextInput');
 			var q = [
-				//~ q[0],
-				//~ document.getElementsByName('Q2Answer')[0],
-				//~ q[1]
 			];
 			
 			// out
 			var out = {
-				//~ parent: d1,
 				div: d1,
-				href: a//,
-				//~ all_inp: document.getElementsByName('Q5FreeTextInput'),
-				//~ inp: document.getElementsByName('Q5FreeTextInput')[0],
-				
-				// out_element (init: 0)
-				//~ out_element: q[0]
-				
-				//~ section_fieldsets: sections[1]
+				href: a
 			}
 			console.log(out);
-			
-			//~ // o
-			//~ if (!localStorage.hasOwnProperty('groi_si')) {
-				//~ localStorage['groi_si'] = 1;
-			//~ }
-			//~ d2b.value = localStorage['groi_si'];
-			//~ o = {
-				//~ 
-			//~ }
-			//~ // ...
-			//~ q[1].multiple = true;
-			//~ q[1].size = 7;
-			//~ q[1].onclick = function() {
-				//~ q[2].focus();
-				//~ return true;
-			//~ }
-			//~ q[1].selectedIndex = o.starting_index;
-			//~ 
-			//~ // zoom
-			//~ q[2].style.zoom = 3;
-			//~ 
-			//~ // onfocus
-			//~ q[0].onfocus = q[2].onfocus = function() {
-				//~ out.out_element = this;
-			//~ }
-			//~ // focus init
-			//~ q[0].focus();
-			
-			//~ // return/accept
-			//~ new AMT___core_factory().
-				//~ iframe2parent__postMessage( // options
-					//~ {
-						//~ action: 'return_and_accept_button__nextTab'
-					//~ }
-				//~ );
 			
 			// submit onclick
 			document.getElementById('submitButton').onclick = function(e) {
