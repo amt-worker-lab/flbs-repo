@@ -28117,10 +28117,6 @@ function MT__RUN() {
 				};
 			}
 			
-			if(char == 'b') {
-				document.getElementById('submitButton').click();
-			}
-			
 			// Go to satellite
 			else if (char == 'c' || char == 'C') {
 				var x=document.getElementsByTagName('div');
@@ -38127,6 +38123,132 @@ function MT__RUN() {
 		//~ }
 	}
 	
+	/**
+	 * Find Google num results
+	 * 
+	 * Nathan Labat
+	 * 
+	 * Google....
+	 * Raymond Fong
+	 * Jason Seeba
+	 */
+	//
+	// Jason Seeba
+	// Search Google, Copy and Paste Number of Search Results
+	// 
+	s = '<p>Please click the link to search Google for all the pages from a specific domain.</p>';
+	if (
+		ih.indexOf(s) != -1
+	) {
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			
+			var td = document.getElementsByTagName('td')[1].innerText;
+			var o = {
+				url: td
+			}
+			// Does not have pound
+			if (o.url.indexOf('#') != -1) {
+				alert('#');
+				return;
+			}
+			
+			var md5_search_url = any_md5(o.url, '0123456789ABCDEF');
+			
+			Nathan_Labat_Google__check_cache();
+			document.body.onclick = function() {
+				document.body.style.backgroundColor = 'aqua';
+				Nathan_Labat_Google__check_cache();
+			}
+			
+			/**
+			 * function Nathan_Labat_Google__check_cache
+			 * 
+			 * exists?
+			 */
+			function Nathan_Labat_Google__check_cache() {
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host + '/mturk/.cached/'+md5_search_url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200) {
+							
+							// new
+							Nathan_Labat_Google__new_download();
+							
+						} else {
+							
+							// cached
+							Nathan_Labat_Google__process_response({
+								rs: rs
+							});
+						}
+					}
+				});
+			}
+			function Nathan_Labat_Google__process_response(complete_object) {
+				
+				var rs = complete_object.rs;
+				
+				var r, r1, r2, r3;
+				
+				r1 = rs.indexOf('>No results found for ');
+				r2 = /<p style="[^"]+"> Your search - <em>[^<]*<\/em> - did not match any documents\.  <\/p>/.exec(rs);
+				//3,220,000
+				r3 = /<div id="resultStats">(About |)([\d,]+) results?/.exec(rs);
+				
+				if (r1 != -1) {
+					//~ alert('x');
+					document.getElementById('web_url').value = '0';
+					doSubmit();
+					return;
+				} else if (r2) {
+					document.getElementById('web_url').value = '0';
+					doSubmit();
+					return;
+				} else if (r3) {
+					document.getElementById('web_url').value = r3[2]; //.replace(/,/g, '');
+					doSubmit();
+				}
+				
+				document.body.style.backgroundColor = '#fff';
+				
+			}
+			function Nathan_Labat_Google__new_download() {
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						var rf = new AMT___requests_factory();
+						rf.io__write_to_file(
+							{
+								data:	'AMT__serverSide_write__value='+encodeURIComponent(response.responseText)+
+										'&AMT__serverSide_write__folder=.cached'+
+										'&AMT__serverSide_write__file=' + md5_search_url,
+								rs:		response.responseText
+							},
+							Nathan_Labat_Google__process_response
+						);
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	//
 	// Nathan Labat
 	// Find the number of google search results
@@ -129548,7 +129670,10 @@ function top_window() {
 			industry_short: null,
 			industries_quoted: null,
 			yelp_country: 'com',
-			comp_quoted: null
+			comp_quoted: null,
+			
+			num_panels: 3, // THIS IS 3 FOR ONLY WEBSITE. FOR YELP INCLUDE 4TH PANEL.
+			pw: 33 // "panel_width". THIS=100% / NUMBER OF PANELS.
 		}
 		o.country_full		= o.country.country_code_to_country_name();
 		
@@ -129586,40 +129711,44 @@ function top_window() {
 		document.body.appendChild(txt_top);
 		//
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:80px;left:25%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		d1b.setAttribute('style','position:absolute;top:80px;left:'+o.pw+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 		document.body.appendChild(d1b);
 		//
 		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:80px;left:50%;width:25%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+		d1c.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*2)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 		document.body.appendChild(d1c);
 		//
-		var d1d = document.createElement('div');
-		d1d.setAttribute('style','position:absolute;top:80px;left:75%;width:24%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
-		document.body.appendChild(d1d);
+		if (o.num_panels == 4) {
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*3)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1d);
+		}
 		//
 		var d3 = document.createElement('textarea');
-		d3.setAttribute('style','position:absolute;top:30px;left:0%;width:25%;height:50px;');
+		d3.setAttribute('style','position:absolute;top:30px;left:0%;width:'+o.pw+'%;height:50px;');
 		document.body.appendChild(d3);
 		d1.txa = d3;
 		//
 		var d3b = document.createElement('textarea');
-		d3b.setAttribute('style','position:absolute;top:30px;left:25%;width:25%;height:50px;');
+		d3b.setAttribute('style','position:absolute;top:30px;left:'+o.pw+'%;width:'+o.pw+'%;height:50px;');
 		document.body.appendChild(d3b);
 		d1b.txa = d3b;
 		//
 		var d3c = document.createElement('textarea');
-		d3c.setAttribute('style','position:absolute;top:30px;left:50%;width:25%;height:50px;');
+		d3c.setAttribute('style','position:absolute;top:30px;left:'+o.pw*2+'%;width:'+o.pw+'%;height:50px;');
 		document.body.appendChild(d3c);
 		d1c.txa = d3c;
 		//
-		var d3d = document.createElement('textarea');
-		d3d.setAttribute('style','position:absolute;top:30px;left:75%;width:24%;height:50px;');
-		document.body.appendChild(d3d);
-		d1d.txa = d3d;
+		if (o.num_panels == 4) {
+			var d3d = document.createElement('textarea');
+			d3d.setAttribute('style','position:absolute;top:30px;left:'+o.pw*3+'%;width:'+o.pw+'%;height:50px;');
+			document.body.appendChild(d3d);
+			d1d.txa = d3d;
+		}
 		/*END ITEMS*/
 		//
 		d3.onblur = function() {
@@ -129631,9 +129760,13 @@ function top_window() {
 		d3c.onblur = function() {
 			Crowd_Task_company_URL__SP_init(d1c, this);
 		}
-		d3d.onblur = function() {
-			Crowd_Task_company_URL__SP_init(d1d, this);
+		//
+		if (o.num_panels == 4) {
+			d3d.onblur = function() {
+				Crowd_Task_company_URL__SP_init(d1d, this);
+			}
 		}
+		//
 		na.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			q.value = 'NA';
@@ -129653,7 +129786,8 @@ function top_window() {
 		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
 		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
 		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
-		d3d. addEventListener('keydown', ef.keydown__blur_field, true);
+		if (o.num_panels == 4)
+			d3d. addEventListener('keydown', ef.keydown__blur_field, true);
 		
 		//
 		new AMT___core_factory().
@@ -129664,13 +129798,17 @@ function top_window() {
 			);
 		
 		// innerHeight
+		var ih_els = [d1,d1b,d1c];
+		//
+		if (o.num_panels == 4) {
+			ih_els.push(d1d);
+		}
+		//
 		new AMT___core_factory().el_innerHeight({
 			// This set the elements d1,d1b, and d1c
 			// to fill up the whole window, minus their
 			// distance from page top (top:XX pixels;).
-			elements: [
-				d1, d1b, d1c, d1d
-			],
+			elements: ih_els,
 			offset: 80 // offset top
 		});
 		new AMT___core_factory().el_innerHeight({
@@ -129688,10 +129826,9 @@ function top_window() {
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
 		
-		d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
-		
-		//~ d3c.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
-		//~ d3d.value = '"' + o.comp_short + '" site:yelp.'+o.yelp_country+'/biz/';
+		if (o.num_panels == 4) {
+			d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+		}
 		
 		// Not US?
 		if (o.country != 'United States' && o.country != 'US' && o.country != '') {
@@ -129729,19 +129866,11 @@ function top_window() {
 					
 					// FULL
 					for (var i in x) {
-						// Skip Yelp
-						if (x[i].indexOf('yelp') == -1)
-							SKIP_SITES[x[i]] = true;
+						SKIP_SITES[x[i]] = true;
+						//~ // Skips Yelp!
+						//~ if (x[i].indexOf('yelp') == -1)
+							//~ SKIP_SITES[x[i]] = true;
 					}
-					
-					// SUBDOMAINS!
-					//~ for (var i in x) {
-						//~ var y;
-						//~ if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
-							//~ SKIP_SITES[y[1]] = true;
-						//~ }
-					//~ }
-					
 					Crowd_Task_company_URL__SP_init();
 			
 				}
@@ -129766,7 +129895,9 @@ function top_window() {
 				return;
 			}
 			
-			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = d1d.innerHTML ='';
+			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+			if (o.num_panels == 4)
+				d1d.innerHTML ='';
 			
 			//1
 			req_proxy = new AMT___xhr_PROXY_REDACTED_({
@@ -129801,16 +129932,18 @@ function top_window() {
 				);
 			}
 			//3
-			if (d3d.value != '') {
-				req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					seed_arg1: d1d,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3d.value)
-				});
-				req_proxy.proxy_init();
-				req_proxy.proxy_waitComplete(
-					Crowd_Task_company_URL__processProxyResponse
-				);
+			if (o.num_panels == 4) {
+				if (d3d.value != '') {
+					req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						seed_arg1: d1d,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3d.value)
+					});
+					req_proxy.proxy_init();
+					req_proxy.proxy_waitComplete(
+						Crowd_Task_company_URL__processProxyResponse
+					);
+				}
 			}
 		}
 		
@@ -129840,10 +129973,14 @@ function top_window() {
 				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 				
 				// trailing
-				if (!isYelpURL)
-					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-				else
-					x = link;
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// YELP
+				//~ // trailing
+				//~ if (!isYelpURL)
+					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				//~ else
+					//~ x = link;
 				
 				//~ if (out_div != d1c && out_div != d1d)
 					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
@@ -129867,13 +130004,17 @@ function top_window() {
 				// add bold (bold_array)
 				full = MT__bold(full, o.bold_array);
 				
-				// classname is http://(www. = '')x.com (no www)
-				// Add Yelp.com/etc/etc/ to mouseovers
-				var cls;
-				if (!isYelpURL)
-					cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
-				else
-					cls = link;
+				// Classname
+				cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				
+				// YELP!
+				//~ // classname is http://(www. = '')x.com (no www)
+				//~ // Add Yelp.com/etc/etc/ to mouseovers
+				//~ var cls;
+				//~ if (!isYelpURL)
+					//~ cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				//~ else
+					//~ cls = link;
 				
 				
 				// ...
