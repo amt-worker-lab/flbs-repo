@@ -129834,11 +129834,15 @@ function top_window() {
 		if (o.country != 'United States' && o.country != 'US' && o.country != '') {
 			d3b.style.border = '4px solid blue';
 			d3c.style.border = '4px solid blue';
-			d3b.value += ' ' + o.country;
+			
+			var country_str = ' ("' + o.country + '" OR "' + o.country_full + '")';
+			
+			d3b.value += country_str;
 			
 			// Country code to country name
 			if (o.country != o.country_full) {
-				d3c.value += ' ' + o.country_full;
+				d3c.value += country_str;
+				//~ d3c.value += ' ' + o.country_full;
 			} else {
 				//
 			}
