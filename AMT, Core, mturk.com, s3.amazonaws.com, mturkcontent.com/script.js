@@ -129965,7 +129965,7 @@ function top_window() {
 			if (o.panels_loaded == o.num_panels) {
 				var max = 0;
 				for (var i in o.domain_counts) {
-					if (o.domain_counts[i] > 0) {
+					if (o.domain_counts[i] > max) {
 						max = o.domain_counts[i];
 						tmp_cls = i; // key
 					}
@@ -129975,11 +129975,13 @@ function top_window() {
 					for (var i in n) {
 						if (i == 'length') break;
 						n[i].style.backgroundColor = 'beige';
+						n[i].style.border = '3px solid brown';
 					}
 				}
 			}
 			
 			console.log(o);
+			console.log(tmp_cls);
 		}
 		
 		function Crowd_Task_company_URL__processProxyResponse(rs, seed_arg) {
