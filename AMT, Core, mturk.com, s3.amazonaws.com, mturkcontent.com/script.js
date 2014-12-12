@@ -20039,7 +20039,7 @@ function MT__RUN() {
 			
 			GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
-			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			
 			var b = document.getElementsByTagName('b');
@@ -20052,16 +20052,21 @@ function MT__RUN() {
 			}
 			o.comp_array = o.comp.clean_string_to_array();
 			o.domain = o.url.replace(/^https?:\/\/w*\.*/i, '');
+			o.url = (!/^http/i.exec(o.url)) ? 'http://' + o.url : o.url;
 			console.log(o);
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:62px;left:33%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:62px;left:66%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1c);
 			//
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('type','text');
@@ -20086,19 +20091,16 @@ function MT__RUN() {
 			d2c.value = 'N/A';
 			d2c.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				//~ var x = document.getElementById('Q1Url');
-				//~ if (x.value == '' || x.value == 'http://') {
-					//~ x.value = 'not found';
-					//~ 
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
-				//~ }
+				var x = document.getElementById('Q1Url');
+				x.value = 'none';
+				new AMT___core_factory().nextTab();
+				doSubmit();
 			}
 			document.body.appendChild(d2c);
 			/* END ITEMS */
 			
 			d2.value  = o.comp;
-			d2b.value = o.comp + ' ' + o.domain; 
+			d2b.value = o.comp + ' ' + o.domain.replace(/(\.co.uk|\.\w{2,4})$/i, ''); // Remove .com, .co.uk, etc.
 			
 			// ...
 			var ef = new AMT___events_factory();
@@ -20117,10 +20119,70 @@ function MT__RUN() {
 				}
 			});
 			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b, d1c
+				],
+				offset: 62 // offset top
+			});
+			
 			// ...
 			facebook_company(d1);
 			facebook_company(d1b);
+			scrape_url_for_fb();
 			
+			/**
+			 * scrape_url_for_fb
+			 * 
+			 */
+			function scrape_url_for_fb(div) {
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: o.url,
+					onload: function(response) {
+						var rs = response.responseText;
+						d1c.innerText = '';
+						
+						if (response.status != 200) {
+							d1c.innerText = '0 Results (s=200)';
+							return;
+						}
+						
+						var reg = /[^"'>< ]*facebook\.com[^"'>< ]*/g;
+						var m;
+						while (m = reg.exec(rs)) {
+							m[0] = (!/^http/i.exec(m[0])) ? 'https://' + m[0] : m[0]; // Add http://
+							var div = document.createElement('div');
+							div.setAttribute('style', 'border-bottom:1px solid teal;');
+							div.innerHTML = MT__bold(m[0], [o.domain]);
+							div.className = 'exe';
+							div.fblink = m[0];
+							d1c.appendChild(div)
+							div.onclick = function() {
+								this.style.border = '4px dashed blue';
+								document.getElementById('Q1Url').value = this.fblink;
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						
+						if (d1c.innerText == '') {
+							d1c.innerText = '0 Results';
+						}
+					}
+				});
+			}
+			
+			/**
+			 * facebook_company
+			 * 
+			 * type=page => https://developers.facebook.com/docs/graph-api/reference/v2.2/page/
+			 */
 			function facebook_company(div) {
 				
 				var out = div;
@@ -20136,7 +20198,7 @@ function MT__RUN() {
 				var u = 
 					'https://graph.facebook.com/search'+
 					'?q='+encodeURIComponent(v)+'&type=page'+ // not &type=user
-					'&fields=category,id,name,likes,talking_about_count,location,link,website'+ //website
+					'&fields=category,id,name,likes,talking_about_count,location,link,website,cover'+ //website, cover
 					'&limit=10'+
 					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
@@ -20187,10 +20249,16 @@ function MT__RUN() {
 								}
 							}
 							
-							//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+							var border = '';
+							if (r[i].hasOwnProperty('website') && r[i].website.toLowerCase().indexOf(o.domain.toLowerCase()) != -1) {
+								border = 'border:3px solid brown;background-color:beige;';
+							} else {
+								border = 'border-bottom:1px solid teal;'
+							}
 							
+							// div
 							var div = document.createElement('div');
-							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+							div.setAttribute('style', 'cursor:pointer;' + border);
 							out.appendChild(div);
 							
 							div.className	= r[i].link;
@@ -20208,31 +20276,37 @@ function MT__RUN() {
 							var tmp = '';
 							tmp += MT__bold(r[i].name, o.comp_array);
 							tmp += '<br>likes:<b>'+r[i].likes+'</b>';
-							tmp += '<br>talking_about_count:'+r[i].talking_about_count;
-							tmp += '<br>website:'+r[i].website;
+							tmp += '<br>talks:'+r[i].talking_about_count;
+							if (r[i].hasOwnProperty('website')) {
+								tmp += '<br>website:'+MT__bold(r[i].website, [o.domain]);
+							}
 							// loc
 							if (r[i].location) {
 								for (var j in r[i].location) {
 									if (r[i].location[j].length > 0)
-										tmp += '<br>' + r[i].location[j];
+										tmp += '<br>location:' + r[i].location[j];
 								}
 							}
 							// cat
 							if (r[i].category) {
 								var x = r[i].category;
-								tmp += '<br>'+x;
+								tmp += '<br>category:'+x;
 							}
 							tmp += '<br>' + r[i].link;
 							// innerHTML
 							div.innerHTML = tmp;
+							div.fblink = r[i].link;
 							// onclick
 							div.onclick = function() {
-								
-								// Turn off
-								this.onclick = function() {};
-								
-								// Get
-								facebook_company__profile(this);
+								this.style.border = '4px dashed blue';
+								document.getElementById('Q1Url').value = this.fblink;
+								new AMT___core_factory().nextTab();
+								doSubmit();
+								//~ // Turn off
+								//~ this.onclick = function() {};
+								//~ 
+								//~ // Get
+								//~ facebook_company__profile(this);
 							}
 							// onmouseover
 							div.onmouseover = function() {
@@ -20251,11 +20325,23 @@ function MT__RUN() {
 								}
 							}
 							
-							// Init this div if first!
-							//
-							//
-							if (c == 0) 
-								div.click();
+							// Image
+							if (r[i].hasOwnProperty('cover') && r[i].cover.hasOwnProperty('source') && r[i].cover.source != '') {
+								
+								var maxW = '50%';
+								
+								var img = document.createElement('img');
+								img.setAttribute('style','max-width:50%;display:block;');
+								img.src = r[i].cover.source;
+								div.appendChild(img);
+								
+							}
+							
+							//~ // Init this div if first!
+							//~ //
+							//~ //
+							//~ if (c == 0) 
+								//~ div.click();
 							
 							c++;
 							
