@@ -44747,7 +44747,8 @@ function MT__RUN() {
 				// Categories.....
 				// books
 				// movies-tv
-				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dbooks&field-keywords='+encodeURIComponent(d2.value);
+				// Or blank...
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
 				d1.innerText = '';
 				
 				GM_xmlhttpRequest({
@@ -44930,10 +44931,13 @@ function MT__RUN() {
 									this.style.backgroundColor = 'LightGreen';
 									var q = document.getElementsByName('ASIN')[0];
 									q.value = this.asin;
-									if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
+									if (/^[A-Z0-9]{6,20}$/.exec(q.value)) {
 										new AMT___core_factory().nextTab();
 										doSubmit();
 									}
+									
+									// Not this... Bxxxx...
+									//~ if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
 								}
 							}
 							
