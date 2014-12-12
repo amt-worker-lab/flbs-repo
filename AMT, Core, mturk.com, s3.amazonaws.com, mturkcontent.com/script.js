@@ -20015,12 +20015,405 @@ function MT__RUN() {
 	/**
 	 * Facebook company search
 	 * 
+	 * Syklar Marcum
 	 * Nicholas Oliver
 	 * Chris Campbell
 	 * felix greaves
 	 * Morgan Intrator
 	 * 
 	 */
+	//
+	// Syklar Marcum
+	// Find Facebook Names for Companies
+	// 
+	s = '	<li>if you CANNOT find, please populate with "none" &nbsp;-- do not put incorrect data</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
+			
+			GM_addStyle('body {margin-top:1000px;}');
+			
+			GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			
+			
+			var b = document.getElementsByTagName('b');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				comp: b[0].innerText.trim(),
+				url: a[0].innerText.trim(),
+				domain: null, 
+				comp_array: []
+			}
+			o.comp_array = o.comp.clean_string_to_array();
+			o.domain = o.url.replace(/^https?:\/\/w*\.*/i, '');
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company(d1);
+			}
+			document.body.appendChild(d2);
+			//
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+			d2b.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company(d1b);
+			}
+			document.body.appendChild(d2b);
+			//
+			var d2c = document.createElement('input');
+			d2c.setAttribute('type','button');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+			d2c.value = 'N/A';
+			d2c.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				//~ var x = document.getElementById('Q1Url');
+				//~ if (x.value == '' || x.value == 'http://') {
+					//~ x.value = 'not found';
+					//~ 
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+			}
+			document.body.appendChild(d2c);
+			/* END ITEMS */
+			
+			d2.value  = o.comp;
+			d2b.value = o.comp + ' ' + o.domain; 
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2b,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			
+			// ...
+			facebook_company(d1);
+			facebook_company(d1b);
+			
+			function facebook_company(div) {
+				
+				var out = div;
+				out.innerHTML = '';
+				
+				var v;
+				if (out == d1)
+					v = d2.value;
+				else
+					v = d2b.value;
+					
+				// just type=page is used here (user ignored)
+				var u = 
+					'https://graph.facebook.com/search'+
+					'?q='+encodeURIComponent(v)+'&type=page'+ // not &type=user
+					'&fields=category,id,name,likes,talking_about_count,location,link,website'+ //website
+					'&limit=10'+
+					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+				
+				//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+					//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+				//~ }
+				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						
+						var r = JSON.parse(rs);
+						
+						if (!r.data) {
+							out.innerHTML = '!r.data';
+							return;
+						}
+						
+						r = r.data;
+						
+						console.log(r);
+						
+						var c = 0;
+						for (var i in r) {
+							
+							if (r[i].type) {
+								if (r[i].type == 'event') continue;
+							}
+							
+							if (r[i].talking_about_count != null) {
+							} else
+								r[i].talking_about_count = '';
+							if (r[i].likes != null) {
+							} else
+								r[i].likes = '';
+							
+							if (r[i].location) {
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
+							}
+							
+							//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+							out.appendChild(div);
+							
+							div.className	= r[i].link;
+							div.fblikes		= r[i].likes * 1;
+							div.bgc			= false;
+							div.pageErr_numRedirects = 0;
+							
+							//~ if (div.fblikes < 4) {
+								//~ div.style.backgroundColor = '#aaa';
+								//~ div.bgc = true;
+							//~ }
+							//~ 
+							
+							// tmp
+							var tmp = '';
+							tmp += MT__bold(r[i].name, o.comp_array);
+							tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+							tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+							tmp += '<br>website:'+r[i].website;
+							// loc
+							if (r[i].location) {
+								for (var j in r[i].location) {
+									if (r[i].location[j].length > 0)
+										tmp += '<br>' + r[i].location[j];
+								}
+							}
+							// cat
+							if (r[i].category) {
+								var x = r[i].category;
+								tmp += '<br>'+x;
+							}
+							tmp += '<br>' + r[i].link;
+							// innerHTML
+							div.innerHTML = tmp;
+							// onclick
+							div.onclick = function() {
+								
+								// Turn off
+								this.onclick = function() {};
+								
+								// Get
+								facebook_company__profile(this);
+							}
+							// onmouseover
+							div.onmouseover = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									x[i].style.backgroundColor = 'LightGreen';
+								}
+							}
+							// onmouseout
+							div.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									x[i].style.backgroundColor = '';
+								}
+							}
+							
+							// Init this div if first!
+							//
+							//
+							if (c == 0) 
+								div.click();
+							
+							c++;
+							
+							//~ if (out == d1 && c == 0)  //XX
+							//~ if (div.fblikes >= 4) {
+							//~ }
+						}
+						
+						if (c == 0) {
+							out.innerHTML = '0';
+							return;
+						}
+						else
+						{
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:2000px;');
+							out.appendChild(div);
+						}
+					}
+				});
+			}
+			//<a class="_3wqb" href="https://www.facebook.com/CHAHVets?sk=reviews" id="u_0_1y" data-hovercard="u_0_1y" data-hovercard-instant="1" data-hovercard-offset-x="20">
+			//<a class="_g3j" href="https://www.facebook.com/CHAHVets?sk=reviews"></a><i class="_1uhg _3-9a img sp_m5zUGIMREvf sx_d83f9c"></i><div class="_1uhd"><span class="_g3i _50f7">Reviews</span>
+			function facebook_company__profile(div) {
+				
+				var div = div;
+				
+				if (div.pageErr_numRedirects > 1) return;
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: div.className,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						
+						//~ console.log(rs);
+						var r = /<script>window\.location\.replace\("(https:\\\/\\\/www\.facebook\.com\\\/[^"]+)"\);<\/script>/.exec(rs);
+						if (r) {
+							div.pageErr_numRedirects++;
+							div.className = r[1].replace(/\\/g, '');
+							
+							//~ console.log(div.className);
+							//~ return;
+							
+							facebook_company_reviews__profile(div);
+							return;
+						}
+						
+						var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							
+							var maxW = '50%';
+							if  (
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
+								)
+							{
+								//~ div.appendChild(document.createElement('br'));
+								//~ div.appendChild(document.createTextNode(' X X '));
+								div.style.border = '4px solid teal';
+								div.style.margin = '-4px -4px -4px -4px';
+								//return;
+								
+								maxW = '20%';
+							}
+							
+							var img = document.createElement('img');
+							img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
+							img.fblink = div.className;
+							img.src = r;
+							div.appendChild(img);
+							img.onclick = function(e) {
+								this.style.border = '4px dashed blue';
+								var i = this.fblink;
+								
+								document.getElementById('Q1Url').value = i;
+								
+								//~ new AMT___core_factory().nextTab();
+								//~ doSubmit();
+								
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
+							}
+							
+							//~ //CHAHVets?sk=reviews
+							//~ //{"href":"https:\/\/www.facebook.com\/THESteakhouseCCLV\/reviews","key":"reviews","label":"Reviews"},
+							//~ //
+							//~ var reviews = /\{"href":"https:\\\/\\\/www\.facebook\.com\\\/[^\\]+\\\/reviews","key":"reviews","label":"Reviews"\}/;
+							//~ //var reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+							//~ 
+							//~ reviews = reviews.exec(rs);
+							//~ if (!reviews) {
+								//~ reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+								//~ reviews = reviews.exec(rs);
+								//~ if (reviews) {
+									//~ reviews = __js_clean_html_str(reviews[1]);
+								//~ }
+							//~ } else {
+								//~ console.log(reviews);
+								//~ reviews = JSON.parse(reviews[0]).href;
+								//~ console.log(reviews);
+							//~ }
+							//~ if (reviews) {
+								//~ 
+								//var x = __js_clean_html_str(reviews[1]);
+								//~ if (/^https:\/\/www\.facebook\.com\/[^\/]+$/.exec(reviews)) {
+									//~ reviews = reviews.replace(/\?sk=reviews/i, '/reviews');
+								//~ }
+								//~ 
+								//~ div.appendChild(document.createElement('br'));
+								//~ div.appendChild(document.createTextNode(reviews));
+								//~ 
+								//~ img.reviewsURL = reviews;
+								//~ img.style.border = '4px solid blue';
+								//~ img.onclick = function(e) {
+									//~ this.style.border = '4px dashed blue';
+									//~ var i = this.reviewsURL;
+									//~ 
+									//~ document.getElementById('Q1Url').value = i;
+									//~ 
+									//~ new AMT___core_factory().nextTab();
+									//~ doSubmit();
+									//~ 
+									//~ e.stopPropagation();
+									//~ e.preventDefault();
+									//~ return false;
+								//~ }
+							//~ }
+							//~ else
+							//~ {
+								//~ img.onclick = function(e) {
+									//~ this.style.border = '4px dashed blue';
+									//~ var i = this.fblink;
+									//~ 
+									//~ document.getElementById('Q1Url').value = i;
+									//~ 
+									//~ new AMT___core_factory().nextTab();
+									//~ doSubmit();
+									//~ 
+									//~ e.stopPropagation();
+									//~ e.preventDefault();
+									//~ return false;
+								//~ }
+							//~ }
+							//~ 
+							//~ img.src = r;
+							//~ div.appendChild(img);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	//
 	// Nicholas Oliver
 	// -SimpleSearch, Find the correct Facebook page for this business
@@ -20132,49 +20525,9 @@ function MT__RUN() {
 			}
 		});
 		
-		// r&a nextTab
-		new AMT___core_factory().
-			iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
-		
-		//~ // ...
-		//~ var ll = {
-			//~ lat:'',
-			//~ lng:''
-		//~ }
-		
 		// ...
 		Nicholas_Oliver_facebook_company_reviews(d1);
 		Nicholas_Oliver_facebook_company_reviews(d1b);
-		//~ Morgan_Intrator_fb_schools_geo();
-		//~ 
-		//~ function felix_greaves_fb_hospitals_geo() {
-			//~ MT___google_api_geocode(o.location, function(lat,lng) {
-				//~ 
-				//~ if  (
-					//~ !lat ||
-					//~ !lng ||
-					//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
-					//~ !/^-?[\d\.]{4,}$/.exec(lng)
-					//~ )
-				//~ {
-					//~ //
-				//~ } else {
-				//~ 
-					//~ ll.lat = lat;
-					//~ ll.lng = lng;
-				//~ }
-				//~ 
-				//~ console.log(ll);
-				//~ 
-				//~ if (d2b.value != '')
-					//~ felix_greaves_fb_hospitals(d1b);
-				//~ 
-			//~ }, false, true);
-		//~ }
 		
 		function Nicholas_Oliver_facebook_company_reviews(div) {
 			
@@ -129956,6 +130309,12 @@ function top_window() {
 			}
 		}
 		
+		/**
+		 * Crowd_Task_company_URL__count_domains
+		 * 
+		 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
+		 * 		seem to rack up the #s!
+		 */
 		function Crowd_Task_company_URL__count_domains() {
 			
 			// increment
