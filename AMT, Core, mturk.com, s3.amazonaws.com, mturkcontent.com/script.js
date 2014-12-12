@@ -44684,6 +44684,10 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {position:absolute;top:900px;}');
 			GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
 			
+			// Move image right
+			GM_addStyle('.imagecontainer {float:left !important;}');
+			
+			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div'); //
 			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
