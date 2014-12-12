@@ -20119,7 +20119,7 @@ function MT__RUN() {
 	/**
 	 * Facebook company search
 	 * 
-	 * Syklar Marcum
+	 * Skylar Marcum
 	 * Nicholas Oliver
 	 * Chris Campbell
 	 * felix greaves
@@ -20253,19 +20253,19 @@ function MT__RUN() {
 			scrape_url_for_fb();
 			
 			// Load util window
-			//~ if (o.url != '') {
-				//~ AMT__setUtilityTabs([
-					//~ {
-						//~ url: o.url
-					//~ }
-				//~ ]);
-			//~ } else {
-				//~ AMT__setUtilityTabs([
-					//~ {
-						//~ url: ''
-					//~ }
-				//~ ]);
-			//~ }
+			if (o.url != '') {
+				AMT__setUtilityTabs([
+					{
+						url: o.url
+					}
+				]);
+			} else {
+				AMT__setUtilityTabs([
+					{
+						url: ''
+					}
+				]);
+			}
 			
 			/**
 			 * scrape_url_for_fb
@@ -44744,7 +44744,10 @@ function MT__RUN() {
 			
 			function amazon_product_search() {
 				
-				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dmovies-tv&field-keywords='+encodeURIComponent(d2.value);
+				// Categories.....
+				// books
+				// movies-tv
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Dbooks&field-keywords='+encodeURIComponent(d2.value);
 				d1.innerText = '';
 				
 				GM_xmlhttpRequest({
