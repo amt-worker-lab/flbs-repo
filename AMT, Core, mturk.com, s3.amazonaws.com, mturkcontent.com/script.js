@@ -2340,6 +2340,109 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Nick Hutchins
+	// Financial Stats for Hopsitals
+	//
+	s = '	<li>Click on the first option for the hospital "FREE PROF"&nbsp;button</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(a[0].href),
+				comp: td[1].innerText.trim()
+			}
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: o.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						return;
+					}
+					
+					// <td><a href="/free_profile/100052/Winter_Haven_Hospital/Winter_Haven/Florida/" title="View the Profile for this Hospital">Winter Haven Hospital</a></td>
+					//
+					// /free_profile/100052/Winter_Haven_Hospital/Winter_Haven/Florida/
+					var reg = new RegExp('<td><a href="([^"]+)" title="View the Profile for this Hospital">'+__js_escape_regEx(o.comp)+'<\/a><\/td>', 'gi');
+					
+					if (reg.exec(rs)) {
+						reg.lastIndex = 0;
+						console.log('count');
+						console.log(rs.match(reg).length);
+						if (rs.match(reg).length != 1) return;
+						var rslt = reg.exec(rs);
+						profile('http://www.ahd.com' + __js_clean_html_str(rslt[1]));
+					}
+					
+					//~ var m;
+					//~ while (m = reg.exec(rs)) {
+						//~ var div = document.createElement('div');
+						//~ div.innerText = m[1];
+						//~ d1.appendChild();
+					//~ }
+					
+				}
+			});
+			
+			function profile(url) {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							return;
+						}
+						
+						var sbm = true;
+						
+						var reg = /<td align="left">Gross Patient Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
+						if (reg) {
+							document.getElementById('gpr').value = reg[1];
+						} else sbm = false;
+						var reg = /<td align="left">Non-Patient Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
+						if (reg) {
+							document.getElementById('npr').value = reg[1];
+						} else sbm = false;
+						var reg = /<td align="left">Total Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
+						if (reg) {
+							document.getElementById('totrev').value = reg[1];
+						} else sbm = false;
+						var reg = /<td align="left">Net Income \(or Loss\)<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>(<span class="loss">|)&#36;([\d,\-]+)(<\/span>|)<\/NOWRAP><\/td>/.exec(rs);
+						if (reg) {
+							document.getElementById('income').value = reg[2];
+						} else sbm = false;
+						
+						console.log(sbm);
+						if (sbm) {
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	// 
 	// Steve Sears
 	// Find the Company Headquarters' Postal Code
 	// startpage + utility window
@@ -2350,6 +2453,7 @@ function MT__RUN() {
 	{
 		var run = function() {};
 		run.prototype.f = function() {
+			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
 			
 			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
