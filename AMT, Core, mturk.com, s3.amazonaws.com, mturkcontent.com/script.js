@@ -20420,6 +20420,7 @@ function MT__RUN() {
 						
 						// Domains?
 						if (divs_to_append.length) {
+							divs_to_append.reverse();// Reverse the order! Instead of Likes=0,1,3,6,800, It needs to be Likes=800,6,3,1,0.
 							if (out.innerHTML != '') { // INSERTBEFORE
 								for (var i in divs_to_append) {
 									out.insertBefore(divs_to_append[i], out.firstChild);
