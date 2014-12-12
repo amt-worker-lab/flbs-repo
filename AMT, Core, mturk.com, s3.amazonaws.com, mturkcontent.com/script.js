@@ -2343,7 +2343,8 @@ function MT__RUN() {
 	// Nick Hutchins
 	// Financial Stats for Hopsitals
 	//
-	s = '	<li>Click on the first option for the hospital "FREE PROF"&nbsp;button</li>';
+	//~ s = '	<li>Click on the first option for the hospital "FREE PROF"&nbsp;button</li>';
+	s = '<p>Enter the financial statistics for each hospital from the master list</p>';
 	if (
 		ih.indexOf(s) != -1
 		)
@@ -2361,6 +2362,10 @@ function MT__RUN() {
 				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(a[0].href),
 				comp: td[1].innerText.trim()
 			}
+			// Override the "new" href with "old" href for full list.
+			o.url = 'http://www.ahd.com/list_cms.php?submitted=Submit&mname=&mcity=&mstate%5B%5D=AK&mstate%5B%5D=AL&mstate%5B%5D=AR&mstate%5B%5D=AS&mstate%5B%5D=AZ&mstate%5B%5D=CA&mstate%5B%5D=CO&mstate%5B%5D=CT&mstate%5B%5D=DC&mstate%5B%5D=DE&mstate%5B%5D=FL&mstate%5B%5D=FM&mstate%5B%5D=GA&mstate%5B%5D=GU&mstate%5B%5D=HI&mstate%5B%5D=IA&mstate%5B%5D=ID&mstate%5B%5D=IL&mstate%5B%5D=IN&mstate%5B%5D=KS&mstate%5B%5D=KY&mstate%5B%5D=LA&mstate%5B%5D=MA&mstate%5B%5D=MD&mstate%5B%5D=ME&mstate%5B%5D=MH&mstate%5B%5D=MI&mstate%5B%5D=MN&mstate%5B%5D=MO&mstate%5B%5D=MP&mstate%5B%5D=MS&mstate%5B%5D=MT&mstate%5B%5D=NC&mstate%5B%5D=ND&mstate%5B%5D=NE&mstate%5B%5D=NH&mstate%5B%5D=NJ&mstate%5B%5D=NM&mstate%5B%5D=NV&mstate%5B%5D=NY&mstate%5B%5D=OH&mstate%5B%5D=OK&mstate%5B%5D=OR&mstate%5B%5D=PA&mstate%5B%5D=PR&mstate%5B%5D=PW&mstate%5B%5D=RI&mstate%5B%5D=SC&mstate%5B%5D=SD&mstate%5B%5D=TN&mstate%5B%5D=TX&mstate%5B%5D=UT&mstate%5B%5D=VA&mstate%5B%5D=VI&mstate%5B%5D=VT&mstate%5B%5D=WA&mstate%5B%5D=WI&mstate%5B%5D=WV&mstate%5B%5D=WY&mzip=&mphone=&fipscounty%5B%5D=';
+			o.url = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.url);
+			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
@@ -2414,20 +2419,31 @@ function MT__RUN() {
 						
 						var sbm = true;
 						
+						var q = [
+							document.getElementById('gpr'),
+							document.getElementById('npr'),
+							document.getElementById('totrev'),
+							document.getElementById('income')
+						];
 						var reg = /<td align="left">Gross Patient Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
-						if (reg) {
+						if (reg && q[0]) {
 							document.getElementById('gpr').value = reg[1];
+							
+							if (!q[1] && !q[2] && !q[3]) {
+								doSubmit();
+								return;
+							}
 						} else sbm = false;
 						var reg = /<td align="left">Non-Patient Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
-						if (reg) {
+						if (reg && q[1]) {
 							document.getElementById('npr').value = reg[1];
 						} else sbm = false;
 						var reg = /<td align="left">Total Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
-						if (reg) {
+						if (reg && q[2]) {
 							document.getElementById('totrev').value = reg[1];
 						} else sbm = false;
 						var reg = /<td align="left">Net Income \(or Loss\)<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>(<span class="loss">|)&#36;([\d,\-]+)(<\/span>|)<\/NOWRAP><\/td>/.exec(rs);
-						if (reg) {
+						if (reg && q[3]) {
 							document.getElementById('income').value = reg[2];
 						} else sbm = false;
 						
