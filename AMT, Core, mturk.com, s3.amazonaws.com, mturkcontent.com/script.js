@@ -20089,7 +20089,7 @@ function MT__RUN() {
 			//
 			var d2c = document.createElement('input');
 			d2c.setAttribute('type','button');
-			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;cursor:pointer;');
 			d2c.value = 'N/A';
 			d2c.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
@@ -20135,6 +20135,7 @@ function MT__RUN() {
 				offset: 62 // offset top
 			});
 			
+			// INIT
 			// ...
 			facebook_company(d1);
 			if (d2.value.trim() != d2b.value.trim())
@@ -20142,6 +20143,21 @@ function MT__RUN() {
 			else
 				d1b.innerText = '--';
 			scrape_url_for_fb();
+			
+			// Load util window
+			if (o.url != '') {
+				AMT__setUtilityTabs([
+					{
+						url: o.url
+					}
+				]);
+			} else {
+				AMT__setUtilityTabs([
+					{
+						url: ''
+					}
+				]);
+			}
 			
 			/**
 			 * scrape_url_for_fb
@@ -20172,7 +20188,7 @@ function MT__RUN() {
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
 							div.innerHTML = MT__bold(m[0], [o.domain]);
-							div.className = m[0].replace(/^http:/i, 'https:').toLowerCase();
+							div.className = m[0].replace(/^https?:\/\/w*\.*/i, '').toLowerCase();
 							//~ div.className = 'exe';
 							div.fblink = m[0];
 							d1c.appendChild(div)
@@ -20285,7 +20301,7 @@ function MT__RUN() {
 							}
 							
 							var border = '';
-							if (r[i].hasOwnProperty('website') && r[i].website.toLowerCase().indexOf(o.domain.toLowerCase()) != -1) {
+							if (r[i].hasOwnProperty('website') && r[i].website.toLowerCase().indexOf(o.domain.toLowerCase()) != -1 && o.domain != '') {
 								border = 'border:3px solid brown;background-color:beige;';
 							} else {
 								border = 'border-bottom:1px solid teal;'
@@ -20296,7 +20312,7 @@ function MT__RUN() {
 							div.setAttribute('style', 'cursor:pointer;' + border);
 							out.appendChild(div);
 							
-							div.className	= r[i].link;
+							div.className	= r[i].link.replace(/^https?:\/\/w*\.*/i, '').toLowerCase();
 							div.fblikes		= r[i].likes * 1;
 							div.bgc			= false;
 							div.pageErr_numRedirects = 0;
