@@ -20127,7 +20127,7 @@ function MT__RUN() {
 	 * 
 	 */
 	//
-	// Syklar Marcum
+	// Skylar Marcum
 	// Find Facebook Names for Companies
 	// 
 	s = '	<li>if you CANNOT find, please populate with "none" &nbsp;-- do not put incorrect data</li>';
@@ -20253,19 +20253,19 @@ function MT__RUN() {
 			scrape_url_for_fb();
 			
 			// Load util window
-			if (o.url != '') {
-				AMT__setUtilityTabs([
-					{
-						url: o.url
-					}
-				]);
-			} else {
-				AMT__setUtilityTabs([
-					{
-						url: ''
-					}
-				]);
-			}
+			//~ if (o.url != '') {
+				//~ AMT__setUtilityTabs([
+					//~ {
+						//~ url: o.url
+					//~ }
+				//~ ]);
+			//~ } else {
+				//~ AMT__setUtilityTabs([
+					//~ {
+						//~ url: ''
+					//~ }
+				//~ ]);
+			//~ }
 			
 			/**
 			 * scrape_url_for_fb
