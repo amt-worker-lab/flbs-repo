@@ -20102,10 +20102,14 @@ function MT__RUN() {
 			/* END ITEMS */
 			
 			d2.value  = o.comp;
-			if (o.comp.toLowerCase() != o.domain_without_extension.toLowerCase())
-				d2b.value = o.comp + ' ' + o.domain_without_extension;
+			if (o.comp.toLowerCase() != o.domain.toLowerCase())
+				d2b.value = o.comp + ' ' + o.domain;
 			else
 				d2b.value = o.comp;
+			//~ if (o.comp.toLowerCase() != o.domain_without_extension.toLowerCase())
+				//~ d2b.value = o.comp + ' ' + o.domain_without_extension;
+			//~ else
+				//~ d2b.value = o.comp;
 			
 			// ...
 			var ef = new AMT___events_factory();
@@ -20279,6 +20283,7 @@ function MT__RUN() {
 						console.log(r);
 						
 						var c = 0;
+						var divs_to_append = []; // for domains matching
 						for (var i in r) {
 							
 							if (r[i].type) {
@@ -20302,8 +20307,10 @@ function MT__RUN() {
 							}
 							
 							var border = '';
+							var domains_are_matching = false;
 							if (r[i].hasOwnProperty('website') && r[i].website.toLowerCase().indexOf(o.domain.toLowerCase()) != -1 && o.domain != '') {
 								border = 'border:3px solid brown;background-color:beige;';
+								domains_are_matching = true;
 							} else {
 								border = 'border-bottom:1px solid teal;'
 							}
@@ -20311,7 +20318,13 @@ function MT__RUN() {
 							// div
 							var div = document.createElement('div');
 							div.setAttribute('style', 'cursor:pointer;' + border);
-							out.appendChild(div);
+							
+							// Append?
+							if (!domains_are_matching) {
+								out.appendChild(div);
+							} else {
+								divs_to_append.push(div);
+							}
 							
 							div.className	= r[i].link.replace(/^https?:\/\/w*\.*/i, '').toLowerCase();
 							div.fblikes		= r[i].likes * 1;
@@ -20400,6 +20413,19 @@ function MT__RUN() {
 							//~ if (out == d1 && c == 0)  //XX
 							//~ if (div.fblikes >= 4) {
 							//~ }
+						}
+						
+						// Domains?
+						if (divs_to_append.length) {
+							if (out.innerHTML != '') { // INSERTBEFORE
+								for (var i in divs_to_append) {
+									out.insertBefore(divs_to_append[i], out.firstChild);
+								}
+							} else { // APPEND
+								for (var i in divs_to_append) {
+									out.appendChild(divs_to_append[i]);
+								}
+							}
 						}
 						
 						if (c == 0) {
