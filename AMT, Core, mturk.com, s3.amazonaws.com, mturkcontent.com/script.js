@@ -20048,11 +20048,13 @@ function MT__RUN() {
 				comp: b[0].innerText.trim(),
 				url: a[0].innerText.trim(),
 				domain: null, 
+				domain_without_extension: null, 
 				comp_array: []
 			}
 			o.comp_array = o.comp.clean_string_to_array();
 			o.domain = o.url.replace(/^https?:\/\/w*\.*/i, '');
-			o.url = (!/^http/i.exec(o.url)) ? 'http://' + o.url : o.url;
+			o.url = (!/^http/i.exec(o.url) && o.url != '') ? 'http://' + o.url : o.url;
+			o.domain_without_extension = o.domain.replace(/(\.co.uk|\.\w{2,4})$/i, ''); // Remove .com, .co.uk, etc.
 			console.log(o);
 			
 			/* BEGIN ITEMS */
@@ -20100,7 +20102,10 @@ function MT__RUN() {
 			/* END ITEMS */
 			
 			d2.value  = o.comp;
-			d2b.value = o.comp + ' ' + o.domain.replace(/(\.co.uk|\.\w{2,4})$/i, ''); // Remove .com, .co.uk, etc.
+			if (o.comp.toLowerCase() != o.domain_without_extension.toLowerCase())
+				d2b.value = o.comp + ' ' + o.domain_without_extension;
+			else
+				d2b.value = o.comp;
 			
 			// ...
 			var ef = new AMT___events_factory();
@@ -20132,7 +20137,10 @@ function MT__RUN() {
 			
 			// ...
 			facebook_company(d1);
-			facebook_company(d1b);
+			if (d2.value.trim() != d2b.value.trim())
+				facebook_company(d1b);
+			else
+				d1b.innerText = '--';
 			scrape_url_for_fb();
 			
 			/**
@@ -20141,6 +20149,10 @@ function MT__RUN() {
 			 */
 			function scrape_url_for_fb(div) {
 				
+				if (o.url == '') {
+					d1c.innerText = '--';
+					return;
+				}
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: o.url,
@@ -20158,9 +20170,10 @@ function MT__RUN() {
 						while (m = reg.exec(rs)) {
 							m[0] = (!/^http/i.exec(m[0])) ? 'https://' + m[0] : m[0]; // Add http://
 							var div = document.createElement('div');
-							div.setAttribute('style', 'border-bottom:1px solid teal;');
+							div.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
 							div.innerHTML = MT__bold(m[0], [o.domain]);
-							div.className = 'exe';
+							div.className = m[0].replace(/^http:/i, 'https:').toLowerCase();
+							//~ div.className = 'exe';
 							div.fblink = m[0];
 							d1c.appendChild(div)
 							div.onclick = function() {
@@ -20169,6 +20182,7 @@ function MT__RUN() {
 								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
+							facebook_company_mouseevents(div);
 						}
 						
 						if (d1c.innerText == '') {
@@ -20178,6 +20192,27 @@ function MT__RUN() {
 				});
 			}
 			
+			/**
+			 * facebook_company_mouseevents
+			 */
+			function facebook_company_mouseevents(div) {
+				// onmouseover
+				div.onmouseover = function() {
+					var x = document.getElementsByClassName(this.className);
+					for (var i in x) {
+						if (i == 'length') break;
+						x[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				// onmouseout
+				div.onmouseout = function() {
+					var x = document.getElementsByClassName(this.className);
+					for (var i in x) {
+						if (i == 'length') break;
+						x[i].style.backgroundColor = '';
+					}
+				}
+			}
 			/**
 			 * facebook_company
 			 * 
