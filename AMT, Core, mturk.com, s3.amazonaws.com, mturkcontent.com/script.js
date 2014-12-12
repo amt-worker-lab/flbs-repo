@@ -20190,6 +20190,7 @@ function MT__RUN() {
 						while (m = reg.exec(rs)) {
 							m[0] = (!/^http/i.exec(m[0])) ? 'https://' + m[0] : m[0]; // Add http://
 							m[0] = m[0].replace(/\?[\d\D]*/, '');// remove ?xxxx
+							m[0] = m[0].replace(/^https?:\/*/i, 'https://'); // Fix https?:////
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
 							div.innerHTML = MT__bold(m[0], [o.domain]);
@@ -20437,140 +20438,6 @@ function MT__RUN() {
 							var div = document.createElement('div');
 							div.setAttribute('style', 'height:2000px;');
 							out.appendChild(div);
-						}
-					}
-				});
-			}
-			//<a class="_3wqb" href="https://www.facebook.com/CHAHVets?sk=reviews" id="u_0_1y" data-hovercard="u_0_1y" data-hovercard-instant="1" data-hovercard-offset-x="20">
-			//<a class="_g3j" href="https://www.facebook.com/CHAHVets?sk=reviews"></a><i class="_1uhg _3-9a img sp_m5zUGIMREvf sx_d83f9c"></i><div class="_1uhd"><span class="_g3i _50f7">Reviews</span>
-			function facebook_company__profile(div) {
-				
-				var div = div;
-				
-				if (div.pageErr_numRedirects > 1) return;
-				
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: div.className,
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) return;
-						
-						//~ console.log(rs);
-						var r = /<script>window\.location\.replace\("(https:\\\/\\\/www\.facebook\.com\\\/[^"]+)"\);<\/script>/.exec(rs);
-						if (r) {
-							div.pageErr_numRedirects++;
-							div.className = r[1].replace(/\\/g, '');
-							
-							//~ console.log(div.className);
-							//~ return;
-							
-							facebook_company_reviews__profile(div);
-							return;
-						}
-						
-						var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
-						if (r) {
-							r = __js_clean_html_str(r[1]).trim();
-							
-							var maxW = '50%';
-							if  (
-								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
-								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
-								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
-								)
-							{
-								//~ div.appendChild(document.createElement('br'));
-								//~ div.appendChild(document.createTextNode(' X X '));
-								div.style.border = '4px solid teal';
-								div.style.margin = '-4px -4px -4px -4px';
-								//return;
-								
-								maxW = '20%';
-							}
-							
-							var img = document.createElement('img');
-							img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
-							img.fblink = div.className;
-							img.src = r;
-							div.appendChild(img);
-							img.onclick = function(e) {
-								this.style.border = '4px dashed blue';
-								var i = this.fblink;
-								
-								document.getElementById('Q1Url').value = i;
-								
-								//~ new AMT___core_factory().nextTab();
-								//~ doSubmit();
-								
-								e.stopPropagation();
-								e.preventDefault();
-								return false;
-							}
-							
-							//~ //CHAHVets?sk=reviews
-							//~ //{"href":"https:\/\/www.facebook.com\/THESteakhouseCCLV\/reviews","key":"reviews","label":"Reviews"},
-							//~ //
-							//~ var reviews = /\{"href":"https:\\\/\\\/www\.facebook\.com\\\/[^\\]+\\\/reviews","key":"reviews","label":"Reviews"\}/;
-							//~ //var reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
-							//~ 
-							//~ reviews = reviews.exec(rs);
-							//~ if (!reviews) {
-								//~ reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
-								//~ reviews = reviews.exec(rs);
-								//~ if (reviews) {
-									//~ reviews = __js_clean_html_str(reviews[1]);
-								//~ }
-							//~ } else {
-								//~ console.log(reviews);
-								//~ reviews = JSON.parse(reviews[0]).href;
-								//~ console.log(reviews);
-							//~ }
-							//~ if (reviews) {
-								//~ 
-								//var x = __js_clean_html_str(reviews[1]);
-								//~ if (/^https:\/\/www\.facebook\.com\/[^\/]+$/.exec(reviews)) {
-									//~ reviews = reviews.replace(/\?sk=reviews/i, '/reviews');
-								//~ }
-								//~ 
-								//~ div.appendChild(document.createElement('br'));
-								//~ div.appendChild(document.createTextNode(reviews));
-								//~ 
-								//~ img.reviewsURL = reviews;
-								//~ img.style.border = '4px solid blue';
-								//~ img.onclick = function(e) {
-									//~ this.style.border = '4px dashed blue';
-									//~ var i = this.reviewsURL;
-									//~ 
-									//~ document.getElementById('Q1Url').value = i;
-									//~ 
-									//~ new AMT___core_factory().nextTab();
-									//~ doSubmit();
-									//~ 
-									//~ e.stopPropagation();
-									//~ e.preventDefault();
-									//~ return false;
-								//~ }
-							//~ }
-							//~ else
-							//~ {
-								//~ img.onclick = function(e) {
-									//~ this.style.border = '4px dashed blue';
-									//~ var i = this.fblink;
-									//~ 
-									//~ document.getElementById('Q1Url').value = i;
-									//~ 
-									//~ new AMT___core_factory().nextTab();
-									//~ doSubmit();
-									//~ 
-									//~ e.stopPropagation();
-									//~ e.preventDefault();
-									//~ return false;
-								//~ }
-							//~ }
-							//~ 
-							//~ img.src = r;
-							//~ div.appendChild(img);
 						}
 					}
 				});
