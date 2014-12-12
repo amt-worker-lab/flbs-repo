@@ -20189,7 +20189,9 @@ function MT__RUN() {
 						var m;
 						while (m = reg.exec(rs)) {
 							m[0] = (!/^http/i.exec(m[0])) ? 'https://' + m[0] : m[0]; // Add http://
-							m[0] = m[0].replace(/\?[\d\D]*/, '');// remove ?xxxx
+							if (m[0].toLowerCase().indexOf('profile.php') == -1) {
+								m[0] = m[0].replace(/\?[\d\D]*/, '');// remove ?xxxx
+							}
 							m[0] = m[0].replace(/^https?:\/*/i, 'https://'); // Fix https?:////
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
