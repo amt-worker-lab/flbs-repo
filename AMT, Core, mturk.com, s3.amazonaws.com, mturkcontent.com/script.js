@@ -84148,6 +84148,7 @@ qatar,80
 	 * Jordan Burke
 	 * Derek Vansant
 	 * Qian Wang
+	 * VFN Master
 	 * 
 	 * ......OLD...... Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
@@ -84421,6 +84422,9 @@ qatar,80
 					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/i, '$1');
+					
+					// Remove en., it. et cetera from the className. This is for en.wikipedia.org, it.wikipedia.org, etc.
+					cls = cls.replace(/^\w+\.wikipedia/, 'wikipedia');
 					
 					// ...
 					var d = document.createElement('p');
