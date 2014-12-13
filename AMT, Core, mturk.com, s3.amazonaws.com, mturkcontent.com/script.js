@@ -2425,6 +2425,18 @@ function MT__RUN() {
 							document.getElementById('totrev'),
 							document.getElementById('income')
 						];
+						var reg = /<td valign="top" align="right">Total Patient Revenue:<\/td>[\r\n\t\s]+<td align="left">&#36;([\d,\-]+)<\/td>/.exec(rs);
+						if (reg && q[0]) {
+							document.getElementById('gpr').value = reg[1];
+							
+							if (!q[1] && !q[2] && !q[3]) {
+								doSubmit();
+								return;
+							}
+						} else sbm = false;
+						return;
+						
+						// OLD TASK
 						var reg = /<td align="left">Gross Patient Revenue<\/td>[\r\n\t\s]+<td align="right"><NOWRAP>&#36;([\d,\-]+)<\/NOWRAP><\/td>/.exec(rs);
 						if (reg && q[0]) {
 							document.getElementById('gpr').value = reg[1];
