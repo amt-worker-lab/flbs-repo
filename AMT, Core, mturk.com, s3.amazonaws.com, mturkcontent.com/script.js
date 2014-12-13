@@ -35,9 +35,7 @@ var beginRunTime = new Date().getTime();
  * 
  * 
  * 
-
-Ex:
-
+ * Ex:
 MT__bold('test <b hahaha>test test test test a</b>', ['test']));
 	<b>test</b> <b hahaha><b>test</b>1 <b>test</b> <b>test</b> <b>test</b> a</b> 
 MT__bold('test <b hahaha>test1</b>', ['test1']));
@@ -84178,9 +84176,11 @@ qatar,80
 			var o = {
 				name: td[13].innerText.trim(),
 				sport: td[15].innerText.trim(),
-				bold_array: []
+				bold_array: [],
+				bold_array_sport: [],
 			}
-			o.bold_array = o.name.clean_string_to_array().concat(o.sport.clean_string_to_array());
+			o.bold_array = o.name.clean_string_to_array();
+			o.bold_array_sport = o.sport.clean_string_to_array();
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -84269,7 +84269,7 @@ qatar,80
 			// ...
 			d3.value  = o.name;
 			d3b.value = '"' + o.name + '" ' + o.sport;
-			d3c.value = o.name + ' "' + o.sport + '"';
+			d3c.value = o.name + ' ' + o.sport + '';
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -84312,6 +84312,7 @@ qatar,80
 			
 			function company_URL__SP_init(el_div, el_inp) {
 				var req_proxy;
+				var st_en = 'site:en.wikipedia.org ';
 				var st = 'site:wikipedia.org ';
 				//
 				if (el_inp && el_div) { // single! (+dynamic!)
@@ -84329,14 +84330,14 @@ qatar,80
 				
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(st+d3.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(st_en+d3.value),
 					seed: d1,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
 				});
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(st+d3b.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(st_en+d3b.value),
 					seed: d1b,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
@@ -84408,8 +84409,15 @@ qatar,80
 							}
 						);
 					
-					// add bold (bold_array)
+					// Remove bold
+					full = full.replace(/<\/?b>/g, '');
+					
+					// Add bold (bold_array)
 					full = MT__bold(full, o.bold_array);
+					
+					// Add bold (bold_array_sport)
+					// Returns as object[.bold_string]
+					full = MT__bold(full, o.bold_array_sport, {color: 'blue'}).bold_string; //console.log(full);
 					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/i, '$1');
