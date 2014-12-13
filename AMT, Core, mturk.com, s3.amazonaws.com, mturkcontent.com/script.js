@@ -84421,7 +84421,9 @@ qatar,80
 					full = MT__bold(full, o.bold_array_sport, {color: 'blue'}).bold_string; //console.log(full);
 					
 					// classname is http://(www. = '')x.com (no www)
-					var cls = x.replace(/^(https?:\/\/|)(www\.|)/i, '$1');
+					//~ var cls = x.replace(/^(https?:\/\/|)(www\.|)/i, '$1');
+					//
+					var cls = x.replace(/^https?:\/\/(www\.|)/i, '');
 					
 					// Remove en., it. et cetera from the className. This is for en.wikipedia.org, it.wikipedia.org, etc.
 					cls = cls.replace(/^\w+\.wikipedia/, 'wikipedia');
