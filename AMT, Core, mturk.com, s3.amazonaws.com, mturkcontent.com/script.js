@@ -2423,6 +2423,7 @@ function MT__RUN() {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
+							document.body.style.backgroundColor = 'yellow';
 							return;
 						}
 						
@@ -2442,7 +2443,10 @@ function MT__RUN() {
 								doSubmit();
 								return;
 							}
-						} else sbm = false;
+						} else {
+							sbm = false;
+							document.body.style.backgroundColor = 'blue';
+						}
 						return;
 						
 						// OLD TASK
@@ -2472,9 +2476,7 @@ function MT__RUN() {
 						if (sbm) {
 							doSubmit();
 						}
-						else {
-							document.body.style.backgroundColor = 'blue';
-						}
+
 					}
 				});
 			}
