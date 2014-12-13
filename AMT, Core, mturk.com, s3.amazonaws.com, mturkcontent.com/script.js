@@ -2393,7 +2393,7 @@ function MT__RUN() {
 						console.log(rs.match(reg).length);
 						
 						if (rs.match(reg).length != 1) {
-							if(res.match(reg).legnth >= 2) {
+							if(rs.match(reg).length >= 2) {
 								document.body.style.backgroundColor = 'green';
 							}
 							else {
@@ -2471,6 +2471,9 @@ function MT__RUN() {
 						console.log(sbm);
 						if (sbm) {
 							doSubmit();
+						}
+						else {
+							document.body.style.backgroundColor = 'blue';
 						}
 					}
 				});
