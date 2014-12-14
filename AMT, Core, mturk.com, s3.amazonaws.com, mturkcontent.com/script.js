@@ -76170,6 +76170,7 @@ qatar,80
 	 * Data Cleansing
 	 * Fiber Data
 	 * Pharm3r
+	 * Carol Chen
 	 */
 	//
 	// Carol Chen
@@ -77287,13 +77288,12 @@ qatar,80
 	s = '<li><span style="font-family: Arial;">Using online search tools (company website, google, bing, linkedin, investing.businessweek.com, hoovers.com), search for the company by the provided name.&nbsp;</span></li>';
 	if(ih.indexOf(s) != -1)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 		GM_addStyle('body {width:18%;margin-top:30px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
 		GM_addStyle('input {width:96%;}');
 		GM_addStyle('#State {width:20px;display:block;}');
-		
-		
+				
 		/* BEGIN ITEMS */
 		var d;
 		d = document.createElement('div');
@@ -77444,7 +77444,7 @@ qatar,80
 			//~ Data_Cleansing_find_company_addr__skips_write();
 		//~ }
 		d2d.onfocus = function() {
-			Data_Cleansing_find_company_addr__skips_init(false);
+			//~ Data_Cleansing_find_company_addr__skips_init(false);
 		}
 		/* END ITEMS */
 		
@@ -77481,6 +77481,14 @@ qatar,80
 			Data_Cleansing_businessweek_addr(false);
 			Data_Cleansing_google_addr();
 		}
+		var ef = new AMT___events_factory();
+		d2.addEventListener('keydown', ef.keydown__blur_field, true);
+		ef.mouseup__delete_range({
+			element: d2,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
 		
 		//Turn the company name into a google search
 		var name = document.getElementsByTagName("b")[12];
@@ -77490,41 +77498,56 @@ qatar,80
 			"</a>";
 		
 		// onsubmit
-		document.getElementById('mturk_form').onsubmit = function() {
+		document.getElementById('submitButton').onclick = function() {
+			var sbm = true;
 			var x = document.getElementById('SourceURL');
 			x.value = x.value.trim();
 			if (x.value.length < 8) {
-				console.log('1');
-				return false;
+				x.style.border = '2px solid orange'
+				//~ console.log('1');
+				sbm=false;
 			}
 			var x = document.getElementById('State');
 			x.value = x.value.trim();
 			if (x.value.length != 2) {
-				console.log('Country length != 2');
-				x.style.border = '1px solid orange';
-				return false;
+				//~ console.log('Country length != 2');
+				x.style.border = '2px solid orange';
+				sbm=false;
 			}
 			var x = document.getElementById('Country');
 			x.value = x.value.trim();
 			if (x.value.length < 1 || x.value.length > 4) {
-				console.log('Country length <1 or >4');
-				x.style.border = '1px solid orange';
-				return false;
+				//~ console.log('Country length <1 or >4');
+				x.style.border = '2px solid orange';
+				sbm=false;
 			}
 			var x = document.getElementById('Address1');
 			x.value = x.value.trim();
 			if (x.value.length < 1) {
-				console.log('3');
-				x.style.border = '1px solid orange';
-				return false;
+				//~ console.log('3');
+				x.style.border = '2px solid orange';
+				sbm=false;
 			}
 			var x = document.getElementById('City');
 			x.value = x.value.trim();
 			if (x.value.length < 1) {
-				console.log('4');
-				x.style.border = '1px solid orange';
-				return false;
+				//~ console.log('4');
+				x.style.border = '2px solid orange';
+				sbm=false;
 			}
+			
+			// Confirm
+			if (!sbm) {
+				var cf = confirm('Some fields may be erroneous. Submit anyway?');
+				if (!cf) {
+					return false;
+				}
+			}
+			
+			// Still here?
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
 		}
 		//
 		if (/^null$/i.exec(d2.value.trim())) {
@@ -77535,10 +77558,14 @@ qatar,80
 		var items_fty = new AMT___items_factory();
 		var requests_fty = new AMT___requests_factory();
 		
-		// skip this job?
-		AMT___POPUP__initializeGlobals(
-			Data_Cleansing_find_company_addr__skips_init
-		);
+		// OLD INIT
+		//~ // skip this job?
+		//~ AMT___POPUP__initializeGlobals(
+			//~ Data_Cleansing_find_company_addr__skips_init
+		//~ );
+		
+		// INIT
+		Data_Cleansing_find_company_addr__init();
 		
 		// function Data_Cleansing_find_company_addr__skips_init()
 		// this will re-populate the textarea when/if !start (textarea.onclick)
@@ -77679,10 +77706,13 @@ qatar,80
 			// 0,0 20000000 = world search
 			//
 			
+			// Replace ()
+			var x = d2.value.replace(/\([^\)]+\)/g, '').trim();
+			
 			d1d.innerHTML = '';
 			
 			var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
-				encodeURIComponent(d2.value)+
+				encodeURIComponent(x)+
 				'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 			
 			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
@@ -77731,8 +77761,8 @@ qatar,80
 								document.getElementById('State').value =	'';
 								document.getElementById('Country').value =	'';
 								document.getElementById('Zip').value =		'';
-								document.getElementById('OtherNames').value	= '';
-								document.getElementById('SourceURL').value = '';
+								document.getElementById('OtherNames').value='';
+								document.getElementById('SourceURL').value ='';
 								
 								var id = JSON.parse(this.json_response); // obj -> place detail
 								console.log(id);
@@ -77748,49 +77778,33 @@ qatar,80
 										document.getElementById('Address1').value = (j + ' ' + document.getElementById('Address1').value).trim();
 									if (type == 'route')
 										document.getElementById('Address1').value = (document.getElementById('Address1').value+' '+j).trim();
-									if (type == 'locality')
+									if (type == 'sublocality_level_1' || type == 'neighborhood' || type == 'locality') // CHACNGE FROM "LOCALITY" DEC14 2014
 										document.getElementById('City').value = j;
 									if (type == 'administrative_area_level_1')
-										document.getElementById('State').value = j;
+										document.getElementById('State').value = j.state_full_to_abbr(); // state_full_to_abbr
 									if (type == 'country')
 										document.getElementById('Country').value = Data_Cleansing_find_company_addr__country2abbr(j); // !
 									if (type == 'postal_code')
 										document.getElementById('Zip').value = j;
+									//~ if (type == 'locality')
 								}
 								
 								document.getElementById('OtherNames').value = id.result.name;
 								document.getElementById('SourceURL').value = id.result.url;
+								
+								document.getElementById('OtherNames').select();
+								document.getElementById('OtherNames').focus();
 							}
 						}
 						
 						d1d.appendChild(div);
-						
-						
-						//~ d1d.innerHTML += '\
-							//~ <div value="" id="" class="exe-google" style="width:auto;text-align:left;border-bottom:2px solid teal;">\
-							//~ </div>\
-						//~ ';//rs[i].reference
-						//~ 
-						//~ var x = d1d.getElementsByTagName('div');
-						//~ x[x.length - 1].id = JSON.stringify(rs[i]);
-						//~ x[x.length - 1].innerText = rs[i].description;
 					}
 					
 					if (rs.length) {
 						var div = document.createElement('div');
 						div.setAttribute('style', 'height:1200px;');
 						d1d.appendChild(div);
-						
-						//~ d1d.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
 					}
-					
-					//~ var x = document.getElementsByClassName('exe-google');
-					//~ for (var i in x) {
-						//~ if (!x[i]) continue;
-						//~ x[i].onclick = function() {
-							//~ 
-						//~ }
-					//~ }
 				}
 			});
 		}
@@ -78164,10 +78178,7 @@ qatar,80
 							}
 						}
 						
-						var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-						
-						
-						
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
 						
 						var div = document.createElement('div');
 						div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
@@ -78176,14 +78187,14 @@ qatar,80
 						inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
 						inp.innerHTML = r[i].name;
 						inp.json_object = r[i];
-						
 						inp.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
 							//~ console.log(this.id);
 							//~ var i = JSON.parse(this.id);
-							
+							var i = this.json_object;
 							console.log(i);
-							var i = this.id;
+							//~ var i = this.id;
+							//~ var i = this.id;
 							
 							if (i.name) {
 								document.getElementById('OtherNames').value = i.name;
@@ -78234,57 +78245,30 @@ qatar,80
 						
 						d1.appendChild(div);
 						
-						
-						
-						
-						
-						//~ d1.innerHTML += '\
-							//~ <input type="button" value="'+r[i].name+'" id="'+x+'" class="exe" style="width:auto;">\
-							//~ \
-						//~ ';
 						//~ 
-						//~ var x = d1.getElementsByTagName('input');
-						//~ x = x[x.length - 1];
-						//~ x.id = y;
-						//~ 
-						//~ d1.innerHTML += '<br>likes:'+r[i].likes;
-						//~ d1.innerHTML += '<br>talking_about_count:'+r[i].talking_about_count;
-						//~ 
-						//~ if (r[i].location) {
-							//~ for (var j in r[i].location) {
-								//~ d1.innerHTML += '<br>' + r[i].location[j];
+						//~ if (c==0) { // && !found
+							//~ 
+							//~ var match__ = r[i].name;
+							//~ match__ = match__.replace(/&/g, 'and');
+							//~ match__ = match__.replace(/^the /i, '');
+							//~ match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+							//~ match__ = match__.replace(/(official|music)$/i, '');
+							//~ 
+							//~ console.log(match__);
+							//~ console.log(match_o);
+							//~ 
+							//~ if  (
+								//~ match_o == match__ &&
+								//~ match_o.length >= 3
+								//~ )
+							//~ {
+								//found = true;
+								//~ 
+								//~ var x = d1.getElementsByTagName('input');
+								//~ x = x[x.length - 1];
+								//~ x.style.backgroundColor = 'LightGreen';
 							//~ }
 						//~ }
-						//~ 
-						//~ if (r[i].category) {
-							//~ var x = r[i].category;
-							//~ d1.innerHTML += '<br>'+x;
-						//~ }
-						
-						if (c==0) { // && !found
-							
-							var match__ = r[i].name;
-							match__ = match__.replace(/&/g, 'and');
-							match__ = match__.replace(/^the /i, '');
-							match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
-							match__ = match__.replace(/(official|music)$/i, '');
-							
-							console.log(match__);
-							console.log(match_o);
-							
-							if  (
-								match_o == match__ &&
-								match_o.length >= 3
-								)
-							{
-								//~ found = true;
-								
-								var x = d1.getElementsByTagName('input');
-								x = x[x.length - 1];
-								x.style.backgroundColor = 'LightGreen';
-							}
-						}
-						//~ d1.innerHTML += '<hr>';
 						c++;
 					}
 					
@@ -78297,47 +78281,6 @@ qatar,80
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1400px;');
 					d1.appendChild(div);
-					
-					//~ d1.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
-					//~ 
-					//~ var x = document.getElementsByClassName('exe');
-					//~ for (var i in x) {
-						//~ if (!x[i]) continue;
-						//~ x[i].onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ console.log(this.id);
-							//~ var i = JSON.parse(this.id);
-							//~ console.log(i);
-							//~ 
-							//~ if (i.name) {
-								//~ document.getElementById('OtherNames').value = i.name;
-							//~ }
-							//~ if (i.link) {
-								//~ document.getElementById('SourceURL').value = i.link;
-							//~ }
-							//~ if (i.location) {
-								//~ i = i.location;
-								//~ if (i.street) {
-									//~ i.street = i.street.replace(/\s+/g, ' ');
-									//~ document.getElementById('Address1').value = i.street;
-								//~ }
-								//~ if (i.city) {
-									//~ document.getElementById('City').value = i.city;
-								//~ }
-								//~ if (i.state) {
-									//~ document.getElementById('State').value = i.state;
-								//~ }
-								//~ if (i.country) {
-									//~ document.getElementById('Country').value = Data_Cleansing_find_company_addr__country2abbr( i.country ); // !
-								//~ }
-								//~ if (i.zip) {
-									//~ document.getElementById('Zip').value = i.zip;
-								//~ }
-							//~ }
-							//~ document.getElementById('OtherNames').focus();
-							//~ document.getElementById('OtherNames').select();
-						//~ }
-					//~ }
 				}
 			});
 		}

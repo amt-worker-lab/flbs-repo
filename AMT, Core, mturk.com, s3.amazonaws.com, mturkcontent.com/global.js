@@ -1231,6 +1231,19 @@ String.prototype.stateAbbrToFull = function() {
 	// None found?
 	return str.toUpperCase();
 }
+String.prototype.state_full_to_abbr = function() {
+	
+	str = this.toString().toLowerCase().trim();
+	
+	for (var i in MT___states) {
+		if (MT___states[i].toLowerCase() == str) {
+			return i;
+		}
+	}
+	
+	// None found?
+	return str.toUpperCase();
+}
 
 /**
  * AMT factories
