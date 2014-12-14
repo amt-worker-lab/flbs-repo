@@ -77448,11 +77448,16 @@ qatar,80
 		}
 		/* END ITEMS */
 		
+		var o = {
+			comp: null
+		};
+		
 		// ...
 		var b;
 		b = /<p><span style="font-family: Arial;">Primary Name: <b>([^<]+)<\/b><\/span><\/p>/.exec(ih)[1];
 		b = __js_clean_html_str(b).trim();
 		var COMP = b;
+		o.comp = b;
 		// ...
 		var location;
 		location = /<p><span style="font-family: Arial;">Suggested Location:&nbsp;<b>([^<]+)<\/b><\/span><\/p>/.exec(ih);
@@ -77699,6 +77704,16 @@ qatar,80
 			});
 		}
 		
+		// function Data_Cleansing_find_company_addr__other_names
+		// Clear OtherNames field
+		function Data_Cleansing_find_company_addr__other_names() {
+			var on = document.getElementById('OtherNames');
+			if (on.value.toLowerCase().replace(/[\.,]/g, '') == o.comp.toLowerCase().replace(/[\.,]/g, '')) {
+				on.value = '';
+			}
+			//~ console.log(on.value.toLowerCase().replace(/[\.,]/g, ''));
+			//~ console.log(o.comp.toLowerCase().replace(/[\.,]/g, ''));
+		}
 		// function Data_Cleansing_google_addr
 		function Data_Cleansing_google_addr() {
 		
@@ -77794,6 +77809,8 @@ qatar,80
 								
 								document.getElementById('OtherNames').select();
 								document.getElementById('OtherNames').focus();
+								
+								Data_Cleansing_find_company_addr__other_names();
 							}
 						}
 						
@@ -77921,6 +77938,7 @@ qatar,80
 							document.getElementById('OtherNames').focus();
 							document.getElementById('OtherNames').select();
 							Data_Cleansing_businessweek_addr_prof(this.url_bw);
+							Data_Cleansing_find_company_addr__other_names();
 						}
 						
 						div.appendChild(inp);
@@ -77971,19 +77989,6 @@ qatar,80
 						Data_Cleansing_businessweek_addr(false);
 						return;
 					}
-					//~ 
-					//~ var x = document.getElementsByClassName('exe3');
-					//~ for (var i in x) {
-						//~ if (!x[i]) continue;
-						//~ x[i].onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ document.getElementById('OtherNames').value = this.value;
-							//~ document.getElementById('SourceURL').value = this.id;
-							//~ document.getElementById('OtherNames').focus();
-							//~ document.getElementById('OtherNames').select();
-							//~ Data_Cleansing_businessweek_addr_prof(this.id);
-						//~ }
-					//~ }
 				}
 			});
 		}
@@ -78082,6 +78087,7 @@ qatar,80
 							document.getElementById('OtherNames').focus();
 							document.getElementById('OtherNames').select();
 							Data_Cleansing_hoovers_addr_prof(this.url_hv);
+							Data_Cleansing_find_company_addr__other_names();
 						}
 						
 						div.appendChild(inp);
@@ -78109,18 +78115,6 @@ qatar,80
 						div.setAttribute('style', 'height:1400px;');
 						d1b.appendChild(div);
 					}
-					//~ var x = document.getElementsByClassName('exe2');
-					//~ for (var i in x) {
-						//~ if (!x[i]) continue;
-						//~ x[i].onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ document.getElementById('OtherNames').value = this.value;
-							//~ document.getElementById('SourceURL').value = 'http://www.hoovers.com'+this.id;
-							//~ document.getElementById('OtherNames').focus();
-							//~ document.getElementById('OtherNames').select();
-							//~ Data_Cleansing_hoovers_addr_prof('http://www.hoovers.com'+this.id);
-						//~ }
-					//~ }
 				}
 			});
 		}
@@ -78223,6 +78217,8 @@ qatar,80
 							}
 							document.getElementById('OtherNames').focus();
 							document.getElementById('OtherNames').select();
+							
+							Data_Cleansing_find_company_addr__other_names();
 						}
 						div.appendChild(inp);
 						
