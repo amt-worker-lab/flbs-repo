@@ -293,6 +293,8 @@ function MT__RUN() {
 					o.city = addr[2];
 					o.state = addr[3];
 					o.fullState = o.state.stateAbbrToFull();
+					console.log(o);
+					//return;
 					o.zip = addr[4];
 				}
 				else {
@@ -395,8 +397,8 @@ function MT__RUN() {
 				
 				// ...
 				d3.value  = 'site:hotels.com '+o.name;
-				d3b.value = 'site:hotels.com ' + '"' + o.name + '" ' + o.zip;
-				d3c.value = 'site:hotels.com ' + '"'+ o.name+'"';
+				d3b.value = 'site:hotels.com ' + '"' + o.name + '" ' + o.city + ' ' + o.fullState;
+				d3c.value = 'site:hotels.com ' + ''+ o.name+' ' +o.fullState;
 				
 				var load_first = true;
 				var FOUND_ONE_NONSKIP = false;
@@ -460,7 +462,7 @@ function MT__RUN() {
 					req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
 						seed_arg1: d1,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:hotels.com ' + d3.value)
 					});
 					req_proxy.proxy_init();
 					req_proxy.proxy_waitComplete(
@@ -470,7 +472,7 @@ function MT__RUN() {
 					req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
 						seed_arg1: d1b,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:hotels.com ' + d3b.value)
 					});
 					req_proxy.proxy_init();
 					req_proxy.proxy_waitComplete(
@@ -481,7 +483,7 @@ function MT__RUN() {
 						req_proxy = new AMT___xhr_PROXY_REDACTED_({
 							startPage: true,
 							seed_arg1: d1c,
-							url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
+							url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:hotels.com ' + d3c.value)
 						});
 						req_proxy.proxy_init();
 						req_proxy.proxy_waitComplete(
@@ -609,7 +611,8 @@ function MT__RUN() {
 							
 							document.getElementById('web_url').value = this.value;
 							var idReg = /hotels.com\/ho([\d]+)/;
-							var id = idReg.exec(this.value);
+							var id = idReg.exec(this.value)[1];
+							console.log(id);
 							document.getElementById('hotel_id_response').value = id;
 							
 							// showNextTab OR nextTab
