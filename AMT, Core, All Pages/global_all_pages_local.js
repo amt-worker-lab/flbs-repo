@@ -308,8 +308,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		 * 
 		 * @returns
 		 */
-		if (request.hasOwnProperty('google_hangouts_load_phone') && document.location.href.indexOf('googleusercontent.com/gadgets/') != -1) {
-			
+		if (request.google_hangouts_load_phone && document.location.href.indexOf('googleusercontent.com/gadgets/') != -1) {
+			console.log('inside of if statement for google hangout load phone');
 			// Put JSON object into a new div with class name 'MakePhoneCommands'
 			var pcDiv = document.createElement('div');
 			pcDiv.setAttribute('class', 'MakePhoneCommands');
