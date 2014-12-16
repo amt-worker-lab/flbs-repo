@@ -276,18 +276,27 @@ function MT__RUN() {
 				method:'GET',
 				url:link,
 				onload: function(response) {
-				if(response.status != 200) {
-					new AMT___core_factory().nextTab();
-					return;
-				}
-				
 				var rs = response.responseText;
-				
+
 				if(rs.indexOf('<span style="font-size:14px;">The page you requested has been moved or is no longer available.</span>') != -1) {
+				
+					document.getElementById('web_url').value = 'N/A';
+					document.getElementById('hotel_id_response').value = ''; //Won't allow it to be n/a
+					document.getElementById('notes').value = 'The website given on Mturk fails to load. When I click ' + link + ' I get a site saying "The page you requested has been moved or is no longer available."';
+					
 					new AMT___core_factory().nextTab();
-					//doSubmit();
+					doSubmit();
 					return;
 				}
+					
+				if(response.status != 200) {
+					//new AMT___core_factory().nextTab();
+					return;
+				}
+				
+
+				
+				
 				
 				var addressReg = /"streetAddress">([^<]*)<\/span>[^<]*<span itemprop="addressLocality">([^<]*)<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
 				var addr;
