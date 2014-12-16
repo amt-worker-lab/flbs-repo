@@ -306,6 +306,12 @@ function MT__RUN() {
 				var name;
 				if(name = nameReg.exec(rs)) {
 					o.name = name[1];
+					o.shortName = []
+					o.shortName.push(o.name.split(' ')[0]);
+					if(o.name.split(' ')[1]) {
+						o.shortName.push(o.name.split(' ')[1]);
+					}
+					o.shortName = o.shortName.join(' ');
 				}
 				else {
 					console.log('name scrape fail');
@@ -396,9 +402,9 @@ function MT__RUN() {
 				});
 				
 				// ...
-				d3.value  = 'site:hotels.com '+o.name;
-				d3b.value = 'site:hotels.com ' + '"' + o.name + '" ' + o.city + ' ' + o.fullState;
-				d3c.value = 'site:hotels.com ' + ''+ o.name+' ' +o.fullState;
+				d3.value  = '"' + o.name + '"';
+				d3b.value = o.name + ' ' + o.city + ' ' + o.fullState;
+				d3c.value = o.shortName+' ' +o.fullState;
 				
 				var load_first = true;
 				var FOUND_ONE_NONSKIP = false;
@@ -619,7 +625,7 @@ function MT__RUN() {
 							new AMT___core_factory().nextTab();
 							
 							
-							//doSubmit();
+							doSubmit();
 						}
 						//mouseover
 						d.addEventListener('mouseover', function() {
