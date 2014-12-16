@@ -393,9 +393,9 @@ function MT__RUN() {
 				});
 				
 				// ...
-				d3.value  = o.name;
-				d3b.value = '"' + o.name + '" ' + o.zip;
-				d3c.value ='"'+ o.name+'"';
+				d3.value  = 'site:hotels.com/ho '+o.name;
+				d3b.value = 'site:hotels.com/ho ' + '"' + o.name + '" ' + o.zip;
+				d3c.value = 'site:hotels.com/ho ' + '"'+ o.name+'"';
 				
 				var load_first = true;
 				var FOUND_ONE_NONSKIP = false;
@@ -538,6 +538,20 @@ function MT__RUN() {
 							);
 						
 						// add bold (bold_array)
+						var bold_array = []
+						for(var j in o) {
+							if(o[j] && typeof o[j] == 'string') {
+								console.log(o[j]);
+								var toBold = o[j].split[' '];
+								if(toBold && toBold.length) {
+									for(var k = 0; k < toBold.length; k++) {
+										toBold[k] = toBold[k].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
+										bold_array.push(toBold[k]);
+									}
+								}
+							}
+						}
+						o.bold_array = bold_array;
 						full = MT__bold(full, o.bold_array);
 						
 						// classname is http://(www. = '')x.com (no www)
