@@ -292,6 +292,7 @@ function MT__RUN() {
 					o.street = addr[1];
 					o.city = addr[2];
 					o.state = addr[3];
+					o.fullState = o.state.stateAbbrToFull();
 					o.zip = addr[4];
 				}
 				else {
@@ -393,9 +394,9 @@ function MT__RUN() {
 				});
 				
 				// ...
-				d3.value  = 'site:hotels.com/ho '+o.name;
-				d3b.value = 'site:hotels.com/ho ' + '"' + o.name + '" ' + o.zip;
-				d3c.value = 'site:hotels.com/ho ' + '"'+ o.name+'"';
+				d3.value  = 'site:hotels.com '+o.name;
+				d3b.value = 'site:hotels.com ' + '"' + o.name + '" ' + o.zip;
+				d3c.value = 'site:hotels.com ' + '"'+ o.name+'"';
 				
 				var load_first = true;
 				var FOUND_ONE_NONSKIP = false;
@@ -510,10 +511,14 @@ function MT__RUN() {
 						var link = rs[i][0];
 						var full = rs[i][1];
 						
+						if(link.indexOf('hotels.com/ho') == -1) {
+							continue;
+						}
+						
 						//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 						
 						// trailing
-						x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+						//x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
 						
 						// http
 						//~ x = x.replace(/^https?:\/\//, ''); // beginning
@@ -553,7 +558,6 @@ function MT__RUN() {
 						}
 						o.bold_array = bold_array;
 						full = MT__bold(full, o.bold_array);
-						
 						// classname is http://(www. = '')x.com (no www)
 						var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
 						
