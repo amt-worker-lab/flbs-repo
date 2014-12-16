@@ -263,7 +263,7 @@ function MT__RUN() {
 			city: null,
 			state: null,
 			zip: null,
-			name: null;
+			name: null
 		}
 		
 		Travel_Data__Get_Details_From_Website()
@@ -394,8 +394,8 @@ function MT__RUN() {
 				
 				// ...
 				d3.value  = o.name;
-				d3b.value = '"' + o.name + '" ' + o.locn;
-				d3c.value = (o.name_short) ? '"' + o.name_short + '" ' + o.full_locn : o.name + ' ' + o.full_locn;
+				d3b.value = '"' + o.name + '" ' + o.zip;
+				d3c.value ='"'+ o.name+'"';
 				
 				var load_first = true;
 				var FOUND_ONE_NONSKIP = false;
@@ -588,11 +588,17 @@ function MT__RUN() {
 						// onclick
 						txa.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
+							
 							document.getElementById('web_url').value = this.value;
+							var idReg = /hotels.com\/ho([\d]+)/;
+							var id = idReg.exec(this.value);
+							document.getElementById('hotel_id_response').value = id;
 							
 							// showNextTab OR nextTab
 							new AMT___core_factory().nextTab();
-							doSubmit();
+							
+							
+							//doSubmit();
 						}
 						//mouseover
 						d.addEventListener('mouseover', function() {
