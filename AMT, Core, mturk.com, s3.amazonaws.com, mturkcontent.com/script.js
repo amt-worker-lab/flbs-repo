@@ -10594,8 +10594,9 @@ function MT__RUN() {
 	//
 	//Dotmenu Web
 	//
-	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name, whether they deliver food or not and whether it is for small or large'
+	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name,&nbsp;whether they deliver '
 	if(ih.indexOf(s) != -1) {
+		console.log('Dotmenu mturk content');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 		
 		//~ GM_addStyle('body {width:16%}');
@@ -10616,6 +10617,19 @@ function MT__RUN() {
 			if(checkbox && checkbox.length && checkbox.length == 1) {
 				allLi[i].onclick = function() {
 					this.getElementsByTagName('input')[0].click();
+				}
+			}
+		}
+		
+		var allInputs = document.getElementsByTagName('input');
+		for(var i = 0; i < allInputs.length; i++) {
+			if(allInputs[i].type == 'checkbox') {
+				allInputs[i].style.zoom = 4;
+				allInputs[i].onclick = function(e) {
+					//e.preventDefault();
+					e.stopPropagation();
+					document.getElementById('submitButton').focus();
+					//return false;
 				}
 			}
 		}
