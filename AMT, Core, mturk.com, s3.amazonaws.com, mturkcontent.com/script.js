@@ -586,7 +586,8 @@ function MT__RUN() {
 										}
 										else {
 											console.log('a');
-											bold_arrayAddr.push(toBold[k]);
+											if(j != 'state')
+												bold_arrayAddr.push(toBold[k]);
 										}
 									}
 								}
@@ -598,6 +599,7 @@ function MT__RUN() {
 						full = full.replace(/<\/?b>/g,'');
 						full = MT__bold(full, bold_array);
 						full = MT__bold(full, bold_arrayAddr,{'color':'blue'}).bold_string;
+
 						
 						// classname is http://(www. = '')x.com (no www)
 						var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
