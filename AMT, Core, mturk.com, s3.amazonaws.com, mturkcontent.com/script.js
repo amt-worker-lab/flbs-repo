@@ -569,21 +569,33 @@ function MT__RUN() {
 							);
 						
 						// add bold (bold_array)
-						var bold_array = []
+						var bold_arrayName = []
+						var bold_arrayAddr = [];
 						for(var j in o) {
 							if(o[j] && typeof o[j] == 'string') {
 								console.log(o[j]);
 								var toBold = o[j].split[' '];
 								if(toBold && toBold.length) {
 									for(var k = 0; k < toBold.length; k++) {
-										toBold[k] = toBold[k].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
-										bold_array.push(toBold[k]);
+										if(j == 'name') {
+											toBold[k] = toBold[k].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
+											bold_arrayName.push(toBold[k]);
+										}
+										else {
+											toBold[k] = toBold[k].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
+											bold_arrayAddr.push(toBold[k]);
+										}
 									}
 								}
 							}
 						}
-						o.bold_array = bold_array;
-						full = MT__bold(full, o.bold_array);
+						o.bold_arrayName = bold_arrayName;
+						o.bold_arrayAddr = bold_arrayAddr;
+						console.log(o);
+						
+						full = MT__bold(full, o.bold_arrayName);
+						full = MT__bold(full, o.bold_arrayAddr, {'color':'blue'});
+						
 						// classname is http://(www. = '')x.com (no www)
 						var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
 						
