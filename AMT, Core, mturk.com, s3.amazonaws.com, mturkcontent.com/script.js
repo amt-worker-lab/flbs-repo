@@ -241,6 +241,40 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	//
+	//Travel Data
+	//Find Hotel Web Page
+	//
+	s = 'Using the hotel name and location destination found on the linked website';
+	if(ih.indexOf(s) != -1) {
+		console.log('Running Travel Data');
+		
+		var link = document.getElementsByTagName('a')[0].href;
+		Travel_Data__Get_Details_From_Website()
+		
+		
+	
+	}
+	
+	function Travel_Data__Get_Details_From_Website() {
+		GM_xmlhttpRequest({
+				method:'GET',
+				url:link,
+				onload: function(rs) {
+				var rs = rs.responseText;
+				var addressReg = /<span itemprop="streetAddress">([^<]*)<\/span>///<span itemprop="addressLocality">([^<]*)///<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
+				var addr;
+				if(addr = addressReg.exec(addr)) {
+					console.log(addr);
+				}
+				else {
+					console.log(addr);
+				}
+			}
+		});
+	}
+	
+	
 	s = 'Include the complete street address, e.g. 100 Main St, Suite A, San Francisco, CA 94103'
 	if(ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,section {margin:0 !important; padding:0 !important;font-size:14px;}');
