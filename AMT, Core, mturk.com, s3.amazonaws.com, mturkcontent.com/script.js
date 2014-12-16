@@ -10591,6 +10591,37 @@ function MT__RUN() {
 	}
 	
 	//
+	//
+	//Dotmenu Web
+	//
+	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name, whether they deliver food or not and whether it is for small or large'
+	if(ih.indexOf(s) != -1) {
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
+		
+		//~ GM_addStyle('body {width:16%}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('td {padding:0 important!;}');
+		
+		// container
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:16% !important !important;}');
+		//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
+		GM_addStyle('table {border: 1px solid #a2a2a2;}');//max-width:10% !important !important !important !important !important !important;
+		// ...
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('li {background-color:aqua;cursor:pointer;}');
+		
+		var allLi = document.getElementsByTagName('li');
+		for(var i = 0; i < allLi.length; i++) {
+			var checkbox = allLi[i].getElementsByTagName('input');
+			if(checkbox && checkbox.length && checkbox.length == 1) {
+				allLi[i].onclick = function() {
+					this.getElementsByTagName('input')[0].click();
+				}
+			}
+		}
+	
+	}
+	//
 	// Evan J 
 	// Search for company news URL
 	//
