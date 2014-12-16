@@ -250,6 +250,7 @@ function MT__RUN() {
 		console.log('Running Travel Data');
 		
 		var link = document.getElementsByTagName('a')[0].href;
+		//link = 'http://www.' + link;
 		Travel_Data__Get_Details_From_Website()
 		
 		
@@ -262,7 +263,11 @@ function MT__RUN() {
 				url:link,
 				onload: function(rs) {
 				var rs = rs.responseText;
-				var addressReg = /<span itemprop="streetAddress">([^<]*)<\/span>///<span itemprop="addressLocality">([^<]*)///<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
+				
+				var addressReg = /"streetAddress">([^<]*)<\/span>/
+				//console.log(rs);
+				
+				//<span itemprop="addressLocality">([^<]*)///<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
 				var addr;
 				if(addr = addressReg.exec(addr)) {
 					console.log(addr);
