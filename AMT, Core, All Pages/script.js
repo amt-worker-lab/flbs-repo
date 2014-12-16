@@ -9553,7 +9553,48 @@ function load__allPages_AMT_combo() {
 		}
 		o.td_phone.appendChild(a);
 		
+	}
+	
+	//Dotmenu Web
+	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name';
+	if(ih.indexOf(s) != -1) {
+		var b_phone = document.getElementsByTagName('b')[1];
+		var phoneNum = document.getElementsByTagName('b')[1].innerHTML;
+		phoneNum = phoneNum.replace(/^[^\:]*\:([^$]*)$/,'$1').trim();
+		console.log('Dotmenu Web All-Pages');
+		console.log(phoneNum);
 		
+		var o = {
+			// phone td
+			b_phone: b_phone,
+			phone: phoneNum
+		}
+		// Phone
+		o.b_phone.innerHTML = '';
+		var a = document.createElement('a');
+		a.innerText = o.phone;
+		a.setAttribute('style', 'cursor:pointer;');
+		//~ a.href = 'https://hangoutsapi.talkgadget.google.com/hangouts/_?gid=135569030656&gd={"number":"6072385144"}';
+		//~ a.target = '_blank';
+		a.onclick = function(e) {
+			
+			console.log('Clicked phone link. Sending request phone:' + this.innerText);
+			
+			// Load this phone number into the phone number window.
+			// Send a message to the background script.
+			// 
+			chrome.extension.sendRequest({
+				method:'google_hangouts_load_phone',
+				phone_number:this.innerText,
+				details: {hangupAllButPickup:true, dial0AtStart:true},
+				task_name: "Andrew Ryan"
+			});
+			
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+		o.b_phone.appendChild(a);
 		
 	}
 	
