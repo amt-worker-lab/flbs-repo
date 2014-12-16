@@ -278,7 +278,11 @@ function MT__RUN() {
 				onload: function(rs) {
 				var rs = rs.responseText;
 				
-
+				if(rs.indexOf('<span style="font-size:14px;">The page you requested has been moved or is no longer available.</span>') != -1) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+					return;
+				}
 				
 				var addressReg = /"streetAddress">([^<]*)<\/span>[^<]*<span itemprop="addressLocality">([^<]*)<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
 				var addr;
