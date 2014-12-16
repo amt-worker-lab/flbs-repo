@@ -570,21 +570,30 @@ function MT__RUN() {
 						
 						// add bold (bold_array)
 						var bold_array = []
+						var bold_arrayAddr = []
 						for(var j in o) {
 							if(o[j] && typeof o[j] == 'string') {
 								var toBold = o[j].split[' '];
 								if(toBold && toBold.length) {
 									for(var k = 0; k < toBold.length; k++) {
 										toBold[k] = toBold[k].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
-										bold_array.push(toBold[k]);
+										if(j == 'name' || j == 'shortName') {
+											console.log('n');
+											bold_array.push(toBold[k]);
+										}
+										else {
+											console.log('a');
+											bold_arrayAddr.push(toBold[k]);
+										}
 									}
 								}
 							}
 						}
-						o.bold_array = bold_array;
+						//o.bold_array = bold_array;
+						//console.log(bold_array)// = bold_arrayAddr;
 						
-						full = MT__bold(full, o.bold_array, {'color':'blue'}).bold_string;
-						//full = MT__bold(full, o.bold_array, {'color':blue
+						//full = MT__bold(full, bold_array);
+						full = MT__bold(full, bold_arrayAddr,{'color':'blue'}).bold_string;
 						
 						// classname is http://(www. = '')x.com (no www)
 						var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
