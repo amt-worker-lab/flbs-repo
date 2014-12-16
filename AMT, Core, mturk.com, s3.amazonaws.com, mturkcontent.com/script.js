@@ -264,12 +264,15 @@ function MT__RUN() {
 				onload: function(rs) {
 				var rs = rs.responseText;
 				
-				var addressReg = /"streetAddress">([^<]*)<\/span>/
-				//console.log(rs);
-				
-				//<span itemprop="addressLocality">([^<]*)///<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
+				var addressReg = /"streetAddress">([^<]*)<\/span>[^<]*<span itemprop="addressLocality">([^<]*)<\/span>[^<]*<span itemprop="addressRegion">([^<]*)<\/span>[^<]*<span itemprop="postalCode">([^<]*)<\/span>/;
 				var addr;
-				if(addr = addressReg.exec(addr)) {
+				
+				if(addr = addressReg.exec(rs)) {
+					console.log(addr);
+					for(var i = 1; i <5; i++) {
+						addr[i] = addr[i].replace(/,[\s]*$/,'').replace(/^,[\s]*/,'').trim();
+						
+					}
 					console.log(addr);
 				}
 				else {
