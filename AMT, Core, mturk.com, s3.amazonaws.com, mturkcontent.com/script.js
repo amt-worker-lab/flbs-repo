@@ -10113,18 +10113,19 @@ function MT__RUN() {
 					x.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
-						//~ AMT__setUtilityTabs([
-							//~ {
-								//~ url: this.url,
-								//~ options:
-								//~ {
-									//~ // TASK "KEY"
-									//task: 'AMT__chios_system_draw_polygon__utility_window',
-									//~ // OTHER VARS
-									//images: img_urls
-								//~ }
-							//~ }
-						//~ ]);
+						AMT__setUtilityTabs([
+							{
+								url: this.url,
+								options: {
+									task: 'AMT__all_pages_util',
+									email_links_remove_mailto: true,
+									show_remove_links_button: true,
+									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+									highlight_range_to_parent: true
+									// highlight range to parent
+								}
+							}
+						]);
 					}
 					
 					// Append
@@ -10134,7 +10135,7 @@ function MT__RUN() {
 					// & not PDF
 					if (first) {
 						first = false;
-						x.click();
+						//~ x.click();
 						// ADD TO SCRAPYD
 						o.start_urls.push(rs[i][1]);
 						
