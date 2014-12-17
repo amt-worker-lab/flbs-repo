@@ -389,12 +389,11 @@ function MT__RUN() {
 					Travel_Data_company_URL__SP_init(d1c, this);
 				}
 				na.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					document.getElementById("web_url").value = "N/A";
-					document.getElementById('notes').value = 'I could not find this hotel on Hotels.com'
-					// nextTab
-					new AMT___core_factory().nextTab();
-					doSubmit();
+					//~ this.style.backgroundColor = 'LightGreen';
+					//~ document.getElementById("web_url").value = "N/A";
+					//~ // nextTab
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
 				}
 				
 				// ...
@@ -9788,6 +9787,450 @@ function MT__RUN() {
 	}
 	
 	/**
+	 * Phone call
+	 * 
+	 * Dotmenu Web
+	 */
+	//
+	// Dotmenu Web
+	//
+	//
+	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name,&nbsp;whether they deliver '
+	if(ih.indexOf(s) != -1) {
+		console.log('Dotmenu mturk content');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
+		
+		//~ GM_addStyle('body {width:16%}');
+		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+		GM_addStyle('td {padding:0 important!;}');
+		
+		// container
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:16% !important !important;}');
+		//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
+		GM_addStyle('table {border: 1px solid #a2a2a2;}');//max-width:10% !important !important !important !important !important !important;
+		// ...
+		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		GM_addStyle('li {background-color:aqua;cursor:pointer;}');
+		
+		var allLi = document.getElementsByTagName('li');
+		for(var i = 0; i < allLi.length; i++) {
+			var checkbox = allLi[i].getElementsByTagName('input');
+			if(checkbox && checkbox.length && checkbox.length == 1) {
+				allLi[i].onclick = function() {
+					this.getElementsByTagName('input')[0].click();
+				}
+			}
+		}
+		
+		var allInputs = document.getElementsByTagName('input');
+		for(var i = 0; i < allInputs.length; i++) {
+			if(allInputs[i].type == 'checkbox') {
+				allInputs[i].style.zoom = 4;
+				allInputs[i].onclick = function(e) {
+					//e.preventDefault();
+					e.stopPropagation();
+					document.getElementById('submitButton').focus();
+					//return false;
+				}
+			}
+		}
+	
+	}
+	
+	/**
+	 * Startpage search + utility window
+	 * 
+	 * Michael Lai (+scrapyd)
+	 * 
+	 */
+	//
+	// Michael Lai
+	// Find Email for School Official
+	//
+	s = '<li>Find the name and email address of the <strong>International Baccalaureate (IB) Theory of Knowledge (TOK) teacher</strong>&nbsp;in the school website (start with the "International Baccalaureate (IB)" section of the website, then try&nbsp;the "School Directory" part of the Website)</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,table,td {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:3000px;}');
+			GM_addStyle('#submitButton {height:60px;position:absolute;top:0px;left:0;width:60px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.form-control {width:400px !important;display:inline !important;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;}');
+			
+			// Remove blanks
+			var p = document.getElementsByTagName('p');
+			p[2].parentNode.removeChild(p[2]);
+			p[0].parentNode.removeChild(p[0]);
+			var b = document.getElementsByTagName('br');
+			b[1].parentNode.removeChild(b[1]);
+			b[0].parentNode.removeChild(b[0]);
+			var d = document.getElementsByTagName('div');
+			for (var i in d) {
+				if (i == 'length') break;
+				//~ console.log(d[i]);
+				//~ console.log(d[i].innerHTML.trim());
+				if (d[i].innerHTML.trim() == '&nbsp;') {
+					d[i].parentNode.removeChild(d[i]);
+				}
+			}
+				//~ if (p[i].innerHTML.trim() == '&nbsp;' || p[i].innerHTML.trim() == '' || p[i].innerText.trim() == '') {
+					//~ p[i].parentNode.removeChild(p[i]);
+				//~ }
+			//~ }
+			
+			// ...
+			var a = document.getElementsByTagName('a');
+			var inp = document.getElementsByName('web_url');
+			var o = {
+				site: a[0].href.trim(),
+				domain: null,
+				query1: null,
+				query2: null,
+				bold_strings: [],
+				
+				start_urls: [],
+				allowed_domains: [],
+				
+				num_finished_startpage: 0, // COUNTER
+				
+				q: [
+					inp[0],
+					inp[1]
+				],
+				
+				utility_windows: []
+			}
+			o.domain = o.site.replace(/^https?:\/\/(www\.|)([^\/]+)[\d\D]*/i, '$2'); // Remove start & www. Remove after trailing slash.
+			o.query1 = 'site:'+o.domain+' Theory of Knowledge';
+			o.query2 = 'site:'+o.domain+' (directory OR staff OR faculty)';
+			o.allowed_domains.push(o.domain);
+			o.start_urls.push(o.site);
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			// 
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			// 
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:100px;left:50%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1c);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 400 // offset top
+			});
+			
+			//
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value.length < 2) {
+						return false;
+					}
+				}
+				//~ if  (
+					//~ document.getElementById('Q1URLNews').value.trim() == '' &&
+					//~ document.getElementsByName('Q2Answer')[0].value != 'NONE'
+					//~ )
+					//~ return false;
+				
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+			/**
+			 * Init
+			 */
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query1),
+				callback_function: startpage,
+				seed: d1b,
+				seed__query: o.query1,
+				return_init_object: true
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query2),
+				callback_function: startpage,
+				seed: d1c,
+				seed__query: o.query2,
+				return_init_object: true
+			});
+			
+			/**
+			 * init_scrapy
+			 */
+			function init_scrapy() {
+				o.num_finished_startpage++;
+				if (o.num_finished_startpage == 2) {
+					// Init scrapyd
+					scrapy(o.start_urls, o.allowed_domains);
+				}
+				
+				// Set listener for AMT__setUtilityTabs
+				chrome.runtime.onMessage.addListener(
+					function(request) { //, sender, sendResponse) {
+						
+					}
+				);
+				// AMT__setUtilityTabs
+				if (o.utility_windows.length)
+					AMT__setUtilityTabs(o.utility_windows, null, {backgroundColor:'pink'}, false,
+						function(response) {
+							console.log('victory!');
+							console.log(response);
+							if(response.hasOwnProperty('data') &&
+							   response.data.hasOwnProperty('email_address')) {
+								o.q[1].value = response.data.email_address;
+								o.q[1].focus();
+							}
+							if(response.hasOwnProperty('data') &&
+							   response.data.hasOwnProperty('text_range')) {
+								
+								if (!response.data.control_key_is_active) {
+									o.q[0].value = response.data.text_range.trim();
+									o.q[0].focus();
+								} else {
+									o.q[1].value = response.data.text_range.trim();
+									o.q[1].focus();
+								}
+							}
+						}
+					);
+			
+
+
+			}
+			/**
+			 * startpage
+			 */
+			/**
+			 * AMT__all_pages_util:
+				task: 'AMT__all_pages_util',
+				MT___all_pages_extend: true,
+				MT___all_pages_zoom: true,
+				MT___all_pages_showhref: true,
+				highlight_range_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+				highlight_strings_in_page: {
+					strings: o.role_to_array
+				},
+				email_links_remove_mailto: true,
+				show_remove_links_button: true,
+				email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'}
+			 */
+			function startpage(response_object) {
+				
+				var rs  = response_object.rs;
+				var out = response_object.seed;
+				var qry = response_object.seed__query;
+				
+				
+				if (!rs.length) {
+					// increment
+					init_scrapy();
+					
+					out.innerText += qry + '\n0';
+					return;
+				}
+				
+				// Here?
+				// 0 = url
+				// 1 = body
+				var first = true;
+				for (var i in rs) {
+					
+					//~ var domain = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+					
+					x = document.createElement('div');
+					x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					x.className = 'exe';
+					x.url = rs[i][0];
+					
+					//return_div_element
+					//~ var b1 = MT__bold(rs[i][0], o.bold_strings, {return_div_element:true}).div_element;
+					//~ var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+					//~ x.appendChild(b1);
+					//~ x.appendChild(b2);
+					
+					// submit this one
+					var b = document.createElement('button');
+					b.url = rs[i][0];
+					b.innerHTML = MT__bold(rs[i][0], o.bold_strings);
+					b.onclick = function(e) {
+						this.style.backgroundColor = 'LightGreen';
+						
+						document.getElementById('Q1URLNews').value = this.url;
+						document.getElementsByName('Q2Answer')[0].value = 'News Section Found';
+						
+						document.getElementById('submitButton').click();
+						
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					x.appendChild(b);
+					
+					// link
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.target = '_blank';
+					a.innerText = '_link_';
+					a.onclick = function(e) {
+						window.open(this.href, 'new_window');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					x.appendChild(a);
+					
+					// Body
+					var dv = document.createElement('div');
+					dv.innerHTML = rs[i][1];
+					x.appendChild(dv);
+					//~ // Body
+					//~ var b = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+					//~ x.appendChild(b);
+					
+					// Onclick
+					x.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						//~ AMT__setUtilityTabs([
+							//~ {
+								//~ url: this.url,
+								//~ options:
+								//~ {
+									//~ // TASK "KEY"
+									//task: 'AMT__chios_system_draw_polygon__utility_window',
+									//~ // OTHER VARS
+									//images: img_urls
+								//~ }
+							//~ }
+						//~ ]);
+					}
+					
+					// Append
+					out.appendChild(x);
+					
+					// First
+					// & not PDF
+					if (first) {
+						first = false;
+						x.click();
+						// ADD TO SCRAPYD
+						o.start_urls.push(rs[i][1]);
+						
+						// utility_windows
+						o.utility_windows.push({
+							url: rs[i][0],
+							options: {
+								task: 'AMT__all_pages_util',
+								email_links_remove_mailto: true,
+								show_remove_links_button: true,
+								email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+								highlight_range_to_parent: true
+								// highlight range to parent
+							}
+						});
+					}
+				}
+				var x = document.createElement('div');
+				x.setAttribute('style','height:2000px;');
+				out.appendChild(x);
+				
+				// increment!
+				init_scrapy();
+			}
+			
+			
+			function scrapy(start_urls, allowed_domains) {
+				
+				console.log(start_urls);
+				console.log(allowed_domains);
+				
+				// If no website then return.
+				if (o.domain.indexOf('amazonaws') != -1 || o.domain.indexOf('mturk') != -1)
+					return;
+				
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 60,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=40', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=1'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								div: d1,
+								input_send_success: o.q[1],
+								do_submit_callback: function() {
+									
+									// do nothing
+									
+									// ...
+									//~ showNextTab();
+									//~ doSubmit();
+								}//,
+								// RUNS BEFORE DASHBOARD IS FILLED IN !
+								//~ callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									//~ console.log(callback_obj);
+									//~ return;
+									//~ return true;
+								//~ }
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+	}
+	/**
 	 * Startpage search + Iframe
 	 * 
 	 * 
@@ -9819,23 +10262,6 @@ function MT__RUN() {
 		GM_addStyle('table {border: 1px solid #a2a2a2;}');//max-width:10% !important !important !important !important !important !important;
 		// ...
 		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-		
-		
-		// 
-		//~ GM_addStyle('td {width:50% !important;min-width:50% !important;max-width:50% !important;}');
-		
-		//~ GM_addStyle('.highlight-box {position:absolute;top:3000px;}');
-		//~ GM_addStyle('h2 {margin-top: 1000px !important;}');
-		//~ GM_addStyle('#Q1URLNews {height:60px;position:absolute;top:300px;left:0;width:19%;}');
-		//~ GM_addStyle('#Q2___ {height:60px;position:absolute;top:360px;left:0;width:19%;}');
-		//~ GM_addStyle('#submitButton {height:60px;position:absolute;top:500px;left:0;width:19%;}');
-		//~ GM_addStyle('img {display:none;}');
-		
-		
-		
-		
-		
-		//~ var b = document.getElementsByTagName('b');
 		
 		var a = document.getElementsByTagName('a')[1].href.trim();
 		var p = document.getElementsByTagName('p');
@@ -10589,51 +11015,6 @@ function MT__RUN() {
 				//~ urls_array: precache_urls
 			//~ });
 		//~ }
-	}
-	//
-	// Dotmenu Web
-	//
-	//
-	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name,&nbsp;whether they deliver '
-	if(ih.indexOf(s) != -1) {
-		console.log('Dotmenu mturk content');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,label,strong,table,tr,td {margin:0;padding:0;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
-		
-		//~ GM_addStyle('body {width:16%}');
-		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('td {padding:0 important!;}');
-		
-		// container
-		GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:16% !important !important;}');
-		//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;width:96% !important !important;}');
-		GM_addStyle('table {border: 1px solid #a2a2a2;}');//max-width:10% !important !important !important !important !important !important;
-		// ...
-		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-		GM_addStyle('li {background-color:aqua;cursor:pointer;}');
-		
-		var allLi = document.getElementsByTagName('li');
-		for(var i = 0; i < allLi.length; i++) {
-			var checkbox = allLi[i].getElementsByTagName('input');
-			if(checkbox && checkbox.length && checkbox.length == 1) {
-				allLi[i].onclick = function() {
-					this.getElementsByTagName('input')[0].click();
-				}
-			}
-		}
-		
-		var allInputs = document.getElementsByTagName('input');
-		for(var i = 0; i < allInputs.length; i++) {
-			if(allInputs[i].type == 'checkbox') {
-				allInputs[i].style.zoom = 4;
-				allInputs[i].onclick = function(e) {
-					//e.preventDefault();
-					e.stopPropagation();
-					document.getElementById('submitButton').focus();
-					//return false;
-				}
-			}
-		}
-	
 	}
 	//
 	// Evan J 

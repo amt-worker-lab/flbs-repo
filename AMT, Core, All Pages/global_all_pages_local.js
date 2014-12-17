@@ -23,10 +23,47 @@
 
 
 //
+//~ 
+//~ /**
+ //~ * AMT__utility_window_quick_funcs
+ //~ * 
+ //~ * @param		object
+ //~ */
+//~ function AMT__utility_window_quick_funcs(r) {
+	//~ 
+	//~ /**
+	 //~ * SIMILAR TO AMT__all_pages_util
+	 //~ * 
+	 //~ * HOWEVER these go to background page, then to mturk-core background page, then to mturk-core script.js.
+	 //~ */
+	//~ if ( r.email_links_click_to_parent ) {
+		//~ new AMT___global_factory().email_links_click_to_parent__util_window(
+		//~ );
+	//~ }
+	//~ 
+	//~ /**
+	 //~ * DUPLICATE OF AMT__all_pages_util
+	 //~ */
+	//~ // email_links_remove_mailto
+	//~ // @param 
+	//~ if ( r.email_links_remove_mailto ) {
+		//~ new AMT___global_factory().email_links_remove_mailto(
+		//~ );
+	//~ }
+	//~ 
+	//~ // show_remove_links_button
+	//~ // @param 
+	//~ if ( r.show_remove_links_button ) {
+		//~ new AMT___global_factory().show_remove_links_button(
+		//~ );
+	//~ }
+	//~ 
+//~ }
 
 /**
  * AMT__all_pages_util
  * 
+ * @param		object
  */
 function AMT__all_pages_util(r) {
 	
@@ -71,8 +108,9 @@ function AMT__all_pages_util(r) {
 	// Pass in an options object
 	if ( r.highlight_range_to_parent ) {
 		//~ console.log('highlight range is on');
+		//~ r.highlight_range_to_parent.messagePassingOptions = r;
 		new AMT___global_factory().highlight_range_to_parent(
-			r.highlight_range_to_parent
+				r
 		);
 	}
 	
@@ -109,7 +147,8 @@ function AMT__all_pages_util(r) {
 	// @param 
 	if ( r.email_links_click_to_parent ) {
 		new AMT___global_factory().email_links_click_to_parent({
-			completion_key: r.email_links_click_to_parent.completion_key
+			completion_key: r.email_links_click_to_parent.completion_key,
+			messagePassingOptions: r
 		});
 	}
 	
@@ -503,13 +542,30 @@ AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
 		if (i == 'length') break;
 		if (/^ *mailto *:/i.exec(a[i].href)) {
 			a[i].addEventListener('mouseup', function(e) {
-				parent.postMessage(
-					{
-						key: options.completion_key, // e.g. Dan_Shaffer_site_eval
-						email_address: this.href.replace(/^ *mailto *:/, '')
-					},
-					"*"
-				);
+				if(options.messagePassingOptions.hasOwnProperty('isUtilityTab')) {
+					chrome.runtime.sendMessage(
+						'gcfnekbbpmbgadddbojhlojhddnkcpje',
+						{
+							util_window_message_passing: true,
+							data: {
+								key: options.completion_key,
+								email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
+							}
+						},
+						function(response) {
+							// response=object
+						}
+					);
+				}
+				else {
+					parent.postMessage(
+						{
+							key: options.completion_key, // e.g. Dan_Shaffer_site_eval
+							email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
+						},
+						"*"
+					);
+				}
 				
 				e.stopPropagation();
 				e.preventDefault();
@@ -518,6 +574,52 @@ AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
 		}
 	}
 }
+//~ /**
+ //~ * .email_links_click_to_parent__util_window
+ //~ * NOTE DUPLICATE BUT GOES TO BACKGROUND SCRIPT
+ //~ * 
+ //~ * @param options			object
+ //~ * @param "".completion_key	string
+ //~ * 
+ //~ * @return 
+ //~ */
+//~ AMT___global_factory.prototype.email_links_click_to_parent__util_window = function(options) {
+	//~ 
+	//~ var options = options;
+	//~ var a = document.getElementsByTagName('a');
+	//~ for (var i in a) {
+		//~ if (i == 'length') break;
+		//~ if (/^ *mailto *:/i.exec(a[i].href)) {
+			//~ a[i].addEventListener('mouseup', function(e) {
+				//~ // SEND MESSAGE TO MTURK.COM-CORE
+				//~ /**
+				 //~ * sendMessage to gcfnekbbpmbgadddbojhlojhddnkcpje
+				 //~ * THIS GOES TO mturk.com-core background page
+				 //~ * 
+				 //~ * 
+				 //~ */
+				//~ chrome.runtime.sendMessage(
+					//~ 'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					//~ {
+						//~ util_window_message_passing: true,
+						//~ data: {
+							//~ tab_id: ,
+							//~ key: options.completion_key,
+							//~ email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
+						//~ }
+					//~ },
+					//~ function(response) {
+						//~ // response=object
+					//~ }
+				//~ );
+				//~ 
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ return false;
+			//~ }, false);
+		//~ }
+	//~ }
+//~ }
 /**
  * .email_links_remove_mailto
  * 
@@ -604,9 +706,12 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 /**
  * .highlight_range_to_parent
  * 
- * @param options_object		object
- * @param "".completion_key		string	This is used to send a postMessage to parent window.
- * XXXXXXXXXXX@param "".control_key_append	boolean	Enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
+ * options_object.isUtilityTab					Boolean or unset
+ * options_object.highlight_range_to_parent		Object or Boolean
+ * 
+ //~ * @param options_object		object
+ //~ * @param "".completion_key		string	This is used to send a postMessage to parent window.
+ //~ * XXXXXXXXXXX@param "".control_key_append	boolean	Enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
  * 
  * @return text_range				string
  * @return control_key_is_active	boolean
@@ -627,14 +732,31 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 		window.getSelection().removeAllRanges();
 		
 		if (str.length > 0) {
-			parent.postMessage(
-				{
-					key: options_object.completion_key, // e.g. Dan_Shaffer_site_eval
-					text_range: str,
-					control_key_is_active: e.ctrlKey	// Is control key down?
-				},
-				"*"
-			);
+			
+			var return_object = {
+				text_range: str,
+				control_key_is_active: e.ctrlKey	// Is control key down?
+			};
+			if (typeof options_object.highlight_range_to_parent == 'object') { // Is object or boolean
+				return_object.key = options_object.highlight_range_to_parent.completion_key; // e.g. Dan_Shaffer_site_eval
+			}
+			
+			if (!options_object.hasOwnProperty('isUtilityTab')) {
+				parent.postMessage(
+					return_object,
+					"*"
+				);
+			} else { // Utility Tab
+				chrome.runtime.sendMessage(
+					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						data: return_object
+					},
+					function(response) {
+					}
+				);
+			}
 		}
 	}
 }

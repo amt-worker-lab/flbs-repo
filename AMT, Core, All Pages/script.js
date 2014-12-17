@@ -408,6 +408,10 @@ function load()
 				AMT__iframeReceiveMessage_done = true;
 				AMT__all_pages_util(event.data);
 			}
+			//~ if (event.data.task == 'AMT__utility_window_quick_funcs' && !AMT__iframeReceiveMessage_done) { // DUPLICATE OF AMT__all_pages_util EXCEPT THIS GOES THROUGH BACKGROUND PAGE!!!
+				//~ AMT__iframeReceiveMessage_done = true;
+				//~ AMT__utility_window_quick_funcs(event.data);
+			//~ }
 			if (event.data.task == 'AMT__Kristin_Howe_agent_photos__yahoo_bot' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Kristin_Howe_agent_photos__yahoo_bot(event.data);
@@ -459,9 +463,14 @@ function load()
 				// NEW
 				new AMT__rq().AMT__chios_system_draw_polygon__utility_window(event.data);
 			}
+			//~ if (event.data.task == 'AMT__Michael_Lai_ib_tok' && !AMT__iframeReceiveMessage_done) {
+				//~ AMT__iframeReceiveMessage_done = true;
+				//~ // NEW
+				//~ new AMT__rq().AMT__Michael_Lai_ib_tok(event.data);
+			//~ }
 		}
 	}
-	this.blaaaaaah = 'xxxxxxxsdfsdfsdavdfs';
+	//~ this.blaaaaaah = 'xxxxxxxsdfsdfsdavdfs';
 	// Ask Core-mturk whether we are a utility window and, if so, run the options
 	this.AMT__init_utility_window = function() {
 		if(window.top == window.self) {
@@ -473,6 +482,7 @@ function load()
 						//the response is an options obj
 						console.log('Got options from Core-Mturk:');
 						console.log(response);
+						response.isUtilityTab = true;
 						AMT__iframeReceiveMessage({
 							data: response // Pass this in as ".data"
 						});
@@ -1722,6 +1732,20 @@ function load()
 		}
 	}
 	
+	/**
+	 * new AMT__rq().AMT__Michael_Lai_ib_tok
+	 * 
+	 * This is inside of a utility window. The passed in object is:
+		{
+			task:'AMT__Michael_Lai_ib_tok',
+		}
+	 * 
+	 * @param	
+	 * @returns	
+	 */
+	AMT__rq.prototype.AMT__Michael_Lai_ib_tok = function(data) {
+		
+	}
 	/**
 	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
 	 * 

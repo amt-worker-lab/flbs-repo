@@ -715,7 +715,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
 	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
       return;  // don't allow this extension access*/
-      
+    
+	/**
+     * amIUtilityTab
+     */  
     if(request.amIUtilityTab) {
 		console.log('recieved msg from:');
 		console.log(sender.tab);
@@ -727,11 +730,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			for(var i in UtilityAMTPairs.options) {
 				optionsToSet[i] = UtilityAMTPairs.options[i]
 			}
+
+			//UtilityAMTPairs
 			
-
-//UtilityAMTPairs
-
 			//Set any options specific to This tab
+			for_loop_break:
 			for(var i in UtilityAMTPairs) {
 				if(UtilityAMTPairs[i] &&
 				   UtilityAMTPairs[i].utilities &&
@@ -745,7 +748,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 								for(var k in UtilityAMTPairs[i].utilities[j].options) {
 									optionsToSet[k] = UtilityAMTPairs[i].utilities[j].options[k];
 								}
-								break;
+								break for_loop_break;
 							}
 						}
 					}
@@ -761,6 +764,61 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		return false;
 	}
     
+    /**
+     * LISTEN FOR ALL PAGES UTILITY WINDOW MESSAGE PASSING
+     * 
+     * e.g.:
+     * {
+			util_window_message_passing: true,
+			data: {
+				key: options.completion_key,
+				email_address: this.href.replace(/^ *mailto *:/, '')
+			}
+	 *	}
+     */
+    if (request.hasOwnProperty('util_window_message_passing')) {
+		console.log('Recieved Msg From Utility Window');
+		console.log(UtilityAMTPairs);
+		console.log(sender);
+		console.log(request);
+		
+		for_loop_break_dance_if_you_want_to:
+		for(var i in UtilityAMTPairs) {
+				if(UtilityAMTPairs[i] &&
+				   UtilityAMTPairs[i].utilities &&
+				   UtilityAMTPairs[i].utilities.length > 0) {
+					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+						console.log('found ' + i + ' so piping data through'); 	
+						request.fromUtilityToParent = true;	
+						
+						// Activate parent tab
+						chrome.tabs.update(i*1, {active: true});
+						// Get windowId
+						chrome.tabs.get(i*1, function (tab) {
+							// Activate window
+							chrome.windows.update(tab.windowId, {focused: true}, function (window) {});
+						})
+						
+						
+						
+						//
+						
+						chrome.tabs.sendMessage((i*1), request, function(response) {
+								//squelch response
+							});
+							break for_loop_break_dance_if_you_want_to;
+						}
+					}
+				}
+			}
+		
+		//var tabId = sender.tab.id;
+	
+		
+		
+		
+	}
       
     /*else if (request.getTargetData)
       sendResponse({targetData: targetData});

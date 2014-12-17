@@ -368,6 +368,39 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				window.location.reload();
 		}
 	}
+	
+	if(request.fromUtilityToParent) {
+		/*
+		 *
+		 { 
+			switchToId,
+			otherDetail1,
+			otherDetail2,
+			etc.
+		 }
+		 
+		 * 
+		 * */
+		
+		var containerDiv = document.getElementById('AMT__UtilityContainer');
+		containerDiv.callbackFromUtility(request);
+		//~ AMT__UtilityContainer
+		//~ 
+		//~ utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
+		//~ utilityTabBtn.setAttribute('id','utilityTabBtn'+utilityTabs[i].id);
+		//~ utilityTabBtn.setAttribute('type','button');
+		//~ containerDiv.appendChild(utilityTabBtn);
+		//~ utilityTabBtn.value = 'Tab' + i;
+		//~ utilityTabBtn.utilityTab = utilityTabs[i];
+		//~ utilityTabBtn.onclick = function() {
+			//~ var switchToId = this.id.replace(/utilityTabBtn/, '');
+			//~ chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
+				//~ function(rs) {
+					//~ /*squelch response*/
+				//~ });
+			//~ 
+			//~ }
+	}
 });
 
 
@@ -394,7 +427,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //			{
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
-function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode) {
+function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
 	if(!AMT__Global_Vars.isPreview && !runInPreviewMode) {
 		var utilityTabsAndOptions = {};
 		utilityTabsAndOptions.utilities = utilityTabs;
@@ -408,12 +441,11 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,
 				function(rs){
 
 				});
-		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions);
+		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility);
 	}
 }
 
-
-function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
+function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackFromUtility) {
 	var containerDiv = document.createElement('div');
 	if(utilityPanelOptions &&
 	   utilityPanelOptions.style)
@@ -421,7 +453,9 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
 	else	
 		containerDiv.setAttribute('style','position:absolute;top:0px;height:27px;left:80%;background-color:gray;border: 1px solid green');
 	containerDiv.setAttribute('id','AMT__UtilityContainer');
+	containerDiv.callbackFromUtility = callbackFromUtility;
 	document.body.appendChild(containerDiv);
+	
 	for(var i = 0; i < utilityTabs.length; i++) {
 		var utilityTabBtn = document.createElement('input');
 		utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
@@ -439,6 +473,9 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions) {
 		}
 	}
 }
+
+
+
 
 /**
  * End of Utility Tabs
