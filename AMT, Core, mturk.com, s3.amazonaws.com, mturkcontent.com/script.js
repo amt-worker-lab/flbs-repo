@@ -21869,7 +21869,7 @@ function MT__RUN() {
 			d2c.value = 'N/A';
 			d2c.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				var x = document.getElementById('Q1Url');
+				var x = document.getElementById('web_url');
 				x.value = 'none';
 				new AMT___core_factory().nextTab();
 				doSubmit();
@@ -21978,7 +21978,7 @@ function MT__RUN() {
 							d1c.appendChild(div)
 							div.onclick = function() {
 								this.style.border = '4px dashed blue';
-								document.getElementById('Q1Url').value = this.fblink;
+								document.getElementById('web_url').value = this.fblink;
 								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
@@ -22143,7 +22143,7 @@ function MT__RUN() {
 							// onclick
 							div.onclick = function() {
 								this.style.border = '4px dashed blue';
-								document.getElementById('Q1Url').value = this.fblink;
+								document.getElementById('web_url').value = this.fblink;
 								new AMT___core_factory().nextTab();
 								doSubmit();
 								//~ // Turn off
