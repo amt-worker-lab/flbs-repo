@@ -241,6 +241,7 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	
 	//
 	//Travel Data
 	//Find Hotel Web Page
@@ -710,7 +711,6 @@ function MT__RUN() {
 			}
 		});
 	}
-	
 	
 	s = 'Include the complete street address, e.g. 100 Main St, Suite A, San Francisco, CA 94103'
 	if(ih.indexOf(s) != -1) {
@@ -10589,10 +10589,9 @@ function MT__RUN() {
 			//~ });
 		//~ }
 	}
-	
 	//
+	// Dotmenu Web
 	//
-	//Dotmenu Web
 	//
 	s = 'For this task, you will call on the telephone a restaurant listed below. We are looking to verify the restaurants name,&nbsp;whether they deliver '
 	if(ih.indexOf(s) != -1) {
@@ -19532,6 +19531,314 @@ function MT__RUN() {
 				}
 			});
 		}
+	}
+	
+	//
+	// henry
+	// -SimpleSearch
+	// Copy-Paste the "Cited By" Information for this Academic Paper
+	var s = '<p>Find the "Cited By" number for&nbsp;this paper</p>';
+	if (ih.indexOf(s) != -1)
+	{	
+		var run = function() {}
+		run.prototype.f = function() {	
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[0].href.trim()
+			}
+			cite();
+			document.body.ondblclick = cite;
+			
+			function cite() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: o.url,
+					//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u), // + '&redirect=no'
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+							document.body.style.backgroundColor = 'pink';
+							exit(response.status);
+						}
+						
+						if (rs.indexOf(' - did not match any articles.') != -1) {
+							document.getElementById('cit').value = '0';
+							doSubmit();
+							return;
+						}
+						
+						// results
+						var r = /<div class="gs_r">((.|\s)*?(?=Fewer<\/a><\/div>|$)|$)/g; // [^>]* added
+						var count = 0;
+						var found = false;
+						if (r.exec(rs)) {
+							r.lastIndex = 0;
+							while (m = r.exec(rs)) {
+								
+								// first?
+								var reg2 = /Cited by ([\d,]+)<\/a>/.exec(m[1]);
+								if (reg2 && count == 0) {
+									document.getElementById('cit').value = reg2[1];
+									doSubmit();
+									found = true;
+									//~ break;
+									return;
+								} else if (reg2) {
+									//~ document.getElementById('cit').value = reg2[1];
+									//~ console.log('count='+count);
+									//~ document.body.style.backgroundColor = 'blue';
+									//~ found = true;
+								}
+							}
+						} else if (rs.indexOf('Cited by ') == -1) {
+							document.getElementById('cit').value = '0';
+							doSubmit();
+							return;
+						}
+						if (document.getElementById('cit').value == '') {
+							document.getElementById('cit').value = '0';
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	//
+	// Carol Chen
+	// -SimpleSearch
+	// alexa.com scrape
+	/**
+	Access Key ID:
+	_API_KEY_REDACTED_
+	Secret Access Key:
+	_API_KEY_REDACTED_
+	 */
+	var s = '	<li>In the top right hand text box, where it says "enter a site", type in the website name.&nbsp;</li>';
+	if (ih.indexOf(s) != -1)
+	{	
+		var run = function() {}
+		run.prototype.f = function() {	
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+		
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[1].innerText.trim().toLowerCase().replace(/^https?:\/*/, ''),
+				q: [
+					document.getElementsByName('web_url')[0],
+					document.getElementsByName('web_url')[1]
+				]
+			}
+			
+			/* BEGIN ITEMS */
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;top:30px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			//~ document.body.appendChild(d1);
+			//
+			var d2 = document.createElement('input');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:28%;height:30px;');
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			d2.value = o.url;
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			d2.onblur = function() {
+				alexa2();
+			}
+			
+			// Init
+			alexa2();
+			
+			// 
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+			/**
+			 * Changed to float
+			 * 3AJ89545MPYNHEW210G20AIMXIXBEM
+			 */
+			function alexa2() {
+				var u = 'http://data.alexa.com/data?cli=10&dat=snbamz&url=' + encodeURIComponent(d2.value);
+			
+				GM_xmlhttpRequest({
+					method: "GET",
+					//~ url: u,
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u), // + '&redirect=no'
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+							//~ if (AMT__Global_Vars.isPreview) {
+								//~ AMT___Floater.skip();
+							//~ }
+							//~ // add to queue
+							//~ addToTabsQ();
+							exit(response.status);
+						}
+						
+						var sbm = true;
+						var r;
+						
+						// 
+						// 69646
+						r = /<POPULARITY URL="[^"]+" TEXT="([\d,\-]+)" SOURCE="panel"\/>/.exec(rs);
+						if (r) {
+							r = r[1];
+							if (r == '-') // N/A!
+								r = 'N/A';
+							document.getElementsByName('web_url')[0].value = r.format_number_with_commas();
+						} else sbm = false;
+						
+						// US rank
+						r = /<COUNTRY CODE="US" NAME="United States" RANK="([\d,]+)"\/>/.exec(rs);
+						if (r) {
+							r = r[1];
+							document.getElementsByName('web_url')[1].value = r.format_number_with_commas();
+						} else if (rs.indexOf('US') == -1 && rs.indexOf('United States') == -1) {
+							document.getElementsByName('web_url')[1].value = 'N/A';
+							sbm = false;
+						} else {
+							sbm = false;
+						}
+						
+						console.log(sbm);
+						if (sbm) {
+							//~ doSubmit();
+							if (AMT__Global_Vars.isPreview) {
+								AMT___Floater.accept();
+							} else {
+								doSubmit();
+							}
+						} else {
+							// TRY VERSION 2 HERE !!
+							alexa3();
+							
+							//~ if (AMT__Global_Vars.isPreview) {
+								//~ AMT___Floater.skip();
+							//~ }
+						}
+					}
+				});
+			}
+			function alexa3() {
+				var u = {
+					url: d2.value
+				};
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host + '/mturk/util.php?AMT_carol_chen_alexa=' + encodeURIComponent(JSON.stringify(u)), //
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+							exit(response.status);
+						}
+						
+						console.log(rs);
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						var sbm = true;
+						if (rs.domain.indexOf(o.url) == -1) {
+							document.body.style.backgroundColor = 'LightGreen';
+							sbm = false;
+							//~ return;
+						}
+						
+						// Here
+						document.getElementsByName('web_url')[0].value = (rs.global !== false) ? rs.global.format_number_with_commas() : 'N/A'; 
+						document.getElementsByName('web_url')[1].value = (rs.usrank !== false) ? rs.usrank.format_number_with_commas() : 'N/A';
+						
+						// sbm
+						if (sbm)
+							doSubmit();
+					}
+				});
+			}
+			function alexa() {
+				var u = 'http://www.alexa.com/siteinfo/' + encodeURIComponent(o.url);
+			
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u), // + '&redirect=no'
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 > 200 && rs*1 < 600)) {
+							//~ if (AMT__Global_Vars.isPreview) {
+								//~ AMT___Floater.skip();
+							//~ }
+							//~ // add to queue
+							//~ addToTabsQ();
+							exit(response.status);
+						}
+						
+						var sbm = true;
+						var r;
+						
+						// 284,220
+						r = /alt='Global rank icon'><strong class="metrics-data align-vmiddle">(<span style='margin-left: 10px;'>|)([\d\,]+|-)<\//.exec(rs);
+						if (r) {
+							r = r[2];
+							if (r == '-') // N/A!
+								r = 'N/A';
+							document.getElementsByName('web_url')[0].value = r;
+						} else sbm = false;
+						
+						// US rank
+						r = /United States<\/a><\/td>[\r\n\t\s]*<td class='text-right' ><span class=''>[^<]*<\/span><\/td>[\r\n\t\s]*<td class='text-right' ><span class=''>([\d,]+)<\/span><\/td>/.exec(rs);
+						if (r) {
+							r = r[1];
+							document.getElementsByName('web_url')[1].value = r;
+						} else {
+							
+							r = /Rank in Country<\/th>[\r\n\t\s]*<\/tr>[\r\n\t\s]*<\/thead>[\r\n\t\s]*<tbody>[\r\n\t\s]*<tr>[\r\n\t\s]*<td colspan="100%" class="align-center"><span>No data available for this site\.<br>We do not[\r\n\t\s]*have enough data to estimate these metrics\./.exec(rs);
+							if (r) {
+								document.getElementsByName('web_url')[1].value = 'N/A';
+							} else {
+								if (rs.indexOf('United States') == -1) {
+									document.getElementsByName('web_url')[1].value = 'N/A';
+								} else
+									sbm = false;
+								//~ sbm = false;
+							}
+						}
+						
+						console.log(sbm);
+						if (sbm) {
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		
 	}
 	
 	//
@@ -84604,11 +84911,377 @@ qatar,80
 	 * Derek Vansant
 	 * Qian Wang
 	 * VFN Master
+	 * Reed Alexander Atkin
 	 * 
 	 * ......OLD...... Emergo Group is ideal. It uses the global.js version of yahoo proxy, whereas
 	 * Graham uses an old manual version of yahoo proxy.
 	 */
 	
+	//
+	// Reed Alexander Atkin
+	// Find the Website for a Business
+	// 
+	var s = '			<td><label>Store Name:</label></td>';
+	var s2= '	<li>Enter the website address for the <strong>official website </strong>of the restaurant.</li>';
+	if  (
+		ih.indexOf(s) != -1 &&
+		ih.indexOf(s2) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+			
+			//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:1000px !important}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				name: td[1].innerText.trim(),
+				addr: td[3].innerText.replace(/[\r\n\t\s]+/g, ' ').trim(),
+				phone: td[5].innerText.trim(),
+				bold_array: []
+			}
+			o.bold_array = o.name.clean_string_to_array().concat(o.addr.clean_string_to_array().concat(o.phone.clean_string_to_array()));
+			console.log(o);
+			
+			/* BEGINS ITEMS */
+			//
+			var na = document.createElement('input');
+			na.setAttribute('type','button');
+			na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:20px;border:1px solid;');
+			document.body.appendChild(na);
+			na.value = "N/A";
+			//~ na.style.fontSize='10px';
+			//
+			var inp_top = document.createElement('input');
+			inp_top.setAttribute('type','input');
+			inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
+			document.body.appendChild(inp_top);
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1b);
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1c);
+			//
+			var d3 = document.createElement('textarea');
+			d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
+			document.body.appendChild(d3);
+			d1.txa = d3;
+			//
+			var d3b = document.createElement('textarea');
+			d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
+			document.body.appendChild(d3b);
+			d1b.txa = d3b;
+			//
+			var d3c = document.createElement('textarea');
+			d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
+			document.body.appendChild(d3c);
+			d1c.txa = d3c;
+			/*END ITEMS*/
+			//
+			d3.onblur = function() {
+				company_URL__SP_init(d1,  this);
+			}
+			d3b.onblur = function() {
+				company_URL__SP_init(d1b, this);
+			}
+			d3c.onblur = function() {
+				company_URL__SP_init(d1c, this);
+			}
+			na.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementById("web_url").value = "N/A";
+				//~ // nextTab
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+			d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+			d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			//
+			new AMT___core_factory().
+				iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b, d1c
+				],
+				offset: 70 // offset top
+			});
+			
+			// ...
+			d3.value  = o.name;
+			d3b.value = o.name +' '+ o.addr;
+			d3c.value = o.name +' '+ o.phone;
+			
+			var load_first = true;
+			var FOUND_ONE_NONSKIP = false;
+			var TOTAL_CALLS = 0;
+			var ARRAY_FIRST_FINDS = [];
+			var NUM_FOUND_SEARCH = 0;
+			
+			var SKIP_SITES;
+			function company_URL__load_skips() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host+'/mturk/util.php?austin_load_skips=',
+					onload: function (response) {
+						var rs=response.responseText;
+						
+						//~ SKIP_SITES = rs.split("\n");
+						
+						var x = rs.split("\n");
+						
+						SKIP_SITES = {}; // ASSOC.
+						
+						// FULL
+						for (var i in x) {
+							SKIP_SITES[x[i]] = true;
+						}
+						
+						// SUBDOMAINS!
+						for (var i in x) {
+							var y;
+							if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+								SKIP_SITES[y[1]] = true;
+							}
+						}
+						
+						company_URL__SP_init();
+					}
+				});
+			}
+			company_URL__load_skips();
+			
+			function company_URL__SP_init(el_div, el_inp) {
+				var req_proxy;
+				//
+				if (el_inp && el_div) { // single! (+dynamic!)
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value),
+						seed: el_div,
+						callback_function: company_URL__processProxyResponse,
+						return_init_object: true
+					});
+					return;
+					
+					//~ el_div.innerHTML = '';
+					//~ req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						//~ startPage: true,
+						//~ seed_arg1: el_div,
+						//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value)
+					//~ });
+					//~ req_proxy.proxy_init();
+					//~ req_proxy.proxy_waitComplete(
+						//~ company_URL__processProxyResponse
+					//~ );
+					//~ return;
+				}
+				
+				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+				
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value),
+					seed: d1,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value),
+					seed: d1b,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value),
+					seed: d1c,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+			}
+			
+			/**
+			 * function company_URL__processProxyResponse
+			 * 
+			 */
+			function company_URL__processProxyResponse(response) {
+				
+				
+				//~ console.log(response);return;
+				
+				var rs = response.rs;
+				
+				// rs
+				// 0=url
+				// 1=full
+				
+				// seed_arg
+				var out_div = response.seed;
+				out_div.innerHTML = '';
+				//~ console.log(seed_arg);
+				
+				if (!rs.length) {
+					out_div.innerHTML = '0';
+					return;
+				}
+				
+				for (var i in rs) {
+					
+					var x = rs[i][0];
+					var link = rs[i][0];
+					var full = rs[i][1];
+					
+					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// http
+					//~ x = x.replace(/^https?:\/\//, ''); // beginning
+					
+					// SKIP BUTTON CREATE
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2(
+							{
+								domain: x,
+								load_file: 'austin_load_skips', 
+								var_skip_sites: SKIP_SITES, 
+								callback_function: false
+							}
+						);
+					
+					// add bold (bold_array)
+					full = MT__bold(full, o.bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+					txa.readOnly = true;
+					txa.value = x;
+					txa.parent_div = out_div;
+					txa.parent_txa = out_div.txa
+					d.appendChild(txa);
+					// ...
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = link;
+					d.appendChild(a);
+					// ...
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					//~ // ...
+					//~ d.appendChild(document.createElement('br'));
+					// ...
+					var pbody = document.createElement('p');
+					pbody.setAttribute('style','');
+					pbody.innerHTML = full;
+					d.appendChild(pbody);
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementById('web_url').value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+							} else {
+								x[i].style.backgroundColor = '';
+							}
+						}
+					}, false);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					count++;
+				}
+				if (rs.length > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
+				}
+			}
+		}
+		new run().f();
+	}
 	//
 	// VFN Master
 	// Find the Wikipedia Page for a person
@@ -85210,19 +85883,6 @@ qatar,80
 			
 			/**
 			 * function company_URL__processProxyResponse
-			 * 
-			 * response:
-			 callback_function: function company_URL__processProxyResponse(response) {
-			 catch_include: "Yahoo! - 999 Unable to process request at this time -- error 999"
-			 catch_include_array: Array[3]
-			 catch_success: "<!DOCTYPE HTML>"
-			 headers_array: Array[1]
-			 return_init_object: true
-			 rs: Array[0]
-			 seed: div
-			 startPage: true
-			 startPage_array: true
-			 url: "https://startpage.com/do/metasearch.pl?query=FLETCHER%20SCHOOL%20DISTRICT%20school%20district"
 			 */
 			function company_URL__processProxyResponse(response) {
 				
@@ -85612,58 +86272,11 @@ qatar,80
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
 				});
-
-					
-				// OLD
-				//~ //1
-				//~ req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					//~ startPage: true,
-					//~ seed_arg1: d1,
-					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value)
-				//~ });
-				//~ req_proxy.proxy_init();
-				//~ req_proxy.proxy_waitComplete(
-					//~ company_URL__processProxyResponse
-				//~ );
-				//~ //2
-				//~ req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					//~ startPage: true,
-					//~ seed_arg1: d1b,
-					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value)
-				//~ });
-				//~ req_proxy.proxy_init();
-				//~ req_proxy.proxy_waitComplete(
-					//~ company_URL__processProxyResponse
-				//~ );
-				//~ //3
-				//~ if (d3c.value != '') {
-					//~ req_proxy = new AMT___xhr_PROXY_REDACTED_({
-						//~ startPage: true,
-						//~ seed_arg1: d1c,
-						//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value)
-					//~ });
-					//~ req_proxy.proxy_init();
-					//~ req_proxy.proxy_waitComplete(
-						//~ company_URL__processProxyResponse
-					//~ );
-				//~ }
 			}
 			
 			/**
 			 * function company_URL__processProxyResponse
 			 * 
-			 * response:
-			 callback_function: function company_URL__processProxyResponse(response) {
-			 catch_include: "Yahoo! - 999 Unable to process request at this time -- error 999"
-			 catch_include_array: Array[3]
-			 catch_success: "<!DOCTYPE HTML>"
-			 headers_array: Array[1]
-			 return_init_object: true
-			 rs: Array[0]
-			 seed: div
-			 startPage: true
-			 startPage_array: true
-			 url: "https://startpage.com/do/metasearch.pl?query=FLETCHER%20SCHOOL%20DISTRICT%20school%20district"
 			 */
 			function company_URL__processProxyResponse(response) {
 				
@@ -136370,7 +136983,10 @@ function mturk_load()
 				case '3T9YKFMCGXSXPUC7TCI0E0CH9E2C91': // Nicolas Cazagou, FB Email
 					AMT___Floater({runMT_Run: true});
 					break;
-				case '3RPY1MM09GUL7M0GAR5MDB066WBMHS': //Andrew Scherer
+				case '3RPY1MM09GUL7M0GAR5MDB066WBMHS': // Andrew Scherer
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '3AJ89545MPYNHEW210G20AIMXIXBEM': // Carol Chen, Alexa.com scrape
 					AMT___Floater({runMT_Run:true});
 					break;
 

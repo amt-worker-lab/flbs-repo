@@ -1100,6 +1100,15 @@ function FindObject(recordName,matchString, timeCutOff) {
 /**
  * .string_to_mixed_case
  */
+String.prototype.format_number_with_commas = function() {
+	var s = this.toString();
+	var parts = (s + '').split(".");
+	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return parts.join(".");
+}
+/**
+ * .string_to_mixed_case
+ */
 String.prototype.string_to_mixed_case = function(options) {
 	var s = this.toString();
 	s = s.replace(
