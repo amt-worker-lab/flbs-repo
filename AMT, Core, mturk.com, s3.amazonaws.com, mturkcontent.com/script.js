@@ -389,11 +389,12 @@ function MT__RUN() {
 					Travel_Data_company_URL__SP_init(d1c, this);
 				}
 				na.onclick = function() {
-					//~ this.style.backgroundColor = 'LightGreen';
-					//~ document.getElementById("web_url").value = "N/A";
-					//~ // nextTab
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById("web_url").value = "N/A";
+					document.getElementById('notes').value = 'I could not find this hotel on Hotels.com'
+					// nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
 				}
 				
 				// ...
