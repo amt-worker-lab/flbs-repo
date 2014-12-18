@@ -47249,21 +47249,22 @@ function MT__RUN() {
 			}
 			
 			// TRY ALL RESULTS
-			for (var rslt in rs.results) {
+			for (var j in rs.results) {
+				var rslt = rs.results[j];
 				if (rslt.partial_match) {
 					document.body.style.backgroundColor = '#a3dda3';
 				}
-				
+				//~ console.log(rslt);
 				for (var i in rslt.address_components) {
 					x = rslt.address_components[i];
-					console.log(x.short_name);
+					//~ console.log(x.short_name);
 					if  (
 							(
 								x.types[0] == 'postal_code' ||
 								x.types[1] == 'postal_code'
 							) &&
 						x.short_name.length >= 4 // &&
-						&& x.short_name != '34200'
+						//~ && x.short_name != '34200'
 						)
 					{
 						
