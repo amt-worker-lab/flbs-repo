@@ -47242,11 +47242,12 @@ function MT__RUN() {
 			for (var i in rs.results[0].address_components) {
 				x = rs.results[0].address_components[i];
 				if  (
-					(
-						x.types[0] == 'postal_code' ||
-						x.types[1] == 'postal_code'
-					) &&
+						(
+							x.types[0] == 'postal_code' ||
+							x.types[1] == 'postal_code'
+						) &&
 					x.short_name.length >= 4 // &&
+					&& x.short_name != '34200'
 					)
 				{
 					
