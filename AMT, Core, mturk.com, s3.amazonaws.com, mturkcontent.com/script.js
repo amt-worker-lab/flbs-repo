@@ -136800,7 +136800,13 @@ function top_window() {
 						return;
 					}
 					
-					if (rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1) {
+					if  (
+						rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
+						rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
+						rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1
+						//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1
+						)
+					{
 						d2.value = 'The image is too big, or the network connection is too slow to download it.';
 						d2.style.border = '8px dashed green';
 						d2.style.backgroundColor = 'MintCream';
@@ -137071,7 +137077,8 @@ function top_window() {
 						
 						if  (
 							rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
-							rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1
+							rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
+							rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1
 							)
 						{
 							d2.value = 'The image is too big, or the network connection is too slow to download it.';
