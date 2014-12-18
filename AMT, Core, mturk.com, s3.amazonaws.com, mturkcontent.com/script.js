@@ -9964,12 +9964,11 @@ function MT__RUN() {
 		document.getElementById('submitButton').onclick = function() {
 			var hasChecked = false;
 			for(var i in allInputs) {
-				var checkbox = allLi[i].getElementsByTagName('input');
-				if(checkbox && checkbox.length && checkbox.length == 1) {
-					if (allInputs[i].checked) {
-						hasChecked = true;
-						break;
-					}
+				if (i == 'length') break;
+				if (allInputs[i].type != 'checkbox') continue;
+				if (allInputs[i].checked) {
+					hasChecked = true;
+					break;
 				}
 			}
 			if (!hasChecked) return false;
