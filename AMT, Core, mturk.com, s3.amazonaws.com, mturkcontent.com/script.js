@@ -2809,6 +2809,132 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Reed Alexander Atkin
+	// Copy the Physical Address, phone number, email address and website for Store Based On Its Website
+	//
+	s = '<p>Find the contact information for this jewelry store.&nbsp; All of the info can be found on the included link</p>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[3].innerText.trim(),
+				q: [
+					document.getElementById('address_1'),
+					document.getElementById('address_2'),
+					document.getElementById('city'),
+					document.getElementById('province'),
+					document.getElementById('zip'),
+					document.getElementById('contact'), //4
+					document.getElementById('phone'), //5
+					document.getElementById('email'), //6
+					document.getElementById('website') //7
+				]
+			}
+			o.q[1].value = 'none';
+			//~ o.q[2].value = 'none';
+			o.q[4].value = 'none';
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: o.url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						return;
+					}
+					
+					var sbm = true;
+					
+					//
+					var reg = /Address: ([^%]+)%0D%0A/.exec(rs);//10816 Macleod Trail SE   
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						o.q[0].value = reg[1];
+						if (reg[1].length == 0) {
+							o.q[0].value = 'none';
+						}
+					} else sbm = false;
+					//Bobcaygeon
+					//61 Bolton Street   
+					//ON
+					//(optional)Commerce Court North
+					var reg = /<p>([^<]+)<br\/>[\r\n\t\s]*([^<]+)<br\/>[\r\n\t\s]*([A-Z]|[a-zA-Z]+)(<\/p>|<\/br>[^<]+<\/p>)/.exec(rs);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						reg[2] = __js_clean_html_str(reg[2]).trim();
+						o.q[2].value = reg[1]; // city
+						o.q[3].value = reg[3];
+						if (reg[1].length == 0) {
+							o.q[2].value = 'none';
+						}
+						if (reg[3].length == 0) {
+							o.q[3].value = 'none';
+						}
+						if (reg[4] != '</p>') {
+							o.q[1].value = __js_clean_html_str(reg[4].replace(/<[^>]*>/g, ''));
+						}
+					} else sbm = false;
+					//Store Manager
+					var reg = /<p>Contact: ([^<]*)<br\/>/.exec(rs);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						o.q[5].value = reg[1];
+						if (reg[1].length == 0) {
+							o.q[5].value = 'none';
+						}
+					} else sbm = false;
+					//705 - 738-2373
+					var reg = /Phone: ([^%]*)%0D%0A/.exec(rs);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						o.q[6].value = reg[1];
+						if (reg[1].length == 0) {
+							o.q[6].value = 'none';
+						}
+					} else sbm = false;
+					//purdys@i-zoom.net
+					var reg = /Email: ([^%]*)%0D%0A/.exec(rs);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						o.q[7].value = reg[1];
+						if (reg[1].length == 0) {
+							o.q[7].value = 'none';
+						}
+					} else sbm = false;
+					//www.purdysjewellery.com
+					var reg = /Website: ([^%]*)%0D%0A/.exec(rs);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						o.q[8].value = reg[1];
+						if (reg[1].length == 0) {
+							o.q[8].value = 'none';
+						}
+					} else sbm = false;
+					
+					
+					console.log(sbm);
+					if (rs.indexOf('Postal Code: %0D%0A') == -1) {
+						document.body.style.backgroundColor = 'LightGreen';
+					} else if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+			
+		}
+		new run().f();
+	}
+	// 
 	// Nick Hutchins
 	// Financial Stats for Hopsitals
 	//
@@ -21798,434 +21924,6 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	//
-	// L2 Inc
-	// Find the best Facebook Page for TV Shows
-	// 
-	s = '<li>Visit the zap2it url for your show if you are not familiar with the show</li>';
-	if (ih.indexOf(s) != -1)
-	{
-		var run = function() {};
-		run.prototype.f = function() {
-			console.log('');
-			
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
-			
-			GM_addStyle('body {margin-top:1000px;}');
-			
-			GM_addStyle('.container {position:absolute;top:1600px;margin-left:-40px;width:30%;zoom:0.6;}');
-			GM_addStyle('.panel {position:absolute;top:2000px;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			
-			
-			var td = document.getElementsByTagName('td');
-			var a = document.getElementsByTagName('a');
-			var o = {
-				comp: td[1].innerText.trim(),
-				url: a[0].href.trim(),
-				domain: null, 
-				domain_without_extension: null, 
-				comp_array: []
-			}
-			o.comp_array = o.comp.clean_string_to_array();
-			o.domain = o.url.replace(/^https?:\/\/w*\.*/i, '');
-			o.url = (!/^http/i.exec(o.url) && o.url != '') ? 'http://' + o.url : o.url;
-			o.domain_without_extension = o.domain.replace(/(\.co.uk|\.\w{2,4})$/i, ''); // Remove .com, .co.uk, etc.
-			console.log(o);
-			
-			/* BEGIN ITEMS */
-			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1);
-			//
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:62px;left:33%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1b);
-			//
-			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:62px;left:66%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1c);
-			//
-			var d2 = document.createElement('textarea');
-			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
-			d2.onblur = function() {
-				this.value = this.value.replace(/\s+/g, ' ').trim();
-				facebook_company(d1);
-			}
-			document.body.appendChild(d2);
-			//
-			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
-			d2b.onblur = function() {
-				this.value = this.value.replace(/\s+/g, ' ').trim();
-				facebook_company(d1b);
-			}
-			document.body.appendChild(d2b);
-			//
-			var d2c = document.createElement('input');
-			d2c.setAttribute('type','button');
-			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;cursor:pointer;');
-			d2c.value = 'N/A';
-			d2c.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				var x = document.getElementById('web_url');
-				x.value = 'none';
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-			document.body.appendChild(d2c);
-			/* END ITEMS */
-			
-			d2.value  = o.comp;
-			if (o.comp.toLowerCase() != o.domain.toLowerCase())
-				d2b.value = o.comp + ' ' + o.domain;
-			else
-				d2b.value = o.comp;
-			//~ if (o.comp.toLowerCase() != o.domain_without_extension.toLowerCase())
-				//~ d2b.value = o.comp + ' ' + o.domain_without_extension;
-			//~ else
-				//~ d2b.value = o.comp;
-			
-			// ...
-			var ef = new AMT___events_factory();
-			d2. addEventListener('keydown', ef.keydown__blur_field, true);
-			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			ef.mouseup__delete_range({
-				element: d2,
-				callback: function(input_object) {
-					input_object.element.blur();
-				}
-			});
-			ef.mouseup__delete_range({
-				element: d2b,
-				callback: function(input_object) {
-					input_object.element.blur();
-				}
-			});
-			
-			// innerHeight
-			new AMT___core_factory().el_innerHeight({
-				// This set the elements d1,d1b, and d1c
-				// to fill up the whole window, minus their
-				// distance from page top (top:XX pixels;).
-				elements: [
-					d1, d1b, d1c
-				],
-				offset: 62 // offset top
-			});
-			
-			// INIT
-			// ...
-			facebook_company(d1);
-			if (d2.value.trim() != d2b.value.trim())
-				facebook_company(d1b);
-			else
-				d1b.innerText = '--';
-			scrape_url_for_fb();
-			
-			// Load util window
-			if (o.url != '') {
-				AMT__setUtilityTabs([
-					{
-						url: o.url
-					}
-				]);
-			} else {
-				AMT__setUtilityTabs([
-					{
-						url: ''
-					}
-				]);
-			}
-			
-			/**
-			 * scrape_url_for_fb
-			 * 
-			 */
-			function scrape_url_for_fb(div) {
-				
-				if (o.url == '') {
-					d1c.innerText = '--';
-					return;
-				}
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: o.url,
-					onload: function(response) {
-						var rs = response.responseText;
-						d1c.innerText = '';
-						
-						if (response.status != 200) {
-							d1c.innerText = '0 Results (s=200)';
-							return;
-						}
-						
-						var reg = /[^"'>< ]*facebook\.com[^"'>< ]*/g;
-						var m;
-						while (m = reg.exec(rs)) {
-							m[0] = (!/^http/i.exec(m[0])) ? 'https://' + m[0] : m[0]; // Add http://
-							if (m[0].toLowerCase().indexOf('profile.php') == -1) {
-								m[0] = m[0].replace(/\?[\d\D]*/, '');// remove ?xxxx
-							}
-							m[0] = m[0].replace(/^https?:\/*/i, 'https://'); // Fix https?:////
-							var div = document.createElement('div');
-							div.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
-							div.innerHTML = MT__bold(m[0], [o.domain]);
-							div.className = m[0].replace(/^https?:\/\/w*\.*/i, '').toLowerCase();
-							//~ div.className = 'exe';
-							div.fblink = m[0];
-							d1c.appendChild(div)
-							div.onclick = function() {
-								this.style.border = '4px dashed blue';
-								document.getElementById('web_url').value = this.fblink;
-								new AMT___core_factory().nextTab();
-								doSubmit();
-							}
-							facebook_company_mouseevents(div);
-						}
-						
-						if (d1c.innerText == '') {
-							d1c.innerText = '0 Results';
-						}
-					}
-				});
-			}
-			
-			/**
-			 * facebook_company_mouseevents
-			 */
-			function facebook_company_mouseevents(div) {
-				// onmouseover
-				div.onmouseover = function() {
-					var x = document.getElementsByClassName(this.className);
-					for (var i in x) {
-						if (i == 'length') break;
-						x[i].style.backgroundColor = 'LightGreen';
-					}
-				}
-				// onmouseout
-				div.onmouseout = function() {
-					var x = document.getElementsByClassName(this.className);
-					for (var i in x) {
-						if (i == 'length') break;
-						x[i].style.backgroundColor = '';
-					}
-				}
-			}
-			/**
-			 * facebook_company
-			 * 
-			 * type=page => https://developers.facebook.com/docs/graph-api/reference/v2.2/page/
-			 */
-			function facebook_company(div) {
-				
-				var out = div;
-				out.innerHTML = '';
-				
-				var v;
-				if (out == d1)
-					v = d2.value;
-				else
-					v = d2b.value;
-					
-				// just type=page is used here (user ignored)
-				var u = 
-					'https://graph.facebook.com/search'+
-					'?q='+encodeURIComponent(v)+'&type=page'+ // not &type=user
-					'&fields=category,id,name,likes,talking_about_count,location,link,website,cover'+ //website, cover
-					'&limit=10'+
-					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-				
-				//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
-					//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
-				//~ }
-				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-				
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) return;
-						
-						var r = JSON.parse(rs);
-						
-						if (!r.data) {
-							out.innerHTML = '!r.data';
-							return;
-						}
-						
-						r = r.data;
-						
-						console.log(r);
-						
-						var c = 0;
-						var divs_to_append = []; // for domains matching
-						for (var i in r) {
-							
-							if (r[i].type) {
-								if (r[i].type == 'event') continue;
-							}
-							
-							if (r[i].talking_about_count != null) {
-							} else
-								r[i].talking_about_count = '';
-							if (r[i].likes != null) {
-							} else
-								r[i].likes = '';
-							
-							if (r[i].location) {
-								if (r[i].location.latitude) {
-									delete r[i].location.latitude;
-								}
-								if (r[i].location.longitude) {
-									delete r[i].location.longitude;
-								}
-							}
-							
-							var border = '';
-							var domains_are_matching = false;
-							if (r[i].hasOwnProperty('website') && r[i].website.toLowerCase().indexOf(o.domain.toLowerCase()) != -1 && o.domain != '') {
-								border = 'border:3px solid brown;background-color:beige;';
-								domains_are_matching = true;
-							} else {
-								border = 'border-bottom:1px solid teal;'
-							}
-							
-							// div
-							var div = document.createElement('div');
-							div.setAttribute('style', 'cursor:pointer;' + border);
-							
-							// Append?
-							if (!domains_are_matching) {
-								out.appendChild(div);
-							} else {
-								divs_to_append.push(div);
-							}
-							
-							div.className	= r[i].link.replace(/^https?:\/\/w*\.*/i, '').toLowerCase();
-							div.fblikes		= r[i].likes * 1;
-							div.bgc			= false;
-							div.pageErr_numRedirects = 0;
-							
-							//~ if (div.fblikes < 4) {
-								//~ div.style.backgroundColor = '#aaa';
-								//~ div.bgc = true;
-							//~ }
-							//~ 
-							
-							// tmp
-							var tmp = '';
-							tmp += MT__bold(r[i].name, o.comp_array);
-							tmp += '<br>likes:<b>'+r[i].likes+'</b>';
-							tmp += '<br>talks:'+r[i].talking_about_count;
-							if (r[i].hasOwnProperty('website')) {
-								tmp += '<br>website:'+MT__bold(r[i].website, [o.domain]);
-							}
-							// loc
-							if (r[i].location) {
-								for (var j in r[i].location) {
-									if (r[i].location[j].length > 0)
-										tmp += '<br>location:' + r[i].location[j];
-								}
-							}
-							// cat
-							if (r[i].category) {
-								var x = r[i].category;
-								tmp += '<br>category:'+x;
-							}
-							tmp += '<br>' + r[i].link;
-							// innerHTML
-							div.innerHTML = tmp;
-							div.fblink = r[i].link;
-							// onclick
-							div.onclick = function() {
-								this.style.border = '4px dashed blue';
-								document.getElementById('web_url').value = this.fblink;
-								new AMT___core_factory().nextTab();
-								doSubmit();
-								//~ // Turn off
-								//~ this.onclick = function() {};
-								//~ 
-								//~ // Get
-								//~ facebook_company__profile(this);
-							}
-							// onmouseover
-							div.onmouseover = function() {
-								var x = document.getElementsByClassName(this.className);
-								for (var i in x) {
-									if (i == 'length') break;
-									x[i].style.backgroundColor = 'LightGreen';
-								}
-							}
-							// onmouseout
-							div.onmouseout = function() {
-								var x = document.getElementsByClassName(this.className);
-								for (var i in x) {
-									if (i == 'length') break;
-									x[i].style.backgroundColor = '';
-								}
-							}
-							
-							// Image
-							if (r[i].hasOwnProperty('cover') && r[i].cover.hasOwnProperty('source') && r[i].cover.source != '') {
-								
-								var maxW = '50%';
-								
-								var img = document.createElement('img');
-								img.setAttribute('style','max-width:50%;display:block;');
-								img.src = r[i].cover.source;
-								div.appendChild(img);
-								
-							}
-							
-							//~ // Init this div if first!
-							//~ //
-							//~ //
-							//~ if (c == 0) 
-								//~ div.click();
-							
-							c++;
-							
-							//~ if (out == d1 && c == 0)  //XX
-							//~ if (div.fblikes >= 4) {
-							//~ }
-						}
-						
-						// Domains?
-						if (divs_to_append.length) {
-							divs_to_append.reverse();// Reverse the order! Instead of Likes=0,1,3,6,800, It needs to be Likes=800,6,3,1,0.
-							if (out.innerHTML != '') { // INSERTBEFORE
-								for (var i in divs_to_append) {
-									out.insertBefore(divs_to_append[i], out.firstChild);
-								}
-							} else { // APPEND
-								for (var i in divs_to_append) {
-									out.appendChild(divs_to_append[i]);
-								}
-							}
-						}
-						
-						if (c == 0) {
-							out.innerHTML = '0';
-							return;
-						}
-						else
-						{
-							var div = document.createElement('div');
-							div.setAttribute('style', 'height:2000px;');
-							out.appendChild(div);
-						}
-					}
-				});
-			}
-		}
-		new run().f();
-	}
-	
-	
 	//
 	// Nicholas Oliver
 	// -SimpleSearch, Find the correct Facebook page for this business
@@ -132757,6 +132455,8 @@ function top_window() {
 		 */
 		function Crowd_Task_company_URL__count_domains() {
 			
+			// Is a tie?
+			var count_domains_is_a_tie = false;
 			// increment
 			o.panels_loaded++;
 			// check complete
@@ -132775,6 +132475,7 @@ function top_window() {
 						if (i == 'length') break;
 						n[i].style.backgroundColor = 'beige';
 						n[i].style.border = '3px solid brown';
+						n[i].original_bg_color = 'beige';
 					}
 				}
 			}
@@ -132861,6 +132562,7 @@ function top_window() {
 				d.setAttribute('style','margin:4px 0 4px 0;');
 				d.className = 'class_'+cls;
 				d.full_URL = link;
+				d.original_bg_color = '';
 				out_div.appendChild(d);
 				
 				// IS SKIP?
@@ -132925,7 +132627,8 @@ function top_window() {
 						if (x[i].className == this.className) {
 							x[i].style.backgroundColor = 'LightGreen';
 						} else {
-							x[i].style.backgroundColor = '';
+							x[i].style.backgroundColor = x[i].original_bg_color;
+							//~ x[i].style.backgroundColor = '';
 						}
 					}
 					// Could do this also! .getElementsByClassName('class_');
@@ -132936,7 +132639,8 @@ function top_window() {
 					for (var i in x) {
 						if (i == 'length') break;
 						if (x[i].className == this.className) {
-							x[i].style.backgroundColor = '';
+							x[i].style.backgroundColor = x[i].original_bg_color;
+							//~ x[i].style.backgroundColor = '';
 						}
 					}
 					// Could do this also! .getElementsByClassName('class_');
