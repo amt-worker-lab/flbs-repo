@@ -9960,6 +9960,23 @@ function MT__RUN() {
 				}
 			}
 		}
+		
+		document.getElementById('submitButton').onclick = function() {
+			var hasChecked = false;
+			for(var i in allInputs) {
+				var checkbox = allLi[i].getElementsByTagName('input');
+				if(checkbox && checkbox.length && checkbox.length == 1) {
+					if (allInputs[i].checked) {
+						hasChecked = true;
+						break;
+					}
+				}
+			}
+			if (!hasChecked) return false;
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
+		}
 	
 	}
 	
@@ -127978,6 +127995,7 @@ qatar,80
 	s = 'Please look for the field that indicates whether it has "Delivery"  or "Take-Out" If either of those fields are set to "Yes"  then check the box(es) below. ';
 	if (ih.indexOf(s) != -1)
 	{
+		return;
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:40%;}');
 		
