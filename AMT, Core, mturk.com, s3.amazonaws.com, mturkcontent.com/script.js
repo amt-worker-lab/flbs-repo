@@ -9938,6 +9938,12 @@ function MT__RUN() {
 		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 		GM_addStyle('li {background-color:aqua;cursor:pointer;}');
 		
+		var h3 = document.getElementsByTagName('h3');
+		h3[0].setAttribute('style', 'position:absolute;top:2000px;');
+		var p = document.getElementsByTagName('p');
+		p[0].setAttribute('style', 'position:absolute;top:2200px;');
+		p[1].setAttribute('style', 'position:absolute;top:2400px;');
+		
 		var allLi = document.getElementsByTagName('li');
 		for(var i = 0; i < allLi.length; i++) {
 			var checkbox = allLi[i].getElementsByTagName('input');
