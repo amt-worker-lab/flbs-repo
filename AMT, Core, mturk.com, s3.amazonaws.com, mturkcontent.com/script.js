@@ -47087,8 +47087,8 @@ function MT__RUN() {
 	// Stephanie Hass
 	// 
 	// 
-	s  = '<li>For this restaurant below, find the zip code</li>';
-	s2 = 'If there is no zip code, write NA';
+	s  = '<li>For this restaurant below, find the postal code</li>';
+	s2 = 'If there is no postal code, write NA';
 	if  (
 		ih.indexOf(s)  != -1 &&
 		ih.indexOf(s2) != -1
@@ -47241,31 +47241,12 @@ function MT__RUN() {
 			
 			for (var i in rs.results[0].address_components) {
 				x = rs.results[0].address_components[i];
-				//~ if  (
-						//~ (
-							//~ x.types[0] == 'postal_code' ||
-							//~ x.types[1] == 'postal_code'
-						//~ ) &&
-						//~ !firstRun &&
-						//~ x.short_name == '10500'
-					//~ )
-				//~ {
-					//~ continue;
-				//~ }
 				if  (
 					(
 						x.types[0] == 'postal_code' ||
 						x.types[1] == 'postal_code'
 					) &&
 					x.short_name.length >= 4 // &&
-					//~ x.short_name != '01018' &&
-					//~ (
-						//~ (
-							//~ x.short_name == '10500' &&
-							//~ b[0].innerText.trim() != ''
-						//~ ) ||
-						//~ x.short_name != '10500'
-					//~ )
 					)
 				{
 					
@@ -47284,12 +47265,6 @@ function MT__RUN() {
 				
 				// Here?
 				// CANADA add 
-				//~ console.log(x.short_name);
-				//~ console.log(x.types[0]);
-				//~ console.log(o.country == 'Canada');
-				//~ console.log(x.types[0] == 'postal_code_prefix');
-				//~ console.log(x.short_name.length == '3');
-				//~ console.log(o.state_abbr != '');
 				if (o.country == 'Canada' && x.types[0] == 'postal_code_prefix' && x.short_name.length == '3' && o.state_abbr != '') {
 					//~ console.log('HERE');
 					document.getElementById('Q1Url').value = o.state_abbr + ' ' + x.short_name;
@@ -47312,18 +47287,6 @@ function MT__RUN() {
 			
 			// still here?
 			Stephanie_Hass_restaurant_zipcode__increment(rs);
-			//~ if (num_tries == 0) {
-				//~ 
-			//~ } else if (num_tries == 1){
-				//~ num_tries++;
-				//~ d1.value = addr2.join(',');
-				//~ MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, true);
-			//~ }
-			//~ try {
-				//~ 
-			//~ } catch (e) {
-				//~ 
-			//~ }
 		}
 		function Stephanie_Hass_restaurant_zipcode__canadapost__prof(id) {
 			//http://ws1.postescanada-canadapost.ca/AddressComplete/Interactive/RetrieveFormatted/v2.00/json3.ws?_API_KEY_REDACTED_&Id=CAN%7CPR%7CX230730015%7CE%7C0%7C0&Source=&$cache=true
