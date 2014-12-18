@@ -47156,10 +47156,11 @@ function MT__RUN() {
 		
 		if (o.city == 'Istanbul') {
 			o.city = '';
-			o.addr = o.addr.replace(/no[:\.\/]+[a-z0-9\/]$/i, '').trim();
-			addr1 = o.addr + ' ' + o.city + ' ' + o.state + ' ' + o.country; 
+			o.addr = o.addr.replace(/((no|d|k)[:\.\/ ]+[a-z0-9\/]+ *)*$/gi, '').trim();
+			o.addr = o.addr.replace(/apt\.$/gi, '').trim();
+			addr1 = o.addr + ', ' + o.city + ', ' + o.state + ', ' + o.country; 
 		} else {
-			addr1 = o.addr + ' ' + o.city + ' ' + o.state + ' ' + o.country; 
+			addr1 = o.addr + ', ' + o.city + ', ' + o.state + ', ' + o.country; 
 		}
 		
 		var d = document.createElement('input');
@@ -47247,42 +47248,46 @@ function MT__RUN() {
 				return;
 			}
 			
-			if (rs.results[0].partial_match) {
-				document.body.style.backgroundColor = '#a3dda3';
-			}
-			
-			for (var i in rs.results[0].address_components) {
-				x = rs.results[0].address_components[i];
-				if  (
-						(
-							x.types[0] == 'postal_code' ||
-							x.types[1] == 'postal_code'
-						) &&
-					x.short_name.length >= 4 // &&
-					&& x.short_name != '34200'
-					)
-				{
-					
-					// ADD A ' TO LEADING '0'
-					x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
-					document.getElementById('Q1Url').value = x.short_name;
-					
-					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.accept();
-						return;
-					}
-					//here ?
-					doSubmit();
-					return;
+			// TRY ALL RESULTS
+			for (var rslt in rs.results) {
+				if (rslt.partial_match) {
+					document.body.style.backgroundColor = '#a3dda3';
 				}
 				
-				// Here?
-				// CANADA add 
-				if (o.country == 'Canada' && x.types[0] == 'postal_code_prefix' && x.short_name.length == '3' && o.state_abbr != '') {
-					//~ console.log('HERE');
-					document.getElementById('Q1Url').value = o.state_abbr + ' ' + x.short_name;
-					doSubmit();
-					return;
+				for (var i in rslt.address_components) {
+					x = rslt.address_components[i];
+					console.log(x.short_name);
+					if  (
+							(
+								x.types[0] == 'postal_code' ||
+								x.types[1] == 'postal_code'
+							) &&
+						x.short_name.length >= 4 // &&
+						&& x.short_name != '34200'
+						)
+					{
+						
+						// ADD A ' TO LEADING '0'
+						x.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
+						document.getElementById('Q1Url').value = x.short_name;
+						
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.accept();
+							return;
+						}
+						//here ?
+						doSubmit();
+						return;
+					}
+					
+					// Here?
+					// CANADA add 
+					if (o.country == 'Canada' && x.types[0] == 'postal_code_prefix' && x.short_name.length == '3' && o.state_abbr != '') {
+						//~ console.log('HERE');
+						document.getElementById('Q1Url').value = o.state_abbr + ' ' + x.short_name;
+						doSubmit();
+						return;
+					}
 				}
 			}
 			
