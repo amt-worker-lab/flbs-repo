@@ -47121,6 +47121,9 @@ function MT__RUN() {
 			addr1.unshift(nm); // !
 		
 		var o = {
+			comp: nm,
+			addr: b[0].innerText.trim(),
+			city: b[1].innerText.trim(),
 			state: b[2].innerText.trim(),
 			state_abbr: '',
 			country: b[3].innerText.trim()
@@ -47151,12 +47154,21 @@ function MT__RUN() {
 		}
 		console.log(o);
 		
+		if (o.city == 'Istanbul') {
+			o.city = '';
+			o.addr = o.addr.replace(/no[:\.\/]+[a-z0-9\/]$/i, '').trim();
+			addr1 = o.addr + ' ' + o.city + ' ' + o.state + ' ' + o.country; 
+		} else {
+			addr1 = o.addr + ' ' + o.city + ' ' + o.state + ' ' + o.country; 
+		}
+		
 		var d = document.createElement('input');
 		d.setAttribute('id','d1');
 		d.setAttribute('style','position:absolute;top:0;left:0;');
 		document.body.appendChild(d);
 		var d1 = document.getElementById('d1');
-		d1.value = addr1.join(',');
+		d1.value = addr1;
+		//~ d1.value = addr1.join(',');
 		d1.onblur = function() {
 			MT___google_api_geocode(this.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
 		}
