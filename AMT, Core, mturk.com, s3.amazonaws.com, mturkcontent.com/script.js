@@ -85823,6 +85823,54 @@ qatar,80
 			}
 			o.bold_array = o.name.clean_string_to_array();
 			o.bold_array_sport = o.sport.clean_string_to_array();
+			
+			// Add bold (bold_array_sport)
+			// Returns as object[.bold_string]
+			o.bold_array_sport.push('game');
+			o.bold_array_sport.push('season');
+			o.bold_array_sport.push('sport');
+			console.log(o.bold_array_sport);
+			var addToBoldArray = [];
+			for(var i = 0; i < o.bold_array_sport.length; i++) {
+				if(	o.bold_array_sport[i] &&
+					typeof o.bold_array_sport[i] == 'string'
+				) {
+					switch(o.bold_array_sport[i].toLowerCase()) {
+						case 'mlb': addToBoldArray.push('baseball');
+						case 'mma': addToBoldArray.push('mixed');
+						case 'mma': addToBoldArray.push('martial');
+						case 'mma': addToBoldArray.push('arts');
+						case 'futbol': addToBoldArray.push('soccer');
+						case 'soccer': addToBoldArray.push('futbol');
+						case 'milb': addToBoldArray.push('baseball');
+						case 'milb': addToBoldArray.push('mlb');
+						case 'nhl': addToBoldArray.push('hockey');
+						case 'hockey': addToBoldArray.push('nhl');
+						case 'hockey': addToBoldArray.push('nhl');
+						case 'nba': addToBoldArray.push('basketball');
+						case 'mls': addToBoldArray.push('major');
+						case 'mls': addToBoldArray.push('league');
+						case 'mls': addToBoldArray.push('soccer');
+						case 'soccer': addToBoldArray.push('mls');
+						case 'basketball': addToBoldArray.push('nba');
+						case 'nfl':	 addToBoldArray.push('football');
+						case 'football': addToBoldArray.push('nfl');
+						case 'football': addToBoldArray.push('nfl');
+						case 'liga': addToBoldArray.push('futbol');
+						case 'liga': addToBoldArray.push('soccer');
+						case 'liga': addToBoldArray.push('soccer');
+						case 'premier': addToBoldArray.push('soccer');//premier league
+						case 'premier': addToBoldArray.push('futbol');//premier league
+						case 'premier': addToBoldArray.push('soccer');
+						case 'premier': addToBoldArray.push('soccer');
+					}
+				}
+			}
+			
+			for(var i = 0; i < addToBoldArray.length; i++) {
+				o.bold_array_sport.push(addToBoldArray[i])
+			}
+			
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -86057,47 +86105,8 @@ qatar,80
 					// Add bold (bold_array)
 					full = MT__bold(full, o.bold_array);
 					
-					// Add bold (bold_array_sport)
-					// Returns as object[.bold_string]
-					o.bold_array_sport.push('game');
-					o.bold_array_sport.push('season');
-					o.bold_array_sport.push('sport');
 					
-					for(var i = 0; i < o.bold_array_sport.length; i++) {
-						if(	o.bold_array_sport[i] &&
-							typeof o.bold_array_sport[i] == 'string'
-						) {
-							switch(o.bold_array_sport[i].toLowerCase()) {
-								case 'mlb': o.bold_array_sport.push('baseball');
-								case 'mma': o.bold_array_sport.push('mixed');
-								case 'mma': o.bold_array_sport.push('martial');
-								case 'mma': o.bold_array_sport.push('arts');
-								case 'futbol': o.bold_array_sport.push('soccer');
-								case 'soccer': o.bold_array_sport.push('futbol');
-								case 'milb': o.bold_array_sport.push('baseball');
-								case 'milb': o.bold_array_sport.push('mlb');
-								case 'nhl': o.bold_array_sport.push('hockey');
-								case 'hockey': o.bold_array_sport.push('nhl');
-								case 'hockey': o.bold_array_sport.push('nhl');
-								case 'nba': o.bold_array_sport.push('basketball');
-								case 'mls': o.bold_array_sport.push('major');
-								case 'mls': o.bold_array_sport.push('league');
-								case 'mls': o.bold_array_sport.push('soccer');
-								case 'soccer': o.bold_array_sport.push('mls');
-								case 'basketball': o.bold_array_sport.push('nba');
-								case 'nfl':	 o.bold_array_sport.push('football');
-								case 'football': o.bold_array_sport.push('nfl');
-								case 'football': o.bold_array_sport.push('nfl');
-								case 'liga': o.bold_array_sport.push('futbol');
-								case 'liga': o.bold_array_sport.push('soccer');
-								case 'liga': o.bold_array_sport.push('soccer');
-								case 'premier': o.bold_array_sport.push('soccer');//premier league
-								case 'premier': o.bold_array_sport.push('futbol');//premier league
-								case 'premier': o.bold_array_sport.push('soccer');
-								case 'premier': o.bold_array_sport.push('soccer');
-							}
-						}
-					}
+					
 					
 					full = MT__bold(full, o.bold_array_sport, {color: 'blue'}).bold_string; //console.log(full);
 					
