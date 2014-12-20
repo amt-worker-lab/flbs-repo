@@ -86059,6 +86059,46 @@ qatar,80
 					
 					// Add bold (bold_array_sport)
 					// Returns as object[.bold_string]
+					o.bold_array_sport.push('game');
+					o.bold_array_sport.push('season');
+					o.bold_array_sport.push('sport');
+					
+					for(var i = 0; i < o.bold_array_sport.length; i++) {
+						if(	o.bold_array_sport[i] &&
+							typeof o.bold_array_sport[i] == 'string'
+						) {
+							switch(o.bold_array_sport[i].toLowerCase()) {
+								case 'mlb': o.bold_array_sport.push('baseball');
+								case 'mma': o.bold_array_sport.push('mixed');
+								case 'mma': o.bold_array_sport.push('martial');
+								case 'mma': o.bold_array_sport.push('arts');
+								case 'futbol': o.bold_array_sport.push('soccer');
+								case 'soccer': o.bold_array_sport.push('futbol');
+								case 'milb': o.bold_array_sport.push('baseball');
+								case 'milb': o.bold_array_sport.push('mlb');
+								case 'nhl': o.bold_array_sport.push('hockey');
+								case 'hockey': o.bold_array_sport.push('nhl');
+								case 'hockey': o.bold_array_sport.push('nhl');
+								case 'nba': o.bold_array_sport.push('basketball');
+								case 'mls': o.bold_array_sport.push('major');
+								case 'mls': o.bold_array_sport.push('league');
+								case 'mls': o.bold_array_sport.push('soccer');
+								case 'soccer': o.bold_array_sport.push('mls');
+								case 'basketball': o.bold_array_sport.push('nba');
+								case 'nfl':	 o.bold_array_sport.push('football');
+								case 'football': o.bold_array_sport.push('nfl');
+								case 'football': o.bold_array_sport.push('nfl');
+								case 'liga': o.bold_array_sport.push('futbol');
+								case 'liga': o.bold_array_sport.push('soccer');
+								case 'liga': o.bold_array_sport.push('soccer');
+								case 'premier': o.bold_array_sport.push('soccer');//premier league
+								case 'premier': o.bold_array_sport.push('futbol');//premier league
+								case 'premier': o.bold_array_sport.push('soccer');
+								case 'premier': o.bold_array_sport.push('soccer');
+							}
+						}
+					}
+					
 					full = MT__bold(full, o.bold_array_sport, {color: 'blue'}).bold_string; //console.log(full);
 					
 					// classname is http://(www. = '')x.com (no www)
