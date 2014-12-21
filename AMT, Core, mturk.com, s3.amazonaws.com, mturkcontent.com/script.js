@@ -29725,7 +29725,8 @@ function MT__RUN() {
 			name: name,
 			addr: addr,
 			button_cannot_find: btns[0],
-			max_streetview_height: 600 // default=600
+			max_streetview_height: 600, // default=600
+			curr_map_view: null // For Z hotkey
 		};
 		
 		// ...
@@ -30094,8 +30095,7 @@ function MT__RUN() {
       
 			var char = String.fromCharCode(e.charCode);
 			
-			// ...
-			//~ // Exit Steet View
+			// Exit Steet View
 			if (char == 'z' || char == 'Z') {
 				console.log('Exit:' + char);
 				var x = document.getElementsByTagName('div');
@@ -30105,35 +30105,48 @@ function MT__RUN() {
 					// Exit Steet View
 					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
 						x[i].click();
+						console.log(x[i]);
 						break;
 					}
+					//~ 
+					//~ // Go to map view
+					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
+						//~ x[i].click();
+					//~ }
+					//~ 
+					//~ // Go to satellite
+					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+						//~ x[i].click();
+					//~ }
+				};
+			}
+			
+			//...
+			// Go to map view
+			else if (char == 'x' || char == 'X') {
+				var x=document.getElementsByTagName('div');
+				for (var i in x) {
+					if (i == 'length') break;
 					
 					// Go to map view
 					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
 						x[i].click();
 						//~ break;
+						console.log('map');
+						console.log(x[i]).style.fontWeight;
+						
 					}
 					
 					// Go to satellite
 					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
 						x[i].click();
 						//~ break;
+						console.log('sat');
+						console.log(x[i]).style.fontWeight;
 					}
 				};
 			}
 			
-			//~ // Go to map view
-			//~ else if (char == 'x' || char == 'X') {
-				//~ var x=document.getElementsByTagName('div');
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
-						//~ x[i].click();
-						//~ break;
-					//~ }
-				//~ };
-			//~ }
-			//~ 
 			//~ // Go to satellite
 			//~ else if (char == 'c' || char == 'C') {
 				//~ var x=document.getElementsByTagName('div');
