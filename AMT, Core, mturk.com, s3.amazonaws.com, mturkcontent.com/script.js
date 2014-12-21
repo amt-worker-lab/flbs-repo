@@ -30094,42 +30094,57 @@ function MT__RUN() {
       
 			var char = String.fromCharCode(e.charCode);
 			
-			// Exit Steet View
+			// ...
+			//~ // Exit Steet View
 			if (char == 'z' || char == 'Z') {
 				console.log('Exit:' + char);
 				var x = document.getElementsByTagName('div');
 				for (var i in x) {
 					if (i == 'length') break;
+					
+					// Exit Steet View
 					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
 						x[i].click();
 						break;
 					}
-				};
-			}
-			
-			// Go to map view
-			else if (char == 'x' || char == 'X') {
-				var x=document.getElementsByTagName('div');
-				for (var i in x) {
-					if (i == 'length') break;
+					
+					// Go to map view
 					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
 						x[i].click();
-						break;
+						//~ break;
+					}
+					
+					// Go to satellite
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+						x[i].click();
+						//~ break;
 					}
 				};
 			}
 			
-			// Go to satellite
-			else if (char == 'c' || char == 'C') {
-				var x=document.getElementsByTagName('div');
-				for (var i in x) {
-					if (i == 'length') break;
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
-						x[i].click();
-						break;
-					}
-				};
-			}
+			//~ // Go to map view
+			//~ else if (char == 'x' || char == 'X') {
+				//~ var x=document.getElementsByTagName('div');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
+						//~ x[i].click();
+						//~ break;
+					//~ }
+				//~ };
+			//~ }
+			//~ 
+			//~ // Go to satellite
+			//~ else if (char == 'c' || char == 'C') {
+				//~ var x=document.getElementsByTagName('div');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+						//~ x[i].click();
+						//~ break;
+					//~ }
+				//~ };
+			//~ }
 		}, false);
 		
 		// Zoom map exit button
