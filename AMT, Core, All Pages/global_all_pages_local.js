@@ -67,6 +67,12 @@
  */
 function AMT__all_pages_util(r) {
 	
+	/**
+	 * Add the current URL to r
+	 * 
+	 */
+	r.init_current_URL = document.location.href;
+	
 	// Add a panel in top left if the following types are present:
 	//		.MT___all_pages_showhref
 	//		.show_remove_links_button
@@ -146,10 +152,11 @@ function AMT__all_pages_util(r) {
 	// email_links_click_to_parent
 	// @param 
 	if ( r.email_links_click_to_parent ) {
-		new AMT___global_factory().email_links_click_to_parent({
-			completion_key: r.email_links_click_to_parent.completion_key,
-			messagePassingOptions: r
-		});
+		new AMT___global_factory().email_links_click_to_parent(r);
+		//~ new AMT___global_factory().email_links_click_to_parent({
+			//~ completion_key: r.email_links_click_to_parent.completion_key,
+			//~ messagePassingOptions: r
+		//~ });
 	}
 	
 	// make_element_words_click
@@ -529,27 +536,32 @@ AMT___global_factory.prototype.document_add_range = function(options) {
 /**
  * .email_links_click_to_parent
  * 
- * @param options			object
- * @param "".completion_key	string
+ * @param		options					object
+ * @param		"".completion_key		string
  * 
- * @return 
+ * @return		object					
  */
 AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
 	
+	/**
+	completion_key: r.email_links_click_to_parent.completion_key,
+	messagePassingOptions: r **/
+			
 	var options = options;
 	var a = document.getElementsByTagName('a');
 	for (var i in a) {
 		if (i == 'length') break;
 		if (/^ *mailto *:/i.exec(a[i].href)) {
 			a[i].addEventListener('mouseup', function(e) {
-				if(options.messagePassingOptions.hasOwnProperty('isUtilityTab')) {
+				if(options.hasOwnProperty('isUtilityTab')) {
 					chrome.runtime.sendMessage(
 						'gcfnekbbpmbgadddbojhlojhddnkcpje',
 						{
 							util_window_message_passing: true,
 							data: {
 								email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
-							}
+							},
+							init_object: options
 						},
 						function(response) {
 							// response=object
@@ -750,7 +762,8 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 					'gcfnekbbpmbgadddbojhlojhddnkcpje',
 					{
 						util_window_message_passing: true,
-						data: return_object
+						data: return_object,
+						init_object: options_object
 					},
 					function(response) {
 					}

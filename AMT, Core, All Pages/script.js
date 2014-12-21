@@ -472,6 +472,7 @@ function load()
 	}
 	//~ this.blaaaaaah = 'xxxxxxxsdfsdfsdavdfs';
 	// Ask Core-mturk whether we are a utility window and, if so, run the options
+	// For example Michael Lai
 	this.AMT__init_utility_window = function() {
 		if(window.top == window.self) {
 			chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
