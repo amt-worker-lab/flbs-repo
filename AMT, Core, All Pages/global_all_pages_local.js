@@ -548,7 +548,6 @@ AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
 						{
 							util_window_message_passing: true,
 							data: {
-								key: options.completion_key,
 								email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
 							}
 						},

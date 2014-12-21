@@ -2809,11 +2809,125 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Mark Richard Adams
+	// Input company size from directory listing
+	//
+	s = '"employers by name"</span>&nbsp;lower right box&nbsp;to search for a company. Then click "Santa Cruz County." If Santa Cruz County is not listed, end search and type N/A in "company size" box.</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.exe:hover {background-color:aqua !important;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				location: td[3].innerText.trim(),
+				city: null,
+				state: null,
+				q: document.getElementById('web_url'),
+				auto_cities: [
+					'Santa Cruz', 'Watsonville', 'Aptos', 'Monterey', 'San Jose'
+				]
+			}
+			var tmp = o.location.split(',');
+			o.city = tmp[0];
+			o.state = (tmp.length > 1) ? tmp[1].trim() : tmp[0];
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 200 // offset top
+			});
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: 'http://www.labormarketinfo.edd.ca.gov/aspdotnet/databrowsing/empResults.aspx?menuChoice=emp&searchType=Keyword&keyword='+encodeURIComponent(o.comp)+'&geogArea=0604000087',
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						return;
+					}
+					
+					var reg = /<tr class="tableData"[^>]*>((.|\s)*?(?=<\/tr>|$)|$)/g;
+					var m;
+					var found = false;
+					while (m = reg.exec(rs)) {
+						
+						var bgc = '';
+						var emp = false;
+						var reg_emp = /<td class="tableData">([\d\-,]+[\r\n\t\s]+employees?)<\/td>/.exec(m[1]);
+						if (reg_emp) {
+							emp = reg_emp[1].replace(/[\r\n\t\s]+/g, ' ');
+						} else {
+							bgc = 'background-color:pink;';
+						}
+						
+						var div = document.createElement('div');
+						div.className = 'exe';
+						div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+bgc);
+						d1.appendChild(div);
+						div.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q.value = this.employees;
+							if (this.employees && this.employees != '') {
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+						}
+						div.innerText = m[1].replace(/<\/td>/g, '\n').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+						div.employees = emp;
+						
+						// Company name
+						// Company city
+						// 41st Avenue Wash & Dry
+						// 41st Ave
+						// Capitola
+						var reg_etc = /<a href="[^"]*">([^<]+)<\/a><\/td><td class="tableData">([^<]*)<\/td><td class="tableData">([^<]*)<\/td>/.exec(m[1]);
+						if (reg_etc) {
+							reg_etc[1] = __js_clean_html_str(reg_etc[1]).trim();
+							reg_etc[3] = __js_clean_html_str(reg_etc[3]).trim();
+							if (o.comp == reg_etc[1] && o.city == reg_etc[3] && !found) {
+								div.click();
+								found = true;
+							}
+						}
+					}
+					
+					if (d1.innerText == '' && rs.indexOf('There are no employers matching your search criteria.') != -1) {
+						o.q.value = 'N/A';
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// Reed Alexander Atkin
 	// Copy the Physical Address, phone number, email address and website for Store Based On Its Website
 	//
 	s = '<p>Find the contact information for this jewelry store.&nbsp; All of the info can be found on the included link</p>';
-	if (
+	if  (
 		ih.indexOf(s) != -1
 		)
 	{
@@ -29700,10 +29814,10 @@ function MT__RUN() {
 		// Left iframe
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
-			'position:absolute;top:80px;left:0;width:30%;border:1px solid blue;background-color:#eee;visibility:visible;'//height:'+tmp_h+';
+			'position:absolute;top:80px;left:0;width:1%;border:1px solid blue;background-color:#eee;visibility:visible;'//height:'+tmp_h+';
 		);//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d2);
-		d2.src = first_url;
+		//~ d2.src = first_url;
 		// Change map button, for google
  		var d3 = document.createElement('button');
  		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:78px;');
@@ -29726,21 +29840,21 @@ function MT__RUN() {
 		/*END ITEMS*/
 		
 		/*ACTIONS*/
- 		d3.onclick = function() {
-			d2.style.width='30%';
- 			if (this.style.backgroundColor == '') {
- 				this.style.backgroundColor = 'LightGreen';
- 			} else {
- 				this.style.backgroundColor = '';
- 			}
-			if (this.innerText == 'Change Map (Google)') {
- 				d2.src = woutNameSearch;
-				this.innerText = 'Change Map (Google+Name)'
-			} else if (this.innerText == 'Change Map (Google+Name)') {
- 				d2.src = withNameSearch
-				this.innerText = 'Change Map (Google)';
- 			}
- 		}
+ 		//~ d3.onclick = function() {
+			//~ d2.style.width='30%';
+ 			//~ if (this.style.backgroundColor == '') {
+ 				//~ this.style.backgroundColor = 'LightGreen';
+ 			//~ } else {
+ 				//~ this.style.backgroundColor = '';
+ 			//~ }
+			//~ if (this.innerText == 'Change Map (Google)') {
+ 				//~ d2.src = woutNameSearch;
+				//~ this.innerText = 'Change Map (Google+Name)'
+			//~ } else if (this.innerText == 'Change Map (Google+Name)') {
+ 				//~ d2.src = withNameSearch
+				//~ this.innerText = 'Change Map (Google)';
+ 			//~ }
+ 		//~ }
 		d3b.onclick = function() {
 			if (this.style.backgroundColor == '') {
 				this.style.backgroundColor = 'LightGreen';
@@ -29896,7 +30010,10 @@ function MT__RUN() {
 						options:
 						{
 							task:'AMT__chios_system_draw_polygon__utility_window',
-							images: img_urls // []
+							images: img_urls, // []
+							task__address: o.addr,
+							task__ll: {lat:lat, lng: lng},
+							task__name: o.name
 						}
 					}
 				]);
@@ -85823,6 +85940,7 @@ qatar,80
 			}
 			o.bold_array = o.name.clean_string_to_array();
 			o.bold_array_sport = o.sport.clean_string_to_array();
+			console.log(o);
 			
 			// Add bold (bold_array_sport)
 			// Returns as object[.bold_string]
@@ -85866,12 +85984,6 @@ qatar,80
 					}
 				}
 			}
-			
-			for(var i = 0; i < addToBoldArray.length; i++) {
-				o.bold_array_sport.push(addToBoldArray[i])
-			}
-			
-			console.log(o);
 			
 			/* BEGINS ITEMS */
 			//
@@ -86105,9 +86217,8 @@ qatar,80
 					// Add bold (bold_array)
 					full = MT__bold(full, o.bold_array);
 					
-					
-					
-					
+					// Add bold (bold_array_sport)
+					// Returns as object[.bold_string]
 					full = MT__bold(full, o.bold_array_sport, {color: 'blue'}).bold_string; //console.log(full);
 					
 					// classname is http://(www. = '')x.com (no www)

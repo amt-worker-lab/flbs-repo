@@ -1752,7 +1752,10 @@ function load()
 	 * This is inside of a utility window. The passed in object is:
 		{
 			task:'AMT__chios_system_draw_polygon__utility_window',
-			images: img_urls // []
+			images: img_urls, // []
+			task__address: o.addr,
+			task__ll: {lat:lat, lng: lng},
+			task__name: o.name
 		}
 	 * 
 	 * @param	
@@ -1762,19 +1765,40 @@ function load()
 		
 		document.body.innerHTML = '';
 		
+		// Iframes
+		var withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(data.task__name)+'&ll='+data.task__ll.lat+','+data.task__ll.lng+'&output=embed&t=h&z=16'; //&iwloc=A
+		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		var d2 = document.createElement('iframe');
+		d2.setAttribute('style',
+			'float:left;width:50%;height:400px;border:1px solid blue;background-color:#eee;visibility:visible;'
+		);
+		document.body.appendChild(d2);
+		d2.src = withNameSearch;
+		//
+		var d2b = document.createElement('iframe');
+		d2b.setAttribute('style',
+			'float:left;width:49%;height:400px;border:1px solid blue;background-color:#eee;visibility:visible;'
+		);
+		document.body.appendChild(d2b);
+		d2b.src = withoutNameSearch;
+		// br
+		var br = document.createElement('br');
+		br.setAttribute('style', 'clear:both;');
+		document.body.appendChild(br);
+		
+		// Images
 		var img_el_array = [];
 		
 		for (i in data.images) {
 			
 			var img = document.createElement('img');
-			img.setAttribute('style','cursor:pointer;display:block;zoom:1;float:left;');
+			img.setAttribute('style','cursor:pointer;display:block;zoom:0.2;float:left;');
 			img.src = data.images[i];
 			document.body.appendChild(img);
 			
 			img_el_array.push(img);
 			
 		}
-		
 		// Add mouse zoom
 		new AMT___events_factory().mousewheel_zoom_image({
 			img_array: img_el_array,
