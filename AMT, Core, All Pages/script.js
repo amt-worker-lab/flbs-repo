@@ -1767,7 +1767,7 @@ function load()
 		
 		// Iframes
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(data.task__name)+'&ll='+data.task__ll.lat+','+data.task__ll.lng+'&output=embed&t=h&z=16'; //&iwloc=A
-		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__address)+'&output=embed&t=h&z=17'; //&iwloc=A
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
 			'float:left;width:50%;height:400px;border:1px solid blue;background-color:#eee;visibility:visible;'
