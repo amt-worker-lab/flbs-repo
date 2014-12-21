@@ -30129,20 +30129,26 @@ function MT__RUN() {
 					if (i == 'length') break;
 					
 					// Go to map view
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
 						x[i].click();
-						//~ break;
-						console.log('map');
-						console.log(x[i]).style.fontWeight;
+						o.curr_map_view = 'map';
+						break;
+						//~ console.log('map');
+						//~ console.log(x[i].style.fontWeight);
+						//~ console.log(x[i].style);
+						//~ console.log(JSON.stringify(x[i].style));
 						
 					}
 					
 					// Go to satellite
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
 						x[i].click();
-						//~ break;
-						console.log('sat');
-						console.log(x[i]).style.fontWeight;
+						o.curr_map_view = null;
+						break;
+						//~ console.log('sat');
+						//~ console.log(x[i].style.fontWeight);
+						//~ console.log(x[i].style);
+						//~ console.log(JSON.stringify(x[i].style));
 					}
 				};
 			}
