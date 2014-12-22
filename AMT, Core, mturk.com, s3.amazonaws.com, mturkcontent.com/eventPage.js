@@ -5,43 +5,6 @@
  * 
  * 
  */
-var UtilityAMTPairs = {};
-function AMTUtilitiesObj(options){
-	this.ownerTabId = options.ownerTabId;
-	this.utilities = options.utilities;
-}
-
-var nextTabQId = 1;
-
-
-function getAllTabsInQ(callback) {
-	var callback = callback;
-		chrome.tabs.query({}, function(allTabs) {
-			if(!allTabs.length) //Make sure it's an array
-			{
-				tabs = [allTabs];
-			}
-
-			var allTabsRespondCount = 0;
-			var allQTabs = [];
-			
-			for(var i = 0; i < allTabs.length; i++) {
-				chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
-				function(rslt) {
-					allTabsRespondCount++;
-					if(rslt && rslt.isQProduct) {
-						allQTabs.push(rslt);
-					}
-					if(allTabsRespondCount == allTabs.length) {
-						callback(allQTabs);
-					}
-				});
-			}
-		});
-}
-getAllTabsInQ(function(a) {console.log(a)});
-
-
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	
@@ -319,8 +282,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.addToTabsQ)
 	{
-		
-		
 		chrome.tabs.executeScript(sender.tab.id, {
 					code: 
 						"(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
@@ -342,7 +303,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			sendResponse({qProductId: nextTabQId});
 			nextTabQId++;
 		});
-		return false;
+		return true;
 	}
 	
 	/**
@@ -350,7 +311,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.showNextTab)
 	{
-		getAllTabsInQ(function(allQTabs)) {
+		getAllTabsInQ(function(allQTabs) {
 			if(allQTabs.length > 0) {
 				//Find the tab with the lowest qProductId and go to that
 				var lowestQId;
@@ -366,7 +327,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			else {
 				//Do nothing
 			}
-		}
+		});
 	}
 
 	/**
@@ -1056,15 +1017,6 @@ function __js_inarray(array, needle) // //
 	return false;
 }
 
-// SHOW TABS Q
-var showTabsQ = function() {
-
-};
-
-showTabsQ.array = [];
-
-var delayTabSwitch = false;
-
 function tabWindowPair(tabId, windowId) {
 	console.log('FUNC.tabWindowPair');
 	//~ console.log(this);
@@ -1076,219 +1028,40 @@ function tabWindowPair(tabId, windowId) {
 	this.winId = windowId;
 }
 
-showTabsQ.isEmpty = function() {
-	console.log('FUNC.isEmpty');
-	
-	for(var i = 0; i < showTabsQ.array.length; i++)
-	{
-		if(showTabsQ.array[i])
-		{
-			return false;
-		}
-	}
-	
-	console.log('showTabsQ.isEmpty()? Length='+showTabsQ.array.length); // CAME BACK "Lengh=238"
-	return true;
+var UtilityAMTPairs = {};
+function AMTUtilitiesObj(options){
+	this.ownerTabId = options.ownerTabId;
+	this.utilities = options.utilities;
 }
 
-showTabsQ.addTab = function(tabWindowPair) {
-	console.log('FUNC.addTab');
-	
-	if(showTabsQ.array[tabWindowPair.winId])
-	{
-		showTabsQ.array[tabWindowPair.winId].push(tabWindowPair);
-		
-		//~ console.log('showTabsQ.array[tabWindowPair.winId].push ('+tabWindowPair.winId+')');
-	}
-	else
-	{
-		// Changed to .push here
-		//
-		showTabsQ.array[tabWindowPair.winId] = new Array();
-		showTabsQ.array[tabWindowPair.winId].push(tabWindowPair);
-		
-		//~ showTabsQ.array[tabWindowPair.winId][0] = tabWindowPair;
-		
-		//~ console.log('showTabsQ.array[tabWindowPair.winId][0] ('+tabWindowPair.winId+') (NEW)');
-		//~ console.log(showTabsQ.array);
-	}
-}
+var nextTabQId = 1;
 
-
-
-
-function showNextTab() { //argv currentWindow
-	console.log('FUNC.showNextTab');
-	//~ console.log(this);
-	
-	if(showTabsQ.isEmpty())
-	{
-		console.log('Commanded to switch: Empty Q');
-		return;
-	}
-	
-	// To consider...
-	// VAR CURRENTWINDOW
-	// currentWindow= true  => 
-	// currentWindow= false => 
-	
-	//Get all of the active tabs
-	// Added currentWindow:true
-	chrome.tabs.query({active: true, currentWindow:true}, function(tabs) {
-	//~ chrome.tabs.query({active: true}, function(tabs) {
-		//Make sure that tabs is an array, even in the case if tabs is a single tab
-		if(!tabs.length)
-		{
-			tabs = [tabs];
-		}
-		
-		console.log('All Active Tabs:');
-		//~ console.log(tabs);
-		for(var i = 0; i < tabs.length; i++)
-		{
-			console.log('Window:'+tabs[i].windowId +';Tab:'+ tabs[i].id);
-		}
-		
-		var tabsX;
-		for(var i = 0; i < tabs.length; i++)
-		{
-			if(showTabsQ.array[tabs[i].windowId])				// array [windowId1, windowId2, ...N]
-			//~ if(showTabsQ.array[tabs[i].windowId])				// array [windowId1, windowId2, ...N]
+function getAllTabsInQ(callback) {
+	var callback = callback;
+		chrome.tabs.query({}, function(allTabs) {
+			if(!allTabs.length) //Make sure it's an array
 			{
-				
-				console.log('here 123 123');
-				
-				for(var j = 0; j < showTabsQ.array[tabs[i].windowId].length; j++)
-				{
-					if(showTabsQ.array[tabs[i].windowId][j] && showTabsQ.array[tabs[i].windowId][j].tabId == tabs[i].id)
-					{
-						console.log('Commanded to switch: Tab ' + tabs[i].id + ', but the tab is already in the Q');	
-						//Since this is already in the Q, lets make sure we can remove it, and if necessary the windowId object as well
-						showTabsQ.array[tabs[i].windowId][j] = null;
-						try {
-							for(var k = 0; k < showTabsQ.array[tabs[i].windowId].length; k++)
-							{
-								if(showTabsQ.array[tabs[i].windowId][k] != null)
-								{
-									allNull = false;
-									break;
-								}
-							}
-							if(allNull)
-							{
-								delete showTabsQ.array[tabs[i].windowId];
-							}
-						}
-						catch(e) {
-							console.log(e);
-							console.log('Error removing current active tab from Q');
-						}
-						return;
-					}
-				}
-				
-				//~ console.log('CHECK isAQProduct---');
-				//~ console.log(tabs[i]);
-				//~ tabs[i].BLEHBLEH = '1111111111111';
-				//~ console.log(tabs[i].BLEHBLEH);
-				
-				console.log('here 123 124');
-				
-				var currentIterator = i;
-				
-				//Still here? Check to see that the current tab isn't a Q Product, and if it is then 
-				isAQProduct(tabs, currentIterator);
-				
-				//~ // BREAK HERE?
-				//~ break;
+				tabs = [allTabs];
 			}
-			else
-			{
-				console.log('Not switching tab: .ID->' +  tabs[i].id + ' b/c it has no window in the Q');
-			}
-		}
-	});
-}
 
-function isAQProduct(tabs, iterator) {
-	console.log('FUNC.isAQProduct');
-	
-	var tabs = tabs;
-	var currentIterator = iterator;
-	chrome.tabs.sendRequest(tabs[currentIterator].id, {isQProduct: true}, 
-	function(rslt) {
-		
-		console.log('here 123 125');
-		//~ console.log('Current Iterator: ' + i);
-		//~ console.log('Window:'+tabs[i].windowId+';Tab:'+tabs[i].id);
-		
-		console.log(rslt); // CAME BACK "undefined"
-		
-		var gotResponse = true;
-		try {
-			gotResponse = rslt.isQProduct;
-		}
-		catch(e)
-		{
-			gotResponse = false;
-		}
-		
-		console.log("got response: " + gotResponse);
-		if(gotResponse && rslt && rslt.isQProduct)
-		{
-			console.log('Not Switching b/c this tab is a Q product');
-			return;
-		}
-		else
-		{
-			var i = currentIterator;
-			//~ console.log(showTabsQ.array[tabs[i].windowId]);
-			//~ console.log('tabs[i]: ' + tabs[i]);
-			//~ console.log('tabs[i].id: ' + tabs[i].id);
-			//~ console.log('tabs[i].windowId: ' + tabs[i].windowId);
+			var allTabsRespondCount = 0;
+			var allQTabs = [];
 			
-			for(var j = 0; j < showTabsQ.array[tabs[i].windowId].length; j++)
-			{
-				if(showTabsQ.array[tabs[i].windowId][j])
-				{
-					console.log('attempting switch to tab ' + tabs[i].id + ' of window ' + tabs[i].windowId);
-					
-											
-					//Go ahead and switch
-					try {
-						
-						//~ return;
-						
-						chrome.tabs.update(showTabsQ.array[tabs[i].windowId][j].tabId, {active: true});
-						
-						//Now that we switched here, remove this
-						showTabsQ.array[tabs[i].windowId][j] = null;
-
-						//Check to see if there are no more tabs to switch to in this window, and if so, delete the windowId entry
-						var allNull = true;
-						for(var k = 0; k < showTabsQ.array[tabs[i].windowId].length; k++)
-						{
-							if(showTabsQ.array[tabs[i].windowId][k] != null)
-							{
-								allNull = false;
-								break;
-							}
-						}
-						if(allNull)
-						{
-							delete showTabsQ.array[tabs[i].windowId];
-						}
-						break;
+			for(var i = 0; i < allTabs.length; i++) {
+				chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
+				function(rslt) {
+					allTabsRespondCount++;
+					if(rslt && rslt.isQProduct) {
+						allQTabs.push(rslt);
 					}
-					catch(e) {
-						console.log(e);
-						console.log('switch failed, cycling to a new tab to switch to');
+					if(allTabsRespondCount == allTabs.length) {
+						callback(allQTabs);
 					}
-				}
+				});
 			}
-		}						
-	});
+		});
 }
+
 
 //Checks if the new activated tab is already in submission
 //If it is, then it switches it forward unless...
