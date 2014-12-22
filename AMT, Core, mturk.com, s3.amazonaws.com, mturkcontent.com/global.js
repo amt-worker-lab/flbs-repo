@@ -286,7 +286,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('Commanded to tell if isQProduct: ' + isQProduct);
 		if(AMT__Global_Vars.isTopWindow)
 		{
-			sendResponse({isQProduct: isQProduct});
+			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
 		}
 	}
 	else if(request.switchTabNotifier) {
@@ -504,7 +504,7 @@ function goToNextTab() {
 	chrome.extension.sendRequest({
 								  getActiveTab: true
 							  }, function(response) {
-								 //do nothign with the response
+								qProductId = response.qProductId;
 							});
 }
 
@@ -527,7 +527,7 @@ function showNextTab() {
 	chrome.extension.sendRequest({
 									  showNextTab: true
 								  }, function(response) {
-									qProductId = response.qProductId;
+
 								});
 }
 

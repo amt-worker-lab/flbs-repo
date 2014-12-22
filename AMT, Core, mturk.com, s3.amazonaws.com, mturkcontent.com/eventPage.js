@@ -14,21 +14,32 @@ function AMTUtilitiesObj(options){
 var nextTabQId = 1;
 
 
-function getAllTabsInQ() {
+function getAllTabsInQ(callback) {
+	var callback = callback;
 		chrome.tabs.query({}, function(allTabs) {
 			if(!allTabs.length) //Make sure it's an array
 			{
 				tabs = [allTabs];
 			}
+
+			var allTabsRespondCount = 0;
+			var allQTabs = [];
+			
 			for(var i = 0; i < allTabs.length; i++) {
 				chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
 				function(rslt) {
-					console.log(rslt);
+					allTabsRespondCount++;
+					if(rslt && rslt.isQProduct) {
+						allQTabs.push(rslt);
+					}
+					if(allTabsRespondCount == allTabs.length) {
+						callback(allQTabs);
+					}
 				});
 			}
 		});
 }
-getAllTabsInQ();
+getAllTabsInQ(function(a) {console.log(a)});
 
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
