@@ -1038,28 +1038,42 @@ var nextTabQId = 1;
 
 function getAllTabsInQ(callback) {
 	var callback = callback;
-		chrome.tabs.query({}, function(allTabs) {
-			if(!allTabs.length) //Make sure it's an array
-			{
-				tabs = [allTabs];
-			}
+	chrome.tabs.query({}, function(allTabs) {
+		if(!allTabs.length) //Make sure it's an array
+		{
+			tabs = [allTabs];
+		}
 
-			var allTabsRespondCount = 0;
-			var allQTabs = [];
-			
-			for(var i = 0; i < allTabs.length; i++) {
-				chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
-				function(rslt) {
-					allTabsRespondCount++;
-					if(rslt && rslt.isQProduct) {
+		var allTabsRespondCount = 0;
+		var allQTabs = [];
+		
+		console.log('Looping through all ' + allTabs.length + ' tabs');
+		
+		for(var i = 0; i < allTabs.length; i++) {
+			chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
+			function(rslt) {
+				allTabsRespondCount++;
+				console.log(allTabsRespondCount);
+				if(rslt && rslt.isQProduct) {
+					if(rslt.tabId === undefined ||
+					   rslt.tabId === false ||
+					   rslt.tabId === null) {
+						alert('Error, got broken tabId from tabsQ');
+						console.log('Error, got broken tabId from tabsQ. tabId:');
+						console.log(rlst.tabId);
+					}
+					else {
 						allQTabs.push(rslt);
 					}
-					if(allTabsRespondCount == allTabs.length) {
-						callback(allQTabs);
-					}
-				});
-			}
-		});
+				}
+				if(allTabsRespondCount == allTabs.length) {
+					console.log('allQTabs: ');
+					console.log(allQTabs);
+					callback(allQTabs);
+				}
+			});
+		}
+	});
 }
 
 
