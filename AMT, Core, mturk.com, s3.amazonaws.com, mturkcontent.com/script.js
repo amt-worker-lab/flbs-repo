@@ -2809,6 +2809,47 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Ed Kohler
+	// Look up a UPC number
+	//
+	s = 'If it\'s not on the page, please type the product name into <a href="http://yoopsie.com/" target="_blank">Yoopsie</a> to see if you can find it there.';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var a = document.getElementsByTagName('a');
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: a[1].href,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						return;
+					}
+					
+					var reg = /<p class="upc"><label>UPC\/EAN\/ISBN:<\/label> <span class="value">([^<]+)<\/span><\/p>/.exec(rs);
+					if (reg) {
+						reg = __js_clean_html_str(reg[1]).trim();
+						document.getElementById('web_url').value = reg;
+						if (reg.length > 4) {
+							doSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// Mark Richard Adams
 	// Input company size from directory listing
 	//
