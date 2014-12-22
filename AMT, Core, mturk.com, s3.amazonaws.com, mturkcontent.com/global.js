@@ -498,6 +498,7 @@ function recordReturn() {
  * Tab Switching 
  ***/
 isQProduct = false;
+qProductId = true;
 
 function goToNextTab() {
 	chrome.extension.sendRequest({
@@ -514,7 +515,7 @@ function addToTabsQ() {
 	chrome.extension.sendRequest({
 								  addToTabsQ: true
 							  }, function(response) {
-								//do nothing with the response
+								
 							});
 }
 
@@ -526,7 +527,7 @@ function showNextTab() {
 	chrome.extension.sendRequest({
 									  showNextTab: true
 								  }, function(response) {
-									//do nothing with the response
+									qProductId = response.qProductId;
 								});
 }
 
