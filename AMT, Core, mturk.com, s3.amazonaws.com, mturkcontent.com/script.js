@@ -46574,6 +46574,31 @@ function MT__RUN() {
 			
 			// Move image right
 			GM_addStyle('.imagecontainer {float:left !important;}');
+
+			document.getElementById('DataCollection').style.position = 'absolute';			
+			document.getElementById('DataCollection').style.top = '4000px';
+			
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				isbn: td[1],
+				title: td[2]
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div'); //
+			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea'); //
+			d2.setAttribute('style','position:absolute;top:160px;left:0;width:60%;height:38px;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('input'); //
+			d2b.type = 'button';
+			d2b.setAttribute('style','position:absolute;top:160px;left:60%;width:38%;height:38px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'NA';
+			/*END ITEMS*/
+			
 			
 			function scrapeKnoSearch(keywords, isIsbnSearch, callback) {
 				var isIsbnSearch = isIsbnSearch;
@@ -46612,12 +46637,208 @@ function MT__RUN() {
 					method: 'GET',
 					url: urlToScrape,
 					onload: function(response) {
-						if(response.State == '200') {
-							var rs = response.responseText;
+						var rs=response.responseText;
+						
+						/*
+						<h3 class="newaps">
+						<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+						*/
+						
+						var r,m,r2;
+						
+						// remove sponsored, to end
+						//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+						rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+						
+						// num results
+						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
+						if (r) {
+							d1.innerHTML += r[1]+' results<br>';
+						} else if (r2) {
+							r = r2;
+							d1.innerHTML += r[1]+' results<br>';
 						}
-						else {
-							console.log('Failed response from ' + urlToScrape);
+						
+						// no results
+						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
+						//~ r2= /<h1[^>]*>Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						if (r || r3) {
+							d1.innerHTML += 'No results';
+							return;
 						}
+						
+						// images
+						// src="http://ecx.images-amazon.com/images/I/
+						var images = [];
+						r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+						while (m = r.exec(rs)) {
+							images.push(m[1]);
+						}
+						d1.innerHTML += images.length+' images<br>';
+						
+						// items
+						var dp, c = 0, multi, highlight = '';
+						
+						r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+						r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+						
+						while (m = r.exec(rs)) {
+							
+							//~ console.log(m);
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
+							div.className = 'exe';
+							d1.appendChild(div);
+							
+							// link
+							// stars
+							// reviews
+							
+							//offer, ratng;
+							var offer = '';
+							var ratng = '';
+							var link;
+							var title;
+							var n;
+							var reg;
+							var asin;
+							var prime, prime_bgc;
+							
+							//link/title
+							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
+							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+							reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							if (reg) {
+								title = __js_clean_html_str(reg[1]);
+								
+								// div.title
+								div.title = title;
+								
+							} else {
+								//~ alert(reg);
+								console.log('!reg title');
+							}
+							
+							// Link + ASIN +
+							// DVD or Blu-Ray
+							// ex B004EPZ06G
+							// Go to end of H3. End of line. This includes additional info. Ex "Full screen".
+							// 1=Ex: DVD|Blu-ray|DVD-R
+							// 2=DP/ASIN
+							// 3=Ex: DVD|Blu-Ray|DVD-R
+							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							var m2;
+							var movs_array = [];
+							while (m2 = reg.exec(m[1])) {
+								
+								movs_array.push({
+									mov_type:	 m2[3] + __js_clean_html_str(m2[4].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
+									asin:		__js_clean_html_str(m2[2])
+								});
+								//~ if (reg) {
+									//~ div.mov_type = reg[1];
+									//~ div.asin = __js_clean_html_str(reg[2]);
+									//~ //div.
+								//~ } else {
+									//~ 
+								//~ }
+							}
+							
+							// offers
+							reg = /\([\d,]+ offers\)/g;
+							if (reg.exec(m[1])) {
+								reg.lastIndex = 0;
+								while (n = reg.exec(m[1])) {
+									offer += n[0] + '<br >';
+								}
+							}
+							// rating
+							reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
+							if (reg) {
+								ratng += reg[1] + '<br >';
+							}
+							// reviews
+							reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
+							if (reg) {
+								ratng += ' (<B>'+reg[1]+'</B> ratings)';
+							}
+							// image
+							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
+							var image;
+							if (reg) {
+								image = __js_clean_html_str(reg[1]).trim();
+								//~ console.log(reg);
+								console.log(image);
+							}
+							// Prime?
+							reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
+							if (reg) {
+								prime = true;
+								prime_bgc = 'border:4px solid teal;';
+								console.log(reg);
+								console.log(prime_bgc);
+							} else {
+								prime = false;
+								prime_bgc = '';
+							}
+							//
+							// Try <i class="a-icon a-icon-prime a-icon-small s-align-text-bottom"></i>
+							
+							// ...
+							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
+							div.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
+							
+							if (image) {
+								var img = document.createElement('img');
+								img.setAttribute('style', 'max-width:140px;'+prime_bgc);
+								img.src = image;
+								div.appendChild(img);
+							}
+							//~ if (images[c] && !multi)
+								//~ div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" /><br>';
+							
+							// Add Buttons for clicking
+							for (var i in movs_array) {
+								var btn = document.createElement('button');
+								btn.setAttribute('style', 'width:80px;height:80px;');
+								btn.innerText	= movs_array[i].mov_type;
+								btn.asin		= movs_array[i].asin;
+								btn.className	= 'exe'
+								div.appendChild(btn);
+								btn.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									var q = document.getElementsByName('ASIN')[0];
+									q.value = this.asin;
+									if (/^[A-Z0-9]{6,20}$/.exec(q.value)) {
+										new AMT___core_factory().nextTab();
+										doSubmit();
+									}
+									
+									// Not this... Bxxxx...
+									//~ if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
+								}
+							}
+							
+							div.onclick = function() {
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ var q = document.getElementsByName('ASIN')[0];
+								//~ q.value = this.link;
+								//~ if (this.link.length > 8) {
+									//~ new AMT___core_factory().nextTab();
+									//~ doSubmit();
+								//~ }
+							}
+							
+							c++;
+							
+						}
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1800px;');
+						d1.appendChild(div);
 					}
 				});
 			}
