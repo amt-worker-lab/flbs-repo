@@ -319,8 +319,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.addToTabsQ)
 	{
-		sendResponse({qProductId: nextTabQId});
-		nextTabQId++;
+		
 		
 		chrome.tabs.executeScript(sender.tab.id, {
 					code: 
@@ -332,33 +331,42 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		
-		getAllTabsInQ();
-	}	
+		getAllTabsInQ(function(allQTabs) {
+			if(allQTabs.length > 0) {
+
+			}
+			else {
+				//We are the only tab in the Q, so simply jump us there
+				chrome.tabs.update(nextTab, {active: true});
+			}
+			sendResponse({qProductId: nextTabQId});
+			nextTabQId++;
+		});
+		return false;
+	}
 	
 	/**
 	 * request.showNextTab
 	 */
 	if(request.showNextTab)
 	{
-		//~ console.log('showTabsQ:')
-		//~ console.log(showTabsQ.array);
-		//Remove the sender from the Q
-		if(showTabsQ.array[sender.tab.windowId])
-		{
-			for(var i = 0; i < showTabsQ.array[sender.tab.windowId].length; i++)
-			{
-				//console.log('here');
-				if(showTabsQ.array[sender.tab.windowId][i] && showTabsQ.array[sender.tab.windowId][i].tabId == sender.tab.id)
-				{
-					console.log('Remove from tabQ: ' + sender.tab.id);
-					
-					showTabsQ.array[sender.tab.windowId][i] = null;
+		getAllTabsInQ(function(allQTabs)) {
+			if(allQTabs.length > 0) {
+				//Find the tab with the lowest qProductId and go to that
+				var lowestQId;
+				var nextTabId;
+				for(var i = 0; i < allQTabs.length; i++) {
+					if(!lowestQId || allQTabs[i].qProductId < lowestQId) {
+						lowestQId = allQTabs[i].qProductId;
+						nextTabId = allQTabs[i].tabId;
+					}
 				}
+				chrome.tabs.update(nextTabId, {active:true});
+			}
+			else {
+				//Do nothing
 			}
 		}
-		
-		
-		showNextTab();
 	}
 
 	/**
