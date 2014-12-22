@@ -46556,6 +46556,104 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	
+	//
+	// Kno Marketing
+	// Find ebook's price
+	//
+	s = 'Digital pricing may not be available in all instances. If phyiscal title, please leave the field blank and then continue.';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			GM_addStyle('#submitButton {position:absolute;top:900px;}');
+			GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
+			
+			// Move image right
+			GM_addStyle('.imagecontainer {float:left !important;}');
+			
+			function scrapeKnoSearch(keywords, isIsbnSearch, callback) {
+				var isIsbnSearch = isIsbnSearch;
+				if(!isIsbnSearch) {
+					keywords = keywords.split(' ').join('+').trim();
+				}
+				console.log('Kno Scrape, IsbnSearch: ' + isIsbnSearch + ', keywords: ' +  keywords);	
+							
+				var urlToScrape = 'https://www.kno.com/book/search?input_search='+keywords;
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: urlToScrape,
+					onload: function(response) {
+						if(response.State == '200') {
+							var rs = response.responseText;
+							
+						}
+						else {
+							console.log('Failed response from ' + urlToScrape);
+						}
+					}
+				});
+			}
+			
+			function scrapeCheggSearch(keywords, isIsbnSearch, callback) {
+				var isIsbnSearch = isIsbnSearch;
+				if(!isIsbnSearch) {
+					keywords = encodeURIComponent(keywords);
+				}
+				console.log('Cheg Scrape, IsbnSearch: ' + isIsbnSearch + ', keywords: ' +  keywords);	
+				
+				var urlToScrape = 'http://www.chegg.com/_ajax/autocomplete?search_by='+keywords;
+				
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: urlToScrape,
+					onload: function(response) {
+						if(response.State == '200') {
+							var rs = response.responseText;
+						}
+						else {
+							console.log('Failed response from ' + urlToScrape);
+						}
+					}
+				});
+			}
+			
+			function scrapeAmazonSearch(keywords, isIsbnSearch, callback) {
+				var isIsbnSearch = isIsbnSearch;
+				if(!isIsbnSearch) {
+					keywords = keywords.split(' ').join('+').trim();
+				}
+				console.log('Amazon Scrape, IsbnSearch: ' + isIsbnSearch + ', keywords: ' +  keywords);
+				if(isIsbnSearch) {
+					var urlToScrape = 'http://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-keywords=&field-author=&field-title=&field-isbn='+keywords+'&field-publisher=&node=&field-p_n_condition-type=&field-feature_browse-bin=&field-subject=&field-language=&field-dateop=During&field-datemod=&field-dateyear=&sort=relevanceexprank&Adv-Srch-Books-Submit.x=23&Adv-Srch-Books-Submit.y=6';
+				}
+				else {
+					var urlToScrape = 'search: http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Dstripbooks&field-keywords='+keywords;				
+				}
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: urlToScrape,
+					onload: function(response) {
+						if(response.State == '200') {
+							var rs = response.responseText;
+						}
+						else {
+							console.log('Failed response from ' + urlToScrape);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	
+	
 	//
 	// karthik ramachandran
 	// 
