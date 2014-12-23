@@ -46590,6 +46590,20 @@ function MT__RUN() {
 			var d1 = document.createElement('div'); //
 			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
+			
+			//Fill divs
+			var d1a = document.createElement('div');
+			d1a.setAttribute('style','left:0;width:99%;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.appendChild(d1a);
+			
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','left:0;width:99%;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.appendChild(d1b);
+			
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','left:0;width:99%;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.appendChild(d1c);
+			
 			var d2 = document.createElement('textarea'); //
 			d2.setAttribute('style','position:absolute;top:160px;left:0;width:60%;height:38px;');
 			document.body.appendChild(d2);
@@ -46600,9 +46614,14 @@ function MT__RUN() {
 			d2b.value = 'NA';
 			/*END ITEMS*/
 			
-			scrapeKnoSearch(o.isbn, true);
+			//scrapeKnoSearch(o.isbn, true);
 			
-			//scrapeAmazonSearch(o.isbn, true);
+			scrapeAmazonSearch(o.isbn, true);
+			
+			
+			function fillDivSearchDetails(div, details) {
+				
+			}
 			
 			
 			function scrapeKnoSearch(keywords, isIsbnSearch, callback) {
@@ -46619,27 +46638,19 @@ function MT__RUN() {
 					onload: function(response) {
 						if(response.status == '200') {
 							var rs = response.responseText;
-							if(isIsbnSearch) {
-								try {
-									rs = JSON.parse(rs);
-								}
-								catch(e) {
-									console.log('failed to json parse rs in scrape know keywords');
-									console.log(e);
-								}
-								
-								console.log(rs);
-								if(rs[0]) {
-								
-								}
-								else {
-									//No results, try again with product search instead of isbn
-									scrapeAmazonSearch(o.product, false);
-								}
+							//Are we the search page, could-not-find page, or the book's page?
+							if(rs.indexOf('<div class="results_header">Search results for "<span class="search_term">') != -1) {
+								//We are search page
+							}
+							else if(rs.indexOf('<div class="results_header">No exact matches were found for') != -1) {
+								//We are could-not-find-page
+							}
+							else {
+								//book's page
 							}
 						}
 						else {
-							//console.log(response);
+
 							console.log('Failed response '+ response.status +' from ' + urlToScrape);
 						}
 					}
@@ -46707,10 +46718,10 @@ function MT__RUN() {
 						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
 						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
 						if (r) {
-							d1.innerHTML += r[1]+' results<br>';
+							d1c.innerHTML += r[1]+' results<br>';
 						} else if (r2) {
 							r = r2;
-							d1.innerHTML += r[1]+' results<br>';
+							d1c.innerHTML += r[1]+' results<br>';
 						}
 						
 						// no results
@@ -46718,7 +46729,7 @@ function MT__RUN() {
 						//~ r2= /<h1[^>]*>Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
 						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
 						if (r || r3) {
-							d1.innerHTML += 'No results';
+							d1c.innerHTML += 'No results';
 							return;
 						}
 						
@@ -46729,7 +46740,7 @@ function MT__RUN() {
 						while (m = r.exec(rs)) {
 							images.push(m[1]);
 						}
-						d1.innerHTML += images.length+' images<br>';
+						d1c.innerHTML += images.length+' images<br>';
 						
 						// items
 						var dp, c = 0, multi, highlight = '';
@@ -46744,7 +46755,7 @@ function MT__RUN() {
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
 							div.className = 'exe';
-							d1.appendChild(div);
+							d1c.appendChild(div);
 							
 							// link
 							// stars
@@ -46891,7 +46902,7 @@ function MT__RUN() {
 						
 						var div = document.createElement('div');
 						div.setAttribute('style', 'height:1800px;');
-						d1.appendChild(div);
+						d1c.appendChild(div);
 					}
 				});
 			}
