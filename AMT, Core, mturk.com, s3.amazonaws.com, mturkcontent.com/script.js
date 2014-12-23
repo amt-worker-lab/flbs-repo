@@ -133208,14 +133208,13 @@ function top_window() {
 		
 		o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
 		o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
-		o.industries_quoted	= '"' + o.industry.clean_string_to_array().join('" OR "') + '"';
+		o.industries_quoted	= '("' + o.industry.clean_string_to_array().join('" OR "') + '")';
 		switch(o.country) {
 			case 'United Kingdom':
 				o.yelp_country = 'co.uk';
 				break;
 		}
 		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
-		
 		console.log(o);
 		
 		/* BEGINS ITEMS */
