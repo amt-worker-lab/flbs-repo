@@ -133896,7 +133896,13 @@ function top_window() {
 			
 			// panel loading and panel domain counts
 			panels_loaded: 0,
-			domain_counts: {} // OBJECT
+			domain_counts: {}, // OBJECT
+			
+			bad_industries: {
+				'and':true,
+				'or':true,
+				'':true
+			}
 			
 		}
 		o.country_full		= o.country.country_code_to_country_name();
@@ -133917,7 +133923,14 @@ function top_window() {
 				o.yelp_country = 'co.uk';
 				break;
 		}
-		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
+		var x = o.comp.split(' ');
+		var x_tmp = [];
+		for (var i in x) {
+			if (!bad_industries.hasOwnProperty(x[i])) {
+				x_tmp.push(x[i]);
+			}
+		}
+		o.comp_quoted = '"' + x_tmp.join('" "') + '"';
 		console.log(o);
 		
 		/* BEGINS ITEMS */
