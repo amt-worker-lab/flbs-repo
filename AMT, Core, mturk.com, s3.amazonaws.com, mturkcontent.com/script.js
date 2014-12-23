@@ -133903,7 +133903,6 @@ function top_window() {
 				'or':true,
 				'':true
 			}
-			
 		}
 		o.country_full		= o.country.country_code_to_country_name();
 		
@@ -133917,20 +133916,25 @@ function top_window() {
 		
 		o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
 		o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
-		o.industries_quoted	= '("' + o.industry.clean_string_to_array().join('" OR "') + '")';
+		//~ o.industries_quoted	= '("' + o.industry.clean_string_to_array().join('" OR "') + '")';
 		switch(o.country) {
 			case 'United Kingdom':
 				o.yelp_country = 'co.uk';
 				break;
 		}
-		var x = o.comp.split(' ');
+		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
+		
+		var x = o.industry.split(' ');
 		var x_tmp = [];
 		for (var i in x) {
-			if (!bad_industries.hasOwnProperty(x[i])) {
+			x[i] = x[i].trim().toLowerCase();;
+			//~ console.log(x[i]);
+			if (!o.bad_industries.hasOwnProperty(x[i])) {
 				x_tmp.push(x[i]);
 			}
 		}
-		o.comp_quoted = '"' + x_tmp.join('" "') + '"';
+		o.industries_quoted	= '("' + x_tmp.join('" OR "') + '")';
+		
 		console.log(o);
 		
 		/* BEGINS ITEMS */
