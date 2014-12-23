@@ -46581,8 +46581,9 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				isbn: td[1],
-				title: td[2]
+				isbn: td[1].innerText,
+				product: td[3].innerText,
+				bold_array: []
 			}
 			
 			/*BEGIN ITEMS*/
@@ -46598,6 +46599,8 @@ function MT__RUN() {
 			document.body.appendChild(d2b);
 			d2b.value = 'NA';
 			/*END ITEMS*/
+			
+			scrapeAmazonSearch(o.product, false);
 			
 			
 			function scrapeKnoSearch(keywords, isIsbnSearch, callback) {
@@ -46632,6 +46635,36 @@ function MT__RUN() {
 				
 				var urlToScrape = 'http://www.chegg.com/_ajax/autocomplete?search_by='+keywords;
 				
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: urlToScrape,
+					onload: function(response) {
+						if(response.State == '200') {
+							var rs = response.responseText;
+						}
+						else {
+							console.log('Failed response from ' + urlToScrape);
+						}
+					}
+				});
+			}
+			
+			function scrapeAmazonSearch(keywords, isIsbnSearch, callback) {
+				var isIsbnSearch = isIsbnSearch;
+				//~ if(!isIsbnSearch) {
+					//~ keywords = keywords.split(' ').join('+').trim();
+				//~ }
+				
+				keywords = encodeURIComponent(keywords);
+				
+				console.log('Amazon Scrape, IsbnSearch: ' + isIsbnSearch + ', keywords: ' +  keywords);
+				if(isIsbnSearch) {
+					var urlToScrape = 'http://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-keywords=&field-author=&field-title=&field-isbn='+keywords+'&field-publisher=&node=&field-p_n_condition-type=&field-feature_browse-bin=&field-subject=&field-language=&field-dateop=During&field-datemod=&field-dateyear=&sort=relevanceexprank&Adv-Srch-Books-Submit.x=23&Adv-Srch-Books-Submit.y=6';
+				}
+				else {
+					var urlToScrape = 'search: http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Dstripbooks&field-keywords='+keywords;				
+				}
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -46839,33 +46872,6 @@ function MT__RUN() {
 						var div = document.createElement('div');
 						div.setAttribute('style', 'height:1800px;');
 						d1.appendChild(div);
-					}
-				});
-			}
-			
-			function scrapeAmazonSearch(keywords, isIsbnSearch, callback) {
-				var isIsbnSearch = isIsbnSearch;
-				if(!isIsbnSearch) {
-					keywords = keywords.split(' ').join('+').trim();
-				}
-				console.log('Amazon Scrape, IsbnSearch: ' + isIsbnSearch + ', keywords: ' +  keywords);
-				if(isIsbnSearch) {
-					var urlToScrape = 'http://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-keywords=&field-author=&field-title=&field-isbn='+keywords+'&field-publisher=&node=&field-p_n_condition-type=&field-feature_browse-bin=&field-subject=&field-language=&field-dateop=During&field-datemod=&field-dateyear=&sort=relevanceexprank&Adv-Srch-Books-Submit.x=23&Adv-Srch-Books-Submit.y=6';
-				}
-				else {
-					var urlToScrape = 'search: http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Dstripbooks&field-keywords='+keywords;				
-				}
-				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: urlToScrape,
-					onload: function(response) {
-						if(response.State == '200') {
-							var rs = response.responseText;
-						}
-						else {
-							console.log('Failed response from ' + urlToScrape);
-						}
 					}
 				});
 			}
