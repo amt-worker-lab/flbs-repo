@@ -46600,7 +46600,7 @@ function MT__RUN() {
 			d2b.value = 'NA';
 			/*END ITEMS*/
 			
-			scrapeKnoSearch(o.product, false);
+			scrapeKnoSearch(o.isbn, true);
 			
 			//scrapeAmazonSearch(o.isbn, true);
 			
@@ -46617,7 +46617,7 @@ function MT__RUN() {
 					method: 'GET',
 					url: urlToScrape,
 					onload: function(response) {
-						if(response.State == '200') {
+						if(response.status == '200') {
 							var rs = response.responseText;
 							if(isIsbnSearch) {
 								try {
@@ -46639,7 +46639,8 @@ function MT__RUN() {
 							}
 						}
 						else {
-							console.log('Failed response from ' + urlToScrape);
+							//console.log(response);
+							console.log('Failed response '+ response.status +' from ' + urlToScrape);
 						}
 					}
 				});
