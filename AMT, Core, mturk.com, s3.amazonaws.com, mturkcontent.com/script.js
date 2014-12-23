@@ -46600,7 +46600,9 @@ function MT__RUN() {
 			d2b.value = 'NA';
 			/*END ITEMS*/
 			
-			scrapeAmazonSearch(o.product, false);
+			scrapeKnoSearch(o.product, false);
+			
+			//scrapeAmazonSearch(o.isbn, true);
 			
 			
 			function scrapeKnoSearch(keywords, isIsbnSearch, callback) {
@@ -46617,7 +46619,24 @@ function MT__RUN() {
 					onload: function(response) {
 						if(response.State == '200') {
 							var rs = response.responseText;
-							
+							if(isIsbnSearch) {
+								try {
+									rs = JSON.parse(rs);
+								}
+								catch(e) {
+									console.log('failed to json parse rs in scrape know keywords');
+									console.log(e);
+								}
+								
+								console.log(rs);
+								if(rs[0]) {
+								
+								}
+								else {
+									//No results, try again with product search instead of isbn
+									scrapeAmazonSearch(o.product, false);
+								}
+							}
 						}
 						else {
 							console.log('Failed response from ' + urlToScrape);
