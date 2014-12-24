@@ -133881,7 +133881,7 @@ function top_window() {
 		
 		var o = {
 			comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
-			industry: li[1].innerText.	replace(/^Industry: /g, '').trim(),
+			industry: li[1].innerText.	replace(/^Industry: */g, '').trim(),
 			country: li[2].innerText.	replace(/^Country: */g, '').trim(),
 			country_full: null,
 			bold_array: [],
@@ -133890,6 +133890,7 @@ function top_window() {
 			industries_quoted: null,
 			yelp_country: 'com',
 			comp_quoted: null,
+			comp_short: null,
 			
 			num_panels: 3, // THIS IS 3 FOR ONLY WEBSITE. FOR YELP INCLUDE 4TH PANEL.
 			pw: 33, // "panel_width". THIS=100% / NUMBER OF PANELS.
@@ -134061,7 +134062,11 @@ function top_window() {
 		// ...
 		d3.value  = o.comp;
 		d3b.value = '"' + o.comp + '"';
-		d3c.value = '' + o.comp + ' ' + o.industries_quoted;
+		if (o.industry != '')
+			d3c.value = '' + o.comp + ' ' + o.industries_quoted;
+		else
+			d3c.value = '"' + o.comp_short + '"';
+		
 		//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
 		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
 		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
