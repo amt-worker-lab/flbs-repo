@@ -134289,7 +134289,7 @@ function top_window() {
 				full = MT__bold(full, o.bold_array);
 				
 				// Classname
-				cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+				cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
 				
 				// YELP!
 				//~ // classname is http://(www. = '')x.com (no www)
