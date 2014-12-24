@@ -300,6 +300,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//We are the only tab in the Q, so simply jump us there
 				chrome.tabs.update(nextTab, {active: true});
 			}
+			//Add us to the Q
 			sendResponse({qProductId: nextTabQId});
 			nextTabQId++;
 		});
@@ -321,6 +322,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						lowestQId = allQTabs[i].qProductId;
 						nextTabId = allQTabs[i].tabId;
 					}
+				}
+				//Is this the active tab? If so, tell it to exit the Q, and go to the Next lowest in the Q
+				if(sender.tab.id == nextTabId) {
+					
 				}
 				chrome.tabs.update(nextTabId, {active:true});
 			}
