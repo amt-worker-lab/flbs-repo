@@ -29742,6 +29742,12 @@ function MT__RUN() {
 		var HEIGHT = screen.height;
 		var tmp_h = (HEIGHT*1 - 400)+ 'px';
 		
+		
+		AMT___GetPageScriptVars(varNames, function(e) {
+			console.log('Got AMT___GetPageScriptVars callback');
+			console.log(e)
+		};
+		
 		//...
 		document.getElementById('map').style.width = '100%';
 		document.getElementById('map').style.height = tmp_h;

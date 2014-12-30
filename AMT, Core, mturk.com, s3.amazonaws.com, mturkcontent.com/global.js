@@ -53,6 +53,7 @@ var AMT__Global_Vars = //function()
 	isSubmitting: false,
 	copyInp: false,
 	RACustomKey: false,
+	initializedScriptInjection: false,
 	//
 	isQProduct: false,
 	//~ var AMT__Queue = {
@@ -1115,6 +1116,107 @@ function FindObject(recordName,matchString, timeCutOff) {
  * 
  * */
 
+
+/**
+ * 						Get/Set Javascript Variables on the Page (As opposed to our Extension)
+ * 
+ * 
+ * 
+ * 
+ * */
+
+function initializeScriptInjection(callBackAMTFunction, varNames, callback, callbackParams) {
+	//Add a script to the page
+	//Then create a DOM listener for Getting and a DOM listener for Setting variables on the page
+	var actualCode = '(' + function() {
+		console.log('actual code ran in page script');
+		document.addEventListener('getPageScriptVars', function (e) {
+			var data = e.data;
+			console.log('recieved ' + e.detail);
+			console.log(data);
+			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
+				var passbackData = {};
+				for(var i = 0; i < data.length; i++) {
+					passbackData[data[i]] = window[data[i]];
+				}
+			} else if(data){
+				//data should be a string, with the exact name as the variable wanted 
+				var passbackData = window[data];
+			} else {
+				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
+				return;
+			}
+			
+
+			
+			var evt = document.createEvent('returnedPageScriptVars', true, true, passbackData);
+			document.dispatchEvent(evt);
+			
+		}) 
+	} + ')' + '();';
+	
+	
+	
+	//Create an event that tells us that the script is finished initializing
+	/*
+	 * <Insert code here>
+	 * 
+	 * */
+
+
+	var script = document.createElement('script');
+	script.textContent = actualCode;
+	(document.head||document.documentElement).appendChild(script);
+	
+	
+	
+	//callBackAMTFunction(varNames, callback, callbackParams); //Make sure this runs once the script has finished being injected and ran
+}
+
+function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
+	if(!AMT__Global_Vars.initializedScriptInjection) {
+		initializeScriptInjection(this, varNames, callback, callbackParams);
+	}
+	
+	document.addEventListener('returnedPageScriptVars', function(e) {
+		var returnedVars = e.data;
+		console.log('recieved returnedPageScriptVars data');
+		console.log(returnedVars);
+		callback(returnedVars, callbackParams);
+	});
+
+	var data = varNames;
+	var evt = document.createEvent('getPageScriptVars', true, true, data);
+	document.dispatchEvent(evt);
+}
+
+function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
+	
+}
+
+//~ 
+//~ function AMT___SetPageScriptVar(varName, callback, callbackParams) {
+//~ 
+//~ }
+
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * **/
+
+
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ * */
 /**
  * String Prototypes
  * 
