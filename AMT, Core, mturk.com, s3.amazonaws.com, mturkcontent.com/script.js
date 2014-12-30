@@ -67760,6 +67760,7 @@ qatar,80
 	// Masters, WF 2
 	// 
 	s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
+	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
 	s2 = 'Profile Picture';
 	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1 && 0 == 1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
@@ -67895,7 +67896,8 @@ qatar,80
 	// WF 1
 	//~ s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
 	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
-	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
+	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
+	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
 	//~ s = 'd. Email';
 	//~ s2 = '';
 	if (ih.indexOf(s) != -1) {//console.log('x');
@@ -67906,11 +67908,11 @@ qatar,80
 		
 		GM_addStyle('strong {zoom:2;}');
 		
-		// move
-		var prof_rad = document.getElementsByTagName('table')[5];
+		// move to top
+		var prof_rad = document.getElementsByTagName('table')[5]; // profile image?
 		prof_rad.setAttribute('style', 'position:absolute;top:0;');
 		prof_rad = prof_rad.getElementsByTagName('input');
-		var prof_rad = document.getElementsByTagName('table')[7];
+		var prof_rad = document.getElementsByTagName('table')[7]; // profile is in first person point of view?
 		prof_rad.setAttribute('style', 'position:absolute;top:40;');
 		prof_rad = prof_rad.getElementsByTagName('input');
 		
@@ -67920,7 +67922,7 @@ qatar,80
 		/*  */
 		var d1;
 		d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:400px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:220px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
 		document.body.appendChild(d1);
 		var d2;
 		d2 = document.createElement('img');
@@ -67928,16 +67930,16 @@ qatar,80
 		document.body.appendChild(d2);
 		/*  */
 		
-		// innerHeight
-		new AMT___core_factory().el_innerHeight({
-			// This set the elements d1,d1b, and d1c
-			// to fill up the whole window, minus their
-			// distance from page top (top:XX pixels;).
-			elements: [
-				d1
-			],
-			offset: 80 // offset top
-		});
+		//~ // innerHeight
+		//~ new AMT___core_factory().el_innerHeight({
+			//~ // This set the elements d1,d1b, and d1c
+			//~ // to fill up the whole window, minus their
+			//~ // distance from page top (top:XX pixels;).
+			//~ elements: [
+				//~ d1
+			//~ ],
+			//~ offset: 80 // offset top
+		//~ });
 		
 		// GLOBAL
 		var sbm = true;
@@ -68251,7 +68253,8 @@ qatar,80
 								}
 								
 								if (sbm) {
-									doSubmit();
+									document.getElementById('submitButton').click();
+									//~ doSubmit();
 								} else {
 									document.body.style.backgroundColor = 'LightGreen';
 								}
@@ -68269,9 +68272,10 @@ qatar,80
 					} else {
 						document.getElementsByName('Q3ePhoto')[1].checked = true;
 						
-						if (sbm)
-							doSubmit();
-						else
+						if (sbm) {
+							document.getElementById('submitButton').click();
+							//~ doSubmit();
+						} else
 							document.body.style.backgroundColor = 'pink';
 					}
 					

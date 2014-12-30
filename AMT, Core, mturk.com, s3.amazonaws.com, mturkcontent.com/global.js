@@ -9842,6 +9842,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					
 					// Options
 					var options = {
+						//bezierCurve: false,
 						scaleShowGridLines: false,
 						pointDot: false,
 					}
