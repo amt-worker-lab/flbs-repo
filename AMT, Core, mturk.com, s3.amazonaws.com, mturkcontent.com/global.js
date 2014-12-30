@@ -1135,11 +1135,11 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			var selectorChunks = selectorString.split('.');
 			console.log(selectorChunks);
 			var variable = window[selectorChunks[0]];
-			console.log(variable);
 			for(var i = 1; i < selectorChunks.length; i++) {
 				variable = variable[selectorChunks[i]];
 			}
-			
+			console.log('finished "getting" here is the result of the selection');
+			console.log(variable);
 			return variable;
 		}
 		
@@ -1152,7 +1152,9 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 					if(data[i].indexOf('.')) {
 						passbackData[data[i]] = selectInnerVariable(data[i]);
 					}
-					passbackData[data[i]] = window[data[i]];
+					else {
+						passbackData[data[i]] = window[data[i]];
+					}
 				}
 			} else if(data){
 				//data should be a string, with the exact name as the variable wanted 
@@ -1212,7 +1214,7 @@ function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
 	}
 	
 	document.addEventListener('returnedPageScriptVars', function(e) {
-		var returnedVars = e;
+		var returnedVars = e.detail;
 		console.log('recieved returnedPageScriptVars data');
 		console.log(returnedVars);
 		callback(returnedVars, callbackParams);
