@@ -1130,13 +1130,28 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 	//Then create a DOM listener for Getting and a DOM listener for Setting variables on the page
 	var actualCode = '(' + function() {
 		console.log('actual code ran in page script');
+		
+		function selectInnerVariable(selectorString) {
+			var selectorChunks = selectorString.split('.');
+			console.log(selectorChunks);
+			var variable = window[selectorChunks[0]];
+			console.log(variable);
+			for(var i = 1; i < selectorChunks.length; i++) {
+				variable = variable[selectorChunks[i]];
+			}
+			
+			return variable;
+		}
+		
 		document.addEventListener('getPageScriptVars', function (e) {
 			var data = e.detail;
 			console.log('recieved ' + e.detail);
 			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
 				var passbackData = {};
 				for(var i = 0; i < data.length; i++) {
-					
+					if(data[i].indexOf('.')) {
+						passbackData[data[i]] = selectInnerVariable(data[i]);
+					}
 					passbackData[data[i]] = window[data[i]];
 				}
 			} else if(data){
@@ -1145,23 +1160,14 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 					var passbackData = window[data];
 				}
 				else {
-					var selectorChunks = data.split('.');
-					console.log(selectorChunks);
-					var passbackData = window[selectorChunks[0]];
-					console.log(passbackData);
-					for(var i = 1; i < selectorChunks.length; i++) {
-						passbackData = passbackData[selectorChunks[i]];
-					}
+					var passbackData = selectInnerVariable(data);
 				}
 			} else {
 				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
 				return;
 			}
 			
-			console.log(passbackData);
-			
-
-			/**The commented out code attempts to get rid of circular references. Note that it fails for any references to HTML objects. If you enable this code, be wary. There may be a simpler approach.**/
+			/**The commented out code attempts to get rid of circular references. Note that it fails for any references to HTML objects. If you enable this code, be wary. Try instead to the variable's properties, e.g. try to get "map.zoom" instead of "map"  **/
 			//~ var cache = [];
 			//~ JSON.stringify(passbackData, function(key, value) {
 				//~ try {
@@ -1181,6 +1187,7 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 				//~ }
 			//~ });
 			//~ cache = null; // Enable garbage collection
+			
 			console.log(passbackData);
 			
 			var evt = new CustomEvent('returnedPageScriptVars', {detail: passbackData});
@@ -1188,14 +1195,6 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			
 		}) 
 	} + ')' + '();';
-	
-	
-	
-	//Create an event that tells us that the script is finished initializing
-	/*
-	 * <Insert code here>
-	 * 
-	 * */
 
 
 	var script = document.createElement('script');
