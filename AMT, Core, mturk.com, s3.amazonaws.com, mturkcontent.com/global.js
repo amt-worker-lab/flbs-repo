@@ -1131,9 +1131,8 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 	var actualCode = '(' + function() {
 		console.log('actual code ran in page script');
 		document.addEventListener('getPageScriptVars', function (e) {
-			var data = e.data;
+			var data = e.detail;
 			console.log('recieved ' + e.detail);
-			console.log(data);
 			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
 				var passbackData = {};
 				for(var i = 0; i < data.length; i++) {
@@ -1147,9 +1146,9 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 				return;
 			}
 			
-
+			console.log(passbackData);
 			
-			var evt = document.createEvent('returnedPageScriptVars', true, true, passbackData);
+			var evt = new CustomEvent('returnedPageScriptVars', {detail: JSON.stringify(passbackData)});
 			document.dispatchEvent(evt);
 			
 		}) 
@@ -1179,14 +1178,14 @@ function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
 	}
 	
 	document.addEventListener('returnedPageScriptVars', function(e) {
-		var returnedVars = e.data;
+		var returnedVars = e;
 		console.log('recieved returnedPageScriptVars data');
 		console.log(returnedVars);
 		callback(returnedVars, callbackParams);
 	});
 
 	var data = varNames;
-	var evt = document.createEvent('getPageScriptVars', true, true, data);
+	var evt = new CustomEvent('getPageScriptVars', {detail: data});
 	document.dispatchEvent(evt);
 }
 
