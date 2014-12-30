@@ -1136,11 +1136,23 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
 				var passbackData = {};
 				for(var i = 0; i < data.length; i++) {
+					
 					passbackData[data[i]] = window[data[i]];
 				}
 			} else if(data){
 				//data should be a string, with the exact name as the variable wanted 
-				var passbackData = window[data];
+				if(data.indexOf('.') == -1) {
+					var passbackData = window[data];
+				}
+				else {
+					var selectorChunks = data.split('.');
+					console.log(selectorChunks);
+					var passbackData = window[selectorChunks[0]];
+					console.log(passbackData);
+					for(var i = 1; i < selectorChunks.length; i++) {
+						passbackData = passbackData[selectorChunks[i]];
+					}
+				}
 			} else {
 				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
 				return;
@@ -1148,25 +1160,27 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			
 			console.log(passbackData);
 			
-			var cache = [];
-			JSON.stringify(passbackData, function(key, value) {
-				try {
-					if (typeof value === 'object' && value !== null) {
-						if (cache.indexOf(value) !== -1) {
-							// Circular reference found, discard key
-							return;
-						}
-						// Store value in our collection
-						cache.push(value);
-					}
-					return value;
-				}
-				catch(err) {
-					console.log('Ignoring error:' +err);
-					return;
-				}
-			});
-			cache = null; // Enable garbage collection
+
+			/**The commented out code attempts to get rid of circular references. Note that it fails for any references to HTML objects. If you enable this code, be wary. There may be a simpler approach.**/
+			//~ var cache = [];
+			//~ JSON.stringify(passbackData, function(key, value) {
+				//~ try {
+					//~ if (typeof value === 'object' && value !== null) {
+						//~ if (cache.indexOf(value) !== -1) {
+							//~ // Circular reference found, discard key
+							//~ return;
+						//~ }
+						//~ // Store value in our collection
+						//~ cache.push(value);
+					//~ }
+					//~ return value;
+				//~ }
+				//~ catch(err) {
+					//~ console.log('Ignoring error:' +err);
+					//~ return;
+				//~ }
+			//~ });
+			//~ cache = null; // Enable garbage collection
 			console.log(passbackData);
 			
 			var evt = new CustomEvent('returnedPageScriptVars', {detail: passbackData});

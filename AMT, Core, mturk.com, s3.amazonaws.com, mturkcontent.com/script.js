@@ -29743,7 +29743,7 @@ function MT__RUN() {
 		var tmp_h = (HEIGHT*1 - 400)+ 'px';
 		
 		
-		AMT___GetPageScriptVars('map', function(e) {
+		AMT___GetPageScriptVars('map.zoom', function(e) {
 			console.log('Got AMT___GetPageScriptVars callback');
 			console.log(e)
 		});
