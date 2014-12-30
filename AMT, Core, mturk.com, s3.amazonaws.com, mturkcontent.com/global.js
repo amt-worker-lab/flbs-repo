@@ -1148,19 +1148,26 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			
 			console.log(passbackData);
 			
-			//~ var cache = [];
-			//~ JSON.stringify(o, function(key, value) {
-				//~ if (typeof value === 'object' && value !== null) {
-					//~ if (cache.indexOf(value) !== -1) {
-						//~ // Circular reference found, discard key
-						//~ return;
-					//~ }
-					//~ // Store value in our collection
-					//~ cache.push(value);
-				//~ }
-				//~ return value;
-			//~ });
-			//~ cache = null; // Enable garbage collection
+			var cache = [];
+			JSON.stringify(passbackData, function(key, value) {
+				try {
+					if (typeof value === 'object' && value !== null) {
+						if (cache.indexOf(value) !== -1) {
+							// Circular reference found, discard key
+							return;
+						}
+						// Store value in our collection
+						cache.push(value);
+					}
+					return value;
+				}
+				catch(err) {
+					console.log('Ignoring error:' +err);
+					return;
+				}
+			});
+			cache = null; // Enable garbage collection
+			console.log(passbackData);
 			
 			var evt = new CustomEvent('returnedPageScriptVars', {detail: passbackData});
 			document.dispatchEvent(evt);
