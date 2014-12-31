@@ -3239,8 +3239,10 @@ function MT__RUN() {
 	// Find the Company Headquarters' Postal Code
 	// startpage + utility window
 	s = '<li>The postal code&nbsp;should follow the standard Canadian format (example: H2H 1A8), please enter it in this format including the space after the third character.</li>';
+	s2 = 'Find the postal code and country of&nbsp;the&nbsp;the headquarters for&nbsp;the&nbsp;business for the website';
 	if (
-		ih.indexOf(s) != -1
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1
 		)
 	{
 		var run = function() {};
