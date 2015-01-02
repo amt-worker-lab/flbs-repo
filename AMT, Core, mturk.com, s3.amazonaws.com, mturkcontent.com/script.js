@@ -29745,11 +29745,7 @@ function MT__RUN() {
 		var tmp_h = (HEIGHT*1 - 400)+ 'px';
 		
 		
-		AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
-			console.log('Got AMT___GetPageScriptVars callback');
-			console.log(obj);
-			console.log(testParams)
-		}, {test: 'test'});
+		
 		
 		//...
 		document.getElementById('map').style.width = '100%';
@@ -30157,6 +30153,15 @@ function MT__RUN() {
 					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
 						x[i].click();
 						console.log(x[i]);
+						
+						AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
+							console.log('Got AMT___GetPageScriptVars callback');
+							console.log(obj);
+							console.log(testParams)
+						}, {test: 'test'});
+						
+						
+						
 						break;
 					}
 					//~ 
