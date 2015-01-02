@@ -30163,11 +30163,14 @@ function MT__RUN() {
 						AMT___RunPageScript(function() {
 								//console.log('haha! PageScript has run!');
 								var headingAngle = map.streetView.pov.heading;
+								headingAngle = headingAngle * Math.PI / 180;
+								
 								console.log(headingAngle);
 								var currentLat = map.streetView.location.latLng.k;
 								var currentLng = map.streetView.location.latLng.D;
-								var nextLat = currentLat + 4*Math.sin(headingAngle);
-								var nextLng = currentLng + 4*Math.cos(headingAngle); 
+								
+								var nextLat = currentLat - 4*Math.cos(headingAngle);
+								var nextLng = currentLng - 4*Math.sin(headingAngle); 
 								var path = [new google.maps.LatLng(currentLat, currentLng),
 											new google.maps.LatLng(nextLat, nextLng)
 											];
