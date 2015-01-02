@@ -30172,8 +30172,8 @@ function MT__RUN() {
 								var currentLat = map.streetView.location.latLng.k;
 								var currentLng = map.streetView.location.latLng.D;
 								
-								var nextLat = currentLat + 4*Math.cos(headingAngle);
-								var nextLng = currentLng + 4*Math.sin(headingAngle); 
+								var nextLat = currentLat + 0.001*Math.cos(headingAngle);
+								var nextLng = currentLng - 0.001*Math.sin(headingAngle); 
 								console.log(currentLat);
 								console.log(currentLng);
 								console.log(nextLat);
@@ -30185,13 +30185,20 @@ function MT__RUN() {
 								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
 											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
 										//	];
-								
+
+								var lineSymbol = {
+									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+								};
 								var angleShower = new google.maps.Polyline({
 										path: path,
 										geodesic: true,
-										strokeColor: '#FF0000',
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
 										strokeOpacity: 1.0,
-										strokeWeight: 2
+										strokeWeight: 4
 									});
 								angleShower.setMap(map);
 								//console.log(angleShower);
