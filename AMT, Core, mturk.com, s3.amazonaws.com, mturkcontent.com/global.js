@@ -1151,7 +1151,13 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			}
 			else {
 				console.log('Got in script: ');
+				data = data.replace(/function ?\(\)/, '');
+				data = data.replace(/^[^{]*{/, '');
+				data = data.replace(/}[^$]*$/, '');
+				data = data.trim();
 				console.log(data);
+				var funcToRun = new Function(data);
+				funcToRun();
 			}
 		});
 		
@@ -1248,8 +1254,9 @@ function AMT___RunPageScript(funcToCall, callback, callbackParams) {
 	});
 	
 	var data = '' + funcToCall;
+	console.log('AMT___RunPageScript');
 	console.log(data);
-	var evt = new CustomEvent('runPageScript', {detail: funcToCall});
+	var evt = new CustomEvent('runPageScript', {detail: data});
 	document.dispatchEvent(evt);
 }
 
