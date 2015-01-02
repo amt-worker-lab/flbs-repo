@@ -30154,11 +30154,16 @@ function MT__RUN() {
 						x[i].click();
 						console.log(x[i]);
 						
-						AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
+						/*AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
 							console.log('Got AMT___GetPageScriptVars callback');
 							console.log(obj);
 							console.log(testParams)
-						}, {test: 'test'});
+						}, {test: 'test'});*/
+						
+						AMT___RunPageScript(function() {
+								console.log('haha! PageScript has run!');
+							
+							})
 						
 						
 						

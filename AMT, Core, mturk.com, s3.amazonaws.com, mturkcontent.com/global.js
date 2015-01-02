@@ -1143,6 +1143,18 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			return variable;
 		}
 		
+		document.addEventListener('runPageScript', function(e) {
+			var data = e.detail;
+			console.log(e);
+			if(typeof data == 'function') {
+				data();
+			}
+			else {
+				console.log('Got in script: ');
+				console.log(data);
+			}
+		});
+		
 		document.addEventListener('getPageScriptVars', function (e) {
 			var data = e.detail;
 			console.log('recieved ' + e.detail);
@@ -1222,6 +1234,22 @@ function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
 
 	var data = varNames;
 	var evt = new CustomEvent('getPageScriptVars', {detail: data});
+	document.dispatchEvent(evt);
+}
+
+//Remember to implement callback and callback params
+function AMT___RunPageScript(funcToCall, callback, callbackParams) {
+	if(!AMT__Global_Vars.initializedScriptInjection) {
+		initializeScriptInjection(this, null, callback, callbackParams);
+	}
+	
+	document.addEventListener('returnedPageScriptFunction', function(e) {
+		
+	});
+	
+	var data = '' + funcToCall;
+	console.log(data);
+	var evt = new CustomEvent('runPageScript', {detail: funcToCall});
 	document.dispatchEvent(evt);
 }
 
