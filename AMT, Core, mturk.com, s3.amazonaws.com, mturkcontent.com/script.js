@@ -30163,25 +30163,28 @@ function MT__RUN() {
 						AMT___RunPageScript(function() {
 								//console.log('haha! PageScript has run!');
 								var headingAngle = map.streetView.pov.heading;
+								headingAngle *= -1;
+
+								console.log(headingAngle);
 								headingAngle = headingAngle * Math.PI / 180;
 								
 								console.log(headingAngle);
 								var currentLat = map.streetView.location.latLng.k;
 								var currentLng = map.streetView.location.latLng.D;
 								
-								var nextLat = currentLat - 4*Math.sin(headingAngle);
-								var nextLng = currentLng + 4*Math.cos(headingAngle); 
+								var nextLat = currentLat + 4*Math.cos(headingAngle);
+								var nextLng = currentLng + 4*Math.sin(headingAngle); 
 								console.log(currentLat);
 								console.log(currentLng);
 								console.log(nextLat);
 								console.log(nextLng);
-								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
-											//~ new google.maps.LatLng(nextLat, nextLng)
-											//~ ];
-								 
 								var path = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(currentLat-1, currentLng + 0)
-											];
+											new google.maps.LatLng(nextLat, nextLng)
+										    ];
+								 
+								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
+											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
+										//	];
 								
 								var angleShower = new google.maps.Polyline({
 										path: path,
