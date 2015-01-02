@@ -30161,14 +30161,15 @@ function MT__RUN() {
 						}, {test: 'test'});*/
 						
 						AMT___RunPageScript(function() {
-								console.log('haha! PageScript has run!');
-								var headerAngle = map.streetView.pov.heading;
-								var currentLat = map.streetView.location.latLng.D;
-								var currentLng = map.streetView.location.latLng.k;
+								//console.log('haha! PageScript has run!');
+								var headingAngle = map.streetView.pov.heading;
+								console.log(headingAngle);
+								var currentLat = map.streetView.location.latLng.k;
+								var currentLng = map.streetView.location.latLng.D;
 								var nextLat = 0;
 								var nextLng = 0; 
 								var path = [new google.maps.LatLng(currentLat, currentLng),
-											new gogole.maps.LatLng(nextLat, nextLng)
+											new google.maps.LatLng(nextLat, nextLng)
 											];
 								var angleShower = new google.maps.Polyline({
 										path: path,
@@ -30178,7 +30179,7 @@ function MT__RUN() {
 										strokeWeight: 2
 									});
 								angleShower.setMap(map);
-								console.log(angleShower);
+								//console.log(angleShower);
 								return;
 							})
 						

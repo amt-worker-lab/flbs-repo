@@ -1153,7 +1153,7 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 				console.log('Got in script: ');
 				data = data.replace(/function ?\(\)/, '');
 				data = data.replace(/^[^{]*{/, '');
-				data = data.replace(/}[^$]*$/, '');
+				data = data.replace(/}[^}]*$/, '');
 				data = data.trim();
 				console.log(data);
 				var funcToRun = new Function(data);
