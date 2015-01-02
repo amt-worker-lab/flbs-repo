@@ -30189,7 +30189,9 @@ function MT__RUN() {
 								var lineSymbol = {
 									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
 								};
-								var angleShower = new google.maps.Polyline({
+								if(window.angleShower)
+									window.angleShower.setMap(null);
+								window.angleShower = new google.maps.Polyline({
 										path: path,
 										geodesic: true,
 										icons: [{
@@ -30200,7 +30202,7 @@ function MT__RUN() {
 										strokeOpacity: 1.0,
 										strokeWeight: 4
 									});
-								angleShower.setMap(map);
+								window.angleShower.setMap(map);
 								//console.log(angleShower);
 								return;
 							})
