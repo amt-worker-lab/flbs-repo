@@ -30166,8 +30166,8 @@ function MT__RUN() {
 								console.log(headingAngle);
 								var currentLat = map.streetView.location.latLng.k;
 								var currentLng = map.streetView.location.latLng.D;
-								var nextLat = 0;
-								var nextLng = 0; 
+								var nextLat = currentLat + 4*Math.sin(headingAngle);
+								var nextLng = currentLng + 4*Math.cos(headingAngle); 
 								var path = [new google.maps.LatLng(currentLat, currentLng),
 											new google.maps.LatLng(nextLat, nextLng)
 											];
