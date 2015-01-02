@@ -30175,9 +30175,14 @@ function MT__RUN() {
 								console.log(currentLng);
 								console.log(nextLat);
 								console.log(nextLng);
+								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
+											//~ new google.maps.LatLng(nextLat, nextLng)
+											//~ ];
+								 
 								var path = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat, nextLng)
+											new google.maps.LatLng(currentLat-1, currentLng + 0)
 											];
+								
 								var angleShower = new google.maps.Polyline({
 										path: path,
 										geodesic: true,
