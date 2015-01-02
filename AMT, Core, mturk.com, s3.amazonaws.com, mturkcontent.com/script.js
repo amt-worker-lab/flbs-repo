@@ -30162,10 +30162,27 @@ function MT__RUN() {
 						
 						AMT___RunPageScript(function() {
 								console.log('haha! PageScript has run!');
-							
+								var headerAngle = map.streetView.pov.heading;
+								var currentLat = map.streetView.location.latLng.D;
+								var currentLng = map.streetView.location.latLng.k;
+								var nextLat = 0;
+								var nextLng = 0; 
+								var path = [new google.maps.LatLng(currentLat, currentLng),
+											new gogole.maps.LatLng(nextLat, nextLng)
+											];
+								var angleShower = new google.maps.Polyline({
+										path: path,
+										geodesic: true,
+										strokeColor: '#FF0000',
+										strokeOpacity: 1.0,
+										strokeWeight: 2
+									});
+								angleShower.setMap(map);
+								console.log(angleShower);
+								return;
 							})
 						
-						
+
 						
 						break;
 					}
