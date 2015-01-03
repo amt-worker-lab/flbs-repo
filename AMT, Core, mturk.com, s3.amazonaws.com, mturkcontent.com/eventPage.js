@@ -753,14 +753,15 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						request.fromUtilityToParent = true;	
 						
 						// Activate parent tab
-						chrome.tabs.update(i*1, {active: true});
-						// Get windowId
-						chrome.tabs.get(i*1, function (tab) {
-							// Activate window
-							if(request.focus)
+						if(request.focus) {
+							chrome.tabs.update(i*1, {active: true});
+							// Get windowId
+							chrome.tabs.get(i*1, function (tab) {
+								// Activate window
+								console.log('focusing window');
 								chrome.windows.update(tab.windowId, {focused: true}, function (window) {});
-						})
-						
+							})
+						}
 						
 						
 						//
