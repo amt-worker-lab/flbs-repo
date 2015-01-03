@@ -30075,6 +30075,9 @@ function MT__RUN() {
 							task__ll: {lat:lat, lng: lng},
 							task__name: o.name
 						}
+					}, null, null, false, function(latLng) {
+						alert(latLng.lat);
+						alert(latLng.lng);
 					}
 				]);
 				

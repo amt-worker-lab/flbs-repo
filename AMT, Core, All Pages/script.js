@@ -181,6 +181,17 @@ function load()
 			var lat = rslt[1];
 			var lng = rslt[2];
 			
+			chrome.runtime.sendMessage(
+					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						init_object: {lat: lat, lng: lng}
+					},
+					function(response) {
+						// response=object
+					}
+				)
+			
 			
 			alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
@@ -1790,6 +1801,10 @@ function load()
 		// Iframes
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(data.task__name)+'&ll='+data.task__ll.lat+','+data.task__ll.lng+'&output=embed&t=h&z=16'; //&iwloc=A
 		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__address)+'&output=embed&t=h&z=17' + '####ChiosSpecial###'; //&iwloc=A
+		
+		
+		
+		
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
 			'float:left;width:50%;height:400px;border:1px solid blue;background-color:#eee;visibility:visible;'
