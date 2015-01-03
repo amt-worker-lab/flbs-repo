@@ -30022,6 +30022,16 @@ function MT__RUN() {
 				
 				console.log(lat +','+ lng);
 				
+				//Draw a marker onto the map for lat/lng
+				AMT___RunPageScript(function() {
+						var marker = new google.maps.Marker({
+								position: new google.maps.LatLng(lat,lng),
+								map: map
+							});
+						
+					});
+				
+				
 				// UPDATE
 				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
 				
