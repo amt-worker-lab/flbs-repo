@@ -1126,6 +1126,9 @@ function FindObject(recordName,matchString, timeCutOff) {
  * */
 
 function initializeScriptInjection(callBackAMTFunction, varNames, callback, callbackParams) {
+	
+	AMT__Global_Vars.initializedScriptInjection = true;
+	
 	//Add a script to the page
 	//Then create a DOM listener for Getting and a DOM listener for Setting variables on the page
 	var actualCode = '(' + function() {

@@ -757,7 +757,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						// Get windowId
 						chrome.tabs.get(i*1, function (tab) {
 							// Activate window
-							chrome.windows.update(tab.windowId, {focused: true}, function (window) {});
+							if(request.focus)
+								chrome.windows.update(tab.windowId, {focused: true}, function (window) {});
 						})
 						
 						

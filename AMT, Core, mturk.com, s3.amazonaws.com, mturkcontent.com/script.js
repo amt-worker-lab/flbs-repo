@@ -30077,13 +30077,12 @@ function MT__RUN() {
 						}
 					}
 				], null, null, false, function(obj) {
-						document.body.tempLat = obj.latLng.lat;
-						document.body.tempLng = obj.latLng.lng;
+						console.log('got response yaya');
 						AMT___RunPageScript("function() {"+
 								"var currentLat = map.getCenter().k;"+
 								"var currentLng = map.getCenter().D;"+
 								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
-							    "				new google.maps.LatLng("+obj.latLng.lat+"+,"+ obj.latLng.lng+")"+
+							    "				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
 							    "			    ];"+
 								" console.log(document.body.tempLat);"+
 								" console.log('running in here');"+
@@ -30094,9 +30093,9 @@ function MT__RUN() {
 								"		strokeColor: '#0000FF',"+
 								"		strokeOpacity: 1.0,"+
 								"		strokeWeight: 4"+
-								"	}");
-								otherLocShower.setMap(map);
-						}");
+								"	});"+
+								"otherLocShower.setMap(map);"+
+						"}");
 					});
 				
 				//~ // Get street view images
