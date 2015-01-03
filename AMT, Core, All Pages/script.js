@@ -172,16 +172,18 @@ function load()
 	console.log('GOT HERE');
 	
 	if(loc.indexOf('ChiosSpecial') != -1) {
-		var innerH = document.body.innerHTML;
-		var latLngReg = /<a target="_blank" jsaction="mouseup:placeCard.largerMap"[\r\n\s\t]*href="http:\/\/maps.google.com\/maps?ll=([^,]+),([^&]+)&amp;[^"]*"> View on Google Maps <\/a>/;
-		
-		var rslt = latLngReg.exec(innerH);
-		var lat = rslt[1];
-		var lng = rslt[2];
-		
-		
-		alert('lat: ' + lat + ' lng: ' + lng);
-	}
+		window.setTimeout(function() {
+			var innerH = document.body.innerHTML;
+			var latLngReg = /<a target="_blank" jsaction="mouseup:placeCard.largerMap"[\r\n\s\t]*href="http:\/\/maps.google.com\/maps?ll=([^,]+),([^&]+)&amp;[^"]*"> View on Google Maps <\/a>/;
+			console.log(innerH);
+			var rslt = latLngReg.exec(innerH);
+			var lat = rslt[1];
+			var lng = rslt[2];
+			
+			
+			alert('lat: ' + lat + ' lng: ' + lng);
+		}, 5000)
+	};
 	//~ MT___google_api_geocode('67 Comfort Road Apt 6, Ithaca, NY, 14850', function(lat, lng) {
 		//~ console.log('drawing');
 		//~ console.log(drawBingMap({style:'width:650px;height:450px;', lat:lat, lng: lng, zoom: '19'}));		
