@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-console.log("Submit Checker content script");
+//console.log("Submit Checker content script");
 
 MAX_PAGE_FAIL = 'You have exceeded the maximum allowed page request rate for this website';
 PROBLEM_FAIL = 'There was a problem submitting your results for this HIT';
@@ -41,13 +41,13 @@ chrome.extension.sendMessage({
 				currentUrl: loc
 			}, function(rs) {
 		
-		console.log('refresh is here');
+		//console.log('refresh is here');
 		
 		var tabId = rs.id;
 		var lastUrl = rs.lastUrl;
 		
 		//alert('herio');
-		console.log(sessionStorage);
+		//console.log(sessionStorage);
 		
 		if(sessionStorage['tab' + tabId + 'Details'] && sessionStorage['tab' + tabId + 'Details'] != '') {
 			
@@ -73,7 +73,7 @@ chrome.extension.sendMessage({
 					loc.indexOf('mturk/welcome') != -1 ||
 					loc.indexOf('mturk/searchbar') != -1
 					) {
-					console.log('went to different area');
+					//console.log('went to different area');
 					wentToDifferentAreaOnMturk = true;
 				}
 				
@@ -90,8 +90,8 @@ chrome.extension.sendMessage({
 				var type = sessionStorage['tab' + tabId + 'Type']
 				//alert(tabId);
 				
-				console.log(hit);
-				console.log(type);
+				//console.log(hit);
+				//console.log(type);
 				
 				//Did we go to dashboard without running out of Hits?
 				
@@ -124,12 +124,12 @@ chrome.extension.sendMessage({
 				}
 				
 				var resolvedHit = new ResolvedHit(hit.hitId,type, hit.accountName, null, isFailed, typeOfFail);
-				console.log(resolvedHit);
+				//console.log(resolvedHit);
 				//alert('and here');
 				chrome.extension.sendMessage({
 						resolvedHit: resolvedHit		
 					}, function(e) {
-						console.log(e);
+						//console.log(e);
 						//squelch response
 					});			
 			}

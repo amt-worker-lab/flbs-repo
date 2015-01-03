@@ -561,7 +561,8 @@ AMT___global_factory.prototype.email_links_click_to_parent = function(options) {
 							data: {
 								email_address: this.href.replace(/^ *mailto *:*\/*/i, '')
 							},
-							init_object: options
+							init_object: options,
+							focus: true
 						},
 						function(response) {
 							// response=object
@@ -763,7 +764,8 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 					{
 						util_window_message_passing: true,
 						data: return_object,
-						init_object: options_object
+						init_object: options_object,
+						focus: true
 					},
 					function(response) {
 					}

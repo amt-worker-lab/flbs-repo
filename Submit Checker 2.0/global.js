@@ -19,7 +19,7 @@ function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
 			this.accountName = document.getElementById('user_name_field').innerText; 
 			this.userName = AMT__Global_Vars.userName;
 			
-			console.log('userName: ' + this.userName);
+			//console.log('userName: ' + this.userName);
 			
 			this.computerId = AMT__Global_Vars.computerId; //Not passed in via sessionStorage
 	}
@@ -202,7 +202,7 @@ AMT__Global_Vars.initializeTabId = function() {
 	chrome.extension.sendMessage({
 								  WhatsMyTab: true
 							  }, function(response) {
-								  console.log(response);
+								  //console.log(response);
 								 AMT__Global_Vars.tabId = response.id;
 							});
  }
@@ -224,7 +224,7 @@ AMT__Global_Vars.initializeTabId = function() {
 			method: 'GET',
 			url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
 			onload: function(response) {
-			console.log(response);
+			//console.log(response);
 
 			var compAndName = JSON.parse(response.responseText);
 			AMT__Global_Vars.computerId = compAndName.ComputerId;
@@ -278,13 +278,13 @@ AMT__Global_Vars.initializeTabId = function() {
 			asynchronous: false,
 			url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
 			onload: function(response) {
-							console.log('Response Recieved');
+							//console.log('Response Recieved');
 							if(response) {
 							
 							var rs = response.responseText;
 							
 							if (response.status == 200) {
-									console.log(rs);
+									//console.log(rs);
 									if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
 										alert('Debug: Failed to record hit b/c it has already been recorded');
 									}
@@ -347,7 +347,7 @@ function AMT___initializeReturnRecording() {
 
 //Send info about this HIT to the database
 window.onbeforeunload = function() {
-	console.log(AMT__Global_Vars);
+	//console.log(AMT__Global_Vars);
 	if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
 		if(sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'] == 'refresh') {
 			delete sessionStorage['tab' + AMT__Global_Vars.tabId + 'Type'];
@@ -405,7 +405,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				//~ console.log('Will showNextTab on return');
 				
 				var b = getReturnButton();
-				console.log(b);
+				//console.log(b);
 				if (b) {
 					b.addEventListener('mouseup', function() {
 						//~ console.log('mouseup on return button');
@@ -469,6 +469,7 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
  * 
  */
 function GM_xmlhttpRequest(details) {
+	try {
 	function setupEvent(xhr, url, eventName, callback) {
 		xhr[eventName] = function () {
 		  var isComplete = xhr.readyState == 4;
@@ -514,4 +515,8 @@ function GM_xmlhttpRequest(details) {
 		}
 	}
 	xhr.send(details.data ? details.data : null);
+	}
+	catch(e) {
+		console.log(e);
+	}
 }

@@ -953,8 +953,8 @@ function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff
 function AMT___addQuestionAnswer(recordName, matchString, outputPairs)
 {
 	var match = new Match(recordName, matchString, outputPairs, (new Date).getTime());
-	console.log("Last time of submit: " + match.lastTimeOfSubmit)
-	console.log(match);
+	//console.log("Last time of submit: " + match.lastTimeOfSubmit)
+	//console.log(match);
 	chrome.extension.sendRequest({
 								   match: match					
 								  }, function(response) {

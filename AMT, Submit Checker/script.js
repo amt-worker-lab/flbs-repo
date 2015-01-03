@@ -1,4 +1,4 @@
-console.log("Submit Checker content script");
+//console.log("Submit Checker content script");
 
 function hit(rew, reqId, reqName, jName,gId) {
 			this.reward = rew;
@@ -14,11 +14,11 @@ var documentText = document.documentElement.innerHTML;
 if(documentText.indexOf('<span id="alertboxHeader">Your results have been submitted to') != -1 &&
    documentText.indexOf('and will be approved or rejected shortly.') != -1)
 {
-	console.log("Results have been submitted!");
+	//console.log("Results have been submitted!");
 
 	var rew = document.getElementsByClassName("reward")[1].innerText.trim();
 	rew = (rew.replace(/\$/, "")) * 1; //0.03
-	console.log(rew);
+	//console.log(rew);
 	
 	//var reqId = document.getElementsByName("requesterId")[0].value.trim();
 	var reqIdReg = /name="requesterId" value="([^"]+)"/;
@@ -41,7 +41,7 @@ if(documentText.indexOf('<span id="alertboxHeader">Your results have been submit
 
 	
 	var h = new hit(rew, reqId, reqName, jName, gId);
-	console.log(h);
+	//console.log(h);
 	chrome.extension.sendMessage({recording: "false", addHit: "true", hit: h},
 		   function (response) {   
         });	
