@@ -139512,7 +139512,7 @@ function mturk_load()
 		}
 		
 		window.addEventListener('message', function(e) {
-				console.log(e);
+				//console.log(e);
 				if(e.data && e.data.runPreview)
 				{
 					//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
