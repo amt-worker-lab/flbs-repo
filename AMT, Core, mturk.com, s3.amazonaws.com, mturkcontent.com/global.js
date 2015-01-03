@@ -1161,6 +1161,33 @@ function initializeScriptInjection(callBackAMTFunction, varNames, callback, call
 			}
 		});
 		
+		document.addEventListener('setPageScriptVars', function (e) {
+			var data = e.detail;
+			console.log('recieved ' + e.detail);
+			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
+				var passbackData = {};
+				for(var i = 0; i < data.length; i++) {
+					if(data[i].indexOf('.')) {
+						passbackData[data[i]] = selectInnerVariable(data[i]);
+					}
+					else {
+						passbackData[data[i]] = window[data[i]];
+					}
+				}
+			} else if(data){
+				//data should be a string, with the exact name as the variable wanted 
+				if(data.indexOf('.') == -1) {
+					var passbackData = window[data];
+				}
+				else {
+					var passbackData = selectInnerVariable(data);
+				}
+			} else {
+				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
+				return;
+			}
+		});
+		
 		document.addEventListener('getPageScriptVars', function (e) {
 			var data = e.detail;
 			console.log('recieved ' + e.detail);
