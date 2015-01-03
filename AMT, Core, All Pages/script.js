@@ -176,8 +176,7 @@ function load()
 			var innerH = document.body.innerHTML;
 			var latLngReg = /http:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
-			console.log(innerH);
-			
+			var rslt = latLngReg.exec(innerH);
 			console.log(rslt);
 			var lat = rslt[1];
 			var lng = rslt[2];
