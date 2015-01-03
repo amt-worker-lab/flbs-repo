@@ -193,7 +193,7 @@ function load()
 				)
 			
 			
-			alert('lat: ' + lat + ' lng: ' + lng);
+			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
 	};
 	//~ MT___google_api_geocode('67 Comfort Road Apt 6, Ithaca, NY, 14850', function(lat, lng) {
