@@ -139136,10 +139136,6 @@ function mturk_load()
 		// Run myHITs
 		// John Roberts
 		if  (
-				//~ (
-					//~ document.location.href == 'https://www.mturk.com/mturk/myhits' ||
-					//~ document.location.href == 'https://www.mturk.com/mturk/submit'
-				//~ ) &&
 				1 == 1 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
@@ -139475,7 +139471,7 @@ function mturk_load()
 		
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
-		console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
+		//console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
 			
 			
 		MT__RUN();
