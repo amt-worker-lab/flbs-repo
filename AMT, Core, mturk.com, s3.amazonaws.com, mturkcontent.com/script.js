@@ -30025,10 +30025,12 @@ function MT__RUN() {
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript(function() {
 						var marker = new google.maps.Marker({
-								position: new google.maps.LatLng(lat,lng),
-								map: map
+								position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
+								map: map,
+								title: 'testing'
 							});
-						
+						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+						map.setZoom(18);
 					});
 				
 				
