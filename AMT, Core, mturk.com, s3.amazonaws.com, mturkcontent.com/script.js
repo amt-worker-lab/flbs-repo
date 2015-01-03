@@ -30076,8 +30076,36 @@ function MT__RUN() {
 							task__name: o.name
 						}
 					}
-				], null, null, false, function(latLng) {
-						console.log(latLng);
+				], null, null, false, function(obj) {
+						document.body.tempLat = obj.latLng.lat;
+						document.body.tempLng = obj.latLng.lng;
+						AMT___RunPageScript(function() {
+								var currentLat = map.getCenter().k;
+								var currentLng = map.getCenter().D;
+								var path = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(document.boyd.tempLat, document.body.tempLng)
+										    ];
+								 console.log(document.body.tempLat);
+								 console.log('running in here');
+								
+								//~ var lineSymbol = {
+									//~ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+								//~ };
+								
+								
+								var otherLocShower = new google.maps.Polyline({
+										path: path,
+										geodesic: true,
+										//~ icons: [{
+											  //~ icon: lineSymbol,
+											  //~ offset: '100%'
+											//~ }],
+										strokeColor: '#0000FF',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								otherLocShower.setMap(map);
+						});
 					});
 				
 				//~ // Get street view images

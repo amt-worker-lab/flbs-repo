@@ -185,7 +185,7 @@ function load()
 					'gcfnekbbpmbgadddbojhlojhddnkcpje',
 					{
 						util_window_message_passing: true,
-						init_object: {lat: lat, lng: lng}
+						latLng: {lat: lat, lng: lng}
 					},
 					function(response) {
 						// response=object
