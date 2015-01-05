@@ -55,10 +55,7 @@ var AMT__Global_Vars = //function()
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	//
-	isQProduct: false,
-	//~ var AMT__Queue = {
-		//~ isQProduct: false
-	//~ };
+	isQProduct: false
 	
 	core: {
 		return_accept_run_nextTab: false,
@@ -285,10 +282,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow)
+		if(!AMT__Global_Vars.isTopWindow)
 		{
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
 		}
+		return true;
 	}
 	else if(request.switchTabNotifier) {
 		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
