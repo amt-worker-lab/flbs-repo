@@ -31464,10 +31464,26 @@ function MT__RUN() {
 			
 			addToTabsQ();
 			
+			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].replace(/,([^\r\n\s\t])[^$]/, ", $1");
+			
 			document.getElementById('submitButton').addEventListener('click', function() {
 				console.log('submit button click fired');
 				showNextTab();
 			});
+		
+			document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
+				if(k == 38) {
+					this.value = this.value.trim() + '.';
+					//document.getElementById('submitButton').click();
+				}
+			}
+			
+			document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
+				if(k == 38) {
+					this.value = this.value.trim() + '.';
+					//document.getElementById('submitButton').click();
+				}
+			}
 			
 		}
 		
