@@ -31476,30 +31476,31 @@ function MT__RUN() {
 			});
 			
 			
-			
-			document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
-				var k = e.keyCode;
-				if(k == 38) {
-					//this.value = this.value.trim() + '.';
-					//document.getElementById('submitButton').click();
-					//e.preventDefault();
-					//return false;
-				}
-			});
-			
-			document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
-				var k = e.keyCode;
-				if(k == 38) {
-					this.value = this.value.trim() + '.';
-					//document.getElementById('submitButton').click();
-					e.preventDefault();
-					return false;
-				}
-			});
+		
+			//~ document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
+				//~ var k = e.keyCode;
+				//~ if(k == 33) {
+					//~ //this.value = this.value.trim() + '.';
+					//~ //document.getElementById('submitButton').click();
+					//~ //e.preventDefault();
+					//~ //return false;
+				//~ }
+			//~ });
+			//~ 
+			//~ document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
+				//~ var k = e.keyCode;
+				//~ if(k == 33) {
+					//~ this.value = this.value.trim() + '.';
+					//~ //document.getElementById('submitButton').click();
+					//~ e.preventDefault();
+					//~ return false;
+				//~ }
+			//~ });
 				
+			//pageup to submit
 			document.addEventListener('keyup', function(e) {
 				var k = e.keyCode;
-				if(k== 40) { //down button
+				if(k== 33) { //down button
 					e.preventDefault();
 					document.getElementById('submitButton').click();
 					return false;
