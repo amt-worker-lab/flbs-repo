@@ -31450,7 +31450,7 @@ function MT__RUN() {
 		if (AMT__Global_Vars.isPreview) {
 			var allTextLength = allText.split(' ').length * 1;
 			console.log(allTextLength);
-			if (allTextLength > 10) {
+			if (allTextLength > 15) {
 				AMT___Floater.skip();
 				return;
 			} else {
