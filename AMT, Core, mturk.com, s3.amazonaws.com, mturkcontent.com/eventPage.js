@@ -331,7 +331,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					
 					console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
-						allQTabTabs.splice(lowestTabIndex,1);
+						allQTabs.splice(lowestTabIndex,1);
 						showNextTabAttempt();
 						sendResponse({RemoveFromTabsQ: true});
 					}
@@ -1078,7 +1078,7 @@ function getAllTabsInQ(callback) {
 					if(rslt.tabId === undefined ||
 					   rslt.tabId === false ||
 					   rslt.tabId === null) {
-						alert('Error, got broken tabId from tabsQ');
+						//alert('Error, got broken tabId from tabsQ');
 						console.log('Error, got broken tabId from tabsQ. tabId:');
 						console.log(rslt.tabId);
 					}
