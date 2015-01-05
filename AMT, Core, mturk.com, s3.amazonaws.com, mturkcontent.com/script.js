@@ -31431,12 +31431,12 @@ function MT__RUN() {
 	//
 	// Grocery ROI
 	// 
-	// USES requests_factory().image_2_OCR()
+	// Uses their OCR instead
 	//
 	s = 'Do not include the word ingredient/ingredients at the start of your transcription, only transcribe the actual ingredients';
 	if(ih.indexOf(s) != -1)
 	{		
-		console.log('');
+		console.log('grocery roi running');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		
 		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
@@ -31445,197 +31445,12 @@ function MT__RUN() {
 		GM_addStyle('em {font-weight:bold;zoom:1.4;}');
 		GM_addStyle('.em2 {font-weight:bold;zoom:2;}');
 		
-		var a = document.getElementsByTagName('a')[0];
+		var allText = document.getElementsByName('Ingredients')[0].value;
+		allText += ' ' + document.getElementsByName('Allergens')[0].value;
 		
-		var q = document.getElementsByName('Ingredients')[0];
-		
-		var o = {
-			tx: document.getElementsByTagName('textarea')[0]
-		}
-		
-		/*BEGIN ITEMS*/
-		//
-		var d2 = document.createElement('input');
-		d2.type = 'button';
-		d2.setAttribute('style', 'position:absolute;top:0;height:60px;left:60%;width:39%;');
-		document.body.appendChild(d2);
-		d2.value = 'clean';
-		//
-		var d3 = document.createElement('img');
-		d3.setAttribute('style', 'position:absolute;top:60px;left:0%;max-width:60%;max-height:200px;');
-		document.body.appendChild(d3);
-		d3.src = a;
-		//
-		var d4 = document.createElement('textarea');
-		d4.setAttribute('style', 'position:absolute;top:400px;left:60%;width:39%;');
-		document.body.appendChild(d4);
-		//
-		var d5 = document.createElement('div');
-		d5.setAttribute('style', 'position:absolute;top:60px;left:60%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d5);
-		//~ d4.disabled = true;
-		/*END ITEMS*/
-		
-		// ...
-		d2.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			q.value = q.value.replace(/[\r\n]/g, ' '); // new line
-			q.value = q.value.replace(/\s+/g, ' '); // multi
-			q.value = q.value.replace(/ jjjjjjjjjjjjjj /g, ''); // multi
-			
-			Grocery_ROI_text_ingredients__div(q.value);
-			
-			document.getElementById('submitButton').focus();
-		}
-		d4.onclick = function() {
-			var x = q.value;
-			q.value = this.value;
-			this.value = x;
-			//~ console.log(x);
-			
-			// focus/blur
-			q.focus();
-			q.select();
-			q.blur();
-			this.focus();
-			this.select();
-			this.blur();
-			
-			Grocery_ROI_text_ingredients__div(q.value);
-			
-		}
-		
-		// Job accepted?
-		if (!AMT__Global_Vars.isPreview) {
-			addToTabsQ();
-		}
-		
-		// inner
-		//~ 
-			
-		new AMT___core_factory().el_innerHeight({
-			//~ // Returns innerHeight in pixels
-			callback_function: function(innerHeight) {
-				
-				//~ console.log(innerHeight);
-				//~ innerHeight -= 70; // This is offset of d1 from top.
-				//~ 
-				//~ var tx = document.getElementsByTagName('textarea')[0];
-				
-				var i = innerHeight - 60; // submit button
-				
-				var short, tall, top;
-				
-				tall = .6 * i + 'px';
-				short = .4 * i + 'px';
-				top = (.6 * i)+60 + 'px';
-				
-				d3.style.maxHeight = tall;
-				
-				o.tx.setAttribute('style', 'position:absolute;');
-				o.tx.style.height = short;
-				o.tx.style.top = top;
-				
-				
-				//~ console.log(.6 * innerHeight + 'px');
-				//~ console.log(o.tx.style.top);
-				
-				//
-				//~ d2.style.height = (.6 * i) + 60 + 'px';
-				
-				//
-				d4.style.height = short;
-				d4.style.top = top;
-				
-				//
-				d5.style.height = tall;
-			}
-		});
-		
-		// ...
-		//~ o.tx.setAttribute('style', 'position:absolute;');
-		
-		// return button function!
-		new AMT___core_factory()
-			.iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_button__showNextTab'
-				}
-			);
-		
-		//~ //
-		//~ // return/accept
-		//~ new AMT___core_factory().
-			//~ iframe2parent__postMessage( // options
-				//~ {
-					//~ action: 'return_and_accept_button__nextTab'
-				//~ }
-			//~ );
-		
-		// 
-		document.getElementById('submitButton').onclick = function() {
-			//~ console.log(
-			q.value = q.value.trim();
-			if (q.value.length < 2) // blank?
-				return false;
-			
-			// Show next
-			//~ 
-			showNextTab();
-			//~ new AMT___core_factory().nextTab();
-			
-			doSubmit();
-		}
-		
-		// ...
-		// image_2_OCR
-		var rf = new AMT___requests_factory().image_2_OCR({
-			url: a.href,
-			resize: '50%',
-			callback_function: Grocery_ROI_text_ingredients
-		});
-		// FULL SIZE
-		//~ var rf = new AMT___requests_factory().image_2_OCR({
-			//~ url: a.href,
-			//~ CALLBACK__FULL_SIZE: true,
-			//~ callback_function: Grocery_ROI_text_ingredients
-		//~ });
-		
-		
-		/**
-		 * 
-		 * @response
-		 * @text
-		 */
-		function Grocery_ROI_text_ingredients__div(rs) {
-			
-			rs = rs.replace(/\./g, '<em class="em2">.</em>');
-			rs = rs.replace(/[\r\n]/g, '<br>');
-			rs = rs.replace(/(ingredients)/gi, '<em>$1</em>');
-			d5.innerHTML = rs;
-			
-		}
-		
-		/**
-		 * 
-		 * @response
-		 * @text
-		 */
-		function Grocery_ROI_text_ingredients(result_object) {
-			
-			//
-			var rs = result_object.text.trim();
-			
-			// REMOVE "ingredients:"
-			rs = rs.replace(/^ *ingredients:* */i, '');
-			rs = rs.replace(/\s+/i, ' ');
-			rs = rs.trim();
-			var num_words = rs.split(' ').length;
-			console.log(rs.length);
-			console.log(num_words);
-			// SKIP?
-			if (AMT__Global_Vars.isPreview) {
-				if (num_words > 20 || rs.length > 280 || rs.trim() == '') {
+		if (AMT__Global_Vars.isPreview) {
+			console.log(allText.split(' ').length);
+				if (allText.split(' ').length < 20) {
 					AMT___Floater.skip();
 					return;
 				} else {
@@ -31643,43 +31458,19 @@ function MT__RUN() {
 					AMT___Floater.accept();
 					return;
 				}
-			}
-			
-			//~ return;
-			
-			var out;
-			
-			//~ console.log(result_object);
-			
-			if (result_object.hasOwnProperty('CALLBACK__FULL_SIZE')) {
-				out = d4;
-			} else {
-				out = q;
-			}
-			
-			out.value = rs.trim() + ' ';
-			
-			// Add a non-spelling
-			//~ out.value += ' jjjjjjjjjjjjjj ';
-			
-			//~ out.focus();
-			out.select();
-			out.blur();
-			
-			out.value = out.value.trim();
-			
-			//~ out.focus();
-			out.select();
-			out.blur();
-			
-			if (out == q) {
-				Grocery_ROI_text_ingredients__div(out.value);
-			}
-			
 		}
+		else {
+			console.log(allText.split(' ').length);
+		}
+		
+		
 	}
 	
-	
+	//
+	//
+	// Grocery ROI
+	// Transcribe
+	// USES requests_factory().image_2_OCR()
 	s = '<p><strong>Our goal</strong> with this project is to extract valuable data from a products ingredient table in order to provide our customers with more information. Your task is to view the product ingredient table and transcribe ingredient text to the provided text field.</p>';
 	if(ih.indexOf(s) != -1)
 	{		
@@ -139611,6 +139402,7 @@ function mturk_load()
 				case '36ARV8EEI7NBH3F0SG1G637JGZMAVD': // Larry Baker
 					AMT___Floater({runMT_Run: true});
 				case '3QNALI7B3RWCD6ZM50ZF6QISKY9Z5G': // Grocery ROI, Transcribe
+				case '3FQJF6D1R1058IYMJJ3IVVDNRNV29E': // Grocery ROI, Transcribe
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3T9YKFMCGXSXPUC7TCI0E0CH9E2C91': // Nicolas Cazagou, FB Email
