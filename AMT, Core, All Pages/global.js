@@ -52,7 +52,9 @@ var AMT__Global_Vars = //function()
 	numSubmitQueries: 0,
 	isSubmitting: false,
 	copyInp: false,
-	RACustomKey: false
+	RACustomKey: false,
+	//
+	isQProduct: false,
 	//~ var AMT__Queue = {
 		//~ isQProduct: false
 	//~ };
@@ -242,7 +244,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		sendResponse({isQProduct: isQProduct});
+		if(AMT__Global_Vars.isTopWindow)
+		{
+			sendResponse({isQProduct: isQProduct});
+		}
 	}
 	else if(request.switchTabNotifier) {
 		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);

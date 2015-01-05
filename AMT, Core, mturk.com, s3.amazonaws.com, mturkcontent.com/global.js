@@ -54,9 +54,7 @@ var AMT__Global_Vars = //function()
 	copyInp: false,
 	RACustomKey: false,
 	initializedScriptInjection: false,
-	//
-	isQProduct: false
-	
+	isQProduct: false,
 	core: {
 		return_accept_run_nextTab: false,
 		// AMT__Global_Vars.core.captcha_string
@@ -284,6 +282,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('Commanded to tell if isQProduct: ' + isQProduct);
 		if(!AMT__Global_Vars.isTopWindow)
 		{
+			console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
 		}
 		return true;
@@ -519,9 +518,6 @@ function showNextTab() {
 	chrome.extension.sendRequest({
 									  showNextTab: true
 								  }, function(response) {
-									  if(response.RemoveFromTabsQ) {
-										isQProduct = false;
-									  }
 								});
 }
 
