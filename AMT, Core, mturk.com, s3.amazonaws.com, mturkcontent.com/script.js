@@ -31466,6 +31466,11 @@ function MT__RUN() {
 			
 			//Place a space after each comma
 			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
+			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
+			
+			//Replace all periods with comman - IMPORTANT: be aware of this
+			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/\./g, ",");
+			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/\./g, ",");
 			
 			
 			
