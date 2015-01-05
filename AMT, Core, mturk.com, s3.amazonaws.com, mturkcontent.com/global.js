@@ -279,14 +279,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.isQProduct)
 	{
 		//Only have the top window sending back the response
-		console.log('Commanded to tell if isQProduct: ' + isQProduct);
+		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
 		if(!AMT__Global_Vars.isTopWindow)
 		{
-			console.log(AMT__Global_Vars.tabId);
+			//console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
 		}
 		else
 			return true;
+	}
+	else if(request.focus) {
+		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow)
+			document.body.focus();
 	}
 	else if(request.switchTabNotifier) {
 		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
@@ -518,7 +522,8 @@ function addToTabsQ() {
 function showNextTab() {
 	console.log('Showing Next Tab');
 	chrome.extension.sendRequest({
-									  showNextTab: true
+									  showNextTab: true,
+									  isTopWindow: AMT__Global_Vars.isTopWindow
 								  }, function(response) {
 								});
 }
