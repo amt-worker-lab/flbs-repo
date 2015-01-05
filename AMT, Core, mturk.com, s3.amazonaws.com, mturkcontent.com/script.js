@@ -31431,7 +31431,6 @@ function MT__RUN() {
 	//
 	// Grocery ROI
 	// 
-	// Uses their OCR instead
 	//
 	s = 'Do not include the word ingredient/ingredients at the start of your transcription, only transcribe the actual ingredients';
 	if(ih.indexOf(s) != -1)
@@ -31451,7 +31450,7 @@ function MT__RUN() {
 		if (AMT__Global_Vars.isPreview) {
 			var allTextLength = allText.split(' ').length * 1;
 			console.log(allTextLength);
-			if (allTextLength > 21) {
+			if (allTextLength > 10) {
 				AMT___Floater.skip();
 				return;
 			} else {
