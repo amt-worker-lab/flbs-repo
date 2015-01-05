@@ -285,7 +285,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
 		}
-		return true;
+		else
+			return true;
 	}
 	else if(request.switchTabNotifier) {
 		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);
