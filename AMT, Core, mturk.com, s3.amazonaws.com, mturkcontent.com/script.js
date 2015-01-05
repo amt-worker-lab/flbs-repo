@@ -31462,11 +31462,20 @@ function MT__RUN() {
 		}
 		else {
 			console.log(allText.split(' ').length);
+			
+			addToTabsQ();
+			
+			document.getElementById('submitButton').addEventListener('click', function() {
+				console.log('submit button click fired');
+				showNextTab();
+			});
+			
 		}
 		
 		
 	}
-	return;
+
+
 	//
 	//
 	// Grocery ROI
