@@ -31449,15 +31449,16 @@ function MT__RUN() {
 		allText += ' ' + document.getElementsByName('Allergens')[0].value;
 		
 		if (AMT__Global_Vars.isPreview) {
-			console.log(allText.split(' ').length);
-				if (allText.split(' ').length < 20) {
-					AMT___Floater.skip();
-					return;
-				} else {
-					console.log('accept!');
-					AMT___Floater.accept();
-					return;
-				}
+			var allTextLength = allText.split(' ').length * 1;
+			console.log(allTextLength);
+			if (allTextLength > 21) {
+				AMT___Floater.skip();
+				return;
+			} else {
+				console.log('accept!');
+				AMT___Floater.accept();
+				return;
+			}
 		}
 		else {
 			console.log(allText.split(' ').length);
@@ -31465,14 +31466,14 @@ function MT__RUN() {
 		
 		
 	}
-	
+	return;
 	//
 	//
 	// Grocery ROI
 	// Transcribe
 	// USES requests_factory().image_2_OCR()
 	s = '<p><strong>Our goal</strong> with this project is to extract valuable data from a products ingredient table in order to provide our customers with more information. Your task is to view the product ingredient table and transcribe ingredient text to the provided text field.</p>';
-	if(ih.indexOf(s) != -1)
+	if(ih.indexOf(s) != -1 && 1 == 0)
 	{		
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
