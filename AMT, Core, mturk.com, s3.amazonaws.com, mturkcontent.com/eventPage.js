@@ -1065,14 +1065,25 @@ function getAllTabsInQ(callback) {
 		}
 
 		var allTabsRespondCount = 0;
+		var didntGetAllResponses = true;
 		var allQTabs = [];
 		
 		console.log('Looping through all ' + allTabs.length + ' tabs');
+		
+		window.setTimeout(function() {
+				if(didntGetAllResponses) {
+					callback(allQTabs);
+				}
+			}, 500);
+		
 		
 		for(var i = 0; i < allTabs.length; i++) {
 			chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
 			function(rslt) {
 				allTabsRespondCount++;
+				if(allTabsRespondCount == allTabs.length)
+					didntGetAllResponses = false;
+					
 				console.log(allTabsRespondCount);
 				if(rslt && rslt.isQProduct) {
 					if(rslt.tabId === undefined ||
