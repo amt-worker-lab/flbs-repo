@@ -31450,7 +31450,7 @@ function MT__RUN() {
 		if (AMT__Global_Vars.isPreview) {
 			var allTextLength = allText.split(' ').length * 1;
 			console.log(allTextLength);
-			if (allTextLength > 15) {
+			if (allTextLength > 10) {
 				AMT___Floater.skip();
 				return;
 			} else {
@@ -31464,7 +31464,11 @@ function MT__RUN() {
 			
 			addToTabsQ();
 			
-			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].replace(/,([^\r\n\s\t])[^$]/, ", $1");
+			//Place a space after each comma
+			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
+			
+			
+			
 			
 			document.getElementById('submitButton').addEventListener('click', function() {
 				console.log('submit button click fired');
@@ -31472,18 +31476,24 @@ function MT__RUN() {
 			});
 		
 			document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
+				var k = e.keyCode;
 				if(k == 38) {
 					this.value = this.value.trim() + '.';
 					//document.getElementById('submitButton').click();
+					e.preventDefault();
+					return false;
 				}
-			}
+			});
 			
 			document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
+				var k = e.keyCode;
 				if(k == 38) {
 					this.value = this.value.trim() + '.';
 					//document.getElementById('submitButton').click();
+					e.preventDefault();
+					return false;
 				}
-			}
+			});
 			
 		}
 		
