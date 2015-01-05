@@ -289,8 +289,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return true;
 	}
 	else if(request.focus) {
-		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow)
+		console.log('told to focus');
+		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow) {
+			console.log('focusing');
 			document.body.focus();
+		}
 	}
 	else if(request.switchTabNotifier) {
 		//~ console.log('isTopWindow: ' + AMT__Global_Vars.isTopWindow);

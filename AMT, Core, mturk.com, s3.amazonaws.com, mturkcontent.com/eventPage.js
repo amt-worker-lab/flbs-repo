@@ -312,6 +312,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.showNextTab)
 	{
 		var senderTabId = sender.tab.id;
+		var isTopWindw = request.isTopWindow;
 		function showNextTabAttempt() {
 			getAllTabsInQ(function(allQTabs) {
 				if(allQTabs.length > 0) {
@@ -337,6 +338,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					}
 					else {
 						chrome.tabs.update(nextTabId, {active:true});
+						chrome.tabs.sendRequest(nextTabId, {isTopWindow: isTopWindow, focus: true});
 					}
 				}
 				else {
