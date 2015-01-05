@@ -521,6 +521,9 @@ function showNextTab() {
 	chrome.extension.sendRequest({
 									  showNextTab: true
 								  }, function(response) {
+									  if(response.RemoveFromTabsQ) {
+										isQProduct = false;
+									  }
 								});
 }
 

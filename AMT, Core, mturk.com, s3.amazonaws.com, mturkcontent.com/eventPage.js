@@ -298,7 +298,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			}
 			else {
 				//We are the only tab in the Q, so simply jump us there
-				chrome.tabs.update(nextTab, {active: true});
+				chrome.tabs.update(tabId, {active: true});
 			}
 			sendResponse({qProductId: nextTabQId});
 			nextTabQId++;
@@ -311,23 +311,40 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.showNextTab)
 	{
-		getAllTabsInQ(function(allQTabs) {
-			if(allQTabs.length > 0) {
-				//Find the tab with the lowest qProductId and go to that
-				var lowestQId;
-				var nextTabId;
-				for(var i = 0; i < allQTabs.length; i++) {
-					if(!lowestQId || allQTabs[i].qProductId < lowestQId) {
-						lowestQId = allQTabs[i].qProductId;
-						nextTabId = allQTabs[i].tabId;
+		var senderTabId = sender.tab.id;
+		function showNextTabAttempt() {
+			getAllTabsInQ(function(allQTabs) {
+				if(allQTabs.length > 0) {
+					//Find the tab with the lowest qProductId and go to that
+					var lowestQId;
+					var nextTabId;
+					var lowestTabIndex = 0;
+					for(var i = 0; i < allQTabs.length; i++) {
+						if(!lowestQId || allQTabs[i].qProductId < lowestQId) {
+							lowestQId = allQTabs[i].qProductId;
+							nextTabId = allQTabs[i].tabId;
+							lowestTabIndex = i;
+						}
+					}
+					
+					//is the lowest tab the same as the tab sending 'shownexttab', if so, remove from the Q, tell the tab that it's not longer in the Q, and call showNextTabAttempt again.
+					
+					console.log(sender.tab.id)
+					if(senderTabId == nextTabId) {
+						allQTabTabs.splice(lowestTabIndex,1);
+						showNextTabAttempt();
+						sendResponse({RemoveFromTabsQ: true});
+					}
+					else {
+						chrome.tabs.update(nextTabId, {active:true});
 					}
 				}
-				chrome.tabs.update(nextTabId, {active:true});
-			}
-			else {
-				//Do nothing
-			}
-		});
+				else {
+					//Do nothing
+				}
+			});
+		}
+		return true;
 	}
 
 	/**
