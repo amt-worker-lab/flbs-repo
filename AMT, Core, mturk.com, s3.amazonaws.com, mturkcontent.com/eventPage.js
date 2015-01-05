@@ -344,6 +344,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});
 		}
+		showNextTabAttempt();
 		return true;
 	}
 
@@ -1079,7 +1080,7 @@ function getAllTabsInQ(callback) {
 					   rslt.tabId === null) {
 						alert('Error, got broken tabId from tabsQ');
 						console.log('Error, got broken tabId from tabsQ. tabId:');
-						console.log(rlst.tabId);
+						console.log(rslt.tabId);
 					}
 					else {
 						allQTabs.push(rslt);

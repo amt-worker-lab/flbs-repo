@@ -139285,6 +139285,8 @@ function mturk_load()
 			AMT__Global_Vars.isPreview = true;
 			console.log('groupId' + AMT__Global_Vars.groupId);
 			
+			AMT__Global_Vars.initializeTabId();
+			
 			// floats go here
 			AllFloaters = [];
 			
@@ -139502,6 +139504,7 @@ function mturk_load()
 	// Set some global vars
 	AMT__Global_Vars.isTopWindow = false;
 	AMT__Global_Vars.initializeGroupId();
+	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
 		
 		
@@ -139553,6 +139556,7 @@ function mturk_load()
 				return false;
 			}
 			this.style.backgroundColor = 'lime';
+			AMT__Global_Vars.initializeTabId();
 			MT__RUN();
 		}
 		

@@ -504,6 +504,7 @@ function addToTabsQ() {
 	isQProduct = true;
 	
 	//Tell eventPage to add this to the Q
+	console.log(AMT__Global_Vars);
 	chrome.extension.sendRequest({
 								  addToTabsQ: true
 							  }, function(response) {
