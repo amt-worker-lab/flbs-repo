@@ -31440,7 +31440,7 @@ function MT__RUN() {
 		
 		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
 		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;}');
+		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;height:110}');
 		GM_addStyle('em {font-weight:bold;zoom:1.4;}');
 		GM_addStyle('.em2 {font-weight:bold;zoom:2;}');
 		
@@ -31474,7 +31474,9 @@ function MT__RUN() {
 				console.log('submit button click fired');
 				showNextTab();
 			});
-		
+			
+			
+			
 			document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
 				var k = e.keyCode;
 				if(k == 38) {
@@ -31494,7 +31496,16 @@ function MT__RUN() {
 					return false;
 				}
 			});
-			
+				
+			document.addEventListener('keyup', function(e) {
+				var k = e.keyCode;
+				if(k== 219) { //[ 
+					this.value = this.value.replace(/\[$//,'');
+					e.preventDefault();
+					document.getElementById('submitButton').click();
+					return false;
+				}
+			});
 		}
 		
 		
