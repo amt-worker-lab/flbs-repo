@@ -682,7 +682,7 @@ AMT___Floater.skip = function() {
 						, timeToSkip);
 						
 			}
-			, -700); //2200//800 
+			, -250); //2200//800 
 	}
 	else if (AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
@@ -693,7 +693,7 @@ AMT___Floater.skip = function() {
 						, timeToSkip);
 						
 			}
-			, -700);
+			, -250);
 	}
 }
 
