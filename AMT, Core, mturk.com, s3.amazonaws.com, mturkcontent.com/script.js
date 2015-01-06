@@ -31489,7 +31489,7 @@ function MT__RUN() {
 			if (AMT__Global_Vars.isPreview) {
 				var allTextLength = allText.split(' ').length * 1;
 				console.log(allTextLength);
-				if (allTextLength > 15) {
+				if (allTextLength > 20) {
 					AMT___Floater.skip();
 					return;
 				} else {
@@ -31573,7 +31573,7 @@ function MT__RUN() {
 					rs = rs.replace(/^ *i *n *g *r *e *d *[^: ]+:* */i, '');
 					rs = rs.replace(/[\r\n\t\s]+/gi, ' ');
 					rs = rs.replace(/\./g, ',');
-					rs = rs.replace(/,$/g, '.');
+					rs = rs.replace(/[,\.]$/g, '');
 					rs = rs.trim();
 					rs = rs.toLowerCase();
 					//~ var num_words = rs.split(' ').length;
