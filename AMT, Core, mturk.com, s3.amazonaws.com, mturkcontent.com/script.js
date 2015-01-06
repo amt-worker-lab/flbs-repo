@@ -31480,6 +31480,8 @@ function MT__RUN() {
 				this.blur();
 			}
 			
+			if(document.getElementsByName('Allergens')[0].value != '')
+				document.body.style.backgroundColor = 'gold';
 			
 			var allText = document.getElementsByName('Ingredients')[0].value;
 			allText += ' ' + document.getElementsByName('Allergens')[0].value;
