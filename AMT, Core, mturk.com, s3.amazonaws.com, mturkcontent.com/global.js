@@ -291,11 +291,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.focus) {
 		//console.log('told to focus');
 		
-		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow) {
+		if(request.isTopWindow == AMT__Global_Vars.isTopWindow) {
+			document.body.focus();
 			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
 				AMT__Global_Vars.callbackOnShowNextTabArrival();
 			console.log('focusing');
-			document.body.focus();
 		}
 	}
 	else if(request.switchTabNotifier) {

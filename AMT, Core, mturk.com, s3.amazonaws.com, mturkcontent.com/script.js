@@ -31570,7 +31570,7 @@ function MT__RUN() {
 							//~ AMT___Floater.skip();
 							//~ return;
 						//~ } else {
-							//~ console.log('accept!');
+							//~ console.log('accept!');asdfas
 							//~ AMT___Floater.accept();
 							//~ return;
 						//~ }
