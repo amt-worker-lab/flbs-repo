@@ -2809,6 +2809,75 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Brian Becker
+	// Find the Company Name & Directory Categories
+	//
+	s = '<li>If there are multiples, separate with a semicolon (eg: SourceBook; Panel; Focus Group)</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var td = document.getElementsByTagName('td');
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: td[1].innerText.trim(),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						return;
+					}
+					
+					
+					var sbm = true;
+					
+					rs = rs.replace(/<div id="ThumbLink">((.|\s)*?(?=<\/div>|$)|$)/g, '');
+					console.log(rs);
+					
+					// name
+					//Alert Marknadskonsult Tommy Eklund AB
+					var reg = /<h1>([^<]+)<\/h1>[\r\n\t\s]+(<\/div>|)<p><strong>Company Address:<\/strong>/.exec(rs);
+					if (reg) {
+						reg = __js_clean_html_str(reg[1]).trim();
+						document.getElementsByName('Company_Name')[0].value = reg;
+						if (reg.length < 2) {
+							sbm = false;
+						}
+					} else sbm = false;
+					
+					/*
+					 * <table id="Function15_DetailCtrl1_SourcebookTab" class="Tab Tabdefault" cellspacing="0">
+	<tr>
+		<td>
+                        <h2>SourceBook</h2>*/
+                    
+                    var reg = /<tr>[\r\n\t\s]+<td>[\r\n\t\s]+<h2[^>]*>([^<]+)<\/h2>/g;
+                    var m;
+                    var arr = [];
+                    while (m = reg.exec(rs)) {
+						arr.push(__js_clean_html_str(m[1]));
+					}
+					document.getElementsByName('Directory_Categories')[0].value = arr.join('; ');
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	
+	// 
 	// Ed Kohler
 	// Look up a UPC number
 	//
