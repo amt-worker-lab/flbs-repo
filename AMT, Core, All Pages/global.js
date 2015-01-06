@@ -50,7 +50,7 @@ var AMT__Global_Vars = //function()
 	groupId: '',
 	hitId: '',
 	numSubmitQueries: 0,
-	isSubmitting: false,
+	isSubmitting: false, 
 	copyInp: false,
 	RACustomKey: false,
 	//
