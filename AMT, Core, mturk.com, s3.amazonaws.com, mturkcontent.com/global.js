@@ -289,9 +289,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return true;
 	}
 	else if(request.focus) {
-		console.log('told to focus');
+		//console.log('told to focus');
+		
 		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow) {
-			console.log('focusing');
+			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
+				AMT__Global_Vars.callbackOnShowNextTabArrival();
+			//console.log('focusing');
 			document.body.focus();
 		}
 	}
@@ -508,9 +511,9 @@ qProductId = false;
 
 
 
-function addToTabsQ() {
+function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
-	
+	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	//Tell eventPage to add this to the Q
 	console.log(AMT__Global_Vars);
 	chrome.extension.sendRequest({
@@ -526,7 +529,7 @@ function showNextTab() {
 	console.log('Showing Next Tab');
 	chrome.extension.sendRequest({
 									  showNextTab: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow
+									  isTopWindow: AMT__Global_Vars.isTopWindow,
 								  }, function(response) {
 								});
 }
