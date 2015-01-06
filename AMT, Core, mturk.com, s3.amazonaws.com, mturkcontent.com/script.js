@@ -2896,7 +2896,7 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function() {
 				o.q[0].value = o.q[0].value.trim();
 				o.q[1].value = o.q[1].value.trim();
-				if (o.q[0].value != 'Yes' || o.q[0].value != 'No') {
+				if (o.q[1].value != 'Yes' && o.q[1].value != 'No') {
 					return false;
 				}
 				new AMT___core_factory().nextTab();
