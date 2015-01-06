@@ -31449,7 +31449,7 @@ function MT__RUN() {
 			/*BEGIN ITEMS*/
 			//
 			var d1 = document.createElement('textarea');
-			d1.setAttribute('style', 'position:absolute;top:0px;height:100px;left:60%;width:39%;cursor:pointer;');
+			d1.setAttribute('style', 'position:relative;top:0px;height:100px;width:100%;cursor:pointer;');//left:60%;
 			document.getElementsByTagName('div')[4].appendChild(d1);
 			/*END ITEMS*/
 			
@@ -31487,7 +31487,7 @@ function MT__RUN() {
 			if (AMT__Global_Vars.isPreview) {
 				var allTextLength = allText.split(' ').length * 1;
 				console.log(allTextLength);
-				if (allTextLength > 20) {
+				if (allTextLength > 15) {
 					AMT___Floater.skip();
 					return;
 				} else {
