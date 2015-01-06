@@ -2964,6 +2964,7 @@ function MT__RUN() {
 							ap.sellerUrl = (ap.hasOwnProperty('sellerUrl')) ? ap.sellerUrl : '';
 							ap.userRatingCount = (ap.hasOwnProperty('userRatingCount')) ? ap.sellerUrl : '0';
 							ap.averageUserRating = (ap.hasOwnProperty('averageUserRating')) ? ap.sellerUrl : 'N/A';
+							ap.description = (ap.hasOwnProperty('description')) ? ap.description : 'N/A';
 							
 							var out = [];
 							out.push('Comp. Name:' + ap.sellerName);
@@ -3005,7 +3006,7 @@ function MT__RUN() {
 						
 						if (rs.resultCount != 0) {
 							var dv = document.createElement('div');
-							dv.setAttribute('style', 'height:1400px;');
+							dv.setAttribute('style', 'height:3000px;');
 							d1.appendChild(dv);
 						}
 					}
