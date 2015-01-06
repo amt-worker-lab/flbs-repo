@@ -2809,8 +2809,156 @@ function MT__RUN() {
 	}
 	
 	// 
+	// C. Eric Smith
+	// Using iTunes and a Bank's website, determine if they have a branded mobile banking app available.
+	//
+	s = '<li>Using the iTunes App, search the App Store for the bank\'s mobile app (using the name of the bank&nbsp;or "app brand" discovered on the bank\'s official website).</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				name: td[1].innerText.trim(),
+				url: td[3].innerText.trim(),
+				full_url: null,
+				bold: []
+			}
+			o.bold = o.name.clean_string_to_array().concat(
+				o.url.replace(/\.com/, '').clean_string_to_array()
+			);
+			o.full_url = (!/^http/i.exec(o.url)) ? 'http://' + o.url : o.url;
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 200 // offset top
+			});
+		
+			// utility window
+			AMT__setUtilityTabs([
+				{
+					url: o.full_url
+				}
+			]);
+				//https://itunes.apple.com/search?callback=jQuery20303672524578869343_1420566513946&media=software&entity=software%2CiPadSoftware%2CsoftwareDeveloper&term=first+colorado+national&country=us&limit=3&_=1420566513956
+			GM_xmlhttpRequest({
+				method: "GET",
+				//~ url: 'https://itunes.apple.com/search?term='+encodeURIComponent(o.name)+' '+encodeURIComponent('')+'&media=app&limit=10', //&country=US&sort=popular
+				//~ url: 'https://itunes.apple.com/search?entity=macSoftware&limit=10&attribute=keywordsTerm&term='+encodeURIComponent(o.name)+' '+encodeURIComponent(''), //&country=US&sort=popular
+				url: 'https://itunes.apple.com/search?media=software&entity=software%2CiPadSoftware%2CsoftwareDeveloper&term='+encodeURIComponent(o.name)+' '+encodeURIComponent('')+'&country=&limit=10&_='+Math.random(), //&country=US&sort=popular
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					//~ console.log(rs);
+					//~ console.log(JSON.parse(rs));
+					
+					rs = JSON.parse(rs);
+					console.log(rs);
+					
+					d1.innerHTML = '<div style="border-bottom:2px solid #a2a2a2;">'+rs.resultCount+'</div>';
+					
+					for (var i in rs.results) {
+						
+						var ap = rs.results[i];
+						
+						// link
+						//trackViewUrl: "https://itunes.apple.com/us/app/fnb-colorado/id673232274?mt=8&uo=4"
+						var dv = document.createElement('div');
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						dv.className = 'exe';
+						dv.link = ap.trackViewUrl
+						d1.appendChild(dv);
+						
+						//onclick
+						dv.onclick = function() {
+							document.getElementsByName('web_url')[0].value = this.link;
+							document.getElementsByName('Yes/No')[0].value = 'Yes';
+							doSubmit();
+						}
+						
+						
+						var genres = [];
+						for (var j in ap.genres) {
+							genres.push(ap.genres[j]);
+						}
+						
+						ap.sellerUrl = (ap.hasOwnProperty('sellerUrl')) ? ap.sellerUrl : '';
+						ap.userRatingCount = (ap.hasOwnProperty('userRatingCount')) ? ap.sellerUrl : '0';
+						ap.averageUserRating = (ap.hasOwnProperty('averageUserRating')) ? ap.sellerUrl : 'N/A';
+						
+						var out = [];
+						out.push('Comp. Name:' + ap.sellerName);
+						out.push('Comp. URL:' + ap.sellerUrl);
+						out.push('Short Name:' + ap.trackName);
+						out.push('#Ratings:' + ap.userRatingCount);
+						out.push('Rating:' + ap.averageUserRating);
+						out.push('Version:' + ap.version);
+						out.push('Desc.:' + MT__bold(ap.description, o.bold));
+						out.push('Genres:' + genres.join('; '));
+						
+						dv.innerHTML += out.join('<br>');
+						
+						// images
+						var im = [];
+						// artworkUrl512
+						var img = document.createElement('img');
+						img.setAttribute('style', 'max-width:120px;max-height:120px;');
+						im.push(img);
+						img.src = ap.artworkUrl512;
+						for (var j in ap.ipadScreenshotUrls) {
+							var img = document.createElement('img');
+							img.setAttribute('style', 'max-width:120px;max-height:120px;');
+							im.push(img);
+							img.src = ap.ipadScreenshotUrls[j];
+						}
+						for (var j in ap.screenshotUrls) {
+							var img = document.createElement('img');
+							img.setAttribute('style', 'max-width:120px;max-height:120px;');
+							im.push(img);
+							img.src = ap.screenshotUrls[j];
+						}
+						// Append
+						dv.appendChild(document.createElement('br'));
+						for (var j in im) {
+							dv.appendChild(im[j]);
+						}
+					}
+					
+					if (rs.resultCount != 0) {
+						var dv = document.createElement('div');
+						dv.setAttribute('style', 'height:1400px;');
+						d1.appendChild(dv);
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// Brian Becker
-	// Find the Company Name & Directory Categories
+	// Find the Company Name & Directory Categories, quirks.com
 	//
 	s = '<li>If there are multiples, separate with a semicolon (eg: SourceBook; Panel; Focus Group)</li>';
 	if  (
@@ -2839,12 +2987,18 @@ function MT__RUN() {
 					
 					var sbm = true;
 					
-					rs = rs.replace(/<div id="ThumbLink">((.|\s)*?(?=<\/div>|$)|$)/g, '');
-					console.log(rs);
+					// xx
+					//~ rs = rs.replace(/<div id="ThumbLink">((.|\s)*?(?=<\/div>|$)|$)/g, '');
+					
+					rs = rs.replace(/<div class="ShareButtons">[^\r\n]+[\r\n]+/g, '');
+					rs = rs.replace(/<div class="Left">[^\r\n]+[\r\n]+/g, '');
+					
+					// xx
+					//~ console.log(rs);
 					
 					// name
 					//Alert Marknadskonsult Tommy Eklund AB
-					var reg = /<h1>([^<]+)<\/h1>[\r\n\t\s]+(<\/div>|)<p><strong>Company Address:<\/strong>/.exec(rs);
+					var reg = /<div id="companyDivider" class="divider"><\/div>[\r\n\t\s]+<h1>([^<]+)<\/h1>/.exec(rs);
 					if (reg) {
 						reg = __js_clean_html_str(reg[1]).trim();
 						document.getElementsByName('Company_Name')[0].value = reg;
