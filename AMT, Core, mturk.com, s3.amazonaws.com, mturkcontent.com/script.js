@@ -31456,6 +31456,15 @@ function MT__RUN() {
 			// q
 			var q = document.getElementsByName('Ingredients')[0];
 			
+			// mouseup__delete_range
+			var ef = new AMT___events_factory();
+			ef.mouseup__delete_range({
+				element: q,
+				callback: function(input_object) {
+					input_object.element.focus();
+				}
+			});
+			
 			// return button function
 			new AMT___core_factory()
 				.iframe2parent__postMessage( // options  , XXXXX >callback_function
@@ -31511,6 +31520,7 @@ function MT__RUN() {
 				// ...
 				document.getElementById('submitButton').addEventListener('click', function() {
 					console.log('submit button click fired');
+					q.value = q.value.trim();
 					showNextTab();
 				});
 				
@@ -31558,8 +31568,9 @@ function MT__RUN() {
 					var rs = result_object.text.trim();
 					
 					// REMOVE "ingredients:"
-					rs = rs.replace(/^ *ingredi[^: ]+:* */i, '');
+					rs = rs.replace(/^ *i *n *g *r *e *d *[^: ]+:* */i, '');
 					rs = rs.replace(/\s+/i, ' ');
+					rs = rs.replace(/\.([^$])/i, ',$1');
 					rs = rs.trim();
 					rs = rs.toLowerCase();
 					//~ var num_words = rs.split(' ').length;
