@@ -312,8 +312,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.showNextTab)
 	{
 		var senderTabId = sender.tab.id;
-		var isTopWindw = request.isTopWindow;
-		function showNextTabAttempt() {
+		var isTopWindow = request.isTopWindow;
+		function showNextTabAttempt(isTopWindow) {
 			getAllTabsInQ(function(allQTabs) {
 				if(allQTabs.length > 0) {
 					//Find the tab with the lowest qProductId and go to that
@@ -333,7 +333,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
 						allQTabs.splice(lowestTabIndex,1);
-						showNextTabAttempt();
+						showNextTabAttempt(isTopWindow);
 						sendResponse({RemoveFromTabsQ: true});
 					}
 					else {
@@ -346,7 +346,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});
 		}
-		showNextTabAttempt();
+		showNextTabAttempt(isTopWindow);
 		return true;
 	}
 

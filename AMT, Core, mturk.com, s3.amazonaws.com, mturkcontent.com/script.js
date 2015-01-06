@@ -31590,11 +31590,7 @@ function MT__RUN() {
 					
 					// ...
 					out.value = rs.trim() + ' ';
-					out.select();
-					out.blur();
 					out.value = out.value.trim();
-					out.select();
-					out.blur();
 				}
 			}
 		}
