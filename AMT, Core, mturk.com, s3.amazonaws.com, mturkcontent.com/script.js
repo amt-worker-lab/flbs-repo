@@ -31450,7 +31450,7 @@ function MT__RUN() {
 			//
 			var d1 = document.createElement('textarea');
 			d1.setAttribute('style', 'position:absolute;top:0px;height:100px;left:60%;width:39%;cursor:pointer;');
-			document.body.appendChild(d1);
+			document.getElementsByTagName('div')[4].appendChild(d1);
 			/*END ITEMS*/
 			
 			// q
@@ -31487,7 +31487,7 @@ function MT__RUN() {
 			if (AMT__Global_Vars.isPreview) {
 				var allTextLength = allText.split(' ').length * 1;
 				console.log(allTextLength);
-				if (allTextLength > 15) {
+				if (allTextLength > 20) {
 					AMT___Floater.skip();
 					return;
 				} else {
@@ -31569,8 +31569,9 @@ function MT__RUN() {
 					
 					// REMOVE "ingredients:"
 					rs = rs.replace(/^ *i *n *g *r *e *d *[^: ]+:* */i, '');
-					rs = rs.replace(/\s+/i, ' ');
-					rs = rs.replace(/\.([^$])/i, ',$1');
+					rs = rs.replace(/[\r\n\t\s]+/gi, ' ');
+					rs = rs.replace(/\./g, ',');
+					rs = rs.replace(/,$/g, '.');
 					rs = rs.trim();
 					rs = rs.toLowerCase();
 					//~ var num_words = rs.split(' ').length;
