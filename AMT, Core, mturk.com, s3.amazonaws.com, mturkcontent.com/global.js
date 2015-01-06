@@ -294,7 +294,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(reuqest.isTopWindow == AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
 				AMT__Global_Vars.callbackOnShowNextTabArrival();
-			//console.log('focusing');
+			console.log('focusing');
 			document.body.focus();
 		}
 	}

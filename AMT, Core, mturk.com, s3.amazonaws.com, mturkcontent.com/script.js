@@ -31434,98 +31434,171 @@ function MT__RUN() {
 	//
 	s = 'Do not include the word ingredient/ingredients at the start of your transcription, only transcribe the actual ingredients';
 	if(ih.indexOf(s) != -1)
-	{		
-		console.log('grocery roi running');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		
-		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
-		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;height:110}');
-		GM_addStyle('em {font-weight:bold;zoom:1.4;}');
-		GM_addStyle('.em2 {font-weight:bold;zoom:2;}');
-		
-		var allText = document.getElementsByName('Ingredients')[0].value;
-		allText += ' ' + document.getElementsByName('Allergens')[0].value;
-		
-		if (AMT__Global_Vars.isPreview) {
-			var allTextLength = allText.split(' ').length * 1;
-			console.log(allTextLength);
-			if (allTextLength > 10) {
-				AMT___Floater.skip();
-				return;
-			} else {
-				console.log('accept!');
-				AMT___Floater.accept();
-				return;
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('grocery roi running');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0;left:0;width:60%;height:110}');
+			GM_addStyle('em {font-weight:bold;zoom:1.4;}');
+			GM_addStyle('.em2 {font-weight:bold;zoom:2;}');
+			
+			/*BEGIN ITEMS*/
+			//
+			var d1 = document.createElement('textarea');
+			d1.setAttribute('style', 'position:absolute;top:0px;height:100px;left:60%;width:39%;cursor:pointer;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// q
+			var q = document.getElementsByName('Ingredients')[0];
+			
+			// return button function
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+			d1.onclick = function() {
+				if (this.value.trim() != '') {
+					this.style.backgroundColor = 'LightGreen';
+					q.value = this.value;
+				}
+				this.blur();
+			}
+			
+			
+			var allText = document.getElementsByName('Ingredients')[0].value;
+			allText += ' ' + document.getElementsByName('Allergens')[0].value;
+			
+			if (AMT__Global_Vars.isPreview) {
+				var allTextLength = allText.split(' ').length * 1;
+				console.log(allTextLength);
+				if (allTextLength > 15) {
+					AMT___Floater.skip();
+					return;
+				} else {
+					console.log('accept!');
+					AMT___Floater.accept();
+					return;
+				}
+			}
+			// TASK IS ACCPTED
+			else
+			{
+				
+				//~ console.log(allText.split(' ').length);
+				
+				addToTabsQ(function() {
+					document.getElementsByName('Ingredients')[0].focus();
+				});
+				
+				//Place a space after each comma
+				document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
+				document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
+				
+				//Replace all periods with comman - IMPORTANT: be aware of this
+				document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/\./g, ",");
+				document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/\./g, ",");
+				
+				
+				
+				// ...
+				document.getElementById('submitButton').addEventListener('click', function() {
+					console.log('submit button click fired');
+					showNextTab();
+				});
+				
+				
+			
+				//~ document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
+					//~ var k = e.keyCode;
+					//~ if(k == 33) {
+						//~ //this.value = this.value.trim() + '.';
+						//~ //document.getElementById('submitButton').click();
+						//~ //e.preventDefault();
+						//~ //return false;
+					//~ }
+				//~ });
+				//~ 
+				//~ document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
+					//~ var k = e.keyCode;
+					//~ if(k == 33) {
+						//~ this.value = this.value.trim() + '.';
+						//~ //document.getElementById('submitButton').click();
+						//~ e.preventDefault();
+						//~ return false;
+					//~ }
+				//~ });
+					
+				//pageup to submit
+				document.addEventListener('keyup', function(e) {
+					var k = e.keyCode;
+					if(k== 33) { //down button
+						e.preventDefault();
+						document.getElementById('submitButton').click();
+						return false;
+					}
+				});
+				
+				// image_2_OCR
+				var rf = new AMT___requests_factory().image_2_OCR({
+					url: document.getElementsByTagName('img')[0].src,
+					resize: '50%',
+					callback_function: ingredients_ocr
+				});
+				function ingredients_ocr(result_object) {
+					console.log(result_object);
+					//
+					var rs = result_object.text.trim();
+					
+					// REMOVE "ingredients:"
+					rs = rs.replace(/^ *ingredi[^: ]+:* */i, '');
+					rs = rs.replace(/\s+/i, ' ');
+					rs = rs.trim();
+					rs = rs.toLowerCase();
+					//~ var num_words = rs.split(' ').length;
+					//~ console.log(rs.length);
+					//~ console.log(num_words);
+					//~ // SKIP?
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ if (num_words > 20 || rs.length > 280 || rs.trim() == '') {
+							//~ AMT___Floater.skip();
+							//~ return;
+						//~ } else {
+							//~ console.log('accept!');
+							//~ AMT___Floater.accept();
+							//~ return;
+						//~ }
+					//~ }
+					
+					var out;
+					
+					if (result_object.hasOwnProperty('CALLBACK__FULL_SIZE')) {
+						//~ out = d4;
+					} else {
+						out = d1;
+					}
+					
+					// Clean it.
+					rs = rs.replace(/[\r\n]/g, ' '); // new line
+					rs = rs.replace(/\s+/g, ' '); // multi-space
+					
+					// ...
+					out.value = rs.trim() + ' ';
+					out.select();
+					out.blur();
+					out.value = out.value.trim();
+					out.select();
+					out.blur();
+				}
 			}
 		}
-		else {
-			console.log(allText.split(' ').length);
-			
-			addToTabsQ();
-			
-			//Place a space after each comma
-			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
-			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
-			
-			//Replace all periods with comman - IMPORTANT: be aware of this
-			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/\./g, ",");
-			document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Allergens')[0].value.replace(/\./g, ",");
-			
-			
-			
-			
-			document.getElementById('submitButton').addEventListener('click', function() {
-				console.log('submit button click fired');
-				showNextTab();
-			});
-			
-			
-		
-			//~ document.getElementsByName('Ingredients')[0].addEventListener('keyup', function(e) {
-				//~ var k = e.keyCode;
-				//~ if(k == 33) {
-					//~ //this.value = this.value.trim() + '.';
-					//~ //document.getElementById('submitButton').click();
-					//~ //e.preventDefault();
-					//~ //return false;
-				//~ }
-			//~ });
-			//~ 
-			//~ document.getElementsByName('Allergens')[0].addEventListener('keyup', function(e) {
-				//~ var k = e.keyCode;
-				//~ if(k == 33) {
-					//~ this.value = this.value.trim() + '.';
-					//~ //document.getElementById('submitButton').click();
-					//~ e.preventDefault();
-					//~ return false;
-				//~ }
-			//~ });
-				
-			//pageup to submit
-			document.addEventListener('keyup', function(e) {
-				var k = e.keyCode;
-				if(k== 35) { //home button button
-					document.getElementsByName('Ingredients')[0].value =
-						document.getElementsByName('Ingredients')[0].value.trim() + '.';
-					e.preventDefault();
-					return false;
-				}
-				if(k== 33) { //page down button
-					e.preventDefault();
-					document.getElementById('submitButton').click();
-					return false;
-				}
-			});
-		}
-		
-		// return button function!
-		new AMT___core_factory()
-			.iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_button__showNextTab'
-				}
-			);
+		new run().f();
 	}
 
 
@@ -31536,7 +31609,7 @@ function MT__RUN() {
 	// USES requests_factory().image_2_OCR()
 	s = '<p><strong>Our goal</strong> with this project is to extract valuable data from a products ingredient table in order to provide our customers with more information. Your task is to view the product ingredient table and transcribe ingredient text to the provided text field.</p>';
 	if(ih.indexOf(s) != -1 && 1 == 0)
-	{		
+	{
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		
