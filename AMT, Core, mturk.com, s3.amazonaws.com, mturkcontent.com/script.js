@@ -2889,6 +2889,7 @@ function MT__RUN() {
 				}
 			});
 			d2.onblur = function() {
+				this.value = this.value.trim();
 				itunes();
 			}
 			
@@ -2902,6 +2903,11 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				doSubmit();
 				return false;
+			}
+			
+			o.q[1].ondblclick = function() {
+				this.value = 'No';
+				document.getElementById('submitButton').click();
 			}
 			
 			// init
