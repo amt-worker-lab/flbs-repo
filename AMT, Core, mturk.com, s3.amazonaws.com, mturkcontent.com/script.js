@@ -31478,7 +31478,7 @@ function MT__RUN() {
 			if (AMT__Global_Vars.isPreview) {
 				var allTextLength = allText.split(' ').length * 1;
 				console.log(allTextLength);
-				if (allTextLength > 15) {
+				if (allTextLength > 20) {
 					AMT___Floater.skip();
 					return;
 				} else {
@@ -31496,6 +31496,7 @@ function MT__RUN() {
 				addToTabsQ(function() {
 					document.getElementsByName('Ingredients')[0].focus();
 				});
+				
 				
 				//Place a space after each comma
 				document.getElementsByName('Ingredients')[0].value = document.getElementsByName('Ingredients')[0].value.replace(/,([^\r\n\s\t])/g, ", $1");
