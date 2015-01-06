@@ -4587,14 +4587,29 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 				return false;
 			}
 		} else {
-			
+			// in/xx
+			r = /<dd><a href="(https?:\/\/\w+\.linkedin\.com\/[^"]+)" class="view-public-profile">[^<]+<\/a><\/dd>/;
+			if (r.exec(rs)) {
+				opts.response.vars.result.public_url = __js_clean_html_str(r.exec(rs)[1]);
+				opts.response.vars.result.profile_has_public_url = true;
+				// Must have only one match
+				r = new RegExp(r.source, 'g');
+				if (rs.match(r).length != 1) {
+					console.log(rs.match(r));
+					console.log(r);
+					alert('Length:'+r);
+					return false;
+				}
+			} else {
+				
+			}
 		}
 		/**
 		 * Name
 		EX:
 James Strate, CFP®
 		 */ 
-		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name">([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
+		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name"[^>]*>([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
 			// Must have only one match
@@ -4614,7 +4629,7 @@ James Strate, CFP®
 Investment Representative at Fidelity Investments
 Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
  		 */ 
-		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title ">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
+		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title *">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
 		if (r.exec(rs)) {
 			var hd = r.exec(rs)[1];
 			hd = hd.replace(/<[^>]*>/g, '');

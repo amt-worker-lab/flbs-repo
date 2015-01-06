@@ -9662,6 +9662,255 @@ function MT__RUN() {
 		}
 	}
 	
+	/**
+	 * linkedin_people_search
+	 * 
+	 * Skylar Marcum
+	 * Andrew Angus
+	 * Web Test
+	 * 
+	 */
+	//
+	// Web Test
+	// Survey about LinkedIn Profiles
+	//
+	s = 'answer a short survey about their LinkedIn profile</h3>\n\n<p>1. Were you able to find this person’s LinkedIn Profile? (If no, you are finished with this survey)</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('input[type="radio"] {zoom:2.2;cursor:pointer;}');
+			
+			var h3 = document.getElementsByTagName('h3')[0].innerText.replace('Please search for ', '').replace(' with Wells Fargo Advisors and answer a short survey about their LinkedIn profile', '');
+			var x = h3.split(' in ');
+			var r = document.getElementsByName('Q1ProfileFound');
+			
+			var o = {
+				fn:			null,
+				ln:			null,
+				name:		x[0],
+				company:	'Wells Fargo',
+				bold_array_comp: [],
+				
+				radios: [
+					r[0], r[1]
+				]
+			};
+			o.bold_array_comp = o.company.clean_string_to_array().concat(
+				o.name.clean_string_to_array()
+			);
+			var x = o.name.split(' ');
+			if (x.length == 1) {
+				o.fn = x[0];
+				o.ln = '';
+			} else if (x.length == 2) {
+				o.fn = x[0];
+				o.ln = x[1];
+			} else if (x.length > 2) {
+				o.fn = x.slice(0, x.length-1).join(' ');
+				o.ln = x[x.length - 1];
+			}
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:160px;left:0%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('input');
+			d2.type = 'button';
+			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
+			document.body.appendChild(d2);
+			d2.value = 'no image';
+			var d2b = document.createElement('input');
+			d2b.type = 'button';
+			d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'no profile';
+			var d3 = document.createElement('img');
+			d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
+			document.body.appendChild(d3);
+			/*END ITEMS*/
+			
+			// Yes/No radios
+			
+			for (var i in o.radios) {
+				o.radios[i].onclick = function() {
+					this.style.zoom = 4;
+					document.getElementById('submitButton').click();
+				}
+			}
+				
+			// ...
+			d2.onclick = d2b.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ q.value = this.value;
+				//~ if (q.value == this.value && q.value.trim() != '') {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+			}
+			
+			// ...
+			var q = document.getElementById('Q3ProfileURL');
+			q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;');
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				if (q.value.length > 10) {
+					o.radios[0].checked = false;
+					o.radios[1].checked = false;
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				} else if (o.radios[0].checked || o.radios[1].checked) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				return false;
+			}
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 160 // offset top
+			});
+			
+			// Do a LinkedIn search 1
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					//~ titleScope: 'CP', // TITLE current or past
+					company: o.company, // blank
+					companyScope: 'CP'//, // blank
+					//~ website: o.website // DEBUG
+				},
+				sortResults: true,
+				nextTab: true, // nextTab()
+				image_search: false,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					//~ var rs = comp_object;
+					//~ 
+					//~ q.value = rs.image_full_url;
+					//~ d3.src = rs.image_full_url;
+					//~ 
+					//~ // Is 200
+					//~ if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
+						//~ new AMT___core_factory().nextTab(); // Next Tab
+						//~ new AMT___requests_factory().url_to_status_code({
+							//~ url: rs.image_full_url,
+							//~ callback_function: function(callback_object) {
+								//~ if (callback_object.status == 200) {
+									//~ doSubmit();
+								//~ } else {
+									//~ 
+								//~ }
+							//~ }
+						//~ });
+					//~ }
+					
+					
+					q.value = rs.profile_url;
+					
+					if (rs.found_valid_li_url) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					} else {
+						q.style.border = '2px dashed blue';
+						q.focus();
+					}
+				}
+			});
+			// Do a LinkedIn search 2
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1b,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					//~ titleScope: 'CP', // TITLE current or past
+					//~ company: o.company, // blank
+					//~ companyScope: 'CP', // blank
+					//~ website: o.website // DEBUG
+				},
+				bold_array_comp: o.bold_array_comp, // bold_array_comp
+				sortResults: true,
+				nextTab: true, // nextTab()
+				image_search: false,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					//~ var rs = comp_object;
+				//~ 
+					//~ q.value = rs.image_full_url;
+					//~ d3.src = rs.image_full_url;
+					//~ 
+					//~ // Is 200
+					//~ if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
+						//~ new AMT___core_factory().nextTab(); // Next Tab
+						//~ new AMT___requests_factory().url_to_status_code({
+							//~ url: rs.image_full_url,
+							//~ callback_function: function(callback_object) {
+								//~ if (callback_object.status == 200) {
+									//~ doSubmit();
+								//~ } else {
+									//~ 
+								//~ }
+							//~ }
+						//~ });
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					q.value = rs.profile_url;
+					
+					if (rs.found_valid_li_url) {
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					} else {
+						q.style.border = '2px dashed blue';
+						q.focus();
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
+	
 	//
 	// Andrew Angus
 	// Find the URL of a Linkedin Profile Image
@@ -31489,7 +31738,7 @@ function MT__RUN() {
 			if (AMT__Global_Vars.isPreview) {
 				var allTextLength = allText.split(' ').length * 1;
 				console.log(allTextLength);
-				if (allTextLength > 20) {
+				if (allTextLength > 15) {
 					AMT___Floater.skip();
 					return;
 				} else {
@@ -68572,16 +68821,18 @@ qatar,80
 	//~ s = '<p>1. Were you able to find this person’s LinkedIn Profile?</p>';
 	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished with this survey)</p>';
 	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished with this survey)</p>';
-	s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished and you can leave the remaining questions blank)</p>';
+	//~ s = '<p>1. Were you able to find this person’s LinkedIn Profile? (If you cannot find, you are finished and you can leave the remaining questions blank)</p>';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:30%;margin-top:0px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:30px;}');
 		GM_addStyle('input[type="radio"] {zoom:2;}');
 		
+		// 
+		var a = document.getElementsByTagName('a')[0].href;
 		//pub/david-alspach/3/b54/949
-		var a = /This URL may take you directly to their profile: (www\.linkedin\.com\/[^<]+)<\/h3>/.exec(ih)[1];
-		a = 'http://' + a;
+		//~ var a = /This URL may take you directly to their profile: (www\.linkedin\.com\/[^<]+)<\/h3>/.exec(ih)[1];
+		//~ a = 'http://' + a;
 		
 		var o = {
 			url: a
@@ -68745,7 +68996,7 @@ qatar,80
 			// name
 			var q = document.getElementsByName('Q5bFullName');
 			var out = 'Name:';
-			if (r.name && r.name.name.toLowerCase().indexOf('linkedin') != -1 && rr.name.toLowerCase().indexOf('member') != -1 )
+			if (r.name && r.name.toLowerCase().indexOf('linkedin') == -1 && r.name.toLowerCase().indexOf('member') == -1 )
 			{
 				q[0].checked = true;
 				q[1].checked = false;

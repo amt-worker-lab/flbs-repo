@@ -495,6 +495,11 @@ function load()
 				// NEW
 				new AMT__rq().AMT__chios_system_draw_polygon__utility_window(event.data);
 			}
+			if (event.data.task == 'AMT__Kristin_Howe_agent_photos2__utility_window' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().AMT__Kristin_Howe_agent_photos2__utility_window(event.data);
+			}
 			//~ if (event.data.task == 'AMT__Michael_Lai_ib_tok' && !AMT__iframeReceiveMessage_done) {
 				//~ AMT__iframeReceiveMessage_done = true;
 				//~ // NEW
@@ -1777,6 +1782,159 @@ function load()
 	 * @returns	
 	 */
 	AMT__rq.prototype.AMT__Michael_Lai_ib_tok = function(data) {
+		
+	}
+	/**
+	 * new AMT__rq().AMT__Kristin_Howe_agent_photos2__utility_window
+	 * 
+	 * ScrollIntoView
+	 * Highlight names on page (highlight_strings_in_page)
+	 * Activate Images
+	 * 
+	 * This is inside of a utility window. The passed in object is:
+		{
+			task:'AMT__Kristin_Howe_agent_photos2__utility_window',
+			agent_name: o.name,
+			agent_name_clean: o.name_clean
+		}
+	 * 
+	 * @param	
+	 * @returns	
+	 */
+	AMT__rq.prototype.AMT__Kristin_Howe_agent_photos2__utility_window = function(data) {
+		console.log(data);
+		
+		// init
+		activate_images();
+		
+		// Highlight Strings
+		var gf = new AMT___global_factory();
+		gf.highlight_strings_in_page({
+			strings: [
+				data.agent_name,
+				data.agent_name_clean
+			]
+		});
+		
+		// Scroll into view
+		setTimeout(function() { // timeout
+			var allElements = document.getElementsByTagName("*");
+			var match_el;
+			var found = false;
+			var tmp_ag1 = data.agent_name.toLowerCase().replace(/[^\w]/g, ''), tmp_ag2 = data.agent_name_clean.toLowerCase().replace(/[^\w]/g, '');
+			for(i = allElements.length -1; i > -1; i--)
+			{
+				if(!allElements[i]) continue;
+				if(!allElements[i].innerText) continue;
+				//~ if (allElements[i].id == 'manual__agent_name' || allElements[i].innerHTML.indexOf('manual__agent_name') != -1) continue;
+				
+				match_el = allElements[i].innerText.toLowerCase().replace(/[^\w]/g, '');
+				
+				if (match_el.indexOf(tmp_ag1) != -1 || match_el.indexOf(tmp_ag2) != -1)
+				{
+					//~ console.log(allElements[i]);
+					allElements[i].scrollIntoView(true); // true for top, false for bottom
+					found = true;
+					break;
+				}
+			}
+		}, 4000);
+		
+		// add_image
+		function add_image(page_img, pos_left) {
+			//create an image
+			//getBounding
+			var b = page_img.getBoundingClientRect();
+			var left = b.left *1;
+			//left -= 60;
+			left += pos_left;
+			var top = b.top *1;
+			top += document.body.scrollTop*1;
+			
+			var d = document.createElement('div');
+			d.setAttribute(
+				'style',
+				'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
+			);
+			d.setAttribute('class', 'manual__exe_div_162435168649');
+			var d_= document.createElement('img');
+			d_.setAttribute('class', 'manual__exe_image_162435168649');
+			d_.setAttribute(
+				'style',
+				'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
+			);
+			d_.src = page_img.src;
+			d.appendChild(d_);
+			document.body.appendChild(d);
+			
+			//~ console.log('pos_left:'+pos_left+' left:'+left);
+			//~ console.log(d_);
+		}
+		
+		// activate_images
+		// activate images function
+		function activate_images() {
+			// Iterate through all images and add an image "button."
+			// Background color is set from domain.
+			// (getBoundingClientRect())
+			// Remove all images from any previous runs.
+			
+			// remove old
+			var a = document.getElementsByClassName('manual__exe_image_162435168649');
+			var i;
+			for (i=a.length - 1; i >= 0; i--) {
+				if (!a[i]) continue;
+				if (!a[i].href) continue;
+				a[i].parentNode.removeChild(a[i]);
+			}
+			var a = document.getElementsByClassName('manual__exe_div_162435168649');
+			for (i=a.length - 1; i >= 0; i--) {
+				if (!a[i]) continue;
+				if (!a[i].href) continue;
+				a[i].parentNode.removeChild(a[i]);
+			}
+			
+			
+			// new
+			//var bgc = (IMAGES_ARE_FZ == 1) ? 'Green' : '#aeaeae';
+			var a = document.getElementsByTagName('img');
+			for (var i in a) {
+				if (i == 'length') break;
+				if (!a[i].src || a[i].src == '') continue;
+				add_image(a[i], 200);
+				//KristinHowe_agent_photo_images__add_image(a[i], 20);
+				add_image(a[i], -200);
+			}
+			
+			// Send to parent/job window
+			// Write value to db
+			var a = document.getElementsByClassName('manual__exe_image_162435168649');
+			for (var i in a) {
+				a[i].onclick = function() {
+					this.style.border = '4px solid LightGreen';
+					
+					chrome.runtime.sendMessage(
+						'gcfnekbbpmbgadddbojhlojhddnkcpje',
+						{
+							util_window_message_passing: true,
+							data: {
+								src: this.src
+							}
+						},
+						function(response) {
+							// response=object
+						}
+					);
+					
+					//~ parent.postMessage(
+						//~ {
+							//~ key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
+							//~ data: this.src
+						//~ },
+					//~ "*");
+				}
+			}
+		}
 		
 	}
 	/**
@@ -3334,6 +3492,137 @@ function load()
 			document.getElementById('QValidURL').value = 1;
 			document.getElementById('QSchoolYear').value = 1;
 			
+		}
+	}
+	
+	/**
+	 * DAEMONS.... ?
+	 * 
+	 * 
+	 */
+	/**
+	 * Della Nelson
+	 * Yandex
+	 */
+	if (1==1) {
+		var loc = document.location.href;
+		if (loc.indexOf('https://wordstat.yandex.com/#!/?words=') != -1) {
+			
+			var run = function() {};
+			run.prototype.f = function() {
+				
+				var o = {
+					next_word: null,
+					word: null,
+					word_stats: null
+				}
+				
+				// Wait for table to be populated
+				init_table();
+				function init_table() {
+					console.log(document.getElementsByClassName('b-phrases__table').length);
+					if (!document.getElementsByClassName('b-phrases__table').length) {
+						setTimeout(function() {
+							init_table();
+						}, 60);
+						return;
+					}
+					
+					// Save to file
+					var x = document.getElementsByClassName('b-phrases__table')[0].getElementsByTagName('tr');
+					if (x.length == 2) { // 0,1=n/a,2=answer
+						// n/a
+						o.word_stats = 'N/A';
+					}
+					else if (x.length < 3) { // 0,1,2 (2 is match)
+						//~ console.log(x);return;
+						setTimeout(function() {
+							init_table();
+						}, 60);
+						return;
+					} else {
+						o.word_stats = x[2].innerText.trim();
+					}
+					console.log(o);
+					// > 2
+					o.word = /words=([^&]+)/.exec(loc)[1];
+					// Init
+					load_words();
+				}
+				// Load saved words
+				function load_words() {
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: MT___host + '/mturk/.miscellaneous/DellaNelson_yandex_words?random='+Math.random(),
+						onload: function(response) {
+							var rs = response.responseText.trim();
+							if (rs == '') {
+								rs = '{}';
+							}
+							rs = JSON.parse(rs);
+							rs[ o.word ] = o.word_stats;
+							//~ console.log(rs);
+							//~ document.getElementsByClassName('b-form-input__input')[0].value = rs[ o.word ];
+							write_words(JSON.stringify(rs));
+						}
+					});
+				}
+				// Write to saved words
+				function write_words(data) {
+					var rf = new AMT___requests_factory()
+						.io__write_to_file(
+							{
+								data:	'AMT__serverSide_write__value=' + encodeURIComponent(data)+
+										'&AMT__serverSide_write__folder=.miscellaneous'+
+										'&AMT__serverSide_write__file=DellaNelson_yandex_words',
+								host:	MT___host
+							},
+							function () {
+								// Init queue checking
+								load_queue();
+							}
+						);
+				}
+				
+				
+				// Load one
+				function load_queue() {
+					GM_xmlhttpRequest({
+						method: "GET",
+						url: MT___host + '/mturk/.miscellaneous/DellaNelson_yandex_queue?random='+Math.random(),
+						onload: function(response) {
+							var rs = response.responseText.trim();
+							if (rs == '' || rs == '[]') {
+								setTimeout(function() { // Check again in 300 ms
+									load_queue();
+								}, 300);
+								return;
+							}
+							rs = JSON.parse(rs); // Array
+							o.next_word = rs.shift();
+							// Write queue
+							write_queue(JSON.stringify(rs));
+						}
+					});
+				}
+				function write_queue(data) {
+					var rf = new AMT___requests_factory()
+						.io__write_to_file(
+							{
+								data:	'AMT__serverSide_write__value=' + encodeURIComponent(data)+
+										'&AMT__serverSide_write__folder=.miscellaneous'+
+										'&AMT__serverSide_write__file=DellaNelson_yandex_queue',
+								host:	MT___host
+							},
+							function () {
+								// Reload the page
+								window.location.href = 'https://wordstat.yandex.com/#!/?words=' + o.next_word+'&'+Math.random();
+								location.reload();
+							}
+						);
+				}
+			}
+			new run().f();
 		}
 	}
 	
