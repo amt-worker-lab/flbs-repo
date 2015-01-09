@@ -14076,8 +14076,8 @@ function MT__RUN() {
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
 			
 			// Skip?
-			if (o.name != '') {
-			//if (o.domain == '' || o.name == '' || o.comp_name == '') {
+			//if (o.name != '') {
+			if (o.domain == '' || o.name == '' || o.comp_name == '') {
 				AMT___Floater.skip();
 				return;
 			}
@@ -14137,10 +14137,14 @@ function MT__RUN() {
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // person + site + email
 				startPage: true,
 				//~ seed_arg1: o.input1,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' ("'+o.name+'" OR "'+o.name_cleaned+'") ("email" OR "contact")'),
 				callback_function: sp_process,
 				return_init_object: true,
-				init__type: 1
+				init__type: 1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+
+				
+				(o.name != '' ? ' ("'+o.name+'" OR "'+o.name_cleaned+'")' : '') +
+				
+				' ("email" OR "contact")')
 			});
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
 				startPage: true,
