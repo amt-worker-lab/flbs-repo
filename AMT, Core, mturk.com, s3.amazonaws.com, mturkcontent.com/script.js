@@ -14237,8 +14237,8 @@ function MT__RUN() {
 				}
 				// Is the Source URL different than company's domain? If so then warn.
 				if (q[4].value.indexOf(o.domain) == -1) {
-					var confirm = confirm('Source URL has different domain than company. Press OK to ignore.');
-					if (confirm) {
+					var confirm_value = confirm('Source URL has different domain than company. Press OK to ignore.');
+					if (confirm_value) {
 						// do nothing
 					} else {
 						// Stop
