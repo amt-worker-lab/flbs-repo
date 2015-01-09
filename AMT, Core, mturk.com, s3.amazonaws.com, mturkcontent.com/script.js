@@ -14145,6 +14145,13 @@ function MT__RUN() {
 				offset: 300 // offset top
 			});
 			
+			window.addEventListener('keydown', function(e) {
+				if(e.keyCode == 220) {
+					new AMT___core_factory().iframe2parent__postMessage({action: 'click_return_button'});
+				}
+			});
+			new AMT___core_factory().iframe2parent__postMessage({action: 'return_button_hotkey', keyCode: 220});
+			
 			//~ // mouseover
 			//~ d2.addEventListener('mouseover', function() {
 				//~ d1.scrollIntoView()

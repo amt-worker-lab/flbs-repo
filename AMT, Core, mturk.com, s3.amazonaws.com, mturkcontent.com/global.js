@@ -1740,6 +1740,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// ...
 	function top_window__addEventListener_iframe__complete(event)
 	{
+		var options = options;
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
@@ -1747,6 +1748,15 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//~ console.log(v);
 		
 		switch(v.action) {
+			case 'return_button_hotkey':
+				window.addEventListener('keydown', function(e) {
+						if(e.keyCode == options.keyCode) {
+							console.log('returning');
+							var b = getReturnButton();
+							b.click();
+						}
+					});
+				break;
 			case 'click_return_button': 
 				var b = getReturnButton();
 				b.click();
