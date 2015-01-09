@@ -1747,6 +1747,10 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//~ console.log(v);
 		
 		switch(v.action) {
+			case 'click_return_button': 
+				var b = getReturnButton();
+				b.click();
+				break;
 			case 'return_button__showNextTab':
 				//~ console.log('Will showNextTab on return');
 				
@@ -1839,7 +1843,8 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	//~ console.log(options);
 	
 	parent.postMessage({
-		action: options.action
+		action: options.action,
+		options: options
 	}, "*");
 	
 	//~ setInterval
