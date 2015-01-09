@@ -30549,9 +30549,15 @@ function MT__RUN() {
 		// Sometimes the first <b> on the page will be
 		// a note rather than the name!
 		var b		= document.getElementsByTagName('b');
-		var name	= b[1].innerText.trim();
-		var addr	= b[2].innerText.trim();
+		var name	= b[0].innerText.trim();
+		var addr	= b[1].innerText.trim();
 		var btns	= document.getElementsByTagName('button');
+		// Is this one with b[1] b[2]?
+		if (b[1].parentNode.indexOf('Address:') == -1) {
+			name = b[1].innerText.trim();
+			addr = b[2].innerText.trim();
+		}
+		
 		
 		// vars
 		var o = {
@@ -30563,6 +30569,7 @@ function MT__RUN() {
 			max_streetview_height: 600, // default=600
 			curr_map_view: null // For Z hotkey
 		};
+		console.log(o);
 		
 		// ...
 		var q = document.getElementById('polygon');
