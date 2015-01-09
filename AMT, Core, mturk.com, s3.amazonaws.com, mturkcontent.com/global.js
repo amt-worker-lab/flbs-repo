@@ -1753,7 +1753,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				var b = getReturnButton();
 				console.log(b);
 				if (b) {
-					b.addEventListener('mouseup', function() {
+					b.addEventListener('click', function() {
 						//~ console.log('mouseup on return button');
 						
 						showNextTab();
