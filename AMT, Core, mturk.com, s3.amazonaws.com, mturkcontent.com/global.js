@@ -7059,7 +7059,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
+	el_select.setAttribute('style','width:98%;height:180px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
@@ -7091,7 +7091,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
 	}
-	for (var i = 0; i<40; i++) {// append blank lines!
+	for (var i = 0; i<40; i++) { // Append blank lines!
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = '';
@@ -7102,7 +7102,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// urls select
 	var el_select2 = document.createElement('select');
 	out_div.appendChild(el_select2);
-	el_select2.setAttribute('style','width:98%;height:120px;');
+	el_select2.setAttribute('style','width:98%;height:60px;');
 	el_select2.multiple = 'multiple';
 	el_select2.onclick = function() {
 		if (this.value == '') return;
