@@ -140060,6 +140060,8 @@ function mturk_load()
 			)
 		{
 			AMT__Global_Vars.isPreview = true;
+			AMT__Global_Vars.isTopWindow = true;
+			AMT__Global_Vars.initializeReturnButton();
 			console.log('groupId' + AMT__Global_Vars.groupId);
 			
 			AMT__Global_Vars.initializeTabId();

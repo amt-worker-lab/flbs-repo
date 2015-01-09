@@ -115,6 +115,26 @@ AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
 		});
 }
 
+//Assumption: We know that we are top window
+AMT__Global_Vars.initializeReturnButton = function () {
+	if(AMT__Global_Vars.isTopWindow && document.body.innerHTML.indexOf('href="/mturk/return') != -1) {
+		var returnButton = document.createElement('input');
+		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px');
+		document.appendChild(returnButton);
+		returnButton.onclick = function() {
+			var allAs = document.getElementByTagName('a');
+			for(var i = 0; i < allAs.length; i++) {
+				if(allAs[i].href.indexOf('mturk/return') != -1) {
+					allAs.click();
+					this.backgroundColor = 'yellow';
+					break;
+				}
+			}
+			return;
+		}
+	}
+}
+
 //var allAs = document.getElementsByTagName('a');
 	
 
