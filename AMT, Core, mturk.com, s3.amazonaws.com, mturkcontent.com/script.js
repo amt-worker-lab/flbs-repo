@@ -30553,7 +30553,7 @@ function MT__RUN() {
 		var addr	= b[1].innerText.trim();
 		var btns	= document.getElementsByTagName('button');
 		// Is this one with b[1] b[2]?
-		if (b[1].parentNode.indexOf('Address:') == -1) {
+		if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
 			name = b[1].innerText.trim();
 			addr = b[2].innerText.trim();
 		}
