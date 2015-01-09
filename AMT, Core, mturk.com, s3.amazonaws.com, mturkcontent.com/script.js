@@ -2809,6 +2809,118 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Andrew McCalister
+	// Fill in name of business founder
+	//
+	s = '<li>If someone has title of CEO, add their first and second name to \'Founder 1 fist name\' and \'Founder 1 second name\'. If no one is listed as \'CEO\', add first and second name of Founder listed in upper left postion on \'Founders\' section of site.</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('#submitButton {width:200px;height:200px;}');
+			GM_addStyle('.text-center {text-align:left !important;}');
+			//~ GM_addStyle('.container {margin-top:30px !important;}');
+			
+			var a = document.getElementsByTagName('a');
+			
+			var o = {
+				founders: [],
+				founders_ceo: [],
+				q: []
+			}
+			for (var i = 1;i<=6;i++) {
+				o.q.push(document.getElementById('Field'+i));
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				//~ url: 'https://itunes.apple.com/search?term='+encodeURIComponent(o.name)+' '+encodeURIComponent('')+'&media=app&limit=10', //&country=US&sort=popular
+				//~ url: 'https://itunes.apple.com/search?entity=macSoftware&limit=10&attribute=keywordsTerm&term='+encodeURIComponent(o.name)+' '+encodeURIComponent(''), //&country=US&sort=popular
+				url: a[0].href,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					var reg = /<div class='founders section'>((.|\s)*?(?=<\/div><\/div>|$)|$)/.exec(rs); //</div></div>
+					if (reg) {
+						var fds = reg[1];
+						
+						// 
+						// e.g.
+						// 1=Barry Givens
+						// 2=co-Founder and CEO of Monsieur.  Mechanical Engineer.  Design, Manufacturing, Sales, Project Management experience, and business development experience.
+						var reg2 = /<div class='name'>[\r\n\t\s]+(<a href="[^"]*" class="[^"]*" data-id="[^"]*" data-type="User">|)([^<]+)(<\/a>[\r\n\t\s]+|)<\/div>([\r\n\t\s]+<div class=['"]bio['"]><p>([^<]+)<\/p><\/div>|)/g;
+						var m;
+						while (m = reg2.exec(fds)) {//console.log(m); return;
+							m[5] = (m[5] == undefined) ? '' : m[5];
+							var bio = __js_clean_html_str( m[5].replace(/<[^>]*>/g, '') ).trim();
+							var x = __js_clean_html_str(m[2]).trim();
+							x = x.split(' ');
+							var person = {
+								name: x.join(' '),
+								first: x.slice(0, x.length - 1).join(' '),
+								last: x[x.length - 1],
+								bio: bio
+							};
+							if (/(c\.?e\.?o\.?|c e o|chief executive officer|chief executive)/i.exec(bio)) {
+								o.founders_ceo.push(person);
+							} else {
+								o.founders.push(person);
+							}
+						}
+						console.log(o);//return;
+						
+						// Fill
+						// var fill_count
+						var fill_count = 0;
+						if (o.founders_ceo.length && fill_count < o.q.length) {
+							while (o.founders_ceo.length && fill_count < o.q.length) {
+								var person = o.founders_ceo.shift();
+								o.q[ fill_count ].value = person.first;
+								o.q[ fill_count+1 ].value = person.last;
+								fill_count+=2;
+								
+								// Border
+								o.q[ fill_count ].style.border = '2px solid blue';
+								o.q[ fill_count+1 ].style.border = '2px solid blue';
+								
+								d1.innerText += person.name + ' ' + person.bio + '\n';
+							}
+						}
+						d1.innerText += '\n\n';
+						// Fill others
+						if (o.founders.length && fill_count < o.q.length) {
+							while (o.founders.length && fill_count < o.q.length) {
+								var person = o.founders.shift();
+								o.q[ fill_count ].value = person.first;
+								o.q[ fill_count+1 ].value = person.last;
+								fill_count+=2;
+								
+								d1.innerText += person.name + ' ' + person.bio + '\n';
+							}
+						}
+					} else {
+						document.body.style.backgroundColor = 'LightGreen';
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// C. Eric Smith
 	// Using iTunes and a Bank's website, determine if they have a branded mobile banking app available.
 	//
@@ -14064,6 +14176,9 @@ function MT__RUN() {
 				name: b[2].innerText.trim(),
 				name_cleaned: b[2].innerText.trim().replace(/ \w\.* /g, '    ').replace(/\s+/g, ' '),
 				comp_name: b[0].innerText.trim(),
+				name_fn: null,
+				name_ln: null,
+				
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				sd_start_urls_obj: {}, // object key for sd_start_urls array
@@ -14074,6 +14189,9 @@ function MT__RUN() {
 			}
 			o.sd_allowed_domains.push(o.domain);
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
+			var x = o.name.split(' ');
+			o.name_fn = x[0];
+			o.name_ln = (x.length > 1) ? x[x.length - 1] : x[0]; // last or first if not last
 			
 			// Skip?
 			//if (o.name != '') {
@@ -14117,6 +14235,17 @@ function MT__RUN() {
 				if (q[3].value.length < 6 || q[3].value.indexOf('@') == -1) {
 					return false;
 				}
+				// Is the Source URL different than company's domain? If so then warn.
+				if (q[4].value.indexOf(o.domain) == -1) {
+					var confirm = confirm('Source URL has different domain than company. Press OK to ignore.');
+					if (confirm) {
+						// do nothing
+					} else {
+						// Stop
+						return false;
+					}
+				}
+				//~ if (new RegExp( '^https?:\\/\\/'__js_escape_regEx(o.domain) ).exec(q[4].value))
 				
 				// Here?
 				showNextTab();
@@ -14129,6 +14258,8 @@ function MT__RUN() {
 			}
 			// INIT
 			//~ Rachel_Scott_decision_maker__scrapy([o.url], [o.domain]);
+			
+			// Add "fname@domain.com" OR "lname@domain.com" OR "lname[fi]@domain.com"
 			
 			// INIT
 			// Yahoo/SP
@@ -14161,6 +14292,17 @@ function MT__RUN() {
 				callback_function: sp_process,
 				return_init_object: true,
 				init__type: 3
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' +
+					encodeURIComponent(
+						'"'+o.name_fn+'@'+o.domain+'" OR "'+o.name_ln+'@'+o.domain+'" OR "'+o.name_ln+o.name_fn[0]+'@'+o.domain+'" OR "'+o.name_fn+o.name_ln[0]+'@'+o.domain+'"'
+					),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 4
 			});
 			
 			/**
@@ -14230,14 +14372,15 @@ function MT__RUN() {
 						}
 					}
 					if (i >= 3) break; // Only go for 4 URLs.
-					if (response_obj.init__type == 3 && i >= 2) break; // Only go for 3 URLs on non-domain searches.
+					if (response_obj.init__type >= 3 && i >= 1) break; // Only go for 2 URLs on non-domain searches.
 					
 					debug_div.appendChild(document.createElement('br'));
 				}
-				if (debug_div.innerText == '')
+				if (debug_div.innerText == '') {
 					debug_div.innerText = '0 Results';
+				}
 				
-				if (o.count_searches <= 1) {
+				if (o.count_searches <= 2) { // Done with 4 searches?
 					o.count_searches++;
 				} else {
 					// Equals 2 (3 complete searches)
