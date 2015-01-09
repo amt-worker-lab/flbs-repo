@@ -119,20 +119,21 @@ AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
 AMT__Global_Vars.initializeReturnButton = function () {
 	if(AMT__Global_Vars.isTopWindow && document.body.innerHTML.indexOf('href="/mturk/return') != -1) {
 		var returnButton = document.createElement('input');
-		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px');
+		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;');
+		returnButton.setAttribute('type', 'button');
+		returnButton.setAttribute('id', 'AMT_return_button_top_window');
 		document.appendChild(returnButton);
 		returnButton.onclick = function() {
-			var allAs = document.getElementByTagName('a');
+			var allAs = document.getElementsByTagName('a');
 			for(var i = 0; i < allAs.length; i++) {
-				if(allAs[i].href.indexOf('mturk/return') != -1) {
-					allAs.click();
-					this.backgroundColor = 'yellow';
-					break;
+				if(allAs[i].href.indexOf('/mturk/return') != -1) {
+						allAs[i].click()
+						return;
+					}
 				}
 			}
-			return;
 		}
-	}
+	console.log(returnButton);
 }
 
 //var allAs = document.getElementsByTagName('a');
