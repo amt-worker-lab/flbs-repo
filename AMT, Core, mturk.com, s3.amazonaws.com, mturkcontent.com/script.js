@@ -14067,7 +14067,7 @@ function MT__RUN() {
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				sd_start_urls_obj: {}, // object key for sd_start_urls array
-				
+				role: b[3].innerText.trim(), 
 				count_searches: 0,
 				sp_search1_first_result: null,
 				sp_search2_first_result: null
@@ -14076,7 +14076,8 @@ function MT__RUN() {
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
 			
 			// Skip?
-			if (o.domain == '' || o.name == '' || o.comp_name == '') {
+			if (o.name == '') {
+			//if (o.domain == '' || o.name == '' || o.comp_name == '') {
 				AMT___Floater.skip();
 				return;
 			}
