@@ -13984,313 +13984,415 @@ function MT__RUN() {
 	//
 	// Rachel Scott
 	// Customer List Email Fetching
-	//
+	// 3WRXIMH6E1KF1DN1WO1NDVSZY6X4LI
 	// Accept all jobs if they include an email.
 	// Skip all with 0 emails.
 	s = '	<li>For this company, enter the name, title and email address for a decision maker.</li>';
+	s = '<li>For this company, enter the company&nbsp;name, name of decision maker\'s first name and last name (with proper capitalization),&nbsp;title, and email address for a decision maker.</li>';
 	if(ih.indexOf(s) != -1)
 	{
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		
-		GM_addStyle('.section {position:absolute;top:0px;left:0;}');
-		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
-		GM_addStyle('#submitButton {position:absolute;top:-300px;left:50%;width:50%;height:40px}');
-		//~ GM_addStyle('table {zoom:0.6;}');
-		
-		/* BEGIN ITEMS */
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:300px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
-		document.body.appendChild(d1);
-		var d2 = document.createElement('iframe');
-		d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
-		document.body.appendChild(d2);
-		var d3 = document.createElement('input');
-		d3.setAttribute('type', 'button');
-		d3.setAttribute('style','position:absolute;top:760px;left:0%;width:48%;height:30px;text-align:left;');
-		document.body.appendChild(d3);
-		var d3b= document.createElement('textarea');
-		d3b.setAttribute('type', 'text');
-		d3b.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:10px;text-align:left;');
-		document.body.appendChild(d3b);
-		/* END ITEMS */
-		
-		// mouseover
-		d2.addEventListener('mouseover', function() {
-			d1.scrollIntoView()
-		}, false);
-		
-		// Flicker
-		d2.addEventListener('load', function() {
-			this.style.visibility = 'visible';
-			// Tell child to zoom out & extend
-			var ifr_intv = setInterval(function() {
-				d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
-			}, 1000);
-		}, false);
-		
-		// NO email btn
-		//~ d3.value = 'NO@email.com';
-		//~ d3.onclick = function() {
-			//~ this.style.backgroundColor = 'LightGreen';
-			//~ document.getElementById('web_url').value = 'NO@email.com';
-			//~ 
-			//~ showNextTab();
-			//~ doSubmit();
-		//~ }
-		
-		// The domain!
-		//~ var td = document.getElementsByTagName('td')[1].innerText.trim();
-		var b  = document.getElementsByTagName('b')[1].innerText.trim();
-		
-		// The url!
-		var url = (!/^http/i.exec(td)) ? 'http://' + b : b;
-		//~ var domain = td.toLowerCase().replace(/http:\/\/www)/, '');
-		
-		var o = {
-			domain: b.replace(/\/\**$/, ''), // /* or /
-			url: url
-		}
-		
-		// ...
-		d3b.value = b; // domain
-		d3b.onblur = function() {
-			var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
-			Rachel_Scott_decision_maker__scrapy([url], [this.value]);
-		}
-		
-		// return button function!
-		//~ var cf = new AMT___core_factory()
-		new AMT___core_factory()
-			.iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_button__showNextTab'
-				}
-			);
-		
-		// ...
-		var q = [
-			document.getElementById('Q1name'),
-			document.getElementById('Q1position'),
-			document.getElementById('Q1email'),
-			document.getElementById('Q1location')
-		];
-		// ...
-		document.getElementById('submitButton').onclick = function(e) {
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
-			for (var i in q) {
-				q[i].value = q[i].value.trim();
-				if (q[i].value == '') {
+			GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			GM_addStyle('#submitButton {position:absolute;top:-300px;left:50%;width:50%;height:40px}');
+			//~ GM_addStyle('table {zoom:0.6;}');
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:300px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div'); // DEBUG
+			d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			//~ var d2 = document.createElement('iframe');
+			//~ d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
+			//~ document.body.appendChild(d2);
+			//~ var d3 = document.createElement('input');
+			//~ d3.setAttribute('type', 'button');
+			//~ d3.setAttribute('style','position:absolute;top:760px;left:0%;width:48%;height:30px;text-align:left;');
+			//~ document.body.appendChild(d3);
+			var d3b= document.createElement('textarea');
+			d3b.setAttribute('type', 'text');
+			d3b.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:10px;text-align:left;');
+			document.body.appendChild(d3b);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 300 // offset top
+			});
+			
+			//~ // mouseover
+			//~ d2.addEventListener('mouseover', function() {
+				//~ d1.scrollIntoView()
+			//~ }, false);
+			//~ 
+			//~ // Flicker
+			//~ d2.addEventListener('load', function() {
+				//~ this.style.visibility = 'visible';
+				//~ // Tell child to zoom out & extend
+				//~ var ifr_intv = setInterval(function() {
+					//~ d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+				//~ }, 1000);
+			//~ }, false);
+			// NO email btn
+			//~ d3.value = 'NO@email.com';
+			//~ d3.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ document.getElementById('web_url').value = 'NO@email.com';
+				//~ 
+				//~ showNextTab();
+				//~ doSubmit();
+			//~ }
+			
+			var b  = document.getElementsByTagName('b');
+			
+			var o = {
+				domain: b[1].innerText.replace(/\/[^\/]*$/, '').trim(), // /$ or /[...]$
+				url: url,
+				name: b[2].innerText.trim(),
+				name_cleaned: b[2].innerText.trim().replace(/ \w\.* /g, '    ').replace(/\s+/g, ' '),
+				comp_name: b[0].innerText.trim(),
+				sd_start_urls: [],
+				sd_allowed_domains: [],
+				sd_start_urls_obj: {}, // object key for sd_start_urls array
+				
+				count_searches: 0,
+				sp_search1_first_result: null,
+				sp_search2_first_result: null
+			}
+			o.sd_allowed_domains.push(o.domain);
+			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
+			
+			// Skip?
+			if (o.domain == '' || o.name == '' || o.comp_name == '') {
+				AMT___Floater.skip();
+				return;
+			}
+			
+			// ...
+			d3b.value = o.domain; // domain
+			d3b.onblur = function() {
+				//~ var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
+				//~ Rachel_Scott_decision_maker__scrapy([url], [this.value]);
+			}
+			
+			// return button
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+			// ...
+			var q = [
+				document.getElementById('Q1company'),
+				document.getElementById('Q1name'),
+				document.getElementById('Q1position'),
+				document.getElementById('Q1email'),
+				document.getElementById('Q1location')
+			];
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value == '') {
+						return false;
+					}
+				}
+				// Email correct?
+				if (q[3].value.length < 6 || q[3].value.indexOf('@') == -1) {
 					return false;
 				}
+				
+				// Here?
+				showNextTab();
+				doSubmit();
+				
+				e.stopPropagation();
+				e.preventDefault();
+				
+				return false;
 			}
+			// INIT
+			//~ Rachel_Scott_decision_maker__scrapy([o.url], [o.domain]);
 			
-			// Here?
-			showNextTab();
-			doSubmit();
-			
-			e.stopPropagation();
-			e.preventDefault();
-			
-			return false;
-		}
-		// INIT
-		Rachel_Scott_decision_maker__scrapy([o.url], [o.domain]);
-		
-		/**
-		 * function
-		 */
-		function Rachel_Scott_decision_maker__scrapy(start_urls, allowed_domains) {
+			// INIT
+			// Yahoo/SP
+			// A third optional search would be... Something like (include comp. name, no domain): ("David Veckerelli" OR "David Veckerelli") ("email") ("ddninc.tv" OR "Ddn")
 			//
-			var s_obj = 
-			{
-				project: 'scrapy_amt',
-				spider: 'AMTSpider',
-				arg_allowed_domains: allowed_domains,	// array
-				arg_start_urls: start_urls,		// array
-				arg_max_pages_to_fetch: 40,
-				arg_type_scrape: 'all_emails',	// all_emails or str_match
-				settings: [
-					//'DEPTH_LIMIT=4',
-					//'SCHEDULER_ORDER=BFO',
-					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
-					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // person + site + email
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' ("'+o.name+'" OR "'+o.name_cleaned+'") ("email" OR "contact")'),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 1
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' "email" ("about us" OR "about" OR "our staff" OR "staff" OR "staff directory" OR "personnel" OR "contact us" OR "contact" OR "leadership" OR "governance" OR "who we are" OR "our people" OR "officers" OR "executives")'),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 2
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('("'+o.name+'" OR "'+o.name_cleaned+'") "email" ("'+o.domain+'" OR "'+o.comp_name+'")'),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 3
+			});
+			
+			/**
+			 * function scrapy
+			 */
+			function sp_process(response_obj) {
+				
+				console.log(response_obj);
+				
+				var rs = response_obj.rs;
+				
+				//~ var rs = response_obj; // original // "callback_function(o.obj_vars [.rs, ...]);" VERSUS "callback_function(rs);"
+				
+				//~ if (!rs.length) {
+					//~ document.body.innerText = '0';
+					//~ return;
+				//~ }
+				var debug_div = document.createElement('div');
+				debug_div.setAttribute('style', 'border-bottom:3px solid teal;');
+				d1b.appendChild(debug_div);
+				for (var i in rs) {
+					var u = rs[i][0];
+					if (!o.sd_start_urls_obj.hasOwnProperty( u )) {
+						
+						o.sd_start_urls.push( u );
+						o.sd_start_urls_obj[ u ] = true; // set key
+							
+						//~ // SKIP NON-DOMAIN FOR SCRAPY
+						//~ if (response_obj.init__type != 3) {						
+							//~ o.sd_start_urls.push( u );
+							//~ o.sd_start_urls_obj[ u ] = true; // set key
+						//~ }
+					}
+					// Button
+					var btn = document.createElement('input');
+					btn.setAttribute('style','cursor:pointer;');
+					btn.type = 'button';
+					btn.value = ' > ';
+					btn.url = rs[i][0];
+					debug_div.appendChild(btn);
+					btn.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						q[4].value = this.url;
+					}
+					// Link
+					var link = document.createElement('a');
+					link.href = rs[i][0];
+					link.innerText = ' L ';
+					link.onclick = function() {
+						window.open(this.href, 'newtab');
+						return false;
+					}
+					debug_div.appendChild(link);
+					// Show link
+					debug_div.appendChild(document.createTextNode(rs[i][0]));
 					
-					'CONCURRENT_ITEMS=40', //DEFAUL = 100
-					'CONCURRENT_REQUESTS=12', //DEFAUL = 16
-					'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+					// Set first!
+					// Disregard if this is the 3rd search type (non-domain).
+					if (i == 0) {
+						switch (response_obj.init__type) {
+							case 1:
+								o.sp_search1_first_result = rs[i][0];
+								break;
+							case 2:
+								o.sp_search2_first_result = rs[i][0];
+								break;
+						}
+					}
+					if (i >= 3) break; // Only go for 4 URLs.
+					if (response_obj.init__type == 3 && i >= 2) break; // Only go for 3 URLs on non-domain searches.
 					
-					'AJAXCRAWL_ENABLED=1', //true
-					'COOKIES_ENABLED=0', //false
-					//'RETRY_ENABLED=0', //false
-					//'DI=0', //false
-					'REDIRECT_MAX_TIMES=1'//,
-					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
-					//'AJAXCRAWL_ENABLED=1', //true
-				]
+					debug_div.appendChild(document.createElement('br'));
+				}
+				if (debug_div.innerText == '')
+					debug_div.innerText = '0 Results';
+				
+				if (o.count_searches <= 1) {
+					o.count_searches++;
+				} else {
+					// Equals 2 (3 complete searches)
+					// ALWAYS init here regardless of whether there are any start urls. It is assumed at this point that there IS a domain at least.
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					
+					// Use utility window to open the first result.
+					// Open SEARCH1 1st result. If no SEARCH1 then SEARCH2 first result.
+					// If no SEARCH2 then open o.domain.
+					var uwurl = o.domain; // default
+					if (o.sp_search1_first_result != null) {
+						uwurl = o.sp_search1_first_result;
+					} else if (o.sp_search2_first_result != null) {
+						uwurl = o.sp_search2_first_result;
+					} else {
+						//
+					}
+					
+					// Set util
+					AMT__setUtilityTabs([{
+						url: uwurl,
+						options: {
+							//~ task: 'AMT__Kristin_Howe_agent_photos2__utility_window',
+							//~ agent_name: o.name,
+							//~ agent_name_clean: o.name_clean
+						}
+					}]);
+					
+					// ...
+					console.log(o);
+				}
 			}
 			
-			var req = new AMT___requests_factory();
-			AMT___POPUP__initializeGlobals(
-				function() {
-					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
-						s_obj,
-						(new AMT___items_factory()).create_dashboard__powers_v1,
-						{
-							div: d1,
-							input_send_success: document.getElementById('Q1email'),
-							input_onclick_callback: function() {
+			/**
+			 * function scrapy
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=40', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=1'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								div: d1,
+								input_send_success: document.getElementById('Q1email'),
 								
-								// OPEN IN IFRAME!
-								//~ el_div.url = url;
-								//~ el_div.onclick = function ...
-								this.style.backgroundColor = 'LightGreen';
-								this.input_send_success.value = this.email;
-								d2.src = this.url;
-								d2.scrollIntoView();
-								
-								//~ showNextTab();
-								//~ doSubmit();
-							},
-							do_submit_callback: function() {
-								
-								// OPEN IN IFRAME!
-								//~ showNextTab();
-								//~ doSubmit();
-							},
-							// RUNS BEFORE DASHBOARD IS FILLED IN !
-							callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
-								//~ console.log(callback_obj);
-								//~ return;
-								
-								if (AMT__Global_Vars.isPreview)
-								{
-									// If no email match results
-									if (!callback_obj.matches || !callback_obj.matches.length) {
+								// This is element el_div.onclick from the panel.
+								//
+								//
+								input_onclick_callback: function() {
+									
+									// OPEN IN IFRAME!
+									//~ this.style.backgroundColor = 'LightGreen';
+									//~ this.input_send_success.value = this.email;
+									//~ d2.src = this.url;
+									//~ d2.scrollIntoView();
+									q[3].value = this.email;
+									q[4].value = this.url;
+									
+									document.getElementById('submitButton').click();
+									// ......
+									//~ showNextTab();
+									//~ doSubmit();
+									//~ showNextTab();
+									//~ doSubmit();
+								},
+								do_submit_callback: function() {
+									// OPEN IN IFRAME!
+									//~ showNextTab();
+									//~ doSubmit();
+								},
+								// RUNS BEFORE DASHBOARD IS FILLED IN !
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURN: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									//~ console.log(callback_obj);
+									//~ return;
+									
+									if (AMT__Global_Vars.isPreview)
+									{
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											
+											AMT___Floater.skip();
+											
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									}
+									else // JOB IS ACCEPTED
+									{
 										
-										AMT___Floater.skip();
+										// Here?
+										// Add to active tabs queue!
+										//
+										//
+										//
+										addToTabsQ();
 										
-										//~ // Check URLs option to accept job when
-										//~ // match.
-										//~ var c = callback_obj.urls
-										//~ var d = c.high.length + c.low.length + c.none.length;
+										
+										//~ // open in Iframe
 										//~ var try_url = false;
 										//~ var u;
-										//~ for (var i in callback_obj.urls.high) { // only high
+										//~ for (var i in callback_obj.urls.high) {
 											//~ u = callback_obj.urls.high[i].urls_url;
 											//~ if (/[\.\/]facebook\.com\//.exec(u)) continue;
+											//~ if (/[\.\/]plus\.google\.com\//.exec(u)) continue;
 											//~ if (/contact/i.exec(u)) {
 												//~ try_url = u;
 												//~ break;
 											//~ }
 										//~ }
-										//~ 
-										//~ if (d <= 10 && try_url) {
-											//~ AMT___Floater.accept();
-										//~ }
-										//~ else
-										//~ {
-											//~ //showNextTab(); // !
-											//~ AMT___Floater.skip();
+										//~ if (try_url) {
+											//~ d2.src = try_url;
 										//~ }
 									}
-									else
-									{
-										AMT___Floater.accept();
-									}
-									// ENDS SCRIPT PROCESSING (aka triggers exception)
-									return true;
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
 								}
-								else // JOB IS ACCEPTED
-								{
-									
-									
-									
-									// customercare @ gmail.com
-									// bizname @ gmail.com
-									//
-									
-									//~ // Is there an auto email?
-									//~ // If so, then return the task at the
-									//~ // current state, i.e., stop processing
-									//~ // of the "Max Powers" dashboard.
-									//~ console.log(callback_obj);
-									//~ // Is unique?
-									//~ var last = '';
-									//~ var unique = true;
-									//~ var em;
-									//~ for (var i in callback_obj.matches) {
-										//~ em = callback_obj.matches[i].email_email.toLowerCase();
-										//~ if (em != last && i == 0) {
-											//~ last = em;
-										//~ }
-										//~ else if (em != last) { // not unique
-											//~ unique = false;
-										//~ }
-									//~ }
-									//~ if (unique && callback_obj.matches.length && em) {
-										//~ var name;
-										//~ if (name = new RegExp('^([^@]+)@' + __js_escape_regEx(o.domain) + '$','i').exec(em)) {
-											//~ name = name[1].toLowerCase();
-											//~ 
-											//~ var good_names = {
-												//~ 'owner' : true,
-												//~ 'marketing' : true,
-												//~ 'sales' : true,
-												//~ 'manager' : true,
-												//~ 'support' : true,
-												//~ 'contact' : true,
-												//~ 'contactus' : true,
-												//~ 'service' : true,
-												//~ 'information' : true,
-												//~ 'info' : true
-											//~ };
-											//~ 
-											//~ if (good_names.hasOwnProperty(name) && o.domain.length > 4) {
-												//~ document.getElementById('web_url').value = em;
-												//~ doSubmit();
-												//~ return true; // ends tasks at current state!
-											//~ }
-										//~ }
-									//~ }
-									
-									
-									// Here?
-									// Add to active tabs queue!
-									//
-									//
-									//
-									addToTabsQ();
-									
-									
-									// open in Iframe
-									var try_url = false;
-									var u;
-									for (var i in callback_obj.urls.high) {
-										u = callback_obj.urls.high[i].urls_url;
-										if (/[\.\/]facebook\.com\//.exec(u)) continue;
-										if (/[\.\/]plus\.google\.com\//.exec(u)) continue;
-										if (/contact/i.exec(u)) {
-											try_url = u;
-											break;
-										}
-									}
-									if (try_url) {
-										//~ console.log(try_url);
-										d2.src = try_url;
-									}
-								}
-								
-								
-								// CONTINUES (job is NOT in "preview" mode)
-								return false;
 							}
-						}
-					);
-				}
-			);
+						);
+					}
+				);
+			}
 		}
+		new run().f();
+		return;
 	}
 	
 	//
@@ -140072,6 +140174,7 @@ function mturk_load()
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3WNTBWVI6H6FB22QWPKXWKDQ9GK1DL': // Rachel Scott, Customer List Email Fetching
+				case '3WRXIMH6E1KF1DN1WO1NDVSZY6X4LI': // Rachel Scott, Customer List Email Fetching, Update (Jan8 2015)
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '3TDV6MPLVN8E5RBAZ86VZNC0U72AAL': // Laura Enstad, URL of patent law firms

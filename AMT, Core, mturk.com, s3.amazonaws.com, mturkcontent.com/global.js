@@ -3384,7 +3384,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				//~ }
 			}
 		}
-		// make complete urls (high to none/outside)
+		// Make complete urls (high to none/outside)
 		// is {} object
 		// high, low, none, outside, (complete_high_to_low)
 		for (var tmp_priority in callback_obj.urls) {
@@ -3398,12 +3398,12 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 			}
 		}
 		
-		// temp callback function?
+		// Temp callback function?
 		if (seed_object.callback__scrapy__begin_scrape__process_completed) {
 			
 			var x = seed_object.callback__scrapy__begin_scrape__process_completed(callback_obj);
 			
-			if (x) { // RESPONSE IS TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+			if (x) { // RESPONSE IS FALSE(CONTINUE), TRUE(END SCRIPT PROCESSING)
 				return;
 			}
 		}
@@ -7825,114 +7825,10 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		proxy_init();
 		proxy_waitComplete(
 			this.obj_vars.callback_function
-		)
-		
-		//~ AMT___POPUP__initializeGlobals(
-			//~ function() {
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: o.local_URL_init,
-					//~ onload: function(response) {
-						//~ //var rs = response.responseText;
-					//~ }
-				//~ });
-			//~ }
-		//~ );
-		
-		//~ this.obj_vars.callback_function
-		//~ var this_obj = this;
-		
-		//~ 
-		//~ var xint = setInterval(function() {
-			//~ GM_xmlhttpRequest({ // init
-				//~ method: "GET",
-				//~ url: o.local_URL_complete,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ console.log(array_startPage_results);
-					//~ 
-					//~ if (rs.trim() != '') {
-						//~ clearInterval(xint);
-					//~ } else
-						//~ return;
-					//~ 
-					//~ // yahoo? (yahoo_array: true)
-					//~ if (o.obj_vars.hasOwnProperty('yahoo_array')) {
-						//~ rs = array_yahoo_results(rs);
-					//~ }
-					//~ // startpage?
-					//~ else if(o.obj_vars.hasOwnProperty('startPage_array')) {
-						//~ rs = array_startPage_results(rs);
-					//~ }
-					//~ 
-					//~ // ...
-					//~ if (o.obj_vars.return_init_object) {
-						//~ o.obj_vars.rs = rs;
-						//~ o.obj_vars.callback_function(o.obj_vars);
-					//~ }
-					//~ else if (o.obj_vars.seed_arg1)
-					//~ {
-						//~ o.obj_vars.callback_function(rs, o.obj_vars.seed_arg1);
-					//~ }
-					//~ else
-						//~ o.obj_vars.callback_function(rs);
-					//~ 
-				//~ }
-			//~ })
-		//~ }, 1200);
+		);
 		
 		return;
 	}
-	
-	
-	
-	
-	// OLD ***
-	//
-	//
-	//
-	//~ this.proxy_waitComplete = function(callback_function) {
-	//~ function proxy_waitComplete(callback_function) {
-		//~ var this_obj = this;
-		//~ 
-		//~ var xint = setInterval(function() {
-			//~ GM_xmlhttpRequest({ // init
-				//~ method: "GET",
-				//~ url: o.local_URL_complete,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ if (rs.trim() != '') {
-						//~ clearInterval(xint);
-					//~ } else
-						//~ return;
-					//~ 
-					//~ // yahoo? (yahoo_array: true)
-					//~ if (this_obj.obj_vars.hasOwnProperty('yahoo_array')) {
-						//~ rs = this_obj.array_yahoo_results(rs);
-					//~ }
-					//~ // startpage?
-					//~ else if(this_obj.obj_vars.startPage_array) {
-						//~ rs = this_obj.array_startPage_results(rs);
-					//~ }
-					//~ 
-					//~ // ...
-					//~ if (this_obj.obj_vars.return_init_object) {
-						//~ this_obj.rs = rs;
-						//~ callback_function(this_obj);
-					//~ }
-					//~ else if (this_obj.obj_vars.seed_arg1)
-					//~ {
-						//~ callback_function(rs, this_obj.obj_vars.seed_arg1);
-					//~ }
-					//~ else
-						//~ callback_function(rs);
-				//~ }
-			//~ })
-		//~ }, 1200);
-	//~ }
-	//~ this.proxy_waitComplete = proxy_waitComplete;
 }
 
 /*
