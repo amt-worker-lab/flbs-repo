@@ -14076,7 +14076,7 @@ function MT__RUN() {
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
 			
 			// Skip?
-			if (o.name == '') {
+			if (o.name != '') {
 			//if (o.domain == '' || o.name == '' || o.comp_name == '') {
 				AMT___Floater.skip();
 				return;
