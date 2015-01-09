@@ -117,12 +117,22 @@ AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
 
 //Assumption: We know that we are top window
 AMT__Global_Vars.initializeReturnButton = function () {
-	if(AMT__Global_Vars.isTopWindow && document.body.innerHTML.indexOf('href="/mturk/return') != -1) {
+	var hasReturnButton = false;
+	var allAs = document.getElementsByTagName('a');
+	for(var i = 0; i < allAs.length; i++) {
+		if(allAs[i].href.indexOf('/mturk/return') != -1) {
+			hasReturnButton = true;
+		}
+	}
+	console.log('ran inside initializeReturnButton');
+	if(AMT__Global_Vars.isTopWindow && hasReturnButton) {
+		console.log('ran inside initializeReturnButton');
 		var returnButton = document.createElement('input');
-		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;');
+		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;cursor:pointer;');
 		returnButton.setAttribute('type', 'button');
 		returnButton.setAttribute('id', 'AMT_return_button_top_window');
-		document.appendChild(returnButton);
+		returnButton.setAttribute('value', 'return');
+		document.body.appendChild(returnButton);
 		returnButton.onclick = function() {
 			var allAs = document.getElementsByTagName('a');
 			for(var i = 0; i < allAs.length; i++) {

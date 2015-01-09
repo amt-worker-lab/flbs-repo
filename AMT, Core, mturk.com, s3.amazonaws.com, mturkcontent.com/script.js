@@ -140061,7 +140061,6 @@ function mturk_load()
 		{
 			AMT__Global_Vars.isPreview = true;
 			AMT__Global_Vars.isTopWindow = true;
-			AMT__Global_Vars.initializeReturnButton();
 			console.log('groupId' + AMT__Global_Vars.groupId);
 			
 			AMT__Global_Vars.initializeTabId();
@@ -140245,6 +140244,8 @@ function mturk_load()
 		 * AMT___core_factory().top_window__addEventListener_iframe();
 		 */
 		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = true;
+		AMT__Global_Vars.initializeReturnButton();
 		AMT__Global_Vars.initializeTabId();
 		AMT__Global_Vars.initialize_return_accept_run_nextTab();
 		
