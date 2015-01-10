@@ -2833,15 +2833,35 @@ function MT__RUN() {
 			var o = {
 				comp_full: td[1].innerText.trim(),
 				comp: null,
+				comp_first_word: null,
 				bold: []
 			}
 			o.comp = o.comp_full.replace(/\/[\d\D]*$/, '').trim(); // chop after /
+			o.comp_first_word = o.comp_full.replace(/[ \/][\d\D]*$/, '').trim().toLowerCase(); // chop after [ /]
+			o.bold = o.comp.clean_string_to_array();
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style','position:absolute;top:0px;left:33%;width:33%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:0px;left:66%;width:33%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d2);
+			document.body.appendChild(d1);
+			var d3 = document.createElement('input');
+			d3.setAttribute('style','position:absolute;top:0px;left:27%;width:6%;height:400px;');
+			document.body.appendChild(d3);
+			d3.type = 'button';
 			/*END ITEMS*/
+			
+			//
+			d3.value = '9\n0\n1';
+			d3.onclick = function() {
+				document.getElementById('h_code').value = '901';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return;
+			}
 			
 			GM_xmlhttpRequest({
 				method: "GET",
@@ -2862,6 +2882,7 @@ function MT__RUN() {
 					
 					// Check obj for comp. name.
 					var sort_comps = [];
+					var first_name_matches = [];
 					for (var comp in obj) {
 						var num = obj[comp];
 						// Any full match?
@@ -2872,6 +2893,11 @@ function MT__RUN() {
 							doSubmit();
 							return;
 						}
+						// first_name_matches
+						if (comp.replace(/[ \/][\d\D]*$/, '').trim().toLowerCase() == o.comp_first_word) {
+							first_name_matches[num] = comp;
+						}
+						
 						// Here?
 						// Get levens. distance.
 						var ldist = new AMT___gen_functions().levensht(comp, o.comp);
@@ -2898,7 +2924,7 @@ function MT__RUN() {
 							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
 							dv.className = 'exe';
 							d1.appendChild(dv);
-							dv.innerText = '('+ldist+')' + comp_arr[0] + ' ' + comp_arr[1];
+							dv.innerHTML = '('+ldist+')' + comp_arr[0] + ' ' + MT__bold(comp_arr[1], o.bold);
 							dv.num = comp_arr[0];
 							dv.onclick = function() {
 								this.style.backgroundColor = 'aqua';
@@ -2908,6 +2934,24 @@ function MT__RUN() {
 							}
 							
 						}
+					}
+					
+					// first name
+					for (var num in first_name_matches) {
+						
+						var dv = document.createElement('div');
+						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						dv.className = 'exe';
+						d2.appendChild(dv);
+						dv.innerHTML = num + ' ' + MT__bold(first_name_matches[ num ], o.bold);
+						dv.num = num;
+						dv.onclick = function() {
+							this.style.backgroundColor = 'aqua';
+							document.getElementById('h_code').value = this.num;
+							new AMT___core_factory().nextTab();
+							doSubmit();
+						}
+						
 					}
 				}
 			});
