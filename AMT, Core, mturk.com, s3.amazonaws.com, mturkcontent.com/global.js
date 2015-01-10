@@ -4041,6 +4041,52 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 function AMT___gen_functions(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+/*
+ * 
+ */
+AMT___gen_functions.prototype.levensht = function(a, b) {
+	
+	// minimator
+	// Returns the smallest of the three values passed in
+	function minimator(x,y,z) {
+		if (x < y && x < z) return x;
+		if (y < x && y < z) return y;
+		return z;
+	}
+
+	var cost;
+	
+	// Get values
+	// Put them .toLowerCase()
+	var a = a.toLowerCase();
+	var m = a.length;
+	
+	var b = b.toLowerCase();
+	var n = b.length;
+	
+	// make sure a.length >= b.length to use O(min(n,m)) space, whatever that is
+	if (m < n) {
+		var c=a;a=b;b=c;
+		var o=m;m=n;n=o;
+	}
+	
+	var r = new Array();
+	r[0] = new Array();
+	for (var c = 0; c < n+1; c++) {
+		r[0][c] = c;
+	}
+	
+	for (var i = 1; i < m+1; i++) {
+		r[i] = new Array();
+		r[i][0] = i;
+		for (var j = 1; j < n+1; j++) {
+			cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
+			r[i][j] = minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
+		}
+	}
+	
+	return r[m][n];
+}
 /**
  * function 
  *
@@ -8983,49 +9029,7 @@ function MT___diff( o, n ) {
   }
   return { o: o, n: n };
 }
-/*
- * 
- */
-levensht = function(a, b) {
-	var cost;
-	
-	// get values
-	var a = a;
-	var m = a.length;
-	
-	var b = b;
-	var n = b.length;
-	
-	// make sure a.length >= b.length to use O(min(n,m)) space, whatever that is
-	if (m < n) {
-		var c=a;a=b;b=c;
-		var o=m;m=n;n=o;
-	}
-	
-	var r = new Array();
-	r[0] = new Array();
-	for (var c = 0; c < n+1; c++) {
-		r[0][c] = c;
-	}
-	
-	for (var i = 1; i < m+1; i++) {
-		r[i] = new Array();
-		r[i][0] = i;
-		for (var j = 1; j < n+1; j++) {
-			cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
-			r[i][j] = minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
-		}
-	}
-	
-	return r[m][n];
-}
 
-// return the smallest of the three values passed in
-minimator = function(x,y,z) {
-	if (x < y && x < z) return x;
-	if (y < x && y < z) return y;
-	return z;
-}
 
 
 

@@ -2809,6 +2809,114 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Jason Smith
+	// Identify the name of the hotel and enter its code from list
+	//
+	s = '<li>Click on the link to get the list of hotel codes: <a href="http://www.dotzdata.com/Project/Hotel_Brands.pdf" target="_blank">Hotel Code List</a></li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('#submitButton {width:200px;height:200px;}');
+			GM_addStyle('.text-center {text-align:left !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('.container {margin-top:30px !important;}');
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				comp_full: td[1].innerText.trim(),
+				comp: null,
+				bold: []
+			}
+			o.comp = o.comp_full.replace(/\/[\d\D]*$/, '').trim(); // chop after /
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/.miscellaneous/Jason Smith, Hotel list',
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					var l = rs.split('\n');
+					var obj = {};
+					for (var i in l) {
+						if (l[i].trim() == '') continue;
+						console.log(l[i]);
+						var line = /^(\d{3})[\r\n\t\s]([^$]+)$/.exec(l[i]);
+						obj[ line[2] ] = line[1]; // [name] = #
+					}
+					
+					// Check obj for comp. name.
+					var sort_comps = [];
+					for (var comp in obj) {
+						var num = obj[comp];
+						// Any full match?
+						if (comp.toLowerCase() == o.comp.toLowerCase()) {
+							// Auto & end.
+							document.getElementById('h_code').value = num;
+							new AMT___core_factory().nextTab();
+							doSubmit();
+							return;
+						}
+						// Here?
+						// Get levens. distance.
+						var ldist = new AMT___gen_functions().levensht(comp, o.comp);
+						console.log(comp);
+						console.log(o.comp);
+						console.log(ldist);
+						
+						if (!sort_comps[ ldist ]) {
+							sort_comps[ ldist ] = [ [num, comp] ];
+						} else {
+							sort_comps[ ldist ].push( [num, comp] );
+						}
+					}
+				
+					// Sort
+					//~ sort_comps.sort();
+					
+					for (var ldist in sort_comps) {
+						
+						for (var num in sort_comps[ ldist ]) {
+							
+							var comp_arr = sort_comps[ ldist ][num];
+							var dv = document.createElement('div');
+							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+							dv.className = 'exe';
+							d1.appendChild(dv);
+							dv.innerText = '('+ldist+')' + comp_arr[0] + ' ' + comp_arr[1];
+							dv.num = comp_arr[0];
+							dv.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								document.getElementById('h_code').value = this.num;
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+							
+						}
+					}
+				}
+			});
+			
+		}
+		new run().f();
+		return;
+	}
+	// 
 	// Andrew McCalister
 	// Fill in name of business founder
 	//
