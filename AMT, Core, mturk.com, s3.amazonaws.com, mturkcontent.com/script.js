@@ -2809,6 +2809,113 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Travis Dao
+	// Copy Data from Web Page
+	//
+	s = '<li>K means "thousand" and M means "Million". If the number is followed by "K" or "M" copy the K or M down with the number. But if there is no K or M, make sure to leave it out.';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			
+			
+			// views
+			// http://counter.mgaserv.com/?mgac_site=ijreview&postid=221928&ctype=views
+			
+			//shares
+			//http://counter.mgaserv.com/?mgac_site=ijreview&postid=221928&ctype=shares&incr=0&post_url=
+			
+			var a = document.getElementsByTagName('a');
+			//http://www.ijreview.com/2014/11/208859-
+			var o = {
+				id: /^https?:\/\/www\.ijreview\.com\/\d+\/\d+\/([\d]+)-/.exec(a[1].href)[1]
+			}
+			
+			views();
+			
+			function views() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://counter.mgaserv.com/?mgac_site=ijreview&postid='+o.id+'&ctype=views',
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) return;
+						
+						var r = JSON.parse(rs);
+						
+						var c = r.count;
+						if (c > 999) {
+							c = Math.floor(c / 1000);
+							// More than 1 thousand?
+							if (c > 999) {
+								//alert('1k');
+								
+								c = Math.floor(r.count / 1000000);
+								
+								if (c > 999) {
+									alert('1m');
+									return;
+								}
+								c = c + 'M';
+							} else 
+								c = c + 'K';
+						}
+						
+						document.getElementById('numberOfViews').value = c;
+						
+						shares();
+					}
+				});
+			}
+			function shares() {
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://counter.mgaserv.com/?mgac_site=ijreview&postid='+o.id+'&ctype=shares&incr=0&post_url=',
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) return;
+						
+						//{"count":1670,"comments":0,"shares":1618,"tweets":52}
+						var r = JSON.parse(rs);
+						
+						var c = r.shares;
+						if (c > 999) {
+							c = Math.floor(c / 1000);
+							// More than 1 thousand?
+							if (c > 999) {
+								//alert('1k');
+								
+								c = Math.floor(r.shares / 1000000);
+								
+								if (c > 999) {
+									alert('1m');
+									return;
+								}
+								c = c + 'M';
+							} else 
+								c = c + 'K';
+						}
+						
+						document.getElementById('numberOfShares').value = c;
+						
+						doSubmit();
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	// 
 	// Jason Smith
 	// Identify the name of the hotel and enter its code from list
 	//
@@ -57754,11 +57861,19 @@ qatar,80
 		document.getElementById('documentText').style.overflow = 'auto'; // overflow left
 	}
 	
+	/**
+	 * GOOGLE MAPS SATELLITE VIEW
+	 * 
+	 * David Sugrue
+	 * Adam Brandt
+	 * Jose Ramos
+	 * 
+	 */
 	//
 	// David Sugrue
 	// Solar v. 2, Jan. 28, 2014
 	// 
-	s = ';Look at the Google satellite view for this address and determine how suitable the roof is for solar and whether this address is a single family home or not. Note that Google views are always aligned on a North - South axis.';
+	s = 'XXXXXXX???????IS THIS WORKING??????XXXXXXXX Look at the Google satellite view for this address and determine how suitable the roof is for solar and whether this address is a single family home or not. Note that Google views are always aligned on a North - South axis.';
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		GM_addStyle('body {margin-top:1000px;}');
@@ -58011,6 +58126,103 @@ qatar,80
 		document.getElementsByClassName('span5 ng-scope')[0].position = 'absolute';
 		document.getElementsByClassName('span5 ng-scope')[0].float = '';
 		document.getElementsByClassName('span5 ng-scope')[0].left = '50%';
+	}
+	//
+	// Adam Brandt
+	// 
+	// 
+	s = '<li>Count the number of tanks on the wellsite. &nbsp;A set of four tanks looks like ';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			
+			var b = /<li>Enter the given coordinates into the search bar: ([^&]+)&nbsp;<\/li>/.exec(ih);
+			var o = {
+				coords: __js_clean_html_str(b[1]).trim(),
+				q: [
+					document.getElementsByName('Tanks')[0],
+					document.getElementsByName('Pumps')[0]
+				]
+			}
+			
+			/*BEGIN ITEMS*/
+			// ifr
+			var d1 = document.createElement('iframe');
+			d1.setAttribute('style','position:absolute;top:140px;left:0;width:60%;height:600px;');
+			document.body.appendChild(d1);
+			d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(o.coords)+'&ie=UTF-8&gl=us&ei=&ved=&z=18&output=embed&t=h&iwloc=near';
+			// img
+			var d2 = document.createElement('img');
+			d2.setAttribute('style','position:absolute;top:140px;left:60%;width:400px;height:600px;');
+			document.body.appendChild(d2);
+			d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.coords)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(o.coords)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			/*END ITEMS*/
+			
+			// inner
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 140 // offset top
+			});
+			
+			// onclick
+			o.q[0].onclick = o.q[1].onclick = function() {
+				this.focus();
+				this.select();
+				return false;
+			}
+			o.q[0].onfocus = o.q[1].onfocus = function() {
+				this.select();
+				return false;
+			}
+			
+			// Defaults
+			o.q[0].value = o.q[1].value = 0;
+			// focus, select
+			o.q[0].focus();
+			o.q[0].select();
+			
+			
+			// onkeypress
+			window.addEventListener('keypress', key, false);
+			function key(e) {
+				console.log(e.keyCode);
+				//e.keyCode == 96 && 
+				
+				if (/^[0-9]$/.exec(String.fromCharCode(e.keyCode))) {
+					
+					//~ o.q[1].focus();
+					//~ o.q[1].select();
+					
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ return false;
+				}
+			}
+			
+			// submit
+			document.getElementById('submitButton').onclick = function() {
+				o.q[0].value = o.q[0].value.trim();
+				o.q[1].value = o.q[1].value.trim();
+				if (o.q[0].value == '' || o.q[1].value == '' || /[^0-9]/.exec(o.q[0].value) || /[^0-9]/.exec(o.q[1].value)) {
+					return false;
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+		return;
 	}
 	//
 	// Jose Ramos
