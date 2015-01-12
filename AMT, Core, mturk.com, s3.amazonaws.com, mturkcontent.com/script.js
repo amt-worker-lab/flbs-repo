@@ -8089,6 +8089,7 @@ function MT__RUN() {
 				q: document.getElementById('web_url')
 				
 			}
+			console.log(o);
 			
 			/* BEGIN ITEMS */
 			// Container
@@ -8106,14 +8107,20 @@ function MT__RUN() {
 				this.ampm_open = ampm_open;
 				this.hr_close = hr_close;
 				this.ampm_close = ampm_close;
-				this.day_str = hr_open + ampm_open.toUpperCase() + '-' + hr_close + ampm_close;
+				this.day_str = hr_open + ampm_open.toUpperCase() + '-' + hr_close + ampm_close.toUpperCase();
 			}
 			var missed_days = [];
-			
 			// reg
 			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}:\d{2}) *(am|pm)-(\d{1,2}:\d{2}) *(am|pm)\)/gi;
-			while (m = reg.exec(tmp_str) && tmp_str != '') {
-				var day = m[1];
+			var m;
+			//~ console.log(reg.exec(tmp_str));
+			//~ console.log(tmp_str);
+			//~ reg.lastIndex = 0;
+			while (m = reg.exec(tmp_str)) { // && tmp_str != '' // DOES NOT LIKE THIS
+				reg.lastIndex = 0;
+				//~ console.log(m);return;
+				var day = m[1].toLowerCase();
+				
 				if (!tmp_days_obj.hasOwnProperty(day)) {
 					tmp_days_obj[ day ] = new day_obj(m[2],m[4],m[3],m[5]);
 				} else {
@@ -8136,9 +8143,9 @@ function MT__RUN() {
 			var fmt_arr = [];
 			for (var i in o.days) {
 				var day = o.days[i];
-				if (tmp_days.hasOwnProperty(day)) {
+				if (tmp_days_obj.hasOwnProperty(day)) {
 					fmt_arr.push(
-						day.day_str
+						tmp_days_obj[ day ].day_str
 					)
 				} else {
 					fmt_arr.push(
