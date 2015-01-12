@@ -140523,7 +140523,7 @@ function top_window() {
 		
 		var d1=document.createElement('input'); //
 		d1.setAttribute('type','button');
-		d1.setAttribute('style','position:absolute;top:0px;left:0;width:10%;');
+		d1.setAttribute('style','position:absolute;top:40px;left:0;width:10%;');
 		document.body.appendChild(d1);
 		d1.onclick = function() {
 			document.body.style.backgroundColor = 'white';
@@ -140532,7 +140532,7 @@ function top_window() {
 		var d2=document.createElement('input'); //
 		d2.setAttribute('type','text');
 		d2.setAttribute('value','0');
-		d2.setAttribute('style','position:absolute;top:0px;left:10%;');
+		d2.setAttribute('style','position:absolute;top:40px;left:10%;');
 		document.body.appendChild(d2);
 		
 		var o = {
