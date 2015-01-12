@@ -8073,7 +8073,10 @@ function MT__RUN() {
 			GM_addStyle('body {margin-top:500px !important;}');
 			GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
 			GM_addStyle('.panel-body {position:absolute;top:4400px;}');
-			GM_addStyle('.container {position:absolute;top:0px;left:0;}');
+			GM_addStyle('.container {position:absolute;top:0px;left:0;width:50% !important;}');
+			GM_addStyle('strike {zoom:0.5}');
+			GM_addStyle('em {zoom:2}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {line-height:12px !important;}');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -8095,7 +8098,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			// Container
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;top:0;left:50%;width:49%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
 			/* END ITEMS */
 			
@@ -8113,7 +8116,7 @@ function MT__RUN() {
 			}
 			var missed_days = [];
 			// reg
-			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}:\d{2}) *(am|pm)-(\d{1,2}:\d{2}) *(am|pm)\)/gi;
+			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}:\d{2}) *(am|pm) *- *(\d{1,2}:\d{2}) *(am|pm)\)/gi;
 			var m;
 			//~ console.log(reg.exec(tmp_str));
 			//~ console.log(tmp_str);
@@ -8140,10 +8143,13 @@ function MT__RUN() {
 			var tmp_hrs = o.hours;
 			for (var i in missed_days) {
 				md = missed_days[i];
-				tmp_hrs = tmp_hrs.replace(md, '<b>$0</b>');
+				tmp_hrs = tmp_hrs.replace(
+					new RegExp('('+__js_escape_regEx( md )+')', ''), // first instance
+					'<em>$1</em>'
+				);
 			}
 			
-			// 
+			// Go day by day
 			var fmt_arr = [];
 			for (var i in o.days) {
 				var day = o.days[i];
@@ -8163,9 +8169,11 @@ function MT__RUN() {
 					);
 				}
 			}
+			// Fill q
 			o.q.value = fmt_arr.join(',');
 			
-			d1.innerHTML = tmp_hrs;
+			// Debug
+			d1.innerHTML = '<p style="zoom:2">'+tmp_hrs+'</p>';
 		}
 		new run().f();
 	}
