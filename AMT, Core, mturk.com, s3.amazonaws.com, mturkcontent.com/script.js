@@ -8066,7 +8066,7 @@ function MT__RUN() {
 	s = 'Take the provided hours of operation information provided and convert it to the format below (PLEASE pay attention to the format).&nbsp;These hours are linked to social service agencies to help people with service types like food and housing, so accuracy is very important.';
 	if (ih.indexOf(s) != -1)
 	{
-		var run = new function(){};
+		var run = function(){};
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
@@ -8074,8 +8074,79 @@ function MT__RUN() {
 			GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
 			GM_addStyle('.panel-body {position:absolute;top:4400px;}');
 			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				hours: td[5].innerText.trim(),
+				days: [
+					'mon',
+					'tue',
+					'wed',
+					'thu',
+					'fri',
+					'sat',
+					'sun'
+				],
+				q: document.getElementById('web_url')
+				
+			}
 			
+			/* BEGIN ITEMS */
+			// Container
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/* END ITEMS */
 			
+			// Simple method
+			// Mon (8:00 am-4:30 Pm)Tue (8:00 am-4:30 Pm)Wed (8:00 am-4:30 Pm)Thu (8:00 am-4:30 Pm)Fri (8:00 am-4:30 Pm)
+			var tmp_str = o.hours;
+			var tmp_days_obj = {}
+			var day_obj = function(hr_open, hr_close, ampm_open, ampm_close) {
+				this.hr_open = hr_open;
+				this.ampm_open = ampm_open;
+				this.hr_close = hr_close;
+				this.ampm_close = ampm_close;
+				this.day_str = hr_open + ampm_open.toUpperCase() + '-' + hr_close + ampm_close;
+			}
+			var missed_days = [];
+			
+			// reg
+			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}:\d{2}) *(am|pm)-(\d{1,2}:\d{2}) *(am|pm)\)/gi;
+			while (m = reg.exec(tmp_str) && tmp_str != '') {
+				var day = m[1];
+				if (!tmp_days_obj.hasOwnProperty(day)) {
+					tmp_days_obj[ day ] = new day_obj(m[2],m[4],m[3],m[5]);
+				} else {
+					missed_days.push(m[0]); // full
+				}
+				// Replace
+				tmp_str = tmp_str.replace(m[0], '');
+				// Trim
+				tmp_str = tmp_str.trim();
+			}
+			
+			// Missed
+			var tmp_hrs = o.hours;
+			for (var i in missed_days) {
+				md = missed_days[i];
+				tmp_hrs = tmp_hrs.replace(md, '<b>$0</b>');
+			}
+			
+			// 
+			var fmt_arr = [];
+			for (var i in o.days) {
+				var day = o.days[i];
+				if (tmp_days.hasOwnProperty(day)) {
+					fmt_arr.push(
+						day.day_str
+					)
+				} else {
+					fmt_arr.push(
+						'CLOSED'
+					);
+				}
+			}
+			o.q.value = fmt_arr.join(',');
 		}
 		new run().f();
 	}
