@@ -140861,7 +140861,7 @@ function top_window() {
 							doSubmit('hitForm');
 						} else {
 							if  (
-									rs.indexOf('No other sizes of this image found.') != -1 &&
+									rs.indexOf('No other sizes of this image found.') != -1 ||
 									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
 								)
 							{
