@@ -8106,17 +8106,46 @@ function MT__RUN() {
 			// Mon (8:00 am-4:30 Pm)Tue (8:00 am-4:30 Pm)Wed (8:00 am-4:30 Pm)Thu (8:00 am-4:30 Pm)Fri (8:00 am-4:30 Pm)
 			var tmp_str = o.hours;
 			var tmp_days_obj = {}
-			var day_obj = function(hr_open, hr_close, ampm_open, ampm_close, original_str) {
+			var day_obj = function(hr_open, mn_open, ampm_open, hr_close, mn_close, ampm_close, original_str) {
 				this.hr_open = hr_open;
-				this.ampm_open = ampm_open;
+				this.mn_open = mn_open;
+				this.ampm_open = ampm_open.toLowerCase();
 				this.hr_close = hr_close;
-				this.ampm_close = ampm_close;
+				this.mn_close = mn_close;
+				this.ampm_close = ampm_close.toLowerCase();
 				this.day_str = hr_open + ampm_open.toUpperCase() + '-' + hr_close + ampm_close.toUpperCase();
 				this.original_str = original_str;
+				
+				this.is_submittable = true;
+				
+				// Checks
+				
+				// Check1
+				// That open does not occur before close
+				if  (
+						(
+						this.ampm_open == 'am' && this.ampm_close == 'am'
+						)
+						||
+						(
+						this.ampm_open == 'pm' && this.ampm_close == 'pm'
+						)
+					)
+				{
+					if (this.hr_open*1 == this.hr_close*1 && this.mn_open*1 >= this.mn_close*1) {
+						this.is_submittable = false;
+					}
+					if (this.hr_open*1 < this.hr_close*1) {
+						this.is_submittable = false;
+					}
+				}
+				if (this.ampm_open == 'pm' && this.ampm_close == 'am') {
+					this.is_submittable = false;
+				}
 			}
 			var missed_days = [];
 			// reg
-			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}:\d{2}) *(am|pm) *- *(\d{1,2}:\d{2}) *(am|pm)\)/gi;
+			var reg = /(mon|tue|wed|thu|fri|sat|sun) *\((\d{1,2}):(\d{2}) *(am|pm) *- *(\d{1,2}):(\d{2}) *(am|pm)\)/gi;
 			var m;
 			//~ console.log(reg.exec(tmp_str));
 			//~ console.log(tmp_str);
@@ -8127,7 +8156,7 @@ function MT__RUN() {
 				var day = m[1].toLowerCase();
 				
 				if (!tmp_days_obj.hasOwnProperty(day)) {
-					tmp_days_obj[ day ] = new day_obj(m[2],m[4],m[3],m[5],m[0]);
+					tmp_days_obj[ day ] = new day_obj(m[2],m[3],m[4],m[5],m[6],m[7],m[0]);
 				} else {
 					missed_days.push(m[0]); // full
 				}
@@ -8151,18 +8180,33 @@ function MT__RUN() {
 			
 			// Go day by day
 			var fmt_arr = [];
+			var match_full_str = '';
 			for (var i in o.days) {
 				var day = o.days[i];
 				var rslt = tmp_days_obj[ day ];
 				if (tmp_days_obj.hasOwnProperty(day)) {
-					fmt_arr.push(
-						rslt.day_str
-					)
-					// Tmp Replace
-					tmp_hrs = tmp_hrs.replace(
-						new RegExp('('+__js_escape_regEx( rslt.original_str )+')', ''), // first instance
-						'<strike>$1</strike>'
-					);
+					// Is submittable?
+					if (!rslt.is_submittable) {
+						// Push - ERR
+						fmt_arr.push(
+							rslt.day_str
+						)
+						// Tmp Replace - ERR
+						tmp_hrs = tmp_hrs.replace(
+							new RegExp('('+__js_escape_regEx( rslt.original_str )+')', ''), // first instance
+							'<em style="color:red;background-color:white;">$1</em>'
+						);
+					} else {
+						// Push
+						fmt_arr.push(
+							rslt.day_str
+						)
+						// Tmp Replace
+						tmp_hrs = tmp_hrs.replace(
+							new RegExp('('+__js_escape_regEx( rslt.original_str )+')', ''), // first instance
+							'<strike>$1</strike>'
+						);
+					}
 				} else {
 					fmt_arr.push(
 						'CLOSED'
