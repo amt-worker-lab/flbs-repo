@@ -8102,6 +8102,10 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			/* END ITEMS */
 			
+			// focus
+			o.q.focus();
+			
+			// submitButton
 			document.getElementById('submitButton').onclick = function() {
 				if (o.q.value.trim() == '') return false;
 				
