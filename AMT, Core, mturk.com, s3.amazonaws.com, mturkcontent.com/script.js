@@ -8052,6 +8052,34 @@ function MT__RUN() {
 		}
 	}
 	
+	/**
+	 * Hours fill in
+	 * 
+	 * Taste of the World
+	 * Manik Bhat
+	 * 
+	 */
+	//
+	// Manik Bhat
+	// Change the format of this Hours of Operation data for the following service organizations
+	//
+	s = 'Take the provided hours of operation information provided and convert it to the format below (PLEASE pay attention to the format).&nbsp;These hours are linked to social service agencies to help people with service types like food and housing, so accuracy is very important.';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = new function(){};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body {margin-top:500px !important;}');
+			GM_addStyle('.panel-heading {position:absolute;top:4000px;}');
+			GM_addStyle('.panel-body {position:absolute;top:4400px;}');
+			
+			
+			
+		}
+		new run().f();
+	}
+	
 	//
 	// Taste of the World
 	// Initial Run at it
@@ -8433,7 +8461,7 @@ function MT__RUN() {
 		
 	//
 	// Taste of the World
-	// 
+	// v2
 	//
 	s = 'In this HIT, we will provide a text description of what days and times a business is open for business. &nbsp;Using only that description, fill in the opening time and closing time&nbsp;for each day of the week.';
 	if (ih.indexOf(s) != -1)
