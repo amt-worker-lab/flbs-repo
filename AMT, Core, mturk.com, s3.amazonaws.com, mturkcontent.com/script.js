@@ -8075,7 +8075,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-body {position:absolute;top:4400px;}');
 			GM_addStyle('.container {position:absolute;top:0px;left:0;width:50% !important;}');
 			GM_addStyle('strike {zoom:0.5}');
-			GM_addStyle('em {zoom:2}');
+			//~ GM_addStyle('em {zoom:2}');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {line-height:12px !important;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -8102,6 +8102,14 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			/* END ITEMS */
 			
+			document.getElementById('submitButton').onclick = function() {
+				if (o.q.value.trim() == '') return false;
+				
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
 			// Simple method
 			// Mon (8:00 am-4:30 Pm)Tue (8:00 am-4:30 Pm)Wed (8:00 am-4:30 Pm)Thu (8:00 am-4:30 Pm)Fri (8:00 am-4:30 Pm)
 			var tmp_str = o.hours;
@@ -8113,7 +8121,7 @@ function MT__RUN() {
 				this.hr_close = hr_close;
 				this.mn_close = mn_close;
 				this.ampm_close = ampm_close.toLowerCase();
-				this.day_str = hr_open + ampm_open.toUpperCase() + '-' + hr_close + ampm_close.toUpperCase();
+				this.day_str = hr_open + ':' + mn_open + ampm_open.toUpperCase() + '-' + hr_close + ':' + mn_close + ampm_close.toUpperCase();
 				this.original_str = original_str;
 				
 				this.is_submittable = true;
@@ -8132,10 +8140,12 @@ function MT__RUN() {
 						)
 					)
 				{
-					if (this.hr_open*1 == this.hr_close*1 && this.mn_open*1 >= this.mn_close*1) {
+					var tmp_hr_open = (this.hr_open == '12') ? 0 : this.hr_open;
+					
+					if (tmp_hr_open*1 == this.hr_close*1 && this.mn_open*1 >= this.mn_close*1) {
 						this.is_submittable = false;
 					}
-					if (this.hr_open*1 < this.hr_close*1) {
+					if (tmp_hr_open*1 > this.hr_close*1) {
 						this.is_submittable = false;
 					}
 				}
