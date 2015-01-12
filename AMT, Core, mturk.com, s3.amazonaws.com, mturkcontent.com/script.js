@@ -140803,7 +140803,7 @@ function top_window() {
 			
 			var d2=document.createElement('input'); //
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;');
+			d2.setAttribute('style','position:absolute;top:40px;left:0%;');
 			document.body.appendChild(d2);
 		
 			var a = document.getElementsByClassName('overview-wrapper')[0].getElementsByTagName('a')[0].href;
@@ -140849,7 +140849,7 @@ function top_window() {
 						//<div id="resultStats">About 2 results<nobr>
 						
 						var r = /<div id="?resultStats"?>About ([\d,]+) results<nobr>/.exec(rs);
-						var r2= /<div id="?resultStats"?>([\d,]+) result<nobr>/.exec(rs);
+						var r2= /<div id="?resultStats"?>([\d,]+) results?<nobr>/.exec(rs);
 						
 						if (r) {
 							r = r[1].replace(/,/g, '');
@@ -140869,6 +140869,8 @@ function top_window() {
 								doSubmit('hitForm');
 							} else {
 								console.log('x');
+								d2.value = 'X 0 Results?';
+								d2.style.border = '8px dashed green';
 							}
 						}
 					}
