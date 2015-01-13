@@ -12746,11 +12746,13 @@ function MT__RUN() {
 					}
 					
 					// Is 200
+					new AMT___core_factory().nextTab();
 					new AMT___requests_factory().url_to_status_code({
 						url: rs.image_full_url,
 						callback_function: function(callback_object) {
-							if (callback_object.status == 200)
+							if (callback_object.status == 200) {
 								doSubmit();
+							}
 						}
 					});
 				}
