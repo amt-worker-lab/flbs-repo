@@ -12634,39 +12634,14 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			//
-			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:8%;width:91%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1);
-			d1.addEventListener('mouseover', function() {
-				//~ this.scrollIntoView(); // NOT THIS
-				d1b.style.top = this.style.top;
-			}, false);
-			//
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:8%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1b);
-			d1b.addEventListener('mouseover', function() {
-				//~ d1.scrollIntoView();
-			}, false);
-			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:800px;left:8%;width:91%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1c.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
-			d1c.addEventListener('mouseover', function() {
-				//~ this.scrollIntoView(); // NOT THIS
-				d1b.style.top = this.style.top;
-			}, false);
 			// Img
 			var d3 = document.createElement('img');
 			d3.setAttribute('style','width:200px;height:200px;');
 			/* END ITEMS */
 			
-			// 3 = id (to append an image)
-			// 4 = url
-			// 5 = first
-			// 6 = last
-			// 7 = title
-			//
 			var td = document.getElementsByTagName('td');
 			var p = document.getElementsByTagName('p');
 			p[3].innerHTML = '';
@@ -12679,8 +12654,8 @@ function MT__RUN() {
 				p_element: p[3]
 			}
 			//
-			var x = o.site.parseURL();
-			o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
+			//~ var x = o.site.parseURL();
+			//~ o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
 			//
 			o.p_element.appendChild(d3); // IMG
 			// Bold
@@ -12688,78 +12663,61 @@ function MT__RUN() {
 				o.fn, o.ln
 			];
 			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1c
+				],
+				offset: 100 // offset top
+			});
+			
 			// q
-			var q = [
-				document.getElementsByName('Q1Answer')[0], //yes
-				document.getElementsByName('Q1Answer')[1], //no, other site
-				document.getElementsByName('Q1Answer')[2], //none
-				document.getElementById('Q1URLpic')
-			];
-			
-			// ...
-			q[2].onclick = function() {
-				this.checked = true;
-				q[3].value = 'NONE';
-				document.getElementById('submitButton').click();
-				return false;
-			}
-			
-			// ...
-			new AMT___core_factory().
-				iframe2parent__postMessage( //
-					{
-						action: 'return_and_accept_button__nextTab'
-					}
-				);
+			var q = document.getElementById('web_url');
 				
 			// Left menu elements.
-			d1b.innerText = o.fn + ' ' + o.ln + '\n' + o.title + '\n' + o.site + '\n' + o.bizName + '\n';
+			//~ d1b.innerText = o.fn + ' ' + o.ln + '\n' + o.title + '\n' + o.site + '\n' + o.bizName + '\n';
 			// Link to google
-			var a = document.createElement('a');
-			a.setAttribute('style', 'cursor:pointer;');
-			a.className = 'link__';
-			a.innerText = 'Link';
-			a.onclick = function() {
-				var link1 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.title + ' ' + o.domain + ' -site:linkedin.com');
-				var link2 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.bizName + ' -site:linkedin.com');
-				var g1 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link1+'&oq='+link1+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
-				var g2 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link2+'&oq='+link2+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
-				window.open(g1, 'new1');
-				window.open(g2, 'new2');
-				return false;
-			}
-			d1b.appendChild(a);
-			//
-			d1b.appendChild(document.createElement('br'));
-			// Input to change iframe
-			var inp = document.createElement('input');
-			inp.setAttribute('style', 'width:40px;');
-			inp.onblur = function() {
-				d2.src = this.value;
-			}
-			d1b.appendChild(inp);
-			//
-			d1b.appendChild(document.createElement('br'));
-			// None button 
-			var inp = document.createElement('input');
-			inp.type = 'button';
-			inp.value = 'NONE';
-			inp.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				q[0].checked = false;
-				q[1].checked = false;
-				q[2].checked = true;
-				q[3].value = 'NONE';
-				if  (
-					q[2].checked &&
-					q[3].value == 'NONE'
-					)
-				{
-					new AMT___core_factory().nextTab();
-					doSubmit();
-				}
-			}
-			d1b.appendChild(inp);
+			//~ var a = document.createElement('a');
+			//~ a.setAttribute('style', 'cursor:pointer;');
+			//~ a.className = 'link__';
+			//~ a.innerText = 'Link';
+			//~ a.onclick = function() {
+			//~ }
+			//~ d1b.appendChild(a);
+			//~ //
+			//~ d1b.appendChild(document.createElement('br'));
+			//~ // Input to change iframe
+			//~ var inp = document.createElement('input');
+			//~ inp.setAttribute('style', 'width:40px;');
+			//~ inp.onblur = function() {
+				//~ d2.src = this.value;
+			//~ }
+			//~ d1b.appendChild(inp);
+			//~ //
+			//~ d1b.appendChild(document.createElement('br'));
+			//~ // None button 
+			//~ var inp = document.createElement('input');
+			//~ inp.type = 'button';
+			//~ inp.value = 'NONE';
+			//~ inp.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ q[0].checked = false;
+				//~ q[1].checked = false;
+				//~ q[2].checked = true;
+				//~ q[3].value = 'NONE';
+				//~ if  (
+					//~ q[2].checked &&
+					//~ q[3].value == 'NONE'
+					//~ )
+				//~ {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+			//~ }
+			//~ d1b.appendChild(inp);
 			
 			// Do a LinkedIn search
 			//
@@ -12769,10 +12727,8 @@ function MT__RUN() {
 				search_params: {
 					firstName: o.fn,
 					lastName: o.ln,
-					title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
-					titleScope: 'CP', // TITLE current or past
-					company: '', // blank
-					companyScope: 'CP' // blank
+					company: o.bizName,
+					companyScope: 'CP'
 				},
 				image_search: true,
 				callback_function: function(comp_object) {
@@ -12785,12 +12741,13 @@ function MT__RUN() {
 					//~ }
 					
 					var rs = comp_object;
+					console.log(rs);
 					
-					q[0].checked = false;
-					q[1].checked = true; // off-site
-					q[1].focus();
-					q[3].value = rs.image_full_url;
-					d3.src = rs.image_full_url;
+					q.value = rs.image_full_url;
+					
+					if (rs.image_full_url.indexOf('https://media.licdn.com/') != 0) {
+						return;
+					}
 					
 					// Is 200
 					new AMT___requests_factory().url_to_status_code({
@@ -12800,30 +12757,15 @@ function MT__RUN() {
 								doSubmit();
 						}
 					});
-					//~ // Let's assume that it's okay.
-					//~ doSubmit();
 				}
 			});
 			
 			// submitButton
 			document.getElementById('submitButton').onclick = function() {
-				q[3].value = q[3].value.trim();
+				q.value = q.value.trim();
 				
-				if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q[3].value) && q[3].value != 'NONE') {
+				if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q.value) && q.value != 'NONE') {
 					console.log('x');
-					console.log(q[3].value);
-					return false;
-				}
-				if (!q[0].checked && !q[1].checked && !q[2].checked) {
-					console.log('x0');
-					return false;
-				}
-				if (q[3].value == 'NONE' && !q[2].checked) {
-					console.log('x1');
-					return false;
-				}
-				if (q[3].value != 'NONE' && q[2].checked ) {
-					console.log('x2');
 					return false;
 				}
 				
