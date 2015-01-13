@@ -12637,6 +12637,28 @@ function MT__RUN() {
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
+			
+			var d2 = document.createElement('input');
+			d2.setAttribute('style','position:absolute;top:0;left:40%;height:65px;width:275px');
+			document.body.appendChild(d2);
+			d2.type = 'button';
+			d2.value = 'No Image';
+			d2.onclick = function () {
+				document.getElementById('web_url').value = this.value;
+				doSubmit();
+			}
+
+			var d3 = document.createElement('input');
+			d3.setAttribute('style','position:absolute;top:65px;left:40%;height:65px;width:275px');
+			document.body.appendChild(d3);
+			d3.type = 'button';
+			d3.value = 'No Profile';
+			d3.onclick = function () {
+				document.getElementById('web_url').value = this.value;
+				doSubmit();
+			}
+			
+			
 			//~ // Img
 			//~ var d3 = document.createElement('img');
 			//~ d3.setAttribute('style','position:absolute;top:0px;left:0;max-height:200px;');
@@ -12755,6 +12777,8 @@ function MT__RUN() {
 							}
 						}
 					});
+				
+					
 				}
 			});
 			
