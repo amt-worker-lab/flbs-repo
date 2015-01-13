@@ -12762,7 +12762,14 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function() {
 				q.value = q.value.trim();
 				
-				if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q.value) && q.value != 'NONE') {
+				if  (
+					!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q.value) &&
+						(
+						q.value != 'No Image' &&
+						q.value != 'Profile Not Found'
+						)
+					)
+				{
 					console.log('x');
 					return false;
 				}
