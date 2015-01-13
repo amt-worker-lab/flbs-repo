@@ -12635,11 +12635,12 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1c.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
-			// Img
-			var d3 = document.createElement('img');
-			d3.setAttribute('style','width:200px;height:200px;');
+			//~ // Img
+			//~ var d3 = document.createElement('img');
+			//~ d3.setAttribute('style','position:absolute;top:0px;left:0;max-height:200px;');
+			//~ document.body.appendChild(d3);
 			/* END ITEMS */
 			
 			var td = document.getElementsByTagName('td');
@@ -12650,14 +12651,9 @@ function MT__RUN() {
 				bizName: td[9].innerText.trim(),
 				fn: td[6].innerText.trim(),
 				ln: td[7].innerText.trim(),
-				bold_strings: null,
-				p_element: p[3]
+				bold_strings: null
+				//~ p_element: p[3]
 			}
-			//
-			//~ var x = o.site.parseURL();
-			//~ o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
-			//
-			o.p_element.appendChild(d3); // IMG
 			// Bold
 			o.bold_strings = [
 				o.fn, o.ln
