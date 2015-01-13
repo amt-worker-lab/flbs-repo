@@ -12642,9 +12642,10 @@ function MT__RUN() {
 			d2.setAttribute('style','position:absolute;top:0;left:40%;height:65px;width:275px');
 			document.body.appendChild(d2);
 			d2.type = 'button';
-			d2.value = 'No Image';
+			d2.value = 'Found Profile, but No Image';
 			d2.onclick = function () {
 				document.getElementById('web_url').value = this.value;
+				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
 
@@ -12655,6 +12656,7 @@ function MT__RUN() {
 			d3.value = 'No Profile';
 			d3.onclick = function () {
 				document.getElementById('web_url').value = this.value;
+				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
 			
