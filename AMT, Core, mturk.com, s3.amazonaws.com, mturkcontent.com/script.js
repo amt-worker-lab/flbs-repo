@@ -12615,6 +12615,434 @@ function MT__RUN() {
 	}
 	
 	//
+	// Sofia Torres
+	// Search pictures
+	// Uses startpage
+	// Add LinkedIn
+	//
+	s = 'Search the website for the C-Level employees/ Executives / Executive Officers /&nbsp; section of the website, and find the named employee.';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			
+			GM_addStyle('body {margin-top:1800px;}');
+			
+			GM_addStyle('.link__:hover {zoom:1.2;}');
+			
+			//~ GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			/* BEGIN ITEMS */
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:8%;width:91%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			d1.addEventListener('mouseover', function() {
+				//~ this.scrollIntoView(); // NOT THIS
+				d1b.style.top = this.style.top;
+			}, false);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:8%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			d1b.addEventListener('mouseover', function() {
+				//~ d1.scrollIntoView();
+			}, false);
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:800px;left:8%;width:91%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1c);
+			d1c.addEventListener('mouseover', function() {
+				//~ this.scrollIntoView(); // NOT THIS
+				d1b.style.top = this.style.top;
+			}, false);
+			// Iframe
+			var d2 = document.createElement('iframe');
+			d2.setAttribute('style','position:absolute;top:300px;left:8%;width:91%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+			document.body.appendChild(d2);
+			d2.addEventListener('mouseover', function() {
+				this.scrollIntoView();
+				d1b.style.top = this.style.top;
+			}, false);
+			d2.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+				// Tell child to zoom out & extend
+				var ifr_intv = setInterval(function() {
+					d2.contentWindow.postMessage({
+						task: 'AMT__all_pages_util',
+						MT___all_pages_extend: true,
+						MT___all_pages_zoom: true,
+						MT___all_pages_showhref: true,
+						global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+						person_name_zoom: o.fn + ' ' + o.ln
+					}, "*");
+				}, 1000);
+				// Watch for complete
+				window.addEventListener("message", Evan_J_Emp_Images__iframe_image_complete, false);
+					
+			}, false);
+			//~ d2.addEventListener('mouseout', function() {
+				//~ d1.scrollIntoView();
+			//~ }, false);
+			// Img
+			var d3 = document.createElement('img');
+			d3.setAttribute('style','width:200px;height:200px;');
+			/* END ITEMS */
+			
+			// 3 = id (to append an image)
+			// 4 = url
+			// 5 = first
+			// 6 = last
+			// 7 = title
+			//
+			var strong = document.getElementsByTagName('strong');
+			
+			var o = {
+				site: strong[4].innerText.trim(),
+				domain: null,
+				bizName: null,
+				fn: strong[5].innerText.trim(),
+				ln: strong[6].innerText.trim(),
+				title: strong[7].innerText.trim(),
+				titles_array: null,
+				titles_query: null,
+				query: '',
+				bold_strings: null,
+				p_element: strong[3]
+			}
+			//
+			var x = o.site.parseURL();
+			o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
+			//
+			o.p_element.appendChild(d3); // IMG
+			// Domain
+			o.domain = x.host.replace(/^www\./i, '');
+			//~ o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
+			// Titles
+			o.titles_array = o.title.split(',');
+			o.titles_query = ''
+			for (var i in o.titles_array) {
+				o.titles_array[i] = o.titles_array[i].trim();
+				o.titles_query += 'site:' + o.domain + ' "' + o.titles_array[i] + '" | ';
+			}
+			// Bold
+			o.bold_strings = [
+				o.fn, o.ln
+			].concat(o.title.replace(/[^\w\d]/g, ' ').split(' '));
+			
+			// Yahoo/SP
+			// | synonymous with OR
+			o.query = 
+				'site:' + o.domain + ' "'+o.fn+' '+o.ln+'" | ' +
+				'site:' + o.domain + ' '+o.fn+' '+o.ln+'   | ' +
+				o.titles_query +
+				'site:' + o.domain + ' "executive"         | ' +
+				'site:' + o.domain + ' "leadership"        | ' +
+				'site:' + o.domain + ' "management"        | ' 
+			;
+			o.query = o.query.replace(/\s+/g, ' '); //clean
+			o.query = o.query.trim();
+			
+			//
+			//~ console.log(o);
+			//~ console.log(o.bold_strings);
+			//~ console.log(JSON.stringify(o));
+			
+			// q
+			var q = [
+				document.getElementsByName('Q1Answer')[0], //yes
+				document.getElementsByName('Q1Answer')[1], //no, other site
+				document.getElementsByName('Q1Answer')[2], //none
+				document.getElementById('Q1URLpic')
+			];
+			
+			// ...
+			q[2].onclick = function() {
+				this.checked = true;
+				q[3].value = 'NONE';
+				document.getElementById('submitButton').click();
+				return false;
+			}
+			
+			// ...
+			new AMT___core_factory().
+				iframe2parent__postMessage( //
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+				
+			// Left menu elements.
+			d1b.innerText = o.fn + ' ' + o.ln + '\n' + o.title + '\n' + o.site + '\n' + o.bizName + '\n';
+			// Link to google
+			var a = document.createElement('a');
+			a.setAttribute('style', 'cursor:pointer;');
+			a.className = 'link__';
+			a.innerText = 'Link';
+			a.onclick = function() {
+				var link1 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.title + ' ' + o.domain + ' -site:linkedin.com');
+				var link2 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.bizName + ' -site:linkedin.com');
+				var g1 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link1+'&oq='+link1+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
+				var g2 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link2+'&oq='+link2+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
+				window.open(g1, 'new1');
+				window.open(g2, 'new2');
+				return false;
+			}
+			d1b.appendChild(a);
+			//
+			d1b.appendChild(document.createElement('br'));
+			// Input to change iframe
+			var inp = document.createElement('input');
+			inp.setAttribute('style', 'width:40px;');
+			inp.onblur = function() {
+				d2.src = this.value;
+			}
+			d1b.appendChild(inp);
+			//
+			d1b.appendChild(document.createElement('br'));
+			// None button 
+			var inp = document.createElement('input');
+			inp.type = 'button';
+			inp.value = 'NONE';
+			inp.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				q[0].checked = false;
+				q[1].checked = false;
+				q[2].checked = true;
+				q[3].value = 'NONE';
+				if  (
+					q[2].checked &&
+					q[3].value == 'NONE'
+					)
+				{
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
+			d1b.appendChild(inp);
+			
+			// Do a LinkedIn search
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1c,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					titleScope: 'CP', // TITLE current or past
+					company: '', // blank
+					companyScope: 'CP' // blank
+				},
+				image_search: true,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url,
+						//~ image_thumbnail_url: btn.src,
+						//~ image_full_url: btn.img_li,
+						//~ image: btn
+					//~ }
+					
+					var rs = comp_object;
+					
+					q[0].checked = false;
+					q[1].checked = true; // off-site
+					q[1].focus();
+					q[3].value = rs.image_full_url;
+					d3.src = rs.image_full_url;
+					
+					// Is 200
+					new AMT___requests_factory().url_to_status_code({
+						url: rs.image_full_url,
+						callback_function: function(callback_object) {
+							if (callback_object.status == 200)
+								doSubmit();
+						}
+					});
+					//~ // Let's assume that it's okay.
+					//~ doSubmit();
+				}
+			});
+			
+			// Init
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
+				callback_function: Evan_J_Emp_Images__startpage
+			});
+			
+			//
+			function Evan_J_Emp_Images__startpage(response_object) {
+				var rs = response_object;
+				if (!rs.length) {
+					d1.innerText += '\n0';
+					return;
+				}
+				
+				d1.appendChild(document.createElement('hr'));
+				
+				// Here?
+				// 0 = url
+				// 1 = body
+				var first = true;
+				for (var i in rs) {
+					
+					var dm = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+					
+					x = document.createElement('div');
+					x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					
+					//return_div_element
+					var b1 = MT__bold(rs[i][0], o.bold_strings, {return_div_element:true}).div_element;
+					var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+					x.appendChild(b1);
+					x.appendChild(b2);
+					
+					// link
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.target = '_blank';
+					a.innerText = '_link_';
+					a.onclick = function(e) {
+						window.open(this.href, 'new_window');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					b1.appendChild(a);
+					
+					//~ x.innerHTML = 
+						//~ MT__bold(rs[i][0], o.bold_strings) +
+						//~ '<br>' +
+						//~ MT__bold(rs[i][1], o.bold_strings);
+					
+					x.url = rs[i][0];
+					d1.appendChild(x);
+					x.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						d2.src = this.url;
+						//~ d2.scrollIntoView();
+					}
+					
+					// First
+					// & not PDF
+					if (first && rs[i][0].toLowerCase().indexOf('.pdf') == -1) {
+						first = false;
+						x.click();
+					}
+				}
+				//~ x = document.createElement('div');
+				//~ x.setAttribute('style','height:1400px;');
+				//~ d1.appendChild(x);
+			}
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function() {
+				q[3].value = q[3].value.trim();
+				
+				if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q[3].value) && q[3].value != 'NONE') {
+					console.log('x');
+					console.log(q[3].value);
+					return false;
+				}
+				if (!q[0].checked && !q[1].checked && !q[2].checked) {
+					console.log('x0');
+					return false;
+				}
+				if (q[3].value == 'NONE' && !q[2].checked) {
+					console.log('x1');
+					return false;
+				}
+				if (q[3].value != 'NONE' && q[2].checked ) {
+					console.log('x2');
+					return false;
+				}
+				
+				// Here?
+				
+				// nextTab
+				new AMT___core_factory().nextTab();
+				// ...
+				doSubmit();
+				// ...
+				return false;
+			}
+			//~ document.getElementById('submitButton').addEventListener('onclick', function() {
+			//~ }, false);
+			
+			//
+			function Evan_J_Emp_Images__iframe_image_complete(event) {
+				var v = event.data;
+				
+				/**
+				 * TURN ON THIS CONSOLE TO DEBUG:
+				 * FIXED SEP 18 2014
+				 * Object {groupIdRequest: true} 
+				 * 
+				 * 
+				 */
+				//~ console.log(v);
+				
+				// clear intv search
+				if (v.key == 'Evan_J_Emp_Images' && v.src != '') {
+					
+					// Set iframe (debug)
+					// And Img d3.
+					d2.src = v.src;
+					d3.src = v.src;
+					setTimeout(function() {
+						q2[1].focus();
+						//~ d3.scollIntoView();
+					}, 200);
+					setTimeout(function() {
+						q2[1].focus();
+						//~ d3.scollIntoView();
+					}, 400);
+					
+					// Enter to form
+					document.getElementById('Q1URLpic').value = v.src;
+					
+					// Same domain?
+					var q2 = document.getElementsByName('Q1Answer');
+					var h = v.src.parseURL().host.replace(/^www\./i, '');
+					//~ console.log(v.src.parseURL().host);
+					//~ console.log(o.domain);
+					
+					if  (
+						h == o.domain
+						)
+					{
+						q2[1].checked = false;
+						q2[2].checked = false;
+						
+						q2[0].checked = true;
+						
+						// Submit?
+						//
+						if (/^https?:\/\/[^\/]+\/[\d\D]{5,}/.exec(v.src)) {
+							//~ doSubmit();
+							document.getElementById('submitButton').click();
+						}
+					} else {
+						q2[0].checked = false;
+						q2[2].checked = false;
+						
+						q2[1].checked = true;
+					}
+					
+					return;
+				}
+			}
+		}
+		new run().f();
+		return;
+	}
+	//
 	// Evan J 
 	// Search on pictures
 	// Uses startpage
@@ -12623,419 +13051,424 @@ function MT__RUN() {
 	s = 'Search the website for the C-Level employees/ Executives / Executive Officers /&nbsp; section of the website, and find the named employee.';
 	if(ih.indexOf(s) != -1)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
-		
-		GM_addStyle('body {margin-top:1800px;}');
-		
-		GM_addStyle('.link__:hover {zoom:1.2;}');
-		
-		//~ GM_addStyle('.section {position:absolute;top:0px;left:0;}');
-		//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		//~ GM_addStyle('table {zoom:0.8;}');
-		
-		/* BEGIN ITEMS */
-		//
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:8%;width:91%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
-		document.body.appendChild(d1);
-		d1.addEventListener('mouseover', function() {
-			//~ this.scrollIntoView(); // NOT THIS
-			d1b.style.top = this.style.top;
-		}, false);
-		//
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:8%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-		document.body.appendChild(d1b);
-		d1b.addEventListener('mouseover', function() {
-			//~ d1.scrollIntoView();
-		}, false);
-		//
-		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:800px;left:8%;width:91%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-		document.body.appendChild(d1c);
-		d1c.addEventListener('mouseover', function() {
-			//~ this.scrollIntoView(); // NOT THIS
-			d1b.style.top = this.style.top;
-		}, false);
-		// Iframe
-		var d2 = document.createElement('iframe');
-		d2.setAttribute('style','position:absolute;top:300px;left:8%;width:91%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
-		document.body.appendChild(d2);
-		d2.addEventListener('mouseover', function() {
-			this.scrollIntoView();
-			d1b.style.top = this.style.top;
-		}, false);
-		d2.addEventListener('load', function() {
-			this.style.visibility = 'visible';
-			// Tell child to zoom out & extend
-			var ifr_intv = setInterval(function() {
-				d2.contentWindow.postMessage({
-					task: 'AMT__all_pages_util',
-					MT___all_pages_extend: true,
-					MT___all_pages_zoom: true,
-					MT___all_pages_showhref: true,
-					global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
-					person_name_zoom: o.fn + ' ' + o.ln
-				}, "*");
-			}, 1000);
-			// Watch for complete
-			window.addEventListener("message", Evan_J_Emp_Images__iframe_image_complete, false);
-				
-		}, false);
-		//~ d2.addEventListener('mouseout', function() {
-			//~ d1.scrollIntoView();
-		//~ }, false);
-		// Img
-		var d3 = document.createElement('img');
-		d3.setAttribute('style','width:200px;height:200px;');
-		/* END ITEMS */
-		
-		// 3 = id (to append an image)
-		// 4 = url
-		// 5 = first
-		// 6 = last
-		// 7 = title
-		//
-		var strong = document.getElementsByTagName('strong');
-		
-		var o = {
-			site: strong[4].innerText.trim(),
-			domain: null,
-			bizName: null,
-			fn: strong[5].innerText.trim(),
-			ln: strong[6].innerText.trim(),
-			title: strong[7].innerText.trim(),
-			titles_array: null,
-			titles_query: null,
-			query: '',
-			bold_strings: null,
-			p_element: strong[3]
-		}
-		//
-		var x = o.site.parseURL();
-		o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
-		//
-		o.p_element.appendChild(d3); // IMG
-		// Domain
-		o.domain = x.host.replace(/^www\./i, '');
-		//~ o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
-		// Titles
-		o.titles_array = o.title.split(',');
-		o.titles_query = ''
-		for (var i in o.titles_array) {
-			o.titles_array[i] = o.titles_array[i].trim();
-			o.titles_query += 'site:' + o.domain + ' "' + o.titles_array[i] + '" | ';
-		}
-		// Bold
-		o.bold_strings = [
-			o.fn, o.ln
-		].concat(o.title.replace(/[^\w\d]/g, ' ').split(' '));
-		
-		// Yahoo/SP
-		// | synonymous with OR
-		o.query = 
-			'site:' + o.domain + ' "'+o.fn+' '+o.ln+'" | ' +
-			'site:' + o.domain + ' '+o.fn+' '+o.ln+'   | ' +
-			o.titles_query +
-			'site:' + o.domain + ' "executive"         | ' +
-			'site:' + o.domain + ' "leadership"        | ' +
-			'site:' + o.domain + ' "management"        | ' 
-		;
-		o.query = o.query.replace(/\s+/g, ' '); //clean
-		o.query = o.query.trim();
-		
-		//
-		//~ console.log(o);
-		//~ console.log(o.bold_strings);
-		//~ console.log(JSON.stringify(o));
-		
-		// q
-		var q = [
-			document.getElementsByName('Q1Answer')[0], //yes
-			document.getElementsByName('Q1Answer')[1], //no, other site
-			document.getElementsByName('Q1Answer')[2], //none
-			document.getElementById('Q1URLpic')
-		];
-		
-		// ...
-		q[2].onclick = function() {
-			this.checked = true;
-			q[3].value = 'NONE';
-			document.getElementById('submitButton').click();
-			return false;
-		}
-		
-		// ...
-		new AMT___core_factory().
-			iframe2parent__postMessage( //
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 			
-		// Left menu elements.
-		d1b.innerText = o.fn + ' ' + o.ln + '\n' + o.title + '\n' + o.site + '\n' + o.bizName + '\n';
-		// Link to google
-		var a = document.createElement('a');
-		a.setAttribute('style', 'cursor:pointer;');
-		a.className = 'link__';
-		a.innerText = 'Link';
-		a.onclick = function() {
-			var link1 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.title + ' ' + o.domain + ' -site:linkedin.com');
-			var link2 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.bizName + ' -site:linkedin.com');
-			var g1 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link1+'&oq='+link1+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
-			var g2 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link2+'&oq='+link2+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
-			window.open(g1, 'new1');
-			window.open(g2, 'new2');
-			return false;
-		}
-		d1b.appendChild(a);
-		//
-		d1b.appendChild(document.createElement('br'));
-		// Input to change iframe
-		var inp = document.createElement('input');
-		inp.setAttribute('style', 'width:40px;');
-		inp.onblur = function() {
-			d2.src = this.value;
-		}
-		d1b.appendChild(inp);
-		//
-		d1b.appendChild(document.createElement('br'));
-		// None button 
-		var inp = document.createElement('input');
-		inp.type = 'button';
-		inp.value = 'NONE';
-		inp.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			q[0].checked = false;
-			q[1].checked = false;
-			q[2].checked = true;
-			q[3].value = 'NONE';
-			if  (
-				q[2].checked &&
-				q[3].value == 'NONE'
-				)
-			{
-				new AMT___core_factory().nextTab();
-				doSubmit();
+			GM_addStyle('body {margin-top:1800px;}');
+			
+			GM_addStyle('.link__:hover {zoom:1.2;}');
+			
+			//~ GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			/* BEGIN ITEMS */
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:8%;width:91%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			d1.addEventListener('mouseover', function() {
+				//~ this.scrollIntoView(); // NOT THIS
+				d1b.style.top = this.style.top;
+			}, false);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:8%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			d1b.addEventListener('mouseover', function() {
+				//~ d1.scrollIntoView();
+			}, false);
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:800px;left:8%;width:91%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1c);
+			d1c.addEventListener('mouseover', function() {
+				//~ this.scrollIntoView(); // NOT THIS
+				d1b.style.top = this.style.top;
+			}, false);
+			// Iframe
+			var d2 = document.createElement('iframe');
+			d2.setAttribute('style','position:absolute;top:300px;left:8%;width:91%;height:500px;border:1px solid blue;visibility:hidden;sandbox:allow-scripts allow-same-origin;');
+			document.body.appendChild(d2);
+			d2.addEventListener('mouseover', function() {
+				this.scrollIntoView();
+				d1b.style.top = this.style.top;
+			}, false);
+			d2.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+				// Tell child to zoom out & extend
+				var ifr_intv = setInterval(function() {
+					d2.contentWindow.postMessage({
+						task: 'AMT__all_pages_util',
+						MT___all_pages_extend: true,
+						MT___all_pages_zoom: true,
+						MT___all_pages_showhref: true,
+						global__highlight_photos: {completion_key: 'Evan_J_Emp_Images'},
+						person_name_zoom: o.fn + ' ' + o.ln
+					}, "*");
+				}, 1000);
+				// Watch for complete
+				window.addEventListener("message", Evan_J_Emp_Images__iframe_image_complete, false);
+					
+			}, false);
+			//~ d2.addEventListener('mouseout', function() {
+				//~ d1.scrollIntoView();
+			//~ }, false);
+			// Img
+			var d3 = document.createElement('img');
+			d3.setAttribute('style','width:200px;height:200px;');
+			/* END ITEMS */
+			
+			// 3 = id (to append an image)
+			// 4 = url
+			// 5 = first
+			// 6 = last
+			// 7 = title
+			//
+			var strong = document.getElementsByTagName('strong');
+			
+			var o = {
+				site: strong[4].innerText.trim(),
+				domain: null,
+				bizName: null,
+				fn: strong[5].innerText.trim(),
+				ln: strong[6].innerText.trim(),
+				title: strong[7].innerText.trim(),
+				titles_array: null,
+				titles_query: null,
+				query: '',
+				bold_strings: null,
+				p_element: strong[3]
 			}
-		}
-		d1b.appendChild(inp);
-		
-		// Do a LinkedIn search
-		//
-		//
-		new AMT___requests_factory().linkedin_people_search({
-			container: d1c,
-			search_params: {
-				firstName: o.fn,
-				lastName: o.ln,
-				title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
-				titleScope: 'CP', // TITLE current or past
-				company: '', // blank
-				companyScope: 'CP' // blank
-			},
-			image_search: true,
-			callback_function: function(comp_object) {
-				//~ {
-					//~ profile_url: url,
-					//~ found_valid_li_url: found_valid_li_url,
-					//~ image_thumbnail_url: btn.src,
-					//~ image_full_url: btn.img_li,
-					//~ image: btn
-				//~ }
-				
-				var rs = comp_object;
-				
-				q[0].checked = false;
-				q[1].checked = true; // off-site
-				q[1].focus();
-				q[3].value = rs.image_full_url;
-				d3.src = rs.image_full_url;
-				
-				// Is 200
-				new AMT___requests_factory().url_to_status_code({
-					url: rs.image_full_url,
-					callback_function: function(callback_object) {
-						if (callback_object.status == 200)
-							doSubmit();
+			//
+			var x = o.site.parseURL();
+			o.bizName = x.host.replace(/(^www\.|\.\w+$)/gi, ''); // Remove www and com
+			//
+			o.p_element.appendChild(d3); // IMG
+			// Domain
+			o.domain = x.host.replace(/^www\./i, '');
+			//~ o.domain = o.site.replace(/^https?:\/\/(www\.|)/i, '');
+			// Titles
+			o.titles_array = o.title.split(',');
+			o.titles_query = ''
+			for (var i in o.titles_array) {
+				o.titles_array[i] = o.titles_array[i].trim();
+				o.titles_query += 'site:' + o.domain + ' "' + o.titles_array[i] + '" | ';
+			}
+			// Bold
+			o.bold_strings = [
+				o.fn, o.ln
+			].concat(o.title.replace(/[^\w\d]/g, ' ').split(' '));
+			
+			// Yahoo/SP
+			// | synonymous with OR
+			o.query = 
+				'site:' + o.domain + ' "'+o.fn+' '+o.ln+'" | ' +
+				'site:' + o.domain + ' '+o.fn+' '+o.ln+'   | ' +
+				o.titles_query +
+				'site:' + o.domain + ' "executive"         | ' +
+				'site:' + o.domain + ' "leadership"        | ' +
+				'site:' + o.domain + ' "management"        | ' 
+			;
+			o.query = o.query.replace(/\s+/g, ' '); //clean
+			o.query = o.query.trim();
+			
+			//
+			//~ console.log(o);
+			//~ console.log(o.bold_strings);
+			//~ console.log(JSON.stringify(o));
+			
+			// q
+			var q = [
+				document.getElementsByName('Q1Answer')[0], //yes
+				document.getElementsByName('Q1Answer')[1], //no, other site
+				document.getElementsByName('Q1Answer')[2], //none
+				document.getElementById('Q1URLpic')
+			];
+			
+			// ...
+			q[2].onclick = function() {
+				this.checked = true;
+				q[3].value = 'NONE';
+				document.getElementById('submitButton').click();
+				return false;
+			}
+			
+			// ...
+			new AMT___core_factory().
+				iframe2parent__postMessage( //
+					{
+						action: 'return_and_accept_button__nextTab'
 					}
-				});
-				//~ // Let's assume that it's okay.
-				//~ doSubmit();
-			}
-		});
-		
-		// Init
-		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-			startPage: true,
-			//~ seed_arg1: o.input1,
-			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
-			callback_function: Evan_J_Emp_Images__startpage
-		});
-		
-		//
-		function Evan_J_Emp_Images__startpage(response_object) {
-			var rs = response_object;
-			if (!rs.length) {
-				d1.innerText += '\n0';
-				return;
-			}
-			
-			d1.appendChild(document.createElement('hr'));
-			
-			// Here?
-			// 0 = url
-			// 1 = body
-			var first = true;
-			for (var i in rs) {
+				);
 				
-				var dm = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
-				
-				x = document.createElement('div');
-				x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
-				
-				//return_div_element
-				var b1 = MT__bold(rs[i][0], o.bold_strings, {return_div_element:true}).div_element;
-				var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
-				x.appendChild(b1);
-				x.appendChild(b2);
-				
-				// link
-				var a = document.createElement('a');
-				a.href = rs[i][0];
-				a.target = '_blank';
-				a.innerText = '_link_';
-				a.onclick = function(e) {
-					window.open(this.href, 'new_window');
-					e.stopPropagation();
-					e.preventDefault();
-					return false;
-				}
-				b1.appendChild(a);
-				
-				//~ x.innerHTML = 
-					//~ MT__bold(rs[i][0], o.bold_strings) +
-					//~ '<br>' +
-					//~ MT__bold(rs[i][1], o.bold_strings);
-				
-				x.url = rs[i][0];
-				d1.appendChild(x);
-				x.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					d2.src = this.url;
-					//~ d2.scrollIntoView();
-				}
-				
-				// First
-				// & not PDF
-				if (first && rs[i][0].toLowerCase().indexOf('.pdf') == -1) {
-					first = false;
-					x.click();
-				}
-			}
-			//~ x = document.createElement('div');
-			//~ x.setAttribute('style','height:1400px;');
-			//~ d1.appendChild(x);
-		}
-		
-		// submitButton
-		document.getElementById('submitButton').onclick = function() {
-			q[3].value = q[3].value.trim();
-			
-			if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q[3].value) && q[3].value != 'NONE') {
-				console.log('x');
-				console.log(q[3].value);
+			// Left menu elements.
+			d1b.innerText = o.fn + ' ' + o.ln + '\n' + o.title + '\n' + o.site + '\n' + o.bizName + '\n';
+			// Link to google
+			var a = document.createElement('a');
+			a.setAttribute('style', 'cursor:pointer;');
+			a.className = 'link__';
+			a.innerText = 'Link';
+			a.onclick = function() {
+				var link1 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.title + ' ' + o.domain + ' -site:linkedin.com');
+				var link2 = encodeURIComponent('"' + o.fn + ' ' + o.ln + '" ' + o.bizName + ' -site:linkedin.com');
+				var g1 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link1+'&oq='+link1+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
+				var g2 = 'https://www.google.com/search?site=&tbm=isch&source=hp&biw=1366&bih=707&q='+link2+'&oq='+link2+'&gs_l=img.3..0i10i24.1866.3151.0.3561.10.9.0.1.1.0.83.650.9.9.0....0...1ac.1.52.img..0.10.651.TxxgUn0JSYQ&gws_rd=ssl';
+				window.open(g1, 'new1');
+				window.open(g2, 'new2');
 				return false;
 			}
-			if (!q[0].checked && !q[1].checked && !q[2].checked) {
-				console.log('x0');
-				return false;
+			d1b.appendChild(a);
+			//
+			d1b.appendChild(document.createElement('br'));
+			// Input to change iframe
+			var inp = document.createElement('input');
+			inp.setAttribute('style', 'width:40px;');
+			inp.onblur = function() {
+				d2.src = this.value;
 			}
-			if (q[3].value == 'NONE' && !q[2].checked) {
-				console.log('x1');
-				return false;
-			}
-			if (q[3].value != 'NONE' && q[2].checked ) {
-				console.log('x2');
-				return false;
-			}
-			
-			// Here?
-			
-			// nextTab
-			new AMT___core_factory().nextTab();
-			// ...
-			doSubmit();
-			// ...
-			return false;
-		}
-		//~ document.getElementById('submitButton').addEventListener('onclick', function() {
-		//~ }, false);
-		
-		//
-		function Evan_J_Emp_Images__iframe_image_complete(event) {
-			var v = event.data;
-			
-			/**
-			 * TURN ON THIS CONSOLE TO DEBUG:
-			 * FIXED SEP 18 2014
-			 * Object {groupIdRequest: true} 
-			 * 
-			 * 
-			 */
-			//~ console.log(v);
-			
-			// clear intv search
-			if (v.key == 'Evan_J_Emp_Images' && v.src != '') {
-				
-				// Set iframe (debug)
-				// And Img d3.
-				d2.src = v.src;
-				d3.src = v.src;
-				setTimeout(function() {
-					q2[1].focus();
-					//~ d3.scollIntoView();
-				}, 200);
-				setTimeout(function() {
-					q2[1].focus();
-					//~ d3.scollIntoView();
-				}, 400);
-				
-				// Enter to form
-				document.getElementById('Q1URLpic').value = v.src;
-				
-				// Same domain?
-				var q2 = document.getElementsByName('Q1Answer');
-				var h = v.src.parseURL().host.replace(/^www\./i, '');
-				//~ console.log(v.src.parseURL().host);
-				//~ console.log(o.domain);
-				
+			d1b.appendChild(inp);
+			//
+			d1b.appendChild(document.createElement('br'));
+			// None button 
+			var inp = document.createElement('input');
+			inp.type = 'button';
+			inp.value = 'NONE';
+			inp.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				q[0].checked = false;
+				q[1].checked = false;
+				q[2].checked = true;
+				q[3].value = 'NONE';
 				if  (
-					h == o.domain
+					q[2].checked &&
+					q[3].value == 'NONE'
 					)
 				{
-					q2[1].checked = false;
-					q2[2].checked = false;
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
+			d1b.appendChild(inp);
+			
+			// Do a LinkedIn search
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1c,
+				search_params: {
+					firstName: o.fn,
+					lastName: o.ln,
+					title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					titleScope: 'CP', // TITLE current or past
+					company: '', // blank
+					companyScope: 'CP' // blank
+				},
+				image_search: true,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url,
+						//~ image_thumbnail_url: btn.src,
+						//~ image_full_url: btn.img_li,
+						//~ image: btn
+					//~ }
 					
-					q2[0].checked = true;
+					var rs = comp_object;
 					
-					// Submit?
-					//
-					if (/^https?:\/\/[^\/]+\/[\d\D]{5,}/.exec(v.src)) {
-						//~ doSubmit();
-						document.getElementById('submitButton').click();
-					}
-				} else {
-					q2[0].checked = false;
-					q2[2].checked = false;
+					q[0].checked = false;
+					q[1].checked = true; // off-site
+					q[1].focus();
+					q[3].value = rs.image_full_url;
+					d3.src = rs.image_full_url;
 					
-					q2[1].checked = true;
+					// Is 200
+					new AMT___requests_factory().url_to_status_code({
+						url: rs.image_full_url,
+						callback_function: function(callback_object) {
+							if (callback_object.status == 200)
+								doSubmit();
+						}
+					});
+					//~ // Let's assume that it's okay.
+					//~ doSubmit();
+				}
+			});
+			
+			// Init
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.query),
+				callback_function: Evan_J_Emp_Images__startpage
+			});
+			
+			//
+			function Evan_J_Emp_Images__startpage(response_object) {
+				var rs = response_object;
+				if (!rs.length) {
+					d1.innerText += '\n0';
+					return;
 				}
 				
-				return;
+				d1.appendChild(document.createElement('hr'));
+				
+				// Here?
+				// 0 = url
+				// 1 = body
+				var first = true;
+				for (var i in rs) {
+					
+					var dm = rs[i][0].replace(/https?:\/\/(www\.|)/, '');//.replace(/\/[\d\D]*/, '');
+					
+					x = document.createElement('div');
+					x.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					
+					//return_div_element
+					var b1 = MT__bold(rs[i][0], o.bold_strings, {return_div_element:true}).div_element;
+					var b2 = MT__bold(rs[i][1], o.bold_strings, {return_div_element:true}).div_element;
+					x.appendChild(b1);
+					x.appendChild(b2);
+					
+					// link
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.target = '_blank';
+					a.innerText = '_link_';
+					a.onclick = function(e) {
+						window.open(this.href, 'new_window');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					b1.appendChild(a);
+					
+					//~ x.innerHTML = 
+						//~ MT__bold(rs[i][0], o.bold_strings) +
+						//~ '<br>' +
+						//~ MT__bold(rs[i][1], o.bold_strings);
+					
+					x.url = rs[i][0];
+					d1.appendChild(x);
+					x.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						d2.src = this.url;
+						//~ d2.scrollIntoView();
+					}
+					
+					// First
+					// & not PDF
+					if (first && rs[i][0].toLowerCase().indexOf('.pdf') == -1) {
+						first = false;
+						x.click();
+					}
+				}
+				//~ x = document.createElement('div');
+				//~ x.setAttribute('style','height:1400px;');
+				//~ d1.appendChild(x);
+			}
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function() {
+				q[3].value = q[3].value.trim();
+				
+				if (!/^https?:\/\/[^\/]+\/[\d\D]{5,}/i.exec(q[3].value) && q[3].value != 'NONE') {
+					console.log('x');
+					console.log(q[3].value);
+					return false;
+				}
+				if (!q[0].checked && !q[1].checked && !q[2].checked) {
+					console.log('x0');
+					return false;
+				}
+				if (q[3].value == 'NONE' && !q[2].checked) {
+					console.log('x1');
+					return false;
+				}
+				if (q[3].value != 'NONE' && q[2].checked ) {
+					console.log('x2');
+					return false;
+				}
+				
+				// Here?
+				
+				// nextTab
+				new AMT___core_factory().nextTab();
+				// ...
+				doSubmit();
+				// ...
+				return false;
+			}
+			//~ document.getElementById('submitButton').addEventListener('onclick', function() {
+			//~ }, false);
+			
+			//
+			function Evan_J_Emp_Images__iframe_image_complete(event) {
+				var v = event.data;
+				
+				/**
+				 * TURN ON THIS CONSOLE TO DEBUG:
+				 * FIXED SEP 18 2014
+				 * Object {groupIdRequest: true} 
+				 * 
+				 * 
+				 */
+				//~ console.log(v);
+				
+				// clear intv search
+				if (v.key == 'Evan_J_Emp_Images' && v.src != '') {
+					
+					// Set iframe (debug)
+					// And Img d3.
+					d2.src = v.src;
+					d3.src = v.src;
+					setTimeout(function() {
+						q2[1].focus();
+						//~ d3.scollIntoView();
+					}, 200);
+					setTimeout(function() {
+						q2[1].focus();
+						//~ d3.scollIntoView();
+					}, 400);
+					
+					// Enter to form
+					document.getElementById('Q1URLpic').value = v.src;
+					
+					// Same domain?
+					var q2 = document.getElementsByName('Q1Answer');
+					var h = v.src.parseURL().host.replace(/^www\./i, '');
+					//~ console.log(v.src.parseURL().host);
+					//~ console.log(o.domain);
+					
+					if  (
+						h == o.domain
+						)
+					{
+						q2[1].checked = false;
+						q2[2].checked = false;
+						
+						q2[0].checked = true;
+						
+						// Submit?
+						//
+						if (/^https?:\/\/[^\/]+\/[\d\D]{5,}/.exec(v.src)) {
+							//~ doSubmit();
+							document.getElementById('submitButton').click();
+						}
+					} else {
+						q2[0].checked = false;
+						q2[2].checked = false;
+						
+						q2[1].checked = true;
+					}
+					
+					return;
+				}
 			}
 		}
+		new run().f();
+		return;
 	}
 	
 	/**
