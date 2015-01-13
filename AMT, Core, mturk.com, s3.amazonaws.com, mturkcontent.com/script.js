@@ -12635,7 +12635,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1c.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
 			//~ // Img
 			//~ var d3 = document.createElement('img');
@@ -12667,7 +12667,7 @@ function MT__RUN() {
 				elements: [
 					d1c
 				],
-				offset: 100 // offset top
+				offset: 140 // offset top
 			});
 			
 			// q
