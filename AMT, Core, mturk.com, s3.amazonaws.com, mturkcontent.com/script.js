@@ -31206,6 +31206,8 @@ function MT__RUN() {
 		var o = {
 			lat: null,
 			lon: null,
+			centerMapLat: null,
+			centerMapLng: null,
 			name: name,
 			addr: addr,
 			button_cannot_find: btns[0],
@@ -31516,6 +31518,10 @@ function MT__RUN() {
 					}
 				], null, null, false, function(obj) {
 						console.log('got response yaya');
+						//Compute distance between two points;
+						
+						
+						
 						AMT___RunPageScript("function() {"+
 								"var currentLat = map.getCenter().k;"+
 								"var currentLng = map.getCenter().D;"+
@@ -31533,6 +31539,27 @@ function MT__RUN() {
 								"		strokeWeight: 4"+
 								"	});"+
 								"otherLocShower.setMap(map);"+
+								"function distance(lat1, lon1, lat2, lon2, unit) {" +
+								"var radlat1 = Math.PI * lat1/180;" +
+								"var radlat2 = Math.PI * lat2/180;" +
+								"var radlon1 = Math.PI * lon1/180;" +
+								"var radlon2 = Math.PI * lon2/180;" +
+								"var theta = lon1-lon2;" +
+								"var radtheta = Math.PI * theta/180;" +
+								"var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);" +
+								"dist = Math.acos(dist);" +
+								"dist = dist * 180/Math.PI;" +
+								"dist = dist * 60 * 1.1515;" +
+								"if (unit=='K') { dist = dist * 1.609344 };" +
+								"if (unit=='N') { dist = dist * 0.8684 };" +
+								"return dist;" +
+								"};" +
+								"var dst = distance(currentLat,currentLng,"+obj.latLng.lat+","+obj.latLng.lng+",'M');"+
+								"dstShower = document.createElement('label');"+
+								"dstShower.setAttribute('style','left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
+								"document.body.appendChild(dstShower);"+
+								"dstShower.value = dst;"+
+								"console.log('dst is' + dst)"+ 
 						"}");
 					});
 				
