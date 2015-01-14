@@ -31555,11 +31555,13 @@ function MT__RUN() {
 								"return dist;" +
 								"};" +
 								"var dst = distance(currentLat,currentLng,"+obj.latLng.lat+","+obj.latLng.lng+",'M');"+
+								"dst = Math.round(dst*100)/100;"+
 								"dstShower = document.createElement('label');"+
-								"dstShower.setAttribute('style','left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
+								"dstShower.setAttribute('style','position:absolute;left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
+								"dstShower.setAttribute('id','dstShower');"+
 								"document.body.appendChild(dstShower);"+
-								"dstShower.value = dst;"+
-								"console.log('dst is' + dst)"+ 
+								"dstShower.innerText = dst +' mi';"+
+								"console.log('dst is' + dst);"+ 
 						"}");
 					});
 				
@@ -31669,8 +31671,8 @@ function MT__RUN() {
 								var currentLat = map.streetView.location.latLng.k;
 								var currentLng = map.streetView.location.latLng.D;
 								
-								var nextLat = currentLat + 0.001*Math.cos(headingAngle);
-								var nextLng = currentLng - 0.001*Math.sin(headingAngle); 
+								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
+								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
 								console.log(currentLat);
 								console.log(currentLng);
 								console.log(nextLat);
