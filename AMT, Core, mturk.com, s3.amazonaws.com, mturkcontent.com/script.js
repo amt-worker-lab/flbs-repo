@@ -12637,6 +12637,28 @@ function MT__RUN() {
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
+			//
+			var d2 = document.createElement('input');
+			d2.setAttribute('style','position:absolute;top:0;left:40%;height:65px;width:275px');
+			document.body.appendChild(d2);
+			d2.type = 'button';
+			d2.value = 'Found Profile, but No Image';
+			d2.onclick = function () {
+				document.getElementById('web_url').value = this.value;
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			//
+			var d3 = document.createElement('input');
+			d3.setAttribute('style','position:absolute;top:65px;left:40%;height:65px;width:275px');
+			document.body.appendChild(d3);
+			d3.type = 'button';
+			d3.value = 'No Profile';
+			d3.onclick = function () {
+				document.getElementById('web_url').value = this.value;
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
 			//~ // Img
 			//~ var d3 = document.createElement('img');
 			//~ d3.setAttribute('style','position:absolute;top:0px;left:0;max-height:200px;');
@@ -62877,6 +62899,7 @@ qatar,80
 				comp: td[1].innerText.trim(), // Seems to be a domain
 				comp_array: null,
 				domain: td[3].innerText.trim(),
+				state: td[5].innerText.trim(),
 				q: [
 					document.getElementById('industry'),
 					document.getElementById('employee_count')
@@ -62885,7 +62908,7 @@ qatar,80
 				isAuto: false,
 				industry_chosen_biz: null
 			}
-			o.comp_array = o.comp.clean_string_to_array();
+			o.comp_array = o.comp.clean_string_to_array().concat(o.state.clean_string_to_array());
 			console.log(o);
 			// domain to button
 			td[3].innerHTML = '';
@@ -62901,35 +62924,54 @@ qatar,80
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1c);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:200px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:200px;left:20%;width:79%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0;width:19%;height:40px;');
 			document.body.appendChild(d2);
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:40px;left:0;width:19%;height:40px;');
+			document.body.appendChild(d2b);
 			//
 			var d3 = document.createElement('input');
 			d3.type = 'button';
-			d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+			d3.setAttribute('style','position:absolute;top:82px;left:0;width:19%;height:20px;');
 			document.body.appendChild(d3);
 			/* END ITEMS */
 			
 			// actions
 			d2.value = o.comp;
 			d2.onblur = function() {
-				linkedin_biz__init();
+				linkedin_biz__init(d1);
 				linkedin_biz__li_init();
-				//linkedin_biz__init();//ARE YOU RUNNING THIS JOB RIGHT NOW, MAKE SURE HAVING TWO IS OKAY
+				//linkedin_biz__init();
+			}
+			d2b.value = o.domain;
+			d2b.onblur = function() {
+				linkedin_biz__init(d1c);
+				//~ linkedin_biz__li_init();
+				//linkedin_biz__init();
 			}
 			
 			//
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
 			ef.mouseup__delete_range({
 				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2b,
 				callback: function(input_object) {
 					input_object.element.blur();
 				}
@@ -63181,19 +63223,52 @@ qatar,80
 					out.appendChild(d);
 				}
 			}
-			function linkedin_biz__init() {
-				d1.innerText = '';
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
-					//~ seed: d1b,
-					callback_function: linkedin_biz__complete,
-					//~ return_init_object: true
-				});
+			function linkedin_biz__init(div) {
+				if (div) {
+					var el_input;
+					if (div == d1) {
+						d1.innerText = '';
+						el_input = d2;
+					} else {
+						d1c.innerText = '';
+						el_input = d2b;
+					}
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + el_input.value + '"'),
+						seed: div,
+						callback_function: linkedin_biz__complete,
+						return_init_object: true
+					});
+				}
+				
+				if (!div) {
+					d1.innerText = '';
+					d1c.innerText = '';
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+						seed: d1,
+						callback_function: linkedin_biz__complete,
+						return_init_object: true
+					});
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2b.value + '"'),
+						seed: d1c,
+						callback_function: linkedin_biz__complete,
+						return_init_object: true
+					});
+				}
 			}
-			function linkedin_biz__complete(rs) {
+			function linkedin_biz__complete(return_obj) {
+				
+				//~ console.log(rs);return;
+				var rs = return_obj.rs;
+				var out = return_obj.seed;
+				
 				if (rs.length == 0) {
-					d1.innerText = '0';
+					out.innerText = '0';
 					
 					// Try with .com removed?
 					// Add a border.
@@ -63239,7 +63314,7 @@ qatar,80
 						//~ }
 					}
 					d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.comp_array );
-					d1.appendChild(d);
+					out.appendChild(d);
 					
 					// isMatch
 					// This will only work with yahoo.com searches? At least not startpage?
@@ -63290,6 +63365,8 @@ qatar,80
 						if (r) {
 							r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').replace(/,/, '').trim();
 							div.fmt_size = r;
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode(r));
 						} else {
 							sbm = false;
 						}
@@ -63319,6 +63396,8 @@ qatar,80
 						if (r) {
 							r = __js_clean_html_str(r[1]).trim();
 							div.fmt_industry = r;
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode(r));
 						} else {
 							sbm = false;
 						}
