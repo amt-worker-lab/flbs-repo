@@ -63006,15 +63006,18 @@ qatar,80
 							save_mappings();
 						}
 					});
+					return false; // STOPS HERE!
 				}
-				if  (
-					o.q[0].value == '-' &&
-					o.q[1].value == '-'
-					)
-				{
-					new AMT___core_factory().nextTab();
-					doSubmit();
-				}
+				//~ if  (
+					//~ o.q[0].value == '-' &&
+					//~ o.q[1].value == '-'
+					//~ )
+				//~ {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+				new AMT___core_factory().nextTab();
+				doSubmit();
 				return false;
 			}
 			
@@ -63128,16 +63131,31 @@ qatar,80
 					doSubmit();
 				} else {
 					// CHECK FOR MAPPINGS!
-					if (o.mappings.hasOwnProperty(div.fmt_industry)) {
-						o.q[0].value = o.mappings[ div.fmt_industry ];
-						// q[0].length == 148
-						
-						if (found_size && o.q[0].selectedIndex > 0 && o.q[0].selectedIndex <= 147) {
-							// Go next
-							new AMT___core_factory().nextTab();
-							doSubmit();
+					// USE A CALLBACK FUNCTION TO GET THE LATEST o.mappings FROM FILE!
+					//
+					//
+					load_mappings(function() {
+						if (o.mappings.hasOwnProperty(div.fmt_industry)) {
+							o.q[0].value = o.mappings[ div.fmt_industry ];
+							// q[0].length == 148
+							
+							if (found_size && o.q[0].selectedIndex > 0 && o.q[0].selectedIndex <= 147) {
+								// Go next
+								new AMT___core_factory().nextTab();
+								doSubmit();
+							}
 						}
-					}
+					});
+					//~ if (o.mappings.hasOwnProperty(div.fmt_industry)) {
+						//~ o.q[0].value = o.mappings[ div.fmt_industry ];
+						//~ // q[0].length == 148
+						//~ 
+						//~ if (found_size && o.q[0].selectedIndex > 0 && o.q[0].selectedIndex <= 147) {
+							//~ // Go next
+							//~ new AMT___core_factory().nextTab();
+							//~ doSubmit();
+						//~ }
+					//~ }
 				}
 			}
 			
@@ -63364,7 +63382,7 @@ qatar,80
 						// e.g. 10,001+ employees
 						r = /<li class="company-size">[\r\n\t\s]*<h4>Company Size<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
 						if (r) {
-							r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').replace(/,/, '').trim();
+							r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').replace(/,/, '').replace(/Myself Only/, '1-10').trim();
 							div.fmt_size = r;
 							div.appendChild(document.createElement('br'));
 							div.appendChild(document.createTextNode(r));
