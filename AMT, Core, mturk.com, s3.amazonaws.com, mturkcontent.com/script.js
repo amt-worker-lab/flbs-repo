@@ -63179,6 +63179,7 @@ qatar,80
 					x_.fmt_size = (!x_.hasOwnProperty('fmt_size') || x_.fmt_size == undefined) ? '-' : x_.fmt_size;
 					x_.fmt_size = (x_.fmt_size == 'Myself Only') ? '1-10' : x_.fmt_size;
 					x_.fmt_size = x_.fmt_size.replace(/,/g, '');
+					x_.fmt_industry = (!x_.hasOwnProperty('fmt_industry') || x_.fmt_industry == undefined) ? '-' : x_.fmt_industry;
 					x_.fmt_industry = __js_clean_html_str( x_.fmt_industry.replace(/<[^>]+>/g, '') );
 					
 					var d = document.createElement('div');
