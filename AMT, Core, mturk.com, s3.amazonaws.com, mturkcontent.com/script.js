@@ -31673,12 +31673,22 @@ function MT__RUN() {
 								
 								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
 								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
+								var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
+								var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
+								var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
+								var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
 								console.log(currentLat);
 								console.log(currentLng);
 								console.log(nextLat);
 								console.log(nextLng);
 								var path = [new google.maps.LatLng(currentLat, currentLng),
 											new google.maps.LatLng(nextLat, nextLng)
+										    ];
+								var path2 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat2, nextLng2)
+										    ];
+								var path3 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat3, nextLng3)
 										    ];
 								 
 								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
@@ -31702,6 +31712,38 @@ function MT__RUN() {
 										strokeWeight: 4
 									});
 								window.angleShower.setMap(map);
+								
+								if(window.angleShower2)
+									window.angleShower2.setMap(null);
+								window.angleShower2 = new google.maps.Polyline({
+										path: path2,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower2.setMap(map);
+								
+								if(window.angleShower3)
+									window.angleShower3.setMap(null);
+								window.angleShower3 = new google.maps.Polyline({
+										path: path3,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower3.setMap(map);
+								
+								
 								//console.log(angleShower);
 								return;
 							})
