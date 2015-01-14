@@ -63361,7 +63361,9 @@ qatar,80
 				
 				var div = div;
 				div.style.border = '4px dashed blue';
-				
+				// Go next
+				new AMT___core_factory().nextTab();
+					
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: div.y_url,
