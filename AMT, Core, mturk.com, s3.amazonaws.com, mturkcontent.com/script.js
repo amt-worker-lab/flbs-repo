@@ -12637,30 +12637,6 @@ function MT__RUN() {
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style','position:absolute;top:140px;left:0%;width:99%;height:200px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
-			
-			var d2 = document.createElement('input');
-			d2.setAttribute('style','position:absolute;top:0;left:40%;height:65px;width:275px');
-			document.body.appendChild(d2);
-			d2.type = 'button';
-			d2.value = 'Found Profile, but No Image';
-			d2.onclick = function () {
-				document.getElementById('web_url').value = this.value;
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-
-			var d3 = document.createElement('input');
-			d3.setAttribute('style','position:absolute;top:65px;left:40%;height:65px;width:275px');
-			document.body.appendChild(d3);
-			d3.type = 'button';
-			d3.value = 'No Profile';
-			d3.onclick = function () {
-				document.getElementById('web_url').value = this.value;
-				new AMT___core_factory().nextTab();
-				doSubmit();
-			}
-			
-			
 			//~ // Img
 			//~ var d3 = document.createElement('img');
 			//~ d3.setAttribute('style','position:absolute;top:0px;left:0;max-height:200px;');
@@ -12779,8 +12755,6 @@ function MT__RUN() {
 							}
 						}
 					});
-				
-					
 				}
 			});
 			
@@ -62875,13 +62849,498 @@ qatar,80
 	 * @ Oceanos Research
 	 */
 	//
+	// Cherise Chin
+	// Find this company on LinkedIn
+	// 
+	s = '<li>In the search bar, type in the name of the Account (if the Account yields no results, then type in the Domain) -- <u><strong>DO NOT HIT ENTER/SEARCH!</strong></u></li>';
+	if (ih.indexOf(s) != -1) {
+		
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:160px !important;}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('img {position:absolute;top:1600px;}');
+			GM_addStyle('select {max-width:20%;}');
+			GM_addStyle('.text-center {text-align:left !important;}');
+			
+			//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
+			//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('b {zoom:1.2 !important;}');
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				comp: td[1].innerText.trim(), // Seems to be a domain
+				comp_array: null,
+				domain: td[3].innerText.trim(),
+				q: [
+					document.getElementById('industry'),
+					document.getElementById('employee_count')
+				],
+				mappings: {},
+				isAuto: false,
+				industry_chosen_biz: null
+			}
+			o.comp_array = o.comp.clean_string_to_array();
+			console.log(o);
+			// domain to button
+			td[3].innerHTML = '';
+			var a = document.createElement('a');
+			a.innerText = o.domain;
+			a.setAttribute('style', 'cursor:pointer;');
+			a.onclick = function() {
+				d2.value = this.innerText;
+				linkedin_biz__init();
+				linkedin_biz__li_init();
+			}
+			td[3].appendChild(a);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:68%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:200px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
+			document.body.appendChild(d2);
+			//
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+			document.body.appendChild(d3);
+			/* END ITEMS */
+			
+			// actions
+			d2.value = o.comp;
+			d2.onblur = function() {
+				linkedin_biz__init();
+				linkedin_biz__li_init();
+				//linkedin_biz__init();//ARE YOU RUNNING THIS JOB RIGHT NOW, MAKE SURE HAVING TWO IS OKAY
+			}
+			
+			//
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			
+			//
+			d3.value = 'N/A';
+			d3.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ document.getElementById('company_size').value = 'N/A';
+				//~ document.getElementById('industry').value = 'N/A';
+				//~ document.getElementById('type').value = 'N/A';
+				//~ document.getElementById('companypage').value = 'N/A';
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+			
+			
+			// ...
+			linkedin_biz__init();
+			linkedin_biz__li_init();
+			load_mappings();
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				//o.isAuto
+				if (!o.isAuto && o.industry_chosen_biz != null) {
+					load_mappings(function() {
+						var check_if_ready = confirm('Would you like to map? ('+o.industry_chosen_biz+' = '+o.q[0].value+')');
+						if (check_if_ready) {
+							o.mappings[ o.industry_chosen_biz ] = o.q[0].value;
+							save_mappings();
+						}
+					});
+				}
+				if  (
+					o.q[0].value == '-' &&
+					o.q[1].value == '-'
+					)
+				{
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				return false;
+			}
+			
+			//~ // innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1b
+				],
+				offset: 200 // offset top
+			});
+			
+			// ...
+			function load_mappings(callback) {
+				var callback = callback;
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host + '/mturk/.miscellaneous/Cherise_Chin_LI_mappings?random='+ Math.random(),
+					onload: function(response) {
+						var rs = response.responseText.trim();
+						
+						if (response.status == 200) {
+							if (rs == '') rs = '{}';
+							o.mappings = JSON.parse(rs);
+							
+							if (callback) {
+								callback();
+							}
+							return;
+						}
+					}
+				});
+			}
+			// ...
+			function save_mappings() {
+				var rf = new AMT___requests_factory();
+				rf.io__write_to_file(
+					{
+						data:	'AMT__serverSide_write__value='+encodeURIComponent(JSON.stringify(o.mappings))+
+								'&AMT__serverSide_write__folder=.miscellaneous'+
+								'&AMT__serverSide_write__file=Cherise_Chin_LI_mappings',
+						host:	MT___host
+					},
+					function (obj) { //callback_function(write_object); // send this back!
+						//~ console.log(obj);
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+				);
+			}
+			
+			/**
+			 * function div_click
+			 * 
+			 * @param		div		element
+			 */
+			function div_click(div) {
+				div.style.backgroundColor = 'LightGreen';
+				//~ //industry
+				//~ document.getElementById('industry').value = this.fmt_industry;
+				//~ //employee_count
+				//~ document.getElementById('employee_count').value = this.fmt_size;
+				
+				// Set chosen biz industry
+				o.industry_chosen_biz = div.fmt_industry;
+				
+				// sbm
+				var sbm = true;
+				// CHECK IF INDUSTRY AND SIZE ARE IN SELECT ELEMENTS
+				// Set isAuto
+				var found = false;
+				for (var i in o.q[0].options) {
+					if  (
+							(
+							o.q[0].options[i].value == div.fmt_industry ||
+							o.q[0].options[i].value == div.fmt_industry.replace(/ & /g, '/')
+							)
+							&&
+						o.q[0].options[i].value != '-'
+						)
+					{
+						found = true;
+						o.q[0].selectedIndex = i;
+						o.isAuto = true;
+					}
+				}
+				if (!found) {
+					sbm = false;
+					o.q[0].style.border = '4px dashed blue';
+				}
+				// size
+				var found_size = false;
+				for (var i in o.q[1].options) {
+					if (o.q[1].options[i].value == div.fmt_size && o.q[1].options[i].innerText == div.fmt_size) { // && o.q[1].options[i].value != '-'
+						found_size = true;
+						o.q[1].selectedIndex = i;
+					}
+				}
+				if (!found_size) {
+					sbm = false;
+					o.q[1].style.border = '4px dashed blue';
+				}
+				
+				// sbm
+				console.log(sbm);
+				if (sbm) {
+					// Go next
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				} else {
+					// CHECK FOR MAPPINGS!
+					if (o.mappings.hasOwnProperty(div.fmt_industry)) {
+						o.q[0].value = o.mappings[ div.fmt_industry ];
+						// q[0].length == 148
+						
+						if (found_size && o.q[0].selectedIndex > 0 && o.q[0].selectedIndex <= 147) {
+							// Go next
+							new AMT___core_factory().nextTab();
+							doSubmit();
+						}
+					}
+				}
+			}
+			
+			// ...
+			function linkedin_biz__li_init() {
+				d1b.innerText = '';
+				var rf = new AMT___requests_factory();
+				rf.linkedin_company_search(
+					{
+						//~ keywords: o.comp_name
+						keywords: d2.value
+					},
+					linkedin_biz__li_process
+				);
+			}
+			// ({results:x, results_count:y, result: r});
+			function linkedin_biz__li_process(response_obj) {
+				
+				var ro = response_obj;
+				
+				var out = d1b;
+				
+				var x = ro.results;
+				
+				console.log(x);
+				
+				out.innerText = ro.results_count + '\n';
+				
+				var found = false;
+				var x_;
+				var btn;
+				for (var i in x) {
+					if (!x[i].company) continue;
+					
+					x_ = x[i].company;
+					x_.fmt_canonicalName = x_.fmt_canonicalName.replace(/<[^>]+>/g, '');
+					x_.fmt_canonicalName = __js_clean_html_str(x_.fmt_canonicalName);
+					console.log(!x_.hasOwnProperty('fmt_size') || x_.fmt_size == undefined);
+					x_.fmt_size = (!x_.hasOwnProperty('fmt_size') || x_.fmt_size == undefined) ? '-' : x_.fmt_size;
+					x_.fmt_size = (x_.fmt_size == 'Myself Only') ? '1-10' : x_.fmt_size;
+					x_.fmt_size = x_.fmt_size.replace(/,/g, '');
+					x_.fmt_industry = __js_clean_html_str( x_.fmt_industry.replace(/<[^>]+>/g, '') );
+					
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;border-top:1px solid #a2a2a2;');
+					d.fmt_industry = x_.fmt_industry;
+					d.fmt_size = x_.fmt_size.replace(/<[^>]+>/g, '').replace(/( employees?)/, '');
+					d.className = 'exe';
+					d.onclick = function(e) {
+						div_click(this);
+					}
+					d.innerHTML = MT__bold( x_.fmt_canonicalName.replace(/<\/?b>/g, ''), o.comp_array ) +
+						'<br>Ind:'+			x_.fmt_industry +
+						'<br>Loc:'+			(x_.hasOwnProperty('fmt_location') ? x_.fmt_location : 'N/A') +
+						'<br>Size:'+		x_.fmt_size +
+						'<br>Followers:'+	x_.followersCount;
+					out.appendChild(d);
+					//~ 
+					//~ //
+					//~ btn = document.createElement('input');
+					//~ btn.setAttribute('type','button');
+					//~ btn.setAttribute('style','width:auto;');
+					//~ btn.value = x_.fmt_canonicalName;
+					//~ // onclick
+					//~ //
+					//~ btn.y_url =  'http://www.linkedin.com/company/' + x_.id // .id 786639
+					//~ btn.onclick = function(){
+						//~ this.style.backgroundColor = 'LightGreen';
+						//~ new AMT___core_factory().nextTab();
+						//~ linkedin_biz__li_profile(this);
+					//~ }
+					//~ //
+					//~ out.appendChild(btn);
+					//~ out.appendChild(document.createElement('br'));
+					
+					
+				}
+				
+				// Append
+				if (ro.results.length > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:2000px;');
+					out.appendChild(d);
+				}
+			}
+			function linkedin_biz__init() {
+				d1.innerText = '';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+					//~ seed: d1b,
+					callback_function: linkedin_biz__complete,
+					//~ return_init_object: true
+				});
+			}
+			function linkedin_biz__complete(rs) {
+				if (rs.length == 0) {
+					d1.innerText = '0';
+					
+					// Try with .com removed?
+					// Add a border.
+					//~ if (d2.value.indexOf('.') != -1) {
+						//~ d2.value = d2.value.replace(/\.[^\.]*$/, '');
+						//~ d2.style.border = '2px solid blue';
+						//~ linkedin_biz__init();
+					//~ }
+					return;
+				}
+				for (var i in rs) {
+					
+					// Get rid of extraneous text on links.
+					// E.g. /company/389583?blahblbahalbahlabhlbhalhb = /company/389583.
+					var short;
+					var extra = '';
+					var x = /^(https?:\/\/\w+\.linkedin\.com\/company\/[^\/]+)([^$]*)/.exec(rs[i][0]);
+					if (x) {
+						short = (x) ? x[1] : rs[i][0];
+						short = short.replace(/^https?:\/\/\w+\./i, 'http://www.')
+						if (x[2])
+							extra = '<b>' +x[2]+ '</b><br>';
+					} else {
+						short = rs[i][0].replace(/^https?:\/\/\w+\./i, 'http://www.');
+					}
+					
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.y_url = short;
+					d.className = 'exe';
+					d.fmt_industry = null; //
+					d.fmt_size = null; //
+					d.onclick = function() {
+						linkedin_biz__li_profile(this);
+						//~ this.style.backgroundColor = 'LightGreen';
+						//~ if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
+							//~ 
+							//~ // Go next
+							//~ new AMT___core_factory().nextTab();
+							//~ 
+							//~ // ...
+							//~ linkedin_biz__li_profile(this);
+						//~ }
+					}
+					d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.comp_array );
+					d1.appendChild(d);
+					
+					// isMatch
+					// This will only work with yahoo.com searches? At least not startpage?
+					var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
+					if (isMatch) {
+						d.style.border = '6px solid LightGreen';
+					}
+					
+					// ...
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.innerText = 'L';
+					a.setAttribute('style','font-weight:bold;zoom:1.4;');
+					a.onclick = function(e) {
+						this.style.backgroundColor = 'LightGreen';
+						window.open(this.href, 'new');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					d.appendChild(a);
+				}
+			}
+			function linkedin_biz__li_profile(div) {
+				
+				var div = div;
+				div.style.border = '4px dashed blue';
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: div.y_url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.innerHTML = response.status;
+							return;
+						}
+						
+						var r;
+						var sbm = true;
+						
+						div.style.border = '';
+						div.style.borderBottom = '1px solid #a2a2a2';
+						
+						// e.g. 10,001+ employees
+						r = /<li class="company-size">[\r\n\t\s]*<h4>Company Size<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim().replace(/ employees/, '').replace(/,/, '').trim();
+							div.fmt_size = r;
+						} else {
+							sbm = false;
+						}
+						
+						//~ // HQ
+						//~ r = /<h4>Headquarters<\/h4>[\r\n\t\s]*<p class="adr" itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
+						//~ if (r) {
+							//~ var full = r[1].replace(/<[^>]*>/g, '').replace(/[\r\n\t\s]+/g, ' ').trim();
+							//~ 
+							//~ div.appendChild(document.createElement('br'));
+							//~ div.appendChild(document.createTextNode(full));
+							//~ 
+							//~ // Auto?
+							//~ var r2 = /<span class="postal-code" itemprop="postalCode">([^<]+)<\/span>/.exec(rs);
+							//~ if (r2) {
+								//~ r2 = __js_clean_html_str(r2[1]).trim();
+								//~ document.getElementsByName('web_url')[1].value = r2;
+							//~ } else sbm = false;
+						//~ } else if (rs.indexOf('<h4>Headquarters</h4>') == -1) {
+							//~ document.getElementsByName('web_url')[1].value = 'N/A';
+						//~ } else {
+							//~ sbm = false;
+						//~ }
+						
+						// e.g. Internet
+						r = /<li class="industry">[\r\n\t\s]*<h4>Industry<\/h4>[\r\n\t\s]*<p>([^<]*)<\/p>[\r\n\t\s]*<\/li>/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							div.fmt_industry = r;
+						} else {
+							sbm = false;
+						}
+						
+						// Sbm
+						console.log(sbm);
+						if (sbm) {
+							div_click(div);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	//
 	// Steve Sears
 	// Find the Number of Employees and Postal Code
 	// 
 	s = '<p>Find the Number of Employees and Postal Code&nbsp;for this website:<b style="font-family: Verdana, Geneva, sans-serif; font-size: 12px;">&nbsp;';
 	if (ih.indexOf(s) != -1) {
-		
-		console.log('x');
 		
 		var run = function() {}
 		run.prototype.f = function() {
