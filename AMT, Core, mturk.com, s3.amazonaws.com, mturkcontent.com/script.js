@@ -2889,6 +2889,11 @@ function MT__RUN() {
 							document.getElementsByName('web_url')[2].value = rslt.formatted_address;
 							if (!rslt.hasOwnProperty('formatted_address')) return; // check
 							
+							if (rslt.formatted_address.length > 10) {
+								document.getElementById('submitButton').click();
+							} else {
+								document.getElementsByName('web_url')[2].style.border = '4px solid blue';
+							}
 							// Submit?
 							break;
 						}
