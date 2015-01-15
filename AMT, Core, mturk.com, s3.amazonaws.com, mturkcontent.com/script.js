@@ -2832,6 +2832,19 @@ function MT__RUN() {
 				q: document.getElementsByName('web_url')
 			}
 			
+			//sbm
+			document.getElementById('submitButton').onclick = function() {
+				for (var i = 0; i<=2; i++) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
 			// Lat/Lng
 			new AMT___geographic_functions().utm_coords_to_geographic({ // options
 				easting: o.easting,
