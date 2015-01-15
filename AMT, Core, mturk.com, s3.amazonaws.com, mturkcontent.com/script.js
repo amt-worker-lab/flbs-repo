@@ -2809,6 +2809,38 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Proffinu
+	// Write letters and numbers from a cropped image
+	// 
+	s = '	<li style="font-size: 0.9em;">Please mark <strong>missing fields in the image</strong> with the text "NA" (no quotes).&nbsp;</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			// image_2_OCR
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: document.getElementsByTagName('img')[0].src,
+				resize: '50%',
+				callback_function: ocr
+			});
+			
+			function ocr(response) {
+				console.log(response);
+				console.log(response.text);
+			}
+		}
+		new run().f()
+		return;
+	}
+	
+	// 
 	// Elliott
 	// Find the latitude and longitude of a location
 	// http://www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
