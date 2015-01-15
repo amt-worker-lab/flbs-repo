@@ -2851,19 +2851,18 @@ function MT__RUN() {
 				o.q[1].value = callback_obj.lng;
 				if (!/^-?\d+(\.\d+|)$/.exec(callback_obj.lat) || !/^-?\d+(\.\d+|)$/.exec(callback_obj.lat))
 					sbm = false;
-				
+				//~ return;
 				// MT___google_api_reverseGeocode
 				MT___google_api_reverseGeocode(
 					callback_obj.lat + ',' + callback_obj.lng,
 					function(rs) {
 						console.log(rs);
-						rs = JSON.parse(rs);
+						//~ rs = JSON.parse(rs);
 						
-						console.log(rs);
+						//~ console.log(rs);
 						
 						if (!rs.results) return;
 						if (!rs.results.length) {
-							//~ d1c.innerHTML = '0';
 								return;
 						}
 						
@@ -2874,7 +2873,7 @@ function MT__RUN() {
 							
 							var rslt = rs.results[i];
 							
-							o.q[2].value = rslt.formatted_address;
+							document.getElementsByName('web_url')[2].value = rslt.formatted_address;
 							if (!rslt.hasOwnProperty('formatted_address')) return; // check
 							
 							// Submit?
