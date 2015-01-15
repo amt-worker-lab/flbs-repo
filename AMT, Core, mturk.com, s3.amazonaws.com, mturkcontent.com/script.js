@@ -2824,7 +2824,7 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
-			var x = /<li>Zone: ([\d+])<\/li>[\r\n\t\s]+<li>Easting:&nbsp;([\d+])<\/li>[\r\n\t\s]+<li>Northing:&nbsp;([\d+])<\/li>/.exec(ih);
+			var x = /<li>Zone: ([\d]+)<\/li>[\r\n\t\s]+<li>Easting:&nbsp;([\d]+)<\/li>[\r\n\t\s]+<li>Northing:&nbsp;([\d]+)<\/li>/.exec(ih);
 			var o = {
 				zone: x[1],
 				easting: x[2],
@@ -2856,7 +2856,7 @@ function MT__RUN() {
 				u+= '&types=address';
 				u+= '&sensor=false';
 				u+= '&rankby=distance'; // distance,prominence(def.)
-				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+				u+= '&key=_GOOGLE_API_KEY_REDACTED_';//
 				
 				GM_xmlhttpRequest({
 					method: "GET",
