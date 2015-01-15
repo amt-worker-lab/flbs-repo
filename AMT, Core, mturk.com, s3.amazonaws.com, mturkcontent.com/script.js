@@ -2848,6 +2848,7 @@ function MT__RUN() {
 				MT___google_api_reverseGeocode(
 					callback_obj.lat + ',' + callback_obj.lng,
 					function(rs) {
+						console.log(rs);
 						rs = JSON.parse(rs);
 						
 						console.log(rs);
