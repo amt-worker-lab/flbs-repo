@@ -2809,6 +2809,74 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Elliott
+	// Find the latitude and longitude of a location
+	// http://www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
+	s = '	<li>Visit the converter URL:&nbsp;http://www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var x = /<li>Zone: ([\d+])<\/li>[\r\n\t\s]+<li>Easting:&nbsp;([\d+])<\/li>[\r\n\t\s]+<li>Northing:&nbsp;([\d+])<\/li>/.exec(ih);
+			var o = {
+				zone: x[1],
+				easting: x[2],
+				northing: x[3]
+			}
+			
+			
+			// 2
+			var u;
+			u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+			u+= 'location='+o.lat+','+o.lng; //lat,lng
+			//~ u+= '&keyword=' + encodeURIComponent('');
+			//u+= '&rankby=distance';
+			//~ u+= '&radius=10000'; // DEFAULT MUST BE 50KM // "Ranking results by distance will set a fixed search radius of 50km."
+			u+= '&types=dentist|doctor|hospital|pharmacy|physiotherapist|veterinary_care';
+			u+= '&sensor=false';
+			u+= '&rankby=distance'; // distance,prominence(def.)
+			u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			//u+= '&radius=40000'; // 5k = 3.1 mi.
+			//u+= '&types=accounting|atm|bank';
+			//u+= '&name=' + encodeURIComponent(b[0].innerText);
+			//u+= '&name=';
+			//u+= '&name='+encodeURIComponent(b[0].innerText);
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					rs = JSON.parse(rs);
+					
+					console.log(rs);
+					
+					if (!rs.results) return;
+					if (!rs.results.length) {
+						d1c.innerHTML = '0';
+						return;
+					}
+					
+					for (var i in rs.results) {
+						
+						var rslt = rs.results[i];
+					}
+				}
+			})
+		}
+		new run().f();
+	}
+	
+	// 
 	// Travis Dao
 	// Copy Data from Web Page
 	//
