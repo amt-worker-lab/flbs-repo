@@ -4098,9 +4098,19 @@ function AMT___geographic_functions(obj_vars) {
 /*
  * 
  * www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
+ * 
+ * @param		options
+ * 				.easting
+ * 				.northing
+ * 				.zone
+ * @returns		{.lat, .lng}
  */
-AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
+AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options) {
 	
+	// vars
+	var DatumEqRad,DatumFlat,Item,k0,a,f,b,e,drad,latd,phi,e0,N,T,C,lng,lng0,lngd,M,x,y,k;
+	var utmz,zcm,DigraphLetrsE,DigraphLetrsN,OOZok;
+	//"inputs"
 	var EqRadBox,PolRadBox,FlatBox,RecipBox;
 	function Declarations(){
 	//Symbols as used in USGS PP 1395: Map Projections - A Working Manual
@@ -4143,7 +4153,14 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
 		OOZok = false;
 	}//Close declarations
 
-
+	// vars
+	var UTMeBox1 = options.easting,UTMnBox1 = options.northing,UTMzBox1 = options.zone;
+	var k0,b,e,e0,esq,e0sq,x,y,utmz,zcm,e1,M0,M,mu,phil,C1,T1,N1,R1,D,phi;
+	//"inputs"
+	var DDLatBox0,DDLonBox0,SHemBox = false; // SHemBox=north of equator=This is always false for this task (Jan15 2015)
+	
+	// Init
+	UTMtoGeog();
 	function UTMtoGeog(){
 		//Convert UTM Coordinates to Geographic
 		Declarations();
@@ -4153,18 +4170,21 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
 		e0 = e/Math.sqrt(1 - e*e);//Called e prime in reference
 		esq = (1 - (b/a)*(b/a));//e squared for use in expansions
 		e0sq = e*e/(1-e*e);// e0 squared - always even powers
-		x = parseFloat(document.getElementById("UTMeBox1").value);
+		x = parseFloat(UTMeBox1);
+		//~ x = parseFloat(document.getElementById("UTMeBox1").value);
 		if (x<160000 || x>840000){alert("Outside permissible range of easting values \n Results may be unreliable \n Use with caution");} 
-		y = parseFloat(document.getElementById("UTMnBox1").value);
-		//alert(y)
+		y = parseFloat(UTMnBox1);
+		//~ y = parseFloat(document.getElementById("UTMnBox1").value);
 		if (y<0){alert("Negative values not allowed \n Results may be unreliable \n Use with caution");}
 		if (y>10000000){alert("Northing may not exceed 10,000,000 \n Results may be unreliable \n Use with caution");}
-		utmz = parseFloat(document.getElementById("UTMzBox1").value);
+		utmz = parseFloat(UTMzBox1);
+		//~ utmz = parseFloat(document.getElementById("UTMzBox1").value);
 		zcm = 3 + 6*(utmz-1) - 180;//Central meridian of zone
 		e1 = (1 - Math.sqrt(1 - e*e))/(1 + Math.sqrt(1 - e*e));//Called e1 in USGS PP 1395 also
 		M0 = 0;//In case origin other than zero lat - not needed for standard UTM
 		M = M0 + y/k0;//Arc length along standard meridian. 
-		if (document.getElementById("SHemBox").checked === true){M=M0+(y-10000000)/k;}
+		if (SHemBox){M=M0+(y-10000000)/k;}
+		//~ if (document.getElementById("SHemBox").checked === true){M=M0+(y-10000000)/k;}
 		mu = M/(a*(1 - esq*(1/4 + esq*(3/64 + 5*esq/256))));
 		phi1 = mu + e1*(3/2 - 27*e1*e1/32)*Math.sin(2*mu) + e1*e1*(21/16 -55*e1*e1/32)*Math.sin(4*mu);//Footprint Latitude
 		phi1 = phi1 + e1*e1*e1*(Math.sin(6*mu)*151/96 + e1*Math.sin(8*mu)*1097/512);
@@ -4176,9 +4196,11 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
 		phi = (D*D)*(1/2 - D*D*(5 + 3*T1 + 10*C1 - 4*C1*C1 - 9*e0sq)/24);
 			phi = phi + Math.pow(D,6)*(61 + 90*T1 + 298*C1 + 45*T1*T1 -252*e0sq - 3*C1*C1)/720;
 			phi = phi1 - (N1*Math.tan(phi1)/R1)*phi;
-					
+		
+		
+		
 	//Output Latitude
-		document.getElementById("DDLatBox0").value = Math.floor(1000000*phi/drad)/1000000;
+		DDLatBox0 = Math.floor(1000000*phi/drad)/1000000;
 		//~ document.getElementById("DDLatBox0").value = Math.floor(1000000*phi/drad)/1000000;
 			
 	//Longitude
@@ -4186,24 +4208,21 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
 		lngd = zcm+lng/drad;
 		
 	//Output Longitude
-		document.getElementById("DDLonBox0").value = Math.floor(1000000*lngd)/1000000;
+		DDLonBox0 = Math.floor(1000000*lngd)/1000000;
 		//~ document.getElementById("DDLonBox0").value = Math.floor(1000000*lngd)/1000000;
 	
-	//Parse DMS
-		xd = lngd;
-		yd = phi/drad;
-		DDtoDMS();
-		document.getElementById("DLatBox0").value = Math.floor(ydd);
-		document.getElementById("MLatBox0").value = ym;
-		document.getElementById("SLatBox0").value = Math.floor(1000*ys)/1000;
-		document.getElementById("DLonBox0").value = Math.floor(xdd);
-		document.getElementById("MLonBox0").value = xm;
-		document.getElementById("SLonBox0").value = Math.floor(1000*xs)/1000;
-
-		document.getElementById("UTMLonZoneBox2").value = utmz;
-		document.getElementById("UTMLatZoneBox2").value = DigraphLetrsE[latz];
-		document.getElementById("UTMeBox2").value = Math.round(10*(x-100000*Math.floor(x/100000)))/10;
-		document.getElementById("UTMnBox2").value = Math.round(10*(y-100000*Math.floor(y/100000)))/10;
+		// Do callback
+		options.callback({
+			lat: DDLatBox0,
+			lng: DDLonBox0
+		});
+	// BELOW HERE IS NOT REQUIRED
+	//
+	//
+	//~ //Parse DMS
+		//~ xd = lngd;
+		//~ yd = phi/drad;
+		//~ DDtoDMS();
 		//~ document.getElementById("DLatBox0").value = Math.floor(ydd);
 		//~ document.getElementById("MLatBox0").value = ym;
 		//~ document.getElementById("SLatBox0").value = Math.floor(1000*ys)/1000;
@@ -4215,8 +4234,7 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(a, b) {
 		//~ document.getElementById("UTMLatZoneBox2").value = DigraphLetrsE[latz];
 		//~ document.getElementById("UTMeBox2").value = Math.round(10*(x-100000*Math.floor(x/100000)))/10;
 		//~ document.getElementById("UTMnBox2").value = Math.round(10*(y-100000*Math.floor(y/100000)))/10;
-		MakeDigraph();
-		document.getElementById("UTMDgBox2").value = Digraph;
+		//~ MakeDigraph();
 		//~ document.getElementById("UTMDgBox2").value = Digraph;
 	}//End UTM to Geog
 }

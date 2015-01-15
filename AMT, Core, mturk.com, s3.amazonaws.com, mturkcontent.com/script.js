@@ -2831,47 +2831,59 @@ function MT__RUN() {
 				northing: x[3]
 			}
 			
+			// Lat/Lng
+			new AMT___geographic_functions().utm_coords_to_geographic({ // options
+				easting: o.easting,
+				northing: o.northing,
+				zone: o.zone,
+				callback: google_nearby
+			});
 			
-			// 2
-			var u;
-			u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-			u+= 'location='+o.lat+','+o.lng; //lat,lng
-			//~ u+= '&keyword=' + encodeURIComponent('');
-			//u+= '&rankby=distance';
-			//~ u+= '&radius=10000'; // DEFAULT MUST BE 50KM // "Ranking results by distance will set a fixed search radius of 50km."
-			u+= '&types=dentist|doctor|hospital|pharmacy|physiotherapist|veterinary_care';
-			u+= '&sensor=false';
-			u+= '&rankby=distance'; // distance,prominence(def.)
-			u+= '&key=_GOOGLE_API_KEY_REDACTED_';
-			
-			//u+= '&radius=40000'; // 5k = 3.1 mi.
-			//u+= '&types=accounting|atm|bank';
-			//u+= '&name=' + encodeURIComponent(b[0].innerText);
-			//u+= '&name=';
-			//u+= '&name='+encodeURIComponent(b[0].innerText);
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					rs = JSON.parse(rs);
-					
-					console.log(rs);
-					
-					if (!rs.results) return;
-					if (!rs.results.length) {
-						d1c.innerHTML = '0';
-						return;
-					}
-					
-					for (var i in rs.results) {
+			/*
+			 * function google_nearby
+			 * 
+			 * @param		callback_obj.(lat,lng)
+			 */
+			function google_nearby(callback_obj) {
+				
+				
+				// 2
+				var u;
+				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+				u+= 'location='+callback_obj.lat+','+callback_obj.lng; //lat,lng
+				//~ u+= '&keyword=' + encodeURIComponent('');
+				//~ u+= '&radius=1000'; // DEFAULT MUST BE 50KM // "Ranking results by distance will set a fixed search radius of 50km."
+				u+= '&types=address';
+				u+= '&sensor=false';
+				u+= '&rankby=distance'; // distance,prominence(def.)
+				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
 						
-						var rslt = rs.results[i];
+						rs = JSON.parse(rs);
+						
+						console.log(rs);
+						
+						if (!rs.results) return;
+						if (!rs.results.length) {
+							d1c.innerHTML = '0';
+							return;
+						}
+						
+						// Closest street address
+						for (var i in rs.results) {
+							
+							var rslt = rs.results[i];
+							
+							
+						}
 					}
-				}
-			})
+				});
+			}
 		}
 		new run().f();
 	}
