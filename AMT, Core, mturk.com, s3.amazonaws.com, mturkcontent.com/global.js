@@ -4157,7 +4157,7 @@ AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options
 	var UTMeBox1 = options.easting,UTMnBox1 = options.northing,UTMzBox1 = options.zone;
 	var k0,b,e,e0,esq,e0sq,x,y,utmz,zcm,e1,M0,M,mu,phil,C1,T1,N1,R1,D,phi;
 	//"inputs"
-	var DDLatBox0,DDLonBox0,SHemBox = false; // SHemBox=north of equator=This is always false for this task (Jan15 2015)
+	var DDLatBox0,DDLonBox0,SHemBox = true; // SET TO TRUE=SOUTH!!! // SHemBox=north of equator=This is always false for this task (Jan15 2015)
 	
 	// Init
 	UTMtoGeog();
