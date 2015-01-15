@@ -2839,24 +2839,67 @@ function MT__RUN() {
 				callback: google_nearby
 			});
 			
+			
+			/*
+			 * function google_nearby
+			 * MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy)
+			 */
+			function google_nearby(callback_obj) {
+				MT___google_api_reverseGeocode(
+					callback_obj.lat + ',' + callback_obj.lng,
+					function(rs) {
+						rs = JSON.parse(rs);
+						
+						console.log(rs);
+						
+						if (!rs.results) return;
+						if (!rs.results.length) {
+							//~ d1c.innerHTML = '0';
+							return;
+						}
+						
+						// Closest street address
+						for (var i in rs.results) {
+							
+							var rslt = rs.results[i];
+							
+							
+						}
+					},
+					true
+				);
+			}
 			/*
 			 * function google_nearby
 			 * 
 			 * @param		callback_obj.(lat,lng)
 			 */
-			function google_nearby(callback_obj) {
+			function google_nearbyXX(callback_obj) {
 				
 				
-				// 2
+				//
+
+
+				// https://developers.google.com/maps/documentation/geocoding/?csw=1#ReverseGeocoding
 				var u;
-				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-				u+= 'location='+callback_obj.lat+','+callback_obj.lng; //lat,lng
+				u = 'https://maps.googleapis.com/maps/api/geocode/json?';
+				u+= 'latlng='+callback_obj.lat+','+callback_obj.lng; //lat,lng
 				//~ u+= '&keyword=' + encodeURIComponent('');
 				//~ u+= '&radius=1000'; // DEFAULT MUST BE 50KM // "Ranking results by distance will set a fixed search radius of 50km."
 				u+= '&types=address';
 				u+= '&sensor=false';
 				u+= '&rankby=distance'; // distance,prominence(def.)
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';//
+				u+= '&language=en'
+				//~ var u;
+				//~ u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+				//~ u+= 'location='+callback_obj.lat+','+callback_obj.lng; //lat,lng
+				//u+= '&keyword=' + encodeURIComponent('');
+				//u+= '&radius=1000'; // DEFAULT MUST BE 50KM // "Ranking results by distance will set a fixed search radius of 50km."
+				//~ u+= '&types=address';
+				//~ u+= '&sensor=false';
+				//~ u+= '&rankby=distance'; // distance,prominence(def.)
+				//~ u+= '&key=_GOOGLE_API_KEY_REDACTED_';//
 				
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -2870,7 +2913,7 @@ function MT__RUN() {
 						
 						if (!rs.results) return;
 						if (!rs.results.length) {
-							d1c.innerHTML = '0';
+							//~ d1c.innerHTML = '0';
 							return;
 						}
 						
