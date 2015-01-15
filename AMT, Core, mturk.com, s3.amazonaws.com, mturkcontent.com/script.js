@@ -2828,7 +2828,8 @@ function MT__RUN() {
 			var o = {
 				zone: x[1],
 				easting: x[2],
-				northing: x[3]
+				northing: x[3],
+				q: document.getElementsByName('web_url')
 			}
 			
 			// Lat/Lng
@@ -2845,6 +2846,13 @@ function MT__RUN() {
 			 * MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy)
 			 */
 			function google_nearby(callback_obj) {
+				var sbm = true;
+				o.q[0].value = callback_obj.lat;
+				o.q[1].value = callback_obj.lng;
+				if (!/^-?\d+(\.\d+|)$/.exec(callback_obj.lat) || !/^-?\d+(\.\d+|)$/.exec(callback_obj.lat))
+					sbm = false;
+				
+				// MT___google_api_reverseGeocode
 				MT___google_api_reverseGeocode(
 					callback_obj.lat + ',' + callback_obj.lng,
 					function(rs) {
@@ -2856,15 +2864,21 @@ function MT__RUN() {
 						if (!rs.results) return;
 						if (!rs.results.length) {
 							//~ d1c.innerHTML = '0';
-							return;
+								return;
 						}
 						
 						// Closest street address
+						// "Generally, addresses are returned from most specific to least specific; the more exact address is the most prominent result, as it is in this case. Note that we return different types of addresses, from the most specific street address to less specific political entities such as neighborhoods, cities, counties, states, etc. If you wish to match a specific type of address, see the section below on restricting results by type."
+						// "ROOFTOP" seems most exact
 						for (var i in rs.results) {
 							
 							var rslt = rs.results[i];
 							
+							o.q[2].value = rslt.formatted_address;
+							if (!rslt.hasOwnProperty('formatted_address')) return; // check
 							
+							// Submit?
+							break;
 						}
 					},
 					true
