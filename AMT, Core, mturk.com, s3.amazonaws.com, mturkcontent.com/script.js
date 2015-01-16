@@ -2824,41 +2824,122 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
+			var o = {
+				q: [
+					document.getElementById('Field1'),
+					document.getElementById('Field2'),
+					document.getElementById('Field3'),
+					document.getElementById('Field4'),
+					document.getElementById('Field5'),
+					document.getElementById('Field6'),
+					document.getElementById('Field7')
+				],
+				fs: document.getElementsByTagName('fieldset')[0]
+			}
+			
+			/*BEGIN ITEMS*/
+			//~ var d1 = document.createElement('textarea');
+			//~ d1.setAttribute('style','width:200px;height:100px;');
+			//~ o.fs.innerText = '';
+			//~ o.fs.appendChild = d1;
+			/*END ITEMS*/
+			
+			// focus
+			setTimeout(function() {
+				o.q[0].focus();
+			}, 1400);
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
 			// image_2_OCR
-			var rf = new AMT___requests_factory().image_2_OCR({
-				url: document.getElementsByTagName('img')[0].src,
-				resize: '50%',
-				callback_function: ocr
-			});
-			var rf = new AMT___requests_factory().image_2_OCR({
-				url: 'http://astarmathsandphysics.com/gcse-physics-notes/gcse-physics-notes-production-of-electron-beams-html-68e1ec61.gif',
-				resize: '100%',
-				callback_function: ocr
-			});
-			var rf = new AMT___requests_factory().image_2_OCR({
-				url: document.getElementsByTagName('img')[0].src,
-				resize: '200%',
-				callback_function: ocr
-			});
-			var rf = new AMT___requests_factory().image_2_OCR({
-				url: document.getElementsByTagName('img')[0].src,
-				resize: '400%',
-				callback_function: ocr
-			});
+			//~ var rf = new AMT___requests_factory().image_2_OCR({
+				//~ url: document.getElementsByTagName('img')[0].src,
+				//~ resize: '400%',
+				//~ nobatch: 'AMT_Requester_Proffinu',
+				//~ crop: '-2+0',
+				//~ callback_function: ocr
+			//~ });
+			//~ var rf = new AMT___requests_factory().image_2_OCR({
+				//~ url: document.getElementsByTagName('img')[0].src,
+				//~ resize: '600%',
+				//~ nobatch: 'AMT_Requester_Proffinu',
+				//~ crop: '-2+0',
+				//~ callback_function: ocr
+			//~ });
 			var rf = new AMT___requests_factory().image_2_OCR({
 				url: document.getElementsByTagName('img')[0].src,
 				resize: '800%',
+				nobatch: 'AMT_Requester_Proffinu',
+				crop: '-2+0',
 				callback_function: ocr
 			});
-			var rf = new AMT___requests_factory().image_2_OCR({
-				url: document.getElementsByTagName('img')[0].src,
-				resize: '1600%',
-				callback_function: ocr
-			});
+			//~ var rf = new AMT___requests_factory().image_2_OCR({
+				//~ url: document.getElementsByTagName('img')[0].src,
+				//~ resize: '1000%',
+				//~ nobatch: 'AMT_Requester_Proffinu',
+				//~ crop: '-2+0',
+				//~ callback_function: ocr
+			//~ });
+			//~ var rf = new AMT___requests_factory().image_2_OCR({
+				//~ url: document.getElementsByTagName('img')[0].src,
+				//~ resize: '1400%',
+				//~ nobatch: 'AMT_Requester_Proffinu',
+				//~ crop: '-2+0',
+				//~ callback_function: ocr
+			//~ });
 			
 			function ocr(response) {
 				console.log(response);
 				console.log(response.text);
+				
+				// rs
+				var rs = response.text;
+				o.fs.innerText = rs;
+				
+				// Replace "sms"...that is, replace "s" with "5"
+				rs = rs.replace(/([\d\w]+)ms/, function(m0, m1) {
+					//~ console.log(m1);
+					m1 = m1.replace(/s/gi, '5');
+					m1 = m1.replace(/U/g, '0');
+					//~ console.log(m1);
+					return m1 + 'ms';
+				});
+				
+				var reg = /(\d+:[\w\d]+) +(\d+)/.exec(rs);
+				if (reg) {
+					o.q[0].value = reg[1].toUpperCase(); // to upper!
+					o.q[1].value = reg[2];
+				}
+				
+				var reg = /(\d+\/\d+\/\d+)/.exec(rs);
+				if (reg) {
+					o.q[2].value = reg[1];
+				}
+				
+				var reg = /(\+ *\d+) *(\+ *\d+ *\. *\d+)/.exec(rs);
+				if (reg) {
+					o.q[3].value = reg[1].replace(/ /g, '');
+					o.q[4].value = reg[2].replace(/ /g, '');
+				}
+				
+				// 0.4% OR 12% OR 1 2 % OR 1. 2%, etc.
+				var reg = /(\d+ms) +(\d+[ \.\d]+%)/.exec(rs);
+				if (reg) {
+					o.q[5].value = reg[1].replace(/ /g, '');
+					o.q[6].value = reg[2].replace(/ /g, '');
+				}
+				
 			}
 		}
 		new run().f()
