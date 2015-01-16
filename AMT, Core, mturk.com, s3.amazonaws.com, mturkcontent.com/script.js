@@ -2830,6 +2830,31 @@ function MT__RUN() {
 				resize: '50%',
 				callback_function: ocr
 			});
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: 'http://astarmathsandphysics.com/gcse-physics-notes/gcse-physics-notes-production-of-electron-beams-html-68e1ec61.gif',
+				resize: '100%',
+				callback_function: ocr
+			});
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: document.getElementsByTagName('img')[0].src,
+				resize: '200%',
+				callback_function: ocr
+			});
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: document.getElementsByTagName('img')[0].src,
+				resize: '400%',
+				callback_function: ocr
+			});
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: document.getElementsByTagName('img')[0].src,
+				resize: '800%',
+				callback_function: ocr
+			});
+			var rf = new AMT___requests_factory().image_2_OCR({
+				url: document.getElementsByTagName('img')[0].src,
+				resize: '1600%',
+				callback_function: ocr
+			});
 			
 			function ocr(response) {
 				console.log(response);
