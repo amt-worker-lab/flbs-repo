@@ -2916,21 +2916,31 @@ function MT__RUN() {
 					return m1 + 'ms';
 				});
 				
-				var reg = /(\d+:[\w\d]+) +(\d+)/.exec(rs);
+				// HIGHLIGHT FIELDS WHEN REGEX FAILS!!!
+				
+				// ...
+				var reg = /(\d+) *: *([\w\d]+) *+(\d+)/.exec(rs);
 				if (reg) {
-					o.q[0].value = reg[1].toUpperCase(); // to upper!
-					o.q[1].value = reg[2];
+					o.q[0].value = reg[1].toUpperCase() + ':' + reg[2].replace(/0/g, 'O'); // to upper! // 0 to O!!!
+					o.q[1].value = reg[3]; 
+				} else {
+					o.q[0].style.border = '2px solid blue';
+					o.q[1].style.border = '2px solid blue';
 				}
 				
 				var reg = /(\d+\/\d+\/\d+)/.exec(rs);
 				if (reg) {
 					o.q[2].value = reg[1];
+				} else {
+					
 				}
 				
 				var reg = /(\+ *\d+) *(\+ *\d+ *\. *\d+)/.exec(rs);
 				if (reg) {
 					o.q[3].value = reg[1].replace(/ /g, '');
 					o.q[4].value = reg[2].replace(/ /g, '');
+				} else {
+					
 				}
 				
 				// 0.4% OR 12% OR 1 2 % OR 1. 2%, etc.
@@ -2938,6 +2948,8 @@ function MT__RUN() {
 				if (reg) {
 					o.q[5].value = reg[1].replace(/ /g, '');
 					o.q[6].value = reg[2].replace(/ /g, '');
+				} else {
+					
 				}
 				
 			}
@@ -13042,6 +13054,7 @@ function MT__RUN() {
 					companyScope: 'CP'
 				},
 				image_search: true,
+				retrieve_fields: {image_full_url:true}, // not profile_url,found_valid_li_url,image_thumbnail_url,image_full_url,image
 				callback_function: function(comp_object) {
 					//~ {
 						//~ profile_url: url,
@@ -13052,7 +13065,7 @@ function MT__RUN() {
 					//~ }
 					
 					var rs = comp_object;
-					console.log(rs);
+					//console.log(rs);
 					
 					q.value = rs.image_full_url;
 					

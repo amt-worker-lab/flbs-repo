@@ -2486,6 +2486,12 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 	//
 	var ps_object = ps_object;
 	
+	// retrieve_fields
+	// ...Defaults
+	// retrieve_fields: Any of "profile_url,found_valid_li_url,image_thumbnail_url,image_full_url,image,image_full_url"
+	if (!ps_object.hasOwnProperty('retrieve_fields')) {
+		ps_object.retrieve_fields = {};
+	}
 	/*BEGIN ITEMS*/
 	//
 	var div_cx_l;
@@ -3090,9 +3096,19 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				}
 				// If it is an image search
 				// Click 1 = ...
+				// CHECK ps_object.retrieve_fields (New Jan16 2015)
 				else {
 					this.style.border = '4px solid LightGreen';
-					linkedin_people_location__profile_image(this);
+					
+					if (ps_object.retrieve_fields.hasOwnProperty('image_full_url')) {
+						ps_object.callback_function({ // SEND BACK ABBREVIATED!
+							image_thumbnail_url: this.src,
+							image_full_url: this.img_li,
+							image: this
+						});
+					} else {
+						linkedin_people_location__profile_image(this);
+					}
 				}
 			}
 			
@@ -3112,7 +3128,16 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		div.setAttribute('style','height:1600px;');
 		out.appendChild(div);
 	}
-	
+	/**
+	 * function linkedin_people_location__profile_image
+	 * 
+	 * @returns
+	 * 					.profile_url			url,
+	 *					.found_valid_li_url		found_valid_li_url,
+	 *					.image_thumbnail_url		btn.src,
+	 *					.image_full_url		btn.img_li,
+	 *					.image				btn
+	 */
 	function linkedin_people_location__profile_image(btn) {
 		
 		var btn = btn;
@@ -3161,7 +3186,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 						}
 					}
 				}
-				
 				
 				// CALLBACK FUNCTION
 				// Object
