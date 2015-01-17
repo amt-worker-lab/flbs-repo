@@ -12933,6 +12933,8 @@ function MT__RUN() {
 			GM_addStyle('.link__:hover {zoom:1.2;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			
+			document.body.focus();
+			
 			//~ GM_addStyle('.section {position:absolute;top:0px;left:0;}');
 			
 			//~ GM_addStyle('table {zoom:0.8;}');
@@ -12948,7 +12950,7 @@ function MT__RUN() {
 			d2.setAttribute('id','noImage');
 			document.body.appendChild(d2);
 			d2.type = 'button';
-			d2.value = 'No Image';
+			d2.value = 'No Image (Q)';
 			d2.onclick = function () {
 				document.getElementById('web_url').value = 'Found Profile, but No Image';
 				new AMT___core_factory().nextTab();
@@ -12960,9 +12962,9 @@ function MT__RUN() {
 			d3.setAttribute('id','noProfile');
 			document.body.appendChild(d3);
 			d3.type = 'button';
-			d3.value = 'No Profile';
+			d3.value = 'No Profile (R)';
 			d3.onclick = function () {
-				document.getElementById('web_url').value = this.value;
+				document.getElementById('web_url').value = 'No Profile';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
