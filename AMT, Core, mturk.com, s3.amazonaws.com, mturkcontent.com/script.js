@@ -31500,7 +31500,7 @@ function MT__RUN() {
 		//...
 		var HEIGHT = screen.height;
 		var tmp_h = (HEIGHT*1 - 400)+ 'px';
-		
+
 		
 		
 		
@@ -31541,6 +31541,18 @@ function MT__RUN() {
 			curr_map_view: null // For Z hotkey
 		};
 		console.log(o);
+		
+		
+		
+		AMT___addUserDecision('Chios Polygon - Quality Control',
+										function() {
+											console.log(o);
+											return o.name + '||||' + o.address;
+										},
+										['Id(polygon)',
+										 'Id(reasons)']
+											);		
+		
 		
 		// ...
 		var q = document.getElementById('polygon');
