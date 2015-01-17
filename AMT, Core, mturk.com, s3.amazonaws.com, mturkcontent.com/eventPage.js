@@ -437,7 +437,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				
 				chrome.tabs.update(nextTab, {active: true}, function() {
 					//~ alert('here1');
-					if(window.request.options.focusOnPage) {
+					if(window.request && window.request.options && window.request.options.focusOnPage) {
 						console.log('told to focus on page');
 						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.isTopWindow}, function(response) {
 							//squelch response

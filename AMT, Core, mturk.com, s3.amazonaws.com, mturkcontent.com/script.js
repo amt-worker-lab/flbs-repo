@@ -13094,7 +13094,7 @@ function MT__RUN() {
 					}
 					
 					// Is 200
-					new AMT___core_factory().nextTab();
+					new AMT___core_factory().nextTab({focusOnPage:true});
 					new AMT___requests_factory().url_to_status_code({
 						url: rs.image_full_url,
 						callback_function: function(callback_object) {
@@ -13125,7 +13125,7 @@ function MT__RUN() {
 				// Here?
 				
 				// nextTab
-				new AMT___core_factory().nextTab();
+				new AMT___core_factory().nextTab({focusOnPage:true});
 				// ...
 				doSubmit();
 				// ...
