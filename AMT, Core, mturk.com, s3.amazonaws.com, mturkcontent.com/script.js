@@ -12953,7 +12953,7 @@ function MT__RUN() {
 			d2.value = 'No Image (Q)';
 			d2.onclick = function () {
 				document.getElementById('web_url').value = 'Found Profile, but No Image';
-				new AMT___core_factory().nextTab();
+				new AMT___core_factory().nextTab({focusOnPage:true});
 				doSubmit();
 			}
 			//
@@ -12965,7 +12965,7 @@ function MT__RUN() {
 			d3.value = 'No Profile (R)';
 			d3.onclick = function () {
 				document.getElementById('web_url').value = 'No Profile';
-				new AMT___core_factory().nextTab();
+				new AMT___core_factory().nextTab({focusOnPage:true});
 				doSubmit();
 			}
 			//~ // Img

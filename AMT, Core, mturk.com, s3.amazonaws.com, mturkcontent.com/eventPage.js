@@ -399,58 +399,55 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.nextTab)
 	{
-		//~ console.log('Here1');
-		//~ console.log(sender);
-		
-			chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
+		var request = request;
+		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
+			
+			//~ console.log('Here2');
+			//~ console.log(sender);
+			
+			var currentIndex = -1;
+			for(var i = 0; i < allTabs.length; i++)
+			{
+				if(allTabs[i].active && allTabs[i].id == sender.tab.id)
+				{
+					var currentIndex = allTabs[i].index;
+					break;
+				}
+			}
+			if(currentIndex == -1) {
+				//We left the tab that we wanted to switch out of
+				//Consider processing option's object even though we will not switch
+			}
+			else {
+				//~ console.log(currentIndex);
+				//~ console.log(currentIndex);
 				
-				//~ console.log('Here2');
-				//~ console.log(sender);
-				
-				var currentIndex = -1;
+				var nextTab =  false;
 				for(var i = 0; i < allTabs.length; i++)
 				{
-					if(allTabs[i].active && allTabs[i].id == sender.tab.id)
+					if( (currentIndex + 1) == allTabs[i].index)
 					{
-						var currentIndex = allTabs[i].index;
-						break;
+						var nextTab = allTabs[i].id;
 					}
 				}
-				if(currentIndex == -1) {
-					//We left the tab that we wanted to switch out of
-					//Consider processing option's object even though we will not switch
-				}
-				else {
-					//~ console.log(currentIndex);
-					//~ console.log(currentIndex);
-					
-					var nextTab =  false;
-					for(var i = 0; i < allTabs.length; i++)
-					{
-						if( (currentIndex + 1) == allTabs[i].index)
-						{
-							var nextTab = allTabs[i].id;
-						}
-					}
-					if(!nextTab)
-					{
-						nextTab = allTabs[0].id;
-					}
-					
-					chrome.tabs.update(nextTab, {active: true}, function() {
-						//~ alert('here1');
-						switch(request.option) {
-							case 'tellNextPageThatItIsOkayToRun': 
-							//~ alert('here2');
-							chrome.tabs.sendMessage(nextTab, {itsOkayToRun: true}, function(response) {
-								//squelch response
-							});
-							break;
-						}				
-					});
+				if(!nextTab)
+				{
+					nextTab = allTabs[0].id;
 				}
 				
-			});
+				chrome.tabs.update(nextTab, {active: true}, function() {
+					//~ alert('here1');
+					if(request.options.focusOnPage) {
+						console.log('told to focus on page');
+						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, request.isTopWindow}, function(response) {
+							//squelch response
+						});
+						break;
+					}				
+				});
+			}
+			
+		});
 	}
 	
 	/**

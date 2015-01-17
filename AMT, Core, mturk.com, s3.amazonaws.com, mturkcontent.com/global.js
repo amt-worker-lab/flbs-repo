@@ -298,6 +298,12 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.focusOnPage) {
+		console.log('toldtofocus');
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			window.focus();
+		}
+	}
 	if(request.checkPreview)
 	{
 		if(AMT__Global_Vars.isTopWindow)
@@ -1592,10 +1598,12 @@ function AMT___core_factory() {
 }
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
-AMT___core_factory.prototype.nextTab = function() {
+AMT___core_factory.prototype.nextTab = function(options) {
 	chrome.extension.sendRequest(
 		{
-			nextTab: true
+			nextTab: true,
+			options: options,
+			isTopWindow: AMT__Global_Vars.isTopWindow
 		},
 		function(response)
 		{
