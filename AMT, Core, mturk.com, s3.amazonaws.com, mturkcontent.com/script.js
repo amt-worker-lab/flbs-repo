@@ -12945,6 +12945,7 @@ function MT__RUN() {
 			//
 			var d2 = document.createElement('input');
 			d2.setAttribute('style','position:absolute;top:0;left:40%;height:65px;width:275px');
+			d2.setAttribute('id','noImage');
 			document.body.appendChild(d2);
 			d2.type = 'button';
 			d2.value = 'No Image';
@@ -12956,6 +12957,7 @@ function MT__RUN() {
 			//
 			var d3 = document.createElement('input');
 			d3.setAttribute('style','position:absolute;top:65px;left:40%;height:65px;width:275px');
+			d3.setAttribute('id','noProfile');
 			document.body.appendChild(d3);
 			d3.type = 'button';
 			d3.value = 'No Profile';
@@ -12985,6 +12987,22 @@ function MT__RUN() {
 			o.bold_strings = [
 				o.fn, o.ln
 			];
+			
+			
+			window.addEventListener('keyup',function(e) {
+				switch(e.keyCode) {
+					case 81:
+						console.log('No image');
+						document.getElementById('noImage').click();
+					break;
+					case 82:
+						console.log('No profile');
+						document.getElementById('noProfile').click();
+					break;
+				}
+				console.log(e.keyCode);
+			})
+			
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
