@@ -399,7 +399,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.nextTab)
 	{
-		var request = request;
+		window.request = request;
 		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
 			
 			//~ console.log('Here2');
@@ -437,12 +437,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				
 				chrome.tabs.update(nextTab, {active: true}, function() {
 					//~ alert('here1');
-					if(request.options.focusOnPage) {
+					if(window.request.options.focusOnPage) {
 						console.log('told to focus on page');
-						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, request.isTopWindow}, function(response) {
+						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.isTopWindow}, function(response) {
 							//squelch response
 						});
-						break;
 					}				
 				});
 			}
