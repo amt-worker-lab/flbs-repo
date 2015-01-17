@@ -31547,7 +31547,7 @@ function MT__RUN() {
 		AMT___addUserDecision('Chios Polygon - Quality Control',
 										function() {
 											console.log(o);
-											return o.name + '||||' + o.address;
+											return o.name + '||||' + o.addr;
 										},
 										['Id(polygon)',
 										 'Id(reasons)']
@@ -31778,6 +31778,8 @@ function MT__RUN() {
 			if (q.value.trim() == '')
 				return false;
 			(new AMT___core_factory()).nextTab();
+			AMT___recordAndSubmit();
+			return false;
 		}
 		
 		
