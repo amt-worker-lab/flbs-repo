@@ -11942,7 +11942,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,table,td {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:3000px;}');
-			GM_addStyle('#submitButton {height:60px;position:absolute;top:0px;left:0;width:60px;}');
+			GM_addStyle('#submitButton {height:200px;position:absolute;top:0px;left:0;width:150px;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('.form-control {width:400px !important;display:inline !important;}');
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;}');
@@ -11977,10 +11977,9 @@ function MT__RUN() {
 				query1: null,
 				query2: null,
 				bold_strings: [],
-				contactSearchRan: null,
 				start_urls: [],
 				allowed_domains: [],
-				
+				numZeroResults: 0,
 				num_finished_startpage: 0, // COUNTER
 				
 				q: [
@@ -12029,15 +12028,17 @@ function MT__RUN() {
 			document.body.appendChild(d1c);
 			/* END ITEMS */
 			
-			
+
 			
 			//
 			document.getElementById('submitButton').onclick = function() {
-				
+				new AMT___core_factory().nextTab();
+				doSubmit();
 				return false;
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
-				//~ return false;
+			}
+			
+			o.q[0].ondblclick = function() {
+				this.value = 'Website was in error';
 			}
 			
 			/**
@@ -12093,6 +12094,31 @@ function MT__RUN() {
 				if (!rs.length) {
 					// increment
 					//init_scrapy();
+					
+					o.numZeroResults++;
+					
+					if(o.numZeroResults == 2) {
+						AMT__setUtilityTabs([
+							{
+								url: o.domain,
+								options: {
+									task: 'AMT__all_pages_util',
+									email_links_remove_mailto: true,
+									show_remove_links_button: true,
+									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+									highlight_range_to_parent: true
+									// highlight range to parent
+								}								
+							}
+						], null, {backgroundColor:'pink'}, false,
+						function(response){
+							console.log(response);
+							o.q[o.currentInp].value = response.data.text_range;
+							o.currentInp++;
+							if(o.q[o.currentInp])
+								o.q[o.currentInp].focus()
+						});
+					}
 					
 					out.innerText += qry + '\n0';
 					return;
