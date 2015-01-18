@@ -109388,12 +109388,15 @@ qatar,80
 		GM_addStyle('input {width:90%;}');
 		GM_addStyle('.highlight-box {position:absolute;top:400px;width:20%;}');
 		
-		var b = document.getElementsByTagName('b')[0].innerText;
-		var bx= document.getElementsByTagName('b');
+		var b = document.getElementsByTagName('b');
 		
-		var b2 = (
-			b + ' ' + bx[2].innerText + ' ' + bx[4].innerText.replace(/[^\d]/g, ' ').replace(/\s+/g, ' ')
-		).trim();
+		var o = {
+			comp: b[0].innerText.trim()
+		};
+		
+		//~ var b2 = (
+			//~ b + ' ' + bx[2].innerText + ' ' + bx[4].innerText.replace(/[^\d]/g, ' ').replace(/\s+/g, ' ')
+		//~ ).trim();
 		
 		var d;
 		d = document.createElement('div');
@@ -109482,8 +109485,8 @@ qatar,80
 		d3c.onclick = function() {
 		}
 		//
-		d3.value = b;
-		d3b.value = b2;
+		d3.value = o.comp;
+		d3b.value = '"'+o.comp+'"';
 		//
 		David_Weber_URL(d1,  d3.value);
 		if (b2 != '')
