@@ -5043,7 +5043,8 @@ function load()
 
 	for(var county in allUkCounties) {
 		if(county) {
-			MT___all_pages_highlightText(new RegExp('contribute'),'gi');
+			document.body.innerHTML.replace((new RegExp(county),'gi'), '<span style="background-color:yellow">'+county+'</span>');
+			console.log(county);
 		}
 	}
 	
@@ -10115,7 +10116,6 @@ var allUkCounties = {
 	'West Yorkshire':true,
 	Wiltshire:true,
 	Worcestershire:true,
-	Contribute: true
 }
 
 
