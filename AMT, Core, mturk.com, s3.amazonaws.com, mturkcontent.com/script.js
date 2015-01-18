@@ -12102,8 +12102,7 @@ function MT__RUN() {
 					b.onclick = function(e) {
 						this.style.backgroundColor = 'LightGreen';
 						
-						document.getElementById('Q1URLNews').value = this.url;
-						document.getElementsByName('Q2Answer')[0].value = 'News Section Found';
+						
 						
 						document.getElementById('submitButton').click();
 						
@@ -12148,9 +12147,12 @@ function MT__RUN() {
 									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
 									highlight_range_to_parent: true
 									// highlight range to parent
-								}
+								}								
 							}
-						]);
+						], null, {backgroundColor:'pink'}, false,
+						function(response){
+							console.log(response);
+						});
 					}
 					
 					// Append
