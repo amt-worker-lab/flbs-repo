@@ -89876,6 +89876,394 @@ qatar,80
 		return;
 	}
 	//
+	// David Weber
+	// Find the Website Address for Building Material Manufacturer
+	// 
+	var s = '	<li>For this manufacturer below, enter the website address for the official website of the business</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr,table,thead,tbody,tr,td {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
+			
+			//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+			
+			var b = document.getElementsByTagName('b');
+			
+			var o = {
+				name: b[0].innerText.replace(/\s+/g, ' ').trim(),
+				bold_array: [],
+				name_short: null,
+				
+				panels_loaded: 0,
+				num_panels: 3,
+				domain_counts: {} // obj
+			}
+			o.bold_array = o.name.clean_string_to_array();
+			o.name_short = o.name.split(' ').slice(0, 2).join(' ');
+			console.log(o);
+			
+			/* BEGINS ITEMS */
+			//
+			var na = document.createElement('input');
+			na.setAttribute('type','button');
+			na.setAttribute('style','position:absolute;top:100px;left:78%;width:20%;height:20px;border:1px solid;cursor:pointer;');
+			document.body.appendChild(na);
+			na.value = "N/A";
+			//
+			var inp_top = document.createElement('input');
+			inp_top.setAttribute('type','input');
+			inp_top.setAttribute('style','position:absolute;top:100px;left:22%;width:40%;height:20px;');
+			document.body.appendChild(inp_top);
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:170px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1);
+			d1.id = 'd1';
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:170px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1b);
+			d1b.id = 'd1b';
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:170px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1c);
+			d1c.id = 'd1c';
+			//
+			var d3 = document.createElement('textarea');
+			d3.setAttribute('style','position:absolute;top:120px;left:0%;width:33%;height:50px;');
+			document.body.appendChild(d3);
+			d1.txa = d3;
+			//
+			var d3b = document.createElement('textarea');
+			d3b.setAttribute('style','position:absolute;top:120px;left:33%;width:33%;height:50px;');
+			document.body.appendChild(d3b);
+			d1b.txa = d3b;
+			//
+			var d3c = document.createElement('textarea');
+			d3c.setAttribute('style','position:absolute;top:120px;left:66%;width:32%;height:50px;');
+			document.body.appendChild(d3c);
+			d1c.txa = d3c;
+			/*END ITEMS*/
+			//
+			d3.onblur = function() {
+				company_URL__SP_init(d1,  this);
+			}
+			d3b.onblur = function() {
+				company_URL__SP_init(d1b, this);
+			}
+			d3c.onblur = function() {
+				company_URL__SP_init(d1c, this);
+			}
+			na.onclick = function() {
+				document.getElementById('Q1Url').value = 'NA';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+			d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+			d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b, d1c
+				],
+				offset: 170 // offset top
+			});
+			
+			// ...
+			d3.value  = o.name;
+			d3b.value = '"' + o.name + '"';
+			d3c.value = '"' + o.name_short + '" building manufacturer';
+			
+			var load_first = true;
+			var FOUND_ONE_NONSKIP = false;
+			var TOTAL_CALLS = 0;
+			var ARRAY_FIRST_FINDS = [];
+			var NUM_FOUND_SEARCH = 0;
+			
+			var SKIP_SITES;
+			function company_URL__load_skips() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host+'/mturk/util.php?austin_load_skips=',
+					onload: function (response) {
+						var rs=response.responseText;
+						
+						//~ SKIP_SITES = rs.split("\n");
+						
+						var x = rs.split("\n");
+						
+						SKIP_SITES = {}; // ASSOC.
+						
+						// FULL
+						for (var i in x) {
+							SKIP_SITES[x[i]] = true;
+						}
+						
+						// SUBDOMAINS!
+						for (var i in x) {
+							var y;
+							if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+								SKIP_SITES[y[1]] = true;
+							}
+						}
+						
+						company_URL__SP_init();
+					}
+				});
+			}
+			company_URL__load_skips();
+			
+			function company_URL__SP_init(el_div, el_inp) {
+				var req_proxy;
+				//
+				if (el_inp && el_div) { // single! (+dynamic!)
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value),
+						seed: el_div,
+						callback_function: company_URL__processProxyResponse,
+						return_init_object: true
+					});
+					return;
+				}
+				
+				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+				
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value),
+					seed: d1,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value),
+					seed: d1b,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value),
+					seed: d1c,
+					callback_function: company_URL__processProxyResponse,
+					return_init_object: true
+				});
+			}
+			/**
+			 * function company_URL__processProxyResponse
+			 * 
+			 * @param		response		object
+			 */
+			function company_URL__processProxyResponse(response) {
+				
+				var rs = response.rs;
+				
+				// rs
+				// 0=url
+				// 1=full
+				
+				// seed_arg
+				var out_div = response.seed;
+				out_div.innerHTML = '';
+				
+				if (!rs.length) {
+					out_div.innerHTML = '0';
+					count_domains();
+					return;
+				}
+				
+				var count = 0;
+				for (var i in rs) {
+					
+					var x = rs[i][0];
+					var link = rs[i][0];
+					var full = rs[i][1];
+					
+					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// http
+					//~ x = x.replace(/^https?:\/\//, ''); // beginning
+					
+					// SKIP BUTTON CREATE
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2(
+							{
+								domain: x,
+								load_file: 'austin_load_skips', 
+								var_skip_sites: SKIP_SITES, 
+								callback_function: false
+							}
+						);
+					
+					// add bold (bold_array)
+					full = MT__bold(full, o.bold_array);
+					
+					// classname is http://(www. = '')x.com (no www)
+					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+					
+					// domain_counts
+					if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
+						o.domain_counts[ 'class_' + cls ]++;
+					} else {
+						o.domain_counts[ 'class_' + cls ] = 1;
+					}
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_url = link;
+					d.original_bg_color = '';
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+					txa.readOnly = true;
+					txa.value = x;
+					txa.parent_div = out_div;
+					txa.parent_txa = out_div.txa
+					d.appendChild(txa);
+					// ...
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = link;
+					d.appendChild(a);
+					// ...
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					//~ // ...
+					//~ d.appendChild(document.createElement('br'));
+					// ...
+					var pbody = document.createElement('p');
+					pbody.setAttribute('style','');
+					pbody.innerHTML = full;
+					d.appendChild(pbody);
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						document.getElementById('Q1Url').value = this.value;
+						
+						// showNextTab OR nextTab
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						inp_top.value = this.full_url;
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+							} else {
+								x[i].style.backgroundColor = x[i].original_bg_color;
+								//~ x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						inp_top.value = '';
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = x[i].original_bg_color;
+								//~ x[i].style.backgroundColor = '';
+							}
+						}
+					}, false);
+					
+				}
+				count_domains();
+				var d = document.createElement('div');
+				d.setAttribute('style','height:2000px;');
+				out_div.appendChild(d);
+				
+			}
+			/**
+			 * count_domains
+			 * 
+			 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
+			 * 		seem to rack up the #s!
+			 */
+			function count_domains() {
+				
+				// Is a tie?
+				var count_domains_is_a_tie = false;
+				// increment
+				o.panels_loaded++;
+				// check complete
+				var tmp_cls = false;
+				if (o.panels_loaded == o.num_panels) {
+					var max = 0;
+					for (var i in o.domain_counts) {
+						if (o.domain_counts[i] > max) {
+							max = o.domain_counts[i];
+							tmp_cls = i; // key
+						}
+					}
+					if (tmp_cls) { // This is an html className
+						var n = document.getElementsByClassName(tmp_cls);
+						console.log(n);
+						for (var i in n) {
+							if (i == 'length') break;
+							n[i].style.backgroundColor = 'beige';
+							n[i].style.border = '3px solid brown';
+							n[i].original_bg_color = 'beige';
+						}
+					}
+				}
+				
+				console.log(o);
+				console.log(o);
+				console.log(tmp_cls);
+			}
+		}
+		new run().f();
+	}
+	//
 	// mlong@primedemand.net
 	// Find email addresses, geographies for scientists
 	// 
@@ -109381,195 +109769,191 @@ qatar,80
 	// David Weber
 	// Masters, Oct. 27, 2013, Manufacturer URL
 	//
-	s = '<h3>Find the Website Address for this building manufacturer:&nbsp;</h3>';
-	if (ih.indexOf(s) != -1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:20%;margin-top:0px;}');
-		GM_addStyle('input {width:90%;}');
-		GM_addStyle('.highlight-box {position:absolute;top:400px;width:20%;}');
-		
-		var b = document.getElementsByTagName('b');
-		
-		var o = {
-			comp: b[0].innerText.trim()
-		};
-		
-		//~ var b2 = (
-			//~ b + ' ' + bx[2].innerText + ' ' + bx[4].innerText.replace(/[^\d]/g, ' ').replace(/\s+/g, ' ')
-		//~ ).trim();
-		
-		var d;
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='50px';
-		d1.style.left='20%';
-		d1.style.width='40%';
-		d1.style.height='400px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.style.fontSize='10px';
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1b');
-		document.body.appendChild(d);
-		var d1b = document.getElementById('d1b');
-		d1b.style.position='absolute';
-		d1b.style.top='50px';
-		d1b.style.left='60%';
-		d1b.style.width='38%';
-		d1b.style.height='400px';
-		d1b.style.overflow='auto';
-		d1b.style.border='1px solid blue';
-		d1b.style.borderBottom='2px solid blue';
-		d1b.style.backgroundColor='#eee';
-		d1b.style.fontSize='10px';
-		//
-		d = document.createElement('iframe');
-		d.setAttribute('id','d2');
-		d.setAttribute('name','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='450px';
-		d2.style.left='20%';
-		d2.style.width='78%';
-		d2.style.height='400px';
-		d2.style.overflow='auto';
-		d2.style.border='1px solid blue';
-		d2.style.borderBottom='2px solid blue';
-		d2.style.backgroundColor='#eee';
-		d2.style.fontSize='8px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3');
-		document.body.appendChild(d);
-		var d3 = document.getElementById('d3');
-		d3.style.position='absolute';
-		d3.style.top='0px';
-		d3.style.left='20%';
-		d3.style.width='40%';
-		d3.style.height='50px';
-		//
-		d = document.createElement('textarea');
-		d.setAttribute('id','d3b');
-		document.body.appendChild(d);
-		var d3b = document.getElementById('d3b');
-		d3b.style.position='absolute';
-		d3b.style.top='0px';
-		d3b.style.left='60%';
-		d3b.style.width='38%';
-		d3b.style.height='50px';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d3c');
-		d.setAttribute('type','button');
-		document.body.appendChild(d);
-		var d3c = document.getElementById('d3c');
-		d3c.style.position='absolute';
-		d3c.style.top='0px';
-		d3c.style.left='0%';
-		d3c.style.width='18%';
-		d3c.style.height='30px';
-		//
-		d3.onblur = function() {
-			David_Weber_URL(d1,  this.value, false);
-		}
-		d3b.onblur = function() {
-			David_Weber_URL(d1b, this.value, false);
-		}
-		d3c.onclick = function() {
-		}
-		//
-		d3.value = o.comp;
-		d3b.value = '"'+o.comp+'"';
-		//
-		David_Weber_URL(d1,  d3.value);
-		if (b2 != '')
-			David_Weber_URL(d1b, d3b.value, false);
-		
-		function David_Weber_URL(out_div, search) {
-			
-			// Yahoo
-			var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
-			out_div.innerHTML = '';
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: u,
-				onload: function (response) {
-					var rs=response.responseText;
-					
-					var rg = /yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
-					
-					if (rg.exec(rs) && rs.indexOf('Including results for') == -1) {
-						rg.lastIndex = 0;
-						rg=/yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // li
-						var count = 0;
-						var x, match, out;
-						
-						var r, m;
-						var fb = '';
-						var domain;
-						
-						//var out_id = out_div.id;
-						while (match = rg.exec(rs)) {
-							if (count >= 8)
-								break;
-							
-							match[1] = decodeURIComponent(match[1]);
-							//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
-							
-							match[2] = match[2].replace(/<b>/g, '`');
-							match[2] = match[2].replace(/<\/b>/g, '``');
-							//match[2] = match[2].replace(/^[^>]+>/, ' '); // first close
-							match[2] = match[2].replace(/<[^>]+>/g, ' ');
-							match[2] = match[2].replace(/[<>]/g, ' ');
-							//match[2] = match[2].replace(/'/g, "\'");
-							match[2] = match[2].replace(/``/g, '</b>');
-							match[2] = match[2].replace(/`/g, '<b>');
-							
-							x = match[1];
-							
-							// trailing
-							x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-							
-							// leading
-							//x = x.replace(/^https?:\/\/(www\.|)/i, '');
-							
-							out_div.innerHTML += '\
-								<p>\
-								<input type="button" value="'+x+'" class="exe" style="width:auto;" > \
-								<a href="'+match[1]+'" target="_blank">link</a> \
-								<a href="'+match[1]+'" target="d2">ifr</a> \
-								<br >'+match[2]+'\
-								</p>';
-								
-							count++;
-						}
-						
-						if (count > 0) {
-							out_div.innerHTML += '<div style="height:1000px;">&nbsp;</div>';
-						}
-						
-						var x = document.getElementsByClassName('exe');
-						for (var i in x) {
-							x[i].onclick = function() {
-								this.style.backgroundColor = 'lime';
-								document.getElementById('Q1Url').value = this.value;
-								document.getElementById('Q1Url').focus();
-								doSubmit();
-							}
-						}
-					} else
-						out_div.innerHTML = '0';
-				}
-			});
-		}
-	}
+	//~ s = '<h3>Find the Website Address for this building manufacturer:&nbsp;</h3>';
+	//~ if (ih.indexOf(s) != -1 & 0==1) {
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		//~ GM_addStyle('body {width:20%;margin-top:0px;}');
+		//~ GM_addStyle('input {width:90%;}');
+		//~ GM_addStyle('.highlight-box {position:absolute;top:400px;width:20%;}');
+		//~ 
+		//~ var b = document.getElementsByTagName('b');
+		//~ 
+		//~ var o = {
+			//~ comp: b[0].innerText.trim()
+		//~ };
+		//~ 
+		//~ var d;
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1');
+		//~ document.body.appendChild(d);
+		//~ var d1 = document.getElementById('d1');
+		//~ d1.style.position='absolute';
+		//~ d1.style.top='50px';
+		//~ d1.style.left='20%';
+		//~ d1.style.width='40%';
+		//~ d1.style.height='400px';
+		//~ d1.style.overflow='auto';
+		//~ d1.style.border='1px solid blue';
+		//~ d1.style.borderBottom='2px solid blue';
+		//~ d1.style.backgroundColor='#eee';
+		//~ d1.style.fontSize='10px';
+		//~ //
+		//~ d = document.createElement('div');
+		//~ d.setAttribute('id','d1b');
+		//~ document.body.appendChild(d);
+		//~ var d1b = document.getElementById('d1b');
+		//~ d1b.style.position='absolute';
+		//~ d1b.style.top='50px';
+		//~ d1b.style.left='60%';
+		//~ d1b.style.width='38%';
+		//~ d1b.style.height='400px';
+		//~ d1b.style.overflow='auto';
+		//~ d1b.style.border='1px solid blue';
+		//~ d1b.style.borderBottom='2px solid blue';
+		//~ d1b.style.backgroundColor='#eee';
+		//~ d1b.style.fontSize='10px';
+		//~ //
+		//~ d = document.createElement('iframe');
+		//~ d.setAttribute('id','d2');
+		//~ d.setAttribute('name','d2');
+		//~ document.body.appendChild(d);
+		//~ var d2 = document.getElementById('d2');
+		//~ d2.style.position='absolute';
+		//~ d2.style.top='450px';
+		//~ d2.style.left='20%';
+		//~ d2.style.width='78%';
+		//~ d2.style.height='400px';
+		//~ d2.style.overflow='auto';
+		//~ d2.style.border='1px solid blue';
+		//~ d2.style.borderBottom='2px solid blue';
+		//~ d2.style.backgroundColor='#eee';
+		//~ d2.style.fontSize='8px';
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d3');
+		//~ document.body.appendChild(d);
+		//~ var d3 = document.getElementById('d3');
+		//~ d3.style.position='absolute';
+		//~ d3.style.top='0px';
+		//~ d3.style.left='20%';
+		//~ d3.style.width='40%';
+		//~ d3.style.height='50px';
+		//~ //
+		//~ d = document.createElement('textarea');
+		//~ d.setAttribute('id','d3b');
+		//~ document.body.appendChild(d);
+		//~ var d3b = document.getElementById('d3b');
+		//~ d3b.style.position='absolute';
+		//~ d3b.style.top='0px';
+		//~ d3b.style.left='60%';
+		//~ d3b.style.width='38%';
+		//~ d3b.style.height='50px';
+		//~ //
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d3c');
+		//~ d.setAttribute('type','button');
+		//~ document.body.appendChild(d);
+		//~ var d3c = document.getElementById('d3c');
+		//~ d3c.style.position='absolute';
+		//~ d3c.style.top='0px';
+		//~ d3c.style.left='0%';
+		//~ d3c.style.width='18%';
+		//~ d3c.style.height='30px';
+		//~ //
+		//~ d3.onblur = function() {
+			//~ David_Weber_URL(d1,  this.value, false);
+		//~ }
+		//~ d3b.onblur = function() {
+			//~ David_Weber_URL(d1b, this.value, false);
+		//~ }
+		//~ d3c.onclick = function() {
+		//~ }
+		//~ //
+		//~ d3.value = o.comp;
+		//~ d3b.value = '"'+o.comp+'"';
+		//~ //
+		//~ David_Weber_URL(d1,  d3.value);
+		//~ if (b2 != '')
+			//~ David_Weber_URL(d1b, d3b.value, false);
+		//~ 
+		//~ function David_Weber_URL(out_div, search) {
+			//~ 
+			//~ // Yahoo
+			//~ var u = 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(search); //%2B
+			//~ out_div.innerHTML = '';
+			//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: u,
+				//~ onload: function (response) {
+					//~ var rs=response.responseText;
+					//~ 
+					//~ var rg = /yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
+					//~ 
+					//~ if (rg.exec(rs) && rs.indexOf('Including results for') == -1) {
+						//~ rg.lastIndex = 0;
+						//~ rg=/yschttl spt" href="[^*]+[*]+([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g; // li
+						//~ var count = 0;
+						//~ var x, match, out;
+						//~ 
+						//~ var r, m;
+						//~ var fb = '';
+						//~ var domain;
+						//~ 
+						//~ //var out_id = out_div.id;
+						//~ while (match = rg.exec(rs)) {
+							//~ if (count >= 8)
+								//~ break;
+							//~ 
+							//~ match[1] = decodeURIComponent(match[1]);
+							//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+							//~ 
+							//~ match[2] = match[2].replace(/<b>/g, '`');
+							//~ match[2] = match[2].replace(/<\/b>/g, '``');
+							//~ //match[2] = match[2].replace(/^[^>]+>/, ' '); // first close
+							//~ match[2] = match[2].replace(/<[^>]+>/g, ' ');
+							//~ match[2] = match[2].replace(/[<>]/g, ' ');
+							//~ //match[2] = match[2].replace(/'/g, "\'");
+							//~ match[2] = match[2].replace(/``/g, '</b>');
+							//~ match[2] = match[2].replace(/`/g, '<b>');
+							//~ 
+							//~ x = match[1];
+							//~ 
+							//~ // trailing
+							//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+							//~ 
+							//~ // leading
+							//~ //x = x.replace(/^https?:\/\/(www\.|)/i, '');
+							//~ 
+							//~ out_div.innerHTML += '\
+								//~ <p>\
+								//~ <input type="button" value="'+x+'" class="exe" style="width:auto;" > \
+								//~ <a href="'+match[1]+'" target="_blank">link</a> \
+								//~ <a href="'+match[1]+'" target="d2">ifr</a> \
+								//~ <br >'+match[2]+'\
+								//~ </p>';
+								//~ 
+							//~ count++;
+						//~ }
+						//~ 
+						//~ if (count > 0) {
+							//~ out_div.innerHTML += '<div style="height:1000px;">&nbsp;</div>';
+						//~ }
+						//~ 
+						//~ var x = document.getElementsByClassName('exe');
+						//~ for (var i in x) {
+							//~ x[i].onclick = function() {
+								//~ this.style.backgroundColor = 'lime';
+								//~ document.getElementById('Q1Url').value = this.value;
+								//~ document.getElementById('Q1Url').focus();
+								//~ doSubmit();
+							//~ }
+						//~ }
+					//~ } else
+						//~ out_div.innerHTML = '0';
+				//~ }
+			//~ });
+		//~ }
+	//~ }
 	
 	//
 	// Andrew Lee
