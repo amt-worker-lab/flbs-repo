@@ -11970,14 +11970,14 @@ function MT__RUN() {
 			
 			// ...
 			var a = document.getElementsByTagName('a');
-			var inp = document.getElementsByName('web_url');
+			var inp = document.getElementsByClassName('form-control');
 			var o = {
 				site: a[0].href.trim(),
 				domain: null,
 				query1: null,
 				query2: null,
 				bold_strings: [],
-				
+				contactSearchRan: null,
 				start_urls: [],
 				allowed_domains: [],
 				
@@ -11985,11 +11985,18 @@ function MT__RUN() {
 				
 				q: [
 					inp[0],
-					inp[1]
+					inp[1],
+					inp[2],
+					inp[3],
+					inp[4],
+					inp[5],
+					inp[6]
 				],
 				
 				utility_windows: []
 			}
+			o.q[1].focus();
+			
 			o.domain = o.site.replace(/^https?:\/\/(www\.|)([^\/]+)[\d\D]*/i, '$2'); // Remove start & www. Remove after trailing slash.
 			o.query1 = 'site:'+o.domain+' (contact)';
 			o.query2 = 'site:'+o.domain+' (contact OR about OR address OR mail OR headquarters)';
@@ -12067,6 +12074,11 @@ function MT__RUN() {
 				var out = response_object.seed;
 				var qry = response_object.seed__query;
 				
+				
+				var isContactSearch = false;
+				if(qry.match(/contact\)$/)) {
+					isContactSearch = true;
+				}
 				
 				if (!rs.length) {
 					// increment
@@ -12156,20 +12168,10 @@ function MT__RUN() {
 					// & not PDF
 					if (first) {
 						first = false;
-						x.click();
+						if(isContactSearch)
+							x.click();
 						
-						// utility_windows
-						o.utility_windows.push({
-							url: rs[i][0],
-							options: {
-								task: 'AMT__all_pages_util',
-								email_links_remove_mailto: true,
-								show_remove_links_button: true,
-								email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
-								highlight_range_to_parent: true
-								// highlight range to parent
-							}
-						});
+						
 					}
 				}
 				var x = document.createElement('div');
