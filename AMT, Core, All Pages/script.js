@@ -29,7 +29,7 @@ var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
 var RUN__ALL_PAGES_TEXTAREA = false;
-var HIGHLIGHT_UK_COUNTIES = true;
+var HIGHLIGHT_UK_COUNTIES = false;
 
 /***
  * Messaging with core-mturk
