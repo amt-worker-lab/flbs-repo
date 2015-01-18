@@ -29,6 +29,7 @@ var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
 var RUN__ALL_PAGES_TEXTAREA = false;
+var HIGHLIGHT_UK_COUNTIES = true;
 
 /***
  * Messaging with core-mturk
@@ -5039,14 +5040,14 @@ function load()
 	function MT___all_pages_highlightText(regex_highlight, scrollIntoView) {
 		MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight);
 	}
-
-	for(var county in allUkCounties) {
-		if(county) {
-			document.body.innerHTML = document.body.innerHTML.replace((new RegExp(county,'gi')), '<span style="background-color:yellow">'+county+'</span>');
-			console.log(county);
+	
+	if(HIGHLIGHT_UK_COUNTIES) {
+		for(var county in allUkCounties) {
+			if(county) {
+				document.body.innerHTML = document.body.innerHTML.replace((new RegExp(county,'gi')), '<span style="background-color:yellow">'+county+'</span>');
+			}
 		}
 	}
-
 
 
 	if  (
