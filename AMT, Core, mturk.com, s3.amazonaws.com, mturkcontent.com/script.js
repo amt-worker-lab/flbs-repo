@@ -12004,11 +12004,11 @@ function MT__RUN() {
 			//~ document.body.appendChild(d1);
 			// 
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style','position:absolute;top:300px;left:0%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
 			// 
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:100px;left:50%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1c.setAttribute('style','position:absolute;top:300px;left:50%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
 			/* END ITEMS */
 			
@@ -12103,12 +12103,6 @@ function MT__RUN() {
 						this.style.backgroundColor = 'LightGreen';
 						
 						
-						
-						document.getElementById('submitButton').click();
-						
-						e.stopPropagation();
-						e.preventDefault();
-						return false;
 					}
 					x.appendChild(b);
 					
@@ -12162,9 +12156,7 @@ function MT__RUN() {
 					// & not PDF
 					if (first) {
 						first = false;
-						//~ x.click();
-						// ADD TO SCRAPYD
-						o.start_urls.push(rs[i][1]);
+						x.click();
 						
 						// utility_windows
 						o.utility_windows.push({
