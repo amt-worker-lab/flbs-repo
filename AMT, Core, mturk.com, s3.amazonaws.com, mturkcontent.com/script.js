@@ -11992,10 +11992,20 @@ function MT__RUN() {
 					inp[5],
 					inp[6]
 				],
-				
+				currentInp: 1,
 				utility_windows: []
 			}
 			o.q[1].focus();
+			
+			for(var i = 0; i < o.q.length; i++) {
+				o.q[i].onfocus = function() {
+					allQ = document.getElementsByClassName('form-control');
+					for(var j = 0; j < allQ.length; j++) {
+						if(allQ[j] == this)
+							o.currentInp = j;
+					}
+				}
+			}
 			
 			o.domain = o.site.replace(/^https?:\/\/(www\.|)([^\/]+)[\d\D]*/i, '$2'); // Remove start & www. Remove after trailing slash.
 			o.query1 = 'site:'+o.domain+' (contact)';
@@ -12131,6 +12141,8 @@ function MT__RUN() {
 					}
 					x.appendChild(a);
 					
+
+					
 					// Body
 					var dv = document.createElement('div');
 					dv.innerHTML = rs[i][1];
@@ -12158,6 +12170,10 @@ function MT__RUN() {
 						], null, {backgroundColor:'pink'}, false,
 						function(response){
 							console.log(response);
+							o.q[o.currentInp].value = response.data.text_range;
+							o.currentInp++;
+							if(o.q[o.currentInp])
+								o.q[o.currentInp].focus()
 						});
 					}
 					
