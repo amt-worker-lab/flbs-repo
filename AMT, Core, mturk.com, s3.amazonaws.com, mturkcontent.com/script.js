@@ -12137,46 +12137,53 @@ function MT__RUN() {
 					isContactSearch = true;
 				}
 				
+
+				
+				
 				if (!rs.length) {
-					// increment
-					//init_scrapy();
-					
+									
 					o.numZeroResults++;
 					
-					if(o.numZeroResults == 2) {
-						console.log('http://'+o.domain);
-						AMT__setUtilityTabs([
-							{
-								url: 'http://'+o.domain,
-								options: {
-									task: 'AMT__all_pages_util',
-									email_links_remove_mailto: true,
-									show_remove_links_button: true,
-									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
-									highlight_range_to_parent: true
-									// highlight range to parent
-								}								
-							}
-						], null, {backgroundColor:'pink'}, false,
-						function(response){
-							console.log(response);
-							var text = response.data.text_range;
-							text = text.replace(/[\n]/g, ',');
-							text = text.replace(/,,/g, ',');
-							text = text.replace(/,/, ', ').trim();
-							text = text.replace(/,$/,'');
-							console.log(text);
-							o.q[o.currentInp].value = text;
-							
-							o.currentInp++;
-							if(o.q[o.currentInp])
-								o.q[o.currentInp].focus()
-						});
+					if(!AMT__Global_Vars.isPreview) {
+						if(o.numZeroResults == 2) {
+							console.log('http://'+o.domain);
+							AMT__setUtilityTabs([
+								{
+									url: 'http://'+o.domain,
+									options: {
+										task: 'AMT__all_pages_util',
+										email_links_remove_mailto: true,
+										show_remove_links_button: true,
+										email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+										highlight_range_to_parent: true
+										// highlight range to parent
+									}								
+								}
+							], null, {backgroundColor:'pink'}, false,
+							function(response){
+								console.log(response);
+								var text = response.data.text_range;
+								text = text.replace(/[\n]/g, ',');
+								text = text.replace(/,,/g, ',');
+								text = text.replace(/,/, ', ').trim();
+								text = text.replace(/,$/,'');
+								console.log(text);
+								o.q[o.currentInp].value = text;
+								
+								o.currentInp++;
+								if(o.q[o.currentInp])
+									o.q[o.currentInp].focus()
+							});
+						}
+						
+						out.innerText += qry + '\n0';
+					} else if(isContactSearch && AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
 					}
-					
-					out.innerText += qry + '\n0';
 					return;
 				}
+				
+
 				
 				// Here?
 				// 0 = url
@@ -12271,15 +12278,31 @@ function MT__RUN() {
 					// & not PDF
 					if (first) {
 						first = false;
-						if(isContactSearch)
+						if(isContactSearch && !AMT__Global_Vars.isPreview) {
 							x.click();
+						} else if(isContactSearch && AMT__Global_Vars.isPreview) {
+							GM_xmlhttpRequest({
+								method: 'GET',
+								url: x.url,
+								onload: function(response) {
+									var rs = response.responseText;
+									if(rs.match(/(\d{5}((|-)-\d{4})?)|([A-Za-z]\d[A-Za-z][\s\.\-]?(|-)\d[A-Za-z]\d)|[A-Za-z]{1,2}\d{1,2}[A-Za-z]? \d[A-Za-z]{2}/)) {
+										AMT___Floater.accept();
+									}else {
+										AMT___Floater.skip();
+									}
+								}
+								
+							});
 						
-						
-					}
+						}
+				
 				}
 				var x = document.createElement('div');
 				x.setAttribute('style','height:2000px;');
 				out.appendChild(x);
+				
+				}
 				
 				// increment!
 				//init_scrapy();
@@ -142814,7 +142837,10 @@ function mturk_load()
 				case '3AJ89545MPYNHEW210G20AIMXIXBEM': // Carol Chen, Alexa.com scrape
 					AMT___Floater({runMT_Run:true});
 					break;
-
+				case '37Z7ICZ5H99Y57AZPGYYF94ULNK11N':
+					AMT___Floater({runMT_Run:true});
+					break;
+				
 				console.log('case ran');
 				break;
 			}
