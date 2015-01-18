@@ -11991,17 +11991,17 @@ function MT__RUN() {
 				utility_windows: []
 			}
 			o.domain = o.site.replace(/^https?:\/\/(www\.|)([^\/]+)[\d\D]*/i, '$2'); // Remove start & www. Remove after trailing slash.
-			o.query1 = 'site:'+o.domain+' Theory of Knowledge';
-			o.query2 = 'site:'+o.domain+' (directory OR staff OR faculty)';
+			o.query1 = 'site:'+o.domain+' (contact)';
+			o.query2 = 'site:'+o.domain+' (contact OR about OR address OR mail OR headquarters)';
 			o.allowed_domains.push(o.domain);
 			o.start_urls.push(o.site);
 			console.log(o);
 			
 			/* BEGIN ITEMS */
 			//
-			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1);
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;top:400px;left:0%;width:99%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			//~ document.body.appendChild(d1);
 			// 
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
@@ -12012,16 +12012,7 @@ function MT__RUN() {
 			document.body.appendChild(d1c);
 			/* END ITEMS */
 			
-			// innerHeight
-			new AMT___core_factory().el_innerHeight({
-				// This set the elements d1,d1b, and d1c
-				// to fill up the whole window, minus their
-				// distance from page top (top:XX pixels;).
-				elements: [
-					d1
-				],
-				offset: 400 // offset top
-			});
+			
 			
 			//
 			document.getElementById('submitButton').onclick = function() {
