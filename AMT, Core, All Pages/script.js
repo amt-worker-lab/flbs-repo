@@ -5040,14 +5040,14 @@ function load()
 		MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight);
 	}
 
-
 	for(var county in allUkCounties) {
 		if(county) {
-			document.body.innerHTML.replace((new RegExp(county),'gi'), '<span style="background-color:yellow">'+county+'</span>');
+			document.body.innerHTML = document.body.innerHTML.replace((new RegExp(county,'gi')), '<span style="background-color:yellow">'+county+'</span>');
 			console.log(county);
 		}
 	}
-	
+
+
 
 	if  (
 			//~ loc.indexOf('https://www.mturk.com') == -1 &&
