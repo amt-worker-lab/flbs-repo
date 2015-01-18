@@ -11941,6 +11941,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button,table,td {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 			
+			
 			GM_addStyle('.panel-primary {position:absolute;top:3000px;}');
 			GM_addStyle('#submitButton {height:200px;position:absolute;top:0px;left:0;width:150px;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
@@ -12070,9 +12071,13 @@ function MT__RUN() {
 			
 			//
 			document.getElementById('submitButton').onclick = function() {
-				new AMT___core_factory().nextTab();
+				//new AMT___core_factory().nextTab();
+				showNextTab();
 				doSubmit();
 				return false;
+			}
+			if(!AMT__Global_Vars.isPreview) {
+				addToTabsQ();
 			}
 			
 			o.q[0].ondblclick = function() {
