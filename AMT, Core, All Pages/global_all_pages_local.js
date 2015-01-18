@@ -877,3 +877,7 @@ AMT___global_factory.prototype.highlight_photos = function(options_object) {
 		//~ console.log(d_);
 	}
 }
+
+
+
+

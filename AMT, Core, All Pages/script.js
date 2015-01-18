@@ -4901,10 +4901,11 @@ function load()
 	{
 		MT___all_pages_highlightEmailAddresses();
 	}
+	
+	
 	function MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight) { // scrollIntoView true/false
 		var scrollIntoView = scrollIntoView;
 		
-		//setTimeout(function() {  // !!
 		
 		var el = document.body.getElementsByTagName("*");
 		
@@ -5034,83 +5035,19 @@ function load()
 		
 		//}, 800);  // !!
 	}
-	//~ function MT___all_pages_highlightStringMatches(scrollIntoView, regex_highlight) { // scrollIntoView true/false
-		//~ var scrollIntoView = scrollIntoView;
-		//~ 
-		//~ //setTimeout(function() {  // !!
-		//~ 
-		//~ var el = document.body.getElementsByTagName("*");
-		//~ 
-		//~ var last_el = false;
-		//~ 
-		//~ var r;
-		//~ if (!regex_highlight)
-			//~ r = /^([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})$/i;
-		//~ else
-			//~ r = regex_highlight;
-		//~ 
-		//~ var arrMatchedStrings = [];
-		//~ var el_innerText;
-		//~ 
-		//~ for (var i in el) {
-			//~ if (!el[i]) continue;
-			//~ if (!el[i].innerText) continue;
-			//~ if (!el[i].tagName) continue;
-			//~ if (el[i].tagName.toUpperCase() == 'SCRIPT') continue;
-			//~ if (el[i].tagName.toUpperCase() == 'STYLE') continue;
-			//~ 
-			//~ if  (
-				//~ el[i].innerText.indexOf('@') == -1 &&
-				//~ el[i].innerText.indexOf('[at]') == -1 &&
-				//~ el[i].innerText.indexOf('&#064;') == -1 &&
-				//~ !regex_highlight // !!
-			//~ ) {
-				//~ continue;
-			//~ }
-			//~ 
-			//~ // 
-			//~ el_innerText = el[i].innerText.trim();
-			//~ 
-			//~ // replace prev. matched
-			//~ for (var j in arrMatchedStrings) {
-				//~ el_innerText = el_innerText.replace( // replaces first occurrence
-					//~ arrMatchedStrings[j],
-					//~ ''
-				//~ );
-			//~ }
-			//~ 
-			//~ if (r.exec(el_innerText)) {
-				//~ 
-				//~ if (!last_el)
-					//~ last_el = el[i];
-				//~ 
-				//~ arrMatchedStrings.push(el[i].innerText.trim());
-				//~ 
-				//~ el[i].style.fontWeight = 'bold';
-				//~ //el[i].style.fontSize = '1.6em';
-				//~ el[i].style.zoom = '2';
-			//~ 
-				//~ //break; // BREAK HERE ... IF FIRST...
-			//~ }
-		//~ }
-		//~ 
-		//~ console.log(arrMatchedStrings);
-		//~ 
-		//~ if (last_el && scrollIntoView) {
-			//~ //last_el.parentNode.scrollTop = last_el.offsetTop - last_el.parentNode.offsetTop;
-			//~ setTimeout(function() {
-				//~ last_el.scrollIntoView();
-			//~ }, 600);
-		//~ }
-		//~ 
-		//~ return arrMatchedStrings; // RETURNS!
-		//~ 
-		//~ //}, 800);  // !!
-	//~ }
-	//
-	// Zoom all pages
-	// 
-	//var loc = document.location.href;
+	
+	function MT___all_pages_highlightText(regex_highlight, scrollIntoView) {
+		MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight);
+	}
+
+
+	for(var county in allUkCounties) {
+		if(county) {
+			MT___all_pages_highlightText(new RegExp('contribute'),'gi');
+		}
+	}
+	
+
 	if  (
 			//~ loc.indexOf('https://www.mturk.com') == -1 &&
 			//~ loc.indexOf('https://www.mturkcontent.com') == -1 &&
@@ -10103,6 +10040,85 @@ var ih;
 
 var SCRIPT_NAME = 'sBjbERoTskUbPjSsoQcZksMjxFobkapd';
 
+
+
+
+/** Big Vars **/
+var allUkCounties = {
+	Avon:true,
+	Bedfordshire:true,
+	Berkshire:true,
+	Borders:true,
+	Buckinghamshire:true,
+	Cambridgeshire:true,
+	Central:true,
+	Cheshire:true,
+	Cleveland:true,
+	Clwyd:true,
+	Cornwall:true,
+	'County Antrim':true,
+	'County Armagh':true,
+	'County Down':true,
+	'County Fermanagh':true,
+	'County Londonderry':true,
+	'County Tyrone':true,
+	Cumbria:true,
+	Derbyshire:true,
+	Devon:true,
+	Dorset:true,
+	'Dumfries and Galloway':true,
+	Durham:true,
+	Dyfed:true,
+	'East Sussex':true,
+	Essex:true,
+	Fife:true,
+	Gloucestershire:true,
+	Grampian:true,
+	'Greater Manchester':true,
+	Gwent:true,
+	'Gwynedd County':true,
+	Hampshire:true,
+	Herefordshire:true,
+	Hertfordshire:true,
+	'Highlands and Islands':true,
+	Humberside:true,
+	'Isle of Wight':true,
+	Kent:true,
+	Lancashire:true,
+	Leicestershire:true,
+	Lincolnshire:true,
+	Lothian:true,
+	Merseyside:true,
+	'Mid Glamorgan':true,
+	Norfolk:true,
+	'North Yorkshire':true,
+	Northamptonshire:true,
+	Northumberland:true,
+	Nottinghamshire:true,
+	Oxfordshire:true,
+	Powys:true,
+	Rutland:true,
+	Shropshire:true,
+	Somerset:true,
+	'South Glamorgan':true,
+	'South Yorkshire':true,
+	Staffordshire:true,
+	Strathclyde:true,
+	Suffolk:true,
+	Surrey:true,
+	Tayside:true,
+	'Tyne and Wear':true,
+	Warwickshire:true,
+	'West Glamorgan':true,
+	'West Midlands':true,
+	'West Sussex':true,
+	'West Yorkshire':true,
+	Wiltshire:true,
+	Worcestershire:true,
+	Contribute: true
+}
+
+
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
 	var loader = new load();
@@ -10122,48 +10138,3 @@ else {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-/*
- * 
- * 
- * 
- * 
- * 
- * 
- * Test, Referer
- */
-/*var u;
-u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-u+= 'location=42.48,76.47'; //lat,lng
-u+= '&keyword=bank+'+Math.floor(Math.random()*100);
-u+= '&radius=35000';
-u+= '&sensor=false';
-u+= '&key=_GOOGLE_API_KEY_REDACTED_';
-u = 'https://www.google.com/search?q=bobb&oq=bobb&aqs=chrome.0.69i59j69i60l2j69i65j69i60l2.362j0&sourceid=chrome&ie=UTF-8'
-GM_xmlhttpRequest({
-	method: "GET",
-	url: u,
-	onload: function(response) {
-		var rs = response.responseText;
-		
-		rs = JSON.parse(rs);
-		
-		console.log(rs);
-		
-		//if (!rs.results) return;
-		if (!rs.results.length) {
-			d1.innerHTML = '0';
-			return;
-		}
-	}
-});*/
-
