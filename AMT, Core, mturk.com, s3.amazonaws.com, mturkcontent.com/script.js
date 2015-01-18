@@ -12035,6 +12035,7 @@ function MT__RUN() {
 			webErrorBtn.value = 'Website Error';
 			webErrorBtn.onclick = function() {
 				o.q[0].value = 'Website was in error';
+				o.q[0].focus();
 			}
 			
 			var noAddressBtn = document.createElement('input');
@@ -12044,6 +12045,7 @@ function MT__RUN() {
 			noAddressBtn.value = 'No Address'
 			noAddressBtn.onclick = function() {
 				o.q[0].value = 'No Address';
+				o.q[0].focus();
 			}
 			
 			var ukBtn = document.createElement('input');
@@ -12053,6 +12055,7 @@ function MT__RUN() {
 			ukBtn.value = 'UK'
 			ukBtn.onclick = function() {
 				o.q[6].value = 'UK';
+				o.q[6].focus();
 			}
 			
 			var usBtn = document.createElement('input');
@@ -12062,6 +12065,7 @@ function MT__RUN() {
 			usBtn.value = 'US'
 			usBtn.onclick = function() {
 				o.q[6].value = 'US';
+				o.q[6].focus();
 			}
 			
 			//
@@ -12156,7 +12160,14 @@ function MT__RUN() {
 						], null, {backgroundColor:'pink'}, false,
 						function(response){
 							console.log(response);
-							o.q[o.currentInp].value = response.data.text_range;
+							var text = response.data.text_range;
+							text = text.replace(/[\n]/g, ',');
+							text = text.replace(/,,/g, ',');
+							text = text.replace(/,/, ', ').trim();
+							text = text.replace(/,$/,'');
+							console.log(text);
+							o.q[o.currentInp].value = text;
+							
 							o.currentInp++;
 							if(o.q[o.currentInp])
 								o.q[o.currentInp].focus()
@@ -12239,7 +12250,14 @@ function MT__RUN() {
 						], null, {backgroundColor:'pink'}, false,
 						function(response){
 							console.log(response);
-							o.q[o.currentInp].value = response.data.text_range;
+							var text = response.data.text_range;
+							text = text.replace(/[\n]/g, ',');
+							text = text.replace(/,,/g, ',');
+							text = text.replace(/,/, ', ').trim();
+							text = text.replace(/,$/,'');
+							console.log(text);
+							o.q[o.currentInp].value = text;
+							
 							o.currentInp++;
 							if(o.q[o.currentInp])
 								o.q[o.currentInp].focus()
