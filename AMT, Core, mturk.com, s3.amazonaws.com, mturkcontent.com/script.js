@@ -12041,6 +12041,14 @@ function MT__RUN() {
 				this.value = 'Website was in error';
 			}
 			
+			
+			o.q[6].ondblclick = function() {
+				if(	this.value ==  '')
+					this.value ='UK';
+				else if(this.value =='UK')
+					this.value = 'United States';
+			}
+			
 			/**
 			 * Init
 			 */
