@@ -12028,7 +12028,41 @@ function MT__RUN() {
 			document.body.appendChild(d1c);
 			/* END ITEMS */
 			
-
+			var webErrorBtn = document.createElement('input');
+			webErrorBtn.setAttribute('style','position:absolute;top:0px;left:800px;height:200px;width:100px;');
+			webErrorBtn.setAttribute('type','button');
+			document.body.appendChild(webErrorBtn);
+			webErrorBtn.value = 'Website Error';
+			webErrorBtn.onclick = function() {
+				o.q[0].value = 'Website was in error';
+			}
+			
+			var noAddressBtn = document.createElement('input');
+			noAddressBtn.setAttribute('style','position:absolute;top:0px;left:900px;height:200px;width:100px;');
+			noAddressBtn.setAttribute('type','button');
+			document.body.appendChild(noAddressBtn);
+			noAddressBtn.value = 'No Address'
+			noAddressBtn.onclick = function() {
+				o.q[0].value = 'No Address';
+			}
+			
+			var ukBtn = document.createElement('input');
+			ukBtn.setAttribute('style','position:absolute;top:200px;left:800px;height:100px;width:100px;');
+			ukBtn.setAttribute('type','button');
+			document.body.appendChild(ukBtn);
+			ukBtn.value = 'UK'
+			ukBtn.onclick = function() {
+				o.q[6].value = 'UK';
+			}
+			
+			var usBtn = document.createElement('input');
+			usBtn.setAttribute('style','position:absolute;top:200px;left:900px;height:100px;width:100px;');
+			usBtn.setAttribute('type','button');
+			document.body.appendChild(usBtn);
+			usBtn.value = 'US'
+			usBtn.onclick = function() {
+				o.q[6].value = 'US';
+			}
 			
 			//
 			document.getElementById('submitButton').onclick = function() {
