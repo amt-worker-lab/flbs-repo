@@ -11972,7 +11972,7 @@ function MT__RUN() {
 			var a = document.getElementsByTagName('a');
 			var inp = document.getElementsByClassName('form-control');
 			var o = {
-				site: a[0].href.trim(),
+				site: a[0].href.trim().replace(/https:\/\/www.mturkcontent.com\/dynamic\//,''),
 				domain: null,
 				query1: null,
 				query2: null,
@@ -12005,12 +12005,12 @@ function MT__RUN() {
 					}
 				}
 			}
-			
+			console.log(o.site);
 			o.domain = o.site.replace(/^https?:\/\/(www\.|)([^\/]+)[\d\D]*/i, '$2'); // Remove start & www. Remove after trailing slash.
 			o.query1 = 'site:'+o.domain+' (contact)';
 			o.query2 = 'site:'+o.domain+' (contact OR about OR address OR mail OR headquarters)';
-			o.allowed_domains.push(o.domain);
-			o.start_urls.push(o.site);
+			//o.allowed_domains.push(o.domain);
+			//o.start_urls.push(o.site);
 			console.log(o);
 			
 			/* BEGIN ITEMS */
@@ -12098,9 +12098,10 @@ function MT__RUN() {
 					o.numZeroResults++;
 					
 					if(o.numZeroResults == 2) {
+						console.log('http://'+o.domain);
 						AMT__setUtilityTabs([
 							{
-								url: o.domain,
+								url: 'http://'+o.domain,
 								options: {
 									task: 'AMT__all_pages_util',
 									email_links_remove_mailto: true,
