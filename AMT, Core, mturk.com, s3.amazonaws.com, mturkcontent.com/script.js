@@ -90126,13 +90126,6 @@ qatar,80
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
 					
-					// domain_counts
-					if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
-						o.domain_counts[ 'class_' + cls ]++;
-					} else {
-						o.domain_counts[ 'class_' + cls ] = 1;
-					}
-					
 					// ...
 					var d = document.createElement('p');
 					d.setAttribute('style','margin:4px 0 4px 0;');
@@ -90147,6 +90140,13 @@ qatar,80
 						continue; // END
 					} else {
 						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// domain_counts
+					if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
+						o.domain_counts[ 'class_' + cls ]++;
+					} else {
+						o.domain_counts[ 'class_' + cls ] = 1;
 					}
 					
 					// IS NOT SKIP?
