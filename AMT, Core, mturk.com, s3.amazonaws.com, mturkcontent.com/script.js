@@ -34583,6 +34583,11 @@ function MT__RUN() {
 							//~ 
 							//~ if (rs == '404') {
 							//~ }
+							if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
+								out.div.innerText = 'We\'re sorry. The Web address you entered is not a functioning page on our site.'
+							} else {
+								out.div.innerText = '404'
+							}
 							return;
 						}
 						
