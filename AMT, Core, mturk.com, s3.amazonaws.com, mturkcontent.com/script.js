@@ -34410,8 +34410,14 @@ function MT__RUN() {
 					
 					var radio = this.radio;
 					radio.checked = (radio.checked) ? false : true;
-					console.log(radio);
-					console.log(e);
+					//~ console.log(radio);
+					//~ console.log(e);
+					
+					// Clear texts
+					o.inputs[0].value = '';
+					o.inputs[1].value = '';
+					
+					//...
 					e.stopPropagation();
 					e.preventDefault();
 					return false;
