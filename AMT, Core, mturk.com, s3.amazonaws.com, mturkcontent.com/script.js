@@ -34502,12 +34502,12 @@ function MT__RUN() {
 			setTimeout(function() {
 				o.inputs[0].focus();
 			}, 2000);
-			setTimeout(function() {
-				o.inputs[0].focus();
-			}, 4000);
-			setTimeout(function() {
-				o.inputs[0].focus();
-			}, 8000);
+			//~ setTimeout(function() {
+				//~ o.inputs[0].focus();
+			//~ }, 4000);
+			//~ setTimeout(function() {
+				//~ o.inputs[0].focus();
+			//~ }, 8000);
 			
 			// window.onkeypress
 			// 
@@ -34533,7 +34533,11 @@ function MT__RUN() {
 					c == 13
 					)
 				{
-				
+					// REMOVE FOCUS FROM THE INPUTS[0] ELEMENT!
+					// This way you don't re-enter the data on run#2.
+					document.getElementById('submitButton').focus();
+					
+					// ...
 					document.getElementById('submitButton').click();
 					e.preventDefault();
 					e.stopPropagation();
