@@ -34301,6 +34301,432 @@ function MT__RUN() {
 		return;
 	}
 	//
+	// Grocery_ROI
+	// Product Categorization, Transcribe protein
+	// Jan19 2015
+	s = 'Our goal with this project to extract valuable data from the Nutrition Facts table in order to provide our customers with more product information.&nbsp; Your task is to follow the link below to the product page, find the Nutrition Facts image from the image panes on the left';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			
+			//~ GM_addStyle('body {min-height:4000px;margin-top:60px !important;}');
+			GM_addStyle('#submitButton {width:10%;height:10px;position:absolute;top:0px;left:50%;}');
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:beige;cursor:pointer;}');
+			
+			//~ GM_addStyle('.main {float:left !important;}');
+			//~ GM_addStyle('.table1 {float:left !important;}');
+			
+			//~ if (!AMT__Global_Vars.isPreview) {
+				//~ addToTabsQ();
+			//~ }
+			
+			var o = {
+				inp_sbm: document.getElementById('submitButton'),
+				inputs: [
+					document.getElementsByName('Protein')[0],
+					document.getElementsByName('Protein measure')[0]
+				],
+				radios: [
+					document.getElementsByName('Unable to Transcribe')[0],
+					document.getElementsByName('No Nutrition Fact image')[0]
+				],
+				labels: [
+					document.getElementsByTagName('label')[1],
+					document.getElementsByTagName('label')[2]
+				]
+			};
+			// Default
+			o.inputs[1].value = 'grams';
+			o.labels[0].radio = o.radios[0]
+			o.labels[1].radio = o.radios[1]
+			
+			var section = document.getElementsByTagName('section')[1];
+			var sections = document.getElementsByTagName('section');
+			
+			section.style.width = '100% !important';
+			var table = document.getElementsByTagName('table');
+			table[0].setAttribute('style', 'float:left;width:20% !important;');
+			table[1].setAttribute('style', 'float:left;width:20% !important;');
+			table[2].setAttribute('style', 'float:left;width:20% !important;');
+			table[3].setAttribute('style', 'float:left;width:20% !important;');
+			//~ table[5].setAttribute('style', 'position:absolute;top:1600px;');
+			//~ table[1].style.width = '100%';
+			//~ table[0].style.width = '100%';
+			//~ table[5].style.width = '100%';
+			
+			console.log(o);
+			
+			/* BEGIN items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'float:left;width:78%;margin-top:40px;');
+			section.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style', 'position:absolute;top:0;left:0;height:24px;');
+			document.body.appendChild(d2);
+			/* END items */
+			
+			//
+			// http://http://www.amazon.com/dp/B000RY8FZ6
+			
+			// a
+			//
+			var a = document.getElementsByTagName('a')[0].href;
+			a = a.replace('::', ':');
+			a = a.replace('////', '//');
+			a = a.replace('http://http://', 'http://'); // http://http://www.amazon.com/dp/B000RY8FZ6
+			a = a.replace('http://http//', 'http://'); // http://http://www.amazon.com/dp/B000RY8FZ6
+			
+			d2.onblur = function() {
+				amazon_images();
+			}
+			d2.value = a;
+			
+			// q
+			var q = [
+			];
+			
+			// out
+			var out = {
+				div: d1,
+				href: a
+			}
+			console.log(out);
+			
+			// labels
+			for (var i in o.labels) {
+				o.labels[i].onmouseup = o.labels[i].onclick = function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				o.labels[i].onmousedown = function(e) {
+					
+					var radio = this.radio;
+					radio.checked = (radio.checked) ? false : true;
+					console.log(radio);
+					console.log(e);
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			}
+			// radios
+			for (var i in o.radios) {
+				//~ o.radios[i].isChecked = false;
+				o.radios[i].onmouseup = o.radios[i].onclick = function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				o.radios[i].onmousedown = function(e) {
+					//~ this.checked = !this.checked;
+					//~ this.checked = true;
+					//~ if (!this.checked) {
+						//~ this.checked = true;
+					//~ }
+					if (this.checked) {
+						this.checked = false;
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					} else {
+						this.checked = true;
+					}
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			}
+			
+			// submit onclick
+			document.getElementById('submitButton').onclick = function(e) {
+				// Any checked?
+				var found = false;
+				for (var i in o.radios) {
+					if (o.radios[i].checked) {
+						found = true;
+						
+						// Does either text input have text?
+						for (var j in o.inputs) {
+							o.inputs[j].value = o.inputs[j].value.trim();
+							if (o.inputs[j].value != '') {
+								return false; // END HERE
+							}
+						}
+						break;
+					}
+				}
+				if (!found) {
+					for (var i in o.inputs) {
+						o.inputs[i].value = o.inputs[i].value.trim();
+						if (o.inputs[i].value == '') {
+							return false; // END HERE
+						}
+					}
+				}
+				
+				// 
+				document.body.style.backgroundColor = 'LightGreen';
+				// Here?
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				
+				return false;
+			}
+			
+			AMT___POPUP__initializeGlobals(
+				amazon_images
+			);
+			
+			/**
+			 * Focus on submit button to begin with so that
+			 * window.onkeypress is active when switching between
+			 * tabs.
+			 */
+			setTimeout(function() {
+				o.inputs[0].focus();
+			}, 1000);
+			setTimeout(function() {
+				o.inputs[0].focus();
+			}, 2000);
+			setTimeout(function() {
+				o.inputs[0].focus();
+			}, 4000);
+			setTimeout(function() {
+				o.inputs[0].focus();
+			}, 8000);
+			
+			// window.onkeypress
+			// 
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				var str = String.fromCharCode(e.keyCode).toLowerCase();
+				
+				console.log(c);
+				
+				switch(c) {
+					//~ case 44:
+						//~ o.cbs[0].click();
+						//~ break;
+					//~ case 46:
+						//~ o.cbs[1].click();
+						//~ break;
+					//~ case 47:
+						//~ o.cbs[2].click();
+						//~ break;
+				}
+				//
+				if  (
+					c == 13
+					)
+				{
+				
+					document.getElementById('submitButton').click();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				
+				// Make images small from keypress
+				//~ var img = document.createElement('img');
+				//~ out.div
+				if (str == 'z') {
+					var img = out.div.getElementsByTagName('img');
+					for (var i in img) {
+						if (!img[i].isSmall) {
+							img[i].click();
+							break;
+						}
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+
+			}, false);
+			
+			
+			// Function amazon_images
+			function amazon_images() {
+				
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					
+					// THIS RUNS OVER LOCAL CACHE
+					//url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options='+opts,
+					
+					// THIS IS DIRECT
+					url: d2.value,
+					
+					//~ url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(d2.value),
+					//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(out.href),
+					
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200 || (/^\d+$/.exec(rs) && rs*1 > 200)) {
+							
+							//~ q[1].value = 'Information Unavailable';
+							//~ if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1) {
+								//~ console.log('x');
+								//~ document.getElementById('submitButton').click();
+							//~ }
+							//~ 
+							//~ 
+							//~ if (rs == '404') {
+							//~ }
+							return;
+						}
+						
+						if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
+							//~ console.log('x');
+							return;
+						}
+						
+						// ...
+						var r;
+						
+						// IMAGES
+						// ...
+						var type_rslt = 0;
+						r = /'colorImages': (\{[^\r\n]+)/.exec(rs);
+						if (!r) {
+							type_rslt = 1;
+							r = /<script type="text\/javascript">var loadState = false; \(function\(\)\{var i=new Image; i\.onload = function\(\) \{ loadState = true; \}; i\.src = "([^"]+)";\}\)\(\);<\/script>/.exec(rs);
+						}
+						if (!r) {
+							// Nothing
+							return;
+						}
+						
+						if (type_rslt == 0) {
+							r = r[1].trim();
+							r = r.replace(/,$/, '');
+							r = r.replace(/'/g, '"');
+							r = JSON.parse(r);
+						} else {
+							r = {
+								initial: [{
+									large: r[1].trim()
+								}]
+							}
+						}
+						
+						console.log(r);
+						
+						var all_images_tmp;
+						
+						if (!r.initial) { // is [{1},{2}, ...{n}]
+							// Nothing
+							return;
+						}
+							
+						r = r.initial;
+						
+						// images
+						
+						// image size ... ...
+						var numImages = r.length;
+						
+						//~ for (var i in r) {
+						
+						// Image loop
+						for (var i = r.length - 1; i>=0; i--) {
+							
+							// BUNDLE image
+							var tmp_src;
+							if (r[i].main && JSON.stringify(r[i].main).indexOf('bundle') != -1) {
+								// Get first
+								// main[key == img URL == ex http://ecx.images-amazon.com/images/I/6 ... ... .jpg] = array [width, height]
+								for (var j in r[i].main) {
+									tmp_src = j;
+									break;
+								}
+							}
+							if (tmp_src)
+								addImage(tmp_src, out);
+								
+							// Regular images
+							var tmp_src;
+							if (r[i].hiRes) {
+								tmp_src = r[i].hiRes;
+							} else if (r[i].large) {
+								tmp_src = r[i].large;
+							} else if (r[i].thumb) {
+								tmp_src = r[i].thumb;
+							} 
+							if (tmp_src)
+								addImage(tmp_src, out);
+						}
+					}
+				});
+			}
+			function addImage(tmp_src, out) {
+				
+				var img = document.createElement('img');
+				out.div.appendChild(img);
+				img.isSmall = false;
+				img.className = 'images_class';
+				img.setAttribute('style', 'border:1px solid #a2a2a2;float:left;');
+				//img.equal_width = equal_width;
+				
+				if (!AMT__Global_Vars.isPreview) {
+					img.src = tmp_src;
+					Grocery_ROI_organic_labels__resizeImg(img, 600);
+				}
+				
+				//
+				// Decrement total_stats.tImages if "No image available" from Amazon.
+				//
+				//
+				if (tmp_src == 'http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._V192198896_.gif') {
+					img.isSmall = true;
+					img.style.zoom = '0.05';
+				}
+				
+				img.onclick = function() {
+					if (!this.isSmall) {
+						this.style.zoom = '0.05'; //.2
+						this.isSmall = true;
+					} else {
+						this.style.zoom = this.zoomFactor; // reset zoom factor!
+						this.isSmall = false;
+					}
+					
+					// Focus
+					o.inputs[0].focus();
+				}
+				
+				img.addEventListener('mousewheel', function(e) {
+					
+					if (!this.style.zoom)
+						this.style.zoom = 1;
+					
+					//~ console.log(typeof e.wheelDelta);
+					
+					if (e.wheelDelta > 0) { // "120", zoom in
+						this.style.zoom = this.style.zoom * 1 + 0.1;
+					} else { // "-120", zoom out
+						this.style.zoom = this.style.zoom * 1 - 0.1;
+					}
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}, false);
+			}
+		}
+		new run().f();
+	}
+	//
 	// Grocery_ROI (fork from turk-HPCBeauty) (fork from Collect Product Information)
 	// Determine if a product is Kosher
 	// Dec2 2014
