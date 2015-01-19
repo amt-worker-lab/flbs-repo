@@ -34587,7 +34587,7 @@ function MT__RUN() {
 						}
 						
 						if (rs.indexOf('We\'re sorry. The Web address you entered is not a functioning page on our site') != -1 || rs == '404') {
-							//~ console.log('x');
+							out.div.innerText = 'We\'re sorry. The Web address you entered is not a functioning page on our site.'
 							return;
 						}
 						
@@ -34666,6 +34666,20 @@ function MT__RUN() {
 							if (tmp_src)
 								addImage(tmp_src, out);
 						}
+						
+						// Click first two!
+						// These are "ingredients" images. After is "nutrition facts" images.
+						// Make sure to setTimeout for this!
+						setTimeout(function() {
+							var img = out.div.getElementsByTagName('img');
+							img[0].click();
+							img[1].click();
+						}, 1000);
+						//~ setTimeout(function() {
+							//~ var img = out.div.getElementsByTagName('img');
+							//~ img[0].click();
+							//~ img[1].click();
+						//~ }, 1000);
 					}
 				});
 			}
