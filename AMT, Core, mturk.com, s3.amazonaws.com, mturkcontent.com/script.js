@@ -62560,7 +62560,9 @@ qatar,80
 			if (!opts || !opts.response || !opts.response.vars) return;
 			
 			if (opts.response.vars.error != null) {
-				d1c.style.backgroundColor = 'pink';
+				console.log(d1c);
+				d1c.style.backgroundColor = 'pink !important';
+				d1c.style.border = '2px solid pink';
 				return;
 			}
 			

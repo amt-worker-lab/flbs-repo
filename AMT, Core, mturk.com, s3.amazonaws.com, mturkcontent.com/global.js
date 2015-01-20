@@ -4616,7 +4616,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			
 		
 		//<div class="info"><h3 class="n">
-		var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="media-thumbnail">|$)|$)/g;
+		//~ var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="media-thumbnail">|$)|$)/g;
+		var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="info"><h3 class="n">|$)|$)/g;
 		var m;
 		while (m = r.exec(rs)) {
 			
@@ -4625,9 +4626,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			// There may be listings on the page that are ads but these are not currently
 			// listed with the other numerical results.
 			
+			// Skip if does not contain "(\d)"
+			if (!/<span class="count">\([\d]\)<\/span>/.exec(m[1])) continue;
+			// OLD
 			// Skip if does not contain "\d.".
 			//<span class="index">5</span><span class="index-dot">.</span>
-			if (!/<span class="index">\d+<\/span><span class="index-dot">\.<\/span>/.exec(m[1])) continue;
+			//~ if (!/<span class="index">\d+<\/span><span class="index-dot">\.<\/span>/.exec(m[1])) continue;
 			
 			
 			var rslt = {
@@ -4643,7 +4647,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			// href & name
 			// e.g. /ithaca-ny/mip/wings-over-ithaca-2590867?lid=2590867
 			// e.g. LongHorn Steakhouse
-			var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" class="business-name"><span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
+			var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" itemprop="name" class="business-name">([^<]+)<\/a>/.exec(m[1]);
+			//~ var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" class="business-name"><span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
 			//~ var r = /<span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
 			if (reg) {
 				rslt.profile_url	= 'http://www.yellowpages.com' + __js_clean_html_str(reg[1]).trim();
@@ -4677,19 +4682,25 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			}
 			
 			// phones
-			// <ul class="phones"><li itemprop="telephone" class="phone primary">(607) 273-7110</li></ul>
-			var reg = /<ul class="phones">((.|\s)*?(?=<\/ul>|$)|$)/.exec(m[1]);
+			var reg = /<div itemprop="telephone" class="phones phone primary">([^<]+)<\/div>/.exec(m[1]);
 			if (reg) {
-				reg = reg[1];
-				// e.g. (607) 273-7110
-				var r2 = /<li[^>]*>([^<]+)<\/li>/g;
-				var m2;
-				while (m2 = r2.exec(reg)) {
-					rslt.phones.push(
-						__js_clean_html_str(m2[1]).trim()
-					);
-				}
+				rslt.phones.push(
+					__js_clean_html_str(reg[1]).trim()
+				);
 			}
+			//~ // <ul class="phones"><li itemprop="telephone" class="phone primary">(607) 273-7110</li></ul>
+			//~ var reg = /<ul class="phones">((.|\s)*?(?=<\/ul>|$)|$)/.exec(m[1]);
+			//~ if (reg) {
+				//~ reg = reg[1];
+				//~ // e.g. (607) 273-7110
+				//~ var r2 = /<li[^>]*>([^<]+)<\/li>/g;
+				//~ var m2;
+				//~ while (m2 = r2.exec(reg)) {
+					//~ rslt.phones.push(
+						//~ __js_clean_html_str(m2[1]).trim()
+					//~ );
+				//~ }
+			//~ }
 			
 			opts.response.vars.results.push(rslt);
 		}
