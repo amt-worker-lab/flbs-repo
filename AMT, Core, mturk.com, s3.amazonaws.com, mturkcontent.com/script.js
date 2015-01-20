@@ -62143,10 +62143,12 @@ qatar,80
 	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
 	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
 	s3= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
+	s4= 'For the U.S. Business below, enter the official U.S. 10 digit phone number.';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1 ||
-		ih.indexOf(s3) != -1
+		ih.indexOf(s3) != -1 ||
+		ih.indexOf(s4) != -1
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
@@ -62256,37 +62258,48 @@ qatar,80
 		// Is by phone
 		if (by_phone) {
 			
+			var reg = /<em>Business Name with city and state:<\/em> <b>([^<]+)<\/b>/.exec(ih);
+			if (reg) {
+				var reg2 = / ([^ ]+ [A-Z]{2})$/.exec(reg[1]);
+				var o = {
+					name: __js_clean_html_str(reg[1]).trim(),
+					locn: __js_clean_html_str(reg2[1]).trim()
+				};
+				o.name = o.name.replace(o.locn, ''); // string replacement
+			} else {
+				exit(reg);
+			}
 			// New Method?
 			//
 			//Charlestown Yoga (Charlestown MA)
 			// REMOVED U\.S\. 
-			var reg = /<p>Business Name \((U\.S\. *|)City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
-			if (reg) {
-				reg = reg[2];
-				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
-				if (reg2) {
-					reg2 = reg2[1];
-					reg = reg.replace('(' + reg2 + ')', '');
-				} else {
-					reg2 = '';
-				}
-				var o = {
-					name: __js_clean_html_str(reg) .trim(),
-					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-				}
-			} else {
-				if(true) {
-					console.log(b);
-					console.log(o);
-					exit('123');
-				}
-				else {
-					var o = {
-						name:		b[2].innerText.trim(),
-						locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
-					}
-				}				
-			} 
+			//~ var reg = /<p>Business Name \((U\.S\. *|)City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
+			//~ if (reg) {
+				//~ reg = reg[2];
+				//~ var reg2 = / \(([^\)]*)\) *$/.exec(reg);
+				//~ if (reg2) {
+					//~ reg2 = reg2[1];
+					//~ reg = reg.replace('(' + reg2 + ')', '');
+				//~ } else {
+					//~ reg2 = '';
+				//~ }
+				//~ var o = {
+					//~ name: __js_clean_html_str(reg) .trim(),
+					//~ locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+				//~ }
+			//~ } else {
+				//~ if(true) 
+					//~ console.log(b);
+					//~ console.log(o);
+					//~ exit('123');
+				//~ }
+				//~ else if(true) {
+					//~ var o = {
+						//~ name:		b[2].innerText.trim(),
+						//~ locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+					//~ }
+				//~ }				
+			//~ } 
 			o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
 			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
 			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
