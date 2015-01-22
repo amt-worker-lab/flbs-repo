@@ -49229,8 +49229,10 @@ function MT__RUN() {
 	// Find the Matching ASIN for a Series of DVDs and Blu-rays
 	// 
 	s = '<p>You must provide the ASIN from Amazon.com that matches the product image and name. Please read the full instructions.</p>';
+	s2 = '<p>You must provide the ASIN or ISBN 10 from Amazon.com that matches the product image and name. The product image is a higher priority than the product name.&nbsp;Please read the full instructions.'
 	if  (
-		ih.indexOf(s) != -1
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1
 		)
 	{
 		
