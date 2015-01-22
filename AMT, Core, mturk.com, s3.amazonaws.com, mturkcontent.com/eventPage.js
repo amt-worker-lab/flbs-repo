@@ -1,3 +1,19 @@
+chrome.windows.getAll({}, function(windows) { // []
+	
+	console.log(windows);		
+	//~ // FIND THE LARGEST WINDOW
+	//~ var largest = 0;
+	//~ var s = windows[i].height
+	//~ 
+	//~ next_window__windowIds
+	//~ 
+	//~ var available_win = {};
+	
+	for (var i in windows) {
+		if (windows[i].focused) continue;
+		if (windows[i].state == 'minimized') continue;
+	}
+})
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
