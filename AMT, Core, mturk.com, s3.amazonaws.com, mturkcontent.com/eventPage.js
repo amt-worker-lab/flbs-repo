@@ -1,3 +1,21 @@
+chrome.windows.getCurrent(function (window) {
+	// ..
+	console.log(window);
+	// Set int.
+	setInterval(function() {
+		// Update to set active
+		chrome.windows.update(
+			window.id,
+			{
+				focused: true
+			}, function(window) {
+				// ...
+				console.log('Updated window.')
+			}
+		);
+		
+	}, 4000);
+});
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
