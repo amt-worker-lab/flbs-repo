@@ -53,6 +53,9 @@ chrome.runtime.onMessage.addListener(
 				
 				//new AMT___core_factory().nextWindow();
 				
+				
+				
+				
 				var theForm = document.forms['aspnetForm'];
 				if (theForm) {
 					var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
@@ -5796,7 +5799,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 									//~ }, 20000);
 									
 									//new AMT___core_factory().nextTab();
-									chrome.extension.sendRequest({nextTab: true, option:'tellNextPageThatItIsOkayToRun'},
+									chrome.extension.sendRequest({nextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
 									function(response) {
 										//squelch response
 									});
