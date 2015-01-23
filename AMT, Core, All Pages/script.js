@@ -5,10 +5,6 @@
 // ==/UserScript==
 
 
-chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
-									function(response) {
-										console.log('hi');
-									});
 
 // jobs
 // Kristin Howe
