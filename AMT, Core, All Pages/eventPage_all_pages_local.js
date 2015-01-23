@@ -6,7 +6,7 @@
  */
  
  
-function PHP_WebSocket() {
+function WS() {
 
 };
 
@@ -103,7 +103,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 							  });
 						 }
 						if(request.options.hasOwnProperty('websocketNextWindow')) {
-							var websocket = new PHP_WebSocket().init({isTrevorFaden:true});					
+							var websocket = new WS().init({isTrevorFaden:true});					
 						}
 						return;				
 					});
@@ -117,47 +117,45 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 
 
-PHP_WebSocket.prototype.init = function(options) {
-	var host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
+WS.prototype.init = function(options) {
+	WS.host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
 	try {
-		socket = new WebSocket(host);
-		log('WebSocket - status '+socket.readyState);
-		socket.onopen    = function(msg) { 
-							   log("Welcome - status "+this.readyState); 
+		WS.socket = new WebSocket(WS.host);
+		console.log('WebSocket - status '+WS.socket.readyState);
+		WS.socket.onopen    = function(msg) { 
+							   console.log("Welcome - status "+this.readyState); 
 						   };
-		socket.onmessage = function(msg) { 
-							   log("Received: "+msg.data); 
+		WS.socket.onmessage = function(msg) { 
+							   console.log("Received: "+msg.data); 
 						   };
-		socket.onclose   = function(msg) { 
-							   log("Disconnected - status "+this.readyState); 
+		WS.socket.onclose   = function(msg) { 
+							   console.log("Disconnected - status "+this.readyState); 
 						   };
 	}
 	catch(ex){ 
-		log(ex); 
+		console.log(ex); 
 	}
 	
-	function send(){
-		var txt,msg;
-		txt = $("msg");
-		msg = txt.value;
+	function send(msg){
+		var msg = msg;
 		if(!msg) { 
 			alert("Message can not be empty"); 
 			return; 
 		}
-		txt.value="";
-		txt.focus();
+
 		try { 
-			socket.send(msg); 
-			log('Sent: '+msg); 
+			WS.socket.send(msg); 
+			console.log('Sent: '+msg); 
 		} catch(ex) { 
-			log(ex); 
+			console.log(ex); 
 		}
 	}
+	
 	function quit(){
-		if (socket != null) {
-			log("Goodbye!");
-			socket.close();
-			socket=null;
+		if (WS.socket != null) {
+			console.log("Goodbye!");
+			WS.socket.close();
+			WS.socket=null;
 		}
 	}
 
