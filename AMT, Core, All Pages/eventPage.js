@@ -468,19 +468,17 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				
 				chrome.tabs.update(nextTab, {active: true},  function() {
 						//~ alert('here1');
-						switch(request.option) {
-							case 'tellNextPageThatItIsOkayToRun': 
-							//~ alert('here2');
-
+						if(request.options.hasOwnProperty('tellNextPageThatItIsOkayToRun')) {
 							chrome.tabs.sendMessage(nextTab, {itsOkayToRun: true}, function(response) {
 									//squelch response
 							  });
-							break;
-							
-							default:
-							return;
-							break;
-						}				
+						 }
+						if(request.options.hasOwnProperty('websocketNextWindow')) {
+							var websocket = new PHP_WebSocket();
+							websocket.init();
+							websocket.send('Testing Message Here');							
+						}
+						return;				
 					});
 
 				
@@ -670,6 +668,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ }
 	//~ }
 });
+
+
+
 
 
 	
