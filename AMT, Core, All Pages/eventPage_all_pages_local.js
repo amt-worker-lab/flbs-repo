@@ -118,23 +118,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 
 WS.prototype.init = function(options) {
-	WS.host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
-	try {
-		WS.socket = new WebSocket(WS.host);
-		console.log('WebSocket - status '+WS.socket.readyState);
-		WS.socket.onopen    = function(msg) { 
-							   console.log("Welcome - status "+this.readyState); 
-						   };
-		WS.socket.onmessage = function(msg) { 
-							   console.log("Received: "+msg.data); 
-						   };
-		WS.socket.onclose   = function(msg) { 
-							   console.log("Disconnected - status "+this.readyState); 
-						   };
-	}
-	catch(ex){ 
-		console.log(ex); 
-	}
+
 	
 	function send(msg){
 		var msg = msg;
@@ -164,10 +148,27 @@ WS.prototype.init = function(options) {
 		init();
 	}
 	
-	
-	if(options.isTrevorFaden) {
-		send('Switch Window');
+		WS.host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
+	try {
+		WS.socket = new WebSocket(WS.host);
+		console.log('WebSocket - status '+WS.socket.readyState);
+		WS.socket.onopen    = function(msg) {	
+								if(options.isTrevorFaden) {
+									send('Switch Window');
+								}
+							   console.log("Welcome - status "+this.readyState); 
+						   };
+		WS.socket.onmessage = function(msg) { 
+							   console.log("Received: "+msg.data); 
+						   };
+		WS.socket.onclose   = function(msg) { 
+							   console.log("Disconnected - status "+this.readyState); 
+						   };
 	}
+	catch(ex){ 
+		console.log(ex); 
+	}
+	
 }
 
 
