@@ -1,21 +1,39 @@
-chrome.windows.getCurrent(function (window) {
-	// ..
-	console.log(window);
-	// Set int.
-	setInterval(function() {
-		// Update to set active
-		chrome.windows.update(
-			window.id,
-			{
-				focused: true
-			}, function(window) {
-				// ...
-				console.log('Updated window.')
-			}
-		);
-		
-	}, 4000);
-});
+/**
+ * Problem:
+ * Solution:
+ * Implementation: Cross-profiles communication.
+ * ScriptA onsubmit	-> Send message to background page to xhr PHP. PHP split queue file by newline. Shift array, write to file. Echo the shifted ID. Push the ID back? Write to file. Exit.
+ * ScriptB onload	-> Send message to background page to start script (profiles-queue-script). BG page send to PHP the windowId. PHP add to end of file+newline if NOT in file. Onresponse Start interval of xhr.load(text-file ?random()=). Interval is probably 60ms-80ms or so. Onresponse of text-file?=random(), if response.indexOf(windowId + newline) == 0 then do window.update(...active:true).
+ * 
+ * Consider implementing http://srchea.com/build-a-real-time-application-using-html5-websockets ?
+ * 
+ **/
+/**
+ * THIS IS A TEST
+ * When using two separate profiles this switches from
+ * one back to the other when each respective interval
+ * is fired. This IS somewhat counter-intuitive, i.e. normally
+ * the two profile "sessions"/browser windows are completely
+ * separate.
+ */
+//~ chrome.windows.getCurrent(function (window) {
+	//~ // ..
+	//~ console.log(window);
+	//~ // Set int.
+	//~ setInterval(function() {
+		//~ // Update to set active
+		//~ chrome.windows.update(
+			//~ window.id,
+			//~ {
+				//~ focused: true
+			//~ }, function(window) {
+				//~ // ...
+				//~ console.log('Updated window.')
+			//~ }
+		//~ );
+		//~ 
+	//~ }, 4000);
+//~ });
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
