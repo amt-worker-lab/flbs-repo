@@ -5,6 +5,11 @@
 // ==/UserScript==
 
 
+chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
+									function(response) {
+										console.log('hi');
+									});
+
 // jobs
 // Kristin Howe
 var RUN_HOWE_CODE = false; // if true this will run "all pages extend". (set RUN__ALL_PAGES_EXTEND = false) 
@@ -5799,7 +5804,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 									//~ }, 20000);
 									
 									//new AMT___core_factory().nextTab();
-									chrome.extension.sendRequest({nextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
+									chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
 									function(response) {
 										//squelch response
 									});

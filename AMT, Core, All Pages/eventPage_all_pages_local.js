@@ -6,7 +6,7 @@
  */
  
  
-function PHP_WebSocket = {
+function PHP_WebSocket() {
 
 };
 
@@ -60,6 +60,56 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ chrome.tabs.sendMessage(tab.id, {google_hangouts_load_phone: request.phone_number}, function(response) {
 				//~ // Meh
 			//~ });
+		});
+	}
+	
+	
+		/**
+	 * request.nextTab
+	 */
+	if(request.allPagesNextTab)
+	{
+		chrome.tabs.query({active:true}, function(tab) {
+			chrome.tabs.getAllInWindow(tab.windowId, function(allTabs) {
+				for(var i = 0; i < allTabs.length; i++)
+				{
+					if(allTabs[i].active)
+					{
+						var currentIndex = allTabs[i].index;
+						break;
+					}
+				}			
+				console.log(currentIndex);
+				
+				console.log(currentIndex);
+				var nextTab =  false;
+				for(var i = 0; i < allTabs.length; i++)
+				{
+					if( (currentIndex + 1) == allTabs[i].index)
+					{
+						var nextTab = allTabs[i].id;
+					}
+				}
+				if(!nextTab)
+				{
+					nextTab = allTabs[0].id;
+				}
+				
+				chrome.tabs.update(nextTab, {active: true},  function() {
+						//~ alert('here1');
+						if(request.options.hasOwnProperty('tellNextPageThatItIsOkayToRun')) {
+							chrome.tabs.sendMessage(nextTab, {itsOkayToRun: true}, function(response) {
+									//squelch response
+							  });
+						 }
+						if(request.options.hasOwnProperty('websocketNextWindow')) {
+							var websocket = new PHP_WebSocket().init({isTrevorFaden:true});					
+						}
+						return;				
+					});
+
+				
+			});
 		});
 	}
 });
