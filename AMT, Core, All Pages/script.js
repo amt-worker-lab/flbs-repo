@@ -5,7 +5,6 @@
 // ==/UserScript==
 
 
-
 // jobs
 // Kristin Howe
 var RUN_HOWE_CODE = false; // if true this will run "all pages extend". (set RUN__ALL_PAGES_EXTEND = false) 
