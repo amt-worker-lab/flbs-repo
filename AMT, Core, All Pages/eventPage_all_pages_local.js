@@ -118,8 +118,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 
 WS.prototype.init = function(options) {
-
-	
 	function send(msg){
 		var msg = msg;
 		if(!msg) { 
@@ -148,13 +146,15 @@ WS.prototype.init = function(options) {
 		init();
 	}
 	
-		WS.host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
+	
+	WS.host = "ws://127.0.0.1:9000/echobot"; // SET THIS TO YOUR SERVER
 	try {
 		WS.socket = new WebSocket(WS.host);
 		console.log('WebSocket - status '+WS.socket.readyState);
 		WS.socket.onopen    = function(msg) {	
 								if(options.isTrevorFaden) {
 									send('Switch Window');
+									quit();
 								}
 							   console.log("Welcome - status "+this.readyState); 
 						   };
