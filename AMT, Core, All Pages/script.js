@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener(
 		if(request.itsOkayToRun) {
 			if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
 				
-				new AMT___core_factory().nextWindow();
+				//new AMT___core_factory().nextWindow();
 				
 				var theForm = document.forms['aspnetForm'];
 				if (theForm) {
