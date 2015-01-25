@@ -51542,8 +51542,8 @@ function MT__RUN() {
 				url: null,
 				
 				q: [
-					document.getElementById('FirstName'),
-					document.getElementById('LastName'),
+					document.getElementById('FirstName'), // "FirstName" is "Word Mark"
+					document.getElementById('LastName'),  // "LastName" is "Owner's Name" (full)
 					document.getElementById('Address1'),
 					document.getElementById('Address2'),
 					document.getElementById('CaseName'),
@@ -51557,8 +51557,8 @@ function MT__RUN() {
 				'f=toc&state=4807%3A91zj41.1.1&p_search=search&p_s_All=&BackReference=&p_L=100' +
 				'&p_plural=yes&p_s_ALL='+o.num+
 				'&a_search=Submit+Query';
-			o.q_annotate_fields.push( // Fields 0-3
-				o.q[0],o.q[1],o.q[2],o.q[3]
+			o.q_annotate_fields.push( // Fields 1-3
+				o.q[1],o.q[2],o.q[3]
 			);
 			
 			/*BEGIN ITEMS*/
@@ -51598,26 +51598,71 @@ function MT__RUN() {
 					
 					var reg;
 					
+					// "Word Mark"
+					// i.e. comp name
+					reg = /<B>Word Mark <\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					if (reg) {
+						var str = __js_clean_html_str(reg[1]).trim().toLowerCase();
+						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
+						o.q[0].value = str;
+					} else {
+						//
+						o.q[0].style.border = '4px solid blue';
+					}
+					
 					//Owner's name & address & unrelated info.
 					//e.g. (APPLICANT) ECO PRK, LLC LIMITED LIABILITY COMPANY CALIFORNIA 14735 Garfield Ave Paramount CALIFORNIA 90723
 					reg = /<B>Owner<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
 					if (reg) {
-						var str = __js_clean_html_str(reg[1]).trim();
-						// Character mod
-						var x = str.split(' ');
-						for (var i in x) {
-							x[i] = REG_INCLUDE_DASHES
-						}
+						var str = __js_clean_html_str(reg[1]).trim().toLowerCase(); // toLower
+						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
+						//~ var x = str.split(' ');
+						//~ for (var i in x) {
+							//~ x[i] = x[i].
+						//~ }
 						// Annotation
 						d1.appendChild(
 							annotation(str)
 						);
 					}
 					
+					// Attorney
+					// e.g. Heedong Chae
+					reg = /<B>Attorney of Record<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					if (reg) {
+						var str = __js_clean_html_str(reg[1]).trim().toLowerCase();
+						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
+						o.q[4].value = str;
+					} else {
+						o.q[4].value = 'NONE';
+					}
+					
+					// 
+					// e.g. November 21, 2013
+					reg = /<B>Filing Date<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					if (reg) {
+						var str = __js_clean_html_str(reg[1]).trim().toLowerCase();
+						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
+						o.q[5].value = str;
+					} else {
+						//
+						o.q[5].style.border = '4px solid blue';
+					}
+					// 
+					// e.g. November 21, 2013
+					reg = /<B>Abaondonment Date<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					if (reg) {
+						var str = __js_clean_html_str(reg[1]).trim().toLowerCase();
+						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
+						o.q[6].value = str;
+					} else {
+						//
+						o.q[6].style.border = '4px solid blue';
+					}
 				}
 			});
 			
-			function annotation() {
+			function annotation(txt) {
 				// options_object
 				// options_object.textToAnnotate = String
 				// options_object.output_fields = []
@@ -51668,6 +51713,7 @@ function MT__RUN() {
 						}
 					}
 				);
+				return div_buttons;
 			}
 		}
 		new run().f();
