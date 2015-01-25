@@ -53096,6 +53096,333 @@ function MT__RUN() {
 		//~ }
 	}
 	
+	/**
+	 * Find the Yelp URL
+	 * 
+	 * "mike o"
+	 * Kristal...
+	 * "TS"
+	 * ...
+	 * Gordon Courtney
+	 * 
+	 * 
+	 */
+	//
+	// Gordon Courtney
+	// Find the Yelp Page for Charlotte Restaurants
+	// 
+	s = '	<li>Include the full address, e.g. http://www.yelp.com/biz/hey-you-gonna-eat-or-what-austin.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('#Q3Type,#submitButton {width:80%;}');
+			GM_addStyle('input {zoom:1.4;}');
+			
+			var p = document.getElementsByTagName('p');
+			for (var i in p) {
+				if (i == 'length') break;
+				var x = p[i].getElementsByTagName('br');
+				for (var j = x.length - 1; j>=0; j--) {
+					if (j == 'length') break;
+					x[j].parentNode.removeChild(x[j]);
+				}
+			}
+			
+			var d;
+			d = document.createElement('div');
+			d.setAttribute('id','d1');
+			document.body.appendChild(d);
+			var d1 = document.getElementById('d1');
+			d1.style.position='absolute';
+			d1.style.top='0px';
+			d1.style.left='30%';
+			d1.style.width='68%';
+			d1.style.height='700px';
+			d1.style.border='1px solid blue';
+			d1.style.borderBottom='2px solid blue';
+			d1.style.overflow = 'auto';
+			d1.style.backgroundColor='#eee';
+			//
+			d = document.createElement('input');
+			d.setAttribute('id','d2');
+			d.setAttribute('type','text');
+			document.body.appendChild(d);
+			var d2 = document.getElementById('d2');
+			d2.style.position='absolute';
+			d2.style.top='0px';
+			d2.style.left='0%';
+			d2.style.width='28%';
+			d2.style.height='30px';
+			d2.style.zoom='0';
+			//
+			d = document.createElement('input');
+			d.setAttribute('id','d2b');
+			d.setAttribute('type','text');
+			document.body.appendChild(d);
+			var d2b = document.getElementById('d2b');
+			d2b.style.position='absolute';
+			d2b.style.top='30px';
+			d2b.style.left='0%';
+			d2b.style.width='28%';
+			d2b.style.height='30px';
+			d2b.style.zoom='0';
+			//
+			d = document.createElement('input');
+			d.setAttribute('id','d2c');
+			d.setAttribute('type','button');
+			document.body.appendChild(d);
+			var d2c = document.getElementById('d2c');
+			d2c.style.position='absolute';
+			d2c.style.top='60px';
+			d2c.style.left='0%';
+			d2c.style.width='8%';
+			d2c.style.height='30px';
+			d2c.style.zoom='0';
+			
+			//
+			var b = document.getElementsByTagName('b');
+			var q = document.getElementsByName('Q1Url');
+			
+			d2.value  = b[0].innerText.trim();
+			d2b.value = b[1].innerText.trim();
+			
+			
+			d2.onblur = d2b.onblur = function() {
+				this.value = this.value.trim();
+				mike_o_yelp_scrape__searchSnippet();
+			}
+			
+			document.getElementById('mturk_form').onsubmit = function() {
+				
+			}
+			mike_o_yelp_scrape__searchSnippet();
+			
+			document.getElementById('submitButton').onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				doSubmit__serverSide();
+				return false;
+			}
+			
+			d2c.value = 'not rst.';
+			d2c.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementsByName('Q1Price')[4].checked = true;
+				document.getElementById('Q2Stars9').checked = true;
+				document.getElementById('Q3Type').value = '';
+				doSubmit__serverSide();
+			}
+			
+			// LINK TO GOOGLE
+			var toSearch = document.getElementsByTagName("b")[2].innerText;
+			toSearch=encodeURIComponent(toSearch);
+			toSearch = "http://www.google.com/search?q="+toSearch;
+			
+			var searchLink = document.createElement("a");
+			searchLink.setAttribute("id","searchLink");
+			searchLink.setAttribute("href",toSearch);
+			searchLink.setAttribute("target","_blank");
+			searchLink.innerText = toSearch;
+			document.getElementsByTagName("b")[2].innerHTML = "";
+			document.getElementsByTagName("b")[2].appendChild(searchLink);
+			
+			//~ mike_o_yelp_scrape__api();
+			//~ function mike_o_yelp_scrape__api() {
+				//~ //http://www.yelp.com/search?find_desc=grammercy%20tavern&find_loc=New+York%2C+NY&attrs=RestaurantsReservations#attrs
+				//~ var u = 'http://api.yelp.com/business_review_search\
+						//~ ?term='+encodeURIComponent(d2.value)+'\
+						//~ &location='+encodeURIComponent(d2b.value)+'\
+						//~ &limit=10&ywsid=YXBS8CWN5yhPwySyPG9o_g'; //14 1? &radius=5
+				//~ 
+				//~ GM_xmlhttpRequest({
+					//~ method: 'GET',
+					//~ url: u,
+					//~ onload: function (response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ if (response.status != 200) return;
+						//~ 
+						//~ rs = JSON.parse(rs);
+						//~ console.log(rs);
+					//~ }
+				//~ });
+			//~ }
+			
+			function mike_o_yelp_scrape__searchSnippet() {
+				
+				u = 'http://www.yelp.com/search/snippet'+
+						'?find_desc='+encodeURIComponent(d2.value) +
+						'&find_loc='+ encodeURIComponent(d2b.value)+
+						//'&cflt=restaurants'+
+						'&parent_request_id=&request_origin=user';
+				
+				d1.innerHTML = d2.value + '<br>' + d2b.value;
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) return;
+						
+						
+						rs = JSON.parse(rs);
+						rs = rs.search_results;
+						console.log(rs);
+						
+						if (rs.indexOf('<div class="no-results">') != -1) {
+							d1.innerHTML += '<br>0';
+							return;
+						}
+						
+						d1.innerHTML = '';
+						
+						var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
+						var k;
+						while (k = rrslt.exec(rs)) {
+						
+							k = k[1];
+							
+							var r;
+							
+							var ypurl;
+							var ypnm;
+							r = /<a class="biz-name" href="([^"]+)"[^>]*>((.|\s)*?(?=<\/a>|$)|$)/.exec(k);
+							if (r) {
+								
+								ypurl = r[1].replace(/#[\d\D]+$/, '');
+								
+								//spam...
+								if (ypurl.indexOf('/adredir?') == 0) {
+									ypurl = /redirect_url=([^&$]+)/.exec(ypurl);
+									if (!ypurl)
+										return;
+									ypurl = decodeURIComponent(ypurl[1]);
+								}
+								
+								if (ypurl.indexOf('http://www.yelp.com') != 0) {
+									ypurl = 'http://www.yelp.com' + ypurl;
+								}
+								ypnm = r[2];
+							} else {
+								console.log(k);
+								return;
+							}
+							
+							var ypcat = '';
+							r = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(k);
+							if (r) {
+								r = r[1];
+								r = r.replace(/<[^>]+>/g, '');
+								r = __js_clean_html_str(r);
+								r = r.replace(/\s+/g, ' ').trim();
+								ypcat = r;
+							}
+							//
+							var yprtg = '';
+							r = /<i class="star-img stars?[^"]+" title="([\d\.]+) stars? rating">/.exec(k);
+							if (r) {
+								r = r[1];
+								yprtg = r;
+							}
+							//
+							var ypprc = '';
+							r = /<span class="business-attribute price-range">([\$£]+)/.exec(k);
+							if (r) {
+								r = r[1];
+								r = r.length; //$$ = 2 OR £
+								if (r < 1 || r > 4)
+									alert('$' + r.length);
+								ypprc = r; // 1...4
+							}
+							//
+							//~ var ypnhd = '';
+							//~ r = /<span class="neighborhood-str-list">([^<]+)<\/span>/.exec(k);
+							//~ if (r) {
+								//~ r = r[1];
+								//~ r = r.replace(/<[^>]+>/g, '');
+								//~ r = __js_clean_html_str(r);
+								//~ r = r.replace(/\s+/g, ' ').trim();
+								//~ ypnhd = r;
+							//~ }
+							var addr = '';
+							r = /<address>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/address>/.exec(k);
+							if (r) {
+								r = r[1];
+								r = r.replace(/<[^>]*>/g, ' ');
+								r = __js_clean_html_str(r);
+								addr = '<i>(' + r + ')</i>';
+							}console.log(addr);
+							
+							d1.innerHTML += 
+								'<div style="border-bottom:2px solid #0a0a0a;" class="exe">'+
+									ypnm + ' ' + addr +
+									'<br>'+
+									'P:<input type="button" value="'+ypprc+'" class="exe1" style="width:auto;zoom:0;"><br>'+
+									'R:<input type="button" value="'+yprtg+'" class="exe1" style="width:auto;zoom:0;"><br>'+
+									'C:<input type="button" value="'+ypcat+'" class="exe1" style="width:auto;zoom:0;">'+
+								'</div>'
+							;
+						}
+						if (d1.innerHTML == '')
+							d1.innerHTML += '<div style="height:2000px;">&nbsp;</div>'
+						
+						var x = document.getElementsByClassName('exe');
+						for (var i in x) {
+							if (!x[i]) continue;
+							x[i].onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								var el = this.getElementsByClassName('exe1');
+								
+								var sbm = true;
+								
+								var r;
+								if (r = document.getElementById('Q1Price'+el[0].value))
+									r.checked = true;
+								else {
+									//document.getElementsByName('Q1Price')[4].checked = true;
+									sbm = false;
+								}
+								
+								
+								var q = document.getElementsByName('Q2Stars');
+								var found = false;
+								for (var i in q) {
+									if (i == 'length') break;
+									if (Math.round(q[i].value*10) == Math.round(el[1].value*10)) {
+										q[i].checked = true;
+										found = true;
+										break;
+									}
+								}
+								if (!found) {
+									document.getElementById('Q2Stars8').checked = true; // no reviews
+									sbm = false;
+								}
+								
+								if (el[2].value.trim().length < 2)
+									sbm = false;
+								
+								document.getElementById('Q3Type').value = el[2].value;	
+								document.getElementById('Q3Type').focus(); //
+								
+								if (!sbm)
+									document.body.style.backgroundColor = 'pink';
+								else
+									doSubmit__serverSide();
+							}
+						}
+					}
+					
+					
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	//
 	// mike o ""
 	// Find the Yelp.com price, star rating, and cuisine type for restaurants, otherwise Google the ones you don't find on Yelp.com.
