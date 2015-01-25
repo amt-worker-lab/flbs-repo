@@ -51539,12 +51539,27 @@ function MT__RUN() {
 			var o = {
 				// Serial number... e.g. 86217068
 				num: /<h3>Find the Following Information for Trademark Serial Number&nbsp;(\d+):<\/h3>/.exec(ih)[1],
-				url: null
+				url: null,
+				
+				q: [
+					document.getElementById('FirstName'),
+					document.getElementById('LastName'),
+					document.getElementById('Address1'),
+					document.getElementById('Address2'),
+					document.getElementById('CaseName'),
+					document.getElementById('Plaintiff'),
+					document.getElementById('Date')
+				],
+				
+				q_annotate_fields: [] // This is an array for annotate fields
 			}
 			o.url = 'http://tmsearch.uspto.gov/bin/gate.exe?' +
 				'f=toc&state=4807%3A91zj41.1.1&p_search=search&p_s_All=&BackReference=&p_L=100' +
 				'&p_plural=yes&p_s_ALL='+o.num+
 				'&a_search=Submit+Query';
+			o.q_annotate_fields.push( // Fields 0-3
+				o.q[0],o.q[1],o.q[2],o.q[3]
+			);
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -51552,8 +51567,26 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			/*END ITEMS*/
 			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 140 // offset top
+			});
 			
-			// TURN ALL ADDRESS INTO "Address" or "Address-Address" etc.
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+				}
+			}
+			
+			// ...
+			// TURN ALL ADDRESS INTO PROPER CASING, E.G. "Address" or "Address-Address" etc.
 			//
 			
 			GM_xmlhttpRequest({ // init
@@ -51569,11 +51602,73 @@ function MT__RUN() {
 					//e.g. (APPLICANT) ECO PRK, LLC LIMITED LIABILITY COMPANY CALIFORNIA 14735 Garfield Ave Paramount CALIFORNIA 90723
 					reg = /<B>Owner<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
 					if (reg) {
-						
+						var str = __js_clean_html_str(reg[1]).trim();
+						// Character mod
+						var x = str.split(' ');
+						for (var i in x) {
+							x[i] = REG_INCLUDE_DASHES
+						}
+						// Annotation
+						d1.appendChild(
+							annotation(str)
+						);
 					}
 					
 				}
 			});
+			
+			function annotation() {
+				// options_object
+				// options_object.textToAnnotate = String
+				// options_object.output_fields = []
+				// options_object.callback_mouseup = Function
+				//~ if (options_object.callback_mouseup) {
+					//~ options_object.callback_mouseup(output_fields[i]);
+				//~ }
+				var div_buttons = new AMT___items_factory().create_annotation_to_output_fields(
+					{
+						textToAnnotate: txt,
+						output_fields:  o.q_annotate_fields,
+						callback_mouseup: function(output_field) { // =>out field
+							
+							//~ // Remove all but words/digits from end of the field!
+							//~ output_field.value = output_field.value.replace(/[^\w\d]$/g, ''); // remove from end all but words
+							
+							// Remove COMMA only
+							output_field.value = output_field.value.replace(/[,]$/g, ''); // remove from end all but words
+							
+							// Get next out field
+							var found = false;
+							for (var i in q) {
+								if (q[i] == output_field) {
+									found = true;
+									continue;
+								}
+								if (found) { // this is it
+									found = q[i];
+									break;
+								}
+							}
+							if (found && found.value == '') {
+								var city_to_match = output_field.value.toLowerCase();
+								
+								//~ var city_to_match = output_field.value.toLowerCase().replace(/[^\w]$/g, ''); // remove from end all but words
+								//~ console.log(city_to_match);
+								
+								if (us_cities_obj.cities_to_lowercase.hasOwnProperty( city_to_match.toLowerCase() )) {
+									// Iterate through .cities
+									for (var city in us_cities_obj.cities) {
+										if (city.toLowerCase() == city_to_match) {
+											found.value = us_cities_obj.cities[city]; //state
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				);
+			}
 		}
 		new run().f();
 		return;

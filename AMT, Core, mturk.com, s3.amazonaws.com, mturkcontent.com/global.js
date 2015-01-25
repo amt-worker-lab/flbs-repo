@@ -1388,16 +1388,31 @@ String.prototype.format_number_with_commas = function() {
 }
 /**
  * .string_to_mixed_case
+ * 
+ * @param		options.REG_INCLUDE_DASHES
  */
 String.prototype.string_to_mixed_case = function(options) {
 	var s = this.toString();
-	s = s.replace(
-		/(^| )([a-z])/g,
-		function(match0, match1, match2) {
-			return match1 + match2.toUpperCase();
-		}
-	);
-	return s;
+	if (options.hasOwnProperty('REG_INCLUDE_DASHES')) // Same as normal but toUpperCase "Some-word" to "Some-Word"
+	{
+		s = s.replace(
+			/(^|[ \-])([a-z])/g,
+			function(match0, match1, match2) {
+				return match1 + match2.toUpperCase();
+			}
+		);
+		return s;
+	}
+	else
+	{
+		s = s.replace(
+			/(^| )([a-z])/g,
+			function(match0, match1, match2) {
+				return match1 + match2.toUpperCase();
+			}
+		);
+		return s;
+	}
 }
 /**
  * .clean_string_to_array
