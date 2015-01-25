@@ -53161,16 +53161,25 @@ function MT__RUN() {
 				comp: td[1].innerText.trim(),
 				addr: td[3].innerText.trim(),
 				phone:td[5].innerText.trim(),
-				q: document.getElementById('web_url')
+				q: document.getElementById('web_url'),
+				
+				bold_addr: [],
+				bold_comp: []
 			}
+			//
+			o.bold_addr = o.addr.clean_string_to_array();
+			o.bold_comp = o.comp.clean_string_to_array();
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr + ', Charlotte, NC';
 			//
 			d2.onblur = d2b.onblur = function() {
 				this.value = this.value.trim();
-				scrape_search_snippet();
+				yelp_search_snippet();
 			}
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
 			
 			document.getElementById('submitButton').onclick = function() {
 				o.q.value = o.q.value.trim();
@@ -53370,7 +53379,7 @@ function MT__RUN() {
 							d.className = 'exe';
 							d.ypurl = ypurl;
 							d1.appendChild(d);
-							d.innerHTML = ypnm + ' ' + addr +'<br>'+
+							d.innerHTML = MT__bold(ypnm, o.bold_comp) + ' ' + MT__bold(addr, o.bold_addr) +'<br>'+
 								'P:'+p_str+'<br>'+
 								'R:'+yprtg+'<br>'+
 								'C:'+ypcat;
