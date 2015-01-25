@@ -51538,11 +51538,42 @@ function MT__RUN() {
 			
 			var o = {
 				// Serial number... e.g. 86217068
-				num: /<h3>Find the Following Information for Trademark Serial Number&nbsp;(\d+):<\/h3>/.exec(ih)[1]
+				num: /<h3>Find the Following Information for Trademark Serial Number&nbsp;(\d+):<\/h3>/.exec(ih)[1],
+				url: null
 			}
+			o.url = 'http://tmsearch.uspto.gov/bin/gate.exe?' +
+				'f=toc&state=4807%3A91zj41.1.1&p_search=search&p_s_All=&BackReference=&p_L=100' +
+				'&p_plural=yes&p_s_ALL='+o.num+
+				'&a_search=Submit+Query';
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:140px;height:400px;width:99%;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
 			
 			// TURN ALL ADDRESS INTO "Address" or "Address-Address" etc.
-//http://tmsearch.uspto.gov/bin/gate.exe?f=toc&state=4807%3A91zj41.1.1&p_search=search&p_s_All=&BackReference=&p_L=100&p_plural=yes&p_s_ALL=86217068&a_search=Submit+Query%20Response%20Headersview%20source
+			//
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: o.url,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var reg;
+					
+					//Owner's name & address & unrelated info.
+					//e.g. (APPLICANT) ECO PRK, LLC LIMITED LIABILITY COMPANY CALIFORNIA 14735 Garfield Ave Paramount CALIFORNIA 90723
+					reg = /<B>Owner<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					if (reg) {
+						
+					}
+					
+				}
+			});
 		}
 		new run().f();
 		return;
@@ -59831,7 +59862,6 @@ qatar,80
 			d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.coords)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C67%20'+encodeURIComponent(o.coords)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			/*END ITEMS*/
 			
-			// inner
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
