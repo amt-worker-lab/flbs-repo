@@ -53118,6 +53118,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('#submitButton {width:80%;}');
+			GM_addStyle('.exe:hover {background-color:aqua !important;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:79% !important;margin-left:20% !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
@@ -53194,6 +53195,7 @@ function MT__RUN() {
 				//~ });
 			//~ }
 			
+			//xx Get lat long
 			//Init
 			yelp_search_snippet();
 			
@@ -53215,10 +53217,11 @@ function MT__RUN() {
 						
 						if (response.status != 200) return;
 						
-						
+						// ...
 						rs = JSON.parse(rs);
+						var map = rs.search_map;
 						rs = rs.search_results;
-						console.log(rs);
+						//~ console.log(rs);
 						
 						if (rs.indexOf('<div class="no-results">') != -1) {
 							d1.innerHTML += '<br>0';
@@ -53229,6 +53232,7 @@ function MT__RUN() {
 						
 						var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
 						var k;
+						var num = 0;
 						while (k = rrslt.exec(rs)) {
 						
 							k = k[1];
@@ -53301,7 +53305,42 @@ function MT__RUN() {
 								r = r[1];
 								r = r.replace(/<[^>]*>/g, ' ');
 								r = __js_clean_html_str(r);
-								addr = '<i>(' + r + ')</i>';
+								addr = r;
+							}
+							// Map
+							var dist;
+							var bgc = 'background-color:pink;';
+							if  (
+								map.center &&
+								map.markers[num]
+								)
+							{
+								dist = Math.round(MT___lat_lng_distance(
+									map.center.latitude,
+									map.center.longitude,
+									map.markers[num].location.latitude,
+									map.markers[num].location.longitude
+								));
+								
+								if (dist < 4) {
+									bgc = 'background-color:auto;';
+								} else {
+									
+								}
+							}
+							else
+							{
+								dist = 999;
+							}
+							// Complete addr
+							addr = '<i>(' + addr + ' ~'+dist+')</i>';
+							
+							//Price str
+							var p_str = '';
+							if (ypprc != '') {
+								for (var i = 0; i<ypprc; i++){
+									p_str += '$';
+								}
 							}
 							
 							//
@@ -53311,7 +53350,7 @@ function MT__RUN() {
 							d.ypurl = ypurl;
 							d1.appendChild(d);
 							d.innerHTML = ypnm + ' ' + addr +'<br>'+
-								'P:'+ypprc+'<br>'+
+								'P:'+p_str+'<br>'+
 								'R:'+yprtg+'<br>'+
 								'C:'+ypcat;
 							d.onclick = function() {
@@ -53319,6 +53358,9 @@ function MT__RUN() {
 								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
+							
+							// Increment (for map)
+							num++;
 						}
 						if (d1.innerHTML == '') {
 							var d = document.createElement('div');
