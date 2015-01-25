@@ -51676,45 +51676,27 @@ function MT__RUN() {
 						output_fields:  o.q_annotate_fields,
 						callback_mouseup: function(output_field) { // =>out field
 							
-							// On the last field try auto commas
-							// 
-							//
-							if (output_field == o.q[6]) {
-								
-							}
-							return;
-							//~ // Remove all but words/digits from end of the field!
-							//~ output_field.value = output_field.value.replace(/[^\w\d]$/g, ''); // remove from end all but words
-							
-							// Remove COMMA only
-							output_field.value = output_field.value.replace(/[,]$/g, ''); // remove from end all but words
-							
-							// Get next out field
-							var found = false;
-							for (var i in q) {
-								if (q[i] == output_field) {
-									found = true;
-									continue;
-								}
-								if (found) { // this is it
-									found = q[i];
-									break;
-								}
-							}
-							if (found && found.value == '') {
-								var city_to_match = output_field.value.toLowerCase();
-								
-								//~ var city_to_match = output_field.value.toLowerCase().replace(/[^\w]$/g, ''); // remove from end all but words
-								//~ console.log(city_to_match);
-								
-								if (us_cities_obj.cities_to_lowercase.hasOwnProperty( city_to_match.toLowerCase() )) {
-									// Iterate through .cities
-									for (var city in us_cities_obj.cities) {
-										if (city.toLowerCase() == city_to_match) {
-											found.value = us_cities_obj.cities[city]; //state
-											break;
-										}
+							// On the last field try auto commas.
+							// Adds TWO commas if successful. If not 
+							// successful the adds border.
+							if (output_field == o.q[3]) {
+								//~ console.log(output_field);
+								//~ console.log(output_field.value);
+								var n = output_field.value;
+								var state, st_reg, found = false;
+								for (var i in MT___states) {
+									state = MT___states[i];
+									st_reg= new RegExp(' ('+__js_clean_html_str(state)+') (\\d+)$', 'i');
+									if (st_reg.exec(n)) {
+										found = state;
+										break;
 									}
+								}
+								if (found) {
+									n = n.replace(st_reg, ', $1, $2'); // Add 2 commas!
+									output_field.value = n;
+								} else {
+									output_field.style.border = '4px solid blue';
 								}
 							}
 						}
