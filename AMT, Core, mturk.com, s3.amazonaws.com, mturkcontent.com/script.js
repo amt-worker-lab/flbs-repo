@@ -51563,7 +51563,7 @@ function MT__RUN() {
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:140px;height:400px;width:99%;');
+			d1.setAttribute('style', 'position:absolute;top:240px;height:400px;width:99%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
 			/*END ITEMS*/
 			
@@ -51575,7 +51575,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 140 // offset top
+				offset: 240 // offset top
 			});
 			
 			// ...
@@ -51650,7 +51650,7 @@ function MT__RUN() {
 					}
 					// 
 					// e.g. November 21, 2013
-					reg = /<B>Abaondonment Date<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
+					reg = /<B>Abandonment Date<\/B><\/TD>[\r\n\t\s]+<TD>([^<]+)<\/TD>/.exec(rs);
 					if (reg) {
 						var str = __js_clean_html_str(reg[1]).trim().toLowerCase();
 						str = str.string_to_mixed_case({REG_INCLUDE_DASHES: true}); // MIXED CASE, include dashes
@@ -51676,6 +51676,13 @@ function MT__RUN() {
 						output_fields:  o.q_annotate_fields,
 						callback_mouseup: function(output_field) { // =>out field
 							
+							// On the last field try auto commas
+							// 
+							//
+							if (output_field == o.q[6]) {
+								
+							}
+							return;
 							//~ // Remove all but words/digits from end of the field!
 							//~ output_field.value = output_field.value.replace(/[^\w\d]$/g, ''); // remove from end all but words
 							
