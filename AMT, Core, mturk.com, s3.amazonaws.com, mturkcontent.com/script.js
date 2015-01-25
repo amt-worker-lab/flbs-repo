@@ -53164,11 +53164,18 @@ function MT__RUN() {
 				q: document.getElementById('web_url'),
 				
 				bold_addr: [],
-				bold_comp: []
+				bold_comp: [],
+				
+				// For auto
+				comp_cln: null,
+				addr_cln: null
 			}
 			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
+			//
+			o.addr_cln = o.addr.toLowerCase().replace(/[a-z0-9]/gi, '') + 'charlotte,nc';
+			o.comp_cln = o.comp.toLowerCase().replace(/[a-z0-9]/gi, '');
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr + ', Charlotte, NC';
@@ -53254,6 +53261,8 @@ function MT__RUN() {
 						var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
 						var k;
 						var num = 1;
+						var auto_found = false;
+						var addr_cln = '', ypnm_cln = '';
 						while (k = rrslt.exec(rs)) {
 						
 							k = k[1];
@@ -53283,7 +53292,8 @@ function MT__RUN() {
 								ypurl = ypurl.replace(/\?osq=[\d\D]*/, '');
 								
 								//..
-								ypnm = r[2];
+								ypnm = r[2].replace(/<[^>]*>/g, ''); // Remove html tags (<span highlighted>, etc.)
+								ypnm_cln = ypnm.toLowerCase().replace(/[a-z0-9]/gi, '');
 							} else {
 								console.log(k);
 								return;
@@ -53334,6 +53344,7 @@ function MT__RUN() {
 								r = r.replace(/<[^>]*>/g, ' ');
 								r = __js_clean_html_str(r);
 								addr = r;
+								addr_cln = r.toLowerCase().replace(/ [\d\-]+$/, '').replace(/[ \-]/g, ''); // remove zip
 							}
 							// Map
 							var dist;
@@ -53392,6 +53403,23 @@ function MT__RUN() {
 							
 							// Increment (for map)
 							num++;
+							
+							// Auto found?
+							console.log(o.comp_cln);
+							console.log(ypnm_cln);
+							console.log(o.addr_cln);
+							console.log(addr_cln);
+							if  (
+								!auto_found &&
+								o.comp_cln == ypnm_cln &&
+								o.addr_cln == addr_cln &&
+								o.comp_cln.length > 4 &&
+								o.addr_cln.length > 4
+								)
+							{
+								d.click();
+								auto_found = true;
+							}
 						}
 						if (d1.innerHTML != '') {
 							var d = document.createElement('div');
