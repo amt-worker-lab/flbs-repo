@@ -53118,7 +53118,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('#submitButton {width:80%;}');
-			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:aqua !important;cursor:pointer;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:79% !important;margin-left:20% !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
@@ -53198,6 +53198,9 @@ function MT__RUN() {
 			}
 			d3.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
+				o.q.value = 'NA';
+				new AMT___core_factory().nextTab();
+				doSubmit();
 			}
 			
 			//~ mike_o_yelp_scrape__api();
