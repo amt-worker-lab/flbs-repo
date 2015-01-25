@@ -53174,8 +53174,8 @@ function MT__RUN() {
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
 			//
-			o.addr_cln = o.addr.toLowerCase().replace(/[a-z0-9]/gi, '') + 'charlotte,nc';
-			o.comp_cln = o.comp.toLowerCase().replace(/[a-z0-9]/gi, '');
+			o.addr_cln = o.addr.toLowerCase().replace(/[^a-z0-9]/gi, '') + 'charlotte,nc';
+			o.comp_cln = o.comp.toLowerCase().replace(/[^a-z0-9]/gi, '');
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr + ', Charlotte, NC';
@@ -53293,7 +53293,7 @@ function MT__RUN() {
 								
 								//..
 								ypnm = r[2].replace(/<[^>]*>/g, ''); // Remove html tags (<span highlighted>, etc.)
-								ypnm_cln = ypnm.toLowerCase().replace(/[a-z0-9]/gi, '');
+								ypnm_cln = ypnm.toLowerCase().replace(/[^a-z0-9]/gi, '');
 							} else {
 								console.log(k);
 								return;
