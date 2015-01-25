@@ -51528,6 +51528,30 @@ function MT__RUN() {
 	// John Nelson
 	// 
 	// 
+	s = '<h3>Find the Following Information for Trademark Serial Number&nbsp;';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('ul {position:absolute;top:2000px;}');
+			
+			var o = {
+				// Serial number... e.g. 86217068
+				num: /<h3>Find the Following Information for Trademark Serial Number&nbsp;(\d+):<\/h3>/.exec(ih)[1]
+			}
+			
+			// TURN ALL ADDRESS INTO "Address" or "Address-Address" etc.
+//http://tmsearch.uspto.gov/bin/gate.exe?f=toc&state=4807%3A91zj41.1.1&p_search=search&p_s_All=&BackReference=&p_L=100&p_plural=yes&p_s_ALL=86217068&a_search=Submit+Query%20Response%20Headersview%20source
+		}
+		new run().f();
+		return;
+	}
+	
+	//
+	// John Nelson
+	// 
+	// 
 	s = /<h3>Find the Following Information for Case No\. *[^ ]* in DeKalb County Magistrate Court<\/h3>/;
 	if  (
 		s.exec(ih)
