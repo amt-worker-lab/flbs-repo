@@ -53116,9 +53116,9 @@ function MT__RUN() {
 	{
 		var run = function() {}
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('#submitButton {width:80%;}');
-			GM_addStyle('.exe:hover {background-color:aqua !important;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:79% !important;margin-left:20% !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
@@ -53129,7 +53129,7 @@ function MT__RUN() {
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:100px;left:0;width:99%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:160px;left:0;width:80%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2  = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
@@ -53144,6 +53144,17 @@ function MT__RUN() {
 			d3.value = 'NA';
 			/*END ITEMS*/
 			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 160 // offset top
+			});
+			
 			//
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -53154,7 +53165,7 @@ function MT__RUN() {
 			}
 			//
 			d2.value  = o.comp;
-			d2b.value = 'Charlotte, NC';
+			d2b.value = o.addr + ', Charlotte, NC';
 			//
 			d2.onblur = d2b.onblur = function() {
 				this.value = this.value.trim();
@@ -53219,9 +53230,10 @@ function MT__RUN() {
 						
 						// ...
 						rs = JSON.parse(rs);
+						console.log(rs);
 						var map = rs.search_map;
 						rs = rs.search_results;
-						//~ console.log(rs);
+						
 						
 						if (rs.indexOf('<div class="no-results">') != -1) {
 							d1.innerHTML += '<br>0';
@@ -53232,7 +53244,7 @@ function MT__RUN() {
 						
 						var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
 						var k;
-						var num = 0;
+						var num = 1;
 						while (k = rrslt.exec(rs)) {
 						
 							k = k[1];
@@ -53257,6 +53269,11 @@ function MT__RUN() {
 								if (ypurl.indexOf('http://www.yelp.com') != 0) {
 									ypurl = 'http://www.yelp.com' + ypurl;
 								}
+								
+								// Replace ?xx
+								ypurl = ypurl.replace(/\?osq=[\d\D]*/, '');
+								
+								//..
 								ypnm = r[2];
 							} else {
 								console.log(k);
@@ -53278,6 +53295,8 @@ function MT__RUN() {
 							if (r) {
 								r = r[1];
 								yprtg = r;
+							} else {
+								yprtg = '-';
 							}
 							//
 							var ypprc = '';
@@ -53341,11 +53360,13 @@ function MT__RUN() {
 								for (var i = 0; i<ypprc; i++){
 									p_str += '$';
 								}
+							} else {
+								p_str = '-';
 							}
 							
 							//
 							var d = document.createElement('div');
-							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+							d.setAttribute('style','border-bottom:1px solid #a2a2a2;' + bgc);
 							d.className = 'exe';
 							d.ypurl = ypurl;
 							d1.appendChild(d);
@@ -53354,6 +53375,7 @@ function MT__RUN() {
 								'R:'+yprtg+'<br>'+
 								'C:'+ypcat;
 							d.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
 								document.getElementById('web_url').value = this.ypurl;
 								new AMT___core_factory().nextTab();
 								doSubmit();
@@ -53362,7 +53384,7 @@ function MT__RUN() {
 							// Increment (for map)
 							num++;
 						}
-						if (d1.innerHTML == '') {
+						if (d1.innerHTML != '') {
 							var d = document.createElement('div');
 							d.setAttribute('style','height:2000px;');
 							d1.appendChild(d);
