@@ -53117,115 +53117,60 @@ function MT__RUN() {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('#Q3Type,#submitButton {width:80%;}');
-			GM_addStyle('input {zoom:1.4;}');
+			GM_addStyle('#submitButton {width:80%;}');
 			
-			var p = document.getElementsByTagName('p');
-			for (var i in p) {
-				if (i == 'length') break;
-				var x = p[i].getElementsByTagName('br');
-				for (var j = x.length - 1; j>=0; j--) {
-					if (j == 'length') break;
-					x[j].parentNode.removeChild(x[j]);
-				}
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:79% !important;margin-left:20% !important;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			
+			
+			// These must be in Charlotte!
+			// i.e. Charlotte_North_Carolina.html
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:100px;left:0;width:99%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2  = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:20%;height:30px;');
+			document.body.appendChild(d2b);
+			var d3 = document.createElement('input');
+			d3.setAttribute('type','button');
+			d3.setAttribute('style','position:absolute;top:64px;left:0px;width:20%;height:30px;');
+			document.body.appendChild(d3);
+			d3.value = 'NA';
+			/*END ITEMS*/
+			
+			//
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				addr: td[3].innerText.trim(),
+				phone:td[5].innerText.trim(),
+				q: document.getElementById('web_url')
 			}
-			
-			var d;
-			d = document.createElement('div');
-			d.setAttribute('id','d1');
-			document.body.appendChild(d);
-			var d1 = document.getElementById('d1');
-			d1.style.position='absolute';
-			d1.style.top='0px';
-			d1.style.left='30%';
-			d1.style.width='68%';
-			d1.style.height='700px';
-			d1.style.border='1px solid blue';
-			d1.style.borderBottom='2px solid blue';
-			d1.style.overflow = 'auto';
-			d1.style.backgroundColor='#eee';
 			//
-			d = document.createElement('input');
-			d.setAttribute('id','d2');
-			d.setAttribute('type','text');
-			document.body.appendChild(d);
-			var d2 = document.getElementById('d2');
-			d2.style.position='absolute';
-			d2.style.top='0px';
-			d2.style.left='0%';
-			d2.style.width='28%';
-			d2.style.height='30px';
-			d2.style.zoom='0';
+			d2.value  = o.comp;
+			d2b.value = 'Charlotte, NC';
 			//
-			d = document.createElement('input');
-			d.setAttribute('id','d2b');
-			d.setAttribute('type','text');
-			document.body.appendChild(d);
-			var d2b = document.getElementById('d2b');
-			d2b.style.position='absolute';
-			d2b.style.top='30px';
-			d2b.style.left='0%';
-			d2b.style.width='28%';
-			d2b.style.height='30px';
-			d2b.style.zoom='0';
-			//
-			d = document.createElement('input');
-			d.setAttribute('id','d2c');
-			d.setAttribute('type','button');
-			document.body.appendChild(d);
-			var d2c = document.getElementById('d2c');
-			d2c.style.position='absolute';
-			d2c.style.top='60px';
-			d2c.style.left='0%';
-			d2c.style.width='8%';
-			d2c.style.height='30px';
-			d2c.style.zoom='0';
-			
-			//
-			var b = document.getElementsByTagName('b');
-			var q = document.getElementsByName('Q1Url');
-			
-			d2.value  = b[0].innerText.trim();
-			d2b.value = b[1].innerText.trim();
-			
-			
 			d2.onblur = d2b.onblur = function() {
 				this.value = this.value.trim();
-				mike_o_yelp_scrape__searchSnippet();
+				scrape_search_snippet();
 			}
-			
-			document.getElementById('mturk_form').onsubmit = function() {
-				
-			}
-			mike_o_yelp_scrape__searchSnippet();
 			
 			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				if (o.q.value == '') return false;
 				this.style.backgroundColor = 'LightGreen';
-				doSubmit__serverSide();
+				new AMT___core_factory().nextTab();
+				doSubmit();
 				return false;
 			}
-			
-			d2c.value = 'not rst.';
-			d2c.onclick = function() {
+			d3.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				document.getElementsByName('Q1Price')[4].checked = true;
-				document.getElementById('Q2Stars9').checked = true;
-				document.getElementById('Q3Type').value = '';
-				doSubmit__serverSide();
 			}
-			
-			// LINK TO GOOGLE
-			var toSearch = document.getElementsByTagName("b")[2].innerText;
-			toSearch=encodeURIComponent(toSearch);
-			toSearch = "http://www.google.com/search?q="+toSearch;
-			
-			var searchLink = document.createElement("a");
-			searchLink.setAttribute("id","searchLink");
-			searchLink.setAttribute("href",toSearch);
-			searchLink.setAttribute("target","_blank");
-			searchLink.innerText = toSearch;
-			document.getElementsByTagName("b")[2].innerHTML = "";
-			document.getElementsByTagName("b")[2].appendChild(searchLink);
 			
 			//~ mike_o_yelp_scrape__api();
 			//~ function mike_o_yelp_scrape__api() {
@@ -53249,7 +53194,10 @@ function MT__RUN() {
 				//~ });
 			//~ }
 			
-			function mike_o_yelp_scrape__searchSnippet() {
+			//Init
+			yelp_search_snippet();
+			
+			function yelp_search_snippet() {
 				
 				u = 'http://www.yelp.com/search/snippet'+
 						'?find_desc='+encodeURIComponent(d2.value) +
@@ -53354,69 +53302,30 @@ function MT__RUN() {
 								r = r.replace(/<[^>]*>/g, ' ');
 								r = __js_clean_html_str(r);
 								addr = '<i>(' + r + ')</i>';
-							}console.log(addr);
+							}
 							
-							d1.innerHTML += 
-								'<div style="border-bottom:2px solid #0a0a0a;" class="exe">'+
-									ypnm + ' ' + addr +
-									'<br>'+
-									'P:<input type="button" value="'+ypprc+'" class="exe1" style="width:auto;zoom:0;"><br>'+
-									'R:<input type="button" value="'+yprtg+'" class="exe1" style="width:auto;zoom:0;"><br>'+
-									'C:<input type="button" value="'+ypcat+'" class="exe1" style="width:auto;zoom:0;">'+
-								'</div>'
-							;
-						}
-						if (d1.innerHTML == '')
-							d1.innerHTML += '<div style="height:2000px;">&nbsp;</div>'
-						
-						var x = document.getElementsByClassName('exe');
-						for (var i in x) {
-							if (!x[i]) continue;
-							x[i].onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								var el = this.getElementsByClassName('exe1');
-								
-								var sbm = true;
-								
-								var r;
-								if (r = document.getElementById('Q1Price'+el[0].value))
-									r.checked = true;
-								else {
-									//document.getElementsByName('Q1Price')[4].checked = true;
-									sbm = false;
-								}
-								
-								
-								var q = document.getElementsByName('Q2Stars');
-								var found = false;
-								for (var i in q) {
-									if (i == 'length') break;
-									if (Math.round(q[i].value*10) == Math.round(el[1].value*10)) {
-										q[i].checked = true;
-										found = true;
-										break;
-									}
-								}
-								if (!found) {
-									document.getElementById('Q2Stars8').checked = true; // no reviews
-									sbm = false;
-								}
-								
-								if (el[2].value.trim().length < 2)
-									sbm = false;
-								
-								document.getElementById('Q3Type').value = el[2].value;	
-								document.getElementById('Q3Type').focus(); //
-								
-								if (!sbm)
-									document.body.style.backgroundColor = 'pink';
-								else
-									doSubmit__serverSide();
+							//
+							var d = document.createElement('div');
+							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+							d.className = 'exe';
+							d.ypurl = ypurl;
+							d1.appendChild(d);
+							d.innerHTML = ypnm + ' ' + addr +'<br>'+
+								'P:'+ypprc+'<br>'+
+								'R:'+yprtg+'<br>'+
+								'C:'+ypcat;
+							d.onclick = function() {
+								document.getElementById('web_url').value = this.ypurl;
+								new AMT___core_factory().nextTab();
+								doSubmit();
 							}
 						}
+						if (d1.innerHTML == '') {
+							var d = document.createElement('div');
+							d.setAttribute('style','height:2000px;');
+							d1.appendChild(d);
+						}
 					}
-					
-					
 				});
 			}
 		}
