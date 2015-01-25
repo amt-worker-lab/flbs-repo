@@ -51563,7 +51563,7 @@ function MT__RUN() {
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:240px;height:400px;width:99%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;left:40%;top:240px;height:400px;width:40%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
 			/*END ITEMS*/
 			
