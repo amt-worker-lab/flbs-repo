@@ -53503,28 +53503,23 @@ function MT__RUN() {
 							//~ sbm = false;
 					//~ } else sbm = false;
 					
-					// reviews
-					var rx = /<div class="biz-main-info embossed-text-white">((.|\s)*?(?=[\r\n]        <\/div>|$)|$)/.exec(rs);
-					if (rx) {
-						// #
-						//~ r = /<span itemprop="reviewCount">([\d,]+)<\/span> review/.exec(rs);
-						//~ if (r) {
-							//~ r = r[1].trim();
-							//~ document.getElementById('Number of Reviews').value = r;
-						//~ } else sbm = false;
+					
 						
 					// rating
 					r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
 					if (r) {
-						r = r[1];
-						r = r.replace(/^([\d])\.0[^$]*$/, '$1');
-						var found = false;
-						console.log('r for rating value:' + r);
-						}
-						if (!found)
-							sbm = false;
-					} else sbm = false;
-				
+							r = r[1];
+							r = r.replace(/^([\d])\.0[^$]*$/, '$1');
+							var found = false;
+							console.log('r for rating value:' + r);
+							if(r) {
+								found = true;
+								document.getElementById('yelp_rating').value = r;
+							}
+					}
+					if (!found)
+						sbm = false;
+					console.log(sbm);
 					// price
 					r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
 					if (r) {
@@ -53533,10 +53528,11 @@ function MT__RUN() {
 						r = r[1];
 						console.log(r);
 						
-						//r = Math.round(r.length*1); //$$ = 2 OR £!
+						r = Math.round(r.length*1); //$$ = 2 OR £!
 						if (r < 1 || r > 4)
 							sbm = false;
 						console.log('r for price value' + r);
+						document.getElementById('price_range').value = r;
 					} else sbm = false;
 			
 					// reservations
@@ -53555,9 +53551,31 @@ function MT__RUN() {
 						}
 					} else {
 						sbm = false;
-						document.getElementsById('reservations').value = 'N/A'; // NO
+						document.getElementById('reservations').value = 'N/A'; // NO
 						document.body.backgroundColor = 'LightGreen';
 					}
+					
+					//Wi-fi
+					r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+					if(r) {
+						r = r[1];
+						switch(r) {
+							case 'Yes':
+								document.getElementById('wifi').value = 'Yes';
+								break;
+							case 'No':
+								document.getElementById('wifi').value = 'No';
+								break;
+							default:
+								sbm = false;
+						}
+					}else {
+						sbm = false;
+						document.getElementById('wifi').value = 'N/A'; // NO
+						document.body.backgroundColor = 'LightGreen';
+					}
+					
+					
 					console.log(sbm);
 					if (sbm) {
 						doSubmit();
