@@ -53351,7 +53351,7 @@ function MT__RUN() {
 								r = __js_clean_html_str(r).trim();
 								phone = (r == '') ? '-' : r;
 								console.log(phone);
-								if (phone.replace(/[^\d]/g, '') == o.phone) {
+								if (phone.replace(/[^\d]/g, '') == o.phone && o.phone.length > 4) {
 									phone_fmt = '<em>'+phone+'</em>';
 								} else {
 									phone_fmt = phone;
@@ -53419,6 +53419,7 @@ function MT__RUN() {
 								'P:'+phone_fmt+'<br>'+
 								'C:'+ypcat;
 							d.onclick = function() {
+								document.body.style.backgroundColor = 'LightGreen';
 								this.style.backgroundColor = 'LightGreen';
 								document.getElementById('web_url').value = this.ypurl;
 								new AMT___core_factory().nextTab();
