@@ -53533,8 +53533,13 @@ function MT__RUN() {
 							sbm = false;
 						console.log('r for price value' + r);
 						document.getElementById('price_range').value = r;
-					} else sbm = false;
-			
+					} else  {
+						console.log('Price not found');
+						document.body.style.backgroundColor = 'LightGreen';
+						sbm = false;
+					}
+					
+					
 					// reservations
 					r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
 					if (r) {
@@ -53550,9 +53555,9 @@ function MT__RUN() {
 								sbm = false;
 						}
 					} else {
-						sbm = false;
+						console.log('reservations not found');
 						document.getElementById('reservations').value = 'N/A'; // NO
-						document.body.backgroundColor = 'LightGreen';
+						document.body.style.backgroundColor = 'LightGreen';
 					}
 					
 					//Wi-fi
@@ -53570,9 +53575,9 @@ function MT__RUN() {
 								sbm = false;
 						}
 					}else {
-						sbm = false;
+						console.log('wifi not found');
 						document.getElementById('wifi').value = 'N/A'; // NO
-						document.body.backgroundColor = 'LightGreen';
+						document.body.style.backgroundColor = 'LightGreen';
 					}
 					
 					
