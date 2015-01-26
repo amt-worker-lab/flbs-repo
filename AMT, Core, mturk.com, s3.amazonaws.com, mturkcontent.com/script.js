@@ -53491,20 +53491,6 @@ function MT__RUN() {
 					var r;
 					var sbm = true;
 					
-					
-					
-					// title
-					//   <h1 class="biz-page-title embossed-text-white osolong" itemprop="name">
-					//~ r = /<h1 class="biz-page-title embossed-text-white[^"]*" itemprop="name">([^<]+)<\/h1>/.exec(rs);
-					//~ if (r) {
-						//~ r = __js_clean_html_str(r[1]).trim();
-						//~ document.getElementById('Name').value = r;
-						//~ if (r.length < 2)
-							//~ sbm = false;
-					//~ } else sbm = false;
-					
-					
-						
 					// rating
 					r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
 					if (r) {
@@ -53519,7 +53505,7 @@ function MT__RUN() {
 					}
 					if (!found)
 						sbm = false;
-					console.log(sbm);
+					
 					// price
 					r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
 					if (r) {
@@ -53534,6 +53520,7 @@ function MT__RUN() {
 						console.log('r for price value' + r);
 						document.getElementById('price_range').value = r;
 					} else  {
+						document.getElementById('price_range').value = 'N/A';
 						console.log('Price not found');
 						document.body.style.backgroundColor = 'LightGreen';
 						sbm = false;
