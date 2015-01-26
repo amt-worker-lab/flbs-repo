@@ -53252,9 +53252,13 @@ function MT__RUN() {
 						rs = JSON.parse(rs);
 						console.log(rs);
 						var map = rs.search_map;
+						
+						if (rs.hasOwnProperty('search_exception') && rs.search_exception.indexOf('<h2>We\'ve found multiple locations matching your search.</h2>') != -1) {
+							d1.innerHTML += '<br>"We\'ve found multiple locations matching your search."';
+							return;
+						}
+						
 						rs = rs.search_results;
-						
-						
 						if (rs.indexOf('<div class="no-results">') != -1) {
 							d1.innerHTML += '<br>0';
 							return;
