@@ -53119,6 +53119,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
 			GM_addStyle('#submitButton {width:80%;}');
 			GM_addStyle('.exe:hover {background-color:aqua !important;cursor:pointer;}');
+			GM_addStyle('em {font-weight:bold;zoom:2;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:79% !important;margin-left:20% !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
@@ -53158,9 +53159,9 @@ function MT__RUN() {
 			//
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
+				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
 				addr: td[3].innerText.trim(),
-				phone:td[5].innerText.trim(),
+				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
 				q: document.getElementById('web_url'),
 				
 				bold_addr: [],
@@ -53340,6 +53341,25 @@ function MT__RUN() {
 								//~ r = r.replace(/\s+/g, ' ').trim();
 								//~ ypnhd = r;
 							//~ }
+							// Phone
+							// e.g. (704) 536-6444
+							var phone = '', phone_fmt = '';
+							r = /<span class="biz-phone">[\r\n\t\s]+([^<]+)<\/span>/.exec(k);
+							if (r) {
+								r = r[1];
+								r = r.replace(/<[^>]*>/g, ' ');
+								r = __js_clean_html_str(r).trim();
+								phone = (r == '') ? '-' : r;
+								console.log(phone);
+								if (phone.replace(/[^\d]/g, '') == o.phone) {
+									phone_fmt = '<em>'+phone+'</em>';
+								} else {
+									phone_fmt = phone;
+								}
+							} else {
+								phone_fmt = '-';
+							}
+							// Addr
 							var addr = '';
 							r = /<address>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/address>/.exec(k);
 							if (r) {
@@ -53394,8 +53414,9 @@ function MT__RUN() {
 							d.ypurl = ypurl;
 							d1.appendChild(d);
 							d.innerHTML = MT__bold(ypnm, o.bold_comp) + ' ' + MT__bold(addr, o.bold_addr) +'<br>'+
-								'P:'+p_str+'<br>'+
+								'$:'+p_str+'<br>'+
 								'R:'+yprtg+'<br>'+
+								'P:'+phone_fmt+'<br>'+
 								'C:'+ypcat;
 							d.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
@@ -53408,10 +53429,10 @@ function MT__RUN() {
 							num++;
 							
 							// Auto found?
-							console.log(o.comp_cln);
-							console.log(ypnm_cln);
-							console.log(o.addr_cln);
-							console.log(addr_cln);
+							//~ console.log(o.comp_cln);
+							//~ console.log(ypnm_cln);
+							//~ console.log(o.addr_cln);
+							//~ console.log(addr_cln);
 							if  (
 								!auto_found &&
 								o.comp_cln == ypnm_cln &&
