@@ -27148,6 +27148,10 @@ function MT__RUN() {
 		}
 	}
 	
+	
+	
+	
+	
 	//
 	// Gordon ""
 	// -SimpleSearch
@@ -53462,6 +53466,169 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	
+	// 
+	// Gordon Courtney
+	// Find Yelp Details for Charlotte Restaurants
+	// Jan26 2015
+	s = '<li>Price Range (The data on yelp is shown as dollar signs so if enter 1 for 1 dollar sign';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			var td = document.getElementsByTagName('td');
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: td[3].innerText.trim(),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					var r;
+					var sbm = true;
+					
+					
+					
+					// title
+					//   <h1 class="biz-page-title embossed-text-white osolong" itemprop="name">
+					//~ r = /<h1 class="biz-page-title embossed-text-white[^"]*" itemprop="name">([^<]+)<\/h1>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ document.getElementById('Name').value = r;
+						//~ if (r.length < 2)
+							//~ sbm = false;
+					//~ } else sbm = false;
+					
+					// reviews
+					var rx = /<div class="biz-main-info embossed-text-white">((.|\s)*?(?=[\r\n]        <\/div>|$)|$)/.exec(rs);
+					if (rx) {
+						// #
+						//~ r = /<span itemprop="reviewCount">([\d,]+)<\/span> review/.exec(rs);
+						//~ if (r) {
+							//~ r = r[1].trim();
+							//~ document.getElementById('Number of Reviews').value = r;
+						//~ } else sbm = false;
+						
+						// rating
+						r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
+						if (r) {
+							r = r[1];
+							r = r.replace(/^([\d])\.0[^$]*$/, '$1');
+							var found = false;
+							var x = document.getElementsByName('Rating')[0];
+							for (var i in x.options) {
+								if (i == 'length') break;
+								var y;
+								y = x.options[i].innerText;
+								//y = y.replace(/s$/, '');
+								y = y.replace(/^([\d\.]+)[^$]*$/, '$1');
+								//~ console.log(r)
+								//~ console.log(y)
+								if  (
+									y == r // + ' star'// ||
+									//y == r + '.0 star'
+									)
+								{
+									found = true;
+									x.selectedIndex = i;
+									break;
+								}
+							}
+							if (!found)
+								sbm = false;
+						} else sbm = false;
+					} else sbm = false;
+					
+					// price
+					r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
+					if (r) {
+						r = r[1];
+						r = Math.round(r.length*1); //$$ = 2 OR £!
+						if (r < 1 || r > 4)
+							sbm = false;
+						document.getElementsByName('Price')[0].selectedIndex = Math.round(r - 1);
+					} else sbm = false;
+					
+					// str
+					//<span itemprop="streetAddress">2222 Martin Luther King Jr<br>Ste J</span><br><span itemprop="addressLocality">Eugene</span>
+					r = /<span itemprop="streetAddress">((.|\s)*?(?=<\/span>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1];
+						r = r.replace(/<[^>]*>/g, ' ');
+						r = __js_clean_html_str(r).trim();
+						document.getElementById('Street').value = r;
+						if (r.length < 2)
+							sbm = false;
+					} else sbm = false;
+					// city
+					r = /<span itemprop="addressLocality">([^<]+)<\/span>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('City').value = r;
+						if (r.length < 2)
+							sbm = false;
+					} else sbm = false;
+					
+					//~ // state
+					//~ r = /<span itemprop="addressRegion">([^<]+)<\/span>/.exec(rs);
+					//~ if (r) {
+						//~ r = __js_clean_html_str(r[1]).trim();
+						//~ switch(r) {
+							//~ case 'OH':
+								//~ document.getElementsByName('ST')[0].checked = true;
+								//~ break;
+							//~ case 'KY':
+								//~ document.getElementsByName('ST')[1].checked = true;
+								//~ break;
+							//~ default:
+								//~ sbm = false;
+						//~ }
+					//~ } else sbm = false;
+					// postalCode
+					r = /<span itemprop="postalCode">([^<]+)<\/span>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('ZipCode').value = r;
+						if (r.length < 2)
+							sbm = false;
+					} else sbm = false;
+					// phone
+					r = /<span class="biz-phone" itemprop="telephone">([^<]+)<\/span>/.exec(rs);
+					if (r) {
+						r = __js_clean_html_str(r[1]).trim();
+						document.getElementById('Phone#').value = r;
+						if (r.length < 2)
+							sbm = false;
+					} else if (rs.indexOf('biz-phone') != -1) // allow this field to be blank !!
+						sbm = false;
+					
+					// reservations
+					r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+					if (r) {
+						r = r[1];
+						switch(r) {
+							case 'Yes':
+								document.getElementsByName('Reservations')[0].checked = true;
+								break;
+							case 'No':
+								document.getElementsByName('Reservations')[1].checked = true;
+								break;
+							default:
+								sbm = false;
+						}
+					} else document.getElementsByName('Reservations')[1].checked = true; // NO
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	
 	//
 	// mike o ""
 	// Find the Yelp.com price, star rating, and cuisine type for restaurants, otherwise Google the ones you don't find on Yelp.com.
