@@ -90443,6 +90443,8 @@ qatar,80
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 			
+			GM_addStyle('form {position:absolute;top:1000px;}');
+			
 			var td = document.getElementsByTagName('td');
 			
 			var o = {
@@ -90462,42 +90464,42 @@ qatar,80
 			//
 			var na = document.createElement('input');
 			na.setAttribute('type','button');
-			na.setAttribute('style','position:absolute;top:100px;left:78%;width:20%;height:20px;border:1px solid;cursor:pointer;');
+			na.setAttribute('style','position:absolute;top:0px;left:78%;width:20%;height:20px;border:1px solid;cursor:pointer;');
 			document.body.appendChild(na);
 			na.value = "N/A";
 			//
 			var inp_top = document.createElement('input');
 			inp_top.setAttribute('type','input');
-			inp_top.setAttribute('style','position:absolute;top:100px;left:22%;width:40%;height:20px;');
+			inp_top.setAttribute('style','position:absolute;top:0px;left:22%;width:40%;height:20px;');
 			document.body.appendChild(inp_top);
 			//
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:170px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1);
 			d1.id = 'd1';
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:170px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1b.setAttribute('style','position:absolute;top:70px;left:33%;width:33%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1b);
 			d1b.id = 'd1b';
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:170px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			d1c.setAttribute('style','position:absolute;top:70px;left:66%;width:32%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
 			document.body.appendChild(d1c);
 			d1c.id = 'd1c';
 			//
 			var d3 = document.createElement('textarea');
-			d3.setAttribute('style','position:absolute;top:120px;left:0%;width:33%;height:50px;');
+			d3.setAttribute('style','position:absolute;top:20px;left:0%;width:33%;height:50px;');
 			document.body.appendChild(d3);
 			d1.txa = d3;
 			//
 			var d3b = document.createElement('textarea');
-			d3b.setAttribute('style','position:absolute;top:120px;left:33%;width:33%;height:50px;');
+			d3b.setAttribute('style','position:absolute;top:20px;left:33%;width:33%;height:50px;');
 			document.body.appendChild(d3b);
 			d1b.txa = d3b;
 			//
 			var d3c = document.createElement('textarea');
-			d3c.setAttribute('style','position:absolute;top:120px;left:66%;width:32%;height:50px;');
+			d3c.setAttribute('style','position:absolute;top:20px;left:66%;width:32%;height:50px;');
 			document.body.appendChild(d3c);
 			d1c.txa = d3c;
 			/*END ITEMS*/
@@ -90512,7 +90514,7 @@ qatar,80
 				company_URL__SP_init(d1c, this);
 			}
 			na.onclick = function() {
-				document.getElementById('Q1Url').value = 'NA';
+				document.getElementById('web_url').value = 'NA';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -90531,7 +90533,7 @@ qatar,80
 				elements: [
 					d1, d1b, d1c
 				],
-				offset: 170 // offset top
+				offset: 70 // offset top
 			});
 			
 			// ...
@@ -90582,6 +90584,7 @@ qatar,80
 				var req_proxy;
 				//
 				if (el_inp && el_div) { // single! (+dynamic!)
+					el_div.innerHTML = '';
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
 						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value),
@@ -90727,7 +90730,7 @@ qatar,80
 					txa.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
-						document.getElementById('Q1Url').value = this.value;
+						document.getElementById('web_url').value = this.value;
 						
 						// showNextTab OR nextTab
 						new AMT___core_factory().nextTab();
