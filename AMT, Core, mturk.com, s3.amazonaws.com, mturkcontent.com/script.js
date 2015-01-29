@@ -90451,13 +90451,15 @@ qatar,80
 				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
 				bold_array: [],
 				name_short: null,
+				name_simple: null,
 				
 				panels_loaded: 0,
 				num_panels: 3,
 				domain_counts: {} // obj
 			}
-			o.bold_array = o.name.clean_string_to_array();
-			o.name_short = o.name.split(' ').slice(0, 2).join(' ');
+			o.bold_array  = o.name.clean_string_to_array();
+			o.name_simple = o.name.replace(/\([^\)]*\)/g, '').trim();
+			o.name_short  = o.name_simple.split(' ').slice(0, 2).join(' ');
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -90538,8 +90540,8 @@ qatar,80
 			
 			// ...
 			d3.value  = o.name;
-			d3b.value = '"' + o.name + '"';
-			d3c.value = '"' + o.name_short + '" app website developer';
+			d3b.value = '"' + o.name_simple + '"';
+			d3c.value = '"' + o.name_short + '" (app OR website OR developer OR startup OR ipo)';
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
