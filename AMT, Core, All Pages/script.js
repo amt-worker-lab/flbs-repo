@@ -9,7 +9,7 @@
 // Kristin Howe
 var RUN_HOWE_CODE = false; // if true this will run "all pages extend". (set RUN__ALL_PAGES_EXTEND = false) 
 // James M Ratcliffe
-var RUN_James_M_Ratcliffe_Verizon_com = false;
+var RUN_James_M_Ratcliffe_Verizon_com = true;
 //test coding and stuff
 // Tony Pavia
 var RUN_Tony_Pavia_Schools = false;
