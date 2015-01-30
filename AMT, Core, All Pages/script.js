@@ -3980,7 +3980,7 @@ function load()
 	// RUN_James_M_Ratcliffe_Verizon_com
 	// James_M_Ratcliffe Verizon
 	if (RUN_James_M_Ratcliffe_Verizon_com) {
-		
+		var LOC__ = document.location.href;
 		function James_M_Ratcliffe_readQueue() {
 			var xint = setInterval(function() {
 				// read queue
@@ -3992,14 +3992,35 @@ function load()
 						
 						if (rs.trim() != '') {
 							clearInterval(xint);
-							window.location = 'https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/Personalization.aspx?change=y#'+rs;
+							//console.log(rs);return;
+							//window.location = 'https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/Personalization.aspx?change=y#'+rs;
+							
+							
+							// ......
+							var h = rs;
+							
+							h = h.split('|_|');
+							
+							GM_setValue('MT___James_M_Ratcliffe_Verizon', h.join('|_|'));
+							document.getElementById('txtAddress').value = h[0]
+							document.getElementById('txtZip').value = h[1];
+							document.getElementById('btnNextContinue').click();
+							return;
+							//setInterval(function() {
+								//document.getElementById('btnNextContinue').click();
+							//}, 1000);
+							//
+							//return;
 						}
 					}
 				});
 			}, 400);
 		}
 		
-		if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#$/i.exec(LOC__)) {
+		if  (
+			/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#$/i.exec(LOC__) ||
+			LOC__ == 'https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#'
+			) {
 			James_M_Ratcliffe_readQueue();
 		}
 		if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#[^$]+/i.exec(LOC__)) {
