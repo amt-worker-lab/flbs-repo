@@ -4019,10 +4019,14 @@ function load()
 			}, 400);
 		}
 		
+		// INIT URL =
+		// https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#
+		var init_url =	'https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?'+
+						'type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#';
 		if  (
-			/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#$/i.exec(LOC__) ||
-			LOC__ == 'https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#'
-			) {
+			LOC__ == init_url
+			)
+		{
 			James_M_Ratcliffe_readQueue();
 		}
 		//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#[^$]+/i.exec(LOC__)) {
