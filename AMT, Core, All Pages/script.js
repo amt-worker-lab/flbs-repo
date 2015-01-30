@@ -4104,8 +4104,13 @@ function load()
 				var x = document.getElementById('rdoNoNotMine');
 				if (x) {
 					x.parentNode.getElementsByTagName('a')[0].click();
-					document.getElementById('body_content_btnContinueExisitng').click();
-					return;
+					
+					var x = document.getElementById('rdoNoAmMovingThere');
+					if (x) {
+						x.parentNode.getElementsByTagName('a')[0].click();
+						document.getElementById('body_content_btnContinueExisitng').click();
+						return;
+					}
 				}
 			}
 			
@@ -4125,27 +4130,30 @@ function load()
 			}, 1000);*/
 			//~ return;
 		}
-		// choose existing
-		if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/OrderNew\/Existingservice\.aspx/i.exec(LOC__)) {
-			//console.log(window.name);
-			//return;
-			var x = document.getElementById('radExitingnNo');
-			if (x) {
-				x.click();
-				var x = document.getElementById('remain_active_no');
-				if (x) {
-					x.click();
-					//setInterval(function() {
-						document.getElementById('btnPersContinue').click();
-					//}, 1000);
-				}
-			}
-		}
+		//~ // choose existing
+		//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/OrderNew\/Existingservice\.aspx/i.exec(LOC__)) {
+			//~ //console.log(window.name);
+			//~ //return;
+			//~ var x = document.getElementById('radExitingnNo');
+			//~ if (x) {
+				//~ x.click();
+				//~ var x = document.getElementById('remain_active_no');
+				//~ if (x) {
+					//~ x.click();
+					//~ //setInterval(function() {
+						//~ document.getElementById('btnPersContinue').click();
+					//~ //}, 1000);
+				//~ }
+			//~ }
+		//~ }
 		// final
-		// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/OrderAddressInfo.aspx
-		if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/OrderNew/NewConnect/PersonalisationLQ.aspx') != -1) {
-			//console.log(window.name);
-			//return;
+		// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx
+		//~ if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/OrderNew/NewConnect/PersonalisationLQ.aspx') != -1) {
+		if  (			
+			LOC__.indexOf('https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx') != -1 &&
+			ih.indexOf('<h2 id="elite_title">Below are the products you are eligible for</h2>') != -1
+			)
+		{
 			var v = {
 				fiostv: false,
 				fiosint: false,
@@ -4165,11 +4173,13 @@ function load()
 			var nm = GM_getValue('MT___James_M_Ratcliffe_Verizon');
 			GM_xmlhttpRequest({ // init
 				method: "GET",
-				url: MT___host+'/mturk/util.php?James_M_Ratcliffe_writecomplete='+encodeURIComponent(nm)+'&James_M_Ratcliffe_writecomplete_val='+encodeURIComponent(JSON.stringify(v)),
+				url: MT___host+'/mturk/util.php' +
+					'?James_M_Ratcliffe_writecomplete='+encodeURIComponent(nm)+
+					'&James_M_Ratcliffe_writecomplete_val='+encodeURIComponent(JSON.stringify(v)),
 				onload: function(response) {
 					//var rs = response.responseText;
-					
-					// read queue
+			
+					// Read queue
 					James_M_Ratcliffe_readQueue();
 				}
 			});
