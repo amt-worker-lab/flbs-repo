@@ -5788,7 +5788,12 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 								if (this.value.length >= 5) {
 									document.getElementById('ctl00_MainContent_MyCaptcha1_TxtCpatcha').onkeyup = function() {};
 									//document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
+									
 									document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									setInterval(function() {
+										document.body.style.backgroundColor = 'blue';
+										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									}, 2000);
 									
 									// Do this here.
 									this.blur();
