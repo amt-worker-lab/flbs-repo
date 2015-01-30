@@ -3980,214 +3980,239 @@ function load()
 	// RUN_James_M_Ratcliffe_Verizon_com
 	// James_M_Ratcliffe Verizon
 	if (RUN_James_M_Ratcliffe_Verizon_com) {
-		var LOC__ = document.location.href;
-		function James_M_Ratcliffe_readQueue() {
-			var xint = setInterval(function() {
-				// read queue
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: MT___host+'/mturk/util.php?James_M_Ratcliffe_readqueue=',
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						if (rs.trim() != '') {
-							clearInterval(xint);
-							//console.log(rs);return;
-							//window.location = 'https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/Personalization.aspx?change=y#'+rs;
-							
-							
-							// ......
-							var h = rs;
-							
-							h = h.split('|_|');
-							
-							GM_setValue('MT___James_M_Ratcliffe_Verizon', h.join('|_|'));
-							document.getElementById('txtAddress').value = h[0]
-							document.getElementById('txtZip').value = h[1];
-							document.getElementById('btnContinueOverlay').click();
-							document.getElementById('chkRememberOverLay').checked = false;
-							
-							return;
-							//setInterval(function() {
-								//document.getElementById('btnNextContinue').click();
-							//}, 1000);
-							//
-							//return;
-						}
-					}
-				});
-			}, 400);
-		}
 		
-		// INIT URL =
-		// https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#
-		var init_url =	'https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?'+
-						'type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#';
-		if  (
-			LOC__ == init_url
-			)
-		{
-			James_M_Ratcliffe_readQueue();
-		}
-		//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#[^$]+/i.exec(LOC__)) {
-			//~ 
-			//~ // # from href
-			//~ var h = /#([\d\D]*)$/.exec(LOC__);
-			//~ if (!h) {
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			var LOC__ = document.location.href;
+			var init_url =	'https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?'+
+							'type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#';
+			
+			function readQueue() {
+				var xint = setInterval(function() {
+					// read queue
+					GM_xmlhttpRequest({ // init
+						method: "GET",
+						url: MT___host+'/mturk/util.php?James_M_Ratcliffe_readqueue=',
+						onload: function(response) {
+							var rs = response.responseText;
+							
+							if (rs.trim() != '') {
+								clearInterval(xint);
+								//console.log(rs);return;
+								//window.location = 'https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/Personalization.aspx?change=y#'+rs;
+								
+								// From new...
+								if (window.location == init_url) {
+									var h = rs;
+									
+									h = h.split('|_|');
+									
+									GM_setValue('MT___James_M_Ratcliffe_Verizon', h.join('|_|'));
+									document.getElementById('txtAddress').value = h[0]
+									document.getElementById('txtZip').value = h[1];
+									document.getElementById('btnContinueOverlay').click();
+									document.getElementById('chkRememberOverLay').checked = false;
+									
+									return;
+								}
+								//setInterval(function() {
+									//document.getElementById('btnNextContinue').click();
+								//}, 1000);
+								//
+								//return;
+							}
+						}
+					});
+				}, 400);
+			}
+			
+			// INIT URL =
+			// https://www.verizon.com/FORYOURHOME/ORDERING/CheckAvailability.aspx?type=pheonix&fromPersonalisation=y&isRefferalURLSecure=N&change=y#
+			if  (
+				LOC__ == init_url
+				)
+			{
+				readQueue();
+			}
+			//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/newconnect\/Personalization\.aspx\?change=y#[^$]+/i.exec(LOC__)) {
+				//~ 
+				//~ // # from href
+				//~ var h = /#([\d\D]*)$/.exec(LOC__);
+				//~ if (!h) {
+					//~ return;
+				//~ }
+				//~ h = h[1];
+				//~ 
+				//~ h = h.split('|_|');
+				//~ 
+				//~ GM_setValue('MT___James_M_Ratcliffe_Verizon', h.join('|_|'));
+				//~ //window.name = h.join('|_|');
+				//~ //console.log(window.name);
+				//~ //document.cookie += '; hhhhhhhhhh='+h.join('|_|');
+				//~ 
+				//~ document.getElementsByName('addrLine')[0].value = h[0]
+				//~ document.getElementById('zip').value = h[1];
+				//~ //setInterval(function() {
+					//~ document.getElementById('btnNextContinue').click();
+				//~ //}, 1000);
+				//~ 
 				//~ return;
 			//~ }
-			//~ h = h[1];
-			//~ 
-			//~ h = h.split('|_|');
-			//~ 
-			//~ GM_setValue('MT___James_M_Ratcliffe_Verizon', h.join('|_|'));
-			//~ //window.name = h.join('|_|');
-			//~ //console.log(window.name);
-			//~ //document.cookie += '; hhhhhhhhhh='+h.join('|_|');
-			//~ 
-			//~ document.getElementsByName('addrLine')[0].value = h[0]
-			//~ document.getElementById('zip').value = h[1];
-			//~ //setInterval(function() {
-				//~ document.getElementById('btnNextContinue').click();
-			//~ //}, 1000);
-			//~ 
-			//~ return;
-		//~ }
-		if (LOC__.indexOf('https://www.verizon.com/home/OrderNew/OutOfFranchise.html?popup=y') != -1) {
-		}
-		if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/SecurityCheck.aspx?change=y') != -1) {
-			setInterval(function() {
-				document.getElementById('recaptcha_response_field').focus();
-			}, 400);
-		}
-		// more than one?
-		if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/GOFLOW/OrderNew/orderAddressInfo.aspx') != -1) {
-			/*if (/<div id="SingleMatch" style="display:;">[\r\n\t\s]+<h4 class="damien">We found the following address in our records\./.exec(ih)) {
-				document.getElementById('btnNextPers').click();
-				return;
+			if (LOC__.indexOf('https://www.verizon.com/home/OrderNew/OutOfFranchise.html?popup=y') != -1) {
 			}
-			if (/<div id="Multimatch" style="display:;">[\r\n\t\s]+<h4 class="damien">We found more than one address matching the address you provided\./.exec(ih)) {
-				var x = document.getElementById('AddressMatches_1');
-				if (x) {
-					x.checked = true;
-					setInterval(function() {
-						document.getElementById('btnNextPers').click();
-					}, 1000);
+			if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/GOFLOW/newconnect/SecurityCheck.aspx?change=y') != -1) {
+				setInterval(function() {
+					document.getElementById('recaptcha_response_field').focus();
+				}, 400);
+			}
+			// more than one?
+			if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/GOFLOW/OrderNew/orderAddressInfo.aspx') != -1) {
+				/*if (/<div id="SingleMatch" style="display:;">[\r\n\t\s]+<h4 class="damien">We found the following address in our records\./.exec(ih)) {
+					document.getElementById('btnNextPers').click();
+					return;
 				}
-				return;
-			}*/
-			//xxhere?
-			/*console.log('h');
-			setInterval(function() {
-				var x = document.getElementById('AddressMatches_1');
-				if (x) {
-					x.checked = true;
-					document.getElementById('btnNextPers').click();
-				} else
-					document.getElementById('btnNextPers').click();
-			}, 1000);
-			return;*/
-		}
-		// yes, this is the correct address
-		// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/OrderAddressInfo.aspx
-		if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/ORDERING\/OrderNew\/OrderAddressInfo\.aspx/i.exec(LOC__)) {
-			
-			// Is this the right address?
-			var x = document.getElementById('rdoAddressOption0');
-			if (x) {
-				//~ x.checked = true;
-				x.parentNode.getElementsByTagName('a')[0].click();
-				document.getElementById('body_content_btnContinue').click();
-				return;
+				if (/<div id="Multimatch" style="display:;">[\r\n\t\s]+<h4 class="damien">We found more than one address matching the address you provided\./.exec(ih)) {
+					var x = document.getElementById('AddressMatches_1');
+					if (x) {
+						x.checked = true;
+						setInterval(function() {
+							document.getElementById('btnNextPers').click();
+						}, 1000);
+					}
+					return;
+				}*/
+				//xxhere?
+				/*console.log('h');
+				setInterval(function() {
+					var x = document.getElementById('AddressMatches_1');
+					if (x) {
+						x.checked = true;
+						document.getElementById('btnNextPers').click();
+					} else
+						document.getElementById('btnNextPers').click();
+				}, 1000);
+				return;*/
 			}
-			
-			// Success?
-			// rdoNoNotMine
-			if (ih.indexOf('<h3 id="body_content_hExServ">This address already has Verizon service.</h3>') != -1)
-			{
-				var x = document.getElementById('rdoNoNotMine');
+			// yes, this is the correct address
+			// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/OrderAddressInfo.aspx
+			if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/ORDERING\/OrderNew\/OrderAddressInfo\.aspx/i.exec(LOC__)) {
+				
+				// Is this the right address?
+				var x = document.getElementById('rdoAddressOption0');
 				if (x) {
+					//~ x.checked = true;
 					x.parentNode.getElementsByTagName('a')[0].click();
-					
-					var x = document.getElementById('rdoNoAmMovingThere');
+					document.getElementById('body_content_btnContinue').click();
+					return;
+				}
+				
+				// Success?
+				// rdoNoNotMine
+				if (ih.indexOf('<h3 id="body_content_hExServ">This address already has Verizon service.</h3>') != -1)
+				{
+					var x = document.getElementById('rdoNoNotMine');
 					if (x) {
 						x.parentNode.getElementsByTagName('a')[0].click();
-						document.getElementById('body_content_btnContinueExisitng').click();
-						return;
+						
+						var x = document.getElementById('rdoNoAmMovingThere');
+						if (x) {
+							x.parentNode.getElementsByTagName('a')[0].click();
+							document.getElementById('body_content_btnContinueExisitng').click();
+							return;
+						}
 					}
 				}
+				
+				//console.log(window.name);
+				//return;
+				//setInterval(function() {
+					//~ var x = document.getElementById('rdoAddressOption0');
+					//~ if (x) {
+						//~ x.checked = true;
+						//~ document.getElementById('body_content_btnContinue').click();
+					//~ } else
+						//~ document.getElementById('body_content_btnContinue').click();
+				//}, 1000);
+				
+				/*setInterval(function() {
+					document.getElementById('btnNextPers').click();
+				}, 1000);*/
+				//~ return;
 			}
-			
-			//console.log(window.name);
-			//return;
-			//setInterval(function() {
-				//~ var x = document.getElementById('rdoAddressOption0');
-				//~ if (x) {
-					//~ x.checked = true;
-					//~ document.getElementById('body_content_btnContinue').click();
-				//~ } else
-					//~ document.getElementById('body_content_btnContinue').click();
-			//}, 1000);
-			
-			/*setInterval(function() {
-				document.getElementById('btnNextPers').click();
-			}, 1000);*/
-			//~ return;
-		}
-		//~ // choose existing
-		//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/OrderNew\/Existingservice\.aspx/i.exec(LOC__)) {
-			//~ //console.log(window.name);
-			//~ //return;
-			//~ var x = document.getElementById('radExitingnNo');
-			//~ if (x) {
-				//~ x.click();
-				//~ var x = document.getElementById('remain_active_no');
+			//~ // choose existing
+			//~ if (/https:\/\/www\.verizon\.com\/FORYOURHOME\/GOFLOW\/OrderNew\/Existingservice\.aspx/i.exec(LOC__)) {
+				//~ //console.log(window.name);
+				//~ //return;
+				//~ var x = document.getElementById('radExitingnNo');
 				//~ if (x) {
 					//~ x.click();
-					//~ //setInterval(function() {
-						//~ document.getElementById('btnPersContinue').click();
-					//~ //}, 1000);
+					//~ var x = document.getElementById('remain_active_no');
+					//~ if (x) {
+						//~ x.click();
+						//~ //setInterval(function() {
+							//~ document.getElementById('btnPersContinue').click();
+						//~ //}, 1000);
+					//~ }
 				//~ }
 			//~ }
-		//~ }
-		// final
-		// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx
-		//~ if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/OrderNew/NewConnect/PersonalisationLQ.aspx') != -1) {
-		if  (			
-			LOC__.indexOf('https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx') != -1 &&
-			ih.indexOf('<h2 id="elite_title">Below are the products you are eligible for</h2>') != -1
-			)
-		{
-			var v = {
-				fiostv: false,
-				fiosint: false,
-				highspd: false
-			};
-			if (ih.indexOf('>FiOS TV<') != -1) {
-				v.fiostv = true;
-			} 
-			if (ih.indexOf('>FiOS Internet<') != -1) {
-				v.fiosint = true;
-			}
-			if (ih.indexOf('>High Speed Internet<') != -1) {
-				v.highspd = true;
-			}
-			// write to file
-			// @param localStorage
-			var nm = GM_getValue('MT___James_M_Ratcliffe_Verizon');
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: MT___host+'/mturk/util.php' +
-					'?James_M_Ratcliffe_writecomplete='+encodeURIComponent(nm)+
-					'&James_M_Ratcliffe_writecomplete_val='+encodeURIComponent(JSON.stringify(v)),
-				onload: function(response) {
-					//var rs = response.responseText;
 			
-					// Read queue
-					James_M_Ratcliffe_readQueue();
+			// Final
+			var final_intv = setInterval(final, 100);
+			function final() {
+				// https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx
+				//~ if (LOC__.indexOf('https://www.verizon.com/FORYOURHOME/OrderNew/NewConnect/PersonalisationLQ.aspx') != -1) {
+				console.log(LOC__);
+				console.log(ih.indexOf('<h2 id="elite_title">Below are the products you are eligible for</h2>') != -1);
+				
+				if  (
+					LOC__.indexOf('https://www.verizon.com/FORYOURHOME/ORDERING/OrderNew/DirectOrdering.aspx') == -1 &&
+					ih.indexOf('<h2 id="elite_title">Below are the products you are eligible for</h2>') == -1
+					)
+				{
+					return;
 				}
-			});
+				
+				// Completed?
+				// ClearInterval
+				clearInterval(final_intv);
+				
+				
+				var v = {
+					fiostv: false,
+					fiosint: false,
+					highspd: false
+				};
+				if (ih.indexOf('>FiOS TV<') != -1) {
+					v.fiostv = true;
+				} 
+				if (ih.indexOf('>FiOS Internet<') != -1) {
+					v.fiosint = true;
+				}
+				if (ih.indexOf('>High Speed Internet<') != -1) {
+					v.highspd = true;
+				}
+				// write to file
+				// @param localStorage
+				var nm = GM_getValue('MT___James_M_Ratcliffe_Verizon');
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: MT___host+'/mturk/util.php' +
+						'?James_M_Ratcliffe_writecomplete='+encodeURIComponent(nm)+
+						'&James_M_Ratcliffe_writecomplete_val='+encodeURIComponent(JSON.stringify(v)),
+					onload: function(response) {
+						//var rs = response.responseText;
+						
+						// GO TO INIT URL
+						document.location.href = init_url;
+						
+						//~ // Read queue
+						//~ readQueue();
+					}
+				});
+			}
 		}
+		new run().f();
 	}
 	
 	//
