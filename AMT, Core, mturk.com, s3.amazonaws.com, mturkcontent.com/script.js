@@ -2846,18 +2846,52 @@ function MT__RUN() {
 			d1.setAttribute('style', 'position:absolute;top:200px;left:0;  width:50%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			d1.links = [ lnk1[0], lnk1[1] ];
+			d1.input_field = document.getElementsByName('App1_AMZN_URL')[0];
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:200px;left:50%;width:49%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			d1b.links = [ lnk2[0], lnk2[1] ];
+			d1b.input_field = document.getElementsByName('App2_AMZN_URL')[0];
 			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 200 // offset top
+			});
+			
 			/**
+			 * function check_submit
 			 * function scrape_googleplay
 			 * function scrape_amazon
 			 * 		Note: amazon is from "Jonathan Huston"
 			 */
 			scrape_gp(d1);
 			scrape_gp(d1b);
+			
+			/**
+			 * function check_submit
+			 * @param
+			 */
+			function check_submit() {
+				
+				d1.input_field.value  = d1.input_field.value.trim();
+				d1b.input_field.value = d1b.input_field.value.trim();
+				
+				if  (
+					d1.input_field.value.length  > 10 &&
+					d1b.input_field.value.length > 10
+					)
+				{
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
 			
 			/**
 			 * function scrape_gp
@@ -3044,14 +3078,15 @@ function MT__RUN() {
 							// 1=Ex: DVD|Blu-ray|DVD-R
 							// 2=DP/ASIN
 							// 3=Ex: DVD|Blu-Ray|DVD-R
-							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*)"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
 							var m2;
 							var movs_array = [];
 							while (m2 = reg.exec(m[1])) {
 								
 								movs_array.push({
-									mov_type:	 m2[3] + __js_clean_html_str(m2[4].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
-									asin:		__js_clean_html_str(m2[2])
+									mov_type:	 m2[4] + __js_clean_html_str(m2[5].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
+									asin:		__js_clean_html_str(m2[3]),
+									link:		__js_clean_html_str(m2[2])
 								});
 								//~ if (reg) {
 									//~ div.mov_type = reg[1];
@@ -3122,16 +3157,23 @@ function MT__RUN() {
 								btn.setAttribute('style', 'width:80px;height:80px;');
 								btn.innerText	= movs_array[i].mov_type;
 								btn.asin		= movs_array[i].asin;
+								btn.link		= movs_array[i].link;
+								btn.input_field	= out.input_field; // ANSWER GOES HERE
 								btn.className	= 'exe'
 								div.appendChild(btn);
 								btn.onclick = function() {
 									this.style.backgroundColor = 'LightGreen';
-									var q = document.getElementsByName('ASIN')[0];
-									q.value = this.asin;
-									if (/^[A-Z0-9]{6,20}$/.exec(q.value)) {
-										new AMT___core_factory().nextTab();
+									
+									this.input_field.value = this.link;
+									
+									check_submit();
+									
+									//~ var q = document.getElementsByName('ASIN')[0];
+									//~ q.value = this.asin;
+									//~ if (/^[A-Z0-9]{6,20}$/.exec(q.value)) {
+										//~ new AMT___core_factory().nextTab();
 										//~ doSubmit();
-									}
+									//~ }
 									
 									// Not this... Bxxxx...
 									//~ if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
