@@ -2812,6 +2812,7 @@ function MT__RUN() {
 	// AABOSS
 	// Determine if App Exists in Search Results
 	// 
+	// In use: Google Play search; Amazon products search;
 	s = 'Our goal is&nbsp;to determine if the Google Play&nbsp;app provided&nbsp;is also available on the Amazon Appstore for Android based on icon, title, developer, and screenshots of the app. If the app has a match on the platform in question, please input the matching app\'s Amazon&nbsp;URL.&nbsp;';
 	if  (
 		ih.indexOf(s) != -1
@@ -2831,17 +2832,23 @@ function MT__RUN() {
 			fs[0].setAttribute('style','position:absolute;top:0;left:0;  width:50%;height:100px;');
 			fs[1].setAttribute('style','position:absolute;top:0;left:50%;width:49%;height:100px;');
 			
+			var lnk1 = fs[0].getElementsByTagName('a');
+			var lnk2 = fs[1].getElementsByTagName('a');
+			
 			var o = {
 				
 			}
 			
 			/*BEGIN ITEMS*/
+			// SET ".links" OF EACH DIV!!!
 			var d1 = document.createElement('div');
 			d1.setAttribute('style', 'position:absolute;top:0;left:0;  width:50%;height:100px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
+			d1.links = [ lnk1[0], lnk1[1] ];
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:0;left:50%;width:49%;height:100px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
+			d1b.links = [ lnk2[0], lnk2[1] ];
 			/*END ITEMS*/
 			/**
 			 * function scrape_googleplay
@@ -2850,11 +2857,42 @@ function MT__RUN() {
 			 */
 			
 			/**
-			 * 
+			 * function scrape_gp
+			 * @param out		div element
+			 */
+			function scrape_gp(out) {
+				var u = out.links[0]; // FIRST LINK!
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						
+						// ..
+						//https://lh6.ggpht.com/t_Hazbs2S1cDn05JjpaAJNiDinS2Bqwx3wnFnO1eZmvNgMfF7u2U8Wdg-T5Q_nu8HUc=w340-rw
+						//https://lh6.ggpht.com/t_Hazbs2S1cDn05JjpaAJNiDinS2Bqwx3wnFnO1eZmvNgMfF7u2U8Wdg-T5Q_nu8HUc=w170-rw
+						var reg = /<img alt="[^"]*" class="cover-image" data-cover-large="([^"]+)" data-cover-small="([^"]+)"/;
+						if (reg) {
+							var img = document.createElement('img');
+							img.setAttribute('style','');
+							img.src = __js_clean_html_str(reg[2]);
+							out.appendChild(img);
+						}
+						
+						// Next.
+						scrape_amazon(out);
+					}
+				});
+				//
+			}
+			/**
+			 * function scrape_amazon
 			 * @param out		div element
 			 */
 			function scrape_amazon(out) {
-				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
+				//~ var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
+				var u = out.links[1]; // SECOND LINK!
 				
 				var d = document.createElement('hr');
 				d.setAttribute('style','border-bottom:1px solid #a2a2a2;height:2px;padding:0;margin:0;');
@@ -48047,7 +48085,6 @@ function MT__RUN() {
 							}
 						}, 200);
 					}
-					
 				}
 			});
 		}
