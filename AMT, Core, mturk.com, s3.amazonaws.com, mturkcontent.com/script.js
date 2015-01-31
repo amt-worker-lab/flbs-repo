@@ -2809,6 +2809,38 @@ function MT__RUN() {
 	}
 	
 	// 
+	// AABOSS
+	// Determine if App Exists in Search Results
+	// 
+	s = 'Our goal is&nbsp;to determine if the Google Play&nbsp;app provided&nbsp;is also available on the Amazon Appstore for Android based on icon, title, developer, and screenshots of the app. If the app has a match on the platform in question, please input the matching app\'s Amazon&nbsp;URL.&nbsp;';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var p = document.getElementsByTagName('p');
+			p[0].style.marginTop = '2000px';
+			
+			var fs = document.getElementsByTagName('fieldset');
+			fs[0].setAttribute('style','position:absolute;top:0;left:0;  width:50%;height:100px;');
+			fs[1].setAttribute('style','position:absolute;top:0;left:50%;width:49%;height:100px;');
+			
+			var o = {
+				
+			}
+			
+			
+		}
+		new run().f();
+	}
+	
+	// 
 	// Proffinu
 	// Write letters and numbers from a cropped image
 	// 
