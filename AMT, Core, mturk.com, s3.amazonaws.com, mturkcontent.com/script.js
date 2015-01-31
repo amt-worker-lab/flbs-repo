@@ -2836,17 +2836,18 @@ function MT__RUN() {
 			var lnk2 = fs[1].getElementsByTagName('a');
 			
 			var o = {
-				bold_array: []
+				bold_title: null,
+				bold_author: null
 			}
 			
 			/*BEGIN ITEMS*/
 			// SET ".links" OF EACH DIV!!!
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:0;left:0;  width:50%;height:100px;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;top:200px;left:0;  width:50%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			d1.links = [ lnk1[0], lnk1[1] ];
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0;left:50%;width:49%;height:100px;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style','position:absolute;top:200px;left:50%;width:49%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			d1b.links = [ lnk2[0], lnk2[1] ];
 			/*END ITEMS*/
@@ -2855,6 +2856,8 @@ function MT__RUN() {
 			 * function scrape_amazon
 			 * 		Note: amazon is from "Jonathan Huston"
 			 */
+			scrape_gp(d1);
+			scrape_gp(d1b);
 			
 			/**
 			 * function scrape_gp
@@ -2888,16 +2891,20 @@ function MT__RUN() {
 						// Name
 						var reg = /<div class="document-title" itemprop="name"> <div>([^<]+)<\/div>/.exec(rs);
 						if (reg) {
-							document.createTextNode(__js_clean_html_str(reg[1]).trim());
+							var x = __js_clean_html_str(reg[1]).trim();
+							document.createTextNode(x);
 							div.appendChild(document.createElement('br'));
+							o.bold_title = x.clean_string_to_array();
 						}
 						// Author & Publish date
 						// e.g. DU APPS STUDIO
 						// e.g. - January 30, 2015
 						var reg = /<div itemprop="author"[^>]*> *<meta[^>]*> *<a[^>]*> *<span itemprop="name">([^<]+)<\/span> *<\/a> *<div[^>]*>([^<]*)<\/div>/.exec(rs);
 						if (reg) {
-							document.createTextNode(__js_clean_html_str(reg[1]).trim() + ' ' + __js_clean_html_str(reg[2]).trim());
+							var x = __js_clean_html_str(reg[1]).trim();
+							document.createTextNode(x + ' ' + __js_clean_html_str(reg[2]).trim());
 							div.appendChild(document.createElement('br'));
+							o.bold_author = x.clean_string_to_array();
 							//~ div.appendChild(
 								//~ MT__bold(
 									//~ __js_clean_html_str(reg[1]).trim() + ' ' + __js_clean_html_str(reg[2]).trim(),
@@ -2930,7 +2937,7 @@ function MT__RUN() {
 				var u = out.links[1]; // SECOND LINK!
 				
 				var d = document.createElement('hr');
-				d.setAttribute('style','border-bottom:1px solid #a2a2a2;height:2px;padding:0;margin:0;');
+				d.setAttribute('style','border:0;border-bottom:1px solid #a2a2a2;height:2px;padding:0;margin:0;');
 				out.appendChild(d);
 				
 				GM_xmlhttpRequest({
@@ -2954,18 +2961,20 @@ function MT__RUN() {
 						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
 						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
 						if (r) {
-							out.innerHTML += r[1]+' results<br>';
+							out.appendChild(document.createTextNode(r[1]+' results'));
+							out.appendChild(document.createElement('br'));
 						} else if (r2) {
 							r = r2;
-							out.innerHTML += r[1]+' results<br>';
+							out.appendChild(document.createTextNode(r[1]+' results'));
+							out.appendChild(document.createElement('br'));
 						}
+						
 						
 						// no results
 						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
-						//~ r2= /<h1[^>]*>Your search <span class="a-color-base">[^<]+<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
 						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
 						if (r || r3) {
-							out.innerHTML += 'No results';
+							out.appendChild(document.createTextNode('No results'));
 							return;
 						}
 						
@@ -2976,7 +2985,8 @@ function MT__RUN() {
 						while (m = r.exec(rs)) {
 							images.push(m[1]);
 						}
-						out.innerHTML += images.length+' images<br>';
+						out.appendChild(document.createTextNode(images.length+' images'));
+						out.appendChild(document.createElement('br'));
 						
 						// items
 						var dp, c = 0, multi, highlight = '';
@@ -2985,8 +2995,6 @@ function MT__RUN() {
 						r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 						
 						while (m = r.exec(rs)) {
-							
-							//~ console.log(m);
 							
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
@@ -3002,15 +3010,23 @@ function MT__RUN() {
 							var ratng = '';
 							var link;
 							var title;
+							var author;
 							var n;
 							var reg;
 							var asin;
 							var prime, prime_bgc;
 							
+							// Author
+							reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+							if (reg) {
+								author = __js_clean_html_str(reg[1]);
+							}
+							
 							//link/title
 							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
 							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
-							reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							reg = /<h2 class="a-size-base s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							if (reg) {
 								title = __js_clean_html_str(reg[1]);
 								
@@ -3018,7 +3034,6 @@ function MT__RUN() {
 								div.title = title;
 								
 							} else {
-								//~ alert(reg);
 								console.log('!reg title');
 							}
 							
@@ -3088,7 +3103,8 @@ function MT__RUN() {
 							// Try <i class="a-icon a-icon-prime a-icon-small s-align-text-bottom"></i>
 							
 							// ...
-							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
+							div.innerHTML += MT__bold(title, o.bold_title) + '<br>';
+							div.innerHTML += MT__bold(author, o.bold_author) + '<br>';
 							div.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
 							
 							if (image) {
