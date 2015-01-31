@@ -2836,7 +2836,7 @@ function MT__RUN() {
 			var lnk2 = fs[1].getElementsByTagName('a');
 			
 			var o = {
-				
+				bold_array: []
 			}
 			
 			/*BEGIN ITEMS*/
@@ -2869,15 +2869,50 @@ function MT__RUN() {
 					onload: function(response) {
 						var rs=response.responseText;
 						
+						// div
+						var div = document.createElement('div');
+						div.setAttribute('style','');
+						out.appendChild(div);
+						
 						// ..
 						//https://lh6.ggpht.com/t_Hazbs2S1cDn05JjpaAJNiDinS2Bqwx3wnFnO1eZmvNgMfF7u2U8Wdg-T5Q_nu8HUc=w340-rw
 						//https://lh6.ggpht.com/t_Hazbs2S1cDn05JjpaAJNiDinS2Bqwx3wnFnO1eZmvNgMfF7u2U8Wdg-T5Q_nu8HUc=w170-rw
-						var reg = /<img alt="[^"]*" class="cover-image" data-cover-large="([^"]+)" data-cover-small="([^"]+)"/;
+						var reg = /<img alt="[^"]*" class="cover-image" data-cover-large="([^"]+)" data-cover-small="([^"]+)"/.exec(rs);
 						if (reg) {
 							var img = document.createElement('img');
 							img.setAttribute('style','');
 							img.src = __js_clean_html_str(reg[2]);
-							out.appendChild(img);
+							div.appendChild(img);
+							div.appendChild(document.createElement('br'));
+						}
+						// Name
+						var reg = /<div class="document-title" itemprop="name"> <div>([^<]+)<\/div>/.exec(rs);
+						if (reg) {
+							document.createTextNode(__js_clean_html_str(reg[1]).trim());
+							div.appendChild(document.createElement('br'));
+						}
+						// Author & Publish date
+						// e.g. DU APPS STUDIO
+						// e.g. - January 30, 2015
+						var reg = /<div itemprop="author"[^>]*> *<meta[^>]*> *<a[^>]*> *<span itemprop="name">([^<]+)<\/span> *<\/a> *<div[^>]*>([^<]*)<\/div>/.exec(rs);
+						if (reg) {
+							document.createTextNode(__js_clean_html_str(reg[1]).trim() + ' ' + __js_clean_html_str(reg[2]).trim());
+							div.appendChild(document.createElement('br'));
+							//~ div.appendChild(
+								//~ MT__bold(
+									//~ __js_clean_html_str(reg[1]).trim() + ' ' + __js_clean_html_str(reg[2]).trim(),
+									//~ o.bold_array,
+									//~ {
+										//~ return_div_element: true
+									//~ }
+								//~ ).div_element
+							//~ );
+						}
+						// Genre
+						// e.g. Productivity
+						var reg = /<span itemprop="genre">([^<]*)<\/span>/.exec(rs);
+						if (reg) {
+							document.createTextNode(__js_clean_html_str(reg[1]).trim());
 						}
 						
 						// Next.
