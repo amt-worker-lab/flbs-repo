@@ -2926,7 +2926,7 @@ function MT__RUN() {
 						var reg = /<div class="document-title" itemprop="name"> <div>([^<]+)<\/div>/.exec(rs);
 						if (reg) {
 							var x = __js_clean_html_str(reg[1]).trim();
-							document.createTextNode(x);
+							div.appendChild(document.createTextNode(x));
 							div.appendChild(document.createElement('br'));
 							o.bold_title = x.clean_string_to_array();
 						}
@@ -2936,7 +2936,7 @@ function MT__RUN() {
 						var reg = /<div itemprop="author"[^>]*> *<meta[^>]*> *<a[^>]*> *<span itemprop="name">([^<]+)<\/span> *<\/a> *<div[^>]*>([^<]*)<\/div>/.exec(rs);
 						if (reg) {
 							var x = __js_clean_html_str(reg[1]).trim();
-							document.createTextNode(x + ' ' + __js_clean_html_str(reg[2]).trim());
+							div.appendChild(document.createTextNode(x + ' ' + __js_clean_html_str(reg[2]).trim()));
 							div.appendChild(document.createElement('br'));
 							o.bold_author = x.clean_string_to_array();
 							//~ div.appendChild(
@@ -3078,7 +3078,7 @@ function MT__RUN() {
 							// 1=Ex: DVD|Blu-ray|DVD-R
 							// 2=DP/ASIN
 							// 3=Ex: DVD|Blu-Ray|DVD-R
-							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*)"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							reg = /<a class="a-link-normal s-access-detail-page a-text-normal" title="([^"]+)" href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*)"><h2 class="[^"]*">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
 							var m2;
 							var movs_array = [];
 							while (m2 = reg.exec(m[1])) {
@@ -3154,7 +3154,7 @@ function MT__RUN() {
 							// Add Buttons for clicking
 							for (var i in movs_array) {
 								var btn = document.createElement('button');
-								btn.setAttribute('style', 'width:80px;height:80px;');
+								btn.setAttribute('style', 'width:180px;height:140px;');
 								btn.innerText	= movs_array[i].mov_type;
 								btn.asin		= movs_array[i].asin;
 								btn.link		= movs_array[i].link;
