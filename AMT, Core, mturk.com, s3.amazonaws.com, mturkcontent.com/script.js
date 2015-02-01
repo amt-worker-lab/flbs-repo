@@ -5810,6 +5810,7 @@ function MT__RUN() {
 						} else if (json.indexOf('Last sold') != -1) {
 							o.q[7].style.border = '4px solid blue';
 							o.q[6].style.border = '4px solid blue';
+							sbm = false;
 						} else {
 							o.q[7].value = 'N/A';
 							o.q[6].value = 'N/A';
@@ -5825,6 +5826,11 @@ function MT__RUN() {
 						var reg = /<li>Built in ([1-2]\d{3})<\/li>/.exec(json);
 						if (reg) {
 							o.q[9].value = reg[1];
+						} else if (json.indexOf('Built in') != -1) {
+							o.q[9].style.border = '4px solid blue';
+							sbm = false;
+						} else {
+							o.q[9].value = 'N/A';
 						}
 						// Elementary rating
 						// Get all ratings, then check for only one elementary.
@@ -5842,7 +5848,7 @@ function MT__RUN() {
 								console.log('no sch. rtg');
 							}
 							// e.g. K-5
-							var reg3 = /<div class="nearby-schools-grades">([^<]+)<\/div>/.exec(m[1]);
+							var reg3 = /<div class="nearby-schools-grades">([\dK]+)-([\dK]+)<\/div>/.exec(m[1]);
 							if (!reg3) {
 								sbm = false;
 								d1b.style.border = '4px solid blue';
@@ -5851,32 +5857,52 @@ function MT__RUN() {
 							// push
 							var tmpobj = {
 								rtg: reg2[1],
-								grd: __js_clean_html_str(reg3[1])
+								grd: reg3[1] + '-' + reg3[2],
+								grd_u: reg3[1],
+								grd_l: reg3[2],
+								// Is elem.
+								is_elementary: null
 							};
-							tmp_sch.push(tmpobj);
 							// Log
 							d1b.innerText += tmpobj.rtg + ' ' + tmpobj.grd +'\n';
+							// is Elem.
+							var is_elem = (tmpobj.grd.indexOf('K') != -1 || tmpobj.grd*1 <= 3) ? true : false;
+							tmpobj.is_elementary = is_elem;
 							// First K!
-							if (!first_k && tmpobj.grd.indexOf('K') != -1) {
+							if (!first_k && is_elem) {
 								first_k = tmpobj;
 							}
 							// More than one K??
-							else if (first_k && tmpobj.grd.indexOf('K') != -1) {
+							else if (first_k && is_elem) {
 								d1b.style.border = '4px solid blue';
 								console.log('More than one "K".');
+								o.q[10].style.border = '4px solid blue';
 							}
+							// Push to array
+							tmp_sch.push(tmpobj);
 						}
 						if (!tmp_sch.length) {//...
 							d1b.style.border = '4px solid blue';
 							console.log('no sch.');
 						} else {
 							// Try first "K"
-							if (first_k) {
-								o.q[10].value = first_k.rtg; // Set first
+							//~ if (first_k) {
+								//~ o.q[10].value = first_k.rtg; // Set first
+							//~ }
+							//~ // Try first?
+							//~ else {
+								//~ o.q[10].style.border = '4px solid blue';
+							//~ }
+							var tmp_grd = -1;
+							for (var i in tmp_sch) {
+								if (tmp_sch[i].is_elementary && tmp_sch[i].rtg*1 > tmp_grd) {
+									tmp_grd = tmp_sch[i].rtg;
+								}
 							}
-							// Try first?
-							else {
-								o.q[10].style.border = '4px solid blue';
+							if (tmp_grd == -1) {
+								o.q[10].value = 'N/A'; //?
+							} else {
+								o.q[10].value = tmp_grd;
 							}
 						}
 						
