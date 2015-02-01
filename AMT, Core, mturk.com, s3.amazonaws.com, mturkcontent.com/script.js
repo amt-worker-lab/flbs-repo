@@ -5736,7 +5736,10 @@ function MT__RUN() {
 					if (o.submit) {
 						document.body.style.backgroundColor = 'aqua';
 						
-						// CLICK THE BUTTON HERE FOR ADDITIONAL ERROR-CHECK
+						document.getElementById('submitButton').click();
+					}
+					else {
+						//AMT___Floater.skip();
 					}
 				}
 				o.num_completed++;
@@ -5959,7 +5962,7 @@ function MT__RUN() {
 								console.log('no sch. rtg');
 							}
 							// e.g. K-5
-							var reg3 = /<div class="nearby-schools-grades">([\dK]+)-([\dK]+)<\/div>/.exec(m[1]);
+							var reg3 = /<div class="nearby-schools-grades">([\dPK]+)-([\dPK]+)<\/div>/.exec(m[1]);
 							if (!reg3) {
 								sbm = false;
 								d1b.style.border = '4px solid blue';
