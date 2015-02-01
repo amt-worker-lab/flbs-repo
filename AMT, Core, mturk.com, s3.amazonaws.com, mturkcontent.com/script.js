@@ -5807,6 +5807,12 @@ function MT__RUN() {
 						if (reg) {
 							o.q[7].value = reg[1];
 							o.q[6].value = reg[2].replace(/,/g, '');
+						} else if (json.indexOf('Last sold') != -1) {
+							o.q[7].style.border = '4px solid blue';
+							o.q[6].style.border = '4px solid blue';
+						} else {
+							o.q[7].value = 'N/A';
+							o.q[6].value = 'N/A';
 						}
 						// zestimate
 						// 1,234,567
@@ -5977,8 +5983,10 @@ function MT__RUN() {
 						var reg = /<img src="\/\/pp\.walk\.sc\/badge\/transit\/score\/([\d]+)\.png"/.exec(rs);
 						if (reg) {
 							document.getElementsByName('transitscore')[0].value = reg[1];
+						} else if (rs.indexOf('Transit Score') != -1) {
+							o.q[1].style.border = '4px solid blue';
 						} else {
-							sbm = false;
+							o.q[1].value = 'N/A';
 						}
 						
 						check_submit(sbm);
