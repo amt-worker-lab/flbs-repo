@@ -5796,8 +5796,27 @@ function MT__RUN() {
 			var d2 = document.createElement('input');
 			d2.setAttribute('style', 'position:absolute;top:126px;left:0%;width:50%;height:20px;overflow:auto;');
 			document.body.appendChild(d2);
-			d2.value = o.addr_clean;
 			d2.value = o.addr;
+			var d3 = document.createElement('input');
+			d3.setAttribute('style', 'position:absolute;top:126px;left:50%;width:10%;height:20px;overflow:auto;');
+			document.body.appendChild(d3);
+			d3.value = 'None-Walkscore';
+			var d3b = document.createElement('input');
+			d3b.setAttribute('style', 'position:absolute;top:126px;left:60%;width:10%;height:20px;overflow:auto;');
+			document.body.appendChild(d3b);
+			d3b.value = 'None-Zillow';
+			var d3c = document.createElement('input');
+			d3c.setAttribute('style', 'position:absolute;top:126px;left:70%;width:10%;height:20px;overflow:auto;');
+			document.body.appendChild(d3c);
+			d3c.value = 'None-Both';
+			
+			
+			
+			
+			
+			
+			
+			
 			d2.onblur = function() {
 				o.addr = this.value;
 				o.addr_ws = encodeURIComponent(o.addr.replace(/\s+/g, '-').replace(/[^\w\d]/g, '-')); // Replace non-digit, non-words
@@ -5812,6 +5831,31 @@ function MT__RUN() {
 				
 				ws();
 				zw();
+			}
+			
+			
+			d3.onclick = function() {
+				o.q[0].value = '';
+				o.q[1].value = '';
+				this.style.backgroundColor = 'yellow';
+				document.getElementById('submitButton').click();
+			}
+
+			d3b.onclick = function() {
+				for(var i = 2; i < o.q.length; i++) {
+					o.q[i].value = '';
+				}
+				this.style.backgroundColor = 'yellow';
+				document.getElementById('submitButton').click();
+			}
+			
+			
+			d3c.onclick = function() {
+				for(var i = 0; i < o.q.length; i++) {
+					o.q[i].value = '';
+				}
+				this.style.backgroundColor = 'yellow';
+				document.getElementById('submitButton').click();
 			}
 			/*END ITEMS*/
 			
