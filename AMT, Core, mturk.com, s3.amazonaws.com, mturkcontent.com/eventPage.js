@@ -229,6 +229,42 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 	
 	
+	if(request.getIsSpecialWorkflowWindow) {
+		if(localStorage['SPECIAL_WORKFLOW_WINDOW'] == 'unset' || localStorage['SPECIAL_WORKFLOW_WINDOW'] == undefined){
+			sendResponse({SPECIAL_WORKFLOW_WINDOW:'unset'});
+		}
+		else {
+			try {
+				chrome.windows.get(localStorage['SPECIAL_WORKFLOW_WINDOW'] *1 , function(window) {
+					if(!window || window.length == 0) {
+						localStorage[SPECIAL_WORKFLOW_WINDOW] = 'unset';
+					}
+				
+					sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
+				});
+				console.log('returning true to keep connection alive');
+			} 
+			catch(err) {
+				localStorage[SPECIAL_WORKFLOW_WINDOW] = 'unset';
+				sendResponse({SPECIAL_WORKFLOW_WINDOW:localStorage['SPECIAL_WORKFLOW_WINDOW']});
+			}
+			return true;
+		}
+	}
+	
+	if(request.setSPECIAL_WORKFLOW_WINDOW) {
+		//console.log(sender.tab.window);
+		//console.log(sender.window);
+		chrome.windows.getLastFocused({}, function(window) {
+			console.log(window);
+			chrome.windows.update(window.id, {state:'fullscreen'});
+			localStorage['SPECIAL_WORKFLOW_WINDOW'] = window.id;
+			sendResponse({SPECIAL_WORKFLOW_WINDOW:localStorage['SPECIAL_WORKFLOW_WINDOW']});
+		});
+		return true;
+	}
+	
+	
 	//RA_Button_NextTab
 	if(request.toggleRA_Button_NextTab) {
 		localStorage['RA_Button_NextTab'] = request.toggleRA_Button_NextTab;

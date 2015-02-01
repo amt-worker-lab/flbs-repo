@@ -186,6 +186,15 @@ function init_func_getIsUtilityWindow() {
 			TOGGLE_IS_UTILITY_WINDOW.value = rs.UTILITY_WINDOW;
 		});	
 }
+function init_func_getIsSpecialWorkflowWindow() {
+	chrome.extension.sendRequest({getIsSpecialWorkflowWindow: true}, 
+		function(rs) 
+		{
+			console.log('got special workflow window?');
+			console.log(rs);
+			TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW.value = rs.SPECIAL_WORKFLOW_WINDOW;
+		});	
+}
 //getNTPassBy
 //toggleNAPassBy
 
@@ -202,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	TOGGLE_RA_BUTTON_NEXTTAB = document.getElementById('R&A NextTab');
 	TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab');
 	TOGGLE_IS_UTILITY_WINDOW = document.getElementById('isUtilityWindow');
+	TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW = document.getElementById('isSpecialWorkflowWindow');
 	EL_STG_ACTIVE	= document.getElementById('CAPTCHA_stagger_is_active');
 	EL_STG_MIN		= document.getElementById('CAPTCHA_min_tabs_to_initiate_staggered');
 	EL_STG_TO		= document.getElementById('CAPTCHA_staggered_timeout_per_tab');
@@ -212,6 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	init_func_toggleNTPassBy();
 	init_func_getIsUtilityWindow();
+	init_func_getIsSpecialWorkflowWindow();
 	
 	init_func_ra_button_nextTab();
 	init_func_r_button_nextTab();
@@ -305,6 +316,18 @@ document.addEventListener("DOMContentLoaded", function() {
 			function(rs) {
 				if(rs.UTILITY_WINDOW) {
 					TOGGLE_IS_UTILITY_WINDOW.value =rs.UTILITY_WINDOW;
+				}
+			}
+		);
+	}
+	
+	TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW.onclick = function() {
+		this.style.border = '4px solid LightGreen';
+		chrome.extension.sendRequest(
+			{setSPECIAL_WORKFLOW_WINDOW: TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW.value}, 
+			function(rs) {
+				if(rs.SPECIAL_WORKFLOW_WINDOW) {
+					TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW.value =rs.SPECIAL_WORKFLOW_WINDOW;
 				}
 			}
 		);
