@@ -5780,17 +5780,25 @@ function MT__RUN() {
 						// 4
 						// 2
 						// 1,794
-						var reg = /<span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) beds?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) baths?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d,]+) sqft<\/span>/.exec(json);
+						var reg = /<span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.\-]+) beds?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.\-]+) baths?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d,\-]+) sqft<\/span>/.exec(json);
 						if (reg) {
-							o.q[2].value = reg[1].replace(/,/, '');
-							o.q[3].value = reg[2].replace(/,/, '');
-							o.q[4].value = reg[3].replace(/,/, '');
+							// -- is NA on zillow
+							for (var i = 1; i<=3; i++) {
+								if (reg[i] == '--') {
+									reg[i] = 'N/A';
+								}
+							}
+							o.q[2].value = reg[1].replace(/,/g, '');
+							o.q[3].value = reg[2].replace(/,/g, '');
+							o.q[4].value = reg[3].replace(/,/g, '');
 						}
 						// lot size
 						// 7,123
 						var reg = / on a lot of ([\d,]+) sqft/.exec(json);
 						if (reg) {
-							o.q[5].value = reg[1].replace(/,/, '');
+							o.q[5].value = reg[1].replace(/,/g, '');
+						} else {
+							o.q[5].value = 'N/A';
 						}
 						// last sold
 						// 2014
@@ -5798,13 +5806,13 @@ function MT__RUN() {
 						var reg = /<li>Last sold: \w+ ([1-2]\d{3}) for \$([\d,]+)<\/li>/.exec(json);
 						if (reg) {
 							o.q[7].value = reg[1];
-							o.q[6].value = reg[2].replace(/,/, '');
+							o.q[6].value = reg[2].replace(/,/g, '');
 						}
 						// zestimate
 						// 1,234,567
 						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">\$([\d,]+)<span class="value-suffix"><\/span>/.exec(json);
 						if (reg) {
-							o.q[8].value = reg[1].replace(/,/, '');
+							o.q[8].value = reg[1].replace(/,/g, '');
 						}
 						// built in
 						// 2014
@@ -5818,6 +5826,7 @@ function MT__RUN() {
 						var reg = /<div class="nearby-schools-rating">((.|\s)*?(?=<li class="nearby-school assigned-school  clearfix|<div class="nearby-schools-rating">|$)|$)/g;
 						var m;
 						var tmp_sch = [];
+						var first_k;
 						while (m = reg.exec(json)) {
 							// e.g. 9
 							var reg2 = /<span class="gs-rating-number gs-rating-\d+">([\d]+)<\/span>/.exec(m[1]);
@@ -5841,12 +5850,28 @@ function MT__RUN() {
 							tmp_sch.push(tmpobj);
 							// Log
 							d1b.innerText += tmpobj.rtg + ' ' + tmpobj.grd +'\n';
+							// First K!
+							if (!first_k && tmpobj.grd.indexOf('K') != -1) {
+								first_k = tmpobj;
+							}
+							// More than one K??
+							else if (first_k && tmpobj.grd.indexOf('K') != -1) {
+								d1b.style.border = '4px solid blue';
+								console.log('More than one "K".');
+							}
 						}
 						if (!tmp_sch.length) {//...
 							d1b.style.border = '4px solid blue';
 							console.log('no sch.');
 						} else {
-							o.q[10].value = tmp_sch[0].rtg; // Set first
+							// Try first "K"
+							if (first_k) {
+								o.q[10].value = first_k.rtg; // Set first
+							}
+							// Try first?
+							else {
+								o.q[10].style.border = '4px solid blue';
+							}
 						}
 						
 						
@@ -5891,20 +5916,21 @@ function MT__RUN() {
 								__js_clean_html_str(reg[2]), //city
 								__js_clean_html_str(reg[3])  //st/zip
 							];
+							
+							// Matching street address / city?
+							// And street/city length >= 6
+							var match_ws = tmp_adr[0].toLowerCase().replace(/[^\w\d]/g,'') + tmp_adr[1].toLowerCase().replace(/[^\w\d]/g,'');
+							if  (
+								o.addr_clean_ws.indexOf(match_ws) == -1 ||
+								match_ws.length < 6
+								)
+							{
+								sbm = false;
+							}
 						} else {
 							sbm = false;
 							d1.style.border = '4px solid blue';
 							console.log('No address reg.');
-						}
-						// Matching street address / city?
-						// And street/city length >= 6
-						var match_ws = tmp_adr[0].toLowerCase().replace(/[^\w\d]/g,'') + tmp_adr[1].toLowerCase().replace(/[^\w\d]/g,'');
-						if  (
-							o.addr_clean_ws.indexOf(match_ws) == -1 ||
-							match_ws.length < 6
-							)
-						{
-							sbm = false;
 						}
 						
 						//~ if (rs_lower.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '').toLowerCase()+'</h1>') == -1) {
