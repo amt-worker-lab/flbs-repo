@@ -5709,14 +5709,33 @@ function MT__RUN() {
 						if(!rslt) {
 							
 						}else {
-							document.body.style.backgroundColor = 'aqua';
+							var foundBad = false;
+							for(var i in o.q) {
+								if(o.q.value == 'N/A') {
+									continue
+								}
+								else {
+									if(o.q.value.match(/^[0-9\.]+$/ )) {
+										continue
+									} else {
+										foundBad = true;
+										document.body.style.backgroundColor = 'red';
+										return;
+									}
+								}
+							}
+							if(!foundBad) {
+								document.getElementById('submitButton').click();
+							
+								document.body.style.backgroundColor = 'aqua';
+								return;
+							}
 							return;
 						}
 					}, true)
 				return;
 			}
 			else {
-				
 				AMT___doPastBehavior('William Riggs - not accepted',1, 'Do Not Submit', function (rslt) {
 						if(!rslt) {
 							// Init

@@ -1118,7 +1118,7 @@ OutputPair.prototype.doWriting = function() {
 		else
 		{
 			console.log(element.value);
-			if(!this.value || this.value == '' {
+			if(this.value === undefined || this.value === false || this.value === '') {
 				element.value = '';
 			} else {
 				element.value = this.value;
