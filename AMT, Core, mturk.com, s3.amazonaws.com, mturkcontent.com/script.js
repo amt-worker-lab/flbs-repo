@@ -5651,7 +5651,7 @@ function MT__RUN() {
 		)
 	{
 		var run = function() {};
-		run.prototype.run = function() {
+		run.prototype.f = function() {
 			
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
@@ -5671,7 +5671,7 @@ function MT__RUN() {
 			o.addr_ws = o.addr.replace(/ /g, '-');
 			o.addr_ws = encodeURIComponent(o.addr_ws);
 			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
-			o.addr_clean = o.addr_clean.replace(/\d+$/, '');
+			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -5682,6 +5682,20 @@ function MT__RUN() {
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
+			// Init
+			ws();
+			
+			/**
+			 * function check_submit
+			 * 
+			 * @param sbm		Bool. Submit?
+			 */
+			function check_submit(sbm) {
+				console.log(sbm);
+			}
+			/**
+			 * function ws
+			 */
 			// Walkscore
 			// https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
 			function ws() {
@@ -5692,15 +5706,46 @@ function MT__RUN() {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
-							d1b.style.backgroundColor = 'LightGreen';
-							return;
-						}
-						if (rs.indexOf('<title>'+o.addr+' - Walk Score</title>') == -1) {
-							d1b.style.backgroundColor = 'LightGreen';
+							d1b.style.backgroundColor = 'pink';
 							return;
 						}
 						
+						//~ var is_correct = ('<title>'+o.addr_clean_ws+' - Walk Score</title>').toLowerCase().replace(/[^\w\d]/g, '');
+						//~ if (rs.indexOf('<title>'+o.addr_clean_ws+' - Walk Score</title>') == -1) {
+							//~ d1b.style.border = '4px solid blue';
+							//~ d1b.innerText = 'No '+o.addr_clean_ws;
+							//~ return;
+						//~ }
+						if (rs.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '')+'</h1>') == -1) {
+							d1.style.border = '4px solid blue';
+						}
 						
+						// Diff
+						d1.innerHTML += MT___diffString(
+							o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
+							o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+						);
+						
+						//~ d1b.style.backgroundColor = 'LightGreen';
+						
+						var sbm = true;
+						
+						// Walkscore
+						var reg = /<img src="\/\/pp\.walk\.sc\/badge\/walk\/score\/([\d]+)\.png"/.exec(rs);
+						if (reg) {
+							document.getElementsByName('walkscore')[0].value = reg[1];
+						} else {
+							sbm = false;
+						}
+						// Transitscore
+						var reg = /<img src="\/\/pp\.walk\.sc\/badge\/transit\/score\/([\d]+)\.png"/.exec(rs);
+						if (reg) {
+							document.getElementsByName('transitscore')[0].value = reg[1];
+						} else {
+							sbm = false;
+						}
+						
+						check_submit(sbm);
 					}
 				});
 			}
