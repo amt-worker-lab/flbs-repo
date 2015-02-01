@@ -5663,13 +5663,23 @@ function MT__RUN() {
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
-				addr: b[0].innerText.trim();
+				addr: b[0].innerText.trim(),
+				addr_ws: null,
+				addr_clean: null,
+				addr_clean_ws: null
 			}
+			o.addr_ws = o.addr.replace(/ /g, '-');
+			o.addr_ws = encodeURIComponent(o.addr_ws);
+			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
+			o.addr_clean = o.addr_clean.replace(/\d+$/, '');
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
 			// Walkscore
@@ -5677,15 +5687,22 @@ function MT__RUN() {
 			function ws() {
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: o.url,
+					url: 'https://www.walkscore.com/score/' + o.addr_ws,
 					onload: function (response) {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
-							document.body.style.backgroundColor = 'LightGreen';
+							d1b.style.backgroundColor = 'LightGreen';
+							return;
+						}
+						if (rs.indexOf('<title>'+o.addr+' - Walk Score</title>') == -1) {
+							d1b.style.backgroundColor = 'LightGreen';
 							return;
 						}
 						
+						
+					}
+				});
 			}
 		}
 		new run().f();
