@@ -5709,6 +5709,10 @@ function MT__RUN() {
 						return false;
 					}
 				}
+				
+				if(AMT__Global_Vars.isSpecialWorkflowWindow)
+					document.body.style.backgroundColor = 'silver';
+				
 				new AMT___core_factory().nextTab();
 				doSubmit();
 				return false;
