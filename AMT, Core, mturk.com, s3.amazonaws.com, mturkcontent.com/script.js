@@ -5777,27 +5777,44 @@ function MT__RUN() {
 						}
 						
 						// bed/bath/sqft
-						var reg = /<h3 class="">  <span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">4 beds<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">2 baths<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">1,794 sqft<\/span>   <\/h3>/.exec(json);
+						// 4
+						// 2
+						// 1,794
+						var reg = /<h3 class="">  <span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) beds<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) baths<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d,]+) sqft<\/span>   <\/h3>/.exec(json);
 						if (reg) {
-							
+							o.q[2].value = reg[1].replace(/,/, '');
+							o.q[3].value = reg[2].replace(/,/, '');
+							o.q[4].value = reg[3].replace(/,/, '');
 						}
 						// lot size
-						var reg = /<li>Lot: 7,313 sqft<\/li>/.exec(json);
+						// 7,123
+						var reg = /<li>Lot: ([\d,]+) sqft<\/li>/.exec(json);
 						if (reg) {
-							
+							o.q[5].value = reg[1].replace(/,/, '');
+						}
+						// last sold
+						// 2014
+						// 1,234,567
+						var reg = /<li>Last sold: \w+ ([1-2]\d{3}) for \$([\d,]+)<\/li>/.exec(json);
+						if (reg) {
+							o.q[7].value = reg[1];
+							o.q[6].value = reg[2].replace(/,/, '');
 						}
 						// zestimate
-						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">$1,084,723<span class="value-suffix"><\/span>/.exec(json);
+						// 1,234,567
+						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">\$([\d,]+)<span class="value-suffix"><\/span>/.exec(json);
 						if (reg) {
-							
+							o.q[8].value = reg[1].replace(/,/, '');
 						}
 						// built in
-						var reg = /<li>Built in 2014<\/li>/.exec(json);
+						// 2014
+						var reg = /<li>Built in ([1-2]\d{3})<\/li>/.exec(json);
 						if (reg) {
-							
+							o.q[9].value = reg[1];
 						}
 						// Elementary rating
 						// Get all ratings, then check for only one elementary.
+						// Auto if: One and only one Elementary in list
 						var reg = /<div class="nearby-schools-rating">((.|\s)*?(?=<li class="nearby-school assigned-school  clearfix|<div class="nearby-schools-rating">|$)|$)/g;
 						var m;
 						var tmp_sch = [];
@@ -5831,6 +5848,8 @@ function MT__RUN() {
 						} else {
 							o.q[10].value = tmp_sch[0].rtg; // Set first
 						}
+						
+						
 					}
 				});
 			}
