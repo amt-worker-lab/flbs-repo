@@ -5691,8 +5691,7 @@ function MT__RUN() {
 				]
 			}
 			o.addr = o.addr.replace(/(\d{5})(\d{4})$/, '$1'); // Start by changing 9 digit zip to 5 if necessary
-			o.addr_ws = o.addr.replace(/\s+/g, '-');
-			o.addr_ws = encodeURIComponent(o.addr_ws);
+			o.addr_ws = encodeURIComponent(o.addr.replace(/\s+/g, '-').replace(/[^\w\d]/g, '-')); // Replace non-digit, non-words
 			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
 			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
 			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/\s+/g, '-'))+'_rb/';
@@ -5892,7 +5891,7 @@ function MT__RUN() {
 							o.q[3].value = reg[3].replace(/,/g, '');
 							o.q[4].value = reg[4].replace(/,/g, '');
 							if (reg[1] == 'Studio') {
-								o.q[2].value = 'Studio';
+								o.q[2].value = '0';
 							}
 						} else {
 							sbm = false;
@@ -6032,6 +6031,7 @@ function MT__RUN() {
 			 * function ws
 			 * Walkscore
 			 * https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
+			 * REMOVE NON DIGIT NON WORDS
 			 */
 			function ws() {
 				GM_xmlhttpRequest({
