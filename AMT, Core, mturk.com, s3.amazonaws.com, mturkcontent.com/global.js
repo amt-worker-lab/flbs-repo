@@ -169,17 +169,11 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 
 AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 	var callback = callback;
-	chrome.extension.sendRequest({getIsSpecialWorkflowWindow: true}, 
+	chrome.extension.sendRequest({amISpecialWorkflowWindow: true}, 
 			function(rs) 
 			{
-				if(rs.SPECIAL_WORKFLOW_WINDOW == 'unset' || !rs.SPECIAL_WORKFLOW_WINDOW) {
-					AMT__Global_Vars.isSpecialWorkflowWindow = false;
-					callback(false);
-				}
-				else {
-					AMT__Global_Vars.isSpecialWorkflowWindow = true;
-					callback(true);
-				}
+				AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
+				callback(AMT__Global_Vars.isSpecialWorkflowWindow);
 			});
 }
 

@@ -5709,20 +5709,22 @@ function MT__RUN() {
 				doSubmit();
 				return false;
 			}
+			
+			AMT___addUserDecision('William Riggs - 1', function() {
+				return o.addr
+			}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+			AMT___addUserDecision('William Riggs - not accepted', function() {
+									return o.addr
+								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+			
+			
 			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(function(isSpecial) {
 				if(isSpecial) {
+					console.log('we are special window');
 					ws();
 					zw();
 				}
-				else {
-					AMT___addUserDecision('William Riggs - 1', function() {
-									return o.addr
-								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
-					AMT___addUserDecision('William Riggs - not accepted', function() {
-											return o.addr
-										}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
-					
-					
+				else {		
 					if(!AMT__Global_Vars.isPreview) {
 						AMT___doPastBehavior('William Riggs - 1',1, 'Do Not Submit', function (rslt) {
 								if(!rslt) {
@@ -5766,8 +5768,6 @@ function MT__RUN() {
 									return;
 								}
 							}, true)
-						
-
 					}
 				}
 			});

@@ -252,6 +252,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	
+	if(request.amISpecialWorkflowWindow) {
+		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
+	}
+	
 	if(request.setSPECIAL_WORKFLOW_WINDOW) {
 		//console.log(sender.tab.window);
 		//console.log(sender.window);
