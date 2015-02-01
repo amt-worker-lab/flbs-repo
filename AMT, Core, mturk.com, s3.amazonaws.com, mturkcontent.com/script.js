@@ -5694,7 +5694,7 @@ function MT__RUN() {
 			o.addr_ws = encodeURIComponent(o.addr.replace(/\s+/g, '-').replace(/[^\w\d]/g, '-')); // Replace non-digit, non-words
 			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
 			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
-			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/\s+/g, '-'))+'_rb/';
+			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/[\s\/]+/g, '-'))+'_rb/';
 			
 			AMT___addUserDecision('William Riggs - 1', function() {
 									return o.addr
@@ -5767,7 +5767,7 @@ function MT__RUN() {
 				if (!sbm) {
 					o.submit = false;
 				}
-				if (o.num_completed == 1) {
+				if (o.num_completed >= 1) {
 					console.log('submit:' + o.submit);
 					if (o.submit) {
 						document.body.style.backgroundColor = 'aqua';
@@ -5848,6 +5848,7 @@ function MT__RUN() {
 						for (var i in badstr) {
 							if (rs.indexOf(badstr[i]) != -1) {
 								d1b.innerText = badstr[i].replace(/<[^>]*>/g, '');
+								check_submit(false);
 								return;
 							}
 						}
