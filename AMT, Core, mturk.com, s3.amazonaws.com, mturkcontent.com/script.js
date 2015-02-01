@@ -5700,7 +5700,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:60px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			d1b.setAttribute('style','position:absolute;top:64px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
@@ -5715,6 +5715,39 @@ function MT__RUN() {
 			 */
 			function check_submit(sbm) {
 				console.log(sbm);
+			}
+			/**
+			 * function make_addr_regex
+			 * 
+			 * NOTE: removes [^\w\d ]
+			 * 
+			 */
+			// Returns...
+			function make_addr_regex(str) {
+				str = __js_escape_regEx( str.replace(/[^\w\d ]/g, '') );
+				str = str
+					.replace(/ (av|ave|avenue)([\.,]* )/g,	' (av|ave|avenue)$2')
+					.replace(/ (e|east)([\.,]* )/g,			' (e|east)$2')
+					.replace(/ (w|west)([\.,]* )/g,			' (w|west)$2')
+					.replace(/ (n|north)([\.,]* )/g,			' (w|north)$2')
+					.replace(/ (s|south)([\.,]* )/g,			' (w|)$2')
+					.replace(/ (sw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+					.replace(/ (nw|southwest)([\.,]* )/g,	' (sw|southwest)$2')
+					.replace(/ (se|southeast)([\.,]* )/g,	' (se|southeast)$2')
+					.replace(/ (ne|northeast)([\.,]* )/g,	' (ne|northeast)$2')
+					.replace(/ (rd|road)([\.,]* )/g,			' (rd|road)$2')
+					.replace(/ (st|street)([\.,]* )/g,		' (st|street)$2')
+					.replace(/ (pl|place)([\.,]* )/g,		' (pl|place)$2')
+					.replace(/ (ct|court)([\.,]* )/g,		' (ct|court)$2')
+					.replace(/ (dr|drive)([\.,]* )/g,		' (dr|drive)$2')
+					.replace(/ (trl|trail)([\.,]* )/g,		' (trl|trail)$2')
+					.replace(/ (ln|lane)([\.,]* )/g,		' (ln|lane)$2')
+					.replace(/ (hwy|highway)([\.,]* )/g,		' (hwy|highway)$2')
+					.replace(/ (ter|terrace)([\.,]* )/g,		' (ter|terrace)$2')
+					.replace(/ (cv|cove)([\.,]* )/g,		' (cv|cove)$2')
+					.replace(/ (blvd|boulevard)([\.,]* )/g,		' (blvd|boulevard)$2')
+					.replace(/ (apt|unit|apartment|#)([\.,]* )/g,		' (apt|unit|apartment|#)$2');
+				return new RegExp(str, '');
 			}
 			/**
 			 * function zw
@@ -5787,11 +5820,16 @@ function MT__RUN() {
 								.replace('- Zillow', '')
 								.replace(/\s+/g, ' ');
 							var t1,t2;
-							t1 = o.addr.toLowerCase().replace(/[^\w\d]/g, '');
-							t2 = reg   .toLowerCase().replace(/[^\w\d]/g, '');
-							console.log(t1)
-							console.log(t2)
-							if  (
+							t1 = o.addr.toLowerCase().replace(/[^\w\d ]/g, '');
+							t2 = reg   .toLowerCase().replace(/[^\w\d ]/g, '');
+							
+							// Match regex?
+							if (make_addr_regex(t1).exec(t2) && t2.length > 6) {
+								// Success
+								d1b.style.backgroundColor = 'LightGreen';
+							}
+							else if
+								(
 								t1 != t2
 								)
 							{
@@ -5801,6 +5839,7 @@ function MT__RUN() {
 									reg   .replace(/,/g, '').string_to_mixed_case().replace(/\d+$/, '') // REMOVE ZIP IF NOT IN 
 								)
 								+'<br>';
+								sbm = false;
 							} else {
 								//
 							}
@@ -5983,20 +6022,20 @@ function MT__RUN() {
 								__js_clean_html_str(reg[3])  //st/zip
 							];
 							
-							// Matching street address / city?
-							// And street/city length >= 6
-							var match_ws = tmp_adr[0].toLowerCase().replace(/[^\w\d]/g,'') + tmp_adr[1].toLowerCase().replace(/[^\w\d]/g,'');
-							if  (
-								o.addr_clean_ws.indexOf(match_ws) == -1 ||
-								match_ws.length < 6
-								)
-							{
-								sbm = false;
-							}
+							//~ // Matching street address / city?
+							//~ // And street/city length >= 6
+							//~ var match_ws = tmp_adr[0].toLowerCase().replace(/[^\w\d]/g,'') + tmp_adr[1].toLowerCase().replace(/[^\w\d]/g,'');
+							//~ if  (
+								//~ o.addr_clean_ws.indexOf(match_ws) == -1 ||
+								//~ match_ws.length < 6
+								//~ )
+							//~ {
+								//~ sbm = false;
+							//~ }
 						} else {
-							sbm = false;
-							d1.style.border = '4px solid blue';
-							console.log('No address reg.');
+							//~ sbm = false;
+							//~ d1.style.border = '4px solid blue';
+							//~ console.log('No address reg.');
 						}
 						
 						//~ if (rs_lower.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '').toLowerCase()+'</h1>') == -1) {
@@ -6018,11 +6057,28 @@ function MT__RUN() {
 						}
 						console.log('Title:'+tmp_addr);
 						
-						// Diff
-						d1.innerHTML += MT___diffString(
-							o.addr  .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
-							tmp_addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
-						);
+						// Match regex?
+						var t1,t2;
+						t1 = o.addr.toLowerCase().replace(/[^\w\d ]/g, '').replace(/ *\d*$/, '');
+						t2 = tmp_addr.toLowerCase().replace(/[^\w\d ]/g, '').replace(/ *\d*$/, '');;
+						console.log(t1)
+						console.log(t2)
+						console.log(make_addr_regex(t1))
+						if (make_addr_regex(t1).exec(t2) && t2.length > 6) { // && tmp_adr[0].length > 6
+							//
+							d1.style.backgroundColor = 'LightGreen';
+						} else {
+							sbm = false;
+							// Diff
+							d1.innerHTML += MT___diffString(
+								o.addr  .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
+								tmp_addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+							);
+						}
+						
+						
+						
+						
 						
 						//~ // Match
 						//~ var match = 
