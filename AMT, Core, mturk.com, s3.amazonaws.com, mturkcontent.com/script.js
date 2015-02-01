@@ -5696,6 +5696,44 @@ function MT__RUN() {
 			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
 			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/\s+/g, '-'))+'_rb/';
 			
+			AMT___addUserDecision('William Riggs - 1', function() {
+									return o.addr
+								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+			AMT___addUserDecision('William Riggs - not accepted', function() {
+									return o.addr
+								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+			
+			
+			if(!AMT__Global_Vars.isPreview) {
+				AMT___doPastBehavior('William Riggs - 1',1, null, function (rslt) {
+						if(!rslt) {
+							
+						}else {
+							document.body.style.backgroundColor = 'aqua';
+							return;
+						}
+					}, true)
+				return;
+			}
+			else {
+				
+				AMT___doPastBehavior('William Riggs - not accepted',1, 'Do Not Submit', function (rslt) {
+						if(!rslt) {
+							// Init
+							ws();
+							zw();
+						}else {
+							document.body.style.backgroundColor = 'green';
+							AMT___Floater.skip();
+							return;
+						}
+					}, true)
+				
+
+			}
+			
+			
+			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
@@ -5718,9 +5756,7 @@ function MT__RUN() {
 				return false;
 			}
 			
-			// Init
-			ws();
-			zw();
+			
 			
 			/**
 			 * function check_submit
@@ -5736,10 +5772,16 @@ function MT__RUN() {
 					if (o.submit) {
 						document.body.style.backgroundColor = 'aqua';
 						
-						document.getElementById('submitButton').click();
+						if(AMT__Global_Vars.isPreview) {
+							document.getElementById('submitButton').click();
+							
+							AMT___record();
+							AMT___Floater.accept();
+						}
 					}
 					else {
-						//AMT___Floater.skip();
+						AMT___record();
+						AMT___Floater.skip();
 					}
 				}
 				o.num_completed++;
@@ -146038,6 +146080,9 @@ function mturk_load()
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '3AJ89545MPYNHEW210G20AIMXIXBEM': // Carol Chen, Alexa.com scrape
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '3OJGK8O6LQRPTVNORS85QS6TMP15L6': // William Riggs
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '37Z7ICZ5H99Y57AZPGYYF94ULNK11N':
