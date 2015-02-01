@@ -5678,6 +5678,8 @@ function MT__RUN() {
 				zillowRan: false,
 				submit: true,
 				
+				isManualSearch: false,
+				
 				q: [
 					document.getElementsByName('walkscore')[0],
 					document.getElementsByName('transitscore')[0],
@@ -5799,6 +5801,7 @@ function MT__RUN() {
 				o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
 				o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/[\s\/]+/g, '-'))+'_rb/';
 				
+				o.isManualSearch = true;
 				ws();
 				zw();
 			}
@@ -5814,6 +5817,10 @@ function MT__RUN() {
 			 * @param sbm		Bool. Submit?
 			 */
 			function check_submit(sbm, runType) {
+				if(runType == 'walkRan')
+					o.walkRan = true;
+				else if(runType == 'zillowRan')
+					o.zillowRan = true;
 				if (!sbm) {
 					o.submit = false;
 				}
@@ -5823,10 +5830,13 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'aqua';
 						
 						if(AMT__Global_Vars.isPreview) {
-							document.getElementById('submitButton').click();
-							
+						
 							AMT___record();
 							AMT___Floater.accept();
+						}
+						else {
+							if(o.isManualSearch)
+								document.body.style.backgroundColor = 'orange';
 						}
 					}
 					else {
@@ -5898,7 +5908,7 @@ function MT__RUN() {
 						for (var i in badstr) {
 							if (rs.indexOf(badstr[i]) != -1) {
 								d1b.innerText = badstr[i].replace(/<[^>]*>/g, '');
-								check_submit(false);
+								check_submit(false, 'zillowRan');
 								return;
 							}
 						}
@@ -5968,7 +5978,7 @@ function MT__RUN() {
 						} else {
 							d1b.innerText += 'NO ADDRESS\n';
 							d1b.style.border = '4px solid blue';
-							check_submit(false);
+							check_submit(false, 'zillowRan');
 						}
 						
 						// bed/bath/sqft
@@ -6120,7 +6130,7 @@ function MT__RUN() {
 							//~ }
 						}
 						
-						check_submit(sbm);
+						check_submit(sbm, 'zillowRan');
 					}
 				});
 			}
@@ -6208,7 +6218,7 @@ function MT__RUN() {
 							o.q[1].value = 'N/A';
 						}
 						
-						check_submit(sbm);
+						check_submit(sbm, 'walkRan');
 						
 						//~ // THIS IS FOR THE FULL ADDRESS SEPARATED - I.E. STREET,CITY,STATE,ZIP
 						//~ // 2614 Benvenue Avenue
