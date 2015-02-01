@@ -5802,6 +5802,10 @@ function MT__RUN() {
 				o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/[\s\/]+/g, '-'))+'_rb/';
 				
 				o.isManualSearch = true;
+				
+				d1.innerHTML = '';
+				d1b.innerHTML = '';
+				
 				ws();
 				zw();
 			}
@@ -5835,8 +5839,12 @@ function MT__RUN() {
 							AMT___Floater.accept();
 						}
 						else {
-							if(o.isManualSearch)
+							if(AMT__Global_Vars.isSpecialWorkflowWindow && !o.isManualSearch)
+								document.getElementById('submitButton').click();
+
+							if(o.isManualSearch) {								
 								document.body.style.backgroundColor = 'orange';
+							}
 						}
 					}
 					else {
