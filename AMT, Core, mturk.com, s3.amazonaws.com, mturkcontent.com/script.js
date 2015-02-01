@@ -5725,14 +5725,16 @@ function MT__RUN() {
 				// e.g. http://www.zillow.com/homes/3462-FLAIR-DRIVE-DALLAS-TX-75229_rb/
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: o.url,
+					url: o.zillow_url,
 					onload: function (response) {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
-							document.body.style.backgroundColor = 'LightGreen';
+							d1b.style.backgroundColor = 'pink';
 							return;
 						}
+						
+						var sbm = true;
 						
 						// bad str
 						var badstr = [
@@ -5743,12 +5745,20 @@ function MT__RUN() {
 						for (var i in badstr) {
 							if (rs.indexOf(badstr[i]) != -1) {
 								d1b.innerText = badstr[i].replace(/<[^>]*>/g, '');
-								
 								return;
 							}
 						}
 						
-						
+						// json
+						var reg = /<div id="initial-hdp-jsonp-\d+" class="template hide">&nbsp;<!-- \{((.|\s)*?(?=\}-->|$)|$)/.exec(rs);
+						if (reg) {
+							reg = JSON.parse(reg[1].replace(/\\\\/g, '`').replace(/\\/g, '').replace(/`/g, '\\'));
+							console.log(reg);
+						} else  {
+							sbm = false;
+							console.log('z no json');
+						}
+						//<h3 class=\\"\\">  <span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">4 beds<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">2 baths<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">1,794 sqft<\\/span>   <\\/h3>
 					}
 				});
 			}
