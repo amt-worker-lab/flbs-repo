@@ -5780,7 +5780,7 @@ function MT__RUN() {
 						// 4
 						// 2
 						// 1,794
-						var reg = /<h3 class="">  <span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) beds<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) baths<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d,]+) sqft<\/span>   <\/h3>/.exec(json);
+						var reg = /<span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) beds?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d\.]+) baths?<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">([\d,]+) sqft<\/span>/.exec(json);
 						if (reg) {
 							o.q[2].value = reg[1].replace(/,/, '');
 							o.q[3].value = reg[2].replace(/,/, '');
@@ -5788,7 +5788,7 @@ function MT__RUN() {
 						}
 						// lot size
 						// 7,123
-						var reg = /<li>Lot: ([\d,]+) sqft<\/li>/.exec(json);
+						var reg = / on a lot of ([\d,]+) sqft/.exec(json);
 						if (reg) {
 							o.q[5].value = reg[1].replace(/,/, '');
 						}
