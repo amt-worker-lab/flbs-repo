@@ -5701,7 +5701,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:64px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			d1b.setAttribute('style','position:absolute;top:66px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
