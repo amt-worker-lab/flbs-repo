@@ -5674,6 +5674,7 @@ function MT__RUN() {
 				zillow_url: null,
 				
 				num_completed: 0,
+				submit: true,
 				
 				q: [
 					document.getElementsByName('walkscore')[0],
@@ -5704,6 +5705,19 @@ function MT__RUN() {
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
 			// Init
 			ws();
 			zw();
@@ -5714,7 +5728,16 @@ function MT__RUN() {
 			 * @param sbm		Bool. Submit?
 			 */
 			function check_submit(sbm) {
-				console.log(sbm);
+				if (!sbm) {
+					o.submit = false;
+				}
+				if (o.num_completed == 1) {
+					console.log('submit:' + o.submit);
+					if (o.submit) {
+						document.body.style.backgroundColor = 'aqua';
+					}
+				}
+				o.num_completed++;
 			}
 			/**
 			 * function make_addr_regex
@@ -5824,7 +5847,7 @@ function MT__RUN() {
 							t2 = reg   .toLowerCase().replace(/[^\w\d ]/g, '');
 							
 							// Match regex?
-							if (make_addr_regex(t1).exec(t2) && t2.length > 6) {
+							if (make_addr_regex(t1).exec(t2) && t2.length > 10) {
 								// Success
 								d1b.style.backgroundColor = 'LightGreen';
 							}
@@ -5840,6 +5863,7 @@ function MT__RUN() {
 								)
 								+'<br>';
 								sbm = false;
+								d1b.style.border = '4px solid blue';
 							} else {
 								//
 							}
@@ -5950,6 +5974,7 @@ function MT__RUN() {
 								d1b.style.border = '4px solid blue';
 								console.log('More than one "K".');
 								o.q[10].style.border = '4px solid blue';
+								sbm = false;
 							}
 							// Push to array
 							tmp_sch.push(tmpobj);
@@ -5957,6 +5982,7 @@ function MT__RUN() {
 						if (!tmp_sch.length) {//...
 							d1b.style.border = '4px solid blue';
 							console.log('no sch.');
+							sbm = false;
 						} else {
 							// Try first "K"
 							//~ if (first_k) {
@@ -5974,12 +6000,15 @@ function MT__RUN() {
 							}
 							if (tmp_grd == -1) {
 								o.q[10].value = 'N/A'; //?
+								d1b.style.border = '4px solid blue';
+								o.q[10].style.border = '4px solid blue';
+								sbm = false;
 							} else {
 								o.q[10].value = tmp_grd;
 							}
 						}
 						
-						
+						check_submit(sbm);
 					}
 				});
 			}
@@ -6064,16 +6093,17 @@ function MT__RUN() {
 						console.log(t1)
 						console.log(t2)
 						console.log(make_addr_regex(t1))
-						if (make_addr_regex(t1).exec(t2) && t2.length > 6) { // && tmp_adr[0].length > 6
+						if (make_addr_regex(t1).exec(t2) && t2.length > 10) { // && tmp_adr[0].length > 6
 							//
 							d1.style.backgroundColor = 'LightGreen';
 						} else {
-							sbm = false;
 							// Diff
 							d1.innerHTML += MT___diffString(
 								o.addr  .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
 								tmp_addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
 							);
+							sbm = false;
+							d1.style.border = '4px solid blue';
 						}
 						
 						
