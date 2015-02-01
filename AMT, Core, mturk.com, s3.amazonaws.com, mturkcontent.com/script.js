@@ -5750,19 +5750,34 @@ function MT__RUN() {
 						}
 						
 						// json
+						//~ var reg = /<div id="initial-hdp-jsonp-\d+" class="template hide">&nbsp;<!-- \{((.|\s)*?(?=\}-->|$)|$)/.exec(rs);
+						//~ if (reg) {
+							//~ var x = reg[1].replace(/\\\\/g, '`').replace(/\\/g, '').replace(/`/g, '\\').replace(/\\\\-/g, '').replace(/\\-/g, '');
+							//~ var x = reg[1].replace(/\\/g, '`')	;
+							//~ console.log(x);
+							//~ reg = JSON.parse('{'+x+'}');
+							//~ reg = JSON.parse('{'+reg[1]+'}');
+							//~ console.log(reg);
+						//~ } else  {
+							//~ sbm = false;
+							//~ console.log('z no json');
+						//~ }
+						
+						//<h3 class=\\"\\">  <span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">4 beds<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">2 baths<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">1,794 sqft<\\/span>   <\\/h3>
+						
+						// ...
 						var reg = /<div id="initial-hdp-jsonp-\d+" class="template hide">&nbsp;<!-- \{((.|\s)*?(?=\}-->|$)|$)/.exec(rs);
 						if (reg) {
-							var x = reg[1].replace(/\\\\/g, '`').replace(/\\/g, '').replace(/`/g, '\\').replace(/\\\\-/g, '').replace(/\\-/g, '');
-							//~ var x = reg[1].replace(/\\/g, '`')	;
-							console.log(x);
-							reg = JSON.parse('{'+x+'}');
-							//~ reg = JSON.parse('{'+reg[1]+'}');
-							console.log(reg);
+							reg = reg[1];
+							var json = reg.replace(/\\/g, '');
 						} else  {
 							sbm = false;
 							console.log('z no json');
 						}
-						//<h3 class=\\"\\">  <span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">4 beds<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">2 baths<\\/span><span class=\\"middle\-dot\\" aria\-hidden=\\"true\\">&nbsp;<\\/span><span class=\\"addr_bbs\\">1,794 sqft<\\/span>   <\\/h3>
+						
+						// bed/bath/sqft
+						var reg = /<h3 class="">  <span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">4 beds<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">2 baths<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">1,794 sqft<\/span>   <\/h3>/.exec(json);
+						
 					}
 				});
 			}
