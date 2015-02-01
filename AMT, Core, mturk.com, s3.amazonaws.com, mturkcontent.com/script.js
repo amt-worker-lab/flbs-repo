@@ -5780,11 +5780,26 @@ function MT__RUN() {
 						var reg = /"zpid" : "\d+", "propertyType" : "[^"]+", "title" : "([^"]+)"/.exec(json);
 						if (reg) {
 							reg = __js_clean_html_str(reg[1]).trim();
-							// Diff
-							d1b.innerHTML += MT___diffString(
-								o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
-								reg   .replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
-							);
+							console.log(reg);
+							reg = reg.replace('is Off Market', '').replace('- Zillow', '').replace(/\s+/g, ' ');
+							var t1,t2;
+							t1 = o.addr.toLowerCase().replace(/[^\w\d]/g, '');
+							t2 = reg   .toLowerCase().replace(/[^\w\d]/g, '');
+							console.log(t1)
+							console.log(t2)
+							if  (
+								t1 != t2
+								)
+							{
+								// Diff
+								d1b.innerHTML += MT___diffString(
+									o.addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
+									reg   .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+								)
+								+'<br>';
+							} else {
+								//
+							}
 						} else {
 							d1b.innerText += 'NO ADDRESS\n';
 							d1b.style.border = '4px solid blue';
@@ -5878,7 +5893,8 @@ function MT__RUN() {
 								is_elementary: null
 							};
 							// Log
-							d1b.innerText += tmpobj.rtg + ' ' + tmpobj.grd +'\n';
+							d1b.appendChild(document.createTextNode(tmpobj.rtg + ' ' + tmpobj.grd +'\n'));
+							d1b.appendChild(document.createElement('br'));
 							// is Elem.
 							var is_elem = (tmpobj.grd.indexOf('K') != -1 || tmpobj.grd*1 <= 3) ? true : false;
 							tmpobj.is_elementary = is_elem;
@@ -6000,8 +6016,8 @@ function MT__RUN() {
 						
 						// Diff
 						d1.innerHTML += MT___diffString(
-							o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
-							tmp_addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+							o.addr  .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
+							tmp_addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
 						);
 						
 						//~ // Match
