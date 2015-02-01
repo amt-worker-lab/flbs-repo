@@ -5776,6 +5776,20 @@ function MT__RUN() {
 							d1b.style.border = '4px solid blue';
 						}
 						
+						// addr
+						var reg = /"zpid" : "\d+", "propertyType" : "[^"]+", "title" : "([^"]+)"/.exec(json);
+						if (reg) {
+							reg = __js_clean_html_str(reg[1]).trim();
+							// Diff
+							d1b.innerHTML += MT___diffString(
+								o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
+								reg   .replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+							);
+						} else {
+							d1b.innerText += 'NO ADDRESS\n';
+							d1b.style.border = '4px solid blue';
+						}
+						
 						// bed/bath/sqft
 						// 4
 						// 2
