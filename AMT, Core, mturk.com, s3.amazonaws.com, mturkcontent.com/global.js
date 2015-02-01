@@ -1393,7 +1393,7 @@ String.prototype.format_number_with_commas = function() {
  */
 String.prototype.string_to_mixed_case = function(options) {
 	var s = this.toString();
-	if (options.hasOwnProperty('REG_INCLUDE_DASHES')) // Same as normal but toUpperCase "Some-word" to "Some-Word"
+	if (options && options.hasOwnProperty('REG_INCLUDE_DASHES')) // Same as normal but toUpperCase "Some-word" to "Some-Word"
 	{
 		s = s.replace(
 			/(^|[ \-])([a-z])/g,

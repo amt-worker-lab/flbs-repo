@@ -5710,25 +5710,41 @@ function MT__RUN() {
 							return;
 						}
 						
+						var sbm = true;
+						var rs_lower = rs.toLowerCase();
+						
 						//~ var is_correct = ('<title>'+o.addr_clean_ws+' - Walk Score</title>').toLowerCase().replace(/[^\w\d]/g, '');
 						//~ if (rs.indexOf('<title>'+o.addr_clean_ws+' - Walk Score</title>') == -1) {
 							//~ d1b.style.border = '4px solid blue';
 							//~ d1b.innerText = 'No '+o.addr_clean_ws;
 							//~ return;
 						//~ }
-						if (rs.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '')+'</h1>') == -1) {
+						if (rs_lower.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '').toLowerCase()+'</h1>') == -1) {
 							d1.style.border = '4px solid blue';
+							console.log('Address is not exact on page.');
+							sbm = false;
 						}
+						
+						// Addr
+						// e.g. 2700 Hearst Avenue, Berkeley CA - Walk Score
+						var reg = /<title>([^<]+)<\/title>/.exec(rs);
+						var tmp_addr = '';
+						if (reg) {
+							tmp_addr = __js_clean_html_str(reg[1]).replace(' - Walk Score', '').trim();
+						} else {
+							d1.style.border = '4px solid blue';
+							console.log('No title.');
+							sbm = false;
+						}
+						console.log(tmp_addr);
 						
 						// Diff
 						d1.innerHTML += MT___diffString(
-							o.zillow_response_address.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
-							o.address.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+							o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
+							tmp_addr.replace(/,/g, '').toLowerCase().string_to_mixed_case() //.replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
 						);
 						
 						//~ d1b.style.backgroundColor = 'LightGreen';
-						
-						var sbm = true;
 						
 						// Walkscore
 						var reg = /<img src="\/\/pp\.walk\.sc\/badge\/walk\/score\/([\d]+)\.png"/.exec(rs);
