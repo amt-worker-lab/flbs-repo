@@ -5674,6 +5674,8 @@ function MT__RUN() {
 				zillow_url: null,
 				
 				num_completed: 0,
+				walkRan: false,
+				zillowRan: false,
 				submit: true,
 				
 				q: [
@@ -5716,6 +5718,8 @@ function MT__RUN() {
 			AMT___addUserDecision('William Riggs - not accepted', function() {
 									return o.addr
 								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+			
+			
 			
 			
 			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(function(isSpecial) {
@@ -5783,6 +5787,21 @@ function MT__RUN() {
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:66px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1b);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style', 'position:absolute;top:126px;left:0%;width:50%;height:20px;overflow:auto;');
+			document.body.appendChild(d2);
+			d2.value = o.addr_clean;
+			d2.value = o.addr;
+			d2.onblur = function() {
+				o.addr = this.value;
+				o.addr_ws = encodeURIComponent(o.addr.replace(/\s+/g, '-').replace(/[^\w\d]/g, '-')); // Replace non-digit, non-words
+				o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
+				o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
+				o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/[\s\/]+/g, '-'))+'_rb/';
+				
+				ws();
+				zw();
+			}
 			/*END ITEMS*/
 			
 			
@@ -5794,11 +5813,11 @@ function MT__RUN() {
 			 * 
 			 * @param sbm		Bool. Submit?
 			 */
-			function check_submit(sbm) {
+			function check_submit(sbm, runType) {
 				if (!sbm) {
 					o.submit = false;
 				}
-				if (o.num_completed >= 1) {
+				if (o.num_completed >= 1 && o.walkRan && o.zillowRan) {
 					console.log('submit:' + o.submit);
 					if (o.submit) {
 						document.body.style.backgroundColor = 'aqua';
