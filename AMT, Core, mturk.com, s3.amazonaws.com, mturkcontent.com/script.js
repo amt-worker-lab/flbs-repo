@@ -5642,6 +5642,55 @@ function MT__RUN() {
 		new run().f();
 	}
 	// 
+	// William Riggs
+	// Find and Input Address Information from Web
+	//
+	s = '	<li>From Walkscore (https://www.walkscore.com/):&nbsp;Walkscore Number &amp; Transit Score Number</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.run = function() {
+			
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			//~ GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;}');
+			//~ GM_addStyle('.panel-default {position:absolute;top:2000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('ins {color:blue;font-weight:bold;}');
+			//~ GM_addStyle('del {color:brown;}');
+			
+			var b = document.getElementsByTagName('b');
+			var o = {
+				addr: b[0].innerText.trim();
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// Walkscore
+			// https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
+			function ws() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'LightGreen';
+							return;
+						}
+						
+			}
+		}
+		new run().f();
+	}
+	// 
 	// Chris Milner
 	// Look up historical property values according to Zillow
 	// Uses rf.general_functions__numberFormat__numberWithCommas
