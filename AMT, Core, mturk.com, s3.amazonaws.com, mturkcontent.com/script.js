@@ -5696,6 +5696,21 @@ function MT__RUN() {
 			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
 			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/[\s\/]+/g, '-'))+'_rb/';
 			
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+			
 			AMT___addUserDecision('William Riggs - 1', function() {
 									return o.addr
 								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
@@ -5711,11 +5726,11 @@ function MT__RUN() {
 						}else {
 							var foundBad = false;
 							for(var i in o.q) {
-								if(o.q.value == 'N/A') {
+								if(o.q[i].value == 'N/A') {
 									continue
 								}
 								else {
-									if(o.q.value.match(/^[0-9\.]+$/ )) {
+									if(o.q[i].value.match(/^[0-9\.]+$/ )) {
 										continue
 									} else {
 										foundBad = true;
@@ -5762,18 +5777,7 @@ function MT__RUN() {
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
-			// ...
-			document.getElementById('submitButton').onclick = function() {
-				for (var i in o.q) {
-					o.q[i].value = o.q[i].value.trim();
-					if (o.q[i].value == '') {
-						return false;
-					}
-				}
-				new AMT___core_factory().nextTab();
-				doSubmit();
-				return false;
-			}
+			
 			
 			
 			
@@ -5937,6 +5941,7 @@ function MT__RUN() {
 						} else {
 							d1b.innerText += 'NO ADDRESS\n';
 							d1b.style.border = '4px solid blue';
+							check_submit(false);
 						}
 						
 						// bed/bath/sqft
