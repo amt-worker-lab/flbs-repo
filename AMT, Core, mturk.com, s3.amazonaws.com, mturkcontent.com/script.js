@@ -5669,12 +5669,31 @@ function MT__RUN() {
 				addr: b[0].innerText.trim(),
 				addr_ws: null,
 				addr_clean: null,
-				addr_clean_ws: null
+				addr_clean_ws: null,
+				
+				zillow_url: null,
+				
+				num_completed: 0,
+				
+				q: [
+					document.getElementsByName('walkscore')[0],
+					document.getElementsByName('transitscore')[0],
+					document.getElementsByName('beds')[0],
+					document.getElementsByName('baths')[0],
+					document.getElementsByName('SQFT')[0],
+					document.getElementsByName('LotSize')[0],
+					document.getElementsByName('price')[0],
+					document.getElementsByName('year')[0],
+					document.getElementsByName('zestimate')[0],
+					document.getElementsByName('yearbuilt')[0],
+					document.getElementsByName('school')[0]
+				]
 			}
-			o.addr_ws = o.addr.replace(/ /g, '-');
+			o.addr_ws = o.addr.replace(/\s+/g, '-');
 			o.addr_ws = encodeURIComponent(o.addr_ws);
 			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
 			o.addr_clean_ws = o.addr_clean.replace(/\d+$/, '');
+			o.zillow_url = 'http://www.zillow.com/homes/'+encodeURIComponent(o.addr.replace(/\s+/g, '-'))+'_rb/';
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -5687,6 +5706,7 @@ function MT__RUN() {
 			
 			// Init
 			ws();
+			zw();
 			
 			/**
 			 * function check_submit
@@ -5697,10 +5717,46 @@ function MT__RUN() {
 				console.log(sbm);
 			}
 			/**
-			 * function ws
+			 * function zw
+			 * Zillow
+			 * https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
 			 */
-			// Walkscore
-			// https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
+			function zw() {
+				// e.g. http://www.zillow.com/homes/3462-FLAIR-DRIVE-DALLAS-TX-75229_rb/
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'LightGreen';
+							return;
+						}
+						
+						// bad str
+						var badstr = [
+							'No matching homes found; showing homes in the region you searched. Add it to our database by',
+							'We could not find this area. Please check your spelling or enter a valid ZIP code.',
+							'<div><p><strong> Showing:<br\\/><\\/strong>' // "Were you looking for ...[?]"
+						];
+						for (var i in badstr) {
+							if (rs.indexOf(badstr[i]) != -1) {
+								d1b.innerText = badstr[i].replace(/<[^>]*>/g, '');
+								
+								return;
+							}
+						}
+						
+						
+					}
+				});
+			}
+			/**
+			 * function ws
+			 * Walkscore
+			 * https://www.walkscore.com/score/2700-hearst-ave-berkeley-ca-94720
+			 */
 			function ws() {
 				GM_xmlhttpRequest({
 					method: 'GET',
