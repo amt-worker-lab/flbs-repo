@@ -5690,6 +5690,7 @@ function MT__RUN() {
 					document.getElementsByName('school')[0]
 				]
 			}
+			o.addr = o.addr.replace(/(\d{5})(\d{4})$/, '$1'); // Start by changing 9 digit zip to 5 if necessary
 			o.addr_ws = o.addr.replace(/\s+/g, '-');
 			o.addr_ws = encodeURIComponent(o.addr_ws);
 			o.addr_clean = o.addr.replace(/[^\w\d]/g, '').toLowerCase();
@@ -5882,7 +5883,7 @@ function MT__RUN() {
 						if (reg) {
 							console.log(reg);
 							// -- is NA on zillow
-							for (var i = 1; i<=3; i++) {
+							for (var i = 2; i<=4; i++) {
 								if (reg[i] == '--') {
 									reg[i] = 'N/A';
 								}
@@ -5921,9 +5922,16 @@ function MT__RUN() {
 						}
 						// zestimate
 						// 1,234,567
-						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">\$([\d,]+)<span class="value-suffix"><\/span>/.exec(json);
+						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">(\$([\d,]+)|None)<span class="value-suffix"><\/span>/.exec(json);
 						if (reg) {
-							o.q[8].value = reg[1].replace(/,/g, '');
+							if (reg[1] == 'None') {
+								o.q[8].value = 'N/A';
+							} else {
+								o.q[8].value = reg[2].replace(/,/g, '');
+							}
+						} else {
+							o.q[8].style.border = '4px solid blue';
+							sbm = false;
 						}
 						// built in
 						// 2014
@@ -6033,7 +6041,7 @@ function MT__RUN() {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
-							d1b.style.backgroundColor = 'pink';
+							d1.style.backgroundColor = 'pink';
 							return;
 						}
 						
