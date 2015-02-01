@@ -5781,7 +5781,11 @@ function MT__RUN() {
 						if (reg) {
 							reg = __js_clean_html_str(reg[1]).trim();
 							console.log(reg);
-							reg = reg.replace('is Off Market', '').replace('- Zillow', '').replace(/\s+/g, ' ');
+							reg = reg
+								.replace('is Off Market', '')
+								.replace('is Recently Sold', '')
+								.replace('- Zillow', '')
+								.replace(/\s+/g, ' ');
 							var t1,t2;
 							t1 = o.addr.toLowerCase().replace(/[^\w\d]/g, '');
 							t2 = reg   .toLowerCase().replace(/[^\w\d]/g, '');
@@ -5793,8 +5797,8 @@ function MT__RUN() {
 							{
 								// Diff
 								d1b.innerHTML += MT___diffString(
-									o.addr.replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
-									reg   .replace(/,/g, '').string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+									o.addr.replace(/,/g, '').string_to_mixed_case().replace(/\d+$/, ''),  // REMOVE ZIP IF NOT IN
+									reg   .replace(/,/g, '').string_to_mixed_case().replace(/\d+$/, '') // REMOVE ZIP IF NOT IN 
 								)
 								+'<br>';
 							} else {
