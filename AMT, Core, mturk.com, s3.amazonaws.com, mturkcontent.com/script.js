@@ -5752,7 +5752,11 @@ function MT__RUN() {
 						// json
 						var reg = /<div id="initial-hdp-jsonp-\d+" class="template hide">&nbsp;<!-- \{((.|\s)*?(?=\}-->|$)|$)/.exec(rs);
 						if (reg) {
-							reg = JSON.parse(reg[1].replace(/\\\\/g, '`').replace(/\\/g, '').replace(/`/g, '\\'));
+							var x = reg[1].replace(/\\\\/g, '`').replace(/\\/g, '').replace(/`/g, '\\').replace(/\\\\-/g, '').replace(/\\-/g, '');
+							//~ var x = reg[1].replace(/\\/g, '`')	;
+							console.log(x);
+							reg = JSON.parse('{'+x+'}');
+							//~ reg = JSON.parse('{'+reg[1]+'}');
 							console.log(reg);
 						} else  {
 							sbm = false;
