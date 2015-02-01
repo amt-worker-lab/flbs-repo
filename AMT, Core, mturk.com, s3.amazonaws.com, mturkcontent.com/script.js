@@ -5657,9 +5657,12 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			//~ GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;}');
 			//~ GM_addStyle('.panel-default {position:absolute;top:2000px;}');
+			
+			GM_addStyle('ul {margin-top:100px;}');
+			
 			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			//~ GM_addStyle('ins {color:blue;font-weight:bold;}');
-			//~ GM_addStyle('del {color:brown;}');
+			GM_addStyle('ins {color:blue;font-weight:bold;zoom:1.2;}');
+			GM_addStyle('del {color:brown;zoom:1.2;}');
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
@@ -5678,7 +5681,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			d1b.setAttribute('style','position:absolute;top:60px;left:0%;width:59%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;cursor:pointer;');
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
@@ -5719,11 +5722,39 @@ function MT__RUN() {
 							//~ d1b.innerText = 'No '+o.addr_clean_ws;
 							//~ return;
 						//~ }
-						if (rs_lower.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '').toLowerCase()+'</h1>') == -1) {
+						
+						// Addr
+						// 2614 Benvenue Avenue
+						// Berkeley
+						// , California, 94704
+						var reg = /<h1 class="tight-bot pad-bot-sm">([^<]+)<\/h1> <p class="tight-top clear-smallphone dull-link unstyled"> <a href="[^"]*">([^<]+)<\/a>([^<]+)<\/p>/.exec(rs);
+						if (reg) {
+							var tmp_adr = [
+								__js_clean_html_str(reg[1]), //str
+								__js_clean_html_str(reg[2]), //city
+								__js_clean_html_str(reg[3])  //st/zip
+							];
+						} else {
+							sbm = false;
 							d1.style.border = '4px solid blue';
-							console.log('Address is not exact on page.');
+							console.log('No address reg.');
+						}
+						// Matching street address / city?
+						// And street/city length >= 6
+						var match_ws = tmp_adr[0].toLowerCase().replace(/[^\w\d]/g,'') + tmp_adr[1].toLowerCase().replace(/[^\w\d]/g,'');
+						if  (
+							o.addr_clean_ws.indexOf(match_ws) == -1 ||
+							match_ws.length < 6
+							)
+						{
 							sbm = false;
 						}
+						
+						//~ if (rs_lower.indexOf('<h1 class="tight-bot pad-bot-sm">'+o.addr.replace(/,[\d\D]*$/, '').toLowerCase()+'</h1>') == -1) {
+							//~ d1.style.border = '4px solid blue';
+							//~ console.log('Address is not exact on page.');
+							//~ sbm = false;
+						//~ }
 						
 						// Addr
 						// e.g. 2700 Hearst Avenue, Berkeley CA - Walk Score
@@ -5736,13 +5767,19 @@ function MT__RUN() {
 							console.log('No title.');
 							sbm = false;
 						}
-						console.log(tmp_addr);
+						console.log('Title:'+tmp_addr);
 						
 						// Diff
 						d1.innerHTML += MT___diffString(
-							o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case(),
-							tmp_addr.replace(/,/g, '').toLowerCase().string_to_mixed_case() //.replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
+							o.addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, ''),  // REMOVE ZIP IF NOT IN
+							tmp_addr.replace(/,/g, '').toLowerCase().string_to_mixed_case().replace(/[, ]*\d+$/, '') // REMOVE ZIP IF NOT IN 
 						);
+						
+						//~ // Match
+						//~ var match = 
+							//~ o.addr.replace(//g, '').toLowerCase().indexOf(
+								//~ 
+							//~ );
 						
 						//~ d1b.style.backgroundColor = 'LightGreen';
 						
