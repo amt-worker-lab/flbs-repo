@@ -5705,7 +5705,7 @@ function MT__RUN() {
 			
 			
 			if(!AMT__Global_Vars.isPreview) {
-				AMT___doPastBehavior('William Riggs - 1',1, null, function (rslt) {
+				AMT___doPastBehavior('William Riggs - 1',1, 'Do Not Submit', function (rslt) {
 						if(!rslt) {
 							
 						}else {

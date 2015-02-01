@@ -1064,7 +1064,10 @@ OutputPair.prototype.doRecording = function() {
 		} 
 		else
 		{
-			this.value = element.value;
+			if(!element.value)
+				this.value = '';
+			else
+				this.value = element.value;
 			//console.log(element);
 			//console.log("this.value: "+this.value);
 		}
@@ -1115,7 +1118,11 @@ OutputPair.prototype.doWriting = function() {
 		else
 		{
 			console.log(element.value);
-			element.value = this.value;
+			if(!this.value || this.value == '' {
+				element.value = '';
+			} else {
+				element.value = this.value;
+			}
 		}
 	}
 	catch(e)
