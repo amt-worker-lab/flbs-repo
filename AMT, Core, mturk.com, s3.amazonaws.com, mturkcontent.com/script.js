@@ -5773,11 +5773,64 @@ function MT__RUN() {
 						} else  {
 							sbm = false;
 							console.log('z no json');
+							d1b.style.border = '4px solid blue';
 						}
 						
 						// bed/bath/sqft
 						var reg = /<h3 class="">  <span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">4 beds<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">2 baths<\/span><span class="middle-dot" aria-hidden="true">&nbsp;<\/span><span class="addr_bbs">1,794 sqft<\/span>   <\/h3>/.exec(json);
-						
+						if (reg) {
+							
+						}
+						// lot size
+						var reg = /<li>Lot: 7,313 sqft<\/li>/.exec(json);
+						if (reg) {
+							
+						}
+						// zestimate
+						var reg = /Zestimate<sup>&reg;<\/sup>:<\/span>  <span class="">$1,084,723<span class="value-suffix"><\/span>/.exec(json);
+						if (reg) {
+							
+						}
+						// built in
+						var reg = /<li>Built in 2014<\/li>/.exec(json);
+						if (reg) {
+							
+						}
+						// Elementary rating
+						// Get all ratings, then check for only one elementary.
+						var reg = /<div class="nearby-schools-rating">((.|\s)*?(?=<li class="nearby-school assigned-school  clearfix|<div class="nearby-schools-rating">|$)|$)/g;
+						var m;
+						var tmp_sch = [];
+						while (m = reg.exec(json)) {
+							// e.g. 9
+							var reg2 = /<span class="gs-rating-number gs-rating-\d+">([\d]+)<\/span>/.exec(m[1]);
+							if (!reg2) {
+								sbm = false;
+								d1b.style.border = '4px solid blue';
+								console.log('no sch. rtg');
+							}
+							// e.g. K-5
+							var reg3 = /<div class="nearby-schools-grades">([^<]+)<\/div>/.exec(m[1]);
+							if (!reg3) {
+								sbm = false;
+								d1b.style.border = '4px solid blue';
+								console.log('no sch. grd');
+							}
+							// push
+							var tmpobj = {
+								rtg: reg2[1],
+								grd: __js_clean_html_str(reg3[1])
+							};
+							tmp_sch.push(tmpobj);
+							// Log
+							d1b.innerText += tmpobj.rtg + ' ' + tmpobj.grd +'\n';
+						}
+						if (!tmp_sch.length) {//...
+							d1b.style.border = '4px solid blue';
+							console.log('no sch.');
+						} else {
+							o.q[10].value = tmp_sch[0].rtg; // Set first
+						}
 					}
 				});
 			}
