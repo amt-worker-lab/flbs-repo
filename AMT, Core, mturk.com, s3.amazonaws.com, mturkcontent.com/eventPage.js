@@ -240,7 +240,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						localStorage[SPECIAL_WORKFLOW_WINDOW] = 'unset';
 					}
 				
-					sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
+					sendResponse({SPECIAL_WORKFLOW_WINDOW:localStorage['SPECIAL_WORKFLOW_WINDOW']});
 				});
 				console.log('returning true to keep connection alive');
 			} 

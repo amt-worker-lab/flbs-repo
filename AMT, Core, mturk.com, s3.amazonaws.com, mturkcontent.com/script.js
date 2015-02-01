@@ -5709,62 +5709,70 @@ function MT__RUN() {
 				doSubmit();
 				return false;
 			}
-			
-			
-			AMT___addUserDecision('William Riggs - 1', function() {
+			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(function(isSpecial) {
+				if(isSpecial) {
+					ws();
+					zw();
+				}
+				else {
+					AMT___addUserDecision('William Riggs - 1', function() {
 									return o.addr
 								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
-			AMT___addUserDecision('William Riggs - not accepted', function() {
-									return o.addr
-								}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
-			
-			
-			if(!AMT__Global_Vars.isPreview) {
-				AMT___doPastBehavior('William Riggs - 1',1, 'Do Not Submit', function (rslt) {
-						if(!rslt) {
-							
-						}else {
-							var foundBad = false;
-							for(var i in o.q) {
-								if(o.q[i].value == 'N/A') {
-									continue
-								}
-								else {
-									if(o.q[i].value.match(/^[0-9\.]+$/ )) {
-										continue
-									} else {
-										foundBad = true;
-										document.body.style.backgroundColor = 'red';
+					AMT___addUserDecision('William Riggs - not accepted', function() {
+											return o.addr
+										}, ['Name(walkscore)[0]','Name(transitscore)[0]','Name(beds)[0]','Name(baths)[0]','Name(SQFT)[0]','Name(LotSize)[0]','Name(price)[0]','Name(year)[0]','Name(zestimate)[0]','Name(yearbuilt)[0]','Name(school)[0]'])
+					
+					
+					if(!AMT__Global_Vars.isPreview) {
+						AMT___doPastBehavior('William Riggs - 1',1, 'Do Not Submit', function (rslt) {
+								if(!rslt) {
+									
+								}else {
+									var foundBad = false;
+									for(var i in o.q) {
+										if(o.q[i].value == 'N/A') {
+											continue
+										}
+										else {
+											if(o.q[i].value.match(/^[0-9\.]+$/ )) {
+												continue
+											} else {
+												foundBad = true;
+												document.body.style.backgroundColor = 'red';
+												return;
+											}
+										}
+									}
+									if(!foundBad) {
+										document.getElementById('submitButton').click();
+									
+										document.body.style.backgroundColor = 'aqua';
 										return;
 									}
+									return;
 								}
-							}
-							if(!foundBad) {
-								document.getElementById('submitButton').click();
-							
-								document.body.style.backgroundColor = 'aqua';
-								return;
-							}
-							return;
-						}
-					}, true)
-				return;
-			}
-			else {
-				AMT___doPastBehavior('William Riggs - not accepted',1, 'Do Not Submit', function (rslt) {
-						if(!rslt) {
-							// Init
-							ws();
-							zw();
-						}else {
-							document.body.style.backgroundColor = 'green';
-							AMT___Floater.skip();
-							return;
-						}
-					}, true)
-				
+							}, true)
+						return;
+					}
+					else {
+						AMT___doPastBehavior('William Riggs - not accepted',1, 'Do Not Submit', function (rslt) {
+								if(!rslt) {
+									// Init
+									ws();
+									zw();
+								}else {
+									document.body.style.backgroundColor = 'green';
+									AMT___Floater.skip();
+									return;
+								}
+							}, true)
+						
 
-			}
+					}
+				}
+			});
+			
+			
 			
 			
 			

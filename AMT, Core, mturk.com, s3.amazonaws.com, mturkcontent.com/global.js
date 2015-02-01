@@ -55,6 +55,7 @@ var AMT__Global_Vars = //function()
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	isQProduct: false,
+	isSpecialWorkflowWindow: false,
 	core: {
 		return_accept_run_nextTab: false,
 		// AMT__Global_Vars.core.captcha_string
@@ -164,6 +165,22 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 			}
 		}
 	);
+}
+
+AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
+	var callback = callback;
+	chrome.extension.sendRequest({getIsSpecialWorkflowWindow: true}, 
+			function(rs) 
+			{
+				if(rs.SPECIAL_WORKFLOW_WINDOW == 'unset' || !rs.SPECIAL_WORKFLOW_WINDOW) {
+					AMT__Global_Vars.isSpecialWorkflowWindow = false;
+					callback(false);
+				}
+				else {
+					AMT__Global_Vars.isSpecialWorkflowWindow = true;
+					callback(true);
+				}
+			});
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
