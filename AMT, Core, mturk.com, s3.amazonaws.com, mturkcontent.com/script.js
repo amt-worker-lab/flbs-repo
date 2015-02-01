@@ -5486,8 +5486,7 @@ function MT__RUN() {
 	}
 	// 
 	// Ward Loving
-	// Look up historical property values according to Zillow
-	// Uses rf.general_functions__numberFormat__numberWithCommas
+	//
 	//
 	s = '<fieldset><label>1. Are the subject\'s eyes closed? Select only ONE of the following:</label>';
 	if (
