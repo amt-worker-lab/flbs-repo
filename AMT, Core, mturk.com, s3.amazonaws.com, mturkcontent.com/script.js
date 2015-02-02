@@ -16825,14 +16825,14 @@ function MT__RUN() {
 					}
 					
 					// Set util
-					AMT__setUtilityTabs([{
-						url: uwurl,
-						options: {
-							//~ task: 'AMT__Kristin_Howe_agent_photos2__utility_window',
-							//~ agent_name: o.name,
-							//~ agent_name_clean: o.name_clean
-						}
-					}]);
+					//~ AMT__setUtilityTabs([{
+						//~ url: uwurl,
+						//~ options: {
+							task: 'AMT__Kristin_Howe_agent_photos2__utility_window',
+							agent_name: o.name,
+							agent_name_clean: o.name_clean
+						//~ }
+					//~ }]);
 					
 					// ...
 					console.log(o);
