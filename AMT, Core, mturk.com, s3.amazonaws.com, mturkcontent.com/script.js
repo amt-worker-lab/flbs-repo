@@ -6115,11 +6115,13 @@ function MT__RUN() {
 						var first_k;
 						while (m = reg.exec(json)) {
 							// e.g. 9
-							var reg2 = /<span class="gs-rating-number gs-rating-\d+">([\d]+)<\/span>/.exec(m[1]);
+							var reg2 = /<span class="gs-rating-number gs-rating-\d+">([\dNR]+)<\/span>/.exec(m[1]);
 							if (!reg2) {
 								sbm = false;
 								d1b.style.border = '4px solid blue';
 								console.log('no sch. rtg');
+							} else if (reg2[1] == 'NR') {
+								reg2[1] = 0; // Change this to 0!
 							}
 							// e.g. K-5
 							var reg3 = /<div class="nearby-schools-grades">([\dPK]+)-([\dPK]+)<\/div>/.exec(m[1]);
