@@ -5783,6 +5783,9 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 						var rs=response.responseText;
 						if (rs == '1') {
 							
+							// AFTER ABOUT 30 SECONDS
+							// THE PARENT WINDOW NEEDS TO RELOAD
+							// ON MTURKCONTENT.COM.
 							document.getElementById('ctl00_MainContent_MyCaptcha1_TxtCpatcha').onkeyup = function() {
 								//console.log(this.value);
 								if (this.value.length >= 5) {
@@ -5790,10 +5793,10 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 									//document.getElementsByName('ctl00$MainContent$GetCallReport')[0].focus();
 									
 									document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
-									setInterval(function() {
-										document.body.style.backgroundColor = 'blue';
-										document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
-									}, 2000);
+									//~ setInterval(function() {
+										//~ document.body.style.backgroundColor = 'blue';
+										//~ document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
+									//~ }, 2000);
 									
 									// Do this here.
 									this.blur();
