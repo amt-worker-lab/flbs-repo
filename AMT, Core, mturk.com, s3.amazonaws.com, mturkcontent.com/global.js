@@ -749,18 +749,18 @@ AMT___Floater.skip = function() {
 AMT___Floater.acceptOrSkip = function(e) {
 	if(e.data && e.data.acceptJob)
 	{
-		AMT___Floater.isAccepting = true;
 		if (GM_getValue('mt_captcha') == '0') { 
+			AMT___Floater.isAccepting = true;
 			document.getElementsByName('/accept')[0].click(); /* TODO: doSumbit (-2.2 seconds) would go here*/
 		}
 		else {
 			var interval = window.setInterval(function() {
 				if (GM_getValue('mt_captcha') == '0') {
+					AMT___Floater.isAccepting = true;
 					window.clearInterval(interval);
 					document.getElementsByName('/accept')[0].click(); /* TODO: doSumbit (-2.2 seconds) would go here*/				
 					
 				}
-				
 			}, 2000);
 		}
 	}
