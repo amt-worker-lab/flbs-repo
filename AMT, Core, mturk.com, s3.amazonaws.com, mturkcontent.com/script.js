@@ -91868,7 +91868,7 @@ qatar,80
 	
 	//
 	// KISI
-	// Find Website for these Companies
+	// Find Website  Address for Company Information
 	// 
 	var s = '<li>Find the <strong>official domain&nbsp;</strong>of the company.</li>';
 	if (ih.indexOf(s) != -1)
@@ -91902,6 +91902,7 @@ qatar,80
 			o.bold_array  = o.name.clean_string_to_array();
 			o.name_simple = o.name.replace(/\([^\)]*\)/g, '').trim();
 			o.name_short  = o.name_simple.split(' ').slice(0, 2).join(' ');
+			o.name_simple = o.name_simple.split(' ').slice(0, 4).join(' ');
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -91983,7 +91984,7 @@ qatar,80
 			// ...
 			d3.value  = o.name;
 			d3b.value = '"' + o.name_simple + '"';
-			d3c.value = '"' + o.name_short
+			d3c.value = '"' + o.name_short + '"';
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
