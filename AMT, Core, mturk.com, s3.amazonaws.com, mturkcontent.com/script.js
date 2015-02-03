@@ -92175,7 +92175,7 @@ qatar,80
 					txa.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
-						document.getElementById('web_url').value = this.value;
+						document.getElementById('web_url').value = this.value.replace(/^https?:\/\/(www\d?\.|)/i,'');
 						
 						// showNextTab OR nextTab
 						new AMT___core_factory().nextTab();
