@@ -91733,7 +91733,7 @@ qatar,80
 					full = MT__bold(full, o.bold_array);
 					
 					// classname is http://(www. = '')x.com (no www)
-					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
 					
 					// ...
 					var d = document.createElement('p');
