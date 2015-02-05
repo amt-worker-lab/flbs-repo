@@ -328,7 +328,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(!AMT__Global_Vars.isTopWindow)
+		if(AMT__Global_Vars.isTopWindow == requqest.isTopWindow)
 		{
 			//console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
@@ -565,7 +565,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 	//Tell eventPage to add this to the Q
 	console.log(AMT__Global_Vars);
 	chrome.extension.sendRequest({
-								  addToTabsQ: true
+								  addToTabsQ: true,
+								  isTopWindow: AMT__Global_Vars.isTopWindow
 							  }, function(response) {
 								qProductId = response.qProductId;
 							});
@@ -577,7 +578,7 @@ function showNextTab() {
 	console.log('Showing Next Tab');
 	chrome.extension.sendRequest({
 									  showNextTab: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow,
+									  isTopWindow: AMT__Global_Vars.isTopWindow
 								  }, function(response) {
 								});
 }

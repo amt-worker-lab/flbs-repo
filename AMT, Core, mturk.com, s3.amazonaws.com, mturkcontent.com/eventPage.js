@@ -368,7 +368,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		
-		getAllTabsInQ(function(allQTabs) {
+		getAllTabsInQ(function(allQTabs, isTopWindow) {
 			if(allQTabs.length > 0) {
 
 			}
@@ -390,7 +390,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var senderTabId = sender.tab.id;
 		var isTopWindow = request.isTopWindow;
 		function showNextTabAttempt(isTopWindow) {
-			getAllTabsInQ(function(allQTabs) {
+			getAllTabsInQ(function(allQTabs, request.isTopWindow) {
 				if(allQTabs.length > 0) {
 					//Find the tab with the lowest qProductId and go to that
 					var lowestQId;
@@ -1130,13 +1130,14 @@ function AMTUtilitiesObj(options){
 
 var nextTabQId = 1;
 
-function getAllTabsInQ(callback) {
+function getAllTabsInQ(callback, isTopWindow) {
+	var isTopWindow = isTopWindow;
 	var callback = callback;
 	chrome.tabs.query({}, function(allTabs) {
-		if(!allTabs.length) //Make sure it's an array
-		{
-			tabs = [allTabs];
-		}
+		//~ if(!allTabs.length) //Make sure it's an array
+		//~ {
+			//~ tabs = [allTabs];
+		//~ }
 
 		var allTabsRespondCount = 0;
 		var didntGetAllResponses = true;
@@ -1152,7 +1153,7 @@ function getAllTabsInQ(callback) {
 		
 		
 		for(var i = 0; i < allTabs.length; i++) {
-			chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true}, 
+			chrome.tabs.sendRequest(allTabs[i].id, {isQProduct: true, isTopWindow: isTopWindow}, 
 			function(rslt) {
 				allTabsRespondCount++;
 				if(allTabsRespondCount == allTabs.length)
