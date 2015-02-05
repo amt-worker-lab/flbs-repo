@@ -328,7 +328,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow == requqest.isTopWindow)
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
 		{
 			//console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
