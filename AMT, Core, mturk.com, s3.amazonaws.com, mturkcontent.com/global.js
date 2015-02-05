@@ -336,6 +336,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		else
 			return true;
 	}
+	else if(request.RemoveFromTabsQ) {
+		isQProduct = false;
+		qProductId = null;
+	}
 	else if(request.focus) {
 		//console.log('told to focus');
 		

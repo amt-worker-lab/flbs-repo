@@ -391,12 +391,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var senderTabId = sender.tab.id;
 		var isTopWindow = request.isTopWindow;
 		function showNextTabAttempt(isTopWindow) {
+			var isTopWindow = isTopWindow;
 			getAllTabsInQ(function(allQTabs) {
 				if(allQTabs.length > 0) {
 					//Find the tab with the lowest qProductId and go to that
 					var lowestQId;
 					var nextTabId;
 					var lowestTabIndex = 0;
+
+					
 					for(var i = 0; i < allQTabs.length; i++) {
 						if(!lowestQId || allQTabs[i].qProductId < lowestQId) {
 							lowestQId = allQTabs[i].qProductId;
@@ -410,8 +413,28 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
 						allQTabs.splice(lowestTabIndex,1);
-						showNextTabAttempt(isTopWindow);
-						sendResponse({RemoveFromTabsQ: true});
+						chrome.tabs.sendRequest(senderTabId, {RemoveFromTabsQ: true});
+												
+						//Find the tab with the lowest qProductId and go to that
+						var lowestQId;
+						var nextTabId;
+						var lowestTabIndex = 0;
+
+						
+						for(var i = 0; i < allQTabs.length; i++) {
+							if(!lowestQId || allQTabs[i].qProductId < lowestQId) {
+								lowestQId = allQTabs[i].qProductId;
+								nextTabId = allQTabs[i].tabId;
+								lowestTabIndex = i;
+							}
+						}
+						if(!nextTabId) {
+							//do nothing
+						}
+						else {
+							chrome.tabs.update(nextTabId, {active:true});
+							chrome.tabs.sendRequest(nextTabId, {isTopWindow: isTopWindow, focus: true});
+						}
 					}
 					else {
 						chrome.tabs.update(nextTabId, {active:true});
