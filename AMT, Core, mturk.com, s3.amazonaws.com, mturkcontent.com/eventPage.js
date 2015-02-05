@@ -413,11 +413,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
 						allQTabs.splice(lowestTabIndex,1);
-						chrome.tabs.sendRequest(senderTabId, {RemoveFromTabsQ: true});
+
 												
 						//Find the tab with the lowest qProductId and go to that
-						var lowestQId;
-						var nextTabId;
+						var lowestQId = null;
+						var nextTabId = null;
 						var lowestTabIndex = 0;
 
 						
@@ -429,12 +429,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 							}
 						}
 						if(!nextTabId) {
-							//do nothing
+							console.log('no next tab to jump to');
 						}
 						else {
 							chrome.tabs.update(nextTabId, {active:true});
 							chrome.tabs.sendRequest(nextTabId, {isTopWindow: isTopWindow, focus: true});
 						}
+						chrome.tabs.sendRequest(senderTabId, {RemoveFromTabsQ: true});
 					}
 					else {
 						chrome.tabs.update(nextTabId, {active:true});
