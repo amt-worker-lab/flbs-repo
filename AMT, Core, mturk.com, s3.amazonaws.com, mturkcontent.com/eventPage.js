@@ -367,13 +367,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var winId = sender.tab.windowId;
 		
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
-		
-		getAllTabsInQ(function(allQTabs, isTopWindow) {
+		console.log('isTopWindow: ' + request.isTopWindow);
+		getAllTabsInQ(function(allQTabs, request.isTopWindow) {
 			if(allQTabs.length > 0) {
 
 			}
 			else {
 				//We are the only tab in the Q, so simply jump us there
+				console.log('We are the only tab in the Q');
 				chrome.tabs.update(tabId, {active: true});
 			}
 			sendResponse({qProductId: nextTabQId});
@@ -390,7 +391,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var senderTabId = sender.tab.id;
 		var isTopWindow = request.isTopWindow;
 		function showNextTabAttempt(isTopWindow) {
-			getAllTabsInQ(function(allQTabs, request.isTopWindow) {
+			getAllTabsInQ(function(allQTabs, isTopWindow) {
 				if(allQTabs.length > 0) {
 					//Find the tab with the lowest qProductId and go to that
 					var lowestQId;
