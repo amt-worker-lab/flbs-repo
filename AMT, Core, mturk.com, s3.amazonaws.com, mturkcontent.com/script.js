@@ -91746,6 +91746,7 @@ qatar,80
 					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
+					console.log(cls);
 					
 					// ...
 					var d = document.createElement('p');
