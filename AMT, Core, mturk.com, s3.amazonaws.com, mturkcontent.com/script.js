@@ -142216,6 +142216,7 @@ function top_window(okay_to_run) {
 			// Add to skips? (increment)
 			// Is accepted?
 			if (o.skip_hard_tasks && !AMT__Global_Vars.isPreview) {
+				addToTabsQ();// Add to tabs queue!!!
 				var sk_ = GM_getValue('sk_'); // or undefined
 				if (!sk_) {
 					sk_ = 0;
@@ -142241,9 +142242,14 @@ function top_window(okay_to_run) {
 			}, false);
 			// If in preview && unchecked then do not skip
 			if (AMT__Global_Vars.isPreview && !o.skip_hard_tasks) {
+				d1 .parentNode.removeChild(d1); // remove d1,d1b,d1c
+				d1b.parentNode.removeChild(d1b);
+				d1c.parentNode.removeChild(d1c);
 				return;
 			}
 			
+			//...
+			//...
 			
 			//
 			var q = document.getElementById('Answer_1_FreeText');
@@ -142256,13 +142262,13 @@ function top_window(okay_to_run) {
 			if (o.num_panels == 4)
 				d3d. addEventListener('keydown', ef.keydown__blur_field, true);
 			
-			//
-			new AMT___core_factory().
-				iframe2parent__postMessage( // options  , XXXXX >callback_function
-					{
-						action: 'return_and_accept_button__nextTab'
-					}
-				);
+			//~ //
+			//~ new AMT___core_factory().
+				//~ iframe2parent__postMessage( // options  , XXXXX >callback_function
+					//~ {
+						//~ action: 'return_and_accept_button__nextTab'
+					//~ }
+				//~ );
 			
 			// innerHeight
 			var ih_els = [d1,d1b,d1c];
@@ -142292,11 +142298,6 @@ function top_window(okay_to_run) {
 				d3c.value = '' + o.comp + ' ' + o.industries_quoted;
 			else
 				d3c.value = '"' + o.comp_short + '"';
-			
-			//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
-			//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
-			//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
-			
 			if (o.num_panels == 4) {
 				d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
 			}
@@ -142645,7 +142646,7 @@ function top_window(okay_to_run) {
 					// Domains count
 					// Increment
 					var tmp_class_name = 'class_' + cls;
-					o.domain_counts[tmp_class_name] = (o.domain_counts.hasOwnProperty(tmp_class_name)) ? o.domain_counts[tmp_class_name] + 1 : 1;
+					o.domain_counts[ tmp_class_name ] = (o.domain_counts.hasOwnProperty(tmp_class_name)) ? o.domain_counts[tmp_class_name] + 1 : 1;
 					
 					// IS NOT SKIP?
 					var txa = document.createElement('textarea');
@@ -142692,9 +142693,16 @@ function top_window(okay_to_run) {
 							q.value = this.short_url;
 						}
 						
-						// showNextTab OR nextTab
+						// ...
 						if (q && q.value.trim().length > 4) {
-							new AMT___core_factory().nextTab();
+							
+							// showNextTab OR nextTab
+							if (o.skip_hard_tasks) {
+								showNextTab();
+							} else {
+								new AMT___core_factory().nextTab();
+							}
+							// Submit
 							doSubmit('hitForm');
 						}
 					}
