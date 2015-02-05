@@ -142066,7 +142066,7 @@ function top_window() {
 		//~ na.style.fontSize='10px';
 		//
 		var txt_top = document.createElement('textarea');
-		txt_top.setAttribute('style','position:absolute;top:0px;left:100px;width:44%;height:80px;');
+		txt_top.setAttribute('style','position:absolute;top:0px;left:100px;width:30%;height:80px;');
 		document.body.appendChild(txt_top);
 		//
 		var d1 = document.createElement('div');
