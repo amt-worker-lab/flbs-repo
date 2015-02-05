@@ -91608,7 +91608,7 @@ qatar,80
 			// ...
 			d3.value  = o.name + ' ' + o.city;
 			d3b.value = o.name + ' ' + o.street;
-			d3c.value = o.name + ' ' + o.street + ' ' + o.city_state;
+			d3c.value = o.name + ' ' + o.city_state;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
