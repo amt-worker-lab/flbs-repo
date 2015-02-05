@@ -91504,6 +91504,8 @@ qatar,80
 				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
 				street: td[3].innerText.replace(/\s+/g, ' ').trim(),
 				city: td[5].innerText.replace(/\s+/g, ' ').trim(),
+				state: td[7].innerText.replace(/\s+/g, ' ').trim(),
+				state_full: null,
 				city_state: null,
 				city_state_clean: null,
 				
@@ -91522,6 +91524,7 @@ qatar,80
 			}
 			o.city_state  = o.city + ' ' + td[7].innerText.replace(/\s+/g, ' ').trim()
 			o.bold_array  = o.name.clean_string_to_array().concat(o.street.clean_string_to_array()).concat(o.city_state.clean_string_to_array());
+			o.state_full  = o.state.stateAbbrToFull();
 			o.q[0].checked = true;
 			o.q[1].checked = false;
 			
@@ -91608,7 +91611,7 @@ qatar,80
 			// ...
 			d3.value  = o.name + ' ' + o.city;
 			d3b.value = o.name + ' ' + o.street;
-			d3c.value = o.name + ' ' + o.city_state;
+			d3c.value = o.name + ' ' + o.city + '("'+o.state+'" OR "'+o.state_full+'")';
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
