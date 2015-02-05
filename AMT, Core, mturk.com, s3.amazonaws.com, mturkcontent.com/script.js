@@ -142179,35 +142179,39 @@ function top_window(okay_to_run) {
 				//~ doSubmit();
 			}
 			
-			// CHECKBOX & ETC. FOR SKIPPING
+			/**
+			 * CHECKBOX & ETC. FOR SKIPPING
+			 * 
+			 * @params localStorage> sk=bool do skipping, sk_=int num skips total (increments), skn=int num skips before alarm sounded (default=7)
 			// ...
 			// ...
 			//
+			 */
 			// checkbox_top
 			checkbox_top.onclick = function() {
 				if (this.checked) {
 					GM_setValue('sk', 1);
 					o.skip_hard_tasks = true;
-					//~ this.style.zoom = '1.4';
 				} else {
 					GM_setValue('sk', 0);
 					o.skip_hard_tasks = false;
-					//~ this.style.zoom = '1.0';
 				}
 			}
 			// checkbox_top Default value
 			if (GM_getValue('sk') == 1) {
 				o.skip_hard_tasks = true;
 				checkbox_top.checked = true;
-				//~ checkbox_top.style.zoom = '1.4';
-			} else {
+			} else if (!GM_getValue('sk') || GM_getValue('sk') == 0) {
 				o.skip_hard_tasks = false;
-				//~ checkbox_top.style.zoom = '1.0';
+				GM_setValue('sk', 0); //Default
 			}
 			// Input num alert Default value (7)
+			// Set if in localStorage.
 			var skn = GM_getValue('skn');
 			if (!skn) {
 				GM_setValue('skn', 7);
+			} else {
+				inp_num_alert.value = skn;
 			}
 			// Add to skips? (increment)
 			// Is accepted?
@@ -142235,6 +142239,10 @@ function top_window(okay_to_run) {
 					inp_num_alert.style.border = '';
 				}, 300);
 			}, false);
+			// If in preview && unchecked then do not skip
+			if (AMT__Global_Vars.isPreview && !o.skip_hard_tasks) {
+				return;
+			}
 			
 			
 			//
