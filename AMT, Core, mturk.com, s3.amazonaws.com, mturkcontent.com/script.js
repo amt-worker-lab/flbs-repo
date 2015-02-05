@@ -141895,10 +141895,12 @@ qatar,80
  * 
  * 
  * 
+ * @param okay_to_run
  * 
+ * @returns ...
  */
  
-function top_window() {
+function top_window(okay_to_run) {
 	
 	/**
 	 * Check job is accepted;
@@ -141907,10 +141909,25 @@ function top_window() {
 	 */
 	if  (
 		GM_getValue('mt_captcha') != '0' ||
-		ih.indexOf('Want to work on this') != -1 ||
+		AMT__Global_Vars.isPreview ||
+		//~ ih.indexOf('Want to work on this') != -1 ||
 		ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') != -1
 		)
-		return;
+	{
+		if  (// Is not captcha, is preview, is signed in
+			GM_getValue('mt_captcha') != '1' &&
+			AMT__Global_Vars.isPreview &&
+			//~ ih.indexOf('Want to work on this') == -1 &&
+			ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') == -1 &&
+			okay_to_run
+			)
+		{
+			// continue
+		} else {
+			return;
+		}
+	}
+	
 	var s, s2, s3;
 	
 	
@@ -141974,589 +141991,767 @@ function top_window() {
 	//
 	// Crowd Task
 	// Top window find URL
-	// 
+	// (3NVVDJT9G6NCC7MWGLSHAEOQMY0PX3)
 	var s = 'Find this company\'s website and enter the URL below. Country and industry are for reference and do not need to match exactly with what\'s shown on the website.';
 	if (ih.indexOf(s) != -1)
-	{		
-		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
-		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
-		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
-		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-		
-		// ...
-		GM_addStyle('#Answer_1_FreeText,#Answer_2_FreeText {width:60%;}');
-		
-		//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
-		//~ GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
-		//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
-		
-		GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-		GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
-		
-		var li = document.getElementsByClassName('-list-item');
-		
-		var o = {
-			comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
-			industry: li[1].innerText.	replace(/^Industry: */g, '').trim(),
-			country: li[2].innerText.	replace(/^Country: */g, '').trim(),
-			country_full: null,
-			bold_array: [],
-			bold_array_etc: [],
-			industry_short: null,
-			industries_quoted: null,
-			yelp_country: 'com',
-			comp_quoted: null,
-			comp_short: null,
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
 			
-			num_panels: 3, // THIS IS 3 FOR ONLY WEBSITE. FOR YELP INCLUDE 4TH PANEL.
-			pw: 33, // "panel_width". THIS=100% / NUMBER OF PANELS.
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+			GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			
-			// panel loading and panel domain counts
-			panels_loaded: 0,
-			domain_counts: {}, // OBJECT
+			// ...
+			GM_addStyle('#Answer_1_FreeText,#Answer_2_FreeText {width:60%;}');
 			
-			bad_industries: {
-				'and':true,
-				'or':true,
-				'':true
+			//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			//~ GM_addStyle('.container {position:absolute;top:900px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+			//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+			
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+			
+			var li = document.getElementsByClassName('-list-item');
+			
+			var o = {
+				comp: li[0].innerText.		replace(/^Company Name: /g, '').trim(),
+				industry: li[1].innerText.	replace(/^Industry: */g, '').trim(),
+				country: li[2].innerText.	replace(/^Country: */g, '').trim(),
+				country_full: null,
+				bold_array: [],
+				bold_array_etc: [],
+				industry_short: null,
+				industries_quoted: null,
+				yelp_country: 'com',
+				comp_quoted: null,
+				comp_short: null,
+				
+				num_panels: 3, // THIS IS 3 FOR ONLY WEBSITE. FOR YELP INCLUDE 4TH PANEL.
+				pw: 33, // "panel_width". THIS=100% / NUMBER OF PANELS.
+				
+				// panel loading and panel domain counts
+				panels_loaded: 0,
+				domain_counts: {}, // OBJECT
+				
+				bad_industries: {
+					'and':true,
+					'or':true,
+					'':true
+				},
+				
+				// SKIPS
+				skip_hard_tasks: false,
+				first_domains: {} // There are three elements for three panels inside this object
 			}
-		}
-		o.country_full		= o.country.country_code_to_country_name();
-		
-		o.bold_array		= o.comp.clean_string_to_array();
-		o.bold_array		= o.bold_array.concat(o.country.clean_string_to_array());
-		o.bold_array		= o.bold_array.concat(o.country_full.clean_string_to_array());
-		
-		o.bold_array_etc	= o.country.clean_string_to_array();
-		o.bold_array_etc	= o.bold_array_etc.concat(o.industry.clean_string_to_array());
-		o.bold_array_etc	= o.bold_array_etc.concat(o.country_full.clean_string_to_array());
-		
-		o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
-		o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
-		//~ o.industries_quoted	= '("' + o.industry.clean_string_to_array().join('" OR "') + '")';
-		switch(o.country) {
-			case 'United Kingdom':
-				o.yelp_country = 'co.uk';
-				break;
-		}
-		o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
-		
-		var x = o.industry.split(' ');
-		var x_tmp = [];
-		for (var i in x) {
-			x[i] = x[i].trim().toLowerCase();;
-			//~ console.log(x[i]);
-			if (!o.bad_industries.hasOwnProperty(x[i])) {
-				x_tmp.push(x[i]);
+			o.country_full		= o.country.country_code_to_country_name();
+			
+			o.bold_array		= o.comp.clean_string_to_array();
+			o.bold_array		= o.bold_array.concat(o.country.clean_string_to_array());
+			o.bold_array		= o.bold_array.concat(o.country_full.clean_string_to_array());
+			
+			o.bold_array_etc	= o.country.clean_string_to_array();
+			o.bold_array_etc	= o.bold_array_etc.concat(o.industry.clean_string_to_array());
+			o.bold_array_etc	= o.bold_array_etc.concat(o.country_full.clean_string_to_array());
+			
+			o.comp_short		= o.comp.split(' ').slice(0, 2).join(' ');
+			o.industry_short	= o.industry.split(' ').slice(0, 4).join(' ');
+			//~ o.industries_quoted	= '("' + o.industry.clean_string_to_array().join('" OR "') + '")';
+			switch(o.country) {
+				case 'United Kingdom':
+					o.yelp_country = 'co.uk';
+					break;
 			}
-		}
-		o.industries_quoted	= '("' + x_tmp.join('" OR "') + '")';
-		
-		console.log(o);
-		
-		/* BEGINS ITEMS */
-		//
-		var na = document.createElement('input');
-		na.setAttribute('type','button');
-		na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:30px;border:1px solid;cursor:pointer;');
-		document.body.appendChild(na);
-		na.value = "N/A";
-		//~ na.style.fontSize='10px';
-		//
-		var txt_top = document.createElement('textarea');
-		txt_top.setAttribute('style','position:absolute;top:0px;left:100px;width:30%;height:80px;');
-		document.body.appendChild(txt_top);
-		//
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
-		document.body.appendChild(d1);
-		//
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:80px;left:'+o.pw+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
-		document.body.appendChild(d1b);
-		//
-		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*2)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
-		document.body.appendChild(d1c);
-		//
-		if (o.num_panels == 4) {
-			var d1d = document.createElement('div');
-			d1d.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*3)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
-			document.body.appendChild(d1d);
-		}
-		//
-		var d3 = document.createElement('textarea');
-		d3.setAttribute('style','position:absolute;top:30px;left:0%;width:'+o.pw+'%;height:50px;');
-		document.body.appendChild(d3);
-		d1.txa = d3;
-		//
-		var d3b = document.createElement('textarea');
-		d3b.setAttribute('style','position:absolute;top:30px;left:'+o.pw+'%;width:'+o.pw+'%;height:50px;');
-		document.body.appendChild(d3b);
-		d1b.txa = d3b;
-		//
-		var d3c = document.createElement('textarea');
-		d3c.setAttribute('style','position:absolute;top:30px;left:'+o.pw*2+'%;width:'+o.pw+'%;height:50px;');
-		document.body.appendChild(d3c);
-		d1c.txa = d3c;
-		//
-		if (o.num_panels == 4) {
-			var d3d = document.createElement('textarea');
-			d3d.setAttribute('style','position:absolute;top:30px;left:'+o.pw*3+'%;width:'+o.pw+'%;height:50px;');
-			document.body.appendChild(d3d);
-			d1d.txa = d3d;
-		}
-		/*END ITEMS*/
-		//
-		d3.onblur = function() {
-			Crowd_Task_company_URL__SP_init(d1,  this);
-		}
-		d3b.onblur = function() {
-			Crowd_Task_company_URL__SP_init(d1b, this);
-		}
-		d3c.onblur = function() {
-			Crowd_Task_company_URL__SP_init(d1c, this);
-		}
-		//
-		if (o.num_panels == 4) {
-			d3d.onblur = function() {
-				Crowd_Task_company_URL__SP_init(d1d, this);
-			}
-		}
-		//
-		na.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			q.value = 'NA';
-			new AMT___core_factory().nextTab();
-			doSubmit('hitForm');
-			//~ document.getElementById("place_website").value = "NONE";
-			// nextTab
-			//~ new AMT___core_factory().nextTab();
-			//~ doSubmit();
-		}
-		
-		//
-		var q = document.getElementById('Answer_1_FreeText');
-		
-		// ...
-		var ef = new AMT___events_factory();
-		d3.  addEventListener('keydown', ef.keydown__blur_field, true);
-		d3b. addEventListener('keydown', ef.keydown__blur_field, true);
-		d3c. addEventListener('keydown', ef.keydown__blur_field, true);
-		if (o.num_panels == 4)
-			d3d. addEventListener('keydown', ef.keydown__blur_field, true);
-		
-		//
-		new AMT___core_factory().
-			iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_and_accept_button__nextTab'
+			o.comp_quoted = '"' + o.comp.split(' ').join('" "') + '"';
+			
+			var x = o.industry.split(' ');
+			var x_tmp = [];
+			for (var i in x) {
+				x[i] = x[i].trim().toLowerCase();;
+				//~ console.log(x[i]);
+				if (!o.bad_industries.hasOwnProperty(x[i])) {
+					x_tmp.push(x[i]);
 				}
-			);
-		
-		// innerHeight
-		var ih_els = [d1,d1b,d1c];
-		//
-		if (o.num_panels == 4) {
-			ih_els.push(d1d);
-		}
-		//
-		new AMT___core_factory().el_innerHeight({
-			// This set the elements d1,d1b, and d1c
-			// to fill up the whole window, minus their
-			// distance from page top (top:XX pixels;).
-			elements: ih_els,
-			offset: 80 // offset top
-		});
-		new AMT___core_factory().el_innerHeight({
-			// Returns innerHeight in pixels
-			callback_function: function(innerHeight) {
-				document.getElementById('hit-wrapper').style.top = innerHeight + 'px';
 			}
-		});
-		
-		// ...
-		d3.value  = o.comp;
-		d3b.value = '"' + o.comp + '"';
-		if (o.industry != '')
-			d3c.value = '' + o.comp + ' ' + o.industries_quoted;
-		else
-			d3c.value = '"' + o.comp_short + '"';
-		
-		//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
-		//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
-		//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
-		
-		if (o.num_panels == 4) {
-			d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
-		}
-		
-		// Not US?
-		if (o.country != 'United States' && o.country != 'US' && o.country != '') {
-			d3b.style.border = '4px solid blue';
-			d3c.style.border = '4px solid blue';
+			o.industries_quoted	= '("' + x_tmp.join('" OR "') + '")';
 			
-			var country_str = ' ("' + o.country + '" OR "' + o.country_full + '")';
+			console.log(o);
 			
-			d3b.value += country_str;
-			
-			// Country code to country name
-			if (o.country != o.country_full) {
-				d3c.value += country_str;
-				//~ d3c.value += ' ' + o.country_full;
-			} else {
-				//
-			}
-		}
-			
-		var load_first = true;
-		var FOUND_ONE_NONSKIP = false;
-		var TOTAL_CALLS = 0;
-		var ARRAY_FIRST_FINDS = [];
-		var NUM_FOUND_SEARCH = 0;
-		
-		var SKIP_SITES;
-		function Crowd_Task_company_URL__load_skips() {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: MT___host+'/mturk/util.php?austin_load_skips=',
-				onload: function (response) {
-					var rs=response.responseText;
-					
-					//~ SKIP_SITES = rs.split("\n");
-					
-					var x = rs.split("\n");
-					
-					SKIP_SITES = {}; // ASSOC.
-					
-					// FULL
-					for (var i in x) {
-						SKIP_SITES[x[i]] = true;
-						//~ // Skips Yelp!
-						//~ if (x[i].indexOf('yelp') == -1)
-							//~ SKIP_SITES[x[i]] = true;
-					}
-					Crowd_Task_company_URL__SP_init();
-			
-				}
-			});
-		}
-		Crowd_Task_company_URL__load_skips();
-		
-		function Crowd_Task_company_URL__SP_init(el_div, el_inp) {
-			var req_proxy;
+			/* BEGINS ITEMS */
 			//
-			if (el_inp && el_div) { // single! (+dynamic!)
-				el_div.innerHTML = '';
-				req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					seed_arg1: el_div,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + ' -"Is This Your Business" -"Claim this business"')
-				});
-				req_proxy.proxy_init();
-				req_proxy.proxy_waitComplete(
-					Crowd_Task_company_URL__processProxyResponse
-				);
-				return;
-			}
-			
-			d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
-			if (o.num_panels == 4)
-				d1d.innerHTML ='';
-			
-			//1
-			req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				startPage: true,
-				seed_arg1: d1,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + ' -"Is This Your Business" -"Claim this business"')
-			});
-			req_proxy.proxy_init();
-			req_proxy.proxy_waitComplete(
-				Crowd_Task_company_URL__processProxyResponse
-			);
-			//2
-			req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				startPage: true,
-				seed_arg1: d1b,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + ' -"Is This Your Business" -"Claim this business"')
-			});
-			req_proxy.proxy_init();
-			req_proxy.proxy_waitComplete(
-				Crowd_Task_company_URL__processProxyResponse
-			);
-			//3
-			if (d3c.value != '') {
-				req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					seed_arg1: d1c,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + ' -"Is This Your Business" -"Claim this business"')
-				});
-				req_proxy.proxy_init();
-				req_proxy.proxy_waitComplete(
-					Crowd_Task_company_URL__processProxyResponse
-				);
-			}
-			//3
+			var na = document.createElement('input');
+			na.setAttribute('type','button');
+			na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:30px;border:1px solid;cursor:pointer;');
+			document.body.appendChild(na);
+			na.value = "N/A";
+			//~ na.style.fontSize='10px';
+			//
+			var txt_top = document.createElement('textarea');
+			txt_top.setAttribute('style','position:absolute;top:0px;left:120px;width:26%;height:80px;');
+			document.body.appendChild(txt_top);
+			// ALERT ... Container for checkbox, alert
+			var d_skip = document.createElement('div');
+			d_skip.setAttribute('style','position:absolute;top:0px;left:100px;width:20px;height:80px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d_skip);
+			// ALERT ... CHECKBOX
+			var checkbox_top = document.createElement('input');
+			checkbox_top.type = 'checkbox';
+			checkbox_top.setAttribute('style','zoom:1.0;');
+			d_skip.appendChild(checkbox_top);
+			// ALERT ... Num before alert
+			var inp_num_alert = document.createElement('input');
+			inp_num_alert.type = 'text';
+			inp_num_alert.setAttribute('style','width:100%;');
+			inp_num_alert.value = 7; //Default
+			d_skip.appendChild(inp_num_alert);
+			//
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:80px;left:0%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1);
+			d1.id = 'd1';
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:80px;left:'+o.pw+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1b);
+			d1b.id = 'd1b';
+			//
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*2)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+			document.body.appendChild(d1c);
+			d1c.id = 'd1c';
+			//
 			if (o.num_panels == 4) {
-				if (d3d.value != '') {
+				var d1d = document.createElement('div');
+				d1d.setAttribute('style','position:absolute;top:80px;left:'+(o.pw*3)+'%;width:'+o.pw+'%;height:400px;overflow:auto;border:1px solid blue;background-color:#eee;');
+				document.body.appendChild(d1d);
+			}
+			//
+			var d3 = document.createElement('textarea');
+			d3.setAttribute('style','position:absolute;top:30px;left:0%;width:'+o.pw+'%;height:50px;');
+			document.body.appendChild(d3);
+			d1.txa = d3;
+			//
+			var d3b = document.createElement('textarea');
+			d3b.setAttribute('style','position:absolute;top:30px;left:'+o.pw+'%;width:'+o.pw+'%;height:50px;');
+			document.body.appendChild(d3b);
+			d1b.txa = d3b;
+			//
+			var d3c = document.createElement('textarea');
+			d3c.setAttribute('style','position:absolute;top:30px;left:'+o.pw*2+'%;width:'+o.pw+'%;height:50px;');
+			document.body.appendChild(d3c);
+			d1c.txa = d3c;
+			//
+			if (o.num_panels == 4) {
+				var d3d = document.createElement('textarea');
+				d3d.setAttribute('style','position:absolute;top:30px;left:'+o.pw*3+'%;width:'+o.pw+'%;height:50px;');
+				document.body.appendChild(d3d);
+				d1d.txa = d3d;
+			}
+			/*END ITEMS*/
+			//
+			d3.onblur = function() {
+				SP_init(d1,  this);
+			}
+			d3b.onblur = function() {
+				SP_init(d1b, this);
+			}
+			d3c.onblur = function() {
+				SP_init(d1c, this);
+			}
+			//
+			if (o.num_panels == 4) {
+				d3d.onblur = function() {
+					SP_init(d1d, this);
+				}
+			}
+			//
+			na.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				q.value = 'NA';
+				new AMT___core_factory().nextTab();
+				doSubmit('hitForm');
+				//~ document.getElementById("place_website").value = "NONE";
+				// nextTab
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+			
+			// CHECKBOX & ETC. FOR SKIPPING
+			// ...
+			// ...
+			//
+			// checkbox_top
+			checkbox_top.onclick = function() {
+				if (this.checked) {
+					GM_setValue('sk', 1);
+					o.skip_hard_tasks = true;
+					//~ this.style.zoom = '1.4';
+				} else {
+					GM_setValue('sk', 0);
+					o.skip_hard_tasks = false;
+					//~ this.style.zoom = '1.0';
+				}
+			}
+			// checkbox_top Default value
+			if (GM_getValue('sk') == 1) {
+				o.skip_hard_tasks = true;
+				checkbox_top.checked = true;
+				//~ checkbox_top.style.zoom = '1.4';
+			} else {
+				o.skip_hard_tasks = false;
+				//~ checkbox_top.style.zoom = '1.0';
+			}
+			// Input num alert Default value (7)
+			var skn = GM_getValue('skn');
+			if (!skn) {
+				GM_setValue('skn', 7);
+			}
+			// Add to skips? (increment)
+			// Is accepted?
+			if (o.skip_hard_tasks && !AMT__Global_Vars.isPreview) {
+				var sk_ = GM_getValue('sk_'); // or undefined
+				if (!sk_) {
+					sk_ = 0;
+				} else {
+					sk_++;
+				}
+				GM_setValue('sk_', sk_);
+				// Is divisible by NUM?
+				// If so then play an alert!
+				if (sk_ % GM_getValue('skn') == 0) {
+					chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+				}
+			}
+			// INPUT num alert
+			inp_num_alert.addEventListener('keyup', function() {
+				this.style.border = '2px solid blue';
+				this.value = this.value.replace(/[^\d]/g, '');
+				this.value = (this.value == '') ? 7 : this.value;
+				GM_setValue('skn', this.value);
+				setTimeout(function() { // Reset border
+					inp_num_alert.style.border = '';
+				}, 300);
+			}, false);
+			
+			
+			//
+			var q = document.getElementById('Answer_1_FreeText');
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+			d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+			d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+			if (o.num_panels == 4)
+				d3d. addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			//
+			new AMT___core_factory().
+				iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+			
+			// innerHeight
+			var ih_els = [d1,d1b,d1c];
+			//
+			if (o.num_panels == 4) {
+				ih_els.push(d1d);
+			}
+			//
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: ih_els,
+				offset: 80 // offset top
+			});
+			new AMT___core_factory().el_innerHeight({
+				// Returns innerHeight in pixels
+				callback_function: function(innerHeight) {
+					document.getElementById('hit-wrapper').style.top = innerHeight + 'px';
+				}
+			});
+			
+			// ...
+			d3.value  = o.comp;
+			d3b.value = '"' + o.comp + '"';
+			if (o.industry != '')
+				d3c.value = '' + o.comp + ' ' + o.industries_quoted;
+			else
+				d3c.value = '"' + o.comp_short + '"';
+			
+			//~ d3b.value = '"' + o.comp + '" ' + o.industries_quoted;
+			//~ d3b.value = o.comp_quoted + ' ' + o.industry_short;
+			//~ d3b.value = '"' + o.comp + '" ' + o.industry_short;
+			
+			if (o.num_panels == 4) {
+				d3d.value = o.comp_quoted + ' ' + o.industry_short + ' site:yelp.'+o.yelp_country+'/biz/';
+			}
+			
+			// Not US?
+			if (o.country != 'United States' && o.country != 'US' && o.country != '') {
+				d3b.style.border = '4px solid blue';
+				d3c.style.border = '4px solid blue';
+				
+				var country_str = ' ("' + o.country + '" OR "' + o.country_full + '")';
+				
+				d3b.value += country_str;
+				
+				// Country code to country name
+				if (o.country != o.country_full) {
+					d3c.value += country_str;
+					//~ d3c.value += ' ' + o.country_full;
+				} else {
+					//
+				}
+			}
+				
+			var load_first = true;
+			var FOUND_ONE_NONSKIP = false;
+			var TOTAL_CALLS = 0;
+			var ARRAY_FIRST_FINDS = [];
+			var NUM_FOUND_SEARCH = 0;
+			
+			var SKIP_SITES;
+			function load_skips() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host+'/mturk/util.php?austin_load_skips=',
+					onload: function (response) {
+						var rs=response.responseText;
+						
+						//~ SKIP_SITES = rs.split("\n");
+						
+						var x = rs.split("\n");
+						
+						SKIP_SITES = {}; // ASSOC.
+						
+						// FULL
+						for (var i in x) {
+							SKIP_SITES[x[i]] = true;
+							//~ // Skips Yelp!
+							//~ if (x[i].indexOf('yelp') == -1)
+								//~ SKIP_SITES[x[i]] = true;
+						}
+						SP_init();
+				
+					}
+				});
+			}
+			load_skips();
+			
+			function SP_init(el_div, el_inp) {
+				var req_proxy;
+				//
+				if (el_inp && el_div) { // single! (+dynamic!)
+					el_div.innerHTML = '';
 					req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						seed_arg1: d1d,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3d.value)
+						seed_arg1: el_div,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + ' -"Is This Your Business" -"Claim this business"')
 					});
 					req_proxy.proxy_init();
 					req_proxy.proxy_waitComplete(
-						Crowd_Task_company_URL__processProxyResponse
+						processProxyResponse
+					);
+					return;
+				}
+				
+				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+				if (o.num_panels == 4)
+					d1d.innerHTML ='';
+				
+				//1
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + ' -"Is This Your Business" -"Claim this business"')
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					processProxyResponse
+				);
+				//2
+				req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					seed_arg1: d1b,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + ' -"Is This Your Business" -"Claim this business"')
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					processProxyResponse
+				);
+				//3
+				if (d3c.value != '') {
+					req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						seed_arg1: d1c,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + ' -"Is This Your Business" -"Claim this business"')
+					});
+					req_proxy.proxy_init();
+					req_proxy.proxy_waitComplete(
+						processProxyResponse
 					);
 				}
-			}
-		}
-		
-		/**
-		 * Crowd_Task_company_URL__count_domains
-		 * 
-		 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
-		 * 		seem to rack up the #s!
-		 */
-		function Crowd_Task_company_URL__count_domains() {
-			
-			// Is a tie?
-			var count_domains_is_a_tie = false;
-			// increment
-			o.panels_loaded++;
-			// check complete
-			var tmp_cls = false;
-			if (o.panels_loaded == o.num_panels) {
-				var max = 0;
-				for (var i in o.domain_counts) {
-					if (o.domain_counts[i] > max) {
-						max = o.domain_counts[i];
-						tmp_cls = i; // key
-					}
-				}
-				if (tmp_cls) { // This is an html className
-					var n = document.getElementsByClassName(tmp_cls);
-					for (var i in n) {
-						if (i == 'length') break;
-						n[i].style.backgroundColor = 'beige';
-						n[i].style.border = '3px solid brown';
-						n[i].original_bg_color = 'beige';
+				//3
+				if (o.num_panels == 4) {
+					if (d3d.value != '') {
+						req_proxy = new AMT___xhr_PROXY_REDACTED_({
+							startPage: true,
+							seed_arg1: d1d,
+							url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3d.value)
+						});
+						req_proxy.proxy_init();
+						req_proxy.proxy_waitComplete(
+							processProxyResponse
+						);
 					}
 				}
 			}
 			
-			console.log(o);
-			console.log(tmp_cls);
-		}
-		
-		function Crowd_Task_company_URL__processProxyResponse(rs, seed_arg) {
-			
-			// rs
-			// 0=url
-			// 1=full
-			
-			// seed_arg
-			var out_div = seed_arg;
-			//~ console.log(seed_arg);
-			
-			if (!rs.length) {
-				out_div.innerHTML = '0';
+			/**
+			 * count_domains
+			 * 
+			 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
+			 * 		seem to rack up the #s!
+			 */
+			function count_domains() {
 				
-				Crowd_Task_company_URL__count_domains();
-				
-				return;
-			}
-			
-			var count = 0;
-			for (var i in rs) {
-				
-				var x = rs[i][0];
-				var link = rs[i][0];
-				var full = rs[i][1];
-				var isYelpURL = /^https?:\/\/(\w+\.|)yelp\./.exec(link);
-				
-				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
-				
-				// trailing
-				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-				
-				// YELP
-				//~ // trailing
-				//~ if (!isYelpURL)
-					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-				//~ else
-					//~ x = link;
-				
-				//~ if (out_div != d1c && out_div != d1d)
-					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-				
-				// beginning
-				// http
-				//~ x = x.replace(/^https?:\/\//, '');
-				
-				// SKIP BUTTON CREATE
-				// returns obj.el_button, obj.isSkip
-				var el_inp_skip2__obj = new AMT___items_factory().
-					create__input_skip_button2(
-						{
-							domain: x,
-							load_file: 'austin_load_skips', 
-							var_skip_sites: SKIP_SITES, 
-							callback_function: false
+				// Is a tie?
+				var count_domains_is_a_tie = false;
+				// increment
+				o.panels_loaded++;
+				// check complete
+				var tmp_cls = false;
+				if (o.panels_loaded == o.num_panels) {
+					var max = 0;
+					for (var i in o.domain_counts) {
+						if (o.domain_counts[i] > max) {
+							max = o.domain_counts[i];
+							tmp_cls = i; // key
 						}
-					);
+					}
+					if (tmp_cls) { // This is an html className
+						var n = document.getElementsByClassName(tmp_cls);
+						for (var i in n) {
+							if (i == 'length') break;
+							n[i].style.backgroundColor = 'beige';
+							n[i].style.border = '3px solid brown';
+							n[i].original_bg_color = 'beige';
+						}
+					}
+				}
 				
-				// add bold (bold_array)
-				full = MT__bold(full, o.bold_array);
-				
-				// Classname
-				cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
-				
-				// YELP!
-				//~ // classname is http://(www. = '')x.com (no www)
-				//~ // Add Yelp.com/etc/etc/ to mouseovers
-				//~ var cls;
-				//~ if (!isYelpURL)
-					//~ cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
-				//~ else
-					//~ cls = link;
-				
-				
+				// WE ARE READY TO CHECK FOR FLOAT SKIPPING/ACCEPTING SCRIPT
 				// ...
-				var d = document.createElement('p');
-				d.setAttribute('style','margin:4px 0 4px 0;');
-				d.className = 'class_'+cls;
-				d.full_URL = link;
-				d.original_bg_color = '';
-				out_div.appendChild(d);
+				// Conditions:
+				// 1) 70% of top windows (9 max.) are same domain.
+				// 2) First result in each of three windows is same domain.
+				// 3) All three panels are "0 results"
+				//
+				// MUST BE IN PREVIEW MODE
 				
-				// IS SKIP?
-				if (el_inp_skip2__obj.isSkip) {
+				if (o.panels_loaded != o.num_panels) {
+					return;
+				}
+				if (AMT__Global_Vars.isPreview) {
+					console.log(o);
+					
+					// 1...
+					// Tally all domains
+					var all_domains = {};
+					var num_unique_dm = 0;
+					var num_tot = 0; //total results
+					for (var div in o.first_domains) {
+						var dm_array = o.first_domains[div]; //o.first_domains[out_div].push(cls);
+						for (var j in dm_array) {
+							var dom = dm_array[j];
+							if (!all_domains.hasOwnProperty(dom)) {
+								all_domains[dom] = 1;
+								num_unique_dm++; //not using this...
+							} else {
+								all_domains[dom]++;
+							}
+							num_tot++;
+						}
+					}
+					var most = 0;
+					var most_dm;
+					for (var i in all_domains) {
+						if (all_domains[i] > most) {
+							most_dm = i; // The most popular domain
+							most = all_domains[i];
+						}
+					}
+					if (most_dm && (most / num_tot) > 0.65) { // MOST E.G. 4, NUM_DM E.G. 9 // SO 4/9 = .44 //
+						console.log('#1 most');
+						console.log(most / num_tot);
+						console.log('most'+most);
+						console.log('num_tot'+num_tot);
+						AMT___Floater.accept();
+						return;
+					}
+					//~ console.log(all_domains);
+					//~ console.log(most);
+					//~ console.log(num_dm);
+					//~ console.log(most / num_dm);
+					
+					// 2...
+					// First in each column is same
+					// All three have something? Use Object.keys(obj) to test for the size of object.
+					if (Object.keys(o.first_domains).length == 3) {
+						var same_dom;
+						var success = true;
+						for (var div in o.first_domains) {
+							var dm_array = o.first_domains[div];
+							var first = dm_array[0];
+							if (!same_dom)
+								same_dom = first;
+							else if (same_dom != first) {
+								success = false;
+							}
+						}
+						// Success?
+						if (success) {
+							console.log('#2');
+							console.log(Object.keys(o.first_domains).length);
+							AMT___Floater.accept();
+							return;
+						}
+					}
+					
+					// 3...
+					// All 0s?
+					// Tested?
+					if (Object.keys(o.first_domains).length == 0) {
+						console.log('#3');
+						AMT___Floater.accept();
+						return;
+					}
+					
+				}
+				// STILL HERE?
+				// THAT MEANS THAT SKIPS FAILS
+				// So skip this.
+				AMT___Floater.skip();
+				
+				
+				//~ console.log(o);
+				//~ console.log(tmp_cls);
+			}
+			
+			function processProxyResponse(rs, seed_arg) {
+				
+				// rs
+				// 0=url
+				// 1=full
+				
+				// seed_arg
+				var out_div = seed_arg;
+				//~ console.log(seed_arg);
+				
+				if (!rs.length) {
+					out_div.innerHTML = '0';
+					
+					count_domains();
+					
+					return;
+				}
+				
+				var count = 0;
+				for (var i in rs) {
+					
+					var x = rs[i][0];
+					var link = rs[i][0];
+					var full = rs[i][1];
+					
+					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					
+					// trailing
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// YELP
+					//~ var isYelpURL = /^https?:\/\/(\w+\.|)yelp\./.exec(link);
+					//~ // trailing
+					//~ if (!isYelpURL)
+						//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					//~ else
+						//~ x = link;
+					
+					//~ if (out_div != d1c && out_div != d1d)
+						//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					
+					// beginning
+					// http
+					//~ x = x.replace(/^https?:\/\//, '');
+					
+					// SKIP BUTTON CREATE
+					// returns obj.el_button, obj.isSkip
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2(
+							{
+								domain: x,
+								load_file: 'austin_load_skips', 
+								var_skip_sites: SKIP_SITES, 
+								callback_function: false
+							}
+						);
+					
+					// add bold (bold_array)
+					full = MT__bold(full, o.bold_array);
+					
+					// Classname
+					cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
+					
+					// YELP!
+					//~ // classname is http://(www. = '')x.com (no www)
+					//~ // Add Yelp.com/etc/etc/ to mouseovers
+					//~ var cls;
+					//~ if (!isYelpURL)
+						//~ cls = x.replace(/^(https?:\/\/|)(www\.|)/, '$1');
+					//~ else
+						//~ cls = link;
+					
+					
+					// ...
+					var d = document.createElement('p');
+					d.setAttribute('style','margin:4px 0 4px 0;');
+					d.className = 'class_'+cls;
+					d.full_URL = link;
+					d.original_bg_color = '';
+					out_div.appendChild(d);
+					
+					// IS SKIP?
+					if (el_inp_skip2__obj.isSkip) {
+						d.appendChild(el_inp_skip2__obj.el_btn);
+						continue; // END
+					} else {
+						FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					}
+					
+					// Domains count
+					// Increment
+					var tmp_class_name = 'class_' + cls;
+					o.domain_counts[tmp_class_name] = (o.domain_counts.hasOwnProperty(tmp_class_name)) ? o.domain_counts[tmp_class_name] + 1 : 1;
+					
+					// IS NOT SKIP?
+					var txa = document.createElement('textarea');
+					txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+					txa.readOnly = true;
+					txa.value = x.replace(/^https?:\/*(www\.|)/, '');
+					txa.parent_div = out_div;
+					txa.parent_txa = out_div.txa
+					txa.full_url = link;
+					txa.short_url = x;
+					d.appendChild(txa);
+					// ...
+					var a = document.createElement('a');
+					a.setAttribute('style','margin-right:6px;');
+					a.target = '_blank';
+					a.innerText = 'link';
+					a.href = link;
+					d.appendChild(a);
+					// ...
 					d.appendChild(el_inp_skip2__obj.el_btn);
-					continue; // END
-				} else {
-					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+					//~ // ...
+					//~ var inp = document.createElement('input');
+					//~ inp.type = 'button';
+					//~ inp.setAttribute('style','cursor:pointer;padding:0;margin:0;');
+					//~ d.appendChild(inp);
+					//~ inp.value = ' F ';
+					//~ inp.url = link;
+					//~ d.appendChild(document.createElement('br'));
+					// ...
+					var pbody = document.createElement('p');
+					pbody.setAttribute('style','');
+					pbody.innerHTML = full;
+					d.appendChild(pbody);
+					
+					// actions
+					// ...
+					
+					// onclick
+					txa.onclick = function(e) {
+						this.style.backgroundColor = 'LightGreen';
+						if (e.ctrlKey) {
+							q.value = this.full_url;//return;
+						} else {
+							q.value = this.short_url;
+						}
+						
+						// showNextTab OR nextTab
+						if (q && q.value.trim().length > 4) {
+							new AMT___core_factory().nextTab();
+							doSubmit('hitForm');
+						}
+					}
+					
+					//mouseover
+					d.addEventListener('mouseover', function() {
+						txt_top.value = this.full_URL;
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = 'LightGreen';
+							} else {
+								x[i].style.backgroundColor = x[i].original_bg_color;
+								//~ x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					//mouseout
+					d.addEventListener('mouseout', function() {
+						var x = document.getElementsByTagName('p');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (x[i].className == this.className) {
+								x[i].style.backgroundColor = x[i].original_bg_color;
+								//~ x[i].style.backgroundColor = '';
+							}
+						}
+						// Could do this also! .getElementsByClassName('class_');
+					}, false);
+					
+					// push first match
+					// but only if array is empty
+					// or all in array equal this domain
+					// DO THIS AFTER BUTTONS ARE ON PAGE!
+					if (count == 0) {
+						if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
+							ARRAY_FIRST_FINDS.push(x);
+						} else if (ARRAY_FIRST_FINDS.length == 0)
+							ARRAY_FIRST_FINDS.push(x);
+					}
+					
+					// domains
+					// based on .id
+					if (count <= 2) {
+						if (!o.first_domains.hasOwnProperty(out_div.id)) {
+							o.first_domains[out_div.id] = [];
+						}
+						o.first_domains[out_div.id].push(cls);
+					}
+					
+					count++;
+				}
+				if (rs.length > 0) {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:1200px;');
+					out_div.appendChild(d);
 				}
 				
 				// Domains count
-				// Increment
-				var tmp_class_name = 'class_' + cls;
-				o.domain_counts[tmp_class_name] = (o.domain_counts.hasOwnProperty(tmp_class_name)) ? o.domain_counts[tmp_class_name] + 1 : 1;
-				
-				// IS NOT SKIP?
-				var txa = document.createElement('textarea');
-				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
-				txa.readOnly = true;
-				txa.value = x.replace(/^https?:\/*(www\.|)/, '');
-				txa.parent_div = out_div;
-				txa.parent_txa = out_div.txa
-				txa.full_url = link;
-				txa.short_url = x;
-				d.appendChild(txa);
-				// ...
-				var a = document.createElement('a');
-				a.setAttribute('style','margin-right:6px;');
-				a.target = '_blank';
-				a.innerText = 'link';
-				a.href = link;
-				d.appendChild(a);
-				// ...
-				d.appendChild(el_inp_skip2__obj.el_btn);
-				//~ // ...
-				//~ var inp = document.createElement('input');
-				//~ inp.type = 'button';
-				//~ inp.setAttribute('style','cursor:pointer;padding:0;margin:0;');
-				//~ d.appendChild(inp);
-				//~ inp.value = ' F ';
-				//~ inp.url = link;
-				//~ d.appendChild(document.createElement('br'));
-				// ...
-				var pbody = document.createElement('p');
-				pbody.setAttribute('style','');
-				pbody.innerHTML = full;
-				d.appendChild(pbody);
-				
-				// actions
-				// ...
-				
-				// onclick
-				//~ inp.onclick = function() {
-					//~ this.style.backgroundColor = 'LightGreen';
-					//~ q.value = this.url;
-					//~ 
-					//~ // showNextTab OR nextTab
-					//~ if (q && q.value.trim() != '') {
-						//~ new AMT___core_factory().nextTab();
-						//~ doSubmit('hitForm');
-					//~ }
-				//~ }
-				txa.onclick = function(e) {
-					this.style.backgroundColor = 'LightGreen';
-					if (e.ctrlKey) {
-						q.value = this.full_url;//return;
-					} else {
-						q.value = this.short_url;
-					}
-					
-					// showNextTab OR nextTab
-					if (q && q.value.trim().length > 4) {
-						new AMT___core_factory().nextTab();
-						doSubmit('hitForm');
-					}
-				}
-				
-				//mouseover
-				d.addEventListener('mouseover', function() {
-					txt_top.value = this.full_URL;
-					var x = document.getElementsByTagName('p');
-					for (var i in x) {
-						if (i == 'length') break;
-						if (x[i].className == this.className) {
-							x[i].style.backgroundColor = 'LightGreen';
-						} else {
-							x[i].style.backgroundColor = x[i].original_bg_color;
-							//~ x[i].style.backgroundColor = '';
-						}
-					}
-					// Could do this also! .getElementsByClassName('class_');
-				}, false);
-				//mouseout
-				d.addEventListener('mouseout', function() {
-					var x = document.getElementsByTagName('p');
-					for (var i in x) {
-						if (i == 'length') break;
-						if (x[i].className == this.className) {
-							x[i].style.backgroundColor = x[i].original_bg_color;
-							//~ x[i].style.backgroundColor = '';
-						}
-					}
-					// Could do this also! .getElementsByClassName('class_');
-				}, false);
-				
-				// push first match
-				// but only if array is empty
-				// or all in array equal this domain
-				// DO THIS AFTER BUTTONS ARE ON PAGE!
-				if (count == 0) {
-					if (ARRAY_FIRST_FINDS.length > 0 && ARRAY_FIRST_FINDS[0] == x) {
-						ARRAY_FIRST_FINDS.push(x);
-					} else if (ARRAY_FIRST_FINDS.length == 0)
-						ARRAY_FIRST_FINDS.push(x);
-				}
-				
-				count++;
+				count_domains();
 			}
-			if (rs.length > 0) {
-				var d = document.createElement('div');
-				d.setAttribute('style','height:1200px;');
-				out_div.appendChild(d);
-			}
-			
-			// Domains count
-			Crowd_Task_company_URL__count_domains();
 		}
+		new run().f();
 	}
 	
 	//
@@ -147404,6 +147599,9 @@ function mturk_load()
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '3OJGK8O6LQRPTVNORS85QS6TMP15L6': // William Riggs
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '3NVVDJT9G6NCC7MWGLSHAEOQMY0PX3': // Crowd Task, find URLs
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '37Z7ICZ5H99Y57AZPGYYF94ULNK11N':

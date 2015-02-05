@@ -669,7 +669,13 @@ AMT___Floater.runPreview = function() {
 	console.log(AMT___Floater.runMT_Run);
 	if(AMT___Floater.runMT_Run)
 	{
-		var ifr = document.getElementsByTagName('iframe')[0];
+		var ifr = document.getElementsByTagName('iframe');//console.log(ifr);
+		if (!ifr || !ifr.length) {//console.log('run');
+			top_window( true ); // Run top_window( okay_to_run ) :)
+			return;
+		} else 
+			ifr = ifr[0];
+		
 		ifr.contentWindow.postMessage({runPreview: true}, '*');
 		
 		var ran = false;
@@ -736,7 +742,7 @@ AMT___Floater.skip = function() {
 	{
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
-						window.postMessage({skipJob: true}, '*')
+						window.postMessage({skipJob: true}, '*') // This could also be: AMT___Floater.acceptOrSkip({data: {skipJob:true}})
 						}
 						, timeToSkip);
 						
