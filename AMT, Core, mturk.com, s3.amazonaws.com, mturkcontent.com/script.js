@@ -91878,9 +91878,9 @@ qatar,80
 					}
 				}
 				
-				console.log(o);
-				console.log(o);
-				console.log(tmp_cls);
+				//~ console.log(o);
+				//~ console.log(o);
+				//~ console.log(tmp_cls);
 			}
 		}
 		new run().f();
@@ -142066,7 +142066,7 @@ function top_window() {
 		//~ na.style.fontSize='10px';
 		//
 		var txt_top = document.createElement('textarea');
-		txt_top.setAttribute('style','position:absolute;top:0px;left:0%;width:40%;height:80px;');
+		txt_top.setAttribute('style','position:absolute;top:0px;left:100px;width:44%;height:80px;');
 		document.body.appendChild(txt_top);
 		//
 		var d1 = document.createElement('div');
