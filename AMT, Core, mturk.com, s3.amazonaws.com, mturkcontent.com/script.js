@@ -142171,7 +142171,13 @@ function top_window(okay_to_run) {
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
 				q.value = 'NA';
-				new AMT___core_factory().nextTab();
+				
+				if (o.skip_hard_tasks) {
+					showNextTab();
+				} else {
+					new AMT___core_factory().nextTab();
+				}				
+				
 				doSubmit('hitForm');
 				//~ document.getElementById("place_website").value = "NONE";
 				// nextTab
