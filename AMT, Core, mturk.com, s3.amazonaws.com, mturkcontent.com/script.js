@@ -146875,7 +146875,7 @@ function top_window(okay_to_run) {
 			d1.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
 				document.body.style.backgroundColor = 'white';
-				john_roberts_getnextpage();
+				getnextpage();
 			}
 			//
 			var d2=document.createElement('input'); //
