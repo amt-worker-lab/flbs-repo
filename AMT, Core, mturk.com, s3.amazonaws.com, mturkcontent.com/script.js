@@ -147066,7 +147066,7 @@ function top_window(okay_to_run) {
 								url_current = url_current.replace(/&filter=1/g, '&filter=0');
 								
 							setTimeout(function() {
-								john_roberts_getnextpage();
+								getnextpage();
 							//}, 1100);//tor
 							}, 440);
 						}
