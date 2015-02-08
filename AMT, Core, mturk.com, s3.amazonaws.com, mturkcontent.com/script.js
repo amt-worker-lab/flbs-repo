@@ -146890,6 +146890,13 @@ function top_window(okay_to_run) {
 			GM_xmlhttpRequest({
 				method: 'GET',
 				url: url_current,
+				ontimeout: function() {
+					document.body.style.backgroundColor = 'aqua';
+				},
+				onerror: function() {
+					document.body.style.backgroundColor = 'aqua';
+				},
+				timeout: 20000,
 				onload: function (response) {
 					var rs = response.responseText;
 					
@@ -147051,77 +147058,6 @@ function top_window(okay_to_run) {
 			});
 			
 			return;
-			
-			//~ GM_xmlhttpRequest({
-				//~ method: 'GET',
-	//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(url_current)+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
-				//~ onload: function (response) {
-					//~ //var rs=response.responseText;
-				//~ }
-			//~ });
-			//~ var xint = setInterval(function() {
-				//~ GM_xmlhttpRequest({
-					//~ method: 'GET',
-					//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(url_current),
-					//~ onload: function (response) {
-						//~ var rs = response.responseText;
-						//~ 
-						//~ if (rs.trim() != '')
-							//~ clearInterval(xint);
-						//~ else
-							//~ return;
-						//~ 
-						//~ var r, m;
-						//~ 
-						//~ /*// correct
-						//~ if (!url_correct) {
-							//~ r = /<div style="display:block">Please click <a href="([^"]+)/.exec(rs);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/&start=\d+/g, '');
-								//~ url = r + '&filter=0&num=10';
-								//~ url_correct = true;
-							//~ }
-						//~ }*/
-						//~ 
-						//~ // results
-						//~ //<td valign=top><h3 class="r"><a href="([^"]+)
-						//~ r = /<td valign=top><h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
-						//~ //r = /<td valign=top><h3 class="r"><a href="([^"]+)/g;
-						//~ if (r.exec(rs)) {
-							//~ r.lastIndex = 0;
-							//~ while (m = r.exec(rs)) {
-								//~ if (m[2].indexOf('>Translate this page<') == -1)
-									//~ q.value += m[1] +' '+"\n";
-							//~ }
-						//~ }
-						//~ 
-						//~ //start += 10;
-						//~ 
-						//~ //
-						//~ 
-						//~ url_current = /<a href="[^"]+" class="pn" id="pnnext" style="text-decoration:none;text-align:left"><span class="csb gbil ch" style="background-position:-96px 0;width:71px"><\/span><span style="display:block;margin-left:53px;text-decoration:underline">Next/.exec(rs);
-						//~ 
-						//~ if  (
-								//~ url_current
-								//~ // /<span style="display:block;margin-left:53px;text-decoration:underline">Next/.exec(rs)
-							//~ )
-						//~ {
-							//~ console.log(url_current[1]);
-							//~ url_current = 'https://www.google.com' + url_current[1].replace(/&amp;/g, '&');
-							//~ console.log(url_current);
-							//~ 
-							//~ return;
-							//~ 
-							//~ if (url_current.indexOf('&filter=') == -1)
-								//~ url_current += '&filter=0';
-								//~ 
-							//~ john_roberts_getnextpage();
-						//~ }
-						//~ 
-					//~ }
-				//~ });
-			//~ }, 2000);
 		}
 	}	
 		
