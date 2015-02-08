@@ -395,7 +395,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			getAllTabsInQ(function(allQTabs) {
 				if(allQTabs.length > 0) {
 					//Find the tab with the lowest qProductId and go to that
-					var lowestQId;
+					var lowestQId = null;
 					var nextTabId;
 					var lowestTabIndex = 0;
 

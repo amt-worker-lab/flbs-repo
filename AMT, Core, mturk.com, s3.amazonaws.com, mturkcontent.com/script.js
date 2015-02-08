@@ -51697,7 +51697,7 @@ function MT__RUN() {
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 		
-		//GM_addStyle('body {width:30%;margin-top:30px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:2000px;left:0;}');
 		GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
 		GM_addStyle('input {width:96%;}');
 		
@@ -147162,9 +147162,20 @@ function top_window(okay_to_run) {
 			document.body.addEventListener('dblclick', page, false);
 			
 			function page() {
+				document.body.style.backgroundColor = '';
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: a,
+					ontimeout: function() {
+						document.body.style.backgroundColor = 'aqua';
+						setTimeout(function() {page();}, 1000);
+						return;
+					},
+					onerror: function() {
+						document.body.style.backgroundColor = 'aqua';
+						setTimeout(function() {page();}, 1000);
+						return;
+					},
 					onload: function (response) {
 						var rs = response.responseText;
 						
