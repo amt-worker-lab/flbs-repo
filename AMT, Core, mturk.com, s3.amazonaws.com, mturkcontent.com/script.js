@@ -147157,6 +147157,8 @@ function top_window(okay_to_run) {
 			
 			// Init.
 			page();
+			// Set interval?
+			setInterval(function() {page();}, 30000);
 			
 			// ...
 			document.body.addEventListener('dblclick', page, false);
@@ -147168,14 +147170,15 @@ function top_window(okay_to_run) {
 					url: a,
 					ontimeout: function() {
 						document.body.style.backgroundColor = 'aqua';
-						setTimeout(function() {page();}, 1000);
+						setTimeout(function() {page();}, 4000);
 						return;
 					},
 					onerror: function() {
 						document.body.style.backgroundColor = 'aqua';
-						setTimeout(function() {page();}, 1000);
+						setTimeout(function() {page();}, 4000);
 						return;
 					},
+					timeout: 12000,
 					onload: function (response) {
 						var rs = response.responseText;
 						
@@ -147233,123 +147236,6 @@ function top_window(okay_to_run) {
 			}
 		}
 		new run().f();
-		/*GM_xmlhttpRequest({
-			method: 'GET',
-			url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a)+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
-			onload: function (response) {
-				//var rs=response.responseText;
-			}
-		});
-		
-		var xint1 = setInterval(function() {
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(a),
-				onload: function (response) {
-					var rs = response.responseText;
-					if (rs.trim() != '') {
-						clearInterval(xint1);
-						
-						//<div id=resultStats>About 3 results<nobr>
-						
-						var r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
-						var r2= /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
-						
-						if (r) {
-							r = r[1];
-							document.getElementById('Q1').value = r;
-						} else if (r2) {
-							r2 = r2[1];
-							document.getElementById('Q1').value = r2;
-						} else {
-							if  (
-									rs.indexOf('No other sizes of this image found.') != -1 ||
-									rs.indexOf('Tip: Try entering a descriptive word in the search box.') != -1
-								)
-							{
-								document.getElementById('Q1').value = 0;
-							} else {
-								console.log('x');
-							}
-						}
-						
-						return;
-						
-						//~ if (rs.indexOf('&amp;start=10') != -1) {
-							//~ GM_xmlhttpRequest({
-								//~ method: 'GET',
-//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(a+'&start=10')+'&catch_include='+encodeURIComponent('<li class="hdtbItm hdtbSel" id=sbi_>Search by image'),
-								//~ onload: function (response) {
-									//~ //var rs = response.responseText;
-								//~ }
-							//~ });
-							//~ 
-							//~ var xint2 = setInterval(function() {
-								//~ GM_xmlhttpRequest({
-									//~ method: 'GET',
-									//~ url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(a+'&start=10'),
-									//~ onload: function (response) {
-										//~ var rs = response.responseText;
-										//~ if (rs.trim() != '') {
-											//~ clearInterval(xint2);
-											//~ //console.log('int2');
-											//~ 
-											//~ var r;
-											//~ r = /<div id=resultStats>About ([^ ]+) results<nobr>/.exec(rs);
-											//~ if (r) {
-												//~ r = r[1];
-												//~ document.getElementById('Q2').value = r;
-											//~ } else {
-												//~ r = /<div id=resultStats>([^ ]+) result<nobr>/.exec(rs);
-												//~ if (r) {
-													//~ r = r[1];
-													//~ document.getElementById('Q2').value = r;
-												//~ } else {
-													//~ r = /<div id=resultStats>Page 2 of about ([^ ]+) results<nobr>/.exec(rs);
-													//~ if (r) {
-														//~ r = r[1];
-														//~ document.getElementById('Q2').value = r;
-													//~ } else {
-														//~ r = /<div id=resultStats>Page 2 of ([^ ]+) results<nobr>/.exec(rs);
-														//~ if (r) {
-															//~ r = r[1];
-															//~ document.getElementById('Q2').value = r;
-														//~ }
-													//~ }
-												//~ }
-											//~ }
-											//~ 
-											//~ //ds
-											//~ if  (
-													//~ document.getElementById('Q1').value != '' &&
-													//~ document.getElementById('Q2').value != ''
-												//~ )
-											//~ {
-												//~ //doSubmit();
-											//~ }
-										//~ }
-									//~ }
-								//~ });
-							//~ }, 2000);
-						//~ } else {
-							//~ document.getElementById('Q2').value = 0;
-						//~ }
-						//~ 
-						//~ //ds
-						//~ if  (
-								//~ document.getElementById('Q1').value != '' &&
-								//~ document.getElementById('Q2').value != ''
-							//~ )
-						//~ {
-							//~ //doSubmit();
-						//~ } else {
-							//~ console.log(document.getElementById('Q1').value);
-							//~ console.log(document.getElementById('Q2').value);
-						//~ }
-					}
-				}
-			});
-		}, 2000);*/
 	}
 }
 /*
