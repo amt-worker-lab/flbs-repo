@@ -2831,6 +2831,8 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
 			var td = document.getElementsByTagName('td');
 			
 			var o = {
@@ -2939,7 +2941,7 @@ function MT__RUN() {
 							console.log(m);
 							
 							var div = document.createElement('div');
-							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;');
+							div.setAttribute('style', 'border-bottom:1px solid teal;border-top:1px solid teal;border-collapse:collapse;cursor:pointer;');
 							div.className = 'exe';
 							out.appendChild(div);
 							
@@ -2959,7 +2961,8 @@ function MT__RUN() {
 							var prime, prime_bgc;
 							
 							// Author
-							reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+							reg = /by <\/span><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+							//~ reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
 							if (reg) {
 								author = __js_clean_html_str(reg[1]);
 							}
@@ -2969,13 +2972,15 @@ function MT__RUN() {
 							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
 							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							// <h2 class="a-size-medium s-inline s-access-title a-text-normal">
-							reg = /<h2 class="a-size-\w+ s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+ s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							if (reg) {
-								title = __js_clean_html_str(reg[1]);
+								title = __js_clean_html_str(reg[2]);
+								link = __js_clean_html_str(reg[1]);
 								
 								// div.title
 								div.title = title;
-								
+								// div.link
+								div.link = link;
 							} else {
 								console.log('!reg title');
 							}
@@ -2987,24 +2992,17 @@ function MT__RUN() {
 							// 1=Ex: DVD|Blu-ray|DVD-R
 							// 2=DP/ASIN
 							// 3=Ex: DVD|Blu-Ray|DVD-R
-							reg = /<a class="a-link-normal s-access-detail-page a-text-normal" title="([^"]+)" href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*)"><h2 class="[^"]*">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
-							var m2;
-							var movs_array = [];
-							while (m2 = reg.exec(m[1])) {
-								
-								movs_array.push({
-									mov_type:	 m2[4] + __js_clean_html_str(m2[5].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
-									asin:		__js_clean_html_str(m2[3]),
-									link:		__js_clean_html_str(m2[2])
-								});
-								//~ if (reg) {
-									//~ div.mov_type = reg[1];
-									//~ div.asin = __js_clean_html_str(reg[2]);
-									//~ //div.
-								//~ } else {
-									//~ 
-								//~ }
-							}
+							//~ reg = /<a class="a-link-normal s-access-detail-page a-text-normal" title="([^"]+)" href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*)"><h2 class="[^"]*">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							//~ var m2;
+							//~ var movs_array = [];
+							//~ while (m2 = reg.exec(m[1])) {
+								//~ 
+								//~ movs_array.push({
+									//~ mov_type:	 m2[4] + __js_clean_html_str(m2[5].replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ')),
+									//~ asin:		__js_clean_html_str(m2[3]),
+									//~ link:		__js_clean_html_str(m2[2])
+								//~ });
+							//~ }
 							
 							// offers
 							reg = /\([\d,]+ offers\)/g;
@@ -3060,36 +3058,27 @@ function MT__RUN() {
 							//~ if (images[c] && !multi)
 								//~ div.innerHTML += '<img src="'+images[c]+'" style="max-width:100px;" /><br>';
 							
-							// Add Buttons for clicking
-							for (var i in movs_array) {
-								var btn = document.createElement('button');
-								btn.setAttribute('style', 'width:180px;height:140px;');
-								btn.innerText	= movs_array[i].mov_type;
-								btn.asin		= movs_array[i].asin;
-								btn.link		= movs_array[i].link;
-								btn.input_field	= out.input_field; // ANSWER GOES HERE
-								btn.className	= 'exe'
-								div.appendChild(btn);
-								btn.onclick = function() {
-									this.style.backgroundColor = 'LightGreen';
-									
-									this.input_field.value = this.link;
-									
-									check_submit();
-									
-									//~ var q = document.getElementsByName('ASIN')[0];
-									//~ q.value = this.asin;
-									//~ if (/^[A-Z0-9]{6,20}$/.exec(q.value)) {
-										//~ new AMT___core_factory().nextTab();
-										//~ doSubmit();
-									//~ }
-									
-									// Not this... Bxxxx...
-									//~ if (/^B[A-Z0-9]{6,20}$/.exec(q.value)) {
-								}
-							}
+							//~ // Add Buttons for clicking
+							//~ for (var i in movs_array) {
+								//~ var btn = document.createElement('button');
+								//~ btn.setAttribute('style', 'width:180px;height:140px;');
+								//~ btn.innerText	= movs_array[i].mov_type;
+								//~ btn.asin		= movs_array[i].asin;
+								//~ btn.link		= movs_array[i].link;
+								//~ btn.input_field	= out.input_field; // ANSWER GOES HERE
+								//~ btn.className	= 'exe'
+								//~ div.appendChild(btn);
+								//~ btn.onclick = function() {
+								//~ }
+							//~ }
 							
 							div.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								if (this.hasOwnProperty('link') && this.link.length > 10 && this.link.indexOf('/dp/') != -1) {
+									document.getElementById('web_url').value = this.link;
+									new AMT___core_factory().nextTab();
+									doSubmit();
+								}
 							}
 							
 							c++;
