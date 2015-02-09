@@ -2808,6 +2808,12 @@ function MT__RUN() {
 		a[1].click();
 	}
 	
+	/**
+	 * Scrape amazon.com
+	 * Amazon.com
+	 * 
+	 * AABOSS
+	 */
 	// 
 	// AABOSS
 	// Determine if App Exists in Search Results
