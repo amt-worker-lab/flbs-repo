@@ -2849,7 +2849,7 @@ function MT__RUN() {
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style', 'position:absolute;top:170px;left:0%;width:99%;height:28px;');
 			document.body.appendChild(d2);
-			d2.value = o.product;
+			d2.value = o.product.replace(/ *\([^\)]*\) */g, ' ');
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:200px;left:50%;width:49%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			//~ document.body.appendChild(d1b);
@@ -2866,6 +2866,19 @@ function MT__RUN() {
 				offset: 200 // offset top
 			});
 			
+			//
+			d2.onblur = function() {
+				scrape_amazon();
+			}
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			
 			scrape_amazon();
 			
 			/**
@@ -2874,6 +2887,7 @@ function MT__RUN() {
 			 */
 			function scrape_amazon() {
 				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
+				d1.innerHTML = '';
 				
 				//~ var d = document.createElement('hr');
 				//~ d.setAttribute('style','border:0;border-bottom:1px solid #a2a2a2;height:2px;padding:0;margin:0;');
@@ -2961,10 +2975,12 @@ function MT__RUN() {
 							var prime, prime_bgc;
 							
 							// Author
-							reg = /by <\/span><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+							reg = /by <\/span><span class="a-size-small a-color-secondary">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
 							//~ reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
 							if (reg) {
-								author = __js_clean_html_str(reg[1]);
+								author = __js_clean_html_str(reg[1].replace(/<[^>]*>/g, ''));
+							} else {
+								author = '';
 							}
 							
 							//link/title
