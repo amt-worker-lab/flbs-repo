@@ -1387,23 +1387,9 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
 //~ }
 
 
-/**
- * 
- * 
- * 
- * 
- * 
- * 
- * **/
+/*********************************************************
+ *********************************************************/
 
-
-/**
- * 
- * 
- * 
- * 
- * 
- * */
 /**
  * String Prototypes
  * 
@@ -1589,6 +1575,9 @@ String.prototype.state_full_to_abbr = function() {
 	return str.toUpperCase();
 }
 
+/*********************************************************
+ *********************************************************/
+
 /**
  * AMT factories
  *
@@ -1602,8 +1591,6 @@ String.prototype.state_full_to_abbr = function() {
  * AMT___site_scrapes
  * AMT___gen_functions
  * AMT___geographic_functions
- * 
- * 
  * 
  * 
  * 
@@ -2076,10 +2063,197 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  * fs__
  * database__
  * 
- * etc...  
+ * etc...
+ * 
+ * xhr_with_disk_cache
+ * 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function xhr_with_disk_cache
+ * 
+ * URL							(Required. String.)
+ * 
+ * host							(Optional. String. Default=MT__host, i.e. 192.168.1.2)
+ * filename						(Optional. String. If null default=md5(URL))
+ * file_folder					(Optional. String. Default=.cached)
+ * method						(Optional. String. "get" or "post". Default="get")
+ * data							(Optional. String. Used with xhr post.)
+ * success_callback				(Optional. Function. Optional but is almost always included.)
+ * check_pre_write_to_disk		(Optional. Function. Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
+ * 
+ * 
+ * XXX NOT THIS XXX fail_xhr_if_not_200			(Optional. Boolean. Default=True.)
+ * 
+ * TODO: Add a param that will allow to overwrite the file on disk. Under a) any circumstance; b) if responseText=... And so on.
+ */
+AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
+	
+	// Verify object params
+	//options
+	var options = options;
+	var verify = verify_opts();
+	if (!verify) return; // Quit here if necessary
+	
+	// Init
+	read_from_disk();
+	
+	/**
+	 *
+	 */	
+	function verify_opts() {
+		// URL
+		if (!options.hasOwnProperty('URL')) {
+			return false;
+		}
+		var chk = options.URL.trim().toLowerCase();
+		if (chk.length < 6 || chk.indexOf('http') == -1) {
+			return false;
+		}
+		// ...
+		if (!options.hasOwnProperty('file_folder')) {
+			options.file_folder = '.cached';
+		}
+		if (!options.hasOwnProperty('filename')) {
+			options.filename = new AMT___requests_factory().general_functions__md5(options.URL); // md5 URL
+		}
+		if (!options.hasOwnProperty('host')) {
+			options.host = MT___host;
+		}
+		if (!options.hasOwnProperty('method')) {
+			options.method = 'get';
+		}
+		if (!options.hasOwnProperty('success_callback')) {
+			options.success_callback = function() {};
+		}
+		if (!options.hasOwnProperty('check_pre_write_to_disk')) { // Default=bool_check_write_to_disk
+			options.check_pre_write_to_disk = bool_check_write_to_disk;
+			//~ options.check_pre_write_to_disk = function() { return true; }; // Default=Returns true
+		}
+		
+		
+		//
+		options.tmp_response_text = null; // THIS IS ONLY WHEN write_to_file is called. It is only tmp.
+		
+		// Returns true to begin INIT.
+		return true;
+		
+		// ...
+		//~ if (!options.hasOwnProperty('fail_xhr_on_400')) { // Default=Returns true
+			//~ options.fail_xhr_on_400 = true;
+		//~ }
+	}
+	/**
+	 * 
+	 * @param completed_response
+	 */	
+	function success(completed_response) {
+		// options.response
+		options.response = {
+			response:		response,
+			status:			response.status,
+			responseText:	response.responseText
+		}
+		
+		// Success callback
+		options.success_callback(options);
+	}
+	/**
+	 * function read_from_disk
+	 * @desc This will return "___FILE_DOES_NOT_EXIST___" if file does not exist. Then read_from_xhr() will be called.
+	 * If file does exist then the file will be returned here and success_callback() will be called.
+	 * 
+	 */	
+	function read_from_disk() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+					read_from_xhr();
+				} else {
+					success(response);
+				}
+			}
+		});
+	}
+	/**
+	 * function read_from_xhr
+	 * @desc 
+	 * 
+	 */	
+	function read_from_xhr() {
+		if (options.method == 'get') {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: options.URL,
+				onload: function (response) {
+					//~ var rs = response.responseText;
+					
+					if (options.check_pre_write_to_disk(response)) {
+						write_to_disk(response);
+					} else {
+						return false;
+					}
+				}
+			});
+		} else if (options.method == 'post') {
+			
+		}
+	}
+	/**
+	 * function bool_check_write_to_disk
+	 * @desc This callback is to check whether or not to save to disk.
+	 * True=write;False=nowrite. Default: !200=False,200=True. Is overwritable.
+	 * Function is called after read_from_xhr().
+	 */	
+	function bool_check_write_to_disk(response) {
+		
+		//
+		// Checks before write to disk go here.
+		//
+		//
+		
+		// Status = 200?
+		if (response.status != 200) {
+			return false;
+		}
+		
+		// Return true if response passes all checks.
+		return true;
+	}
+	/**
+	 * function write_to_disk
+	 * @desc Post.
+	 * 
+	 * @param completed_response
+	 * 
+	 * @NOTE XHR response must be: blank; and 200. 
+	 */	
+	function write_to_disk(competed_response) {
+		var competed_response = competed_response; // Passes into success(competed_response) func.
+		options.tmp_response_text = competed_response.responseText; // This is just a tmp var to pass in the responseText without the full response.
+		// Make the post request.
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: options.host + '/mturk/util.php',
+			data: 'xhr_with_disk_cache__write_to_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				if (rs.trim() != '') return;
+				
+				success(competed_response);
+			}
+		});
+	}
 }
 /**
  * google_api_timezone 

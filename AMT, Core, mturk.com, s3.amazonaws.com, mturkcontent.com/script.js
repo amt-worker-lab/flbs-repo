@@ -139327,15 +139327,25 @@ qatar,80
 			}
 		}
 		//
-		function kronopin_linkedin_company_employees_submit() {
+		function kronopin_linkedin_company_employees_submit() { 
 			var sbm = true;
+			var all_zeros = true;
 			for (var i=1; i<=6; i++) {
 				if (!/^[\d,]+$/.exec(document.getElementById('Q'+i+'Url').value)) {
 					sbm = false;
 					break;
 				}
+				if (document.getElementById('Q'+i+'Url').value != 0) {
+					all_zeros = false;
+				}
 			}
 			if (sbm && !debug && !submitted) {
+				// All zeros?
+				if (all_zeros) {
+					document.body.style.backgroundColor = 'green';
+					return;
+				}
+				// Let's go!
 				submitted = true;
 				doSubmit();
 			}
@@ -139383,6 +139393,22 @@ qatar,80
 					}
 					
 					rs = JSON.parse(rs);
+					
+					console.log(rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted);
+					console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset');
+					console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove');
+					console.log(rs.content.global_requestParams.f_N == 'F');
+					// CHECK FOR MAX PAGE REQUESTS ERROR HERE.
+					if  (
+						rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted &&
+						rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset' &&
+						rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove'// &&
+						//~ rs.content.global_requestParams.f_N == 'F'
+						)
+					{
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
 					
 					if (/^\d+$/.exec(rs.content.page.voltron_unified_search_json.search.baseData.resultCount)) {
 						
