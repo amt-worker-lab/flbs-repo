@@ -139290,138 +139290,142 @@ qatar,80
 	s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
 	if (ih.indexOf(s) != -1) {
 		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		//GM_addStyle('body {width:30%;margin-top:30px;}');
-		GM_addStyle('img {position:absolute;top:1400px;}');
-		GM_addStyle('table {position:absolute;top:1000px;}');
-		
-		var runs = 0;
-		var a = document.getElementsByTagName('a');
-		var debug = false;
-		var submitted = false;
-		
-		//
-		AMT___POPUP__initializeGlobals(
-			function() {
-				kronopin_linkedin_company_employees_submit__init();
-			}
-		);
-		//
-		function kronopin_linkedin_company_employees_submit__init() {
-		
-			var c = 1;
-			var x;
-			for (var i in a) {
-				if (!a[i]) continue;
-				if (!a[i].href) continue;
-				x = /\/company\/(\d+)$/.exec(a[i].href);
-				if (!x) {
-					continue;
+		var run = function() {};
+		run.prototype.f = function () {
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			//GM_addStyle('body {width:30%;margin-top:30px;}');
+			GM_addStyle('img {position:absolute;top:1400px;}');
+			GM_addStyle('table {position:absolute;top:1000px;}');
+			
+			var runs = 0;
+			var a = document.getElementsByTagName('a');
+			var debug = false;
+			var submitted = false;
+			
+			//
+			AMT___POPUP__initializeGlobals(
+				function() {
+					kronopin_linkedin_company_employees_submit__init();
 				}
-				x = x[1];
-				if (AMT___POPUP___PROXY_REDACTED_ != '')
-					kronopin_linkedin_company_employees_cached(x, c);
-				else
-					kronopin_linkedin_company_employees(x, c);
-				c++;
-			}
-		}
-		//
-		function kronopin_linkedin_company_employees_submit() { 
-			var sbm = true;
-			var all_zeros = true;
-			for (var i=1; i<=6; i++) {
-				if (!/^[\d,]+$/.exec(document.getElementById('Q'+i+'Url').value)) {
-					sbm = false;
-					break;
-				}
-				if (document.getElementById('Q'+i+'Url').value != 0) {
-					all_zeros = false;
+			);
+			//
+			function kronopin_linkedin_company_employees_submit__init() {
+			
+				var c = 1;
+				var x;
+				for (var i in a) {
+					if (!a[i]) continue;
+					if (!a[i].href) continue;
+					x = /\/company\/(\d+)$/.exec(a[i].href);
+					if (!x) {
+						continue;
+					}
+					x = x[1];
+					if (AMT___POPUP___PROXY_REDACTED_ != '')
+						kronopin_linkedin_company_employees_cached(x, c);
+					else
+						kronopin_linkedin_company_employees(x, c);
+					c++;
 				}
 			}
-			if (sbm && !debug && !submitted) {
-				// All zeros?
-				if (all_zeros) {
-					document.body.style.backgroundColor = 'green';
-					return;
+			//
+			function kronopin_linkedin_company_employees_submit() { 
+				var sbm = true;
+				var all_zeros = true;
+				for (var i=1; i<=6; i++) {
+					if (!/^[\d,]+$/.exec(document.getElementById('Q'+i+'Url').value)) {
+						sbm = false;
+						break;
+					}
+					if (document.getElementById('Q'+i+'Url').value != 0) {
+						all_zeros = false;
+					}
 				}
-				// Let's go!
-				submitted = true;
-				doSubmit();
-			}
-		}
-		function kronopin_linkedin_company_employees_cached(companyId, count) {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
-				//~ timeout: 2000,
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) {
-						console.log('x');
+				if (sbm && !debug && !submitted) {
+					// All zeros?
+					if (all_zeros) {
+						document.body.style.backgroundColor = 'green';
 						return;
 					}
-					
-					if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
-						//debug = true;
-						document.getElementById('Q'+count+'Url').value = rs;
-						kronopin_linkedin_company_employees_submit();
-						// test do not submit
-					}
-					else { // download new
-						kronopin_linkedin_company_employees(companyId, count, true);
-					}
-					
+					// Let's go!
+					submitted = true;
+					doSubmit();
 				}
-			});
-		}
-		function kronopin_linkedin_company_employees(companyId, count) {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					runs++;
-					
-					if (response.status != 200) {
-						console.log('x'+runs);
-						// try again?
-						if (runs < 10)
-							kronopin_linkedin_company_employees(companyId, count);
-						return;
-					}
-					
-					rs = JSON.parse(rs);
-					
-					console.log(rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted);
-					console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset');
-					console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove');
-					console.log(rs.content.global_requestParams.f_N == 'F');
-					// CHECK FOR MAX PAGE REQUESTS ERROR HERE.
-					if  (
-						rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted &&
-						rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset' &&
-						rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove'// &&
-						//~ rs.content.global_requestParams.f_N == 'F'
-						)
-					{
-						document.body.style.backgroundColor = 'pink';
-						return;
-					}
-					
-					if (/^\d+$/.exec(rs.content.page.voltron_unified_search_json.search.baseData.resultCount)) {
+			}
+			function kronopin_linkedin_company_employees_cached(companyId, count) {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
+					//~ timeout: 2000,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							console.log('x');
+							return;
+						}
 						
-						var i = MT___numberWithCommas(rs.content.page.voltron_unified_search_json.search.baseData.resultCount);
+						if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
+							//debug = true;
+							document.getElementById('Q'+count+'Url').value = rs;
+							kronopin_linkedin_company_employees_submit();
+							// test do not submit
+						}
+						else { // download new
+							kronopin_linkedin_company_employees(companyId, count, true);
+						}
 						
-						if (/^[\d,]+$/.exec(i)) {
-							document.getElementById('Q'+count+'Url').value = i;
+					}
+				});
+			}
+			function kronopin_linkedin_company_employees(companyId, count) {
+				GM_xmlhttpRequest({
+					method: "GET",
+					
+					//~ url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
+					url: 'http://www.linkedin.com/company/'+companyId,
+					
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						runs++;
+						
+						// !=200
+						if (response.status != 200) {
+							console.log('x'+runs);
+							// try again?
+							if (runs < 10) {
+								kronopin_linkedin_company_employees(companyId, count);
+							}
+							return;
+						}
+						//
+						
+						var reg;
+						var num;
+						reg = /<a class="employee-count" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+						if (!reg) {
+							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
+								num = 0;
+							} else { // invalid page!
+								document.body.style.backgroundColor = 'pink';
+								return;
+							}
+						} else {
+							num = reg[1].replace(/[^\d]/g, '');
+						}
+						
+						if (/^\d+$/.exec(num)) {
 							
-							// write
-							if (AMT___POPUP___PROXY_REDACTED_ != '') {
+							num = MT___numberWithCommas(num);
+							
+							if (/^[\d,]+$/.exec(num)) {
+								
+								document.getElementById('Q'+count+'Url').value = num;
+								
 								GM_xmlhttpRequest({
 									method: "GET",
-									url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+i,
+									url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
 									onload: function(response) {
 										var rs = response.responseText;
 										if (response.status != 200) {
@@ -139433,13 +139437,81 @@ qatar,80
 								});
 							}
 						}
-					} else
-					{
-						console.log(rs);
+						else
+						{
+							console.log(rs);
+						}
 					}
-				}
-			});
+				});
+			}
+			// OLD AJAX
+			//~ function kronopin_linkedin_company_employees(companyId, count) {
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ runs++;
+						//~ 
+						//~ if (response.status != 200) {
+							//~ console.log('x'+runs);
+							//~ // try again?
+							//~ if (runs < 10)
+								//~ kronopin_linkedin_company_employees(companyId, count);
+							//~ return;
+						//~ }
+						//~ 
+						//~ rs = JSON.parse(rs);
+						//~ 
+						//~ console.log(rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted);
+						//~ console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset');
+						//~ console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove');
+						//~ console.log(rs.content.global_requestParams.f_N == 'F');
+						//~ // CHECK FOR MAX PAGE REQUESTS ERROR HERE.
+						//~ if  (
+							//~ rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted &&
+							//~ rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset' &&
+							//~ rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove'// &&
+							//~ )
+						//~ {
+							//~ document.body.style.backgroundColor = 'pink';
+							//~ return;
+						//~ }
+						//~ 
+						//~ if (/^\d+$/.exec(rs.content.page.voltron_unified_search_json.search.baseData.resultCount)) {
+							//~ 
+							//~ var i = MT___numberWithCommas(rs.content.page.voltron_unified_search_json.search.baseData.resultCount);
+							//~ 
+							//~ if (/^[\d,]+$/.exec(i)) {
+								//~ document.getElementById('Q'+count+'Url').value = i;
+								//~ 
+								//~ // write
+								//~ if (AMT___POPUP___PROXY_REDACTED_ != '') {
+									//~ GM_xmlhttpRequest({
+										//~ method: "GET",
+										//~ url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+i,
+										//~ onload: function(response) {
+											//~ var rs = response.responseText;
+											//~ if (response.status != 200) {
+												//~ console.log('x');
+												//~ return;
+											//~ }
+											//~ kronopin_linkedin_company_employees_submit();
+										//~ }
+									//~ });
+								//~ }
+							//~ }
+						//~ } else
+						//~ {
+							//~ console.log(rs);
+						//~ }
+					//~ }
+				//~ });
+			//~ }
 		}
+		new run().f();
+		return;
 	}
 	//
 	// Jason Santiago
@@ -139605,9 +139677,7 @@ qatar,80
 		{
 			doSubmit();
 		}
-		
 	}
-	
 	
 	//
 	// Angela Medlar / Prospect Smarter
