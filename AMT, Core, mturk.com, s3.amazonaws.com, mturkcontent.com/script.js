@@ -139304,13 +139304,14 @@ qatar,80
 			var submitted = false;
 			
 			//
-			AMT___POPUP__initializeGlobals(
-				function() {
-					kronopin_linkedin_company_employees_submit__init();
-				}
-			);
+			company_employees_submit__init();
+			//~ AMT___POPUP__initializeGlobals(
+				//~ function() {
+					//~ company_employees_submit__init();
+				//~ }
+			//~ );
 			//
-			function kronopin_linkedin_company_employees_submit__init() {
+			function company_employees_submit__init() {
 			
 				var c = 1;
 				var x;
@@ -139322,15 +139323,16 @@ qatar,80
 						continue;
 					}
 					x = x[1];
-					if (AMT___POPUP___PROXY_REDACTED_ != '')
-						kronopin_linkedin_company_employees_cached(x, c);
-					else
-						kronopin_linkedin_company_employees(x, c);
+					company_employees_cached(x, c);
+					//~ if (AMT___POPUP___PROXY_REDACTED_ != '')
+						//~ company_employees_cached(x, c);
+					//~ else
+						//~ company_employees(x, c);
 					c++;
 				}
 			}
 			//
-			function kronopin_linkedin_company_employees_submit() { 
+			function company_employees_submit() { 
 				var sbm = true;
 				var all_zeros = true;
 				for (var i=1; i<=6; i++) {
@@ -139353,7 +139355,7 @@ qatar,80
 					doSubmit();
 				}
 			}
-			function kronopin_linkedin_company_employees_cached(companyId, count) {
+			function company_employees_cached(companyId, count) {
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
@@ -139368,17 +139370,87 @@ qatar,80
 						if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
 							//debug = true;
 							document.getElementById('Q'+count+'Url').value = rs;
-							kronopin_linkedin_company_employees_submit();
+							company_employees_submit();
 							// test do not submit
 						}
 						else { // download new
-							kronopin_linkedin_company_employees(companyId, count, true);
+							company_employees(companyId, count, true);
 						}
 						
 					}
 				});
 			}
-			function kronopin_linkedin_company_employees(companyId, count) {
+			/**
+			 * function company_employees_tor
+			 */
+			function company_employees_tor(obj_complete) {
+				//obj_complete is the init object + .rs which is the responseText
+				
+				console.log(obj_complete);
+				
+				var rs = obj_complete.rs;
+				var count = obj_complete.seed.count;
+				var companyId = obj_complete.seed.companyId;
+				
+				var reg;
+				var num;
+				reg = /<a class="employee-count" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+				if (!reg) {
+					if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
+						num = 0;
+					} else { // invalid page!
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+				} else {
+					num = reg[1].replace(/[^\d]/g, '');
+				}
+				
+				if (/^\d+$/.exec(num)) {
+					
+					num = MT___numberWithCommas(num);
+					
+					if (/^[\d,]+$/.exec(num)) {
+						
+						document.getElementById('Q'+count+'Url').value = num;
+						
+						GM_xmlhttpRequest({
+							method: "GET",
+							url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
+							onload: function(response) {
+								var rs = response.responseText;
+								if (response.status != 200) {
+									console.log('x');
+									return;
+								}
+								company_employees_submit();
+							}
+						});
+					}
+				}
+				else
+				{
+					console.log(rs);
+				}
+			}
+			/**
+			 * function company_employees
+			 */
+			function company_employees(companyId, count) {
+				// INIT _PROXY_REDACTED_
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://www.linkedin.com/company/'+companyId,
+					callback_function: company_employees_tor,
+					catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					seed: {
+						companyId:companyId,
+						count:count
+					},
+					return_init_object: true
+				});
+				return;
+				
+				//
 				GM_xmlhttpRequest({
 					method: "GET",
 					
@@ -139395,7 +139467,7 @@ qatar,80
 							console.log('x'+runs);
 							// try again?
 							if (runs < 10) {
-								kronopin_linkedin_company_employees(companyId, count);
+								company_employees(companyId, count);
 							}
 							return;
 						}
@@ -139432,7 +139504,7 @@ qatar,80
 											console.log('x');
 											return;
 										}
-										kronopin_linkedin_company_employees_submit();
+										company_employees_submit();
 									}
 								});
 							}
