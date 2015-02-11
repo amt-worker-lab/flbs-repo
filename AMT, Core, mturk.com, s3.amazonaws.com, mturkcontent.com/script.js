@@ -139285,7 +139285,7 @@ qatar,80
 	//
 	// Jason Santiago
 	// aka Kronopin
-	//
+	// 3I2IYPM3ZTX3XI6LHP7MND84RC9J84
 	//~ s='<h2><span style="font-family:arial,helvetica,sans-serif;"><b>Your task is to determine the number of employees a company has on LinkedIn.</b></span></h2>';
 	s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
 	if (ih.indexOf(s) != -1) {
@@ -139323,7 +139323,7 @@ qatar,80
 						continue;
 					}
 					x = x[1];
-					company_employees_cached(x, c);
+					company_employees(x, c);
 					//~ if (AMT___POPUP___PROXY_REDACTED_ != '')
 						//~ company_employees_cached(x, c);
 					//~ else
@@ -139350,36 +139350,40 @@ qatar,80
 						document.body.style.backgroundColor = 'green';
 						return;
 					}
+					// Is preview (This is for pre-caching the task!)
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
+						return;
+					}
 					// Let's go!
 					submitted = true;
 					doSubmit();
 				}
 			}
-			function company_employees_cached(companyId, count) {
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
-					//~ timeout: 2000,
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) {
-							console.log('x');
-							return;
-						}
-						
-						if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
-							//debug = true;
-							document.getElementById('Q'+count+'Url').value = rs;
-							company_employees_submit();
-							// test do not submit
-						}
-						else { // download new
-							company_employees(companyId, count, true);
-						}
-						
-					}
-				});
-			}
+			//~ function company_employees_cached(companyId, count) {
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: MT___host+'/mturk/util.php?mt__read_cache='+companyId,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ if (response.status != 200) {
+							//~ console.log('x');
+							//~ return;
+						//~ }
+						//~ 
+						//~ if (rs.trim() != '' && /^[\d,]+$/.exec(rs)) {
+							//~ //debug = true;
+							//~ document.getElementById('Q'+count+'Url').value = rs;
+							//~ company_employees_submit();
+							//~ // test do not submit
+						//~ }
+						//~ else { // download new
+							//~ company_employees(companyId, count, true);
+						//~ }
+						//~ 
+					//~ }
+				//~ });
+			//~ }
 			/**
 			 * function company_employees_tor
 			 */
@@ -139441,7 +139445,11 @@ qatar,80
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					url: 'http://www.linkedin.com/company/'+companyId,
 					callback_function: company_employees_tor,
-					catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					//~ catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					catch_include_array: [
+						'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+						'<title>503 Service Temporarily Unavailable</title>'
+					],
 					seed: {
 						companyId:companyId,
 						count:count
@@ -139450,71 +139458,71 @@ qatar,80
 				});
 				return;
 				
-				//
-				GM_xmlhttpRequest({
-					method: "GET",
-					
-					//~ url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
-					url: 'http://www.linkedin.com/company/'+companyId,
-					
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						runs++;
-						
-						// !=200
-						if (response.status != 200) {
-							console.log('x'+runs);
-							// try again?
-							if (runs < 10) {
-								company_employees(companyId, count);
-							}
-							return;
-						}
-						//
-						
-						var reg;
-						var num;
-						reg = /<a class="employee-count" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
-						if (!reg) {
-							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
-								num = 0;
-							} else { // invalid page!
-								document.body.style.backgroundColor = 'pink';
-								return;
-							}
-						} else {
-							num = reg[1].replace(/[^\d]/g, '');
-						}
-						
-						if (/^\d+$/.exec(num)) {
-							
-							num = MT___numberWithCommas(num);
-							
-							if (/^[\d,]+$/.exec(num)) {
-								
-								document.getElementById('Q'+count+'Url').value = num;
-								
-								GM_xmlhttpRequest({
-									method: "GET",
-									url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
-									onload: function(response) {
-										var rs = response.responseText;
-										if (response.status != 200) {
-											console.log('x');
-											return;
-										}
-										company_employees_submit();
-									}
-								});
-							}
-						}
-						else
-						{
-							console.log(rs);
-						}
-					}
-				});
+				//~ //
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ 
+					//~ //url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
+					//~ url: 'http://www.linkedin.com/company/'+companyId,
+					//~ 
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ runs++;
+						//~ 
+						//~ // !=200
+						//~ if (response.status != 200) {
+							//~ console.log('x'+runs);
+							//~ // try again?
+							//~ if (runs < 10) {
+								//~ company_employees(companyId, count);
+							//~ }
+							//~ return;
+						//~ }
+						//~ //
+						//~ 
+						//~ var reg;
+						//~ var num;
+						//~ reg = /<a class="employee-count" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+						//~ if (!reg) {
+							//~ if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
+								//~ num = 0;
+							//~ } else { // invalid page!
+								//~ document.body.style.backgroundColor = 'pink';
+								//~ return;
+							//~ }
+						//~ } else {
+							//~ num = reg[1].replace(/[^\d]/g, '');
+						//~ }
+						//~ 
+						//~ if (/^\d+$/.exec(num)) {
+							//~ 
+							//~ num = MT___numberWithCommas(num);
+							//~ 
+							//~ if (/^[\d,]+$/.exec(num)) {
+								//~ 
+								//~ document.getElementById('Q'+count+'Url').value = num;
+								//~ 
+								//~ GM_xmlhttpRequest({
+									//~ method: "GET",
+									//~ url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
+									//~ onload: function(response) {
+										//~ var rs = response.responseText;
+										//~ if (response.status != 200) {
+											//~ console.log('x');
+											//~ return;
+										//~ }
+										//~ company_employees_submit();
+									//~ }
+								//~ });
+							//~ }
+						//~ }
+						//~ else
+						//~ {
+							//~ console.log(rs);
+						//~ }
+					//~ }
+				//~ });
 			}
 			// OLD AJAX
 			//~ function kronopin_linkedin_company_employees(companyId, count) {
@@ -147844,7 +147852,8 @@ function mturk_load()
 				case '2C4PHMVHVKCOKJWBOEVJI9KQ36935R':
 				case '3FQJF6D1R11V8N3Q284CY8YBHMM299':
 				case '3N6I2GM9S1W6VD1AIBK6NLWDR095BQ':
-					AMT___Floater({runMT_Run: true}); //Max Powers
+				case '3I2IYPM3ZTX3XI6LHP7MND84RC9J84': // KronoPin, # employees on LI
+					AMT___Floater({runMT_Run: true});
 					break;
 				case '32SRECFMFBIEQWWELJ4BDO8IAIEUTZ': //Bart Jansen, track packages #2
 				case '3TFUINTXMP151JB1KK968F4R9KRT9R': //Bart Jansen, track packages #2

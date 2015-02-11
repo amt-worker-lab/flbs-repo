@@ -7982,7 +7982,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	//~ if (!this.obj_vars.url) // URL REQUIRED
 		//~ return;
 		
-	if (!this.obj_vars.catch_include) // DEFAULT
+	if (!this.obj_vars.catch_include && !this.obj_vars.hasOwnProperty('catch_include_array')) // DEFAULT
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
 	if (this.obj_vars.startPage) {
