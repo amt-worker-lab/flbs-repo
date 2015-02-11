@@ -139352,8 +139352,8 @@ qatar,80
 					}
 					// Is preview (This is for pre-caching the task!)
 					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.skip();
-						return;
+						//~ AMT___Floater.skip();
+						//~ return;
 					}
 					// Let's go!
 					submitted = true;
