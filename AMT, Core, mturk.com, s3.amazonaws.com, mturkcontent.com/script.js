@@ -139448,7 +139448,8 @@ qatar,80
 					//~ catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
 					catch_include_array: [
 						'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
-						'<title>503 Service Temporarily Unavailable</title>'
+						'<title>503 Service Temporarily Unavailable</title>',
+						'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
 					],
 					seed: {
 						companyId:companyId,
@@ -147606,7 +147607,7 @@ function top_window(okay_to_run) {
 			// Init.
 			page();
 			// Set interval?
-			setInterval(function() {page();}, 30000);
+			setInterval(function() {page();}, 12000);
 			
 			// ...
 			document.body.addEventListener('dblclick', page, false);
