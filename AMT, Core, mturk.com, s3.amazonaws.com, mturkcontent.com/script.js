@@ -33415,6 +33415,9 @@ function MT__RUN() {
 		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:78px;');
 		document.body.appendChild(d3c);
 		d3c.innerText = 'Hide/Show Street View';
+		var middleLine = document.createElement('div');
+		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:black;z-index:9999999;hidden:true;');
+		document.body.appendChild(middleLine);
 		//~ // Images div
 		//~ var d4 = document.createElement('div');
 		//~ d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
@@ -33872,18 +33875,20 @@ function MT__RUN() {
 					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
 						x[i].click();
 						o.curr_map_view = 'map';
+						middleLine.style.hidden = true;
 						break;
 						//~ console.log('map');
 						//~ console.log(x[i].style.fontWeight);
 						//~ console.log(x[i].style);
 						//~ console.log(JSON.stringify(x[i].style));
-						
+							
 					}
 					
 					// Go to satellite
 					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
 						x[i].click();
 						o.curr_map_view = null;
+						middleLine.style.hidden = false;
 						break;
 						//~ console.log('sat');
 						//~ console.log(x[i].style.fontWeight);
