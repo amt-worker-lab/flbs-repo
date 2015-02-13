@@ -33416,7 +33416,7 @@ function MT__RUN() {
 		document.body.appendChild(d3c);
 		d3c.innerText = 'Hide/Show Street View';
 		var middleLine = document.createElement('div');
-		middleLine.setAttribute('style','position:absolute;top:78px;width:3px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
+		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
 		document.body.appendChild(middleLine);
 		//~ // Images div
 		//~ var d4 = document.createElement('div');
