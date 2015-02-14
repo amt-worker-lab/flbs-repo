@@ -139288,7 +139288,7 @@ qatar,80
 	
 	//
 	// Jason Santiago
-	// aka Kronopin
+	// Kronopin (aka)
 	// 3I2IYPM3ZTX3XI6LHP7MND84RC9J84
 	//~ s='<h2><span style="font-family:arial,helvetica,sans-serif;"><b>Your task is to determine the number of employees a company has on LinkedIn.</b></span></h2>';
 	s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
