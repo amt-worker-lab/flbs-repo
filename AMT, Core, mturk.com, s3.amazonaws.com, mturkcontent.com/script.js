@@ -67399,7 +67399,10 @@ qatar,80
 		//~ GM_addStyle('ol {position:absolute;top:1200px;}');
 		//~ GM_addStyle('#submitButton {height:80px;margin-top:8px;}');
 		
-		GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		//~ GM_addStyle('.container {position:absolute;top:180px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+		
+		GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;position:absolute;top:1600px;}');
+		
 		GM_addStyle('.panel {position:absolute;top:2000px;}');
 		
 		//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
@@ -67424,14 +67427,20 @@ qatar,80
 		
 		//BEGIN ITEMS
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:30%;width:35%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:60px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
+		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:300px;left:30%;width:68%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:1400px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
+		//
 		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:0px;left:65%;width:34%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1c.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1c);
+		//
+		var d1d = document.createElement('div');
+		d1d.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1d);
 		//
 		var d2 = document.createElement('textarea');
 		d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
@@ -67439,7 +67448,7 @@ qatar,80
 		//
 		var d3 = document.createElement('input');
 		d3.type = 'button';
-		d3.setAttribute('style','position:absolute;top:62px;left:0;width:28%;height:30px;');
+		d3.setAttribute('style','position:absolute;top:0px;left:30%;width:28%;height:60px;');
 		document.body.appendChild(d3);
 		//END ITEMS
 				
@@ -67471,8 +67480,8 @@ qatar,80
 			new AMT___core_factory().nextTab();
 			doSubmit();
 		}
-		
-		// NEW TW
+		//
+		d1d.innerText = o.comp;
 		
 		// ...
 		kyle_morris_linkedin_biz__init();
