@@ -67581,8 +67581,6 @@ qatar,80
 				
 				// 0 Results???
 				// Both sides
-				//~ console.log(d1.innerText == v);
-				//~ console.log(/\.\w+$/.exec(d2.value));
 				if (d1.innerText == v && /\.\w+$/.exec(d2.value)) {
 					d2.value = d2.value.replace(/\.\w+$/, '');
 					kyle_morris_linkedin_biz__init();
@@ -67612,11 +67610,20 @@ qatar,80
 				rs[i][1] = rs[i][1].replace(/(http:\/\/|)\w+\.linkedin\.[^\/]+\/ *company/, '');
 				
 				var d = document.createElement('div');
-				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				d.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 				d.y_url = short;
-				d.className = 'exe';
+				d.className = short;
+				//~ d.className = 'exe';
 				d.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
+					//~ this.style.backgroundColor = 'LightGreen';
+					//
+					var el = document.getElementsByClassName(this.className);
+					for (var i in el) {
+						if (i == 'length') break;
+						el[i].style.border = '2px solid LightGreen';
+						el[i].style.backgroundColor = 'aqua';
+					}
+					// ...
 					document.getElementById('web_url').value = this.y_url;
 					if (/^http:\/\/www\.linkedin\.com\/company\/[^\/$]+/.exec(this.y_url)) {
 						new AMT___core_factory().nextTab();
@@ -67625,6 +67632,23 @@ qatar,80
 				}
 				d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1], o.bold_array ); //.replace(/<\/?b>/g, '')
 				d1c.appendChild(d);
+				
+				// mouseover
+				d.onmouseover = function() {
+					var el = document.getElementsByClassName(this.className);
+					for (var i in el) {
+						if (i == 'length') break;
+						el[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				// mouseout
+				d.onmouseout = function() {
+					var el = document.getElementsByClassName(this.className);
+					for (var i in el) {
+						if (i == 'length') break;
+						el[i].style.backgroundColor = '';
+					}
+				}
 				
 				// ...
 				var a = document.createElement('a');
@@ -67693,10 +67717,11 @@ qatar,80
 				rs[i][1] = rs[i][1].replace(/(http:\/\/|)\w+\.linkedin\.[^\/]+\/ *company/, '');
 				
 				var d = document.createElement('div');
-				d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+				d.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 				d.y_url = short;
 				//d.y_url = rs[i][0];
-				d.className = 'exe';
+				d.className = short;
+				//~ d.className = 'exe';
 				d.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
 					document.getElementById('web_url').value = this.y_url;
@@ -67708,12 +67733,29 @@ qatar,80
 				d.innerHTML = short + '<br>' + extra + MT__bold(rs[i][1], o.bold_array); //.replace(/<[^>]*>/g, '')
 				d1.appendChild(d);
 				
+				// mouseover
+				d.onmouseover = function() {
+					var el = document.getElementsByClassName(this.className);
+					for (var i in el) {
+						if (i == 'length') break;
+						el[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+				// mouseout
+				d.onmouseout = function() {
+					var el = document.getElementsByClassName(this.className);
+					for (var i in el) {
+						if (i == 'length') break;
+						el[i].style.backgroundColor = '';
+					}
+				}
+				
 				var isMatch = (new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i')).exec(rs[i][1]);
 				//~ var x = new RegExp('Website *http:\/\/(www\\.|)<b>'+__js_escape_regEx(o.comp)+'<\\/b>\\/* ', 'i');
 				//~ console.log(isMatch);
 				//~ console.log(x);
 				if (isMatch) {
-					d.style.border = '6px solid LightGreen';
+					d.style.border = '6px solid blue';
 				}
 				
 				// ...
