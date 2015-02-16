@@ -142,6 +142,10 @@ function AMT__all_pages_util(r) {
 		);
 	}
 	
+	if(r.ScrollToPageButtom) {
+		alert('scroll to page button');
+	}
+	
 	// show_remove_links_button
 	// @param 
 	if ( r.show_remove_links_button ) {
