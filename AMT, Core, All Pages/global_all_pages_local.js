@@ -143,7 +143,9 @@ function AMT__all_pages_util(r) {
 	}
 	
 	if(r.ScrollToPageButtom) {
-		alert('scroll to page button');
+		window.setTimeout(function () {
+			window.scroll(0,100000);
+		}, 3000);
 	}
 	
 	// show_remove_links_button
