@@ -67437,7 +67437,7 @@ qatar,80
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:60px;left:66%;width:33%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:60px;left:66%;width:33%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		var d1c = document.createElement('div');
@@ -67447,6 +67447,10 @@ qatar,80
 		var d1d = document.createElement('div');
 		d1d.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:60px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1d);
+		//
+		var d1e = document.createElement('div');
+		d1e.setAttribute('style','position:absolute;top:260px;left:66%;width:33%;height:140px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1e);
 		//
 		var d2 = document.createElement('textarea');
 		d2.setAttribute('style','position:absolute;top:0px;left:0;width:28%;height:60px;');
@@ -67493,6 +67497,8 @@ qatar,80
 		kyle_morris_linkedin_biz__init();
 		kyle_morris_linkedin_biz__li_init();
 		kyle_morris_linkedin_biz__SP_init();
+		// Init site search
+		kyle_morris_linkedin_biz__SP_init_site_search();
 		
 		// ...
 		function kyle_morris_linkedin_biz__li_init() {
@@ -67571,6 +67577,52 @@ qatar,80
 				var d = document.createElement('div');
 				d.setAttribute('style','height:1200px;');
 				out.appendChild(d);
+			}
+		}
+		function kyle_morris_linkedin_biz__SP_init_site_search() {
+			d1e.innerText = '';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + d2.value + ' "linkedin"'),
+				callback_function: kyle_morris_linkedin_biz__SP_site_search_complete,
+				//~ return_init_object: true
+			});
+		}
+		function kyle_morris_linkedin_biz__SP_site_search_complete(rs) {
+			if (rs.length == 0) {
+				var v = '0\n'+d2.value;
+				
+				d1e.innerText = v;
+				return;
+			}
+			
+			for (var i in rs) {
+				
+				var short = rs[i][0].replace(/^https?:\/\/\w+\./i, '');
+				
+				var d = document.createElement('div');
+				d.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+				d.url = rs[i][0];
+				//~ d.className = 'exe';
+				d.onclick = function() {
+					window.open(this.url, 'new');
+					//~ this.style.backgroundColor = 'LightGreen';
+					//
+					//~ var el = document.getElementsByClassName(this.className);
+					//~ for (var i in el) {
+						//~ if (i == 'length') break;
+						//~ el[i].style.border = '2px solid LightGreen';
+						//~ el[i].style.backgroundColor = 'aqua';
+					//~ }
+					//~ // ...
+					//~ document.getElementById('web_url').value = this.y_url;
+					//~ if (/^http:\/\/www\.linkedin\.com\/company\/[^\/$]+/.exec(this.y_url)) {
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+					//~ }
+				}
+				d.innerHTML = short + '<br>' + MT__bold( rs[i][1], o.bold_array.concat(['linkedin']) );
+				d1e.appendChild(d);
 			}
 		}
 		function kyle_morris_linkedin_biz__SP_init() {
