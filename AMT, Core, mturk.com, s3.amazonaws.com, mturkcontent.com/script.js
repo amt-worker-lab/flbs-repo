@@ -67384,7 +67384,6 @@ qatar,80
 		}
 	}
 	
-	
 	//
 	// Kyle Morris
 	// 
