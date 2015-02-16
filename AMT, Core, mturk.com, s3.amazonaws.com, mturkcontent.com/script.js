@@ -67598,7 +67598,7 @@ qatar,80
 			
 			for (var i in rs) {
 				
-				var short = rs[i][0].replace(/^https?:\/\/\w+\./i, '');
+				var short = rs[i][0].replace(/^https?:\/\/(w+\.|)/i, '');
 				
 				var d = document.createElement('div');
 				d.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
