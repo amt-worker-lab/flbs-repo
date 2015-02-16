@@ -67427,15 +67427,15 @@ qatar,80
 		
 		//BEGIN ITEMS
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:60px;left:0%;width:50%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:60px;left:0%;width:33%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:1400px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:60px;left:66%;width:33%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1c.setAttribute('style','position:absolute;top:60px;left:33%;width:33%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1c);
 		//
 		var d1d = document.createElement('div');
@@ -67455,7 +67455,7 @@ qatar,80
 		// actions
 		d2.value = td;
 		d2.onblur = function() {
-			kyle_morris_linkedin_biz__init();
+			//~ kyle_morris_linkedin_biz__init(); // not this one. rate limiting. Feb16-'15
 			kyle_morris_linkedin_biz__li_init();
 			kyle_morris_linkedin_biz__SP_init();
 		}
