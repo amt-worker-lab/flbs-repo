@@ -2824,7 +2824,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:120px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;width:24% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -2837,6 +2837,7 @@ function MT__RUN() {
 				addr: td[1].innerText.trim(),
 				street: null,
 				street_num: null,
+				apt_num: null,
 				q: [
 					document.getElementById('building_class'),
 					document.getElementById('units'),
@@ -2851,11 +2852,28 @@ function MT__RUN() {
 			var tmpst = /^(\d+) ([^$]+)$/.exec(o.addr);
 			o.street = tmpst[2];
 			o.street_num = tmpst[1];
+			// Has apartment?
+			var tmpapt = / #([^ ]+)$/.exec(o.street);
+			if (tmpapt) {
+				o.apt_num = tmpapt[1];
+				o.street = o.street.replace(/ (#[^ ]+)$/, '').trim();
+			} else {
+				// Has apartment?
+				// I.e.: "Apt. 200"
+				var tmpapt = / apt\.? ([^$]+)$/i.exec(o.street);
+				if (tmpapt) {
+					o.apt_num = tmpapt[1];
+					o.street = o.street.replace(/ apt\.? ([^$]+)$/, '').trim();
+				} else {
+					
+				}
+			}
+			
 			
 			// focus
 			setTimeout(function() {
 				o.q[0].focus();
-			}, 6000);
+			}, 4000);
 			
 			/*BEGIN ITEMS*/
 			// SET ".links" OF EACH DIV!!!
@@ -2872,21 +2890,26 @@ function MT__RUN() {
 			document.body.appendChild(d2b);
 			var d2c = document.createElement('input');
 			d2c.type = 'button';
-			d2c.setAttribute('style', 'position:absolute;top:60px;left:0%;width:24%;height:30px;');
+			d2c.setAttribute('style', 'position:absolute;top:90px;left:0%;width:24%;height:30px;');
 			document.body.appendChild(d2c);
 			var d2d = document.createElement('input');
 			d2d.type = 'button';
-			d2d.setAttribute('style', 'position:absolute;top:90px;left:0%;width:24%;height:30px;');
+			d2d.setAttribute('style', 'position:absolute;top:120px;left:0%;width:24%;height:30px;');
 			document.body.appendChild(d2d);
+			var d2e = document.createElement('input');
+			d2e.type = 'text';
+			d2e.setAttribute('style', 'position:absolute;top:60px;left:0%;width:24%;height:30px;');
+			document.body.appendChild(d2e);
 			/*END ITEMS*/
 			
 			// value
 			d2a.value = o.street_num;
 			d2b.value = o.street;
+			d2e.value = o.apt_num;
 			d2c.value = 'Biz.'
 			d2d.value = 'Clear'
 			// onblur
-			d2a.onblur = d2b.onblur = function() {
+			d2a.onblur = d2b.onblur = d2e.onblur = function() {
 				acris();
 			}
 			// onclick
@@ -2904,8 +2927,9 @@ function MT__RUN() {
 			var ef = new AMT___events_factory();
 			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2e.addEventListener('keydown', ef.keydown__blur_field, true);
 			ef.mouseup__delete_range({
-				elements: [d2a, d2b],
+				elements: [d2a, d2b, d2e],
 				blur_element: true
 			});
 			
@@ -2952,7 +2976,8 @@ function MT__RUN() {
 				var u = 'http://a836-acris.nyc.gov/CP/LookUp/Return?select_borough=3&text_block=&text_lot='+
 					'&text_street_number='+ encodeURIComponent(d2a.value) +
 					'&text_street_name='+ encodeURIComponent(d2b.value) +
-					'&text_unit=&find_type=FindBBL&find_unit_code=&text_floor=&text_sq_feet=&req_ass_val=';
+					'&text_unit='+ encodeURIComponent(d2e.value)+
+					'&find_type=FindBBL&find_unit_code=&text_floor=&text_sq_feet=&req_ass_val=';
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
@@ -3070,7 +3095,7 @@ function MT__RUN() {
 					var num_commas = name.split(',').length;// == 1) ? 0 : 1;
 					if (num_newline != 1) {
 						//~ err(false, name);
-						annotate_name(name);
+						//~ annotate_name(name);
 					} else if (num_commas == 2) { // only 1 comma
 						name = name.split(',');
 						o.q[2].value = name[1].trim();
@@ -3078,9 +3103,9 @@ function MT__RUN() {
 						o.q[2].style.backgroundColor = '';
 						o.q[3].style.backgroundColor = '';
 					} else if (num_commas >= 3) { // more than 1 comma
-						annotate_name(name);
+						//~ annotate_name(name);
 					} else if (num_words != 2) { // not two words, no commas
-						annotate_name(name);
+						//~ annotate_name(name);
 					} else { // two words, no commas
 						name = name.split(' ');
 						o.q[2].value = name[0];
@@ -3088,6 +3113,9 @@ function MT__RUN() {
 						o.q[2].style.backgroundColor = '';
 						o.q[3].style.backgroundColor = '';
 					}
+					
+					// Always annotate! :)
+					annotate_name(reg[1].trim());
 				} else {
 					console.log(rs);
 				}
