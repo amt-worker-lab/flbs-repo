@@ -2956,7 +2956,13 @@ function MT__RUN() {
 			}
 			
 			// init
-			acris();
+			// Use AMT___POPUP__initializeGlobals to get values from
+			// extension localStorage ("bird"). AMT___POPUP___PROXY_REDACTED_
+			// before anything gets started.
+			AMT___POPUP__initializeGlobals(
+				acris()
+			);
+			//acris();
 			
 			// err
 			function err(el, errorMsg) {
@@ -3037,7 +3043,7 @@ function MT__RUN() {
 					'0123456789ABCDEF'
 				);
 				md5 += '.pdf'; // Add .pdf
-				var pdfurl = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+				var pdfurl = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' +
 							encodeURIComponent(u) +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent
 							(
@@ -3054,7 +3060,7 @@ function MT__RUN() {
 						if (response.status != 200) return;
 						
 						// Set utility window
-						AMT__setUtilityTabs([{url: MT___host + '/mturk/.cached/' + md5}]);
+						AMT__setUtilityTabs([{url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/.cached/' + md5}]);
 						
 						// pdftotext
 						new AMT___requests_factory().io__command_line_request({
@@ -3142,7 +3148,7 @@ function MT__RUN() {
 					'https://a836-propertyportal.nyc.gov/ExemptionDetails.aspx?borough3block'+o.bbl.block+'lot'+o.bbl.lot,
 					'0123456789ABCDEF'
 				);
-				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+				var u = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' +
 							encodeURIComponent('https://a836-propertyportal.nyc.gov/ExemptionDetails.aspx') +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 								{
