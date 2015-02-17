@@ -2824,7 +2824,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:90px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:120px !important;width:24% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -2874,12 +2874,17 @@ function MT__RUN() {
 			d2c.type = 'button';
 			d2c.setAttribute('style', 'position:absolute;top:60px;left:0%;width:24%;height:30px;');
 			document.body.appendChild(d2c);
+			var d2d = document.createElement('input');
+			d2d.type = 'button';
+			d2d.setAttribute('style', 'position:absolute;top:90px;left:0%;width:24%;height:30px;');
+			document.body.appendChild(d2d);
 			/*END ITEMS*/
 			
 			// value
 			d2a.value = o.street_num;
 			d2b.value = o.street;
 			d2c.value = 'Biz.'
+			d2d.value = 'Clear'
 			// onblur
 			d2a.onblur = d2b.onblur = function() {
 				acris();
@@ -2887,6 +2892,11 @@ function MT__RUN() {
 			// onclick
 			d2c.onclick = function() {
 				o.q[2].value = o.q[3].value + ' ' + o.q[2].value;// ignore comma & order?
+				o.q[3].value = '';
+				o.q[2].focus();
+			}
+			d2d.onclick = function() {
+				o.q[2].value = '';
 				o.q[3].value = '';
 				o.q[2].focus();
 			}
@@ -2904,6 +2914,7 @@ function MT__RUN() {
 			// occurred.
 			// aqua	= no scrape
 			// ""	= scrape
+			o.q[0].style.backgroundColor = 'aqua';
 			o.q[1].style.backgroundColor = 'aqua';
 			o.q[2].style.backgroundColor = 'aqua';
 			o.q[3].style.backgroundColor = 'aqua';
@@ -3060,19 +3071,17 @@ function MT__RUN() {
 					if (num_newline != 1) {
 						//~ err(false, name);
 						annotate_name(name);
-					} else if (num_words != 2) {
-						annotate_name(name);
-					//~ } else if (num_commas == 1) {
-						//~ annotate_name(name);
-					} else if (num_commas == 2) {
+					} else if (num_commas == 2) { // only 1 comma
 						name = name.split(',');
 						o.q[2].value = name[1].trim();
 						o.q[3].value = name[0].trim();
 						o.q[2].style.backgroundColor = '';
 						o.q[3].style.backgroundColor = '';
-					} else if (num_commas >= 3) {
+					} else if (num_commas >= 3) { // more than 1 comma
 						annotate_name(name);
-					} else {
+					} else if (num_words != 2) { // not two words, no commas
+						annotate_name(name);
+					} else { // two words, no commas
 						name = name.split(' ');
 						o.q[2].value = name[0];
 						o.q[3].value = name[1];
@@ -3081,6 +3090,20 @@ function MT__RUN() {
 					}
 				} else {
 					console.log(rs);
+				}
+				
+				// Building class
+				// 
+				var reg = /[\r\n]BUILDING CLASS: ([^ ]+) /.exec(rs); // ALL BUILDING CLASSES ARE /[A-Z][A-Z0-9]/
+				if (reg) {
+					var bc = reg[1].trim();
+					if (o.q[0].value == bc) {
+						o.q[0].style.backgroundColor = '';
+					} else {
+						err(o.q[0], 'err :: __BUILDING CLASS DOES NOT MATCH__');
+					}
+				} else {
+					err(o.q[0], 'err :: __BUILDING CLASS IS NOT FOUND__');
 				}
 			}
 			// curl
