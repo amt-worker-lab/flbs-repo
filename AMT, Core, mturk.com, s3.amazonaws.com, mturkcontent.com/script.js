@@ -3096,6 +3096,7 @@ function MT__RUN() {
 				var reg = /OWNER NAME[\r\n\t\s]+((.|\s)*?(?=PROPERTY ADDRESS|$)|$)/.exec(rs);
 				if (reg) {
 					var name = reg[1].trim();
+					var tmpnm = name;
 					var num_newline = name.split('\n').length;
 					var num_words = name.split(' ').length;
 					var num_commas = name.split(',').length;// == 1) ? 0 : 1;
@@ -3109,9 +3110,9 @@ function MT__RUN() {
 						o.q[2].style.backgroundColor = '';
 						o.q[3].style.backgroundColor = '';
 					} else if (num_commas >= 3) { // more than 1 comma
-						//~ annotate_name(name);
+						o.q[2].value = tmpnm;
 					} else if (num_words != 2) { // not two words, no commas
-						//~ annotate_name(name);
+						o.q[2].value = tmpnm;
 					} else { // two words, no commas
 						name = name.split(' ');
 						o.q[2].value = name[0];
@@ -3121,7 +3122,7 @@ function MT__RUN() {
 					}
 					
 					// Always annotate! :)
-					annotate_name(reg[1].trim());
+					annotate_name(tmpnm);
 				} else {
 					console.log(rs);
 				}
