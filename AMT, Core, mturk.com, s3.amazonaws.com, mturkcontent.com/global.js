@@ -2027,26 +2027,49 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 		return true;
 	}
 }
+/**
+ * mouseup__delete_range
+ * 
+ * @param element		html object
+ * @param elements		array, array of html objects
+ * 
+ * @TODO PAGE.addEventListener. Then watch for the target, or something similar (?), and blur this element.
+ * Problem: onmouseup is only registered for el.onmouseup but not for page.onmouseup.
+ */
 AMT___events_factory.prototype.mouseup__delete_range = function(options_object) {
 	
 	var options_object = options_object;
 	
-	options_object.element.addEventListener('mouseup', function() {
-		
-		// Only run when the selection is not blank.
-		//
-		//
-		if (window.getSelection().toString() == '') return;
-		
-		var text = this.value;
-		var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
-		this.value = new_text;
-		
-		if (options_object.hasOwnProperty('callback')) {
-			options_object.callback(options_object);
+	if (options_object.hasOwnProperty('element')) {
+		add_evl(options_object.element); //single
+	} else if (options_object.hasOwnProperty('elements')) {
+		for (var i in options_object.elements) {
+			add_evl(options_object.elements[i]);
 		}
-		
-	}, false);
+	}
+	
+	function add_evl(el) {
+		var el = el;
+		el.addEventListener('mouseup', function() {
+			
+			// Only run when the selection is not blank.
+			//
+			//
+			if (window.getSelection().toString() == '') return;
+			
+			var text = this.value;
+			
+			var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
+			this.value = new_text.trim(); // DEFAULT IS TRIM! Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
+			
+			if (options_object.hasOwnProperty('callback')) {
+				options_object.callback(options_object);
+			} else if (options_object.hasOwnProperty('blur_element')) {
+				el.blur();
+			}
+			
+		}, false);
+	}
 	
 }
 
@@ -3938,12 +3961,19 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 		}
 	});
 }
-//
+/**
+ * io__command_line_request
+ * 
+ */
 AMT___requests_factory.prototype.io__command_line_request = function(options_object, callback_function_complete) //
 {
 	var options_object				= options_object;
-	var callback_function_complete	= callback_function_complete;
+	var callback_function_complete	= callback_function_complete; // may be false/null
+	if (options_object.hasOwnProperty('callback')) {
+		callback_function_complete = options_object.callback;
+	}
 	
+	// xhr
 	GM_xmlhttpRequest({
 		method: "POST",
 		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
@@ -3952,15 +3982,7 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		onload: function(response) {
-			// DEBUG
-			//
-			//
-			//~ var rs = response.responseText;
-			//~ console.log(rs);
-			
-			//~ if (response.status != 200) return;
-			//~ options_object.responseText = rs;
-			//~ callback_function(download_object); // send this back!
+			// could send back here, if desired!
 		}
 	});
 	
@@ -3984,14 +4006,15 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
 				
 				clearInterval(xint);
 				
+				options_object.responseText = rs;
+				options_object.rs = rs; // synonym of responseText
+				
+				callback_function_complete(options_object); // send this back!
+				
 				//~ console.log(rs);
 				//~ echo json_encode($files);
 				//~ 
 				//~ options_object.rs = JSON.parse(rs);
-				
-				options_object.responseText = rs;
-				
-				callback_function_complete(options_object); // send this back!
 			}
 		});
 	}, 1000);

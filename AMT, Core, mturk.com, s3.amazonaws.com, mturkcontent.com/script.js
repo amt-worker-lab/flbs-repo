@@ -2808,6 +2808,403 @@ function MT__RUN() {
 		a[1].click();
 	}
 	
+	// 
+	// David Pham
+	// Collect building class and units from database + break apart full name into first name and last name
+	//
+	/**
+	 * Gets all but #units: http://a836-acris.nyc.gov/CP/LookUp/Return?select_borough=3&text_block=&text_lot=&text_street_number=1262&text_street_name=JEFFERSON+AVE&text_unit=&find_type=FindBBL&find_unit_code=&text_floor=&text_sq_feet=&req_ass_val=
+	 */
+	s = '<p>1. Go to http://webapps.nyc.gov:8084/CICS/fin1/find001i<br>\n2. From the borough drop down, select Brooklyn<br>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:90px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var td = document.getElementsByTagName('td');
+			// Clear td[0]
+			// This is "<label>House number and street name:</label>"
+			if (td[0].innerText == 'House number and street name:')
+				td[0].innerText = 'HN&SN:';
+			
+			var o = {
+				addr: td[1].innerText.trim(),
+				street: null,
+				street_num: null,
+				q: [
+					document.getElementById('building_class'),
+					document.getElementById('units'),
+					document.getElementById('first_name'),
+					document.getElementById('last_name')
+				],
+				bbl: {
+					block: null,
+					lot: null
+				}
+			}
+			var tmpst = /^(\d+) ([^$]+)$/.exec(o.addr);
+			o.street = tmpst[2];
+			o.street_num = tmpst[1];
+			
+			// focus
+			setTimeout(function() {
+				o.q[0].focus();
+			}, 6000);
+			
+			/*BEGIN ITEMS*/
+			// SET ".links" OF EACH DIV!!!
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:0px;left:24%;width:75%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2a = document.createElement('input');
+			d2a.type = 'text';
+			d2a.setAttribute('style', 'position:absolute;top:0px;left:0%;width:24%;height:30px;');
+			document.body.appendChild(d2a);
+			var d2b = document.createElement('input');
+			d2b.type = 'text';
+			d2b.setAttribute('style', 'position:absolute;top:30px;left:0%;width:24%;height:30px;');
+			document.body.appendChild(d2b);
+			var d2c = document.createElement('input');
+			d2c.type = 'button';
+			d2c.setAttribute('style', 'position:absolute;top:60px;left:0%;width:24%;height:30px;');
+			document.body.appendChild(d2c);
+			/*END ITEMS*/
+			
+			// value
+			d2a.value = o.street_num;
+			d2b.value = o.street;
+			d2c.value = 'Biz.'
+			// onblur
+			d2a.onblur = d2b.onblur = function() {
+				acris();
+			}
+			// onclick
+			d2c.onclick = function() {
+				o.q[2].value = o.q[3].value + ' ' + o.q[2].value;// ignore comma & order?
+				o.q[3].value = '';
+				o.q[2].focus();
+			}
+			// ef
+			var ef = new AMT___events_factory();
+			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2a, d2b],
+				blur_element: true
+			});
+			
+			// Set bgcolor of o.q[1] to aqua!
+			// This will show whether the PDF scrape has
+			// occurred.
+			// aqua	= no scrape
+			// ""	= scrape
+			o.q[1].style.backgroundColor = 'aqua';
+			o.q[2].style.backgroundColor = 'aqua';
+			o.q[3].style.backgroundColor = 'aqua';
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '' && i != 3) return false; // all but last must be filled
+				}
+				// sbm...
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+			// init
+			acris();
+			
+			// err
+			function err(el, errorMsg) {
+				if (!errorMsg)
+					d1.innerText = 'ERROR';
+				else {
+					var div = document.createElement('div');
+					div.innerHTML = errorMsg;
+					d1.appendChild(div);
+				}
+				if (el)
+					el.style.border = '4px solid blue';
+			}
+			// acris
+			function acris() {
+				d1.innerText = '';
+				var u = 'http://a836-acris.nyc.gov/CP/LookUp/Return?select_borough=3&text_block=&text_lot='+
+					'&text_street_number='+ encodeURIComponent(d2a.value) +
+					'&text_street_name='+ encodeURIComponent(d2b.value) +
+					'&text_unit=&find_type=FindBBL&find_unit_code=&text_floor=&text_sq_feet=&req_ass_val=';
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) return;
+						
+						// Err?
+						//<input type="hidden" name="hid_error" value="INPUT ERROR: HOUSE NUMBER"/>
+						//<input type="hidden" name="hid_error" value=""/>
+						if (rs.indexOf('<input type="hidden" name="hid_error" value=""/>') == -1) {
+							var reg = /<input type="hidden" name="hid_error" value="([^>]+)>/.exec(rs); // trailing="\/
+							if (reg) {
+								err(false, 'error message ::'+reg[1].replace('"\/', ''));
+							} else {
+								err(false, 'error message?');
+							}
+							return;
+						}
+						
+						// Scrape bbl
+						var reg = /<input type="hidden" name="hid_block" value="([\d]+)" \/>/.exec(rs);
+						if (reg) {
+							o.bbl.block = reg[1];
+						} else {
+							err();
+							return;
+						}
+						var reg = /<input type="hidden" name="hid_lot" value="([\d]+)" \/>/.exec(rs);
+						if (reg) {
+							o.bbl.lot = reg[1];
+						} else {
+							err();
+							return;
+						}
+						
+						// Looks good?
+						// Load with curl
+						propertyportal();
+						
+						// Open extra PDF doc with util window
+						pdf();
+					}
+				});
+			}
+			// pdf
+			// IN ADDITION IT IS POSSIBLE TO SCRAPE THIS PDF
+			// THE TEXT IS, E.G.: "\nUNITS: 4 residential - 2 non-residential\n"
+			function pdf() {
+				// PDF url
+				//http://nycprop.nyc.gov/nycproperty/StatementSearch?bbl=3016550017&stmtDate=20150115&stmtType=NPV
+				var u = 'http://nycprop.nyc.gov/nycproperty/StatementSearch?bbl=3'+o.bbl.block+o.bbl.lot+'&stmtDate=20150115&stmtType=NPV'
+				
+				// Cache the PDF
+				var md5 = any_md5(// Make a filename unique to this request (block/lot)
+					u,
+					'0123456789ABCDEF'
+				);
+				md5 += '.pdf'; // Add .pdf
+				var pdfurl = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+							encodeURIComponent(u) +
+							'&AMT__output_html_from_URL__options=' + encodeURIComponent
+							(
+								JSON.stringify({
+									short_filename: md5
+								})
+							);
+				// xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: pdfurl,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) return;
+						
+						// Set utility window
+						AMT__setUtilityTabs([{url: MT___host + '/mturk/.cached/' + md5}]);
+						
+						// pdftotext
+						new AMT___requests_factory().io__command_line_request({
+							filename: md5,
+							command: 'pdftotext',
+							callback: pdftotext
+						});
+					}
+				});
+			}
+			function pdftotext(init_object) {
+				//~ console.log(init_object);
+				//~ console.log(init_object.rs);
+				
+				var rs = init_object.rs;
+				
+				// 1=e.g. "4 residential - 2 non-residential"
+				var reg = /[\r\n]UNITS: ([^\r\n]+)[\r\n]/.exec(rs);
+				if (reg) {
+					var n = reg[1].trim();
+					if (n != '') {
+						o.q[1].value = reg[1];
+						o.q[1].style.backgroundColor = '';
+					} else {
+						console.log(rs);
+					}
+				} else {
+					console.log(rs);
+				}
+				
+				// owner name
+				// e.g. HENNY KATZ
+				var reg = /OWNER NAME[\r\n\t\s]+((.|\s)*?(?=PROPERTY ADDRESS|$)|$)/.exec(rs);
+				if (reg) {
+					var name = reg[1].trim();
+					var num_newline = name.split('\n').length;
+					var num_words = name.split(' ').length;
+					var num_commas = name.split(',').length;// == 1) ? 0 : 1;
+					if (num_newline != 1) {
+						//~ err(false, name);
+						annotate_name(name);
+					} else if (num_words != 2) {
+						annotate_name(name);
+					//~ } else if (num_commas == 1) {
+						//~ annotate_name(name);
+					} else if (num_commas == 2) {
+						name = name.split(',');
+						o.q[2].value = name[1].trim();
+						o.q[3].value = name[0].trim();
+						o.q[2].style.backgroundColor = '';
+						o.q[3].style.backgroundColor = '';
+					} else if (num_commas >= 3) {
+						annotate_name(name);
+					} else {
+						name = name.split(' ');
+						o.q[2].value = name[0];
+						o.q[3].value = name[1];
+						o.q[2].style.backgroundColor = '';
+						o.q[3].style.backgroundColor = '';
+					}
+				} else {
+					console.log(rs);
+				}
+			}
+			// curl
+			function propertyportal() {
+				//curl "https://a836-propertyportal.nyc.gov/ExemptionDetails.aspx" -H "Accept-Encoding: gzip, deflate, sdch" -H "Accept-Language: en-US,en;q=0.8" -H "User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Referer: https://a836-propertyportal.nyc.gov/" -H "Cookie: WT_FPC=id=:lv=:ss=; ASP.NET_SessionId=; borough=3; block=03385; lot=0053; style=default" -H "Connection: keep-alive" -H "Cache-Control: max-age=0" --compressed
+				
+				var md5 = any_md5(// Make a filename unique to this request (block/lot)
+					'https://a836-propertyportal.nyc.gov/ExemptionDetails.aspx?borough3block'+o.bbl.block+'lot'+o.bbl.lot,
+					'0123456789ABCDEF'
+				);
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+							encodeURIComponent('https://a836-propertyportal.nyc.gov/ExemptionDetails.aspx') +
+							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+								{
+									short_filename: md5,
+									headers_array: [
+										'Accept-Encoding: gzip, deflate, sdch',
+										'Accept-Language: en-US,en;q=0.8',
+										'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36',
+										'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+										'Referer: https://a836-propertyportal.nyc.gov/',
+										'Cookie: WT_FPC=id=:lv=:ss=; ASP.NET_SessionId=; borough=3; block='+o.bbl.block+'; lot='+o.bbl.lot+'; style=default',
+										'Connection: keep-alive',
+										'Cache-Control: max-age=0'
+									]
+								}
+							));
+				// xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) return;
+						
+						console.log(rs);
+						
+						var sbm = true;
+						
+						// 1=e.g. C0
+						// 2=e.g. Multi-use Residence__SINGLE/MULT RES W/STORES/OFFICES
+						//<span id="ctl00_SampleContent_ctl02_lblBuildingClassCd">C0</span>\n<span id="ctl00_SampleContent_ctl02_lblBuildingClassDesc">Walk-up apartments__THREE FAMILIES</span>
+						var reg = /<span id="ctl00_SampleContent_ctl02_lblBuildingClassCd">([^<]+)<\/span>[\r\n\t\s]+-[\r\n\t\s]+<span id="ctl00_SampleContent_ctl02_lblBuildingClassDesc">([^<]+)<\/span>/.exec(rs);
+						if (reg) {
+							o.q[0].value = reg[1];
+							d1.innerText = __js_clean_html_str(reg[2]);
+						} else {
+							err(o.q[0]);
+							sbm = false;
+							return;
+						}
+						// 1=e.g. 3
+						var reg = /<td class="contentDataElement">[\r\n\t\s]+<span id="ctl00_SampleContent_ctl02_lblNumberOfUnits">([\d]+)<\/span>[\r\n\t\s]+<\/td>/.exec(rs);
+						if (reg) {
+							o.q[1].value = reg[1] + ' residential';
+						} else {
+							err(o.q[1]);
+							sbm = false;
+							return;
+						}
+						// e.g.<td id="ctl00_SampleContent_ctl02_lblOwnerNames" class="contentDataElement">BERRY , CHAD K.\n<BR />DALGLISH, GABRIEL C.</td>\n</td>
+						// 1=e.g. TORRES, APOLINAR
+						// OR 1=e.g. BERRY , CHAD K.\n<BR />DALGLISH, GABRIEL C.
+						var reg = /<td id="ctl00_SampleContent_ctl02_lblOwnerNames" class="contentDataElement">([^<]+)<\/td>[\r\n\t\s]+<\/td>/.exec(rs);
+						var reg2= /<td id="ctl00_SampleContent_ctl02_lblOwnerNames" class="contentDataElement">((.|\s)*?(?=<\/td>|$)|$)/.exec(rs);
+						if (reg) {
+							var n = __js_clean_html_str(reg[1]).trim();
+							var nms = n.split(',');
+							if (nms.length == 2) {
+								o.q[2].value = nms[1].trim();
+								o.q[3].value = nms[0];
+							} else {
+								
+								//TRY THE FIRST
+								//~ o.q[2].value = n;
+								//~ err(o.q[2], n);
+								
+								annotate_name(n);
+								
+								sbm = false;
+								return;
+							}
+						} else if (reg2) {
+							//~ err(o.q[2], reg2[1]);
+							
+							var mult = reg2[1].replace(/<br *\/*>/gi, ', ');
+							o.q[2].value = mult;
+							
+							annotate_name(mult);
+							
+							// ...
+							sbm = false;
+							return;
+						} else {
+							err(o.q[2]);
+							sbm = false;
+							return;
+						}
+					}
+				});
+			}
+			// annotate_name
+			function annotate_name(str) {
+				// annotate
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: str,
+					output_fields: o.q,
+					callback_mouseup: function(addField) {
+						
+						// Remove trailing commas
+						addField.value = addField.value.replace(/ *,*$/, '');
+						
+						//XX Go to submit
+					}
+					//~ appendToField: true,
+					//~ appendToField_glue: '\n',
+					//~ delimeter: '',
+					//~ focusToField: false
+				});
+				d1.appendChild(buttons);
+			}
+		}
+		new run().f();
+	}
 	/**
 	 * Scrape amazon.com
 	 * Amazon.com
