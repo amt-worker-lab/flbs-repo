@@ -148009,6 +148009,7 @@ function top_window(okay_to_run) {
 								d2.value = err;
 								d2.style.border = '8px dashed green';
 								d2.style.backgroundColor = 'MintCream';
+								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
 								return;
 							}
 						}
@@ -148248,6 +148249,7 @@ function top_window(okay_to_run) {
 								d2.value = err;
 								d2.style.border = '8px dashed green';
 								d2.style.backgroundColor = 'MintCream';
+								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
 								return;
 							}
 						}
