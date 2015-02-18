@@ -33851,10 +33851,9 @@ function MT__RUN() {
 		// Left iframe
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
-			'position:absolute;top:80px;left:0;width:1%;border:1px solid blue;background-color:#eee;visibility:visible;'//height:'+tmp_h+';
+			'position:absolute;top:80px;left:0;width:1px;border:1px solid blue;background-color:#eee;visibility:visible;'
 		);//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d2);
-		//~ d2.src = first_url;
 		// Change map button, for google
  		var d3 = document.createElement('button');
  		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:78px;');
@@ -43613,6 +43612,17 @@ function MT__RUN() {
 			});
 		}
 	}
+	
+	/**
+	 * CATEGORIATION
+	 * 
+	 * Dustin Smith
+	 * Chris Anderson
+	 * ...
+	 * 
+	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
+	 */
+	
 	
 	/**
 	 * 
@@ -147985,19 +147995,37 @@ function top_window(okay_to_run) {
 							return;
 						}
 						
-						if  (
-							rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
-							rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
-							rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1
-							//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1
-							)
-						{
-							d2.value = 'The image is too big, or the network connection is too slow to download it.';
-							d2.style.border = '8px dashed green';
-							d2.style.backgroundColor = 'MintCream';
-							console.log('The image is too big, or the network connection is too slow to download it.');
-							return;
+						var errors = [
+							'The image is too big, or the network connection is too slow to download it.',
+							'The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.',
+							'The URL doesn\'t refer to an image, or the image is not publicly accessible.',
+							'Images must be smaller than 20MB.',
+						];
+						var has_error = false;
+						for (var i in errors) {
+							var err = errors[i];
+							if (rs.indexOf(err) != -1) {
+								has_error = true;
+								d2.value = err;
+								d2.style.border = '8px dashed green';
+								d2.style.backgroundColor = 'MintCream';
+								return;
+							}
 						}
+						//~ if  (
+							//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
+							//~ rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
+							//~ rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1 ||
+							//~ rs.indexOf('Images must be smaller than 20MB.') != -1
+							//rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1
+							//~ )
+						//~ {
+							//~ d2.value = 'The image is too big, or the network connection is too slow to download it.';
+							//~ d2.style.border = '8px dashed green';
+							//~ d2.style.backgroundColor = 'MintCream';
+							//~ console.log('The image is too big, or the network connection is too slow to download it.');
+							//~ return;
+						//~ }
 						
 						
 						
@@ -148206,18 +148234,35 @@ function top_window(okay_to_run) {
 							return;
 						}
 						
-						if  (
-							rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
-							rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
-							rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1
-							)
-						{
-							d2.value = 'The image is too big, or the network connection is too slow to download it.';
-							d2.style.border = '8px dashed green';
-							d2.style.backgroundColor = 'MintCream';
-							//~ console.log('The image is too big, or the network connection is too slow to download it.');
-							return;
+						var errors = [
+							'The image is too big, or the network connection is too slow to download it.',
+							'The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.',
+							'The URL doesn\'t refer to an image, or the image is not publicly accessible.',
+							'Images must be smaller than 20MB.',
+						];
+						var has_error = false;
+						for (var i in errors) {
+							var err = errors[i];
+							if (rs.indexOf(err) != -1) {
+								has_error = true;
+								d2.value = err;
+								d2.style.border = '8px dashed green';
+								d2.style.backgroundColor = 'MintCream';
+								return;
+							}
 						}
+						//~ if  (
+							//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
+							//~ rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
+							//~ rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1
+							//~ )
+						//~ {
+							//~ d2.value = 'The image is too big, or the network connection is too slow to download it.';
+							//~ d2.style.border = '8px dashed green';
+							//~ d2.style.backgroundColor = 'MintCream';
+							//console.log('The image is too big, or the network connection is too slow to download it.');
+							//~ return;
+						//~ }
 						
 						//<div id=resultStats>About 3 results<nobr>
 						//<div id="resultStats">About 2 results<nobr>
