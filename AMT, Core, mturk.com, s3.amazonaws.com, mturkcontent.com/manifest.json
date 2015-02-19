@@ -2,7 +2,7 @@
    "content_scripts": [ {
       "exclude_globs": [  ],
       "exclude_matches": [  ],
-      "include_globs": ["https://*.mturk.com/*", "https://s3.amazonaws.com/*", "https://*.mturkcontent.com/dynamic/hit*"],
+      "include_globs": ["https://*.mturk.com/*", "https://s3.amazonaws.com/*", "https://*.mturkcontent.com/dynamic/hit*", "http://localhost/mturk/.dev/*"],
       "js": [
 		"includes/pdfobject.js",
 		
