@@ -17464,7 +17464,7 @@ function MT__RUN() {
 			d3b.value = o.domain; // domain
 			d3b.onblur = function() {
 				var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
-				Rachel_Scott_decision_maker__scrapy([url], [this.value]);
+				scrapy([url], [this.value]);
 			}
 			
 			// return button
