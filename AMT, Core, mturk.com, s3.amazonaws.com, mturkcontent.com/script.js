@@ -17803,6 +17803,450 @@ function MT__RUN() {
 		return;
 	}
 	
+	
+	s = "Find the email&nbsp;address for this Photographer&nbsp;using the website provided.";
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.section {position:absolute;top:0px;left:0;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			GM_addStyle('#submitButton {position:absolute;top:-300px;left:50%;width:50%;height:40px}');
+			//~ GM_addStyle('table {zoom:0.6;}');
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:300px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div'); // DEBUG
+			d1b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:300px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			//~ var d2 = document.createElement('iframe');
+			//~ d2.setAttribute('style','position:absolute;top:790px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;sandbox:allow-scripts allow-same-origin;visibility:hidden;');
+			//~ document.body.appendChild(d2);
+			//~ var d3 = document.createElement('input');
+			//~ d3.setAttribute('type', 'button');
+			//~ d3.setAttribute('style','position:absolute;top:760px;left:0%;width:48%;height:30px;text-align:left;');
+			//~ document.body.appendChild(d3);
+			var d3b= document.createElement('textarea');
+			d3b.setAttribute('type', 'text');
+			d3b.setAttribute('style','position:absolute;top:0px;left:0%;width:10%;height:10px;text-align:left;');
+			document.body.appendChild(d3b);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 300 // offset top
+			});
+			
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode);
+				if(e.keyCode == 220) {
+					new AMT___core_factory().iframe2parent__postMessage({action: 'click_return_button'});
+				}
+			});
+			new AMT___core_factory().iframe2parent__postMessage({action: 'return_button_hotkey', keyCode: 220});
+			
+			//~ // mouseover
+			//~ d2.addEventListener('mouseover', function() {
+				//~ d1.scrollIntoView()
+			//~ }, false);
+			//~ 
+			//~ // Flicker
+			//~ d2.addEventListener('load', function() {
+				//~ this.style.visibility = 'visible';
+				//~ // Tell child to zoom out & extend
+				//~ var ifr_intv = setInterval(function() {
+					//~ d2.contentWindow.postMessage({task: 'AMT__all_pages_util', MT___all_pages_extend: true, MT___all_pages_zoom: true}, "*");
+				//~ }, 1000);
+			//~ }, false);
+			// NO email btn
+			//~ d3.value = 'NO@email.com';
+			//~ d3.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ document.getElementById('web_url').value = 'NO@email.com';
+				//~ 
+				//~ showNextTab();
+				//~ doSubmit();
+			//~ }
+			
+			var b  = document.getElementsByTagName('b');
+			var td = document.getElementsByTagName('td');
+			var labels = document.getElementsByTagName('label');
+			var o = {
+				domain: td[3].innerText.replace(/\/[^\/]*$/, '').trim(), // /$ or /[...]$
+				url: td[3],
+				name: td[0].innerText.trim(),
+				name_cleaned: td[0].innerText.trim().replace(/ \w\.* /g, '    ').replace(/\s+/g, ' '),
+				name_fn: null,
+				name_ln: null,
+				
+				sd_start_urls: [],
+				sd_allowed_domains: [],
+				sd_start_urls_obj: {}, // object key for sd_start_urls array
+				role: "photography", 
+				count_searches: 0,
+				sp_search1_first_result: null,
+				sp_search2_first_result: null
+			}
+			o.sd_allowed_domains.push(o.domain);
+			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.domain : o.domain;
+			var x = o.name.split(' ');
+			o.name_fn = x[0];
+			o.name_ln = (x.length > 1) ? x[x.length - 1] : x[0]; // last or first if not last
+			
+			console.log(o);
+			
+			// Skip?
+			//if (o.name != '') {
+			if (o.domain == '' || o.name == '') {
+				AMT___Floater.skip();
+				return;
+			}
+			
+			// ...
+			d3b.value = o.domain; // domain
+			d3b.onblur = function() {
+				var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
+				scrapy([url], [this.value]);
+			}
+			d3b.blur();
+			
+			// return button
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+			// ...
+			var q = [
+				document.getElementById('email_address'),
+			];
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value == '') {
+						return false;
+					}
+				}
+				// Email correct?
+				if (q[0].value.length < 6 || q[0].value.indexOf('@') == -1) {
+					return false;
+				}
+				// Is the Source URL different than company's domain? If so then warn.
+				//~ if (q[].value.indexOf(o.domain) == -1) {
+					//~ var confirm_value = confirm('Source URL has different domain than company. Press OK to ignore.');
+					//~ if (confirm_value) {
+						//~ // do nothing
+					//~ } else {
+						//~ // Stop
+						//~ return false;
+					//~ }
+				//~ }
+				//~ if (new RegExp( '^https?:\\/\\/'__js_escape_regEx(o.domain) ).exec(q[4].value))
+				
+				return false;
+				// Here?
+				showNextTab();
+				doSubmit();
+				
+				e.stopPropagation();
+				e.preventDefault();
+				
+				return false;
+			}
+			// INIT
+			//~ Rachel_Scott_decision_maker__scrapy([o.url], [o.domain]);
+			
+			// Add "fname@domain.com" OR "lname@domain.com" OR "lname[fi]@domain.com"
+			
+			// INIT
+			// Yahoo/SP
+			// A third optional search would be... Something like (include comp. name, no domain): ("David Veckerelli" OR "David Veckerelli") ("email") ("ddninc.tv" OR "Ddn")
+			//
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // person + site + email
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+
+				
+				(o.name != '' ? ' ("'+o.name+'" OR "'+o.name_cleaned+'")' : '') +
+				
+				' ("email" OR "contact")')
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' "email" ("about us" OR "about" OR "our staff" OR "staff" OR "staff directory" OR "personnel" OR "contact us" OR "contact" OR "leadership" OR "governance" OR "who we are" OR "our people" OR "officers" OR "executives")'),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 2
+			});
+			//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				//~ startPage: true,
+				seed_arg1: o.input1,
+				//~ url: 'https://startpage.com/do/metasearch.pl?query=' +
+					//~ encodeURIComponent(
+						//~ '"'+o.name_fn+'@'+o.domain+'" OR "'+o.name_ln+'@'+o.domain+'" OR "'+o.name_ln+o.name_fn[0]+'@'+o.domain+'" OR "'+o.name_fn+o.name_ln[0]+'@'+o.domain+'"'
+					//~ ),
+				//~ callback_function: sp_process,
+				//~ return_init_object: true,
+				//~ init__type: 4
+			//~ });
+			
+			/**
+			 * function scrapy
+			 */
+			function sp_process(response_obj) {
+				
+				console.log(response_obj);
+				
+				var rs = response_obj.rs;
+				
+				//~ var rs = response_obj; // original // "callback_function(o.obj_vars [.rs, ...]);" VERSUS "callback_function(rs);"
+				
+				//~ if (!rs.length) {
+					//~ document.body.innerText = '0';
+					//~ return;
+				//~ }
+				var debug_div = document.createElement('div');
+				debug_div.setAttribute('style', 'border-bottom:3px solid teal;');
+				d1b.appendChild(debug_div);
+				for (var i in rs) {
+					var u = rs[i][0];
+					if (!o.sd_start_urls_obj.hasOwnProperty( u )) {
+						
+						o.sd_start_urls.push( u );
+						o.sd_start_urls_obj[ u ] = true; // set key
+							
+						//~ // SKIP NON-DOMAIN FOR SCRAPY
+						//~ if (response_obj.init__type != 3) {						
+							//~ o.sd_start_urls.push( u );
+							//~ o.sd_start_urls_obj[ u ] = true; // set key
+						//~ }
+					}
+					// Button
+					var btn = document.createElement('input');
+					btn.setAttribute('style','cursor:pointer;');
+					btn.type = 'button';
+					btn.value = ' > ';
+					btn.url = rs[i][0];
+					debug_div.appendChild(btn);
+					btn.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						//q[4].value = this.url;
+					}
+					// Link
+					var link = document.createElement('a');
+					link.href = rs[i][0];
+					link.innerText = ' L ';
+					link.onclick = function() {
+						window.open(this.href, 'newtab');
+						return false;
+					}
+					debug_div.appendChild(link);
+					// Show link
+					debug_div.appendChild(document.createTextNode(rs[i][0]));
+					
+					// Set first!
+					// Disregard if this is the 3rd search type (non-domain).
+					if (i == 0) {
+						switch (response_obj.init__type) {
+							case 1:
+								o.sp_search1_first_result = rs[i][0];
+								break;
+							case 2:
+								o.sp_search2_first_result = rs[i][0];
+								break;
+						}
+					}
+					if (i >= 3) break; // Only go for 4 URLs.
+					if (response_obj.init__type >= 3 && i >= 1) break; // Only go for 2 URLs on non-domain searches.
+					
+					debug_div.appendChild(document.createElement('br'));
+				}
+				if (debug_div.innerText == '') {
+					debug_div.innerText = '0 Results';
+				}
+				
+				if (o.count_searches <= 1) { // Done with 2 searches?
+					o.count_searches++;
+				} else {
+					// Equals 1 (2 complete searches)
+					// ALWAYS init here regardless of whether there are any start urls. It is assumed at this point that there IS a domain at least.
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					
+					// Use utility window to open the first result.
+					// Open SEARCH1 1st result. If no SEARCH1 then SEARCH2 first result.
+					// If no SEARCH2 then open o.domain.
+					var uwurl = o.domain; // default
+					if (o.sp_search1_first_result != null) {
+						uwurl = o.sp_search1_first_result;
+					} else if (o.sp_search2_first_result != null) {
+						uwurl = o.sp_search2_first_result;
+					} else {
+						//
+					}
+					
+					// Set util
+					//~ AMT__setUtilityTabs([{
+						//~ url: uwurl,
+						//~ options: {
+							//~ task: 'AMT__Kristin_Howe_agent_photos2__utility_window',
+							//~ agent_name: o.name,
+							//~ agent_name_clean: o.name_clean
+						//~ }
+					//~ }]);
+					
+					// ...
+					console.log(o);
+				}
+			}
+			
+			/**
+			 * function scrapy
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=40', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=1'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								div: d1,
+								input_send_success: document.getElementById('Q1email'),
+								
+								// This is element el_div.onclick from the panel.
+								//
+								//
+								input_onclick_callback: function() {
+									
+									// OPEN IN IFRAME!
+									//~ this.style.backgroundColor = 'LightGreen';
+									//~ this.input_send_success.value = this.email;
+									//~ d2.src = this.url;
+									//~ d2.scrollIntoView();
+									q[3].value = this.email;
+									q[4].value = this.url;
+									
+									document.getElementById('submitButton').click();
+									// ......
+									//~ showNextTab();
+									//~ doSubmit();
+									//~ showNextTab();
+									//~ doSubmit();
+								},
+								do_submit_callback: function() {
+									// OPEN IN IFRAME!
+									//~ showNextTab();
+									//~ doSubmit();
+								},
+								// RUNS BEFORE DASHBOARD IS FILLED IN !
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURN: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									//~ console.log(callback_obj);
+									//~ return;
+									
+									if (AMT__Global_Vars.isPreview)
+									{
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											
+											AMT___Floater.skip();
+											
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									}
+									else // JOB IS ACCEPTED
+									{
+										
+										// Here?
+										// Add to active tabs queue!
+										//
+										//
+										//
+										addToTabsQ();
+										
+										
+										//~ // open in Iframe
+										//~ var try_url = false;
+										//~ var u;
+										//~ for (var i in callback_obj.urls.high) {
+											//~ u = callback_obj.urls.high[i].urls_url;
+											//~ if (/[\.\/]facebook\.com\//.exec(u)) continue;
+											//~ if (/[\.\/]plus\.google\.com\//.exec(u)) continue;
+											//~ if (/contact/i.exec(u)) {
+												//~ try_url = u;
+												//~ break;
+											//~ }
+										//~ }
+										//~ if (try_url) {
+											//~ d2.src = try_url;
+										//~ }
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								}
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+		return;
+	}
+	
 	//
 	// Amazon Requester Inc.- EPS Marketing
 	// Find the Contact Email Address on Websites
