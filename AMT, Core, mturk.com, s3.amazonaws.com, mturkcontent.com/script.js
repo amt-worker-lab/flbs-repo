@@ -17905,8 +17905,8 @@ function MT__RUN() {
 			var x = o.name.split(' ');
 			o.name_fn = x[0];
 			o.name_ln = (x.length > 1) ? x[x.length - 1] : x[0]; // last or first if not last
-			o.sd_start_urls = [o.domain];
-			o.sd_start_urls_obj[o.domain] = o.domain;
+			o.sd_start_urls = [o.url];
+			o.sd_start_urls_obj[o.url] = o.url;
 			
 			console.log(o);
 			
@@ -18192,9 +18192,9 @@ function MT__RUN() {
 										// If no email match results
 										
 										if (!callback_obj.matches || !callback_obj.matches.length) {
-											console.log(callback_obj);
+											//console.log(callback_obj);
 											
-											//AMT___Floater.skip();
+											AMT___Floater.skip();
 											
 										}
 										else
