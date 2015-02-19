@@ -17884,9 +17884,9 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var labels = document.getElementsByTagName('label');
 			var o = {
-				domain: td[3].innerText.replace(/\/[^\/]*$/, '').trim(), // /$ or /[...]$
+				domain: td[3].innerText.replace(/https?:\/\/[w]*\.?/, '').trim(), // /$ or /[...]$
 				url: td[3],
-				name: td[0].innerText.trim(),
+				name: td[1].innerText.trim(),
 				name_cleaned: td[0].innerText.trim().replace(/ \w\.* /g, '    ').replace(/\s+/g, ' '),
 				name_fn: null,
 				name_ln: null,
@@ -17920,7 +17920,7 @@ function MT__RUN() {
 				var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
 				scrapy([url], [this.value]);
 			}
-			d3b.blur();
+			//d3b.blur();
 			
 			// return button
 			new AMT___core_factory()
@@ -17973,41 +17973,7 @@ function MT__RUN() {
 			
 			// Add "fname@domain.com" OR "lname@domain.com" OR "lname[fi]@domain.com"
 			
-			// INIT
-			// Yahoo/SP
-			// A third optional search would be... Something like (include comp. name, no domain): ("David Veckerelli" OR "David Veckerelli") ("email") ("ddninc.tv" OR "Ddn")
-			//
-			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // person + site + email
-				startPage: true,
-				//~ seed_arg1: o.input1,
-				callback_function: sp_process,
-				return_init_object: true,
-				init__type: 1,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+
-				
-				(o.name != '' ? ' ("'+o.name+'" OR "'+o.name_cleaned+'")' : '') +
-				
-				' ("email" OR "contact")')
-			});
-			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
-				startPage: true,
-				//~ seed_arg1: o.input1,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' "email" ("about us" OR "about" OR "our staff" OR "staff" OR "staff directory" OR "personnel" OR "contact us" OR "contact" OR "leadership" OR "governance" OR "who we are" OR "our people" OR "officers" OR "executives")'),
-				callback_function: sp_process,
-				return_init_object: true,
-				init__type: 2
-			});
-			//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
-				//~ startPage: true,
-				seed_arg1: o.input1,
-				//~ url: 'https://startpage.com/do/metasearch.pl?query=' +
-					//~ encodeURIComponent(
-						//~ '"'+o.name_fn+'@'+o.domain+'" OR "'+o.name_ln+'@'+o.domain+'" OR "'+o.name_ln+o.name_fn[0]+'@'+o.domain+'" OR "'+o.name_fn+o.name_ln[0]+'@'+o.domain+'"'
-					//~ ),
-				//~ callback_function: sp_process,
-				//~ return_init_object: true,
-				//~ init__type: 4
-			//~ });
+			
 			
 			/**
 			 * function scrapy
@@ -18117,6 +18083,33 @@ function MT__RUN() {
 					console.log(o);
 				}
 			}
+			
+			
+			// INIT
+			// Yahoo/SP
+			// A third optional search would be... Something like (include comp. name, no domain): ("David Veckerelli" OR "David Veckerelli") ("email") ("ddninc.tv" OR "Ddn")
+			//
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // person + site + email
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+
+				
+				(o.name != '' ? ' ("'+o.name+'" OR "'+o.name_cleaned+'")' : '') +
+				
+				' ("email" OR "contact")')
+			});
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({ // email + staff-pages
+				startPage: true,
+				//~ seed_arg1: o.input1,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.domain+' "email" ("about us" OR "about" OR "our staff" OR "staff" OR "staff directory" OR "personnel" OR "contact us" OR "contact" OR "leadership" OR "governance" OR "who we are" OR "our people" OR "officers" OR "executives")'),
+				callback_function: sp_process,
+				return_init_object: true,
+				init__type: 2
+			});
+		
 			
 			/**
 			 * function scrapy
