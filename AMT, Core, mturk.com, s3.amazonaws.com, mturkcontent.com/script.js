@@ -17803,7 +17803,8 @@ function MT__RUN() {
 		return;
 	}
 	
-	
+	// Stephen Robertson
+	//	
 	s = "Find the email&nbsp;address for this Photographer&nbsp;using the website provided.";
 	if(ih.indexOf(s) != -1)
 	{
@@ -18189,9 +18190,11 @@ function MT__RUN() {
 									if (AMT__Global_Vars.isPreview)
 									{
 										// If no email match results
+										
 										if (!callback_obj.matches || !callback_obj.matches.length) {
+											console.log(callback_obj);
 											
-											AMT___Floater.skip();
+											//AMT___Floater.skip();
 											
 										}
 										else
@@ -149135,6 +149138,9 @@ function mturk_load()
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '37Z7ICZ5H99Y57AZPGYYF94ULNK11N':
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '33FX93QHQ5WTQJFSGGTT4QKM3TNFSS': //Stephen Robertson
 					AMT___Floater({runMT_Run:true});
 					break;
 				
