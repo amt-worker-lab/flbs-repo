@@ -2879,7 +2879,7 @@ function MT__RUN() {
 					doSubmit();
 					new AMT___core_factory().nextTab();
 				}
-			}, true); // use proxy
+			}, false, true); // use proxy
 			}
 		}
 		new run().f();
