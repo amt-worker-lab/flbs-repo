@@ -17904,6 +17904,8 @@ function MT__RUN() {
 			var x = o.name.split(' ');
 			o.name_fn = x[0];
 			o.name_ln = (x.length > 1) ? x[x.length - 1] : x[0]; // last or first if not last
+			o.sd_start_urls = [o.domain];
+			o.sd_start_urls_obj[o.domain] = o.domain;
 			
 			console.log(o);
 			
@@ -18164,8 +18166,8 @@ function MT__RUN() {
 									//~ this.input_send_success.value = this.email;
 									//~ d2.src = this.url;
 									//~ d2.scrollIntoView();
-									q[3].value = this.email;
-									q[4].value = this.url;
+									q[0].value = this.email;
+									//q[4].value = this.url;
 									
 									document.getElementById('submitButton').click();
 									// ......
