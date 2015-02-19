@@ -17961,7 +17961,6 @@ function MT__RUN() {
 				//~ }
 				//~ if (new RegExp( '^https?:\\/\\/'__js_escape_regEx(o.domain) ).exec(q[4].value))
 				
-				return false;
 				// Here?
 				showNextTab();
 				doSubmit();
