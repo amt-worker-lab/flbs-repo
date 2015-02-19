@@ -2809,6 +2809,83 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Rick Duggan
+	// Find the Latitude and Longitude for Bowling Centers
+	//
+	s = '<p>Find the latitude and longitude&nbsp;for this bowling center</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var addr1, addr2;
+			
+			var o = {
+				addr1: null,
+				addr2: null
+			}
+			o.addr1 =
+				td[3].innerText.trim() + ', ' +
+				td[5].innerText.trim() + ', ' +
+				td[7].innerText.trim() + ', ' +
+				td[9].innerText.trim() + ', ' +
+				td[11].innerText.trim() + ', ' + 
+				td[13].innerText.trim();
+			o.addr2 =
+				td[5].innerText.trim() + ', ' + // w/o name
+				td[7].innerText.trim() + ', ' +
+				td[9].innerText.trim() + ', ' +
+				td[11].innerText.trim() + ', ' + 
+				td[13].innerText.trim();
+			console.log(o);
+			
+			MT___google_api_geocode(o.addr1, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng
+					)
+				{
+					try_2();
+					return;
+				} else {
+					document.getElementById('latitude').value = lat;
+					document.getElementById('longitude').value = lng;
+					doSubmit();
+					new AMT___core_factory().nextTab();
+				}
+			}, false, true); // use proxy
+			
+			function try_2() {
+				MT___google_api_geocode(o.addr2, function(lat,lng) {
+				
+				if  (
+					!lat ||
+					!lng
+					)
+				{
+					document.body.style.backgroundColor = 'pink';
+					return;
+				} else {
+					document.getElementById('latitude').value = lat;
+					document.getElementById('longitude').value = lng;
+					doSubmit();
+					new AMT___core_factory().nextTab();
+				}
+			}, true); // use proxy
+			}
+		}
+		new run().f();
+	}
+	
+	// 
 	// David Pham
 	// Collect building class and units from database + break apart full name into first name and last name
 	//
@@ -43614,7 +43691,7 @@ function MT__RUN() {
 	}
 	
 	/**
-	 * CATEGORIATION
+	 * CATEGORIZATION
 	 * 
 	 * Dustin Smith
 	 * Chris Anderson
@@ -43622,7 +43699,36 @@ function MT__RUN() {
 	 * 
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
-	
+	//
+	// "Megan"
+	// Categorization, Masters
+	// Catgories of pictures.
+	s = '<p>\nThese are images of designs created for business or personal use. \n</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;}');
+			
+			var cat = /window\.categories = ([^\r\n]+)/.exec(ih)[1];
+			
+			var o = {
+				cat: JSON.parse(cat) // An array of objects, e.g. {"name":"Category 1","subcategories":[{"name":"Auto Maintenance" ...
+			}
+			
+			for (var i in o.cat) {
+				var catg = o.cat[i];
+				for (var j in catg.subcategories) {
+					
+				}
+			}
+		}
+		new run().f();
+	}
 	
 	/**
 	 * 
