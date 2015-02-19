@@ -18050,7 +18050,7 @@ function MT__RUN() {
 					debug_div.innerText = '0 Results';
 				}
 				
-				if (o.count_searches <= 1) { // Done with 2 searches?
+				if (o.count_searches <= 0) { // Done with 2 searches?
 					o.count_searches++;
 				} else {
 					// Equals 1 (2 complete searches)
@@ -18152,7 +18152,7 @@ function MT__RUN() {
 							(new AMT___items_factory()).create_dashboard__powers_v1,
 							{
 								div: d1,
-								input_send_success: document.getElementById('Q1email'),
+								input_send_success: document.getElementById('email_address'),
 								
 								// This is element el_div.onclick from the panel.
 								//
