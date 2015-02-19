@@ -44,6 +44,7 @@ MT__bold('test <b hahaha>test1</b>', ['test1']));
 function MT__bold(o, arr, options_object) {
 	
 	
+	
 	// THIS is old
 	// The older way of doing it.
 	//
@@ -17462,8 +17463,8 @@ function MT__RUN() {
 			// ...
 			d3b.value = o.domain; // domain
 			d3b.onblur = function() {
-				//~ var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
-				//~ Rachel_Scott_decision_maker__scrapy([url], [this.value]);
+				var url = (!/^http/i.exec(this.value)) ? 'http://' + this.value : this.value;
+				Rachel_Scott_decision_maker__scrapy([url], [this.value]);
 			}
 			
 			// return button
@@ -148420,6 +148421,7 @@ function top_window(okay_to_run) {
  */
 function mturk_load()
 {
+	
 	startPerformanceTime = new Date();
 	
 	// ENSURE THAN MT_CAPTCHA IS SET!
@@ -148778,6 +148780,7 @@ function mturk_load()
 	AMT__Global_Vars.initializeGroupId();
 	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
+
 		
 		
 	// This is running at mturkcontent.com or amazonaws.com

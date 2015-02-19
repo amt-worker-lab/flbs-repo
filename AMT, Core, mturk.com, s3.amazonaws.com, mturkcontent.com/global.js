@@ -291,8 +291,12 @@ AMT__Global_Vars.initializeHitId = function () {
 		{
 			//alert('Error initializing groupId');
 		}
-		hitId = hitId[1];
-		AMT__Global_Vars.hitId = hitId;
+		if(hitId) {
+			hitId = hitId[1];
+			AMT__Global_Vars.hitId = hitId;
+		} else {
+			AMT__Global_Vars.hitId = "hitIDDNE?";
+		}
 	}
 }
 
