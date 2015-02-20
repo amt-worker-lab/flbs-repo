@@ -255,13 +255,25 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			window.setTimeout(function() {
+				document.getElementById('submitButton').focus();
+			}, 4000);
+			
+			var imgs = document.getElementsByTagName('img');
+			for(var i = 0; i < imgs.length; i++) {
+				imgs[i].onclick = function() {
+					console.log('focusing');
+					document.getElementById('submitButton').focus();
+				}
+			}
+			
 			document.getElementById('submitButton').onclick = function() {
 				new AMT___core_factory().nextTab();
 				doSubmit();
 				return false;
 			}
 		}
-		run.f();
+		new run().f();
 	}
 	
 	
