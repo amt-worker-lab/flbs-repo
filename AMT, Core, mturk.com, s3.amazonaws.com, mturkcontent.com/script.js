@@ -45,6 +45,7 @@ function MT__bold(o, arr, options_object) {
 	
 	
 	
+	
 	// THIS is old
 	// The older way of doing it.
 	//
@@ -242,6 +243,27 @@ function MT__bold(o, arr, options_object) {
  * 
  */
 function MT__RUN() {
+	// 
+	// David Pham
+	// Collect building class and units from database + break apart full name into first name and last name
+	//
+	s = 'Help us determine which images should be considered adult or mature content. Please check the box for each image that contains';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			document.getElementById('submitButton').onclick = function() {
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+		}
+		run.f();
+	}
+	
 	
 	//
 	//Travel Data
