@@ -2948,12 +2948,33 @@ function MT__RUN() {
 				onload: function(response) {
 					var rs=response.responseText;
 					if (response.status != 200) {
+						// dne?
+						if (rs.indexOf('<p>Sorry, this page does not exist.</p>') != -1) {
+							for (var i = 1; i<=3; i++) {
+								document.getElementById('Field' + i).value = 'none';
+								doSubmit();
+							}
+						}
 						return;
 					}
 					
-					var num_identifiers1 = rs.match(/<th>Identifier<\/th>/g).length;
 					
-					var num_identifiers2 = rs.match(/<a href="browse\/identifier\/[^"]*"[^>]*>([^<]*)<\/a>/g).length;
+					
+					var num_identifiers1 = rs.match(/<th>Identifier<\/th>/g);
+					
+					var num_identifiers2 = rs.match(/<a href="browse\/identifier\/[^"]*"[^>]*>([^<]*)<\/a>/g);
+					
+					if (!num_identifiers1 && !num_identifiers2) { // 0?
+						for (var i = 1; i<=3; i++) {
+							document.getElementById('Field' + i).value = 'none';
+							doSubmit();
+						}
+						return;
+					} else {
+						num_identifiers1 = num_identifiers1.length;
+						num_identifiers2 = num_identifiers2.length;
+					}
+					
 					console.log('num1:'+num_identifiers1);
 					console.log('num2:'+num_identifiers2);
 					
@@ -2967,6 +2988,8 @@ function MT__RUN() {
 					var m;
 					var c = 1;
 					while (m = reg.exec(rs)) {
+						
+						if (c >= 4) break;
 						
 						document.getElementById('Field' + c).value = m[1];
 						
