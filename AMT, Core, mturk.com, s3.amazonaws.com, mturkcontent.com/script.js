@@ -2921,6 +2921,76 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Seth Perlow
+	// Record "Identifier" Information from a Library Archive Web Site
+	//
+	s = '	<li>Copy the text following the first "Identifier" label and paste the text into the first box below. This text will begin with "Amherst Manuscript".</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var reg = /<li>Go to this web site:&nbsp;(https:\/\/acdc\.amherst\.edu\/view\/asc:[\d]+)<\/li>/.exec(ih)[1]; //e.g. 11851
+			
+			var o = {
+				url: __js_clean_html_str(reg).trim()
+			}
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.url,
+				onload: function(response) {
+					var rs=response.responseText;
+					if (response.status != 200) {
+						return;
+					}
+					
+					var num_identifiers1 = rs.match(/<th>Identifier<\/th>/g).length;
+					
+					var num_identifiers2 = rs.match(/<a href="browse\/identifier\/[^"]*"[^>]*>([^<]*)<\/a>/g).length;
+					console.log('num1:'+num_identifiers1);
+					console.log('num2:'+num_identifiers2);
+					
+					if (num_identifiers1 != num_identifiers2) {
+						console.log('num');
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					var reg = /<a href="browse\/identifier\/[^"]*"[^>]*>([^<]*)<\/a>/g;
+					var m;
+					var c = 1;
+					while (m = reg.exec(rs)) {
+						
+						document.getElementById('Field' + c).value = m[1];
+						
+						// Increment
+						c++;
+					}
+					for (var i = 2; i<=3; i++) {
+						if (document.getElementById('Field' + i).value.trim() == '') {
+							document.getElementById('Field' + i).value = 'none';
+						}
+					}
+					if (document.getElementById('Field1').value.trim() == '') {
+						console.log('"none"');
+						document.body.style.backgroundColor = 'blue';
+						return;
+					}
+					
+					doSubmit();
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// David Pham
 	// Collect building class and units from database + break apart full name into first name and last name
 	//
