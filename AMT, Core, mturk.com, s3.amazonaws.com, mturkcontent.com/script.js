@@ -2949,7 +2949,17 @@ function MT__RUN() {
 					var rs=response.responseText;
 					if (response.status != 200) {
 						// dne?
-						if (rs.indexOf('<p>Sorry, this page does not exist.</p>') != -1) {
+						if  (
+							rs.indexOf('<p>Sorry, this page does not exist.</p>') != -1 ||
+							rs.indexOf('<p>Sorry, you do not have access to this page.</p>') != -1
+							
+							)
+						{
+							for (var i = 1; i<=3; i++) {
+								document.getElementById('Field' + i).value = 'none';
+								doSubmit();
+							}
+						} else if (response.status == 401) {
 							for (var i = 1; i<=3; i++) {
 								document.getElementById('Field' + i).value = 'none';
 								doSubmit();
