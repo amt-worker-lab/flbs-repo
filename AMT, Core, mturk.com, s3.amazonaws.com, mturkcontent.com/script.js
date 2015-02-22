@@ -256,7 +256,12 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\/([^\s]+) (^$)$/;
+			var x = ih.exec(reg);
+			console.log(x);			
+			var o = {
 			
+			}
 			
 		}
 		new run().f();

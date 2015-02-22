@@ -206,6 +206,33 @@ function load()
 		//~ console.log('drawn');
 	//~ }, false, true)
 	
+	// 
+	// Flicksio
+	// Level I: Locate URL for TV or Movie
+	//
+	s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
+	if  (
+		loc.indexOf('flicksio.com/mturk') != -1 &&
+		document.body.innerHTML.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
+			GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\/([^\s]+) (^$)$/;
+			console.log('inside flicksio');
+			var ih = document.body.innerHTML;
+			var x = ih.exec(reg);
+			console.log(x);			
+			var o = {
+			
+			}
+			
+		}
+		new run().f();
+	}
+	
 	
 	
 	//
