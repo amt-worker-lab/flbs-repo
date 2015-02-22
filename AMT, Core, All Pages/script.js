@@ -222,6 +222,12 @@ function load()
 			GM_addStyle('body {margin-top:900px;}'); //;width:100%
 			document.getElementsByClassName('container')[0].style.width = "50%";
 			document.getElementsByClassName('container')[0].style.margin = "0";
+			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('header-bg')[0].style.top = '4000px';
+			document.getElementsByClassName('row header')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('row header')[0].style.top = '4000px';
+			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('instructions')[0].style.top = '3000px';
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
@@ -266,10 +272,12 @@ function load()
 			
 			
 			/*Begin Elements*/
-			var d1 = document.createElement('div')
-			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:100%;background-color:light-gray;");
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:50%;background-color:#CCC;");
 			document.body.appendChild(d1);
-			
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:50%;background-color:#CCC;");
+			document.body.appendChild(d1);
 			/*End of Elments*/
 			
 			function checkIMDB(keywords, title, title_type) {
