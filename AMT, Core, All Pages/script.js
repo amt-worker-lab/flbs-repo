@@ -303,29 +303,44 @@ function load()
 					console.log(rs);
 					allDetails = rs.split('<td class="number">');
 					allDetails.splice(0,1);
-					allDetails[allDetails.length -1].replace(
 					//splits it into secions with 1 being the first
 					
 					//reg1 - imdbId of series, series name, year_type of series
 					//Should ALWAYS be there
-					var reg1 = /<a href="\/title\/([^\]+)\/">(^[<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>
+					var reg1 = /<a href="\/title\/([^\]+)\/">(^[<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
 					
 					//reg 2 - imdbId of title, title name, year of title
 					//Should be here only if it's an episode
-					var reg2 = /<span class="episode">Episode: <a href="\/title\/tt0542958\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+))[\r\n\s\t]*</span>/;
+					var reg2 = /<span class="episode">Episode: <a href="\/title\/tt0542958\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
 					
 					//reg 3 - duration
 					//Sometimes is there, sometimes is left unspecified
-					var reg3 = /<span class="runtime">([\d+]) mins.</span>/;
+					var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
 					
 					
 					
 					//reg 3 - duration
 					
+					var choices = [];
+					
 					for(var i = 0; i <allDetails.length; i++) {
-						reg1.exec(allDetails[i]);
-						reg2.exec(allDetails[i]);
-						reg3.exec(allDetails[i]);
+						var scr1 = reg1.exec(allDetails[i]);
+						choices[i].seriesIMDBId = scr1[1];
+						choices[i].seriesName = scr1[2];
+						choices[i].year_type = scr1[3];
+						
+						var scr2 = reg2.exec(allDetails[i]);
+						if(scr2) {
+							choices[i].imdbId = scr2[1];
+							choices[i].title = scr2[2]
+							choices[i].year = scr2[3];
+						}
+						
+						var scr3 = reg3.exec(allDetails[i]);
+						if(scr3) {
+							choices[i].duration = scr3[i];
+						}
+						console.log(choices);
 					}
 					
 				}
