@@ -227,7 +227,7 @@ function load()
 			var rslt1 = reg.exec(ih);
 			var rslt2 = reg.exec(ih);
 			var s1 = rslt1[2].split(", Season");
-			var s2 = rslt1[2].split(", Season");
+			var s2 = rslt2[2].split(", Season");
 			
 			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
 			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
@@ -238,8 +238,8 @@ function load()
 			var releaseYear1 = yearReg.exec(ih[0])[1];
 			
 			if(ih.length > 1) {
-				var runtime2 = runtimeReg.exec(ih[1])[1];
-				var releaseYear2 = yearReg.exec(ih[1])[1];
+				var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
+				var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
 				
 			}else {
 				var runtime2 = null;
