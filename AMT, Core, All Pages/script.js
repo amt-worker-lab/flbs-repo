@@ -220,6 +220,9 @@ function load()
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			document.getElementsByClassName('container')[0].style.width = "50%";
+			document.getElementsByClassName('container')[0].style.margin = "0";
+			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
 			console.log('inside flicksio');
@@ -260,6 +263,35 @@ function load()
 				
 			}
 			console.log(o);
+			
+			
+			/*Begin Elements*/
+			var d1 = document.createElement('div')
+			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:100%;background-color:light-gray;");
+			document.body.appendChild(d1);
+			
+			/*End of Elments*/
+			
+			function checkIMDB(keywords, title, title_type) {
+				//~ var url = 'http://www.imdb.com/search/title?' +
+							//~ (keywords.length > 0 ? 'keywords=' + keywords.join(','))
+				//~ GM_xmlhttpRequest({
+				//~ method: 'GET',
+				//~ url: r.course_webpage,
+				//~ onload: function (response) {
+					//~ var rs = response.responseText;
+					//~ 
+					//~ if (response.status != 200) {
+						//~ exit(response.status);
+					//~ }
+					//~ 
+					//~ 
+				//~ }
+			//~ });
+				
+			}
+			
+			
 		}
 		new run().f();
 	}
