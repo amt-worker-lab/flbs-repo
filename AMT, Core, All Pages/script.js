@@ -282,6 +282,14 @@ function load()
 			document.body.appendChild(d2);
 			/*End of Elments*/
 			
+			(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					o: o
+				}
+			}, 
+			
+			
 			checkIMDB("african-american-female-detective",
 			         "Fatal Retraction",
 			         "tv_movie,tv_series,tv_episode,tv_special,mini_series");
