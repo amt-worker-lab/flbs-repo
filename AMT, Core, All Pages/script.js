@@ -280,9 +280,11 @@ function load()
 			document.body.appendChild(d2);
 			/*End of Elments*/
 			
-			checkIMDB("african-american-female-detective",
-			         "Fatal Retraction",
-			         "tv_movie,tv_series,tv_episode,tv_special,mini_series");
+			//~ checkIMDB("african-american-female-detective",
+			         //~ "Fatal Retraction",
+			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series");
+			         
+			checkIMDB("","fatal","");
 			
 			function checkIMDB(keywords, title, title_type) {
 				var url = 'http://www.imdb.com/search/title?' +
@@ -300,18 +302,18 @@ function load()
 					if (response.status != 200) {
 						exit(response.status);
 					}
-					console.log(rs);
 					allDetails = rs.split('<td class="number">');
 					allDetails.splice(0,1);
+					console.log(allDetails);
 					//splits it into secions with 1 being the first
 					
 					//reg1 - imdbId of series, series name, year_type of series
 					//Should ALWAYS be there
-					var reg1 = /<a href="\/title\/([^\]+)\/">(^[<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
+					var reg1 = /<a href="\/title\/([^\/]+)\/">([^<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
 					
 					//reg 2 - imdbId of title, title name, year of title
 					//Should be here only if it's an episode
-					var reg2 = /<span class="episode">Episode: <a href="\/title\/tt0542958\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
+					var reg2 = /<span class="episode">Episode: <a href="\/title\/([^\/]+)\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
 					
 					//reg 3 - duration
 					//Sometimes is there, sometimes is left unspecified
@@ -324,6 +326,7 @@ function load()
 					var choices = [];
 					
 					for(var i = 0; i <allDetails.length; i++) {
+						choices.push({});
 						var scr1 = reg1.exec(allDetails[i]);
 						choices[i].seriesIMDBId = scr1[1];
 						choices[i].seriesName = scr1[2];
