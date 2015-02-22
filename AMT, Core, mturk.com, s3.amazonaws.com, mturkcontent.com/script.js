@@ -247,6 +247,26 @@ function MT__RUN() {
 	// David Pham
 	// Collect building class and units from database + break apart full name into first name and last name
 	//
+	s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
+			GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			
+			
+		}
+		new run().f();
+	}
+	
+	
+	// 
+	// David Pham
+	// Collect building class and units from database + break apart full name into first name and last name
+	//
 	s = 'Help us determine which images should be considered adult or mature content. Please check the box for each image that contains';
 	if  (
 		ih.indexOf(s) != -1
