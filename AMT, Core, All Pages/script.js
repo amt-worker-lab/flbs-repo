@@ -273,29 +273,37 @@ function load()
 			
 			/*Begin Elements*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:50%;background-color:#CCC;");
+			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:500px;background-color:#BBB;");
 			document.body.appendChild(d1);
-			var d1 = document.createElement('div');
-			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:50%;background-color:#CCC;");
-			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#BBB;");
+			document.body.appendChild(d2);
 			/*End of Elments*/
 			
+			checkIMDB("african-american-female-detective",
+			         "Fatal Retraction",
+			         "tv_movie,tv_series,tv_episode,tv_special,mini_series");
+			
 			function checkIMDB(keywords, title, title_type) {
-				//~ var url = 'http://www.imdb.com/search/title?' +
-							//~ (keywords.length > 0 ? 'keywords=' + keywords.join(','))
-				//~ GM_xmlhttpRequest({
-				//~ method: 'GET',
-				//~ url: r.course_webpage,
-				//~ onload: function (response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ if (response.status != 200) {
-						//~ exit(response.status);
-					//~ }
-					//~ 
-					//~ 
-				//~ }
-			//~ });
+				var url = 'http://www.imdb.com/search/title?' +
+							'keywords=' + encodeURIComponent(keywords) + "&" +
+							'title='+encodeURIComponent(title) + "&" +
+							'title_type=' +encodeURIComponent(title_type)
+				
+				
+				GM_xmlhttpRequest({
+				method: 'GET',
+				url: url,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) {
+						exit(response.status);
+					}
+					console.log(rs);
+					
+				}
+			});
 				
 			}
 			
