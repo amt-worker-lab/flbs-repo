@@ -229,16 +229,34 @@ function load()
 			var s1 = rslt1[2].split(", Season");
 			var s2 = rslt1[2].split(", Season");
 			
-			var parser = new DOMParser();
-			var doc = parser.parseFromString(ih, "text/html");
-			console.log(doc);	
+			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
+			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
+			
+			var ih = ih.split('<div class="title last">');
+			//Check the top for runtime and release date, do the same for the bottom
+			var runtime1 = runtimeReg.exec(ih[0])[1];
+			var releaseYear1 = yearReg.exec(ih[0])[1];
+			
+			if(ih.length > 1) {
+				var runtime2 = runtimeReg.exec(ih[1])[1];
+				var releaseYear2 = yearReg.exec(ih[1])[1];
+				
+			}else {
+				var runtime2 = null;
+				var releaseYear2 = null;
+			}
+			
 			var o = {
 				title1 : rslt1[1],
 				title2 : (rslt2 ? rslt2[1] : null),
 				series1 : s1[0],
 				series2 : s2[0],
 				season1 : (s1.length > 1 ? s1[1] : null),
-				season2 : (s2.length > 1 ? s2[1] : null)
+				season2 : (s2.length > 1 ? s2[1] : null),
+				runtime1: runtime1,
+				runtime2: runtime2,
+				releaseYear1: releaseYear1,
+				releaseYear2: releaseYear2,
 				
 			}
 			console.log(o);
