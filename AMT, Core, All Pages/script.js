@@ -226,12 +226,22 @@ function load()
 			var ih = document.body.innerHTML;
 			var rslt1 = reg.exec(ih);
 			var rslt2 = reg.exec(ih);
-			console.log(rslt1);			
-			console.log(rslt2);			
+			var s1 = rslt1[2].split(", Season");
+			var s2 = rslt1[2].split(", Season");
+			
+			var parser = new DOMParser();
+			var doc = parser.parseFromString(ih, "text/html");
+			console.log(doc);	
 			var o = {
+				title1 : rslt1[1],
+				title2 : (rslt2 ? rslt2[1] : null),
+				series1 : s1[0],
+				series2 : s2[0],
+				season1 : (s1.length > 1 ? s1[1] : null),
+				season2 : (s2.length > 1 ? s2[1] : null)
 				
 			}
-			
+			console.log(o);
 		}
 		new run().f();
 	}
