@@ -268,8 +268,35 @@ function load()
 				releaseYear2: releaseYear2,
 				choices1 : null,
 				choices2 : null,
-				numRuns : 0		
+				numRuns : 0,
+				numShows: null	
 			}
+			
+			var firstQuery = {
+				title: o.title1,
+				series: o.series1,
+				season: o.season1,
+				runtime: o.runtime1,
+				releaseYear: o.releaseYear1,
+				isTopShow:true
+			}
+			
+			if(o.title2) {
+				var secondQuery = {
+					title: o.title2,
+					series: o.series2,
+					season: o.season2,
+					runtime: o.runtime2,
+					releaseYear: o.releaseYear2,
+					isTopShow: false
+				}
+				o.numShows = 2;
+			}
+			else {
+				o.numShows = 1;
+			}
+			
+			
 			console.log(o);
 			
 			
@@ -280,19 +307,45 @@ function load()
 			var d2 = document.createElement('div');
 			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#BBB;");
 			document.body.appendChild(d2);
-			/*End of Elments*/
+			/*End of Elements*/
 			
+			function processDBResults(response) {
+				//Process the results, and then call checkIMDB
+				var keywords;
+				var title;
+				var title_type;
+				var isTopShow;
+
+				
+				checkIMDB(keywords, title, title_type,isTopShow);
+			}
+			
+			
+			//Code to pull from database
+			//Uncomment out when we need it
+			/**
 			(new AMT___requests_factory()).database__select({
 				query: "AMT_Flicksio_IMDB_GetDetails",
 				encodeStrings: {
-					o: o
+					qStrs: firstQuery
 				}
-			}, 
+			}, processDBResults
+			); 
+			
+			if(o.numShows == 2) {
+				(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					qStrs: secondQuery
+				}
+				}, processDBResults);
+			}
+			**/	
 			
 			
 			checkIMDB("african-american-female-detective",
 			         "Fatal Retraction",
-			         "tv_movie,tv_series,tv_episode,tv_special,mini_series");
+			         "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
 			         
 			//checkIMDB("","fatal","");
 			
@@ -361,19 +414,19 @@ function load()
 					buildInterface(isTopShow);
 				
 					o.numRuns++;
-					if(o.numRuns = 2) {
+					if(o.numRuns == o.numShows) {
 						attemptAuto();
-					}				
+					}
 				}
+				});
 				
-				function buildInterace(isTopShow) {
+				function buildInterface(isTopShow) {
 					console.log('building interface, topShow is:' + isTopShow);
 				}
 				
 				function attemptAuto() {
 					console.log('attempting auto');
 				}
-			});
 				
 			}
 			
