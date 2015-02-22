@@ -266,7 +266,9 @@ function load()
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
 				releaseYear2: releaseYear2,
-				
+				choices1 : null,
+				choices2 : null,
+				numRuns : 0		
 			}
 			console.log(o);
 			
@@ -280,18 +282,18 @@ function load()
 			document.body.appendChild(d2);
 			/*End of Elments*/
 			
-			//~ checkIMDB("african-american-female-detective",
-			         //~ "Fatal Retraction",
-			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series");
+			checkIMDB("african-american-female-detective",
+			         "Fatal Retraction",
+			         "tv_movie,tv_series,tv_episode,tv_special,mini_series");
 			         
-			checkIMDB("","fatal","");
+			//checkIMDB("","fatal","");
 			
-			function checkIMDB(keywords, title, title_type) {
+			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var url = 'http://www.imdb.com/search/title?' +
-							'keywords=' + encodeURIComponent(keywords) + "&" +
-							'title='+encodeURIComponent(title) + "&" +
-							'title_type=' +encodeURIComponent(title_type)
-				
+							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
+							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
+							'title='+encodeURIComponent(title)
+							
 				
 				GM_xmlhttpRequest({
 				method: 'GET',
@@ -343,9 +345,25 @@ function load()
 						if(scr3) {
 							choices[i].duration = scr3[i];
 						}
-						console.log(choices);
 					}
-					
+					if(isTopShow) 
+						o.choices1 = choices;
+					else
+						o.choices2 = choices;
+					buildInterface(isTopShow);
+				
+					o.numRuns++;
+					if(o.numRuns = 2) {
+						attemptAuto();
+					}				
+				}
+				
+				function buildInterace(isTopShow) {
+					console.log('building interface, topShow is:' + isTopShow);
+				}
+				
+				function attemptAuto() {
+					console.log('attempting auto');
 				}
 			});
 				
