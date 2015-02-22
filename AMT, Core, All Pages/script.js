@@ -220,13 +220,16 @@ function load()
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('body {margin-top:900px;}'); //;width:100%
-			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\/([^\s]+) (^$)$/;
+			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
+			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
 			console.log('inside flicksio');
 			var ih = document.body.innerHTML;
-			var x = ih.exec(reg);
-			console.log(x);			
+			var rslt1 = reg.exec(ih);
+			var rslt2 = reg.exec(ih);
+			console.log(rslt1);			
+			console.log(rslt2);			
 			var o = {
-			
+				
 			}
 			
 		}
