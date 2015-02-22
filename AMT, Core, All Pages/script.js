@@ -301,6 +301,32 @@ function load()
 						exit(response.status);
 					}
 					console.log(rs);
+					allDetails = rs.split('<td class="number">');
+					allDetails.splice(0,1);
+					allDetails[allDetails.length -1].replace(
+					//splits it into secions with 1 being the first
+					
+					//reg1 - imdbId of series, series name, year_type of series
+					//Should ALWAYS be there
+					var reg1 = /<a href="\/title\/([^\]+)\/">(^[<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>
+					
+					//reg 2 - imdbId of title, title name, year of title
+					//Should be here only if it's an episode
+					var reg2 = /<span class="episode">Episode: <a href="\/title\/tt0542958\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+))[\r\n\s\t]*</span>/;
+					
+					//reg 3 - duration
+					//Sometimes is there, sometimes is left unspecified
+					var reg3 = /<span class="runtime">([\d+]) mins.</span>/;
+					
+					
+					
+					//reg 3 - duration
+					
+					for(var i = 0; i <allDetails.length; i++) {
+						reg1.exec(allDetails[i]);
+						reg2.exec(allDetails[i]);
+						reg3.exec(allDetails[i]);
+					}
 					
 				}
 			});
