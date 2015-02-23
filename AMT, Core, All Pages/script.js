@@ -231,7 +231,7 @@ function load()
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
 			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
 			document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
-			GM_addStyle('img {width:80px;}');
+			GM_addStyle('img {width:60px;}');
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
@@ -296,7 +296,11 @@ function load()
 				dbSelection1: null,
 				dbSelection2: null,
 				imdbFirstOption1: null,
-				imdbFirstOption2: null
+				imdbFirstOption2: null,
+				q: [
+					document.getElementsByClassName('imdb_url')[0],
+					document.getElementsByClassName('imdb_url')[1]
+				]
 			}
 			
 			var firstQuery = {
@@ -634,9 +638,19 @@ function load()
 									// Make div small
 									this.parent_div.style.height = 'auto';
 									//
-									if(document.getElementsByClassName('imdb_url')[0].value &&
-										document.getElementsByClassName('imdb_url')[1].value) {
-									
+									o.q[0].value = o.q[0].value.trim();
+									o.q[1].value = o.q[1].value.trim();
+									if  (
+										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
+										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
+										)
+									{
+										// Is preview?
+										if (AMT__Global_Vars.isPreview) {
+											AMT___Floater.accept();
+											return;
+										}
+										// Is accepted?
 										document.body.style.backgroundColor = 'blue';
 										//doSubmit('mturk')
 										return false;
