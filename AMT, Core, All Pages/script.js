@@ -529,26 +529,27 @@ function load()
 							var castMatches = [];
 							for(var j = 0; j < (isTopShow ? o.cast1.length : o.cast2.length); j++) {
 								for(var k = 0; k < choices[i].cast.length; k++) {
-									if(choices[i].cast[k].toLowerCase() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase) {
+									if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
 										castMatches.push(choices[i].cast[k]);
 									}
 								}
 							}
 							var el_div = document.createElement('div');
-							el_div.style = 'border:1px solid black;';
+							el_div.setAttribute('style', 'border-bottom:1px solid black;');
 							el_div.className = 'exe';
 							div.appendChild(el_div);
-							el_div.castMatches = castMatches;
+							
 							el_div.innerHTML = 
 									   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
 									   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
 									   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-									   'k: ' + choices[i].title_type + '<br>'
-									   'y: ' + choices[i].year +
-									   'cm: ' + castMatches.split(',');
-						}							
+									   'k: ' + choices[i].title_type + '<br>' +
+									   'y: ' + choices[i].year + '<br>' +
+									   'cm: ' + castMatches.join(',');
+						}
 					}
 				}
+				console.log(o);
 			}
 				
 			function attemptAuto() {
