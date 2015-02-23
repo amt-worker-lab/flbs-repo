@@ -511,6 +511,7 @@ AMT___Floater.skip = function() {
 
 
 AMT___Floater.acceptOrSkip = function(e) {
+	console.log(e);
 	if(e.data && e.data.acceptJob)
 	{
 		AMT___Floater.isAccepting = true;

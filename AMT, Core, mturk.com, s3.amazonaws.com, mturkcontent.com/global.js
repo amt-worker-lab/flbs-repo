@@ -762,6 +762,8 @@ AMT___Floater.skip = function() {
 
 
 AMT___Floater.acceptOrSkip = function(e) {
+	console.log('got accept or skip');
+	console.log(e);
 	if(e.data && e.data.acceptJob)
 	{
 		if (GM_getValue('mt_captcha') == '0') { 
