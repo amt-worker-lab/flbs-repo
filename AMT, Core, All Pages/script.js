@@ -388,6 +388,7 @@ function load()
 			
 			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var isTopShow = isTopShow;
+				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
 				var url = 'http://www.imdb.com/search/title?' +
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
@@ -550,6 +551,7 @@ function load()
 				var div = isTopShow ? d1 : d2;
 				div.style.overflow = 'auto';
 				if(choices.length == 0) {
+					console.log(o);
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
 				}
