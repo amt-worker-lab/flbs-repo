@@ -322,32 +322,30 @@ function load()
 			
 			
 			//Code to pull from database
-			//Uncomment out when we need it
-			/**
-			(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: firstQuery
-				}
-			}, processDBResults
-			); 
-			
-			if(o.numShows == 2) {
-				(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: secondQuery
-				}
-				}, processDBResults);
-			}
-			**/	
+			//~ (new AMT___requests_factory()).database__select({
+				//~ query: "AMT_Flicksio_IMDB_GetDetails",
+				//~ encodeStrings: {
+					//~ qStrs: firstQuery
+				//~ }
+			//~ }, processDBResults
+			//~ ); 
+			//~ 
+			//~ if(o.numShows == 2) {
+				//~ (new AMT___requests_factory()).database__select({
+				//~ query: "AMT_Flicksio_IMDB_GetDetails",
+				//~ encodeStrings: {
+					//~ qStrs: secondQuery
+				//~ }
+				//~ }, processDBResults);
+			//~ }
 			
 			
-			checkIMDB("african-american-female-detective",
-			         "Fatal Retraction",
-			         "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
+			
+			//~ checkIMDB("african-american-female-detective",
+			         //~ "Fatal Retraction",
+			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
 			         
-			//checkIMDB("","fatal","");
+			checkIMDB("","fatal","");
 			
 			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var url = 'http://www.imdb.com/search/title?' +
@@ -407,6 +405,7 @@ function load()
 							choices[i].duration = scr3[i];
 						}
 					}
+					console.log(choices);
 					if(isTopShow) 
 						o.choices1 = choices;
 					else
