@@ -9943,6 +9943,7 @@ function load__allPages_AMT_combo() {
 				dbSelection2: null,
 				imdbFirstOption1: null,
 				imdbFirstOption2: null,
+				is_in_skip_condition: false, // One of two is in a skip condition.
 				q: [
 					document.getElementsByClassName('imdb_url')[0],
 					document.getElementsByClassName('imdb_url')[1]
@@ -10000,7 +10001,20 @@ function load__allPages_AMT_combo() {
 				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
-				
+				// numShows == 2
+				// Is not in skip condition
+				// isTopShow == true
+				console.log(o.numShows);
+				console.log(o.is_in_skip_condition);
+				console.log(ro.original_query_object.isTopShow);
+				if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) {
+					(new AMT___requests_factory()).database__select({
+						query: "AMT_Flicksio_IMDB_GetDetails",
+						encodeStrings: {
+							qStrs: secondQuery
+						}
+					}, processDBResults);
+				}
 				
 				//~ response = JSON.parse(response)
 				//~ if(response.checkClosestSeries) {
@@ -10025,17 +10039,9 @@ function load__allPages_AMT_combo() {
 				encodeStrings: {
 					qStrs: firstQuery
 				}
-			}, processDBResults
-			); 
+			}, processDBResults); 
 			
-			if(o.numShows == 2) {
-				(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: secondQuery
-				}
-				}, processDBResults);
-			}
+			
 			
 			
 			
@@ -10206,7 +10212,12 @@ function load__allPages_AMT_combo() {
 						   console.log('---------imdbAuto2');
 						}
 						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
-					} 
+					}
+				else // Skip condition #1. Skips here.
+				{
+					o.is_in_skip_condition = true;
+					AMT___Floater.skip();
+				} 
 			}
 								
 			function buildFinalInterface(isTopShow) {
