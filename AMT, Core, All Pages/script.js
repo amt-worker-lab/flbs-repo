@@ -95,11 +95,13 @@ function load()
 		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
 		)
 	{
+		AMT__Global_Vars.isPreview = true;
+		AMT__Global_Vars.isTopWindow = false;
+		
 		// have a run button
 		load__allPages_AMT_combo__btn();
 		// stop
 		console.log('stop all pages');
-		
 		this.global_vars.is_running_on_amt = false;
 		
 		return;
@@ -127,8 +129,12 @@ function load()
 		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
 		)
 	{
+		AMT__Global_Vars.isPreview = true;
+		AMT__Global_Vars.isTopWindow = true;
+
 		load__allPages_AMT_combo();
 		console.log('Stop. Run:load__allPages_AMT_combo.');
+		
 		this.global_vars.is_running_on_amt = false; // Apparently? This need to be false?
 		return;
 	}
