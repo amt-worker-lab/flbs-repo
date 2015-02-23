@@ -10123,7 +10123,6 @@ function load__allPages_AMT_combo() {
 						//Sometimes is there, sometimes is left unspecified
 						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
 						
-						
 						//reg 4 - credits
 						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
 						
@@ -10132,7 +10131,15 @@ function load__allPages_AMT_combo() {
 						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
 						console.log(allDetails);
 						for(var i = 0; i <allDetails.length; i++) {
-							choices.push({});
+							choices.push({
+								seriesIMDBId: null,
+								seriesName:null,
+								year_type:null,
+								title_type:null,
+								imdbId:null,
+								title:null,
+								year:null,
+							});
 							var scr1 = reg1.exec(allDetails[i]);
 							choices[i].seriesIMDBId = scr1[1];
 							choices[i].seriesName = scr1[2];
@@ -10144,9 +10151,8 @@ function load__allPages_AMT_combo() {
 							var scr2 = reg2.exec(allDetails[i]);
 							if(scr2) {
 								choices[i].imdbId = scr2[1];
-								choices[i].title = scr2[2]
+								choices[i].title = scr2[2];
 								choices[i].year = (/^\d+$/.exec(scr2[3])) ? scr2[3] : null;
-							
 							}
 							
 							var scr3 = reg3.exec(allDetails[i]);
@@ -10241,10 +10247,10 @@ function load__allPages_AMT_combo() {
 							   rslts.length &&
 							   rslts[i].title &&
 							   rslts[i].title.length > 2 &&
-							   rslts[i].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+							   rslts[i].title.toLowerCase().replace(/&/g, 'and') == (isTopShow ? o.title1 : o.title2).toLowerCase().replace(/&/g, 'and') &&
 							   rslts[i].parent_title &&
 							   rslts[i].parent_title.length > 2 &&
-							   rslts[i].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
+							   rslts[i].parent_title.toLowerCase().replace(/&/g, 'and') == (isTopShow ? o.series1 : o.series2).toLowerCase().replace(/&/g, 'and')
 							   )
 							{
 								if(isTopShow) {
@@ -10316,8 +10322,8 @@ function load__allPages_AMT_combo() {
 								   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
 								   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
 								   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-								   'k: ' + choices[i].title_type + '<br>' +
-								   'y: ' + choices[i].year + '<br>' +
+								   'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
+								   'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
 								   'cm: ' + castMatches.join(',');
 						el_div.title = choices[i].title;
 						el_div.seriesName = choices[i].seriesName;
@@ -10385,11 +10391,11 @@ function load__allPages_AMT_combo() {
 								choices[i] &&
 								choices[i].title &&
 								choices[i].title.length > 2 &&
-								choices[i].title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
+								choices[i].title.toLowerCase().trim().replace(/&/g, 'and') == o.title1.toLowerCase().trim().replace(/&/g, 'and') &&
 								choices[i].seriesName &&
 								choices[i].seriesName.length > 2 &&
 								o.series1 &&
-								choices[i].seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
+								choices[i].seriesName.toLowerCase().trim().replace(/&/g, 'and') == o.series1.toLowerCase().trim().replace(/&/g, 'and')
 							)
 							{
 								if(
@@ -10423,11 +10429,11 @@ function load__allPages_AMT_combo() {
 								choices[i] &&
 								choices[i].title &&
 								choices[i].title.length > 2 &&
-								choices[i].title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
+								choices[i].title.toLowerCase().trim().replace(/&/g, 'and') == o.title2.toLowerCase().trim().replace(/&/g, 'and') &&
 								choices[i].seriesName &&
 								choices[i].seriesName.length > 2 &&
 								o.series2 &&
-								choices[i].seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
+								choices[i].seriesName.toLowerCase().trim().replace(/&/g, 'and') == o.series2.toLowerCase().trim().replace(/&/g, 'and')
 							)
 							{
 								if(
