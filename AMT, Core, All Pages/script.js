@@ -647,8 +647,8 @@ function load()
 				o.imdbFirstOption1.title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
 				o.imdbFirstOption1.seriesName &&
 				o.imdbFirstOption1.seriesName.length > 2 &&
-				o.seriesName1 &&
-				o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.seriesName1.toLowerCase().trim()
+				o.series1 &&
+				o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
 				)
 				{
 					if(
@@ -668,15 +668,15 @@ function load()
 				}
 				
 				if(
-				isTopShow &&
+				!isTopShow &&
 				o.imdbFirstOption2 &&
 				o.imdbFirstOption2.title &&
 				o.imdbFirstOption2.title.length > 2 &&
 				o.imdbFirstOption2.title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
 				o.imdbFirstOption2.seriesName &&
 				o.imdbFirstOption2.seriesName.length > 2 &&
-				o.seriesName2 &&
-				o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.seriesName2.toLowerCase().trim()
+				o.series2 &&
+				o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
 				)
 				{
 					if(
