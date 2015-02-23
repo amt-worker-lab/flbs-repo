@@ -10050,7 +10050,7 @@ function load__allPages_AMT_combo() {
 			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;overflow:auto;");
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;overflow:auto;");
+			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;");
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
@@ -10419,7 +10419,8 @@ function load__allPages_AMT_combo() {
 									}
 									// Is accepted?
 									document.body.style.backgroundColor = 'aqua';
-									setTimeout(function() { doSubmit('mturk'); }, 4000);
+									rand = 3600 + (Math.random() * 2000);
+									setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
 									return false;
 								}
 							} else {
