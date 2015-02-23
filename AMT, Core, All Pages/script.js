@@ -623,7 +623,7 @@ function load()
 										document.getElementsByClassName('imdb_url')[1].value) {
 									
 									document.body.style.backgroundColor = 'blue';
-									//doSubmit()
+									//doSubmit('mturk')
 									return false;
 								}
 								} else {
