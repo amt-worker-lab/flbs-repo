@@ -228,7 +228,7 @@ function load()
 			document.getElementsByClassName('row header')[0].style.top = '4000px';
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
-			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
@@ -452,7 +452,7 @@ function load()
 				locn = locn[rsltsType];
 				
 				var div = document.createElement('div');
-				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width,height:100%;position:absolute;');	
+				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width:25%;height:100%;position:absolute;border-left:1px solid black;');	
 				container.appendChild(div);
 				if(!rslts || rslts.length == 0) {
 					div.innerHTML = '0';
@@ -460,13 +460,14 @@ function load()
 				else {					
 					for(var i = 0; i < rslts.length; i++) {
 						var el_div = document.createElement('div');
-						el_div.style = 'border: 1px solid black;';
+						el_div.setAttribute('style', 'border-bottom:1px solid black;');
 						div.appendChild(el_div);
 						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: ') +
 										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: ') +
 										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 										   'k: ' + rslts[i].kind +
 										   'y: ' + rslts[i].year
+						el_div.className = 'exe';
 						el_div.title = rslts[i].title;
 						el_div.parent_title = rslts[i].parent_title;
 						el_div.season_nr = rslts[i].season_nr;
@@ -491,29 +492,29 @@ function load()
 			}
 								
 			function buildFinalInterface(isTopShow) {
-				//~ console.log('building interface, topShow is:' + isTopShow);
-				//~ var choices = isTopShow ? o.choices1 : o.choices2;
-				//~ var div = isTopShow ? d1 : d2;
-				//~ if(choices.length == 0) {
-					//~ console.log('no choices found')
-					//~ div.style.border = '2px solid blue';
-				//~ }
-				//~ else {
-					//~ div.innerHTML = ''; //Clear everything
-					//~ for(var i = 0; i < 10; i++) { 
-						//~ if(choices[i]) {
-								//~ var el_div = document.createElement('div');
-								//~ el_div.style = 'border:1px solid black;';
-								//~ div.appendChild(el_div);
-								//~ eldiv.innerHTML = 
-										   //~ (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
-										   //~ (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
-										   //~ (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-										   //~ 'k: ' + choices[i].kind +
-										   //~ 'y: ' + choices[i].year
-						//~ }							
-					//~ }
-				//~ }
+				console.log('building interface, topShow is:' + isTopShow);
+				var choices = isTopShow ? o.choices1 : o.choices2;
+				var div = isTopShow ? d1 : d2;
+				if(choices.length == 0) {
+					console.log('no choices found')
+					div.style.border = '2px solid blue';
+				}
+				else {
+					div.innerHTML = ''; //Clear everything
+					for(var i = 0; i < 10; i++) { 
+						if(choices[i]) {
+								var el_div = document.createElement('div');
+								el_div.style = 'border:1px solid black;';
+								div.appendChild(el_div);
+								el_div.innerHTML = 
+										   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
+										   (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
+										   (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+										   'k: ' + choices[i].kind +
+										   'y: ' + choices[i].year
+						}							
+					}
+				}
 			}
 				
 			function attemptAuto() {
