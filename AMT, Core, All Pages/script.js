@@ -10011,7 +10011,17 @@ function load__allPages_AMT_combo() {
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			
+			// Special workflow window.
 			// One query. For skips.
+			if(AMT__Global_Vars.isSpecialWorkflowWindow) {
+				var one_qy = true;
+			}
+			// Non-special workflow window.
+			// Probably two queries. Title+Series && Has more than one result. Or ...?
+			if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
+				var one_qy = false;
+			}
+			
 			var firstQuery = {
 				title: o.title1,
 				series: o.series1,
@@ -10019,7 +10029,7 @@ function load__allPages_AMT_combo() {
 				runtime: o.runtime1,
 				releaseYear: o.releaseYear1,
 				isTopShow:true,
-				one_query: true
+				one_query: one_qy
 			}
 			if(o.title2) {
 				o.matches.title2 = clean_str_to_auto(o.title2);
@@ -10032,7 +10042,7 @@ function load__allPages_AMT_combo() {
 					runtime: o.runtime2,
 					releaseYear: o.releaseYear2,
 					isTopShow: false,
-					one_query: true
+					one_query: one_qy
 				}
 				o.numShows = 2;
 			}
