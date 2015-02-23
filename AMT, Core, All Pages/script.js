@@ -10421,6 +10421,13 @@ function load__allPages_AMT_combo() {
 							}
 							else // Bottom (!isTopShow)
 							{
+								console.log('chewbacca');
+								if(choices[i].title == "Seth") {
+									console.log('seth consideration');
+									console.log(choices[i]);
+									console.log(o);
+
+								}
 								if(
 								choices[i] &&
 								choices[i].title &&
@@ -10438,7 +10445,7 @@ function load__allPages_AMT_combo() {
 										//Make sure they're both numbers by trimming them
 										choices[i].year = choices[i].year.trim();
 										o.releaseYear2 = o.releaseYear2.trim();
-										if(Math.abs((choices[i].year *1) - (o.realeaseYear2*1)) <= 2) {
+										if(Math.abs((choices[i].year *1) - (o.releaseYear2*1)) <= 2) {
 											console.log('year matched for top');
 											bottomAuto = true;
 											foundAuto = true;
