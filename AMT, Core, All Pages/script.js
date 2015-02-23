@@ -107,6 +107,23 @@ function load()
 		return;
 	}
 	
+	if  (
+		window.top != window.self &&
+		/^https?:\/\/flicksio\.com\/mturk2/.exec(loc)
+		)
+	{
+		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = true;
+		
+		// have a run button
+		load__allPages_AMT_combo();
+		// stop
+		console.log('stop all pages');
+		this.global_vars.is_running_on_amt = false;
+		
+		return;
+	}
+	
 	// Exit if AMT
 	if  (
 			loc.indexOf('https://www.mturk.com') != -1 ||
@@ -10008,8 +10025,8 @@ function load__allPages_AMT_combo() {
 				console.log(response);
 				var ro = response.responseObject;
 				
-				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
-				//~ buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				//buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
@@ -10160,8 +10177,8 @@ function load__allPages_AMT_combo() {
 				var container = isTopShow ? d1 : d2;
 				var locn = 
 				{
-					search_t : 0,
-					search_t_s:1,
+					search_t : 1,
+					search_t_s:0,
 					search_s:2,
 					search_title_no_opts: 3
 				}
@@ -10203,7 +10220,7 @@ function load__allPages_AMT_combo() {
 				}
 				
 				//Attempt to auto into a checkIMDB here:
-				if(rsltsType == 'search_t') {
+				if(rsltsType == 'search_t_s') {
 					if(
 					   rslts &&
 					   rslts.length &&
