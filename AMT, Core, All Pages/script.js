@@ -312,33 +312,31 @@ function load()
 			
 			function processDBResults(response) {
 				//response of 3 searches
+				console.log('got db response');
+				console.log(response);
+				var ro = response.responseObject;
 				
-				var search_t;
-				var search_t_s;
-				var search_s;
-				var search_title_no_opts;
-				
-				buildDBRsltsInterface(search_t, 'search_t', isTopShow);
-				buildDBRsltsInterface(search_t_s, 'search_t_s', isTopShow);
-				buildDBRsltsInterface(search_s, 'search_s', isTopShow);
-				buildDBRsltsInterface(search_title_no_opts, 'search_title_no_opts', isTopShow);
+				buildDBRsltsInterface(ro.search_t, 'search_t', isTopShow);
+				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', isTopShow);
+				buildDBRsltsInterface(ro.search_s, 'search_s', isTopShow);
+				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', isTopShow);
 				
 				
 				
-				response = JSON.parse(response)
-				if(response.checkClosestSeries) {
-					checkClosestSeries(response.seriesChoices, response.isTopShow);
-				}
-				else { //This is an IMDB check				
-					//Process the results, and then call checkIMDB
-					var keywords;
-					var title;
-					var title_type;
-					var isTopShow;
-
-					
-					checkIMDB(keywords, title, title_type,isTopShow);
-				}
+				//~ response = JSON.parse(response)
+				//~ if(response.checkClosestSeries) {
+					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
+				//~ }
+				//~ else { //This is an IMDB check				
+					//~ //Process the results, and then call checkIMDB
+					//~ var keywords;
+					//~ var title;
+					//~ var title_type;
+					//~ var isTopShow;
+				//~ 
+					//~ 
+					//~ checkIMDB(keywords, title, title_type,isTopShow);
+				//~ }
 			}
 			
 			
@@ -476,11 +474,14 @@ function load()
 					}
 					
 					//Attempt to auto into a checkIMDB here:
-					if(rsltsType == 'search_t' && rslts.length == 1) {
+					if(rsltsType == 'search_t' && 
+					   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+					   rslts[0].series.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
+					   ) {
 						//
 						//...
 						//
-					} 
+						} 
 				}
 								
 				function buildFinalInterface(isTopShow) {
