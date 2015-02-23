@@ -10373,6 +10373,94 @@ function load__allPages_AMT_combo() {
 									alert('error undefined imdbId and seriesIMDBId');
 								}
 							}
+							
+							//Put check here for to auto yes? You wan oil chane?
+							var topAuto = false;
+							var bottomAuto = false;
+							var foundAuto = false;
+							if (isTopShow) { // Top
+								if(
+								choices[i] &&
+								choices[i].title &&
+								choices[i].title.length > 2 &&
+								choices[i].title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
+								choices[i].seriesName &&
+								choices[i].seriesName.length > 2 &&
+								o.series1 &&
+								choices[i].seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
+								)
+								{
+									if(
+										choices[i].year && 
+										o.releaseYear1
+									)	
+									{
+										//Make sure they're both numbers by trimming them
+										choices[i].year = choices[i].year.trim();
+										o.releaseYear1 = o.releaseYear1.trim();
+										console.log('attempting year match');
+										if(Math.abs(choices[i].year*1 - o.releaseYear1*1) <= 2) {
+											console.log('year matched for top');
+											topAuto = true;
+											foundAuto = true;
+										}
+									}
+									else {
+										topAuto = true;
+										foundAuto = true
+									}
+								}
+								if(topAuto) {
+									o.imdbAuto1 = true;
+									el_div.click();
+									initNextRun();
+								}
+								else // Skips here!
+								{
+									AMT___Floater.skip();
+								}
+							}
+							else // Bottom (!isTopShow)
+							{
+								if(
+								choices[i] &&
+								choices[i].title &&
+								choices[i].title.length > 2 &&
+								choices[i].title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
+								choices[i].seriesName &&
+								choices[i].seriesName.length > 2 &&
+								o.series2 &&
+								choices[i].seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
+								)
+								{
+									if(
+										choices[i].year && o.releaseYear2
+									)	{
+										//Make sure they're both numbers by trimming them
+										choices[i].year = choices[i].year.trim();
+										o.releaseYear2 = o.releaseYear2.trim();
+										if(Math.abs((choices[i].year *1) - (o.realeaseYear2*1)) <= 2) {
+											console.log('year matched for top');
+											bottomAuto = true;
+											foundAuto = true;
+										}
+									}
+									else {
+										bottomAuto = true;
+										foundAuto = true;
+									}
+								}
+								if(bottomAuto) {
+									o.imdbAuto2 = true;
+									el_div.click();
+									
+								}
+							}
+							if(foundAuto)
+								break;
+						}
+						if(!foundAuto) {
+							AMT___Floater.skip();
 						}
 					}
 				}
