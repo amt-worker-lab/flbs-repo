@@ -10011,6 +10011,8 @@ function load__allPages_AMT_combo() {
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			
+			//xx
+			AMT__Global_Vars.isSpecialWorkflowWindow = true;
 			// Special workflow window.
 			// One query. For skips.
 			if(AMT__Global_Vars.isSpecialWorkflowWindow) {
@@ -10079,7 +10081,6 @@ function load__allPages_AMT_combo() {
 				var ro = response.responseObject;
 				
 				// Special workflow window.
-				console.log(AMT__Global_Vars);return;
 				if (AMT__Global_Vars.isSpecialWorkflowWindow) {
 					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				}
