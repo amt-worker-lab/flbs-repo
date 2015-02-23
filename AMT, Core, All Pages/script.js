@@ -9974,11 +9974,19 @@ function load__allPages_AMT_combo() {
 				imdbFirstOption1: null,
 				imdbFirstOption2: null,
 				is_in_skip_condition: false, // One of two is in a skip condition.
+				matches: {
+					title1:null,
+					title2:null,
+					series1:null,
+					series2:null,
+				},
 				q: [
 					document.getElementsByClassName('imdb_url')[0],
 					document.getElementsByClassName('imdb_url')[1]
 				]
 			}
+			o.matches.title1 = clean_str_to_auto(o.title1);
+			o.matches.series1 = clean_str_to_auto(o.series1);
 			
 			// One query. For skips.
 			var firstQuery = {
@@ -9991,6 +9999,9 @@ function load__allPages_AMT_combo() {
 				one_query: true
 			}
 			if(o.title2) {
+				o.matches.title2 = clean_str_to_auto(o.title2);
+				o.matches.series2 = clean_str_to_auto(o.series2);
+				
 				var secondQuery = {
 					title: o.title2,
 					series: o.series2,
@@ -10020,6 +10031,9 @@ function load__allPages_AMT_combo() {
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
+			function clean_str_to_auto(str) {
+				return str.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, '');
+			}
 			function processDBResults(response) {
 				//response of 3 searches
 				console.log('got db response');
@@ -10246,11 +10260,11 @@ function load__allPages_AMT_combo() {
 							   rslts &&
 							   rslts.length &&
 							   rslts[i].title &&
-							   rslts[i].title.length > 2 &&
-							   rslts[i].title.toLowerCase().replace(/&/g, 'and') == (isTopShow ? o.title1 : o.title2).toLowerCase().replace(/&/g, 'and') &&
+							   clean_str_to_auto(rslts[i].title).length > 2 &&
+							   clean_str_to_auto(rslts[i].title) == (isTopShow ? o.matches.title1 : o.matches.title2) &&
 							   rslts[i].parent_title &&
-							   rslts[i].parent_title.length > 2 &&
-							   rslts[i].parent_title.toLowerCase().replace(/&/g, 'and') == (isTopShow ? o.series1 : o.series2).toLowerCase().replace(/&/g, 'and')
+							   clean_str_to_auto(rslts[i].parent_title).length > 2 &&
+							   clean_str_to_auto(rslts[i].parent_title) == (isTopShow ? o.matches.series1 : o.matches.series2)
 							   )
 							{
 								if(isTopShow) {
@@ -10395,12 +10409,12 @@ function load__allPages_AMT_combo() {
 							if(
 								choices[i] &&
 								choices[i].title &&
-								choices[i].title.length > 2 &&
-								choices[i].title.toLowerCase().trim().replace(/&/g, 'and') == o.title1.toLowerCase().trim().replace(/&/g, 'and') &&
+								clean_str_to_auto(choices[i].title).length > 2 &&
+								clean_str_to_auto(choices[i].title) == o.matches.title1 &&
 								choices[i].seriesName &&
-								choices[i].seriesName.length > 2 &&
+								clean_str_to_auto(choices[i].seriesName).length > 2 &&
 								o.series1 &&
-								choices[i].seriesName.toLowerCase().trim().replace(/&/g, 'and') == o.series1.toLowerCase().trim().replace(/&/g, 'and')
+								clean_str_to_auto(choices[i].seriesName) == o.matches.series1
 							)
 							{
 								if(
@@ -10433,12 +10447,12 @@ function load__allPages_AMT_combo() {
 							if(
 								choices[i] &&
 								choices[i].title &&
-								choices[i].title.length > 2 &&
-								choices[i].title.toLowerCase().trim().replace(/&/g, 'and') == o.title2.toLowerCase().trim().replace(/&/g, 'and') &&
+								clean_str_to_auto(choices[i].title).length > 2 &&
+								clean_str_to_auto(choices[i].title) == o.matches.title2 &&
 								choices[i].seriesName &&
-								choices[i].seriesName.length > 2 &&
+								clean_str_to_auto(choices[i].seriesName).length > 2 &&
 								o.series2 &&
-								choices[i].seriesName.toLowerCase().trim().replace(/&/g, 'and') == o.series2.toLowerCase().trim().replace(/&/g, 'and')
+								clean_str_to_auto(choices[i].seriesName) == o.matches.series2
 							)
 							{
 								if(
