@@ -302,10 +302,10 @@ function load()
 			
 			/*Begin Elements*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:500px;background-color:#BBB;");
+			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:500px;background-color:#CCC;");
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#BBB;");
+			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#CCC;");
 			document.body.appendChild(d2);
 			/*End of Elements*/
 			
@@ -422,15 +422,22 @@ function load()
 				
 				function buildInterface(isTopShow) {
 					console.log('building interface, topShow is:' + isTopShow);
+					var choices = isTopShow ? o.choices1 : o.choices2;
+					var div = isTopShow ? d1 : d2;
+					for(var i = 0; i < 10; i++) { 
+						if(choices[i]) {
+							s
+							
+							
+						}
+					}
+					
 				}
 				
 				function attemptAuto() {
 					console.log('attempting auto');
-				}
-				
+				}	
 			}
-			
-			
 		}
 		new run().f();
 	}
