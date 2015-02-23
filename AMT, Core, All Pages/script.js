@@ -10054,20 +10054,18 @@ function load__allPages_AMT_combo() {
 				// numShows == 2
 				// Is not in skip condition
 				// isTopShow == true
-				console.log(o.numShows);
-				console.log(o.is_in_skip_condition);
-				console.log(ro.original_query_object.isTopShow);
-				if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) {
-					console.log('Run:Running show#2');
+				//~ console.log(o.numShows);
+				//~ console.log(o.is_in_skip_condition);
+				//~ console.log(ro.original_query_object.isTopShow);
+				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) 
+				console.log('Run:Running show#2');
 					(new AMT___requests_factory()).database__select({
 						query: "AMT_Flicksio_IMDB_GetDetails",
 						encodeStrings: {
 							qStrs: secondQuery
 						}
 					}, processDBResults);
-				} else {
-					console.log('Run:Not running show#2');
-				}
+				
 			}
 			
 			//Code to pull from database
@@ -10147,6 +10145,7 @@ function load__allPages_AMT_combo() {
 								choices[i].imdbId = scr2[1];
 								choices[i].title = scr2[2]
 								choices[i].year = scr2[3];
+							
 							}
 							
 							var scr3 = reg3.exec(allDetails[i]);
@@ -10155,11 +10154,12 @@ function load__allPages_AMT_combo() {
 							}
 							
 							//Clean everything
-							for(var itm in choices) {
-								if(typeof choices[itm] == 'string') 
-									choices[itm] = __js_clean_html_str(choices[itm]);
-							}
+							for(var itm in choices[i]) {
+								if(typeof choices[i][itm] == "string") 
+									choices[i][itm] = __js_clean_html_str(choices[i][itm]);
 							
+							}
+
 							var scr4 = reg4.exec(allDetails[i]);
 							console.log(scr4);
 							choices[i].cast = [];
