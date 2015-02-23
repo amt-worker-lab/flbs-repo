@@ -490,7 +490,11 @@ function load()
 						el_div.isTopShow = isTopShow;
 						el_div.cast = rslts[i].cast;
 						el_div.onclick = function() {
-							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow, this.cast);
+							if(this.isTopShow)
+								o.cast1 = this.cast;
+							else
+								o.cast2 = this.cast;
+							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
 						}
 					}
 				}
@@ -517,18 +521,31 @@ function load()
 				}
 				else {
 					div.innerHTML = ''; //Clear everything
+					
+					
+					
 					for(var i = 0; i < 10; i++) { 
 						if(choices[i]) {
-								var el_div = document.createElement('div');
-								el_div.style = 'border:1px solid black;';
-								el_div.className = 'exe';
-								div.appendChild(el_div);
-								el_div.innerHTML = 
-										   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
-										   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
-										   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + choices[i].title_type + '<br>'
-										   'y: ' + choices[i].year
+							var castMatches = [];
+							for(var j = 0; j < (isTopShow ? o.cast1.length : o.cast2.length); j++) {
+								for(var k = 0; k < choices[i].cast.length; k++) {
+									if(choices[i].cast[k].toLowerCase() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase) {
+										castMatches.push(choices[i].cast[k]);
+									}
+								}
+							}
+							var el_div = document.createElement('div');
+							el_div.style = 'border:1px solid black;';
+							el_div.className = 'exe';
+							div.appendChild(el_div);
+							el_div.castMatches = castMatches;
+							el_div.innerHTML = 
+									   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
+									   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
+									   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+									   'k: ' + choices[i].title_type + '<br>'
+									   'y: ' + choices[i].year +
+									   'cm: ' + castMatches.split(',');
 						}							
 					}
 				}
