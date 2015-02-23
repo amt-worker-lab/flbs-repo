@@ -10342,7 +10342,7 @@ function load__allPages_AMT_combo() {
 							//~ }
 						//~ }
 						el_div.onclick = function() { // onclick
-							this.style.backgroundColor = 'green';
+							this.style.backgroundColor = 'LightGreen';
 							var id;
 							if(this.imdbId) {
 								id = this.imdbId;
@@ -10361,7 +10361,12 @@ function load__allPages_AMT_combo() {
 									document.getElementsByClassName('imdb_url')[1].value = url;
 								}
 								// Make div small
-								this.parent_div.style.height = 'auto';
+								//~ this.parent_div.style.height = 'auto';
+								this.parentNode.style.height = '140px';
+								console.log('Make div small');
+								console.log(this);
+								console.log(this.parentNode);
+								this.scrollIntoView(false);
 								//
 								o.q[0].value = o.q[0].value.trim();
 								o.q[1].value = o.q[1].value.trim();
@@ -10377,7 +10382,7 @@ function load__allPages_AMT_combo() {
 									}
 									// Is accepted?
 									document.body.style.backgroundColor = 'aqua';
-									//doSubmit('mturk')
+									//setTimeout(function() { doSubmit('mturk'); }, 2000);
 									return false;
 								}
 							} else {
