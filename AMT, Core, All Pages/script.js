@@ -311,6 +311,20 @@ function load()
 			/*End of Elements*/
 			
 			function processDBResults(response) {
+				//response of 3 searches
+				
+				var search_t;
+				var search_t_s;
+				var search_s;
+				var search_title_no_opts;
+				
+				buildDBRsltsInterface(search_t, 'search_t', isTopShow);
+				buildDBRsltsInterface(search_t_s, 'search_t_s', isTopShow);
+				buildDBRsltsInterface(search_s, 'search_s', isTopShow);
+				buildDBRsltsInterface(search_title_no_opts, 'search_title_no_opts', isTopShow);
+				
+				
+				
 				response = JSON.parse(response)
 				if(response.checkClosestSeries) {
 					checkClosestSeries(response.seriesChoices, response.isTopShow);
@@ -329,30 +343,30 @@ function load()
 			
 			
 			//Code to pull from database
-			//~ (new AMT___requests_factory()).database__select({
-				//~ query: "AMT_Flicksio_IMDB_GetDetails",
-				//~ encodeStrings: {
-					//~ qStrs: firstQuery
-				//~ }
-			//~ }, processDBResults
-			//~ ); 
-			//~ 
-			//~ if(o.numShows == 2) {
-				//~ (new AMT___requests_factory()).database__select({
-				//~ query: "AMT_Flicksio_IMDB_GetDetails",
-				//~ encodeStrings: {
-					//~ qStrs: secondQuery
-				//~ }
-				//~ }, processDBResults);
-			//~ }
+			(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					qStrs: firstQuery
+				}
+			}, processDBResults
+			); 
 			
+			if(o.numShows == 2) {
+				(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					qStrs: secondQuery
+				}
+				}, processDBResults);
+			}
+			//~ 
 			
 			
 			//~ checkIMDB("african-american-female-detective",
 			         //~ "Fatal Retraction",
 			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
 			         
-			//checkIMDB("","fatal","");
+			//~ //checkIMDB("","fatal","");
 			
 			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var url = 'http://www.imdb.com/search/title?' +
@@ -417,7 +431,7 @@ function load()
 						o.choices1 = choices;
 					else
 						o.choices2 = choices;
-					buildInterface(isTopShow);
+					buildFinalInterface(isTopShow);
 				
 					o.numRuns++;
 					if(o.numRuns == o.numShows) {
@@ -426,45 +440,73 @@ function load()
 				}
 				});
 				
-				
-				function checkClosestSeries(seriesNames, isTopShow) {
-					var seriesChoices = seriesNames;
-					var div = isTopShow ? d1 : d2;
-					for(var i = 0; i < seriesNames.length; i++) {
-						var el_div = document.createElement('div');
-						el_div.style = 'border: 1px solid black';
-						div.appendChild(el_div);
-						el_div.innerText = seriesNames[i];
-						el_div.value = seriesNames[i];
-						el_div.className = 'exe';
-						el_div.onclick = function() {
-						
-						}
+				function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
+					var container = isTopShow ? d1 : d2;
+					var locn = 
+					{
+						search_t : 0,
+						search_t_s:1,
+						search_t_s:2,
+						search_title_no_opts: 3
+					}
+					locn = locn[rsltsType];
 					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'left: ' + locn*25+'%;'+'width,height:100%;');	
+					container.appendChild(div);
+					if(rstls == null) {
+						div.innerHTML = '0';
+					}
+					else {					
+						for(var i = 0; i < rslts.shows.length; i++) {
+							var el_div = document.createElement('div');
+							el_div.style = 'border: 1px solid black;';
+							div.appendChild(el_div);
+							el_div.innerHTML = (rslts[i].title ? 't: ' + rslsts[i].title + '<br>' : 't: ') +
+											   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: ') +
+											   (rlsts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+											   'k: ' + rslts[i].kind +
+											   'y: ' + rslts[i].year
+							el_div.value = seriesNames[i];
+							el_div.className = 'exe';
+							el_div.onclick = function() {
+								checkIMDB(rslts[i].keywords, rslts[i].title, rslts[i].kind, isTopShow);
+							}
+						}
 					}
 					
-					(new AMT___requests_factory()).database__select({
-						query: "AMT_Flicksio_IMDB_GetDetails",
-						encodeStrings: {
-							qStrs: (isTopShow ? firstQuery : secondQuery),
-							makeSeriesSynonym: [firstQuery.title, synonym]
-						}
-					}, processDBResults
-					); 
+					//Attempt to auto into a checkIMDB here:
+					if(rsltsType == 'search_t' && rslts.length == 1) {
+						//
+						//...
+						//
+					} 
 				}
-				
-				function buildInterface(isTopShow) {
-					console.log('building interface, topShow is:' + isTopShow);
-					var choices = isTopShow ? o.choices1 : o.choices2;
-					var div = isTopShow ? d1 : d2;
-					for(var i = 0; i < 10; i++) { 
-						if(choices[i]) {
-							
-							
-							
-						}
-					}
-					
+								
+				function buildFinalInterface(isTopShow) {
+					//~ console.log('building interface, topShow is:' + isTopShow);
+					//~ var choices = isTopShow ? o.choices1 : o.choices2;
+					//~ var div = isTopShow ? d1 : d2;
+					//~ if(choices.length == 0) {
+						//~ console.log('no choices found')
+						//~ div.style.border = '2px solid blue';
+					//~ }
+					//~ else {
+						//~ div.innerHTML = ''; //Clear everything
+						//~ for(var i = 0; i < 10; i++) { 
+							//~ if(choices[i]) {
+									//~ var el_div = document.createElement('div');
+									//~ el_div.style = 'border:1px solid black;';
+									//~ div.appendChild(el_div);
+									//~ eldiv.innerHTML = 
+											   //~ (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
+											   //~ (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
+											   //~ (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+											   //~ 'k: ' + choices[i].kind +
+											   //~ 'y: ' + choices[i].year
+							//~ }							
+						//~ }
+					//~ }
 				}
 				
 				function attemptAuto() {
