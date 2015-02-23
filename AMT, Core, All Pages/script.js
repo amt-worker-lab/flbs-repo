@@ -329,13 +329,13 @@ function load()
 			
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
-			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:1000px;background-color:#eee;border:1px solid blue;");
+			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "width:100%;height:500px;background-color:#eee;");
+			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;");
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "width:100%;height:500px;background-color:#eee;border-top:1px solid black;");
+			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;");
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
@@ -532,7 +532,6 @@ function load()
 					}
 				}
 				
-				console.log(rslts);
 				//Attempt to auto into a checkIMDB here:
 				if(rsltsType == 'search_t' && 
 				   rslts &&
@@ -620,7 +619,9 @@ function load()
 									id = this.imdbId;
 								}
 								else {
-									id = this.seriesIMDBId
+									id = this.seriesIMDBId;
+									alert('Series IMDB ID!'); //?
+									return;
 								}
 								if(id) {
 									var url = 'http://www.imdb.com/title/' + id;
@@ -647,88 +648,94 @@ function load()
 						}
 					}
 				}
-				console.log(o);
+				//~ console.log(o);
 			}
 				
 			function attemptAuto(isTopShow) {
-				console.log('attempting auto, isTopShow: ' + isTopShow);
-				console.log(o)
+				//~ console.log('attempting auto, isTopShow: ' + isTopShow);
+				//~ console.log(o)
 				var topAuto = false;
 				var bottomAuto = false;
-				if(
-				isTopShow &&
-				o.imdbFirstOption1 &&
-				o.imdbFirstOption1.title &&
-				o.imdbFirstOption1.title.length > 2 &&
-				o.imdbFirstOption1.title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
-				o.imdbFirstOption1.seriesName &&
-				o.imdbFirstOption1.seriesName.length > 2 &&
-				o.series1 &&
-				o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
-				)
-				{
+				if (isTopShow) { // Top
 					if(
-						o.imdbFirstOption1.year && 
-						o.releaseYear1
-					)	
+					o.imdbFirstOption1 &&
+					o.imdbFirstOption1.title &&
+					o.imdbFirstOption1.title.length > 2 &&
+					o.imdbFirstOption1.title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
+					o.imdbFirstOption1.seriesName &&
+					o.imdbFirstOption1.seriesName.length > 2 &&
+					o.series1 &&
+					o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
+					)
 					{
-						//Make sure they're both numbers by trimming them
-						o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
-						o.releaseYear1 = o.releaseYear1.trim();
-						console.log('attempting year match');
-						if(Math.abs(o.imdbFirstOption1.year*1 - o.releaseYear1*1) <= 2) {
-							console.log('year matched for top');
+						if(
+							o.imdbFirstOption1.year && 
+							o.releaseYear1
+						)	
+						{
+							//Make sure they're both numbers by trimming them
+							o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
+							o.releaseYear1 = o.releaseYear1.trim();
+							console.log('attempting year match');
+							if(Math.abs(o.imdbFirstOption1.year*1 - o.releaseYear1*1) <= 2) {
+								console.log('year matched for top');
+								topAuto = true;
+							}
+						}
+						else {
 							topAuto = true;
 						}
 					}
-					else {
-						topAuto = true;
+					if(topAuto) {
+						o.imdbAuto1 = true;
+						o.imdbFirstOption1.click();
+					}
+					else // Skips here!
+					{
+						AMT___Floater.skip();
 					}
 				}
-				
-				if(
-				!isTopShow &&
-				o.imdbFirstOption2 &&
-				o.imdbFirstOption2.title &&
-				o.imdbFirstOption2.title.length > 2 &&
-				o.imdbFirstOption2.title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
-				o.imdbFirstOption2.seriesName &&
-				o.imdbFirstOption2.seriesName.length > 2 &&
-				o.series2 &&
-				o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
-				)
+				else // Bottom (!isTopShow)
 				{
 					if(
-						o.imdbFirstOption2.year && o.releaseYear2
-					)	{
-						//Make sure they're both numbers by trimming them
-						o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
-						o.releaseYear2 = o.releaseYear2.trim();
-						if(Math.abs((o.imdbFirstOption2.year *1) - (o.realeaseYear2*1)) <= 2) {
-							console.log('year matched for top');
+					o.imdbFirstOption2 &&
+					o.imdbFirstOption2.title &&
+					o.imdbFirstOption2.title.length > 2 &&
+					o.imdbFirstOption2.title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
+					o.imdbFirstOption2.seriesName &&
+					o.imdbFirstOption2.seriesName.length > 2 &&
+					o.series2 &&
+					o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
+					)
+					{
+						if(
+							o.imdbFirstOption2.year && o.releaseYear2
+						)	{
+							//Make sure they're both numbers by trimming them
+							o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
+							o.releaseYear2 = o.releaseYear2.trim();
+							if(Math.abs((o.imdbFirstOption2.year *1) - (o.realeaseYear2*1)) <= 2) {
+								console.log('year matched for top');
+								bottomAuto = true;
+							}
+						}
+						else {
 							bottomAuto = true;
 						}
 					}
-					else {
-						bottomAuto = true;
+					if(bottomAuto) {
+						o.imdbAuto2 = true;
+						o.imdbFirstOption2.click();
+					}
+					else // Skips here!
+					{
+						AMT___Floater.skip();
 					}
 				}
-				
-			
-				if(topAuto) {
-					o.imdbAuto1 = true;
-					o.imdbFirstOption1.click();
-				}
-				if(bottomAuto) {
-					o.imdbAuto2 = true;
-					o.imdbFirstOption2.click();
-				}				
 			}				
 		}
 		new run().f();
 	}
-	
-	
 	
 	//
 	//
