@@ -319,7 +319,7 @@ function load()
 				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
 				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
 				
 				
@@ -446,7 +446,7 @@ function load()
 				{
 					search_t : 0,
 					search_t_s:1,
-					search_t_s:2,
+					search_s:2,
 					search_title_no_opts: 3
 				}
 				locn = locn[rsltsType];
@@ -454,7 +454,7 @@ function load()
 				var div = document.createElement('div');
 				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width,height:100%;position:absolute;');	
 				container.appendChild(div);
-				if(rslts == null) {
+				if(!rslts || rslts.length == 0) {
 					div.innerHTML = '0';
 				}
 				else {					
@@ -467,9 +467,13 @@ function load()
 										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 										   'k: ' + rslts[i].kind +
 										   'y: ' + rslts[i].year
-						el_div.className = 'exe';
+						el_div.title = rslts[i].title;
+						el_div.parent_title = rslts[i].parent_title;
+						el_div.season_nr = rslts[i].season_nr;
+						el_div.kind = rslts[i].kind;
+						el_div.isTopShow = isTopShow;
 						el_div.onclick = function() {
-							checkIMDB(rslts[i].keywords, rslts[i].title, rslts[i].kind, isTopShow);
+							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
 						}
 					}
 				}
