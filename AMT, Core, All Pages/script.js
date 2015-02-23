@@ -219,15 +219,21 @@ function load()
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
-			GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
 			document.getElementsByClassName('container')[0].style.width = "20%";
 			document.getElementsByClassName('container')[0].style.margin = "0";
+			document.getElementsByClassName('titles')[0].style.marginTop = "60px"; // Move titles down
 			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('header-bg')[0].style.top = '4000px';
 			document.getElementsByClassName('row header')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('row header')[0].style.top = '4000px';
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
+			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
+			document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
+			GM_addStyle('img {width:80px;}');
+			GM_addStyle('.left {width:60px;}');
+			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.title {height:120px;overflow:hidden;}');
 			var n = document.getElementsByClassName('title');
@@ -523,6 +529,7 @@ function load()
 					}
 				}
 				
+				console.log(rslts);
 				//Attempt to auto into a checkIMDB here:
 				if(rsltsType == 'search_t' && 
 				   rslts &&
