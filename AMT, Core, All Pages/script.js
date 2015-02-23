@@ -316,10 +316,10 @@ function load()
 				console.log(response);
 				var ro = response.responseObject;
 				
-				buildDBRsltsInterface(ro.search_t, 'search_t', isTopShow);
-				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', isTopShow);
-				buildDBRsltsInterface(ro.search_s, 'search_s', isTopShow);
-				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', isTopShow);
+				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.qStrs.isTopShow);
 				
 				
 				
@@ -373,147 +373,148 @@ function load()
 							'title='+encodeURIComponent(title)
 							
 				
+				
 				GM_xmlhttpRequest({
-				method: 'GET',
-				url: url,
-				onload: function (response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						exit(response.status);
-					}
-					allDetails = rs.split('<td class="number">');
-					allDetails.splice(0,1);
-					console.log(allDetails);
-					//splits it into secions with 1 being the first
-					
-					//reg1 - imdbId of series, series name, year_type of series
-					//Should ALWAYS be there
-					var reg1 = /<a href="\/title\/([^\/]+)\/">([^<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
-					
-					//reg 2 - imdbId of title, title name, year of title
-					//Should be here only if it's an episode
-					var reg2 = /<span class="episode">Episode: <a href="\/title\/([^\/]+)\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
-					
-					//reg 3 - duration
-					//Sometimes is there, sometimes is left unspecified
-					var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
-					
-					
-					
-					//reg 3 - duration
-					
-					var choices = [];
-					
-					for(var i = 0; i <allDetails.length; i++) {
-						choices.push({});
-						var scr1 = reg1.exec(allDetails[i]);
-						choices[i].seriesIMDBId = scr1[1];
-						choices[i].seriesName = scr1[2];
-						choices[i].year_type = scr1[3];
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
 						
-						var scr2 = reg2.exec(allDetails[i]);
-						if(scr2) {
-							choices[i].imdbId = scr2[1];
-							choices[i].title = scr2[2]
-							choices[i].year = scr2[3];
+						if (response.status != 200) {
+							exit(response.status);
 						}
+						allDetails = rs.split('<td class="number">');
+						allDetails.splice(0,1);
+						console.log(allDetails);
+						//splits it into secions with 1 being the first
 						
-						var scr3 = reg3.exec(allDetails[i]);
-						if(scr3) {
-							choices[i].duration = scr3[i];
-						}
-					}
-					console.log(choices);
-					if(isTopShow) 
-						o.choices1 = choices;
-					else
-						o.choices2 = choices;
-					buildFinalInterface(isTopShow);
-				
-					o.numRuns++;
-					if(o.numRuns == o.numShows) {
-						attemptAuto();
-					}
-				}
-				});
-				
-				function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
-					var container = isTopShow ? d1 : d2;
-					var locn = 
-					{
-						search_t : 0,
-						search_t_s:1,
-						search_t_s:2,
-						search_title_no_opts: 3
-					}
-					locn = locn[rsltsType];
-					
-					var div = document.createElement('div');
-					div.setAttribute('style', 'left: ' + locn*25+'%;'+'width,height:100%;');	
-					container.appendChild(div);
-					if(rstls == null) {
-						div.innerHTML = '0';
-					}
-					else {					
-						for(var i = 0; i < rslts.shows.length; i++) {
-							var el_div = document.createElement('div');
-							el_div.style = 'border: 1px solid black;';
-							div.appendChild(el_div);
-							el_div.innerHTML = (rslts[i].title ? 't: ' + rslsts[i].title + '<br>' : 't: ') +
-											   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: ') +
-											   (rlsts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-											   'k: ' + rslts[i].kind +
-											   'y: ' + rslts[i].year
-							el_div.value = seriesNames[i];
-							el_div.className = 'exe';
-							el_div.onclick = function() {
-								checkIMDB(rslts[i].keywords, rslts[i].title, rslts[i].kind, isTopShow);
+						//reg1 - imdbId of series, series name, year_type of series
+						//Should ALWAYS be there
+						var reg1 = /<a href="\/title\/([^\/]+)\/">([^<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
+						
+						//reg 2 - imdbId of title, title name, year of title
+						//Should be here only if it's an episode
+						var reg2 = /<span class="episode">Episode: <a href="\/title\/([^\/]+)\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
+						
+						//reg 3 - duration
+						//Sometimes is there, sometimes is left unspecified
+						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
+						
+						
+						
+						//reg 3 - duration
+						
+						var choices = [];
+						
+						for(var i = 0; i <allDetails.length; i++) {
+							choices.push({});
+							var scr1 = reg1.exec(allDetails[i]);
+							choices[i].seriesIMDBId = scr1[1];
+							choices[i].seriesName = scr1[2];
+							choices[i].year_type = scr1[3];
+							
+							var scr2 = reg2.exec(allDetails[i]);
+							if(scr2) {
+								choices[i].imdbId = scr2[1];
+								choices[i].title = scr2[2]
+								choices[i].year = scr2[3];
+							}
+							
+							var scr3 = reg3.exec(allDetails[i]);
+							if(scr3) {
+								choices[i].duration = scr3[i];
 							}
 						}
-					}
+						console.log(choices);
+						if(isTopShow) 
+							o.choices1 = choices;
+						else
+							o.choices2 = choices;
+						buildFinalInterface(isTopShow);
 					
-					//Attempt to auto into a checkIMDB here:
-					if(rsltsType == 'search_t' && 
-					   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
-					   rslts[0].series.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
-					   ) {
-						//
-						//...
-						//
-						} 
+						o.numRuns++;
+						if(o.numRuns == o.numShows) {
+							attemptAuto();
+						}
+					}
+				});
+			}
+				
+			function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
+				var container = isTopShow ? d1 : d2;
+				var locn = 
+				{
+					search_t : 0,
+					search_t_s:1,
+					search_t_s:2,
+					search_title_no_opts: 3
 				}
-								
-				function buildFinalInterface(isTopShow) {
-					//~ console.log('building interface, topShow is:' + isTopShow);
-					//~ var choices = isTopShow ? o.choices1 : o.choices2;
-					//~ var div = isTopShow ? d1 : d2;
-					//~ if(choices.length == 0) {
-						//~ console.log('no choices found')
-						//~ div.style.border = '2px solid blue';
-					//~ }
-					//~ else {
-						//~ div.innerHTML = ''; //Clear everything
-						//~ for(var i = 0; i < 10; i++) { 
-							//~ if(choices[i]) {
-									//~ var el_div = document.createElement('div');
-									//~ el_div.style = 'border:1px solid black;';
-									//~ div.appendChild(el_div);
-									//~ eldiv.innerHTML = 
-											   //~ (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
-											   //~ (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
-											   //~ (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-											   //~ 'k: ' + choices[i].kind +
-											   //~ 'y: ' + choices[i].year
-							//~ }							
-						//~ }
-					//~ }
+				locn = locn[rsltsType];
+				
+				var div = document.createElement('div');
+				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width,height:100%;position:absolute;');	
+				container.appendChild(div);
+				if(rslts == null) {
+					div.innerHTML = '0';
+				}
+				else {					
+					for(var i = 0; i < rslts.length; i++) {
+						var el_div = document.createElement('div');
+						el_div.style = 'border: 1px solid black;';
+						div.appendChild(el_div);
+						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: ') +
+										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: ') +
+										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+										   'k: ' + rslts[i].kind +
+										   'y: ' + rslts[i].year
+						el_div.className = 'exe';
+						el_div.onclick = function() {
+							checkIMDB(rslts[i].keywords, rslts[i].title, rslts[i].kind, isTopShow);
+						}
+					}
 				}
 				
-				function attemptAuto() {
-					console.log('attempting auto');
-				}	
+				//Attempt to auto into a checkIMDB here:
+				if(rsltsType == 'search_t' && 
+				   rslts &&
+				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
+				   ) {
+					//
+					//...
+					//
+					} 
 			}
+								
+			function buildFinalInterface(isTopShow) {
+				//~ console.log('building interface, topShow is:' + isTopShow);
+				//~ var choices = isTopShow ? o.choices1 : o.choices2;
+				//~ var div = isTopShow ? d1 : d2;
+				//~ if(choices.length == 0) {
+					//~ console.log('no choices found')
+					//~ div.style.border = '2px solid blue';
+				//~ }
+				//~ else {
+					//~ div.innerHTML = ''; //Clear everything
+					//~ for(var i = 0; i < 10; i++) { 
+						//~ if(choices[i]) {
+								//~ var el_div = document.createElement('div');
+								//~ el_div.style = 'border:1px solid black;';
+								//~ div.appendChild(el_div);
+								//~ eldiv.innerHTML = 
+										   //~ (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
+										   //~ (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
+										   //~ (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+										   //~ 'k: ' + choices[i].kind +
+										   //~ 'y: ' + choices[i].year
+						//~ }							
+					//~ }
+				//~ }
+			}
+				
+			function attemptAuto() {
+				console.log('attempting auto');
+			}				
 		}
 		new run().f();
 	}
