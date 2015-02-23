@@ -34197,6 +34197,9 @@ function MT__RUN() {
 			curr_map_view: null // For Z hotkey
 		};
 		console.log(o);
+		if(o.name.toLowerCase() == 'marshalls') {
+			document.body.backgroundColor = 'lightgreen';
+		}
 		
 		
 		
