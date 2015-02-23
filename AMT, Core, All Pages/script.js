@@ -9895,7 +9895,7 @@ function load__allPages_AMT_combo() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
-			document.getElementsByClassName('container')[0].style.width = "20%";
+			document.getElementsByClassName('container')[0].style.width = "30%";
 			document.getElementsByClassName('container')[0].style.margin = "0";
 			document.getElementsByClassName('titles')[0].style.marginTop = "60px"; // Move titles down
 			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
@@ -9911,7 +9911,8 @@ function load__allPages_AMT_combo() {
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.title {height:120px;overflow:hidden;}');
-			GM_addStyle('.worker-info {top:1000px;position:absolute');
+			GM_addStyle('.worker-info {top:1000px;position:absolute;}');
+			GM_addStyle('.submit {padding:0;}');
 			var n = document.getElementsByClassName('title');
 			for (var p = 0; p <n.length; p++) {
 				n[p].addEventListener('mouseover', function() {
@@ -10021,7 +10022,7 @@ function load__allPages_AMT_combo() {
 			
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
-			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
+			d_container.setAttribute('style', "position:absolute;left:30%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
 			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;overflow:auto;");
