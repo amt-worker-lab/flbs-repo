@@ -520,7 +520,11 @@ function load()
 				   rslts[0].parent_title &&
 				   rslts[0].parent_title.length > 2 &&
 				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
-				   ) {
+				   ) {					   
+					   if(this.isTopShow)
+								o.cast1 =  rslts[i].cast;
+							else
+								o.cast2 =  rslts[i].cast;
 						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
 					} 
 			}
