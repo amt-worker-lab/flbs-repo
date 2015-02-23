@@ -513,6 +513,7 @@ function load()
 						el_div.cast = rslts[i].cast;
 						el_div.keywords = rslts[i].keywords;
 						el_div.onclick = function() {
+							this.style.backgroundColor = 'green';
 							if(this.isTopShow)
 								o.cast1 = this.cast;
 							else
@@ -601,6 +602,7 @@ function load()
 								}
 							}
 							el_div.onclick = function() {
+								this.style.backgroundColor = 'green';
 								var id;
 								if(this.imdbId) {
 									id = this.imdbId;
@@ -652,12 +654,14 @@ function load()
 				)
 				{
 					if(
-						o.imdbFirstOption1.year
-					)	{
+						o.imdbFirstOption1.year && 
+						o.releaseYear1
+					)	
+					{
 						//Make sure they're both numbers by trimming them
-						o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
-						o.year2 = o.year2.trim();
-						if(Math.abs(o.imdbFirstOption1 - o.year1) <= 2) {
+						o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
+						o.releaseYear1 = o.releaseYear1.trim();
+						if(Math.abs(o.imdbFirstOption1 - o.releaseYear1) <= 2) {
 							console.log('year matched for top');
 							topAuto = true;
 						}
@@ -680,12 +684,12 @@ function load()
 				)
 				{
 					if(
-						o.imdbFirstOption2.year
+						o.imdbFirstOption2.year && o.releaseYear2
 					)	{
 						//Make sure they're both numbers by trimming them
 						o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
-						o.year2 = o.year2.trim();
-						if(Math.abs((o.imdbFirstOption2.year *1) - (o.year2*1)) <= 2) {
+						o.releaseYear2 = o.releaseYear2.trim();
+						if(Math.abs((o.imdbFirstOption2.year *1) - (o.realeaseYear2*1)) <= 2) {
 							console.log('year matched for top');
 							bottomAuto = true;
 						}
@@ -698,11 +702,11 @@ function load()
 			
 				if(topAuto) {
 					o.imdbAuto1 = true;
-					o.firstOpion1.click();
+					o.imdbFirstOption1.click();
 				}
 				if(bottomAuto) {
 					o.imdbAuto2 = true;
-					o.firstOpion2.click();
+					o.imdbFirstOption2.click();
 				}				
 			}				
 		}
