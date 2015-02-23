@@ -107,23 +107,6 @@ function load()
 		return;
 	}
 	
-	if  (
-		window.top != window.self &&
-		/^https?:\/\/flicksio\.com\/mturk2/.exec(loc)
-		)
-	{
-		AMT__Global_Vars.isPreview = false;
-		AMT__Global_Vars.isTopWindow = true;
-		
-		// have a run button
-		load__allPages_AMT_combo();
-		// stop
-		console.log('stop all pages');
-		this.global_vars.is_running_on_amt = false;
-		
-		return;
-	}
-	
 	// Exit if AMT
 	if  (
 			loc.indexOf('https://www.mturk.com') != -1 ||
@@ -153,6 +136,45 @@ function load()
 		console.log('Stop. Run:load__allPages_AMT_combo.');
 		
 		this.global_vars.is_running_on_amt = false; // Apparently? This need to be false?
+		return;
+	}
+	
+	// FLICKSIO
+	// topwindow=true
+	// ispreview=false
+	if  (
+		window.top == window.self &&
+		/^https?:\/\/flicksio\.com\/mturk2\//.exec(loc)
+		)
+	{
+		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = true;
+		
+		// have a run button
+		load__allPages_AMT_combo();
+		// stop
+		console.log('stop all pages');
+		this.global_vars.is_running_on_amt = false;
+		
+		return;
+	}
+	// FLICKSIO
+	// topwindow=true
+	// ispreview=false
+	if  (
+		window.top != window.self &&
+		/^https?:\/\/flicksio\.com\/mturk2\//.exec(loc)
+		)
+	{
+		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = false;
+		
+		// have a run button
+		load__allPages_AMT_combo();
+		// stop
+		console.log('stop all pages');
+		this.global_vars.is_running_on_amt = false;
+		
 		return;
 	}
 	
@@ -10397,7 +10419,7 @@ function load__allPages_AMT_combo() {
 									}
 									// Is accepted?
 									document.body.style.backgroundColor = 'aqua';
-									//setTimeout(function() { doSubmit('mturk'); }, 2000);
+									setTimeout(function() { doSubmit('mturk'); }, 4000);
 									return false;
 								}
 							} else {
