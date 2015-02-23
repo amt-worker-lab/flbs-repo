@@ -661,7 +661,8 @@ function load()
 						//Make sure they're both numbers by trimming them
 						o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
 						o.releaseYear1 = o.releaseYear1.trim();
-						if(Math.abs(o.imdbFirstOption1 - o.releaseYear1) <= 2) {
+						console.log('attempting year match');
+						if(Math.abs(o.imdbFirstOption1.year*1 - o.releaseYear1*1) <= 2) {
 							console.log('year matched for top');
 							topAuto = true;
 						}
