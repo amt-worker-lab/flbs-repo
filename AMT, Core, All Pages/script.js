@@ -10031,6 +10031,26 @@ function load__allPages_AMT_combo() {
 				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
+				
+				
+				//~ response = JSON.parse(response)
+				//~ if(response.checkClosestSeries) {
+					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
+				//~ }
+				//~ else { //This is an IMDB check				
+					//~ //Process the results, and then call checkIMDB
+					//~ var keywords;
+					//~ var title;
+					//~ var title_type;
+					//~ var isTopShow;
+				//~ 
+					//~ 
+					//~ checkIMDB(keywords, title, title_type,isTopShow);
+				//~ }
+			}
+			
+			
+			function initNextRun() {
 				// numShows == 2
 				// Is not in skip condition
 				// isTopShow == true
@@ -10048,21 +10068,6 @@ function load__allPages_AMT_combo() {
 				} else {
 					console.log('Run:Not running show#2');
 				}
-				
-				//~ response = JSON.parse(response)
-				//~ if(response.checkClosestSeries) {
-					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
-				//~ }
-				//~ else { //This is an IMDB check				
-					//~ //Process the results, and then call checkIMDB
-					//~ var keywords;
-					//~ var title;
-					//~ var title_type;
-					//~ var isTopShow;
-				//~ 
-					//~ 
-					//~ checkIMDB(keywords, title, title_type,isTopShow);
-				//~ }
 			}
 			
 			//Code to pull from database
@@ -10363,7 +10368,6 @@ function load__allPages_AMT_combo() {
 						}
 					}
 				}
-				//~ console.log(o);
 			}
 				
 			function attemptAuto(isTopShow) {
@@ -10404,6 +10408,7 @@ function load__allPages_AMT_combo() {
 					if(topAuto) {
 						o.imdbAuto1 = true;
 						o.imdbFirstOption1.click();
+						initNextRun();
 					}
 					else // Skips here!
 					{
