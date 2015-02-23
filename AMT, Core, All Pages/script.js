@@ -94,7 +94,7 @@ function load()
 		window.top != window.self &&
 		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
 		)
-	{	
+	{
 		// have a run button
 		load__allPages_AMT_combo__btn();
 		// stop
@@ -105,35 +105,40 @@ function load()
 		return;
 	}
 	
-	
-	// exit if AMT
+	// Exit if AMT
 	if  (
 			loc.indexOf('https://www.mturk.com') != -1 ||
 			loc.indexOf('https://www.mturkcontent.com') != -1 ||
 			loc.indexOf('https://s3.amazonaws.com') != -1 ||
 			loc.indexOf('https://workersandbox.mturk.com') != -1
 		)
-	{ // run any dual mode content here!
-		//if (window.top == window.self)
-			load__allPages_AMT_combo();
+	{ // Run any dual mode content here!
+		load__allPages_AMT_combo();
 		
 		this.global_vars.is_running_on_amt = false;
 		
 		return;
 	}
 	
+	// Run all pages AMT combo content.
+	// This runs when top==self and inurl(assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE) 
+	if  (
+		window.top == window.self &&
+		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
+		)
+	{
+		load__allPages_AMT_combo();
+		console.log('Stop. Run:load__allPages_AMT_combo.');
+		this.global_vars.is_running_on_amt = false; // Apparently? This need to be false?
+		return;
+	}
 	
 	/*
-	 
 	 {
 		zoom: int, //Default 3
 		cp
 	 }
-	 
-	 
 	 */
-	
-	
 	//Draws a bing map based on the parameters object
 	//Creates a div with the id "myMap"
 	//Returns that div
@@ -167,14 +172,15 @@ function load()
 		//~ 
 	//~ }
 	
+	// ...
 	if(loc.indexOf('bingImageTest.html') != -1) {
 		//drawBingMap({style:'width:650px;height:450px;', lat:'42.394496', lng: '-76.511503', zoom: '19'});		
 	}
 	
-	
-	
+	// ...
 	console.log('GOT HERE');
 	
+	// ...
 	if(loc.indexOf('ChiosSpecial') != -1) {
 		window.setTimeout(function() {
 			var innerH = document.body.innerHTML;
@@ -10006,12 +10012,15 @@ function load__allPages_AMT_combo() {
 				console.log(o.is_in_skip_condition);
 				console.log(ro.original_query_object.isTopShow);
 				if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) {
+					console.log('Run:Running show#2');
 					(new AMT___requests_factory()).database__select({
 						query: "AMT_Flicksio_IMDB_GetDetails",
 						encodeStrings: {
 							qStrs: secondQuery
 						}
 					}, processDBResults);
+				} else {
+					console.log('Run:Not running show#2');
 				}
 				
 				//~ response = JSON.parse(response)
@@ -10216,6 +10225,8 @@ function load__allPages_AMT_combo() {
 					{
 						o.is_in_skip_condition = true;
 						AMT___Floater.skip();
+						console.log('Skip condition #1. Skips here.');
+						console.log(AMT___Floater);
 					}
 				}
 			}
@@ -10705,7 +10716,6 @@ var allUkCounties = {
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
 	var loader = new load();
-	
 	if (loader.global_vars.is_running_on_amt) {
 		loader.AMT__init_utility_window();
 	}
