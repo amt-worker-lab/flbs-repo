@@ -9951,12 +9951,12 @@ function load__allPages_AMT_combo() {
 			}
 			
 			var o = {
-				title1 : rslt1[1],
-				title2 : (rslt2 ? rslt2[1] : null),
-				series1 : s1[0],
-				series2 : s2[0],
-				season1 : (s1.length > 1 ? s1[1] : null),
-				season2 : (s2.length > 1 ? s2[1] : null),
+				title1 : __js_clean_html_str(rslt1[1]),
+				title2 : (rslt2 ?  __js_clean_html_str(rslt2[1]) : null),
+				series1 :  __js_clean_html_str(s1[0]),
+				series2 : __js_clean_html_str(s2[0]),
+				season1 : (s1.length > 1 ?  __js_clean_html_str(s1[1]) : null),
+				season2 : (s2.length > 1 ?  __js_clean_html_str(s2[1]) : null),
 				runtime1: runtime1,
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
@@ -10154,6 +10154,12 @@ function load__allPages_AMT_combo() {
 								choices[i].duration = scr3[i];
 							}
 							
+							//Clean everything
+							for(var itm in choices) {
+								if(typeof choices[itm] == 'string') 
+									choices[itm] = __js_clean_html_str(choices[itm]);
+							}
+							
 							var scr4 = reg4.exec(allDetails[i]);
 							console.log(scr4);
 							choices[i].cast = [];
@@ -10164,6 +10170,8 @@ function load__allPages_AMT_combo() {
 									choices[i].cast.push(__js_clean_html_str(m[1]));
 								}
 							}
+							
+
 						}
 						console.log(choices);
 						
