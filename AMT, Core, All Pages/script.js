@@ -10344,7 +10344,7 @@ function load__allPages_AMT_combo() {
 											return;
 										}
 										// Is accepted?
-										document.body.style.backgroundColor = 'blue';
+										document.body.style.backgroundColor = 'aqua';
 										//doSubmit('mturk')
 										return false;
 									}
