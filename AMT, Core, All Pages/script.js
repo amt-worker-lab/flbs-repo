@@ -229,6 +229,20 @@ function load()
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.title {height:120px;overflow:hidden;}');
+			window.setTimeout(function() {
+			var n = document.getElementsByClassName('title');
+			for (var p = 0; p <n.length; p++) {
+				n[p].addEventListener('mouseover', function() {
+					console.log('moused over');
+					this.style.height = 'auto';
+				}, false);
+				n[p].addEventListener('mouseout', function() {
+					this.style.height = '120px';
+				}, false);
+			}
+		},2000);
+
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
@@ -551,7 +565,7 @@ function load()
 							el_div.title_type = choices[i].title_type;
 							el_div.castMatches = castMatches;
 							el_div.imdbId = choices[i].imdbId;
-							el_div.seriesIMDBId = seriesIMDBId;
+							el_div.seriesIMDBId = choices[i].seriesIMDBId;
 							el_div.isTopShow = isTopShow;
 							
 							el_div.onclick = function() {
@@ -568,11 +582,13 @@ function load()
 										document.getElementsByClassName('imdb_url')[0].value = url;
 									}
 									else {
-										document.getElementsByClassNAme('imdb_url')[0].value = url;
+										document.getElementsByClassName('imdb_url')[1].value = url;
 									}
 									
 									if(document.getElementsByClassName('imdb_url')[0].value &&
-										document.getElementsByClassNAme('imdb_url')[0].value) {
+										document.getElementsByClassName('imdb_url')[1].value) {
+									
+									document.body.style.backgroundColor = 'blue';
 									//doSubmit()
 									return false;
 								}
