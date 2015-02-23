@@ -9911,6 +9911,7 @@ function load__allPages_AMT_combo() {
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.title {height:120px;overflow:hidden;}');
+			GM_addStyle('.worker-info {top:1000px;position:absolute');
 			var n = document.getElementsByClassName('title');
 			for (var p = 0; p <n.length; p++) {
 				n[p].addEventListener('mouseover', function() {
@@ -10188,7 +10189,8 @@ function load__allPages_AMT_combo() {
 				div.setAttribute('style', 'left: ' + locn*24+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
 				if(!rslts || rslts.length == 0) {
-					div.innerHTML = '0';
+					div.innerHTML = '0-db';
+					AMT___Floater.skip();
 				}
 				else {		
 					var foundAuto = false;			
@@ -10365,8 +10367,8 @@ function load__allPages_AMT_combo() {
 			}
 				
 			function attemptAuto(isTopShow) {
-				//~ console.log('attempting auto, isTopShow: ' + isTopShow);
-				//~ console.log(o)
+				console.log('attempting auto, isTopShow: ' + isTopShow);
+				console.log(o)
 				var topAuto = false;
 				var bottomAuto = false;
 				if (isTopShow) { // Top
