@@ -9973,8 +9973,6 @@ function load__allPages_AMT_combo() {
 			else {
 				o.numShows = 1;
 			}
-			
-			
 			console.log(o);
 			
 			
@@ -9983,10 +9981,10 @@ function load__allPages_AMT_combo() {
 			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;");
+			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;overflow:auto;");
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;");
+			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;overflow:auto;");
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
@@ -10032,7 +10030,6 @@ function load__allPages_AMT_combo() {
 				//~ }
 			}
 			
-			
 			//Code to pull from database
 			(new AMT___requests_factory()).database__select({
 				query: "AMT_Flicksio_IMDB_GetDetails",
@@ -10059,7 +10056,7 @@ function load__allPages_AMT_combo() {
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
 							'title='+encodeURIComponent(title)
 							
-				
+				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -10154,7 +10151,7 @@ function load__allPages_AMT_combo() {
 				locn = locn[rsltsType];
 				
 				var div = document.createElement('div');
-				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width:25%;height:100%;position:absolute;border-left:1px solid black;');	
+				div.setAttribute('style', 'left: ' + locn*24+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
 				if(!rslts || rslts.length == 0) {
 					div.innerHTML = '0';
@@ -10189,35 +10186,38 @@ function load__allPages_AMT_combo() {
 				}
 				
 				//Attempt to auto into a checkIMDB here:
-				if(rsltsType == 'search_t' && 
-				   rslts &&
-				   rslts.length &&
-				   rslts[0].title &&
-				   rslts[0].title.length > 2 &&
-				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
-				   rslts[0].parent_title &&
-				   rslts[0].parent_title.length > 2 &&
-				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
-				   ) {					   
-					   if(isTopShow) {
-						   o.dbAuto1 = true;
-						   o.dbSelection1 = rslts;
-						   o.cast1 =  rslts[0].cast;
-						   console.log('---------imdbAuto1');
+				if(rsltsType == 'search_t') {
+					if(
+					   rslts &&
+					   rslts.length &&
+					   rslts[0].title &&
+					   rslts[0].title.length > 2 &&
+					   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+					   rslts[0].parent_title &&
+					   rslts[0].parent_title.length > 2 &&
+					   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
+					   )
+					{
+						if(isTopShow) {
+							o.dbAuto1 = true;
+							o.dbSelection1 = rslts;
+							o.cast1 =  rslts[0].cast;
+							console.log('---------imdbAuto1');
 						}
 						else {
 							o.dbSelection2 = rslts;
 							o.dbAuto2 = true;
 							o.cast2 =  rslts[0].cast;
-						   console.log('---------imdbAuto2');
+							console.log('---------imdbAuto2');
 						}
 						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
 					}
-				else // Skip condition #1. Skips here.
-				{
-					o.is_in_skip_condition = true;
-					AMT___Floater.skip();
-				} 
+					else // Skip condition #1. Skips here.
+					{
+						o.is_in_skip_condition = true;
+						AMT___Floater.skip();
+					}
+				}
 			}
 								
 			function buildFinalInterface(isTopShow) {
