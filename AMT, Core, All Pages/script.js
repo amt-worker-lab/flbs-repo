@@ -341,28 +341,28 @@ function load()
 			
 			
 			//Code to pull from database
-			(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: firstQuery
-				}
-			}, processDBResults
-			); 
-			
-			if(o.numShows == 2) {
-				(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: secondQuery
-				}
-				}, processDBResults);
-			}
+			//~ (new AMT___requests_factory()).database__select({
+				//~ query: "AMT_Flicksio_IMDB_GetDetails",
+				//~ encodeStrings: {
+					//~ qStrs: firstQuery
+				//~ }
+			//~ }, processDBResults
+			//~ ); 
+			//~ 
+			//~ if(o.numShows == 2) {
+				//~ (new AMT___requests_factory()).database__select({
+				//~ query: "AMT_Flicksio_IMDB_GetDetails",
+				//~ encodeStrings: {
+					//~ qStrs: secondQuery
+				//~ }
+				//~ }, processDBResults);
+			//~ }
 			//~ 
 			
 			
-			//~ checkIMDB("african-american-female-detective",
-			         //~ "Fatal Retraction",
-			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
+			checkIMDB("african-american-female-detective",
+			         "Fatal Retraction",
+			         "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
 			         
 			//~ //checkIMDB("","fatal","");
 			
@@ -401,6 +401,9 @@ function load()
 						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
 						
 						
+						//reg 4 - credits
+						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
+						
 						
 						//reg 3 - duration
 						
@@ -426,6 +429,20 @@ function load()
 							var scr3 = reg3.exec(allDetails[i]);
 							if(scr3) {
 								choices[i].duration = scr3[i];
+							}
+							
+							var scr4 = reg4.exec(allDetails[i]);
+							console.log(scr4);
+							if(scr4) {
+								var nameReg = /<a[^>]+>([^<]+)</g;
+								var scr5 = nameReg.exec(scr4[0]);
+								console.log(scr4);
+								if(scr5) {
+									choices[i].cast = [];
+									for(var j = 1; j < scr5.length; j++) {
+										choices[i].cast.push(scr5[j]);
+									}
+								}
 							}
 						}
 						console.log(choices);
