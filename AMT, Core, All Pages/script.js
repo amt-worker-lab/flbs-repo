@@ -219,7 +219,7 @@ function load()
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
-			//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
 			document.getElementsByClassName('container')[0].style.width = "20%";
 			document.getElementsByClassName('container')[0].style.margin = "0";
 			document.getElementsByClassName('titles')[0].style.marginTop = "60px"; // Move titles down
@@ -328,12 +328,15 @@ function load()
 			
 			
 			/*Begin Elements*/
+			var d_container = document.createElement('div');
+			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:1000px;background-color:#eee;border:1px solid blue;");
+			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:500px;background-color:#CCC;");
-			document.body.appendChild(d1);
+			d1.setAttribute('style', "width:100%;height:500px;background-color:#eee;");
+			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "position:absolute;left:20%;top:500px;width:80%;height:500px;background-color:#CCC;border-top:1px solid black;");
-			document.body.appendChild(d2);
+			d2.setAttribute('style', "width:100%;height:500px;background-color:#eee;border-top:1px solid black;");
+			d_container.appendChild(d2);
 			/*End of Elements*/
 			
 			function processDBResults(response) {
@@ -533,6 +536,7 @@ function load()
 				//Attempt to auto into a checkIMDB here:
 				if(rsltsType == 'search_t' && 
 				   rslts &&
+				   rslts.length &&
 				   rslts[0].title &&
 				   rslts[0].title.length > 2 &&
 				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
@@ -601,6 +605,7 @@ function load()
 							el_div.imdbId = choices[i].imdbId;
 							el_div.seriesIMDBId = choices[i].seriesIMDBId;
 							el_div.isTopShow = isTopShow;
+							el_div.parent_div = div;
 							if(i == 0) {
 								if(el_div.isTopShow) {
 									o.imdbFirstOption1 = el_div;
@@ -608,7 +613,7 @@ function load()
 									o.imdbFirstOption2 = el_div;
 								}
 							}
-							el_div.onclick = function() {
+							el_div.onclick = function() { // onclick
 								this.style.backgroundColor = 'green';
 								var id;
 								if(this.imdbId) {
@@ -625,14 +630,16 @@ function load()
 									else {
 										document.getElementsByClassName('imdb_url')[1].value = url;
 									}
-									
+									// Make div small
+									this.parent_div.style.height = 'auto';
+									//
 									if(document.getElementsByClassName('imdb_url')[0].value &&
 										document.getElementsByClassName('imdb_url')[1].value) {
 									
-									document.body.style.backgroundColor = 'blue';
-									//doSubmit('mturk')
-									return false;
-								}
+										document.body.style.backgroundColor = 'blue';
+										//doSubmit('mturk')
+										return false;
+									}
 								} else {
 									alert('error undefined imdbId and seriesIMDBId');
 								}
