@@ -10206,12 +10206,13 @@ function load__allPages_AMT_combo() {
 
 							var scr4 = reg4.exec(allDetails[i]);
 							console.log(scr4);
-							choices[i].cast = [];
+							choices[i].cast = {}; // cast obj
 							if(scr4) {
 								var nameReg = /<a[^>]+>([^<]+)</g;
 								var m;
 								while(m = nameReg.exec(scr4[1])) {
-									choices[i].cast.push(__js_clean_html_str(m[1]));
+									var cm = __js_clean_html_str(m[1]).trim();
+									choices[i].cast[cm.toLowerCase()] = cm;
 								}
 							}
 							
@@ -10343,13 +10344,23 @@ function load__allPages_AMT_combo() {
 					for(var i = 0; i < 10; i++) {
 						if(!choices[i]) break;
 						var castMatches = [];
-						for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
-							for(var k = 0; k < choices[i].cast.length; k++) {
-								if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
-									castMatches.push(choices[i].cast[k]);
-								}
+						var chk_cast = (isTopShow ? o.cast1 : o.cast2);
+						for(var j = 0; j < chk_cast.length; j++) {
+							var ch = choices[i].cast;
+							if (ch.hasOwnProperty( chk_cast[j].toLowerCase().trim() )) {
+								castMatches.push(chk_cast[j]);
 							}
 						}
+						//~ console.log(choices[i].cast);
+						//~ console.log(chk_cast);
+						//~ console.log(castMatches);
+						//~ for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
+							//~ for(var k = 0; k < choices[i].cast.length; k++) {
+								//~ if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
+									//~ castMatches.push(choices[i].cast[k]);
+								//~ }
+							//~ }
+						//~ }
 						var el_div = document.createElement('div');
 						el_div.setAttribute('style', 'border-bottom:1px solid black;');
 						el_div.className = 'exe';
