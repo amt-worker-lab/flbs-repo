@@ -230,7 +230,6 @@ function load()
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.title {height:120px;overflow:hidden;}');
-			window.setTimeout(function() {
 			var n = document.getElementsByClassName('title');
 			for (var p = 0; p <n.length; p++) {
 				n[p].addEventListener('mouseover', function() {
@@ -241,7 +240,6 @@ function load()
 					this.style.height = '120px';
 				}, false);
 			}
-		},2000);
 
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
@@ -516,12 +514,14 @@ function load()
 				//Attempt to auto into a checkIMDB here:
 				if(rsltsType == 'search_t' && 
 				   rslts &&
+				   rslts[0].title &&
+				   rslts[0].title.length > 2 &&
 				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+				   rslts[0].parent_title &&
+				   rslts[0].parent_title.length > 2 &&
 				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
 				   ) {
-					//
-					//...
-					//
+						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
 					} 
 			}
 								
@@ -529,6 +529,7 @@ function load()
 				console.log('building interface, topShow is:' + isTopShow);
 				var choices = isTopShow ? o.choices1 : o.choices2;
 				var div = isTopShow ? d1 : d2;
+				div.style.overflow = 'auto';
 				if(choices.length == 0) {
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
