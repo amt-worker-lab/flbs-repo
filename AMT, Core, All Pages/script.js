@@ -220,7 +220,7 @@ function load()
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('body {margin-top:900px;}'); //;width:100%
-			document.getElementsByClassName('container')[0].style.width = "50%";
+			document.getElementsByClassName('container')[0].style.width = "20%";
 			document.getElementsByClassName('container')[0].style.margin = "0";
 			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('header-bg')[0].style.top = '4000px';
@@ -256,8 +256,8 @@ function load()
 			
 			var ih = ih.split('<div class="title last">');
 			//Check the top for runtime and release date, do the same for the bottom
-			var runtime1 = runtimeReg.exec(ih[0])[1];
-			var releaseYear1 = yearReg.exec(ih[0])[1];
+			var runtime1 = (runtimeReg.exec(ih[0])) ? runtimeReg.exec(ih[0])[1] : null;
+			var releaseYear1 = (yearReg.exec(ih[0])) ? yearReg.exec(ih[0])[1] : null;
 			
 			if(ih.length > 1) {
 				var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
@@ -282,7 +282,11 @@ function load()
 				choices1 : null,
 				choices2 : null,
 				numRuns : 0,
-				numShows: null	
+				numShows: null,
+				dbAuto1: false,
+				dbAuto2: false,
+				imdbAuto1: false,
+				imdbAuto2: false	
 			}
 			
 			var firstQuery = {
@@ -315,10 +319,10 @@ function load()
 			
 			/*Begin Elements*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:500px;background-color:#CCC;");
+			d1.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:500px;background-color:#CCC;");
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#CCC;border-top:1px solid black;");
+			d2.setAttribute('style', "position:absolute;left:20%;top:500px;width:80%;height:500px;background-color:#CCC;border-top:1px solid black;");
 			document.body.appendChild(d2);
 			/*End of Elements*/
 			
@@ -521,10 +525,14 @@ function load()
 				   rslts[0].parent_title.length > 2 &&
 				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
 				   ) {					   
-					   if(this.isTopShow)
-								o.cast1 =  rslts[i].cast;
-							else
-								o.cast2 =  rslts[i].cast;
+					   if(this.isTopShow) {
+						   o.dbAuto1 = true;
+						   o.cast1 =  rslts[i].cast;
+						}
+						else {
+							o.dbAuto2 = true;
+							o.cast2 =  rslts[i].cast;
+						}
 						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
 					} 
 			}
