@@ -428,7 +428,8 @@ function load()
 						
 						
 						var choices = [];
-						
+						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
+						console.log(allDetails);
 						for(var i = 0; i <allDetails.length; i++) {
 							choices.push({});
 							var scr1 = reg1.exec(allDetails[i]);
@@ -463,6 +464,7 @@ function load()
 							}
 						}
 						console.log(choices);
+						
 						if(isTopShow) 
 							o.choices1 = choices;
 						else
@@ -509,6 +511,7 @@ function load()
 						el_div.kind = rslts[i].kind;
 						el_div.isTopShow = isTopShow;
 						el_div.cast = rslts[i].cast;
+						el_div.keywords = rslts[i].keywords;
 						el_div.onclick = function() {
 							if(this.isTopShow)
 								o.cast1 = this.cast;
