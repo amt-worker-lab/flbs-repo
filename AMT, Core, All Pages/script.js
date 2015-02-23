@@ -411,8 +411,11 @@ function load()
 							var scr1 = reg1.exec(allDetails[i]);
 							choices[i].seriesIMDBId = scr1[1];
 							choices[i].seriesName = scr1[2];
-							choices[i].year_type = scr1[3];
-							
+							choices[i].year_type = scr1[3].trim();
+							choices[i].title_type = /([^\d]+\))[\r\n\s\t]*$/.exec(choices[i].year_type)
+							if(choices[i].title_type) {
+								choices[i].title_type = choices[i].title_type[1].trim();
+							}
 							var scr2 = reg2.exec(allDetails[i]);
 							if(scr2) {
 								choices[i].imdbId = scr2[1];
@@ -462,8 +465,8 @@ function load()
 						var el_div = document.createElement('div');
 						el_div.setAttribute('style', 'border-bottom:1px solid black;');
 						div.appendChild(el_div);
-						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: ') +
-										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: ') +
+						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
+										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
 										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 										   'k: ' + rslts[i].kind +
 										   'y: ' + rslts[i].year
@@ -507,10 +510,10 @@ function load()
 								el_div.style = 'border:1px solid black;';
 								div.appendChild(el_div);
 								el_div.innerHTML = 
-										   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: ') +
-										   (choices[i].parent_title ? 's: ' + choices[i].parent_title + '<br>' : 's: ') +
-										   (choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + choices[i].kind +
+										   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
+										   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
+										   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+										   'k: ' + choices[i].title_type +
 										   'y: ' + choices[i].year
 						}							
 					}
