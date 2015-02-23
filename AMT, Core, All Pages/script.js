@@ -387,6 +387,7 @@ function load()
 			//~ //checkIMDB("","fatal","");
 			
 			function checkIMDB(keywords, title, title_type, isTopShow) {
+				var isTopShow = isTopShow;
 				var url = 'http://www.imdb.com/search/title?' +
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
@@ -527,15 +528,17 @@ function load()
 				   rslts[0].parent_title.length > 2 &&
 				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
 				   ) {					   
-					   if(this.isTopShow) {
+					   if(isTopShow) {
 						   o.dbAuto1 = true;
 						   o.dbSelection1 = rslts;
-						   o.cast1 =  rslts[i].cast;
+						   o.cast1 =  rslts[0].cast;
+						   console.log('---------imdbAuto1');
 						}
 						else {
 							o.dbSelection2 = rslts;
 							o.dbAuto2 = true;
-							o.cast2 =  rslts[i].cast;
+							o.cast2 =  rslts[0].cast;
+						   console.log('---------imdbAuto2');
 						}
 						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
 					} 
@@ -558,7 +561,7 @@ function load()
 					for(var i = 0; i < 10; i++) { 
 						if(choices[i]) {
 							var castMatches = [];
-							for(var j = 0; j < (isTopShow ? o.cast1.length : o.cast2.length); j++) {
+							for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
 								for(var k = 0; k < choices[i].cast.length; k++) {
 									if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
 										castMatches.push(choices[i].cast[k]);
@@ -627,7 +630,7 @@ function load()
 			}
 				
 			function attemptAuto(isTopShow) {
-				console.log('attempting auto');
+				console.log('attempting auto, isTopShow: ' + isTopShow);
 				console.log(o)
 				var topAuto = false;
 				var bottomAuto = false;
@@ -641,6 +644,7 @@ function load()
 				o.imdbFirstOption1.seriesName.length > 2 &&
 				o.seriesName1 &&
 				o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.seriesName1.toLowerCase().trim()
+				)
 				{
 					if(
 						o.imdbFirstOption1.year
@@ -668,6 +672,7 @@ function load()
 				o.imdbFirstOption2.seriesName.length > 2 &&
 				o.seriesName2 &&
 				o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.seriesName2.toLowerCase().trim()
+				)
 				{
 					if(
 						o.imdbFirstOption2.year
@@ -677,11 +682,11 @@ function load()
 						o.year2 = o.year2.trim();
 						if(Math.abs((o.imdbFirstOption2.year *1) - (o.year2*1)) <= 2) {
 							console.log('year matched for top');
-							topAuto = true;
+							bottomAuto = true;
 						}
 					}
 					else {
-						topAuto = true;
+						bottomAuto = true;
 					}
 				}
 				
