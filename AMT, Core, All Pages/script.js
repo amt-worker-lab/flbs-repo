@@ -10015,11 +10015,13 @@ function load__allPages_AMT_combo() {
 			// One query. For skips.
 			if(AMT__Global_Vars.isSpecialWorkflowWindow) {
 				var one_qy = true;
+				var spe_wk = true;
 			}
 			// Non-special workflow window.
 			// Probably two queries. Title+Series && Has more than one result. Or ...?
 			if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
 				var one_qy = false;
+				var spe_wk = false;
 			}
 			
 			var firstQuery = {
@@ -10029,20 +10031,23 @@ function load__allPages_AMT_combo() {
 				runtime: o.runtime1,
 				releaseYear: o.releaseYear1,
 				isTopShow:true,
-				one_query: one_qy
+				one_query: one_qy,
+				special_ww: one_qy
 			}
+			var secondQuery;
 			if(o.title2) {
 				o.matches.title2 = clean_str_to_auto(o.title2);
 				o.matches.series2 = clean_str_to_auto(o.series2);
 				
-				var secondQuery = {
+				secondQuery = {
 					title: o.title2,
 					series: o.series2,
 					season: o.season2,
 					runtime: o.runtime2,
 					releaseYear: o.releaseYear2,
 					isTopShow: false,
-					one_query: one_qy
+					one_query: one_qy,
+					special_ww: one_qy
 				}
 				o.numShows = 2;
 			}
@@ -10073,8 +10078,18 @@ function load__allPages_AMT_combo() {
 				console.log(response);
 				var ro = response.responseObject;
 				
+				// Special workflow window.
+				console.log(AMT__Global_Vars);return;
+				if (AMT__Global_Vars.isSpecialWorkflowWindow) {
+					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				}
+				// Non special workflow window.
+				if (!AMT__Global_Vars.isSpecialWorkflowWindow) {
+					buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
+					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				}
 				//buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				//buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				

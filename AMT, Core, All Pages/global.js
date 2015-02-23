@@ -53,14 +53,22 @@ var AMT__Global_Vars = //function()
 	isSubmitting: false,
 	copyInp: false,
 	RACustomKey: false,
-	//
+	initializedScriptInjection: false,
 	isQProduct: false,
-	//~ var AMT__Queue = {
-		//~ isQProduct: false
-	//~ };
-	
+	isSpecialWorkflowWindow: false,
 	core: {
-		return_accept_run_nextTab: false
+		return_accept_run_nextTab: false,
+		// AMT__Global_Vars.core.captcha_string
+		captcha_string: 'In order to accept your next HIT, please type this word into the text box below'
+	},
+	
+	num_amt_tabs: null,
+	
+	// Defaults are false, 4, 200
+	CAPTCHA_staggered: {				// defaults
+		stagger_is_active:				false,
+		min_tabs_to_initiate_staggered:	4,
+		staggered_timeout_per_tab:		200
 	}
 }
 //~ AMT__Global_Vars();
@@ -68,6 +76,28 @@ var AMT__Global_Vars = //function()
 //~ console.log(AMT__Global_Vars.isTopWindow);
 //~ console.log(AMT__Global_Vars.core);
 
+
+
+
+AMT__Global_Vars.initialize_num_amt_tabs = function() {
+	chrome.extension.sendRequest({get_num_amt_tabs: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.num_amt_tabs = rs.num_amt_tabs;
+
+		}
+	);
+}
+AMT__Global_Vars.initialize_CAPTCHA_staggered_vars = function() {
+	chrome.extension.sendRequest({getNTPassBy: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.CAPTCHA_staggered.min_tabs_to_initiate_staggered	= rs.min_tabs_to_initiate_staggered;
+			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
+			AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab		= rs.staggered_timeout_per_tab;
+		}
+	);
+}
 
 AMT__Global_Vars.initializeNextTabPassBy = function() {
 	chrome.extension.sendRequest({getNTPassBy: true}, 
@@ -84,6 +114,37 @@ AMT__Global_Vars.initialize_return_accept_run_nextTab = function() {
 		{
 			AMT__Global_Vars.core.return_accept_run_nextTab = rs.RA_Button_NextTab == 'On' ? true : false;
 		});
+}
+
+//Assumption: We know that we are top window
+AMT__Global_Vars.initializeReturnButton = function () {
+	var hasReturnButton = false;
+	var allAs = document.getElementsByTagName('a');
+	for(var i = 0; i < allAs.length; i++) {
+		if(allAs[i].href.indexOf('/mturk/return') != -1) {
+			hasReturnButton = true;
+		}
+	}
+	console.log('ran inside initializeReturnButton');
+	if(AMT__Global_Vars.isTopWindow && hasReturnButton) {
+		console.log('ran inside initializeReturnButton');
+		var returnButton = document.createElement('input');
+		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;cursor:pointer;');
+		returnButton.setAttribute('type', 'button');
+		returnButton.setAttribute('id', 'AMT_return_button_top_window');
+		returnButton.setAttribute('value', 'return');
+		document.body.appendChild(returnButton);
+		returnButton.onclick = function() {
+			var allAs = document.getElementsByTagName('a');
+			for(var i = 0; i < allAs.length; i++) {
+				if(allAs[i].href.indexOf('/mturk/return') != -1) {
+						allAs[i].click()
+						return;
+					}
+				}
+			}
+		}
+	console.log(returnButton);
 }
 
 //var allAs = document.getElementsByTagName('a');
@@ -106,6 +167,16 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 	);
 }
 
+AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
+	var callback = callback;
+	chrome.extension.sendRequest({amISpecialWorkflowWindow: true}, 
+			function(rs) 
+			{
+				AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
+				callback(AMT__Global_Vars.isSpecialWorkflowWindow);
+			});
+}
+
 AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
@@ -117,13 +188,20 @@ AMT__Global_Vars.initializeGroupId = function () {
 		}
 		AMT__Global_Vars.groupId = groupId;		
 		
-		//Now that we have the groupId, listen for whether the child frame wants to learn it as well.
-		window.addEventListener('message', function(e) {
-			var ifr = document.getElementsByTagName('iframe')[0];
-			ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
-			this.removeEventListener('click',arguments.callee,false);
-		}, false);
-		
+		// Now that we have the groupId, listen for whether the child frame wants to learn it as well.
+		// OCT19 2014. In some cases top window does not have an iframe.
+		// Added case for this.
+		if (document.getElementsByTagName('iframe').length) {
+			window.addEventListener('message', function(e) {
+				var ifr = document.getElementsByTagName('iframe')[0];
+				ifr.contentWindow.postMessage({groupId: AMT__Global_Vars.groupId}, '*');
+				this.removeEventListener('click',arguments.callee,false);
+			}, false);
+		}
+		// TESTING.........
+		//~ window.addEventListener('message', function(e) {
+			//~ console.log(e);
+		//~ }, false);
 	}
 	// Sep 18 2014
 	// Added window.top != window.self
@@ -213,8 +291,12 @@ AMT__Global_Vars.initializeHitId = function () {
 		{
 			//alert('Error initializing groupId');
 		}
-		hitId = hitId[1];
-		AMT__Global_Vars.hitId = hitId;
+		if(hitId) {
+			hitId = hitId[1];
+			AMT__Global_Vars.hitId = hitId;
+		} else {
+			AMT__Global_Vars.hitId = "hitIDDNE?";
+		}
 	}
 }
 
@@ -231,6 +313,12 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.focusOnPage) {
+		console.log('toldtofocus');
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			window.focus();
+		}
+	}
 	if(request.checkPreview)
 	{
 		if(AMT__Global_Vars.isTopWindow)
@@ -243,10 +331,27 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.isQProduct)
 	{
 		//Only have the top window sending back the response
-		console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow)
+		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
 		{
-			sendResponse({isQProduct: isQProduct});
+			//console.log(AMT__Global_Vars.tabId);
+			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
+		}
+		else
+			return true;
+	}
+	else if(request.RemoveFromTabsQ) {
+		isQProduct = false;
+		qProductId = null;
+	}
+	else if(request.focus) {
+		//console.log('told to focus');
+		
+		if(request.isTopWindow == AMT__Global_Vars.isTopWindow) {
+			document.body.focus();
+			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
+				AMT__Global_Vars.callbackOnShowNextTabArrival();
+			console.log('focusing');
 		}
 	}
 	else if(request.switchTabNotifier) {
@@ -281,6 +386,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.R_Button_NextTab) {
 		//Implement Later
 	}
+	else if(request.removeUtilityTab) {
+		var containerDiv = document.getElementById('AMT__UtilityContainer');
+		var removeDiv = document.getElementById('utilityTabBtn' + request.removeUtilityTab)
+		if(containerDiv && removeDiv)
+			containerDiv.removeChild(removeDiv);
+	}
 	//~ // Reload the iframes.
 	//~ // This is coming from the context
 	//~ // menu click. And eventpage.js.
@@ -291,9 +402,72 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ }, 5000);
 		//~ }
 	//~ }
+	
+	
 });
 
 //
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	/**
+	 * request.CAPTCHA_queue_reload
+	 */
+	// Must set false tmp?
+	console.log(request);
+	var test=false;
+	if  (request.CAPTCHA_queue_reload) {
+		// Send success 
+		// This could be sendResponse(true); As long as it is not sendResponse() or sendResponse(false) or No Response.
+		sendResponse({CAPTCHA_queue_reload__tab_recieved: true});
+		
+		if  (
+			document.body.innerHTML.indexOf(AMT__Global_Vars.core.captcha_string) != -1 ||
+			test
+			)
+		{
+			// Go to new href or window.reload()
+			if (document.location.href == 'https://www.mturk.com/mturk/submit') { //
+				var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+				if (i)
+					window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			} else
+				window.location.reload();
+		}
+	}
+	
+	if(request.fromUtilityToParent) {
+		/*
+		 *
+		 { 
+			switchToId,
+			otherDetail1,
+			otherDetail2,
+			etc.
+		 }
+		 
+		 * 
+		 * */
+		
+		var containerDiv = document.getElementById('AMT__UtilityContainer');
+		containerDiv.callbackFromUtility(request);
+		//~ AMT__UtilityContainer
+		//~ 
+		//~ utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
+		//~ utilityTabBtn.setAttribute('id','utilityTabBtn'+utilityTabs[i].id);
+		//~ utilityTabBtn.setAttribute('type','button');
+		//~ containerDiv.appendChild(utilityTabBtn);
+		//~ utilityTabBtn.value = 'Tab' + i;
+		//~ utilityTabBtn.utilityTab = utilityTabs[i];
+		//~ utilityTabBtn.onclick = function() {
+			//~ var switchToId = this.id.replace(/utilityTabBtn/, '');
+			//~ chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
+				//~ function(rs) {
+					//~ /*squelch response*/
+				//~ });
+			//~ 
+			//~ }
+	}
+});
+
 
 /**
  * 
@@ -302,6 +476,80 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  * 
  * 
  * */
+
+
+
+/**
+ * Utility Tabs
+ * 
+ */
+//utilityTabs  [{
+//					url: "string",
+//					options: {} //These options are specific to the tab, and overwrite any options set in the options parameter below				
+//				}]
+//			
+//	globalTabOptions
+//			{
+//				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
+//			}
+function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
+	if(!AMT__Global_Vars.isPreview && !runInPreviewMode) {
+		var utilityTabsAndOptions = {};
+		utilityTabsAndOptions.utilities = utilityTabs;
+		utilityTabsAndOptions.options = globalTabOptions;
+		console.log('utilityTabsAndOptions');
+		console.log(utilityTabsAndOptions);
+		for(var i = 0; i < utilityTabs.length; i++) {
+			utilityTabs[i].id = "" + i + ":" + Math.random();
+		}
+		chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
+				function(rs){
+
+				});
+		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility);
+	}
+}
+
+function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackFromUtility) {
+	var containerDiv = document.createElement('div');
+	if(utilityPanelOptions &&
+	   utilityPanelOptions.style)
+		containerDiv.setAttribute('style',utilityPanelOptions.style);
+	else	
+		containerDiv.setAttribute('style','position:absolute;top:0px;height:27px;left:80%;background-color:gray;border: 1px solid green');
+	containerDiv.setAttribute('id','AMT__UtilityContainer');
+	containerDiv.callbackFromUtility = callbackFromUtility;
+	document.body.appendChild(containerDiv);
+	
+	for(var i = 0; i < utilityTabs.length; i++) {
+		var utilityTabBtn = document.createElement('input');
+		utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
+		utilityTabBtn.setAttribute('id','utilityTabBtn'+utilityTabs[i].id);
+		utilityTabBtn.setAttribute('type','button');
+		containerDiv.appendChild(utilityTabBtn);
+		utilityTabBtn.value = 'Tab' + i;
+		utilityTabBtn.utilityTab = utilityTabs[i];
+		utilityTabBtn.onclick = function() {
+			var switchToId = this.id.replace(/utilityTabBtn/, '');
+			chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
+				function(rs) {
+					/*squelch response*/
+				});
+		}
+	}
+}
+
+
+
+
+/**
+ * End of Utility Tabs
+ * 
+ **/
+
+
+
+
 
 //Record Returning
 /**
@@ -315,37 +563,34 @@ function recordReturn() {
  * Tab Switching 
  ***/
 isQProduct = false;
+qProductId = false;
 
-function goToNextTab() {
-	chrome.extension.sendRequest({
-								  getActiveTab: true
-							  }, function(response) {
-								 //do nothign with the response
-							});
-}
 
-function addToTabsQ() {
+
+function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
-	
+	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	//Tell eventPage to add this to the Q
+	console.log(AMT__Global_Vars);
 	chrome.extension.sendRequest({
-								  addToTabsQ: true
+								  addToTabsQ: true,
+								  isTopWindow: AMT__Global_Vars.isTopWindow
 							  }, function(response) {
-								//do nothing with the response
+								qProductId = response.qProductId;
 							});
 }
 
 
 
 function showNextTab() {
-	isQProduct = false;
 	console.log('Showing Next Tab');
 	chrome.extension.sendRequest({
-									  showNextTab: true
+									  showNextTab: true,
+									  isTopWindow: AMT__Global_Vars.isTopWindow
 								  }, function(response) {
-									//do nothing with the response
 								});
 }
+
 
 /**
  * End of Tab Switching
@@ -363,7 +608,7 @@ function showNextTab() {
 //This is the Constructer Function
 //Call new on this function and pass in the options to initialize the floater's variables!
 var AMT___Floater = function (options) {
-		AMT___Floater.acceptCondition = options.acceptCondition;							//done
+		AMT___Floater.acceptCondition = options.acceptCondition ? options.acceptCondition : null;							//done
 		AMT___Floater.runMT_Run = options.runMT_Run;										//done
 		AMT___Floater.runTop_Window = options.runTop_Window;								//done
 		AMT___Floater.forceTopCondition = options.forceTopCondition;
@@ -433,7 +678,13 @@ AMT___Floater.runPreview = function() {
 	console.log(AMT___Floater.runMT_Run);
 	if(AMT___Floater.runMT_Run)
 	{
-		var ifr = document.getElementsByTagName('iframe')[0];
+		var ifr = document.getElementsByTagName('iframe');//console.log(ifr);
+		if (!ifr || !ifr.length) {//console.log('run');
+			top_window( true ); // Run top_window( okay_to_run ) :)
+			return;
+		} else 
+			ifr = ifr[0];
+		
 		ifr.contentWindow.postMessage({runPreview: true}, '*');
 		
 		var ran = false;
@@ -485,8 +736,6 @@ AMT___Floater.accept = function() {
 
 // -800 to 400 on May 30 for Peter Heyneman.
 AMT___Floater.skip = function() {
-	console.log('attempting to send skip');
-	console.log(AMT__Global_Vars);
 	if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
 		doSubmit(false, false, function(timeToSkip){
@@ -496,29 +745,41 @@ AMT___Floater.skip = function() {
 						, timeToSkip);
 						
 			}
-			, -800); //2200//800 
+			, 800); //2200//800 
 	}
 	else if (AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
-						window.postMessage({skipJob: true}, '*')
+						window.postMessage({skipJob: true}, '*') // This could also be: AMT___Floater.acceptOrSkip({data: {skipJob:true}})
 						}
 						, timeToSkip);
 						
 			}
-			, -800);
+			, 800);
 	}
 }
 
 
 AMT___Floater.acceptOrSkip = function(e) {
+	console.log('got accept or skip');
 	console.log(e);
 	if(e.data && e.data.acceptJob)
 	{
-		AMT___Floater.isAccepting = true;
-		if (GM_getValue('mt_captcha') == '0')
+		if (GM_getValue('mt_captcha') == '0') { 
+			AMT___Floater.isAccepting = true;
 			document.getElementsByName('/accept')[0].click(); /* TODO: doSumbit (-2.2 seconds) would go here*/
+		}
+		else {
+			var interval = window.setInterval(function() {
+				if (GM_getValue('mt_captcha') == '0') {
+					AMT___Floater.isAccepting = true;
+					window.clearInterval(interval);
+					document.getElementsByName('/accept')[0].click(); /* TODO: doSumbit (-2.2 seconds) would go here*/				
+					
+				}
+			}, 2000);
+		}
 	}
 	else if(e.data && e.data.skipJob)
 	{
@@ -778,8 +1039,8 @@ function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff
 function AMT___addQuestionAnswer(recordName, matchString, outputPairs)
 {
 	var match = new Match(recordName, matchString, outputPairs, (new Date).getTime());
-	console.log("Last time of submit: " + match.lastTimeOfSubmit)
-	console.log(match);
+	//console.log("Last time of submit: " + match.lastTimeOfSubmit)
+	//console.log(match);
 	chrome.extension.sendRequest({
 								   match: match					
 								  }, function(response) {
@@ -842,7 +1103,10 @@ OutputPair.prototype.doRecording = function() {
 		} 
 		else
 		{
-			this.value = element.value;
+			if(!element.value)
+				this.value = '';
+			else
+				this.value = element.value;
 			//console.log(element);
 			//console.log("this.value: "+this.value);
 		}
@@ -893,7 +1157,11 @@ OutputPair.prototype.doWriting = function() {
 		else
 		{
 			console.log(element.value);
-			element.value = this.value;
+			if(this.value === undefined || this.value === false || this.value === '') {
+				element.value = '';
+			} else {
+				element.value = this.value;
+			}
 		}
 	}
 	catch(e)
@@ -941,23 +1209,276 @@ function FindObject(recordName,matchString, timeCutOff) {
  * 
  * */
 
+
+/**
+ * 						Get/Set Javascript Variables on the Page (As opposed to our Extension)
+ * 
+ * 
+ * 
+ * 
+ * */
+
+function initializeScriptInjection(callBackAMTFunction, varNames, callback, callbackParams) {
+	
+	AMT__Global_Vars.initializedScriptInjection = true;
+	
+	//Add a script to the page
+	//Then create a DOM listener for Getting and a DOM listener for Setting variables on the page
+	var actualCode = '(' + function() {
+		console.log('actual code ran in page script');
+		
+		function selectInnerVariable(selectorString) {
+			var selectorChunks = selectorString.split('.');
+			console.log(selectorChunks);
+			var variable = window[selectorChunks[0]];
+			for(var i = 1; i < selectorChunks.length; i++) {
+				variable = variable[selectorChunks[i]];
+			}
+			console.log('finished "getting" here is the result of the selection');
+			console.log(variable);
+			return variable;
+		}
+		
+		document.addEventListener('runPageScript', function(e) {
+			var data = e.detail;
+			console.log(e);
+			if(typeof data == 'function') {
+				data();
+			}
+			else {
+				console.log('Got in script: ');
+				data = data.replace(/function ?\(\)/, '');
+				data = data.replace(/^[^{]*{/, '');
+				data = data.replace(/}[^}]*$/, '');
+				data = data.trim();
+				console.log(data);
+				var funcToRun = new Function(data);
+				funcToRun();
+			}
+		});
+		
+		document.addEventListener('setPageScriptVars', function (e) {
+			var data = e.detail;
+			console.log('recieved ' + e.detail);
+			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
+				var passbackData = {};
+				for(var i = 0; i < data.length; i++) {
+					if(data[i].indexOf('.')) {
+						passbackData[data[i]] = selectInnerVariable(data[i]);
+					}
+					else {
+						passbackData[data[i]] = window[data[i]];
+					}
+				}
+			} else if(data){
+				//data should be a string, with the exact name as the variable wanted 
+				if(data.indexOf('.') == -1) {
+					var passbackData = window[data];
+				}
+				else {
+					var passbackData = selectInnerVariable(data);
+				}
+			} else {
+				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
+				return;
+			}
+		});
+		
+		document.addEventListener('getPageScriptVars', function (e) {
+			var data = e.detail;
+			console.log('recieved ' + e.detail);
+			if(Array.isArray(data)) { //Should be an array of strings, where each string is a variable name
+				var passbackData = {};
+				for(var i = 0; i < data.length; i++) {
+					if(data[i].indexOf('.')) {
+						passbackData[data[i]] = selectInnerVariable(data[i]);
+					}
+					else {
+						passbackData[data[i]] = window[data[i]];
+					}
+				}
+			} else if(data){
+				//data should be a string, with the exact name as the variable wanted 
+				if(data.indexOf('.') == -1) {
+					var passbackData = window[data];
+				}
+				else {
+					var passbackData = selectInnerVariable(data);
+				}
+			} else {
+				console.log('Error: The data passed into getPageScriptVars is null/false/undefined');
+				return;
+			}
+			
+			/**The commented out code attempts to get rid of circular references. Note that it fails for any references to HTML objects. If you enable this code, be wary. Try instead to the variable's properties, e.g. try to get "map.zoom" instead of "map"  **/
+			//~ var cache = [];
+			//~ JSON.stringify(passbackData, function(key, value) {
+				//~ try {
+					//~ if (typeof value === 'object' && value !== null) {
+						//~ if (cache.indexOf(value) !== -1) {
+							//~ // Circular reference found, discard key
+							//~ return;
+						//~ }
+						//~ // Store value in our collection
+						//~ cache.push(value);
+					//~ }
+					//~ return value;
+				//~ }
+				//~ catch(err) {
+					//~ console.log('Ignoring error:' +err);
+					//~ return;
+				//~ }
+			//~ });
+			//~ cache = null; // Enable garbage collection
+			
+			console.log(passbackData);
+			
+			var evt = new CustomEvent('returnedPageScriptVars', {detail: passbackData});
+			document.dispatchEvent(evt);
+			
+		}) 
+	} + ')' + '();';
+
+
+	var script = document.createElement('script');
+	script.textContent = actualCode;
+	(document.head||document.documentElement).appendChild(script);
+	
+	
+	
+	//callBackAMTFunction(varNames, callback, callbackParams); //Make sure this runs once the script has finished being injected and ran
+}
+
+function AMT___GetPageScriptVars(varNames, callback, callbackParams) {
+	if(!AMT__Global_Vars.initializedScriptInjection) {
+		initializeScriptInjection(this, varNames, callback, callbackParams);
+	}
+	
+	document.addEventListener('returnedPageScriptVars', function(e) {
+		var returnedVars = e.detail;
+		console.log('recieved returnedPageScriptVars data');
+		console.log(returnedVars);
+		callback(returnedVars, callbackParams);
+	});
+
+	var data = varNames;
+	var evt = new CustomEvent('getPageScriptVars', {detail: data});
+	document.dispatchEvent(evt);
+}
+
+//Remember to implement callback and callback params
+function AMT___RunPageScript(funcToCall, callback, callbackParams) {
+	if(!AMT__Global_Vars.initializedScriptInjection) {
+		initializeScriptInjection(this, null, callback, callbackParams);
+	}
+	
+	document.addEventListener('returnedPageScriptFunction', function(e) {
+		
+	});
+	
+	var data = '' + funcToCall;
+	console.log('AMT___RunPageScript');
+	console.log(data);
+	var evt = new CustomEvent('runPageScript', {detail: data});
+	document.dispatchEvent(evt);
+}
+
+function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
+	
+}
+
 //~ 
-//~ /**
- //~ * AMT___functions_factory
- //~ * @
- //~ * @ AMT___requests_factory.prototype.scrapy__begin_scrape
- //~ */
-//~ function AMT___generic_factory(obj_vars) {
-	//~ // this.___SKIP_SITES = ''; // would this work?
+//~ function AMT___SetPageScriptVar(varName, callback, callbackParams) {
+//~ 
 //~ }
+
+
+/*********************************************************
+ *********************************************************/
 
 /**
  * String Prototypes
  * 
  * .parseURL
  * .stateAbbrToFull
+ * .clean_string_to_array
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  */
+/**
+ * .string_to_mixed_case
+ */
+String.prototype.format_number_with_commas = function() {
+	var s = this.toString();
+	var parts = (s + '').split(".");
+	parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return parts.join(".");
+}
+/**
+ * .string_to_mixed_case
+ * 
+ * @param		options.REG_INCLUDE_DASHES
+ */
+String.prototype.string_to_mixed_case = function(options) {
+	var s = this.toString().toLowerCase();
+	if (options && options.hasOwnProperty('REG_INCLUDE_DASHES')) // Same as normal but toUpperCase "Some-word" to "Some-Word"
+	{
+		s = s.replace(
+			/(^|[ \-])([a-z])/g,
+			function(match0, match1, match2) {
+				return match1 + match2.toUpperCase();
+			}
+		);
+		return s;
+	}
+	else
+	{
+		s = s.replace(
+			/(^| )([a-z])/g,
+			function(match0, match1, match2) {
+				return match1 + match2.toUpperCase();
+			}
+		);
+		return s;
+	}
+}
+/**
+ * .clean_string_to_array
+ * 
+ * @param options						object
+ * @param .string						str		String to clean.
+ * @param .least_characters_per_word	int		Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
+ * 
+ * Returns string
+ */
+String.prototype.clean_string_to_array = function(options) {
+	
+	//~ console.log(this);
+	
+	var s = this.toString(); // this['[[PrimitiveValue]]']; //options.string;
+	var min;
+	
+	if (options && typeof options == 'object')
+		min = (options.hasOwnProperty('least_characters_per_word')) ? options.least_characters_per_word : 1;
+	else
+		min = 1
+	
+	var reg = new RegExp('(^| )[\\w\\d]{'+min+'}($| )', 'g');
+	
+	s = s.replace(/[^\w\d]/g, '  ');
+	
+	s = s.replace(reg, '  ');
+	
+	s = s.replace(/[\r\n\t\s]+/g, ' ');
+	
+	s = s.split(' ');
+	
+	return s;
+}
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561
 /**
@@ -979,10 +1500,6 @@ String.prototype.parseURL = function() {
 		queries, split, i;
 	
 	// USING :: this.toString()
-	//~ console.log(this);
-	//~ console.log(this.toString());
-	//~ console.log(this.join(''));
-	//~ return;
 	
 	// Let the browser do the work
 	parser.href = this.toString() + '';
@@ -1005,25 +1522,40 @@ String.prototype.parseURL = function() {
 		hash: parser.hash
 	};
 }
-String.prototype.stateAbbrToFull = function() {
+/**
+ * .country_code_to_country_name
+ * 
+ * MT___countries = [
+	{name: 'Bosnia and Herzogovina', code: 'BA'}, 
+ */
+String.prototype.country_code_to_country_name = function() {
 	
-	//~ console.log(this);
-	//~ console.log(this[0]);
+	str = this.toString().toLowerCase().trim();
 	
-	
-	// BUILD STR
-	var str = '';
-	for (var i in this) {
-		//~ console.log(this[i]);
-		if (i == 'length' || this[i].length != 1) {
-			break;
+	for (var i in MT___countries) {
+		var c = MT___countries[i];
+		if (c.code.toLowerCase() == str) {
+			return c.name;
 		}
-		str += this[i];
 	}
 	
-	str = str.toLowerCase().trim();
+	// None found?
+	return str.toUpperCase();
+}
+String.prototype.stateAbbrToFull = function() {
 	
-	console.log(str);
+	//~ // BUILD STR
+	//~ var str = '';
+	//~ for (var i in this) {
+		//~ if (i == 'length' || this[i].length != 1) {
+			//~ break;
+		//~ }
+		//~ str += this[i];
+	//~ }
+	
+	str = this.toString().toLowerCase().trim();
+	
+	//~ console.log(str);
 	
 	for (var i in MT___states) {
 		if (i.toLowerCase() == str) {
@@ -1035,10 +1567,27 @@ String.prototype.stateAbbrToFull = function() {
 	// None found?
 	return str.toUpperCase();
 }
+String.prototype.state_full_to_abbr = function() {
+	
+	str = this.toString().toLowerCase().trim();
+	
+	for (var i in MT___states) {
+		if (MT___states[i].toLowerCase() == str) {
+			return i;
+		}
+	}
+	
+	// None found?
+	return str.toUpperCase();
+}
+
+/*********************************************************
+ *********************************************************/
 
 /**
  * AMT factories
  *
+ * run
  * AMT__rq
  * AMT___core_factory
  * AMT___events_factory
@@ -1046,8 +1595,8 @@ String.prototype.stateAbbrToFull = function() {
  * AMT___huge_vars_factory
  * AMT___items_factory
  * AMT___site_scrapes
- * 
- * 
+ * AMT___gen_functions
+ * AMT___geographic_functions
  * 
  * 
  * 
@@ -1058,6 +1607,20 @@ String.prototype.stateAbbrToFull = function() {
  * 
 **/
 
+/**
+ * run
+ * 
+ * Puts every task into a prototype function
+ * 
+ * 
+ */
+var run = function() {
+}
+/**
+ * This is just a placeholder. run.prototype.f is re-defined in each task.
+ */
+run.prototype.f = function() {
+}
 /**
  * AMT requester functions
  * AMT__rq
@@ -1083,10 +1646,12 @@ function AMT___core_factory() {
 }
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
-AMT___core_factory.prototype.nextTab = function() {
+AMT___core_factory.prototype.nextTab = function(options) {
 	chrome.extension.sendRequest(
 		{
-			nextTab: true
+			nextTab: true,
+			options: options,
+			isTopWindow: AMT__Global_Vars.isTopWindow
 		},
 		function(response)
 		{
@@ -1239,13 +1804,26 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//~ console.log(v);
 		
 		switch(v.action) {
+			case 'return_button_hotkey':
+				window.addEventListener('keydown', function(e) {
+						if(e.keyCode == v.options.keyCode) {
+							console.log('returning');
+							var b = getReturnButton();
+							b.click();
+						}
+					});
+				break;
+			case 'click_return_button': 
+				var b = getReturnButton();
+				b.click();
+				break;
 			case 'return_button__showNextTab':
 				//~ console.log('Will showNextTab on return');
 				
 				var b = getReturnButton();
 				console.log(b);
 				if (b) {
-					b.addEventListener('mouseup', function() {
+					b.addEventListener('click', function() {
 						//~ console.log('mouseup on return button');
 						
 						showNextTab();
@@ -1331,7 +1909,8 @@ AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	//~ console.log(options);
 	
 	parent.postMessage({
-		action: options.action
+		action: options.action,
+		options: options
 	}, "*");
 	
 	//~ setInterval
@@ -1402,7 +1981,7 @@ AMT___events_factory.prototype.mousewheel_zoom_image = function(options_object) 
 	}
 	
 	if (!opts.hasOwnProperty('img_array')) {
-		opts.img_array = [img];
+		opts.img_array = [opts.img];
 	}
 	
 	for (var i in opts.img_array) {
@@ -1454,26 +2033,49 @@ AMT___events_factory.prototype.keydown__blur_field = function(e) {
 		return true;
 	}
 }
+/**
+ * mouseup__delete_range
+ * 
+ * @param element		html object
+ * @param elements		array, array of html objects
+ * 
+ * @TODO PAGE.addEventListener. Then watch for the target, or something similar (?), and blur this element.
+ * Problem: onmouseup is only registered for el.onmouseup but not for page.onmouseup.
+ */
 AMT___events_factory.prototype.mouseup__delete_range = function(options_object) {
 	
 	var options_object = options_object;
 	
-	options_object.element.addEventListener('mouseup', function() {
-		
-		// Only run when the selection is not blank.
-		//
-		//
-		if (window.getSelection().toString() == '') return;
-		
-		var text = this.value;
-		var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
-		this.value = new_text;
-		
-		if (options_object.hasOwnProperty('callback')) {
-			options_object.callback(options_object);
+	if (options_object.hasOwnProperty('element')) {
+		add_evl(options_object.element); //single
+	} else if (options_object.hasOwnProperty('elements')) {
+		for (var i in options_object.elements) {
+			add_evl(options_object.elements[i]);
 		}
-		
-	}, false);
+	}
+	
+	function add_evl(el) {
+		var el = el;
+		el.addEventListener('mouseup', function() {
+			
+			// Only run when the selection is not blank.
+			//
+			//
+			if (window.getSelection().toString() == '') return;
+			
+			var text = this.value;
+			
+			var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
+			this.value = new_text.trim(); // DEFAULT IS TRIM! Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
+			
+			if (options_object.hasOwnProperty('callback')) {
+				options_object.callback(options_object);
+			} else if (options_object.hasOwnProperty('blur_element')) {
+				el.blur();
+			}
+			
+		}, false);
+	}
 	
 }
 
@@ -1490,35 +2092,314 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  * fs__
  * database__
  * 
- * etc...  
+ * etc...
+ * 
+ * xhr_with_disk_cache
+ * 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+/**
+ * function xhr_with_disk_cache
+ * 
+ * URL							(Required. String.)
+ * 
+ * host							(Optional. String. Default=MT__host, i.e. 192.168.1.2)
+ * filename						(Optional. String. If null default=md5(URL))
+ * file_folder					(Optional. String. Default=.cached)
+ * method						(Optional. String. "get" or "post". Default="get")
+ * data							(Optional. String. Used with xhr post.)
+ * success_callback				(Optional. Function. Optional but is almost always included.)
+ * check_pre_write_to_disk		(Optional. Function. Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
+ * 
+ * 
+ * XXX NOT THIS XXX fail_xhr_if_not_200			(Optional. Boolean. Default=True.)
+ * 
+ * TODO: Add a param that will allow to overwrite the file on disk. Under a) any circumstance; b) if responseText=... And so on.
+ */
+AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
+	
+	// Verify object params
+	//options
+	var options = options;
+	var verify = verify_opts();
+	if (!verify) return; // Quit here if necessary
+	
+	// Init
+	read_from_disk();
+	
+	/**
+	 *
+	 */	
+	function verify_opts() {
+		// URL
+		if (!options.hasOwnProperty('URL')) {
+			return false;
+		}
+		var chk = options.URL.trim().toLowerCase();
+		if (chk.length < 6 || chk.indexOf('http') == -1) {
+			return false;
+		}
+		// ...
+		if (!options.hasOwnProperty('file_folder')) {
+			options.file_folder = '.cached';
+		}
+		if (!options.hasOwnProperty('filename')) {
+			options.filename = new AMT___requests_factory().general_functions__md5(options.URL); // md5 URL
+		}
+		if (!options.hasOwnProperty('host')) {
+			options.host = MT___host;
+		}
+		if (!options.hasOwnProperty('method')) {
+			options.method = 'get';
+		}
+		if (!options.hasOwnProperty('success_callback')) {
+			options.success_callback = function() {};
+		}
+		if (!options.hasOwnProperty('check_pre_write_to_disk')) { // Default=bool_check_write_to_disk
+			options.check_pre_write_to_disk = bool_check_write_to_disk;
+			//~ options.check_pre_write_to_disk = function() { return true; }; // Default=Returns true
+		}
+		
+		
+		//
+		options.tmp_response_text = null; // THIS IS ONLY WHEN write_to_file is called. It is only tmp.
+		
+		// Returns true to begin INIT.
+		return true;
+		
+		// ...
+		//~ if (!options.hasOwnProperty('fail_xhr_on_400')) { // Default=Returns true
+			//~ options.fail_xhr_on_400 = true;
+		//~ }
+	}
+	/**
+	 * 
+	 * @param completed_response
+	 */	
+	function success(completed_response) {
+		// options.response
+		options.response = {
+			response:		response,
+			status:			response.status,
+			responseText:	response.responseText
+		}
+		
+		// Success callback
+		options.success_callback(options);
+	}
+	/**
+	 * function read_from_disk
+	 * @desc This will return "___FILE_DOES_NOT_EXIST___" if file does not exist. Then read_from_xhr() will be called.
+	 * If file does exist then the file will be returned here and success_callback() will be called.
+	 * 
+	 */	
+	function read_from_disk() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+					read_from_xhr();
+				} else {
+					success(response);
+				}
+			}
+		});
+	}
+	/**
+	 * function read_from_xhr
+	 * @desc 
+	 * 
+	 */	
+	function read_from_xhr() {
+		if (options.method == 'get') {
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: options.URL,
+				onload: function (response) {
+					//~ var rs = response.responseText;
+					
+					if (options.check_pre_write_to_disk(response)) {
+						write_to_disk(response);
+					} else {
+						return false;
+					}
+				}
+			});
+		} else if (options.method == 'post') {
+			
+		}
+	}
+	/**
+	 * function bool_check_write_to_disk
+	 * @desc This callback is to check whether or not to save to disk.
+	 * True=write;False=nowrite. Default: !200=False,200=True. Is overwritable.
+	 * Function is called after read_from_xhr().
+	 */	
+	function bool_check_write_to_disk(response) {
+		
+		//
+		// Checks before write to disk go here.
+		//
+		//
+		
+		// Status = 200?
+		if (response.status != 200) {
+			return false;
+		}
+		
+		// Return true if response passes all checks.
+		return true;
+	}
+	/**
+	 * function write_to_disk
+	 * @desc Post.
+	 * 
+	 * @param completed_response
+	 * 
+	 * @NOTE XHR response must be: blank; and 200. 
+	 */	
+	function write_to_disk(competed_response) {
+		var competed_response = competed_response; // Passes into success(competed_response) func.
+		options.tmp_response_text = competed_response.responseText; // This is just a tmp var to pass in the responseText without the full response.
+		// Make the post request.
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: options.host + '/mturk/util.php',
+			data: 'xhr_with_disk_cache__write_to_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				if (rs.trim() != '') return;
+				
+				success(competed_response);
+			}
+		});
+	}
+}
+/**
+ * google_api_timezone 
+ * 
+ * @param options				object
+ * @param .lat					float
+ * @param .lng					float
+ * @param .callback_function	function
+ * 
+ * @return options.reseponse.offset		integer		Returns the time zone as an integer, offset of UTC. So Eastern would be -5. Pacific would be -8.
+ * 
+ * NOTE: "The 7 numbers specify the year, month, day, hour, minute, second, and millisecond, in that order:"
+ * 
+ * E.g.:
+ *{
+   "dstOffset" : 0,
+   "rawOffset" : -28800,
+   "status" : "OK",
+   "timeZoneId" : "America/Los_Angeles",
+   "timeZoneName" : "Pacific Standard Time"
+ *}
+ */
+AMT___requests_factory.prototype.google_api_timezone = function(options) {
+	
+	var d = new Date();
+	var ts = new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/1000; // 1999,0,31=Jan.31,1999
+	ts = Math.round(ts);
+	
+	var u= 'https://maps.googleapis.com/maps/api/timezone/json?location='+options.lat+','+options.lng+'&timestamp='+ts;
+	
+	u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+	
+	// Get next
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: u,
+		onload: function (response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				options.callback_function(false);
+				return;
+			}
+			
+			// ...
+			// rawOffset / 3600s
+			rs = JSON.parse(rs);
+			if (rs.status != 'OK') {
+				console.log('rs.status=' + rs.status);
+				options.callback_function(false);
+				return;
+			}
+			
+			// This is in Eastern Time Zone
+			var curr_local_hour = new Date().getTime();
+			
+			//~ var curr_local_hour = Date.UTC();
+			//~ console.log(new Date(curr_local_hour).getHours()); // This is 0-23 and it is in Eastern Time zone.
+			//~ console.log(curr_local_hour);
+			//~ console.log(rs.rawOffset);
+			
+			// Offset by UTC offset + Eastern Time Zone offset
+			curr_local_hour += rs.rawOffset*1000 + (5*3600*1000); // seconds to ms
+			
+			//~ console.log(curr_local_hour);
+			
+			curr_local_hour = new Date(curr_local_hour).getHours();
+			
+			//~ console.log(curr_local_hour);
+			
+			options.response = rs;
+			options.response.responseText = response.responseText;
+			options.response.offset = Math.round(rs.rawOffset/3600);
+			options.response.local_hour = curr_local_hour;
+			options.callback_function(options);
+		}
+	});
+}
+/**
+ * load_precache_urls 
+ * 
+ * @param options		object
+ * @param "".urls_array	object	Array of URLs.
+ * 
+ * @return Does not return
+ */
+AMT___requests_factory.prototype.load_precache_urls = function(options) {
+	
+	var options = options;
+	
+	load();
+	
+	function load() {
+		
+		// Complete?
+		if (options.urls_array.length < 1)
+			return;
+		
+		// Get next
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.urls_array.shift(),
+			onload: function (response) {
+				load();
+			}
+		});
+	}
+	
+}
+/**
+ * image_2_OCR 
+ */
 AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	
 	console.log(options_object);
 	
 	//AMT__image_2_OCR
 	
-	//~ // INIT (x 10s)
-	//~ var x_interval_init = setInterval(function() {
-		//~ GM_xmlhttpRequest({
-			//~ method: 'GET',
-			//~ url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
-			//~ onload: function (response) {
-				//~ var rs = response.responseText;
-				//~ 
-				// RETURN options_object
-				// Add response.
-				//~ options_object.response = response;
-				//~ options_object.text = rs;
-				//~ 
-				//~ 
-				//~ options_object.callback_function(options_object);
-			//~ }
-		//~ });
-	//~ }, 30000);
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
@@ -1871,6 +2752,12 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 	//
 	var ps_object = ps_object;
 	
+	// retrieve_fields
+	// ...Defaults
+	// retrieve_fields: Any of "profile_url,found_valid_li_url,image_thumbnail_url,image_full_url,image,image_full_url"
+	if (!ps_object.hasOwnProperty('retrieve_fields')) {
+		ps_object.retrieve_fields = {};
+	}
 	/*BEGIN ITEMS*/
 	//
 	var div_cx_l;
@@ -2475,9 +3362,19 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				}
 				// If it is an image search
 				// Click 1 = ...
+				// CHECK ps_object.retrieve_fields (New Jan16 2015)
 				else {
 					this.style.border = '4px solid LightGreen';
-					linkedin_people_location__profile_image(this);
+					
+					if (ps_object.retrieve_fields.hasOwnProperty('image_full_url')) {
+						ps_object.callback_function({ // SEND BACK ABBREVIATED!
+							image_thumbnail_url: this.src,
+							image_full_url: this.img_li,
+							image: this
+						});
+					} else {
+						linkedin_people_location__profile_image(this);
+					}
 				}
 			}
 			
@@ -2497,7 +3394,16 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		div.setAttribute('style','height:1600px;');
 		out.appendChild(div);
 	}
-	
+	/**
+	 * function linkedin_people_location__profile_image
+	 * 
+	 * @returns
+	 * 					.profile_url			url,
+	 *					.found_valid_li_url		found_valid_li_url,
+	 *					.image_thumbnail_url		btn.src,
+	 *					.image_full_url		btn.img_li,
+	 *					.image				btn
+	 */
 	function linkedin_people_location__profile_image(btn) {
 		
 		var btn = btn;
@@ -2546,7 +3452,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 						}
 					}
 				}
-				
 				
 				// CALLBACK FUNCTION
 				// Object
@@ -2815,7 +3720,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				//~ }
 			}
 		}
-		// make complete urls (high to none/outside)
+		// Make complete urls (high to none/outside)
 		// is {} object
 		// high, low, none, outside, (complete_high_to_low)
 		for (var tmp_priority in callback_obj.urls) {
@@ -2829,12 +3734,12 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 			}
 		}
 		
-		// temp callback function?
+		// Temp callback function?
 		if (seed_object.callback__scrapy__begin_scrape__process_completed) {
 			
 			var x = seed_object.callback__scrapy__begin_scrape__process_completed(callback_obj);
 			
-			if (x) { // RESPONSE IS TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+			if (x) { // RESPONSE IS FALSE(CONTINUE), TRUE(END SCRIPT PROCESSING)
 				return;
 			}
 		}
@@ -2974,7 +3879,14 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		//~ var rf = new AMT___requests_factory();
 		//~ rf.scrapy__cancel_job(jobid, 40000);
 }
-//
+/**
+ * database__select
+ * 
+ * @param database_object
+ * @param callback_function
+ * 
+ * @returns
+ */
 AMT___requests_factory.prototype.database__select = function(database_object, callback_function) //
 {
 	var database_object = database_object;
@@ -2992,9 +3904,8 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 			var rs = response.responseText;
 			if (response.status != 200) return;
 			
-			//array_push($out_arr, [ $row['name'], $row['id_number'] ]);
+			database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
 			
-			//~ console.log(rs);
 			if (rs == '') //
 				rs = '[]'; // blank!!
 				
@@ -3028,7 +3939,7 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 			
 			if (response.status != 200) return;
 			
-			database_object.responseText = response.responseText;
+			database_object.responseText = response.responseText; // SET THE RESPONSE TEXT !!!
 			
 			var rs = response.responseText;
 			
@@ -3056,12 +3967,19 @@ AMT___requests_factory.prototype.database__write = function(database_object, cal
 		}
 	});
 }
-//
+/**
+ * io__command_line_request
+ * 
+ */
 AMT___requests_factory.prototype.io__command_line_request = function(options_object, callback_function_complete) //
 {
 	var options_object				= options_object;
-	var callback_function_complete	= callback_function_complete;
+	var callback_function_complete	= callback_function_complete; // may be false/null
+	if (options_object.hasOwnProperty('callback')) {
+		callback_function_complete = options_object.callback;
+	}
 	
+	// xhr
 	GM_xmlhttpRequest({
 		method: "POST",
 		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
@@ -3070,15 +3988,7 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		onload: function(response) {
-			// DEBUG
-			//
-			//
-			//~ var rs = response.responseText;
-			//~ console.log(rs);
-			
-			//~ if (response.status != 200) return;
-			//~ options_object.responseText = rs;
-			//~ callback_function(download_object); // send this back!
+			// could send back here, if desired!
 		}
 	});
 	
@@ -3102,14 +4012,15 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
 				
 				clearInterval(xint);
 				
+				options_object.responseText = rs;
+				options_object.rs = rs; // synonym of responseText
+				
+				callback_function_complete(options_object); // send this back!
+				
 				//~ console.log(rs);
 				//~ echo json_encode($files);
 				//~ 
 				//~ options_object.rs = JSON.parse(rs);
-				
-				options_object.responseText = rs;
-				
-				callback_function_complete(options_object); // send this back!
 			}
 		});
 	}, 1000);
@@ -3411,6 +4322,212 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 		}
 	});
 }
+/**
+ * AMT___gen_functions
+ * 
+ * 
+ * 
+ */
+function AMT___gen_functions(obj_vars) {
+	// this.___SKIP_SITES = ''; // would this work?
+}
+/*
+ * 
+ */
+AMT___gen_functions.prototype.levensht = function(a, b) {
+	
+	// minimator
+	// Returns the smallest of the three values passed in
+	function minimator(x,y,z) {
+		if (x < y && x < z) return x;
+		if (y < x && y < z) return y;
+		return z;
+	}
+
+	var cost;
+	
+	// Get values
+	// Put them .toLowerCase()
+	var a = a.toLowerCase();
+	var m = a.length;
+	
+	var b = b.toLowerCase();
+	var n = b.length;
+	
+	// make sure a.length >= b.length to use O(min(n,m)) space, whatever that is
+	if (m < n) {
+		var c=a;a=b;b=c;
+		var o=m;m=n;n=o;
+	}
+	
+	var r = new Array();
+	r[0] = new Array();
+	for (var c = 0; c < n+1; c++) {
+		r[0][c] = c;
+	}
+	
+	for (var i = 1; i < m+1; i++) {
+		r[i] = new Array();
+		r[i][0] = i;
+		for (var j = 1; j < n+1; j++) {
+			cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
+			r[i][j] = minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
+		}
+	}
+	
+	return r[m][n];
+}
+/**
+ * AMT___geographic_functions
+ * 
+ * 
+ * 
+ */
+function AMT___geographic_functions(obj_vars) {
+}
+/*
+ * 
+ * www.uwgb.edu/DUTCHS/UsefulData/ConvertUTMNoOZ.HTM
+ * 
+ * @param		options
+ * 				.easting
+ * 				.northing
+ * 				.zone
+ * @returns		{.lat, .lng}
+ */
+AMT___geographic_functions.prototype.utm_coords_to_geographic = function(options) {
+	
+	// vars
+	var DatumEqRad,DatumFlat,Item,k0,a,f,b,e,drad,latd,phi,e0,N,T,C,lng,lng0,lngd,M,x,y,k;
+	var utmz,zcm,DigraphLetrsE,DigraphLetrsN,OOZok;
+	//"inputs"
+	var EqRadBox,PolRadBox,FlatBox,RecipBox;
+	function Declarations(){
+	//Symbols as used in USGS PP 1395: Map Projections - A Working Manual
+		DatumEqRad = [6378137.0,6378137.0,6378137.0,6378135.0,6378160.0,6378245.0,6378206.4,
+		6378388.0,6378388.0,6378249.1,6378206.4,6377563.4,6377397.2,6377276.3];	
+		DatumFlat = [298.2572236, 298.2572236, 298.2572215,	298.2597208, 298.2497323, 298.2997381, 294.9786982,
+		296.9993621, 296.9993621, 293.4660167, 294.9786982, 299.3247788, 299.1527052, 300.8021499]; 
+		Item = 0;//Default
+		k0 = 0.9996;//scale on central meridian
+		a = DatumEqRad[Item];//equatorial radius, meters. 
+		f = 1/DatumFlat[Item];//polar flattening.
+		b = a*(1-f);//polar axis.
+		e = Math.sqrt(1 - b*b/a*a);//eccentricity
+		drad = Math.PI/180;//Convert degrees to radians)
+		latd = 0;//latitude in degrees
+		phi = 0;//latitude (north +, south -), but uses phi in reference
+		e0 = e/Math.sqrt(1 - e*e);//e prime in reference
+		N = a/Math.sqrt(1-Math.pow(e*Math.sin(phi)),2);
+		T = Math.pow(Math.tan(phi),2);
+		C = Math.pow(e*Math.cos(phi),2);
+		lng = 0;//Longitude (e = +, w = -) - can't use long - reserved word
+		lng0 = 0;//longitude of central meridian
+		lngd = 0;//longitude in degrees
+		M = 0;//M requires calculation
+		x = 0;//x coordinate
+		y = 0;//y coordinate
+		k = 1;//local scale
+		utmz = 30;//utm zone
+		zcm = 0;//zone central meridian
+		DigraphLetrsE = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+		DigraphLetrsN = "ABCDEFGHJKLMNPQRSTUV";
+		EqRadBox = a;
+		PolRadBox = b;
+		FlatBox = f;
+		RecipBox = 1/f;
+		//~ document.getElementById("EqRadBox").value = a;
+		//~ document.getElementById("PolRadBox").value = b;
+		//~ document.getElementById("FlatBox").value = f;
+		//~ document.getElementById("RecipBox").value = 1/f;
+		OOZok = false;
+	}//Close declarations
+
+	// vars
+	var UTMeBox1 = options.easting,UTMnBox1 = options.northing,UTMzBox1 = options.zone;
+	var k0,b,e,e0,esq,e0sq,x,y,utmz,zcm,e1,M0,M,mu,phil,C1,T1,N1,R1,D,phi;
+	//"inputs"
+	var DDLatBox0,DDLonBox0,SHemBox = true; // SET TO TRUE=SOUTH!!! // SHemBox=north of equator=This is always false for this task (Jan15 2015)
+	
+	// Init
+	UTMtoGeog();
+	function UTMtoGeog(){
+		//Convert UTM Coordinates to Geographic
+		Declarations();
+		k0 = 0.9996;//scale on central meridian
+		b = a*(1-f);//polar axis.
+		e = Math.sqrt(1 - (b/a)*(b/a));//eccentricity
+		e0 = e/Math.sqrt(1 - e*e);//Called e prime in reference
+		esq = (1 - (b/a)*(b/a));//e squared for use in expansions
+		e0sq = e*e/(1-e*e);// e0 squared - always even powers
+		x = parseFloat(UTMeBox1);
+		//~ x = parseFloat(document.getElementById("UTMeBox1").value);
+		if (x<160000 || x>840000){alert("Outside permissible range of easting values \n Results may be unreliable \n Use with caution");} 
+		y = parseFloat(UTMnBox1);
+		//~ y = parseFloat(document.getElementById("UTMnBox1").value);
+		if (y<0){alert("Negative values not allowed \n Results may be unreliable \n Use with caution");}
+		if (y>10000000){alert("Northing may not exceed 10,000,000 \n Results may be unreliable \n Use with caution");}
+		utmz = parseFloat(UTMzBox1);
+		//~ utmz = parseFloat(document.getElementById("UTMzBox1").value);
+		zcm = 3 + 6*(utmz-1) - 180;//Central meridian of zone
+		e1 = (1 - Math.sqrt(1 - e*e))/(1 + Math.sqrt(1 - e*e));//Called e1 in USGS PP 1395 also
+		M0 = 0;//In case origin other than zero lat - not needed for standard UTM
+		M = M0 + y/k0;//Arc length along standard meridian. 
+		if (SHemBox){M=M0+(y-10000000)/k;}
+		//~ if (document.getElementById("SHemBox").checked === true){M=M0+(y-10000000)/k;}
+		mu = M/(a*(1 - esq*(1/4 + esq*(3/64 + 5*esq/256))));
+		phi1 = mu + e1*(3/2 - 27*e1*e1/32)*Math.sin(2*mu) + e1*e1*(21/16 -55*e1*e1/32)*Math.sin(4*mu);//Footprint Latitude
+		phi1 = phi1 + e1*e1*e1*(Math.sin(6*mu)*151/96 + e1*Math.sin(8*mu)*1097/512);
+		C1 = e0sq*Math.pow(Math.cos(phi1),2);
+		T1 = Math.pow(Math.tan(phi1),2);
+		N1 = a/Math.sqrt(1-Math.pow(e*Math.sin(phi1),2));
+		R1 = N1*(1-e*e)/(1-Math.pow(e*Math.sin(phi1),2));
+		D = (x-500000)/(N1*k0);
+		phi = (D*D)*(1/2 - D*D*(5 + 3*T1 + 10*C1 - 4*C1*C1 - 9*e0sq)/24);
+			phi = phi + Math.pow(D,6)*(61 + 90*T1 + 298*C1 + 45*T1*T1 -252*e0sq - 3*C1*C1)/720;
+			phi = phi1 - (N1*Math.tan(phi1)/R1)*phi;
+		
+		
+		
+	//Output Latitude
+		DDLatBox0 = Math.floor(1000000*phi/drad)/1000000;
+		//~ document.getElementById("DDLatBox0").value = Math.floor(1000000*phi/drad)/1000000;
+			
+	//Longitude
+		lng = D*(1 + D*D*((-1 -2*T1 -C1)/6 + D*D*(5 - 2*C1 + 28*T1 - 3*C1*C1 +8*e0sq + 24*T1*T1)/120))/Math.cos(phi1);
+		lngd = zcm+lng/drad;
+		
+	//Output Longitude
+		DDLonBox0 = Math.floor(1000000*lngd)/1000000;
+		//~ document.getElementById("DDLonBox0").value = Math.floor(1000000*lngd)/1000000;
+	
+		// Do callback
+		options.callback({
+			lat: DDLatBox0,
+			lng: DDLonBox0
+		});
+	// BELOW HERE IS NOT REQUIRED
+	//
+	//
+	//~ //Parse DMS
+		//~ xd = lngd;
+		//~ yd = phi/drad;
+		//~ DDtoDMS();
+		//~ document.getElementById("DLatBox0").value = Math.floor(ydd);
+		//~ document.getElementById("MLatBox0").value = ym;
+		//~ document.getElementById("SLatBox0").value = Math.floor(1000*ys)/1000;
+		//~ document.getElementById("DLonBox0").value = Math.floor(xdd);
+		//~ document.getElementById("MLonBox0").value = xm;
+		//~ document.getElementById("SLonBox0").value = Math.floor(1000*xs)/1000;
+//~ 
+		//~ document.getElementById("UTMLonZoneBox2").value = utmz;
+		//~ document.getElementById("UTMLatZoneBox2").value = DigraphLetrsE[latz];
+		//~ document.getElementById("UTMeBox2").value = Math.round(10*(x-100000*Math.floor(x/100000)))/10;
+		//~ document.getElementById("UTMnBox2").value = Math.round(10*(y-100000*Math.floor(y/100000)))/10;
+		//~ MakeDigraph();
+		//~ document.getElementById("UTMDgBox2").value = Digraph;
+	}//End UTM to Geog
+}
 
 /**
  * AMT___site_scrapes
@@ -3424,6 +4541,30 @@ function AMT___site_scrapes(obj_vars) {
 /**
  * function scrape
  *
+ * Yellow Pages
+ * 
+ * @param options_object					object	
+ * @param options_object.site				string	
+ * @param options_object.url				string	
+ * @param options_object.callback_function	string	
+ * 
+ * Site:
+ * @site
+ * 	http://www.yellowpages.com/search
+ * @site
+ *	https://www.yellowpages.com/whitepages/address
+ * @site
+ *	http://www.healthgrades.com/PROFILE/
+ * @site
+ *	LINKEDIN_PROFILE
+ * 
+ * @returns ...
+ * 
+ * Typically returns ...
+ * @return opts.response.vars.result{} OR results[{rslt}, {rslt}, ... ]
+ * @return opts.response.vars.error?
+ * @return opts.response.vars.error_type?
+ * 
  * TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
  * 
  */
@@ -3431,8 +4572,26 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
 	// Global
 	var opts = options_object;
+	console.log('------------.scrape OPTS-------------');
+	console.log(opts);
 	
 	switch (opts.site) {
+		// TripAdvisor profile page
+		// e.g. 
+		case 'TripAdvisor_profile': 
+			opts.tmp_callback = tripadvisor_profile_page;
+			xhr_get();
+			break;
+		// e.g. http://www.tripadvisor.com/Search?q=Lotte+City+Hotel+Daejeon&geo=1&pid=3826&returnTo=__2F__
+		case 'http://www.tripadvisor.com/Search': 
+			opts.tmp_callback = tripadvisor_search_page;
+			xhr_get();
+			break;
+		// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+		case 'http://www.yellowpages.com/search': 
+			opts.tmp_callback = yp_search;
+			xhr_get();
+			break;
 		case 'https://www.yellowpages.com/whitepages/address':
 			opts.tmp_callback = yp_reverse_addr;
 			xhr_get();
@@ -3442,11 +4601,11 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			xhr_get();
 			break;
 		case 'LINKEDIN_PROFILE':
+			opts.tmp_callback = linkedin_person_profile;
+			xhr_get();
 		//~ case 'https://www.linkedin.com/profile/view?id=':
 		//~ case 'https://www.linkedin.com/pub/':
 		//~ case 'https://www.linkedin.com/in/':
-			opts.tmp_callback = linkedin_person_profile;
-			xhr_get();
 			break;
 	}
 	
@@ -3484,6 +4643,400 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				opts.callback_function(opts);
 			}
 		});
+	}
+	
+	/**
+	 * tripadvisor_profile_page
+	 * 
+	 * e.g. http://www.tripadvisor.com/Hotel_Review-g297887-d6378639-Reviews-Lotte_City_Hotel_Daejeon-Daejeon.html
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function tripadvisor_profile_page() {
+		
+		opts.response.vars = {
+			result: {
+				prices: [],		// objects {price, fees, source}
+				date_ci: null,	// string, check in
+				date_co: null	// string, check out
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		//~ console.log(rs);
+		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
+		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+		
+		if (r) {
+			r = r[1].replace(/\\/g, '\n');
+			console.log(r);
+			
+			// price
+			// e.g. BookingCom, 121, 12
+			var r2 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)\nPF:([^\n]+)/g;
+			var m;
+			while (m = r2.exec(r)) {
+				opts.response.vars.result.prices.push({
+					price:	m[2],
+					fees:	m[3],
+					source:	m[1]
+				});
+			}
+			
+			//~ // price
+			//~ // e.g. BookingCom, 121, 12
+			//~ var r2 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)\nPF:([^\n]+)/.exec(r);
+			//~ var r3 = /PT:meta\nPN:([^\n]+)\nPP:([^\n]+)/.exec(r);
+			//~ if (r2) {
+				//~ opts.response.vars.result.prices.push({
+					//~ price:	r2[2],
+					//~ fees:	r2[3],
+					//~ source:	r2[1]
+				//~ });
+			//~ } else if (r3) {
+				//~ opts.response.vars.result.prices.push({
+					//~ price:	r2[2],
+					//~ fees:	null,
+					//~ source:	r2[1]
+				//~ });
+			//~ }
+			
+			// dates
+			// e.g. 2014-11-29
+			var r2 = /CI:([\d\-]+)/.exec(r);
+			if (r2) {
+				opts.response.vars.result.date_ci = r2[1];
+			}
+			var r2 = /CO:([\d\-]+)/.exec(r);
+			if (r2) {
+				opts.response.vars.result.date_co = r2[1];
+			}
+			
+			
+		}
+		return true;
+	}
+	/**
+	 * tripadvisor_search_page
+	 * 
+	 * e.g. http://www.tripadvisor.com/Search?q=Lotte+City+Hotel+Daejeon&geo=1&pid=3826&returnTo=__2F__
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function tripadvisor_search_page() {
+		
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText; //console.log(rs);
+		
+		var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
+		if (r) {
+			opts.response.vars.num_search_results = r[1];
+		}
+		
+		// Listings
+		//
+		//
+		
+		var r = /<div class="searchResult ([^ ]*)[^"]*">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		//~ var r = /<div class="searchResult([^"]*)">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//console.log(m);
+			
+			// Type of... Skip "srREVIEWS" type, which are at bottom of page.
+			// Main types are: srLODGING, srEATERY
+			var type_of_searchResult = m[1];
+			console.log(type_of_searchResult);
+			//~ if (type_of_searchResult.indexOf('srREVIEWS') != -1)
+				//~ continue;
+			if (type_of_searchResult == 'srREVIEWS')
+				continue;
+			if (type_of_searchResult == 'srFORUMS')
+				continue;
+			
+			var rslt = {
+				name:			null,	// string
+				address:		null,	// string
+				rating:			null,	// string
+				profile_url:	null,	// string
+				result_type:	null	// string
+			};
+			
+			// result_type
+			rslt.result_type = type_of_searchResult;
+			
+			// href & name
+			// e.g. Lotte City Hotel Daejeon
+			// e.g. /Hotel_Review-g297887-d6378639-Reviews-Lotte_City_Hotel_Daejeon-Daejeon.html
+			//
+			// e.g. <a target="_blank" href="/Restaurant_Review-g806325-d4594024-Reviews-New_Acropol_restaurant-Morogoro_Morogoro_Region.html" onclick="setOneTimeCookie('NORDINAL','B2'); ta.call('ta.servlet.SearchPage.recordSelection', event, this, 'B2', 'EATERY');">\n<b>New Acropol</b> restaurant</a>
+			//
+			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*(<b>[^<]+<\/b>[^<]*)<\/a>/.exec(m[2]);
+			if (r2) {
+				rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
+				rslt.name = __js_clean_html_str(
+					r2[2].replace(/<\/?b>/g, '')
+				);
+			}
+			
+			// address
+			var r2 = /<div class="srAddress inline">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[2]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// rating
+			var r2 = /<span class="rate[^"]*">[\r\n\t\s]*<img class="sprite-ratings" src="[^"]*" alt="([\d\.]+) of 5 stars">[\r\n\t\s]*<\/span>/.exec(m[2]);
+			if (r2) {
+				rslt.rating = r2[1];
+			}
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		return true;
+	}
+	/**
+	 * yp_search
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function yp_search() {
+		
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+			opts.response.vars.num_search_results = 0;
+			return;
+		}
+		
+		var str = '<div id="no-results-main" class="no-results-term-error"><h4>No results found for <strong>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.num_search_results = 0;
+			return; // Quit here
+		}
+		var str = '<header>We did not find any business listings for&nbsp;<strong>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.num_search_results = 0;
+			return; // Quit here
+		}
+		
+		// Distances
+		// distance_from_address_object & dfao_listings
+		//
+		// e.g. if href=>http://www.yellowpages.com/ithaca-ny/mip/wings-over-ithaca-2590867?lid=2590867
+		//{"listingID":"2590867","ypid":"2590867","latitude":42.436546,"longitude":-76.46467,"addressLine1":"335 Pine Tree Rd","city":"Ithaca","state":"NY","zip":"14850","omitAddress":"N","name":"Wings Over Ithaca","distance":2.7685942611732415,"assumedGeoFlag":"","position":4,"rank":4,"impressionID":"4c4aa949-44b2-4a34-a262-71a3f9b438af","srid":"L-webyp-887b5b46-4d90-4eb8-be3a-68ed6c38769f-2590867"}
+		//
+		var r = /YPU *= *\{((.|\s)*?(?=\};|$)|$)/.exec(rs);
+		var distance_from_address_object = null;
+		var dfao_listings = null;
+		if (r) {
+			try {
+				r = JSON.parse('{' + r[1] + '}');
+				if (r) {
+					distance_from_address_object = r;
+					dfao_listings = {};
+					// distance_from_address_object.expandedMapListings is an array of objects
+					if (distance_from_address_object.hasOwnProperty('expandedMapListings') && distance_from_address_object.expandedMapListings.length) {
+						for (var i in distance_from_address_object.expandedMapListings) {
+							var x = distance_from_address_object.expandedMapListings[i];
+							dfao_listings[x.listingID] = x;
+						}
+					}
+				}
+			} catch(e) {
+				console.log(e);
+				console.log('Could not parse coordinates object!');
+			}
+		}
+			
+		
+		//<div class="info"><h3 class="n">
+		//~ var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="media-thumbnail">|$)|$)/g;
+		var r = /<div class="info"><h3 class="n">((.|\s)*?(?=<div class="info"><h3 class="n">|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			// Only use the listings that are not ads. For the time being these are listed
+			// as results 1-30. I.e. 1., 2., 3. ... etc.
+			// There may be listings on the page that are ads but these are not currently
+			// listed with the other numerical results.
+			
+			// Skip if does not contain "(\d)"
+			if (!/<span class="count">\([\d]\)<\/span>/.exec(m[1])) continue;
+			// OLD
+			// Skip if does not contain "\d.".
+			//<span class="index">5</span><span class="index-dot">.</span>
+			//~ if (!/<span class="index">\d+<\/span><span class="index-dot">\.<\/span>/.exec(m[1])) continue;
+			
+			
+			var rslt = {
+				name:					null,	// string
+				address:				null,	// string
+				phones:					[],		// array of strings
+				profile_url:			null,	// string
+				distance_from_address:	null,	// float
+				
+				listing_id:				null	// string, private
+			};
+			
+			// href & name
+			// e.g. /ithaca-ny/mip/wings-over-ithaca-2590867?lid=2590867
+			// e.g. LongHorn Steakhouse
+			var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" itemprop="name" class="business-name">([^<]+)<\/a>/.exec(m[1]);
+			//~ var reg = /<a href="(\/[^"]+)" data-analytics='[^']*' rel="[^"]*" class="business-name"><span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
+			//~ var r = /<span itemprop="name">([^<]+)<\/span>/.exec(m[1]);
+			if (reg) {
+				rslt.profile_url	= 'http://www.yellowpages.com' + __js_clean_html_str(reg[1]).trim();
+				rslt.name			= __js_clean_html_str(reg[2]).trim();
+				
+				var r2 = /lid=(\d+)/.exec(rslt.profile_url);
+				if (r2) {
+					rslt.listing_id = r2[1];
+					if  (
+						dfao_listings &&
+						dfao_listings.hasOwnProperty(rslt.listing_id) &&
+						dfao_listings[ rslt.listing_id ].hasOwnProperty('distance') &&
+						typeof dfao_listings[ rslt.listing_id ].distance == 'number'
+						)
+					{
+						rslt.distance_from_address = dfao_listings[rslt.listing_id].distance;
+					}
+				}
+			}
+			
+			// address
+			// e.g. <span itemprop="streetAddress" class="street-address">400 N Meadow St</span><span itemprop="addressLocality" class="locality">Ithaca, </span><span itemprop="addressRegion">NY</span>&nbsp;<span itemprop="postalCode">14850</span>
+			var reg = /<p itemscope itemtype="http:\/\/schema\.org\/PostalAddress" itemprop="address" class="adr">((.|\s)*?(?=<\/p>|$)|$)/.exec(m[1]);
+			if (reg) {
+				reg = reg[1];
+				reg = reg.replace(/<[^>]*>/g, ' ');
+				reg = __js_clean_html_str(reg);
+				reg = reg.replace(/\s+/g, ' ');
+				reg = reg.trim();
+				rslt.address = reg;
+			}
+			
+			// phones
+			var reg = /<div itemprop="telephone" class="phones phone primary">([^<]+)<\/div>/.exec(m[1]);
+			if (reg) {
+				rslt.phones.push(
+					__js_clean_html_str(reg[1]).trim()
+				);
+			}
+			//~ // <ul class="phones"><li itemprop="telephone" class="phone primary">(607) 273-7110</li></ul>
+			//~ var reg = /<ul class="phones">((.|\s)*?(?=<\/ul>|$)|$)/.exec(m[1]);
+			//~ if (reg) {
+				//~ reg = reg[1];
+				//~ // e.g. (607) 273-7110
+				//~ var r2 = /<li[^>]*>([^<]+)<\/li>/g;
+				//~ var m2;
+				//~ while (m2 = r2.exec(reg)) {
+					//~ rslt.phones.push(
+						//~ __js_clean_html_str(m2[1]).trim()
+					//~ );
+				//~ }
+			//~ }
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		// UPDATE opts.response.vars.num_search_results
+		// It must be greater than 0 at this point!
+		if (opts.response.vars.results.length == 0) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = 'num_search_results==0 but search did not specify 0! Is the scrape regexp broken?';
+			opts.response.vars.num_search_results = 0;
+			return;
+		}
+		else {
+			opts.response.vars.num_search_results = opts.response.vars.results.length;
+		}
+		
+		return true;
+	}
+	/**
+	 * yp_reverse_addr
+	 * 
+	 * @ opts.response
+	 */
+	function yp_reverse_addr() {
+		
+		opts.response.vars = {
+			results: [],
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
+		if (rs.indexOf(str) != -1) {
+			opts.response.vars.error = true;
+			opts.response.vars.error_type = str;
+		}
+		
+		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
+		var m;
+		while (m = r.exec(rs)) {
+			
+			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
+			
+			//~ console.log(m);
+			
+			var rslt = {
+				title: null,
+				address: null,
+				phone: null
+			};
+			
+			// Title
+			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
+			if (r2) {
+				rslt.title = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Address
+			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.address = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			// Phone
+			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
+			if (r2) {
+				rslt.phone = __js_clean_html_str(r2[1]).trim();
+			}
+			
+			//~ console.log(rslt);
+			
+			opts.response.vars.results.push(rslt);
+		}
+		
+		//~ // Callback final
+		//~ opts.callback_function(opts);
 	}
 	
 	/**
@@ -3569,14 +5122,29 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 				return false;
 			}
 		} else {
-			
+			// in/xx
+			r = /<dd><a href="(https?:\/\/\w+\.linkedin\.com\/[^"]+)" class="view-public-profile">[^<]+<\/a><\/dd>/;
+			if (r.exec(rs)) {
+				opts.response.vars.result.public_url = __js_clean_html_str(r.exec(rs)[1]);
+				opts.response.vars.result.profile_has_public_url = true;
+				// Must have only one match
+				r = new RegExp(r.source, 'g');
+				if (rs.match(r).length != 1) {
+					console.log(rs.match(r));
+					console.log(r);
+					alert('Length:'+r);
+					return false;
+				}
+			} else {
+				
+			}
 		}
 		/**
 		 * Name
 		EX:
 James Strate, CFP®
 		 */ 
-		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name">([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
+		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name"[^>]*>([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
 			// Must have only one match
@@ -3596,7 +5164,7 @@ James Strate, CFP®
 Investment Representative at Fidelity Investments
 Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
  		 */ 
-		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title ">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
+		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title *">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
 		if (r.exec(rs)) {
 			var hd = r.exec(rs)[1];
 			hd = hd.replace(/<[^>]*>/g, '');
@@ -4075,67 +5643,7 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 		}
 	}
 	
-	/**
-	 * yp_reverse_addr
-	 * 
-	 * @ opts.response
-	 */
-	function yp_reverse_addr() {
-		
-		opts.response.vars = {
-			results: [],
-			error: null,
-			error_type: null
-		}
-		
-		var rs = opts.response.responseText;
-		
-		var str = '<header>We’re ever so sorry. You may have<br>encountered a temporary glitch.<br>Please try one of the following:</header>';
-		if (rs.indexOf(str) != -1) {
-			opts.response.vars.error = true;
-			opts.response.vars.error_type = str;
-		}
-		
-		var r = /<div class="phone-result-container">((.|\s)*?(?=<\/div><\/div>|$)|$)/g;
-		var m;
-		while (m = r.exec(rs)) {
-			
-			//<a href="/whitepages/show?fp=eyJmaXJzdCI6Ik1pY2hhZWwiLCJsYXN0IjoiSG9yaSIsInN0cmVldCI6IjQwMTEgVGFsYm90IFJkIFMiLCJjaXR5IjoiUmVudG9uIiwic3RhdGUiOiJXQSIsInBob25lIjoiNDI1LTI3MS01MDIwIiwiemlwIjoiOTgwNTUifQ%3D%3D&amp;form=sba" data-analytics='{"click_id":1649,"adclick":false}' class="fullname">Michael K Hori</a><p class="address">4011 Talbot Rd S, Renton, WA 98055</p><p class="phone">425-271-5020</p>
-			
-			//~ console.log(m);
-			
-			var rslt = {
-				title: null,
-				address: null,
-				phone: null
-			};
-			
-			// Title
-			var r2 = /<a href="[^"]+" data-analytics='[^']*' class="fullname">([^<]*)<\/a>/.exec(m[1]);
-			if (r2) {
-				rslt.title = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			// Address
-			var r2 = /<p class="address">([^<]*)<\/p>/.exec(m[1]);
-			if (r2) {
-				rslt.address = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			// Phone
-			var r2 = /<p class="phone">([^<]*)<\/p>/.exec(m[1]);
-			if (r2) {
-				rslt.phone = __js_clean_html_str(r2[1]).trim();
-			}
-			
-			//~ console.log(rslt);
-			
-			opts.response.vars.results.push(rslt);
-		}
-		
-		//~ // Callback final
-		//~ opts.callback_function(opts);
-	}
+	
 }
 /**
  * 
@@ -4149,12 +5657,820 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
  * create__input_scrapy_button
  * create__input_skip_button2
  * create__input_skip_button
+ * create_dashboard_find_address
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function create_dashboard_find_address
+ *
+ * @param options_object						object	
+ * @param "".parent								element	
+ * @param "".parent_controller_el				element	
+ * @param "".submitButton_onclick_callback		function	
+ * @param "".output_elements					object	
+ * @param "".first_element						element		Default is false. This is the box focused on by default. Also gets "debug" addresses, if present.	
+ * @param ""."". city							element
+ * @param ""."". state							element
+ * @param ""."". country						element
+ */
+AMT___items_factory.prototype.create_dashboard_find_address = function(options_object) {
+	
+	var options_object = opts = options_object;
+	
+	// First element
+	// This is mostly for debug purposes, e.g. when 
+	// an address scrape fails and finds a different address.
+	// This is also used for *focus* when selecting an
+	// address!
+	for (var i in opts.output_elements) {
+		opts.first_element = opts.output_elements[i];
+		break;
+	}
+	
+	
+	
+	/* BEGIN ITEMS */
+	if (!opts.hasOwnProperty('parent_controller_el')) {
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('style','width:99%;height:18px;');
+		opts.parent.appendChild(d2);
+	} else {
+		var d2 = opts.parent_controller_el;
+	}
+	//
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1);
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1b);
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1c);
+	var d1d = document.createElement('div');
+	d1d.setAttribute('style','float:left;width:24%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
+	opts.parent.appendChild(d1d);
+	var x = document.createElement('br');
+	x.setAttribute('style','clear:both;');
+	opts.parent.appendChild(x);
+	/* END ITEMS */
+	
+	// ...
+	var COMP = d2.value.trim();
+	
+	// ...
+	var match_o = COMP;
+	match_o = match_o.replace(/&/g, 'and');
+	match_o = match_o.replace(/^the /i, '');
+	match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+	
+	// ...
+	//~ d2.value = b.replace(/"/g, '') + ' ' + location;
+	//~ d2.value = d2.value.trim();
+	
+	//Turn the company name into a google search
+	//~ d2d.href = 'http://www.google.com/search?q='+encodeURIComponent(COMP);
+	//~ d2d.innerText = COMP;
+	
+	// ...
+	d2.onblur = function() {
+		this.value = this.value.trim();
+		FB_addr();
+		hoovers_addr();
+		businessweek_addr(false);
+		google_addr();
+	}
+	
+	// ...
+	var ef = new AMT___events_factory();
+	d2.addEventListener('keydown', ef.keydown__blur_field, true);
+	
+	// onsubmit
+	if (opts.hasOwnProperty('submitButton_onclick_callback')) {
+		//~ document.getElementById('submitButton').onclick = opts.submitButton_onclick_callback;
+	} else {
+		document.getElementById('submitButton').onclick = function() {
+			//...
+			alert('x');
+			//~ new AMT___core_factory().nextTab();
+		}
+	}
+	
+	// ...
+	AMT___POPUP__initializeGlobals(
+		addr__init
+	);
+	
+	// function Fiber_Data_Co_find_company_addr__init
+	function addr__init() {
+		FB_addr();
+		hoovers_addr();
+		businessweek_addr(false); // initial
+		google_addr();
+	}
+	
+	// function Fiber_Data_Co_find_company_addr__country2abbr
+	function Fiber_Data_Co_find_company_addr__country2abbr(country) {
+		var abbr = new AMT___requests_factory().general_functions__countryToAbbreviatedCountry(country);
+		if (!abbr) {
+			alert(country + ' not in MT___countries!');
+			return;
+		}
+		// here?
+		return abbr;
+	}
+	
+	// function Fiber_Data_Co_find_company_addr__google_addr_prof
+	function google_addr_prof(el) {
+		
+		// update button bgc
+		el.style.backgroundColor = 'MintCream';
+		
+		// obj
+		var id = JSON.parse(el.json_response); // obj -> prediction
+		
+		var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+			id.reference+
+			'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+			
+		//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(gu);
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var s = rs;
+				
+				rs = JSON.parse(rs);
+				
+				if (rs.status != 'OK') {
+					console.log(rs.status);
+					return;
+				}
+				
+				console.log(rs);
+				
+				// update button id/value
+				//~ el.innerText += "\n"+rs.result.formatted_address;
+				
+				el.appendChild(document.createElement('br'));
+				el.appendChild(document.createTextNode(rs.result.formatted_address));
+				el.json_response = s; // JSON!
+			}
+		});
+	}
+	
+	function clear_output_elements() {
+		for (var i in opts.output_elements) {
+			opts.output_elements[i].value = '';
+		}
+	}
+	
+	// function google_addr
+	//
+	// 100 000 requests per 24 hour period	
+	// The Text Search service is subject to a 10-times multiplier.
+	// The Radar Search Service is subject to a 5-times multiplier
+	//
+	// 0,0 20000000 = world search
+	//
+	function google_addr() {
+	
+		d1d.innerHTML = '';
+		
+		var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+			encodeURIComponent(d2.value)+
+			'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+		
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				rs = JSON.parse(rs);
+				
+				if (rs.status != 'OK') {
+					console.log(rs.status);
+					d1d.innerText = rs.status;
+					return;
+				}
+				
+				rs = rs.predictions;
+				
+				for (var i in rs) { //obj
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
+					div.innerText = rs[i].description;
+					div.json_response = JSON.stringify(rs[i]);
+					
+					div.onclick = function() {
+						
+						//~ console.log(this.style.backgroundColor);
+						
+						// focus
+						opts.first_element.focus();
+						
+						if  (
+							this.style.backgroundColor != 'LightGreen' &&
+							this.style.backgroundColor != 'rgb(245, 255, 250)' // MintCream
+							)
+						{
+							this.style.backgroundColor = 'LightGreen';
+							google_addr_prof(this);
+						}
+						else {
+							// fill in details
+							
+							// clear
+							clear_output_elements();
+							
+							//~ document.getElementById('address1').value =	'';
+							//~ document.getElementById('city').value =		'';
+							//~ document.getElementById('state').value =	'';
+							//~ document.getElementById('postalcode').value =		'';
+							
+							var id = JSON.parse(this.json_response); // obj -> place detail
+							//~ console.log(id);
+							
+							var j;
+							var type;
+							
+							for (var i in id.result.address_components) {
+								type = id.result.address_components[i].types[0];
+								j = id.result.address_components[i].long_name;
+								
+								if (opts.output_elements.hasOwnProperty('street') && type == 'street_number')
+									opts.output_elements.street.value = (j + ' ' + opts.output_elements.street.value).trim();
+								
+								if (opts.output_elements.hasOwnProperty('street') && type == 'route')
+									opts.output_elements.street.value = (opts.output_elements.street.value+' '+j).trim();
+								
+								if (opts.output_elements.hasOwnProperty('city') && (type == 'locality' || type == 'sublocality_level_1'))
+									opts.output_elements.city.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('state') && type == 'administrative_area_level_1')
+									opts.output_elements.state.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('zip') && type == 'postal_code')
+									opts.output_elements.zip.value = j;
+								
+								if (opts.output_elements.hasOwnProperty('country') && type == 'country')
+									opts.output_elements.country.value = j;
+							}
+						}
+					}
+					
+					d1d.appendChild(div);
+				}
+				
+				if (rs.length) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1200px;');
+					d1d.appendChild(div);
+				}
+			}
+		});
+	}
+	
+	// function
+	function businessweek_addr_prof(u) {
+		
+		// clear
+		clear_output_elements();
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				
+				// WORKS
+				//"<span itemprop="streetAddress">1 N Field Ct</span><br /><span itemprop="addressLocality">Lake Forest</span>, <span itemprop="addressRegion">IL</span>, 60045 <span itemprop="addressCountry">United States</span>"
+				// DOES NOT WORK (DOUBLES 1ST)
+				//"<div itemprop="address"><p>919A Bay Ridge Road</p><p>Annapolis, MD&nbsp;21403</p><p style="margin:5px 0;">United States</p></div>"
+				
+				//
+				//12050 West Broad Street
+				//
+				//United States
+				var r, r1, r2, r3;
+				r1 = /<div itemprop="address">((<p>[^<]+<\/p>)*)<p>([^,]+), ([A-Z]{2})&nbsp;([\d\-]+)<\/p><p style="[^"]*">([^<]+)<\/p><\/div>/.exec(rs);
+				//~ r2 = /<div itemprop="address">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+				r3 = /<div itemprop="address">((<p[^>]*>[^<]+<\/p>)*)/.exec(rs);
+				
+				// e.g. "<div itemprop="address"><p>34 west 17th street</p><p>3rd Floor</p><p>New York, NY&nbsp;10011</p><p style="margin:5px 0;">United States</p></div>"
+				if (r1) {
+					r = r1;
+					var addr = [];
+					for (var i = 1; i<= r.length - 1; i++) {
+						r[i] = r[i].replace(/<[^>]*>/g, ' ');
+						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+						
+						if (i == 2) continue;
+						addr.push(r[i]);
+					}
+					
+					// 0=...
+					// 1= Street address (including suite)
+					// 2= A duplicate of 1 or JUST the suite number, which is also part of 1 already
+					// 3= City
+					// 4= State abbr
+					// 5= Zip
+					// 6= Country
+					
+					// BECOMES
+					
+					// 0=Street
+					// 1=City
+					// 2=State
+					// 3=Zip
+					// 4=Country
+					
+					console.log(addr);
+					
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value = addr[0];
+					
+					if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value = addr[1];
+					
+					if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value = addr[2];
+					
+					if (opts.output_elements.hasOwnProperty('zip'))
+						opts.output_elements.zip.value = addr[3];
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = addr[4];
+					
+					//~ document.getElementById('address1').value = r[1];
+					//~ // in reverse
+					//~ document.getElementById('city').value = r[r.length - 4];
+					//~ document.getElementById('state').value = r[r.length - 3];
+					//~ document.getElementById('postalcode').value = r[r.length - 2];
+				}
+				
+				//~ if (!r1 && r2) {
+					//~ r = r2;
+					//~ // First el?
+					//~ opts.output_elements.value = __js_clean_html_str(
+						//~ r[1].replace(/<[^>]*>/g,'')
+					//~ );
+				//~ }
+				
+				// Bug: This doubles street.
+				// <div itemprop="address"><p>Via Pian Scairolo 9</p><p>Pazzallo</p><p>Lugano, &nbsp;6912</p><p style="margin:5px 0;">Switzerland</p></div>
+				if (!r1 && !r2 && r3) {
+					r = r3;
+					console.log(r);
+					delete r.index;
+					delete r.input;
+					for (var i = 0; i<r.length; i++) {
+						//~ console.log(r[i]);
+						r[i] = __js_clean_html_str(r[i].replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+					}
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = r[r.length - 1];
+					
+					// DEBUG
+					var dbg = r.slice(0, r.length - 1).join(' ');
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value	= dbg;
+					else if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value		= dbg;
+					else if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value	= dbg;
+				}
+			}
+		});
+	}
+	function businessweek_addr(first) {
+		d1c.innerHTML = '';
+		//if (first) {
+		//	d1c.innerHTML = '';
+		//}
+		//
+		var u = 'http://investing.businessweek.com/research/common/symbollookup/symbollookup.asp?region=all&textIn='+encodeURIComponent(d2.value);
+		//
+		if (first) {
+			u += '&lookuptype=';
+		}
+		else {
+			u += '&lookuptype=private';
+		}
+		//
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = /<div id="resultCaption">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+				if (r) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+					div.innerHTML = r[1].replace(/<[^>]+>/g, '');
+					d1c.appendChild(div);
+					//~ d1c.innerHTML +=  r[1].replace(/<[^>]+>/g, '');
+					//~ d1c.innerHTML += '<hr>';
+				}
+				
+				//
+				// Dominion Auto Group
+				// United States
+				// Specialty Retail
+				var r = /<tr>\s*<td><a href="([^"]+)">([^<]+)<\/a><\/td>\s*<td>([^<]+)<\/td>\s*<td>([^<]*)<\/td>\s*<\/tr>/g;
+				
+				if (!r.exec(rs)) {
+					// SHOUGANG GENERACION ELECT-C
+					//
+				}
+				
+				r.lastIndex = 0;
+				
+				var m;
+				var c = 0;
+				while (m = r.exec(rs)) {
+					for (var i = 1; i<= 4; i++) {
+						m[i] = __js_clean_html_str(m[i]).trim();
+					}
+					
+					m[1] = m[1].replace(/\.\.\//g,'');
+					m[1] = 'http://investing.businessweek.com/research/' + m[1];
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = m[2];
+					inp.url_bw = m[1];
+					inp.name_bw = m[2];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						businessweek_addr_prof(this.url_bw);
+					}
+					
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[3]));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[4]));
+					
+					d1c.appendChild(div);
+					
+					c++;
+				}
+				if (c == 0) {
+					d1c.appendChild(document.createTextNode('0'));
+				}	
+				if (!first) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1c.appendChild(div);
+				}
+				
+				if (first) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:3px solid LightGreen;');
+					d1c.appendChild(div);
+					businessweek_addr(false);
+					return;
+				}
+			}
+		});
+	}
+	/**
+	 * function hoovers_addr_prof
+	 * 
+	 * @param	btn		element
+	 * @returns	none	
+	 */
+	function hoovers_addr_prof(btn) {
+		
+		//~ this.url_hv
+		var btn = btn;
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: btn.url_hv,
+			timeout: 20000,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				btn.style.border = '2px solid teal';
+				
+				if (response.status != 200) return;
+				// clear
+				clear_output_elements();
+				
+				// <div itemprop="address"><p>639 Front Street</p><p>Floor 4</p><p>San Francisco, CA&nbsp;94111</p><p style="margin:5px 0;">United States</p></div>
+
+				// ZIP [\d\-]+ REPLACE WITH [^<]+
+				var r, r1, r2;//, r3;
+				r1 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]+)<span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
+				r2 = /<p div itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
+				console.log(r1);
+				console.log(r2);
+				//~ console.log(r3);
+				
+				if (r1) {
+					r = r1;
+					
+					// ...
+					delete r.index;
+					delete r.input;
+					delete r.length;
+					
+					// ...
+					for (var i = 1; i<= 5; i++) {
+						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
+					}
+					
+					if (opts.output_elements.hasOwnProperty('street'))
+						opts.output_elements.street.value = r[1];
+					
+					if (opts.output_elements.hasOwnProperty('city'))
+						opts.output_elements.city.value = r[2];
+					
+					if (opts.output_elements.hasOwnProperty('state'))
+						opts.output_elements.state.value = r[3];
+					
+					if (opts.output_elements.hasOwnProperty('zip'))
+						opts.output_elements.zip.value = r[4];
+					
+					if (opts.output_elements.hasOwnProperty('country'))
+						opts.output_elements.country.value = r[5];
+						
+					//~ document.getElementById('address1').value = r[1];
+					//~ document.getElementById('city').value = r[2];
+					//~ document.getElementById('state').value = r[3];
+					//~ document.getElementById('postalcode').value = r[4];
+					
+					
+				}
+				
+				if (!r1 && r2) {
+					r = r2;
+					r[1] = r[1]
+						.replace(/<span itemprop="telephone">[^<]*/g, '')
+						.replace(/<[^>]*>/g, ' ')
+						.replace(/\s+/g, ' ')
+						.trim();
+					r[1] = __js_clean_html_str(r[1]);
+					
+					// First el?
+					opts.output_elements[0].value = r[1];
+				}
+			}
+		});
+	}
+	function hoovers_addr() {
+		d1b.innerHTML = '';
+		//
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
+			//~ timeout:30000,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				// /company-information/cs/company-profile.Cap_Gemini_SA.6af800b9fd01669c.html
+				// Cap Gemini S.A.
+				// Paris, France
+				// $13563.88M
+				var r = /<td><a href="([^"]+)">([^<]*)<\/a><\/td>[\r\n\t\s]+<td>([^<]*)<\/td>[\r\n\t\s]+<td>([^<]*)<\/td>/g;
+				var m;
+				while (m = r.exec(rs)) {
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = m[2];
+					inp.url_hv = 'http://www.hoovers.com' + m[1];
+					inp.name_hv = m[2];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						hoovers_addr_prof(this);
+					}
+					
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[3]));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode(m[4]));
+					
+					d1b.appendChild(div);
+				}
+				if (d1b.innerHTML == '') {
+					d1b.innerHTML = '0';
+				} else {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:1400px;');
+					d1b.appendChild(div);
+				}
+			}
+		});
+	}
+	function FB_addr() {
+		d1.innerHTML = '';
+		
+		var u = 
+			'https://graph.facebook.com/search'+
+			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+			'&fields=category,id,name,likes,talking_about_count,location,link'+
+			'&limit=6'+
+			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+		
+		// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = JSON.parse(rs);
+				
+				if (!r.data) {
+					d1.innerHTML = '!r.data';
+					return;
+				}
+				
+				r = r.data;
+				
+				var c = 0;
+				for (var i in r) {
+					
+					if (r[i].type) {
+						if (r[i].type == 'event') continue;
+					}
+					
+					if (r[i].talking_about_count != null) {
+					} else
+						r[i].talking_about_count = '';
+					if (r[i].likes != null) {
+					} else
+						r[i].likes = '';
+					
+					if (r[i].location) {
+						if (r[i].location.latitude) {
+							delete r[i].location.latitude;
+						}
+						if (r[i].location.longitude) {
+							delete r[i].location.longitude;
+						}
+					}
+					
+					//~ 
+					//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+					//~ 
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
+					
+					var inp = document.createElement('button');
+					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
+					inp.innerHTML = r[i].name;
+					inp.json_object = r[i];
+					
+					inp.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						// focus
+						opts.first_element.focus();
+						
+						// clear
+						clear_output_elements();
+							
+						//~ console.log(this.id);
+						//~ var i = JSON.parse(this.id);
+						//~ 
+						//~ console.log(i);
+						
+						var i = this.json_object;
+						
+						if (i.name) {
+							//~ document.getElementById('OtherNames').value = i.name;
+						}
+						if (i.link) {
+							//~ document.getElementById('SourceURL').value = i.link;
+						}
+						if (i.location) {
+							i = i.location;
+							if (i.street && opts.output_elements.hasOwnProperty('street')) {
+								i.street = i.street.replace(/\s+/g, ' ');
+								opts.output_elements.street.value = i.street;
+							}
+							if (i.city && opts.output_elements.hasOwnProperty('city')) {
+								opts.output_elements.city.value = i.city;
+							}
+							if (i.state && opts.output_elements.hasOwnProperty('state')) {
+								opts.output_elements.state.value = i.state;
+							}
+							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
+								opts.output_elements.zip.value = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+							}
+							if (i.country && opts.output_elements.hasOwnProperty('country')) {
+								opts.output_elements.country.value = i.country;
+							}
+						}
+						//~ document.getElementById('OtherNames').focus();
+						//~ document.getElementById('OtherNames').select();
+					}
+					div.appendChild(inp);
+					
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode('L:'+r[i].likes));
+					div.appendChild(document.createElement('br'));
+					div.appendChild(document.createTextNode('T:'+r[i].talking_about_count));
+					
+					if (r[i].category) {
+						div.appendChild(document.createElement('br'));
+						div.appendChild(document.createTextNode('C:'+r[i].category));
+					}
+					
+					if (r[i].location) {
+						for (var j in r[i].location) {
+							div.appendChild(document.createElement('br'));
+							div.appendChild(document.createTextNode('A::'+r[i].location[j]));
+						}
+					}
+					
+					d1.appendChild(div);
+					
+					if (c==0) { // && !found
+						
+						var match__ = r[i].name;
+						match__ = match__.replace(/&/g, 'and');
+						match__ = match__.replace(/^the /i, '');
+						match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
+						match__ = match__.replace(/(official|music)$/i, '');
+						
+						console.log(match__);
+						console.log(match_o);
+						
+						if  (
+							match_o == match__ &&
+							match_o.length >= 3
+							)
+						{
+							//~ found = true;
+							//~ 
+							//~ var x = d1.getElementsByTagName('input');
+							//~ x = x[x.length - 1];
+							//~ x.style.backgroundColor = 'LightGreen';
+						}
+					}
+					c++;
+				}
+				
+				if (c == 0) {
+					d1.innerHTML = '0';
+					return;
+				}
+				
+				// Here?
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:1400px;');
+				d1.appendChild(div);
+			}
+		});
+	}
 }
 /**
  * function xhr_scrape_page
@@ -4252,6 +6568,10 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 		var foundMatch = false;
 		
 		for (var index in kw) {
+			
+			// IF BLANK THEN CONTINUE
+			if (kw[index].trim() == '')
+				continue;
 			
 			var keyword = kw[index];
 			var keyword_reg = kw[index];
@@ -4529,7 +6849,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			
 			// CALLBACK
 			if (options_object.callback_mouseup) {
-				options_object.callback_mouseup(s); // THIS SENDS BACK THE STRING ADDED
+				options_object.callback_mouseup(s);						// THIS SENDS BACK THE STRING ADDED
 			}
 			return;
 		}
@@ -4544,7 +6864,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				
 				// CALLBACK
 				if (options_object.callback_mouseup) {
-					options_object.callback_mouseup(output_fields[i]);
+					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
 				}
 				break;
 			}
@@ -5013,6 +7333,20 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
 	}
 	
 }
+/**
+ * function create_dashboard__powers_v1__showScrapyResult_contexts
+ * 
+ * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1
+ * 
+ * @param results_array
+ * @param out_div
+ * @param seed_object.{}
+ * @param seed_object.input_send_success
+ * @param seed_object.do_submit_callback
+ * @param seed_object.input_onclick_callback
+ * @param seed_object.do_submit_next_tab
+ * @param seed_object.do_submit_add_to_tabs_queue
+ */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
 	//var out_div = d1;
@@ -5109,7 +7443,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		if (!input_onclick_callback) {
 			el_div.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-					
+				
 				this.input_send_success.value = this.email;
 				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
 					
@@ -5229,7 +7563,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
+	el_select.setAttribute('style','width:98%;height:180px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
@@ -5261,7 +7595,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
 	}
-	for (var i = 0; i<40; i++) {// append blank lines!
+	for (var i = 0; i<40; i++) { // Append blank lines!
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = '';
@@ -5272,7 +7606,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// urls select
 	var el_select2 = document.createElement('select');
 	out_div.appendChild(el_select2);
-	el_select2.setAttribute('style','width:98%;height:120px;');
+	el_select2.setAttribute('style','width:98%;height:60px;');
 	el_select2.multiple = 'multiple';
 	el_select2.onclick = function() {
 		if (this.value == '') return;
@@ -5664,7 +7998,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	var o = {
 		local_URL_init: '',
 		local_URL_complete: '',
-		obj_vars: null
+		obj_vars: null,
+		
 	}
 	
 	var local_URL;
@@ -5676,12 +8011,24 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	//~ if (!this.obj_vars.url) // URL REQUIRED
 		//~ return;
 		
-	if (!this.obj_vars.catch_include) // DEFAULT
+	if (!this.obj_vars.catch_include && !this.obj_vars.hasOwnProperty('catch_include_array')) // DEFAULT
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
 	if (this.obj_vars.startPage) {
 		
 		this.obj_vars.startPage_array = true;
+		
+		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
+		
+		this.obj_vars.catch_include_array = [
+			'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.',
+			
+			// CAPTCHA, 2 DIFFERENT STRINGS FROM THE CAPTCHA ENTER PAGE.
+			'As part of StartPage\'s ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user.', // Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
+			'<h2 >Please enter the text below to continue using StartPage.</h2>'
+		]
+		// UPDATE
+		// As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
 		
 		//~ this.obj_vars.url = 'https://startpage.com/do/search';
 		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';
@@ -5756,13 +8103,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				'&get_header_array=' + encodeURIComponent( JSON.stringify(this.obj_vars.headers_array) ) :
 				'';
 		
-		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
-						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
-						'&short_filename='+short_filename+
-						'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-						header_array;
-		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
+			o.local_URL_init		= 
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+							'&short_filename='+short_filename+
+							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+							header_array;
+		} else {
+			o.local_URL_init		= 
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
+							'&short_filename='+short_filename+
+							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+							header_array;
+		}
+		
+		o.local_URL_complete	= 
 						'/mturk/.scripts/google/get-page.php?v='+short_filename;
 		
 		//
@@ -5782,13 +8139,23 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		var catch_success = (this.obj_vars.hasOwnProperty('catch_success')) ?
 				'&catch_success=' + encodeURIComponent( this.obj_vars.catch_success ) :
 				'';
-				
-		o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_+
-						'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-						'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
-						header_array+
-						catch_success;
-		o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_+
+		
+		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
+			
+			o.local_URL_init =
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+							header_array+
+							catch_success;
+		} else {
+			o.local_URL_init =
+							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+							header_array+
+							catch_success;
+		}
+		
+		o.local_URL_complete = 
 						'/mturk/.scripts/google/get-page.php?v='+encodedURI;
 	}
 	
@@ -5800,11 +8167,19 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function array_startPage_results(rs) {
 		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
+		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
 		if(!(rslts = r.exec(rs))) {
 			//~ alert('No match');
 			return [];
 		}
 		else {
+			
+			// Not enough results.
+			// not_enough_results_str
+			// Returns []
+			if (rs.indexOf(not_enough_results_str) != -1)
+				return [];
+			
 			//Assume we have 1-10 results
 
 
@@ -5848,6 +8223,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	}
 	this.array_startPage_results = array_startPage_results;
 	
+	// array_yahoo_results
 	// -> returns array of arrays
 	// -> [ [m[1],m[2]], [m[1], m[2]] ]
 	function array_yahoo_results(rs) {
@@ -5909,6 +8285,13 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function proxy_init() {
 		AMT___POPUP__initializeGlobals(
 			function() {
+				
+				//~ console.log('AMT___POPUP___PROXY_REDACTED_:');
+				//~ console.log(AMT___POPUP___PROXY_REDACTED_);
+				
+				o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
+				o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
+
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: o.local_URL_init,
@@ -5952,15 +8335,17 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					
 					// ...
 					if (o.obj_vars.return_init_object) {
-						this_obj.rs = rs;
-						callback_function(this_obj);
+						o.obj_vars.rs = rs;
+						callback_function(o.obj_vars);
 					}
 					else if (o.obj_vars.seed_arg1)
 					{
 						callback_function(rs, o.obj_vars.seed_arg1);
 					}
 					else
+					{
 						callback_function(rs);
+					}
 				}
 			})
 		}, 1200);
@@ -5975,114 +8360,10 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		proxy_init();
 		proxy_waitComplete(
 			this.obj_vars.callback_function
-		)
-		
-		//~ AMT___POPUP__initializeGlobals(
-			//~ function() {
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: o.local_URL_init,
-					//~ onload: function(response) {
-						//~ //var rs = response.responseText;
-					//~ }
-				//~ });
-			//~ }
-		//~ );
-		
-		//~ this.obj_vars.callback_function
-		//~ var this_obj = this;
-		
-		//~ 
-		//~ var xint = setInterval(function() {
-			//~ GM_xmlhttpRequest({ // init
-				//~ method: "GET",
-				//~ url: o.local_URL_complete,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ console.log(array_startPage_results);
-					//~ 
-					//~ if (rs.trim() != '') {
-						//~ clearInterval(xint);
-					//~ } else
-						//~ return;
-					//~ 
-					//~ // yahoo? (yahoo_array: true)
-					//~ if (o.obj_vars.hasOwnProperty('yahoo_array')) {
-						//~ rs = array_yahoo_results(rs);
-					//~ }
-					//~ // startpage?
-					//~ else if(o.obj_vars.hasOwnProperty('startPage_array')) {
-						//~ rs = array_startPage_results(rs);
-					//~ }
-					//~ 
-					//~ // ...
-					//~ if (o.obj_vars.return_init_object) {
-						//~ o.obj_vars.rs = rs;
-						//~ o.obj_vars.callback_function(o.obj_vars);
-					//~ }
-					//~ else if (o.obj_vars.seed_arg1)
-					//~ {
-						//~ o.obj_vars.callback_function(rs, o.obj_vars.seed_arg1);
-					//~ }
-					//~ else
-						//~ o.obj_vars.callback_function(rs);
-					//~ 
-				//~ }
-			//~ })
-		//~ }, 1200);
+		);
 		
 		return;
 	}
-	
-	
-	
-	
-	// OLD ***
-	//
-	//
-	//
-	//~ this.proxy_waitComplete = function(callback_function) {
-	//~ function proxy_waitComplete(callback_function) {
-		//~ var this_obj = this;
-		//~ 
-		//~ var xint = setInterval(function() {
-			//~ GM_xmlhttpRequest({ // init
-				//~ method: "GET",
-				//~ url: o.local_URL_complete,
-				//~ onload: function(response) {
-					//~ var rs = response.responseText;
-					//~ 
-					//~ if (rs.trim() != '') {
-						//~ clearInterval(xint);
-					//~ } else
-						//~ return;
-					//~ 
-					//~ // yahoo? (yahoo_array: true)
-					//~ if (this_obj.obj_vars.hasOwnProperty('yahoo_array')) {
-						//~ rs = this_obj.array_yahoo_results(rs);
-					//~ }
-					//~ // startpage?
-					//~ else if(this_obj.obj_vars.startPage_array) {
-						//~ rs = this_obj.array_startPage_results(rs);
-					//~ }
-					//~ 
-					//~ // ...
-					//~ if (this_obj.obj_vars.return_init_object) {
-						//~ this_obj.rs = rs;
-						//~ callback_function(this_obj);
-					//~ }
-					//~ else if (this_obj.obj_vars.seed_arg1)
-					//~ {
-						//~ callback_function(rs, this_obj.obj_vars.seed_arg1);
-					//~ }
-					//~ else
-						//~ callback_function(rs);
-				//~ }
-			//~ })
-		//~ }, 1200);
-	//~ }
-	//~ this.proxy_waitComplete = proxy_waitComplete;
 }
 
 /*
@@ -6241,7 +8522,7 @@ function GM_addStyle(css) {
 var MT__DOSUBMIT__USER_SET_TYPE = 'regular'; // var to set by user! Types are "regular" and "server side"; default "regular".
 //
 var AMT___POPUP___PROXY_REDACTED_			= MT___host; // default is MT___host!
-var AMT___POPUP__doSubmitServerHost	= MT___host; // // !! THIS IS AS OF YET UNDEFINED !! // //
+//~ var AMT___POPUP__doSubmitServerHost	= MT___host; // // !! THIS IS AS OF YET UNDEFINED !! // //
 
 function AMT___POPUP__initializeGlobals(callback_function) {
 	chrome.extension.sendRequest(
@@ -6250,12 +8531,8 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 			key: "MT__DOSUBMIT__USER_SET_TYPE"
 		},
 		function(response) {
-			if (response) {
+			if (response && response.hasOwnProperty('data')) {
 				try {
-					if (!response.data)
-					{
-						//
-					}
 					
 					var r = JSON.parse(response.data); // { data: "{}" } or { data: "{ type: "" }" }
 				
@@ -6271,20 +8548,25 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
 						AMT___POPUP___PROXY_REDACTED_ = r._PROXY_REDACTED_;
 					}
-					if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
-						AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+					//~ if (r.doSubmitServerHost && r.doSubmitServerHost.length > 6) { // // !! THIS IS AS OF YET UNDEFINED !! // //
 						//~ AMT___POPUP__doSubmitServerHost = r.doSubmitServerHost;
+					//~ }
+					
+					if (r.hasOwnProperty('CAPTCHA_staggered__stagger_is_active')) {
+						AMT__Global_Vars.CAPTCHA_staggered.stagger_is_active = r.CAPTCHA_staggered__stagger_is_active;
 					}
+					if (r.hasOwnProperty('CAPTCHA_staggered__min_tabs_to_initiate_staggered')) {
+						AMT__Global_Vars.CAPTCHA_staggered.min_tabs_to_initiate_staggered = r.CAPTCHA_staggered__min_tabs_to_initiate_staggered;
+					}
+					if (r.hasOwnProperty('CAPTCHA_staggered__staggered_timeout_per_tab')) {
+						AMT__Global_Vars.CAPTCHA_staggered.staggered_timeout_per_tab = r.CAPTCHA_staggered__staggered_timeout_per_tab;
+					}
+					
 				}
 				catch(e)
 				{
 					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 				}
-			} else {
-				if (!response)
-					console.log('Alert, AMT___POPUP__initializeGlobals :: !response');
-				else
-					console.log('Alert, AMT___POPUP__initializeGlobals :: !response.data');
 			}
 			
 			if (callback_function)
@@ -6292,7 +8574,7 @@ function AMT___POPUP__initializeGlobals(callback_function) {
 		}
 	);
 }
-//~ AMT___POPUP__initializeGlobals();
+AMT___POPUP__initializeGlobals();
 /**
  * function doSubmit() 
  * & global vars
@@ -6577,7 +8859,10 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 		// add this
 		if (addThis) {
 			// push
-			arr_all_submits.push({'id' : MT__DOSUBMIT__BY_ID_THIS_ID, 'time_to_submit' : MT__DOSUBMIT__TIME_TO_SUBMIT}); // add this
+			arr_all_submits.push({
+				'id': MT__DOSUBMIT__BY_ID_THIS_ID,
+				'time_to_submit': MT__DOSUBMIT__TIME_TO_SUBMIT
+			}); // add one
 		}
 		
 		// change to seconds until submit
@@ -6606,7 +8891,8 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 			},
 			function(response) {
 				//Squelch response
-			});
+			}
+		);
 	}
 	
 	
@@ -7187,49 +9473,7 @@ function MT___diff( o, n ) {
   }
   return { o: o, n: n };
 }
-/*
- * 
- */
-levensht = function(a, b) {
-	var cost;
-	
-	// get values
-	var a = a;
-	var m = a.length;
-	
-	var b = b;
-	var n = b.length;
-	
-	// make sure a.length >= b.length to use O(min(n,m)) space, whatever that is
-	if (m < n) {
-		var c=a;a=b;b=c;
-		var o=m;m=n;n=o;
-	}
-	
-	var r = new Array();
-	r[0] = new Array();
-	for (var c = 0; c < n+1; c++) {
-		r[0][c] = c;
-	}
-	
-	for (var i = 1; i < m+1; i++) {
-		r[i] = new Array();
-		r[i][0] = i;
-		for (var j = 1; j < n+1; j++) {
-			cost = (a.charAt(i-1) == b.charAt(j-1))? 0: 1;
-			r[i][j] = minimator(r[i-1][j]+1,r[i][j-1]+1,r[i-1][j-1]+cost);
-		}
-	}
-	
-	return r[m][n];
-}
 
-// return the smallest of the three values passed in
-minimator = function(x,y,z) {
-	if (x < y && x < z) return x;
-	if (y < x && y < z) return y;
-	return z;
-}
 
 
 
@@ -7241,13 +9485,9 @@ minimator = function(x,y,z) {
  * AMT___core_factory.prototype. = function() {
  * 
  * TODO: CLOSE btn
+ * TODO: ratings
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
-	
-	// OLD
-	// JUL30 2014
-	//~ function MT___page1_show_jobs() {
-	
 	
 	// Check if the page is currently at /mturk/findhits
 	//
@@ -7257,103 +9497,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	if (!u.exec(s)) return;
 	
 	// Ignored
-	//
-	//
-	var ignore_requesters__ids = {
-		'A3A0N4OPTWRYPD':true //Research Project
-	};
-	var ignore_requesters = {
-		'CrowdFlower':true,
-		'CrowdSource':true,
-		'Classify AdImages':true,
-		'ClariTrans':true,
-		'RelevanceQuest':true,
-		'AMTSpeech':true,
-		'Amazon Requester Inc. (Product Ads)':true,
-		'Amazon Requester Inc.':true,
-		'Chris Callison-Burch':true,
-		'User453':true,
-		'ProductRnR':true,
-		'WSOVC COM':true,
-		'rohzit0d':true,
-		'Cardcow':true,
-		'Redwood':true,
-		'Craft Listings':true,
-		'Stanford Language and Cognition Lab':true,
-		'Brandeis NLP':true,
-		'Streema':true,
-		'Fluffy Cloud':true,
-		'Intelius Data Systems':true,
-		'Johnny Wong':true,
-		'Oscar Smith':true,
-		'Sara Rosenthal':true,
-		'Comdata IT Fuel Tax':true,
-		'Venue Quality':true,
-		'Product Listings':true,
-		'Amazon Requester Inc - browse classification':true,
-		'Classify This':true,
-		'Tagasauris':true,
-		'chinese.mturk':true,
-		'Quality Website Reviews':true,
-		'Phillip Atiba Goff':true,
-		'Catalog Choice':true,
-		'WMT Admin':true,
-		'Sebastian Darr':true,
-		'Coder of Web Apps':true,
-		'Smartsheet.com Clients':true,
-		'A-Team':true,
-		'MASC Data':true,
-		'Ad Tagger':true,
-		'Dmitry Kachaev':true,
-		'Nic Lowe':true,
-		'Nascent Visions Corp':true,
-		'RI Services':true,
-		'techlist':true,
-		'Benjamin C Lok':true,
-		'Readabl':true,
-		'NetMSi':true,
-		'Todd Dickerson':true,
-		'Jimmy Dragon':true,
-		'Jon Brelig':true,
-		//~ REMOVED JULY 30 2014
-		//~ 'Taste of the World':true,
-		'SET Master Account':true,
-		'Ignite Media Solutions':true,
-		'The Public Group':true,
-		'Turk Experiment':true,
-		'Crowdsurf Support':true,
-		'Social Media Research':true,
-		'11223344':true,
-		'A Global Media Analytics':true,
-		'411Richmond':true,
-		'Visual Genome':true,
-		'p9r':true,
-		'mirador-tech':true
-	};
+	var ignore_requesters__ids, ignore_requesters;
+	set_ignored_vars();
 	
+	// Add styles to page
+	add_styles();
 	
-	// OLD
-	//~ if (u.exec(s))
-	//~ {
-	
-	
-	// OLD styles
-	GM_addStyle('.cont {height:16px;overflow:auto;}');
-	GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
-	GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
-	GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
-	GM_addStyle('.cont:hover {background-color: #e9d8e9}');
-	GM_addStyle('.cont_link {text-decoration:none;color:black;}');
-	GM_addStyle('.cont_link:hover {font-weight:bold;}');
-	
-	
-	GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
-	GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
-	GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
-	//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
-	//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
-	
-	// hosts
+	// Hosts
 	var MT___page1_hosts = [
 		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
 		'http://www.sjshpack.com/AMT/g.php'
@@ -7361,14 +9511,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	var MT___page1_host = MT___page1_hosts[0];
 	var MT___page1_host_num = 0;
 	
-	//~ // last update
-	//~ var last = 0;
+	// Timers intervals
+	var xint, xint2;
 	
 	/**
 	 * tasks_obj
-	 //tasks_obj.table1_row_ids: {} db_id:true
-	 //tasks_obj.table2_row_ids: {} db_id:true
-	 //tasks_obj.table_rows:     {} db_id:row _ element
+	 * 
+	 * tasks_obj.table1_row_ids: {} db_id:true
+	 * tasks_obj.table2_row_ids: {} db_id:true
+	 * tasks_obj.table_rows:     {} db_id:row _ element
 	 */ 
 	tasks_obj = {
 		current_db_ids: {},
@@ -7376,6 +9527,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Timestamp of the last update. This matches
 		// timestamp of the database.
 		last_update: 0,
+		last_update_2: 0, // This is for a show_all timestamp.
 		
 		// ...
 		table1_row_ids:	{},	// #
@@ -7386,6 +9538,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		div_container: null,
 		table1: null,
 		table2: null,
+		
+		// ...
+		close_btn: null,
+		timer_btn: null,
+		user_select: null,
+		
+		// ...
+		db_users: [
+			'Ben','Dave','Sora'
+		],
 		
 		// ...
 		// boolean: first pull from database
@@ -7429,11 +9591,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'',
 			'',
 			''
-		]
+		],
+		
+		// comments_timestamp
+		// Local timestamp for last modified comment.
+		//
+		//
+		comments_timestamp: 0
 	}
-	
-	// Timers intervals
-	var xint, xint2;
 	
 	// Container
 	tasks_obj.div_container = document.createElement('div');
@@ -7464,85 +9629,93 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	tasks_obj.table2.className = 'amt_show_tasks_table';
 	tasks_obj.div_container.appendChild(tasks_obj.table2);
 	
-	
-	
 	// INIT !
-	//~ control_buttons();
 	MT___page1_async_last_update();
+	
+	// Creates the Pause and Close buttons.
+	// Starts the update intervals.
 	interval_update_timers();
 	
 	
 	/**
 	 * function interval_update_timers()
 	 * 
-	 * Set interval for time since posted timers.
-	 * And set interval for pause timer.
+	 * Sets interval for time since posted timers.
+	 * Sets interval for pause timer.
+	 * Creates the Pause and Close buttons.
+	 * Creates the "user" select field (tasks_obj.user_select)
 	 */
 	function interval_update_timers() {
 		
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('id','input__reload');
+		// timer
+		var d = document.createElement('input');
+		//~ d.setAttribute('id','input__reload');
 		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:60px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;cursor:pointer;');
 		document.body.appendChild(d);
-		var dx = document.getElementById('input__reload');
-		dx.style.position = 'absolute';
-		dx.style.top = '0px';
-		dx.style.left = '60px';
-		dx.style.height = '30px';
-		dx.style.border = '2px solid #3b3b3b';
-		dx.style.borderTop = '0';
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','input2__reload');
+		tasks_obj.timer_btn = d;
+		// close
+		var d = document.createElement('input');
+		//~ d.setAttribute('id','input2__reload');
 		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:0px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		document.body.appendChild(d);
-		var dx2 = document.getElementById('input2__reload');
-		dx2.style.position = 'absolute';
-		dx2.style.top = '0px';
-		dx2.style.left = '0px';
-		dx2.style.height = '30px';
-		dx2.style.width = '60px';
-		dx2.style.textAlign = 'center'; 
-		dx2.style.border = '2px solid #3b3b3b';
-		dx2.style.borderLeft = '0';
-		dx2.style.borderTop = '0';
-		dx2.value = 'Close!'; 
-		dx2.onclick = function() {
-			clearInterval(xint);
-			var x;
-			x = document.getElementById('div__main');
-			if (x) {
-				document.body.removeChild(x);
-			}if (dx) {
-				document.body.removeChild(dx);
-			}
-			document.body.removeChild(this);
-		}
+		tasks_obj.close_btn = d;
+		// tasks_obj.user_select
+		// .onchange?
+		var d = document.createElement('select');
+		d.setAttribute('style','position:absolute;top:0px;left:120px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
+		d.innerHTML = '<option value="Ben">Ben</option><option value="Dave">Dave</option><option value="Sora">Sora</option>';
+		document.body.appendChild(d);
+		tasks_obj.user_select = d;
 		
-		// Set page reload vars
-		dx.value = 'Pause 20';
-		dx.onclick = function() {
+		// Value, onclick
+		// timer_btn
+		tasks_obj.timer_btn.value = '20';
+		tasks_obj.timer_btn.onclick = function() {
+			//~ clearInterval(xint);
+			//~ clearInterval(xint2);
+			//~ dx.value = 'Press reload to continue...';
+		}
+		// close_btn
+		tasks_obj.close_btn.value = 'Close!'; 
+		tasks_obj.close_btn.onclick = function() {
 			clearInterval(xint);
 			clearInterval(xint2);
-			dx.value = 'Press reload to continue...';
+			//~ if (dx) {
+				//~ document.body.removeChild(dx);
+			//~ }
+			// this
+			this.parentNode.removeChild(this);
+			// timer_btn
+			tasks_obj.timer_btn.parentNode.removeChild(tasks_obj.timer_btn);
+			// tasks_obj.div_container
+			if (tasks_obj.div_container) {
+				tasks_obj.div_container.parentNode.removeChild(tasks_obj.div_container);
+			}
 		}
+		//
 		
+		// The countdown timer for when last_update runs.
+		//
+		//
 		xint = setInterval(function() {
-			var x = /Pause ([\d-]+)/.exec(dx.value);
-			if (!x) return;
-			x = x[1]*1;
+			var x = tasks_obj.timer_btn.value * 1;
+			//~ if (!x) return;
+			//~ x = x[1]*1;
 			x = Math.floor(x - 1);
 			if (x <= 0) {
 				// next
 				x = 20;
 				MT___page1_async_last_update();
 			}
-			dx.value = 'Pause '+x;
+			tasks_obj.timer_btn.value = x;
 		}, 1000);
+		
+		// The time_since_posted for every job.
+		//
+		//
 		xint2 = setInterval(function() {
-			//~ var x = document.getElementsByClassName('cont');
-			
 			var x = tasks_obj.table_rows;
 			
 			for (var i in x) {
@@ -7563,61 +9736,56 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				z[0].innerText = y;
 			}
-		}, 6000);
+		}, 10000);
 	}
+	
+	//~ /**
+	 //~ * functions for comments:
+	 //~ * 
+	 //~ * tasks_obj.
+	 //~ * 	comments_timestamp
+	 //~ * 
+	 //~ * 
+	 //~ * comments_init (gets all comments, based on IDs of jobs on page, records the current timestamp into variable>comments_timestamp)
+	 //~ * comments_last_modified (gets only comments newer, or last modified after, comments_timestamp)
+	 //~ * 
+	 //~ * interval
+	 //~ * 
+	 //~ * Uses tasks_obj.
+	 //~ * 
+	 //~ */
+	//~ /**
+	 //~ * function comments_init
+	 //~ * 
+	 //~ */
 	
 	/**
-	 * Function date_format()
-	 * 
-	 * Rounding:
-	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
-	 * Display:
-	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+	 * function last_update_check_host
 	 */
-	function date_format(n) {
-	
-		// OLD
-		//~ function MT___page1_date_format(n) {
-					
-		var n = n*1000, // in ms
-			nt, // current time
-			nx,
-			nx_milliseconds;
-		nt = new Date();
-		nt = nt.getTime(); // linux epoch ms
-		nx = (nt - n) / 1000; // seconds difference (current - job)
-		
-		if (nx < 3600) { // 1 hr
-			if (nt < n) nt = n; // is less than zero?
-			nx_milliseconds = new Date(nt - n);
-			// minutes
-			display_date = nx_milliseconds.getUTCMinutes() + 'm';
-		} else if (nx < 86400) { // 1 day
-			if (nt < n) nt = n; // is less than zero?
-			nx_milliseconds = new Date(nt - n);
-			// hours
-			display_date = nx_milliseconds.getUTCHours();
-			// minutes
-			// rounds to int.
-			// 30/60 = .5 * 10 = 5
-			// 50/60 = .83* 10 = 8.3 
-			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
-			display_date = display_date + '.' + min + 'h';
-		} else if (nx < 86400*7) {
-			// days
-			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
-		} else if (nx < 86400*365.2425) {
-			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
-			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
-		} else {
-			// years
-			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
+	function last_update_check_host(response) {
+		if (response.status != 200) {
+			console.log('response.status:' + response.status);
+			if (MT___page1_host_num === 0) {
+				MT___page1_host = MT___page1_hosts[1];
+				MT___page1_host_num = 1;
+			} else {
+				MT___page1_host = MT___page1_hosts[0];
+				MT___page1_host_num = 0;
+			}
+			
+			setTimeout(function(){
+				MT___page1_async_last_update();
+			}, 4000);
+			return false;
 		}
-		return display_date;
+		return true;
 	}
-	
 	/**
 	 * function MT___page1_async_last_update()
+	 * 
+	 * When was the last DB update?
+	 * 
+	 * "?last_update=" VERSUS tasks_obj.last_update
 	 */
 	function MT___page1_async_last_update() {
 		// 
@@ -7626,46 +9794,48 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//xhr
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?last_update=&' + Math.random()*10000,
+			url: MT___page1_host + '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random()*10000,
 			onload: function (response) {
 				var rs = response.responseText;
-				
-				console.log('response.status:' + response.status);
-				if (response.status != 200) {
-					if (MT___page1_host_num === 0) {
-						MT___page1_host = MT___page1_hosts[1];
-						MT___page1_host_num = 1;
-					} else {
-						MT___page1_host = MT___page1_hosts[0];
-						MT___page1_host_num = 0;
-					}
-					
-					setTimeout(function(){
-						MT___page1_async_last_update();
-					}, 4000);
+				// last_update_check_host
+				// Returns false if response.status != 200
+				if (!last_update_check_host(response)) {
 					return;
 				}
 				
 				/**
 				 * Response is object
-					{
-					h: int, (hits available updated, integer)
-					j: int	(jobs updated, integer)?
-					}
+				 *	{
+				 *	h: int, (hits available updated, integer)
+				 *	j: int,	(jobs updated, integer)?
+				 *	 
+				 *	c: int (comments, NEW :), integer) 
+				 *	}
+				 * 
+				 * e.g: [{"j":"1424490769","h":"1424491009","c":"12435678"}] 
 				 * 
 				 * @var tasks_obj.last_update
 				 * 
 				 */
 				rs = JSON.parse(rs);
+				//~ console.log('Local time:'+tasks_obj.last_update);
+				//~ console.log('DB time:'+rs[0].h);
+				
+				// Does DB match local DB-updated timestamp?
 				//
-				console.log(tasks_obj.last_update);
-				console.log(rs[0].h);
 				//
 				if (rs[0].h != tasks_obj.last_update) {
-					// 
 					console.log('last_update != database. Begin db full.');
-					//
+					// ...
 					tasks_obj.last_update = rs[0].h;
+					MT___page1_async(); // run full
+				}
+				// Is the newest DB comment, or latest modified DB comment, different from local
+				// comments_timestamp?
+				//
+				else if (rs[0].hasOwnProperty('c') && rs[0].c != tasks_obj.comments_timestamp)
+				{
+					tasks_obj.comments_timestamp = rs[0].c;
 					MT___page1_async(); // run full
 				}
 			}
@@ -7675,7 +9845,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	/**
 	 * function has_new_alertable()
 	 * 
-	 * @return true/false
+	 * 
+	 * @param	rs, 
+	 * @return	true/false
 	 */
 	function has_new_alertable(rs) {
 		// Are there new jobs?
@@ -7707,7 +9879,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		if (new_job) {
 			play_audio();
 		}
-		// Reset the current_db_ids
+		// Reset the current_db_ids, = new object.
 		tasks_obj.current_db_ids = {};
 		// Reset the current_hash_ids
 		tasks_obj.current_history_ids = [];
@@ -7729,14 +9901,38 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
+	 * function rate_show_hide_button()
+	 * 
+	 * @param	event
+	 */
+	function rate_show_hide_button(e) {
+		
+		if (this.isHidden) {
+			this.isHidden = false;
+			this.style.backgroundColor = 'LightGreen';
+		} else if (!this.isHidden) {
+			this.isHidden = false;
+			this.style.backgroundColor = '';
+		}
+		
+	}
+	//~ function ()
+	
+	/**
 	 * function makeRow()
 	 * 
-	 * @param row
-	 * @param isIgnored
+	 * @param 	row			object	DB row.
+	 * @param 	isIgnored	bool	Local object of ignored requesters.
+	 * 
+	 * @returns	TR			element	Returns an HTML TR
+	 * 
+	 * Note:	tasks_obj.table1_row_ids[row.db_id] = true;
+	 * Note 2:	tasks_obj.table_rows[row.db_id] = tr;
+	 * Note 3:	Ratings are 0-4, i.e 0,1,2,3,4, where middle=2, good=4, bad=0.
+	 * 
+	 * NEW: task_comment: '', comment_last_mod: 0
 	 */
 	function makeRow(row, isIgnored) {
-		
-		//~ console.log(row);
 		
 		// Set globals!
 		if (!isIgnored)
@@ -7744,53 +9940,142 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		else
 			tasks_obj.table2_row_ids[row.db_id] = true;
 		
-		// tr
+		// TR
 		//
 		//
-		
 		var tr = document.createElement('tr');
 		tr.setAttribute('style',
 			''
 		);
-		//~ 
-		//~ 
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Add to global!
 		tasks_obj.table_rows[row.db_id] = tr;
 		
-		//~ XX
-		//~ tasks_obj.table_rows[tr] = true;
+		/**
+		 * TDs ... ...
+		 * ID
+		 * Title
+		 * 		-> comment/vote
+		 * Req. Name
+		 * 		-> comment/vote
+		 * Available
+		 * Reward
+		 * Time Since Posted
+		 * Chart Controller
+		 * Chart
+		 */
 		
-		// tds
-		//
-		//
 		
-		// id
+		// ID
 		var td = document.createElement('td');
 		td.setAttribute('style',
-			'width:8px;border-right:1px solid #a4a4a4;'
+			'border-right:1px solid #a4a4a4;'//width:8px;
 		);
 		td.innerText = row.db_id;
 		tr.appendChild(td);
 		
-		// title
+		// Rate TD
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			'border-right:1px solid #a4a4a4;'//width:8px;
+		);
+		td.innerText = row.db_id;
+		tr.appendChild(td);
+		// Rate btn
+		var btn = document.createElement('button');
+		btn.value = 'R';
+		btn.rating = {
+			isHidden: true, // default=hidden
+			requester_id: row.requester_id,
+			db_id: row.history_id
+		}
+		btn.onclick = rate_show_hide_button;
+		td.appendChild(btn);
+		
+		/**
+		 * Title Rating & Comment 
+		 * Does this title have ratings/comments?
+		 * Has the user rated or commented the title?
+		 * */
+		//>> Title Rating
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		/** 
+		 * DB Ratings 
+		 * Displays the current rating (if any) as a decimal, e.g. 2 or 3.5.
+		 * Displays a rating select multiple field for each user, with the value set to "" (blank) or DB value.
+		 * 
+		 * Note:	tasks_obj.db_users
+		 * Note 2:
+		 * This is the .value table:
+					id	int(10) UN PK AI
+					value	smallint(6) 
+					fk_user_name	varchar(10) 
+					fk_id_jobs_history_index	int(11) UN 
+		 * */
+		if (row.title_ratings != null && row.title_ratings.hasOwnProperty( row.history_id )) {
+			var title_ratings = row.title_ratings[ row.history_id ];
+			var tmp_users_obj = {};
+			for (var i in title_ratings) {
+				//~ tmp_users_obj[ title_ratings[i].fk_user_name ] = 
+			}
+		}
+		//>> Title Comments
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		
+		// Title
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:50%;'
 		);
 		tr.appendChild(td);
+		var a_gid;
 		if (row.group_id != '' && row.group_id != null) {
-			var a_gid		= document.createElement('a');
+			a_gid			= document.createElement('a');
 			a_gid.href		= 'https://www.mturk.com/mturk/preview?groupId='+row.group_id;
-			a_gid			.setAttribute('class','cont_link');
+			a_gid.setAttribute('class','cont_link');
 			a_gid.target	= '_blank';
 			a_gid.innerText = '▶' + __js_clean_html_str(row.title); // "Black right-pointing triangle"
 		} else
-			var a_gid		= document.createTextNode(__js_clean_html_str(row.title));
+			a_gid			= document.createTextNode(__js_clean_html_str(row.title));
 		td.appendChild(a_gid);
+		/**
+		// TODO
+		Add comment(s) notification (if comment(s))
+		Add rating(s) notification (if ratings(s))
 		
-		// name
+		Add controller button>
+			> .onclick shows/hides:
+				> select.dropdown ratings 0-4
+					>(.onclick = .onkeyup = .onfocus = .onblur = ) write_to_db / update_db
+				> comment textarea (drag to expand)
+					>(.onclick = .onkeyup = .onfocus = .onblur = ) write_to_db / update_db
+		 */
+		
+		/* Req. Rating & Comment */
+		// Req. Rating
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		// Req. Comments
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		tr.appendChild(td);
+		
+		
+		// Req. name
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:18%;'
@@ -7799,14 +10084,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		if (row.requester_id != '') {
 			var a_rid		= document.createElement('a');
 			a_rid.href		= 'https://www.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId='+row.requester_id;
-			a_rid			.setAttribute('class','cont_link');
+			a_rid.setAttribute('class','cont_link');
 			a_rid.target	= '_blank';
 			a_rid.innerText = __js_clean_html_str(row.requester_name);
 		} else
 			var a_rid		= document.createTextNode(__js_clean_html_str(row.requester_name));
 		td.appendChild(a_rid);
 		
-		// available
+		// Available
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:4%;'
@@ -7817,7 +10102,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Set row property .hits_available (td element) here.
 		tr.hits_available = td;
 		
-		// reward
+		// Reward
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:4%;'
@@ -7825,7 +10110,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.innerText = row.reward.replace(/^\$/, '');
 		tr.appendChild(td);
 		
-		// tsp
+		// Time since posted
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			'width:6%;'//+'max-width:10px;'
@@ -7836,7 +10121,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tsp_input.setAttribute('type', 'hidden');
 		tsp_input.value = row.time_since_posted;
 		td.appendChild(tsp_input);
-		// createTextNode
 		var tsp_span = document.createElement('span');
 		var x = date_format(row.time_since_posted);
 		tsp_span.className = 'mt__timer';
@@ -7856,7 +10140,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//height:20px;
 		);
 		select.db_id = row.db_id; // db_id
-		select.history_id = row.history_id; // db_id
+		select.history_id = row.history_id; // history_id. This will be "null" if unavailable.
 		td.appendChild(select);
 		for (var count in tasks_obj.chart_types) {
 			var chart_type = tasks_obj.chart_types[count];
@@ -7871,11 +10155,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			console.log(this.db_id);
 			console.log(this.history_id);
 			
-			tasks_obj.current_init_history_ids = [
-				this.history_id
-			];
-			init_graph(this.value, this.chart_td); //chart_type
-			
+			if (this.history_id != null) {
+				tasks_obj.current_init_history_ids = [
+					this.history_id
+				];
+				init_graph(this.value, this.chart_td); //chart_type
+			}
 		}
 		select.onblur = function() {
 			
@@ -7909,18 +10194,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//~ tasks_obj.hash_tds[row.hash_id] = td;
 		
 		return tr;
-		
-		//~ //OLD
-		//~ div_contain	.setAttribute('style','width:100%;');
-		//~ div_gid		.setAttribute('style','float:left;width:60%;');
-		//~ div_rid		.setAttribute('style','float:left;width:22%;overflow:hidden;');
-		//~ div_avl		.setAttribute('style','float:left;width:8%;overflow:hidden;');
-		//~ div_date	.setAttribute('style','width:8%;overflow:hidden;');
-		//~ inp_tsp		.setAttribute('type', 'hidden');
-		//~ div_contain	.setAttribute('class', 'cont');
-		//~ div_date	.setAttribute('class', 'mt__timer');
-		//~ inp_tsp		.value = rs[5][i];
-		//~ d = date_format(rs[3][i]);
 	}
 	
 	/**
@@ -8095,6 +10368,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					
 					// Options
 					var options = {
+						//bezierCurve: false,
 						scaleShowGridLines: false,
 						pointDot: false,
 					}
@@ -8134,35 +10408,53 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
+	 * function show_latest_check_host
+	 * 
+	 * 
+	 */
+	function show_latest_check_host(response) {
+		// If response is not 200
+		// then try another host. Other
+		// hosts would be sjshpack.com.
+		// Etc.
+		if (response.status != 200) {
+			if (MT___page1_host_num === 0) {
+				MT___page1_host = MT___page1_hosts[1];
+				MT___page1_host_num = 1;
+			} else {
+				MT___page1_host = MT___page1_hosts[0];
+				MT___page1_host_num = 0;
+			}
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * show_latest
+	 */
+	/**
 	 * function MT___page1_async()
 	 */
 	function MT___page1_async() {
 		
 		// load
+		// @show_all
+		// @last_comment_retrieved
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?show_all=&' + Math.random(),
+			url: MT___page1_host + '?show_all='+tasks_obj.last_update_2+'&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random(),
 			onload: function (response) {
-				
 				var rs = response.responseText;
-				
-				// If response is not 200
-				// then try another host. Other
-				// hosts would be sjshpack.com.
-				// Etc.
-				if (response.status != 200) {
-					if (MT___page1_host_num === 0) {
-						MT___page1_host = MT___page1_hosts[1];
-						MT___page1_host_num = 1;
-					} else {
-						MT___page1_host = MT___page1_hosts[0];
-						MT___page1_host_num = 0;
-					}
+				if (!show_latest_check_host(response)) {
 					return;
 				}
 				
+				// Set the timestamp #2
+				tasks_obj.last_update_2 = tasks_obj.last_update;
+				
 				// Parse
 				rs = JSON.parse(rs);
+				//~ 
 				//~ console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
@@ -8181,6 +10473,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// First loop through all table rows and check 
 				// against current_db_ids to ensure that all rows
 				// in table are still active.
+				// Delete all non-active/removed jobs from table.
 				
 				for (var db_id in tasks_obj.table_rows) {
 					
@@ -8210,11 +10503,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Loop through response object and check if table elements
 				// contain this task. If so then update table entry.
-				// Else if does not exist in either table, determine which
-				// table it ought to go in and - put 'er there!
+				// However, if it does not exist in either table, determine which
+				// table it ought to go in and put it there!
 				
 				/**
-				 *
+				 * rs
+				 * Set history_id=null if not available.
+				 * Set reward=null if not available.
 					rs
 					0 job DB id
 					1 on_page_number
@@ -8226,6 +10521,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					7 groupid
 					* 8 histID
 					* 9 reward
+					* 10 title_ratings
+					* 11 title_comments
+					* 12 requester_ratings
+					* 13 requester_comments
+				 * 10-13 are objects.
+				 * 
 				*/
 				var d = {
 					db_id: '',
@@ -8237,7 +10538,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					requester_id: '',
 					group_id: '',
 					history_id: '',
-					reward: ''
+					reward: '',
+					task_comment: '',
+					comment_last_mod: 0
+					//~ title_ratings: null,
+					//~ title_comments: null,
+					//~ requester_ratings: null,
+					//~ requester_comments: null
 				};
 				for (var i = 0; i < rs[0].length; i++) {
 					
@@ -8249,8 +10556,26 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.time_since_posted	= rs[5][i];
 					d.requester_id		= rs[6][i];
 					d.group_id			= rs[7][i];
-					d.history_id		= (rs[8]) ? rs[8][i] : '';
-					d.reward			= (rs[9]) ? rs[9][i] : '';
+					d.history_id		= (rs[8]) ? rs[8][i]	: null;
+					d.reward			= (rs[9]) ? rs[9][i]	: null;
+					d.task_comment		= (rs[10]) ? rs[10][i] : null;
+					d.comment_last_mod	= (rs[11]) ? rs[11][i] : 0;
+					
+					//~ d.title_ratings			= (rs[10]) ? null	: null;
+					//~ d.title_comments		= (rs[11]) ? null	: null;
+					//~ d.requester_ratings		= (rs[12]) ? null	: null;
+					//~ d.requester_comments	= (rs[13]) ? null	: null;
+					//~ d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
+					//~ d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
+					//~ d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
+					//~ d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
+					
+					// Set the tasks_obj.comments_timestamp.
+					// If tasks_obj.comments_timestamp is older than DB comment_last_mod.
+					//
+					if (d.comment_last_mod > tasks_obj.comments_timestamp) {
+						tasks_obj.comments_timestamp = d.comment_last_mod;
+					}
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
@@ -8266,14 +10591,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 						continue;
 					}
-					// Else
-					else
-					{
-						
-					}
+					//~ // Else
+					//~ else
+					//~ {
+						//~ 
+					//~ }
 					
 					// Create a new row.
-					// And append or insert.
+					// And then append or insert.
 					// If global tasks_obj.firstRun is true,
 					// (firstRun == true) then for all rows
 					// treat them as appendChild. If firstRun
@@ -8310,17 +10635,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
-						{
-							//~ console.log('inserting');
-							
+						{	
 							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
 							tasks_obj.table2.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
-						{
-							//~ console.log('appending');
-							
+						{	
 							tasks_obj.table2.appendChild(new_row); // true == ignored
 						}
 					}
@@ -8340,16 +10661,68 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
 					
 					// init graph?
-					
+					// xx
 				} else if (tasks_obj.current_init_history_ids.length) {
 					// init graph?
+					// xx
 				}
 			}
 		});
 	}
 	
+	
 	/**
-	 //~ * Function MT___page1_show_jobs_play_audio
+	 * Function date_format()
+	 * 
+	 * Rounding:
+	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
+	 * Display:
+	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+	 */
+	function date_format(n) {
+	
+		// OLD
+		//~ function MT___page1_date_format(n) {
+					
+		var n = n*1000, // in ms
+			nt, // current time
+			nx,
+			nx_milliseconds;
+		nt = new Date();
+		nt = nt.getTime(); // linux epoch ms
+		nx = (nt - n) / 1000; // seconds difference (current - job)
+		
+		if (nx < 3600) { // 1 hr
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// minutes
+			display_date = nx_milliseconds.getUTCMinutes() + 'm';
+		} else if (nx < 86400) { // 1 day
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// hours
+			display_date = nx_milliseconds.getUTCHours();
+			// minutes
+			// rounds to int.
+			// 30/60 = .5 * 10 = 5
+			// 50/60 = .83* 10 = 8.3 
+			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
+			display_date = display_date + '.' + min + 'h';
+		} else if (nx < 86400*7) {
+			// days
+			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
+		} else if (nx < 86400*365.2425) {
+			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
+			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
+		} else {
+			// years
+			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
+		}
+		return display_date;
+	}
+	
+	/**
+	 * Function MT___page1_show_jobs_play_audio
 	 * 
 	 * play_audio
 	 * 
@@ -8379,6 +10752,107 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		setTimeout(function() {
 			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
 		}, 4000);
+	}
+	/**
+	 * Add the CSS style to page.
+	 */
+	function add_styles() {
+		// OLD styles
+		GM_addStyle('.cont {height:16px;overflow:auto;}');
+		GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
+		GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
+		GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
+		GM_addStyle('.cont:hover {background-color: #e9d8e9}');
+		GM_addStyle('.cont_link {text-decoration:none;color:black;}');
+		GM_addStyle('.cont_link:hover {font-weight:bold;}');
+		
+		
+		GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
+		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
+		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
+		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
+		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
+	}
+	/**
+	 * set_ignored_vars
+	 * 
+	 * Set the vars for ignored Requesters.
+	 */
+	function set_ignored_vars() {
+		
+		//
+		//
+		ignore_requesters__ids = {
+			'A3A0N4OPTWRYPD':true //Research Project
+		};
+		ignore_requesters = {
+			'CrowdFlower':true,
+			'CrowdSource':true,
+			'Classify AdImages':true,
+			'ClariTrans':true,
+			'RelevanceQuest':true,
+			'AMTSpeech':true,
+			'Amazon Requester Inc. (Product Ads)':true,
+			'Amazon Requester Inc.':true,
+			'Chris Callison-Burch':true,
+			'User453':true,
+			'ProductRnR':true,
+			'WSOVC COM':true,
+			'rohzit0d':true,
+			'Cardcow':true,
+			'Redwood':true,
+			'Craft Listings':true,
+			'Stanford Language and Cognition Lab':true,
+			'Brandeis NLP':true,
+			'Streema':true,
+			'Fluffy Cloud':true,
+			'Intelius Data Systems':true,
+			'Johnny Wong':true,
+			'Oscar Smith':true,
+			'Sara Rosenthal':true,
+			'Comdata IT Fuel Tax':true,
+			'Venue Quality':true,
+			'Product Listings':true,
+			'Amazon Requester Inc - browse classification':true,
+			'Classify This':true,
+			'Tagasauris':true,
+			'chinese.mturk':true,
+			'Quality Website Reviews':true,
+			'Phillip Atiba Goff':true,
+			'Catalog Choice':true,
+			'WMT Admin':true,
+			'Sebastian Darr':true,
+			'Coder of Web Apps':true,
+			'Smartsheet.com Clients':true,
+			'A-Team':true,
+			'MASC Data':true,
+			'Ad Tagger':true,
+			'Dmitry Kachaev':true,
+			'Nic Lowe':true,
+			'Nascent Visions Corp':true,
+			'RI Services':true,
+			'techlist':true,
+			'Benjamin C Lok':true,
+			'Readabl':true,
+			'NetMSi':true,
+			'Todd Dickerson':true,
+			'Jimmy Dragon':true,
+			'Jon Brelig':true,
+			//~ REMOVED JULY 30 2014
+			//~ 'Taste of the World':true,
+			'SET Master Account':true,
+			'Ignite Media Solutions':true,
+			'The Public Group':true,
+			'Turk Experiment':true,
+			'Crowdsurf Support':true,
+			'Social Media Research':true,
+			'11223344':true,
+			'A Global Media Analytics':true,
+			'411Richmond':true,
+			'Visual Genome':true,
+			'p9r':true,
+			'mirador-tech':true
+		};
 	}
 }
 /*
@@ -8830,22 +11304,78 @@ function AMT___returnAndAcceptButton() {
  */
 /**
  * Function AMT___checkCaptchaStatus()
- * // Check the captcha status
-   // Set var -> GM_setValue('mt_captcha','1'). No captcha == "0".
-   // Plus -> some interesting captcha behavior.
+ * 
+ * Check the captcha status
+ * Set var -> GM_setValue('mt_captcha','1'). No captcha == "0".
+ * Plus -> some interesting captcha behavior.
  */
 function AMT___checkCaptchaStatus() {
-	/**
-	 * Captcha & more
-	 * 
-	 */
+	
 	var s,t,u,w;
 	t=/you were viewing could not be accepted/; // Not accepted
 	u=/The HIT you were viewing has expired/; // Not accepted
 	w=/Want to work on this HIT/; // Not accepted
 	
-	s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
-	if (s.exec(ih)) {
+	var test=false;
+	var test2=false;
+	var test3=false;
+	if (test) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				add_tab_to_captcha_queue: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+			//~ chrome.extension.sendRequest(
+			//~ {
+				//~ add_tab_to_captcha_queue: true
+			//~ }, 
+			//~ function(response) {
+				//~ //Squelch response
+				//~ }
+			//~ );
+			chrome.extension.sendRequest(
+			{
+				CAPTCHA_tab_queue_process: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	if (test2) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				CAPTCHA_tab_queue_process: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	if (test3) {
+		document.body.ondblclick = function() {
+			chrome.extension.sendRequest(
+			{
+				add_tab_to_captcha_queue: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
+	}
+	
+	//AMT__Global_Vars.core.captcha_string
+	// s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
+	
+	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
 		
 		/**
 		 * Change icon
@@ -8853,6 +11383,18 @@ function AMT___checkCaptchaStatus() {
 		chrome.extension.sendRequest(
 		{
 			captchaChangeTabIcon: true
+		}, 
+		function(response) {
+			//Squelch response
+			}
+		);
+		
+		/**
+		 * Add this tab to reload captcha queue
+		 */
+		chrome.extension.sendRequest(
+		{
+			add_tab_to_captcha_queue: true
 		}, 
 		function(response) {
 			//Squelch response
@@ -8883,38 +11425,43 @@ function AMT___checkCaptchaStatus() {
 			!GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES')
 		   )
 			GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-			
-		// New 23 Sep 2014
-		// Set an eventListener for storage which will monitor other tabs.
-		// Another tab will set localStorage['mt_captcha'] = 0.
-		//
-		var reset_after_captcha = false;
-		window.addEventListener('storage', function() {
-			
-			if  (
-				GM_getValue('mt_captcha') == '0' &&
-				!reset_after_captcha
-			    )
-			{
-				// Set true
-				reset_after_captcha = true;
-				
-				// OLD.......
-				// TODO: 23 Sep 2014
-				// Ask the background page how many tabs are currently on mturk.com.
-				// (This is topWindow.) Then reload / location.href based on this amount.
-				//
-				if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
-					
-					var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-					if (i)
-						window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-					
-				} else
-					window.location.reload();
-			}
-			
-		}, false);
+		
+		// AS OF OCT28 THIS IS NO LONGER USED. THE METHOD USED IS EVENT PAGE QUEUEING.
+		//~ // New 23 Sep 2014
+		//~ // Set an eventListener for storage which will monitor other tabs.
+		//~ // Another tab will set localStorage['mt_captcha'] = 0.
+		//~ //
+		//~ // New 17 Oct 2014
+		//~ // Read localStorage value (later, global value) for CAPTCHA vars (CAPTCHA_staggered__min_tabs_to_initiate_staggered, CAPTCHA_staggered__staggered_timeout_per_tab)
+		//~ //
+		//~ //
+		//~ var reset_after_captcha = false;
+		//~ window.addEventListener('storage', function() {
+			//~ 
+			//~ if  (
+				//~ GM_getValue('mt_captcha') == '0' &&
+				//~ !reset_after_captcha
+			    //~ )
+			//~ {
+				//~ // Set true
+				//~ reset_after_captcha = true;
+				//~ 
+				//~ // OLD.......
+				//~ // TODO: 23 Sep 2014
+				//~ // Ask the background page how many tabs are currently on mturk.com.
+				//~ // (This is topWindow.) Then reload / location.href based on this amount.
+				//~ //
+				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
+					//~ 
+					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+					//~ if (i)
+						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+					//~ 
+				//~ } else
+					//~ window.location.reload();
+			//~ }
+			//~ 
+		//~ }, false);
 		
 		
 		// int
@@ -8966,51 +11513,71 @@ function AMT___checkCaptchaStatus() {
 	}
 	/**
 	 * No Captcha
-	 * (not ?continue)
+	 * Begin background page -> CAPTCHA_tab_queue.queue
+	 * CAPTCHA_tab_queue_process
+	 * 
+	 * NOTE:
+	 * This is where mt_captcha is set to 0.
+	 * 
+	 * 
 	 */
 	else if (!/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href))
 	{
 		//
 		GM_setValue('mt_captcha','0');
 		
-		if  (
-				ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				ih.indexOf('Copy and paste a webpage\'s HTML (Chrome and Firefox only, please)') != -1 &&
-				ih.indexOf('Automan LLC') != -1
-			)
+		/**
+		 * CAPTCHA_tab_queue_process
+		 */
+		chrome.extension.sendRequest(
 		{
-			var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			if (i) {
-				window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			CAPTCHA_tab_queue_process: true
+		}, 
+		function(response) {
+			//Squelch response
 			}
-		}
-		if  (
-				ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				ih.indexOf('KronoPin') != -1
-			)
-		{
-			var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			if (i) {
-				var xint_dup = setInterval(function() {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: 'http://www.linkedin.com/nhome/',
-						onload: function (response) {
-							if (response.status < 400) {
-								
-								clearInterval(xint_dup);
-								
-								// get new
-								var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-								window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-								
-							}
-						}
-					});
-				}, 60000);
-			}
-		}
-		// reload after captcha, /mturk/submit
+		);
+		
+		//~ 
+		//~ if  (
+				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
+				//~ ih.indexOf('Copy and paste a webpage\'s HTML (Chrome and Firefox only, please)') != -1 &&
+				//~ ih.indexOf('Automan LLC') != -1
+			//~ )
+		//~ {
+			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+			//~ if (i) {
+				//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+			//~ }
+		//~ }
+		//~ if  (
+				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
+				//~ ih.indexOf('KronoPin') != -1
+			//~ )
+		//~ {
+			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+			//~ if (i) {
+				//~ var xint_dup = setInterval(function() {
+					//~ GM_xmlhttpRequest({
+						//~ method: 'GET',
+						//~ url: 'http://www.linkedin.com/nhome/',
+						//~ onload: function (response) {
+							//~ if (response.status < 400) {
+								//~ 
+								//~ clearInterval(xint_dup);
+								//~ 
+								//~ // get new
+								//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
+								//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
+								//~ 
+							//~ }
+						//~ }
+					//~ });
+				//~ }, 60000);
+			//~ }
+		//~ }
+		
+		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
 			// Amicus Labs
 			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
@@ -9325,8 +11892,210 @@ function __js_clean_html_str(s) {
 	s = div.firstChild.nodeValue;
 	return s;
 }
-
-
+// MT__bold
+// o is a string
+// arr is an array of strings to be bolded
+// avoid b
+// go from longest to shortest
+/**
+ * 
+ * 
+ * 
+ * Ex:
+MT__bold('test <b hahaha>test test test test a</b>', ['test']));
+	<b>test</b> <b hahaha><b>test</b>1 <b>test</b> <b>test</b> <b>test</b> a</b> 
+MT__bold('test <b hahaha>test1</b>', ['test1']));
+	test <b hahaha>test1</b> 
+ */
+function MT__bold(o, arr, options_object) {
+	
+	
+	
+	
+	// THIS is old
+	// The older way of doing it.
+	//
+	//~ // used bold matches
+	//~ var found_words_bolded = [];
+	//~ console.log(arr);
+	
+	// Sort longest first
+	arr.sort(function(a, b){
+	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
+	});
+	
+	//~ console.log(o);
+	//~ console.log(arr);
+	
+	var x = o;
+	var word;
+	
+	for (var i in arr) {
+		
+		// July 2 2014, Added .trim()
+		//
+		//
+		word = arr[i].trim();
+		
+		//console.log(word);
+		
+		if (word == '') {
+			continue;
+		}
+		
+		// Is word "b" or "B"?
+		// Replace all cases where it is not b> AND/OR <b OR </b
+		// Encapsulate in bold element.
+		if (word == 'b' || word == 'B') {
+			x = x.replace(/b([^>])/i, '<b>$1'); //     b>
+			x = x.replace(/([^\/<])b/i, '$1</b>'); //  /<b
+			continue;
+		}
+		
+		// Here?
+		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
+		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\\/b>)', 'gi');
+		// fishes</b>
+		// fish</b>
+		// fis(h)(<)
+		// fis(h)([ $])
+		//~ console.log(reg);
+		//~ console.log(options_object);
+		
+		if (options_object && options_object.hasOwnProperty('color'))
+			x = x.replace(reg, '<b style="color:'+options_object.color+';">$1</b>');
+		else {
+			//~ console.log(x);
+			//~ console.log('x');
+			x = x.replace(reg, '<b>$1</b>');
+		}
+		
+	}
+	
+	if (!options_object)
+		return x;
+	else {
+		var return_object = {};
+		return_object.bold_string = x;
+		
+		//~ if (x == undefined) x = '';
+		
+		if (options_object.percent_matched) {
+			var pm;
+			var xlen1 = x.length;
+			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
+			//~ var chars_removed = xlen1 - xlen2;
+			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
+			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
+			return_object.pm = {
+				bold_string: x,
+				percent_matched: pm,
+				xlen1: xlen1,
+				xlen2: xlen2
+			}
+			//~ return {
+				//~ bold_string: x,
+				//~ percent_matched: pm,
+				//~ xlen1: xlen1,
+				//~ xlen2: xlen2
+			//~ }
+			//~ return;
+		}
+		if (options_object.return_div_element) {
+			var d = document.createElement('div');
+			d.innerHTML = x;
+			return_object.div_element = d;
+		}
+		
+		return_object.options_object = options_object; // RETURN INIT !!
+		
+		//~ if (options_object.initial) {
+			//~ 
+		//~ }
+		
+		return return_object;
+	}
+	
+	// old
+	//
+	//
+	//~ for (var i in arr) {
+		//~ 
+		//~ // July 2 2014, Added .trim()
+		//~ //
+		//~ //
+		//~ word = arr[i].trim();
+		//~ 
+		//~ //console.log(word);
+		//~ 
+		//~ if (word == '') {
+			//~ continue;
+		//~ }
+		//~ 
+		//~ // is in found_words_bolded ?
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
+		//~ }
+		
+		
+		// THIS is old
+		// The older way of doing it.
+		//
+		//~ x = x.replace(reg, function(p0, p1) {
+			//~ console.log('p0:' + p0);
+			//~ console.log('p1:' + p1);
+			//~ console.log(found_words_bolded);
+			//~ // is current "word" in a past "regex matched"?
+			//~ for (var j in found_words_bolded) {
+				//~ var prev_match = found_words_bolded[j];
+				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
+				//~ if (tmp_match) {
+					//~ //found_in_prev = true;
+					//~ return p1; // ends here
+				//~ }
+			//~ }
+			//~ // Still here? Must be a new word
+			//~ found_words_bolded.push(word); // not here
+			//~ return '<b>'+p1+'</b>';
+		//~ });
+		
+		//console.log(found_words_bolded);
+		
+		// ...
+		// The idea is to avoid bolding smaller words
+		// when larger word already has bolded. So if "Frat"
+		// is going to be bolded then don't bold "rat."
+		
+		// Below will bold "rat" regardless of whether
+		// "Frat" is bolded. (Removed)
+		//~ var found_in_prev = false;
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (tmp_match) {
+				//~ found_in_prev = true;
+				//~ break;
+			//~ } else {
+				//~ 
+			//~ }
+		//~ }
+		//~ if (!found_in_prev) {
+			//~ found_words_bolded.push(word);
+		//~ }
+		
+		//~ var str_match = false;
+		//~ if (reg.exec(x))
+			//~ str_match = true;
+		//~ reg.lastIndex = 0;
+		//x = x.replace(reg, '<b>$1</b>');
+		//~ 
+	//~ }
+}
+//console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
 /*
  * old whois
  */
