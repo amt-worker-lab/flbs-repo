@@ -9487,11 +9487,6 @@ function MT___diff( o, n ) {
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	
-	// OLD
-	// JUL30 2014
-	//~ function MT___page1_show_jobs() {
-	
-	
 	// Check if the page is currently at /mturk/findhits
 	//
 	//
@@ -9500,103 +9495,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	if (!u.exec(s)) return;
 	
 	// Ignored
-	//
-	//
-	var ignore_requesters__ids = {
-		'A3A0N4OPTWRYPD':true //Research Project
-	};
-	var ignore_requesters = {
-		'CrowdFlower':true,
-		'CrowdSource':true,
-		'Classify AdImages':true,
-		'ClariTrans':true,
-		'RelevanceQuest':true,
-		'AMTSpeech':true,
-		'Amazon Requester Inc. (Product Ads)':true,
-		'Amazon Requester Inc.':true,
-		'Chris Callison-Burch':true,
-		'User453':true,
-		'ProductRnR':true,
-		'WSOVC COM':true,
-		'rohzit0d':true,
-		'Cardcow':true,
-		'Redwood':true,
-		'Craft Listings':true,
-		'Stanford Language and Cognition Lab':true,
-		'Brandeis NLP':true,
-		'Streema':true,
-		'Fluffy Cloud':true,
-		'Intelius Data Systems':true,
-		'Johnny Wong':true,
-		'Oscar Smith':true,
-		'Sara Rosenthal':true,
-		'Comdata IT Fuel Tax':true,
-		'Venue Quality':true,
-		'Product Listings':true,
-		'Amazon Requester Inc - browse classification':true,
-		'Classify This':true,
-		'Tagasauris':true,
-		'chinese.mturk':true,
-		'Quality Website Reviews':true,
-		'Phillip Atiba Goff':true,
-		'Catalog Choice':true,
-		'WMT Admin':true,
-		'Sebastian Darr':true,
-		'Coder of Web Apps':true,
-		'Smartsheet.com Clients':true,
-		'A-Team':true,
-		'MASC Data':true,
-		'Ad Tagger':true,
-		'Dmitry Kachaev':true,
-		'Nic Lowe':true,
-		'Nascent Visions Corp':true,
-		'RI Services':true,
-		'techlist':true,
-		'Benjamin C Lok':true,
-		'Readabl':true,
-		'NetMSi':true,
-		'Todd Dickerson':true,
-		'Jimmy Dragon':true,
-		'Jon Brelig':true,
-		//~ REMOVED JULY 30 2014
-		//~ 'Taste of the World':true,
-		'SET Master Account':true,
-		'Ignite Media Solutions':true,
-		'The Public Group':true,
-		'Turk Experiment':true,
-		'Crowdsurf Support':true,
-		'Social Media Research':true,
-		'11223344':true,
-		'A Global Media Analytics':true,
-		'411Richmond':true,
-		'Visual Genome':true,
-		'p9r':true,
-		'mirador-tech':true
-	};
+	var ignore_requesters__ids, ignore_requesters;
+	set_ignored_vars();
 	
+	// Add styles to page
+	add_styles();
 	
-	// OLD
-	//~ if (u.exec(s))
-	//~ {
-	
-	
-	// OLD styles
-	GM_addStyle('.cont {height:16px;overflow:auto;}');
-	GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
-	GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
-	GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
-	GM_addStyle('.cont:hover {background-color: #e9d8e9}');
-	GM_addStyle('.cont_link {text-decoration:none;color:black;}');
-	GM_addStyle('.cont_link:hover {font-weight:bold;}');
-	
-	
-	GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
-	GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
-	GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
-	//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
-	//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
-	
-	// hosts
+	// Hosts
 	var MT___page1_hosts = [
 		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
 		'http://www.sjshpack.com/AMT/g.php'
@@ -9604,14 +9509,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	var MT___page1_host = MT___page1_hosts[0];
 	var MT___page1_host_num = 0;
 	
-	//~ // last update
-	//~ var last = 0;
+	// Timers intervals
+	var xint, xint2;
 	
 	/**
 	 * tasks_obj
-	   tasks_obj.table1_row_ids: {} db_id:true
-	   tasks_obj.table2_row_ids: {} db_id:true
-	   tasks_obj.table_rows:     {} db_id:row _ element
+	 * 
+	 * tasks_obj.table1_row_ids: {} db_id:true
+	 * tasks_obj.table2_row_ids: {} db_id:true
+	 * tasks_obj.table_rows:     {} db_id:row _ element
 	 */ 
 	tasks_obj = {
 		current_db_ids: {},
@@ -9619,6 +9525,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Timestamp of the last update. This matches
 		// timestamp of the database.
 		last_update: 0,
+		last_update_2: 0, // This is for a show_all timestamp.
 		
 		// ...
 		table1_row_ids:	{},	// #
@@ -9682,11 +9589,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'',
 			'',
 			''
-		]
+		],
+		
+		// comments_timestamp
+		// Local timestamp for last modified comment.
+		//
+		//
+		comments_timestamp: 0
 	}
-	
-	// Timers intervals
-	var xint, xint2;
 	
 	// Container
 	tasks_obj.div_container = document.createElement('div');
@@ -9717,10 +9627,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	tasks_obj.table2.className = 'amt_show_tasks_table';
 	tasks_obj.div_container.appendChild(tasks_obj.table2);
 	
-	
-	
 	// INIT !
-	//~ control_buttons();
 	MT___page1_async_last_update();
 	
 	// Creates the Pause and Close buttons.
@@ -9787,6 +9694,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		}
 		//
 		
+		// The countdown timer for when last_update runs.
+		//
 		//
 		xint = setInterval(function() {
 			var x = tasks_obj.timer_btn.value * 1;
@@ -9801,10 +9710,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			tasks_obj.timer_btn.value = x;
 		}, 1000);
 		
+		// The time_since_posted for every job.
+		//
 		//
 		xint2 = setInterval(function() {
-			//~ var x = document.getElementsByClassName('cont');
-			
 			var x = tasks_obj.table_rows;
 			
 			for (var i in x) {
@@ -9825,61 +9734,56 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				z[0].innerText = y;
 			}
-		}, 6000);
+		}, 10000);
 	}
+	
+	//~ /**
+	 //~ * functions for comments:
+	 //~ * 
+	 //~ * tasks_obj.
+	 //~ * 	comments_timestamp
+	 //~ * 
+	 //~ * 
+	 //~ * comments_init (gets all comments, based on IDs of jobs on page, records the current timestamp into variable>comments_timestamp)
+	 //~ * comments_last_modified (gets only comments newer, or last modified after, comments_timestamp)
+	 //~ * 
+	 //~ * interval
+	 //~ * 
+	 //~ * Uses tasks_obj.
+	 //~ * 
+	 //~ */
+	//~ /**
+	 //~ * function comments_init
+	 //~ * 
+	 //~ */
 	
 	/**
-	 * Function date_format()
-	 * 
-	 * Rounding:
-	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
-	 * Display:
-	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+	 * function last_update_check_host
 	 */
-	function date_format(n) {
-	
-		// OLD
-		//~ function MT___page1_date_format(n) {
-					
-		var n = n*1000, // in ms
-			nt, // current time
-			nx,
-			nx_milliseconds;
-		nt = new Date();
-		nt = nt.getTime(); // linux epoch ms
-		nx = (nt - n) / 1000; // seconds difference (current - job)
-		
-		if (nx < 3600) { // 1 hr
-			if (nt < n) nt = n; // is less than zero?
-			nx_milliseconds = new Date(nt - n);
-			// minutes
-			display_date = nx_milliseconds.getUTCMinutes() + 'm';
-		} else if (nx < 86400) { // 1 day
-			if (nt < n) nt = n; // is less than zero?
-			nx_milliseconds = new Date(nt - n);
-			// hours
-			display_date = nx_milliseconds.getUTCHours();
-			// minutes
-			// rounds to int.
-			// 30/60 = .5 * 10 = 5
-			// 50/60 = .83* 10 = 8.3 
-			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
-			display_date = display_date + '.' + min + 'h';
-		} else if (nx < 86400*7) {
-			// days
-			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
-		} else if (nx < 86400*365.2425) {
-			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
-			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
-		} else {
-			// years
-			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
+	function last_update_check_host(response) {
+		if (response.status != 200) {
+			console.log('response.status:' + response.status);
+			if (MT___page1_host_num === 0) {
+				MT___page1_host = MT___page1_hosts[1];
+				MT___page1_host_num = 1;
+			} else {
+				MT___page1_host = MT___page1_hosts[0];
+				MT___page1_host_num = 0;
+			}
+			
+			setTimeout(function(){
+				MT___page1_async_last_update();
+			}, 4000);
+			return false;
 		}
-		return display_date;
+		return true;
 	}
-	
 	/**
 	 * function MT___page1_async_last_update()
+	 * 
+	 * When was the last DB update?
+	 * 
+	 * "?last_update=" VERSUS tasks_obj.last_update
 	 */
 	function MT___page1_async_last_update() {
 		// 
@@ -9888,46 +9792,48 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//xhr
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?last_update=&' + Math.random()*10000,
+			url: MT___page1_host + '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random()*10000,
 			onload: function (response) {
 				var rs = response.responseText;
-				
-				console.log('response.status:' + response.status);
-				if (response.status != 200) {
-					if (MT___page1_host_num === 0) {
-						MT___page1_host = MT___page1_hosts[1];
-						MT___page1_host_num = 1;
-					} else {
-						MT___page1_host = MT___page1_hosts[0];
-						MT___page1_host_num = 0;
-					}
-					
-					setTimeout(function(){
-						MT___page1_async_last_update();
-					}, 4000);
+				// last_update_check_host
+				// Returns false if response.status != 200
+				if (!last_update_check_host(response)) {
 					return;
 				}
 				
 				/**
 				 * Response is object
-					{
-					h: int, (hits available updated, integer)
-					j: int	(jobs updated, integer)?
-					}
+				 *	{
+				 *	h: int, (hits available updated, integer)
+				 *	j: int,	(jobs updated, integer)?
+				 *	 
+				 *	c: int (comments, NEW :), integer) 
+				 *	}
+				 * 
+				 * e.g: [{"j":"1424490769","h":"1424491009","c":"12435678"}] 
 				 * 
 				 * @var tasks_obj.last_update
 				 * 
 				 */
 				rs = JSON.parse(rs);
+				//~ console.log('Local time:'+tasks_obj.last_update);
+				//~ console.log('DB time:'+rs[0].h);
+				
+				// Does DB match local DB-updated timestamp?
 				//
-				console.log(tasks_obj.last_update);
-				console.log(rs[0].h);
 				//
 				if (rs[0].h != tasks_obj.last_update) {
-					// 
 					console.log('last_update != database. Begin db full.');
-					//
+					// ...
 					tasks_obj.last_update = rs[0].h;
+					MT___page1_async(); // run full
+				}
+				// Is the newest DB comment, or latest modified DB comment, different from local
+				// comments_timestamp?
+				//
+				else if (rs[0].hasOwnProperty('c') && rs[0].c != tasks_obj.comments_timestamp)
+				{
+					tasks_obj.comments_timestamp = rs[0].c;
 					MT___page1_async(); // run full
 				}
 			}
@@ -9937,7 +9843,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	/**
 	 * function has_new_alertable()
 	 * 
-	 * @return true/false
+	 * 
+	 * @param	rs, 
+	 * @return	true/false
 	 */
 	function has_new_alertable(rs) {
 		// Are there new jobs?
@@ -9969,7 +9877,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		if (new_job) {
 			play_audio();
 		}
-		// Reset the current_db_ids
+		// Reset the current_db_ids, = new object.
 		tasks_obj.current_db_ids = {};
 		// Reset the current_hash_ids
 		tasks_obj.current_history_ids = [];
@@ -10019,6 +9927,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * Note:	tasks_obj.table1_row_ids[row.db_id] = true;
 	 * Note 2:	tasks_obj.table_rows[row.db_id] = tr;
 	 * Note 3:	Ratings are 0-4, i.e 0,1,2,3,4, where middle=2, good=4, bad=0.
+	 * 
+	 * NEW: task_comment: '', comment_last_mod: 0
 	 */
 	function makeRow(row, isIgnored) {
 		
@@ -10496,38 +10406,54 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	
 	/**
+	 * function show_latest_check_host
+	 * 
+	 * 
+	 */
+	function show_latest_check_host(response) {
+		// If response is not 200
+		// then try another host. Other
+		// hosts would be sjshpack.com.
+		// Etc.
+		if (response.status != 200) {
+			if (MT___page1_host_num === 0) {
+				MT___page1_host = MT___page1_hosts[1];
+				MT___page1_host_num = 1;
+			} else {
+				MT___page1_host = MT___page1_hosts[0];
+				MT___page1_host_num = 0;
+			}
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * show_latest
+	 */
+	/**
 	 * function MT___page1_async()
 	 */
 	function MT___page1_async() {
 		
 		// load
+		// @show_all
+		// @last_comment_retrieved
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?show_all=&' + Math.random(),
+			url: MT___page1_host + '?show_all='+tasks_obj.last_update_2+'&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random(),
 			onload: function (response) {
-				
 				var rs = response.responseText;
-				
-				// If response is not 200
-				// then try another host. Other
-				// hosts would be sjshpack.com.
-				// Etc.
-				if (response.status != 200) {
-					if (MT___page1_host_num === 0) {
-						MT___page1_host = MT___page1_hosts[1];
-						MT___page1_host_num = 1;
-					} else {
-						MT___page1_host = MT___page1_hosts[0];
-						MT___page1_host_num = 0;
-					}
+				if (!show_latest_check_host(response)) {
 					return;
 				}
 				
-				console.log(rs);
+				// Set the timestamp #2
+				tasks_obj.last_update_2 = tasks_obj.last_update;
+				
 				// Parse
 				rs = JSON.parse(rs);
-				
-				console.log(rs);
+				//~ 
+				//~ console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -10545,6 +10471,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// First loop through all table rows and check 
 				// against current_db_ids to ensure that all rows
 				// in table are still active.
+				// Delete all non-active/removed jobs from table.
 				
 				for (var db_id in tasks_obj.table_rows) {
 					
@@ -10574,10 +10501,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Loop through response object and check if table elements
 				// contain this task. If so then update table entry.
-				// Else if does not exist in either table, determine which
-				// table it ought to go in and - put 'er there!
+				// However, if it does not exist in either table, determine which
+				// table it ought to go in and put it there!
 				
 				/**
+				 * rs
 				 * Set history_id=null if not available.
 				 * Set reward=null if not available.
 					rs
@@ -10609,10 +10537,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					group_id: '',
 					history_id: '',
 					reward: '',
-					title_ratings: null,
-					title_comments: null,
-					requester_ratings: null,
-					requester_comments: null
+					task_comment: '',
+					comment_last_mod: 0
+					//~ title_ratings: null,
+					//~ title_comments: null,
+					//~ requester_ratings: null,
+					//~ requester_comments: null
 				};
 				for (var i = 0; i < rs[0].length; i++) {
 					
@@ -10626,14 +10556,24 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					d.group_id			= rs[7][i];
 					d.history_id		= (rs[8]) ? rs[8][i]	: null;
 					d.reward			= (rs[9]) ? rs[9][i]	: null;
-					d.title_ratings			= (rs[10]) ? null	: null;
-					d.title_comments		= (rs[11]) ? null	: null;
-					d.requester_ratings		= (rs[12]) ? null	: null;
-					d.requester_comments	= (rs[13]) ? null	: null;
+					d.task_comment		= (rs[10]) ? rs[10][i] : null;
+					d.comment_last_mod	= (rs[11]) ? rs[11][i] : 0;
+					
+					//~ d.title_ratings			= (rs[10]) ? null	: null;
+					//~ d.title_comments		= (rs[11]) ? null	: null;
+					//~ d.requester_ratings		= (rs[12]) ? null	: null;
+					//~ d.requester_comments	= (rs[13]) ? null	: null;
 					//~ d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
 					//~ d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
 					//~ d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
 					//~ d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
+					
+					// Set the tasks_obj.comments_timestamp.
+					// If tasks_obj.comments_timestamp is older than DB comment_last_mod.
+					//
+					if (d.comment_last_mod > tasks_obj.comments_timestamp) {
+						tasks_obj.comments_timestamp = d.comment_last_mod;
+					}
 					
 					// UPDATE THIS ROW!
 					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
@@ -10649,14 +10589,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 						continue;
 					}
-					// Else
-					else
-					{
-						
-					}
+					//~ // Else
+					//~ else
+					//~ {
+						//~ 
+					//~ }
 					
 					// Create a new row.
-					// And append or insert.
+					// And then append or insert.
 					// If global tasks_obj.firstRun is true,
 					// (firstRun == true) then for all rows
 					// treat them as appendChild. If firstRun
@@ -10693,17 +10633,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 						
 						// append
 						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
-						{
-							//~ console.log('inserting');
-							
+						{	
 							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
 							tasks_obj.table2.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
 						}
 						// insert
 						else
-						{
-							//~ console.log('appending');
-							
+						{	
 							tasks_obj.table2.appendChild(new_row); // true == ignored
 						}
 					}
@@ -10723,16 +10659,68 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					tasks_obj.current_init_history_ids = tasks_obj.current_history_ids;
 					
 					// init graph?
-					
+					// xx
 				} else if (tasks_obj.current_init_history_ids.length) {
 					// init graph?
+					// xx
 				}
 			}
 		});
 	}
 	
+	
 	/**
-	 //~ * Function MT___page1_show_jobs_play_audio
+	 * Function date_format()
+	 * 
+	 * Rounding:
+	 *  1.75 days -- 151200 / 86400 = 1.75 * 10 = 17.5 round = 18 / 10 = 1.8
+	 * Display:
+	 *  6.5h -- 10m -- 18.5h -- 1.5 days, 6.5 D -- 1.5 W, 3.5 W -- 1.5 M, 3.5 M -- 1.5 Y, 3.5 Y
+	 */
+	function date_format(n) {
+	
+		// OLD
+		//~ function MT___page1_date_format(n) {
+					
+		var n = n*1000, // in ms
+			nt, // current time
+			nx,
+			nx_milliseconds;
+		nt = new Date();
+		nt = nt.getTime(); // linux epoch ms
+		nx = (nt - n) / 1000; // seconds difference (current - job)
+		
+		if (nx < 3600) { // 1 hr
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// minutes
+			display_date = nx_milliseconds.getUTCMinutes() + 'm';
+		} else if (nx < 86400) { // 1 day
+			if (nt < n) nt = n; // is less than zero?
+			nx_milliseconds = new Date(nt - n);
+			// hours
+			display_date = nx_milliseconds.getUTCHours();
+			// minutes
+			// rounds to int.
+			// 30/60 = .5 * 10 = 5
+			// 50/60 = .83* 10 = 8.3 
+			var min = Math.floor((nx_milliseconds.getUTCMinutes()/60)*10); 
+			display_date = display_date + '.' + min + 'h';
+		} else if (nx < 86400*7) {
+			// days
+			display_date = Math.round( (nx/86400) * 10 )/10 +'d';
+		} else if (nx < 86400*365.2425) {
+			// Months. WP: "The average month in the Gregorian calendar has a length of 30.4167 days or 4.345 weeks in a non-leap year and 30.5 days or 4.357 weeks in a leap year, or 30.436875 days in a mean Gregorian month overall (365.2425 Ã· 12)."
+			display_date = Math.round( (nx/(86400*30.436875)) * 10 )/10 +'mo.';
+		} else {
+			// years
+			display_date = Math.round( (nx/(86400*365.2425)) * 10 )/10 +'y';
+		}
+		return display_date;
+	}
+	
+	/**
+	 * Function MT___page1_show_jobs_play_audio
 	 * 
 	 * play_audio
 	 * 
@@ -10762,6 +10750,107 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		setTimeout(function() {
 			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
 		}, 4000);
+	}
+	/**
+	 * Add the CSS style to page.
+	 */
+	function add_styles() {
+		// OLD styles
+		GM_addStyle('.cont {height:16px;overflow:auto;}');
+		GM_addStyle('.cont>div {height:16px;overflow:auto;font-size:1.4em;}');
+		GM_addStyle('#div__reload>hr,#div__reload2>hr  {margin:0;padding:0;}');
+		GM_addStyle('#div__reload,#div__reload2  {z-index:100;}');
+		GM_addStyle('.cont:hover {background-color: #e9d8e9}');
+		GM_addStyle('.cont_link {text-decoration:none;color:black;}');
+		GM_addStyle('.cont_link:hover {font-weight:bold;}');
+		
+		
+		GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
+		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
+		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
+		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
+		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
+	}
+	/**
+	 * set_ignored_vars
+	 * 
+	 * Set the vars for ignored Requesters.
+	 */
+	function set_ignored_vars() {
+		
+		//
+		//
+		ignore_requesters__ids = {
+			'A3A0N4OPTWRYPD':true //Research Project
+		};
+		ignore_requesters = {
+			'CrowdFlower':true,
+			'CrowdSource':true,
+			'Classify AdImages':true,
+			'ClariTrans':true,
+			'RelevanceQuest':true,
+			'AMTSpeech':true,
+			'Amazon Requester Inc. (Product Ads)':true,
+			'Amazon Requester Inc.':true,
+			'Chris Callison-Burch':true,
+			'User453':true,
+			'ProductRnR':true,
+			'WSOVC COM':true,
+			'rohzit0d':true,
+			'Cardcow':true,
+			'Redwood':true,
+			'Craft Listings':true,
+			'Stanford Language and Cognition Lab':true,
+			'Brandeis NLP':true,
+			'Streema':true,
+			'Fluffy Cloud':true,
+			'Intelius Data Systems':true,
+			'Johnny Wong':true,
+			'Oscar Smith':true,
+			'Sara Rosenthal':true,
+			'Comdata IT Fuel Tax':true,
+			'Venue Quality':true,
+			'Product Listings':true,
+			'Amazon Requester Inc - browse classification':true,
+			'Classify This':true,
+			'Tagasauris':true,
+			'chinese.mturk':true,
+			'Quality Website Reviews':true,
+			'Phillip Atiba Goff':true,
+			'Catalog Choice':true,
+			'WMT Admin':true,
+			'Sebastian Darr':true,
+			'Coder of Web Apps':true,
+			'Smartsheet.com Clients':true,
+			'A-Team':true,
+			'MASC Data':true,
+			'Ad Tagger':true,
+			'Dmitry Kachaev':true,
+			'Nic Lowe':true,
+			'Nascent Visions Corp':true,
+			'RI Services':true,
+			'techlist':true,
+			'Benjamin C Lok':true,
+			'Readabl':true,
+			'NetMSi':true,
+			'Todd Dickerson':true,
+			'Jimmy Dragon':true,
+			'Jon Brelig':true,
+			//~ REMOVED JULY 30 2014
+			//~ 'Taste of the World':true,
+			'SET Master Account':true,
+			'Ignite Media Solutions':true,
+			'The Public Group':true,
+			'Turk Experiment':true,
+			'Crowdsurf Support':true,
+			'Social Media Research':true,
+			'11223344':true,
+			'A Global Media Analytics':true,
+			'411Richmond':true,
+			'Visual Genome':true,
+			'p9r':true,
+			'mirador-tech':true
+		};
 	}
 }
 /*
@@ -11801,8 +11890,210 @@ function __js_clean_html_str(s) {
 	s = div.firstChild.nodeValue;
 	return s;
 }
-
-
+// MT__bold
+// o is a string
+// arr is an array of strings to be bolded
+// avoid b
+// go from longest to shortest
+/**
+ * 
+ * 
+ * 
+ * Ex:
+MT__bold('test <b hahaha>test test test test a</b>', ['test']));
+	<b>test</b> <b hahaha><b>test</b>1 <b>test</b> <b>test</b> <b>test</b> a</b> 
+MT__bold('test <b hahaha>test1</b>', ['test1']));
+	test <b hahaha>test1</b> 
+ */
+function MT__bold(o, arr, options_object) {
+	
+	
+	
+	
+	// THIS is old
+	// The older way of doing it.
+	//
+	//~ // used bold matches
+	//~ var found_words_bolded = [];
+	//~ console.log(arr);
+	
+	// Sort longest first
+	arr.sort(function(a, b){
+	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
+	});
+	
+	//~ console.log(o);
+	//~ console.log(arr);
+	
+	var x = o;
+	var word;
+	
+	for (var i in arr) {
+		
+		// July 2 2014, Added .trim()
+		//
+		//
+		word = arr[i].trim();
+		
+		//console.log(word);
+		
+		if (word == '') {
+			continue;
+		}
+		
+		// Is word "b" or "B"?
+		// Replace all cases where it is not b> AND/OR <b OR </b
+		// Encapsulate in bold element.
+		if (word == 'b' || word == 'B') {
+			x = x.replace(/b([^>])/i, '<b>$1'); //     b>
+			x = x.replace(/([^\/<])b/i, '$1</b>'); //  /<b
+			continue;
+		}
+		
+		// Here?
+		//~ var reg = new RegExp('(?=(<b>))[\s]('+__js_escape_regEx(word)+')', 'gi');
+		var reg = new RegExp('('+__js_escape_regEx(word)+')(?![^< ]*<\\/b>)', 'gi');
+		// fishes</b>
+		// fish</b>
+		// fis(h)(<)
+		// fis(h)([ $])
+		//~ console.log(reg);
+		//~ console.log(options_object);
+		
+		if (options_object && options_object.hasOwnProperty('color'))
+			x = x.replace(reg, '<b style="color:'+options_object.color+';">$1</b>');
+		else {
+			//~ console.log(x);
+			//~ console.log('x');
+			x = x.replace(reg, '<b>$1</b>');
+		}
+		
+	}
+	
+	if (!options_object)
+		return x;
+	else {
+		var return_object = {};
+		return_object.bold_string = x;
+		
+		//~ if (x == undefined) x = '';
+		
+		if (options_object.percent_matched) {
+			var pm;
+			var xlen1 = x.length;
+			var xlen2 = (x.replace(/<b>((.|\s)*?(?=<\/b>|$)|$)/g, '')).length;
+			//~ var chars_removed = xlen1 - xlen2;
+			//~ pm = chars_removed / xlen1; // 0 = no matches to 1 = all matches
+			pm = (xlen1 - xlen2) / xlen1; // Inverse of 10 - 10/10 = 0, 10 - 0/10 = 1 => 1/0 and 1/1
+			return_object.pm = {
+				bold_string: x,
+				percent_matched: pm,
+				xlen1: xlen1,
+				xlen2: xlen2
+			}
+			//~ return {
+				//~ bold_string: x,
+				//~ percent_matched: pm,
+				//~ xlen1: xlen1,
+				//~ xlen2: xlen2
+			//~ }
+			//~ return;
+		}
+		if (options_object.return_div_element) {
+			var d = document.createElement('div');
+			d.innerHTML = x;
+			return_object.div_element = d;
+		}
+		
+		return_object.options_object = options_object; // RETURN INIT !!
+		
+		//~ if (options_object.initial) {
+			//~ 
+		//~ }
+		
+		return return_object;
+	}
+	
+	// old
+	//
+	//
+	//~ for (var i in arr) {
+		//~ 
+		//~ // July 2 2014, Added .trim()
+		//~ //
+		//~ //
+		//~ word = arr[i].trim();
+		//~ 
+		//~ //console.log(word);
+		//~ 
+		//~ if (word == '') {
+			//~ continue;
+		//~ }
+		//~ 
+		//~ // is in found_words_bolded ?
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (new RegExp('('+__js_escape_regEx(word)+')'
+		//~ }
+		
+		
+		// THIS is old
+		// The older way of doing it.
+		//
+		//~ x = x.replace(reg, function(p0, p1) {
+			//~ console.log('p0:' + p0);
+			//~ console.log('p1:' + p1);
+			//~ console.log(found_words_bolded);
+			//~ // is current "word" in a past "regex matched"?
+			//~ for (var j in found_words_bolded) {
+				//~ var prev_match = found_words_bolded[j];
+				//~ var tmp_match = (new RegExp('('+__js_escape_regEx(p1)+')', 'i')).exec(prev_match);
+				//~ if (tmp_match) {
+					//~ //found_in_prev = true;
+					//~ return p1; // ends here
+				//~ }
+			//~ }
+			//~ // Still here? Must be a new word
+			//~ found_words_bolded.push(word); // not here
+			//~ return '<b>'+p1+'</b>';
+		//~ });
+		
+		//console.log(found_words_bolded);
+		
+		// ...
+		// The idea is to avoid bolding smaller words
+		// when larger word already has bolded. So if "Frat"
+		// is going to be bolded then don't bold "rat."
+		
+		// Below will bold "rat" regardless of whether
+		// "Frat" is bolded. (Removed)
+		//~ var found_in_prev = false;
+		//~ for (var j in found_words_bolded) {
+			//~ var prev_match = found_words_bolded[j];
+			//~ var tmp_match = (new RegExp('('+__js_escape_regEx(word)+')')).exec(prev_match);
+			//~ if (tmp_match) {
+				//~ found_in_prev = true;
+				//~ break;
+			//~ } else {
+				//~ 
+			//~ }
+		//~ }
+		//~ if (!found_in_prev) {
+			//~ found_words_bolded.push(word);
+		//~ }
+		
+		//~ var str_match = false;
+		//~ if (reg.exec(x))
+			//~ str_match = true;
+		//~ reg.lastIndex = 0;
+		//x = x.replace(reg, '<b>$1</b>');
+		//~ 
+	//~ }
+}
+//console.log(MT__bold('all of the fishes ran to the fish store fish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store ish', ['fish','ish','fishes']));
+//console.log(MT__bold('all of the fishes ran to the fish store fishes', ['fish','ish','fishes']));
 /*
  * old whois
  */

@@ -306,7 +306,7 @@ function load()
 			d1.setAttribute('style', "position:absolute;left:50%;top:0px;width:49%;height:500px;background-color:#CCC;");
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#CCC;");
+			d2.setAttribute('style', "position:absolute;left:50%;top:500px;width:49%;height:500px;background-color:#CCC;border-top:1px solid black;");
 			document.body.appendChild(d2);
 			/*End of Elements*/
 			
@@ -405,8 +405,6 @@ function load()
 						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
 						
 						
-						//reg 3 - duration
-						
 						var choices = [];
 						
 						for(var i = 0; i <allDetails.length; i++) {
@@ -415,7 +413,7 @@ function load()
 							choices[i].seriesIMDBId = scr1[1];
 							choices[i].seriesName = scr1[2];
 							choices[i].year_type = scr1[3].trim();
-							choices[i].title_type = /([^\d]+\))[\r\n\s\t]*$/.exec(choices[i].year_type)
+							choices[i].title_type = /([^\d]+)\)[\r\n\s\t]*$/.exec(choices[i].year_type)
 							if(choices[i].title_type) {
 								choices[i].title_type = choices[i].title_type[1].trim();
 							}
@@ -482,7 +480,7 @@ function load()
 						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
 										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
 										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + rslts[i].kind +
+										   'k: ' + rslts[i].kind + '<br>'
 										   'y: ' + rslts[i].year
 						el_div.className = 'exe';
 						el_div.title = rslts[i].title;
@@ -490,8 +488,9 @@ function load()
 						el_div.season_nr = rslts[i].season_nr;
 						el_div.kind = rslts[i].kind;
 						el_div.isTopShow = isTopShow;
+						el_div.cast = rslts[i].cast;
 						el_div.onclick = function() {
-							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
+							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow, this.cast);
 						}
 					}
 				}
@@ -522,12 +521,13 @@ function load()
 						if(choices[i]) {
 								var el_div = document.createElement('div');
 								el_div.style = 'border:1px solid black;';
+								el_div.className = 'exe';
 								div.appendChild(el_div);
 								el_div.innerHTML = 
 										   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
 										   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
 										   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + choices[i].title_type +
+										   'k: ' + choices[i].title_type + '<br>'
 										   'y: ' + choices[i].year
 						}							
 					}
