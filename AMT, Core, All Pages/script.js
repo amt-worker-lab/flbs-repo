@@ -10210,7 +10210,7 @@ function load__allPages_AMT_combo() {
 							if(scr4) {
 								var nameReg = /<a[^>]+>([^<]+)</g;
 								var m;
-								while(m = nameReg.exec(scr4[0])) {
+								while(m = nameReg.exec(scr4[1])) {
 									choices[i].cast.push(__js_clean_html_str(m[1]));
 								}
 							}
