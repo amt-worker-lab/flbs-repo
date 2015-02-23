@@ -228,6 +228,7 @@ function load()
 			document.getElementsByClassName('row header')[0].style.top = '4000px';
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
@@ -310,14 +311,20 @@ function load()
 			/*End of Elements*/
 			
 			function processDBResults(response) {
-				//Process the results, and then call checkIMDB
-				var keywords;
-				var title;
-				var title_type;
-				var isTopShow;
+				response = JSON.parse(response)
+				if(response.checkClosestSeries) {
+					checkClosestSeries(response.seriesChoices, response.isTopShow);
+				}
+				else { //This is an IMDB check				
+					//Process the results, and then call checkIMDB
+					var keywords;
+					var title;
+					var title_type;
+					var isTopShow;
 
-				
-				checkIMDB(keywords, title, title_type,isTopShow);
+					
+					checkIMDB(keywords, title, title_type,isTopShow);
+				}
 			}
 			
 			
@@ -345,7 +352,7 @@ function load()
 			         //~ "Fatal Retraction",
 			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
 			         
-			checkIMDB("","fatal","");
+			//checkIMDB("","fatal","");
 			
 			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var url = 'http://www.imdb.com/search/title?' +
@@ -419,13 +426,40 @@ function load()
 				}
 				});
 				
+				
+				function checkClosestSeries(seriesNames, isTopShow) {
+					var seriesChoices = seriesNames;
+					var div = isTopShow ? d1 : d2;
+					for(var i = 0; i < seriesNames.length; i++) {
+						var el_div = document.createElement('div');
+						el_div.style = 'border: 1px solid black';
+						div.appendChild(el_div);
+						el_div.innerText = seriesNames[i];
+						el_div.value = seriesNames[i];
+						el_div.className = 'exe';
+						el_div.onclick = function() {
+						
+						}
+					
+					}
+					
+					(new AMT___requests_factory()).database__select({
+						query: "AMT_Flicksio_IMDB_GetDetails",
+						encodeStrings: {
+							qStrs: (isTopShow ? firstQuery : secondQuery),
+							makeSeriesSynonym: [firstQuery.title, synonym]
+						}
+					}, processDBResults
+					); 
+				}
+				
 				function buildInterface(isTopShow) {
 					console.log('building interface, topShow is:' + isTopShow);
 					var choices = isTopShow ? o.choices1 : o.choices2;
 					var div = isTopShow ? d1 : d2;
 					for(var i = 0; i < 10; i++) { 
 						if(choices[i]) {
-							s
+							
 							
 							
 						}
