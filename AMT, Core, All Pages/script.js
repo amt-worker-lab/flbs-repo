@@ -546,6 +546,40 @@ function load()
 									   'k: ' + choices[i].title_type + '<br>' +
 									   'y: ' + choices[i].year + '<br>' +
 									   'cm: ' + castMatches.join(',');
+							el_div.title = choices[i].title;
+							el_div.seriesName = choices[i].seriesName;
+							el_div.title_type = choices[i].title_type;
+							el_div.castMatches = castMatches;
+							el_div.imdbId = choices[i].imdbId;
+							el_div.seriesIMDBId = seriesIMDBId;
+							el_div.isTopShow = isTopShow;
+							
+							el_div.onclick = function() {
+								var id;
+								if(this.imdbId) {
+									id = this.imdbId;
+								}
+								else {
+									id = this.seriesIMDBId
+								}
+								if(id) {
+									var url = 'http://www.imdb.com/title/' + id;
+									if(this.isTopShow) {
+										document.getElementsByClassName('imdb_url')[0].value = url;
+									}
+									else {
+										document.getElementsByClassNAme('imdb_url')[0].value = url;
+									}
+									
+									if(document.getElementsByClassName('imdb_url')[0].value &&
+										document.getElementsByClassNAme('imdb_url')[0].value) {
+									//doSubmit()
+									return false;
+								}
+								} else {
+									alert('error undefined imdbId and seriesIMDBId');
+								}
+							}
 						}
 					}
 				}
