@@ -286,7 +286,11 @@ function load()
 				dbAuto1: false,
 				dbAuto2: false,
 				imdbAuto1: false,
-				imdbAuto2: false	
+				imdbAuto2: false,
+				dbSelection1: null,
+				dbSelection2: null,
+				imdbFirstOption1: null,
+				imdbFirstOption2: null
 			}
 			
 			var firstQuery = {
@@ -527,9 +531,11 @@ function load()
 				   ) {					   
 					   if(this.isTopShow) {
 						   o.dbAuto1 = true;
+						   o.dbSelection1 = rslts;
 						   o.cast1 =  rslts[i].cast;
 						}
 						else {
+							o.dbSelection2 = rslts;
 							o.dbAuto2 = true;
 							o.cast2 =  rslts[i].cast;
 						}
@@ -580,7 +586,13 @@ function load()
 							el_div.imdbId = choices[i].imdbId;
 							el_div.seriesIMDBId = choices[i].seriesIMDBId;
 							el_div.isTopShow = isTopShow;
-							
+							if(i == 0) {
+								if(el_div.isTopShow) {
+									o.imdbFirstOption = el_div;
+								}else {
+									o.imdbSecon
+								}
+							}
 							el_div.onclick = function() {
 								var id;
 								if(this.imdbId) {
@@ -616,6 +628,7 @@ function load()
 			}
 				
 			function attemptAuto() {
+				if(
 				console.log('attempting auto');
 			}				
 		}
