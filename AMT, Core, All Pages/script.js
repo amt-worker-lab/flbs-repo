@@ -9962,15 +9962,16 @@ function load__allPages_AMT_combo() {
 				]
 			}
 			
+			// One query. For skips.
 			var firstQuery = {
 				title: o.title1,
 				series: o.series1,
 				season: o.season1,
 				runtime: o.runtime1,
 				releaseYear: o.releaseYear1,
-				isTopShow:true
+				isTopShow:true,
+				one_query: true
 			}
-			
 			if(o.title2) {
 				var secondQuery = {
 					title: o.title2,
@@ -9978,7 +9979,8 @@ function load__allPages_AMT_combo() {
 					season: o.season2,
 					runtime: o.runtime2,
 					releaseYear: o.releaseYear2,
-					isTopShow: false
+					isTopShow: false,
+					one_query: true
 				}
 				o.numShows = 2;
 			}
@@ -10007,9 +10009,9 @@ function load__allPages_AMT_combo() {
 				var ro = response.responseObject;
 				
 				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
+				//~ buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
+				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
 				// numShows == 2
 				// Is not in skip condition

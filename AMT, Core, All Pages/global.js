@@ -485,6 +485,8 @@ AMT___Floater.accept = function() {
 
 // -800 to 400 on May 30 for Peter Heyneman.
 AMT___Floater.skip = function() {
+	console.log('attempting to send skip');
+	console.log(AMT__Global_Vars);
 	if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
 		doSubmit(false, false, function(timeToSkip){
