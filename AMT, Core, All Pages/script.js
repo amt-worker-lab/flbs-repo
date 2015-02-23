@@ -206,551 +206,6 @@ function load()
 		//~ console.log('drawn');
 	//~ }, false, true)
 	
-	// 
-	// Flicksio
-	// Level I: Locate URL for TV or Movie
-	//
-	s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
-	if  (
-		loc.indexOf('flicksio.com/mturk') != -1 &&
-		document.body.innerHTML.indexOf(s) != -1
-		)
-	{
-		var run = function() {};
-		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
-			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
-			document.getElementsByClassName('container')[0].style.width = "20%";
-			document.getElementsByClassName('container')[0].style.margin = "0";
-			document.getElementsByClassName('titles')[0].style.marginTop = "60px"; // Move titles down
-			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
-			document.getElementsByClassName('header-bg')[0].style.top = '4000px';
-			document.getElementsByClassName('row header')[0].style.position = 'absolute'; 
-			document.getElementsByClassName('row header')[0].style.top = '4000px';
-			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
-			document.getElementsByClassName('instructions')[0].style.top = '3000px';
-			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
-			document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
-			GM_addStyle('img {width:60px;}');
-			GM_addStyle('.left {width:60px;}');
-			GM_addStyle('.right {margin-left:0px;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			GM_addStyle('.title {height:120px;overflow:hidden;}');
-			var n = document.getElementsByClassName('title');
-			for (var p = 0; p <n.length; p++) {
-				n[p].addEventListener('mouseover', function() {
-					console.log('moused over');
-					this.style.height = 'auto';
-				}, false);
-				n[p].addEventListener('mouseout', function() {
-					this.style.height = '120px';
-				}, false);
-			}
-
-			
-			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
-			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
-			console.log('inside flicksio');
-			var ih = document.body.innerHTML;
-			var rslt1 = reg.exec(ih);
-			var rslt2 = reg.exec(ih);
-			var s1 = rslt1[2].split(", Season");
-			var s2 = rslt2[2].split(", Season");
-			
-			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
-			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
-			
-			var ih = ih.split('<div class="title last">');
-			//Check the top for runtime and release date, do the same for the bottom
-			var runtime1 = (runtimeReg.exec(ih[0])) ? runtimeReg.exec(ih[0])[1] : null;
-			var releaseYear1 = (yearReg.exec(ih[0])) ? yearReg.exec(ih[0])[1] : null;
-			
-			if(ih.length > 1) {
-				var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
-				var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
-				
-			}else {
-				var runtime2 = null;
-				var releaseYear2 = null;
-			}
-			
-			var o = {
-				title1 : rslt1[1],
-				title2 : (rslt2 ? rslt2[1] : null),
-				series1 : s1[0],
-				series2 : s2[0],
-				season1 : (s1.length > 1 ? s1[1] : null),
-				season2 : (s2.length > 1 ? s2[1] : null),
-				runtime1: runtime1,
-				runtime2: runtime2,
-				releaseYear1: releaseYear1,
-				releaseYear2: releaseYear2,
-				choices1 : null,
-				choices2 : null,
-				numRuns : 0,
-				numShows: null,
-				dbAuto1: false,
-				dbAuto2: false,
-				imdbAuto1: false,
-				imdbAuto2: false,
-				dbSelection1: null,
-				dbSelection2: null,
-				imdbFirstOption1: null,
-				imdbFirstOption2: null,
-				q: [
-					document.getElementsByClassName('imdb_url')[0],
-					document.getElementsByClassName('imdb_url')[1]
-				]
-			}
-			
-			var firstQuery = {
-				title: o.title1,
-				series: o.series1,
-				season: o.season1,
-				runtime: o.runtime1,
-				releaseYear: o.releaseYear1,
-				isTopShow:true
-			}
-			
-			if(o.title2) {
-				var secondQuery = {
-					title: o.title2,
-					series: o.series2,
-					season: o.season2,
-					runtime: o.runtime2,
-					releaseYear: o.releaseYear2,
-					isTopShow: false
-				}
-				o.numShows = 2;
-			}
-			else {
-				o.numShows = 1;
-			}
-			
-			
-			console.log(o);
-			
-			
-			/*Begin Elements*/
-			var d_container = document.createElement('div');
-			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
-			document.body.appendChild(d_container);
-			var d1 = document.createElement('div');
-			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;");
-			d_container.appendChild(d1);
-			var d2 = document.createElement('div');
-			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;");
-			d_container.appendChild(d2);
-			/*End of Elements*/
-			
-			function processDBResults(response) {
-				//response of 3 searches
-				console.log('got db response');
-				console.log(response);
-				var ro = response.responseObject;
-				
-				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
-				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
-				
-				
-				
-				//~ response = JSON.parse(response)
-				//~ if(response.checkClosestSeries) {
-					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
-				//~ }
-				//~ else { //This is an IMDB check				
-					//~ //Process the results, and then call checkIMDB
-					//~ var keywords;
-					//~ var title;
-					//~ var title_type;
-					//~ var isTopShow;
-				//~ 
-					//~ 
-					//~ checkIMDB(keywords, title, title_type,isTopShow);
-				//~ }
-			}
-			
-			
-			//Code to pull from database
-			(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: firstQuery
-				}
-			}, processDBResults
-			); 
-			
-			if(o.numShows == 2) {
-				(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: secondQuery
-				}
-				}, processDBResults);
-			}
-			
-			
-			
-			//~ checkIMDB("african-american-female-detective",
-			         //~ "Fatal Retraction",
-			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
-			         
-			//~ //checkIMDB("","fatal","");
-			
-			function checkIMDB(keywords, title, title_type, isTopShow) {
-				var isTopShow = isTopShow;
-				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
-				var url = 'http://www.imdb.com/search/title?' +
-							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
-							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
-							'title='+encodeURIComponent(title)
-							
-				
-				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: url,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status != 200) {
-							exit(response.status);
-						}
-						allDetails = rs.split('<td class="number">');
-						allDetails.splice(0,1);
-						console.log(allDetails);
-						//splits it into secions with 1 being the first
-						
-						//reg1 - imdbId of series, series name, year_type of series
-						//Should ALWAYS be there
-						var reg1 = /<a href="\/title\/([^\/]+)\/">([^<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
-						
-						//reg 2 - imdbId of title, title name, year of title
-						//Should be here only if it's an episode
-						var reg2 = /<span class="episode">Episode: <a href="\/title\/([^\/]+)\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
-						
-						//reg 3 - duration
-						//Sometimes is there, sometimes is left unspecified
-						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
-						
-						
-						//reg 4 - credits
-						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
-						
-						
-						var choices = [];
-						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
-						console.log(allDetails);
-						for(var i = 0; i <allDetails.length; i++) {
-							choices.push({});
-							var scr1 = reg1.exec(allDetails[i]);
-							choices[i].seriesIMDBId = scr1[1];
-							choices[i].seriesName = scr1[2];
-							choices[i].year_type = scr1[3].trim();
-							choices[i].title_type = /([^\d]+)\)[\r\n\s\t]*$/.exec(choices[i].year_type)
-							if(choices[i].title_type) {
-								choices[i].title_type = choices[i].title_type[1].trim();
-							}
-							var scr2 = reg2.exec(allDetails[i]);
-							if(scr2) {
-								choices[i].imdbId = scr2[1];
-								choices[i].title = scr2[2]
-								choices[i].year = scr2[3];
-							}
-							
-							var scr3 = reg3.exec(allDetails[i]);
-							if(scr3) {
-								choices[i].duration = scr3[i];
-							}
-							
-							var scr4 = reg4.exec(allDetails[i]);
-							console.log(scr4);
-							choices[i].cast = [];
-							if(scr4) {
-								var nameReg = /<a[^>]+>([^<]+)</g;
-								var m;
-								while(m = nameReg.exec(scr4[0])) {
-									choices[i].cast.push(__js_clean_html_str(m[1]));
-								}
-							}
-						}
-						console.log(choices);
-						
-						if(isTopShow) 
-							o.choices1 = choices;
-						else
-							o.choices2 = choices;
-						buildFinalInterface(isTopShow);
-					
-						o.numRuns++;
-						attemptAuto(isTopShow);
-					}
-				});
-			}
-				
-			function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
-				var container = isTopShow ? d1 : d2;
-				var locn = 
-				{
-					search_t : 0,
-					search_t_s:1,
-					search_s:2,
-					search_title_no_opts: 3
-				}
-				locn = locn[rsltsType];
-				
-				var div = document.createElement('div');
-				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width:25%;height:100%;position:absolute;border-left:1px solid black;');	
-				container.appendChild(div);
-				if(!rslts || rslts.length == 0) {
-					div.innerHTML = '0';
-				}
-				else {					
-					for(var i = 0; i < rslts.length; i++) {
-						var el_div = document.createElement('div');
-						el_div.setAttribute('style', 'border-bottom:1px solid black;');
-						div.appendChild(el_div);
-						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
-										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
-										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + rslts[i].kind + '<br>'
-										   'y: ' + rslts[i].year
-						el_div.className = 'exe';
-						el_div.title = rslts[i].title;
-						el_div.parent_title = rslts[i].parent_title;
-						el_div.season_nr = rslts[i].season_nr;
-						el_div.kind = rslts[i].kind;
-						el_div.isTopShow = isTopShow;
-						el_div.cast = rslts[i].cast;
-						el_div.keywords = rslts[i].keywords;
-						el_div.onclick = function() {
-							this.style.backgroundColor = 'green';
-							if(this.isTopShow)
-								o.cast1 = this.cast;
-							else
-								o.cast2 = this.cast;
-							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
-						}
-					}
-				}
-				
-				//Attempt to auto into a checkIMDB here:
-				if(rsltsType == 'search_t' && 
-				   rslts &&
-				   rslts.length &&
-				   rslts[0].title &&
-				   rslts[0].title.length > 2 &&
-				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
-				   rslts[0].parent_title &&
-				   rslts[0].parent_title.length > 2 &&
-				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
-				   ) {					   
-					   if(isTopShow) {
-						   o.dbAuto1 = true;
-						   o.dbSelection1 = rslts;
-						   o.cast1 =  rslts[0].cast;
-						   console.log('---------imdbAuto1');
-						}
-						else {
-							o.dbSelection2 = rslts;
-							o.dbAuto2 = true;
-							o.cast2 =  rslts[0].cast;
-						   console.log('---------imdbAuto2');
-						}
-						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
-					} 
-			}
-								
-			function buildFinalInterface(isTopShow) {
-				console.log('building interface, topShow is:' + isTopShow);
-				var choices = isTopShow ? o.choices1 : o.choices2;
-				var div = isTopShow ? d1 : d2;
-				div.style.overflow = 'auto';
-				if(choices.length == 0) {
-					console.log(o);
-					console.log('no choices found')
-					div.style.border = '2px solid blue';
-				}
-				else {
-					div.innerHTML = ''; //Clear everything
-					
-					
-					
-					for(var i = 0; i < 10; i++) { 
-						if(choices[i]) {
-							var castMatches = [];
-							for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
-								for(var k = 0; k < choices[i].cast.length; k++) {
-									if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
-										castMatches.push(choices[i].cast[k]);
-									}
-								}
-							}
-							var el_div = document.createElement('div');
-							el_div.setAttribute('style', 'border-bottom:1px solid black;');
-							el_div.className = 'exe';
-							div.appendChild(el_div);
-							
-							el_div.innerHTML = 
-									   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
-									   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
-									   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-									   'k: ' + choices[i].title_type + '<br>' +
-									   'y: ' + choices[i].year + '<br>' +
-									   'cm: ' + castMatches.join(',');
-							el_div.title = choices[i].title;
-							el_div.seriesName = choices[i].seriesName;
-							el_div.title_type = choices[i].title_type;
-							el_div.year = choices[i].year;
-							el_div.castMatches = castMatches;
-							el_div.imdbId = choices[i].imdbId;
-							el_div.seriesIMDBId = choices[i].seriesIMDBId;
-							el_div.isTopShow = isTopShow;
-							el_div.parent_div = div;
-							if(i == 0) {
-								if(el_div.isTopShow) {
-									o.imdbFirstOption1 = el_div;
-								}else {
-									o.imdbFirstOption2 = el_div;
-								}
-							}
-							el_div.onclick = function() { // onclick
-								this.style.backgroundColor = 'green';
-								var id;
-								if(this.imdbId) {
-									id = this.imdbId;
-								}
-								else {
-									id = this.seriesIMDBId;
-									alert('Series IMDB ID!'); //?
-									return;
-								}
-								if(id) {
-									var url = 'http://www.imdb.com/title/' + id;
-									if(this.isTopShow) {
-										document.getElementsByClassName('imdb_url')[0].value = url;
-									}
-									else {
-										document.getElementsByClassName('imdb_url')[1].value = url;
-									}
-									// Make div small
-									this.parent_div.style.height = 'auto';
-									//
-									o.q[0].value = o.q[0].value.trim();
-									o.q[1].value = o.q[1].value.trim();
-									if  (
-										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
-										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
-										)
-									{
-										// Is preview?
-										if (AMT__Global_Vars.isPreview) {
-											AMT___Floater.accept();
-											return;
-										}
-										// Is accepted?
-										document.body.style.backgroundColor = 'blue';
-										//doSubmit('mturk')
-										return false;
-									}
-								} else {
-									alert('error undefined imdbId and seriesIMDBId');
-								}
-							}
-						}
-					}
-				}
-				//~ console.log(o);
-			}
-				
-			function attemptAuto(isTopShow) {
-				//~ console.log('attempting auto, isTopShow: ' + isTopShow);
-				//~ console.log(o)
-				var topAuto = false;
-				var bottomAuto = false;
-				if (isTopShow) { // Top
-					if(
-					o.imdbFirstOption1 &&
-					o.imdbFirstOption1.title &&
-					o.imdbFirstOption1.title.length > 2 &&
-					o.imdbFirstOption1.title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
-					o.imdbFirstOption1.seriesName &&
-					o.imdbFirstOption1.seriesName.length > 2 &&
-					o.series1 &&
-					o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
-					)
-					{
-						if(
-							o.imdbFirstOption1.year && 
-							o.releaseYear1
-						)	
-						{
-							//Make sure they're both numbers by trimming them
-							o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
-							o.releaseYear1 = o.releaseYear1.trim();
-							console.log('attempting year match');
-							if(Math.abs(o.imdbFirstOption1.year*1 - o.releaseYear1*1) <= 2) {
-								console.log('year matched for top');
-								topAuto = true;
-							}
-						}
-						else {
-							topAuto = true;
-						}
-					}
-					if(topAuto) {
-						o.imdbAuto1 = true;
-						o.imdbFirstOption1.click();
-					}
-					else // Skips here!
-					{
-						AMT___Floater.skip();
-					}
-				}
-				else // Bottom (!isTopShow)
-				{
-					if(
-					o.imdbFirstOption2 &&
-					o.imdbFirstOption2.title &&
-					o.imdbFirstOption2.title.length > 2 &&
-					o.imdbFirstOption2.title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
-					o.imdbFirstOption2.seriesName &&
-					o.imdbFirstOption2.seriesName.length > 2 &&
-					o.series2 &&
-					o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
-					)
-					{
-						if(
-							o.imdbFirstOption2.year && o.releaseYear2
-						)	{
-							//Make sure they're both numbers by trimming them
-							o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
-							o.releaseYear2 = o.releaseYear2.trim();
-							if(Math.abs((o.imdbFirstOption2.year *1) - (o.realeaseYear2*1)) <= 2) {
-								console.log('year matched for top');
-								bottomAuto = true;
-							}
-						}
-						else {
-							bottomAuto = true;
-						}
-					}
-					if(bottomAuto) {
-						o.imdbAuto2 = true;
-						o.imdbFirstOption2.click();
-					}
-					else // Skips here!
-					{
-						AMT___Floater.skip();
-					}
-				}
-			}				
-		}
-		new run().f();
-	}
-	
 	//
 	//
 	//
@@ -10376,6 +9831,18 @@ function load__allPages_AMT_combo__btn() {
 		load__allPages_AMT_combo();
 	}
 	document.body.appendChild(d);
+	var MT___RUN_MANUAL = d;
+	
+	// Have a watcher
+	window.addEventListener('message', function(e) {
+		if(e.data && e.data.runPreview)
+		{
+			//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
+			setTimeout(function() {MT___RUN_MANUAL.click();}, 200);
+			parent.postMessage({MT_Ran: true}, '*');
+			this.removeEventListener('click',arguments.callee,false)
+		}
+	}, false);
 }
 /**
  * load__allPages_AMT_combo()
@@ -10384,6 +9851,551 @@ function load__allPages_AMT_combo__btn() {
  * It is also run in PREVIEW if the button is clicked.
  */
 function load__allPages_AMT_combo() {
+	
+	// 
+	// Flicksio
+	// Level I: Locate URL for TV or Movie
+	//
+	s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
+	if  (
+		document.location.href.indexOf('flicksio.com/mturk') != -1 &&
+		document.body.innerHTML.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
+			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
+			document.getElementsByClassName('container')[0].style.width = "20%";
+			document.getElementsByClassName('container')[0].style.margin = "0";
+			document.getElementsByClassName('titles')[0].style.marginTop = "60px"; // Move titles down
+			document.getElementsByClassName('header-bg')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('header-bg')[0].style.top = '4000px';
+			document.getElementsByClassName('row header')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('row header')[0].style.top = '4000px';
+			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
+			document.getElementsByClassName('instructions')[0].style.top = '3000px';
+			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
+			document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
+			GM_addStyle('img {width:60px;}');
+			GM_addStyle('.left {width:60px;}');
+			GM_addStyle('.right {margin-left:0px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.title {height:120px;overflow:hidden;}');
+			var n = document.getElementsByClassName('title');
+			for (var p = 0; p <n.length; p++) {
+				n[p].addEventListener('mouseover', function() {
+					console.log('moused over');
+					this.style.height = 'auto';
+				}, false);
+				n[p].addEventListener('mouseout', function() {
+					this.style.height = '120px';
+				}, false);
+			}
+
+			
+			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
+			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
+			console.log('inside flicksio');
+			var ih = document.body.innerHTML;
+			var rslt1 = reg.exec(ih);
+			var rslt2 = reg.exec(ih);
+			var s1 = rslt1[2].split(", Season");
+			var s2 = rslt2[2].split(", Season");
+			
+			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
+			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
+			
+			var ih = ih.split('<div class="title last">');
+			//Check the top for runtime and release date, do the same for the bottom
+			var runtime1 = (runtimeReg.exec(ih[0])) ? runtimeReg.exec(ih[0])[1] : null;
+			var releaseYear1 = (yearReg.exec(ih[0])) ? yearReg.exec(ih[0])[1] : null;
+			
+			if(ih.length > 1) {
+				var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
+				var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
+				
+			}else {
+				var runtime2 = null;
+				var releaseYear2 = null;
+			}
+			
+			var o = {
+				title1 : rslt1[1],
+				title2 : (rslt2 ? rslt2[1] : null),
+				series1 : s1[0],
+				series2 : s2[0],
+				season1 : (s1.length > 1 ? s1[1] : null),
+				season2 : (s2.length > 1 ? s2[1] : null),
+				runtime1: runtime1,
+				runtime2: runtime2,
+				releaseYear1: releaseYear1,
+				releaseYear2: releaseYear2,
+				choices1 : null,
+				choices2 : null,
+				numRuns : 0,
+				numShows: null,
+				dbAuto1: false,
+				dbAuto2: false,
+				imdbAuto1: false,
+				imdbAuto2: false,
+				dbSelection1: null,
+				dbSelection2: null,
+				imdbFirstOption1: null,
+				imdbFirstOption2: null,
+				q: [
+					document.getElementsByClassName('imdb_url')[0],
+					document.getElementsByClassName('imdb_url')[1]
+				]
+			}
+			
+			var firstQuery = {
+				title: o.title1,
+				series: o.series1,
+				season: o.season1,
+				runtime: o.runtime1,
+				releaseYear: o.releaseYear1,
+				isTopShow:true
+			}
+			
+			if(o.title2) {
+				var secondQuery = {
+					title: o.title2,
+					series: o.series2,
+					season: o.season2,
+					runtime: o.runtime2,
+					releaseYear: o.releaseYear2,
+					isTopShow: false
+				}
+				o.numShows = 2;
+			}
+			else {
+				o.numShows = 1;
+			}
+			
+			
+			console.log(o);
+			
+			
+			/*Begin Elements*/
+			var d_container = document.createElement('div');
+			d_container.setAttribute('style', "position:absolute;left:20%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
+			document.body.appendChild(d_container);
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;");
+			d_container.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:1px solid black;");
+			d_container.appendChild(d2);
+			/*End of Elements*/
+			
+			function processDBResults(response) {
+				//response of 3 searches
+				console.log('got db response');
+				console.log(response);
+				var ro = response.responseObject;
+				
+				buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
+				buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
+				
+				
+				
+				//~ response = JSON.parse(response)
+				//~ if(response.checkClosestSeries) {
+					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
+				//~ }
+				//~ else { //This is an IMDB check				
+					//~ //Process the results, and then call checkIMDB
+					//~ var keywords;
+					//~ var title;
+					//~ var title_type;
+					//~ var isTopShow;
+				//~ 
+					//~ 
+					//~ checkIMDB(keywords, title, title_type,isTopShow);
+				//~ }
+			}
+			
+			
+			//Code to pull from database
+			(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					qStrs: firstQuery
+				}
+			}, processDBResults
+			); 
+			
+			if(o.numShows == 2) {
+				(new AMT___requests_factory()).database__select({
+				query: "AMT_Flicksio_IMDB_GetDetails",
+				encodeStrings: {
+					qStrs: secondQuery
+				}
+				}, processDBResults);
+			}
+			
+			
+			
+			//~ checkIMDB("african-american-female-detective",
+			         //~ "Fatal Retraction",
+			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
+			         
+			//~ //checkIMDB("","fatal","");
+			
+			function checkIMDB(keywords, title, title_type, isTopShow) {
+				var isTopShow = isTopShow;
+				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
+				var url = 'http://www.imdb.com/search/title?' +
+							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
+							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
+							'title='+encodeURIComponent(title)
+							
+				
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							exit(response.status);
+						}
+						allDetails = rs.split('<td class="number">');
+						allDetails.splice(0,1);
+						console.log(allDetails);
+						//splits it into secions with 1 being the first
+						
+						//reg1 - imdbId of series, series name, year_type of series
+						//Should ALWAYS be there
+						var reg1 = /<a href="\/title\/([^\/]+)\/">([^<]*)<\/a>[\r\n\s\t]*<span class="year_type">([^<]+)<\/span><br>/;
+						
+						//reg 2 - imdbId of title, title name, year of title
+						//Should be here only if it's an episode
+						var reg2 = /<span class="episode">Episode: <a href="\/title\/([^\/]+)\/">([^<]+)<\/a>[\r\n\s\t]*\((\d+)\)[\r\n\s\t]*<\/span>/;
+						
+						//reg 3 - duration
+						//Sometimes is there, sometimes is left unspecified
+						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
+						
+						
+						//reg 4 - credits
+						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
+						
+						
+						var choices = [];
+						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
+						console.log(allDetails);
+						for(var i = 0; i <allDetails.length; i++) {
+							choices.push({});
+							var scr1 = reg1.exec(allDetails[i]);
+							choices[i].seriesIMDBId = scr1[1];
+							choices[i].seriesName = scr1[2];
+							choices[i].year_type = scr1[3].trim();
+							choices[i].title_type = /([^\d]+)\)[\r\n\s\t]*$/.exec(choices[i].year_type)
+							if(choices[i].title_type) {
+								choices[i].title_type = choices[i].title_type[1].trim();
+							}
+							var scr2 = reg2.exec(allDetails[i]);
+							if(scr2) {
+								choices[i].imdbId = scr2[1];
+								choices[i].title = scr2[2]
+								choices[i].year = scr2[3];
+							}
+							
+							var scr3 = reg3.exec(allDetails[i]);
+							if(scr3) {
+								choices[i].duration = scr3[i];
+							}
+							
+							var scr4 = reg4.exec(allDetails[i]);
+							console.log(scr4);
+							choices[i].cast = [];
+							if(scr4) {
+								var nameReg = /<a[^>]+>([^<]+)</g;
+								var m;
+								while(m = nameReg.exec(scr4[0])) {
+									choices[i].cast.push(__js_clean_html_str(m[1]));
+								}
+							}
+						}
+						console.log(choices);
+						
+						if(isTopShow) 
+							o.choices1 = choices;
+						else
+							o.choices2 = choices;
+						buildFinalInterface(isTopShow);
+					
+						o.numRuns++;
+						attemptAuto(isTopShow);
+					}
+				});
+			}
+				
+			function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
+				var container = isTopShow ? d1 : d2;
+				var locn = 
+				{
+					search_t : 0,
+					search_t_s:1,
+					search_s:2,
+					search_title_no_opts: 3
+				}
+				locn = locn[rsltsType];
+				
+				var div = document.createElement('div');
+				div.setAttribute('style', 'left: ' + locn*25+'%;'+'width:25%;height:100%;position:absolute;border-left:1px solid black;');	
+				container.appendChild(div);
+				if(!rslts || rslts.length == 0) {
+					div.innerHTML = '0';
+				}
+				else {					
+					for(var i = 0; i < rslts.length; i++) {
+						var el_div = document.createElement('div');
+						el_div.setAttribute('style', 'border-bottom:1px solid black;');
+						div.appendChild(el_div);
+						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
+										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
+										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+										   'k: ' + rslts[i].kind + '<br>'
+										   'y: ' + rslts[i].year
+						el_div.className = 'exe';
+						el_div.title = rslts[i].title;
+						el_div.parent_title = rslts[i].parent_title;
+						el_div.season_nr = rslts[i].season_nr;
+						el_div.kind = rslts[i].kind;
+						el_div.isTopShow = isTopShow;
+						el_div.cast = rslts[i].cast;
+						el_div.keywords = rslts[i].keywords;
+						el_div.onclick = function() {
+							this.style.backgroundColor = 'green';
+							if(this.isTopShow)
+								o.cast1 = this.cast;
+							else
+								o.cast2 = this.cast;
+							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
+						}
+					}
+				}
+				
+				//Attempt to auto into a checkIMDB here:
+				if(rsltsType == 'search_t' && 
+				   rslts &&
+				   rslts.length &&
+				   rslts[0].title &&
+				   rslts[0].title.length > 2 &&
+				   rslts[0].title.toLowerCase() == (isTopShow ? o.title1 : o.title2).toLowerCase() &&
+				   rslts[0].parent_title &&
+				   rslts[0].parent_title.length > 2 &&
+				   rslts[0].parent_title.toLowerCase() == (isTopShow ? o.series1 : o.series2).toLowerCase()
+				   ) {					   
+					   if(isTopShow) {
+						   o.dbAuto1 = true;
+						   o.dbSelection1 = rslts;
+						   o.cast1 =  rslts[0].cast;
+						   console.log('---------imdbAuto1');
+						}
+						else {
+							o.dbSelection2 = rslts;
+							o.dbAuto2 = true;
+							o.cast2 =  rslts[0].cast;
+						   console.log('---------imdbAuto2');
+						}
+						checkIMDB(rslts[0].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
+					} 
+			}
+								
+			function buildFinalInterface(isTopShow) {
+				console.log('building interface, topShow is:' + isTopShow);
+				var choices = isTopShow ? o.choices1 : o.choices2;
+				var div = isTopShow ? d1 : d2;
+				div.style.overflow = 'auto';
+				if(choices.length == 0) {
+					console.log(o);
+					console.log('no choices found')
+					div.style.border = '2px solid blue';
+				}
+				else {
+					div.innerHTML = ''; //Clear everything
+					
+					
+					
+					for(var i = 0; i < 10; i++) { 
+						if(choices[i]) {
+							var castMatches = [];
+							for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
+								for(var k = 0; k < choices[i].cast.length; k++) {
+									if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
+										castMatches.push(choices[i].cast[k]);
+									}
+								}
+							}
+							var el_div = document.createElement('div');
+							el_div.setAttribute('style', 'border-bottom:1px solid black;');
+							el_div.className = 'exe';
+							div.appendChild(el_div);
+							
+							el_div.innerHTML = 
+									   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
+									   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
+									   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+									   'k: ' + choices[i].title_type + '<br>' +
+									   'y: ' + choices[i].year + '<br>' +
+									   'cm: ' + castMatches.join(',');
+							el_div.title = choices[i].title;
+							el_div.seriesName = choices[i].seriesName;
+							el_div.title_type = choices[i].title_type;
+							el_div.year = choices[i].year;
+							el_div.castMatches = castMatches;
+							el_div.imdbId = choices[i].imdbId;
+							el_div.seriesIMDBId = choices[i].seriesIMDBId;
+							el_div.isTopShow = isTopShow;
+							el_div.parent_div = div;
+							if(i == 0) {
+								if(el_div.isTopShow) {
+									o.imdbFirstOption1 = el_div;
+								}else {
+									o.imdbFirstOption2 = el_div;
+								}
+							}
+							el_div.onclick = function() { // onclick
+								this.style.backgroundColor = 'green';
+								var id;
+								if(this.imdbId) {
+									id = this.imdbId;
+								}
+								else {
+									id = this.seriesIMDBId;
+									alert('Series IMDB ID!'); //?
+									return;
+								}
+								if(id) {
+									var url = 'http://www.imdb.com/title/' + id;
+									if(this.isTopShow) {
+										document.getElementsByClassName('imdb_url')[0].value = url;
+									}
+									else {
+										document.getElementsByClassName('imdb_url')[1].value = url;
+									}
+									// Make div small
+									this.parent_div.style.height = 'auto';
+									//
+									o.q[0].value = o.q[0].value.trim();
+									o.q[1].value = o.q[1].value.trim();
+									if  (
+										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
+										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
+										)
+									{
+										// Is preview?
+										if (AMT__Global_Vars.isPreview) {
+											AMT___Floater.accept();
+											return;
+										}
+										// Is accepted?
+										document.body.style.backgroundColor = 'blue';
+										//doSubmit('mturk')
+										return false;
+									}
+								} else {
+									alert('error undefined imdbId and seriesIMDBId');
+								}
+							}
+						}
+					}
+				}
+				//~ console.log(o);
+			}
+				
+			function attemptAuto(isTopShow) {
+				//~ console.log('attempting auto, isTopShow: ' + isTopShow);
+				//~ console.log(o)
+				var topAuto = false;
+				var bottomAuto = false;
+				if (isTopShow) { // Top
+					if(
+					o.imdbFirstOption1 &&
+					o.imdbFirstOption1.title &&
+					o.imdbFirstOption1.title.length > 2 &&
+					o.imdbFirstOption1.title.toLowerCase().trim() == o.title1.toLowerCase().trim() &&
+					o.imdbFirstOption1.seriesName &&
+					o.imdbFirstOption1.seriesName.length > 2 &&
+					o.series1 &&
+					o.imdbFirstOption1.seriesName.toLowerCase().trim() == o.series1.toLowerCase().trim()
+					)
+					{
+						if(
+							o.imdbFirstOption1.year && 
+							o.releaseYear1
+						)	
+						{
+							//Make sure they're both numbers by trimming them
+							o.imdbFirstOption1.year = o.imdbFirstOption1.year.trim();
+							o.releaseYear1 = o.releaseYear1.trim();
+							console.log('attempting year match');
+							if(Math.abs(o.imdbFirstOption1.year*1 - o.releaseYear1*1) <= 2) {
+								console.log('year matched for top');
+								topAuto = true;
+							}
+						}
+						else {
+							topAuto = true;
+						}
+					}
+					if(topAuto) {
+						o.imdbAuto1 = true;
+						o.imdbFirstOption1.click();
+					}
+					else // Skips here!
+					{
+						AMT___Floater.skip();
+					}
+				}
+				else // Bottom (!isTopShow)
+				{
+					if(
+					o.imdbFirstOption2 &&
+					o.imdbFirstOption2.title &&
+					o.imdbFirstOption2.title.length > 2 &&
+					o.imdbFirstOption2.title.toLowerCase().trim() == o.title2.toLowerCase().trim() &&
+					o.imdbFirstOption2.seriesName &&
+					o.imdbFirstOption2.seriesName.length > 2 &&
+					o.series2 &&
+					o.imdbFirstOption2.seriesName.toLowerCase().trim() == o.series2.toLowerCase().trim()
+					)
+					{
+						if(
+							o.imdbFirstOption2.year && o.releaseYear2
+						)	{
+							//Make sure they're both numbers by trimming them
+							o.imdbFirstOption2.year = o.imdbFirstOption2.year.trim();
+							o.releaseYear2 = o.releaseYear2.trim();
+							if(Math.abs((o.imdbFirstOption2.year *1) - (o.realeaseYear2*1)) <= 2) {
+								console.log('year matched for top');
+								bottomAuto = true;
+							}
+						}
+						else {
+							bottomAuto = true;
+						}
+					}
+					if(bottomAuto) {
+						o.imdbAuto2 = true;
+						o.imdbFirstOption2.click();
+					}
+					else // Skips here!
+					{
+						AMT___Floater.skip();
+					}
+				}
+			}				
+		}
+		new run().f();
+	}
 	
 	//
 	// Andrew Ryan

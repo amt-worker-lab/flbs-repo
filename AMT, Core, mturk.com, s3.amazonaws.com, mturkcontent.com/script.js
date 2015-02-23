@@ -149210,15 +149210,15 @@ function mturk_load()
 		}
 		
 		window.addEventListener('message', function(e) {
-				//console.log(e);
-				if(e.data && e.data.runPreview)
-				{
-					//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
-					setTimeout(function() {MT___RUN_MANUAL.click();}, 200);
-					parent.postMessage({MT_Ran: true}, '*');
-					this.removeEventListener('click',arguments.callee,false)
-				}
-			}, false);
+			//console.log(e);
+			if(e.data && e.data.runPreview)
+			{
+				//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
+				setTimeout(function() {MT___RUN_MANUAL.click();}, 200);
+				parent.postMessage({MT_Ran: true}, '*');
+				this.removeEventListener('click',arguments.callee,false)
+			}
+		}, false);
 			
 			
 		// Run regardless
