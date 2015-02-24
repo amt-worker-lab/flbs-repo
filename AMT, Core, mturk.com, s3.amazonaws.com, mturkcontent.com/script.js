@@ -34569,6 +34569,42 @@ function MT__RUN() {
 								"document.body.appendChild(dstShower);"+
 								"dstShower.innerText = dst +' mi';"+
 								"console.log('dst is' + dst);"+ 
+								"function difference(link) {"+
+								"var pano = map.streetView;"+
+								"return Math.abs(pano.pov.heading%360 - link.heading);"+
+								"}"+
+
+								"function moveForward() {"+
+								  "var pano = map.streetView;"+
+								  "var curr;"+
+								  "for(i=0; i < pano.links.length; i++) {"+
+									"var differ = difference(pano.links[i]);"+
+									"if(curr == undefined) {"+
+									 "curr = pano.links[i];"+
+									"}"+
+									"if(difference(curr) > difference(pano.links[i])) {"+
+									  "curr = curr = pano.links[i];"+
+									"}"+
+								  "}"+
+								  "pano.setPano(curr.pano);"+
+								"}"+
+								"function moveBackward() {"+
+								 "var pano = map.streetView;"+
+								  "var curr;"+
+								  "for(i=0; i < pano.links.length; i++) {"+
+									"var differ = difference(pano.links[i]);"+
+									"if(curr == undefined) {"+
+									  "curr = pano.links[i];"+
+									"}"+
+									"if(difference(curr) < difference(pano.links[i])) {"+
+									  "curr = curr = pano.links[i];"+
+									"}"+
+								  "}"+
+								  "pano.setPano(curr.pano);"+
+								"}"+
+								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {moveBackward()} if(e.keyCode == 115) {moveForward()}})"+
+
+
 						"}");
 					});
 				
