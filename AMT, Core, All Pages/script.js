@@ -10018,6 +10018,9 @@ function load__allPages_AMT_combo() {
 			if(AMT__Global_Vars.isSpecialWorkflowWindow) {
 				var one_qy = true;
 				var spe_wk = true;
+				setTimeout(function() {
+					location.reload();
+				}, 14000);
 			}
 			// Non-special workflow window.
 			// Probably two queries. Title+Series && Has more than one result. Or ...?
