@@ -20873,7 +20873,8 @@ function MT__RUN() {
 		
 		var o = {
 			name: p[0].innerText.trim(),
-			loc: p[1].innerText.trim().replace(/^in /, '') // remove "in "
+			loc: p[1].innerText.trim().replace(/^in /, ''), // remove "in "
+			domain_counts: {} // obj
 		}
 		
 		/*BEGIN ITEMS*/
@@ -20937,8 +20938,180 @@ function MT__RUN() {
 				callback_function: company_URL__processProxyResponse
 			});
 		}
-		function company_URL__processProxyResponse() {
+		function company_URL__processProxyResponse(response) {
+			var rs = response.rs;
 			
+			// rs
+			// 0=url
+			// 1=full
+			
+			// seed_arg
+			var out_div = d2
+			out_div.innerHTML = '';
+			
+			if (!rs.length) {
+				out_div.innerHTML = '0';
+				count_domains();
+				return;
+			}
+			
+			var count = 0;
+			for (var i in rs) {
+				
+				var x = rs[i][0];
+				var link = rs[i][0];
+				var full = rs[i][1];
+				
+				//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+				
+				// trailing
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+				
+				// http
+				//~ x = x.replace(/^https?:\/\//, ''); // beginning
+				
+				// SKIP BUTTON CREATE
+				// returns obj.el_button, obj.isSkip
+				var el_inp_skip2__obj = new AMT___items_factory().
+					create__input_skip_button2(
+						{
+							domain: x,
+							load_file: 'austin_load_skips', 
+							var_skip_sites: SKIP_SITES, 
+							callback_function: false
+						}
+					);
+				
+				// add bold (bold_array)
+				full = MT__bold(full, o.bold_array);
+				
+				// classname is http://(www. = '')x.com (no www)
+				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
+				
+				// ...
+				var d = document.createElement('p');
+				d.setAttribute('style','margin:4px 0 4px 0;');
+				d.className = 'class_'+cls;
+				d.full_url = link;
+				d.original_bg_color = '';
+				out_div.appendChild(d);
+				
+				// IS SKIP?
+				if (el_inp_skip2__obj.isSkip) {
+					d.appendChild(el_inp_skip2__obj.el_btn);
+					continue; // END
+				} else {
+					FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+				}
+				
+				// domain_counts
+				if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
+					o.domain_counts[ 'class_' + cls ]++;
+				} else {
+					o.domain_counts[ 'class_' + cls ] = 1;
+				}
+				
+				// IS NOT SKIP?
+				var txa = document.createElement('textarea');
+				txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+				txa.readOnly = true;
+				txa.value = x;
+				txa.parent_div = out_div;
+				txa.parent_txa = out_div.txa
+				d.appendChild(txa);
+				// ...
+				var a = document.createElement('a');
+				a.setAttribute('style','margin-right:6px;');
+				a.target = '_blank';
+				a.innerText = 'link';
+				a.href = link;
+				d.appendChild(a);
+				// ...
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				//~ // ...
+				//~ d.appendChild(document.createElement('br'));
+				// ...
+				var pbody = document.createElement('p');
+				pbody.setAttribute('style','');
+				pbody.innerHTML = full;
+				d.appendChild(pbody);
+				
+				// actions
+				// ...
+				
+				// onclick
+				txa.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					
+					document.getElementById('web_url').value = this.value;
+					
+					// showNextTab OR nextTab
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				//mouseover
+				d.addEventListener('mouseover', function() {
+					inp_top.value = this.full_url;
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = 'LightGreen';
+						} else {
+							x[i].style.backgroundColor = x[i].original_bg_color;
+						}
+					}
+					// Could do this also! .getElementsByClassName('class_');
+				}, false);
+				//mouseout
+				d.addEventListener('mouseout', function() {
+					inp_top.value = '';
+					var x = document.getElementsByTagName('p');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].className == this.className) {
+							x[i].style.backgroundColor = x[i].original_bg_color;
+						}
+					}
+				}, false);
+				
+			}
+			count_domains();
+			var d = document.createElement('div');
+			d.setAttribute('style','height:2000px;');
+			out_div.appendChild(d);
+			
+		}
+		/**
+		 * count_domains
+		 * 
+		 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
+		 * 		seem to rack up the #s!
+		 */
+		function count_domains() {
+			
+			// Is a tie?
+			var count_domains_is_a_tie = false;
+			// check complete
+			var tmp_cls = false;
+			var max = 0;
+			// loop
+			for (var i in o.domain_counts) {
+				if (o.domain_counts[i] > max) {
+					max = o.domain_counts[i];
+					tmp_cls = i; // key
+				}
+			}
+			if (tmp_cls) { // This is an html className
+				var n = document.getElementsByClassName(tmp_cls);
+				console.log(n);
+				for (var i in n) {
+					if (i == 'length') break;
+					n[i].style.backgroundColor = 'beige';
+					n[i].style.border = '3px solid brown';
+					n[i].original_bg_color = 'beige';
+				}
+			}
 		}
 		/**
 		 * function yelp
@@ -20966,7 +21139,7 @@ function MT__RUN() {
 						r = r[1];
 						d1.innerHTML = r + ' results.<hr>';
 					} else {
-						
+						d1.innerHTML = 0 + ' results.<hr>';
 					}
 					
 					
@@ -20974,25 +21147,42 @@ function MT__RUN() {
 					var m;
 					while (m = r.exec(rs.search_results)) {
 						
-						//~ console.log(m);
+						console.log(m);
 						
-						if (m[1].indexOf('<span class="indexed-biz-name">' + id + '.' ) != -1) {
-							
-							//~ console.log(m);
-							
-							// (619) 238-4949
-							// 
-							var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
-							if (ph) {
-								ph = __js_clean_html_str(ph[1]).trim();
-								document.getElementById('phone_number').value = ph;
-								
-								doSubmit();
-							}
-							
-							// END HERE
-							break;
+						var div = document.createElement('div');
+						div.setAttribute('style','width:100;border-bottom:1px solid #a2a2a2;');
+						div.className = 'exe';
+						div.yname = null;
+						div.yhref = null;
+						div.yphone = null;
+						div.yreviews = null;
+						d1.appendChild(div);
+						
+						
+						// (619) 238-4949
+						// 
+						var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+						if (ph) {
+							ph = __js_clean_html_str(ph[1]).trim();
+							div.yphone = ph;
 						}
+						// Name, href
+						//
+						var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(k[1]); //McDonald’s</a>
+						if (reg) {
+							//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
+							div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
+							div.yname = __js_clean_html_str(reg[2]).trim();
+						}
+						// reviews
+						//
+						var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(k[1]);
+						if (reg) {
+							reg = reg[1];
+							div.yreviews = reg;
+						}
+						
+						c++;
 					}
 				}
 			});
@@ -93236,11 +93426,10 @@ qatar,80
 			/**
 			 * function company_URL__processProxyResponse
 			 * 
-			 * @param	response,object
+			 * @param		response		object
 			 */
 			function company_URL__processProxyResponse(response) {
 				
-				console.log(response);
 				var rs = response.rs;
 				
 				// rs
