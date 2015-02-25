@@ -29,11 +29,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 * Send external message to core mturk.com.
 	 */
 	if(request.amISpecialWorkflowWindow_all_pages) {
-		//~ var sendResponse = sendResponse;
-		//~ console.log(request.callback); //undefined
 		console.log(sender);
-		//~ console.log(sender.tab.windowId);
-		//~ console.log(sendResponse);
 		// Send External Message!
 		chrome.runtime.sendMessage(
 			globals.core_content_script_extension_id,
