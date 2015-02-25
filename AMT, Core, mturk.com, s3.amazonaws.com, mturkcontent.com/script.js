@@ -20737,6 +20737,7 @@ function MT__RUN() {
 	 * Yelp.com scrape
 	 * Adam Garson
 	 * Brandon Bennett
+	 * Steven Frank
 	 * 
 	 */
 	//
@@ -21075,6 +21076,9 @@ function MT__RUN() {
 					// e.ctrlKey
 					this.style.backgroundColor = 'LightGreen';
 					document.getElementById('web_url').value = this.value;
+					if (e.ctrlKey) { //try_submit
+						try_submit();
+					}
 				}
 				//mouseover
 				d.addEventListener('mouseover', function() {
@@ -21193,6 +21197,7 @@ function MT__RUN() {
 						div.ystreet = null;
 						div.ylocn = null;
 						div.yzip = null;
+						div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
 						d1.appendChild(div);
 						
 						
@@ -21263,7 +21268,7 @@ function MT__RUN() {
 							return false;
 						}
 						div.appendChild(link);
-						div.onclick = function() { // div.onclick
+						div.onclick = function(e) { // div.onclick
 							this.style.backgroundColor = 'aqua';
 							o.q.phone.value = this.yphone;
 							o.q.address.value = this.ystreet;
@@ -21276,9 +21281,16 @@ function MT__RUN() {
 								o.q.name.style.border = '4px solid blue';
 								o.q.name.value = this.yname;
 							}
+							// y.yurl is already scraped?
+							//
+							if (this.yurl) {
+								o.q.url.value = this.yurl;
+								if (e.ctrlKey)
+									try_submit();
+							}
 							// URL?
-							// If URL is blank then scrape profile page
-							if (o.q.url.value == '') {
+							// If URL is blank then scrape profile page.
+							else if (o.q.url.value == '') {
 								yelp_profile(this);
 							}
 						}
@@ -21298,7 +21310,7 @@ function MT__RUN() {
 			div.appendChild(document.createElement('br'));
 			div.appendChild(document.createTextNode('U:'));
 			div.style.border = '2px dashed blue';
-			div.onclick = function () {}; // Set to none!
+			//~ div.onclick = function () {}; // Set to none!
 			GM_xmlhttpRequest({
 				method: 'GET',
 				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
@@ -21319,15 +21331,21 @@ function MT__RUN() {
 						u = decodeURIComponent(u);
 						div.appendChild(document.createTextNode(u));
 						div.yurl = u;
-						// onclick
-						div.onclick = function(e) {
-							// ctrlKey?
-							o.q.url.value = this.yurl;
-							if (e.ctrlKey) {
-								// all filled?
-								try_submit();
-							}
-						}
+						// Fill
+						o.q.url.value = div.yurl;
+						//~ // AUTO FILL
+						//~ if (o.q.url.value == '') {
+							//~ o.q.url.value = div.yurl;
+						//~ }
+						//~ // onclick
+						//~ div.onclick = function(e) {
+							//~ // ctrlKey?
+							//~ o.q.url.value = this.yurl;
+							//~ if (e.ctrlKey) {
+								//~ // all filled?
+								//~ try_submit();
+							//~ }
+						//~ }
 					}
 				}
 			});
