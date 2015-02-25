@@ -10107,7 +10107,8 @@ function load__allPages_AMT_combo() {
 						query: "AMT_Flicksio_IMDB_GetDetails",
 						encodeStrings: {
 							qStrs: firstQuery
-						}
+						},
+						timeout: 80000
 					},
 					processDBResults
 				); 
@@ -10173,7 +10174,8 @@ function load__allPages_AMT_combo() {
 						query: "AMT_Flicksio_IMDB_GetDetails",
 						encodeStrings: {
 							qStrs: secondQuery
-						}
+						},
+						timeout: 80000
 					},
 					processDBResults
 				);
@@ -10316,7 +10318,9 @@ function load__allPages_AMT_combo() {
 					var min_lev_accept = 80; // pct to accept
 					for(var i = 0; i < rslts.length; i++) {
 						var el_div = document.createElement('div');
-						el_div.setAttribute('style', 'border-bottom:1px solid black;');
+						el_div.setAttribute('style',
+							'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
+						); 
 						div.appendChild(el_div);
 						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
 										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
@@ -10352,6 +10356,7 @@ function load__allPages_AMT_combo() {
 						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
 						var pct = ((longest - dist) / longest) * 100; // 0-100
 						highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
+						el_div.style.backgroundColor = pct >= min_lev_length ? 'aqua' : '';
 						//~ console.log(strtmp1 + ',' + strtmp2);
 						//~ console.log(dist);
 						//~ console.log(pct);

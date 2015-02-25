@@ -3899,9 +3899,14 @@ AMT___requests_factory.prototype.database__select = function(database_object, ca
 	if (database_object.encodeStrings)
 		u +='&AMT__database_select__encodeStrings='+encodeURIComponent(JSON.stringify(database_object.encodeStrings));
 	
+	// Timeout?
+	database_object.timeout = (database_object.hasOwnProperty('timeout')) ? database_object.timeout : 30000;
+	
+	// xhr
 	GM_xmlhttpRequest({
 		method: "GET",
 		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php' + u,
+		timeout: database_object.timeout,
 		onload: function(response) {
 			var rs = response.responseText;
 			if (response.status != 200) return;
