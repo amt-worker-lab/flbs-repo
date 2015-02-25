@@ -375,6 +375,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if (request.amISpecialWorkflowWindow_all_pages) {
 			console.log('x');
 			console.log(run);
+			console.log(run.f);
 			console.log(run.require);
 		}
 		

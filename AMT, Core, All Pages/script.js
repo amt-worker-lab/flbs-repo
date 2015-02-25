@@ -9913,7 +9913,7 @@ function load__allPages_AMT_combo() {
 		document.body.innerHTML.indexOf(s) != -1
 		)
 	{
-		var run = function() {require: 'x';}; // requirements
+		var run = function() {}; //require: 'x';// requirements
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
@@ -10018,7 +10018,7 @@ function load__allPages_AMT_combo() {
 						//~ alert('x');
 					//~ }
 				}
-			);return;
+			);//return;
 			
 			AMT__Global_Vars.isSpecialWorkflowWindow = true;
 			// Special workflow window.

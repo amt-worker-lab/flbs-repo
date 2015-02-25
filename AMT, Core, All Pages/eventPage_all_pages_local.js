@@ -46,7 +46,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				console.log(response.detail);
 				
 				// Send a message to global_all_pages_local.js for callback.
-				chrome.runtime.sendMessage(
+				chrome.tabs.sendMessage(
 					sender.tab.id,
 					{
 						amISpecialWorkflowWindow_all_pages: true,
