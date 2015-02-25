@@ -800,6 +800,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
      * specialWorkflowWindow
      */
     if(request.amISpecialWorkflowWindow) {
+		//~ alert(sender.tab + '.');
+		console.log(request);
+		console.log(sender);
 		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
 	}
 	
