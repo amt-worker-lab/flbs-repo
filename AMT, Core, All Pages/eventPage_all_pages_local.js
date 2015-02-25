@@ -5,7 +5,11 @@
  * 
  */
  
- 
+// A place for global vars
+var globals = {
+	core_content_script_extension_id: 'gcfnekbbpmbgadddbojhlojhddnkcpje'
+};
+
 function WS() {
 
 };
@@ -18,6 +22,22 @@ function WS() {
  * 
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	
+	if(request.amISpecialWorkflowWindow) {
+		//~ sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
+		
+		// Make a simple request:
+		chrome.runtime.sendMessage(
+			globals.core_content_script_extension_id,
+			{amISpecialWorkflowWindow: true},
+			function(response) {
+				console.log(response);
+				alert(response);
+				//~ if (targetInRange(response.targetData))
+				//~ chrome.runtime.sendMessage(laserExtensionId, {activateLasers: true});
+			}
+		);
+	}
 	
 	/**
 	 * google_hangouts_load_phone

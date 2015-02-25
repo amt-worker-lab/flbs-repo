@@ -788,11 +788,21 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  
 /**
  * Listen for messages from OTHER scripts
- * */
+ * 
+ * amIUtilityTab
+ * util_window_message_passing
+ */
 chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
 	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
       return;  // don't allow this extension access*/
     
+    /**
+     * specialWorkflowWindow
+     */
+    if(request.amISpecialWorkflowWindow) {
+		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
+	}
+	
 	/**
      * amIUtilityTab
      */  

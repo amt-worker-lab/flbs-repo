@@ -793,6 +793,11 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 	/*if (sender.id == 'gcfnekbbpmbgadddbojhlojhddnkcpje') //Don't listen to ourselves (probably won't happen
       return;  // don't allow this extension access*/
     
+	//~ /**
+     //~ * amIUtilityTab
+     //~ */  
+    //~ if(request.amIUtilityTab) {
+    
 	/**
      * amIUtilityTab
      */  
