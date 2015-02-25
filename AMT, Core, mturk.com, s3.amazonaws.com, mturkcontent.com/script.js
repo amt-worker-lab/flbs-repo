@@ -20868,6 +20868,7 @@ function MT__RUN() {
 		GM_addStyle('.container {margin:0 !important;padding:0;width:20% !important;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		//~ GM_addStyle('.submitButton:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
 		
@@ -20899,7 +20900,22 @@ function MT__RUN() {
 		d3.setAttribute('style','width:100%;background-color:#eee;border:1px solid blue;');
 		o.task_container.appendChild(d3);
 		d3.innerText = '555-555-5555\n123 Main St\n97000\nhttp://a.com';
+		//multiple
+		var d4 = document.createElement('input');
+		d4.type = 'button';
+		d4.setAttribute('style','width:100%;');
+		o.task_container.appendChild(d4);
+		d4.value = 'multiple';
 		/*END ITEMS*/
+		
+		// d4.onclick
+		d4.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			o.q.phone.value = 'multiple';
+			o.q.street.value = 'multiple';
+			o.q.zip.value = 'multiple';
+			o.q.name.focus();
+		}
 		
 		// Set blank placeholder
 		for (var i in o.q) {
@@ -21095,6 +21111,8 @@ function MT__RUN() {
 					if (e.ctrlKey) { //try_submit
 						try_submit();
 					}
+					// Form focus
+					o.q.name.focus();
 				}
 				//mouseover
 				d.addEventListener('mouseover', function() {
@@ -21313,6 +21331,9 @@ function MT__RUN() {
 							else if (o.q.url.value == '') {
 								yelp_profile(this);
 							}
+							
+							// Form focus
+							o.q.name.focus();
 						}
 					}
 				}
@@ -21379,17 +21400,20 @@ function MT__RUN() {
 					has_blank = true;
 				}
 			}
-			var c = confirm('Form has blank field(s). Continue?');
-			if (c) {
-				// ...
-			} else {
+			if (has_blank) {
+				var c = confirm('Form has blank field(s). Continue?');
+				if (c) {
+					// ...
+				} else {
+					return false;
+				}
+			}
+			// Here?
+			// URL, if not blank. Starts with https*://.
+			if (o.q.url.value != '' && !/^https?:\/\/[^\/]{4,}/i.exec(o.q.url.value)) {
 				return false;
 			}
 			// Here?
-			// url? Starts with https*://
-			if (!/^https?:\/\/[^\/]{4,}/i.exec(o.q.url.value)) {
-				return false;
-			}
 			// Phone
 			if (!/^\d{3}-\d{3}-\d{4}$/i.exec(o.q.phone.value)) {
 				return false;
