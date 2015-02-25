@@ -10316,6 +10316,12 @@ function load__allPages_AMT_combo() {
 							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
 						}
 						
+						// If this is special workflow.
+						// Is Levenstein distance less than X?
+						// If so then mark show (top OR bottom) as "found."
+						// Add background-color.
+						
+						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
 							if(
@@ -10348,19 +10354,29 @@ function load__allPages_AMT_combo() {
 							}
 						}
 					}
-					if(!foundAuto)
+					// Single query, special_ww==false, rsltsType==search_t_s
+					if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 					{
 						o.is_in_skip_condition = true;
 						AMT___Floater.skip();
 						console.log('Skip condition #1. Skips here.');
-						console.log(AMT___Floater);
 					}
-
+					// Mutli-query, special_ww==true.
+					else
+					{
+						if (isTopShow) {
+							
+						}
+						if (!isTopShow) {
+							
+						}
+					}
 				}
-				
-				
 			}
-								
+			
+			/**
+			 * function buildFinalInterface
+			 */
 			function buildFinalInterface(isTopShow) {
 				console.log('building interface, topShow is:' + isTopShow);
 				var choices = isTopShow ? o.choices1 : o.choices2;
