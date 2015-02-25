@@ -21,15 +21,19 @@
 
 
 
-var initializeIsSpecialWorkflowWindow__all_pages = function(callback) {
-	var callback = callback;
+var initializeIsSpecialWorkflowWindow__all_pages = function() {
 	chrome.extension.sendRequest( // request, sender, se
 		{
-			amISpecialWorkflowWindow_all_pages: true,
-			callback: callback
+			amISpecialWorkflowWindow_all_pages: true//,
+			//~ callback: callback
+			
+			//callback: 'amISpecialWorkflowWindow_all_pages'
 		}, 
 		function(rs)
 		{
+			// nothing here
+			// Comes back as onMessage. See onMessage.amISpecialWorkflowWindow_all_pages.
+			
 			//~ console.log(rs);
 			//~ AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
 			//~ callback(AMT__Global_Vars.isSpecialWorkflowWindow);
@@ -362,8 +366,15 @@ function MT__bold(o, arr, options_object) {
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		
-		console.log('Recieved onMessage request.');
-		console.log(request);
+		//~ console.log('Recieved onMessage request.');
+		//~ console.log(request);
+		
+		/**
+		 * 
+		 */
+		if (request.amISpecialWorkflowWindow_all_pages) {
+			
+		}
 		
 		/**
 		 * request.google_hangouts_load_phone

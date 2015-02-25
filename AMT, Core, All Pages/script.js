@@ -10011,13 +10011,13 @@ function load__allPages_AMT_combo() {
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			
-			//xx
-			initializeIsSpecialWorkflowWindow__all_pages(
+			//
+			initializeIsSpecialWorkflowWindow__all_pages( // Ask event page of core-mturk.com.
 				function(isSpecialWW) {
-					alert(isSpecialWW);
-					if(isSpecialWW) {
-						alert('x');
-					}
+					//~ alert(isSpecialWW); //x
+					//~ if(isSpecialWW) {
+						//~ alert('x');
+					//~ }
 				}
 			);return;
 			

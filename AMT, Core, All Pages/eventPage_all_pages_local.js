@@ -30,7 +30,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.amISpecialWorkflowWindow_all_pages) {
 		//~ var sendResponse = sendResponse;
-		//~ console.log(request);
+		//~ console.log(request.callback); //undefined
 		//~ console.log(sender);
 		//~ console.log(sender.tab.windowId);
 		//~ console.log(sendResponse);
@@ -42,8 +42,19 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				window_id: sender.tab.windowId
 			},
 			function(response) {
-				console.log(response);
-				console.log(request.callback);
+				
+				// Send a message to global_all_pages_local.js for callback.
+				chrome.runtime.sendMessage(
+					sender.tab.tabId,
+					{
+						amISpecialWorkflowWindow_all_pages: true,
+						detail: response.detail // response.detail
+					},
+					function() {}
+				);
+				
+				//~ console.log(response);
+				//~ console.log(request.callback);
 				//~ sendResponse(response);
 				//~ return 'x';
 			}
