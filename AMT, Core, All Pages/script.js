@@ -10017,8 +10017,8 @@ function load__allPages_AMT_combo() {
 				runtime: o.runtime1,
 				releaseYear: o.releaseYear1,
 				isTopShow:true,
-				one_query: one_qy,
-				special_ww: one_qy
+				one_query: null,
+				special_ww: null
 			}
 			var secondQuery;
 			if(o.title2) {
@@ -10032,8 +10032,8 @@ function load__allPages_AMT_combo() {
 					runtime: o.runtime2,
 					releaseYear: o.releaseYear2,
 					isTopShow: false,
-					one_query: one_qy,
-					special_ww: one_qy
+					one_query: null,
+					special_ww: null
 				}
 				o.numShows = 2;
 			}
@@ -10060,21 +10060,23 @@ function load__allPages_AMT_combo() {
 			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(initialize);
 			/**
 			 * function initialize
+			 * 
+			 * @param is_special, boolean, is_special?
 			 */
-			function initialize() {
-				AMT__Global_Vars.isSpecialWorkflowWindow = true;
+			function initialize(is_special) {//alert(is_special);
+				AMT__Global_Vars.isSpecialWorkflowWindow = is_special;
 				// Auto
-				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
-					var one_qy = true;
-					var spe_wk = true;
+				if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
+					firstQuery.one_query = true;
+					firstQuery.special_ww = true;
 					setTimeout(function() {
 						location.reload();
 					}, 14000);
 				}
 				// Manual+Auto
-				if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
-					var one_qy = false;
-					var spe_wk = false;
+				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
+					firstQuery.one_query = false;
+					firstQuery.special_ww = false;
 				}
 				
 				// Run
@@ -10105,12 +10107,12 @@ function load__allPages_AMT_combo() {
 				console.log(response);
 				var ro = response.responseObject;
 				
-				// Special workflow window.
-				if (AMT__Global_Vars.isSpecialWorkflowWindow) {
-					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
-				}
 				// Non special workflow window.
 				if (!AMT__Global_Vars.isSpecialWorkflowWindow) {
+					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
+				}
+				// Special workflow window.
+				if (AMT__Global_Vars.isSpecialWorkflowWindow) {
 					buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
 					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				}
