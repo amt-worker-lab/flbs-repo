@@ -20906,6 +20906,16 @@ function MT__RUN() {
 			o.q[i].placeholder = '';
 		}
 		
+		// Remove td[0]
+		document.getElementsByTagName('td')[0].innerText = 'r';
+		// Remove blank divs
+		var d = document.getElementsByTagName('div');
+		for (var i in d) {
+			if (i == 'length') break;
+			if (d[i].innerHTML.trim() == '&nbsp;')
+				d[i].style.display = 'none';
+		}
+		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
 			elements: [
@@ -20913,6 +20923,12 @@ function MT__RUN() {
 			],
 			offset: 0
 		});
+		
+		// sb.onclick
+		document.getElementById('submitButton').onclick = function () {
+			try_submit();
+			return false;
+		}
 		
 		// Init yelp
 		yelp();
@@ -21206,6 +21222,10 @@ function MT__RUN() {
 						var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
 						if (ph) {
 							ph = __js_clean_html_str(ph[1]).trim();
+							// Format phone
+							ph = ph.replace(/[\- \(\)]/g, '');
+							ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
+							// ...
 							div.yphone = ph;
 						}
 						// Name, href
@@ -21351,16 +21371,27 @@ function MT__RUN() {
 			});
 		}
 		function try_submit() {
+			var has_blank = false;
 			for (var i in o.q) {
 				var el = o.q[i];
 				el.value = el.value.trim();
 				if (el.value == '') {
-					return false;
+					has_blank = true;
 				}
+			}
+			var c = confirm('Form has blank field(s). Continue?');
+			if (c) {
+				// ...
+			} else {
+				return false;
 			}
 			// Here?
 			// url? Starts with https*://
 			if (!/^https?:\/\/[^\/]{4,}/i.exec(o.q.url.value)) {
+				return false;
+			}
+			// Phone
+			if (!/^\d{3}-\d{3}-\d{4}$/i.exec(o.q.phone.value)) {
 				return false;
 			}
 			// Here?
