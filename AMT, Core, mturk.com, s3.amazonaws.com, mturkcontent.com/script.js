@@ -20868,6 +20868,7 @@ function MT__RUN() {
 		GM_addStyle('.container {margin:0 !important;padding:0;width:20% !important;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+		GM_addStyle('#new_name:hover {background-color:LightGreen;cursor:pointer;}');
 		//~ GM_addStyle('.submitButton:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
@@ -20907,6 +20908,16 @@ function MT__RUN() {
 		o.task_container.appendChild(d4);
 		d4.value = 'multiple';
 		/*END ITEMS*/
+		
+		// ctrlClick on o.q.name
+		//~ // And set :hover
+		o.q.name.onclick = function(e) {
+			if (e.ctrlKey) {
+				this.value = o.name;
+				this.style.border = '';
+			}
+		}
+		//~ o.q.name.setAttribut
 		
 		// d4.onclick
 		d4.onclick = function() {
@@ -21253,6 +21264,8 @@ function MT__RUN() {
 							//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
 							div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
 							div.yname = __js_clean_html_str(reg[2]).trim();
+							// Replace "’" with "'" in name
+							div.yname = div.yname.replace(/’/g, "'");
 						}
 						// IF NO NAME THEN DO NOT CONTINUE
 						else {
