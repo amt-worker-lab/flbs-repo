@@ -20866,7 +20866,7 @@ function MT__RUN() {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('.container {margin:0 !important;padding:0;width:20% !important;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
-		GM_addStyle('.exe:hover {background-color:LightGreen;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
 		
@@ -21230,9 +21230,20 @@ function MT__RUN() {
 							'l:'+ div.ylocn + '('+div.yzip+')<br>' +
 							'r:'+ div.yreviews + '<br>' +
 							'p:'+ div.yphone + '<br>' +
-							'd:'+ df
+							'd:'+ df + '<br>' +
+							'l:'
 						;
-						div.onclick = function() { // onclick
+						var link = document.createElement(a); // Link
+						a.innerText = 'link';
+						a.href = div.href;
+						a.onclick = function(e) {
+							window.open(this.href, 'new');
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+						div.appendChild(link);
+						div.onclick = function() { // div.onclick
 							this.style.backgroundColor = 'aqua';
 							o.q.phone.value = this.yphone;
 							o.q.address.value = this.ystreet;
@@ -21245,10 +21256,76 @@ function MT__RUN() {
 								o.q.name.style.border = '4px solid blue';
 								o.q.name.value = this.yname;
 							}
+							// URL?
+							// If URL is blank then scrape profile page
+							if (o.q.url.value == '') {
+								yelp_profile(this);
+							}
 						}
 					}
 				}
 			});
+		}
+		/**
+		 * function yelp_profile
+		 * 
+		 * @param	div, html element
+		 * @returns
+		 */
+		function yelp_profile(div) {
+			var u = div.yhref;
+			var div = div;
+			div.appendChild(document.createTextNode('U:'));
+			div.style.border = '2px dashed blue';
+			div.onclick = function () {}; // Set to none!
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					// Loaded
+					div.style.border = '';
+					
+					// scrape url
+					//
+					var reg = /<span class="offscreen">Business website<\/span>[\r\n\t\s]+<a href="\/biz_redir\?url=([^&]+)&amp;[^"]+" target="_blank">[^<]+<\/a>/.exec(rs);
+					if (reg) {
+						var u = __js_clean_html_str(reg[1]).trim();
+						u = decodeURIComponent(u);
+						div.appendChild(document.createTextNode(u));
+						div.yurl = u;
+						// onclick
+						div.onclick = function(e) {
+							// ctrlKey?
+							o.q.url.value = this.yurl;
+							if (e.ctrlKey) {
+								// all filled?
+								try_submit();
+							}
+						}
+					}
+				}
+			});
+		}
+		function try_submit() {
+			for (var i in o.q) {
+				var el = o.q[i];
+				el.value = el.value.trim();
+				if (el.value == '') {
+					return false;
+				}
+			}
+			// Here?
+			// url? Starts with https*://
+			if (!/^https?:\/\/[^\/]{4,}/i.exec(o.q.url.value)) {
+				return false;
+			}
+			// Here?
+			new AMT___core_factory().nextTab();
+			doSubmit();
 		}
 	}
 	//
