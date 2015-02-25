@@ -23,20 +23,24 @@ function WS() {
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
-	if(request.amISpecialWorkflowWindow) {
+	/**
+	 * amISpecialWorkflowWindow_all_pages
+	 */
+	if(request.amISpecialWorkflowWindow_all_pages) {
+		var sendResponse = sendResponse;
 		chrome.windows.getCurrent(
 			function(window) {
 				//~ console.log(window);
 				//~ console.log(window.id);
 				
+				// Send External Message!
 				chrome.runtime.sendMessage(
 					globals.core_content_script_extension_id,
 					{amISpecialWorkflowWindow: true, window_id: window.id},
 					function(response) {
 						console.log(response);
-						alert(response);
-						//~ if (targetInRange(response.targetData))
-						//~ chrome.runtime.sendMessage(laserExtensionId, {activateLasers: true});
+						//~ alert(response);
+						sendResponse(response);
 					}
 				);
 			}
