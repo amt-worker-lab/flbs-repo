@@ -20864,103 +20864,78 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('.container {margin:0;padding:0;}');
+		GM_addStyle('.container {margin:0;padding:0;width:20%;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		
-		//http://www.yelp.com/search?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
-		var a = document.getElementsByTagName('a')[0].href.replace(/\/search/, '/search/snippet').replace(/#/g, '&');
+		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
 		
-		var id = document.getElementsByTagName('td')[3].innerText;
+		var p = document.getElementsByTagName('td')[1].getElementsByTagName('p');
 		
-		// 0
-		// 1 = #
-		a = a.replace(/&start=(\d+)$/, function(m0, m1) {
-			//~ console.log(m1);
-			
-			// 190 needs to go to 180.
-			
-			// 190 would contain 191 - 200
-			// 193 = 193 / 10 = 19.3 = Math.round(19.3) = 19 * 10 = 190 ( #s 191-200 )
-			
-			// 19 / 10 = 1.9 = Math.round(1.9) = 2 ( #s 11-20 )
-			
-			// start = x
-			// get = x + 1
-			
-			// start = 0
-			// get = 1
-			
-			// 0 / 10 = 0
-			
-			// 190 is 189.
-			// 189 = 18.9 = 18 = 180 = #s 181 - 190
-			//~ m1 = (m1*1) - 1;
-			//~ m1 = Math.round(m1);
-			
-			// FLOOR RATHER THAN ROUND
-			// FLOOR
-			// 357 = 356 = 35.6 = 35
-			// ROUND
-			// 357 = 356 = 35.6 = 36
-			
-			// 11 = 11 - 1 = 10 / 10 = 1 * 10 = 10
-			
-			// 10 = 10 / 10 = 1 * 10 = 10 (11-20)
-			
-			// 190 = 
-			
-			
-			return '&start=' + (Math.floor( m1 / 10 ) * 10);
-		});
-		//~ return;
+		var o = {
+			name: p[0].innerText.trim(),
+			loc: p[1].innerText.trim().replace(/^in /, '') // remove "in "
+		}
 		
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(a),
-			onload: function (response) {
-				var rs = response.responseText;
-				
-				if (response.status != 200) return;
-				
-				rs = JSON.parse(rs);
-				
-				console.log(rs);
-				
-				//~ var sh = rs.search_header;
-				//~ var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
-				//~ if (r) {
-					//~ r = r[1];
-					//~ document.getElementById('result_count').value = r;
-					//~ doSubmit();
-				//~ }
-				
-				
-				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
-				var m;
-				while (m = r.exec(rs.search_results)) {
+		/*BEGIN ITEMS*/
+		var d1 = document.createElement('div');
+		d1.setAttribute('style','position:absolute;top:0;left:20%;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		var d2 = document.createElement('div');
+		d2.setAttribute('style','position:absolute;top:0;left:20%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d2);
+		/*END ITEMS*/
+		
+		function yelp() {
+			var u = 'http://www.yelp.com/search/snippet'+
+				'?find_desc='+encodeURIComponent(o.loc)+
+				'&find_loc='+encodeURIComponent(o.loc);
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				onload: function (response) {
+					var rs = response.responseText;
 					
-					//~ console.log(m);
+					if (response.status != 200) return;
 					
-					if (m[1].indexOf('<span class="indexed-biz-name">' + id + '.' ) != -1) {
+					rs = JSON.parse(rs); // Must be valid to continue.
+					
+					console.log(rs);
+					
+					var sh = rs.search_header;
+					var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+					if (r) {
+						r = r[1];
+						d1.innerHTML = r + ' results.<hr>';
+					}
+					
+					
+					var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+					var m;
+					while (m = r.exec(rs.search_results)) {
 						
 						//~ console.log(m);
 						
-						// (619) 238-4949
-						// 
-						var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
-						if (ph) {
-							ph = __js_clean_html_str(ph[1]).trim();
-							document.getElementById('phone_number').value = ph;
+						if (m[1].indexOf('<span class="indexed-biz-name">' + id + '.' ) != -1) {
 							
-							doSubmit();
+							//~ console.log(m);
+							
+							// (619) 238-4949
+							// 
+							var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+							if (ph) {
+								ph = __js_clean_html_str(ph[1]).trim();
+								document.getElementById('phone_number').value = ph;
+								
+								doSubmit();
+							}
+							
+							// END HERE
+							break;
 						}
-						
-						// END HERE
-						break;
 					}
 				}
-			}
-		});
+			});
+		}
 	}
 	//
 	// Brandon Bennett
