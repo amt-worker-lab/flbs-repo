@@ -25,13 +25,14 @@ var initializeIsSpecialWorkflowWindow__all_pages = function(callback) {
 	var callback = callback;
 	chrome.extension.sendRequest( // request, sender, se
 		{
-			amISpecialWorkflowWindow_all_pages: true
+			amISpecialWorkflowWindow_all_pages: true,
+			callback: callback
 		}, 
 		function(rs)
 		{
-			console.log(rs);
-			AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
-			callback(AMT__Global_Vars.isSpecialWorkflowWindow);
+			//~ console.log(rs);
+			//~ AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
+			//~ callback(AMT__Global_Vars.isSpecialWorkflowWindow);
 		}
 	);
 }

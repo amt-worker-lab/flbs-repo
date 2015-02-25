@@ -43,6 +43,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			},
 			function(response) {
 				console.log(response);
+				console.log(request.callback);
 				//~ sendResponse(response);
 				//~ return 'x';
 			}
@@ -84,14 +85,17 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//~ chrome.tabs.query({url: 'https://*.googleusercontent.com/*'}, function(tabs) {
 		chrome.tabs.query({url: '<all_urls>'}, function(tabs) {
 			for (var i in tabs) {
-				chrome.tabs.sendMessage(tabs[i].id, 
-								{
-									google_hangouts_load_phone: request.phone_number,
-									google_hangouts_details: request.details,
-									google_hangouts_task_name: request.task_name
-								}, function(response) {
-					// Meh
-				});
+				chrome.tabs.sendMessage(
+					tabs[i].id,
+					{
+						google_hangouts_load_phone: request.phone_number,
+						google_hangouts_details: request.details,
+						google_hangouts_task_name: request.task_name
+					},
+					function(response) {
+						// Meh
+					}
+				);
 			}
 			//~ console.log('query tabs');
 			//~ console.log(tabs);
