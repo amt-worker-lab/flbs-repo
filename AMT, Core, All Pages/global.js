@@ -169,12 +169,15 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 
 AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 	var callback = callback;
-	chrome.extension.sendRequest({amISpecialWorkflowWindow: true}, 
-			function(rs) 
-			{
-				AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
-				callback(AMT__Global_Vars.isSpecialWorkflowWindow);
-			});
+	chrome.extension.sendRequest(
+		{amISpecialWorkflowWindow: true}, 
+		function(rs)
+		{
+			console.log(rs);
+			AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
+			callback(AMT__Global_Vars.isSpecialWorkflowWindow);
+		}
+	);
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
@@ -4572,7 +4575,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
 	// Global
 	var opts = options_object;
-	console.log('------------.scrape OPTS-------------');
+	console.log('------------.scrape OPTS-------------'); //DEBUG: This was to help find duplicate reload.extensions bug.
 	console.log(opts);
 	
 	switch (opts.site) {

@@ -10012,6 +10012,14 @@ function load__allPages_AMT_combo() {
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			
 			//xx
+			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(
+				function(isSpecialWW) {
+					alert(isSpecialWW);
+					if(isSpecialWW) {
+						alert('x');
+					}
+				}
+			);return;
 			AMT__Global_Vars.isSpecialWorkflowWindow = true;
 			// Special workflow window.
 			// One query. For skips.
