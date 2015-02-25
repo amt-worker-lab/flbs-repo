@@ -169,12 +169,14 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 
 AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 	var callback = callback;
-	chrome.extension.sendRequest({amISpecialWorkflowWindow: true}, 
-			function(rs) 
-			{
-				AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
-				callback(AMT__Global_Vars.isSpecialWorkflowWindow);
-			});
+	chrome.extension.sendRequest(
+		{amISpecialWorkflowWindow: true}, 
+		function(rs) 
+		{
+			AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
+			callback(AMT__Global_Vars.isSpecialWorkflowWindow);
+		}
+	);
 }
 
 AMT__Global_Vars.initializeGroupId = function () {
