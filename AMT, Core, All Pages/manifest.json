@@ -3,20 +3,28 @@
       "exclude_globs": [  ],
       "exclude_matches": [  ],
       "include_globs": [ "*" ],
-      "js": [ "global.js","global_all_pages_local.js", "script.js" ],
+      "js": [ "global.js","global_all_pages_local.js","script.js" ],
       "matches": ["http://*/*","https://*/*"],
       "run_at": "document_idle",
       "all_frames": true
    } ],
    "background": {
-      "scripts": ["eventPage.js", "eventPage_all_pages_local.js"]
+      "scripts": [ "eventPage.js","eventPage_all_pages_local.js" ]
    },
    "permissions": [
 		"http://*/",
 		"https://*/"
    ],
+   "browser_action": {
+		"default_icon": {
+			"19": "images/RobGTX_Cardinal.png",
+			"38": "images/RobGTX_Cardinal.png"
+		},
+		"default_title": "All Pages",		// optional; shown in tooltip
+		"default_popup": "popup.html"			// optional
+   },
    "converted_from_user_script": false,
-   "description": "",
+   "description": "All Pages",
    "key": "Mt2SWnq1lkxE25k7wxESx5b7FJoOlQJPWnqkqWAoAaU=",
    "name": "AMT, Core, All Pages",
    "version": "1.0",

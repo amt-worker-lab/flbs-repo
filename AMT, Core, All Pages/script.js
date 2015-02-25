@@ -10058,6 +10058,9 @@ function load__allPages_AMT_combo() {
 			// One = skips, autos only.
 			// Two = skips, autos, manual: accepts on 2x has results>0, 2x Levenstein distance (ep. + series) <= 4
 			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(initialize);
+			/**
+			 * function initialize
+			 */
 			function initialize() {
 				AMT__Global_Vars.isSpecialWorkflowWindow = true;
 				// Auto
