@@ -798,12 +798,14 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     
     /**
      * specialWorkflowWindow
+     * @ request.amISpecialWorkflowWindow
+     * @ request.window_id
      */
     if(request.amISpecialWorkflowWindow) {
-		//~ alert(sender.tab + '.');
-		console.log(request);
-		console.log(sender);
-		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
+		//~ console.log(request);
+		//~ console.log(sender);
+		//~ console.log(request.window_id);
+		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == request.window_id)});
 	}
 	
 	/**

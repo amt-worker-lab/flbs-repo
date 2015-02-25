@@ -24,18 +24,21 @@ function WS() {
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	if(request.amISpecialWorkflowWindow) {
-		//~ sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
-		console.log(window);
-		console.log(this);
-		// Make a simple request:
-		chrome.runtime.sendMessage(
-			globals.core_content_script_extension_id,
-			{amISpecialWorkflowWindow: true, window_id: window},
-			function(response) {
-				console.log(response);
-				alert(response);
-				//~ if (targetInRange(response.targetData))
-				//~ chrome.runtime.sendMessage(laserExtensionId, {activateLasers: true});
+		chrome.windows.getCurrent(
+			function(window) {
+				//~ console.log(window);
+				//~ console.log(window.id);
+				
+				chrome.runtime.sendMessage(
+					globals.core_content_script_extension_id,
+					{amISpecialWorkflowWindow: true, window_id: window.id},
+					function(response) {
+						console.log(response);
+						alert(response);
+						//~ if (targetInRange(response.targetData))
+						//~ chrome.runtime.sendMessage(laserExtensionId, {activateLasers: true});
+					}
+				);
 			}
 		);
 	}
