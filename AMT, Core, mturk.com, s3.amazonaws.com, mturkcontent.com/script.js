@@ -20874,7 +20874,7 @@ function MT__RUN() {
 		
 		var o = {
 			name: p[0].innerText.trim(),
-			loc: p[1].innerText.trim().replace(/^in /, ''), // remove "in "
+			locn: p[1].innerText.trim().replace(/^in /, ''), // remove "in "
 			domain_counts: {}, // obj
 			q: {
 				name: document.getElementById('new_name'),
@@ -20945,7 +20945,7 @@ function MT__RUN() {
 			
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				startPage: true,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.name + ' ' + o.loc),
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.name + ' ' + o.locn),
 				callback_function: company_URL__processProxyResponse
 			});
 		}
@@ -21131,8 +21131,8 @@ function MT__RUN() {
 		function yelp() {
 			d1.innerText = '';
 			var u = 'http://www.yelp.com/search/snippet'+
-				'?find_desc='+encodeURIComponent(o.loc)+
-				'&find_loc='+encodeURIComponent(o.loc);
+				'?find_desc='+encodeURIComponent(o.name)+
+				'&find_loc='+encodeURIComponent(o.locn);
 			GM_xmlhttpRequest({
 				method: 'GET',
 				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
@@ -21149,20 +21149,27 @@ function MT__RUN() {
 					var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
 					if (r) {
 						r = r[1];
-						d1.innerHTML = r + ' results.<hr>';
+						d1.innerHTML = r + ' results.';
 					} else {
-						d1.innerHTML = 0 + ' results.<hr>';
+						d1.innerHTML = 0 + ' results.';
 					}
+					var div = document.createElement('div'); // hr
+					div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
+					d1.appendChild(div);
 					
 					
 					var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
 					var m;
 					while (m = r.exec(rs.search_results)) {
 						
+						// Replace all highlights!
+						m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+						// ...
 						console.log(m);
 						
+						
 						var div = document.createElement('div');
-						div.setAttribute('style','width:100;border-bottom:1px solid #a2a2a2;');
+						div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
 						div.className = 'exe';
 						div.yname = null;
 						div.yhref = null;
