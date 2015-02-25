@@ -21428,7 +21428,7 @@ function MT__RUN() {
 			}
 			// Here?
 			// Phone
-			if (o.q.phone.value != '' && !/^\d{3}-\d{3}-\d{4}$/i.exec(o.q.phone.value)) {
+			if (o.q.phone.value != '' && o.q.phone.value != 'multiple' && !/^\d{3}-\d{3}-\d{4}$/i.exec(o.q.phone.value)) {
 				return false;
 			}
 			// Here?
