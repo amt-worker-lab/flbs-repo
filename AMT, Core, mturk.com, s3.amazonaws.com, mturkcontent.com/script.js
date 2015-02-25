@@ -20869,6 +20869,7 @@ function MT__RUN() {
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 		GM_addStyle('#new_name:hover {background-color:LightGreen;cursor:pointer;}');
+		GM_addStyle('a:hover {background-color:blue !important;cursor:pointer !important;}');
 		//~ GM_addStyle('.submitButton:hover {background-color:LightGreen;cursor:pointer;}');
 		
 		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
@@ -20886,15 +20887,17 @@ function MT__RUN() {
 				zip: document.getElementById('zip'),
 				url: document.getElementById('web_url'),
 			},
-			task_container: document.getElementsByClassName('container')[0].getElementsByTagName('div')[0]
+			task_container: document.getElementsByClassName('container')[0].getElementsByTagName('div')[0],
+			bold_name: null
 		}
+		o.bold_name = o.name.clean_string_to_array();
 		
 		/*BEGIN ITEMS*/
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0;left:20%;width:20%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:0;left:20%;width:30%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d2 = document.createElement('div');
-		d2.setAttribute('style','position:absolute;top:0;left:40%;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d2.setAttribute('style','position:absolute;top:0;left:50%;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d2);
 		//task_container add instructions
 		var d3 = document.createElement('div');
@@ -21237,11 +21240,12 @@ function MT__RUN() {
 						div.className = 'exe';
 						div.yname = null;
 						div.yhref = null;
-						div.yphone = null;
+						div.yphone = '';
 						div.yreviews = null;
-						div.ystreet = null;
-						div.ylocn = null;
-						div.yzip = null;
+						div.ycategories = '';
+						div.ystreet = '';
+						div.ylocn = '';
+						div.yzip = '';
 						div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
 						d1.appendChild(div);
 						
@@ -21278,6 +21282,13 @@ function MT__RUN() {
 							reg = reg[1];
 							div.yreviews = reg;
 						}
+						// catg.
+						// e.g. <a href="/search?find_desc=Pok+Pok+Noi&amp;find_loc=Portland%2C+Oregon&amp;cflt=thai">Thai</a>    
+						var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+						if (reg) {
+							reg = reg[1].replace(/<[^>]*>/g, '').trim();
+							div.ycategories = reg;
+						}
 						// addr
 						// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
 						var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
@@ -21301,13 +21312,14 @@ function MT__RUN() {
 						
 						// Display
 						div.innerHTML = 
-							'n:'+ div.yname + '<br>' + // diff
-							's:'+ div.ystreet + '<br>' +
-							'l:'+ div.ylocn + '('+div.yzip+')<br>' +
-							'r:'+ div.yreviews + '<br>' +
-							'p:'+ div.yphone + '<br>' +
-							'd:'+ df + '<br>' +
-							'l:'
+							':'+ MT__bold(div.yname, o.bold_name) + '<br>' + // diff
+							':'+ div.ystreet + '<br>' +
+							':'+ div.ylocn + (div.yzip != '' ? '('+div.yzip+')' : '') + '<br>' +
+							':'+ div.yphone + '<br>' +
+							':'+ df + '<br>' +
+							'reviews:'+ div.yreviews + '<br>' +
+							'catg.:'+ div.ycategories + '<br>' +
+							':'
 						;
 						var link = document.createElement(a); // Link
 						link.innerText = 'link';
