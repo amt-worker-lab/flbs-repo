@@ -20733,6 +20733,12 @@ function MT__RUN() {
 		//~ var y = JSON.parse('[{"name":"aqua","hex":"#00FFFF","hsl":[180,1,0.5]},{"name":"beige","hex":"#F5F5DC","hsl":[60,0.555555555555556,0.911764705882353]},{"name":"black","hex":"#000000","hsl":[0,0,0]},{"name":"blue","hex":"#0000FF","hsl":[240,1,0.5]},{"name":"brown","hex":"#A52A2A","hsl":[0,0.5942028985507247,0.40588235294117647]},{"name":"fuchsia","hex":"#FF00FF","hsl":[300,1,0.5]},{"name":"gray","hex":"#808080","hsl":[0,0,0.5019607843137255]},{"name":"green","hex":"#008000","hsl":[120,1,0.25098039215686274]},{"name":"lime","hex":"#00FF00","hsl":[120,1,0.5]},{"name":"maroon","hex":"#800000","hsl":[0,1,0.25098039215686274]},{"name":"navy","hex":"#000080","hsl":[240,1,0.25098039215686274]},{"name":"olive","hex":"#808000","hsl":[60,1,0.25098039215686274]},{"name":"orange","hex":"#FFA500","hsl":[39,1,0.5]},{"name":"pink","hex":"#FFC0CB","hsl":[350,1,0.8764705882352941]},{"name":"purple","hex":"#800080","hsl":[300,1,0.25098039215686274]},{"name":"red","hex":"#FF0000","hsl":[0,1,0.5]},{"name":"silver","hex":"#C0C0C0","hsl":[0,0,0.7529411764705882]},{"name":"teal","hex":"#008080","hsl":[180,1,0.25098039215686274]},{"name":"turquoise","hex":"#40E0D0","hsl":[174,0.7207207207207207,0.5647058823529412]},{"name":"white","hex":"#FFFFFF","hsl":[0,0,1]},{"name":"yellow","hex":"#FFFF00","hsl":[60,1,0.5]}]');
 	}
 	
+	/**
+	 * Yelp.com scrape
+	 * Adam Garson
+	 * Brandon Bennett
+	 * 
+	 */
 	//
 	// Adam Garson
 	// yelp
@@ -20851,74 +20857,111 @@ function MT__RUN() {
 	}
 	
 	//
-	// Andrew Martin
-	// Find the Number of Bedrooms for this Home
+	// Steven Frank
+	// Find contact information for restaurants
 	//
-	s = '	<li>You can and should use sites like Zillow, Trulia, or Redfin to find this information</li>';
-	if(ih.indexOf(s) != -1)
+	s = '<p>- If you have a better suggestion for the restaurant\'s name (for example, if it contains a typo or is not accurate), edit the name field, otherwise leave it as is.</p>';
+	if (ih.indexOf(s) != -1)
 	{		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		GM_addStyle('body {width:40%;margin-top:0px;}');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+		GM_addStyle('.container {margin:0;padding:0;}');
+		GM_addStyle('.panel {position:absolute;top:1000px;}');
 		
-		//
-		var b = document.getElementsByTagName('b');
-		b = b[0].innerText.trim();
+		//http://www.yelp.com/search?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
+		var a = document.getElementsByTagName('a')[0].href.replace(/\/search/, '/search/snippet').replace(/#/g, '&');
 		
-		//
-		var d;
-		//
-		d = document.createElement('div');
-		d.setAttribute('id','d1');
-		d.setAttribute('style','position:absolute;top:0px;left:40%;width:59%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d);
-		var d1 = d;
+		var id = document.getElementsByTagName('td')[3].innerText;
 		
-		var u;
-		u = 'http://www.zillow.com/search/RealEstateSearch.htm?citystatezip='+encodeURIComponent(b);
-		// /.../ DEBUG /.../ u = 'http://www.zillow.com/search/RealEstateSearch.htm?citystatezip=10042+Cynthia+Dr%2C+Huntington+Beach%2C+CA+92646';
+		// 0
+		// 1 = #
+		a = a.replace(/&start=(\d+)$/, function(m0, m1) {
+			//~ console.log(m1);
+			
+			// 190 needs to go to 180.
+			
+			// 190 would contain 191 - 200
+			// 193 = 193 / 10 = 19.3 = Math.round(19.3) = 19 * 10 = 190 ( #s 191-200 )
+			
+			// 19 / 10 = 1.9 = Math.round(1.9) = 2 ( #s 11-20 )
+			
+			// start = x
+			// get = x + 1
+			
+			// start = 0
+			// get = 1
+			
+			// 0 / 10 = 0
+			
+			// 190 is 189.
+			// 189 = 18.9 = 18 = 180 = #s 181 - 190
+			//~ m1 = (m1*1) - 1;
+			//~ m1 = Math.round(m1);
+			
+			// FLOOR RATHER THAN ROUND
+			// FLOOR
+			// 357 = 356 = 35.6 = 35
+			// ROUND
+			// 357 = 356 = 35.6 = 36
+			
+			// 11 = 11 - 1 = 10 / 10 = 1 * 10 = 10
+			
+			// 10 = 10 / 10 = 1 * 10 = 10 (11-20)
+			
+			// 190 = 
+			
+			
+			return '&start=' + (Math.floor( m1 / 10 ) * 10);
+		});
+		//~ return;
 		
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: u,
-			//url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(this.whitepages_href),
+			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(a),
 			onload: function (response) {
 				var rs = response.responseText;
 				
-				if (response.status != 200) {
-					exit(response.status);
-				}
+				if (response.status != 200) return;
 				
-				if  (
-					rs.indexOf('No matching homes found; showing homes in the region you searched. Add it to our database by') != -1 ||
-					rs.indexOf('We could not find this area. Please check your spelling or enter a valid ZIP code.') != -1
-					) {
-					document.getElementById('Q1Url').value = 'No matching homes found; showing homes in the region you searched.';
-					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.skip();
-						return;
-					}
-				}
+				rs = JSON.parse(rs);
 				
-				var r;
+				console.log(rs);
 				
-				//}--></div><
-				r = /<div id="resurrection-page-state" class="template hide">&nbsp;<!--((.|\s)*?(?=--><\/div>|$)|$)/.exec(rs);
-				if (r) {
-					var r2 = /<li class=\\\\"prop\\-cola\\\\"> Beds: (\d+)</.exec(r[1]);
-					if (r2) {
-						document.getElementById('Q1Url').value = r2[1];
-						doSubmit();
-					}
+				//~ var sh = rs.search_header;
+				//~ var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+				//~ if (r) {
+					//~ r = r[1];
+					//~ document.getElementById('result_count').value = r;
+					//~ doSubmit();
+				//~ }
+				
+				
+				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+				var m;
+				while (m = r.exec(rs.search_results)) {
 					
-					// THIS WILL PARSE JS OBJECT
-					//~ var x = r[1].replace(/\\-/g, '-');
-					//~ x = x.replace(/\\\\/g, '\\')
-					//~ console.log(JSON.parse(x));
+					//~ console.log(m);
+					
+					if (m[1].indexOf('<span class="indexed-biz-name">' + id + '.' ) != -1) {
+						
+						//~ console.log(m);
+						
+						// (619) 238-4949
+						// 
+						var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+						if (ph) {
+							ph = __js_clean_html_str(ph[1]).trim();
+							document.getElementById('phone_number').value = ph;
+							
+							doSubmit();
+						}
+						
+						// END HERE
+						break;
+					}
 				}
 			}
 		});
 	}
-	
 	//
 	// Brandon Bennett
 	//
@@ -21065,6 +21108,75 @@ function MT__RUN() {
 					r = r[1];
 					document.getElementById('result_count').value = r;
 					doSubmit();
+				}
+			}
+		});
+	}
+	
+	//
+	// Andrew Martin
+	// Find the Number of Bedrooms for this Home
+	//
+	s = '	<li>You can and should use sites like Zillow, Trulia, or Redfin to find this information</li>';
+	if(ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('body {width:40%;margin-top:0px;}');
+		
+		//
+		var b = document.getElementsByTagName('b');
+		b = b[0].innerText.trim();
+		
+		//
+		var d;
+		//
+		d = document.createElement('div');
+		d.setAttribute('id','d1');
+		d.setAttribute('style','position:absolute;top:0px;left:40%;width:59%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d);
+		var d1 = d;
+		
+		var u;
+		u = 'http://www.zillow.com/search/RealEstateSearch.htm?citystatezip='+encodeURIComponent(b);
+		// /.../ DEBUG /.../ u = 'http://www.zillow.com/search/RealEstateSearch.htm?citystatezip=10042+Cynthia+Dr%2C+Huntington+Beach%2C+CA+92646';
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: u,
+			//url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(this.whitepages_href),
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				if (response.status != 200) {
+					exit(response.status);
+				}
+				
+				if  (
+					rs.indexOf('No matching homes found; showing homes in the region you searched. Add it to our database by') != -1 ||
+					rs.indexOf('We could not find this area. Please check your spelling or enter a valid ZIP code.') != -1
+					) {
+					document.getElementById('Q1Url').value = 'No matching homes found; showing homes in the region you searched.';
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
+						return;
+					}
+				}
+				
+				var r;
+				
+				//}--></div><
+				r = /<div id="resurrection-page-state" class="template hide">&nbsp;<!--((.|\s)*?(?=--><\/div>|$)|$)/.exec(rs);
+				if (r) {
+					var r2 = /<li class=\\\\"prop\\-cola\\\\"> Beds: (\d+)</.exec(r[1]);
+					if (r2) {
+						document.getElementById('Q1Url').value = r2[1];
+						doSubmit();
+					}
+					
+					// THIS WILL PARSE JS OBJECT
+					//~ var x = r[1].replace(/\\-/g, '-');
+					//~ x = x.replace(/\\\\/g, '\\')
+					//~ console.log(JSON.parse(x));
 				}
 			}
 		});
