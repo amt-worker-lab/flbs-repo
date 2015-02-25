@@ -10045,15 +10045,31 @@ function load__allPages_AMT_combo() {
 			
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
-			d_container.setAttribute('style', "position:absolute;left:30%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
+			d_container.setAttribute('style',
+				"position:absolute;left:30%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;"
+			);
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', "width:100%;height:400px;background-color:#eee;overflow:auto;");
+			d1.setAttribute('style',
+				"width:100%;height:400px;background-color:#eee;overflow:auto;"
+			);
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', "width:100%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;");
+			d2.setAttribute('style',
+				"width:100%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;"
+			);
 			d_container.appendChild(d2);
 			/*End of Elements*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				callback_function: function(innerHeight) {
+					var half = Math.floor(innerHeight / 2);
+					d_container.style.height = innerHeight + 'px';
+					d1.style.height = half + 'px';
+					d2.style.height = half + 'px';
+				}
+			});
 			
 			// Special workflow.
 			// One = skips, autos only.
@@ -10070,6 +10086,8 @@ function load__allPages_AMT_combo() {
 				if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
 					firstQuery.one_query = true;
 					firstQuery.special_ww = true;
+					secondQuery.one_query = true;
+					secondQuery.special_ww = true;
 					setTimeout(function() {
 						location.reload();
 					}, 14000);
@@ -10078,6 +10096,8 @@ function load__allPages_AMT_combo() {
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
 					firstQuery.one_query = false;
 					firstQuery.special_ww = false;
+					secondQuery.one_query = false;
+					secondQuery.special_ww = false;
 				}
 				
 				// Run
@@ -10331,10 +10351,11 @@ function load__allPages_AMT_combo() {
 						var dist = new AMT___gen_functions().levensht(strtmp1, strtmp2);
 						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
 						var pct = ((longest - dist) / longest) * 100; // 0-100
-						highestPct = (pct > highestPct && longest.length >= min_lev_length) ? pct : highestPct;// set highest
-						console.log(strtmp1 + ',' + strtmp2);
-						console.log(dist);
-						console.log(pct);
+						highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
+						//~ console.log(strtmp1 + ',' + strtmp2);
+						//~ console.log(dist);
+						//~ console.log(pct);
+						//~ console.log(highestPct);
 						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
