@@ -10327,11 +10327,14 @@ function load__allPages_AMT_combo() {
 						// 
 						// QUESTION: Cache any, or up to X, if Lev. is >= 96? 98? 99?
 						var strtmp1 = rslts[i].title + rslts[i].parent_title;
-						var strtmp2 = (isTopShow) ? o.cast1 + o.series1 : o.cast2 + o.series2;
+						var strtmp2 = (isTopShow) ? o.title1 + o.series1 : o.title2 + o.series2;
 						var dist = new AMT___gen_functions().levensht(strtmp1, strtmp2);
 						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
 						var pct = ((longest - dist) / longest) * 100; // 0-100
 						highestPct = (pct > highestPct && longest.length >= min_lev_length) ? pct : highestPct;// set highest
+						console.log(strtmp1 + ',' + strtmp2);
+						console.log(dist);
+						console.log(pct);
 						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
@@ -10377,6 +10380,8 @@ function load__allPages_AMT_combo() {
 					{
 						if (isTopShow) {
 							o.lev_pct[0] = highestPct;
+							if (o.lev_pct[0] >= min_lev_accept)
+								initNextRun(); // Go to next run!
 						}
 						if (!isTopShow) {
 							o.lev_pct[1] = highestPct;
