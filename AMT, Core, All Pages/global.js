@@ -173,7 +173,6 @@ AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 		{amISpecialWorkflowWindow: true}, 
 		function(rs)
 		{
-			console.log(rs);
 			AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
 			callback(AMT__Global_Vars.isSpecialWorkflowWindow);
 		}

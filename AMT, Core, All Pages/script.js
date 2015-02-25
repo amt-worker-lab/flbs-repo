@@ -10010,33 +10010,6 @@ function load__allPages_AMT_combo() {
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			
-			//
-			initializeIsSpecialWorkflowWindow__all_pages( // Ask event page of core-mturk.com.
-				function(isSpecialWW) {
-					//~ alert(isSpecialWW); //x
-					//~ if(isSpecialWW) {
-						//~ alert('x');
-					//~ }
-				}
-			);//return;
-			
-			AMT__Global_Vars.isSpecialWorkflowWindow = true;
-			// Special workflow window.
-			// One query. For skips.
-			if(AMT__Global_Vars.isSpecialWorkflowWindow) {
-				var one_qy = true;
-				var spe_wk = true;
-				setTimeout(function() {
-					location.reload();
-				}, 14000);
-			}
-			// Non-special workflow window.
-			// Probably two queries. Title+Series && Has more than one result. Or ...?
-			if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
-				var one_qy = false;
-				var spe_wk = false;
-			}
-			
 			var firstQuery = {
 				title: o.title1,
 				series: o.series1,
@@ -10069,7 +10042,6 @@ function load__allPages_AMT_combo() {
 			}
 			console.log(o);
 			
-			
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
 			d_container.setAttribute('style', "position:absolute;left:30%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;");
@@ -10082,9 +10054,48 @@ function load__allPages_AMT_combo() {
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
+			// Special workflow.
+			// One = skips, autos only.
+			// Two = skips, autos, manual: accepts on 2x has results>0, 2x Levenstein distance (ep. + series) <= 4
+			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(initialize);
+			function initialize() {
+				AMT__Global_Vars.isSpecialWorkflowWindow = true;
+				// Auto
+				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
+					var one_qy = true;
+					var spe_wk = true;
+					setTimeout(function() {
+						location.reload();
+					}, 14000);
+				}
+				// Manual+Auto
+				if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
+					var one_qy = false;
+					var spe_wk = false;
+				}
+				
+				// Run
+				// Code to pull from database
+				new AMT___requests_factory().database__select(
+					{
+						query: "AMT_Flicksio_IMDB_GetDetails",
+						encodeStrings: {
+							qStrs: firstQuery
+						}
+					},
+					processDBResults
+				); 
+			}
+			
+			/**
+			 * function clean_str_to_auto
+			 */
 			function clean_str_to_auto(str) {
 				return str.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, '');
 			}
+			/**
+			 * function processDBResults
+			 */
 			function processDBResults(response) {
 				//response of 3 searches
 				console.log('got db response');
@@ -10133,33 +10144,21 @@ function load__allPages_AMT_combo() {
 				//~ console.log(ro.original_query_object.isTopShow);
 				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) 
 				console.log('Run:Running show#2');
-					(new AMT___requests_factory()).database__select({
-						query: "AMT_Flicksio_IMDB_GetDetails",
-						encodeStrings: {
-							qStrs: secondQuery
-						}
-					}, processDBResults);
+					new AMT___requests_factory().database__select(
+						{
+							query: "AMT_Flicksio_IMDB_GetDetails",
+							encodeStrings: {
+								qStrs: secondQuery
+							}
+						},
+						processDBResults
+					);
 				
 			}
 			
-			//Code to pull from database
-			(new AMT___requests_factory()).database__select({
-				query: "AMT_Flicksio_IMDB_GetDetails",
-				encodeStrings: {
-					qStrs: firstQuery
-				}
-			}, processDBResults); 
-			
-			
-			
-			
-			
-			//~ checkIMDB("african-american-female-detective",
-			         //~ "Fatal Retraction",
-			         //~ "tv_movie,tv_series,tv_episode,tv_special,mini_series", false);
-			         
-			//~ //checkIMDB("","fatal","");
-			
+			/**
+			 * function checkIMDB
+			 */
 			function checkIMDB(keywords, title, title_type, isTopShow) {
 				var isTopShow = isTopShow;
 				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
