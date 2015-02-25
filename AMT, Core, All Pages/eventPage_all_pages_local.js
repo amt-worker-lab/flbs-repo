@@ -31,7 +31,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.amISpecialWorkflowWindow_all_pages) {
 		//~ var sendResponse = sendResponse;
 		//~ console.log(request.callback); //undefined
-		//~ console.log(sender);
+		console.log(sender);
 		//~ console.log(sender.tab.windowId);
 		//~ console.log(sendResponse);
 		// Send External Message!
@@ -42,15 +42,19 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				window_id: sender.tab.windowId
 			},
 			function(response) {
+				console.log(response);
+				console.log(response.detail);
 				
 				// Send a message to global_all_pages_local.js for callback.
 				chrome.runtime.sendMessage(
-					sender.tab.tabId,
+					sender.tab.id,
 					{
 						amISpecialWorkflowWindow_all_pages: true,
-						detail: response.detail // response.detail
+						detail: response.detail
 					},
-					function() {}
+					function(response) {
+						//
+					}
 				);
 				
 				//~ console.log(response);

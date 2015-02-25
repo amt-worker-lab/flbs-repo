@@ -9913,7 +9913,7 @@ function load__allPages_AMT_combo() {
 		document.body.innerHTML.indexOf(s) != -1
 		)
 	{
-		var run = function() {};
+		var run = function() {require: 'x';}; // requirements
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');			
 			GM_addStyle('.container {margin:0;padding:0;width:20%;}'); //;width:100%
@@ -9938,7 +9938,6 @@ function load__allPages_AMT_combo() {
 			var n = document.getElementsByClassName('title');
 			for (var p = 0; p <n.length; p++) {
 				n[p].addEventListener('mouseover', function() {
-					console.log('moused over');
 					this.style.height = 'auto';
 				}, false);
 				n[p].addEventListener('mouseout', function() {
