@@ -20923,7 +20923,7 @@ function MT__RUN() {
 		d4.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			o.q.phone.value = 'multiple';
-			o.q.street.value = 'multiple';
+			o.q.address.value = 'multiple';
 			o.q.zip.value = 'multiple';
 			o.q.name.focus();
 		}
