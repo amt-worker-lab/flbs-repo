@@ -10002,6 +10002,7 @@ function load__allPages_AMT_combo() {
 					series1:null,
 					series2:null,
 				},
+				lev_pct: [0, 0], // Levenstein distance for episode1+series1, episode2+series2
 				q: [
 					document.getElementsByClassName('imdb_url')[0],
 					document.getElementsByClassName('imdb_url')[1]
@@ -10289,7 +10290,10 @@ function load__allPages_AMT_combo() {
 					AMT___Floater.skip();
 				}
 				else {		
-					var foundAuto = false;			
+					var foundAuto = false;
+					var highestPct = 0;
+					var min_lev_length = 10; // min. to consider
+					var min_lev_accept = 80; // pct to accept
 					for(var i = 0; i < rslts.length; i++) {
 						var el_div = document.createElement('div');
 						el_div.setAttribute('style', 'border-bottom:1px solid black;');
@@ -10320,7 +10324,14 @@ function load__allPages_AMT_combo() {
 						// Is Levenstein distance less than X?
 						// If so then mark show (top OR bottom) as "found."
 						// Add background-color.
-						
+						// 
+						// QUESTION: Cache any, or up to X, if Lev. is >= 96? 98? 99?
+						var strtmp1 = rslts[i].title + rslts[i].parent_title;
+						var strtmp2 = (isTopShow) ? o.cast1 + o.series1 : o.cast2 + o.series2;
+						var dist = new AMT___gen_functions().levensht(strtmp1, strtmp2);
+						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
+						var pct = ((longest - dist) / longest) * 100; // 0-100
+						highestPct = (pct > highestPct && longest.length >= min_lev_length) ? pct : highestPct;// set highest
 						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
@@ -10365,10 +10376,21 @@ function load__allPages_AMT_combo() {
 					else
 					{
 						if (isTopShow) {
-							
+							o.lev_pct[0] = highestPct;
 						}
 						if (!isTopShow) {
+							o.lev_pct[1] = highestPct;
 							
+							// ACCEPT?
+							if  (
+								o.lev_pct[0] >= min_lev_accept &&
+								o.lev_pct[1] >= min_lev_accept &&
+								!AMT__Global_Vars.isPreview
+								)
+							{
+								console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
+								AMT___Floater.accept();
+							}
 						}
 					}
 				}
