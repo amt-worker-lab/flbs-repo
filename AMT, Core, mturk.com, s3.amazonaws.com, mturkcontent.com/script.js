@@ -20864,8 +20864,9 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('.container {margin:0;padding:0;width:20%;}');
+		GM_addStyle('.container {margin:0 !important;padding:0;width:20% !important;}');
 		GM_addStyle('.panel {position:absolute;top:1000px;}');
+		GM_addStyle('.exe:hover {background-color:LightGreen;}');
 		
 		//http://www.yelp.com/search/snippet?find_desc=&find_loc=Palo+Alto%2C+CA&ns=1#attrs=HappyHour
 		
@@ -20874,7 +20875,14 @@ function MT__RUN() {
 		var o = {
 			name: p[0].innerText.trim(),
 			loc: p[1].innerText.trim().replace(/^in /, ''), // remove "in "
-			domain_counts: {} // obj
+			domain_counts: {}, // obj
+			q: {
+				name: document.getElementById('new_name'),
+				phone: document.getElementById('phone_number'),
+				address: document.getElementById('address1'),
+				zip: document.getElementById('zip'),
+				url: document.getElementById('web_url'),
+			}
 		}
 		
 		/*BEGIN ITEMS*/
@@ -20882,9 +20890,12 @@ function MT__RUN() {
 		d1.setAttribute('style','position:absolute;top:0;left:20%;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d2 = document.createElement('div');
-		d2.setAttribute('style','position:absolute;top:0;left:20%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d2.setAttribute('style','position:absolute;top:0;left:40%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d2);
 		/*END ITEMS*/
+		
+		// Init yelp
+		yelp();
 		
 		/**
 		 * Skips & SP
@@ -20939,7 +20950,8 @@ function MT__RUN() {
 			});
 		}
 		function company_URL__processProxyResponse(response) {
-			var rs = response.rs;
+			console.log(response);
+			var rs = response;
 			
 			// rs
 			// 0=url
@@ -21045,9 +21057,9 @@ function MT__RUN() {
 					
 					document.getElementById('web_url').value = this.value;
 					
-					// showNextTab OR nextTab
-					new AMT___core_factory().nextTab();
-					doSubmit();
+					//~ // showNextTab OR nextTab
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
 				}
 				//mouseover
 				d.addEventListener('mouseover', function() {
@@ -21156,6 +21168,9 @@ function MT__RUN() {
 						div.yhref = null;
 						div.yphone = null;
 						div.yreviews = null;
+						div.ystreet = null;
+						div.ylocn = null;
+						div.yzip = null;
 						d1.appendChild(div);
 						
 						
@@ -21168,7 +21183,7 @@ function MT__RUN() {
 						}
 						// Name, href
 						//
-						var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(k[1]); //McDonald’s</a>
+						var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
 						if (reg) {
 							//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
 							div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
@@ -21176,13 +21191,54 @@ function MT__RUN() {
 						}
 						// reviews
 						//
-						var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(k[1]);
+						var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
 						if (reg) {
 							reg = reg[1];
 							div.yreviews = reg;
 						}
+						// addr
+						// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
+						var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
+						if (reg) {
+							reg[1] = __js_clean_html_str(reg[1]).trim();
+							reg[2] = __js_clean_html_str(reg[2]).trim();
+							div.ystreet = reg[1];
+							div.ylocn = reg[2];
+							var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+							div.zip = (z) ? z[1] : null;
+						}
 						
-						c++;
+						// Diff
+						console.log(div.yname);
+						console.log(o.name);
+						var df = MT___diffString(
+							div.yname,
+							o.name
+						);
+						
+						// Display
+						div.innerHTML = 
+							'n:'+ div.yname + '<br>' + // diff
+							's:'+ div.ystreet + '<br>' +
+							'l:'+ div.ylocn + '('+div.yzip+')<br>' +
+							'r:'+ div.yreviews + '<br>' +
+							'p:'+ div.yphone + '<br>' +
+							'd:'+ df
+						;
+						div.onclick = function() { // onclick
+							this.style.backgroundColor = 'aqua';
+							o.q.phone.value = this.yphone;
+							o.q.address.value = this.ystreet;
+							o.q.zip.value = this.yzip;
+							// Name?
+							if  (
+								o.q.name.replace(/[^\w\d]/gi, '').toLowerCase() != this.yname.replace(/[^\w\d]/gi, '').toLowerCase()
+								)
+							{
+								o.q.name.style.border = '4px solid blue';
+								o.q.name.value = this.yname;
+							}
+						}
 					}
 				}
 			});
