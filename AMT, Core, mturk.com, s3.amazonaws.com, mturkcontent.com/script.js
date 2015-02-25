@@ -20882,17 +20882,28 @@ function MT__RUN() {
 				address: document.getElementById('address1'),
 				zip: document.getElementById('zip'),
 				url: document.getElementById('web_url'),
-			}
+			},
+			task_container: document.getElementsByClassName('container')[0].getElementsByTagName('div')[0]
 		}
 		
 		/*BEGIN ITEMS*/
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0;left:20%;width:30%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:0;left:20%;width:20%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d2 = document.createElement('div');
-		d2.setAttribute('style','position:absolute;top:0;left:70%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d2.setAttribute('style','position:absolute;top:0;left:40%;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d2);
+		//task_container add instructions
+		var d3 = document.createElement('div');
+		d3.setAttribute('style','width:100%;background-color:#eee;border:1px solid blue;');
+		o.task_container.appendChild(d3);
+		d3.innerText = '555-555-5555\n123 Main St\n97000\nhttp://a.com';
 		/*END ITEMS*/
+		
+		// Set blank placeholder
+		for (var i in o.q) {
+			o.q[i].placeholder = '';
+		}
 		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
@@ -21081,7 +21092,7 @@ function MT__RUN() {
 				}, false);
 				//mouseout
 				d.addEventListener('mouseout', function() {
-					inp_top.value = '';
+					//~ inp_top.value = '';
 					var x = document.getElementsByTagName('p');
 					for (var i in x) {
 						if (i == 'length') break;
@@ -21284,6 +21295,7 @@ function MT__RUN() {
 		function yelp_profile(div) {
 			var u = div.yhref;
 			var div = div;
+			div.appendChild(document.createElement('br'));
 			div.appendChild(document.createTextNode('U:'));
 			div.style.border = '2px dashed blue';
 			div.onclick = function () {}; // Set to none!
@@ -21296,7 +21308,8 @@ function MT__RUN() {
 					if (response.status != 200) return;
 					
 					// Loaded
-					div.style.border = '';
+					div.style.border = '4px solid blue';
+					//~ div.style.backgroundColor = '';
 					
 					// scrape url
 					//
