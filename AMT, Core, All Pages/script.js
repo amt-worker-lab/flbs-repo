@@ -10121,8 +10121,6 @@ function load__allPages_AMT_combo() {
 				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
-				
-				
 				//~ response = JSON.parse(response)
 				//~ if(response.checkClosestSeries) {
 					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
@@ -10149,16 +10147,15 @@ function load__allPages_AMT_combo() {
 				//~ console.log(ro.original_query_object.isTopShow);
 				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) 
 				console.log('Run:Running show#2');
-					new AMT___requests_factory().database__select(
-						{
-							query: "AMT_Flicksio_IMDB_GetDetails",
-							encodeStrings: {
-								qStrs: secondQuery
-							}
-						},
-						processDBResults
-					);
-				
+				new AMT___requests_factory().database__select(
+					{
+						query: "AMT_Flicksio_IMDB_GetDetails",
+						encodeStrings: {
+							qStrs: secondQuery
+						}
+					},
+					processDBResults
+				);
 			}
 			
 			/**
