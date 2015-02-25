@@ -20887,12 +20887,20 @@ function MT__RUN() {
 		
 		/*BEGIN ITEMS*/
 		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0;left:20%;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1.setAttribute('style','position:absolute;top:0;left:20%;width:30%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		var d2 = document.createElement('div');
-		d2.setAttribute('style','position:absolute;top:0;left:40%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d2.setAttribute('style','position:absolute;top:0;left:70%;width:39%;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d2);
 		/*END ITEMS*/
+		
+		// innerHeight
+		new AMT___core_factory().el_innerHeight({
+			elements: [
+				d1, d2
+			],
+			offset: 0
+		});
 		
 		// Init yelp
 		yelp();
@@ -20994,8 +21002,8 @@ function MT__RUN() {
 						}
 					);
 				
-				// add bold (bold_array)
-				full = MT__bold(full, o.bold_array);
+				//~ // add bold (bold_array)
+				//~ full = MT__bold(full, o.bold_array);
 				
 				// classname is http://(www. = '')x.com (no www)
 				var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
@@ -21049,21 +21057,17 @@ function MT__RUN() {
 				d.appendChild(pbody);
 				
 				// actions
-				// ...
+				//
 				
 				// onclick
-				txa.onclick = function() {
+				txa.onclick = function(e) {
+					// e.ctrlKey
 					this.style.backgroundColor = 'LightGreen';
-					
 					document.getElementById('web_url').value = this.value;
-					
-					//~ // showNextTab OR nextTab
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
 				}
 				//mouseover
 				d.addEventListener('mouseover', function() {
-					inp_top.value = this.full_url;
+					//~ inp_top.value = this.full_url;
 					var x = document.getElementsByTagName('p');
 					for (var i in x) {
 						if (i == 'length') break;
@@ -21196,6 +21200,10 @@ function MT__RUN() {
 							div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
 							div.yname = __js_clean_html_str(reg[2]).trim();
 						}
+						// IF NO NAME THEN DO NOT CONTINUE
+						else {
+							continue;
+						}
 						// reviews
 						//
 						var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
@@ -21212,8 +21220,9 @@ function MT__RUN() {
 							div.ystreet = reg[1];
 							div.ylocn = reg[2];
 							var z = / ([\d\-]{4,})$/.exec(div.ylocn);
-							div.zip = (z) ? z[1] : null;
+							div.yzip = (z) ? z[1] : null;
 						}
+						console.log(div.ylocn);
 						
 						// Diff
 						console.log(div.yname);
@@ -21234,9 +21243,9 @@ function MT__RUN() {
 							'l:'
 						;
 						var link = document.createElement(a); // Link
-						a.innerText = 'link';
-						a.href = div.href;
-						a.onclick = function(e) {
+						link.innerText = 'link';
+						link.href = div.yhref;
+						link.onclick = function(e) {
 							window.open(this.href, 'new');
 							e.stopPropagation();
 							e.preventDefault();
@@ -21250,7 +21259,7 @@ function MT__RUN() {
 							o.q.zip.value = this.yzip;
 							// Name?
 							if  (
-								o.q.name.replace(/[^\w\d]/gi, '').toLowerCase() != this.yname.replace(/[^\w\d]/gi, '').toLowerCase()
+								o.q.name.value.replace(/[^\w\d]/gi, '').toLowerCase() != this.yname.replace(/[^\w\d]/gi, '').toLowerCase()
 								)
 							{
 								o.q.name.style.border = '4px solid blue';
