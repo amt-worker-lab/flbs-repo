@@ -305,10 +305,10 @@ AMT__Global_Vars.initializeHitId = function () {
 
 AMT__Global_Vars.initializeTabId = function() {
 		chrome.extension.sendRequest(
-		{
-			getTabId: true
-		}, 
-		function(response) {
+			{
+				getTabId: true
+			}, 
+			function(response) {
 				AMT__Global_Vars.tabId = response.id;
 			}
 		);

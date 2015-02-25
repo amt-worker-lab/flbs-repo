@@ -23,8 +23,10 @@
 
 var initializeIsSpecialWorkflowWindow__all_pages = function(callback) {
 	var callback = callback;
-	chrome.extension.sendRequest(
-		{amISpecialWorkflowWindow_all_pages: true}, 
+	chrome.extension.sendRequest( // request, sender, se
+		{
+			amISpecialWorkflowWindow_all_pages: true
+		}, 
 		function(rs)
 		{
 			console.log(rs);

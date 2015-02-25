@@ -25,26 +25,43 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	/**
 	 * amISpecialWorkflowWindow_all_pages
+	 * 
+	 * Send external message to core mturk.com.
 	 */
 	if(request.amISpecialWorkflowWindow_all_pages) {
-		var sendResponse = sendResponse;
-		chrome.windows.getCurrent(
-			function(window) {
-				//~ console.log(window);
-				//~ console.log(window.id);
-				
-				// Send External Message!
-				chrome.runtime.sendMessage(
-					globals.core_content_script_extension_id,
-					{amISpecialWorkflowWindow: true, window_id: window.id},
-					function(response) {
-						console.log(response);
-						//~ alert(response);
-						sendResponse(response);
-					}
-				);
+		//~ var sendResponse = sendResponse;
+		//~ console.log(request);
+		//~ console.log(sender);
+		//~ console.log(sender.tab.windowId);
+		//~ console.log(sendResponse);
+		// Send External Message!
+		chrome.runtime.sendMessage(
+			globals.core_content_script_extension_id,
+			{
+				amISpecialWorkflowWindow: true,
+				window_id: sender.tab.windowId
+			},
+			function(response) {
+				console.log(response);
+				//~ sendResponse(response);
+				//~ return 'x';
 			}
 		);
+				
+		//~ chrome.windows.getCurrent(
+			//~ function(window) {
+				//~ // Send External Message!
+				//~ chrome.runtime.sendMessage(
+					//~ globals.core_content_script_extension_id,
+					//~ {amISpecialWorkflowWindow: true, window_id: window.id},
+					//~ function(response) {
+						//~ console.log(response);
+						//~ alert(response);
+						//~ sendResponse(response);
+					//~ }
+				//~ );
+			//~ }
+		//~ );
 	}
 	
 	/**
