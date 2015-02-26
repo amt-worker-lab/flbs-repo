@@ -10003,6 +10003,7 @@ function load__allPages_AMT_combo() {
 					series2:null,
 				},
 				lev_pct: [0, 0], // Levenstein distance for episode1+series1, episode2+series2
+				count_db_runs: 1, // Num runs. Top show == 1. If >= 2 then initNextRun() exits.
 				q: [
 					document.getElementsByClassName('imdb_url')[0],
 					document.getElementsByClassName('imdb_url')[1]
@@ -10167,7 +10168,12 @@ function load__allPages_AMT_combo() {
 				//~ console.log(o.numShows);
 				//~ console.log(o.is_in_skip_condition);
 				//~ console.log(ro.original_query_object.isTopShow);
-				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow) 
+				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow)
+				
+				// Do not run more than once here.
+				if (o.count_db_runs >= 2) return;
+				o.count_db_runs++;
+				
 				console.log('Run:Running show#2');
 				new AMT___requests_factory().database__select(
 					{
@@ -10307,10 +10313,17 @@ function load__allPages_AMT_combo() {
 				var div = document.createElement('div');
 				div.setAttribute('style', 'left: ' + locn*24+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
-				if(!rslts || rslts.length == 0) {
+				
+				// Not special workflow. Either top or bottom show, results.length == 0. Skip.
+				if(
+						(!rslts || rslts.length == 0) &&
+					!AMT__Global_Vars.isSpecialWorkflowWindow
+					)
+				{
 					div.innerHTML = '0-db';
 					AMT___Floater.skip();
 				}
+				// Else ...
 				else {		
 					var foundAuto = false;
 					var highestPct = 0;
@@ -10622,10 +10635,17 @@ function load__allPages_AMT_combo() {
 						}
 					}
 					// END OF FOR LOOP
-					if(!foundAuto) {
+					
+					// Not special workflow 
+					if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
 						AMT___Floater.skip();
 					}
+					// If auto and isTopShow
 					if(foundAuto && isTopShow) {
+						initNextRun();
+					}
+					// Not auto but special workflow
+					else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
 						initNextRun();
 					}
 				}
