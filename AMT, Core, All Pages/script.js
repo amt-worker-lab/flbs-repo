@@ -10567,6 +10567,7 @@ function load__allPages_AMT_combo() {
 									}
 									// Is accepted?
 									document.body.style.backgroundColor = 'aqua';
+									new AMT___core_factory().nextTab(); // nextTab
 									var rand = 3600 + (Math.random() * 2000);
 									setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
 									return false;
