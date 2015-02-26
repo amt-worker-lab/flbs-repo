@@ -10089,9 +10089,9 @@ function load__allPages_AMT_combo() {
 					firstQuery.special_ww = true;
 					secondQuery.one_query = true;
 					secondQuery.special_ww = true;
-					setTimeout(function() {
-						location.reload();
-					}, 14000);
+					//~ setTimeout(function() { //do not do this
+						//~ location.reload();
+					//~ }, 14000);
 				}
 				// Manual+Auto
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
