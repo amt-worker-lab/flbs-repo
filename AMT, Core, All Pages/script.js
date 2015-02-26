@@ -10002,6 +10002,8 @@ function load__allPages_AMT_combo() {
 					series1:null,
 					series2:null,
 				},
+				bold_ep1: null,
+				bold_ep2: null,
 				lev_pct: [0, 0], // Levenstein distance for episode1+series1, episode2+series2
 				count_db_runs: 1, // Num runs. Top show == 1. If >= 2 then initNextRun() exits.
 				q: [
@@ -10011,6 +10013,8 @@ function load__allPages_AMT_combo() {
 			}
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
+			o.bold_ep1 = o.title1.clean_string_to_array().concat(o.series1.clean_string_to_array());
+			o.bold_ep2 = o.title2.clean_string_to_array().concat(o.series2.clean_string_to_array());
 			
 			var firstQuery = {
 				title: o.title1,
@@ -10052,12 +10056,12 @@ function load__allPages_AMT_combo() {
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				"width:99%;height:400px;background-color:#eee;overflow:auto;"
+				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
 			d2.setAttribute('style',
-				"width:99%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;"
+				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d2);
 			/*End of Elements*/
@@ -10308,10 +10312,10 @@ function load__allPages_AMT_combo() {
 					search_s:2,
 					search_title_no_opts: 3
 				}
-				locn = locn[rsltsType];
+				locn = locn[ rsltsType ];
 				
 				var div = document.createElement('div'); // 24=4, 49=2
-				div.setAttribute('style', 'left: ' + locn*49+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
+				div.setAttribute('style', 'width:49%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
 				
 				// Not special workflow. Either top or bottom show, results.length == 0. Skip.
@@ -10329,17 +10333,19 @@ function load__allPages_AMT_combo() {
 					var highestPct = 0;
 					var min_lev_length = 10; // min. to consider
 					var min_lev_accept = 80; // pct to accept
+					var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
 					for(var i = 0; i < rslts.length; i++) {
 						var el_div = document.createElement('div');
 						el_div.setAttribute('style',
 							'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
 						); 
 						div.appendChild(el_div);
-						el_div.innerHTML = (rslts[i].title ? 't: ' + rslts[i].title + '<br>' : 't: <br>') +
-										   (rslts[i].parent_title ? 's: ' + rslts[i].parent_title + '<br>' : 's: <br>') +
-										   (rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-										   'k: ' + rslts[i].kind + '<br>'
-										   'y: ' + rslts[i].year
+						el_div.innerHTML = 
+							(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
+							(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
+							(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+							'k: ' + rslts[i].kind + '<br>'
+							'y: ' + rslts[i].year
 						el_div.className = 'exe';
 						el_div.title = rslts[i].title;
 						el_div.parent_title = rslts[i].parent_title;
@@ -10469,6 +10475,7 @@ function load__allPages_AMT_combo() {
 					var topAuto = false;
 					var bottomAuto = false;
 					var foundAuto = false;
+					var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
 					// Loop goes here.
 					for(var i = 0; i < 10; i++) {
 						if(!choices[i]) break;
@@ -10496,12 +10503,12 @@ function load__allPages_AMT_combo() {
 						div.appendChild(el_div);
 						
 						el_div.innerHTML = 
-								   (choices[i].title ? 't: ' + choices[i].title + '<br>' : 't: <br>' ) +
-								   (choices[i].seriesName ? 's: ' + choices[i].seriesName + '<br>' : 's: <br>') +
-								   //(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-								   'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
-								   'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
-								   'cm: ' + castMatches.join(',');
+							(choices[i].title ? 't: ' + MT__bold(choices[i].title, bold) + '<br>' : 't: <br>' ) +
+							(choices[i].seriesName ? 's: ' + MT__bold(choices[i].seriesName, bold) + '<br>' : 's: <br>') +
+							//(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+							'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
+							'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
+							'cm: ' + castMatches.join(',');
 						el_div.title = choices[i].title;
 						el_div.seriesName = choices[i].seriesName;
 						el_div.title_type = choices[i].title_type;
