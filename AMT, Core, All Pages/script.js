@@ -10046,17 +10046,17 @@ function load__allPages_AMT_combo() {
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
 			d_container.setAttribute('style',
-				"position:absolute;left:30%;top:0px;width:80%;height:800px;background-color:#eee;border:1px solid blue;"
+				"position:absolute;left:30%;top:0px;width:70%;height:800px;background-color:#eee;border:1px solid blue;"
 			);
 			document.body.appendChild(d_container);
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				"width:100%;height:400px;background-color:#eee;overflow:auto;"
+				"width:99%;height:400px;background-color:#eee;overflow:auto;"
 			);
 			d_container.appendChild(d1);
 			var d2 = document.createElement('div');
 			d2.setAttribute('style',
-				"width:100%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;"
+				"width:99%;height:400px;background-color:#eee;border-top:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d2);
 			/*End of Elements*/
@@ -10356,7 +10356,7 @@ function load__allPages_AMT_combo() {
 						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
 						var pct = ((longest - dist) / longest) * 100; // 0-100
 						highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
-						el_div.style.backgroundColor = pct >= min_lev_length ? 'aqua' : '';
+						el_div.style.backgroundColor = pct >= min_lev_accept ? 'aqua' : '';
 						//~ console.log(strtmp1 + ',' + strtmp2);
 						//~ console.log(dist);
 						//~ console.log(pct);
