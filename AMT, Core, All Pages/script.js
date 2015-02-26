@@ -10808,6 +10808,11 @@ function load__allPages_AMT_combo() {
 				} else {
 					return false;
 				}
+				// If phone, q[0] must be checked.
+				if (o.q[2].value != 'NA' && !o.q[0].checked) {
+					o.q[0].parentNode.style.backgroundColor = 'green';
+					return false;
+				}
 				
 				//
 				new AMT___core_factory().nextTab();
