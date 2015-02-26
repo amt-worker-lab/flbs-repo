@@ -10310,8 +10310,8 @@ function load__allPages_AMT_combo() {
 				}
 				locn = locn[rsltsType];
 				
-				var div = document.createElement('div');
-				div.setAttribute('style', 'left: ' + locn*24+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
+				var div = document.createElement('div'); // 24=4, 49=2
+				div.setAttribute('style', 'left: ' + locn*49+'%;'+'width:24%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
 				
 				// Not special workflow. Either top or bottom show, results.length == 0. Skip.
@@ -10540,9 +10540,6 @@ function load__allPages_AMT_combo() {
 								// Make div small
 								//~ this.parent_div.style.height = 'auto';
 								this.parentNode.style.height = '140px';
-								console.log('Make div small');
-								console.log(this);
-								console.log(this.parentNode);
 								this.scrollIntoView(false);
 								//
 								o.q[0].value = o.q[0].value.trim();
