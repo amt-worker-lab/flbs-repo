@@ -10415,25 +10415,34 @@ function load__allPages_AMT_combo() {
 						console.log('Skip condition #1. Skips here.');
 					}
 					// Mutli-query, special_ww==true.
+					// Search1=search_t, Search2=search_t_s
 					else
 					{
 						if (isTopShow) {
-							o.lev_pct[0] = highestPct;
-							if (o.lev_pct[0] >= min_lev_accept)
+							o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
+							if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
 								initNextRun(); // Go to next run!
+							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
+								AMT___Floater.skip();
+							}
 						}
 						if (!isTopShow) {
-							o.lev_pct[1] = highestPct;
+							o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
 							
 							// ACCEPT?
 							if  (
 								o.lev_pct[0] >= min_lev_accept &&
 								o.lev_pct[1] >= min_lev_accept &&
-								!AMT__Global_Vars.isPreview
+								AMT__Global_Vars.isPreview &&
+								rsltsType == 'search_t_s' // Second search
 								)
 							{
 								console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
 								AMT___Floater.accept();
+							}
+							// SKIP
+							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
+								AMT___Floater.skip();
 							}
 						}
 					}
