@@ -34,6 +34,48 @@ var beginRunTime = new Date().getTime();
  */
 function MT__RUN() {
 	// 
+	// Alexander
+	// 
+	//
+	s = '<p>2. Find website address on the page (See below web page example with URL)</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				link : a[0].href
+			}
+			
+			GM_xmlhttpRequest({
+						method: 'GET',
+						url: o.link,
+						onload: function (response) {
+							var rs=response.responseText;
+							if(response.status != 200) {
+								document.body.style.backgroundColor = 'purple';
+								exit('status: ' + response.status);
+							}
+							var doc = new DOMParser().parseFromString(rs, 'text/html');
+							var finalLink = doc.getElementsByClassName('info')[2].innerText;
+							if(finalLink && finalLink.trim().length > 4) {
+								document.getElementById('URL').value = finalLink.trim();
+								//new AMT___core_factory().nextTab();
+								doSubmit();
+							}
+							else {
+								document.body.style.backgroundColor = 'pink';
+							}
+						}
+			});
+		}
+		new run().f();
+	}
+	
+	// 
 	// David Pham
 	// Collect building class and units from database + break apart full name into first name and last name
 	//
@@ -58,7 +100,6 @@ function MT__RUN() {
 			}
 			
 			document.getElementById('submitButton').onclick = function() {
-				new AMT___core_factory().nextTab();
 				doSubmit();
 				return false;
 			}
