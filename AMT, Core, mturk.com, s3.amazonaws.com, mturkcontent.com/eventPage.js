@@ -43,8 +43,6 @@
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
-	
-	
 	if(request.setUtilityTabs) {
 		console.log('sender');
 		console.log(sender.tab);

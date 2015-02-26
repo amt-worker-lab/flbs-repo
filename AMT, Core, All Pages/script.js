@@ -10756,6 +10756,93 @@ function load__allPages_AMT_combo() {
 		new run().f();
 	}
 	
+	// 
+	// 
+	// 
+	//
+	s = '	<li>Then&nbsp;please confirm that you called the hotel and did not use any other means to gather this information.</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 0 0 60px !important;padding:0 !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				phone: td[3].innerText.trim(),
+				td_phone: td[2],
+				q: [
+					document.getElementsByName('SpaYesNo')[0],
+					document.getElementsByName('SpaYesNo')[1],
+					document.getElementById('SpaPhoneNumber'),
+					document.getElementsByName('ValetParkingYesNo')[0],
+					document.getElementsByName('ValetParkingYesNo')[1],
+					document.getElementsByName('CalledYes')[0]
+				]
+			}
+			
+			// Defaults
+			document.getElementsByName('SpaYesNo')[1].checked = true;
+			document.getElementsByName('ValetParkingYesNo')[0].checked = true;
+			document.getElementsByName('CalledYes')[0].checked = true;
+			
+			//
+			o.q[2].onclick = function() { this.focus(); this.select(); }
+			o.q[2].value = 'NA';
+			
+			//
+			document.getElementById('submitButton').onclick = function() {
+				if (!o.q[0].checked && !o.q[1].checked) return false; // either
+				if (!o.q[3].checked && !o.q[4].checked) return false; // either
+				if (!o.q[5].checked) return false; // req.
+				o.q[2].value = o.q[2].value.trim();
+				if (o.q[2].value == 'NA' || /^\d{3}-\d{3}-\d{4}( ext\. [^$]+|)$/.exec(o.q[2].value)) { // phone OR phone+ "ext X"
+					// go
+				} else {
+					return false;
+				}
+				
+				//
+				new AMT___core_factory().nextTab();
+				
+				// ...
+				return true;
+			}
+			
+			// Phone
+			o.td_phone.innerHTML = '';
+			var a = document.createElement('a');
+			a.innerText = o.phone;
+			a.setAttribute('style', 'cursor:pointer;');
+			a.onclick = function(e) {
+				console.log('Clicked phone link. Sending request phone:' + this.innerText);
+				
+				// Load this phone number into the phone number window.
+				// Send a message to the background script.
+				// 
+				chrome.extension.sendRequest({
+					method:'google_hangouts_load_phone',
+					phone_number:this.innerText,
+					details: {hangupAllButPickup:true, dial0AtStart:true},
+					task_name: "Andrew Ryan"
+				});
+				
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			o.td_phone.appendChild(a);
+		}
+		new run().f();
+		return;
+	}
 	//
 	// Andrew Ryan
 	//

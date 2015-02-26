@@ -410,11 +410,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 //
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	console.log(request);
+		
 	/**
 	 * request.CAPTCHA_queue_reload
 	 */
 	// Must set false tmp?
-	console.log(request);
 	var test=false;
 	if  (request.CAPTCHA_queue_reload) {
 		// Send success 
