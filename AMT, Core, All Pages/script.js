@@ -10100,9 +10100,13 @@ function load__allPages_AMT_combo() {
 				// Manual+Auto
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
 					firstQuery.one_query = false;
-					firstQuery.special_ww = false;
+					firstQuery.special_ww = true;
 					secondQuery.one_query = false;
-					secondQuery.special_ww = false;
+					secondQuery.special_ww = true;
+					//~ firstQuery.one_query = f alse; // !ONE_QUERY == 4 QUERIES PER !!!!
+					//~ firstQuery.special_ww = false;
+					//~ secondQuery.one_query = false;
+					//~ secondQuery.special_ww = false;
 				}
 				
 				// Run
@@ -10140,7 +10144,7 @@ function load__allPages_AMT_combo() {
 				}
 				// Special workflow window.
 				if (AMT__Global_Vars.isSpecialWorkflowWindow) {
-					buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
+					//THIS IS GOING SLOW// FFIIXX //buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
 					buildDBRsltsInterface(ro.search_t_s, 'search_t_s', response.encodeStrings.qStrs.isTopShow);
 				}
 				//buildDBRsltsInterface(ro.search_t, 'search_t', response.encodeStrings.qStrs.isTopShow);
