@@ -315,6 +315,11 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.playFirstElement) {
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			document.getElementsByTagName('audio')[0].play();
+		}
+	}
 	if(request.focusOnPage) {
 		console.log('toldtofocus');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {

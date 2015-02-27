@@ -541,8 +541,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.isTopWindow}, function(response) {
 							//squelch response
 						});
-					}				
+					}	
+	
 				});
+				if(window.request.playFirstElement) {
+					chrome.tabs.sendRequest(nextTab, {playFirstElement : true, isTopWindow:window.request.isTopWindow}, function(response) {
+								//squelch response
+							});
+				}
 			}
 			
 		});

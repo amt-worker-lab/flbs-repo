@@ -33,6 +33,27 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
+	//
+	//
+	// 
+	//
+	s = "Are there problems with the speech quality?&nbsp;</strong> (check all that apply)</p>"
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			
+			document.getElementById("submitButton").focus();
+			document.getElementById("submitButton").onclick = function() {
+				new AMT___core_factory().nextTab({playFirstElement: true});
+				return false;
+			}
+			
+		}
+		new run().f();
+	}
+	
 	// 
 	// Alexander
 	// 
