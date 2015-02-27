@@ -76,8 +76,8 @@ function MT__RUN() {
 	}
 	
 	// 
-	// David Pham
-	// Collect building class and units from database + break apart full name into first name and last name
+	// Society6
+	//
 	//
 	s = 'Help us determine which images should be considered adult or mature content. Please check the box for each image that contains';
 	if  (
@@ -88,6 +88,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			window.setTimeout(function() {
+				document.getElementById('submitButton').scrollIntoView(false); // top
 				document.getElementById('submitButton').focus();
 			}, 4000);
 			
@@ -100,6 +101,7 @@ function MT__RUN() {
 			}
 			
 			document.getElementById('submitButton').onclick = function() {
+				(new AMT___core_factory().nextTab());
 				doSubmit();
 				return false;
 			}
