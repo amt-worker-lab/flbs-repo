@@ -316,8 +316,10 @@ AMT__Global_Vars.initializeTabId = function() {
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.playFirstElement) {
+		console.log('recieved: play first element');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
 			document.getElementsByTagName('audio')[0].play();
+			console.log('attempted to play');
 		}
 	}
 	if(request.focusOnPage) {
@@ -1655,6 +1657,7 @@ function AMT___core_factory() {
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function(options) {
+	console.log(options);
 	chrome.extension.sendRequest(
 		{
 			nextTab: true,

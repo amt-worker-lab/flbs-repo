@@ -538,13 +538,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					//~ alert('here1');
 					if(window.request && window.request.options && window.request.options.focusOnPage) {
 						console.log('told to focus on page');
-						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.isTopWindow}, function(response) {
+						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.options.isTopWindow}, function(response) {
 							//squelch response
 						});
 					}	
 	
 				});
-				if(window.request.playFirstElement) {
+				console.log(nextTab);
+				console.log(window.request);
+				if(window.request.options.playFirstElement) {
+					console.log('told to play first element');
 					chrome.tabs.sendRequest(nextTab, {playFirstElement : true, isTopWindow:window.request.isTopWindow}, function(response) {
 								//squelch response
 							});

@@ -47,6 +47,7 @@ function MT__RUN() {
 			document.getElementById("submitButton").focus();
 			document.getElementById("submitButton").onclick = function() {
 				new AMT___core_factory().nextTab({playFirstElement: true});
+				doSubmit();
 				return false;
 			}
 			
