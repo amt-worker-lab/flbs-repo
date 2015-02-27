@@ -122,10 +122,6 @@ function MT__RUN() {
 				}
 			}
 			
-			document.body.onclick = function(e) {
-				document.getElementById('submitButton').focus();
-			}
-			
 			document.getElementById('submitButton').onclick = function() {
 				(new AMT___core_factory().nextTab());
 				doSubmit();
