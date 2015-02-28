@@ -303,12 +303,17 @@ AMT__Global_Vars.initializeHitId = function () {
 }
 
 AMT__Global_Vars.initializeTabId = function() {
+		AMT___Global_Vars.isInitializingTabId = true;
 		chrome.extension.sendRequest(
 		{
 			getTabId: true
 		}, 
 		function(response) {
 				AMT__Global_Vars.tabId = response.id;
+				AMT__Global_Vars.isInitializingTabId = true;
+				if(AMT__Global_Vars.initializeTabIdCallback) {
+					AMT__Global_Vars.initializeTabIdCallback();
+				}
 			}
 		);
 }
@@ -580,14 +585,28 @@ qProductId = false;
 function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
-	//Tell eventPage to add this to the Q
-	console.log(AMT__Global_Vars);
-	chrome.extension.sendRequest({
-								  addToTabsQ: true,
-								  isTopWindow: AMT__Global_Vars.isTopWindow
-							  }, function(response) {
-								qProductId = response.qProductId;
-							});
+	if(AMT__Global_Vars.isInitializingTabId) {
+		AMT__Global_Vars.initializeTabIdCallback = function() {
+			//Tell eventPage to add this to the Q
+			console.log(AMT__Global_Vars);
+			chrome.extension.sendRequest({
+				  addToTabsQ: true,
+				  isTopWindow: AMT__Global_Vars.isTopWindow
+			  }, function(response) {
+				qProductId = response.qProductId;
+			});
+		}
+	}
+	else {
+		//Tell eventPage to add this to the Q
+		console.log(AMT__Global_Vars);
+		chrome.extension.sendRequest({
+									  addToTabsQ: true,
+									  isTopWindow: AMT__Global_Vars.isTopWindow
+								  }, function(response) {
+									qProductId = response.qProductId;
+								});
+	}
 }
 
 
