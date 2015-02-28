@@ -171,7 +171,7 @@ AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
 	var callback = callback;
 	chrome.extension.sendRequest(
 		{amISpecialWorkflowWindow: true}, 
-		function(rs)
+		function(rs) 
 		{
 			AMT__Global_Vars.isSpecialWorkflowWindow = rs.detail;
 			callback(AMT__Global_Vars.isSpecialWorkflowWindow);
@@ -304,10 +304,10 @@ AMT__Global_Vars.initializeHitId = function () {
 
 AMT__Global_Vars.initializeTabId = function() {
 		chrome.extension.sendRequest(
-			{
-				getTabId: true
-			}, 
-			function(response) {
+		{
+			getTabId: true
+		}, 
+		function(response) {
 				AMT__Global_Vars.tabId = response.id;
 			}
 		);
@@ -315,6 +315,13 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.playFirstElement) {
+		console.log('recieved: play first element');
+		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			document.getElementsByTagName('audio')[0].play();
+			console.log('attempted to play');
+		}
+	}
 	if(request.focusOnPage) {
 		console.log('toldtofocus');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
@@ -410,11 +417,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 //
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	console.log(request);
+		
 	/**
 	 * request.CAPTCHA_queue_reload
 	 */
 	// Must set false tmp?
-	console.log(request);
 	var test=false;
 	if  (request.CAPTCHA_queue_reload) {
 		// Send success 
@@ -1649,6 +1657,7 @@ function AMT___core_factory() {
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function(options) {
+	console.log(options);
 	chrome.extension.sendRequest(
 		{
 			nextTab: true,
@@ -1823,15 +1832,18 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				//~ console.log('Will showNextTab on return');
 				
 				var b = getReturnButton();
-				console.log(b);
 				if (b) {
 					b.addEventListener('click', function() {
-						//~ console.log('mouseup on return button');
-						
 						showNextTab();
 					}, false);
-					
-					//~ b.addEventListener('mouseup', v.callback_function, false);
+				}
+				// 2nd return button
+				// AMT_return_button_top_window
+				var b = getReturnButton2();
+				if (b) {
+					b.addEventListener('click', function() {
+						showNextTab();
+					}, false);
 				}
 				break;
 			// AMT___returnAndAcceptButton()
@@ -1904,6 +1916,15 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		// here?
 		return false;
+	}
+	/**
+	 * var getReturnButton2
+	 * 
+	 * @returns Button or false
+	 */
+	var getReturnButton2 = function() {
+		var a = document.getElementById('AMT_return_button_top_window');
+		return a;
 	}
 }
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
@@ -3885,6 +3906,9 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
  * database__select
  * 
  * @param database_object
+ * 			.query
+ * 			.encodeStrings
+ * 			.timeout
  * @param callback_function
  * 
  * @returns
