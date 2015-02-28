@@ -9927,6 +9927,7 @@ function load__allPages_AMT_combo() {
 			document.getElementsByClassName('row header')[0].style.top = '4000px';
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
+			GM_addStyle('.accept-overlay {position:70%;left:70%;width:29%;}');
 			GM_addStyle('img {width:60px;}');
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
