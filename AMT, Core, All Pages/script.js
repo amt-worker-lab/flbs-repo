@@ -10398,12 +10398,6 @@ function load__allPages_AMT_combo() {
 							'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
 						); 
 						div.appendChild(el_div);
-						el_div.innerHTML = 
-							(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
-							(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
-							(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-							'k: ' + rslts[i].kind + '<br>'
-							'y: ' + rslts[i].year
 						el_div.className = 'exe';
 						el_div.title = rslts[i].title;
 						el_div.parent_title = rslts[i].parent_title;
@@ -10438,6 +10432,15 @@ function load__allPages_AMT_combo() {
 						//~ console.log(dist);
 						//~ console.log(pct);
 						//~ console.log(highestPct);
+						// Show
+						el_div.innerHTML = 
+							(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
+							(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
+							(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+							'k: ' + rslts[i].kind + '<br>' +
+							'y: ' + rslts[i].year + '<br>' +
+							'score: ' + Math.round(rslts[i].score*1) + '<br>' +
+							'lev.: ' + Math.round(pct) + '%<br>'
 						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
