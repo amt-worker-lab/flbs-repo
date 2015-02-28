@@ -10043,15 +10043,18 @@ function load__allPages_AMT_combo() {
 						''
 					);
 					// Season
-					var tmpse = /,? (season) (\d+)$/i.exec(tmpseries);
+					var tmpse = /,? (season|saison|staffel) (\d+)$/i.exec(tmpseries);
 					if (tmpse) {
 						o.season1 = tmpse[2];
+						// Series (replace season)
+						o.series1 = tmpseries.replace(
+							new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
+							''
+						);
+					} else {
+						// Series (no season)
+						o.series1 = tmpseries;
 					}
-					// Series (replace season)
-					o.series1 = tmpseries.replace(
-						new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
-						''
-					)
 				}
 			}
 			
@@ -10621,6 +10624,14 @@ function load__allPages_AMT_combo() {
 										return;
 									}
 									// Is accepted?
+									// Fire event to simulate change of text box.
+									// This produces a "post" request to their server.
+									var evt = document.createEvent('HTMLEvents');
+									evt.initEvent('change', false, true);
+									o.q[0].dispatchEvent(evt);
+									if (o.q.length > 1)
+										o.q[1].dispatchEvent(evt);
+									// ...
 									document.body.style.backgroundColor = 'aqua';
 									new AMT___core_factory().nextTab(); // nextTab
 									var rand = 3600 + (Math.random() * 2000);
