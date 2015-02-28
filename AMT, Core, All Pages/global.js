@@ -584,6 +584,9 @@ qProductId = false;
 
 function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
+	console.log('document title ' + document.title);
+	document.title = "TQ";
+
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	if(AMT__Global_Vars.isInitializingTabId) {
 		AMT__Global_Vars.initializeTabIdCallback = function() {
