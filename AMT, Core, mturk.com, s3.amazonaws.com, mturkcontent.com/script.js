@@ -34,6 +34,52 @@ var beginRunTime = new Date().getTime();
  */
 function MT__RUN() {
 	//
+	// 
+	//
+	//
+	s= '<li>Find the section that describes the company <strong>(often listed in "About" or "Services" section)';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+		
+		var a = document.getElementsByTagName('a');
+		var o = {
+			o: ('http://' + a[0])
+		}
+		
+		
+		AMT__setUtilityTabs([
+							{
+								url: o.url,
+								options: {
+									email_links_remove_mailto: true,
+									show_remove_links_button: true,
+									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+									highlight_range_to_parent: true
+									// highlight range to parent
+								}								
+							}
+						], null, {backgroundColor:'pink'}, false,
+						function(response){
+							console.log(response);
+							var text = response.data.text_range;
+							text = text.replace(/[\n]/g, ',');
+							text = text.replace(/,,/g, ',');
+							text = text.replace(/,/, ', ').trim();
+							text = text.replace(/,$/,'');
+							console.log(text);
+							o.q[o.currentInp].value = text;
+							
+							o.currentInp++;
+							if(o.q[o.currentInp])
+								o.q[o.currentInp].focus()
+						});
+		}
+		new run().f();
+	}
+	
+	//
 	//
 	// 
 	//
