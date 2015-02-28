@@ -10015,6 +10015,7 @@ function load__allPages_AMT_combo() {
 				imdbFirstOption1: null,
 				imdbFirstOption2: null,
 				is_in_skip_condition: false, // One of two is in a skip condition.
+				has_google_translate: false,
 				matches: {
 					title1:null,
 					title2:null,
@@ -10161,20 +10162,57 @@ function load__allPages_AMT_combo() {
 					//~ secondQuery.special_ww = false;
 				}
 				
-				// Run
-				// Code to pull from database
-				new AMT___requests_factory().database__select(
-					{
-						query: "AMT_Flicksio_IMDB_GetDetails",
-						encodeStrings: {
-							qStrs: firstQuery
-						},
-						timeout: 80000
-					},
-					processDBResults
-				); 
+				// Check for language of title.
+				// On google.com translate.
+				translate();
+				
 			}
 			
+			/**
+			 * function translate
+			 */
+			function translate() {
+				var url = 'http://translate.google.com/translate_a/t?client=t&text='+encodeURIComponent(o.title1)+'&hl=en&sl=&tl=en'
+				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 >= 300 && rs*1 <= 600)) {
+							alert('rs');
+							exit(response.status);
+						}
+						
+						rs = rs.replace(/,+/g, ','); // replace ,+
+						rs = JSON.parse(rs);
+						console.log(rs);
+						//[[["I like linux It makes freedom","Ich mag linux Es macht freiheit","",""]] ...
+						if (rs.length && rs[0].length && rs[0][0].length) {
+							var str = rs[0][0][0];
+							var str_translated = rs[0][0][1];
+							console.log(str);
+							console.log(str_translated);
+							return;
+						}
+						
+						// Run
+						// Code to pull from database
+						new AMT___requests_factory().database__select(
+							{
+								query: "AMT_Flicksio_IMDB_GetDetails",
+								encodeStrings: {
+									qStrs: firstQuery
+								},
+								timeout: 80000
+							},
+							processDBResults
+						); 
+					}
+				});
+			}
 			/**
 			 * function clean_str_to_auto
 			 */
