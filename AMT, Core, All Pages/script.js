@@ -86,7 +86,7 @@ function load()
 	
 	// Var to show if this has run.
 	this.global_vars = {
-		is_running_on_amt: false // default=true
+		is_running_on_amt: true // default=true
 	}
 	
 	

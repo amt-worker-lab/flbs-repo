@@ -44,8 +44,9 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 		
 		var a = document.getElementsByTagName('a');
+		var url = 'http://' + a[0].innerText;
 		var o = {
-			o: ('http://' + a[0])
+			url: url
 		}
 		
 		
@@ -53,9 +54,7 @@ function MT__RUN() {
 							{
 								url: o.url,
 								options: {
-									email_links_remove_mailto: true,
-									show_remove_links_button: true,
-									email_links_click_to_parent: {completion_key: 'Andrew_Ryan_people_search__iframe_complete'},
+									task: 'AMT__all_pages_util',
 									highlight_range_to_parent: true
 									// highlight range to parent
 								}								
