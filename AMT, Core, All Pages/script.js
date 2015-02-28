@@ -9907,7 +9907,8 @@ function load__allPages_AMT_combo() {
 	// Flicksio
 	// Level I: Locate URL for TV or Movie
 	//
-	s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
+	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
+	s = '<b>Enter in the IMDb url of this title(s).</b><br>\n        	To begin, please view the following';
 	if  (
 		document.location.href.indexOf('flicksio.com/mturk') != -1 &&
 		document.body.innerHTML.indexOf(s) != -1
@@ -9927,7 +9928,7 @@ function load__allPages_AMT_combo() {
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
 			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
-			document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
+			//~ document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
 			GM_addStyle('img {width:60px;}');
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
@@ -10757,7 +10758,7 @@ function load__allPages_AMT_combo() {
 	}
 	
 	// 
-	// 
+	// ?? Dennis Meng?
 	// 
 	//
 	s = '	<li>Then&nbsp;please confirm that you called the hotel and did not use any other means to gather this information.</li>';
