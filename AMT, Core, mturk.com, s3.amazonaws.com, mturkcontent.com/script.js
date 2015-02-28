@@ -94074,14 +94074,51 @@ qatar,80
 			// ...
 			d3.value  = ' " at '+o.comp+'" (site:linkedin.com/pub/ OR site:linkedin.com/in/) -inurl:/dir/ ("founder" OR "ceo" OR "chief executive officer" OR "president")';
 			d3b.value = '"'+o.phone+'" site:manta.com/c/ ("founder" OR "ceo" OR "chief executive officer" OR "president")';
-			d3c.value = '+"'+o.comp+'" +"'+o.city+'" site:manta.com/c/';// ("founder" OR "ceo" OR "chief executive officer" OR "president")
+			//~ d3c.value = '+"'+o.comp+'" +"'+o.city+'" site:manta.com/c/';// ("founder" OR "ceo" OR "chief executive officer" OR "president")
+			
+			// Do a LinkedIn search 1
+			//
+			//
+			new AMT___requests_factory().linkedin_people_search({
+				container: d1c,
+				search_params: {
+					//~ firstName: o.fn,
+					//~ lastName: o.ln,
+					title: 'founder OR ceo OR president OR cheif',
+					titleScope: 'CP', // TITLE current or past
+					company: '"' + o.comp + '"',
+					companyScope: 'CP'
+					//~ website: o.website // DEBUG
+				},
+				sortResults: true,
+				nextTab: true, // nextTab()
+				image_search: false,
+				callback_function: function(comp_object) {
+					//~ {
+						//~ profile_url: url,
+						//~ found_valid_li_url: found_valid_li_url
+					//~ }
+					
+					var rs = comp_object;
+					console.log(comp_object);
+					
+					//~ q.value = rs.profile_url;
+					//~ 
+					//~ if (rs.found_valid_li_url) {
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+					//~ } else {
+						//~ q.style.border = '2px dashed blue';
+						//~ q.focus();
+					//~ }
+				}
+			});
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
 			var TOTAL_CALLS = 0;
 			var ARRAY_FIRST_FINDS = [];
-			var NUM_FOUND_SEARCH = 0;
-			
+			var NUM_FOUND_SEARCH = 0;			
 			var SKIP_SITES;
 			function company_URL__load_skips() {
 				GM_xmlhttpRequest({
@@ -94130,7 +94167,7 @@ qatar,80
 					return;
 				}
 				
-				d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+				//~ d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
 				
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
@@ -94146,6 +94183,7 @@ qatar,80
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
 				});
+				if (d3c.value == '') return;
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value),
