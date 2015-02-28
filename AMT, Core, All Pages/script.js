@@ -10329,7 +10329,7 @@ function load__allPages_AMT_combo() {
 							//Clean everything
 							for(var itm in choices[i]) {
 								if(typeof choices[i][itm] == "string") 
-									choices[i][itm] = __js_clean_html_str(choices[i][itm]);
+									choices[i][itm] = __js_clean_html_str(choices[i][itm].replace(/<[^>]*>/g, ''));
 							
 							}
 
@@ -10484,10 +10484,29 @@ function load__allPages_AMT_combo() {
 					{
 						if (isTopShow) {
 							o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
-							if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
-								initNextRun(); // Go to next run!
-							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
-								AMT___Floater.skip();
+							// ONE SHOW
+							if (o.q.length == 1) {
+								if (AMT__Global_Vars.isPreview) {
+									if  (
+										o.lev_pct[0] >= min_lev_accept &&
+										AMT__Global_Vars.isPreview
+										)
+									{
+										AMT___Floater.accept();
+									}
+									else {
+										d1.innerHTML = 'Max='+o.lev_pct[0]+'%';
+										AMT___Floater.skip();
+									}
+								}
+							}
+							// TWO SHOWS
+							else {
+								if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
+									initNextRun(); // Go to next run!
+								else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
+									AMT___Floater.skip();
+								}
 							}
 						}
 						if (!isTopShow) {
