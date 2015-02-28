@@ -89,6 +89,7 @@ function load()
 		is_running_on_amt: true // default=true
 	}
 	
+	
 	// Exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
 	if  (
 		window.top != window.self &&
@@ -106,6 +107,22 @@ function load()
 		
 		return;
 	}
+	
+	
+	
+	if  (
+		window.top == window.self &&
+		location.href.indexOf("mturk.com/mturk") != -1
+		)
+	{
+		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = true;
+		new AMT___core_factory().top_window__addEventListener_iframe();
+		
+		return;
+	}
+	
+	
 	
 	// Exit if AMT
 	if  (
