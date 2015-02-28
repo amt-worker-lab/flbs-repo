@@ -10021,14 +10021,15 @@ function load__allPages_AMT_combo() {
 				lev_pct: [0, 0], // Levenstein distance for episode1+series1, episode2+series2
 				count_db_runs: 1, // Num runs. Top show == 1. If >= 2 then initNextRun() exits.
 				q: [
-					inp[1],
-					inp[2]
+					inp[0]
 				]
 			}
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			o.bold_ep1 = o.title1.clean_string_to_array().concat(o.series1.clean_string_to_array());
 			o.bold_ep2 = o.title2 ? o.title2.clean_string_to_array().concat(o.series2.clean_string_to_array()) : null;
+			if (inp.length > 1)
+				o.q.push(inp[1]);
 			
 			var firstQuery = {
 				title: o.title1,
@@ -10105,18 +10106,19 @@ function load__allPages_AMT_combo() {
 				if(!AMT__Global_Vars.isSpecialWorkflowWindow) {
 					firstQuery.one_query = true;
 					firstQuery.special_ww = true;
-					secondQuery.one_query = true;
-					secondQuery.special_ww = true;
-					//~ setTimeout(function() { //do not do this
-						//~ location.reload();
-					//~ }, 14000);
+					if (secondQuery) {
+						secondQuery.one_query = true;
+						secondQuery.special_ww = true;
+					}
 				}
 				// Manual+Auto
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
 					firstQuery.one_query = false;
 					firstQuery.special_ww = true;
-					secondQuery.one_query = false;
-					secondQuery.special_ww = true;
+					if (secondQuery) {
+						secondQuery.one_query = false;
+						secondQuery.special_ww = true;
+					}
 					//~ firstQuery.one_query = false; // !ONE_QUERY == 4 QUERIES PER !!!!
 					//~ firstQuery.special_ww = false;
 					//~ secondQuery.one_query = false;
@@ -10196,6 +10198,9 @@ function load__allPages_AMT_combo() {
 				if (o.count_db_runs >= 2) return;
 				o.count_db_runs++;
 				
+				if (o.q.length == 1) return; // Only one show.
+				
+				// Two shows
 				console.log('Run:Running show#2');
 				new AMT___requests_factory().database__select(
 					{
@@ -10557,10 +10562,10 @@ function load__allPages_AMT_combo() {
 							if(id) {
 								var url = 'http://www.imdb.com/title/' + id;
 								if(this.isTopShow) {
-									document.getElementsByClassName('imdb_url')[0].value = url;
+									o.q[0].value = url;
 								}
 								else {
-									document.getElementsByClassName('imdb_url')[1].value = url;
+									o.q[1].value = url;
 								}
 								// Make div small
 								//~ this.parent_div.style.height = 'auto';
@@ -10568,10 +10573,14 @@ function load__allPages_AMT_combo() {
 								this.scrollIntoView(false);
 								//
 								o.q[0].value = o.q[0].value.trim();
-								o.q[1].value = o.q[1].value.trim();
+								if (o.q.length > 1)
+									o.q[1].value = o.q[1].value.trim();
 								if  (
 									/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
-									/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
+										(
+										o.q.length == 1 ||
+										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
+										)
 									)
 								{
 									// Is preview?
