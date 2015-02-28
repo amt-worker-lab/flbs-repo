@@ -149,7 +149,7 @@ function load()
 	{
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = true;
-		
+		new AMT___core_factory().top_window__addEventListener_iframe();
 		// have a run button
 		load__allPages_AMT_combo();
 		// stop
@@ -10016,6 +10016,7 @@ function load__allPages_AMT_combo() {
 				imdbFirstOption2: null,
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
+				original_title: null,
 				matches: {
 					title1:null,
 					title2:null,
@@ -10030,6 +10031,7 @@ function load__allPages_AMT_combo() {
 					inp[0]
 				]
 			}
+			o.original_title = o.title1; // set o.original_title
 			// ...
 			// "Google Translated"
 			// e.g. "A History Channel Thanksgiving (South Park Season 15)"
@@ -10173,7 +10175,7 @@ function load__allPages_AMT_combo() {
 			 * function translate
 			 */
 			function translate() {
-				if (!o.has_google_translate) { // End here if not has_google_translate
+				if (!o.has_google_translate || o.title1 == o.original_title) { // End here if not has_google_translate
 					initFirstRun();
 					return;
 				}
