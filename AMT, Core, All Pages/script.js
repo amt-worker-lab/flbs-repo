@@ -9953,6 +9953,9 @@ function load__allPages_AMT_combo() {
 				inp[1] = null;
 			}
 			
+			// e.g. "+Etablir le contact+Desperate Housewives, Saison 8"
+			//
+			//
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
 			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/g;
 			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/g;
@@ -9962,7 +9965,7 @@ function load__allPages_AMT_combo() {
 			var ih = document.body.innerHTML;
 			var rslt1 = reg.exec(ih);
 			var rslt2 = reg.exec(ih);
-			var s1 = rslt1[2].split(", Season");
+			var s1 = rslt1[2].split(", Season"); //Season, Saison, Staffel
 			var s2 = rslt2 ? rslt2[2].split(", Season") : null;
 			
 			//~ var ih = ih.split('<div class="title last">');
@@ -9977,7 +9980,7 @@ function load__allPages_AMT_combo() {
 			runtime2 = (runtime2) ? runtime2[1] : null;
 			var releaseYear2 = yearReg.exec(ih);
 			releaseYear2 = (releaseYear2) ? releaseYear2[1] : null;
-				
+			
 			//~ if(ih.length > 1) {
 				//~ var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
 				//~ var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
@@ -10025,6 +10028,34 @@ function load__allPages_AMT_combo() {
 					inp[0]
 				]
 			}
+			// ...
+			// "Google Translated"
+			// e.g. "A History Channel Thanksgiving (South Park Season 15)"
+			var reg = /<b style="color: green;">Google Translated -- <\/b>[\r\n\t\s]+<b style="color: green;">Title:<\/b> <i>([^<]+)<\/i>/.exec(ih);
+			if (reg) {
+				reg = __js_clean_html_str(reg[1]).trim();
+				var reg2 = / \(([^\)]+)\)$/.exec(reg);
+				if (reg2) {
+					var tmpseries = reg2[1];
+					// Title (replace series/season)
+					o.title1 = reg.replace(
+						new RegExp(__js_escape_regEx(reg2[0])+'$', ''),
+						''
+					);
+					// Season
+					var tmpse = /,? (season) (\d+)$/i.exec(tmpseries);
+					if (tmpse) {
+						o.season1 = tmpse[2];
+					}
+					// Series (replace season)
+					o.series1 = tmpseries.replace(
+						new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
+						''
+					)
+				}
+			}
+			
+			// ...
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			o.bold_ep1 = o.title1.clean_string_to_array().concat(o.series1.clean_string_to_array());
