@@ -1834,15 +1834,17 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				var b = getReturnButton();
 				if (b) {
 					b.addEventListener('click', function() {
-						//~ console.log('mouseup on return button');
-						
 						showNextTab();
 					}, false);
-					
-					//~ b.addEventListener('mouseup', v.callback_function, false);
 				}
 				// 2nd return button
 				// AMT_return_button_top_window
+				var b = getReturnButton2();
+				if (b) {
+					b.addEventListener('click', function() {
+						showNextTab();
+					}, false);
+				}
 				break;
 			// AMT___returnAndAcceptButton()
 			case 'return_and_accept_button__nextTab':
@@ -1914,6 +1916,15 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		// here?
 		return false;
+	}
+	/**
+	 * var getReturnButton2
+	 * 
+	 * @returns Button or false
+	 */
+	var getReturnButton2 = function() {
+		var a = document.getElementById('AMT_return_button_top_window');
+		return a;
 	}
 }
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {

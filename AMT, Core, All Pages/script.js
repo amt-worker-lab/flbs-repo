@@ -10668,7 +10668,9 @@ function load__allPages_AMT_combo() {
 										o.q[1].dispatchEvent(evt);
 									// ...
 									document.body.style.backgroundColor = 'aqua';
-									new AMT___core_factory().nextTab(); // nextTab
+									//~ new AMT___core_factory().nextTab(); // nextTab
+									// show next
+									showNextTab();
 									var rand = 3600 + (Math.random() * 2000);
 									setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
 									return false;
