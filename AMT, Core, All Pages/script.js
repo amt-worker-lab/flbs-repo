@@ -10385,6 +10385,11 @@ function load__allPages_AMT_combo() {
 					div.innerHTML = '0-db';
 					AMT___Floater.skip();
 				}
+				// If one show and isSpecialWorkflowWindow==true
+				else if ((!rslts || rslts.length == 0) && o.q.length == 1 && AMT__Global_Vars.isSpecialWorkflowWindow) {
+					div.innerHTML = '0-db';
+					AMT___Floater.skip();
+				}
 				// Else ...
 				else {		
 					var foundAuto = false;
@@ -10501,6 +10506,10 @@ function load__allPages_AMT_combo() {
 										d1.innerHTML = 'Max='+o.lev_pct[0]+'%';
 										AMT___Floater.skip();
 									}
+								}
+								// Not in preview
+								else {
+									addToTabsQ(); // Add to tabs queue
 								}
 							}
 							// TWO SHOWS
