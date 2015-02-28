@@ -46,7 +46,18 @@ function MT__RUN() {
 		var a = document.getElementsByTagName('a');
 		var url = 'http://' + a[0].innerText;
 		var o = {
-			url: url
+			url: url,
+			q: document.getElementsByName('WritingTexts')[0]
+		}
+		
+		document.getElementById('submitButton').onclick = function() {
+			o.q.value = o.q.value.trim();
+			if(!o.q.value || o.q.length < 5) {
+				return false;
+			}
+			new AMT___core_factory().nextTab();
+			doSubmit();
+			return false;
 		}
 		
 		
@@ -63,16 +74,18 @@ function MT__RUN() {
 						function(response){
 							console.log(response);
 							var text = response.data.text_range;
-							text = text.replace(/[\n]/g, ',');
-							text = text.replace(/,,/g, ',');
-							text = text.replace(/,/, ', ').trim();
-							text = text.replace(/,$/,'');
+					
 							console.log(text);
-							o.q[o.currentInp].value = text;
 							
-							o.currentInp++;
-							if(o.q[o.currentInp])
-								o.q[o.currentInp].focus()
+							if(o.q.value) {
+								o.q.value += '\n' + text;
+							}
+							else {
+								o.q.value = text;
+							}
+							o.q.value.trim();
+							
+							document.getElementById('submitButton').focus();
 						});
 		}
 		new run().f();
