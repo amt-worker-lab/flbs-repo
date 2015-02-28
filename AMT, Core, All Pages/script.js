@@ -9927,8 +9927,6 @@ function load__allPages_AMT_combo() {
 			document.getElementsByClassName('row header')[0].style.top = '4000px';
 			document.getElementsByClassName('instructions')[0].style.position = 'absolute'; 
 			document.getElementsByClassName('instructions')[0].style.top = '3000px';
-			document.getElementsByClassName('imdb_url')[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
-			//~ document.getElementsByClassName('imdb_url')[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
 			GM_addStyle('img {width:60px;}');
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
@@ -9945,41 +9943,56 @@ function load__allPages_AMT_combo() {
 					this.style.height = '120px';
 				}, false);
 			}
-
+			// inputs up
+			var inp = document.getElementsByClassName('imdb_url');
+			inp[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
+			if (inp.length > 1) {
+				inp[1].setAttribute('style','position:absolute;top:30px;left:0;width:20%;height:30px'); // Move inputs up
+			} else {
+				inp[1] = null;
+			}
 			
 			var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+([^\+]+)\+([^"]+)/g;
+			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/g;
+			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/g;
+			
 			//var reg = /https?:\/\/www.google.com\/search\?q=site:http:%2F%2Fimdb.com\/title\+\//;
-			console.log('inside flicksio');
+			//~ console.log('inside flicksio');
 			var ih = document.body.innerHTML;
 			var rslt1 = reg.exec(ih);
 			var rslt2 = reg.exec(ih);
 			var s1 = rslt1[2].split(", Season");
-			var s2 = rslt2[2].split(", Season");
+			var s2 = rslt2 ? rslt2[2].split(", Season") : null;
 			
-			var runtimeReg = /<b>Runtime:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
-			var yearReg = /<b>Release Year:[\r\n\s\t]*<\/b>[\r\n\s\t]*([\d]+)/;
+			//~ var ih = ih.split('<div class="title last">');
 			
-			var ih = ih.split('<div class="title last">');
 			//Check the top for runtime and release date, do the same for the bottom
-			var runtime1 = (runtimeReg.exec(ih[0])) ? runtimeReg.exec(ih[0])[1] : null;
-			var releaseYear1 = (yearReg.exec(ih[0])) ? yearReg.exec(ih[0])[1] : null;
+			var runtime1 = runtimeReg.exec(ih);
+			runtime1 = (runtime1) ? runtime1[1] : null;
+			var releaseYear1 = yearReg.exec(ih);
+			releaseYear1 = (releaseYear1) ? releaseYear1[1] : null;
 			
-			if(ih.length > 1) {
-				var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
-				var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
+			var runtime2 = runtimeReg.exec(ih);
+			runtime2 = (runtime2) ? runtime2[1] : null;
+			var releaseYear2 = yearReg.exec(ih);
+			releaseYear2 = (releaseYear2) ? releaseYear2[1] : null;
 				
-			}else {
-				var runtime2 = null;
-				var releaseYear2 = null;
-			}
+			//~ if(ih.length > 1) {
+				//~ var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
+				//~ var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
+				//~ 
+			//~ }else {
+				//~ var runtime2 = null;
+				//~ var releaseYear2 = null;
+			//~ }
 			
 			var o = {
-				title1 : __js_clean_html_str(rslt1[1]),
-				title2 : (rslt2 ?  __js_clean_html_str(rslt2[1]) : null),
-				series1 :  __js_clean_html_str(s1[0]),
-				series2 : __js_clean_html_str(s2[0]),
-				season1 : (s1.length > 1 ?  __js_clean_html_str(s1[1]) : null),
-				season2 : (s2.length > 1 ?  __js_clean_html_str(s2[1]) : null),
+				title1  : __js_clean_html_str(rslt1[1]),
+				title2  : rslt2 ? __js_clean_html_str(rslt2[1]) : null,
+				series1 : __js_clean_html_str(s1[0]),
+				series2 : (s2) ? __js_clean_html_str(s2[0]) : null,
+				season1 : (s1 && s1.length > 1 ?  __js_clean_html_str(s1[1]) : null),
+				season2 : (s2 && s2.length > 1 ?  __js_clean_html_str(s2[1]) : null),
 				runtime1: runtime1,
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
@@ -10008,14 +10021,14 @@ function load__allPages_AMT_combo() {
 				lev_pct: [0, 0], // Levenstein distance for episode1+series1, episode2+series2
 				count_db_runs: 1, // Num runs. Top show == 1. If >= 2 then initNextRun() exits.
 				q: [
-					document.getElementsByClassName('imdb_url')[0],
-					document.getElementsByClassName('imdb_url')[1]
+					inp[1],
+					inp[2]
 				]
 			}
 			o.matches.title1 = clean_str_to_auto(o.title1);
 			o.matches.series1 = clean_str_to_auto(o.series1);
 			o.bold_ep1 = o.title1.clean_string_to_array().concat(o.series1.clean_string_to_array());
-			o.bold_ep2 = o.title2.clean_string_to_array().concat(o.series2.clean_string_to_array());
+			o.bold_ep2 = o.title2 ? o.title2.clean_string_to_array().concat(o.series2.clean_string_to_array()) : null;
 			
 			var firstQuery = {
 				title: o.title1,
@@ -10104,7 +10117,7 @@ function load__allPages_AMT_combo() {
 					firstQuery.special_ww = true;
 					secondQuery.one_query = false;
 					secondQuery.special_ww = true;
-					//~ firstQuery.one_query = f alse; // !ONE_QUERY == 4 QUERIES PER !!!!
+					//~ firstQuery.one_query = false; // !ONE_QUERY == 4 QUERIES PER !!!!
 					//~ firstQuery.special_ww = false;
 					//~ secondQuery.one_query = false;
 					//~ secondQuery.special_ww = false;
