@@ -10394,8 +10394,10 @@ function load__allPages_AMT_combo() {
 				else {		
 					var foundAuto = false;
 					var highestPct = 0;
+					var highestScore = 0;
 					var min_lev_length = 10; // min. to consider
 					var min_lev_accept = 80; // pct to accept
+					var min_score_accept = 12; // pct to accept
 					var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
 					for(var i = 0; i < rslts.length; i++) {
 						var el_div = document.createElement('div');
@@ -10433,10 +10435,10 @@ function load__allPages_AMT_combo() {
 						var pct = ((longest - dist) / longest) * 100; // 0-100
 						highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
 						el_div.style.backgroundColor = pct >= min_lev_accept ? 'aqua' : '';
-						//~ console.log(strtmp1 + ',' + strtmp2);
-						//~ console.log(dist);
-						//~ console.log(pct);
-						//~ console.log(highestPct);
+						// Highest score
+						if (rslts[i].score >= min_score_accept && rslts[i].score > highestScore) {
+							highestScore = rslts[i].score;
+						}
 						// Show
 						el_div.innerHTML = 
 							(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
@@ -10488,7 +10490,7 @@ function load__allPages_AMT_combo() {
 					}
 					// Mutli-query, special_ww==true.
 					// Search1=search_t, Search2=search_t_s
-					else
+					else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow)
 					{
 						if (isTopShow) {
 							o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
@@ -10496,14 +10498,16 @@ function load__allPages_AMT_combo() {
 							if (o.q.length == 1) {
 								if (AMT__Global_Vars.isPreview) {
 									if  (
-										o.lev_pct[0] >= min_lev_accept &&
-										AMT__Global_Vars.isPreview
+										o.lev_pct[0] >= min_lev_accept ||
+										highestScore > min_score_accept
 										)
 									{
 										AMT___Floater.accept();
 									}
 									else {
-										d1.innerHTML = 'Max='+o.lev_pct[0]+'%';
+										d1.innerHTML =
+											'MaxScore='+Math.round(highestScore)+'<br>'+
+											'Max%='+Math.round(o.lev_pct[0])+'%';
 										AMT___Floater.skip();
 									}
 								}

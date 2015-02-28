@@ -1832,7 +1832,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				//~ console.log('Will showNextTab on return');
 				
 				var b = getReturnButton();
-				console.log(b);
 				if (b) {
 					b.addEventListener('click', function() {
 						//~ console.log('mouseup on return button');
@@ -1842,6 +1841,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 					
 					//~ b.addEventListener('mouseup', v.callback_function, false);
 				}
+				// 2nd return button
+				// AMT_return_button_top_window
 				break;
 			// AMT___returnAndAcceptButton()
 			case 'return_and_accept_button__nextTab':
