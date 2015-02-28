@@ -10148,11 +10148,11 @@ function load__allPages_AMT_combo() {
 				}
 				// Manual+Auto
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
-					firstQuery.one_query = false;
-					firstQuery.special_ww = true;
+					firstQuery.one_query = true;
+					firstQuery.special_ww = false;
 					if (secondQuery) {
-						secondQuery.one_query = false;
-						secondQuery.special_ww = true;
+						secondQuery.one_query = true;
+						secondQuery.special_ww = false;
 					}
 					//~ firstQuery.one_query = false; // !ONE_QUERY == 4 QUERIES PER !!!!
 					//~ firstQuery.special_ww = false;
