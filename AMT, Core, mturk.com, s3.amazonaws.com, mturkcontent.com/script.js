@@ -94084,7 +94084,7 @@ qatar,80
 				search_params: {
 					//~ firstName: o.fn,
 					//~ lastName: o.ln,
-					title: 'founder OR ceo OR president OR cheif',
+					title: 'founder OR ceo OR president OR chief',
 					titleScope: 'CP', // TITLE current or past
 					company: '"' + o.comp + '"',
 					companyScope: 'CP'
