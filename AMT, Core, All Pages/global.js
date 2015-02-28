@@ -584,10 +584,10 @@ qProductId = false;
 
 function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
-	console.log('document title ' + document.title);
-	document.title = "TQ";
-
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'tabsQTitleChange'
+	});
 	if(AMT__Global_Vars.isInitializingTabId) {
 		AMT__Global_Vars.initializeTabIdCallback = function() {
 			//Tell eventPage to add this to the Q
@@ -1837,6 +1837,10 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//~ console.log(v);
 		
 		switch(v.action) {
+			case 'tabsQTitleChange': 
+				console.log("Changing document title to TQ");
+				document.title = "TQ";
+				break;
 			case 'return_button_hotkey':
 				window.addEventListener('keydown', function(e) {
 						if(e.keyCode == v.options.keyCode) {
