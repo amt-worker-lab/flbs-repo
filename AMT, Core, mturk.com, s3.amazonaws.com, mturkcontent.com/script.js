@@ -94005,10 +94005,10 @@ qatar,80
 	}
 	
 	//
-	// *
+	// Monvia
+	// Online Restaurant Menus
 	// 
-	// 
-	var s = '	<li>Include the full address, e.g. https://twitter.com/BMWDeutschland</li>';
+	var s = '	<li>Determine whether the restaurant is open, permanently closed or not really a restaurant.&nbsp;</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -94030,29 +94030,20 @@ qatar,80
 			
 			var o = {
 				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
-				nameShort: null,
-				street: '',
-				city: '',
-				state: '',
-				state_full: null,
-				city_state: null,
-				city_state_clean: null,
+				street: td[3].innerText.replace(/\s+/g, ' ').trim(),
+				locn: td[5].innerText.replace(/\s+/g, ' ').trim()
 				
 				bold_array: [],
-				//~ name_short: null,
-				//~ name_simple: null,
 				
 				panels_loaded: 0,
 				num_panels: 3,
 				domain_counts: {}, // obj
 				
 				q: [
-					document.getElementsByName('church_website')[0], // Yes
-					document.getElementsByName('church_website')[1]  // No
+					document.getElementsByName('Q2FreeTextInput')[0]
 				]
 			}
-			o.bold_array  = o.name.clean_string_to_array();
-			o.nameShort = o.name.split(' ').slice(0,2).join(' ');
+			o.bold_array  = o.comp.clean_string_to_array();
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -94109,10 +94100,10 @@ qatar,80
 				company_URL__SP_init(d1c, this);
 			}
 			na.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				document.getElementById('twitter_url').value = 'NA';
-				new AMT___core_factory().nextTab();
-				doSubmit();
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ document.getElementById('twitter_url').value = 'NA';
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
 			}
 			
 			// ...
@@ -94133,17 +94124,15 @@ qatar,80
 			});
 			
 			// ...
-			d3.value  = o.name;
-			d3b.value = '"' + o.name + '"';
-			d3c.value = o.nameShort != o.name ? o.nameShort : '';
-			//d3c.value = o.name + ' ' + o.city + '("'+o.state+'" OR "'+o.state_full+'")';
+			d3.value  = o.comp + ' "menu"';
+			d3b.value = o.comp + ' '+o.street+' "menu"';
+			d3c.value = o.comp + ' '+o.locn+' "menu"';
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
 			var TOTAL_CALLS = 0;
 			var ARRAY_FIRST_FINDS = [];
 			var NUM_FOUND_SEARCH = 0;
-			
 			var SKIP_SITES;
 			function company_URL__load_skips() {
 				GM_xmlhttpRequest({
@@ -94177,13 +94166,12 @@ qatar,80
 			
 			function company_URL__SP_init(el_div, el_inp) {
 				var req_proxy;
-				var def = 'site:twitter.com ';
 				//
 				if (el_inp && el_div) { // single! (+dynamic!)
 					el_div.innerHTML = '';
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + el_inp.value),
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value),
 						seed: el_div,
 						callback_function: company_URL__processProxyResponse,
 						return_init_object: true
@@ -94195,14 +94183,14 @@ qatar,80
 				
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value),
 					seed: d1,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
 				});
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3b.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value),
 					seed: d1b,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
@@ -94210,7 +94198,7 @@ qatar,80
 				if (d3c.value == '') return;
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3c.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value),
 					seed: d1c,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
@@ -94329,7 +94317,7 @@ qatar,80
 					txa.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
-						document.getElementById('twitter_url').value = this.value;
+						o.q[0].value = this.value;
 						
 						// showNextTab OR nextTab
 						new AMT___core_factory().nextTab();
