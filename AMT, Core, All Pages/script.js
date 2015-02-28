@@ -147,7 +147,6 @@ function load()
 		/^https?:\/\/flicksio\.com\/mturk2\//.exec(loc)
 		)
 	{
-		AMT__Global_Vars.initializeTabId();
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = true;
 		
@@ -167,6 +166,7 @@ function load()
 		/^https?:\/\/flicksio\.com\/mturk2\//.exec(loc)
 		)
 	{
+		AMT__Global_Vars.initializeTabId();
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = false;
 		

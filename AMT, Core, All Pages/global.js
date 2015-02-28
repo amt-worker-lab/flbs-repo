@@ -303,7 +303,7 @@ AMT__Global_Vars.initializeHitId = function () {
 }
 
 AMT__Global_Vars.initializeTabId = function() {
-		AMT___Global_Vars.isInitializingTabId = true;
+		AMT__Global_Vars.isInitializingTabId = true;
 		chrome.extension.sendRequest(
 		{
 			getTabId: true
