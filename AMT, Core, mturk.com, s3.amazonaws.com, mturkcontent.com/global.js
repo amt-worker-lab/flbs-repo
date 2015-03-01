@@ -1435,15 +1435,25 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .parseURL
  * .stateAbbrToFull
  * .clean_string_to_array
- * 
- * 
- * 
- * 
- * 
+ * .string_to_mixed_case
+ * .format_number_with_commas
+ * .div
  * 
  */
 /**
- * .string_to_mixed_case
+ * .div
+ */
+String.prototype.div = function(opts) {
+	var s = this.toString();
+	var div = document.createElement('div');
+	if (opts.hasOwnProperty('style')) {
+		div.setAttribute('style', opts.style);
+	}
+	div.innerText = s;
+	return div;
+}
+/**
+ * .format_number_with_commas
  */
 String.prototype.format_number_with_commas = function() {
 	var s = this.toString();

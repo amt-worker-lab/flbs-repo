@@ -15926,7 +15926,7 @@ function MT__RUN() {
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
@@ -15947,10 +15947,14 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:220px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style',
+				'position:absolute;top:220px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:160px;left:0%;width:98%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:40%;width:59%;height:220px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
 			document.body.appendChild(d1b);
 			/* END ITEMS */
 			
@@ -16015,15 +16019,39 @@ function MT__RUN() {
 					var reg = /<a href="([^"]+)">/g;
 					var m;
 					var x;
+					var tmpsites = '';
 					while (m = reg.exec(content)) {
 						x = __js_clean_html_str(m[1]);
-						d1b.innerText += x; // show in d1b
+						tmpsites += x; // show in d1b
 						o.sd_start_urls.push(x);
 						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, '').replace(/\/[\d\D]*$/, ''); // to domain
-						if (!/(facebook|google|gmail|linkedin|myspace|twitter)\./i.exec(x))
+						if (!/(facebook|google|gmail|linkedin|myspace|twitter|fb)\./i.exec(x))
 							o.sd_allowed_domains.push(x);
-						d1b.innerText += '('+x+')\n'; // show in d1b
+						tmpsites += '('+x+')\n'; // show in d1b
 					}
+					tmpsites = tmpsites.div({style:'border-bottom:1px solid black'});
+					
+					// Name
+					// e.g. "Code Laboratories"
+					var reg = /<h1 class="h2 normal mb1">[\r\n\t\s]+<a[^>]*>[\r\n\t\s]+([^<]+)<\/a>[\r\n\t\s]+<\/h1>/.exec(rs);
+					var tmpname;
+					if (reg) {
+						tmpname = __js_clean_html_str(reg[1]).trim();
+						//~ d1c.innerText = reg;
+						tmpname = tmpname.div({style:'border-bottom:1px solid black'});
+					}
+					// Desc
+					var reg = /<div class="readability">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					var tmpdesc;
+					if (reg) {
+						tmpdesc = __js_clean_html_str(reg[1].replace(/<[^>]*>/g, '')).trim();
+						tmpdesc = tmpdesc.div({style:'border-bottom:1px solid black'});
+					}
+					// Fill d1b
+					d1b.appendChild(tmpname);
+					d1b.appendChild(tmpdesc);
+					d1b.appendChild(tmpsites);
+					
 					
 					if (o.sd_start_urls.length < 1) { // skip
 						AMT___Floater.skip();
