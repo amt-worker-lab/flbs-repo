@@ -9937,7 +9937,7 @@ function load__allPages_AMT_combo() {
 	 * 
 	 * DB + itunes: Retrieve Episode#, and hence EpisodeTitle.
 	 * If we are in specialWorkflowWindow
-	 * and .skip() has been called.
+	 * and...? .skip() has been called?
 	 * o.itunes_country = us/de/fr
 	 * o.season1 = \d+
 	 * https://itunes.apple.com/search?term=Prison%20Break,%20Staffel%204&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country=de&limit=200
@@ -10095,13 +10095,24 @@ function load__allPages_AMT_combo() {
 					var tmpse = /,? (season|saison|staffel) (\d+)$/i.exec(tmpseries);
 					if (tmpse) {
 						o.season1 = tmpse[2]; // Season #
-						// Series (replace season)
-						o.series1 = tmpseries.replace(
+						o.series1 = tmpseries.replace( // Series title (replace season#)
 							new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
 							''
 						);
+						// country?
+						switch(tmpse[1]) {
+							case 'Season':
+								o.itunes_country = 'us';
+								break;
+							case 'Saison':
+								o.itunes_country = 'fr';
+								break;
+							case 'Staffel':
+								o.itunes_country = 'de';
+								break;
+						}
 					} else {
-						// Series (no season)
+						// Series (no season#)
 						o.series1 = tmpseries;
 					}
 				}
@@ -10442,7 +10453,7 @@ function load__allPages_AMT_combo() {
 				if (o.count_db_runs >= 2) return;
 				o.count_db_runs++;
 				
-				if (o.q.length == 1) return; // Only one show.
+				if (o.q.length == 1) return; // Only one show if one INPUT element.
 				
 				// Two shows
 				console.log('Run:Running show#2');
@@ -10501,7 +10512,7 @@ function load__allPages_AMT_combo() {
 						
 						//reg 3 - duration
 						//Sometimes is there, sometimes is left unspecified
-						var reg3 = /<span class="runtime">([\d+]) mins.<\/span>/;
+						var reg3 = /<span class="runtime">([\d+]) mins\.<\/span>/;
 						
 						//reg 4 - credits
 						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
