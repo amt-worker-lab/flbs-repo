@@ -614,14 +614,23 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 
 
 
-function showNextTab() {
+function showNextTab(options) {
 	console.log('Showing Next Tab');
 	isQProduct = false;
-	chrome.extension.sendRequest({
-									  showNextTab: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow
-								  }, function(response) {
-								});
+	if(options && options.isTopWindow) {
+		chrome.extension.sendRequest({
+										  showNextTab: true,
+										  isTopWindow: options.isTopWindow
+									  }, function(response) {
+									});
+	}
+	else {
+		chrome.extension.sendRequest({
+										  showNextTab: true,
+										  isTopWindow: AMT__Global_Vars.isTopWindow
+									  }, function(response) {
+									});
+	}
 }
 
 
@@ -1871,17 +1880,18 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				var b = getReturnButton();
 				if (b) {
 					b.addEventListener('click', function() {
-						showNextTab();
+						showNextTab({isTopWindow:true});
+						showNextTab({isTopWindow:false});
 					}, false);
 				}
 				// 2nd return button
 				// AMT_return_button_top_window
-				var b = getReturnButton2();
-				if (b) {
-					b.addEventListener('click', function() {
-						showNextTab();
-					}, false);
-				}
+				//~ var b = getReturnButton2();
+				//~ if (b) {
+					//~ b.addEventListener('click', function() {
+						//~ showNextTab();
+					//~ }, false);
+				//~ }
 				break;
 			// AMT___returnAndAcceptButton()
 			case 'return_and_accept_button__nextTab':

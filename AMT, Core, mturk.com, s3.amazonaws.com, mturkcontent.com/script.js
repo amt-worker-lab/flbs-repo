@@ -16025,7 +16025,7 @@ function MT__RUN() {
 						tmpsites += x; // show in d1b
 						o.sd_start_urls.push(x);
 						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, '').replace(/\/[\d\D]*$/, ''); // to domain
-						if (!/(facebook|fb|google|gmail|linkedin|myspace|twitter|youtube|yt|amazon|instagram)\./i.exec(x)) {
+						if (!/(facebook|fb|google|gmail|linkedin|myspace|twitter|youtube|yt|amazon|instagram|github|angel|kickingitforward|vimeo)\./i.exec(x)) {
 							o.sd_allowed_domains.push(x);
 							tmpsites += '('+x+')\n'; // show in d1b
 						} else
