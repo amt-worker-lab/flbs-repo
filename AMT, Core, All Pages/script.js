@@ -9935,6 +9935,9 @@ function load__allPages_AMT_combo() {
 	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
 	 * Always accept file (for manuals)
 	 * 
+	 * DB + itunes: Retrieve Episode#, and hence EpisodeTitle
+	 * https://itunes.apple.com/search?term=Prison%20Break,%20Staffel%204&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country=de&limit=200
+	 * 
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
 	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
