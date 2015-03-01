@@ -9933,6 +9933,7 @@ function load__allPages_AMT_combo() {
 	 * "return" button sends "showNextTab" to AllPages.js.
 	 * Top show Div is large. Make btm small.
 	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
+	 * Always accept file (for manuals)
 	 * 
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
@@ -10224,17 +10225,18 @@ function load__allPages_AMT_combo() {
 						
 						d3.value = rs.trim(); // Set value
 						
-						//~ console.log('loaded');
-						// Make obj.
-						rs = rs.trim().split('\n');
-						if (__js_inarray(rs, o.series1)) { // array, needle
-							d1.innerText = 'Skips file: ' + o.series1;
-							AMT___Floater.skip(); // SKIP
-							return; // STOP
+						// ...
+						if (is_init_run) {
+							// Make obj.
+							rs = rs.trim().split('\n');
+							if (__js_inarray(rs, o.series1)) { // array, needle
+								d1.innerText = 'Skips file: ' + o.series1;
+								AMT___Floater.skip(); // SKIP
+								return; // STOP
+							}
+							// Still here?
+							translate(); // GOTO TRANSLATE
 						}
-						// Continue...
-						if (is_init_run) // GOTO TRANSLATE
-							translate();
 						else if (!is_init_run)
 							d3.style.border = '4px solid blue';
 					}
