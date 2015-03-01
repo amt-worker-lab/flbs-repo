@@ -9927,12 +9927,14 @@ function load__allPages_AMT_combo() {
 	//
 	/**
 	 * TODO:
-	 * Skips-like file-object to ignore X. E.g. Daily Show, Colbert Report.
+	 * DONE:Skips-like file-object to ignore X. E.g. Daily Show, Colbert Report.
 	 * Synonym-like file-object for series names.
 	 * Auto select IMDB when coming from local.
 	 * "return" button sends "showNextTab" to AllPages.js.
 	 * Top show Div is large. Make btm small.
 	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
+	 * 
+	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
 	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
 	s = '<b>Enter in the IMDb url of this title(s).</b><br>\n        	To begin, please view the following';
@@ -10043,6 +10045,7 @@ function load__allPages_AMT_combo() {
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
 				original_title: null,
+				manual_choice_selected: null, // This is for manual selections from DB. It will help to auto on IMDB.
 				matches: {
 					title1:null,
 					title2:null,
@@ -10059,9 +10062,11 @@ function load__allPages_AMT_combo() {
 			}
 			o.original_title = o.title1; // set o.original_title
 			
+			// Timeout to skip
 			window.setTimeout(function() {
-											AMT___Floater.skip();
-										}, 90000);
+				if (AMT__Global_Vars.isPreview)
+					AMT___Floater.skip();
+			}, 90000);
 			
 			// ...
 			// "Google Translated"
