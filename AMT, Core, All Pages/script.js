@@ -10430,6 +10430,7 @@ function load__allPages_AMT_combo() {
 					}
 				});
 			}
+			
 				
 			function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
 				var container = isTopShow ? d1 : d2;
@@ -11319,7 +11320,9 @@ if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
 	var loader = new load();
 	if (loader.global_vars.is_running_on_amt) {
-		loader.AMT__init_utility_window();
+		if(loader.AMT__init_utility_window) {
+			loader.AMT__init_utility_window();
+		}
 	}
 }
 else {
@@ -11328,7 +11331,9 @@ else {
 			ih = document.body.innerHTML;
 			var loader = new load();
 			if (loader.global_vars.is_running_on_amt) {
-				loader.AMT__init_utility_window();
+				if(loader.AMT__init_utility_window){
+					loader.AMT__init_utility_window();
+				}
 			}
 		}
 	}
