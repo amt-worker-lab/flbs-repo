@@ -10437,21 +10437,21 @@ function load__allPages_AMT_combo() {
 						}
 						
 						// Try DB
-						new AMT___requests_factory().database__select(
-							{
-								query: "AMT_Flicksio_IMDB_GetDetails",
-								encodeStrings: {
-									qStrs: {
-										title: o.title1,
-										series: o.series1,
-										season: o.season1,
-										itunes_search: true
-									}
-								},
-								timeout: 80000
-							},
-							process_itunes_DB
-						);
+						//~ new AMT___requests_factory().database__select(
+							//~ {
+								//~ query: "AMT_Flicksio_IMDB_GetDetails",
+								//~ encodeStrings: {
+									//~ qStrs: {
+										//~ title: o.title1,
+										//~ series: o.series1,
+										//~ season: o.season1,
+										//~ itunes_search: true
+									//~ }
+								//~ },
+								//~ timeout: 80000
+							//~ },
+							//~ process_itunes_DB
+						//~ );
 					}
 				});
 			}
