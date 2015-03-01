@@ -617,7 +617,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 function showNextTab(options) {
 	console.log('Showing Next Tab');
 	isQProduct = false;
-	if(options && options.isTopWindow) {
+	if(options && options.hasOwnProperty("isTopWindow")) {
+		console.log("isTopWindow: " +options.isTopWindow);
 		chrome.extension.sendRequest({
 										  showNextTab: true,
 										  isTopWindow: options.isTopWindow

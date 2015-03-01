@@ -15925,8 +15925,9 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
@@ -15948,12 +15949,12 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:220px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:100px;left:0%;width:50%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:40%;width:59%;height:220px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:100px;left:50%;width:49%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
 			/* END ITEMS */
@@ -15964,9 +15965,9 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1
+					d1,d1b
 				],
-				offset: 220 // offset top
+				offset: 100 // offset top
 			});
 			
 			// return button function!
