@@ -9929,7 +9929,7 @@ function load__allPages_AMT_combo() {
 	 * TODO:
 	 * DONE:Skips-like file-object to ignore X. E.g. Daily Show, Colbert Report.
 	 * Synonym-like file-object for series names.
-	 * Auto select IMDB when coming from local.
+	 * DONE:Auto select IMDB when coming from local.
 	 * "return" button sends "showNextTab" to AllPages.js.
 	 * Top show Div is large. Make btm small.
 	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
@@ -10045,7 +10045,6 @@ function load__allPages_AMT_combo() {
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
 				original_title: null,
-				manual_choice_selected: null, // This is for manual selections from DB. It will help to auto on IMDB.
 				matches: {
 					title1:null,
 					title2:null,
@@ -10164,7 +10163,7 @@ function load__allPages_AMT_combo() {
 			
 			// onclick
 			d3.onclick = function() {
-				//~ load_skips();
+				load_skips(); // Update the values.
 			}
 			d3.onblur = function() {
 				write_skips();
@@ -10174,8 +10173,8 @@ function load__allPages_AMT_combo() {
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(innerHeight) {
 					d_container.style.height = innerHeight + 'px';
-					d1.style.height = innerHeight-40 + 'px';
-					d3.style.height = '38px';
+					d1.style.height = innerHeight-60 + 'px';
+					d3.style.height = '48px';
 					//~ var half = Math.floor(innerHeight / 2);
 					//~ d_container.style.height = innerHeight + 'px';
 					//~ d1.style.height = half + 'px';
