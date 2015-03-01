@@ -10414,14 +10414,19 @@ function load__allPages_AMT_combo() {
 			/**
 			 * function checkIMDB
 			 */
-			function checkIMDB(keywords, title, title_type, isTopShow) {
+			function checkIMDB(keywords, title, title_type, parent_title, isTopShow) {
+				var obj = {
+					title: title,
+					parent_title: parent_title,
+					isTopShow: isTopShow
+				}
 				var isTopShow = isTopShow;
 				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
+				
 				var url = 'http://www.imdb.com/search/title?' +
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
 							'title='+encodeURIComponent(title)
-							
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
 				
 				GM_xmlhttpRequest({
@@ -10454,7 +10459,6 @@ function load__allPages_AMT_combo() {
 						//reg 4 - credits
 						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
 						
-						
 						var choices = [];
 						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
 						console.log(allDetails);
@@ -10467,6 +10471,7 @@ function load__allPages_AMT_combo() {
 								imdbId:null,
 								title:null,
 								year:null,
+								is_auto:null // This is for autos
 							});
 							var scr1 = reg1.exec(allDetails[i]);
 							choices[i].seriesIMDBId = scr1[1];
@@ -10507,18 +10512,21 @@ function load__allPages_AMT_combo() {
 								}
 							}
 							
-
+							// Is this an auto, based on the manual choice selected?
+							if (choices[i].title == obj.title && choices[i].seriesName == parent_title) {
+								choices[i].is_auto = true;
+							}
 						}
-						console.log(choices);
 						
+						// ...
 						if(isTopShow) 
 							o.choices1 = choices;
 						else
 							o.choices2 = choices;
+						// Build final
 						buildFinalInterface(isTopShow);
-					
+						// Increment o.numRuns
 						o.numRuns++;
-						//attemptAuto(isTopShow);
 					}
 				});
 			}
@@ -10582,7 +10590,7 @@ function load__allPages_AMT_combo() {
 								o.cast1 = this.cast;
 							else
 								o.cast2 = this.cast;
-							checkIMDB(this.keywords, this.title, this.kind, this.isTopShow);
+							checkIMDB(this.keywords, this.title, this.kind, this.parent_title, this.isTopShow);
 						}
 						
 						// If this is special workflow.
@@ -10713,6 +10721,8 @@ function load__allPages_AMT_combo() {
 			
 			/**
 			 * function buildFinalInterface
+			 * 
+			 * choices.is_auto
 			 */
 			function buildFinalInterface(isTopShow) {
 				console.log('building interface, topShow is:' + isTopShow);
@@ -10726,212 +10736,212 @@ function load__allPages_AMT_combo() {
 					AMT___Floater.skip();
 					return;
 				}
-				else {
-					div.innerHTML = ''; //Clear everything	
-					var topAuto = false;
-					var bottomAuto = false;
-					var foundAuto = false;
-					var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
-					// Loop goes here.
-					for(var i = 0; i < 10; i++) {
-						if(!choices[i]) break;
-						var castMatches = [];
-						var chk_cast = (isTopShow ? o.cast1 : o.cast2);
-						for(var j = 0; j < chk_cast.length; j++) {
-							var ch = choices[i].cast;
-							if (ch.hasOwnProperty( chk_cast[j].toLowerCase().trim() )) {
-								castMatches.push(chk_cast[j]);
-							}
+				// How many autos are there? (choices.is_auto)
+				// There MUST be only ONE in order to auto.
+				var num_autos = 0;
+				for (var i in choices) {
+					if (choices[i].is_auto) {
+						num_autos++;
+					}
+				}
+				
+				// Still here?
+				div.innerHTML = ''; //Clear everything	
+				var topAuto = false;
+				var bottomAuto = false;
+				var foundAuto = false;
+				var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
+				// Loop goes here.
+				for(var i in choices) {
+				//~ for(var i = 0; i < 10; i++) {
+					if(!choices[i]) break;
+					var castMatches = [];
+					var chk_cast = (isTopShow ? o.cast1 : o.cast2);
+					for(var j = 0; j < chk_cast.length; j++) {
+						var ch = choices[i].cast;
+						if (ch.hasOwnProperty( chk_cast[j].toLowerCase().trim() )) {
+							castMatches.push(chk_cast[j]);
 						}
-						//~ console.log(choices[i].cast);
-						//~ console.log(chk_cast);
-						//~ console.log(castMatches);
-						//~ for(var j = 0; j < (isTopShow ? o.cast1 : o.cast2).length; j++) {
-							//~ for(var k = 0; k < choices[i].cast.length; k++) {
-								//~ if(choices[i].cast[k].toLowerCase().trim() == (isTopShow ? o.cast1[j] : o.cast2[j]).toLowerCase().trim()) {
-									//~ castMatches.push(choices[i].cast[k]);
-								//~ }
-							//~ }
-						//~ }
-						var el_div = document.createElement('div');
-						el_div.setAttribute('style', 'border-bottom:1px solid black;');
-						el_div.className = 'exe';
-						div.appendChild(el_div);
-						
-						el_div.innerHTML = 
-							(choices[i].title ? 't: ' + MT__bold(choices[i].title, bold) + '<br>' : 't: <br>' ) +
-							(choices[i].seriesName ? 's: ' + MT__bold(choices[i].seriesName, bold) + '<br>' : 's: <br>') +
-							//(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
-							'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
-							'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
-							'cm: ' + castMatches.join(',');
-						el_div.title = choices[i].title;
-						el_div.seriesName = choices[i].seriesName;
-						el_div.title_type = choices[i].title_type;
-						el_div.year = choices[i].year;
-						el_div.castMatches = castMatches;
-						el_div.imdbId = choices[i].imdbId;
-						el_div.seriesIMDBId = choices[i].seriesIMDBId;
-						el_div.isTopShow = isTopShow;
-						el_div.parent_div = div;
-						//~ if(i == 0) { // unnecessary
-							//~ if(el_div.isTopShow) {
-								//~ o.imdbFirstOption1 = el_div;
-							//~ }else {
-								//~ o.imdbFirstOption2 = el_div;
-							//~ }
-						//~ }
-						el_div.onclick = function() { // onclick
-							this.style.backgroundColor = 'LightGreen';
-							var id;
-							if(this.imdbId) {
-								id = this.imdbId;
+					}
+					// el_div
+					var el_div = document.createElement('div');
+					el_div.setAttribute('style', 'border-bottom:1px solid black;');
+					el_div.className = 'exe';
+					div.appendChild(el_div);
+					// .innerHTML
+					el_div.innerHTML = 
+						(choices[i].title ? 't: ' + MT__bold(choices[i].title, bold) + '<br>' : 't: <br>' ) +
+						(choices[i].seriesName ? 's: ' + MT__bold(choices[i].seriesName, bold) + '<br>' : 's: <br>') +
+						//(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
+						'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
+						'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
+						'cm: ' + castMatches.join(',');
+					// ...
+					el_div.title = choices[i].title;
+					el_div.seriesName = choices[i].seriesName;
+					el_div.title_type = choices[i].title_type;
+					el_div.year = choices[i].year;
+					el_div.castMatches = castMatches;
+					el_div.imdbId = choices[i].imdbId;
+					el_div.seriesIMDBId = choices[i].seriesIMDBId;
+					el_div.isTopShow = isTopShow;
+					el_div.parent_div = div;
+					// .onclick
+					el_div.onclick = function() { // onclick
+						this.style.backgroundColor = 'LightGreen';
+						var id;
+						if(this.imdbId) {
+							id = this.imdbId;
+						}
+						else {
+							id = this.seriesIMDBId;
+							alert('Series IMDB ID!'); //?
+							return;
+						}
+						if(id) {
+							var url = 'http://www.imdb.com/title/' + id;
+							if(this.isTopShow) {
+								o.q[0].value = url;
 							}
 							else {
-								id = this.seriesIMDBId;
-								alert('Series IMDB ID!'); //?
-								return;
+								o.q[1].value = url;
 							}
-							if(id) {
-								var url = 'http://www.imdb.com/title/' + id;
-								if(this.isTopShow) {
-									o.q[0].value = url;
-								}
-								else {
-									o.q[1].value = url;
-								}
-								// Make div small
-								//~ this.parent_div.style.height = 'auto';
-								this.parentNode.style.height = '140px';
-								this.scrollIntoView(false);
-								//
-								o.q[0].value = o.q[0].value.trim();
-								if (o.q.length > 1)
-									o.q[1].value = o.q[1].value.trim();
-								if  (
-									/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
-										(
-										o.q.length == 1 ||
-										/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
-										)
+							// Make div small
+							//~ this.parent_div.style.height = 'auto';
+							this.parentNode.style.height = '140px';
+							this.scrollIntoView(false);
+							//
+							o.q[0].value = o.q[0].value.trim();
+							if (o.q.length > 1)
+								o.q[1].value = o.q[1].value.trim();
+							if  (
+								/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[0].value) &&
+									(
+									o.q.length == 1 ||
+									/^http:\/\/www\.imdb\.com\/title\/tt[^\/]+$/.exec(o.q[1].value)
 									)
-								{
-									// Is preview?
-									if (AMT__Global_Vars.isPreview) {
-										AMT___Floater.accept();
-										return;
-									}
-									// Is accepted?
-									// Fire event to simulate change of text box.
-									// This produces a "post" request to their server.
-									var evt = document.createEvent('HTMLEvents');
-									evt.initEvent('change', false, true);
-									o.q[0].dispatchEvent(evt);
-									if (o.q.length > 1)
-										o.q[1].dispatchEvent(evt);
-									// ...
-									document.body.style.backgroundColor = 'aqua';
-									//~ new AMT___core_factory().nextTab(); // nextTab
-									// show next
-									showNextTab();
-									var rand = 3600 + (Math.random() * 2000);
-									setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
-									return false;
-								}
-							} else {
-								alert('error undefined imdbId and seriesIMDBId');
-							}
-						}
-						
-						//Put check here for to auto yes? You wan oil chane?
-						if (isTopShow) { // Top
-							if(
-								choices[i] &&
-								choices[i].title &&
-								clean_str_to_auto(choices[i].title).length > 2 &&
-								clean_str_to_auto(choices[i].title) == o.matches.title1 &&
-								choices[i].seriesName &&
-								clean_str_to_auto(choices[i].seriesName).length > 2 &&
-								o.series1 &&
-								clean_str_to_auto(choices[i].seriesName) == o.matches.series1
-							)
+								)
 							{
-								if(
-									choices[i].year && 
-									o.releaseYear1
-								)	
-								{
-									//Make sure they're both numbers by trimming them
-									choices[i].year = choices[i].year.trim();
-									o.releaseYear1 = o.releaseYear1.trim();
-									console.log('attempting year match');
-									if(Math.abs(choices[i].year*1 - o.releaseYear1*1) <= 2) {
-										console.log('year matched for top');
-										topAuto = true;
-									}
+								// Is preview?
+								if (AMT__Global_Vars.isPreview) {
+									AMT___Floater.accept();
+									return;
 								}
-								else {
+								// Is accepted?
+								// Fire event to simulate change of text box.
+								// This produces a "post" request to their server.
+								var evt = document.createEvent('HTMLEvents');
+								evt.initEvent('change', false, true);
+								o.q[0].dispatchEvent(evt);
+								if (o.q.length > 1)
+									o.q[1].dispatchEvent(evt);
+								// ...
+								document.body.style.backgroundColor = 'aqua';
+								//~ new AMT___core_factory().nextTab(); // nextTab
+								// show next
+								showNextTab();
+								var rand = 3600 + (Math.random() * 2000);
+								setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
+								return false;
+							}
+						} else {
+							alert('error undefined imdbId and seriesIMDBId');
+						}
+					}
+					
+					// Check for "auto" when localDB button is manually clicked.
+					if (num_autos == 1 && choices[i].is_auto) {
+						el_div.click();
+					}
+					
+					// Put check here for to auto yes? You wan oil chane?
+					if (isTopShow) { // Top
+						if(
+							choices[i] &&
+							choices[i].title &&
+							clean_str_to_auto(choices[i].title).length > 2 &&
+							clean_str_to_auto(choices[i].title) == o.matches.title1 &&
+							choices[i].seriesName &&
+							clean_str_to_auto(choices[i].seriesName).length > 2 &&
+							o.series1 &&
+							clean_str_to_auto(choices[i].seriesName) == o.matches.series1
+						)
+						{
+							if(
+								choices[i].year && 
+								o.releaseYear1
+							)	
+							{
+								//Make sure they're both numbers by trimming them
+								choices[i].year = choices[i].year.trim();
+								o.releaseYear1 = o.releaseYear1.trim();
+								console.log('attempting year match');
+								if(Math.abs(choices[i].year*1 - o.releaseYear1*1) <= 2) {
+									console.log('year matched for top');
 									topAuto = true;
 								}
 							}
-							if(topAuto) {
-								o.imdbAuto1 = true;
-								el_div.click();
-								foundAuto = true;
-								break;
+							else {
+								topAuto = true;
 							}
 						}
-						else // Bottom (!isTopShow)
+						if(topAuto) {
+							o.imdbAuto1 = true;
+							el_div.click();
+							foundAuto = true;
+							break;
+						}
+					}
+					else // Bottom (!isTopShow)
+					{
+						if(
+							choices[i] &&
+							choices[i].title &&
+							clean_str_to_auto(choices[i].title).length > 2 &&
+							clean_str_to_auto(choices[i].title) == o.matches.title2 &&
+							choices[i].seriesName &&
+							clean_str_to_auto(choices[i].seriesName).length > 2 &&
+							o.series2 &&
+							clean_str_to_auto(choices[i].seriesName) == o.matches.series2
+						)
 						{
 							if(
-								choices[i] &&
-								choices[i].title &&
-								clean_str_to_auto(choices[i].title).length > 2 &&
-								clean_str_to_auto(choices[i].title) == o.matches.title2 &&
-								choices[i].seriesName &&
-								clean_str_to_auto(choices[i].seriesName).length > 2 &&
-								o.series2 &&
-								clean_str_to_auto(choices[i].seriesName) == o.matches.series2
+								choices[i].year && o.releaseYear2
 							)
 							{
-								if(
-									choices[i].year && o.releaseYear2
-								)
-								{
-									//Make sure they're both numbers by trimming them
-									choices[i].year = choices[i].year.trim();
-									o.releaseYear2 = o.releaseYear2.trim();
-									if(Math.abs((choices[i].year *1) - (o.releaseYear2*1)) <= 2) {
-										console.log('year matched for top');
-										bottomAuto = true;
-									}
-								}
-								else {
+								//Make sure they're both numbers by trimming them
+								choices[i].year = choices[i].year.trim();
+								o.releaseYear2 = o.releaseYear2.trim();
+								if(Math.abs((choices[i].year *1) - (o.releaseYear2*1)) <= 2) {
+									console.log('year matched for top');
 									bottomAuto = true;
 								}
 							}
-							if(bottomAuto) {
-								o.imdbAuto2 = true;
-								el_div.click();
-								foundAuto = true;
-								break;
+							else {
+								bottomAuto = true;
 							}
 						}
+						if(bottomAuto) {
+							o.imdbAuto2 = true;
+							el_div.click();
+							foundAuto = true;
+							break;
+						}
 					}
-					// END OF FOR LOOP
-					
-					// Not special workflow 
-					if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
-						AMT___Floater.skip();
-					}
-					// If auto and isTopShow
-					if(foundAuto && isTopShow) {
-						initNextRun();
-					}
-					// Not auto but special workflow
-					else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
-						initNextRun();
-					}
+				}
+				// END OF FOR LOOP
+				
+				// Not special workflow 
+				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
+					AMT___Floater.skip();
+				}
+				// If auto and isTopShow
+				if(foundAuto && isTopShow) {
+					initNextRun();
+				}
+				// Not auto but special workflow
+				else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
+					initNextRun();
 				}
 			}
 				
