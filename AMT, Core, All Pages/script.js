@@ -9925,6 +9925,15 @@ function load__allPages_AMT_combo() {
 	// Flicksio
 	// Level I: Locate URL for TV or Movie
 	//
+	/**
+	 * TODO:
+	 * Skips-like file-object to ignore X. E.g. Daily Show, Colbert Report.
+	 * Synonym-like file-object for series names.
+	 * Auto select IMDB when coming from local.
+	 * "return" button sends "showNextTab" to AllPages.js.
+	 * Top show Div is large. Make btm small.
+	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
+	 */
 	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
 	s = '<b>Enter in the IMDb url of this title(s).</b><br>\n        	To begin, please view the following';
 	if  (
