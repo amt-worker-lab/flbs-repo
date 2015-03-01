@@ -10018,6 +10018,20 @@ function load__allPages_AMT_combo() {
 			var releaseYear2 = yearReg.exec(ih);
 			releaseYear2 = (releaseYear2) ? releaseYear2[1] : null;
 			
+			// synopsis
+			// e.g. <div>\n<b>Synopsis: </b>
+			var b = document.getElementsByTagName('b');
+			var synp1=null,synp2=null;
+			for (var i in b) {
+				if (i == 'length') break;
+				if (b[i].innerText.trim() == 'Synopsis:') {
+					if (!synp1) {
+						synp1 = b[i].parentNode.innerText.trim()replace(/^Synopsis: */, '');
+						break;
+					}
+				}
+			}
+			
 			//~ if(ih.length > 1) {
 				//~ var runtime2 = runtimeReg.exec(ih[1]) ? runtimeReg.exec(ih[1])[1] : null;
 				//~ var releaseYear2 = yearReg.exec(ih[1]) ? yearReg.exec(ih[1])[1] : null;
@@ -10038,6 +10052,8 @@ function load__allPages_AMT_combo() {
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
 				releaseYear2: releaseYear2,
+				synopsis1: synp1,
+				synopsis2: synp2,
 				choices1 : null,
 				choices2 : null,
 				numRuns : 0,
@@ -10053,6 +10069,7 @@ function load__allPages_AMT_combo() {
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
 				original_title: null,
+				series1_season1: __js_clean_html_str(rslt1[2]), // Series Title + Season #, e.g. "Scrubs, Season 4"
 				itunes_country: 'us', // default=us, others=de,fr
 				matches: {
 					title1:null,
@@ -10383,25 +10400,41 @@ function load__allPages_AMT_combo() {
 			/**
 			 * function itunes_search_init
 			 * Init itunes
+			 * Synopsis must not be blank
 			 */
 			function itunes_search_init() {
-				var url = 'http://translate.google.com/translate_a/t?client=t&text='+encodeURIComponent(o.title1)+'&hl=en&sl=&tl=en'
+				// Syn?
+				if (!o.synopsis1) {
+					AMT___Floater.skip();
+					return;
+				}
+				// e.g. "Prison%20Break,%20Staffel%204"
+				var url = 'https://itunes.apple.com/search?term='+encodeURIComponent(o.series1_season1)+'&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country='+o.itunes_country+'&limit=200';
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
-				
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: url,
 					onload: function (response) {
-						var rs = response.responseText;
+						var rs = response.responseText.trim();
 						
 						if (response.status != 200 || (rs*1 >= 300 && rs*1 <= 600)) {
 							alert('rs');
 							exit(response.status);
 						}
 						
-						rs = rs.replace(/,+/g, ','); // replace ,+
+						//~ rs = rs.replace(/,+/g, ','); // replace ,+
 						rs = JSON.parse(rs);
 						console.log(rs);
+						
+						//{"resultCount":24,"results": [{"wrapperType":"track" ...
+						
+						// Loop through results looking for an exact match of the episode's description.
+						// There must be only 1 exact match of the episode description. If found
+						// then search DB for SeriesTitle(itunes)/Season#/Episode#(itunes)
+						
+						for (var i in rs.results) {
+							
+						}
 						
 						// Try DB
 						new AMT___requests_factory().database__select(
