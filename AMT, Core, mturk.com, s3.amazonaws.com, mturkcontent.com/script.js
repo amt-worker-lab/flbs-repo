@@ -16025,11 +16025,11 @@ function MT__RUN() {
 						tmpsites += x; // show in d1b
 						o.sd_start_urls.push(x);
 						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, '').replace(/\/[\d\D]*$/, ''); // to domain
-						if (!/(facebook|fb|google|gmail|linkedin|myspace|twitter|youtube|yt)\./i.exec(x)) {
+						if (!/(facebook|fb|google|gmail|linkedin|myspace|twitter|youtube|yt|amazon|instagram)\./i.exec(x)) {
 							o.sd_allowed_domains.push(x);
-							tmpsites += '(X:'+x+')\n'; // show in d1b
-						} else
 							tmpsites += '('+x+')\n'; // show in d1b
+						} else
+							tmpsites += '(X:'+x+')\n'; // show in d1b
 					}
 					tmpsites = tmpsites.div({style:'border-bottom:1px solid black'});
 					
