@@ -94031,7 +94031,7 @@ qatar,80
 			var o = {
 				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
 				street: td[3].innerText.replace(/\s+/g, ' ').trim(),
-				locn: td[5].innerText.replace(/\s+/g, ' ').trim(),
+				locn: td[5].innerText.replace(/\s+/g, ' ').trim()
 				
 				bold_array: [],
 				
