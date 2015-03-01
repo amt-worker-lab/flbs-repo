@@ -10187,6 +10187,7 @@ function load__allPages_AMT_combo() {
 			 * function write_skips
 			 */
 			function write_skips() {
+				d3.style.border = '4px dashed blue';
 				var rf = new AMT___requests_factory();
 				// Write to file !
 				rf.io__write_to_file(
@@ -10196,20 +10197,40 @@ function load__allPages_AMT_combo() {
 								'&AMT__serverSide_write__file=flicksio_options',
 						host:	MT___host
 					},
-					linkedin_people__processQuery
+					function(rs) {
+						d3.style.border = '4px solid blue';
+					}
 				);
 			}
 			/**
 			 * function load_skips
+			 * Load options/skips file.
+			 * If initial run then decide if skip. o.series1 VS. skips.
 			 */
-			// Load options/skips file.
-			function load_skips() {
+			function load_skips(is_init_run) {
+				var is_init_run = is_init_run;
+				if (!is_init_run)
+					d3.style.border = '4px dashed blue';
 				url = MT___host + '/mturk/.miscellaneous/flicksio_options';
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: url,
 					onload: function (response) {
 						var rs = response.responseText;
+						
+						console.log('loaded');
+						// Make obj.
+						rs = rs.trim().split('\n');
+						if (__js_inarray(rs, o.series1)) { // array, needle
+							console.log('skip');
+							AMT___Floater.skip(); // SKIP
+							return; // STOP
+						}
+						// Continue...
+						if (is_init_run) // GOTO TRANSLATE
+							translate();
+						else if (!is_init_run)
+							d3.style.border = '4px solid blue';
 					}
 				});
 			}
@@ -10228,6 +10249,8 @@ function load__allPages_AMT_combo() {
 						secondQuery.one_query = true;
 						secondQuery.special_ww = true;
 					}
+					//~ // GOTO TRANSLATE
+					//~ translate();
 				}
 				// Manual+Auto
 				if(AMT__Global_Vars.isSpecialWorkflowWindow) {
@@ -10237,19 +10260,21 @@ function load__allPages_AMT_combo() {
 						secondQuery.one_query = true;
 						secondQuery.special_ww = false;
 					}
+					//~ // GOTO LOAD SKIPS
+					//~ load_skips();
 					//~ firstQuery.one_query = false; // !ONE_QUERY == 4 QUERIES PER !!!!
 					//~ firstQuery.special_ww = false;
 					//~ secondQuery.one_query = false;
 					//~ secondQuery.special_ww = false;
 				}
-				
-				// Check for language of title.
-				// On google.com translate.
-				translate();
+				// GOTO LOAD SKIPS
+				load_skips();
 			}
 			
 			/**
 			 * function translate
+			 * Check for language of title.
+			 * On google.com translate.
 			 */
 			function translate() {
 				if (!o.has_google_translate || o.title1 == o.original_title) { // End here if not has_google_translate
