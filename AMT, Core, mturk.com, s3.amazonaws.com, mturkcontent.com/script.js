@@ -15949,6 +15949,9 @@ function MT__RUN() {
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:220px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:160px;left:0%;width:98%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
 			/* END ITEMS */
 			
 			// innerHeight
@@ -16014,10 +16017,12 @@ function MT__RUN() {
 					var x;
 					while (m = reg.exec(content)) {
 						x = __js_clean_html_str(m[1]);
+						d1b.innerText += x; // show in d1b
 						o.sd_start_urls.push(x);
-						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, ''); // to domain
+						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, '').replace(/\/[\d\D]*$/, ''); // to domain
 						if (!/(facebook|google|gmail|linkedin|myspace|twitter)\./i.exec(x))
 							o.sd_allowed_domains.push(x);
+						d1b.innerText += '('+x+')\n'; // show in d1b
 					}
 					
 					if (o.sd_start_urls.length < 1) { // skip
