@@ -303,12 +303,17 @@ AMT__Global_Vars.initializeHitId = function () {
 }
 
 AMT__Global_Vars.initializeTabId = function() {
+		AMT__Global_Vars.isInitializingTabId = true;
 		chrome.extension.sendRequest(
 		{
 			getTabId: true
 		}, 
 		function(response) {
 				AMT__Global_Vars.tabId = response.id;
+				AMT__Global_Vars.isInitializingTabId = true;
+				if(AMT__Global_Vars.initializeTabIdCallback) {
+					AMT__Global_Vars.initializeTabIdCallback();
+				}
 			}
 		);
 }
@@ -580,20 +585,38 @@ qProductId = false;
 function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
-	//Tell eventPage to add this to the Q
-	console.log(AMT__Global_Vars);
-	chrome.extension.sendRequest({
-								  addToTabsQ: true,
-								  isTopWindow: AMT__Global_Vars.isTopWindow
-							  }, function(response) {
-								qProductId = response.qProductId;
-							});
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'tabsQTitleChange'
+	});
+	if(AMT__Global_Vars.isInitializingTabId) {
+		AMT__Global_Vars.initializeTabIdCallback = function() {
+			//Tell eventPage to add this to the Q
+			console.log(AMT__Global_Vars);
+			chrome.extension.sendRequest({
+				  addToTabsQ: true,
+				  isTopWindow: AMT__Global_Vars.isTopWindow
+			  }, function(response) {
+				qProductId = response.qProductId;
+			});
+		}
+	}
+	else {
+		//Tell eventPage to add this to the Q
+		console.log(AMT__Global_Vars);
+		chrome.extension.sendRequest({
+									  addToTabsQ: true,
+									  isTopWindow: AMT__Global_Vars.isTopWindow
+								  }, function(response) {
+									qProductId = response.qProductId;
+								});
+	}
 }
 
 
 
 function showNextTab() {
 	console.log('Showing Next Tab');
+	isQProduct = false;
 	chrome.extension.sendRequest({
 									  showNextTab: true,
 									  isTopWindow: AMT__Global_Vars.isTopWindow
@@ -1812,9 +1835,13 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		var v = event.data;
 		
-		//~ console.log(v);
+		console.log(v);
 		
 		switch(v.action) {
+			case 'tabsQTitleChange': 
+				console.log("Changing document title to TQ");
+				document.title = "TQ";
+				break;
 			case 'return_button_hotkey':
 				window.addEventListener('keydown', function(e) {
 						if(e.keyCode == v.options.keyCode) {

@@ -15914,7 +15914,7 @@ function MT__RUN() {
 	 */
 	
 	//
-	// garrett grohman
+	// garrett grohman (372BFDRISCA6E6WX8JDCP7YD8F6C1F)
 	// Find Email Address for Crowdfunding Projects
 	//
 	s = '<p>Find the email address for the campaign owner of this campaing.</p>';
@@ -16088,17 +16088,19 @@ function MT__RUN() {
 										}
 										// ENDS SCRIPT PROCESSING
 										return true;
+									} else { // Add to tabs queue if not in preview
+										addToTabsQ();
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
 									return false;
 								},
-								do_submit_callback: function() {
-									
-									// NOTE: DEC1 2014
-									// THIS NEEDS TO BE TESTED FIRST!!
-									//document.getElementById('submitButton').click();
-								},
+								//~ do_submit_callback: function() {
+									//~ 
+									//~ // NOTE: DEC1 2014
+									//~ // THIS NEEDS TO BE TESTED FIRST!!
+									//~ //document.getElementById('submitButton').click();
+								//~ },
 								//~ // What to do onclick
 								//~ input_onclick_callback: function() {
 									//~ document.getElementById('Q1Email').value = 
@@ -151688,6 +151690,8 @@ function mturk_load()
 					break;
 				case '3Z18Y091VBP65DOWDMYY3XZ211V1FB': //FlicksIO, Level I: Locate URL for TV or Movie
 				case '3ED2P6N3KZO1CZPTJSAFYTQJ9DA6FF': //FlicksIO, Second Posting
+					AMT___Floater({runMT_Run:true});
+				case '372BFDRISCA6E6WX8JDCP7YD8F6C1F': //garrett grohman, Kickstarter emails
 					AMT___Floater({runMT_Run:true});
 					break;
 				
