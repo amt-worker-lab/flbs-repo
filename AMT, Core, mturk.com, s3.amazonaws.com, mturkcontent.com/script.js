@@ -15970,13 +15970,13 @@ function MT__RUN() {
 			});
 			
 			// return button function!
-			//~ var cf = new AMT___core_factory()
-			//~ new AMT___core_factory()
-				//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
-					//~ {
-						//~ action: 'return_button__showNextTab'
-					//~ }
-				//~ );
+			var cf = new AMT___core_factory()
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
@@ -16025,9 +16025,11 @@ function MT__RUN() {
 						tmpsites += x; // show in d1b
 						o.sd_start_urls.push(x);
 						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, '').replace(/\/[\d\D]*$/, ''); // to domain
-						if (!/(facebook|google|gmail|linkedin|myspace|twitter|fb)\./i.exec(x))
+						if (!/(facebook|fb|google|gmail|linkedin|myspace|twitter|youtube|yt)\./i.exec(x)) {
 							o.sd_allowed_domains.push(x);
-						tmpsites += '('+x+')\n'; // show in d1b
+							tmpsites += '(X:'+x+')\n'; // show in d1b
+						} else
+							tmpsites += '('+x+')\n'; // show in d1b
 					}
 					tmpsites = tmpsites.div({style:'border-bottom:1px solid black'});
 					
