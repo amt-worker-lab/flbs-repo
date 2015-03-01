@@ -15941,6 +15941,7 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			
+			// ks e.g. http://kickstarter.com/projects/673522836/timbre-redefining-the-desktop-speaker/
 			var o = {
 				ks: td[1].innerText.trim() // kickstarter
 				sd_start_urls: [],
@@ -15949,14 +15950,15 @@ function MT__RUN() {
 					document.getElementById('web_url')
 				]
 			}
+			if (/\/$/.exec(o.ks)) {
+				alert('/');
+			}
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
 				o.q[0].value = o.q[0].value.trim();
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
 					return false;
-				} else {
-					console.log('x');
 				}
 				
 				// Here?
@@ -15964,36 +15966,47 @@ function MT__RUN() {
 				doSubmit();
 			}
 			
-			//~ if (o.domain != '' ) {
-				//~ 
-			//~ } else {
-				//~ scrapy(o.sd_start_urls, o.sd_allowed_domains);
-			//~ }
-			
-			//~ if (o.domain != '' && o.domain.indexOf('mturkcontent.com') == -1) {
-				//~ if (/^http/i.exec(o.domain)) { // Push start url
-					//~ o.sd_start_urls.push(o.domain); // 
-				//~ } else {
-					//~ o.sd_start_urls.push('http://' + o.domain); // 
-				//~ }
-				//~ o.domain = o.domain.replace(/^https?:\/\/(www\.|)/i, '');
-				//o.domain = o.domain.replace(/\/[\d\D]*/i, '');
-				//~ o.sd_allowed_domains.push(o.domain);
-				//~ 
-				//~ // Yahoo/SP top 3 for start
-				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					//~ startPage: true,
-					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team'),
-					//~ callback_function: Nicolas_Cazagou_FB_emails__startpage
-				//~ });
-			//~ } else {
-				//~ // Go straight to scrapy
-				//o.sd_start_urls.push('http://localhost'); //?
-				//~ 
-				//~ // start URLs, allowed domains
-				//~ Nicolas_Cazagou_FB_emails__scrapy(o.sd_start_urls, o.sd_allowed_domains);
-			//~ }
-			
+			// scrape ks
+			//https://www.kickstarter.com/projects/runningfarmlabs/timbre-redefining-the-desktop-speaker/creator_bio.js
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.ks + 'creator_bio.js'),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200 || (rs*1>300 && rs*1<600)) return;
+					
+					/*<ul class="websites list-simple h5 bold">
+<li>
+<a href="http://www.runningfarmlabs.com">http://runningfarmlabs.com
+</a></li>
+<li>
+<a href="https://www.facebook.com/bgardineer">http://facebook.com
+</a></li>
+<li>
+<a href="https://www.facebook.com/jongoh">http://facebook.com
+</a></li>
+</ul>*/
+					
+					var reg = /<ul class="websites list-simple h5 bold">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
+					if (!reg) { // skip
+						AMT___Floater.skip();
+						return;
+					}
+					// Here?
+					var content = reg[1];
+					var reg = /<a href="([^"]+)">/g;
+					var m;
+					var x;
+					while (m = reg.exec(content)) {
+						x = __js_clean_html_str(m[1]);
+						o.sd_start_urls.push(x);
+						x = x.replace(/^https?:\/\/(www[w\d]*|)/i, ''); // to domain
+						if (!/^(facebook|google|gmail|linkedin|myspace)\./i.exec(x))
+						o.sd_allowed_domains.push(x);
+					}
+				}
+			});
 			
 			// return button function!
 			//~ var cf = new AMT___core_factory()
