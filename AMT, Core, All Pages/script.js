@@ -10145,20 +10145,36 @@ function load__allPages_AMT_combo() {
 				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d1);
-			var d2 = document.createElement('div');
-			d2.setAttribute('style',
-				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
+			var d3 = document.createElement('textarea');
+			d3.setAttribute('style',
+				"width:99%;height:400px;"
 			);
-			d_container.appendChild(d2);
+			d_container.appendChild(d3);
+			//~ var d2 = document.createElement('div');
+			//~ d2.setAttribute('style',
+				//~ "width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
+			//~ );
+			//~ d_container.appendChild(d2);
 			/*End of Elements*/
+			
+			// onclick
+			d3.onclick = function() {
+				load_skips();
+			}
+			d3.onblur = function() {
+				write_skips();
+			}
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(innerHeight) {
-					var half = Math.floor(innerHeight / 2);
 					d_container.style.height = innerHeight + 'px';
-					d1.style.height = half + 'px';
-					d2.style.height = half + 'px';
+					d1.style.height = innerHeight-20 + 'px';
+					d3.style.height = '18px';
+					//~ var half = Math.floor(innerHeight / 2);
+					//~ d_container.style.height = innerHeight + 'px';
+					//~ d1.style.height = half + 'px';
+					//~ d2.style.height = half + 'px';
 				}
 			});
 			
@@ -10166,6 +10182,37 @@ function load__allPages_AMT_combo() {
 			// One = skips, autos only.
 			// Two = skips, autos, manual: accepts on 2x has results>0, 2x Levenstein distance (ep. + series) <= 4
 			AMT__Global_Vars.initializeIsSpecialWorkflowWindow(initialize);
+			
+			/**
+			 * function write_skips
+			 */
+			function write_skips() {
+				var rf = new AMT___requests_factory();
+				// Write to file !
+				rf.io__write_to_file(
+					{
+						data:	'AMT__serverSide_write__value='+encodeURIComponent(d3.value)+
+								'&AMT__serverSide_write__folder=.miscellaneous'+
+								'&AMT__serverSide_write__file=flicksio_options',
+						host:	MT___host
+					},
+					linkedin_people__processQuery
+				);
+			}
+			/**
+			 * function load_skips
+			 */
+			// Load options/skips file.
+			function load_skips() {
+				url = MT___host + '/mturk/.miscellaneous/flicksio_options';
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+					}
+				});
+			}
 			/**
 			 * function initialize
 			 * 
@@ -10199,7 +10246,6 @@ function load__allPages_AMT_combo() {
 				// Check for language of title.
 				// On google.com translate.
 				translate();
-				
 			}
 			
 			/**
