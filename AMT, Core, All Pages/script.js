@@ -9940,7 +9940,7 @@ function load__allPages_AMT_combo() {
 	 * and...? .skip() has been called?
 	 * o.itunes_country = us/de/fr
 	 * o.season1 = \d+
-	 * https://itunes.apple.com/search?term=Prison%20Break,%20Staffel%204&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country=de&limit=200
+	 * https://itunes.apple.com/search?term=...
 	 * 
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
@@ -10380,6 +10380,57 @@ function load__allPages_AMT_combo() {
 					}
 				});
 			}
+			/**
+			 * function itunes_search_init
+			 * Init itunes
+			 */
+			function itunes_search_init() {
+				var url = 'http://translate.google.com/translate_a/t?client=t&text='+encodeURIComponent(o.title1)+'&hl=en&sl=&tl=en'
+				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200 || (rs*1 >= 300 && rs*1 <= 600)) {
+							alert('rs');
+							exit(response.status);
+						}
+						
+						rs = rs.replace(/,+/g, ','); // replace ,+
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						// Try DB
+						new AMT___requests_factory().database__select(
+							{
+								query: "AMT_Flicksio_IMDB_GetDetails",
+								encodeStrings: {
+									qStrs: {
+										title: o.title1,
+										series: o.series1,
+										season: o.season1,
+										itunes_search: true
+									}
+								},
+								timeout: 80000
+							},
+							process_itunes_DB
+						);
+					}
+				});
+			}
+			/**
+			 * function process_itunes_DB
+			 */
+			function process_itunes_DB() {
+				
+			}
+			/**
+			 * function initFirstRun
+			 */
 			function initFirstRun() {
 				// Run
 				// Code to pull from database
@@ -10617,7 +10668,9 @@ function load__allPages_AMT_combo() {
 				// If one show and isSpecialWorkflowWindow==true
 				else if ((!rslts || rslts.length == 0) && o.q.length == 1 && AMT__Global_Vars.isSpecialWorkflowWindow) {
 					div.innerHTML = '0-db';
-					AMT___Floater.skip();
+					// Init itunes
+					itunes_search_init();
+					//~ AMT___Floater.skip();
 				}
 				// Else ...
 				else {		
@@ -10737,7 +10790,9 @@ function load__allPages_AMT_combo() {
 										d1.innerHTML =
 											'MaxScore='+Math.round(highestScore)+'<br>'+
 											'Max%='+Math.round(o.lev_pct[0])+'%';
-										AMT___Floater.skip();
+										// Init itunes
+										itunes_search_init();
+										//AMT___Floater.skip();
 									}
 								}
 								// Not in preview
@@ -10794,7 +10849,7 @@ function load__allPages_AMT_combo() {
 					AMT___Floater.skip();
 					return;
 				}
-				// How many autos are there? (choices.is_auto)
+				// How many autos are there? (choices.is_auto) (From a MANUAL selection.)
 				// There MUST be only ONE in order to auto.
 				var num_autos = 0;
 				for (var i in choices) {
