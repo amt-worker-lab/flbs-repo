@@ -94270,7 +94270,7 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			
 			var o = {
-				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
+				comp: td[1].innerText.replace(/\s+/g, ' ').trim(),
 				street: td[3].innerText.replace(/\s+/g, ' ').trim(),
 				locn: td[5].innerText.replace(/\s+/g, ' ').trim(),
 				
@@ -94368,6 +94368,9 @@ qatar,80
 			d3.value  = o.comp + ' "menu"';
 			d3b.value = o.comp + ' '+o.street+' "menu"';
 			d3c.value = o.comp + ' '+o.locn+' "menu"';
+			
+			// default
+			document.getElementsByName('Q1Answer')[0].checked = true;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -94489,7 +94492,7 @@ qatar,80
 					var el_inp_skip2__obj = new AMT___items_factory().
 						create__input_skip_button2(
 							{
-								domain: x,
+								domain: x.replace(/(\w+)\/[^$]*$/, '$1'),
 								load_file: 'austin_load_skips', 
 								var_skip_sites: SKIP_SITES, 
 								callback_function: false
@@ -94501,7 +94504,7 @@ qatar,80
 					
 					// classname is http://(www. = '')x.com (no www)
 					var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
-					console.log(cls);
+					//~ console.log(cls);
 					
 					// ...
 					var d = document.createElement('p');
@@ -94520,7 +94523,7 @@ qatar,80
 					}
 					
 					// domain_counts
-					if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
+					if (o.domain_counts.hasOwnProperty( 'class_' + cls )) {
 						o.domain_counts[ 'class_' + cls ]++;
 					} else {
 						o.domain_counts[ 'class_' + cls ] = 1;
@@ -94541,6 +94544,12 @@ qatar,80
 					a.innerText = 'link';
 					a.href = link;
 					d.appendChild(a);
+					// A button to open in utility window
+					var btn = document.createElement('button');
+					btn.setAttribute('style', '');
+					btn.innerText = 'open util.';
+					btn.href = x;
+					d.appendChild(btn);
 					// ...
 					d.appendChild(el_inp_skip2__obj.el_btn);
 					//~ // ...
@@ -94553,6 +94562,16 @@ qatar,80
 					
 					// actions
 					// ...
+					
+					// btn
+					btn.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						AMT__setUtilityTabs([
+							{
+								url: this.href,
+							}
+						]);
+					}
 					
 					// onclick
 					txa.onclick = function() {
@@ -94621,11 +94640,16 @@ qatar,80
 					if (tmp_cls) { // This is an html className
 						var n = document.getElementsByClassName(tmp_cls);
 						console.log(n);
+						var click_one = false;
 						for (var i in n) {
 							if (i == 'length') break;
 							n[i].style.backgroundColor = 'beige';
 							n[i].style.border = '3px solid brown';
 							n[i].original_bg_color = 'beige';
+							if (!click_one) {
+								click_one = true;
+								n[i].getElementsByTagName('button')[0].click();
+							}
 						}
 					}
 				}
