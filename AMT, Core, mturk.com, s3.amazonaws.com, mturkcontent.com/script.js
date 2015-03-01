@@ -15954,6 +15954,15 @@ function MT__RUN() {
 				alert('/');
 			}
 			
+			// return button function!
+			//~ var cf = new AMT___core_factory()
+			//~ new AMT___core_factory()
+				//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
+					//~ {
+						//~ action: 'return_button__showNextTab'
+					//~ }
+				//~ );
+			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
 				o.q[0].value = o.q[0].value.trim();
@@ -15983,9 +15992,6 @@ function MT__RUN() {
 <li>
 <a href="https://www.facebook.com/bgardineer">http://facebook.com
 </a></li>
-<li>
-<a href="https://www.facebook.com/jongoh">http://facebook.com
-</a></li>
 </ul>*/
 					
 					var reg = /<ul class="websites list-simple h5 bold">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
@@ -16001,80 +16007,23 @@ function MT__RUN() {
 					while (m = reg.exec(content)) {
 						x = __js_clean_html_str(m[1]);
 						o.sd_start_urls.push(x);
-						x = x.replace(/^https?:\/\/(www[w\d]*|)/i, ''); // to domain
-						if (!/^(facebook|google|gmail|linkedin|myspace)\./i.exec(x))
-						o.sd_allowed_domains.push(x);
+						x = x.replace(/^https?:\/\/(www[w\d]*\.|)/i, ''); // to domain
+						if (!/(facebook|google|gmail|linkedin|myspace|twitter)\./i.exec(x))
+							o.sd_allowed_domains.push(x);
 					}
+					
+					if (o.sd_start_urls.length < 1) { // skip
+						AMT___Floater.skip();
+						return;
+					}
+					// Init scrapy
+					console.log(o);
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
 				}
 			});
-			
-			// return button function!
-			//~ var cf = new AMT___core_factory()
-			//~ new AMT___core_factory()
-				//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
-					//~ {
-						//~ action: 'return_button__showNextTab'
-					//~ }
-				//~ );
-			
 			/**
-			 * function startpage
+			 * function scrapy
 			 */
-			function startpage(response_obj) {
-				
-				console.log(response_obj.length);
-				var rs = response_obj;
-				console.log(rs);
-				
-				if (!rs.length) {
-					// No URLs
-					//~ document.body.innerText = '0';
-					//~ return;
-				} else {
-					/*([{
-						url: rs[0][0]
-					}]);*/
-				}
-				
-				// MANY WINDOWS
-				var uw = [];
-				for (var i in rs) {
-					o.sd_start_urls.push(rs[i][0]);
-					
-					// Add to d2
-					var dv = document.createElement('div');
-					dv.setAttribute('style', 'border-bottom:1px solid teal;cursor:pointer;');
-					dv.innerHTML = rs[i][0] + '<br>' + rs[i][1].substr(0,40);
-					dv.url = rs[i][0]
-					dv.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						document.getElementById('Q1Url').value = this.url;
-						document.getElementById('Q1Email').value = 'NOT FOUND';
-						if(this.url.length > 10)
-							doSubmit();
-					}
-					d2.appendChild(dv);
-					// Utility window?
-					//AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions)
-					uw.push({
-						url: rs[i][0]
-					});
-					
-					console.log(i);
-					if (i >= 2) break; 
-				}
-				console.log(uw);
-				AMT__setUtilityTabs(uw);
-				
-				
-				
-				// Push 
-				//~ o.sd_start_urls.push();
-				
-				// start URLs, allowed domains
-				scrapy(o.sd_start_urls, o.sd_allowed_domains);
-			}
-			
 			function scrapy(start_urls, allowed_domains) {
 				//~ console.log(start_urls);
 				//~ console.log(allowed_domains);
