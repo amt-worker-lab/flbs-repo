@@ -10026,7 +10026,7 @@ function load__allPages_AMT_combo() {
 				if (i == 'length') break;
 				if (b[i].innerText.trim() == 'Synopsis:') {
 					if (!synp1) {
-						synp1 = b[i].parentNode.innerText.trim()replace(/^Synopsis: */, '');
+						synp1 = b[i].parentNode.innerText.trim().replace(/^Synopsis: */, '');
 						break;
 					}
 				}

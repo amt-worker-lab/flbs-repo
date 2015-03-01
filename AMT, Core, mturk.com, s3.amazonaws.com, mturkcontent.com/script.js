@@ -15924,35 +15924,43 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
-			GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			
-			//~ GM_addStyle('.container {position:absolute;top:0px;left:0;margin:0 !important;padding:0 !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('table {zoom:0.8;}');
-			
-			/* BEGIN ITEMS */
-			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:220px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1);
-			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:120px;left:0%;width:98%;height:100px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d2);
-			/* END ITEMS */
+			//~ GM_addStyle('table {zoom:0.8;}');
 			
 			var td = document.getElementsByTagName('td');
 			
 			// ks e.g. http://kickstarter.com/projects/673522836/timbre-redefining-the-desktop-speaker/
 			var o = {
-				ks: td[1].innerText.trim() // kickstarter
+				ks: td[1].innerText.trim(), // kickstarter
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				q: [
 					document.getElementById('web_url')
 				]
 			}
-			if (/\/$/.exec(o.ks)) {
+			if (!/\/$/.exec(o.ks)) {
 				alert('/');
 			}
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:220px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 220 // offset top
+			});
 			
 			// return button function!
 			//~ var cf = new AMT___core_factory()
@@ -16065,7 +16073,7 @@ function MT__RUN() {
 							{
 								// add PREVIEW all snippets
 								div: d1,
-								input_send_success: document.getElementById('Q1Email'),
+								input_send_success: o.q[0],
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									
@@ -16096,8 +16104,8 @@ function MT__RUN() {
 									//~ document.getElementById('Q1Email').value = 
 									//~ document.getElementById('submitButton').click();
 								//~ },
-								do_submit_next_tab: true
-								//~ do_submit_add_to_tabs_queue: true
+								//~ do_submit_next_tab: true
+								do_submit_add_to_tabs_queue: true
 							}
 						);
 					}
