@@ -10159,7 +10159,7 @@ function load__allPages_AMT_combo() {
 			
 			// onclick
 			d3.onclick = function() {
-				load_skips();
+				//~ load_skips();
 			}
 			d3.onblur = function() {
 				write_skips();
@@ -10169,8 +10169,8 @@ function load__allPages_AMT_combo() {
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(innerHeight) {
 					d_container.style.height = innerHeight + 'px';
-					d1.style.height = innerHeight-20 + 'px';
-					d3.style.height = '18px';
+					d1.style.height = innerHeight-40 + 'px';
+					d3.style.height = '38px';
 					//~ var half = Math.floor(innerHeight / 2);
 					//~ d_container.style.height = innerHeight + 'px';
 					//~ d1.style.height = half + 'px';
@@ -10218,11 +10218,13 @@ function load__allPages_AMT_combo() {
 					onload: function (response) {
 						var rs = response.responseText;
 						
-						console.log('loaded');
+						d3.value = rs.trim(); // Set value
+						
+						//~ console.log('loaded');
 						// Make obj.
 						rs = rs.trim().split('\n');
 						if (__js_inarray(rs, o.series1)) { // array, needle
-							console.log('skip');
+							d1.innerText = 'Skips file: ' + o.series1;
 							AMT___Floater.skip(); // SKIP
 							return; // STOP
 						}
@@ -10268,7 +10270,7 @@ function load__allPages_AMT_combo() {
 					//~ secondQuery.special_ww = false;
 				}
 				// GOTO LOAD SKIPS
-				load_skips();
+				load_skips(true);
 			}
 			
 			/**
