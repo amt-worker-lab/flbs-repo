@@ -10049,6 +10049,11 @@ function load__allPages_AMT_combo() {
 				]
 			}
 			o.original_title = o.title1; // set o.original_title
+			
+			window.setTimeout(function() {
+											AMT___Floater.skip();
+										}, 90000);
+			
 			// ...
 			// "Google Translated"
 			// e.g. "A History Channel Thanksgiving (South Park Season 15)"
