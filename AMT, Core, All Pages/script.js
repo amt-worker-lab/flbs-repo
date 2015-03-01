@@ -9935,7 +9935,11 @@ function load__allPages_AMT_combo() {
 	 * "CAPTCHA" title, AMT Tools, This needs to go back to PREVIOUS, i.e. in this case "TQ".
 	 * Always accept file (for manuals)
 	 * 
-	 * DB + itunes: Retrieve Episode#, and hence EpisodeTitle
+	 * DB + itunes: Retrieve Episode#, and hence EpisodeTitle.
+	 * If we are in specialWorkflowWindow
+	 * and .skip() has been called.
+	 * o.itunes_country = us/de/fr
+	 * o.season1 = \d+
 	 * https://itunes.apple.com/search?term=Prison%20Break,%20Staffel%204&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country=de&limit=200
 	 * 
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
@@ -10049,6 +10053,7 @@ function load__allPages_AMT_combo() {
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
 				original_title: null,
+				itunes_country: 'us', // default=us, others=de,fr
 				matches: {
 					title1:null,
 					title2:null,
@@ -10086,10 +10091,10 @@ function load__allPages_AMT_combo() {
 						new RegExp(__js_escape_regEx(reg2[0])+'$', ''),
 						''
 					);
-					// Season
+					// Series & Season#
 					var tmpse = /,? (season|saison|staffel) (\d+)$/i.exec(tmpseries);
 					if (tmpse) {
-						o.season1 = tmpse[2];
+						o.season1 = tmpse[2]; // Season #
 						// Series (replace season)
 						o.series1 = tmpseries.replace(
 							new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
@@ -10110,6 +10115,7 @@ function load__allPages_AMT_combo() {
 			if (inp.length > 1)
 				o.q.push(inp[1]);
 			
+			// firstQuery & secondQuery
 			var firstQuery = {
 				title: o.title1,
 				series: o.series1,
