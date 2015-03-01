@@ -10150,11 +10150,16 @@ function load__allPages_AMT_combo() {
 				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d1);
-			var d3 = document.createElement('textarea');
+			var d3 = document.createElement('textarea'); // skips
 			d3.setAttribute('style',
-				"width:99%;height:400px;"
+				"width:50%;height:400px;"
 			);
 			d_container.appendChild(d3);
+			var d3b = document.createElement('textarea'); // always accept
+			d3b.setAttribute('style',
+				"width:49%;height:400px;"
+			);
+			d_container.appendChild(d3b);
 			//~ var d2 = document.createElement('div');
 			//~ d2.setAttribute('style',
 				//~ "width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
@@ -10163,11 +10168,11 @@ function load__allPages_AMT_combo() {
 			/*End of Elements*/
 			
 			// onclick
-			d3.onclick = function() {
+			d3.onclick = d3b.onclick = function() {
 				load_skips(); // Update the values.
 			}
-			d3.onblur = function() {
-				write_skips();
+			d3.onblur = d3b.onblur = function() {
+				write_skips(); // Write the values.
 			}
 			
 			// innerHeight
@@ -10176,6 +10181,7 @@ function load__allPages_AMT_combo() {
 					d_container.style.height = innerHeight + 'px';
 					d1.style.height = innerHeight-60 + 'px';
 					d3.style.height = '48px';
+					d3b.style.height = '48px';
 					//~ var half = Math.floor(innerHeight / 2);
 					//~ d_container.style.height = innerHeight + 'px';
 					//~ d1.style.height = half + 'px';
@@ -10193,17 +10199,20 @@ function load__allPages_AMT_combo() {
 			 */
 			function write_skips() {
 				d3.style.border = '4px dashed blue';
+				d3b.style.border = '4px dashed blue';
 				var rf = new AMT___requests_factory();
+				var write = d3.value + '-------------------------------' + d3b.value;
 				// Write to file !
 				rf.io__write_to_file(
 					{
-						data:	'AMT__serverSide_write__value='+encodeURIComponent(d3.value)+
+						data:	'AMT__serverSide_write__value='+encodeURIComponent(write)+
 								'&AMT__serverSide_write__folder=.miscellaneous'+
 								'&AMT__serverSide_write__file=flicksio_options',
 						host:	MT___host
 					},
 					function(rs) {
 						d3.style.border = '4px solid blue';
+						d3b.style.border = '4px solid blue';
 					}
 				);
 			}
@@ -10214,8 +10223,10 @@ function load__allPages_AMT_combo() {
 			 */
 			function load_skips(is_init_run) {
 				var is_init_run = is_init_run;
-				if (!is_init_run)
+				if (!is_init_run) {
 					d3.style.border = '4px dashed blue';
+					d3b.style.border = '4px dashed blue';
+				}
 				url = MT___host + '/mturk/.miscellaneous/flicksio_options';
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -10223,22 +10234,48 @@ function load__allPages_AMT_combo() {
 					onload: function (response) {
 						var rs = response.responseText;
 						
-						d3.value = rs.trim(); // Set value
+						rs = rs.split('-------------------------------'); // Top=Skips, Btm=Accepts
+						var opt_skip = rs[0].trim(), opt_acpt;
+						
+						d3.value = opt_skip; // Set value d3
+						if (rs.length > 1) {
+							opt_acpt = rs[1].trim();
+							d3b.value = opt_acpt; // Set value d3b
+							opt_acpt = opt_acpt.split('\n'); // Split by \n
+						}
 						
 						// ...
 						if (is_init_run) {
-							// Make obj.
-							rs = rs.trim().split('\n');
-							if (__js_inarray(rs, o.series1)) { // array, needle
+							opt_skip = opt_skip.split('\n'); // Split by \n
+							// Skip if...
+							if (AMT__Global_Vars.isPreview && __js_inarray(opt_skip, o.series1)) { // array, needle
 								d1.innerText = 'Skips file: ' + o.series1;
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
+							// Accept if...
+							else if (
+								AMT__Global_Vars.isPreview &&
+								opt_acpt &&
+								__js_inarray(opt_acpt, o.series1) && //array, needle
+								AMT__Global_Vars.isSpecialWorkflowWindow // Special=Manual tasks
+								)
+							{
+								d1.innerText = 'Accept file: ' + o.series1;
+								AMT___Floater.accept(); // ACCEPT
+								return;
+							}
 							// Still here?
 							translate(); // GOTO TRANSLATE
+							
+							return; // STOP
 						}
-						else if (!is_init_run)
+						
+						// Is not init run?
+						if (!is_init_run) {
 							d3.style.border = '4px solid blue';
+							d3b.style.border = '4px solid blue';
+						}
 					}
 				});
 			}
