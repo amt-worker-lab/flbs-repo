@@ -68145,7 +68145,7 @@ qatar,80
 				domain: td[3].innerText.trim(),
 				state: td[5].innerText.trim(),
 				q: [
-					document.getElementById('industry'),
+					//~ document.getElementById('industry'),
 					document.getElementById('employee_count')
 				],
 				mappings: {},
@@ -68165,6 +68165,9 @@ qatar,80
 				linkedin_biz__li_init();
 			}
 			td[3].appendChild(a);
+			
+			// ...
+			o.q[1] = o.q[0]; // bypass...
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -68195,13 +68198,10 @@ qatar,80
 			d2.onblur = function() {
 				linkedin_biz__init(d1);
 				linkedin_biz__li_init();
-				//linkedin_biz__init();
 			}
 			d2b.value = o.domain;
 			d2b.onblur = function() {
 				linkedin_biz__init(d1c);
-				//~ linkedin_biz__li_init();
-				//linkedin_biz__init();
 			}
 			
 			//
@@ -68224,41 +68224,26 @@ qatar,80
 			//
 			d3.value = 'N/A';
 			d3.onclick = function() {
-				//~ this.style.backgroundColor = 'LightGreen';
-				//~ document.getElementById('company_size').value = 'N/A';
-				//~ document.getElementById('industry').value = 'N/A';
-				//~ document.getElementById('type').value = 'N/A';
-				//~ document.getElementById('companypage').value = 'N/A';
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
 			}
 			
 			
 			// ...
 			linkedin_biz__init();
 			linkedin_biz__li_init();
-			load_mappings();
+			//~ load_mappings();
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
-				//o.isAuto
-				if (!o.isAuto && o.industry_chosen_biz != null) {
-					load_mappings(function() {
-						var check_if_ready = confirm('Would you like to map? ('+o.industry_chosen_biz+' = '+o.q[0].value+')');
-						if (check_if_ready) {
-							o.mappings[ o.industry_chosen_biz ] = o.q[0].value;
-							save_mappings();
-						}
-					});
-					return false; // STOPS HERE!
-				}
-				//~ if  (
-					//~ o.q[0].value == '-' &&
-					//~ o.q[1].value == '-'
-					//~ )
-				//~ {
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
+				//~ //o.isAuto
+				//~ if (!o.isAuto && o.industry_chosen_biz != null) {
+					//~ load_mappings(function() {
+						//~ var check_if_ready = confirm('Would you like to map? ('+o.industry_chosen_biz+' = '+o.q[0].value+')');
+						//~ if (check_if_ready) {
+							//~ o.mappings[ o.industry_chosen_biz ] = o.q[0].value;
+							//~ save_mappings();
+						//~ }
+					//~ });
+					//~ return false; // STOPS HERE!
 				//~ }
 				new AMT___core_factory().nextTab();
 				doSubmit();
@@ -68322,10 +68307,6 @@ qatar,80
 			 */
 			function div_click(div) {
 				div.style.backgroundColor = 'LightGreen';
-				//~ //industry
-				//~ document.getElementById('industry').value = this.fmt_industry;
-				//~ //employee_count
-				//~ document.getElementById('employee_count').value = this.fmt_size;
 				
 				// Set chosen biz industry
 				o.industry_chosen_biz = div.fmt_industry;
@@ -68335,29 +68316,29 @@ qatar,80
 				// CHECK IF INDUSTRY AND SIZE ARE IN SELECT ELEMENTS
 				// Set isAuto
 				var found = false;
-				for (var i in o.q[0].options) {
-					if  (
-							(
-							o.q[0].options[i].value == div.fmt_industry ||
-							o.q[0].options[i].value == div.fmt_industry.replace(/ & /g, '/')
-							)
-							&&
-						o.q[0].options[i].value != '-'
-						)
-					{
-						found = true;
-						o.q[0].selectedIndex = i;
-						o.isAuto = true;
-					}
-				}
-				if (!found) {
-					sbm = false;
-					o.q[0].style.border = '4px dashed blue';
-				}
+				//~ for (var i in o.q[0].options) {
+					//~ if  (
+							//~ (
+							//~ o.q[0].options[i].value == div.fmt_industry ||
+							//~ o.q[0].options[i].value == div.fmt_industry.replace(/ & /g, '/')
+							//~ )
+							//~ &&
+						//~ o.q[0].options[i].value != '-'
+						//~ )
+					//~ {
+						//~ found = true;
+						//~ o.q[0].selectedIndex = i;
+						//~ o.isAuto = true;
+					//~ }
+				//~ }
+				//~ if (!found) {
+					//~ sbm = false;
+					//~ o.q[0].style.border = '4px dashed blue';
+				//~ }
 				// size
 				var found_size = false;
 				for (var i in o.q[1].options) {
-					if (o.q[1].options[i].value == div.fmt_size && o.q[1].options[i].innerText == div.fmt_size) { // && o.q[1].options[i].value != '-'
+					if (o.q[1].options[i].value == div.fmt_size && o.q[1].options[i].innerText == div.fmt_size) {
 						found_size = true;
 						o.q[1].selectedIndex = i;
 					}
@@ -68373,7 +68354,7 @@ qatar,80
 					// Go next
 					new AMT___core_factory().nextTab();
 					doSubmit();
-				} else {
+				} else { return;
 					// CHECK FOR MAPPINGS!
 					// USE A CALLBACK FUNCTION TO GET THE LATEST o.mappings FROM FILE!
 					//
@@ -68390,16 +68371,6 @@ qatar,80
 							}
 						}
 					});
-					//~ if (o.mappings.hasOwnProperty(div.fmt_industry)) {
-						//~ o.q[0].value = o.mappings[ div.fmt_industry ];
-						//~ // q[0].length == 148
-						//~ 
-						//~ if (found_size && o.q[0].selectedIndex > 0 && o.q[0].selectedIndex <= 147) {
-							//~ // Go next
-							//~ new AMT___core_factory().nextTab();
-							//~ doSubmit();
-						//~ }
-					//~ }
 				}
 			}
 			
@@ -68409,7 +68380,6 @@ qatar,80
 				var rf = new AMT___requests_factory();
 				rf.linkedin_company_search(
 					{
-						//~ keywords: o.comp_name
 						keywords: d2.value
 					},
 					linkedin_biz__li_process
@@ -68458,25 +68428,6 @@ qatar,80
 						'<br>Size:'+		x_.fmt_size +
 						'<br>Followers:'+	x_.followersCount;
 					out.appendChild(d);
-					//~ 
-					//~ //
-					//~ btn = document.createElement('input');
-					//~ btn.setAttribute('type','button');
-					//~ btn.setAttribute('style','width:auto;');
-					//~ btn.value = x_.fmt_canonicalName;
-					//~ // onclick
-					//~ //
-					//~ btn.y_url =  'http://www.linkedin.com/company/' + x_.id // .id 786639
-					//~ btn.onclick = function(){
-						//~ this.style.backgroundColor = 'LightGreen';
-						//~ new AMT___core_factory().nextTab();
-						//~ linkedin_biz__li_profile(this);
-					//~ }
-					//~ //
-					//~ out.appendChild(btn);
-					//~ out.appendChild(document.createElement('br'));
-					
-					
 				}
 				
 				// Append
@@ -68566,15 +68517,6 @@ qatar,80
 					d.fmt_size = null; //
 					d.onclick = function() {
 						linkedin_biz__li_profile(this);
-						//~ this.style.backgroundColor = 'LightGreen';
-						//~ if (/^http:\/\/www\.linkedin\.com\/company\/[^$]+/.exec(this.y_url)) {
-							//~ 
-							//~ // Go next
-							//~ new AMT___core_factory().nextTab();
-							//~ 
-							//~ // ...
-							//~ linkedin_biz__li_profile(this);
-						//~ }
 					}
 					d.innerHTML = short + '<br>' + extra + MT__bold( rs[i][1].replace(/<\/?b>/g, ''), o.comp_array );
 					out.appendChild(d);
