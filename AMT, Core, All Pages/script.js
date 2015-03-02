@@ -10408,6 +10408,8 @@ function load__allPages_AMT_combo() {
 					AMT___Floater.skip();
 					return;
 				}
+				AMT___Floater.skip(); // TODO
+				return;
 				// e.g. "Prison%20Break,%20Staffel%204"
 				var url = 'https://itunes.apple.com/search?term='+encodeURIComponent(o.series1_season1)+'&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country='+o.itunes_country+'&limit=200';
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
