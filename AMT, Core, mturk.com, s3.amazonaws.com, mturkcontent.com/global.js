@@ -3920,8 +3920,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 												},
 												scrapy__begin_scrape__process_completed
 											);
-											
-											
 										}
 									});
 								}
@@ -3939,7 +3937,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 								}
 							}
 						});
-						
 					}, 4000);
 				}
 			});
