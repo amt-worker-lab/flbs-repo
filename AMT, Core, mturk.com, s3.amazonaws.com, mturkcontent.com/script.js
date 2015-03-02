@@ -15948,7 +15948,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:100px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:200px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -15985,7 +15985,7 @@ function MT__RUN() {
 				doSubmit();
 			}
 
-			scrapy(o.start_urls, o.allowed_domains);
+			scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			
 			/**
 			 * function scrapy
@@ -151857,6 +151857,9 @@ function mturk_load()
 				case '3ED2P6N3KZO1CZPTJSAFYTQJ9DA6FF': //FlicksIO, Second Posting
 					AMT___Floater({runMT_Run:true});
 				case '372BFDRISCA6E6WX8JDCP7YD8F6C1F': //garrett grohman, Kickstarter emails
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '372BFDRISCA6E6WX8JDCP7YD8C6C19': //garrett grohman, Kickstarter emails
 					AMT___Floater({runMT_Run:true});
 					break;
 				
