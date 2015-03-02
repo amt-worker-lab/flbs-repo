@@ -3836,6 +3836,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 	// CACHE !! //
 	var rf		= new AMT___requests_factory();
 	var md5_url	= any_md5(data, '0123456789ABCDEF'); //rf.general_functions__md5(data);//console.log(md5_url);
+	md5_url += '?RANDOM='+Math.random();
 	
 	GM_xmlhttpRequest({
 		method: "GET",
