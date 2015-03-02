@@ -68451,7 +68451,7 @@ qatar,80
 					}
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + el_input.value + '"'),
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ ' + el_input.value),
 						seed: div,
 						callback_function: linkedin_biz__complete,
 						return_init_object: true
@@ -68463,14 +68463,14 @@ qatar,80
 					d1c.innerText = '';
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2.value + '"'),
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ ' + d2.value),
 						seed: d1,
 						callback_function: linkedin_biz__complete,
 						return_init_object: true
 					});
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ "' + d2b.value + '"'),
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:linkedin.com/company/ ' + d2b.value),
 						seed: d1c,
 						callback_function: linkedin_biz__complete,
 						return_init_object: true
