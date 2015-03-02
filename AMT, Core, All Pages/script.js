@@ -10226,11 +10226,16 @@ function load__allPages_AMT_combo() {
 				"width:49%;height:400px;"
 			);
 			d_container.appendChild(d3b);
+			var d3c = document.createElement('textarea'); // always accept
+			d3c.setAttribute('style',
+				"width:99%;height:20px;"
+			);
+			d_container.appendChild(d3c);
 			var d2 = document.createElement('div');
 			d2.setAttribute('style',
 				"width:99%;height:1px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
-			d2.show_height = null; // d2.show_height
+			d2.show_height = null; // XXd2.show_height
 			d_container.appendChild(d2);
 			/*End of Elements*/
 			
@@ -10421,6 +10426,8 @@ function load__allPages_AMT_combo() {
 							//return;
 							
 							o.title1 = str_translated;
+							
+							d3c.value = o.title1;
 						}
 						
 						//initFirstRun
