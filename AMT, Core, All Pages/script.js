@@ -10002,8 +10002,48 @@ function load__allPages_AMT_combo() {
 			var ih = document.body.innerHTML;
 			var rslt1 = reg.exec(ih);
 			var rslt2 = reg.exec(ih);
-			var s1 = rslt1[2].split(", Season"); //Season, Saison, Staffel
-			var s2 = rslt2 ? rslt2[2].split(", Season") : null;
+			
+			//~ var s1 = rslt1[2].split(", Season"); //Season, Saison, Staffel
+			//~ var s2 = rslt2 ? rslt2[2].split(", Season") : null;
+			
+			var s1 = get_show_param(rslt1[2]);//console.log(s1);return;
+			var s2 = get_show_param(rslt2[2]);
+			function get_show_param(show_str) {
+				
+				var c = 'us';
+				var x = /,? (season|saison|staffel) (\d+)$/i.exec(show_str);
+				if (x) {
+					var y = show_str.replace(
+						new RegExp(__js_escape_regEx(x[0])+'$', ''),
+						''
+					);
+					// country?
+					switch(tmpse[1]) {
+						case 'Season':
+							c = 'us';
+							break;
+						case 'Saison':
+							c = 'fr';
+							break;
+						case 'Staffel':
+							c = 'de';
+							break;
+					}
+					x = x[2];
+				} else {
+					y = show_str;
+					x = null;
+					c = 'us';
+				}
+				y = __js_clean_html_str(y); // clean
+				
+				return {
+					//~ episode:,
+					series:		y,
+					season_nr:	x,
+					country:	c
+				}
+			}
 			
 			//~ var ih = ih.split('<div class="title last">');
 			
@@ -10044,10 +10084,10 @@ function load__allPages_AMT_combo() {
 			var o = {
 				title1  : __js_clean_html_str(rslt1[1]),
 				title2  : rslt2 ? __js_clean_html_str(rslt2[1]) : null,
-				series1 : __js_clean_html_str(s1[0]),
-				series2 : (s2) ? __js_clean_html_str(s2[0]) : null,
-				season1 : (s1 && s1.length > 1 ?  __js_clean_html_str(s1[1]) : null),
-				season2 : (s2 && s2.length > 1 ?  __js_clean_html_str(s2[1]) : null),
+				series1 : s1.series,
+				series2 : s2.series,
+				season1 : s1.season_nr,
+				season2 : s2.season_nr
 				runtime1: runtime1,
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
@@ -10070,7 +10110,7 @@ function load__allPages_AMT_combo() {
 				has_google_translate: false,
 				original_title: null,
 				series1_season1: __js_clean_html_str(rslt1[2]), // Series Title + Season #, e.g. "Scrubs, Season 4"
-				itunes_country: 'us', // default=us, others=de,fr
+				itunes_country: s1.country, // default=us, others=de,fr
 				matches: {
 					title1:null,
 					title2:null,
@@ -10086,6 +10126,7 @@ function load__allPages_AMT_combo() {
 				]
 			}
 			o.original_title = o.title1; // set o.original_title
+			
 			
 			// Timeout to skip
 			window.setTimeout(function() {
@@ -10116,18 +10157,6 @@ function load__allPages_AMT_combo() {
 							new RegExp(__js_escape_regEx(tmpse[0])+'$', ''),
 							''
 						);
-						// country?
-						switch(tmpse[1]) {
-							case 'Season':
-								o.itunes_country = 'us';
-								break;
-							case 'Saison':
-								o.itunes_country = 'fr';
-								break;
-							case 'Staffel':
-								o.itunes_country = 'de';
-								break;
-						}
 					} else {
 						// Series (no season#)
 						o.series1 = tmpseries;
