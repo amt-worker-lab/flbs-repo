@@ -10517,15 +10517,43 @@ function load__allPages_AMT_combo() {
 			function process_itunes_DB(response) {
 				var ro = response.responseObject;
 				console.log(ro);
+				var rslts = ro.search_itunes;
 				// Make selectors
 				// out=d2
 				// d2.show_height
-				if (!ro.search_itunes.length) {
+				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
 					AMT___Floater.skip(); // TODO
 					return;
 				}
-				console.log(ro);
+				var bold = o.bold_ep1;
+				
+				for (var i = 0; i < rslts.length; i++) {
+					var el_div = document.createElement('div');
+					el_div.setAttribute('style',
+						'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
+					);
+					d2.appendChild(el_div);
+					el_div.className = 'exe';
+					el_div.title = rslts[i].title;
+					el_div.parent_title = rslts[i].parent_title;
+					el_div.season_nr = rslts[i].season_nr;
+					el_div.kind = rslts[i].kind;
+					//~ el_div.isTopShow = isTopShow;
+					el_div.cast = rslts[i].cast;
+					el_div.keywords = rslts[i].keywords;
+					el_div.onclick = function() {
+						this.style.backgroundColor = 'lightgreen';
+						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, true);
+					}
+					// Show
+					el_div.innerHTML = 
+						(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
+						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
+						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+						'k: ' + rslts[i].kind + '<br>' +
+						'y: ' + rslts[i].year + '<br>';
+				}
 			}
 			/**
 			 * function initFirstRun
@@ -10828,7 +10856,7 @@ function load__allPages_AMT_combo() {
 							'k: ' + rslts[i].kind + '<br>' +
 							'y: ' + rslts[i].year + '<br>' +
 							'score: ' + Math.round(rslts[i].score*1) + '<br>' +
-							'lev.: ' + Math.round(pct) + '%<br>'
+							'lev.: ' + Math.round(pct) + '%<br>';
 						
 						//Attempt to auto into a checkIMDB here:
 						if(rsltsType == 'search_t_s') {
