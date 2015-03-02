@@ -16152,6 +16152,14 @@ function MT__RUN() {
 				doSubmit();
 			}
 			
+			// If preview setInterval reload, 3min.
+			if (AMT__Global_Vars.isPreview) {
+				setInterval(function() {
+					location.reload();
+				}, 180000);
+			}
+			
+			
 			// scrape ks
 			//https://www.kickstarter.com/projects/runningfarmlabs/timbre-redefining-the-desktop-speaker/creator_bio.js
 			GM_xmlhttpRequest({
@@ -151432,7 +151440,7 @@ function top_window(okay_to_run) {
 	//
 	// John Roberts
 	// Get number of search results
-	//
+	// Errors="0"
 	//s = 'Near the top left of the search results page, there is a number, which is the quantity of search results found. The number is in gray text and usually says ';
 	s = 'Near the top of the search results page is a piece of gray text that says "About X results..." Enter the number represented by X.';
 	if  (
@@ -151504,11 +151512,13 @@ function top_window(okay_to_run) {
 						for (var i in errors) {
 							var err = errors[i];
 							if (rs.indexOf(err) != -1) {
-								has_error = true;
-								d2.value = err;
-								d2.style.border = '8px dashed green';
-								d2.style.backgroundColor = 'MintCream';
-								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
+								document.getElementById('Answer_1_FreeText').value = 0; //UPDATE
+								doSubmit('hitForm');
+								//~ has_error = true;
+								//~ d2.value = err;
+								//~ d2.style.border = '8px dashed green';
+								//~ d2.style.backgroundColor = 'MintCream';
+								//~ chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
 								return;
 							}
 						}
