@@ -10440,8 +10440,8 @@ function load__allPages_AMT_combo() {
 			 */
 			function itunes_search_init() {
 				// Open d2, close d1
-				d2.style.height = d2.show_height;
-				d1.style.height = '20px';
+				d2.style.height = '100px';//d2.show_height;
+				d1.style.height = '100px';
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
@@ -10995,14 +10995,14 @@ function load__allPages_AMT_combo() {
 				for(var i in choices) {
 				//~ for(var i = 0; i < 10; i++) {
 					if(!choices[i]) break;
-					var castMatches = [];
-					var chk_cast = (isTopShow ? o.cast1 : o.cast2);
-					for(var j = 0; j < chk_cast.length; j++) {
-						var ch = choices[i].cast;
-						if (ch.hasOwnProperty( chk_cast[j].toLowerCase().trim() )) {
-							castMatches.push(chk_cast[j]);
-						}
-					}
+					//~ var castMatches = [];
+					//~ var chk_cast = (isTopShow ? o.cast1 : o.cast2);
+					//~ for(var j = 0; j < chk_cast.length; j++) {
+						//~ var ch = choices[i].cast;
+						//~ if (ch.hasOwnProperty( chk_cast[j].toLowerCase().trim() )) {
+							//~ castMatches.push(chk_cast[j]);
+						//~ }
+					//~ }
 					// el_div
 					var el_div = document.createElement('div');
 					el_div.setAttribute('style', 'border-bottom:1px solid black;');
@@ -11014,14 +11014,14 @@ function load__allPages_AMT_combo() {
 						(choices[i].seriesName ? 's: ' + MT__bold(choices[i].seriesName, bold) + '<br>' : 's: <br>') +
 						//(choices[i].season_nr ? 'sn: Season ' + choices[i].season_nr + '<br>' : 'sn: ') +
 						'k: ' + (choices[i].title_type ? choices[i].title_type : '') + '<br>' +
-						'y: ' + (choices[i].year ? choices[i].year : '') + '<br>' +
-						'cm: ' + castMatches.join(',');
+						'y: ' + (choices[i].year ? choices[i].year : '') + '<br>'// +
+						//'cm: ' + castMatches.join(',');
 					// ...
 					el_div.title = choices[i].title;
 					el_div.seriesName = choices[i].seriesName;
 					el_div.title_type = choices[i].title_type;
 					el_div.year = choices[i].year;
-					el_div.castMatches = castMatches;
+					//el_div.castMatches = castMatches;
 					el_div.imdbId = choices[i].imdbId;
 					el_div.seriesIMDBId = choices[i].seriesIMDBId;
 					el_div.isTopShow = isTopShow;
