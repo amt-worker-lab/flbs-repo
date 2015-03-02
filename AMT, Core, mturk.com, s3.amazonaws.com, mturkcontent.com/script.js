@@ -15935,8 +15935,8 @@ function MT__RUN() {
 			
 			
 			var o = {
-				sd_start_urls: [td[9].innerText],
-				sd_allowed_domains: [td[9].innerText],
+				sd_start_urls: [td[9].innerText.trim()],
+				sd_allowed_domains: [td[9].innerText.trim()],
 				q: [
 					document.getElementById('web_url')
 				]
