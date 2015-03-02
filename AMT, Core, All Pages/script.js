@@ -10007,7 +10007,7 @@ function load__allPages_AMT_combo() {
 			//~ var s2 = rslt2 ? rslt2[2].split(", Season") : null;
 			
 			var s1 = get_show_param(rslt1[2]);//console.log(s1);return;
-			var s2 = get_show_param(rslt2[2]);
+			var s2 = rslt2 ? get_show_param(rslt2[2]) : {series:null,season_nr:null,country:null};
 			function get_show_param(show_str) {
 				
 				var c = 'us';
@@ -10018,7 +10018,7 @@ function load__allPages_AMT_combo() {
 						''
 					);
 					// country?
-					switch(tmpse[1]) {
+					switch(x[1]) {
 						case 'Season':
 							c = 'us';
 							break;
@@ -10087,7 +10087,7 @@ function load__allPages_AMT_combo() {
 				series1 : s1.series,
 				series2 : s2.series,
 				season1 : s1.season_nr,
-				season2 : s2.season_nr
+				season2 : s2.season_nr,
 				runtime1: runtime1,
 				runtime2: runtime2,
 				releaseYear1: releaseYear1,
@@ -10439,8 +10439,9 @@ function load__allPages_AMT_combo() {
 			 * Synopsis must not be blank
 			 */
 			function itunes_search_init() {
-				// Open d2
+				// Open d2, close d1
 				d2.style.height = d2.show_height;
+				d1.style.height = '20px';
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
@@ -10515,10 +10516,11 @@ function load__allPages_AMT_combo() {
 			 */
 			function process_itunes_DB(response) {
 				var ro = response.responseObject;
+				console.log(ro);
 				// Make selectors
 				// out=d2
 				// d2.show_height
-				if (!ro.length) {
+				if (!ro.search_itunes.length) {
 					d2.innerText = '0-db-itunes';
 					AMT___Floater.skip(); // TODO
 					return;
