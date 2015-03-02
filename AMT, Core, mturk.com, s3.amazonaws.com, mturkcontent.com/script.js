@@ -16064,8 +16064,8 @@ function MT__RUN() {
 									//~ document.getElementById('Q1Email').value = 
 									//~ document.getElementById('submitButton').click();
 								//~ },
-								do_submit_next_tab: true
-								//~do_submit_add_to_tabs_queue: true
+								do_submit_next_tab: true,
+								do_submit_add_to_tabs_queue: true
 							}
 						);
 					}
