@@ -10494,6 +10494,7 @@ function load__allPages_AMT_combo() {
 					AMT___Floater.skip(); // TODO
 					return;
 				}
+				console.log(ro);
 			}
 			/**
 			 * function initFirstRun
