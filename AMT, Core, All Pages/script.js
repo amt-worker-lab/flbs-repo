@@ -10197,11 +10197,12 @@ function load__allPages_AMT_combo() {
 				"width:49%;height:400px;"
 			);
 			d_container.appendChild(d3b);
-			//~ var d2 = document.createElement('div');
-			//~ d2.setAttribute('style',
-				//~ "width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
-			//~ );
-			//~ d_container.appendChild(d2);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style',
+				"width:99%;height:1px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
+			);
+			d2.show_height = null; // d2.show_height
+			d_container.appendChild(d2);
 			/*End of Elements*/
 			
 			// onclick
@@ -10219,6 +10220,7 @@ function load__allPages_AMT_combo() {
 					d1.style.height = innerHeight-60 + 'px';
 					d3.style.height = '48px';
 					d3b.style.height = '48px';
+					d2.show_height = innerHeight-120 + 'px';
 					//~ var half = Math.floor(innerHeight / 2);
 					//~ d_container.style.height = innerHeight + 'px';
 					//~ d1.style.height = half + 'px';
@@ -10398,18 +10400,26 @@ function load__allPages_AMT_combo() {
 				});
 			}
 			/**
+			 * function 
+			 */
+			function itunes_search_test_rslt(results) {
+			}
+			/**
 			 * function itunes_search_init
 			 * Init itunes
 			 * Synopsis must not be blank
 			 */
 			function itunes_search_init() {
-				// Syn?
+				// Open d2
+				d2.style.height = d2.show_height;
+				// Synopsis?
 				if (!o.synopsis1) {
+					d2.innerText = 'SYNOPSIS=""';
 					AMT___Floater.skip();
 					return;
 				}
-				AMT___Floater.skip(); // TODO
-				return;
+				//~ AMT___Floater.skip(); // TODO
+				//~ return;
 				// e.g. "Prison%20Break,%20Staffel%204"
 				var url = 'https://itunes.apple.com/search?term='+encodeURIComponent(o.series1_season1)+'&media=tvShow&attribute=tvSeasonTerm&entity=tvEpisode&country='+o.itunes_country+'&limit=200';
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
@@ -10433,35 +10443,57 @@ function load__allPages_AMT_combo() {
 						// Loop through results looking for an exact match of the episode's description.
 						// There must be only 1 exact match of the episode description. If found
 						// then search DB for SeriesTitle(itunes)/Season#/Episode#(itunes)
+						// .shortDescription, .artistName
 						
+						//var rslt = itunes_search_test_rslt(rs);
+						var short_syn = o.synopsis1.substr(0, 30);
+						var found_num = 0;
+						var rslt;
 						for (var i in rs.results) {
-							
+							if (rs.results[i].shortDescription.indexOf(short_syn) == 0) {
+								rslt = rs.results[i];
+								found_num++;
+							}
+						}
+						if (found_num != 1) {
+							d2.innerText = '0-matched-itunes';
+							AMT___Floater.skip(); // TODO
+							return;
 						}
 						
 						// Try DB
-						//~ new AMT___requests_factory().database__select(
-							//~ {
-								//~ query: "AMT_Flicksio_IMDB_GetDetails",
-								//~ encodeStrings: {
-									//~ qStrs: {
+						new AMT___requests_factory().database__select(
+							{
+								query: "AMT_Flicksio_IMDB_GetDetails",
+								encodeStrings: {
+									qStrs: {
 										//~ title: o.title1,
-										//~ series: o.series1,
-										//~ season: o.season1,
-										//~ itunes_search: true
-									//~ }
-								//~ },
-								//~ timeout: 80000
-							//~ },
-							//~ process_itunes_DB
-						//~ );
+										series: rslt.artistName,
+										season: o.season1,
+										seriesNr: rslt.trackNumber,
+										itunes_search: true
+									}
+								},
+								timeout: 80000
+							},
+							process_itunes_DB
+						);
 					}
 				});
 			}
 			/**
 			 * function process_itunes_DB
 			 */
-			function process_itunes_DB() {
-				
+			function process_itunes_DB(response) {
+				var ro = response.responseObject;
+				// Make selectors
+				// out=d2
+				// d2.show_height
+				if (!ro.length) {
+					d2.innerText = '0-db-itunes';
+					AMT___Floater.skip(); // TODO
+					return;
+				}
 			}
 			/**
 			 * function initFirstRun
