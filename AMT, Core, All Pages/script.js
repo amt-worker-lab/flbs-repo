@@ -10470,7 +10470,7 @@ function load__allPages_AMT_combo() {
 										//~ title: o.title1,
 										series: rslt.artistName,
 										season: o.season1,
-										seriesNr: rslt.trackNumber,
+										episode_nr: rslt.trackNumber,
 										itunes_search: true
 									}
 								},
