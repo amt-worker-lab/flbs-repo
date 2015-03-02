@@ -68113,6 +68113,8 @@ qatar,80
 	 * @ Kyle Morris
 	 * @ Matthew Kennedy
 	 * @ Oceanos Research
+	 * Cherise Chin
+	 * 
 	 */
 	//
 	// Cherise Chin
@@ -68199,7 +68201,7 @@ qatar,80
 				linkedin_biz__init(d1);
 				linkedin_biz__li_init();
 			}
-			d2b.value = o.domain;
+			d2b.value = o.comp + ' ' + o.domain;
 			d2b.onblur = function() {
 				linkedin_biz__init(d1c);
 			}
