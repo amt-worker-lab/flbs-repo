@@ -614,14 +614,24 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 
 
 
-function showNextTab() {
+function showNextTab(options) {
 	console.log('Showing Next Tab');
 	isQProduct = false;
-	chrome.extension.sendRequest({
-									  showNextTab: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow
-								  }, function(response) {
-								});
+	if(options && options.hasOwnProperty("isTopWindow")) {
+		console.log("isTopWindow: " +options.isTopWindow);
+		chrome.extension.sendRequest({
+										  showNextTab: true,
+										  isTopWindow: options.isTopWindow
+									  }, function(response) {
+									});
+	}
+	else {
+		chrome.extension.sendRequest({
+										  showNextTab: true,
+										  isTopWindow: AMT__Global_Vars.isTopWindow
+									  }, function(response) {
+									});
+	}
 }
 
 
@@ -1435,15 +1445,25 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .parseURL
  * .stateAbbrToFull
  * .clean_string_to_array
- * 
- * 
- * 
- * 
- * 
+ * .string_to_mixed_case
+ * .format_number_with_commas
+ * .div
  * 
  */
 /**
- * .string_to_mixed_case
+ * .div
+ */
+String.prototype.div = function(opts) {
+	var s = this.toString();
+	var div = document.createElement('div');
+	if (opts.hasOwnProperty('style')) {
+		div.setAttribute('style', opts.style);
+	}
+	div.innerText = s;
+	return div;
+}
+/**
+ * .format_number_with_commas
  */
 String.prototype.format_number_with_commas = function() {
 	var s = this.toString();
@@ -1839,8 +1859,10 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		switch(v.action) {
 			case 'tabsQTitleChange': 
-				console.log("Changing document title to TQ");
+				//console.log("Changing document title to TQ");
 				document.title = "TQ";
+				(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();
+
 				break;
 			case 'return_button_hotkey':
 				window.addEventListener('keydown', function(e) {
@@ -1861,17 +1883,18 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				var b = getReturnButton();
 				if (b) {
 					b.addEventListener('click', function() {
-						showNextTab();
+						showNextTab({isTopWindow:true});
+						showNextTab({isTopWindow:false});
 					}, false);
 				}
 				// 2nd return button
 				// AMT_return_button_top_window
-				var b = getReturnButton2();
-				if (b) {
-					b.addEventListener('click', function() {
-						showNextTab();
-					}, false);
-				}
+				//~ var b = getReturnButton2();
+				//~ if (b) {
+					//~ b.addEventListener('click', function() {
+						//~ showNextTab();
+					//~ }, false);
+				//~ }
 				break;
 			// AMT___returnAndAcceptButton()
 			case 'return_and_accept_button__nextTab':
@@ -3813,6 +3836,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 	// CACHE !! //
 	var rf		= new AMT___requests_factory();
 	var md5_url	= any_md5(data, '0123456789ABCDEF'); //rf.general_functions__md5(data);//console.log(md5_url);
+	md5_url += '?RANDOM='+Math.random();
 	
 	GM_xmlhttpRequest({
 		method: "GET",
@@ -3896,8 +3920,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 												},
 												scrapy__begin_scrape__process_completed
 											);
-											
-											
 										}
 									});
 								}
@@ -3915,7 +3937,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 								}
 							}
 						});
-						
 					}, 4000);
 				}
 			});

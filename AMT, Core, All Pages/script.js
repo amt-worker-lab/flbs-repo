@@ -10262,6 +10262,11 @@ function load__allPages_AMT_combo() {
 					d3.style.height = '48px';
 					d3b.style.height = '48px';
 					d2.show_height = innerHeight-120 + 'px';
+					
+					// full_height
+					d1.full_height = innerHeight-60 + 'px';
+					d2.full_height = innerHeight-60 + 'px';
+					
 					//~ var half = Math.floor(innerHeight / 2);
 					//~ d_container.style.height = innerHeight + 'px';
 					//~ d1.style.height = half + 'px';
@@ -10454,10 +10459,11 @@ function load__allPages_AMT_combo() {
 			 */
 			function itunes_search_init() {
 				// Open d2, close d1
-				d2.style.height = '200px';//d2.show_height;
-				d1.style.height = '200px';
+				d2.style.height = '400px';//d2.show_height;
+				d1.style.height = '400px';
 				if (d1.innerText == '0-db') {
-					d1.style.height = '60px';
+					d1.style.height = '20px';
+					d2.style.height = d2.full_height;
 				}
 				// Synopsis?
 				if (!o.synopsis1) {
@@ -10506,6 +10512,7 @@ function load__allPages_AMT_combo() {
 						}
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
+							d2.style.height = '20px';
 							if (AMT__Global_Vars.isPreview)
 								AMT___Floater.skip(); // TODO
 							return;
@@ -10535,16 +10542,17 @@ function load__allPages_AMT_combo() {
 			 * function process_itunes_DB
 			 */
 			function process_itunes_DB(response) {
-				var ro = response.responseObject;
-				console.log(ro);
+				var ro = response.responseObject; //~ console.log(ro);
 				var rslts = ro.search_itunes;
 				// Make selectors
 				// out=d2
 				// d2.show_height
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
+					d2.style.height = '20px';
 					if (AMT__Global_Vars.isPreview)
 						AMT___Floater.skip(); // TODO
+					d1.style.height = d1.full_height;
 					return;
 				}
 				var bold = o.bold_ep1;
@@ -10909,12 +10917,17 @@ function load__allPages_AMT_combo() {
 						}
 					}
 				}
+				// Make a spacer div
+				var tmp_div = ''.div({style:'height:1000px;'});
+				div.appendChild(tmp_div);
+				//~ console.log(tmp_div);
 				// Single query, special_ww==false, rsltsType==search_t_s
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
 					o.is_in_skip_condition = true;
 					AMT___Floater.skip();
 					console.log('Skip condition #1. Skips here.');
+					return;
 				}
 				// Mutli-query, special_ww==true.
 				// Search1=search_t, Search2=search_t_s
@@ -11018,7 +11031,7 @@ function load__allPages_AMT_combo() {
 				var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
 				// Loop goes here.
 				for(var i in choices) {
-				//~ for(var i = 0; i < 10; i++) {
+					//~ for(var i = 0; i < 10; i++) {
 					if(!choices[i]) break;
 					//~ var castMatches = [];
 					//~ var chk_cast = (isTopShow ? o.cast1 : o.cast2);
@@ -11105,8 +11118,8 @@ function load__allPages_AMT_combo() {
 								//~ new AMT___core_factory().nextTab(); // nextTab
 								// show next
 								showNextTab();
-								var rand = 3600 + (Math.random() * 2000);
-								setTimeout(function() { doSubmit('mturk'); }, rand); // 3.6 + 0~2.0
+								var rand = 1000 + (Math.random() * 2000);
+								setTimeout(function() { doSubmit('mturk'); }, rand); // 1.0 + 0~2.0
 								return false;
 							}
 						} else {
@@ -11195,6 +11208,9 @@ function load__allPages_AMT_combo() {
 					}
 				}
 				// END OF FOR LOOP
+				// Make a spacer div
+				var tmp_div = ''.div({style:'height:1000px;'});
+				div.appendChild(tmp_div);
 				
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
