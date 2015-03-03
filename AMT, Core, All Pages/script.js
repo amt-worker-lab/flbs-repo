@@ -10227,7 +10227,7 @@ function load__allPages_AMT_combo() {
 				"width:49%;height:400px;"
 			);
 			d_container.appendChild(d3b);
-			var d3c = document.createElement('textarea'); // always accept
+			var d3c = document.createElement('textarea'); // Translate debug output, Itunes debug output
 			d3c.setAttribute('style',
 				"width:99%;height:20px;"
 			);
@@ -10609,31 +10609,15 @@ function load__allPages_AMT_combo() {
 				//~ buildDBRsltsInterface(ro.search_s, 'search_s', response.encodeStrings.qStrs.isTopShow);
 				//~ buildDBRsltsInterface(ro.search_title_no_opts, 'search_title_no_opts', response.encodeStrings.qStrs.isTopShow);
 				
-				//~ response = JSON.parse(response)
-				//~ if(response.checkClosestSeries) {
-					//~ checkClosestSeries(response.seriesChoices, response.isTopShow);
-				//~ }
-				//~ else { //This is an IMDB check				
-					//~ //Process the results, and then call checkIMDB
-					//~ var keywords;
-					//~ var title;
-					//~ var title_type;
-					//~ var isTopShow;
-				//~ 
-					//~ 
-					//~ checkIMDB(keywords, title, title_type,isTopShow);
-				//~ }
 			}
 			
-			
+			/**
+			 * function initNextRun
+			 */
 			function initNextRun() {
 				// numShows == 2
 				// Is not in skip condition
 				// isTopShow == true
-				//~ console.log(o.numShows);
-				//~ console.log(o.is_in_skip_condition);
-				//~ console.log(ro.original_query_object.isTopShow);
-				//~ if(o.numShows == 2 && !o.is_in_skip_condition && ro.original_query_object.isTopShow)
 				
 				// Do not run more than once here.
 				if (o.count_db_runs >= 2) return;
@@ -10667,12 +10651,14 @@ function load__allPages_AMT_combo() {
 				var isTopShow = isTopShow;
 				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
 				
+				// url
 				var url = 'http://www.imdb.com/search/title?' +
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
 							'title='+encodeURIComponent(title)
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
 				
+				// xhr
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: url,
@@ -10775,7 +10761,15 @@ function load__allPages_AMT_combo() {
 				});
 			}
 			
-				
+			/**
+			 * function buildDBRsltsInterface
+			 * 
+			 * @param rslts
+			 * @param rsltsType
+			 * @param isTopShow
+			 * 
+			 * @returns
+			 */
 			function buildDBRsltsInterface(rslts,rsltsType,isTopShow) {
 				var container = isTopShow ? d1 : d2;
 				var locn = 
@@ -10799,6 +10793,7 @@ function load__allPages_AMT_combo() {
 				{
 					div.innerHTML = '0-db';
 					AMT___Floater.skip();
+					return;
 				}
 				// If one show and isSpecialWorkflowWindow==true
 				else if ((!rslts || rslts.length == 0) && o.q.length == 1 && AMT__Global_Vars.isSpecialWorkflowWindow) {
@@ -10806,162 +10801,165 @@ function load__allPages_AMT_combo() {
 					// Init itunes
 					itunes_search_init();
 					//~ AMT___Floater.skip();
+					return;
 				}
+
 				// Else ...
-				else {		
-					var foundAuto = false;
-					var highestPct = 0;
-					var highestScore = 0;
-					var min_lev_length = 10; // min. to consider
-					var min_lev_accept = 60; // pct to accept
-					var min_score_accept = 12; // pct to accept
-					var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
-					for(var i = 0; i < rslts.length; i++) {
-						var el_div = document.createElement('div');
-						el_div.setAttribute('style',
-							'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
-						); 
-						div.appendChild(el_div);
-						el_div.className = 'exe';
-						el_div.title = rslts[i].title;
-						el_div.parent_title = rslts[i].parent_title;
-						el_div.season_nr = rslts[i].season_nr;
-						el_div.kind = rslts[i].kind;
-						el_div.isTopShow = isTopShow;
-						el_div.cast = rslts[i].cast;
-						el_div.keywords = rslts[i].keywords;
-						el_div.onclick = function() {
-							this.style.backgroundColor = 'lightgreen';
-							if(this.isTopShow)
-								o.cast1 = this.cast;
-							else
-								o.cast2 = this.cast;
-							checkIMDB(this.keywords, this.title, this.kind, this.parent_title, this.isTopShow);
-						}
-						
-						// If this is special workflow.
-						// Is Levenstein distance less than X?
-						// If so then mark show (top OR bottom) as "found."
-						// Add background-color.
-						// 
-						// QUESTION: Cache any, or up to X, if Lev. is >= 96? 98? 99?
-						var strtmp1 = rslts[i].title + rslts[i].parent_title;
-						var strtmp2 = (isTopShow) ? o.title1 + o.series1 : o.title2 + o.series2;
-						var dist = new AMT___gen_functions().levensht(strtmp1, strtmp2);
-						var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
-						var pct = ((longest - dist) / longest) * 100; // 0-100
-						highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
-						el_div.style.backgroundColor = pct >= min_lev_accept ? 'aqua' : '';
-						// Highest score
-						if (rslts[i].score >= min_score_accept && rslts[i].score > highestScore) {
-							highestScore = rslts[i].score;
-						}
-						// Show
-						el_div.innerHTML = 
-							(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
-							(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
-							(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-							'k: ' + rslts[i].kind + '<br>' +
-							'y: ' + rslts[i].year + '<br>' +
-							'score: ' + Math.round(rslts[i].score*1) + '<br>' +
-							'lev.: ' + Math.round(pct) + '%<br>';
-						
-						//Attempt to auto into a checkIMDB here:
-						if(rsltsType == 'search_t_s') {
-							if(
-							   rslts &&
-							   rslts.length &&
-							   rslts[i].title &&
-							   clean_str_to_auto(rslts[i].title).length > 2 &&
-							   clean_str_to_auto(rslts[i].title) == (isTopShow ? o.matches.title1 : o.matches.title2) &&
-							   rslts[i].parent_title &&
-							   clean_str_to_auto(rslts[i].parent_title).length > 2 &&
-							   clean_str_to_auto(rslts[i].parent_title) == (isTopShow ? o.matches.series1 : o.matches.series2)
-							   )
-							{
-								if(isTopShow) {
-									o.dbAuto1 = true;
-									o.dbSelection1 = rslts;
-									o.cast1 =  rslts[i].cast;
-									console.log('---------imdbAuto1');
-								}
-								else {
-									o.dbSelection2 = rslts;
-									o.dbAuto2 = true;
-									o.cast2 =  rslts[i].cast;
-									console.log('---------imdbAuto2');
-								}						
-								//checkIMDB(rslts[i].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
-								el_div.click();
-								foundAuto = true;
-								break;
-							}
-						}
+				// Still here?
+				var foundAuto = false;
+				var highestPct = 0;
+				var highestScore = 0;
+				var min_lev_length = 10; // min. to consider
+				var min_lev_accept = 60; // pct to accept
+				var min_score_accept = 12; // pct to accept
+				var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
+				for(var i = 0; i < rslts.length; i++) {
+					var el_div = document.createElement('div');
+					el_div.setAttribute('style',
+						'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
+					); 
+					div.appendChild(el_div);
+					el_div.className = 'exe';
+					el_div.title = rslts[i].title;
+					el_div.parent_title = rslts[i].parent_title;
+					el_div.season_nr = rslts[i].season_nr;
+					el_div.kind = rslts[i].kind;
+					el_div.isTopShow = isTopShow;
+					el_div.cast = rslts[i].cast;
+					el_div.keywords = rslts[i].keywords;
+					el_div.onclick = function() {
+						this.style.backgroundColor = 'lightgreen';
+						if(this.isTopShow)
+							o.cast1 = this.cast;
+						else
+							o.cast2 = this.cast;
+						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, this.isTopShow);
 					}
-					// Single query, special_ww==false, rsltsType==search_t_s
-					if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
-					{
-						o.is_in_skip_condition = true;
-						AMT___Floater.skip();
-						console.log('Skip condition #1. Skips here.');
+					
+					// If this is special workflow.
+					// Is Levenstein distance less than X?
+					// If so then mark show (top OR bottom) as "found."
+					// Add background-color.
+					// 
+					// QUESTION: Cache any, or up to X, if Lev. is >= 96? 98? 99?
+					var strtmp1 = rslts[i].title + rslts[i].parent_title;
+					var strtmp2 = (isTopShow) ? o.title1 + o.series1 : o.title2 + o.series2;
+					var dist = new AMT___gen_functions().levensht(strtmp1, strtmp2);
+					var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
+					var pct = ((longest - dist) / longest) * 100; // 0-100
+					highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
+					el_div.style.backgroundColor = pct >= min_lev_accept ? 'aqua' : '';
+					// Highest score
+					if (rslts[i].score >= min_score_accept && rslts[i].score > highestScore) {
+						highestScore = rslts[i].score;
 					}
-					// Mutli-query, special_ww==true.
-					// Search1=search_t, Search2=search_t_s
-					else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow)
-					{
-						if (isTopShow) {
-							o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
-							// ONE SHOW
-							if (o.q.length == 1) {
-								if (AMT__Global_Vars.isPreview) {
-									if  (
-										o.lev_pct[0] >= min_lev_accept ||
-										highestScore > min_score_accept
-										)
-									{
-										AMT___Floater.accept();
-									}
-									else {
-										d1.innerHTML =
-											'MaxScore='+Math.round(highestScore)+'<br>'+
-											'Max%='+Math.round(o.lev_pct[0])+'%';
-										// Init itunes
-										itunes_search_init();
-										//AMT___Floater.skip();
-									}
-								}
-								// Not in preview
-								else {
-									addToTabsQ(); // Add to tabs queue
-								}
+					// Show
+					el_div.innerHTML = 
+						(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
+						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
+						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+						'k: ' + rslts[i].kind + '<br>' +
+						'y: ' + rslts[i].year + '<br>' +
+						'score: ' + Math.round(rslts[i].score*1) + '<br>' +
+						'lev.: ' + Math.round(pct) + '%<br>';
+					
+					//Attempt to auto into a checkIMDB here:
+					if(rsltsType == 'search_t_s') {
+						if(
+						   rslts &&
+						   rslts.length &&
+						   rslts[i].title &&
+						   clean_str_to_auto(rslts[i].title).length > 2 &&
+						   clean_str_to_auto(rslts[i].title) == (isTopShow ? o.matches.title1 : o.matches.title2) &&
+						   rslts[i].parent_title &&
+						   clean_str_to_auto(rslts[i].parent_title).length > 2 &&
+						   clean_str_to_auto(rslts[i].parent_title) == (isTopShow ? o.matches.series1 : o.matches.series2)
+						   )
+						{
+							if(isTopShow) {
+								o.dbAuto1 = true;
+								o.dbSelection1 = rslts;
+								o.cast1 =  rslts[i].cast;
+								console.log('---------imdbAuto1');
 							}
-							// TWO SHOWS
 							else {
-								if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
-									initNextRun(); // Go to next run!
-								else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
-									AMT___Floater.skip();
+								o.dbSelection2 = rslts;
+								o.dbAuto2 = true;
+								o.cast2 =  rslts[i].cast;
+								console.log('---------imdbAuto2');
+							}						
+							//checkIMDB(rslts[i].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
+							el_div.click();
+							foundAuto = true;
+							break;
+						}
+					}
+				}
+				// Single query, special_ww==false, rsltsType==search_t_s
+				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
+				{
+					o.is_in_skip_condition = true;
+					AMT___Floater.skip();
+					console.log('Skip condition #1. Skips here.');
+				}
+				// Mutli-query, special_ww==true.
+				// Search1=search_t, Search2=search_t_s
+				else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow)
+				{
+					if (isTopShow) {
+						o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
+						// ONE SHOW
+						if (o.q.length == 1) {
+							if (AMT__Global_Vars.isPreview) {
+								if  (
+									o.lev_pct[0] >= min_lev_accept ||
+									highestScore > min_score_accept
+									)
+								{
+									AMT___Floater.accept();
+								}
+								else {
+									//~ d1.innerHTML =
+									d3c.value += '\n';
+										'MaxScore='+Math.round(highestScore)+'\n'+
+										'Max%='+Math.round(o.lev_pct[0])+'%';
+									// Init itunes
+									itunes_search_init();
+									//AMT___Floater.skip();
 								}
 							}
-						}
-						if (!isTopShow) {
-							o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
-							
-							// ACCEPT?
-							if  (
-								o.lev_pct[0] >= min_lev_accept &&
-								o.lev_pct[1] >= min_lev_accept &&
-								AMT__Global_Vars.isPreview &&
-								rsltsType == 'search_t_s' // Second search
-								)
-							{
-								console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
-								AMT___Floater.accept();
+							// Not in preview
+							else {
+								addToTabsQ(); // Add to tabs queue
+								itunes_search_init(); // Init itunes
 							}
-							// SKIP
-							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
+						}
+						// TWO SHOWS
+						else {
+							if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
+								initNextRun(); // Go to next run!
+							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
 								AMT___Floater.skip();
 							}
+						}
+					}
+					if (!isTopShow) {
+						o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
+						
+						// ACCEPT?
+						if  (
+							o.lev_pct[0] >= min_lev_accept &&
+							o.lev_pct[1] >= min_lev_accept &&
+							AMT__Global_Vars.isPreview &&
+							rsltsType == 'search_t_s' // Second search
+							)
+						{
+							console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
+							AMT___Floater.accept();
+						}
+						// SKIP
+						else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
 						}
 					}
 				}
