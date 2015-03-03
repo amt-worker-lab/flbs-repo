@@ -10209,35 +10209,35 @@ function load__allPages_AMT_combo() {
 			/*Begin Elements*/
 			var d_container = document.createElement('div');
 			d_container.setAttribute('style',
-				"position:absolute;left:30%;top:0px;width:70%;height:800px;background-color:#eee;border:1px solid blue;"
+				"position:absolute;left:30%;top:0px;width:70%;height:800px;background-color:#eee;border:1px solid blue;overflow:auto"
 			);
 			document.body.appendChild(d_container);
-			var d1 = document.createElement('div');
+			var d1 = document.createElement('div'); // Main
 			d1.setAttribute('style',
 				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
 			d_container.appendChild(d1);
-			var d3 = document.createElement('textarea'); // skips
+			var d2 = document.createElement('div'); // Itunes div
+			d2.setAttribute('style',
+				"width:99%;height:1px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
+			);
+			//d2.show_height = null; // XX
+			d_container.appendChild(d2);
+			var d3 = document.createElement('textarea'); // Skips
 			d3.setAttribute('style',
 				"width:50%;height:400px;"
 			);
 			d_container.appendChild(d3);
-			var d3b = document.createElement('textarea'); // always accept
+			var d3b = document.createElement('textarea'); // Always accept
 			d3b.setAttribute('style',
 				"width:49%;height:400px;"
 			);
 			d_container.appendChild(d3b);
 			var d3c = document.createElement('textarea'); // Translate debug output, Itunes debug output
 			d3c.setAttribute('style',
-				"width:99%;height:20px;"
+				"width:99%;height:60px;"
 			);
 			d_container.appendChild(d3c);
-			var d2 = document.createElement('div');
-			d2.setAttribute('style',
-				"width:99%;height:1px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
-			);
-			d2.show_height = null; // XXd2.show_height
-			d_container.appendChild(d2);
 			/*End of Elements*/
 			
 			// onclick
@@ -10448,8 +10448,11 @@ function load__allPages_AMT_combo() {
 			 */
 			function itunes_search_init() {
 				// Open d2, close d1
-				d2.style.height = '100px';//d2.show_height;
-				d1.style.height = '100px';
+				d2.style.height = '200px';//d2.show_height;
+				d1.style.height = '200px';
+				if (d1.innerText == '0-db') {
+					d1.style.height = '60px';
+				}
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
@@ -10531,12 +10534,13 @@ function load__allPages_AMT_combo() {
 				// d2.show_height
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
-					AMT___Floater.skip(); // TODO
+					if (AMT__Global_Vars.isPreview)
+						AMT___Floater.skip(); // TODO
 					return;
 				}
 				var bold = o.bold_ep1;
 				
-				for (var i = 0; i < rslts.length; i++) {
+				for (var i in rslts) {
 					var el_div = document.createElement('div');
 					el_div.setAttribute('style',
 						'border-bottom:1px solid black;padding: 1px 2px 1px 2px' //top,right,btm,left
@@ -10560,7 +10564,7 @@ function load__allPages_AMT_combo() {
 						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
 						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 						'k: ' + rslts[i].kind + '<br>' +
-						'y: ' + rslts[i].year + '<br>';
+						'y: ' + rslts[i].year;
 				}
 			}
 			/**
@@ -10910,29 +10914,34 @@ function load__allPages_AMT_combo() {
 						o.lev_pct[0] = highestPct > o.lev_pct[0] ? highestPct : o.lev_pct[0];
 						// ONE SHOW
 						if (o.q.length == 1) {
-							if (AMT__Global_Vars.isPreview) {
-								if  (
-									o.lev_pct[0] >= min_lev_accept ||
-									highestScore > min_score_accept
-									)
-								{
+							if  (
+								o.lev_pct[0] >= min_lev_accept ||
+								highestScore > min_score_accept
+								)
+							{
+								if (AMT__Global_Vars.isPreview) {
 									AMT___Floater.accept();
-								}
-								else {
-									//~ d1.innerHTML =
-									d3c.value += '\n';
-										'MaxScore='+Math.round(highestScore)+'\n'+
-										'Max%='+Math.round(o.lev_pct[0])+'%';
-									// Init itunes
-									itunes_search_init();
-									//AMT___Floater.skip();
+									return;
 								}
 							}
-							// Not in preview
 							else {
-								addToTabsQ(); // Add to tabs queue
-								itunes_search_init(); // Init itunes
+								//~ d1.innerHTML =
+								d3c.value += '\n';
+									'MaxScore='+Math.round(highestScore)+'\n'+
+									'Max%='+Math.round(o.lev_pct[0])+'%';
+								// Init itunes
+								//itunes_search_init();
+								//AMT___Floater.skip();
 							}
+							
+							// Tabs queue
+							if (!AMT__Global_Vars.isPreview) {
+								addToTabsQ(); // Add to tabs queue
+								//itunes_search_init(); // Init itunes
+							}
+							
+							// Always here
+							itunes_search_init(); // Init itunes
 						}
 						// TWO SHOWS
 						else {
