@@ -35733,7 +35733,10 @@ function MT__RUN() {
 								  "}"+
 								  "pano.setPano(curr.pano);"+
 								"}"+
-								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {moveBackward()} if(e.keyCode == 115) {moveForward()}})"+
+								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {moveBackward()} if(e.keyCode == 115) {moveForward()};"+
+								"if(e.keyCode == 99) {"+
+								"if(map.getTilt() == 45) {map.setTilt(0)} else {map.setTilt(45)};"+
+								"}})"+
 
 
 						"}");
@@ -151272,11 +151275,16 @@ function top_window(okay_to_run) {
 						for (var i in errors) {
 							var err = errors[i];
 							if (rs.indexOf(err) != -1) {
-								has_error = true;
-								d2.value = err;
-								d2.style.border = '8px dashed green';
-								d2.style.backgroundColor = 'MintCream';
-								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
+								if (q.value == '') {
+									document.body.style.backgroundColor = 'LightGreen';
+									q.value = 'NONE';
+									doSubmit('hitForm');
+								}
+								//~ has_error = true;
+								//~ d2.value = err;
+								//~ d2.style.border = '8px dashed green';
+								//~ d2.style.backgroundColor = 'MintCream';
+								//~ chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
 								return;
 							}
 						}
