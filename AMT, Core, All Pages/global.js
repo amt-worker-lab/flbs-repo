@@ -4238,6 +4238,8 @@ AMT___requests_factory.prototype.io__write_to_file = function(write_object, call
 			var rs = response.responseText;
 			if (response.status != 200) return;
 			
+			console.log('Write response is:"' + rs + '"');
+			
 			write_object.responseText	= rs;
 			write_object.response		= rs;
 			

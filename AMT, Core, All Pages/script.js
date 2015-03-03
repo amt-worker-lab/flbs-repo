@@ -10287,7 +10287,7 @@ function load__allPages_AMT_combo() {
 				d3.style.border = '4px dashed blue';
 				d3b.style.border = '4px dashed blue';
 				var rf = new AMT___requests_factory();
-				var write = d3.value + '-------------------------------' + d3b.value;
+				var write = d3.value + '-------------------------------' + d3b.value; console.log(write);
 				// Write to file !
 				rf.io__write_to_file(
 					{
