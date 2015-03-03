@@ -10592,6 +10592,9 @@ function load__allPages_AMT_combo() {
 					el_div.keywords = rslts[i].keywords;
 					el_div.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
+						// Try show next tab here!
+						showNextTab();
+						// ...
 						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, true);
 					}
 					// Desc
@@ -10716,7 +10719,7 @@ function load__allPages_AMT_combo() {
 					isTopShow: isTopShow
 				}
 				var isTopShow = isTopShow;
-				console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
+				//~ console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
 				
 				// url
 				var url = 'http://www.imdb.com/search/title?' +
@@ -10737,7 +10740,7 @@ function load__allPages_AMT_combo() {
 						}
 						allDetails = rs.split('<td class="number">');
 						allDetails.splice(0,1);
-						console.log(allDetails);
+						//~ console.log(allDetails);
 						//splits it into secions with 1 being the first
 						
 						//reg1 - imdbId of series, series name, year_type of series
@@ -10757,8 +10760,8 @@ function load__allPages_AMT_combo() {
 						var reg4 = /<span class="credit">((.|\s)*?(?=<\/span>|$)|$)/;
 						
 						var choices = [];
-						console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
-						console.log(allDetails);
+						//~ console.log('Finished scraping imbd: isTopShow: '+ isTopShow);
+						//~ console.log(allDetails);
 						for(var i = 0; i <allDetails.length; i++) {
 							choices.push({
 								seriesIMDBId: null,
@@ -10798,7 +10801,7 @@ function load__allPages_AMT_combo() {
 							}
 
 							var scr4 = reg4.exec(allDetails[i]);
-							console.log(scr4);
+							//~ console.log(scr4);
 							choices[i].cast = {}; // cast obj
 							if(scr4) {
 								var nameReg = /<a[^>]+>([^<]+)</g;
@@ -11062,7 +11065,7 @@ function load__allPages_AMT_combo() {
 			 * choices.is_auto
 			 */
 			function buildFinalInterface(isTopShow) {
-				console.log('building interface, topShow is:' + isTopShow);
+				//~ console.log('building interface, topShow is:' + isTopShow);
 				var choices = isTopShow ? o.choices1 : o.choices2;
 				var div = isTopShow ? d1 : d2;
 				div.style.overflow = 'auto';
@@ -11221,9 +11224,9 @@ function load__allPages_AMT_combo() {
 								//Make sure they're both numbers by trimming them
 								choices[i].year = choices[i].year.trim();
 								o.releaseYear1 = o.releaseYear1.trim();
-								console.log('attempting year match');
+								//~ console.log('attempting year match');
 								if(Math.abs(choices[i].year*1 - o.releaseYear1*1) <= 2) {
-									console.log('year matched for top');
+									//~ console.log('year matched for top');
 									topAuto = true;
 								}
 							}
@@ -11239,42 +11242,47 @@ function load__allPages_AMT_combo() {
 							break;
 						}
 					}
-					else // Bottom (!isTopShow)
-					{
-						if(
-							choices[i] &&
-							choices[i].title &&
-							clean_str_to_auto(choices[i].title).length > 2 &&
-							clean_str_to_auto(choices[i].title) == o.matches.title2 &&
-							choices[i].seriesName &&
-							clean_str_to_auto(choices[i].seriesName).length > 2 &&
-							o.series2 &&
-							clean_str_to_auto(choices[i].seriesName) == o.matches.series2
-						)
-						{
-							if(
-								choices[i].year && o.releaseYear2
-							)
-							{
-								//Make sure they're both numbers by trimming them
-								choices[i].year = choices[i].year.trim();
-								o.releaseYear2 = o.releaseYear2.trim();
-								if(Math.abs((choices[i].year *1) - (o.releaseYear2*1)) <= 2) {
-									console.log('year matched for top');
-									bottomAuto = true;
-								}
-							}
-							else {
-								bottomAuto = true;
-							}
-						}
-						if(bottomAuto) {
-							o.imdbAuto2 = true;
-							el_div.click();
-							foundAuto = true;
-							break;
-						}
-					}
+					// THIS IS FOR **2** SHOWS!
+					//
+					//
+					//
+					//
+					//~ else // Bottom (!isTopShow)
+					//~ {
+						//~ if(
+							//~ choices[i] &&
+							//~ choices[i].title &&
+							//~ clean_str_to_auto(choices[i].title).length > 2 &&
+							//~ clean_str_to_auto(choices[i].title) == o.matches.title2 &&
+							//~ choices[i].seriesName &&
+							//~ clean_str_to_auto(choices[i].seriesName).length > 2 &&
+							//~ o.series2 &&
+							//~ clean_str_to_auto(choices[i].seriesName) == o.matches.series2
+						//~ )
+						//~ {
+							//~ if(
+								//~ choices[i].year && o.releaseYear2
+							//~ )
+							//~ {
+								//~ //Make sure they're both numbers by trimming them
+								//~ choices[i].year = choices[i].year.trim();
+								//~ o.releaseYear2 = o.releaseYear2.trim();
+								//~ if(Math.abs((choices[i].year *1) - (o.releaseYear2*1)) <= 2) {
+									//~ console.log('year matched for top');
+									//~ bottomAuto = true;
+								//~ }
+							//~ }
+							//~ else {
+								//~ bottomAuto = true;
+							//~ }
+						//~ }
+						//~ if(bottomAuto) {
+							//~ o.imdbAuto2 = true;
+							//~ el_div.click();
+							//~ foundAuto = true;
+							//~ break;
+						//~ }
+					//~ }
 				}
 				// END OF FOR LOOP
 				// Make a spacer div
@@ -11284,15 +11292,29 @@ function load__allPages_AMT_combo() {
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
 					AMT___Floater.skip();
+					return;
 				}
-				// If auto and isTopShow
-				if(foundAuto && isTopShow) {
-					initNextRun();
+				if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
+					// Add this to tabs queue so user is able
+					// to re-check this. I.e., User selected from 
+					// local DB. Then left tab. However, there was no auto.
+					// So now return the user to complete task.
+					addToTabsQ();
 				}
-				// Not auto but special workflow
-				else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
-					initNextRun();
-				}
+				
+				// THIS IS FOR **2** SHOWS
+				//
+				//
+				//~ // If auto and isTopShow
+				//~ if(foundAuto && isTopShow) {
+					//~ initNextRun();
+					//~ return;
+				//~ }
+				//~ // Not auto but special workflow
+				//~ else if (!foundAuto && AMT__Global_Vars.isSpecialWorkflowWindow) {
+					//~ initNextRun();
+					//~ return;
+				//~ }
 			}
 				
 			//~ function attemptAuto(isTopShow) {
