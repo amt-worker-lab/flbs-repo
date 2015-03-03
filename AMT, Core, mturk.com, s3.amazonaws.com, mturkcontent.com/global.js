@@ -11909,23 +11909,24 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 						MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
 					}
 				});
-				
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
-					//~ }
-				//~ });
 				return;
 			}
 			
+			//{ "results" : [], "status" : "UNKNOWN_ERROR" }
+			//'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )
+			var ci_array = [
+				'"error_message" : "You have exceeded your daily request quota for this API."',
+				'{ "results" : [], "status" : "UNKNOWN_ERROR" }'
+			];
 			if (use_a_proxy) {
 				AMT___POPUP__initializeGlobals(function() {
 					GM_xmlhttpRequest({ // init
 						method: "GET",
-						url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
+						url: AMT___POPUP___PROXY_REDACTED_+
+							'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+							'&catch_success='+encodeURIComponent('"results"')+
+							'&catch_include_array='+encodeURIComponent(JSON.stringify(ci_array)),
+							//~ '&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
 						onload: function(response) {
 							//var rs = response.responseText;
 						}

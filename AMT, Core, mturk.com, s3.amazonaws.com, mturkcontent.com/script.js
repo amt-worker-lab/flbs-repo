@@ -35594,7 +35594,7 @@ function MT__RUN() {
 					!/^-?[\d\.]{4,}$/.exec(lng)
 					)
 				{
-					d5.style.display = 'none';
+					//d5.style.display = 'none';
 					return;
 				}
 				
@@ -151260,10 +151260,10 @@ function top_window(okay_to_run) {
 						if (response.status > 200) {
 							document.body.style.backgroundColor = 'pink';
 							return;
-						} else if (/captcha/.exec(rs)) {
-							document.body.style.backgroundColor = 'pink';
-							return;
-						}
+						}// else if (/captcha/.exec(rs)) {
+						//	document.body.style.backgroundColor = 'pink';
+						//	return;
+						//}
 						
 						var errors = [
 							'The image is too big, or the network connection is too slow to download it.',
