@@ -10226,11 +10226,6 @@ function load__allPages_AMT_combo() {
 			);
 			//d2.show_height = null; // XX
 			d_container.appendChild(d2);
-			var d4 = document.createElement('div'); // Spacing div
-			d4.setAttribute('style',
-				"width:99%;height:1600px;background-color:#eee;"
-			);
-			d_container.appendChild(d4);
 			var d3 = document.createElement('textarea'); // Skips
 			d3.setAttribute('style',
 				"width:50%;height:400px;"
@@ -10246,6 +10241,11 @@ function load__allPages_AMT_combo() {
 				"width:99%;height:60px;"
 			);
 			d_container.appendChild(d3c);
+			var d4 = document.createElement('div'); // Spacing div
+			d4.setAttribute('style',
+				"width:99%;height:1600px;background-color:#eee;"
+			);
+			d_container.appendChild(d4);
 			/*End of Elements*/
 			
 			// onclick
