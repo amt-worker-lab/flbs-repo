@@ -331,6 +331,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.playFirstElement) {
 		console.log('recieved: play first element');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			console.log(request.isTopWindow);
 			document.getElementsByTagName('audio')[0].play();
 			console.log('attempted to play');
 		}

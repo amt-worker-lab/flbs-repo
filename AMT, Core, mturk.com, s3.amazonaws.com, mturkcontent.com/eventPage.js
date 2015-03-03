@@ -502,8 +502,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.nextTab)
 	{
 		window.request = request;
-		window.request.isTopWindow = request.isTopWindow;
-
+		window.request.options.isTopWindow = request.isTopWindow;
+		
+		console.log('nexttab');
 		
 		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
 			

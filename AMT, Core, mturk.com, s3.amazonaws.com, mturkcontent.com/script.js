@@ -101,20 +101,12 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('input[type="checkbox"] {zoom:4;}');
+			GM_addStyle('input[type="radio"] {zoom:4;}');
 			
-			document.getElementsByName('is_good')[0].clik();
+			document.getElementsByName('is_good')[0].click();
 			
 			
-			var  uls = document.getElementsByTagName('ul')[0];
-			for(var i = 0; i < uls.length; i++) {
-				uls.style.zoom = "2";
-			}
-			
-			var  uls = document.getElementsByTagName('ul')[1];
-			for(var i = 0; i < uls.length; i++) {
-				uls.style.zoom = "2";
-			}
-			
+		
 			document.getElementById("submitButton").focus();
 			
 			
