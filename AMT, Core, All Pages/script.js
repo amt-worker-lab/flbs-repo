@@ -9945,7 +9945,8 @@ function load__allPages_AMT_combo() {
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
 	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
-	s = '<b>Enter in the IMDb url of this title(s).</b><br>\n        	To begin, please view the following';
+	//~ s = '<b>Enter in the IMDb url of this title(s).</b><br>\n        	To begin, please view the following';
+	s = '<div class="instructions">\n        	<b>Enter in the IMDb url of this title(s).</b><br>';
 	if  (
 		document.location.href.indexOf('flicksio.com/mturk') != -1 &&
 		document.body.innerHTML.indexOf(s) != -1
