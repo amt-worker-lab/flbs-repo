@@ -10507,7 +10507,6 @@ function load__allPages_AMT_combo() {
 							if (rs.results[i].shortDescription.indexOf(short_syn) == 0) {
 								rslt = rs.results[i];
 								found_num++;
-								o.itunes_match_rslt = rslt;
 							}
 						}
 						if (found_num != 1) {
@@ -10516,6 +10515,8 @@ function load__allPages_AMT_combo() {
 							if (AMT__Global_Vars.isPreview)
 								AMT___Floater.skip(); // TODO
 							return;
+						} else {
+							o.itunes_match_rslt = rslt;
 						}
 						
 						// Try DB
@@ -10566,6 +10567,8 @@ function load__allPages_AMT_combo() {
 				}
 				
 				// Loop
+				console.log(o.itunes_match_rslt);
+				console.log(rslts);
 				for (var i in rslts) {
 					var el_div = document.createElement('div');
 					el_div.setAttribute('style',
@@ -10594,10 +10597,13 @@ function load__allPages_AMT_combo() {
 						'd: ' + o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
 					// ScrollIntoView
 					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
-						el_div.scrollIntoView(true);
+						el_div.scrollIntoView(false);
 						el_div.style.border = '4px solid blue';
 					}
 				}
+				// spacer
+				var tmp_div = ''.div({style:'height:1000px;'});
+				d2.appendChild(tmp_div);
 			}
 			/**
 			 * function initFirstRun
