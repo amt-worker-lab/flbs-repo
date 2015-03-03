@@ -9970,18 +9970,20 @@ function load__allPages_AMT_combo() {
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			GM_addStyle('.title {height:120px;overflow:hidden;}');
 			GM_addStyle('.worker-info {top:1000px;position:absolute;}');
 			GM_addStyle('.submit {padding:0;}');
-			var n = document.getElementsByClassName('title');
-			for (var p = 0; p <n.length; p++) {
-				n[p].addEventListener('mouseover', function() {
-					this.style.height = 'auto';
-				}, false);
-				n[p].addEventListener('mouseout', function() {
-					this.style.height = '120px';
-				}, false);
-			}
+			// THIS IS FOR HIDING THE SHOWS
+			//~ GM_addStyle('.title {height:120px;overflow:hidden;}');
+			//~ var n = document.getElementsByClassName('title');
+			//~ for (var p = 0; p <n.length; p++) {
+				//~ n[p].addEventListener('mouseover', function() {
+					//~ this.style.height = 'auto';
+				//~ }, false);
+				//~ n[p].addEventListener('mouseout', function() {
+					//~ this.style.height = '120px';
+				//~ }, false);
+			//~ }
+			
 			// inputs up
 			var inp = document.getElementsByClassName('imdb_url');
 			inp[0].setAttribute('style','position:absolute;top:0;left:0;width:20%;height:30px'); // Move inputs up
