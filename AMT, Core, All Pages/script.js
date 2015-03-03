@@ -10894,12 +10894,17 @@ function load__allPages_AMT_combo() {
 					el_div.isTopShow = isTopShow;
 					el_div.cast = rslts[i].cast;
 					el_div.keywords = rslts[i].keywords;
+					el_div.is_auto_db = false; // set .is_auto_db=false
 					el_div.onclick = function() {
 						this.style.backgroundColor = 'lightgreen';
 						if(this.isTopShow)
 							o.cast1 = this.cast;
 						else
 							o.cast2 = this.cast;
+						// LET'S TRY SHOW NEXT TAB HERE.
+						if (!this.is_auto_db)
+							showNextTab(); // show next tab
+						
 						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, this.isTopShow);
 					}
 					
@@ -10955,7 +10960,7 @@ function load__allPages_AMT_combo() {
 								o.cast2 =  rslts[i].cast;
 								console.log('---------imdbAuto2');
 							}						
-							//checkIMDB(rslts[i].keywords, rslts[0].title, rslts[0].title_type, isTopShow);
+							el_div.is_auto_db = true; // set .is_auto_db true
 							el_div.click();
 							foundAuto = true;
 							break;
@@ -10965,7 +10970,6 @@ function load__allPages_AMT_combo() {
 				// Make a spacer div
 				var tmp_div = ''.div({style:'height:1000px;'});
 				div.appendChild(tmp_div);
-				//~ console.log(tmp_div);
 				// Single query, special_ww==false, rsltsType==search_t_s
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
@@ -11011,34 +11015,44 @@ function load__allPages_AMT_combo() {
 							// Always here
 							itunes_search_init(); // Init itunes
 						}
-						// TWO SHOWS
-						else {
-							if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
-								initNextRun(); // Go to next run!
-							else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
-								AMT___Floater.skip();
-							}
-						}
+						// THIS IS FOR **2** SHOWS
+						//
+						//
+						//
+						//
+						//~ // TWO SHOWS
+						//~ else {
+							//~ if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
+								//~ initNextRun(); // Go to next run!
+							//~ else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
+								//~ AMT___Floater.skip();
+							//~ }
+						//~ }
 					}
-					if (!isTopShow) {
-						o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
-						
-						// ACCEPT?
-						if  (
-							o.lev_pct[0] >= min_lev_accept &&
-							o.lev_pct[1] >= min_lev_accept &&
-							AMT__Global_Vars.isPreview &&
-							rsltsType == 'search_t_s' // Second search
-							)
-						{
-							console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
-							AMT___Floater.accept();
-						}
-						// SKIP
-						else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
-							AMT___Floater.skip();
-						}
-					}
+					// THIS IS FOR **2** SHOWS
+					//
+					//
+					//
+					//
+					//~ if (!isTopShow) {
+						//~ o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
+						//~ 
+						//~ // ACCEPT?
+						//~ if  (
+							//~ o.lev_pct[0] >= min_lev_accept &&
+							//~ o.lev_pct[1] >= min_lev_accept &&
+							//~ AMT__Global_Vars.isPreview &&
+							//~ rsltsType == 'search_t_s' // Second search
+							//~ )
+						//~ {
+							//~ console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
+							//~ AMT___Floater.accept();
+						//~ }
+						//~ // SKIP
+						//~ else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.skip();
+						//~ }
+					//~ }
 				}
 			}
 			
@@ -11060,7 +11074,7 @@ function load__allPages_AMT_combo() {
 					return;
 				}
 				// How many autos are there? (choices.is_auto) (From a MANUAL selection.)
-				// There MUST be only ONE in order to auto.
+				// There MUST be only ONE in order to auto on IMDB.
 				var num_autos = 0;
 				for (var i in choices) {
 					if (choices[i].is_auto) {
@@ -11168,8 +11182,8 @@ function load__allPages_AMT_combo() {
 									var rand = 2000 + (Math.random() * 2000);
 									setTimeout(function() { doSubmit('mturk'); }, rand); // 2.0 + 0.0~2.0
 								} else {
-									showNextTab(); // show next tab
-									doSubmit('mturk');
+									//~ showNextTab(); // show next tab
+									//~ doSubmit('mturk');
 								}
 								return false;
 							}
@@ -11179,6 +11193,7 @@ function load__allPages_AMT_combo() {
 					}
 					
 					// Check for "auto" when localDB button is manually clicked.
+					// This is when a choice is made from local DB and checkIMDB is run.
 					if (num_autos == 1 && choices[i].is_auto) {
 						el_div.is_auto = true; // set el_div.is_auto
 						el_div.click();
