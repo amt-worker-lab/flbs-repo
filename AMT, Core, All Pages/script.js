@@ -10557,6 +10557,15 @@ function load__allPages_AMT_combo() {
 				}
 				var bold = o.bold_ep1;
 				
+				// Accept here
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.accept();
+				} else {
+					// Add to queue
+					addToTabsQ();
+				}
+				
+				// Loop
 				for (var i in rslts) {
 					var el_div = document.createElement('div');
 					el_div.setAttribute('style',
@@ -10583,6 +10592,11 @@ function load__allPages_AMT_combo() {
 						'k: ' + rslts[i].kind + '<br>' +
 						'y: ' + rslts[i].year + '<br>' +
 						'd: ' + o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
+					// ScrollIntoView
+					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
+						el_div.scrollIntoView(true);
+						el_div.style.border = '4px solid blue';
+					}
 				}
 			}
 			/**
