@@ -10268,8 +10268,8 @@ function load__allPages_AMT_combo() {
 					//~ d2.full_height = innerHeight-60 + 'px';
 					//~ 
 					var half = Math.floor(innerHeight / 2);
-					d1.style.height = half + 'px';
-					d2.style.height = half + 'px';
+					d1.style.height = half-100 + 'px';
+					d2.style.height = half+100 + 'px';
 				}
 			});
 			
