@@ -11178,10 +11178,12 @@ function load__allPages_AMT_combo() {
 						}
 					}
 					
-					// Check for "auto" when localDB button is manually clicked.
-					if (num_autos == 1 && choices[i].is_auto) {
-						el_div.click();
-					}
+					//~ // Check for "auto" when localDB button is manually clicked.
+					//~ if (num_autos == 1 && choices[i].is_auto) {
+						//~ el_div.is_auto = true; // set el_div.is_auto
+						//~ el_div.click();
+						//~ return;
+					//~ }
 					
 					// Put check here for to auto yes? You wan oil chane?
 					if (isTopShow) { // Top
@@ -11216,7 +11218,7 @@ function load__allPages_AMT_combo() {
 						}
 						if(topAuto) {
 							o.imdbAuto1 = true;
-							el_div.is_auto = true; // set .is_auto
+							el_div.is_auto = true; // set el_div.is_auto
 							el_div.click();
 							foundAuto = true;
 							break;
