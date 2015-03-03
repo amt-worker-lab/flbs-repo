@@ -126,7 +126,7 @@ AMT__Global_Vars.initializeReturnButton = function () {
 		}
 	}
 	console.log('ran inside initializeReturnButton');
-	if(AMT__Global_Vars.isTopWindow && hasReturnButton) {
+	if(AMT__Global_Vars.isTopWindow && hasReturnButton) { //alert('make return btn');
 		console.log('ran inside initializeReturnButton');
 		var returnButton = document.createElement('input');
 		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;cursor:pointer;');
@@ -138,23 +138,23 @@ AMT__Global_Vars.initializeReturnButton = function () {
 			var allAs = document.getElementsByTagName('a');
 			for(var i = 0; i < allAs.length; i++) {
 				if(allAs[i].href.indexOf('/mturk/return') != -1) {
-						allAs[i].click()
-						return;
-					}
+					allAs[i].click();
+					return;
 				}
 			}
 		}
-	console.log(returnButton);
+	}
+	//~ console.log(returnButton);
 }
 
 //var allAs = document.getElementsByTagName('a');
-	
 
 AMT__Global_Vars.initializeR_Button_NextTab = function() {
 	chrome.extension.sendRequest({getR_Button_NextTab: true}, 
 		function(rs) 
-		{
-			if(rs.R_Button_NextTab == rs.R_Button_NextTab == 'On') {
+		{console.log(rs);alert('initializeR_Button_NextTab');
+			if(rs.R_Button_NextTab == rs.R_Button_NextTab == 'On') { alert('ra nextab=on');
+				var allAs = document.getElementsByTagName('a');
 				for(var i = 0; i < allAs.length; i++) {
 					if(allAs[i].href.indexOf('/mturk/return') != -1) {
 						allAs[i].addEventListener('onclick', function() {

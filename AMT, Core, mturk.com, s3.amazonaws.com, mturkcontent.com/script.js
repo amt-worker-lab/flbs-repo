@@ -151915,9 +151915,10 @@ function mturk_load()
 		 */
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = true;
-		AMT__Global_Vars.initializeReturnButton();
 		AMT__Global_Vars.initializeTabId();
 		AMT__Global_Vars.initialize_return_accept_run_nextTab();
+		AMT__Global_Vars.initializeR_Button_NextTab();
+		AMT__Global_Vars.initializeReturnButton();
 		
 		// Make return/accept button
 		// AMT___returnAndAcceptButton
