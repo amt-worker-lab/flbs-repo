@@ -35600,7 +35600,7 @@ function MT__RUN() {
 				
 				console.log(lat +','+ lng);
 				
-				//Draw a marker onto the map for lat/lng
+				//Draw a marker onto the map for center of map
 				AMT___RunPageScript(function() {
 						var marker = new google.maps.Marker({
 								position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
@@ -35611,6 +35611,21 @@ function MT__RUN() {
 						map.setZoom(18);
 					});
 				
+				//Draw a marker onto the map for lat/lng
+				AMT___RunPageScript("function() {"+
+						"var image = {"+
+							"url: 'images/beachflag.png',"+
+							"size: new google.maps.Size(20, 32),"+
+							"origin: new google.maps.Point(0,0),"+
+							"anchor: new google.maps.Point(0, 32)"+
+						  "};"+
+						"var marker = new google.maps.Marker({"+
+								"position: new google.maps.LatLng(" +lat +","+lang+"),"+
+								"map: map,"+
+								"title: 'testing,'"+
+								"icon: 'image'"+
+							"});"+
+					"}");"
 				
 				// UPDATE
 				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
