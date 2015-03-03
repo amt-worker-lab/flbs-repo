@@ -10112,6 +10112,7 @@ function load__allPages_AMT_combo() {
 				original_title: null,
 				series1_season1: __js_clean_html_str(rslt1[2]), // Series Title + Season #, e.g. "Scrubs, Season 4"
 				itunes_country: s1.country, // default=us, others=de,fr
+				itunes_match_rslt: null, // For itunes match
 				matches: {
 					title1:null,
 					title2:null,
@@ -10212,7 +10213,7 @@ function load__allPages_AMT_combo() {
 				"position:absolute;left:30%;top:0px;width:70%;height:800px;background-color:#eee;border:1px solid blue;overflow:auto"
 			);
 			document.body.appendChild(d_container);
-			var d1 = document.createElement('div'); // Main
+			var d1 = document.createElement('div'); // Main div
 			d1.setAttribute('style',
 				"width:99%;height:400px;background-color:#eee;border-bottom:4px solid black;overflow:auto;"
 			);
@@ -10223,6 +10224,11 @@ function load__allPages_AMT_combo() {
 			);
 			//d2.show_height = null; // XX
 			d_container.appendChild(d2);
+			var d4 = document.createElement('div'); // Spacing div
+			d4.setAttribute('style',
+				"width:99%;height:1600px;background-color:#eee;"
+			);
+			d_container.appendChild(d4);
 			var d3 = document.createElement('textarea'); // Skips
 			d3.setAttribute('style',
 				"width:50%;height:400px;"
@@ -10456,7 +10462,8 @@ function load__allPages_AMT_combo() {
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
-					AMT___Floater.skip();
+					if (AMT__Global_Vars.isPreview)
+						AMT___Floater.skip();
 					return;
 				}
 				//~ AMT___Floater.skip(); // TODO
@@ -10494,11 +10501,13 @@ function load__allPages_AMT_combo() {
 							if (rs.results[i].shortDescription.indexOf(short_syn) == 0) {
 								rslt = rs.results[i];
 								found_num++;
+								o.itunes_match_rslt = rslt;
 							}
 						}
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
-							AMT___Floater.skip(); // TODO
+							if (AMT__Global_Vars.isPreview)
+								AMT___Floater.skip(); // TODO
 							return;
 						}
 						
@@ -10564,7 +10573,8 @@ function load__allPages_AMT_combo() {
 						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
 						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 						'k: ' + rslts[i].kind + '<br>' +
-						'y: ' + rslts[i].year;
+						'y: ' + rslts[i].year + '<br>' +
+						'd: ' + o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
 				}
 			}
 			/**
