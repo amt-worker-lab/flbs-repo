@@ -502,6 +502,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.nextTab)
 	{
 		window.request = request;
+		console.log(request.isTopWindow)
+		console.log(window.request)
+		console.log(window.request.options)
+		console.log(window.request.options.isTopWindow)
 		window.request.options.isTopWindow = request.isTopWindow;
 		
 		console.log('nexttab');

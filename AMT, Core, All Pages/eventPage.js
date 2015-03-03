@@ -552,7 +552,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					chrome.tabs.sendRequest(nextTab, window.request.options, function(response) {
 						//squelch response
 					});
-				
+				}
 			}
 			
 		});
