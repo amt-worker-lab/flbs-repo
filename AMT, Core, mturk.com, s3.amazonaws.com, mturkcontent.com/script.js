@@ -93,7 +93,7 @@ function MT__RUN() {
 	
 	//
 	//
-	// 
+	// Lyric Theory
 	//
 	s = "Are there problems with the speech quality?&nbsp;</strong> (check all that apply)</p>"
 	if(ih.indexOf(s) != -1) {

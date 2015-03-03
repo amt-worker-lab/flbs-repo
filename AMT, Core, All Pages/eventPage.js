@@ -502,6 +502,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.nextTab)
 	{
 		window.request = request;
+		window.request.isTopWindow = request.isTopWindow;
 		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
 			
 			//~ console.log('Here2');
@@ -546,6 +547,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						});
 					}				
 				});
+				
+				if(window.request && window.request.options) {
+					chrome.tabs.sendRequest(nextTab, window.request.options, function(response) {
+						//squelch response
+					});
+				
 			}
 			
 		});
