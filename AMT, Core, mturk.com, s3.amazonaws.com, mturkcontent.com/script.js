@@ -15900,7 +15900,7 @@ function MT__RUN() {
 	
 	/**
 	 * scrapy
-	 * 
+	 * garrett grohman
 	 * Rachel Scott
 	 * CRE, Find this person's email address
 	 * Yin Li
@@ -16294,7 +16294,7 @@ function MT__RUN() {
 										// ENDS SCRIPT PROCESSING
 										return true;
 									} else { // Add to tabs queue if not in preview
-										addToTabsQ();
+										//addToTabsQ();
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
@@ -16311,8 +16311,8 @@ function MT__RUN() {
 									//~ document.getElementById('Q1Email').value = 
 									//~ document.getElementById('submitButton').click();
 								//~ },
-								//~ do_submit_next_tab: true
-								do_submit_add_to_tabs_queue: true
+								do_submit_next_tab: true
+								//~ do_submit_add_to_tabs_queue: true
 							}
 						);
 					}
