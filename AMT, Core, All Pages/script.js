@@ -10503,6 +10503,8 @@ function load__allPages_AMT_combo() {
 						var short_syn = o.synopsis1.substr(0, 30);
 						var found_num = 0;
 						var rslt;
+						// All itunes
+						o.all_itunes_results = rs.results;
 						for (var i in rs.results) {
 							if (rs.results[i].shortDescription.indexOf(short_syn) == 0) {
 								rslt = rs.results[i];
@@ -10584,17 +10586,28 @@ function load__allPages_AMT_combo() {
 					el_div.cast = rslts[i].cast;
 					el_div.keywords = rslts[i].keywords;
 					el_div.onclick = function() {
-						this.style.backgroundColor = 'lightgreen';
+						this.style.backgroundColor = 'LightGreen';
 						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, true);
+					}
+					// Desc
+					// Matches series name.
+					// Matches track nr.
+					var sd = '';
+					for (var j in o.all_itunes_results) {
+						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr) { // && o.all_itunes_results[j].artistName == o.series1
+							sd = o.all_itunes_results[j].shortDescription.substr(0,30)+'[...]';
+							break;
+						}
 					}
 					// Show
 					el_div.innerHTML = 
 						(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
 						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
-						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-						'k: ' + rslts[i].kind + '<br>' +
-						'y: ' + rslts[i].year + '<br>' +
-						'd: ' + o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
+						(rslts[i].season_nr ? 'ssn: ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+						'ep: ' + rslts[i].episode_nr + '<br>' +
+						'k: '  + rslts[i].kind + '<br>' +
+						'y: '  + rslts[i].year + '<br>' +
+						'd: '  + sd; // o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
 					// ScrollIntoView
 					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
 						el_div.scrollIntoView(false);
