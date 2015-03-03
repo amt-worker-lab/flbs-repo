@@ -11300,6 +11300,7 @@ function load__allPages_AMT_combo() {
 					// local DB. Then left tab. However, there was no auto.
 					// So now return the user to complete task.
 					addToTabsQ();
+					document.body.style.backgroundColor = 'pink';
 				}
 				
 				// THIS IS FOR **2** SHOWS
