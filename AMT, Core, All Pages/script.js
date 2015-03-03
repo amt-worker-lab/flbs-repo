@@ -10112,6 +10112,7 @@ function load__allPages_AMT_combo() {
 				is_in_skip_condition: false, // One of two is in a skip condition.
 				has_google_translate: false,
 				original_title: null,
+				original_series: null,
 				series1_season1: __js_clean_html_str(rslt1[2]), // Series Title + Season #, e.g. "Scrubs, Season 4"
 				itunes_country: s1.country, // default=us, others=de,fr
 				itunes_match_rslt: null, // For itunes match
@@ -10130,6 +10131,7 @@ function load__allPages_AMT_combo() {
 				]
 			}
 			o.original_title = o.title1; // set o.original_title
+			o.original_series = s1.series; // set o.original_series
 			
 			
 			// Timeout to skip
@@ -10598,7 +10600,7 @@ function load__allPages_AMT_combo() {
 					var itn = '';
 					var icn = '';
 					for (var j in o.all_itunes_results) {
-						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr && o.all_itunes_results[j].artistName == o.series1) {
+						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr && o.all_itunes_results[j].collectionName == o.original_series) { // collection=series/season, artistName=series
 							isd = o.all_itunes_results[j].shortDescription.substr(0,30)+'[...]';
 							itn = o.all_itunes_results[j].trackName;
 							icn = o.all_itunes_results[j].collectionName;
