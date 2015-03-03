@@ -35601,31 +35601,32 @@ function MT__RUN() {
 				console.log(lat +','+ lng);
 				
 				//Draw a marker onto the map for center of map
-				AMT___RunPageScript(function() {
-						var marker = new google.maps.Marker({
-								position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
-								map: map,
-								title: 'testing'
-							});
-						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-						map.setZoom(18);
-					});
+				//~ AMT___RunPageScript(function() {
+						//~ var marker = new google.maps.Marker({
+								//~ position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
+								//~ map: map,
+								//~ title: 'testing'
+							//~ });
+						//~ map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+						//~ map.setZoom(18);
+					//~ });
 				
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript("function() {"+
+						"console.log('attempting image xxx');"+
 						"var image = {"+
-							"url: 'images/beachflag.png',"+
+							"url: 'https://google-developers.appspot.com/maps/documentation/javascript/examples/full/images/beachflag.png',"+
 							"size: new google.maps.Size(20, 32),"+
 							"origin: new google.maps.Point(0,0),"+
 							"anchor: new google.maps.Point(0, 32)"+
 						  "};"+
-						"var marker = new google.maps.Marker({"+
-								"position: new google.maps.LatLng(" +lat +","+lang+"),"+
+						"var marker2 = new google.maps.Marker({"+
+								"position: new google.maps.LatLng(" +lat +","+lng+"),"+
 								"map: map,"+
-								"title: 'testing,'"+
-								"icon: 'image'"+
+								"title: 'testing',"+
+								"icon: image"+
 							"});"+
-					"}");"
+					"}");
 				
 				// UPDATE
 				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
