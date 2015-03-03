@@ -100,9 +100,26 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('input[type="checkbox"] {zoom:4;}');
 			
+			document.getElementsByName('is_good')[0].clik();
+			
+			
+			var  uls = document.getElementsByTagName('ul')[0];
+			for(var i = 0; i < uls.length; i++) {
+				uls.style.zoom = "2";
+			}
+			
+			var  uls = document.getElementsByTagName('ul')[1];
+			for(var i = 0; i < uls.length; i++) {
+				uls.style.zoom = "2";
+			}
 			
 			document.getElementById("submitButton").focus();
+			
+			
+			
+			var allInps = 
 			document.getElementById("submitButton").onclick = function() {
 				new AMT___core_factory().nextTab({playFirstElement: true});
 				doSubmit();
