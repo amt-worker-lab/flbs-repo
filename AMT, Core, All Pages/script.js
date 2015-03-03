@@ -10598,7 +10598,7 @@ function load__allPages_AMT_combo() {
 					var itn = '';
 					var icn = '';
 					for (var j in o.all_itunes_results) {
-						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr) { // && o.all_itunes_results[j].artistName == o.series1
+						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr && o.all_itunes_results[j].artistName == o.series1) {
 							isd = o.all_itunes_results[j].shortDescription.substr(0,30)+'[...]';
 							itn = o.all_itunes_results[j].trackName;
 							icn = o.all_itunes_results[j].collectionName;
