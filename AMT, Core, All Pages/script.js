@@ -10590,23 +10590,30 @@ function load__allPages_AMT_combo() {
 					}
 					// Desc
 					// Matches series name.
+					// Matches season#
 					// Matches track nr.
-					var sd = '';
+					var isd = '';
+					var itn = '';
+					var icn = '';
 					for (var j in o.all_itunes_results) {
 						if (o.all_itunes_results[j].trackNumber == rslts[i].episode_nr) { // && o.all_itunes_results[j].artistName == o.series1
-							sd = o.all_itunes_results[j].shortDescription.substr(0,30)+'[...]';
+							isd = o.all_itunes_results[j].shortDescription.substr(0,30)+'[...]';
+							itn = o.all_itunes_results[j].trackName;
+							icn = o.all_itunes_results[j].collectionName;
 							break;
 						}
 					}
 					// Show
 					el_div.innerHTML = 
 						(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
-						(rslts[i].parent_title ? 's: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
-						(rslts[i].season_nr ? 'ssn: ' + rslts[i].season_nr + '<br>' : 'sn: ') +
-						'ep: ' + rslts[i].episode_nr + '<br>' +
+						(rslts[i].parent_title ? 'series: ' + MT__bold(rslts[i].parent_title, bold) + '<br>' : 's: <br>') +
+						(rslts[i].season_nr ? 'season#: ' + rslts[i].season_nr + '<br>' : 'sn: ') +
+						'ep#: ' + rslts[i].episode_nr + '<br>' +
 						'k: '  + rslts[i].kind + '<br>' +
 						'y: '  + rslts[i].year + '<br>' +
-						'd: '  + sd; // o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
+						'itunes_desc: '  + isd + '<br>' + // o.itunes_match_rslt.shortDescription.substr(0,30)+'[...]';
+						'itunes_title: ' + itn + '<br>' +
+						'itunes_coll: '  + icn;
 					// ScrollIntoView
 					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
 						el_div.scrollIntoView(false);
