@@ -35601,15 +35601,15 @@ function MT__RUN() {
 				console.log(lat +','+ lng);
 				
 				//Draw a marker onto the map for center of map
-				//~ AMT___RunPageScript(function() {
-						//~ var marker = new google.maps.Marker({
-								//~ position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
-								//~ map: map,
-								//~ title: 'testing'
-							//~ });
-						//~ map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-						//~ map.setZoom(18);
-					//~ });
+				AMT___RunPageScript(function() {
+						var marker = new google.maps.Marker({
+								position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
+								map: map,
+								title: 'testing'
+							});
+						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+						map.setZoom(18);
+					});
 				
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript("function() {"+
@@ -35623,7 +35623,7 @@ function MT__RUN() {
 						"var marker2 = new google.maps.Marker({"+
 								"position: new google.maps.LatLng(" +lat +","+lng+"),"+
 								"map: map,"+
-								"title: 'testing',"+
+								"title: 'testing2',"+
 								"icon: image"+
 							"});"+
 					"}");
