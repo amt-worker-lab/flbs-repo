@@ -10315,7 +10315,7 @@ function load__allPages_AMT_combo() {
 					d3.style.border = '4px dashed blue';
 					d3b.style.border = '4px dashed blue';
 				}
-				url = MT___host + '/mturk/.miscellaneous/flicksio_options';
+				url = MT___host + '/mturk/.miscellaneous/flicksio_options?RANDOM='+Math.random(); // add Math.random()!
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: url,
@@ -11178,12 +11178,12 @@ function load__allPages_AMT_combo() {
 						}
 					}
 					
-					//~ // Check for "auto" when localDB button is manually clicked.
-					//~ if (num_autos == 1 && choices[i].is_auto) {
-						//~ el_div.is_auto = true; // set el_div.is_auto
-						//~ el_div.click();
-						//~ return;
-					//~ }
+					// Check for "auto" when localDB button is manually clicked.
+					if (num_autos == 1 && choices[i].is_auto) {
+						el_div.is_auto = true; // set el_div.is_auto
+						el_div.click();
+						return;
+					}
 					
 					// Put check here for to auto yes? You wan oil chane?
 					if (isTopShow) { // Top
