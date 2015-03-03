@@ -14020,6 +14020,7 @@ function MT__RUN() {
 				return false;
 			}
 			if(!AMT__Global_Vars.isPreview) {
+				console.log('!preview');
 				addToTabsQ();
 			}
 			
@@ -16294,7 +16295,7 @@ function MT__RUN() {
 										// ENDS SCRIPT PROCESSING
 										return true;
 									} else { // Add to tabs queue if not in preview
-										//addToTabsQ();
+										addToTabsQ();
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
