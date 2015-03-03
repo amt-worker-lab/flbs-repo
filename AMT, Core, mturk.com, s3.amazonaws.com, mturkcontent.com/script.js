@@ -35300,17 +35300,9 @@ function MT__RUN() {
 		var HEIGHT = screen.height;
 		var tmp_h = (HEIGHT*1 - 400)+ 'px';
 
-		
-		
-		
 		//...
 		document.getElementById('map').style.width = '100%';
 		document.getElementById('map').style.height = tmp_h;
-		//~ document.getElementById('map').style.width = '10%';
-		//~ document.getElementById('map').style.width = '100%';
-		//~ document.getElementById('map').style.width = '10%';
-		//~ document.getElementById('map').style.width = '100%';
-		//~ GM_addStyle('#map {width:100%;}'); // map 100% !
 		
 		//...
 		// This will change occasionally.
@@ -35326,7 +35318,6 @@ function MT__RUN() {
 			addr = b[2].innerText.trim();
 		}
 		
-		
 		// vars
 		var o = {
 			lat: null,
@@ -35340,27 +35331,24 @@ function MT__RUN() {
 			curr_map_view: null // For Z hotkey
 		};
 		console.log(o);
-		console.log(o.name);
-		console.log('name');
-		if(o.name.toLowerCase() == 'marshalls') {
-			document.body.style.backgroundColor = 'green';
-		}else if(o.name.toLowerCase() != 'ross dress for less') {
-			document.body.style.backgroundColor = 'pink';
-		
-		}
-		
-		
+		//~ console.log(o.name);
+		//~ console.log('name');
+		//~ if(o.name.toLowerCase() == 'marshalls') {
+			//~ document.body.style.backgroundColor = 'green';
+		//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
+			//~ document.body.style.backgroundColor = 'pink';
+		//~ 
+		//~ }
 		
 		AMT___addUserDecision('Chios Polygon - Quality Control',
-										function() {
-											console.log(o);
-											console.log(AMT__Global_Vars);
-											return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-										},
-										['Id(polygon)',
-										 'Id(reasons)']
-											);		
-		
+			function() {
+				console.log(o);
+				console.log(AMT__Global_Vars);
+				return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+			},
+			['Id(polygon)',
+			 'Id(reasons)']
+		);
 		
 		// ...
 		var q = document.getElementById('polygon');
