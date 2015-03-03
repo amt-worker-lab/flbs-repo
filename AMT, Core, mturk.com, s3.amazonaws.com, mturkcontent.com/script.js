@@ -16182,7 +16182,7 @@ function MT__RUN() {
 					
 					var reg = /<ul class="websites list-simple h5 bold">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
 					if (!reg) { // skip
-						
+						document.body.style.backgroundColor = 'red';
 						AMT___Floater.skip();
 						return;
 					}
@@ -16226,7 +16226,7 @@ function MT__RUN() {
 					d1b.appendChild(tmpdesc);
 					d1b.appendChild(tmpsites);
 					
-					
+					console.log('regging');
 					if (o.sd_start_urls.length < 1) { // skip
 						document.body.style.backgroundColor = 'silver';
 						AMT___Floater.skip();
@@ -16297,7 +16297,7 @@ function MT__RUN() {
 										// ENDS SCRIPT PROCESSING
 										return true;
 									} else { // Add to tabs queue if not in preview
-										addToTabsQ();
+										//addToTabsQ();
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
