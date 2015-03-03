@@ -16182,6 +16182,7 @@ function MT__RUN() {
 					
 					var reg = /<ul class="websites list-simple h5 bold">((.|\s)*?(?=<\/ul>|$)|$)/.exec(rs);
 					if (!reg) { // skip
+						
 						AMT___Floater.skip();
 						return;
 					}
@@ -16227,6 +16228,7 @@ function MT__RUN() {
 					
 					
 					if (o.sd_start_urls.length < 1) { // skip
+						document.body.style.backgroundColor = 'silver';
 						AMT___Floater.skip();
 						return;
 					}
