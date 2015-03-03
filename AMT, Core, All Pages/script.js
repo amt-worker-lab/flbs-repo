@@ -10426,7 +10426,9 @@ function load__allPages_AMT_combo() {
 						
 						if (response.status != 200 || (rs*1 >= 300 && rs*1 <= 600)) {
 							alert('rs');
-							exit(response.status);
+							initFirstRun();
+							return;
+							//exit(response.status);
 						}
 						
 						rs = rs.replace(/,+/g, ','); // replace ,+
@@ -11107,6 +11109,7 @@ function load__allPages_AMT_combo() {
 					el_div.seriesIMDBId = choices[i].seriesIMDBId;
 					el_div.isTopShow = isTopShow;
 					el_div.parent_div = div;
+					el_div.is_auto = false; // is_auto=false
 					// .onclick
 					el_div.onclick = function() { // onclick
 						this.style.backgroundColor = 'LightGreen';
@@ -11148,9 +11151,11 @@ function load__allPages_AMT_combo() {
 									AMT___Floater.accept();
 									return;
 								}
-								// Is accepted?
+								// Is accepted
+								
 								// Fire event to simulate change of text box.
 								// This produces a "post" request to their server.
+								//
 								var evt = document.createEvent('HTMLEvents');
 								evt.initEvent('change', false, true);
 								o.q[0].dispatchEvent(evt);
@@ -11158,11 +11163,14 @@ function load__allPages_AMT_combo() {
 									o.q[1].dispatchEvent(evt);
 								// ...
 								document.body.style.backgroundColor = 'aqua';
-								//~ new AMT___core_factory().nextTab(); // nextTab
-								// show next
-								showNextTab();
-								var rand = 1000 + (Math.random() * 2000);
-								setTimeout(function() { doSubmit('mturk'); }, rand); // 1.0 + 0~2.0
+								// 
+								if (this.is_auto) { // no show next tab, submit random time
+									var rand = 2000 + (Math.random() * 2000);
+									setTimeout(function() { doSubmit('mturk'); }, rand); // 2.0 + 0.0~2.0
+								} else {
+									showNextTab(); // show next tab
+									doSubmit('mturk');
+								}
 								return false;
 							}
 						} else {
@@ -11208,6 +11216,7 @@ function load__allPages_AMT_combo() {
 						}
 						if(topAuto) {
 							o.imdbAuto1 = true;
+							el_div.is_auto = true; // set .is_auto
 							el_div.click();
 							foundAuto = true;
 							break;
