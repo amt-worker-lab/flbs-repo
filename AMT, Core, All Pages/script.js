@@ -9942,6 +9942,8 @@ function load__allPages_AMT_combo() {
 	 * o.season1 = \d+
 	 * https://itunes.apple.com/search?term=...
 	 * 
+	 * checkIMDB: If the title contains less than 6 word characters then include the series name.
+	 * 
 	 * http://www.imdb.com/find?q=Love+and+War%2C+The+Real+Housewives+of+Orange+County&&s=tt&&ttype=ep&ref_=fn_ep
 	 */
 	//~ s = '<i>Note: if the title is a Movie you will find the IMDb url for <b>ONE</b> titles. If it is a TV Episode, you will enter in the IMDb url for <b>TWO</b> titles'
@@ -10722,7 +10724,7 @@ function load__allPages_AMT_combo() {
 				//~ console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
 				
 				// url
-				var url = 'http://www.imdb.com/search/title?' +
+				var url = 'http://www.imdb.com/search/title?count=100' + //set count=100
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
 							'title='+encodeURIComponent(title)
