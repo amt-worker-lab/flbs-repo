@@ -10427,7 +10427,8 @@ function load__allPages_AMT_combo() {
 						var rs = response.responseText;
 						
 						if (response.status != 200 || (rs*1 >= 300 && rs*1 <= 600)) {
-							alert('Google translate status!=200');
+							//~ alert('Google translate status!=200');
+							document.body.style.backgroundColor = 'orange'; //
 							initFirstRun();
 							return;
 							//exit(response.status);
