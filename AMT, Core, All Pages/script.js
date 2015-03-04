@@ -10883,9 +10883,9 @@ function load__allPages_AMT_combo() {
 				var foundAuto = false;
 				var highestPct = 0;
 				var highestScore = 0;
-				var min_lev_length = 10; // min. to consider
-				var min_lev_accept = 60; // pct to accept
-				var min_score_accept = 12; // pct to accept
+				var min_lev_length = 8; // min. to consider
+				var min_lev_accept = 50; // pct to accept
+				var min_score_accept = 10; // pct to accept
 				var bold = (isTopShow) ? o.bold_ep1 : o.bold_ep2;
 				for(var i = 0; i < rslts.length; i++) {
 					var el_div = document.createElement('div');
