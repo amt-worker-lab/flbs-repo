@@ -113963,7 +113963,7 @@ qatar,80
 		
 		// if accepted add to tabs queue!
 		if (!AMT__Global_Vars.isPreview)
-			addToTabsQ();
+			//addToTabsQ();
 		
 		// ...
 		// global
@@ -146515,7 +146515,7 @@ function top_window(okay_to_run) {
 				q.value = 'NA';
 				
 				if (o.skip_hard_tasks) {
-					showNextTab();
+					new AMT___core_factory().nextTab();
 				} else {
 					new AMT___core_factory().nextTab();
 				}				
@@ -147046,7 +147046,7 @@ function top_window(okay_to_run) {
 							
 							// showNextTab OR nextTab
 							if (o.skip_hard_tasks) {
-								showNextTab();
+								new AMT___core_factory().nextTab();
 							} else {
 								new AMT___core_factory().nextTab();
 							}
