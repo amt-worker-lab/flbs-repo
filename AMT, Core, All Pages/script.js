@@ -10724,10 +10724,11 @@ function load__allPages_AMT_combo() {
 				//~ console.log('ran inside checkIMDB, isTopShow: ' + isTopShow);
 				
 				// url
-				var url = 'http://www.imdb.com/search/title?count=100' + //set count=100
+				var url = 'http://www.imdb.com/search/title?count=100&' + //set count=100
 							(keywords ?	'keywords=' + encodeURIComponent(keywords) + "&" : '') +
 							(title_type ? 'title_type=' +encodeURIComponent(title_type) + "&" : '') +
-							'title='+encodeURIComponent(title)
+							'title='+encodeURIComponent(title);
+				//~ url+= '&count=100';
 				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url); // cache
 				
 				// xhr
