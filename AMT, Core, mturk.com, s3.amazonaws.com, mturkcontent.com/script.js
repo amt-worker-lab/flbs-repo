@@ -151889,6 +151889,7 @@ function mturk_load()
 					break;
 				case '3Z18Y091VBP65DOWDMYY3XZ211V1FB': //FlicksIO, Level I: Locate URL for TV or Movie
 				case '3ED2P6N3KZO1CZPTJSAFYTQJ9DA6FF': //FlicksIO, Second Posting
+				case '3WC6MIR2HS9J0LLV81WSWI241WLYJF': //FlicksIO, Third Posting
 					AMT___Floater({runMT_Run:true});
 				case '372BFDRISCA6E6WX8JDCP7YD8F6C1F': //garrett grohman, Kickstarter emails
 					AMT___Floater({runMT_Run:true});
