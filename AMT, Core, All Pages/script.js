@@ -11132,7 +11132,7 @@ function load__allPages_AMT_combo() {
 					el_div.parent_div = div;
 					el_div.is_auto = false; // is_auto=false
 					// .onclick
-					el_div.onclick = function() { // onclick
+					el_div.onclick = function(e) { // onclick
 						this.style.backgroundColor = 'LightGreen';
 						var id;
 						if(this.imdbId) {
