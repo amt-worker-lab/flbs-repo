@@ -11180,7 +11180,7 @@ function load__allPages_AMT_combo() {
 								var evt = document.createEvent('HTMLEvents');
 								evt.initEvent('change', false, true);
 								o.q[0].dispatchEvent(evt);
-								if (o.q.length > 1)
+								if (o.q.length > 1) // Fire on second if necessary.
 									o.q[1].dispatchEvent(evt);
 								// ...
 								document.body.style.backgroundColor = 'aqua';
@@ -11188,10 +11188,14 @@ function load__allPages_AMT_combo() {
 								if (this.is_auto) { // no show next tab, submit random time
 									var rand = 2000 + (Math.random() * 2000);
 									setTimeout(function() { doSubmit('mturk'); }, rand); // 2.0 + 0.0~2.0
-								} else {
+								} else if (e.ctrlKey) { // e.ctrlKey show next tab
+									showNextTab();
+									doSubmit('mturk');
+								}
+								//~ } else {
 									//~ showNextTab(); // show next tab
 									//~ doSubmit('mturk');
-								}
+								//~ }
 								return false;
 							}
 						} else {
