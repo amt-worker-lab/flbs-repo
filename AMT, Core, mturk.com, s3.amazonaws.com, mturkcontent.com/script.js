@@ -56832,10 +56832,10 @@ function MT__RUN() {
 		d2c.value = 'N/A';
 		d2c.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
-			var x = document.getElementById('web_url');
+			var x = o.qfbUrl;
 			if (x.value == '' || x.value == 'http://') {
 				x.value = 'N/A';
-				//doSubmit();
+				doSubmit();
 			}
 		}
 		document.body.appendChild(d2c);
@@ -56962,8 +56962,9 @@ function MT__RUN() {
 						// Init this div if first!
 						//
 						//
-						if (out == d1 && c == 0) 
-							div.click();
+						if (out == d1 && c == 0) {
+							//div.click();
+						}
 						
 						//~ if (div.fblikes >= 4) {
 						//~ }
@@ -57004,12 +57005,12 @@ function MT__RUN() {
 				}
 			});
 		}
-			function validate() {
-				if(o.scrapeSuccess && o.qfbUrl.value != "") {
-					new AMT___core_factory().nextTab();
-					//doSubmit();
-				}
+		function validate() {
+			if(o.scrapeSuccess && o.qfbUrl.value != "") {
+				new AMT___core_factory().nextTab();
+				doSubmit();
 			}
+		}
 			function yelp_search_scrape() {
 				GM_xmlhttpRequest({
 					method: 'GET',
