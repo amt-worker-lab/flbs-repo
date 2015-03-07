@@ -56823,7 +56823,7 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1b);
 		}
-		d2b.value = o.comp + ", " + o.addr;
+		d2b.value = o.comp;
 		document.body.appendChild(d2b);
 		//
 		var d2c = document.createElement('input');
