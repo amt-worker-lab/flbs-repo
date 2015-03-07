@@ -56776,8 +56776,9 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('.container {position:absolute;top:660px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
-			
 			var td = document.getElementsByTagName('td');
+			
+			
 			var o = {
 				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
 				addr: td[3].innerText.trim(),
@@ -56800,25 +56801,27 @@ function MT__RUN() {
 			
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1 .setAttribute('style','position:absolute;top:82px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:82px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		var d2 = document.createElement('textarea');
 		d2.setAttribute('type','text');
-		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+		d2.setAttribute('style','position:absolute;top:20px;width:30%;height:60px;');
 		d2.onblur = function() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1);
 		}
 		d2.value = o.comp + ", Indiana";
 		document.body.appendChild(d2);
+		
+
 		//
 		var d2b = document.createElement('textarea');
-		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+		d2b.setAttribute('style','position:absolute;top:20px;left:30%;width:30%;height:60px;');
 		d2b.onblur = function() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1b);
@@ -56839,6 +56842,11 @@ function MT__RUN() {
 			}
 		}
 		document.body.appendChild(d2c);
+		
+		var d3 = document.createElement('div');
+		d3.setAttribute('style','position:absolute;top:0px;left:10px;height:20px');
+		d3.innerText = td[3].innerText;
+		document.body.appendChild(d3);
 		/* END ITEMS */
 			
 		yelp_search_scrape()
@@ -56929,8 +56937,8 @@ function MT__RUN() {
 						//~ 
 						var tmp = '';
 						//console.log(r);
-						console.log(o.bold_addr);
-						console.log(r.name);
+						console.log(o.bold_comp);
+						console.log(r[i].name);
 						tmp += MT__bold(r[i].name, o.bold_comp);
 						
 						
