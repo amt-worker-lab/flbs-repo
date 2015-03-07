@@ -56791,6 +56791,8 @@ function MT__RUN() {
 				comp_cln: null,
 				addr_cln: null
 			}
+			o.bold_addr = o.addr.split(" ");
+			
 			console.log(o);
 			
 			
@@ -56924,12 +56926,11 @@ function MT__RUN() {
 						//~ }
 						//~ 
 						var tmp = '';
+						//console.log(r);
+						console.log(o.bold_addr);
+						console.log(r.name);
+						//tmp += MT__bold(r[i].name, o.bold_addr);
 						
-						tmp += MT__bold(r[i].name, o.school_array);
-						//~ tmp += '\
-							//~ <input type="button" value="'+r[i].name+'" id="'+x+'" class="exe" style="width:auto;">\
-							//~ \
-						//~ ';
 						
 						//~ var x = out.getElementsByTagName('input');
 						//~ x = x[x.length - 1];
