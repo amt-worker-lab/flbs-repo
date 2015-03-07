@@ -57031,7 +57031,8 @@ function MT__RUN() {
 			});
 		}
 		function validate() {
-			if(o.scrapeSuccess && o.qfbUrl.value != "" && o.finishedScraping) {
+//			if(o.scrapeSuccess && o.qfbUrl.value != "" && o.finishedScraping) {
+			if(o.qfbUrl.value != "" && o.finishedScraping) {
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -57135,7 +57136,7 @@ function MT__RUN() {
 							o.finishedScraping = true;
 							o.scrapeSuccess = false;
 							console.log('scrapeSuccess failed');
-							document.body.style.backgroundColor = 'blue';
+							//document.body.style.backgroundColor = 'blue';
 						}
 					}
 				});
