@@ -56828,6 +56828,7 @@ function MT__RUN() {
 				comp_cln: null,
 				addr_cln: null
 			}
+			console.log(o);
 			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
@@ -56837,6 +56838,8 @@ function MT__RUN() {
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr + ', Charlotte, NC';
+	
+			console.log(o);
 			//
 			d2.onblur = d2b.onblur = function() {
 				this.value = this.value.trim();
