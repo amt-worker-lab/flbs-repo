@@ -56781,7 +56781,7 @@ function MT__RUN() {
 			
 			var o = {
 				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
-				addr: td[3].innerText.trim(),
+				addr: td[3].innerText.trim().replace(/,/g," "),
 				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
 				yelp_url: td[7].innerText.trim(),
 				q: document.getElementById('web_url'),
@@ -56795,6 +56795,7 @@ function MT__RUN() {
 			}
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
+			
 			
 			console.log(o);
 			
@@ -56980,7 +56981,11 @@ function MT__RUN() {
 							var x = document.getElementsByClassName(this.className);
 							for (var i in x) {
 								if (i == 'length') break;
-								x[i].style.backgroundColor = 'LightGreen';
+								if(document.body.style.backgroundColor != 'blue') {
+									x[i].style.backgroundColor = 'LightGreen';
+								} else {
+									x[i].style.backgroundColor = 'blue';
+								}
 							}
 						}
 						div.onmouseout = function() {
