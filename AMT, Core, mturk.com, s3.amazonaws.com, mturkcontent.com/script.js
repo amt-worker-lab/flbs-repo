@@ -15992,9 +15992,9 @@ function MT__RUN() {
 					return false;
 				}
 				
-				// Here?
-				new AMT___core_factory().nextTab();
-				doSubmit();
+				//~ // Here?
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
 			}
 
 			scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -16076,8 +16076,8 @@ function MT__RUN() {
 									//~ document.getElementById('Q1Email').value = 
 									//~ document.getElementById('submitButton').click();
 								//~ },
-								do_submit_next_tab: true
-								//do_submit_add_to_tabs_queue: true
+								//~ do_submit_next_tab: true
+								do_submit_add_to_tabs_queue: true
 							}
 						);
 					}
