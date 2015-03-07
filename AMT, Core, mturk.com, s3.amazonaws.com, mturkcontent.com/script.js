@@ -56937,9 +56937,9 @@ function MT__RUN() {
 						//~ }
 						//~ 
 						var tmp = '';
-						//console.log(r);
-						console.log(o.bold_comp);
-						console.log(r[i].name);
+						console.log(r);
+						//console.log(o.bold_comp);
+						//console.log(r[i].name);
 						tmp += MT__bold(r[i].name, o.bold_comp);
 						
 						
@@ -56952,7 +56952,13 @@ function MT__RUN() {
 						
 						if (r[i].location) {
 							for (var j in r[i].location) {
-								tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
+								if(j == "city") {
+									tmp += '<br><u>' + MT__bold(r[i].location[j], o.bold_addr) + '</u>';
+								} else if (j== "street"){
+									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).innerHTML;
+								}else {
+									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
+								}
 							}
 						}
 						
