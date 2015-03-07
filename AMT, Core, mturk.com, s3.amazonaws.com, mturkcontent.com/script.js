@@ -56774,6 +56774,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.container {position:absolute;top:660px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -56786,11 +56787,12 @@ function MT__RUN() {
 				qfbUrl: document.getElementById('facebook_url'),				
 				bold_addr: [],
 				bold_comp: [],
-				
+				scrapeSuccess: false,
 				// For auto
 				comp_cln: null,
 				addr_cln: null
 			}
+			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
 			
 			console.log(o);
@@ -56929,7 +56931,7 @@ function MT__RUN() {
 						//console.log(r);
 						console.log(o.bold_addr);
 						console.log(r.name);
-						//tmp += MT__bold(r[i].name, o.bold_addr);
+						tmp += MT__bold(r[i].name, o.bold_comp);
 						
 						
 						//~ var x = out.getElementsByTagName('input');
@@ -56941,7 +56943,7 @@ function MT__RUN() {
 						
 						if (r[i].location) {
 							for (var j in r[i].location) {
-								tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
+								tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
 							}
 						}
 						
@@ -56953,8 +56955,8 @@ function MT__RUN() {
 						div.innerHTML = tmp;
 						
 						div.onclick = function() {
-							
-							Morgan_Intrator_fb_schools__profile(this);
+							o.qfbUrl.value = this.className;
+							validate();
 						}
 						
 						// Init this div if first!
@@ -57002,6 +57004,12 @@ function MT__RUN() {
 				}
 			});
 		}
+			function validate() {
+				if(o.scrapeSuccess && o.qfbUrl.value != "") {
+					new AMT___core_factory().nextTab();
+					//doSubmit();
+				}
+			}
 			function yelp_search_scrape() {
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -57091,10 +57099,15 @@ function MT__RUN() {
 						}
 						
 						
-						console.log(sbm);
 						if (sbm) {
+							o.scrapeSuccess = true;
 							console.log('submitting');
 							//doSubmit();
+						}
+						else {
+							o.scrapeSuccess = false;
+							console.log('scrapeSuccess failed');
+							document.body.style.backgroundColor = 'blue';
 						}
 					}
 				});
