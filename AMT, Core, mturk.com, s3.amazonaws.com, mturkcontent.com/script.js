@@ -56764,6 +56764,195 @@ function MT__RUN() {
 	 * 
 	 * 
 	 */
+	// 
+	// Gordon Courtney
+	// Find Yelp Details for Charlotte Restaurants
+	// Jan26 2015
+	s = '<li>Include the full address, e.g. https://www.facebook.com/AnotherBrokenEggCafeCharlotteSouthpark</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
+				addr: td[3].innerText.trim(),
+				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
+				yelp_url: td[7].innerText.trim(),
+				q: document.getElementById('web_url'),
+				qfbUrl: document.getElementById('facebook_url'),				
+				bold_addr: [],
+				bold_comp: [],
+				
+				// For auto
+				comp_cln: null,
+				addr_cln: null
+			}
+			console.log(o);
+			
+			
+		/* BEGIN ITEMS */
+		var d1 = document.createElement('div');
+		d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1);
+		//
+		var d1b = document.createElement('div');
+		d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		document.body.appendChild(d1b);
+		//
+		var d2 = document.createElement('textarea');
+		d2.setAttribute('type','text');
+		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+		d2.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Morgan_Intrator_fb_schools(d1);
+		}
+		document.body.appendChild(d2);
+		//
+		var d2b = document.createElement('textarea');
+		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+		d2b.onblur = function() {
+			this.value = this.value.replace(/\s+/g, ' ').trim();
+			Morgan_Intrator_fb_schools(d1b);
+			//~ Morgan_Intrator_fb_schools_geo();
+		}
+		document.body.appendChild(d2b);
+		//
+		var d2c = document.createElement('input');
+		d2c.setAttribute('type','button');
+		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+		d2c.value = 'N/A';
+		d2c.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			var x = document.getElementById('web_url');
+			if (x.value == '' || x.value == 'http://') {
+				x.value = 'N/A';
+				//doSubmit();
+			}
+		}
+		document.body.appendChild(d2c);
+		/* END ITEMS */
+			
+			yelp_search_scrape()
+			facebookSearch();
+			function facebookSearch() {
+				var u = 
+				'https://graph.facebook.com/search'+
+				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count'+
+				'&limit=6'+
+				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.yelp_url,
+					onload: function (response) {
+					}
+				});
+			}
+			function yelp_search_scrape() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.yelp_url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) return;
+						
+						var r;
+						var sbm = true;
+						
+						// rating
+						//~ r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
+						//~ if (r) {
+								//~ r = r[1];
+								//~ r = r.replace(/^([\d])\.0[^$]*$/, '$1');
+								//~ var found = false;
+								//~ console.log('r for rating value:' + r);
+								//~ if(r) {
+									//~ found = true;
+									//~ document.getElementById('yelp_rating').value = r;
+								//~ }
+						//~ }
+						//~ if (!found)
+							//~ sbm = false;
+						
+						// price
+						r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
+						if (r) {
+							console.log(r);
+							
+							r = r[1];
+							console.log(r);
+							
+							r = Math.round(r.length*1); //$$ = 2 OR £!
+							if (r < 1 || r > 4)
+								sbm = false;
+							console.log('r for price value' + r);
+							document.getElementById('price_range').value = r;
+						} else  {
+							document.getElementById('price_range').value = 'N/A';
+							console.log('Price not found');
+							document.body.style.backgroundColor = 'LightGreen';
+							sbm = false;
+						}
+						
+						
+						// reservations
+						r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+						if (r) {
+							r = r[1];
+							switch(r) {
+								case 'Yes':
+									document.getElementById('reservations').value = 'Yes';
+									break;
+								case 'No':
+									document.getElementById('reservations').value = 'No';
+									break;
+								default:
+									sbm = false;
+							}
+						} else {
+							console.log('reservations not found');
+							document.getElementById('reservations').value = 'N/A'; // NO
+							document.body.style.backgroundColor = 'LightGreen';
+						}
+						
+						//Wi-fi
+						r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+						if(r) {
+							r = r[1];
+							switch(r) {
+								case 'Yes':
+									document.getElementById('wifi').value = 'Yes';
+									break;
+								case 'No':
+									document.getElementById('wifi').value = 'No';
+									break;
+								default:
+									sbm = false;
+							}
+						}else {
+							console.log('wifi not found');
+							document.getElementById('wifi').value = 'N/A'; // NO
+							document.body.style.backgroundColor = 'LightGreen';
+						}
+						
+						
+						console.log(sbm);
+						if (sbm) {
+							console.log('submitting');
+							//doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	 
+	 
 	//
 	// Gordon Courtney
 	// Find the Yelp Page for Charlotte Restaurants
@@ -56828,7 +57017,6 @@ function MT__RUN() {
 				comp_cln: null,
 				addr_cln: null
 			}
-			console.log(o);
 			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
@@ -56838,8 +57026,6 @@ function MT__RUN() {
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr + ', Charlotte, NC';
-	
-			console.log(o);
 			//
 			d2.onblur = d2b.onblur = function() {
 				this.value = this.value.trim();
@@ -57133,122 +57319,103 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+		
 			
 			var td = document.getElementsByTagName('td');
-			var o = {
-				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
-				addr: td[3].innerText.trim(),
-				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
-				yelp_url: td[7].innerText.trim(),
-				q: document.getElementById('web_url'),
-				
-				bold_addr: [],
-				bold_comp: [],
-				
-				// For auto
-				comp_cln: null,
-				addr_cln: null
-			}
-			console.log(o);
-			
-			yelp_search_scrape()
-			function yelp_search_scrape() {
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: o.yelp_url,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status != 200) return;
-						
-						var r;
-						var sbm = true;
-						
-						// rating
-						//~ r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
-						//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/^([\d])\.0[^$]*$/, '$1');
-								//~ var found = false;
-								//~ console.log('r for rating value:' + r);
-								//~ if(r) {
-									//~ found = true;
-									//~ document.getElementById('yelp_rating').value = r;
-								//~ }
-						//~ }
-						//~ if (!found)
-							//~ sbm = false;
-						
-						// price
-						r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
-						if (r) {
-							console.log(r);
-							
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: td[3].innerText.trim(),
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					if (response.status != 200) return;
+					
+					var r;
+					var sbm = true;
+					
+					// rating
+					r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
+					if (r) {
 							r = r[1];
-							console.log(r);
-							
-							r = Math.round(r.length*1); //$$ = 2 OR £!
-							if (r < 1 || r > 4)
-								sbm = false;
-							console.log('r for price value' + r);
-							document.getElementById('price_range').value = r;
-						} else  {
-							document.getElementById('price_range').value = 'N/A';
-							console.log('Price not found');
-							document.body.style.backgroundColor = 'LightGreen';
-							sbm = false;
-						}
-						
-						
-						// reservations
-						r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
-						if (r) {
-							r = r[1];
-							switch(r) {
-								case 'Yes':
-									document.getElementById('reservations').value = 'Yes';
-									break;
-								case 'No':
-									document.getElementById('reservations').value = 'No';
-									break;
-								default:
-									sbm = false;
+							r = r.replace(/^([\d])\.0[^$]*$/, '$1');
+							var found = false;
+							console.log('r for rating value:' + r);
+							if(r) {
+								found = true;
+								document.getElementById('yelp_rating').value = r;
 							}
-						} else {
-							console.log('reservations not found');
-							document.getElementById('reservations').value = 'N/A'; // NO
-							document.body.style.backgroundColor = 'LightGreen';
-						}
-						
-						//Wi-fi
-						r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
-						if(r) {
-							r = r[1];
-							switch(r) {
-								case 'Yes':
-									document.getElementById('wifi').value = 'Yes';
-									break;
-								case 'No':
-									document.getElementById('wifi').value = 'No';
-									break;
-								default:
-									sbm = false;
-							}
-						}else {
-							console.log('wifi not found');
-							document.getElementById('wifi').value = 'N/A'; // NO
-							document.body.style.backgroundColor = 'LightGreen';
-						}
-						
-						
-						console.log(sbm);
-						if (sbm) {
-							console.log('submitting');
-							//doSubmit();
-						}
 					}
-				});
-			}
+					if (!found)
+						sbm = false;
+					
+					// price
+					r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
+					if (r) {
+						console.log(r);
+						
+						r = r[1];
+						console.log(r);
+						
+						r = Math.round(r.length*1); //$$ = 2 OR £!
+						if (r < 1 || r > 4)
+							sbm = false;
+						console.log('r for price value' + r);
+						document.getElementById('price_range').value = r;
+					} else  {
+						document.getElementById('price_range').value = 'N/A';
+						console.log('Price not found');
+						document.body.style.backgroundColor = 'LightGreen';
+						sbm = false;
+					}
+					
+					
+					// reservations
+					r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+					if (r) {
+						r = r[1];
+						switch(r) {
+							case 'Yes':
+								document.getElementById('reservations').value = 'Yes';
+								break;
+							case 'No':
+								document.getElementById('reservations').value = 'No';
+								break;
+							default:
+								sbm = false;
+						}
+					} else {
+						console.log('reservations not found');
+						document.getElementById('reservations').value = 'N/A'; // NO
+						document.body.style.backgroundColor = 'LightGreen';
+					}
+					
+					//Wi-fi
+					r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+					if(r) {
+						r = r[1];
+						switch(r) {
+							case 'Yes':
+								document.getElementById('wifi').value = 'Yes';
+								break;
+							case 'No':
+								document.getElementById('wifi').value = 'No';
+								break;
+							default:
+								sbm = false;
+						}
+					}else {
+						console.log('wifi not found');
+						document.getElementById('wifi').value = 'N/A'; // NO
+						document.body.style.backgroundColor = 'LightGreen';
+					}
+					
+					
+					console.log(sbm);
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
 		}
 		new run().f();
 	}
