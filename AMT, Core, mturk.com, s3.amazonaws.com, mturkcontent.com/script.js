@@ -15927,7 +15927,7 @@ function MT__RUN() {
 	//
 	// Steve Murch
 	// Find the contact email if it exists, or contact url for this blog
-	//
+	// 3VKZWROWWHDRYOHCACV5A8TXOY08G2
 	s = '	<li>Otherwise, enter the website address for the <strong>Contact Us&nbsp;form</strong>.</li>';
 	if(ih.indexOf(s) != -1)
 	{
@@ -15942,14 +15942,15 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
-			var td = document.getElementsByTagName('td');
+			var p = document.getElementsByTagName('p');
+			var a = document.getElementsByTagName('a');
 			
 			
 			var o = {
-				sd_start_urls: [td[9].innerText.trim()],
-				sd_allowed_domains: [td[9].innerText.trim()],
+				sd_start_urls: [a[0].innerText.trim()],
+				sd_allowed_domains: [p[1].innerText.trim()],
 				q: [
-					document.getElementById('web_url')
+					document.getElementById('email')
 				]
 			}
 			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
@@ -152054,9 +152055,10 @@ function mturk_load()
 				case '3WC6MIR2HS9J0LLV81WSWI241WLYJF': //FlicksIO, Third Posting
 					AMT___Floater({runMT_Run:true});
 				case '372BFDRISCA6E6WX8JDCP7YD8F6C1F': //garrett grohman, Kickstarter emails
+				case '372BFDRISCA6E6WX8JDCP7YD8C6C19': //garrett grohman, Kickstarter emails
 					AMT___Floater({runMT_Run:true});
 					break;
-				case '372BFDRISCA6E6WX8JDCP7YD8C6C19': //garrett grohman, Kickstarter emails
+				case '3VKZWROWWHDRYOHCACV5A8TXOY08G2': // Steve Murch, emails
 					AMT___Floater({runMT_Run:true});
 					break;
 				
