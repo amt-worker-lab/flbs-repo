@@ -331,6 +331,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.playFirstElement) {
 		console.log('recieved: play first element');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+			console.log(request.isTopWindow);
 			document.getElementsByTagName('audio')[0].play();
 			console.log('attempted to play');
 		}
@@ -470,8 +471,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		 * 
 		 * */
 		
+		// THIS CAUSES AN ERROR ON "RETURN AND ACCEPT".
+		// Error in event handler for runtime.onMessage: TypeError: Cannot read property 'callbackFromUtility' of null
+		// ADDING CONDITIONAL hasOwnProperty: FRI MARCH 6 2015
 		var containerDiv = document.getElementById('AMT__UtilityContainer');
-		containerDiv.callbackFromUtility(request);
+		if (containerDiv.hasOwnProperty('callbackFromUtility'))
+			containerDiv.callbackFromUtility(request);
+		
+		
 		//~ AMT__UtilityContainer
 		//~ 
 		//~ utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
@@ -3844,11 +3851,12 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 	// CACHE !! //
 	var rf		= new AMT___requests_factory();
 	var md5_url	= any_md5(data, '0123456789ABCDEF'); //rf.general_functions__md5(data);//console.log(md5_url);
-	md5_url += '?RANDOM='+Math.random();
+	//~ md5_url += ;
+	var random = '?RANDOM='+Math.random();
 	
 	GM_xmlhttpRequest({
 		method: "GET",
-		url: MT___host + '/mturk/.cached/'+md5_url,
+		url: MT___host + '/mturk/.cached/'+ md5_url + random,
 		onload: function(response) {
 			var rs = response.responseText;
 			
@@ -11908,23 +11916,24 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 						MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
 					}
 				});
-				
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
-					//~ }
-				//~ });
 				return;
 			}
 			
+			//{ "results" : [], "status" : "UNKNOWN_ERROR" }
+			//'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )
+			var ci_array = [
+				'"error_message" : "You have exceeded your daily request quota for this API."',
+				'{ "results" : [], "status" : "UNKNOWN_ERROR" }'
+			];
 			if (use_a_proxy) {
 				AMT___POPUP__initializeGlobals(function() {
 					GM_xmlhttpRequest({ // init
 						method: "GET",
-						url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+'&catch_success='+encodeURIComponent('"results"')+'&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
+						url: AMT___POPUP___PROXY_REDACTED_+
+							'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
+							'&catch_success='+encodeURIComponent('"results"')+
+							'&catch_include_array='+encodeURIComponent(JSON.stringify(ci_array)),
+							//~ '&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
 						onload: function(response) {
 							//var rs = response.responseText;
 						}
