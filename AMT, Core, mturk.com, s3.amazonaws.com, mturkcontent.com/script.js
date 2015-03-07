@@ -56774,8 +56774,9 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
-			GM_addStyle('.container {position:absolute;top:660px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
+			GM_addStyle('.container {position:absolute;top:1020px;}');
+
 			var td = document.getElementsByTagName('td');
 			var cityReg = /,([^,]+),[\s]*IN /gi;
 			var city = cityReg.exec(td[3].innerText.trim());
@@ -57093,9 +57094,9 @@ function MT__RUN() {
 						
 						
 						// reservations
-						r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+						r = /<dt class="attribute-key">[\r\n\t\s]+Takes Reservations[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No|Paid|([^\r\n]+))/.exec(rs);
 						if (r) {
-							r = r[1];
+							r = __js_clean_html_str(r[1]).trim();
 							switch(r) {
 								case 'Yes':
 									document.getElementById('reservations').value = 'Yes';
@@ -57103,7 +57104,11 @@ function MT__RUN() {
 								case 'No':
 									document.getElementById('reservations').value = 'No';
 									break;
+								case 'Paid':
+									document.getElementById('reservations').value = 'Paid';
+									break;
 								default:
+									document.getElementById('reservations').value = r;
 									sbm = false;
 							}
 						} else {
