@@ -56774,6 +56774,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('table {position:absolute;top:1200px;}');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -56807,16 +56808,18 @@ function MT__RUN() {
 		d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
 		d2.onblur = function() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
-			Morgan_Intrator_fb_schools(d1);
+			facebookSearch(d1);
 		}
+		d2.value = o.comp + " " + o.addr;
 		document.body.appendChild(d2);
 		//
 		var d2b = document.createElement('textarea');
 		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
 		d2b.onblur = function() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
-			Morgan_Intrator_fb_schools(d1b);
-			//~ Morgan_Intrator_fb_schools_geo();
+			//d1b.className = d2b.value;
+			//Morgan_Intrator_fb_schools(d1b);
+			facebookSearch(d1b);
 		}
 		document.body.appendChild(d2b);
 		//
@@ -56835,22 +56838,169 @@ function MT__RUN() {
 		document.body.appendChild(d2c);
 		/* END ITEMS */
 			
-			yelp_search_scrape()
-			facebookSearch();
-			function facebookSearch() {
-				var u = 
+		yelp_search_scrape()
+		facebookSearch(d1);
+		
+		function facebookSearch(div) {
+			var out = div;
+			out.innerHTML = '';
+			
+			var v;
+			if (out == d1)
+				v = d2.value;
+			else
+				v = d2b.value;
+				
+			var u = 
 				'https://graph.facebook.com/search'+
-				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
-				'&fields=category,id,name,likes,talking_about_count'+
-				'&limit=6'+
+				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+				'&fields=category,id,name,likes,talking_about_count,location,link'+
+				'&limit=8'+
 				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: o.yelp_url,
-					onload: function (response) {
+				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+			
+			
+			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+			//~ }
+			
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+			
+			GM_xmlhttpRequest({ // init
+				method: "GET",
+				url: u,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) return;
+					
+					var r = JSON.parse(rs);
+					
+					if (!r.data) {
+						out.innerHTML = '!r.data';
+						return;
 					}
-				});
-			}
+					
+					r = r.data;
+					console.log(r);
+					
+					var c = 0;
+					//~ var found		= false;
+					//~ var found_a_band= false;
+					for (var i in r) {
+						
+						if (r[i].type) {
+							if (r[i].type == 'event') continue;
+						}
+						
+						if (r[i].talking_about_count != null) {
+						} else
+							r[i].talking_about_count = '';
+						if (r[i].likes != null) {
+						} else
+							r[i].likes = '';
+						
+						if (r[i].location) {
+							if (r[i].location.latitude) {
+								delete r[i].location.latitude;
+							}
+							if (r[i].location.longitude) {
+								delete r[i].location.longitude;
+							}
+						}
+						
+						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+						
+						var div = document.createElement('div');
+						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+						out.appendChild(div);
+						
+						div.className	= r[i].link;
+						div.fblikes		= r[i].likes * 1;
+						div.bgc = false;
+						
+						//~ if (div.fblikes < 4) {
+							//~ div.style.backgroundColor = '#aaa';
+							//~ div.bgc = true;
+						//~ }
+						//~ 
+						var tmp = '';
+						
+						tmp += MT__bold(r[i].name, o.school_array);
+						//~ tmp += '\
+							//~ <input type="button" value="'+r[i].name+'" id="'+x+'" class="exe" style="width:auto;">\
+							//~ \
+						//~ ';
+						
+						//~ var x = out.getElementsByTagName('input');
+						//~ x = x[x.length - 1];
+						//~ x.id = y;
+						
+						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+						
+						if (r[i].location) {
+							for (var j in r[i].location) {
+								tmp += '<br>' + MT__bold(r[i].location[j], o.location_array);
+							}
+						}
+						
+						if (r[i].category) {
+							var x = r[i].category;
+							tmp += '<br>'+x;
+						}
+						
+						div.innerHTML = tmp;
+						
+						div.onclick = function() {
+							
+							Morgan_Intrator_fb_schools__profile(this);
+						}
+						
+						// Init this div if first!
+						//
+						//
+						if (out == d1 && c == 0) 
+							div.click();
+						
+						//~ if (div.fblikes >= 4) {
+						//~ }
+						div.onmouseover = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						div.onmouseout = function() {
+							var x = document.getElementsByClassName(this.className);
+							for (var i in x) {
+								if (i == 'length') break;
+								x[i].style.backgroundColor = '';
+							}
+						}
+						
+						c++;
+					}
+					
+					if (c == 0) {
+						out.innerHTML = '0';
+						return;
+					}
+					else
+					{
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:2000px;');
+						out.appendChild(div);
+					}
+					
+					//~ var x = document.getElementsByClassName('exe');
+					//~ for (var i in x) {
+						//~ if (!x[i]) continue;
+						//~ x[i]
+					//~ }
+				}
+			});
+		}
 			function yelp_search_scrape() {
 				GM_xmlhttpRequest({
 					method: 'GET',
