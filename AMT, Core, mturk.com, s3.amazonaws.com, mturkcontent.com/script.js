@@ -56790,7 +56790,7 @@ function MT__RUN() {
 				scrapeSuccess: false,
 				// For auto
 				comp_cln: null,
-				addr_cln: null
+				addr_cln: null,
 			}
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
@@ -56814,17 +56814,16 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1);
 		}
-		d2.value = o.comp + " " + o.addr;
+		d2.value = o.comp + ", Indiana";
 		document.body.appendChild(d2);
 		//
 		var d2b = document.createElement('textarea');
 		d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
 		d2b.onblur = function() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
-			//d1b.className = d2b.value;
-			//Morgan_Intrator_fb_schools(d1b);
 			facebookSearch(d1b);
 		}
+		d2b.value = o.comp + ", " + o.addr;
 		document.body.appendChild(d2b);
 		//
 		var d2c = document.createElement('input');
@@ -56844,6 +56843,7 @@ function MT__RUN() {
 			
 		yelp_search_scrape()
 		facebookSearch(d1);
+		facebookSearch(d1b);
 		
 		function facebookSearch(div) {
 			var out = div;
