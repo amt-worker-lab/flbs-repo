@@ -56777,7 +56777,7 @@ function MT__RUN() {
 			GM_addStyle('.container {position:absolute;top:660px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
 			var td = document.getElementsByTagName('td');
-			var cityReg = /,([^,]+),[\s]*IN/gi;
+			var cityReg = /,([^,]+),[\s]*IN /gi;
 			var city = cityReg.exec(td[3].innerText.trim());
 			if(city && city.length) {
 				city = city[1];
@@ -56851,6 +56851,7 @@ function MT__RUN() {
 			var x = o.qfbUrl;
 			if (x.value == '' || x.value == 'http://') {
 				x.value = 'N/A';
+				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
 		}
