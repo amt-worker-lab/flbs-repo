@@ -56789,6 +56789,7 @@ function MT__RUN() {
 				bold_addr: [],
 				bold_comp: [],
 				scrapeSuccess: false,
+				finishedScraping: false,
 				// For auto
 				comp_cln: null,
 				addr_cln: null,
@@ -57030,7 +57031,7 @@ function MT__RUN() {
 			});
 		}
 		function validate() {
-			if(o.scrapeSuccess && o.qfbUrl.value != "") {
+			if(o.scrapeSuccess && o.qfbUrl.value != "" && o.finishedScraping) {
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -57125,11 +57126,13 @@ function MT__RUN() {
 						
 						
 						if (sbm) {
+							o.finishedScraping = true;
 							o.scrapeSuccess = true;
 							console.log('submitting');
 							//doSubmit();
 						}
 						else {
+							o.finishedScraping = true;
 							o.scrapeSuccess = false;
 							console.log('scrapeSuccess failed');
 							document.body.style.backgroundColor = 'blue';
