@@ -56808,11 +56808,11 @@ function MT__RUN() {
 			
 		/* BEGIN ITEMS */
 		var d1 = document.createElement('div');
-		d1 .setAttribute('style','position:absolute;top:82px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1 .setAttribute('style','position:absolute;top:82px;left:0%;width:50%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1);
 		//
 		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:82px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+		d1b.setAttribute('style','position:absolute;top:82px;left:50%;width:49%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 		document.body.appendChild(d1b);
 		//
 		var d2 = document.createElement('textarea');
