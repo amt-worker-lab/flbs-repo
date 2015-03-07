@@ -56793,6 +56793,11 @@ function MT__RUN() {
 				comp_cln: null,
 				addr_cln: null,
 			}
+			if(o.yelp_url.indexOf('Range') != -1) {
+				console.log('yelp_url' + o.yelp_url);
+				alert('examine');
+				return;
+			}
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
 			
@@ -56955,7 +56960,7 @@ function MT__RUN() {
 								if(j == "city") {
 									tmp += '<br><u>' + MT__bold(r[i].location[j], o.bold_addr) + '</u>';
 								} else if (j== "street"){
-									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).innerHTML;
+									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).bold_string;
 								}else {
 									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
 								}
