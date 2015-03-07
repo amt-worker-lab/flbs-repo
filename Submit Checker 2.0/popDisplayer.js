@@ -222,7 +222,6 @@ function signIn(id) {
 
 
 function buildUserInterface() {
-	createSubmissionDisplay(function() {
 				var centReset = document.createElement("input");
 				centReset.type = "button";
 				centReset.style.width = "25%";
@@ -259,6 +258,8 @@ function buildUserInterface() {
 					   function (response) {
 					});
 				  };
+	createSubmissionDisplay(function() {
+
 				 
 				 var signInButton = document.createElement('input');
 				 signInButton.type = 'button';
