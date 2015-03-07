@@ -56777,11 +56777,17 @@ function MT__RUN() {
 			GM_addStyle('.container {position:absolute;top:660px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
 			var td = document.getElementsByTagName('td');
-			
-			
+			var cityReg = /,([^,]+),[\s]*IN/gi;
+			var city = cityReg.exec(td[3].innerText.trim());
+			if(city && city.length) {
+				city = city[1];
+			} else {
+				city = '';
+			}
 			var o = {
 				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
 				addr: td[3].innerText.trim().replace(/,/g," "),
+				city: city,
 				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
 				yelp_url: td[7].innerText.trim(),
 				q: document.getElementById('web_url'),
@@ -56833,7 +56839,7 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1b);
 		}
-		d2b.value = o.comp;
+		d2b.value = o.comp + ", " + o.city;
 		document.body.appendChild(d2b);
 		//
 		var d2c = document.createElement('input');
