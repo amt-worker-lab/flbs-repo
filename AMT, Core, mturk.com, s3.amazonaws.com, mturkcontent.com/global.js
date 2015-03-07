@@ -471,8 +471,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		 * 
 		 * */
 		
+		// THIS CAUSES AN ERROR ON "RETURN AND ACCEPT".
+		// Error in event handler for runtime.onMessage: TypeError: Cannot read property 'callbackFromUtility' of null
+		// ADDING CONDITIONAL hasOwnProperty: FRI MARCH 6 2015
 		var containerDiv = document.getElementById('AMT__UtilityContainer');
-		containerDiv.callbackFromUtility(request);
+		if (containerDiv.hasOwnProperty('callbackFromUtility'))
+			containerDiv.callbackFromUtility(request);
+		
+		
 		//~ AMT__UtilityContainer
 		//~ 
 		//~ utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
