@@ -10644,6 +10644,8 @@ function load__allPages_AMT_combo() {
 			 * Scroll into view function. This is mainly set a timeout to scroll.
 			 */
 			function scroll(div) {
+				if (AMT__Global_Vars.isPreview) // Do not scroll in preview.
+					return;
 				var div = div;
 				setTimeout(function() {
 					div.scrollIntoView(false);
