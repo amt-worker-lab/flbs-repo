@@ -10263,7 +10263,9 @@ function load__allPages_AMT_combo() {
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(innerHeight) {
-					d_container.style.height = innerHeight + 'px';
+					
+					var ix = innerHeight - 20; // Full is too much! By about 6px!
+					d_container.style.height = ix + 'px';
 					//~ d1.style.height = innerHeight-60 + 'px';
 					d3.style.height = '48px';
 					d3b.style.height = '48px';
@@ -10273,9 +10275,9 @@ function load__allPages_AMT_combo() {
 					//~ d1.full_height = innerHeight-60 + 'px';
 					//~ d2.full_height = innerHeight-60 + 'px';
 					//~ 
-					var half = Math.floor(innerHeight / 2);
-					d1.style.height = half-100 + 'px';
-					d2.style.height = half+100 + 'px';
+					var half = Math.floor(ix / 2);
+					d1.style.height = half-60 + 'px';
+					d2.style.height = half+60 + 'px';
 				}
 			});
 			
