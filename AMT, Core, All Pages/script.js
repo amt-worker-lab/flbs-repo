@@ -10340,7 +10340,7 @@ function load__allPages_AMT_combo() {
 						for (var i in opt_skip_iof) {
 							opt_skip_iof[i] = opt_skip_iof[i].trim();
 							if (opt_skip_iof[i] == '') continue;
-							if (o.series1.indexOf(opt_skip_iof[i])) {
+							if (o.series1.indexOf(opt_skip_iof[i]) != -1) {
 								bool_skip_iof = opt_skip_iof[i];
 								break;
 							}
