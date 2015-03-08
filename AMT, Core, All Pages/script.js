@@ -10327,13 +10327,23 @@ function load__allPages_AMT_combo() {
 						var rs = response.responseText;
 						
 						rs = rs.split('-------------------------------'); // Top=Skips, Btm=Accepts
-						var opt_skip = rs[0].trim(), opt_acpt;
+						var opt_skip = rs[0].trim(), opt_acpt, opt_skip_iof, bool_skip_iof = false;
 						
 						d3.value = opt_skip; // Set value d3
 						if (rs.length > 1) {
 							opt_acpt = rs[1].trim();
 							d3b.value = opt_acpt; // Set value d3b
+							opt_skip_iof = opt_acpt.split('\n'); // Split by \n
 							opt_acpt = opt_acpt.split('\n'); // Split by \n
+						}
+						// Skips #2, IndexOf.
+						for (var i in opt_skip_iof) {
+							opt_skip_iof[i] = opt_skip_iof[i].trim();
+							if (opt_skip_iof[i] == '') continue;
+							if (o.series1.indexOf(opt_skip_iof[i])) {
+								bool_skip_iof = opt_skip_iof[i];
+								break;
+							}
 						}
 						
 						// ...
@@ -10345,18 +10355,25 @@ function load__allPages_AMT_combo() {
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
-							// Accept if...
-							else if (
-								AMT__Global_Vars.isPreview &&
-								opt_acpt &&
-								__js_inarray(opt_acpt, o.series1) && //array, needle
-								AMT__Global_Vars.isSpecialWorkflowWindow // Special=Manual tasks
-								)
-							{
-								d1.innerText = 'Accept file: ' + o.series1;
-								AMT___Floater.accept(); // ACCEPT
-								return;
+							// Skip if #2, indexOf.
+							else if (AMT__Global_Vars.isPreview && bool_skip_iof) {
+								d1.innerText = 'Skips file: ' + o.series1;
+								d1.innerText += '\n(' + bool_skip_iof + ')';
+								AMT___Floater.skip(); // SKIP
+								return; // STOP
 							}
+							//~ // Accept if...
+							//~ else if (
+								//~ AMT__Global_Vars.isPreview &&
+								//~ opt_acpt &&
+								//~ __js_inarray(opt_acpt, o.series1) && //array, needle
+								//~ AMT__Global_Vars.isSpecialWorkflowWindow // Special=Manual tasks
+								//~ )
+							//~ {
+								//~ d1.innerText = 'Accept file: ' + o.series1;
+								//~ AMT___Floater.accept(); // ACCEPT
+								//~ return;
+							//~ }
 							// Still here?
 							translate(); // GOTO TRANSLATE
 							
