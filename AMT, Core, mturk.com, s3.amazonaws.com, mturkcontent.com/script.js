@@ -16095,6 +16095,8 @@ function MT__RUN() {
 	{
 		var run = function() {}
 		run.prototype.f = function() {
+			AMT___Floater.accept();
+			return;
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
@@ -56772,6 +56774,7 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
+			
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
