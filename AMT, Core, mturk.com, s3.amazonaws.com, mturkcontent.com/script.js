@@ -94574,12 +94574,24 @@ qatar,80
 				domain_counts: {}, // obj
 				
 				q: [
-					document.getelementById("web_url")
+					document.getElementById("web_url")
 					]
 			}
 			o.bold_array  = o.name.clean_string_to_array();
 			o.nameShort = o.name.split(' ').slice(0,2).join(' ');
 			o.location = o.location.replace(/[\d]*area$/, "");
+			var locationArray = o.location.split(" ");
+			console.log(locationArray);
+			for(var i = 0; i < locationArray.length; i++) {
+				if(locationArray[i]) {
+					o.bold_array.push(locationArray[i].replace(/,/g, " "));
+					
+				}
+			}
+			
+			//Convert NY to New York?
+			//..
+			
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -94637,7 +94649,7 @@ qatar,80
 			}
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				document.getElementById('twitter_url').value = 'NA';
+				o.q[0].value = 'NA';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -94703,13 +94715,12 @@ qatar,80
 			
 			function company_URL__SP_init(el_div, el_inp) {
 				var req_proxy;
-				var def = 'site:twitter.com ';
 				//
 				if (el_inp && el_div) { // single! (+dynamic!)
 					el_div.innerHTML = '';
 					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 						startPage: true,
-						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + el_inp.value),
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value),
 						seed: el_div,
 						callback_function: company_URL__processProxyResponse,
 						return_init_object: true
@@ -94721,14 +94732,14 @@ qatar,80
 				
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value),
 					seed: d1,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
 				});
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3b.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value),
 					seed: d1b,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
@@ -94736,7 +94747,7 @@ qatar,80
 				if (d3c.value == '') return;
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(def + d3c.value),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value),
 					seed: d1c,
 					callback_function: company_URL__processProxyResponse,
 					return_init_object: true
