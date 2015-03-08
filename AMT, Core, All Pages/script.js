@@ -10553,7 +10553,7 @@ function load__allPages_AMT_combo() {
 			 * function process_itunes_DB
 			 */
 			function process_itunes_DB(response) {
-				var ro = response.responseObject; //~ console.log(ro);
+				var ro = response.responseObject; 
 				var rslts = ro.search_itunes;
 				// Make selectors
 				// out=d2
@@ -10628,13 +10628,24 @@ function load__allPages_AMT_combo() {
 						'itunes_coll: '  + icn;
 					// ScrollIntoView
 					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
-						el_div.scrollIntoView(false);
+						scroll(el_div);
 						el_div.style.border = '4px solid blue';
 					}
 				}
 				// spacer
 				var tmp_div = ''.div({style:'height:1000px;'});
 				d2.appendChild(tmp_div);
+			}
+			/**
+			 * function scroll
+			 * 
+			 * Scroll into view function. This is mainly set a timeout to scroll.
+			 */
+			function scroll(div) {
+				var div = div;
+				setTimeout(function() {
+					div.scrollIntoView(false);
+				}, 2000);
 			}
 			/**
 			 * function initFirstRun
@@ -11154,7 +11165,9 @@ function load__allPages_AMT_combo() {
 							// Make div small
 							//~ this.parent_div.style.height = 'auto';
 							this.parentNode.style.height = '140px';
-							this.scrollIntoView(false);
+							// Scroll func.
+							scroll(this);
+							//~ this.scrollIntoView(false);
 							//
 							o.q[0].value = o.q[0].value.trim();
 							if (o.q.length > 1)
