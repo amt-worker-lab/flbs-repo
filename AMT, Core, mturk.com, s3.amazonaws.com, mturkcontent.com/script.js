@@ -94579,7 +94579,7 @@ qatar,80
 			}
 			o.bold_array  = o.name.clean_string_to_array();
 			o.nameShort = o.name.split(' ').slice(0,2).join(' ');
-			o.location = o.location.replace(/[\d]*area$/, "");
+			o.location = o.location.replace(/[\s]*area$/i, "");
 			var locationArray = o.location.split(" ");
 			console.log(locationArray);
 			for(var i = 0; i < locationArray.length; i++) {
@@ -94649,7 +94649,7 @@ qatar,80
 			}
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				o.q[0].value = 'NA';
+				o.q[0].value = 'N/A';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
@@ -94674,7 +94674,7 @@ qatar,80
 			// ...
 			d3.value  = o.name;
 			d3b.value = o.name +  " " + o.location;
-			d3c.value = o.name + o.segment;
+			d3c.value = o.name + " " + o.segment;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
@@ -94784,13 +94784,13 @@ qatar,80
 					var full = rs[i][1];
 					
 					//~ // ..
-					//~ //domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+					//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 					
 					//~ // TRAILING
-					//~ x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+					x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
 					
 					//~ // DOMAIN
-					//~ x = x.replace(/^https?:\/\//, ''); // beginning
+					//x = x.replace(/^https?:\/\//, ''); // beginning
 					
 					// SKIP BUTTON CREATE
 					// returns obj.el_button, obj.isSkip
@@ -94866,7 +94866,7 @@ qatar,80
 					txa.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
-						document.getElementById('twitter_url').value = this.value;
+						o.q[0].value = this.value;
 						
 						// showNextTab OR nextTab
 						new AMT___core_factory().nextTab();
