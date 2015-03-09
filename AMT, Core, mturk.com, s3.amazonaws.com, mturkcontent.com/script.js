@@ -72,6 +72,12 @@ function MT__RUN() {
 				}
 			}
 			
+			for(var i = 0; i < document.getElementsByTagName('input').length; i++) {
+				if(document.getElementsByTagName('input')[i].type == 'radio') {
+					document.getElementsByTagName('input')[i].style.zoom = 4;
+				}
+			}
+			
 			document.body.scrollIntoView(document.getElementById('year'));
 			document.getElementById('year').focus()
 			document.getElementById('submitButton').onclick = function() {
