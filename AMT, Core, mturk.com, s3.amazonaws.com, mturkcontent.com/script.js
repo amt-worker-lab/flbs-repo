@@ -94649,7 +94649,7 @@ qatar,80
 			}
 			na.onclick = function() {
 				this.style.backgroundColor = 'LightGreen';
-				o.q[0].value = 'N/A';
+				o.q[0].value = 'cannot find URL';
 				new AMT___core_factory().nextTab();
 				doSubmit();
 			}
