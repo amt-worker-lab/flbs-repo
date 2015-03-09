@@ -82,24 +82,31 @@ function MT__RUN() {
 			document.getElementById('year').focus()
 			document.getElementById('submitButton').onclick = function() {
 				o.q.value = o.q.value.trim();
-				for(var i = 0; i < o.q.length; i++) {
-					var expectedLength;
-					switch(i) {
-						case 0: expectedLength = 4;
-						break;
-						case 1:expectedLength = 2;
-						break;
-						case 2:expectedLength = 2;
-						break;
+				if(!document.getElementsByTagName('input')[0].checked) {
+					console.log(document.getElementsByTagName('input'));
+					document.getElementsByTagName('input')[1].click();
+						for(var i = 0; i < o.q.length; i++) {
+							var expectedLength;
+							switch(i) {
+								case 0: expectedLength = 4;
+								break;
+								case 1:expectedLength = 2;
+								break;
+								case 2:expectedLength = 2;
+								break;
+							}
+							if(!o.q[i].value || o.q[i].value.length != expectedLength) {
+								if(expectedLength == 2 && o.q[i].value.length == 1) {
+									o.q[i].value = ' ' + o.q[i].value
+									continue;
+								}
+								console.log(o.q[i].value);
+								return false;
+							}
 					}
-					if(!o.q[i].value || o.q[i].value.length != expectedLength) {
-						if(expectedLength == 2 && o.q[i].value.length == 1) {
-							o.q[i].value = ' ' + o.q[i].value
-							continue;
-						}
-						console.log(o.q[i].value);
-						return false;
-					}
+				}
+				else {
+					
 				}
 				new AMT___core_factory().nextTab();
 				doSubmit();
