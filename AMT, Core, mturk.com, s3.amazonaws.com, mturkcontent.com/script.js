@@ -34,6 +34,34 @@ var beginRunTime = new Date().getTime();
  */
 function MT__RUN() {
 	//
+	//
+	//
+	//
+	
+	s= '<li>Find the section that describes the company <strong>(often listed in "About" or "Services" section)';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			var a = document.getElementsByTagName('a');
+			var o = {
+				link = a[0].href
+			}
+			console.log(o);
+
+			AMT__setUtilityTabs([
+						{
+							url: o.url
+						}]);
+			document.body.scrollIntoView(document.getElementById('year'));
+			document.getElementById('year').focus()
+			
+			
+			
+		}
+		run.f();
+	}	
+	
+	//
 	// 
 	//
 	//
