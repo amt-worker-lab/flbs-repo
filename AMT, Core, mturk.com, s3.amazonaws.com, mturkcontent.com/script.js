@@ -44,7 +44,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			var a = document.getElementsByTagName('a');
 			var o = {
-				url: a[0].href,
+				url: a[3].href,
 				q : [
 				document.getElementById('year'),
 				document.getElementById('month'),
@@ -57,6 +57,21 @@ function MT__RUN() {
 						{
 							url: o.url,
 						}]);
+
+			//~ var h5 = document.getElementsByClassName('h5');
+			//~ for(var i = 0; i < h5.length; i++) {
+				//~ h5[i].onclick = function() {
+					//~ this.getElementsByTagName('input')[0].click();
+					//~ 
+					//~ document.getElementById('submitButton').click();
+				//~ }
+			//~ }
+			document.body.onclick = function(e) {
+				if(e.ctrlKey) {
+					document.getElementById('submitButton').click();
+				}
+			}
+			
 			document.body.scrollIntoView(document.getElementById('year'));
 			document.getElementById('year').focus()
 			document.getElementById('submitButton').onclick = function() {
@@ -72,6 +87,10 @@ function MT__RUN() {
 						break;
 					}
 					if(!o.q[i].value || o.q[i].value.length != expectedLength) {
+						if(expectedLength == 2 && o.q[i].value.length == 1) {
+							o.q[i].value = ' ' + o.q[i].value
+							continue;
+						}
 						console.log(o.q[i].value);
 						return false;
 					}
