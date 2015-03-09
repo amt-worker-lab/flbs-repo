@@ -38,27 +38,52 @@ function MT__RUN() {
 	//
 	//
 	
-	s= '<li>Find the section that describes the company <strong>(often listed in "About" or "Services" section)';
+	s= '<h4>Publish-date year:&nbsp; <strong>2012</strong>, Publish-date month (using number): <strong>';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
 			var a = document.getElementsByTagName('a');
 			var o = {
-				link = a[0].href
+				url: a[0].href,
+				q : [
+				document.getElementById('year'),
+				document.getElementById('month'),
+				document.getElementById('day')
+				]
 			}
 			console.log(o);
 
 			AMT__setUtilityTabs([
 						{
-							url: o.url
+							url: o.url,
 						}]);
 			document.body.scrollIntoView(document.getElementById('year'));
 			document.getElementById('year').focus()
-			
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				for(var i = 0; i < o.q.length; i++) {
+					var expectedLength;
+					switch(i) {
+						case 0: expectedLength = 4;
+						break;
+						case 1:expectedLength = 2;
+						break;
+						case 2:expectedLength = 2;
+						break;
+					}
+					if(!o.q[i].value || o.q[i].value.length != expectedLength) {
+						console.log(o.q[i].value);
+						return false;
+					}
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
 			
 			
 		}
-		run.f();
+		new run().f();
 	}	
 	
 	//
