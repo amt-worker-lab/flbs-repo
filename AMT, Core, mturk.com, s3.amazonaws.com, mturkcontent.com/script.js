@@ -70,6 +70,8 @@ function MT__RUN() {
 			}
 			console.log(o);
 
+			o.secondRadio.click();
+
 			AMT__setUtilityTabs([
 						{
 							url: o.url,
@@ -101,7 +103,6 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function() {
 				if(!o.firstRadio.checked) {
 					console.log(document.getElementsByTagName('input'));
-					o.secondRadio.click();
 						for(var i = 0; i < o.q.length; i++) {
 							o.q[i].value = o.q[i].value.trim();
 							var expectedLength;
