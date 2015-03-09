@@ -43,8 +43,25 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			var a = document.getElementsByTagName('a');
+			var firstRadio = null;
+			var secondRadio = null;
+			for(var i = 0; i < document.getElementsByTagName('input').length; i++) {
+				if(document.getElementsByTagName('input')[i].type == 'radio') {
+					if(!firstRadio) {
+						firstRadio = document.getElementsByTagName('input')[i];
+					} else {
+						secondRadio = document.getElementsByTagName('input')[i];
+					}
+					document.getElementsByTagName('input')[i].style.zoom = 4;
+
+				}
+			}
+
+			
 			var o = {
 				url: a[3].href,
+				firstRadio : firstRadio,
+				secondRadio : secondRadio,
 				q : [
 				document.getElementById('year'),
 				document.getElementById('month'),
@@ -72,6 +89,7 @@ function MT__RUN() {
 				}
 			}
 			
+
 			for(var i = 0; i < document.getElementsByTagName('input').length; i++) {
 				if(document.getElementsByTagName('input')[i].type == 'radio') {
 					document.getElementsByTagName('input')[i].style.zoom = 4;
@@ -81,11 +99,11 @@ function MT__RUN() {
 			document.body.scrollIntoView(document.getElementById('year'));
 			document.getElementById('year').focus()
 			document.getElementById('submitButton').onclick = function() {
-				o.q.value = o.q.value.trim();
-				if(!document.getElementsByTagName('input')[0].checked) {
+				if(!o.firstRadio.checked) {
 					console.log(document.getElementsByTagName('input'));
-					document.getElementsByTagName('input')[1].click();
+					o.secondRadio.click();
 						for(var i = 0; i < o.q.length; i++) {
+							o.q[i].value = o.q[i].value.trim();
 							var expectedLength;
 							switch(i) {
 								case 0: expectedLength = 4;
@@ -97,7 +115,7 @@ function MT__RUN() {
 							}
 							if(!o.q[i].value || o.q[i].value.length != expectedLength) {
 								if(expectedLength == 2 && o.q[i].value.length == 1) {
-									o.q[i].value = ' ' + o.q[i].value
+									o.q[i].value = '0' + o.q[i].value
 									continue;
 								}
 								console.log(o.q[i].value);
