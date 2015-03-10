@@ -10622,7 +10622,8 @@ function load__allPages_AMT_combo() {
 					el_div.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						// Try show next tab here!
-						showNextTab();
+						new AMT___core_factory().nextTab();
+						//~ showNextTab();
 						// ...
 						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, true);
 					}
@@ -10955,8 +10956,10 @@ function load__allPages_AMT_combo() {
 						else
 							o.cast2 = this.cast;
 						// LET'S TRY SHOW NEXT TAB HERE.
-						if (!this.is_auto_db)
-							showNextTab(); // show next tab
+						if (!this.is_auto_db) {
+							new AMT___core_factory().nextTab();
+							//~ showNextTab(); // show next tab
+						}
 						
 						checkIMDB(this.keywords, this.title, this.kind, this.parent_title, this.isTopShow);
 					}
@@ -11204,13 +11207,10 @@ function load__allPages_AMT_combo() {
 									var rand = 2000 + (Math.random() * 2000);
 									setTimeout(function() { doSubmit('mturk'); }, rand); // 2.0 + 0.0~2.0
 								} else if (e.ctrlKey) { // e.ctrlKey show next tab
-									showNextTab();
+									new AMT___core_factory().nextTab();
+									//~ showNextTab();
 									doSubmit('mturk');
 								}
-								//~ } else {
-									//~ showNextTab(); // show next tab
-									//~ doSubmit('mturk');
-								//~ }
 								return false;
 							}
 						} else {
