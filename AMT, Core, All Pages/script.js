@@ -9972,7 +9972,6 @@ function load__allPages_AMT_combo() {
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			GM_addStyle('.Rm:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.worker-info {top:1000px;position:absolute;}');
 			GM_addStyle('.submit {padding:0;}');
 			// THIS IS FOR HIDING THE SHOWS
@@ -10251,28 +10250,6 @@ function load__allPages_AMT_combo() {
 				"width:99%;height:1600px;background-color:#eee;"
 			);
 			d_container.appendChild(d4);
-			
-			//~ var d_skipHit = document.createElement('div');
-			//~ d_skipHit.setAttribute('style',"position:absolute;width:99%;top:0px;height:1600px;background-color:rgba(255,255,255,0.95);z-Index:-10"); 
-			//~ d_skipHit.innerHTML = "Skip";
-			//~ d_container.appendChild(d_skipHit);
-			//~ 
-			//~ var d_checkUnderSkip = document.createElement('div');
-			//~ d_checkUnderSkip.setAttribute('style',"position:absolute;width:20px;left:25%;top:0px;height:20px;background-color:pink;border: 1px solid blue;"); 
-			//~ d_checkUnderSkip.innerHTML = "Rm";
-			//~ d_checkUnderSkip.className = 'Rm';
-//~ 
-			//~ document.body.appendChild(d_checkUnderSkip);
-			//~ 
-			//~ d_checkUnderSkip.addEventListener('click', function(e) {
-				//~ console.log(e);
-				//~ d_skipHit.style.visibility = "hidden";
-			//~ });
-			//~ 
-			
-			
-
-			
 			/*End of Elements*/
 			
 			// onclick
@@ -10376,16 +10353,14 @@ function load__allPages_AMT_combo() {
 							if (__js_inarray(opt_skip, o.series1)) { // array, needle
 								d1.innerText = 'Skips file: ' + o.series1;
 								d1.style.backgroundColor = 'orange';
-								document.body.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
 							// Skip if #2, indexOf.
 							else if (bool_skip_iof) {
-								d1.style.backgroundColor = 'orange';
-								document.body.style.backgroundColor = 'orange';
 								d1.innerText = 'Skips file: ' + o.series1;
 								d1.innerText += '\n(' + bool_skip_iof + ')';
+								d1.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
@@ -10523,9 +10498,7 @@ function load__allPages_AMT_combo() {
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
-					return;
 				}
 				//~ AMT___Floater.skip(); // TODO
 				//~ return;
@@ -10570,9 +10543,7 @@ function load__allPages_AMT_combo() {
 							d2.innerText = '0-matched-itunes';
 							//~ d2.style.height = '20px';
 							d1.style.backgroundColor = 'orange';
-							document.body.style.backgroundColor = 'orange';
 							AMT___Floater.skip(); // TODO
-							return;
 						} else {
 							o.itunes_match_rslt = rslt;
 						}
@@ -10610,9 +10581,7 @@ function load__allPages_AMT_combo() {
 					d2.innerText = '0-db-itunes';
 					//~ d2.style.height = '20px';
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip(); // TODO
-					//~ d1.style.height = d1.full_height;
 					return;
 				}
 				var bold = o.bold_ep1;
@@ -10929,7 +10898,6 @@ function load__allPages_AMT_combo() {
 				{
 					div.innerHTML = '0-db';
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11046,7 +11014,7 @@ function load__allPages_AMT_combo() {
 				{
 					o.is_in_skip_condition = true;
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
+
 					AMT___Floater.skip();
 					console.log('Skip condition #1. Skips here.');
 					return;
@@ -11144,7 +11112,6 @@ function load__allPages_AMT_combo() {
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11370,7 +11337,6 @@ function load__allPages_AMT_combo() {
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
 					d1.style.backgroundColor = 'orange';
-					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
