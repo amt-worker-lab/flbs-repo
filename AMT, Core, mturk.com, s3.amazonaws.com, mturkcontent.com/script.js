@@ -35775,13 +35775,15 @@ function MT__RUN() {
 				break;
 			}
 		}
+		var p = document.getElementsByTagName('p');
 		for (i = p.length - 2; p>=0; p--) { // Blank Ps
+			console.log(i);
 			if (i == 'length') continue;
 			console.log(p[i].innerHTML);
 			if (p[i].innerHTML.trim() == '&nbsp;') {
 				p[i].parentNode.removeChild(p[i]);
 			}
-		}
+		}console.log(p);return;
 		
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];

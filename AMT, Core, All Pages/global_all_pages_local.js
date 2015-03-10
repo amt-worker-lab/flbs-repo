@@ -931,8 +931,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
-		
-		console.log(v);
+		//~ console.log('ASDFASDFASDFASDFASDF');return;
+		//~ console.log(v);
 		
 		switch(v.action) {
 			case 'tabsQTitleChange': 
