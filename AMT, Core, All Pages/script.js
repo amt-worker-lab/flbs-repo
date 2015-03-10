@@ -10250,6 +10250,14 @@ function load__allPages_AMT_combo() {
 				"width:99%;height:1600px;background-color:#eee;"
 			);
 			d_container.appendChild(d4);
+			
+			var d_skipHit = document.createElement('div');
+			d_skipHit.setAttribute('style',"width:99%;height:1600px;background-color:pink;z-Index:-10"); 
+			d_skipHit.innerHTML = "Skip";
+			d_container.appendChild(d_skipHit);
+			
+
+			
 			/*End of Elements*/
 			
 			// onclick
@@ -10350,13 +10358,13 @@ function load__allPages_AMT_combo() {
 						if (is_init_run) {
 							opt_skip = opt_skip.split('\n'); // Split by \n
 							// Skip if...
-							if (AMT__Global_Vars.isPreview && __js_inarray(opt_skip, o.series1)) { // array, needle
+							if (__js_inarray(opt_skip, o.series1)) { // array, needle
 								d1.innerText = 'Skips file: ' + o.series1;
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
 							// Skip if #2, indexOf.
-							else if (AMT__Global_Vars.isPreview && bool_skip_iof) {
+							else if (bool_skip_iof) {
 								d1.innerText = 'Skips file: ' + o.series1;
 								d1.innerText += '\n(' + bool_skip_iof + ')';
 								AMT___Floater.skip(); // SKIP
@@ -10495,8 +10503,7 @@ function load__allPages_AMT_combo() {
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
-					if (AMT__Global_Vars.isPreview)
-						AMT___Floater.skip();
+					AMT___Floater.skip();
 					return;
 				}
 				//~ AMT___Floater.skip(); // TODO
@@ -10541,8 +10548,9 @@ function load__allPages_AMT_combo() {
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
 							//~ d2.style.height = '20px';
-							if (AMT__Global_Vars.isPreview)
+							if (AMT__Global_Vars.isPreview) {
 								AMT___Floater.skip(); // TODO
+							}
 							return;
 						} else {
 							o.itunes_match_rslt = rslt;
@@ -10580,8 +10588,7 @@ function load__allPages_AMT_combo() {
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
 					//~ d2.style.height = '20px';
-					if (AMT__Global_Vars.isPreview)
-						AMT___Floater.skip(); // TODO
+					AMT___Floater.skip(); // TODO
 					//~ d1.style.height = d1.full_height;
 					return;
 				}
