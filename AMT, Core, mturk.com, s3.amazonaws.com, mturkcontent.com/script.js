@@ -35680,7 +35680,7 @@ function MT__RUN() {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		GM_addStyle('body {margin-top:0px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
-		GM_addStyle('#submitButton {width:100%;height:90px;margin-top:-16px;}');
+		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
 		
 		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
@@ -35776,14 +35776,18 @@ function MT__RUN() {
 			}
 		}
 		var p = document.getElementsByTagName('p');
-		for (i = p.length - 2; p>=0; p--) { // Blank Ps
+		for (i = p.length - 2; i>=0; i--) { // Blank Ps
 			console.log(i);
 			if (i == 'length') continue;
 			console.log(p[i].innerHTML);
-			if (p[i].innerHTML.trim() == '&nbsp;') {
+			if  (
+				p[i].innerHTML.trim() == '&nbsp;' ||
+				p[i].innerHTML.trim() == 'Polygon:'
+				)
+			{
 				p[i].parentNode.removeChild(p[i]);
 			}
-		}console.log(p);return;
+		}
 		
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];
@@ -35907,8 +35911,6 @@ function MT__RUN() {
 		}
 		/*END ACTIONS*/
 		
-		console.log('XXX');
-		
 		// innerHeight
 		new AMT___core_factory().el_innerHeight({
 			// This set the elements d1,d1b, and d1c
@@ -35917,9 +35919,9 @@ function MT__RUN() {
 			// XX OFFSET NOT HERE XX //offset: 80, // offset top
 			callback_function: function(innerHeight) {
 				
-				console.log('x');
+				//~ console.log('x');
 				
-				var new_h = (innerHeight-240) + 'px';
+				var new_h = (innerHeight-160) + 'px';
 				
 				// 100 px offset from bottom
 				d2.style.height = new_h;
@@ -35927,8 +35929,6 @@ function MT__RUN() {
 				//~ document.getElementById('map').style.height = new_h + ' !important';
 				
 				document.getElementById('map').style.height = new_h;
-				
-				//~ console.log(new_h);
 				
 				// DO NOT USE THIS (IMAGES WINDOW)
 				//~ // d4 is 40px lower and so 40px shorter.
