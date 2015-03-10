@@ -65,16 +65,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
 						(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
 						);
-				//if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+				if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
 				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
 			//tabId is null
 			
 			console.log('REMOVE');
 			console.log(tabIdsToRemove);
-			if(tabIdsToRemove.length) {
+			//if(tabIdsToRemove.length) {
 				chrome.tabs.remove(tabIdsToRemove);
-			}
+			//}
 		}
 		
 		
