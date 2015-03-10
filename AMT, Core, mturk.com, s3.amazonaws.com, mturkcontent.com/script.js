@@ -2882,14 +2882,15 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
 			var a = document.getElementsByTagName('a');
 			var addr1, addr2;
 			
 			var o = {
-				url: a[0].href
+				url: a[0].href,
+				q: document.getElementById('web_url')
 			}
 			o.url = o.url.replace(/^https?:\/\/(www\.|)facebook\.com\//i, '');
 			o.url = 'https://graph.facebook.com/' + o.url;
@@ -2900,6 +2901,8 @@ function MT__RUN() {
 				onload: function(response) {
 					var rs=response.responseText;
 					if (response.status != 200) {
+						o.q.value = response.status;
+						document.body.style.backgroundColor = 'pink';
 						return;
 					}
 					rs = JSON.parse(rs);
@@ -2907,6 +2910,9 @@ function MT__RUN() {
 					if (rs.hasOwnProperty('username') && rs.username.trim().length > 2) {
 						document.getElementById('web_url').value = 'https://www.facebook.com/' + rs.username;
 						doSubmit();
+					} else {
+						document.body.innerText = rs;
+						document.body.style.backgroundColor = 'pink';
 					}
 				}
 			});
