@@ -10366,6 +10366,11 @@ function load__allPages_AMT_combo() {
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
+							// Still here?
+							translate(); // GOTO TRANSLATE
+							// Stop
+							return; // STOP
+							
 							//~ // Accept if...
 							//~ else if (
 								//~ AMT__Global_Vars.isPreview &&
@@ -10378,10 +10383,6 @@ function load__allPages_AMT_combo() {
 								//~ AMT___Floater.accept(); // ACCEPT
 								//~ return;
 							//~ }
-							// Still here?
-							translate(); // GOTO TRANSLATE
-							
-							return; // STOP
 						}
 						
 						// Is not init run?
@@ -10454,19 +10455,17 @@ function load__allPages_AMT_combo() {
 							document.body.style.backgroundColor = 'orange'; //
 							initFirstRun();
 							return;
-							//exit(response.status);
 						}
 						
 						rs = rs.replace(/,+/g, ','); // replace ,+
 						rs = JSON.parse(rs);
-						console.log(rs);
+						//~ console.log(rs);
 						//[[["I like linux It makes freedom","Ich mag linux Es macht freiheit","",""]] ...
 						if (rs.length && rs[0].length && rs[0][0].length) {
 							var str_translated = rs[0][0][0];
 							var str = rs[0][0][1];
-							console.log(str);
-							console.log(str_translated);
-							//return;
+							//~ console.log(str);
+							//~ console.log(str_translated);
 							
 							o.title1 = str_translated;
 							
@@ -10490,18 +10489,16 @@ function load__allPages_AMT_combo() {
 			 */
 			function itunes_search_init() {
 				// Open d2, close d1
-				//~ d2.style.height = '400px';//d2.show_height;
-				//~ d1.style.height = '400px';
-				//~ if (d1.innerText == '0-db') {
-					//~ d1.style.height = '20px';
-					//~ d2.style.height = d2.full_height;
-				//~ }
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
+					//~ o.q[0].style.backgroundColor = 'orange';
 					d1.style.backgroundColor = 'orange';
-					console.log('skip');
-					AMT___Floater.skip();
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
+						console.log('skip');
+					}
+					return;
 				}
 				//~ AMT___Floater.skip(); // TODO
 				//~ return;
@@ -10650,7 +10647,12 @@ function load__allPages_AMT_combo() {
 						'itunes_title: ' + itn + '<br>' +
 						'itunes_coll: '  + icn;
 					// ScrollIntoView
-					if (rslts[i].episode_nr == o.itunes_match_rslt.trackNumber) {
+					if  (
+						o.itunes_match_rslt &&
+						o.itunes_match_rslt.hasOwnProperty('trackNumber') &&
+						rslts[i].episode_nr == o.itunes_match_rslt.trackNumber
+						)
+					{
 						scroll(el_div);
 						el_div.style.border = '4px solid blue';
 					}
@@ -10700,8 +10702,8 @@ function load__allPages_AMT_combo() {
 			 */
 			function processDBResults(response) {
 				//response of 3 searches
-				console.log('got db response');
-				console.log(response);
+				//~ console.log('got db response');
+				//~ console.log(response);
 				var ro = response.responseObject;
 				
 				// Non special workflow window.
@@ -11018,11 +11020,10 @@ function load__allPages_AMT_combo() {
 				// Single query, special_ww==false, rsltsType==search_t_s
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
-					o.is_in_skip_condition = true;
+					//~ o.is_in_skip_condition = true;
 					d1.style.backgroundColor = 'orange';
 					console.log('skip');
 					AMT___Floater.skip();
-					console.log('Skip condition #1. Skips here.');
 					return;
 				}
 				// Mutli-query, special_ww==true.
@@ -11062,44 +11063,7 @@ function load__allPages_AMT_combo() {
 							// Always here
 							itunes_search_init(); // Init itunes
 						}
-						// THIS IS FOR **2** SHOWS
-						//
-						//
-						//
-						//
-						//~ // TWO SHOWS
-						//~ else {
-							//~ if (o.lev_pct[0] >= min_lev_accept && rsltsType == 'search_t_s')
-								//~ initNextRun(); // Go to next run!
-							//~ else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) { // Second search. Skip.
-								//~ AMT___Floater.skip();
-							//~ }
-						//~ }
 					}
-					// THIS IS FOR **2** SHOWS
-					//
-					//
-					//
-					//
-					//~ if (!isTopShow) {
-						//~ o.lev_pct[1] = highestPct > o.lev_pct[1] ? highestPct : o.lev_pct[1];
-						//~ 
-						//~ // ACCEPT?
-						//~ if  (
-							//~ o.lev_pct[0] >= min_lev_accept &&
-							//~ o.lev_pct[1] >= min_lev_accept &&
-							//~ AMT__Global_Vars.isPreview &&
-							//~ rsltsType == 'search_t_s' // Second search
-							//~ )
-						//~ {
-							//~ console.log('Found >= '+min_lev_accept+':'+o.lev_pct[0]+'/'+o.lev_pct[1]);
-							//~ AMT___Floater.accept();
-						//~ }
-						//~ // SKIP
-						//~ else if (rsltsType == 'search_t_s' && AMT__Global_Vars.isPreview) {
-							//~ AMT___Floater.skip();
-						//~ }
-					//~ }
 				}
 			}
 			
