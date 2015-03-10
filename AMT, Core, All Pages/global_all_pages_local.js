@@ -913,6 +913,117 @@ AMT___global_factory.prototype.highlight_photos = function(options_object) {
 	}
 }
 
+AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
+	
+	// Is there an iframe on the page?
+	// If there is not then this is the end!
+	if (!document.getElementsByTagName('iframe').length)
+		return;
+	
+	// Still here. There is an iframe so listen for any
+	// messages that may come up.
+	// ...
+	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
+	
+	// ...
+	function top_window__addEventListener_iframe__complete(event)
+	{
+		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		var v = event.data;
+		
+		console.log(v);
+		
+		switch(v.action) {
+			case 'tabsQTitleChange': 
+				//console.log("Changing document title to TQ");
+				document.title = "TQ";
+				(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();
+
+				break;
+			//~ case 'return_button_hotkey':
+				//~ window.addEventListener('keydown', function(e) {
+						//~ if(e.keyCode == v.options.keyCode) {
+							//~ console.log('returning');
+							//~ var b = getReturnButton();
+							//~ b.click();
+						//~ }
+					//~ });
+				//~ break;
+			//~ case 'click_return_button': 
+				//~ var b = getReturnButton();
+				//~ b.click();
+				//~ break;
+			//~ case 'return_button__showNextTab':
+				console.log('Will showNextTab on return');
+				//~ 
+				//~ var b = getReturnButton();
+				//~ if (b) {
+					//~ b.addEventListener('click', function() {
+						//~ showNextTab({isTopWindow:true});
+						//~ showNextTab({isTopWindow:false});
+					//~ }, false);
+				//~ }
+				//~ // 2nd return button
+				//~ // AMT_return_button_top_window
+				//~ var b = getReturnButton2();
+				//~ if (b) {
+					//~ b.addEventListener('click', function() {
+						//~ showNextTab();
+					//~ }, false);
+				//~ }
+				//~ break;
+			// AMT___returnAndAcceptButton()
+			//~ case 'return_and_accept_button__nextTab':
+				//~ AMT__Global_Vars.core.return_accept_run_nextTab = true;
+				//~ break;
+			//~ case 'return_button__nextTab':
+				//~ AMT__Global_Vars.core.return_run_nextTab = true;
+				//~ break;
+			//~ case 'return_and_accept':
+				//~ document.getElementById('MT__gm_returnaccept').click();
+				//~ break;
+			//~ case 'changeWindowNotifier':
+				//~ //alert('here 1');
+				//~ if(!localStorage['ChangeWindowCount'])
+					//~ localStorage['ChangeWindowCount'] = 0;
+				//~ if(localStorage['ChangeWindowCount'] <= v.threshold_to_change)
+				//~ {
+					//~ localStorage['ChangeWindowCount']++;
+				//~ }
+				//~ else {
+					//~ localStorage['ChangeWindowCount'] = 0;
+					//~ document.body.style.backgroundColor = 'silver';
+					//~ chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
+					new AMT___core_factory().nextWindow();
+				//~ }
+				//~ break;
+			
+			/**
+			 * window.innerHeight
+			 * 
+			 * If offsetTop > 60 then do not use this
+			 * in the calculation.
+			 */
+			case 'window.innerHeight':
+				
+				var ifr = document.getElementsByTagName('iframe')[0];
+				
+				// Get the current offset of the iframe!
+				// Usually set by tools.
+				var ot = (ifr.offsetTop <= 60) ? ifr.offsetTop : 0;
+				//~ console.log('ot' + ot);
+				//~ console.log('ih' + window.innerHeight);
+				
+				// Send response
+				ifr.contentWindow.postMessage({
+					action: 'window.innerHeight',
+					innerHeight: window.innerHeight - ot
+				}, '*');
+				break;
+		}
+	}
+}
 
 
 
