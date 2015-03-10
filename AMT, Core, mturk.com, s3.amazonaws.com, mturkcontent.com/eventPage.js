@@ -62,6 +62,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
+			console.log(tabIdsToRemove);
 			chrome.tabs.remove(tabIdsToRemove);
 		}
 		
