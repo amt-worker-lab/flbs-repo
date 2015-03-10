@@ -10350,17 +10350,15 @@ function load__allPages_AMT_combo() {
 						if (is_init_run) {
 							opt_skip = opt_skip.split('\n'); // Split by \n
 							// Skip if...
-							if (__js_inarray(opt_skip, o.series1)) { // array, needle
+							if (AMT__Global_Vars.isPreview && __js_inarray(opt_skip, o.series1)) { // array, needle
 								d1.innerText = 'Skips file: ' + o.series1;
-								d1.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
 							// Skip if #2, indexOf.
-							else if (bool_skip_iof) {
+							else if (AMT__Global_Vars.isPreview && bool_skip_iof) {
 								d1.innerText = 'Skips file: ' + o.series1;
 								d1.innerText += '\n(' + bool_skip_iof + ')';
-								d1.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
@@ -10497,8 +10495,9 @@ function load__allPages_AMT_combo() {
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
-					d1.style.backgroundColor = 'orange';
-					AMT___Floater.skip();
+					if (AMT__Global_Vars.isPreview)
+						AMT___Floater.skip();
+					return;
 				}
 				//~ AMT___Floater.skip(); // TODO
 				//~ return;
@@ -10542,8 +10541,9 @@ function load__allPages_AMT_combo() {
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
 							//~ d2.style.height = '20px';
-							d1.style.backgroundColor = 'orange';
-							AMT___Floater.skip(); // TODO
+							if (AMT__Global_Vars.isPreview)
+								AMT___Floater.skip(); // TODO
+							return;
 						} else {
 							o.itunes_match_rslt = rslt;
 						}
@@ -10580,8 +10580,9 @@ function load__allPages_AMT_combo() {
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
 					//~ d2.style.height = '20px';
-					d1.style.backgroundColor = 'orange';
-					AMT___Floater.skip(); // TODO
+					if (AMT__Global_Vars.isPreview)
+						AMT___Floater.skip(); // TODO
+					//~ d1.style.height = d1.full_height;
 					return;
 				}
 				var bold = o.bold_ep1;
@@ -10897,7 +10898,6 @@ function load__allPages_AMT_combo() {
 					)
 				{
 					div.innerHTML = '0-db';
-					d1.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11013,8 +11013,6 @@ function load__allPages_AMT_combo() {
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
 					o.is_in_skip_condition = true;
-					d1.style.backgroundColor = 'orange';
-
 					AMT___Floater.skip();
 					console.log('Skip condition #1. Skips here.');
 					return;
@@ -11111,7 +11109,6 @@ function load__allPages_AMT_combo() {
 					console.log(o);
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
-					d1.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11336,7 +11333,6 @@ function load__allPages_AMT_combo() {
 				
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
-					d1.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
