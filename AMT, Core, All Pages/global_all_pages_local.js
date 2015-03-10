@@ -995,7 +995,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 					//~ localStorage['ChangeWindowCount'] = 0;
 					//~ document.body.style.backgroundColor = 'silver';
 					//~ chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
-					new AMT___core_factory().nextWindow();
+					//~ new AMT___core_factory().nextWindow();
 				//~ }
 				//~ break;
 			
