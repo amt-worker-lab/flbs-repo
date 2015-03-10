@@ -2917,7 +2917,26 @@ function MT__RUN() {
 						o.q[1].value = '';
 						o.q[2].checked = true;
 						doSubmit();
-						return;	
+						return;
+					}
+					
+					// Here?
+					// One result?
+					var reg1 = /<div class="_1zf">/g; //document.body.innerText.match(/<div class="_1zf">/g).length; //1
+					var reg2 = /<div class="_zs fwb"/g;
+					if  (
+						rs.match(reg1) && rs.match(reg1).length == 1 &&
+						rs.match(reg2) && rs.match(reg2).length == 1
+						)
+					{
+						var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+)\?ref=br_rs&amp;fref=browse_search">([^<]+)<\/a>/.exec(rs);
+						if (reg3) {
+							//e.g. "https://...", "James Yates"
+							o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+							o.q[0].value = __js_clean_html_str(reg3[2]).trim();
+							o.q[2].checked = false;
+							//doSubmit();
+						}
 					}
 				}
 			});
