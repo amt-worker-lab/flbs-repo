@@ -10252,23 +10252,23 @@ function load__allPages_AMT_combo() {
 			);
 			d_container.appendChild(d4);
 			
-			var d_skipHit = document.createElement('div');
-			d_skipHit.setAttribute('style',"position:absolute;width:99%;top:0px;height:1600px;background-color:rgba(255,255,255,0.95);z-Index:-10"); 
-			d_skipHit.innerHTML = "Skip";
-			d_container.appendChild(d_skipHit);
-			
-			var d_checkUnderSkip = document.createElement('div');
-			d_checkUnderSkip.setAttribute('style',"position:absolute;width:20px;left:25%;top:0px;height:20px;background-color:pink;border: 1px solid blue;"); 
-			d_checkUnderSkip.innerHTML = "Rm";
-			d_checkUnderSkip.className = 'Rm';
-
-			document.body.appendChild(d_checkUnderSkip);
-			
-			d_checkUnderSkip.addEventListener('click', function(e) {
-				console.log(e);
-				d_skipHit.style.visibility = "hidden";
-			});
-			
+			//~ var d_skipHit = document.createElement('div');
+			//~ d_skipHit.setAttribute('style',"position:absolute;width:99%;top:0px;height:1600px;background-color:rgba(255,255,255,0.95);z-Index:-10"); 
+			//~ d_skipHit.innerHTML = "Skip";
+			//~ d_container.appendChild(d_skipHit);
+			//~ 
+			//~ var d_checkUnderSkip = document.createElement('div');
+			//~ d_checkUnderSkip.setAttribute('style',"position:absolute;width:20px;left:25%;top:0px;height:20px;background-color:pink;border: 1px solid blue;"); 
+			//~ d_checkUnderSkip.innerHTML = "Rm";
+			//~ d_checkUnderSkip.className = 'Rm';
+//~ 
+			//~ document.body.appendChild(d_checkUnderSkip);
+			//~ 
+			//~ d_checkUnderSkip.addEventListener('click', function(e) {
+				//~ console.log(e);
+				//~ d_skipHit.style.visibility = "hidden";
+			//~ });
+			//~ 
 			
 			
 
@@ -10375,13 +10375,15 @@ function load__allPages_AMT_combo() {
 							// Skip if...
 							if (__js_inarray(opt_skip, o.series1)) { // array, needle
 								d1.innerText = 'Skips file: ' + o.series1;
-								d_skipHit.style.zIndex = 1000;
+								d1.style.backgroundColor = 'orange';
+								document.body.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // SKIP
 								return; // STOP
 							}
 							// Skip if #2, indexOf.
 							else if (bool_skip_iof) {
-								d_skipHit.style.zIndex = 1000;
+								d1.style.backgroundColor = 'orange';
+								document.body.style.backgroundColor = 'orange';
 								d1.innerText = 'Skips file: ' + o.series1;
 								d1.innerText += '\n(' + bool_skip_iof + ')';
 								AMT___Floater.skip(); // SKIP
@@ -10520,7 +10522,8 @@ function load__allPages_AMT_combo() {
 				// Synopsis?
 				if (!o.synopsis1) {
 					d2.innerText = 'SYNOPSIS=""';
-					d_skipHit.style.zIndex = 1000;
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -10566,7 +10569,8 @@ function load__allPages_AMT_combo() {
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
 							//~ d2.style.height = '20px';
-							d_skipHit.style.zIndex = 1000;
+							d1.style.backgroundColor = 'orange';
+							document.body.style.backgroundColor = 'orange';
 							AMT___Floater.skip(); // TODO
 							return;
 						} else {
@@ -10605,7 +10609,8 @@ function load__allPages_AMT_combo() {
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
 					//~ d2.style.height = '20px';
-					d_skipHit.style.zIndex = 1000;
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip(); // TODO
 					//~ d1.style.height = d1.full_height;
 					return;
@@ -10923,7 +10928,8 @@ function load__allPages_AMT_combo() {
 					)
 				{
 					div.innerHTML = '0-db';
-					d_skipHit.style.zIndex = 1000;
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11039,8 +11045,8 @@ function load__allPages_AMT_combo() {
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
 					o.is_in_skip_condition = true;
-					d_skipHit.style.zIndex = 1000;
-
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					console.log('Skip condition #1. Skips here.');
 					return;
@@ -11137,7 +11143,8 @@ function load__allPages_AMT_combo() {
 					console.log(o);
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
-					d_skipHit.style.zIndex = 1000;
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
@@ -11362,7 +11369,8 @@ function load__allPages_AMT_combo() {
 				
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
-					d_skipHit.style.zIndex = 1000;
+					d1.style.backgroundColor = 'orange';
+					document.body.style.backgroundColor = 'orange';
 					AMT___Floater.skip();
 					return;
 				}
