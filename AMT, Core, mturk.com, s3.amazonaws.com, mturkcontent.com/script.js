@@ -35768,11 +35768,18 @@ function MT__RUN() {
 		var i,x;
 		for (i in p) {
 			if (i == 'length') break;
-			x = p[i].getElementsByTagName('img');
+			x = p[i].getElementsByTagName('img'); // Images
 			if (x.length && (x.length == 4 || x.length == 3 || x.length == 2)) {
 				p[i].style.position = 'absolute';
 				p[i].style.marginTop = '400px';
 				break;
+			}
+		}
+		for (i = p.length - 2; p>=0; p--) { // Blank Ps
+			if (i == 'length') continue;
+			console.log(p[i].innerHTML);
+			if (p[i].innerHTML.trim() == '&nbsp;') {
+				p[i].parentNode.removeChild(p[i]);
 			}
 		}
 		
