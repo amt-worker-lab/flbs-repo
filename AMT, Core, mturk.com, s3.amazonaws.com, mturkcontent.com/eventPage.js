@@ -60,19 +60,26 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//Remove all of the old utility tabs
 			var tabIdsToRemove = []
 			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
-				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+				console.log('TABID');
+				//~ console.log(UtilityAMTPairs[senderId].utilities[i]);
+				console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
+				if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+					tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
+			console.log('REMOVE');
 			console.log(tabIdsToRemove);
 			chrome.tabs.remove(tabIdsToRemove);
 		}
 		
 		
-		UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
-															ownerTabId:senderId,
-															utilities: request.setUtilityTabs.utilities
-														});
+		UtilityAMTPairs[senderId] = new AMTUtilitiesObj(
+			{
+				ownerTabId:senderId,
+				utilities: request.setUtilityTabs.utilities
+			}
+		);
 		UtilityAMTPairs.options = request.setUtilityTabs.options;
-		console.log(UtilityAMTPairs);
+		//~ console.log(UtilityAMTPairs);
 		//console.log(a.b.c);
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
@@ -92,13 +99,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 																				active: (currentUtility.active != null ? currentUtility.active : 
 																														 (sender.tab.active && i == 0 ? true :false))}, 
 					function(newTab) {
-						console.log('New Tab Created with url:' +newTab.url);
+						//~ console.log('New Tab Created with url:' +newTab.url);
 						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
-						console.log('ownerTabId:' + ownerTabId);
+						//~ console.log('ownerTabId:' + ownerTabId);
 						var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
-						console.log('utTabPos:' + utTabPos);
+						//~ console.log('utTabPos:' + utTabPos);
 						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-						console.log(UtilityAMTPairs);
+						//~ console.log(UtilityAMTPairs);
 						
 
 					});
