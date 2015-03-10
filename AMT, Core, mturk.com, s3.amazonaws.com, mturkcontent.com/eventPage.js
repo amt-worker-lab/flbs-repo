@@ -87,28 +87,28 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//~ });
 			
 		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
-				//Create a tab for each utilityTab in utilities
-				currentUtility = UtilityAMTPairs[senderId].utilities[i];
-				var tabIdentifier = '###tabId'+senderId+'###at'+i;
-				if(!currentUtility.url || currentUtility.url.trim() == '') {
-					currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
-					//~ currentUtility.url = 'includes/blankUtilityTab.html';
-				}
-				currentUtility.url += tabIdentifier;
-				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
-																				active: (currentUtility.active != null ? currentUtility.active : 
-																														 (sender.tab.active && i == 0 ? true :false))}, 
-					function(newTab) {
-						//~ console.log('New Tab Created with url:' +newTab.url);
-						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
-						//~ console.log('ownerTabId:' + ownerTabId);
-						var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
-						//~ console.log('utTabPos:' + utTabPos);
-						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-						//~ console.log(UtilityAMTPairs);
-						
+			//Create a tab for each utilityTab in utilities
+			currentUtility = UtilityAMTPairs[senderId].utilities[i];
+			var tabIdentifier = '###tabId'+senderId+'###at'+i;
+			if(!currentUtility.url || currentUtility.url.trim() == '') {
+				currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
+				//~ currentUtility.url = 'includes/blankUtilityTab.html';
+			}
+			currentUtility.url += tabIdentifier;
+			chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
+																			active: (currentUtility.active != null ? currentUtility.active : 
+																													 (sender.tab.active && i == 0 ? true :false))}, 
+				function(newTab) {
+					//~ console.log('New Tab Created with url:' +newTab.url);
+					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+					//~ console.log('ownerTabId:' + ownerTabId);
+					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+					//~ console.log('utTabPos:' + utTabPos);
+					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
+					//~ console.log(UtilityAMTPairs);
+					
 
-					});
+				});
 		}
 	}
 	
