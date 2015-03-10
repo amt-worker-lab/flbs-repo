@@ -10548,6 +10548,7 @@ function load__allPages_AMT_combo() {
 								d1.style.backgroundColor = 'orange';
 								AMT___Floater.skip(); // TODO
 							}
+							return; // Let's try stopping here.
 						} else {
 							o.itunes_match_rslt = rslt;
 						}
@@ -10583,10 +10584,12 @@ function load__allPages_AMT_combo() {
 				// d2.show_height
 				if (!rslts.length) {
 					d2.innerText = '0-db-itunes';
-					//~ d2.style.height = '20px';
-					d1.style.backgroundColor = 'orange';
-					//console.log('skip');
-					AMT___Floater.skip(); // TODO
+					if (AMT__Global_Vars.isPreview) {
+						//~ d2.style.height = '20px';
+						d1.style.backgroundColor = 'orange';
+						//console.log('skip');
+						AMT___Floater.skip(); // TODO
+					}
 					return;
 				}
 				var bold = o.bold_ep1;
