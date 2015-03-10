@@ -61,14 +61,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			var tabIdsToRemove = []
 			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
 				console.log('TABID');
-				//~ console.log(UtilityAMTPairs[senderId].utilities[i]);
 				console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
-				if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
-					tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+				console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
+						(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+						);
+				//if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
+			//tabId is null
+			
 			console.log('REMOVE');
 			console.log(tabIdsToRemove);
-			chrome.tabs.remove(tabIdsToRemove);
+			if(tabIdsToRemove.length) {
+				chrome.tabs.remove(tabIdsToRemove);
+			}
 		}
 		
 		
@@ -1385,7 +1391,9 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						tabIdsToRemove.push(UtilityAMTPairs[i].utilities[j].tabId);
 					}
-					chrome.tabs.remove(tabIdsToRemove);
+					if(tabIdsToRemove.length) {
+						chrome.tabs.remove(tabIdsToRemove);
+					}
 					delete UtilityAMTPairs[i]; 
 					console.log(UtilityAMTPairs);
 					break;
