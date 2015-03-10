@@ -9972,6 +9972,7 @@ function load__allPages_AMT_combo() {
 			GM_addStyle('.left {width:60px;}');
 			GM_addStyle('.right {margin-left:0px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.Rm:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.worker-info {top:1000px;position:absolute;}');
 			GM_addStyle('.submit {padding:0;}');
 			// THIS IS FOR HIDING THE SHOWS
@@ -10257,13 +10258,16 @@ function load__allPages_AMT_combo() {
 			d_container.appendChild(d_skipHit);
 			
 			var d_checkUnderSkip = document.createElement('div');
-			d_checkUnderSkip.setAttribute('style',"position:absolute;width:10px;left:15%;top:0px;height:1600px;background-color:pink;border: 1px solid blue;"); 
-			d_checkUnderSkip.innerHTML = "rm-skip";
-			d_container.appendChild(d_checkUnderSkip);
+			d_checkUnderSkip.setAttribute('style',"position:absolute;width:20px;left:25%;top:0px;height:20px;background-color:pink;border: 1px solid blue;"); 
+			d_checkUnderSkip.innerHTML = "Rm";
+			d_checkUnderSkip.className = 'Rm';
+
+			document.body.appendChild(d_checkUnderSkip);
 			
-			d_checkUnderSkip.onclick = function(e) {
-					d_skipHit.style.visible = "hidden";
-			}
+			d_checkUnderSkip.addEventListener('click', function(e) {
+				console.log(e);
+				d_skipHit.style.visibility = "hidden";
+			});
 			
 			
 			
@@ -11035,6 +11039,8 @@ function load__allPages_AMT_combo() {
 				if(!foundAuto && rsltsType == 'search_t_s' && !AMT__Global_Vars.isSpecialWorkflowWindow)
 				{
 					o.is_in_skip_condition = true;
+					d_skipHit.style.zIndex = 1000;
+
 					AMT___Floater.skip();
 					console.log('Skip condition #1. Skips here.');
 					return;
@@ -11131,6 +11137,7 @@ function load__allPages_AMT_combo() {
 					console.log(o);
 					console.log('no choices found')
 					div.style.border = '2px solid blue';
+					d_skipHit.style.zIndex = 1000;
 					AMT___Floater.skip();
 					return;
 				}
@@ -11355,6 +11362,7 @@ function load__allPages_AMT_combo() {
 				
 				// Not special workflow 
 				if(!foundAuto && !AMT__Global_Vars.isSpecialWorkflowWindow) {
+					d_skipHit.style.zIndex = 1000;
 					AMT___Floater.skip();
 					return;
 				}
