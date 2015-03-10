@@ -2871,6 +2871,61 @@ function MT__RUN() {
 	
 	// 
 	// Richard Yeung
+	// 
+	//
+	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by phone number in facebook. &nbsp;If there is a match, click the profile url and record the <strong>full name of the person</strong> and the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var a = document.getElementsByTagName('a');
+			
+			var o = {
+				url: a[0].href,
+				q: [
+					document.getElementById('FB_profile_NAME'),
+					document.getElementById('FB_profile_URL'),
+					document.getElementsByName('no_results')[0]
+				]
+			}
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.url,
+				onload: function(response) {
+					var rs=response.responseText;
+					if (response.status != 200) {
+						o.q[0].value = response.status;
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					if  (
+						rs.indexOf(
+							'<div class="_26l">Sorry, we couldn&#039;t find any results for this search.</div>'
+						) != -1
+					)
+					{
+						o.q[0].value = '';
+						o.q[1].value = '';
+						o.q[2].checked = true;
+						doSubmit();
+						return;	
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
+	// Richard Yeung
 	// Convert FB profile id to FB profile name by pinging URL
 	//
 	s = '<p>Visit the Facebook URL provided below by clicking on the link and opening in a new window. &nbsp;The URL will be automatically conerted to a facebook profile name URL&nbsp;by your browser. &nbsp;Input this new URL&nbsp;in the box below. &nbsp;This task should take 5 seconds: simply click on the link and record the new URL&nbsp;that your browser converts it to. &nbsp;&nbsp;</p>';
@@ -2886,7 +2941,6 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
 			var a = document.getElementsByTagName('a');
-			var addr1, addr2;
 			
 			var o = {
 				url: a[0].href,
