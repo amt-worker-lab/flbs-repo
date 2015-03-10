@@ -2870,6 +2870,50 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Richard Yeung
+	// Convert FB profile id to FB profile name by pinging URL
+	//
+	s = '<p>Visit the Facebook URL provided below by clicking on the link and opening in a new window. &nbsp;The URL will be automatically conerted to a facebook profile name URL&nbsp;by your browser. &nbsp;Input this new URL&nbsp;in the box below. &nbsp;This task should take 5 seconds: simply click on the link and record the new URL&nbsp;that your browser converts it to. &nbsp;&nbsp;</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;width:24% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var a = document.getElementsByTagName('a');
+			var addr1, addr2;
+			
+			var o = {
+				url: a[0].href
+			}
+			o.url = o.url.replace(/^https?:\/\/(www\.|)facebook\.com\//i, '');
+			o.url = 'https://graph.facebook.com/' + o.url;
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.url,
+				onload: function(response) {
+					var rs=response.responseText;
+					if (response.status != 200) {
+						return;
+					}
+					rs = JSON.parse(rs);
+					
+					if (rs.hasOwnProperty('username') && rs.username.trim().length > 2) {
+						document.getElementById('web_url').value = 'https://www.facebook.com/' + rs.username;
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// 
 	// Rick Duggan
 	// Find the Latitude and Longitude for Bowling Centers
 	//
