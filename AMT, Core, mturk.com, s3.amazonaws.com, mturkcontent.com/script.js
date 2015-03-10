@@ -35677,7 +35677,7 @@ function MT__RUN() {
 		ih.indexOf(s8) != -1
 		)
 	{		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
 		GM_addStyle('body {margin-top:0px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
