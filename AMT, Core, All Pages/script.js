@@ -10542,9 +10542,12 @@ function load__allPages_AMT_combo() {
 						if (found_num != 1) {
 							d2.innerText = '0-matched-itunes';
 							//~ d2.style.height = '20px';
-							d1.style.backgroundColor = 'orange';
-							console.log('skip');
-							AMT___Floater.skip(); // TODO
+							//~ d1.style.backgroundColor = 'orange';
+							if (AMT__Global_Vars.isPreview) {
+								console.log('skip');
+								d1.style.backgroundColor = 'orange';
+								AMT___Floater.skip(); // TODO
+							}
 						} else {
 							o.itunes_match_rslt = rslt;
 						}
@@ -10597,8 +10600,8 @@ function load__allPages_AMT_combo() {
 				}
 				
 				// Loop
-				console.log(o.itunes_match_rslt);
-				console.log(rslts);
+				//~ console.log(o.itunes_match_rslt);
+				//~ console.log(rslts);
 				for (var i in rslts) {
 					var el_div = document.createElement('div');
 					el_div.setAttribute('style',
@@ -10894,7 +10897,7 @@ function load__allPages_AMT_combo() {
 				locn = locn[ rsltsType ];
 				
 				var div = document.createElement('div'); // 24=4, 49=2
-				div.setAttribute('style', 'width:49%;height:100%;float:left;border-left:1px solid black;');	//
+				div.setAttribute('style', 'width:99%;height:100%;float:left;border-left:1px solid black;');	//
 				container.appendChild(div);
 				
 				// Not special workflow. Either top or bottom show, results.length == 0. Skip.
