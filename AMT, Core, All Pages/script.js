@@ -10256,6 +10256,17 @@ function load__allPages_AMT_combo() {
 			d_skipHit.innerHTML = "Skip";
 			d_container.appendChild(d_skipHit);
 			
+			var d_checkUnderSkip = document.createElement('div');
+			d_checkUnderSkip.setAttribute('style',"position:absolute;width:10px;left:15%;top:0px;height:1600px;background-color:pink;border: 1px solid blue;"); 
+			d_checkUnderSkip.innerHTML = "rm-skip";
+			d_container.appendChild(d_checkUnderSkip);
+			
+			d_checkUnderSkip.onclick = function(e) {
+					d_skipHit.style.visible = "hidden";
+			}
+			
+			
+			
 
 			
 			/*End of Elements*/
