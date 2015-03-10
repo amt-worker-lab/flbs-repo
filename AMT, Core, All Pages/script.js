@@ -10973,11 +10973,12 @@ function load__allPages_AMT_combo() {
 					var longest = (strtmp1 > strtmp2) ? strtmp1.length : strtmp2.length;
 					var pct = ((longest - dist) / longest) * 100; // 0-100
 					highestPct = (pct > highestPct && longest >= min_lev_length) ? pct : highestPct;// set highest
-					el_div.style.backgroundColor = pct >= min_lev_accept ? 'aqua' : '';
 					// Highest score
 					if (rslts[i].score >= min_score_accept && rslts[i].score > highestScore) {
 						highestScore = rslts[i].score;
 					}
+					console.log('SCORE:'+rslts[i].score);
+					el_div.style.backgroundColor = (pct >= min_lev_accept || rslts[i].score >= min_score_accept) ? 'aqua' : '';
 					// Show
 					el_div.innerHTML = 
 						(rslts[i].title ? 't: ' + MT__bold(rslts[i].title, bold) + '<br>' : 't: <br>') +
@@ -10985,7 +10986,7 @@ function load__allPages_AMT_combo() {
 						(rslts[i].season_nr ? 'sn: Season ' + rslts[i].season_nr + '<br>' : 'sn: ') +
 						'k: ' + rslts[i].kind + '<br>' +
 						'y: ' + rslts[i].year + '<br>' +
-						'score: ' + Math.round(rslts[i].score*1) + '<br>' +
+						'score: ' + Math.round(rslts[i].score*1 * 100) / 100 + '<br>' +
 						'lev.: ' + Math.round(pct) + '%<br>';
 					
 					//Attempt to auto into a checkIMDB here:
