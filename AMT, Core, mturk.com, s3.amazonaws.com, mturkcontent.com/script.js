@@ -67130,41 +67130,37 @@ qatar,80
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			d1.setAttribute('style','position:absolute;left:0%;top:62px;width:25%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 			document.body.appendChild(d1);
 			// d1b
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;left:33%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			d1b.setAttribute('style','position:absolute;left:25%;top:62px;width:25%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 			document.body.appendChild(d1b);
 			// d1c
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;left:66%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			d1c.setAttribute('style','position:absolute;left:50%;top:62px;width:25%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 			document.body.appendChild(d1c);
-			//
-			d = document.createElement('input');
-			d.setAttribute('id','d2');
-			document.body.appendChild(d);
-			var d2 = document.getElementById('d2');
-			d2.style.position='absolute';
-			d2.style.top='0px';
-			d2.style.left='0%';
-			d2.style.width='99%';
-			d2.style.height='30px';
-			//
+			// d1d
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style','position:absolute;left:75%;top:62px;width:24%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			document.body.appendChild(d1d);
+			// d2
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style','position:absolute;left:0px;top:0px;width:99%;height:30px;');
+			document.body.appendChild(d2);
+			// d2
 			var d2b = document.createElement('input');
+			d2b.type = 'text';
+			d2b.setAttribute('style','position:absolute;left:0px;top:30px;width:99%;height:30px;');
 			document.body.appendChild(d2b);
-			d2b.style.position='absolute';
-			d2b.style.top='30px';
-			d2b.style.left='0%';
-			d2b.style.width='99%';
-			d2b.style.height='30px';
 			/* END ITEMS */
 			
 			// Actions
 			d2.onblur = function() {
 				this.value = this.value.trim();
-				Peter_Heyneman_google_find_phone();
-				Peter_Heyneman_find_phone__YellowPages();
+				google_find_phone();
+				find_phone__YellowPages();
 			}
 			
 			// vars
@@ -67177,7 +67173,14 @@ qatar,80
 				locn_cln: null,
 				
 				bad_phones: [], // bad phones
-				bad_phones_obj: {} // bad phones
+				bad_phones_obj: {}, // bad phones
+				
+				stats: { // stats
+					google_search_complete: false,
+					fb_search_complete: false,
+					num_google_results: 0,
+					num_fb_results: 0
+				}
 			};
 			
 			// Biz name
@@ -67208,6 +67211,7 @@ qatar,80
 			if (ih.indexOf('Not interested in information&nbsp;fromThumbtack websites or these phone numbers:') != -1) {
 				by_phone = true;
 			}
+			// If by phone...
 			// innerHTML reg for phone #s.
 			if (by_phone) {
 				var reg = /(\d{3}-\d{3}-\d{4})/g;
@@ -67218,7 +67222,6 @@ qatar,80
 					o.bad_phones_obj[ m[1] ] = true;
 				}
 			}
-			
 			// Not by phone
 			if (!by_phone) {
 				
@@ -67312,22 +67315,27 @@ qatar,80
 			//
 			// INIT
 			// Init yellow pages. Wait for Lat/Long for Google & FB.
-			Peter_Heyneman_find_phone__YellowPages();
+			//XXfind_phone__YellowPages();
 			
 			// google places api
-			MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll, false, true);
+			MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
 			
-			function Peter_Heyneman_find_phone__check_no_good_match(){
+			/**
+			 * function
+			 */
+			function find_phone__check_no_good_match(){
 				no_good_match++;
 				
 				if (no_good_match >= 2) {
 					if (AMT__Global_Vars.isPreview) {
 						AMT___Floater.skip();
-						//exit(); // EXIT?
 					}
 				}
 			}
-			function Peter_Heyneman_find_phone__FB() {
+			/**
+			 * function
+			 */
+			function find_phone__FB() {
 				
 				d1b.innerHTML = '';
 				
@@ -67362,41 +67370,42 @@ qatar,80
 						if (response.status != 200) return;
 						
 						var r = JSON.parse(rs);
-						
-						if (!r.data) {
-							//~ d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+						if (!r.data) { // No data?
 							var dv = document.createElement('div');
 							d1b.appendChild(dv);
 							dv.innerText = '0';
 							return;
 						}
-						
 						r = r.data;
 						console.log(r);
 						
+						// 0 results.
 						if (r.length == 0) {
 							var dv = document.createElement('div');
 							d1b.appendChild(dv);
-							dv.innerText = '0';
-							
-							
-							Peter_Heyneman_find_phone__check_no_good_match();
+							dv.innerText = '0'
+							find_phone__check_no_good_match();
 							return;
-						} else {
+						}
+						// More than 0 results.
+						else {
 							if (AMT__Global_Vars.isPreview) {
 								AMT___Floater.accept();
 								return;
 							}
 						}
 						
+						// Loop
 						var c = 0;
-						var found		= false;
+						var found = false;
 						for (var i in r) {
 							
+							// Type != event
 							if (r[i].type) {
 								if (r[i].type == 'event') continue;
 							}
 							
+							// Talking about count
 							if (r[i].talking_about_count != null) {
 							} else
 								r[i].talking_about_count = '';
@@ -67404,8 +67413,10 @@ qatar,80
 							} else
 								r[i].likes = '';
 							
+							// Phone
 							r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
 							
+							// Location
 							var dist = '-';
 							var dist_bgc = '';
 							if (r[i].location) {
@@ -67426,9 +67437,6 @@ qatar,80
 									delete r[i].location.longitude;
 								}
 							}
-							
-							var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-							
 							// ...
 							var locn__ = '';
 							if (r[i].location) {
@@ -67439,9 +67447,10 @@ qatar,80
 							locn__ = locn__.replace(/^,/, '').trim();
 							
 							// ...
-							var dv = document.createElement('div');
-							d1b.appendChild(dv);
+							var y = JSON.stringify(r[i]);
 							
+							// ...
+							var dv = document.createElement('div');
 							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 							dv.className = 'exe';
 							dv.phone = r[i].phone;
@@ -67451,7 +67460,9 @@ qatar,80
 							dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
 							dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
 							//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
+							d1b.appendChild(dv);
 							
+							// .onclick
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								
@@ -67487,24 +67498,21 @@ qatar,80
 									doSubmit();
 								}
 							}
-							
-							//~ if (r[i].category) {
-								//~ var x = r[i].category;
-								//~ d1.innerHTML += '<br>'+x;
-							//~ }
 						}
-						
 						if (d1b.innerHTML != '') {
 							var dv = document.createElement('div');
 							dv.setAttribute('style', 'height:1400px;');
 							d1b.appendChild(dv);
 						}
+						
+						// 
+						o.stats.fb_search_complete = true;
 					}
 				});
 			}
 			/**
 			 * 
-			 * Peter_Heyneman_find_phone__YellowPages_process
+			 * find_phone__YellowPages_process
 			opts.response.vars = {
 				results: [],
 				num_search_results: null, // integer, default=0
@@ -67522,7 +67530,7 @@ qatar,80
 				listing_id:				null	// string, private
 			};
 			*/
-			function Peter_Heyneman_find_phone__YellowPages_process(opts) {
+			function find_phone__YellowPages_process(opts) {
 				
 				console.log(opts);
 				
@@ -67619,7 +67627,10 @@ qatar,80
 					d1c.appendChild(dv);
 				}
 			}
-			function Peter_Heyneman_find_phone__YellowPages() {
+			/**
+			 * function find_phone__YellowPages
+			 */
+			function find_phone__YellowPages() {
 				
 				d1c.innerHTML = '';
 				
@@ -67637,26 +67648,28 @@ qatar,80
 				new AMT___site_scrapes().scrape({
 					site: 'http://www.yellowpages.com/search',
 					url: u,
-					callback_function: Peter_Heyneman_find_phone__YellowPages_process
+					callback_function: find_phone__YellowPages_process
 				});
 			}
-			//
-			function Peter_Heyneman_google_find_phone__setll(lat, lng) {
+			/**
+			 * function google_find_phone__setll
+			 */
+			function google_find_phone__setll(lat, lng) {
 				ll.lat = lat;
 				ll.lng = lng;
-				Peter_Heyneman_google_find_phone(); // do both
-				// 	// 
+				google_find_phone(); // Init Google
+				find_phone__FB(); // Init FB
 			}
-			
-			
-			function Peter_Heyneman_google_find_phone() {
+			/**
+			 * function
+			 */
+			function google_find_phone() {
 				
 				d1.innerHTML = '';
 				var dv = document.createElement('div');
 				d1.appendChild(dv);
 				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
 				dv.innerText = d2.value;
-				
 				
 				// 2
 				var u;
@@ -67676,6 +67689,7 @@ qatar,80
 				//u+= '&name=';
 				//u+= '&name='+encodeURIComponent(b[0].innerText);
 				
+				// Xhr request.
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
@@ -67683,35 +67697,14 @@ qatar,80
 						var rs = response.responseText;
 						
 						rs = JSON.parse(rs);
-						
 						console.log(rs);
-						
-						
 						
 						if (!rs.results || !rs.results.length) {
 							d1.innerHTML += '0';
-							
-							Peter_Heyneman_find_phone__check_no_good_match();
-							Peter_Heyneman_find_phone__FB();
-							
-							//~ if (AMT__Global_Vars.isPreview) {
-								//~ 
-								//~ 
-								//~ 
-							//~ } else {
-								//~ 
-							//~ }
+							//~ find_phone__check_no_good_match();
+							//~ find_phone__FB();
 							return;
 						}
-						
-						// here?
-						//~ d1.innerHTML = '';
-						//~ console.log(AMT__Global_Vars.isPreview);
-						// not auto!!
-						//~ if (AMT__Global_Vars.isPreview) {
-							//~ AMT___Floater.accept();
-							//~ return;
-						//~ }
 						
 						var x;
 						var icon;
@@ -67769,7 +67762,7 @@ qatar,80
 							dv.onclick = function() {
 								dv.onclick = function() {}; // clear!
 								this.style.backgroundColor = 'LightGreen';
-								Peter_Heyneman_google_find_phone__profile(this);
+								google_find_phone__profile(this);
 							}
 							
 							m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
@@ -67797,22 +67790,21 @@ qatar,80
 						dv.setAttribute('style', 'height:1400px;');
 						d1.appendChild(dv);
 							
-						// Always run this here.
-						//
-						//
-						//
-						Peter_Heyneman_find_phone__FB();
+						//~ // Always run this here.
+						//~ //
+						//~ //
+						//~ //
+						//~ find_phone__FB();
 					}
 				});
 			}
-			
 			/**
-			 * Function Peter_Heyneman_google_find_phone__profile
+			 * function google_find_phone__profile
 			 * 
 			 * Update Oct10 2014:
 			 * Add .url from response.
 			 */
-			function Peter_Heyneman_google_find_phone__profile(div) {
+			function google_find_phone__profile(div) {
 				
 				//greference
 				
