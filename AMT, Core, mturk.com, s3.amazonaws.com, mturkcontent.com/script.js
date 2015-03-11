@@ -35846,17 +35846,17 @@ function MT__RUN() {
 		document.body.appendChild(d2);
 		// Change map button, for google
  		var d3 = document.createElement('button');
- 		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:78px;');
+ 		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
 		d3.innerText = 'Change Map (Google+Name)';
 		document.body.appendChild(d3);
 		// Change map button, for bing
 		var d3b = document.createElement('button');
-		d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:78px;');
+		d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:20px;');
 		document.body.appendChild(d3b);
 		d3b.innerText = 'Change Map (Bing+Name)';
 		// Hide/show street view images
 		var d3c = document.createElement('button');
-		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:78px;');
+		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:20px;');
 		document.body.appendChild(d3c);
 		d3c.innerText = 'Hide/Show Street View';
 		var middleLine = document.createElement('div');
