@@ -57039,9 +57039,11 @@ function MT__RUN() {
 			
 			var o = {
 				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
+				compClean: null,
 				addr: td[3].innerText.trim().replace(/,/g," "),
 				city: city,
 				state: state,
+				cleanZip: null,
 				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
 				yelp_url: td[7].innerText.trim(),
 				q: document.getElementById('web_url'),
@@ -57059,6 +57061,10 @@ function MT__RUN() {
 				alert('examine');
 				return;
 			}
+			o.compClean = o.comp.replace(/llc$|inc/i,"");
+			var cleanZipReg = /([\d]*)[\s]$/i;
+			o.cleanZip: cleanZipReg.exec(o.addr);
+			o.cleanZip = o
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
 			
@@ -57082,7 +57088,7 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1);
 		}
-		d2.value = o.comp + ", " + o.state;
+		d2.value = o.compClean + ", " + o.state;
 		document.body.appendChild(d2);
 		
 
@@ -57093,7 +57099,7 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1b);
 		}
-		d2b.value = o.comp + ", " + o.city;
+		d2b.value = o.compClean + ", " + o.city;
 		document.body.appendChild(d2b);
 		//
 		var d2c = document.createElement('input');
@@ -57223,6 +57229,8 @@ function MT__RUN() {
 									tmp += '<br><u>' + MT__bold(r[i].location[j], o.bold_addr) + '</u>';
 								} else if (j== "street"){
 									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).bold_string;
+								} else if (j== "zip"){
+									tmp += '<br>' + MT__bold(r[i].location[j], [o.cleanZip], {color:'green'}).bold_string;
 								}else {
 									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
 								}
