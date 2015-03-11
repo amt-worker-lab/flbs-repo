@@ -67300,7 +67300,7 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b, d1c
+					d1, d1b, d1c, d1d
 				],
 				offset: 80 // offset top
 			});
@@ -67320,48 +67320,45 @@ qatar,80
 			// google places api
 			MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
 			
-			/**
-			 * function
-			 */
-			function find_phone__check_no_good_match(){
-				no_good_match++;
-				
-				if (no_good_match >= 2) {
-					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.skip();
-					}
-				}
-			}
+			//~ /**
+			 //~ * function
+			 //~ */
+			//~ function find_phone__check_no_good_match(){
+				//~ no_good_match++;
+				//~ 
+				//~ if (no_good_match >= 2) {
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.skip();
+					//~ }
+				//~ }
+			//~ }
 			/**
 			 * function
 			 */
 			function find_phone__FB() {
 				
 				d1b.innerHTML = '';
-				
 				var dv = document.createElement('div');
 				d1b.appendChild(dv);
 				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
 				dv.innerText = d2.value;
 				
+				// URL
 				var u = 
-					
 					'https://graph.facebook.com/search'+
 					'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
 					//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
 					'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
-					'&limit=8'+
+					'&limit=10'+ //8 to 10 Mar11,2015
 					'&center='+ll.lat+','+ll.lng+ //
 					'&distance=30000'+ // 30k ~ 19mi
 					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 				
 					//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
-					
-				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-				
+					// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				
+				// Xhr
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: u,
@@ -67371,9 +67368,11 @@ qatar,80
 						
 						var r = JSON.parse(rs);
 						if (!r.data) { // No data?
-							var dv = document.createElement('div');
-							d1b.appendChild(dv);
-							dv.innerText = '0';
+							d1b.appendChild('0'.div());
+							// 
+							o.stats.fb_search_complete = true;
+							check_if_yp_init();
+							// quit
 							return;
 						}
 						r = r.data;
@@ -67381,10 +67380,11 @@ qatar,80
 						
 						// 0 results.
 						if (r.length == 0) {
-							var dv = document.createElement('div');
-							d1b.appendChild(dv);
-							dv.innerText = '0'
-							find_phone__check_no_good_match();
+							d1b.appendChild('0'.div());
+							// 
+							o.stats.fb_search_complete = true;
+							check_if_yp_init();
+							// quit
 							return;
 						}
 						// More than 0 results.
@@ -67404,6 +67404,9 @@ qatar,80
 							if (r[i].type) {
 								if (r[i].type == 'event') continue;
 							}
+							
+							// Here? Increment result count.
+							o.stats.num_fb_results++;
 							
 							// Talking about count
 							if (r[i].talking_about_count != null) {
@@ -67507,8 +67510,20 @@ qatar,80
 						
 						// 
 						o.stats.fb_search_complete = true;
+						check_if_yp_init();
 					}
 				});
+			}
+			function check_if_yp_init() {
+				if  (
+					o.stats.fb_search_complete &&
+					o.stats.google_search_complete &&
+					o.stats.num_fb_results == 0 &&
+					o.stats.num_google_results == 0
+					)
+				{
+					find_phone__YellowPages; // Init YP.
+				}
 			}
 			/**
 			 * 
@@ -67537,29 +67552,29 @@ qatar,80
 				if (!opts || !opts.response || !opts.response.vars) return;
 				
 				if (opts.response.vars.error != null) {
-					console.log(d1c);
-					d1c.style.backgroundColor = 'pink !important';
-					d1c.style.border = '2px solid pink';
+					d1d.style.backgroundColor = 'pink !important';
+					d1d.style.border = '2px solid pink';
 					return;
 				}
 				
 				var dv = document.createElement('div');
 				dv.setAttribute('style', 'border-bottom:1px solid teal');
-				d1c.appendChild(dv);
+				d1d.appendChild(dv);
 				dv.innerText = opts.response.vars.num_search_results + ' results';
 				
 				if (opts.response.vars.num_search_results == 0) {
 					return;
 				}
 							
+				// Loop
 				var c = 0;
 				var found = false;
 				var r = opts.response.vars.results;
-				
 				for (var i in r) {
 					
 					//r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
 					
+					// Distance
 					var dist = '-';
 					var dist_bgc = '';
 					if (r[i].distance_from_address) {
@@ -67570,8 +67585,7 @@ qatar,80
 					
 					// ...
 					var dv = document.createElement('div');
-					d1c.appendChild(dv);
-					
+					d1d.appendChild(dv);
 					dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
 					dv.className = 'exe';
 					dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
@@ -67584,6 +67598,7 @@ qatar,80
 						dv.innerHTML += '-';
 					dv.innerHTML += '<br>P:'+r[i].phones.join(',');
 					
+					// .onclick
 					dv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						
@@ -67620,11 +67635,11 @@ qatar,80
 						}
 					}
 				}
-				
-				if (d1c.innerHTML != '') {
+				// ...
+				if (d1d.innerHTML != '') {
 					var dv = document.createElement('div');
 					dv.setAttribute('style', 'height:1400px;');
-					d1c.appendChild(dv);
+					d1d.appendChild(dv);
 				}
 			}
 			/**
@@ -67632,10 +67647,9 @@ qatar,80
 			 */
 			function find_phone__YellowPages() {
 				
-				d1c.innerHTML = '';
-				
+				d1d.innerHTML = '';
 				var dv = document.createElement('div');
-				d1c.appendChild(dv);
+				d1d.appendChild(dv);
 				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
 				dv.innerText = d2.value;
 				
@@ -67643,8 +67657,8 @@ qatar,80
 				var u = 'http://www.yellowpages.com/search'+
 					'?search_terms='+encodeURIComponent(d2.value)+
 					'&geo_location_terms='+encodeURIComponent(d2b.value);
-					
 				//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				
 				new AMT___site_scrapes().scrape({
 					site: 'http://www.yellowpages.com/search',
 					url: u,
@@ -67680,7 +67694,7 @@ qatar,80
 				u+= '&radius=50000';
 				u+= '&sensor=false';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
-				
+				// Set to MT___host
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				
 				//u+= '&radius=40000'; // 5k = 3.1 mi.
@@ -67701,11 +67715,13 @@ qatar,80
 						
 						if (!rs.results || !rs.results.length) {
 							d1.innerHTML += '0';
-							//~ find_phone__check_no_good_match();
-							//~ find_phone__FB();
+							// 
+							o.stats.google_search_complete = true;
+							check_if_yp_init();
 							return;
 						}
 						
+						// Loop
 						var x;
 						var icon;
 						var count = 0;
@@ -67713,11 +67729,15 @@ qatar,80
 						var m_locn;
 						for (var i in rs.results) {
 							
-							if (i > 10) break; // 8 only!
+							if (i > 20) break; // 8 only!
 							
+							// Increment
+							o.stats.num_google_results++;
+							
+							// ...
 							x = rs.results[i];
 							
-							// dist
+							// Dist
 							//~ geometry: Object
 							//~ location: Object
 							//~ lat: 34.049662
@@ -67785,16 +67805,14 @@ qatar,80
 							}
 							count++;
 						}
-
+						// ...
 						var dv = document.createElement('div');
 						dv.setAttribute('style', 'height:1400px;');
 						d1.appendChild(dv);
-							
-						//~ // Always run this here.
-						//~ //
-						//~ //
-						//~ //
-						//~ find_phone__FB();
+						
+						// ...
+						o.stats.google_search_complete = true;
+						check_if_yp_init();
 					}
 				});
 			}
