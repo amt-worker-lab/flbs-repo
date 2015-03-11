@@ -57027,17 +57027,21 @@ function MT__RUN() {
 			GM_addStyle('.container {position:absolute;top:1020px;}');
 
 			var td = document.getElementsByTagName('td');
-			var cityReg = /,([^,]+),[\s]*IN /gi;
+			var cityReg = /,([^,]+),[\s]*[\w]{2}[\s]*[\d]+/gi;
 			var city = cityReg.exec(td[3].innerText.trim());
 			if(city && city.length) {
 				city = city[1];
 			} else {
 				city = '';
 			}
+			var stateReg = /,[\s]*([\w]{2})[\s]*[\d]*$/
+			var state = stateReg.exec(td[3].innerText.trim())[1].stateAbbrToFull();
+			
 			var o = {
 				comp: td[1].innerText.trim().replace(/ - GESLOTEN/, ''),
 				addr: td[3].innerText.trim().replace(/,/g," "),
 				city: city,
+				state: state,
 				phone:td[5].innerText.trim().replace(/[^\d]/g, ''),
 				yelp_url: td[7].innerText.trim(),
 				q: document.getElementById('web_url'),
@@ -57078,7 +57082,7 @@ function MT__RUN() {
 			this.value = this.value.replace(/\s+/g, ' ').trim();
 			facebookSearch(d1);
 		}
-		d2.value = o.comp + ", Indiana";
+		d2.value = o.comp + ", " + o.state;
 		document.body.appendChild(d2);
 		
 
