@@ -67158,9 +67158,17 @@ qatar,80
 			
 			// Actions
 			d2.onblur = function() {
+				o.stats = {// RESET THIS!!!
+					google_search_complete: false,
+					fb_search_complete: false,
+					yelp_search_complete: false,
+					num_google_results: 0,
+					num_fb_results: 0,
+					yelp_fb_results: 0
+				}
 				this.value = this.value.trim();
 				google_find_phone();
-				find_phone__YellowPages();
+				//~ find_phone__YellowPages();
 			}
 			
 			// vars
@@ -67176,10 +67184,12 @@ qatar,80
 				bad_phones_obj: {}, // bad phones
 				
 				stats: { // stats
-					google_search_complete: false,
-					fb_search_complete: false,
-					num_google_results: 0,
-					num_fb_results: 0
+					google_search_complete:	false,
+					fb_search_complete:		false,
+					yelp_search_complete:	false,
+					num_google_results:		0,
+					num_fb_results:			0,
+					yelp_fb_results:		0
 				}
 			};
 			
@@ -67516,10 +67526,12 @@ qatar,80
 			}
 			function check_if_yp_init() {
 				if  (
-					o.stats.fb_search_complete &&
-					o.stats.google_search_complete &&
-					o.stats.num_fb_results == 0 &&
-					o.stats.num_google_results == 0
+					o.stats.fb_search_complete		&&
+					o.stats.google_search_complete	&&
+					o.stats.yelp_search_complete	&&
+					o.stats.num_fb_results == 0		&&
+					o.stats.num_google_results == 0	&&
+					o.stats.yelp_google_results == 0
 					)
 				{
 					find_phone__YellowPages; // Init YP.
@@ -67673,6 +67685,182 @@ qatar,80
 				ll.lng = lng;
 				google_find_phone(); // Init Google
 				find_phone__FB(); // Init FB
+				yelp(); // Init FB
+			}
+			/**
+			 * function
+			 */
+			function yelp() {
+				d1c.innerHTML = '';
+				d1c.appendChild(
+					d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
+				);
+				var u = 'http://www.yelp.com/search/snippet'+
+				'?find_desc='	+encodeURIComponent(o.name)+
+				'&find_loc='	+encodeURIComponent(o.locn);
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) return;
+						
+						rs = JSON.parse(rs); // Must be valid to continue.
+						
+						console.log(rs);
+						
+						var sh = rs.search_header;
+						var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+						if (r) {
+							r = r[1];
+							d1.innerHTML = r + ' results.';
+						} else {
+							d1.innerHTML = 0 + ' results.';
+						}
+						var div = document.createElement('div'); // hr
+						div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
+						d1.appendChild(div);
+						
+						
+						var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+						var m;
+						while (m = r.exec(rs.search_results)) {
+							
+							// Replace all highlights!
+							m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+							// ...
+							console.log(m);
+							
+							
+							var div = document.createElement('div');
+							div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
+							div.className = 'exe';
+							div.yname = null;
+							div.yhref = null;
+							div.yphone = '';
+							div.yreviews = null;
+							div.ycategories = '';
+							div.ystreet = '';
+							div.ylocn = '';
+							div.yzip = '';
+							div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
+							d1.appendChild(div);
+							
+							
+							// (619) 238-4949
+							// 
+							var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+							if (ph) {
+								ph = __js_clean_html_str(ph[1]).trim();
+								// Format phone
+								ph = ph.replace(/[\- \(\)]/g, '');
+								ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
+								// ...
+								div.yphone = ph;
+							}
+							// Name, href
+							//
+							var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
+							if (reg) {
+								//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
+								div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
+								div.yname = __js_clean_html_str(reg[2]).trim();
+								// Replace "’" with "'" in name
+								div.yname = div.yname.replace(/’/g, "'");
+							}
+							// IF NO NAME THEN DO NOT CONTINUE
+							else {
+								continue;
+							}
+							// reviews
+							//
+							var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
+							if (reg) {
+								reg = reg[1];
+								div.yreviews = reg;
+							}
+							// catg.
+							// e.g. <a href="/search?find_desc=Pok+Pok+Noi&amp;find_loc=Portland%2C+Oregon&amp;cflt=thai">Thai</a>    
+							var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+							if (reg) {
+								reg = reg[1].replace(/<[^>]*>/g, '').trim();
+								div.ycategories = reg;
+							}
+							// addr
+							// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
+							var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
+							if (reg) {
+								reg[1] = __js_clean_html_str(reg[1]).trim();
+								reg[2] = __js_clean_html_str(reg[2]).trim();
+								div.ystreet = reg[1];
+								div.ylocn = reg[2];
+								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+								div.yzip = (z) ? z[1] : null;
+							}
+							console.log(div.ylocn);
+							
+							// Diff
+							console.log(div.yname);
+							console.log(o.name);
+							var df = MT___diffString(
+								div.yname,
+								o.name
+							);
+							
+							// Display
+							div.innerHTML = 
+								':'+ MT__bold(div.yname, o.bold_name) + '<br>' + // diff
+								':'+ div.ystreet + '<br>' +
+								':'+ div.ylocn + (div.yzip != '' ? '('+div.yzip+')' : '') + '<br>' +
+								':'+ div.yphone + '<br>' +
+								':'+ df + '<br>' +
+								'reviews:'+ div.yreviews + '<br>' +
+								'catg.:'+ div.ycategories + '<br>' +
+								':'
+							;
+							var link = document.createElement(a); // Link
+							link.innerText = 'link';
+							link.href = div.yhref;
+							link.onclick = function(e) {
+								window.open(this.href, 'new');
+								e.stopPropagation();
+								e.preventDefault();
+								return false;
+							}
+							div.appendChild(link);
+							div.onclick = function(e) { // div.onclick
+								this.style.backgroundColor = 'aqua';
+								o.q.phone.value = this.yphone;
+								o.q.address.value = this.ystreet;
+								o.q.zip.value = this.yzip;
+								// Name?
+								if  (
+									o.q.name.value.replace(/[^\w\d]/gi, '').toLowerCase() != this.yname.replace(/[^\w\d]/gi, '').toLowerCase()
+									)
+								{
+									o.q.name.style.border = '4px solid blue';
+									o.q.name.value = this.yname;
+								}
+								// y.yurl is already scraped?
+								//
+								if (this.yurl) {
+									o.q.url.value = this.yurl;
+									if (e.ctrlKey)
+										try_submit();
+								}
+								// URL?
+								// If URL is blank then scrape profile page.
+								else if (o.q.url.value == '') {
+									yelp_profile(this);
+								}
+								
+								// Form focus
+								o.q.name.focus();
+							}
+						}
+					}
+				});
 			}
 			/**
 			 * function
