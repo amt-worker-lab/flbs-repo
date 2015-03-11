@@ -33,11 +33,21 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
-	//
-	//
-	//
-	//
 	
+	//
+	//
+	// test
+	//
+	s = 'Is there an official <b>Facebook </b>page for the artist?</span>';
+	if(ih.indexOf(s) != -1) {
+		addToTabsQ();
+	}
+	
+	
+	//
+	//
+	// get date publisher
+	//	
 	s= '<h4>Publish-date year:&nbsp; <strong>2012</strong>, Publish-date month (using number): <strong>';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
