@@ -57062,9 +57062,9 @@ function MT__RUN() {
 				return;
 			}
 			o.compClean = o.comp.replace(/llc$|inc/i,"");
-			var cleanZipReg = /([\d]*)[\s]$/i;
-			o.cleanZip: cleanZipReg.exec(o.addr);
-			o.cleanZip = o
+			var cleanZipReg = /([\d]*)[\s]*$/i;
+			o.cleanZip = cleanZipReg.exec(o.addr)[1];
+			o.cleanZip = o.cleanZip.substring(0, o.cleanZip.length -1);
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
 			
@@ -57382,18 +57382,7 @@ function MT__RUN() {
 						r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
 						if(r) {
 							r = r[1];
-							switch(r) {
-								case 'Yes':
-									document.getElementById('wifi').value = 'Yes';
-									break;
-								case 'No':
-									document.getElementById('wifi').value = 'No';
-									break;
-								case 'Free':
-									document.getElementById('wifi').value = 'Free';
-								default:
-									sbm = false;
-							}
+							document.getElementById('wifi').value = r;
 						}else {
 							console.log('wifi not found');
 							document.getElementById('wifi').value = 'N/A'; // NO
