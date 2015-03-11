@@ -57064,7 +57064,7 @@ function MT__RUN() {
 			o.compClean = o.comp.replace(/llc$|inc/i,"");
 			var cleanZipReg = /([\d]*)[\s]*$/i;
 			o.cleanZip = cleanZipReg.exec(o.addr)[1];
-			o.cleanZip = o.cleanZip.substring(0, o.cleanZip.length -1);
+			o.cleanZip = o.cleanZip.substring(0,o.cleanZip.length - 1);
 			o.bold_comp = o.comp.split(" ");
 			o.bold_addr = o.addr.split(" ");
 			
@@ -57072,240 +57072,240 @@ function MT__RUN() {
 			console.log(o);
 			
 			
-		/* BEGIN ITEMS */
-		var d1 = document.createElement('div');
-		d1 .setAttribute('style','position:absolute;top:82px;left:0%;width:50%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1);
-		//
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:82px;left:50%;width:49%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1b);
-		//
-		var d2 = document.createElement('textarea');
-		d2.setAttribute('type','text');
-		d2.setAttribute('style','position:absolute;top:20px;width:30%;height:60px;');
-		d2.onblur = function() {
-			this.value = this.value.replace(/\s+/g, ' ').trim();
-			facebookSearch(d1);
-		}
-		d2.value = o.compClean + ", " + o.state;
-		document.body.appendChild(d2);
-		
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1 .setAttribute('style','position:absolute;top:82px;left:0%;width:50%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:82px;left:50%;width:49%;height:1000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:20px;width:30%;height:60px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebookSearch(d1);
+			}
+			d2.value = o.compClean + ", " + o.state;
+			document.body.appendChild(d2);
+			
 
-		//
-		var d2b = document.createElement('textarea');
-		d2b.setAttribute('style','position:absolute;top:20px;left:30%;width:30%;height:60px;');
-		d2b.onblur = function() {
-			this.value = this.value.replace(/\s+/g, ' ').trim();
-			facebookSearch(d1b);
-		}
-		d2b.value = o.compClean + ", " + o.city;
-		document.body.appendChild(d2b);
-		//
-		var d2c = document.createElement('input');
-		d2c.setAttribute('type','button');
-		d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
-		d2c.value = 'N/A';
-		d2c.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			var x = o.qfbUrl;
-			if (x.value == '' || x.value == 'http://') {
-				x.value = 'N/A';
-				new AMT___core_factory().nextTab();
-				doSubmit();
+			//
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:20px;left:30%;width:30%;height:60px;');
+			d2b.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebookSearch(d1b);
 			}
-		}
-		document.body.appendChild(d2c);
-		
-		var d3 = document.createElement('div');
-		d3.setAttribute('style','position:absolute;top:0px;left:10px;height:20px');
-		d3.innerText = td[3].innerText;
-		document.body.appendChild(d3);
-		/* END ITEMS */
-			
-		yelp_search_scrape()
-		facebookSearch(d1);
-		facebookSearch(d1b);
-		
-		function facebookSearch(div) {
-			var out = div;
-			out.innerHTML = '';
-			
-			var v;
-			if (out == d1)
-				v = d2.value;
-			else
-				v = d2b.value;
-				
-			var u = 
-				'https://graph.facebook.com/search'+
-				'?q='+encodeURIComponent(v)+'&type=user&type=page'+
-				'&fields=category,id,name,likes,talking_about_count,location,link'+
-				'&limit=8'+
-				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-			
-			
-			//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
-				//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
-			//~ }
-			
-			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-			
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) return;
-					
-					var r = JSON.parse(rs);
-					
-					if (!r.data) {
-						out.innerHTML = '!r.data';
-						return;
-					}
-					
-					r = r.data;
-					console.log(r);
-					
-					var c = 0;
-					//~ var found		= false;
-					//~ var found_a_band= false;
-					for (var i in r) {
-						
-						if (r[i].type) {
-							if (r[i].type == 'event') continue;
-						}
-						
-						if (r[i].talking_about_count != null) {
-						} else
-							r[i].talking_about_count = '';
-						if (r[i].likes != null) {
-						} else
-							r[i].likes = '';
-						
-						if (r[i].location) {
-							if (r[i].location.latitude) {
-								delete r[i].location.latitude;
-							}
-							if (r[i].location.longitude) {
-								delete r[i].location.longitude;
-							}
-						}
-						
-						//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-						
-						var div = document.createElement('div');
-						div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
-						out.appendChild(div);
-						
-						div.className	= r[i].link;
-						div.fblikes		= r[i].likes * 1;
-						div.bgc = false;
-						
-						//~ if (div.fblikes < 4) {
-							//~ div.style.backgroundColor = '#aaa';
-							//~ div.bgc = true;
-						//~ }
-						//~ 
-						var tmp = '';
-						console.log(r);
-						//console.log(o.bold_comp);
-						//console.log(r[i].name);
-						tmp += MT__bold(r[i].name, o.bold_comp);
-						
-						
-						//~ var x = out.getElementsByTagName('input');
-						//~ x = x[x.length - 1];
-						//~ x.id = y;
-						
-						tmp += '<br>likes:<b>'+r[i].likes+'</b>';
-						tmp += '<br>talking_about_count:'+r[i].talking_about_count;
-						
-						if (r[i].location) {
-							for (var j in r[i].location) {
-								if(j == "city") {
-									tmp += '<br><u>' + MT__bold(r[i].location[j], o.bold_addr) + '</u>';
-								} else if (j== "street"){
-									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).bold_string;
-								} else if (j== "zip"){
-									tmp += '<br>' + MT__bold(r[i].location[j], [o.cleanZip], {color:'green'}).bold_string;
-								}else {
-									tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
-								}
-							}
-						}
-						
-						if (r[i].category) {
-							var x = r[i].category;
-							tmp += '<br>'+x;
-						}
-						
-						div.innerHTML = tmp;
-						
-						div.onclick = function() {
-							o.qfbUrl.value = this.className;
-							validate();
-						}
-						
-						// Init this div if first!
-						//
-						//
-						if (out == d1 && c == 0) {
-							//div.click();
-						}
-						
-						//~ if (div.fblikes >= 4) {
-						//~ }
-						div.onmouseover = function() {
-							var x = document.getElementsByClassName(this.className);
-							for (var i in x) {
-								if (i == 'length') break;
-								if(document.body.style.backgroundColor != 'blue') {
-									x[i].style.backgroundColor = 'LightGreen';
-								} else {
-									x[i].style.backgroundColor = 'blue';
-								}
-							}
-						}
-						div.onmouseout = function() {
-							var x = document.getElementsByClassName(this.className);
-							for (var i in x) {
-								if (i == 'length') break;
-								x[i].style.backgroundColor = '';
-							}
-						}
-						
-						c++;
-					}
-					
-					if (c == 0) {
-						out.innerHTML = '0';
-						return;
-					}
-					else
-					{
-						var div = document.createElement('div');
-						div.setAttribute('style', 'height:2000px;');
-						out.appendChild(div);
-					}
-					
-					//~ var x = document.getElementsByClassName('exe');
-					//~ for (var i in x) {
-						//~ if (!x[i]) continue;
-						//~ x[i]
-					//~ }
+			d2b.value = o.compClean + ", " + o.city;
+			document.body.appendChild(d2b);
+			//
+			var d2c = document.createElement('input');
+			d2c.setAttribute('type','button');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+			d2c.value = 'N/A';
+			d2c.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				var x = o.qfbUrl;
+				if (x.value == '' || x.value == 'http://') {
+					x.value = 'N/A';
+					new AMT___core_factory().nextTab();
+					doSubmit();
 				}
-			});
-		}
-		function validate() {
-//			if(o.scrapeSuccess && o.qfbUrl.value != "" && o.finishedScraping) {
-			if(o.qfbUrl.value != "" && o.finishedScraping) {
-				new AMT___core_factory().nextTab();
-				doSubmit();
 			}
-		}
+			document.body.appendChild(d2c);
+			
+			var d3 = document.createElement('div');
+			d3.setAttribute('style','position:absolute;top:0px;left:10px;height:20px');
+			d3.innerText = td[3].innerText;
+			document.body.appendChild(d3);
+			/* END ITEMS */
+				
+			yelp_search_scrape()
+			facebookSearch(d1);
+			facebookSearch(d1b);
+			
+			function facebookSearch(div) {
+				var out = div;
+				out.innerHTML = '';
+				
+				var v;
+				if (out == d1)
+					v = d2.value;
+				else
+					v = d2b.value;
+					
+				var u = 
+					'https://graph.facebook.com/search'+
+					'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+					'&fields=category,id,name,likes,talking_about_count,location,link'+
+					'&limit=8'+
+					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+				
+				
+				//~ if (out == d1b && ll.lat != '' && ll.lng != '') {
+					//~ u += '&center='+ll.lat+','+ll.lng+'&distance=100'; // meters?
+				//~ }
+				
+				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						
+						var r = JSON.parse(rs);
+						
+						if (!r.data) {
+							out.innerHTML = '!r.data';
+							return;
+						}
+						
+						r = r.data;
+						console.log(r);
+						
+						var c = 0;
+						//~ var found		= false;
+						//~ var found_a_band= false;
+						for (var i in r) {
+							
+							if (r[i].type) {
+								if (r[i].type == 'event') continue;
+							}
+							
+							if (r[i].talking_about_count != null) {
+							} else
+								r[i].talking_about_count = '';
+							if (r[i].likes != null) {
+							} else
+								r[i].likes = '';
+							
+							if (r[i].location) {
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
+							}
+							
+							//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+							out.appendChild(div);
+							
+							div.className	= r[i].link;
+							div.fblikes		= r[i].likes * 1;
+							div.bgc = false;
+							
+							//~ if (div.fblikes < 4) {
+								//~ div.style.backgroundColor = '#aaa';
+								//~ div.bgc = true;
+							//~ }
+							//~ 
+							var tmp = '';
+							console.log(r);
+							//console.log(o.bold_comp);
+							//console.log(r[i].name);
+							tmp += MT__bold(r[i].name, o.bold_comp);
+							
+							
+							//~ var x = out.getElementsByTagName('input');
+							//~ x = x[x.length - 1];
+							//~ x.id = y;
+							
+							tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+							tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+							
+							if (r[i].location) {
+								for (var j in r[i].location) {
+									if(j == "city") {
+										tmp += '<br><u>' + MT__bold(r[i].location[j], o.bold_addr) + '</u>';
+									} else if (j== "street"){
+										tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr, {color:'blue'}).bold_string;
+									} else if (j== "zip"){
+										tmp += '<br>' + MT__bold(r[i].location[j], [o.cleanZip], {color:'green'}).bold_string;
+									}else {
+										tmp += '<br>' + MT__bold(r[i].location[j], o.bold_addr);
+									}
+								}
+							}
+							
+							if (r[i].category) {
+								var x = r[i].category;
+								tmp += '<br>'+x;
+							}
+							
+							div.innerHTML = tmp;
+							
+							div.onclick = function() {
+								o.qfbUrl.value = this.className;
+								validate();
+							}
+							
+							// Init this div if first!
+							//
+							//
+							if (out == d1 && c == 0) {
+								//div.click();
+							}
+							
+							//~ if (div.fblikes >= 4) {
+							//~ }
+							div.onmouseover = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									if(document.body.style.backgroundColor != 'blue') {
+										x[i].style.backgroundColor = 'LightGreen';
+									} else {
+										x[i].style.backgroundColor = 'blue';
+									}
+								}
+							}
+							div.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									x[i].style.backgroundColor = '';
+								}
+							}
+							
+							c++;
+						}
+						
+						if (c == 0) {
+							out.innerHTML = '0';
+							return;
+						}
+						else
+						{
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:2000px;');
+							out.appendChild(div);
+						}
+						
+						//~ var x = document.getElementsByClassName('exe');
+						//~ for (var i in x) {
+							//~ if (!x[i]) continue;
+							//~ x[i]
+						//~ }
+					}
+				});
+			}
+			function validate() {
+	//			if(o.scrapeSuccess && o.qfbUrl.value != "" && o.finishedScraping) {
+				if(o.qfbUrl.value != "" && o.finishedScraping) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+			}
 			function yelp_search_scrape() {
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -57317,21 +57317,6 @@ function MT__RUN() {
 						
 						var r;
 						var sbm = true;
-						
-						// rating
-						//~ r = /<meta itemprop="ratingValue" content="([\d\.]+)">/.exec(rs); //<meta itemprop="ratingValue" content="4.5">
-						//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/^([\d])\.0[^$]*$/, '$1');
-								//~ var found = false;
-								//~ console.log('r for rating value:' + r);
-								//~ if(r) {
-									//~ found = true;
-									//~ document.getElementById('yelp_rating').value = r;
-								//~ }
-						//~ }
-						//~ if (!found)
-							//~ sbm = false;
 						
 						// price
 						r = /<span class="business-attribute price-range" itemprop="priceRange">([\$£]+)<\/span>/.exec(rs);
@@ -57379,10 +57364,11 @@ function MT__RUN() {
 						}
 						
 						//Wi-fi
-						r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+						r=/<dt class="attribute-key">[\r\n\t\s]+Wi-Fi[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No|Paid|Free)/.exec(rs);
 						if(r) {
 							r = r[1];
 							document.getElementById('wifi').value = r;
+							
 						}else {
 							console.log('wifi not found');
 							document.getElementById('wifi').value = 'N/A'; // NO
