@@ -1,3 +1,6 @@
+
+
+
 // ==UserScript==
 // @name			AMT, Core, mturk.com, s3.amazonaws.com, mturkcontent.com
 // @include			https://www.mturk.com/*
@@ -34,14 +37,8 @@ var beginRunTime = new Date().getTime();
  */
 function MT__RUN() {
 	
-	//
-	//
-	// test
-	//
-	s = 'Is there an official <b>Facebook </b>page for the artist?</span>';
-	if(ih.indexOf(s) != -1) {
-		addToTabsQ();
-	}
+	
+	
 	
 	
 	//
@@ -57025,6 +57022,8 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('table {position:absolute;top:1200px;}');
 			GM_addStyle('.container {position:absolute;top:1020px;}');
+
+//Clover, SC 29710
 
 			var td = document.getElementsByTagName('td');
 			var cityReg = /([^,]+),[\s]*[\w]{2}[\s]*[\d]+/gi;
