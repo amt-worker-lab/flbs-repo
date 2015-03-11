@@ -387,8 +387,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var winId = sender.tab.windowId;
 		
 		
-		chrome.tabs.move(tabId, {index: 0}, function (tab) {
-				//console.log('Moved tab');
+		chrome.tabs.move(tabId, {window: winId, index: 1}, function (tab) {
+				console.log('Moved tab');
 			});
 		
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
