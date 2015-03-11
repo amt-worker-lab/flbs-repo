@@ -67093,777 +67093,787 @@ qatar,80
 	//~ s = '<li>For the business below, enter the official 10 digit US phone number from their website or other official source.';
 	//~ s = '<li>For the business below, enter the official 10 digit phone number.</li>';
 	//~ s = 'For the business below, enter the official 10 digit US phone number from their website or other official source';
-	s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
-	s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
-	s3= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
-	s4= 'For the U.S. Business below, enter the official U.S. 10 digit phone number.';
+	var s = '	<li>For the business below, enter the official 10 digit phone number.</li>';
+	var s2= 'For the business below, enter the official 10 digit US phone number from their website or other official source';
+	var s3= '	<li>Please do not include any special characters (no (, - spaces or .). Do not put 1 in front of the number.</li>';
+	var s4= 'For the U.S. Business below, enter the official U.S. 10 digit phone number.';
+	var s5= '<h3>For the business below, enter the official <strong><u>10 digit</u></strong> US phone number from their preferably their official&nbsp;website or some other source.</h3>';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1 ||
 		ih.indexOf(s3) != -1 ||
-		ih.indexOf(s4) != -1
+		ih.indexOf(s4) != -1 ||
+		ih.indexOf(s5) != -1
 		)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
-		
-		GM_addStyle('body {margin-top:1000px;}');
-		
-		//GM_addStyle('input {width:96%;}');
-		//GM_addStyle('#submitButton {width:96%;height:80px;}');
-		
-		GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
-		
-		GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
-		
-		var q  = document.getElementById('Q1Url');
-		var q2 = document.getElementById('Q1Url2');
-		
-		var b = document.getElementsByTagName('b');
-		var strong = document.getElementsByTagName('strong');
-		
-		document.getElementById('mturk_form').onsubmit = function() {
-			q.value = q.value.trim();
-			var x = q.value.replace(/[^\d]/g,'');
-			if (x.length != 10) return false;
-			if (q1.value == '' || q2.value == '')
-				return false;
-		}
-		
-		/* BEGIN ITEMS */
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;left:0%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
-		document.body.appendChild(d1);
-		// d1b
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;left:33%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
-		document.body.appendChild(d1b);
-		// d1c
-		var d1c = document.createElement('div');
-		d1c.setAttribute('style','position:absolute;left:66%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
-		document.body.appendChild(d1c);
-		//
-		d = document.createElement('input');
-		d.setAttribute('id','d2');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		d2.style.position='absolute';
-		d2.style.top='0px';
-		d2.style.left='0%';
-		d2.style.width='99%';
-		d2.style.height='30px';
-		//
-		var d2b = document.createElement('input');
-		document.body.appendChild(d2b);
-		d2b.style.position='absolute';
-		d2b.style.top='30px';
-		d2b.style.left='0%';
-		d2b.style.width='99%';
-		d2b.style.height='30px';
-		/* END ITEMS */
-		
-		// Actions
-		d2.onblur = function() {
-			this.value = this.value.trim();
-			Peter_Heyneman_google_find_phone();
-			Peter_Heyneman_find_phone__YellowPages();
-		}
-		
-		//
-		// IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED. THIS NUMBER CHANGES WITH EVERY NEW HIT.
-		var by_phone = false;
-		if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
-			by_phone = true;
-		}
-		// Not by phone
-		if (!by_phone) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('body {margin-top:1000px;}');
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			//GM_addStyle('input {width:96%;}');
+			//GM_addStyle('#submitButton {width:96%;height:80px;}');
 			
-			// New Method?
+			var q  = document.getElementById('Q1Url');
+			var q2 = document.getElementById('Q1Url2');
+			var b = document.getElementsByTagName('b');
+			var strong = document.getElementsByTagName('strong');
+			
+			document.getElementById('mturk_form').onsubmit = function() {
+				q.value = q.value.trim();
+				var x = q.value.replace(/[^\d]/g,'');
+				if (x.length != 10) return false;
+				if (q1.value == '' || q2.value == '')
+					return false;
+			}
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			document.body.appendChild(d1);
+			// d1b
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;left:33%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			document.body.appendChild(d1b);
+			// d1c
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;left:66%;top:62px;width:33%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			document.body.appendChild(d1c);
 			//
-			//Charlestown Yoga (Charlestown MA)
-			var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):(&nbsp;| )<b>([^<]+)<\/b><\/p>/.exec(ih);
-			if (reg) {
-				reg = reg[2];
-				var reg2 = / \(([^\)]*)\) *$/.exec(reg);
-				if (reg2) {
-					reg2 = reg2[1];
-					reg = reg.replace('(' + reg2 + ')', '');
-				} else {
-					reg2 = '';
-				}
-				var o = {
-					name: __js_clean_html_str(reg) .trim(),
-					locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-				}
-			} else {
+			d = document.createElement('input');
+			d.setAttribute('id','d2');
+			document.body.appendChild(d);
+			var d2 = document.getElementById('d2');
+			d2.style.position='absolute';
+			d2.style.top='0px';
+			d2.style.left='0%';
+			d2.style.width='99%';
+			d2.style.height='30px';
+			//
+			var d2b = document.createElement('input');
+			document.body.appendChild(d2b);
+			d2b.style.position='absolute';
+			d2b.style.top='30px';
+			d2b.style.left='0%';
+			d2b.style.width='99%';
+			d2b.style.height='30px';
+			/* END ITEMS */
 			
-				// Regular / old method
-				//
-				var o = {
-					name: b[0].innerText.trim(),
-					locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+			// Actions
+			d2.onblur = function() {
+				this.value = this.value.trim();
+				Peter_Heyneman_google_find_phone();
+				Peter_Heyneman_find_phone__YellowPages();
+			}
+			
+			// vars
+			var o = {
+				name: null,
+				locn: null,
+				name_arr: [],
+				locn_arr: [],
+				name_cln: null,
+				locn_cln: null,
+				
+				bad_phones: [], // bad phones
+				bad_phones_obj: {} // bad phones
+			};
+			
+			// Biz name
+			//<p style="line-height: 20.7999992370605px;">Business Name (U.S. City and State):&nbsp;<b>John Kruger Construction (Lake Hughes, CA)</b></p>
+			// John Kruger Construction \(Lake Hughes, CA\)
+			var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):&nbsp;<b>([^<]+)<\/b><\/p>/.exec(ih);
+			if (reg) {
+				reg = __js_clean_html_str(reg[1]).trim();
+				var tmpcs = / *\(([^\)]*)\)$/.exec(reg);
+				if (tmpcs) {
+					o.name = reg.replace(tmpcs[0], '');
+					o.locn = tmpcs[1].trim().replace(/ (\d{4})$/, ' 0$1') // Add 0
+					
+					o.name_arr = o.name.clean_string_to_array();
+					o.locn_arr = o.locn.clean_string_to_array();
+					
+					o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+					o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 				}
 			}
-			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
-		}
-		// Is by phone
-		if (by_phone) {
 			
-			var reg = /<em>Business Name with city and state:<\/em> <b>([^<]+)<\/b>/.exec(ih);
-			if (reg) {
-				var reg2 = / ([^ ]+ [A-Z]{2})$/.exec(reg[1]);
-				var o = {
-					name: __js_clean_html_str(reg[1]).trim(),
-					locn: __js_clean_html_str(reg2[1]).trim()
-				};
-				o.name = o.name.replace(o.locn, ''); // string replacement
-			} else {
-				exit(reg);
-			}
-			// New Method?
 			//
-			//Charlestown Yoga (Charlestown MA)
-			// REMOVED U\.S\. 
-			//~ var reg = /<p>Business Name \((U\.S\. *|)City and State\): <b>([^<]+)<\/b><\/p>/.exec(ih);
-			//~ if (reg) {
-				//~ reg = reg[2];
-				//~ var reg2 = / \(([^\)]*)\) *$/.exec(reg);
-				//~ if (reg2) {
-					//~ reg2 = reg2[1];
-					//~ reg = reg.replace('(' + reg2 + ')', '');
-				//~ } else {
-					//~ reg2 = '';
-				//~ }
-				//~ var o = {
-					//~ name: __js_clean_html_str(reg) .trim(),
-					//~ locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-				//~ }
-			//~ } else {
-				//~ if(true) 
-					//~ console.log(b);
-					//~ console.log(o);
-					//~ exit('123');
-				//~ }
-				//~ else if(true) {
-					//~ var o = {
-						//~ name:		b[2].innerText.trim(),
-						//~ locn:		b[3].innerText.trim().replace(/ (\d{4})$/, ' 0$1'),
+			// IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED. THIS NUMBER CHANGES WITH EVERY NEW HIT.
+			var by_phone = false;
+			if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
+				by_phone = true;
+			}
+			if (ih.indexOf('Not interested in information&nbsp;fromThumbtack websites or these phone numbers:') != -1) {
+				by_phone = true;
+			}
+			// innerHTML reg for phone #s.
+			if (by_phone) {
+				var reg = /(\d{3}-\d{3}-\d{4})/g;
+				var m;
+				while (m = reg.exec(ih)) {
+					o.bad_phones.push(m[0]);
+					o.bad_phones_obj[ m[0] ] = true;
+				}
+			}
+			
+			// Not by phone
+			if (!by_phone) {
+				
+				//~ // New Method?
+				//~ //
+				//~ //Charlestown Yoga (Charlestown MA)
+				//~ var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):(&nbsp;| )<b>([^<]+)<\/b><\/p>/.exec(ih);
+				//~ if (reg) {
+					//~ reg = reg[2];
+					//~ var reg2 = / \(([^\)]*)\) *$/.exec(reg);
+					//~ if (reg2) {
+						//~ reg2 = reg2[1];
+						//~ reg = reg.replace('(' + reg2 + ')', '');
+					//~ } else {
+						//~ reg2 = '';
 					//~ }
-				//~ }				
-			//~ } 
-			o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
-			o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-			o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-			o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-			o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
-			
-			if (o.bad_phone.length != 10) {
-				alert('Initial phone is bad:' + o.bad_phone);
-				return;
-			}
-		}
-		console.log(o);
-		
-		// Values
-		d2.value  = o.name;
-		d2b.value = o.locn;
-		
-		// ef
-		var ef = new AMT___events_factory();
-		d2.addEventListener('keydown', ef.keydown__blur_field, true);
-		
-		// innerHeight
-		new AMT___core_factory().el_innerHeight({
-			// This set the elements d1,d1b, and d1c
-			// to fill up the whole window, minus their
-			// distance from page top (top:XX pixels;).
-			elements: [
-				d1, d1b, d1c
-			],
-			offset: 80 // offset top
-		});
-		
-		// global lat long
-		var ll = {};
-		
-		// var skip
-		// This is when no FB match and no 20% or higher google matches
-		var no_good_match = 0; // 2 signifies skip
-		
-		//~ // ...
-		//~ new AMT___core_factory().
-			//~ iframe2parent__postMessage( //
-				//~ {
-					//~ action: 'return_and_accept_button__nextTab'
+					//~ var o = {
+						//~ name: __js_clean_html_str(reg) .trim(),
+						//~ locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+					//~ }
+				//~ } else {
+				//~ 
+					//~ // Regular / old method
+					//~ //
+					//~ var o = {
+						//~ name: b[0].innerText.trim(),
+						//~ locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
+					//~ }
 				//~ }
-			//~ );
-		
-		//
-		// INIT
-		// Init yellow pages. Wait for Lat/Long for Google & FB.
-		Peter_Heyneman_find_phone__YellowPages();
-		
-		// google places api
-		MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll, false, true);
-		
-		function Peter_Heyneman_find_phone__check_no_good_match(){
-			no_good_match++;
+				//~ o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+				//~ o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+				//~ o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+				//~ o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+			}
+			// Is by phone
+			if (by_phone) {
+				//~ 
+				//~ var reg = /<em>Business Name with city and state:<\/em> <b>([^<]+)<\/b>/.exec(ih);
+				//~ if (reg) {
+					//~ var reg2 = / ([^ ]+ [A-Z]{2})$/.exec(reg[1]);
+					//~ var o = {
+						//~ name: __js_clean_html_str(reg[1]).trim(),
+						//~ locn: __js_clean_html_str(reg2[1]).trim()
+					//~ };
+					//~ o.name = o.name.replace(o.locn, ''); // string replacement
+				//~ } else {
+					//~ exit(reg);
+				//~ }
+				//~ // New Method?
+				//~ //
+				//~ 
+				//~ o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
+				//~ o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+				//~ o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
+				//~ o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
+				//~ o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
+				//~ 
+				//~ if (o.bad_phone.length != 10) {
+					//~ alert('Initial phone is bad:' + o.bad_phone);
+					//~ return;
+				//~ }
+			}
+			console.log(o);
 			
-			if (no_good_match >= 2) {
-				if (AMT__Global_Vars.isPreview) {
-					AMT___Floater.skip();
-					//exit(); // EXIT?
+			// Values
+			d2.value  = o.name;
+			d2b.value = o.locn;
+			
+			// ef
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b, d1c
+				],
+				offset: 80 // offset top
+			});
+			
+			// global lat long
+			var ll = {};
+			
+			// var skip
+			// This is when no FB match and no 20% or higher google matches
+			var no_good_match = 0; // 2 signifies skip
+			
+			//
+			// INIT
+			// Init yellow pages. Wait for Lat/Long for Google & FB.
+			Peter_Heyneman_find_phone__YellowPages();
+			
+			// google places api
+			MT___google_api_geocode(o.locn, Peter_Heyneman_google_find_phone__setll, false, true);
+			
+			function Peter_Heyneman_find_phone__check_no_good_match(){
+				no_good_match++;
+				
+				if (no_good_match >= 2) {
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
+						//exit(); // EXIT?
+					}
 				}
 			}
-		}
-		function Peter_Heyneman_find_phone__FB() {
-			
-			d1b.innerHTML = '';
-			
-			var dv = document.createElement('div');
-			d1b.appendChild(dv);
-			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
-			dv.innerText = d2.value;
-			
-			var u = 
+			function Peter_Heyneman_find_phone__FB() {
 				
-				'https://graph.facebook.com/search'+
-				'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
-				//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
-				'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
-				'&limit=8'+
-				'&center='+ll.lat+','+ll.lng+ //
-				'&distance=30000'+ // 30k ~ 19mi
-				'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-				//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-			
-				//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
+				d1b.innerHTML = '';
 				
-			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-			
-			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-			
-			GM_xmlhttpRequest({ // init
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					if (response.status != 200) return;
+				var dv = document.createElement('div');
+				d1b.appendChild(dv);
+				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+				dv.innerText = d2.value;
+				
+				var u = 
 					
-					var r = JSON.parse(rs);
+					'https://graph.facebook.com/search'+
+					'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
+					//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+					'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
+					'&limit=8'+
+					'&center='+ll.lat+','+ll.lng+ //
+					'&distance=30000'+ // 30k ~ 19mi
+					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+				
+					//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
 					
-					if (!r.data) {
-						//~ d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
-						var dv = document.createElement('div');
-						d1b.appendChild(dv);
-						dv.innerText = '0';
-						return;
-					}
-					
-					r = r.data;
-					console.log(r);
-					
-					if (r.length == 0) {
-						var dv = document.createElement('div');
-						d1b.appendChild(dv);
-						dv.innerText = '0';
+				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+				
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
 						
+						var r = JSON.parse(rs);
 						
-						Peter_Heyneman_find_phone__check_no_good_match();
-						return;
-					} else {
-						if (AMT__Global_Vars.isPreview) {
-							AMT___Floater.accept();
+						if (!r.data) {
+							//~ d1b.style.backgroundColor = 'LightGreen';//innerHTML += '!r.data';
+							var dv = document.createElement('div');
+							d1b.appendChild(dv);
+							dv.innerText = '0';
 							return;
 						}
-					}
-					
-					var c = 0;
-					var found		= false;
-					for (var i in r) {
 						
-						if (r[i].type) {
-							if (r[i].type == 'event') continue;
-						}
+						r = r.data;
+						console.log(r);
 						
-						if (r[i].talking_about_count != null) {
-						} else
-							r[i].talking_about_count = '';
-						if (r[i].likes != null) {
-						} else
-							r[i].likes = '';
-						
-						r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
-						
-						var dist = '-';
-						var dist_bgc = '';
-						if (r[i].location) {
-							//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
-							if (r[i].location.latitude && r[i].location.longitude) {
-								dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
-								if (dist) {
-									dist = Math.round(dist*100) / 100;
-									if (dist*1 >= 4)
-										dist_bgc = 'background-color:aqua;';
-								}
-							}
+						if (r.length == 0) {
+							var dv = document.createElement('div');
+							d1b.appendChild(dv);
+							dv.innerText = '0';
 							
-							if (r[i].location.latitude) {
-								delete r[i].location.latitude;
-							}
-							if (r[i].location.longitude) {
-								delete r[i].location.longitude;
-							}
-						}
-						
-						var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-						
-						// ...
-						var locn__ = '';
-						if (r[i].location) {
-							for (var j in r[i].location) {
-								locn__ += ', ' + r[i].location[j];
-							}
-						}
-						locn__ = locn__.replace(/^,/, '').trim();
-						
-						// ...
-						var dv = document.createElement('div');
-						d1b.appendChild(dv);
-						
-						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
-						dv.className = 'exe';
-						dv.phone = r[i].phone;
-						dv.fblink = r[i].link;
-						dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
-						dv.innerHTML += '<br>Like:'+r[i].likes;
-						dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
-						dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
-						//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
-						
-						dv.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
 							
-							var p = this.phone;
-							
-							//~ if (/[a-z]/i.exec(p)) {
-								//~ q.value = p;
-								//~ q.style.border = '4px solid teal';
-								//~ return;
-							//~ }
-							
-							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
-							
-							q.value = p;
-							if (q2)
-								q2.value = this.fblink;
-							
-							if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
-								d2.value = 'bad phone!';
-								q.style.border = '4px solid teal';
-								return;
-							}
-						
-							if (p.length == 10 && q.value == p) {
-								new AMT___core_factory().nextTab();
-								doSubmit();
-							}
-						}
-						
-						//~ if (r[i].category) {
-							//~ var x = r[i].category;
-							//~ d1.innerHTML += '<br>'+x;
-						//~ }
-					}
-					
-					if (d1b.innerHTML != '') {
-						var dv = document.createElement('div');
-						dv.setAttribute('style', 'height:1400px;');
-						d1b.appendChild(dv);
-					}
-				}
-			});
-		}
-		/**
-		 * 
-		 * Peter_Heyneman_find_phone__YellowPages_process
-		opts.response.vars = {
-			results: [],
-			num_search_results: null, // integer, default=0
-			error: null,
-			error_type: null
-		}
-		 
-		var rslt = {
-			name:					null,	// string
-			address:				null,	// string
-			phones:					[],		// array of strings
-			profile_url:			null,	// string
-			distance_from_address:	null,	// float
-			
-			listing_id:				null	// string, private
-		};
-		*/
-		function Peter_Heyneman_find_phone__YellowPages_process(opts) {
-			
-			console.log(opts);
-			
-			if (!opts || !opts.response || !opts.response.vars) return;
-			
-			if (opts.response.vars.error != null) {
-				console.log(d1c);
-				d1c.style.backgroundColor = 'pink !important';
-				d1c.style.border = '2px solid pink';
-				return;
-			}
-			
-			var dv = document.createElement('div');
-			dv.setAttribute('style', 'border-bottom:1px solid teal');
-			d1c.appendChild(dv);
-			dv.innerText = opts.response.vars.num_search_results + ' results';
-			
-			if (opts.response.vars.num_search_results == 0) {
-				return;
-			}
-						
-			var c = 0;
-			var found = false;
-			var r = opts.response.vars.results;
-			
-			for (var i in r) {
-				
-				//r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
-				
-				var dist = '-';
-				var dist_bgc = '';
-				if (r[i].distance_from_address) {
-					dist = Math.round(r[i].distance_from_address*100) / 100;
-					if (dist*1 > 4)
-						dist_bgc = 'background-color:aqua;';
-				}
-				
-				// ...
-				var dv = document.createElement('div');
-				d1c.appendChild(dv);
-				
-				dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
-				dv.className = 'exe';
-				dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
-				dv.link = r[i].profile_url;
-				dv.innerHTML  = MT__bold(r[i].name, o.name_arr);
-				dv.innerHTML += '('+dist+')<br>';
-				if (r[i].address != null)
-					dv.innerHTML += MT__bold(r[i].address, o.locn_arr);
-				else
-					dv.innerHTML += '-';
-				dv.innerHTML += '<br>P:'+r[i].phones.join(',');
-				
-				dv.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					
-					var p = this.phone;
-					if (p == null) return;
-					
-					//~ if (/[a-z]/i.exec(p)) {
-						//~ q.value = p;
-						//~ q.style.border = '4px solid teal';
-						//~ return;
-					//~ }
-					
-					p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
-					
-					q.value = p;
-					if (q2)
-						q2.value = this.link;
-					
-					if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
-						d2.value = 'bad phone!';
-						q.style.border = '4px solid teal';
-						return;
-					}
-				
-					if (p.length == 10 && q.value == p) {
-						new AMT___core_factory().nextTab();
-						doSubmit();
-					}
-				}
-			}
-			
-			if (d1c.innerHTML != '') {
-				var dv = document.createElement('div');
-				dv.setAttribute('style', 'height:1400px;');
-				d1c.appendChild(dv);
-			}
-		}
-		function Peter_Heyneman_find_phone__YellowPages() {
-			
-			d1c.innerHTML = '';
-			
-			var dv = document.createElement('div');
-			d1c.appendChild(dv);
-			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
-			dv.innerText = d2.value;
-			
-			// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
-			var u = 'http://www.yellowpages.com/search'+
-				'?search_terms='+encodeURIComponent(d2.value)+
-				'&geo_location_terms='+encodeURIComponent(d2b.value);
-				
-			//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-			new AMT___site_scrapes().scrape({
-				site: 'http://www.yellowpages.com/search',
-				url: u,
-				callback_function: Peter_Heyneman_find_phone__YellowPages_process
-			});
-		}
-		//
-		function Peter_Heyneman_google_find_phone__setll(lat, lng) {
-			ll.lat = lat;
-			ll.lng = lng;
-			Peter_Heyneman_google_find_phone(); // do both
-			// 	// 
-		}
-		
-		
-		function Peter_Heyneman_google_find_phone() {
-			
-			d1.innerHTML = '';
-			var dv = document.createElement('div');
-			d1.appendChild(dv);
-			dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
-			dv.innerText = d2.value;
-			
-			
-			// 2
-			var u;
-			u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-			u+= 'location='+ll.lat+','+ll.lng; //lat,lng
-			u+= '&keyword=' + encodeURIComponent(d2.value);
-			//u+= '&rankby=distance';
-			u+= '&radius=50000';
-			u+= '&sensor=false';
-			u+= '&key=_GOOGLE_API_KEY_REDACTED_';
-			
-			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-			
-			//u+= '&radius=40000'; // 5k = 3.1 mi.
-			//u+= '&types=accounting|atm|bank';
-			//u+= '&name=' + encodeURIComponent(b[0].innerText);
-			//u+= '&name=';
-			//u+= '&name='+encodeURIComponent(b[0].innerText);
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					rs = JSON.parse(rs);
-					
-					console.log(rs);
-					
-					
-					
-					if (!rs.results || !rs.results.length) {
-						d1.innerHTML += '0';
-						
-						Peter_Heyneman_find_phone__check_no_good_match();
-						Peter_Heyneman_find_phone__FB();
-						
-						//~ if (AMT__Global_Vars.isPreview) {
-							//~ 
-							//~ 
-							//~ 
-						//~ } else {
-							//~ 
-						//~ }
-						return;
-					}
-					
-					// here?
-					//~ d1.innerHTML = '';
-					//~ console.log(AMT__Global_Vars.isPreview);
-					// not auto!!
-					//~ if (AMT__Global_Vars.isPreview) {
-						//~ AMT___Floater.accept();
-						//~ return;
-					//~ }
-					
-					var x;
-					var icon;
-					var count = 0;
-					var m_comp;
-					var m_locn;
-					for (var i in rs.results) {
-						
-						if (i > 10) break; // 8 only!
-						
-						x = rs.results[i];
-						
-						// dist
-						//~ geometry: Object
-						//~ location: Object
-						//~ lat: 34.049662
-						//~ lng: -118.25385
-						var dist = '';
-						var dist_bgc = '';
-						if (x.geometry && x.geometry.location) {
-							dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
-							if (dist) {
-								dist = Math.round(dist*100) / 100;
-								//~ console.log(dist);
-								if (dist*1 >= 4)
-									dist_bgc = 'background-color:aqua;';
-							}
-						}
-
-						var dv = document.createElement('div');
-						d1.appendChild(dv);
-						dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
-						dv.className = 'exe';
-						dv.isAuto = false;
-						dv.greference = x.reference;
-						//~ dv.gurl = x.url.replace(/about\?hl=en-US/, '');
-						
-						var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
-						var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
-						
-						// Check for skip based on bolding!
-						//
-						//						
-						if (tmp_nm.pm.percent_matched * 1 >= 0.4) { // JUST THE NAME!
+							Peter_Heyneman_find_phone__check_no_good_match();
+							return;
+						} else {
 							if (AMT__Global_Vars.isPreview) {
 								AMT___Floater.accept();
 								return;
 							}
 						}
-						//~ if (tmp_nm.pm.percent_matched * 1 + tmp_vc.pm.percent_matched * 1 < 0.2) { // combined 
-						//~ console.log(tmp_nm);
-						// ...
-						dv.innerHTML = tmp_nm.pm.bold_string + '('+dist+')<br>' + tmp_vc.pm.bold_string;
 						
-						dv.onclick = function() {
-							dv.onclick = function() {}; // clear!
-							this.style.backgroundColor = 'LightGreen';
-							Peter_Heyneman_google_find_phone__profile(this);
-						}
-						
-						m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
-						m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
-						
-						if  (
-							count <= 1 &&
-							o.name_cln == m_comp &&
-							o.name_cln.length >= 4 &&
-							(
-								o.locn_cln.indexOf(m_locn) != -1 ||
-								m_locn.indexOf(o.locn_cln) != -1
-							) &&
-							m_locn.length >= 6 &&
-							o.locn_cln.length >= 6
-							)
-						{
-							//~ dv.isAuto = true;
-							//~ dv.click();
-						}
-						count++;
-					}
-
-					var dv = document.createElement('div');
-					dv.setAttribute('style', 'height:1400px;');
-					d1.appendChild(dv);
-						
-					// Always run this here.
-					//
-					//
-					//
-					Peter_Heyneman_find_phone__FB();
-				}
-			});
-		}
-		
-		/**
-		 * Function Peter_Heyneman_google_find_phone__profile
-		 * 
-		 * Update Oct10 2014:
-		 * Add .url from response.
-		 */
-		function Peter_Heyneman_google_find_phone__profile(div) {
-			
-			//greference
-			
-			var u;
-			u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+div.greference+'&sensor=true&key=_GOOGLE_API_KEY_REDACTED_';
-			
-			u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-			
-			var div = div;
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: u,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						d1.innerHTML = response.status;
-						return;
-					}
-					
-					rs = JSON.parse(rs);
-					console.log(rs);
-					if (!rs.result) {
-						d1.innerHTML = 'X';
-						return;
-					}
-					
-					var r;
-					var sbm = true;
-					
-					r = rs.result.formatted_phone_number;
-					if (r) {
-						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
-						
-						div.innerText  += '\n' + r;
-						div.gphone		=  r;
-						div.gurl		= rs.result.url.replace(/about\?hl=en-US/, '');
-						
-						console.log('div:');
-						console.log(div);
-						
-						div.onclick = function() {
-							//~ console.log(this);
-							//~ console.log('isAuto:'+this.isAuto);return;
-							this.style.backgroundColor = 'teal';
+						var c = 0;
+						var found		= false;
+						for (var i in r) {
 							
-							q.value = this.gphone;
-							if (q2)
-								q2.value = this.gurl;
-							
-							if (this.gphone == o.bad_phone || this.gphone.length != 10 || !/^https?:\/\/[^\/]+/.exec(this.gurl)) {
-								d2.value = 'bad phone!';
-								d2.style.backgroundColor = 'LightGreen';
-								q.style.border = '4px solid teal';
-								return;
+							if (r[i].type) {
+								if (r[i].type == 'event') continue;
 							}
 							
-							// Here?
-							new AMT___core_factory().nextTab();
-							doSubmit();
+							if (r[i].talking_about_count != null) {
+							} else
+								r[i].talking_about_count = '';
+							if (r[i].likes != null) {
+							} else
+								r[i].likes = '';
 							
-							//~ // isAuto?
-							//~ if (!this.isAuto)
-								//~ new AMT___core_factory().nextTab();
+							r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
+							
+							var dist = '-';
+							var dist_bgc = '';
+							if (r[i].location) {
+								//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
+								if (r[i].location.latitude && r[i].location.longitude) {
+									dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
+									if (dist) {
+										dist = Math.round(dist*100) / 100;
+										if (dist*1 >= 4)
+											dist_bgc = 'background-color:aqua;';
+									}
+								}
+								
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
+							}
+							
+							var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
+							
+							// ...
+							var locn__ = '';
+							if (r[i].location) {
+								for (var j in r[i].location) {
+									locn__ += ', ' + r[i].location[j];
+								}
+							}
+							locn__ = locn__.replace(/^,/, '').trim();
+							
+							// ...
+							var dv = document.createElement('div');
+							d1b.appendChild(dv);
+							
+							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+							dv.className = 'exe';
+							dv.phone = r[i].phone;
+							dv.fblink = r[i].link;
+							dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
+							dv.innerHTML += '<br>Like:'+r[i].likes;
+							dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
+							dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
+							//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
+							
+							dv.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								
+								var p = this.phone;
+								
+								//~ if (/[a-z]/i.exec(p)) {
+									//~ q.value = p;
+									//~ q.style.border = '4px solid teal';
+									//~ return;
+								//~ }
+								
+								p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+								
+								q.value = p;
+								if (q2)
+									q2.value = this.fblink;
+								
+								if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
+									d2.value = 'bad phone!';
+									q.style.border = '4px solid teal';
+									return;
+								}
+							
+								if (p.length == 10 && q.value == p) {
+									new AMT___core_factory().nextTab();
+									doSubmit();
+								}
+							}
+							
+							//~ if (r[i].category) {
+								//~ var x = r[i].category;
+								//~ d1.innerHTML += '<br>'+x;
+							//~ }
 						}
 						
-						// is good?
-						div.click();
+						if (d1b.innerHTML != '') {
+							var dv = document.createElement('div');
+							dv.setAttribute('style', 'height:1400px;');
+							d1b.appendChild(dv);
+						}
+					}
+				});
+			}
+			/**
+			 * 
+			 * Peter_Heyneman_find_phone__YellowPages_process
+			opts.response.vars = {
+				results: [],
+				num_search_results: null, // integer, default=0
+				error: null,
+				error_type: null
+			}
+			 
+			var rslt = {
+				name:					null,	// string
+				address:				null,	// string
+				phones:					[],		// array of strings
+				profile_url:			null,	// string
+				distance_from_address:	null,	// float
+				
+				listing_id:				null	// string, private
+			};
+			*/
+			function Peter_Heyneman_find_phone__YellowPages_process(opts) {
+				
+				console.log(opts);
+				
+				if (!opts || !opts.response || !opts.response.vars) return;
+				
+				if (opts.response.vars.error != null) {
+					console.log(d1c);
+					d1c.style.backgroundColor = 'pink !important';
+					d1c.style.border = '2px solid pink';
+					return;
+				}
+				
+				var dv = document.createElement('div');
+				dv.setAttribute('style', 'border-bottom:1px solid teal');
+				d1c.appendChild(dv);
+				dv.innerText = opts.response.vars.num_search_results + ' results';
+				
+				if (opts.response.vars.num_search_results == 0) {
+					return;
+				}
+							
+				var c = 0;
+				var found = false;
+				var r = opts.response.vars.results;
+				
+				for (var i in r) {
+					
+					//r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
+					
+					var dist = '-';
+					var dist_bgc = '';
+					if (r[i].distance_from_address) {
+						dist = Math.round(r[i].distance_from_address*100) / 100;
+						if (dist*1 > 4)
+							dist_bgc = 'background-color:aqua;';
+					}
+					
+					// ...
+					var dv = document.createElement('div');
+					d1c.appendChild(dv);
+					
+					dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+					dv.className = 'exe';
+					dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
+					dv.link = r[i].profile_url;
+					dv.innerHTML  = MT__bold(r[i].name, o.name_arr);
+					dv.innerHTML += '('+dist+')<br>';
+					if (r[i].address != null)
+						dv.innerHTML += MT__bold(r[i].address, o.locn_arr);
+					else
+						dv.innerHTML += '-';
+					dv.innerHTML += '<br>P:'+r[i].phones.join(',');
+					
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						var p = this.phone;
+						if (p == null) return;
+						
+						//~ if (/[a-z]/i.exec(p)) {
+							//~ q.value = p;
+							//~ q.style.border = '4px solid teal';
+							//~ return;
+						//~ }
+						
+						p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						
+						q.value = p;
+						if (q2)
+							q2.value = this.link;
+						
+						if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
+							d2.value = 'bad phone!';
+							q.style.border = '4px solid teal';
+							return;
+						}
+					
+						if (p.length == 10 && q.value == p) {
+							new AMT___core_factory().nextTab();
+							doSubmit();
+						}
 					}
 				}
-			});
+				
+				if (d1c.innerHTML != '') {
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'height:1400px;');
+					d1c.appendChild(dv);
+				}
+			}
+			function Peter_Heyneman_find_phone__YellowPages() {
+				
+				d1c.innerHTML = '';
+				
+				var dv = document.createElement('div');
+				d1c.appendChild(dv);
+				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+				dv.innerText = d2.value;
+				
+				// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+				var u = 'http://www.yellowpages.com/search'+
+					'?search_terms='+encodeURIComponent(d2.value)+
+					'&geo_location_terms='+encodeURIComponent(d2b.value);
+					
+				//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				new AMT___site_scrapes().scrape({
+					site: 'http://www.yellowpages.com/search',
+					url: u,
+					callback_function: Peter_Heyneman_find_phone__YellowPages_process
+				});
+			}
+			//
+			function Peter_Heyneman_google_find_phone__setll(lat, lng) {
+				ll.lat = lat;
+				ll.lng = lng;
+				Peter_Heyneman_google_find_phone(); // do both
+				// 	// 
+			}
+			
+			
+			function Peter_Heyneman_google_find_phone() {
+				
+				d1.innerHTML = '';
+				var dv = document.createElement('div');
+				d1.appendChild(dv);
+				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+				dv.innerText = d2.value;
+				
+				
+				// 2
+				var u;
+				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+				u+= 'location='+ll.lat+','+ll.lng; //lat,lng
+				u+= '&keyword=' + encodeURIComponent(d2.value);
+				//u+= '&rankby=distance';
+				u+= '&radius=50000';
+				u+= '&sensor=false';
+				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+				
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				
+				//u+= '&radius=40000'; // 5k = 3.1 mi.
+				//u+= '&types=accounting|atm|bank';
+				//u+= '&name=' + encodeURIComponent(b[0].innerText);
+				//u+= '&name=';
+				//u+= '&name='+encodeURIComponent(b[0].innerText);
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						rs = JSON.parse(rs);
+						
+						console.log(rs);
+						
+						
+						
+						if (!rs.results || !rs.results.length) {
+							d1.innerHTML += '0';
+							
+							Peter_Heyneman_find_phone__check_no_good_match();
+							Peter_Heyneman_find_phone__FB();
+							
+							//~ if (AMT__Global_Vars.isPreview) {
+								//~ 
+								//~ 
+								//~ 
+							//~ } else {
+								//~ 
+							//~ }
+							return;
+						}
+						
+						// here?
+						//~ d1.innerHTML = '';
+						//~ console.log(AMT__Global_Vars.isPreview);
+						// not auto!!
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.accept();
+							//~ return;
+						//~ }
+						
+						var x;
+						var icon;
+						var count = 0;
+						var m_comp;
+						var m_locn;
+						for (var i in rs.results) {
+							
+							if (i > 10) break; // 8 only!
+							
+							x = rs.results[i];
+							
+							// dist
+							//~ geometry: Object
+							//~ location: Object
+							//~ lat: 34.049662
+							//~ lng: -118.25385
+							var dist = '';
+							var dist_bgc = '';
+							if (x.geometry && x.geometry.location) {
+								dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
+								if (dist) {
+									dist = Math.round(dist*100) / 100;
+									//~ console.log(dist);
+									if (dist*1 >= 4)
+										dist_bgc = 'background-color:aqua;';
+								}
+							}
+
+							var dv = document.createElement('div');
+							d1.appendChild(dv);
+							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+							dv.className = 'exe';
+							dv.isAuto = false;
+							dv.greference = x.reference;
+							//~ dv.gurl = x.url.replace(/about\?hl=en-US/, '');
+							
+							var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
+							var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
+							
+							// Check for skip based on bolding!
+							//
+							//						
+							if (tmp_nm.pm.percent_matched * 1 >= 0.4) { // JUST THE NAME!
+								if (AMT__Global_Vars.isPreview) {
+									AMT___Floater.accept();
+									return;
+								}
+							}
+							//~ if (tmp_nm.pm.percent_matched * 1 + tmp_vc.pm.percent_matched * 1 < 0.2) { // combined 
+							//~ console.log(tmp_nm);
+							// ...
+							dv.innerHTML = tmp_nm.pm.bold_string + '('+dist+')<br>' + tmp_vc.pm.bold_string;
+							
+							dv.onclick = function() {
+								dv.onclick = function() {}; // clear!
+								this.style.backgroundColor = 'LightGreen';
+								Peter_Heyneman_google_find_phone__profile(this);
+							}
+							
+							m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
+							m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
+							
+							if  (
+								count <= 1 &&
+								o.name_cln == m_comp &&
+								o.name_cln.length >= 4 &&
+								(
+									o.locn_cln.indexOf(m_locn) != -1 ||
+									m_locn.indexOf(o.locn_cln) != -1
+								) &&
+								m_locn.length >= 6 &&
+								o.locn_cln.length >= 6
+								)
+							{
+								//~ dv.isAuto = true;
+								//~ dv.click();
+							}
+							count++;
+						}
+
+						var dv = document.createElement('div');
+						dv.setAttribute('style', 'height:1400px;');
+						d1.appendChild(dv);
+							
+						// Always run this here.
+						//
+						//
+						//
+						Peter_Heyneman_find_phone__FB();
+					}
+				});
+			}
+			
+			/**
+			 * Function Peter_Heyneman_google_find_phone__profile
+			 * 
+			 * Update Oct10 2014:
+			 * Add .url from response.
+			 */
+			function Peter_Heyneman_google_find_phone__profile(div) {
+				
+				//greference
+				
+				var u;
+				u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+div.greference+'&sensor=true&key=_GOOGLE_API_KEY_REDACTED_';
+				
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				
+				var div = div;
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.innerHTML = response.status;
+							return;
+						}
+						
+						rs = JSON.parse(rs);
+						console.log(rs);
+						if (!rs.result) {
+							d1.innerHTML = 'X';
+							return;
+						}
+						
+						var r;
+						var sbm = true;
+						
+						r = rs.result.formatted_phone_number;
+						if (r) {
+							r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+							
+							div.innerText  += '\n' + r;
+							div.gphone		=  r;
+							div.gurl		= rs.result.url.replace(/about\?hl=en-US/, '');
+							
+							console.log('div:');
+							console.log(div);
+							
+							div.onclick = function() {
+								//~ console.log(this);
+								//~ console.log('isAuto:'+this.isAuto);return;
+								this.style.backgroundColor = 'teal';
+								
+								q.value = this.gphone;
+								if (q2)
+									q2.value = this.gurl;
+								
+								if (this.gphone == o.bad_phone || this.gphone.length != 10 || !/^https?:\/\/[^\/]+/.exec(this.gurl)) {
+									d2.value = 'bad phone!';
+									d2.style.backgroundColor = 'LightGreen';
+									q.style.border = '4px solid teal';
+									return;
+								}
+								
+								// Here?
+								new AMT___core_factory().nextTab();
+								doSubmit();
+								
+								//~ // isAuto?
+								//~ if (!this.isAuto)
+									//~ new AMT___core_factory().nextTab();
+							}
+							
+							// is good?
+							div.click();
+						}
+					}
+				});
+			}
 		}
+		new run().f();
 	}
 	
 	//
