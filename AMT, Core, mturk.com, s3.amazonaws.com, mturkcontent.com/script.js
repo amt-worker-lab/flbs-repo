@@ -67213,8 +67213,9 @@ qatar,80
 				var reg = /(\d{3}-\d{3}-\d{4})/g;
 				var m;
 				while (m = reg.exec(ih)) {
-					o.bad_phones.push(m[0]);
-					o.bad_phones_obj[ m[0] ] = true;
+					m[1] = m[1].replace(/[^\d]/g, '');
+					o.bad_phones.push( m[1] );
+					o.bad_phones_obj[ m[1] ] = true;
 				}
 			}
 			
@@ -67465,10 +67466,17 @@ qatar,80
 								p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
 								
 								q.value = p;
-								if (q2)
+								if (q2) {
 									q2.value = this.fblink;
+								}
 								
-								if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.fblink)) {
+								if  (
+									//~ p == o.bad_phone ||
+									o.bad_phones_obj.hasOwnProperty( p ) ||
+									p.length != 10 ||
+									!/https?:\/\/[^\/]+\/.*/.exec(this.fblink)
+									)
+								{
 									d2.value = 'bad phone!';
 									q.style.border = '4px solid teal';
 									return;
@@ -67586,7 +67594,13 @@ qatar,80
 						if (q2)
 							q2.value = this.link;
 						
-						if (p == o.bad_phone || p.length != 10 || !/https?:\/\/[^\/]+\/.*/.exec(this.link)) {
+						if  (
+							//~ p == o.bad_phone ||
+							o.bad_phones_obj.hasOwnProperty( p ) ||
+							p.length != 10 ||
+							!/https?:\/\/[^\/]+\/.*/.exec(this.link)
+							)
+						{
 							d2.value = 'bad phone!';
 							q.style.border = '4px solid teal';
 							return;
@@ -67850,7 +67864,13 @@ qatar,80
 								if (q2)
 									q2.value = this.gurl;
 								
-								if (this.gphone == o.bad_phone || this.gphone.length != 10 || !/^https?:\/\/[^\/]+/.exec(this.gurl)) {
+								if  (
+									//~ this.gphone == o.bad_phone ||
+									o.bad_phones_obj.hasOwnProperty( this.gphone ) ||
+									this.gphone.length != 10 ||
+									!/^https?:\/\/[^\/]+/.exec(this.gurl)
+									)
+								{
 									d2.value = 'bad phone!';
 									d2.style.backgroundColor = 'LightGreen';
 									q.style.border = '4px solid teal';
