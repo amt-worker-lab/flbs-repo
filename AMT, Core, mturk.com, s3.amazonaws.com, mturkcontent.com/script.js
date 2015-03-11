@@ -57377,6 +57377,8 @@ function MT__RUN() {
 								case 'No':
 									document.getElementById('wifi').value = 'No';
 									break;
+								case 'Free':
+									document.getElementById('wifi').value = 'Free';
 								default:
 									sbm = false;
 							}
