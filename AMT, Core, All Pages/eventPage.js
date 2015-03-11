@@ -370,7 +370,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		console.log('isTopWindow: ' + request.isTopWindow);
 		
-		chrome.tabs.move(tabId, {index: 10}, function);
+		chrome.tabs.move(tabId, {index: 0}, function (tab) {
+				console.log('Moved tab');
+			});
 		
 		getAllTabsInQ(function(allQTabs) {
 			if(allQTabs.length > 0) {

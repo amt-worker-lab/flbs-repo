@@ -72,8 +72,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			
 			console.log('REMOVE');
 			console.log(tabIdsToRemove);
-			if(tabIdsToRemove.length) {
-				chrome.tabs.remove(tabIdsToRemove);
+			try {
+				if(tabIdsToRemove.length) {
+					chrome.tabs.remove(tabIdsToRemove);
+				}
+			}
+			catch(e) {
+				//console.log('err');
 			}
 		}
 		
@@ -380,6 +385,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		
 		var tabId  = sender.tab.id;
 		var winId = sender.tab.windowId;
+		
+		
+		chrome.tabs.move(tabId, {index: 0}, function (tab) {
+				//console.log('Moved tab');
+			});
 		
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		console.log('isTopWindow: ' + request.isTopWindow);
