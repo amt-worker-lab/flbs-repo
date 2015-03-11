@@ -57027,7 +57027,7 @@ function MT__RUN() {
 			GM_addStyle('.container {position:absolute;top:1020px;}');
 
 			var td = document.getElementsByTagName('td');
-			var cityReg = /,([^,]+),[\s]*[\w]{2}[\s]*[\d]+/gi;
+			var cityReg = /([^,]+),[\s]*[\w]{2}[\s]*[\d]+/gi;
 			var city = cityReg.exec(td[3].innerText.trim());
 			if(city && city.length) {
 				city = city[1];
