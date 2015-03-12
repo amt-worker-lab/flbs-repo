@@ -67168,6 +67168,8 @@ qatar,80
 				}
 				this.value = this.value.trim();
 				google_find_phone();
+				find_phone__FB();
+				yelp();
 				//~ find_phone__YellowPages();
 			}
 			
@@ -67189,7 +67191,7 @@ qatar,80
 					yelp_search_complete:	false,
 					num_google_results:		0,
 					num_fb_results:			0,
-					yelp_fb_results:		0
+					num_yelp_results:		0
 				}
 			};
 			
@@ -67391,10 +67393,9 @@ qatar,80
 						// 0 results.
 						if (r.length == 0) {
 							d1b.appendChild('0'.div());
-							// 
+							// Finished
 							o.stats.fb_search_complete = true;
 							check_if_yp_init();
-							// quit
 							return;
 						}
 						// More than 0 results.
@@ -67534,7 +67535,7 @@ qatar,80
 					o.stats.yelp_google_results == 0
 					)
 				{
-					find_phone__YellowPages; // Init YP.
+					find_phone__YellowPages(); // Init YP.
 				}
 			}
 			/**
@@ -67706,10 +67707,15 @@ qatar,80
 					onload: function (response) {
 						var rs = response.responseText;
 						
-						if (response.status != 200) return;
+						// Status
+						if (response.status != 200) {
+							// Finished
+							o.stats.yelp_search_complete = true;
+							check_if_yp_init();
+							return;
+						}
 						
 						rs = JSON.parse(rs); // Must be valid to continue.
-						
 						console.log(rs);
 						
 						var sh = rs.search_header;
@@ -67759,7 +67765,7 @@ qatar,80
 								ph = ph.replace(/[\- \(\)]/g, '');
 								ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
 								// ...
-								div.yphone = ph;
+								div.yphone = ph.replace(/[^\d]/g, '');
 							}
 							// Name, href
 							//
@@ -67809,13 +67815,13 @@ qatar,80
 							
 							// Display
 							div.innerHTML = 
-								':'+ MT__bold(div.yname, o.bold_name) + '<br>' + // diff
+								':'+ MT__bold(div.yname, o.name_arr) + '<br>' +
 								':'+ div.ystreet + '<br>' +
 								':'+ div.ylocn + (div.yzip != '' ? '('+div.yzip+')' : '') + '<br>' +
 								':'+ div.yphone + '<br>' +
 								':'+ df + '<br>' +
-								'reviews:'+ div.yreviews + '<br>' +
-								'catg.:'+ div.ycategories + '<br>' +
+								//~ 'reviews:'+ div.yreviews + '<br>' +
+								//~ 'catg.:'+ div.ycategories + '<br>' +
 								':'
 							;
 							var link = document.createElement(a); // Link
@@ -67837,7 +67843,7 @@ qatar,80
 								if  (
 									o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
 									this.yphone.length != 10 ||
-									!/^https?:\/\/[^\/]+/.exec(this.yhref)
+									!/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
 									)
 								{
 									d2.value = 'bad phone!';
@@ -67850,7 +67856,14 @@ qatar,80
 								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
+							
+							// Increment count
+							o.stats.num_yelp_results++;
 						}
+						
+						// Finished
+						o.stats.yelp_search_complete = true;
+						check_if_yp_init();
 					}
 				});
 			}

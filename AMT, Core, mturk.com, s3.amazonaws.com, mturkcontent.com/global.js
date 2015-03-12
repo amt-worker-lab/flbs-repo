@@ -1471,7 +1471,7 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
 String.prototype.div = function(opts) {
 	var s = this.toString();
 	var div = document.createElement('div');
-	if (opts.hasOwnProperty('style')) {
+	if (opts && opts.hasOwnProperty('style')) {
 		div.setAttribute('style', opts.style);
 	}
 	div.innerText = s;
