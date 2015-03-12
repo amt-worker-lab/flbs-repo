@@ -68027,6 +68027,7 @@ qatar,80
 							
 							// ...
 							x = rs.results[i];
+							console.log(x);
 							
 							// Dist
 							//~ geometry: Object
@@ -68044,7 +68045,13 @@ qatar,80
 										dist_bgc = 'background-color:aqua;';
 								}
 							}
-
+							
+							// Set vicinity to '' if it does not exist.
+							if (!x.hasOwnProperty('vicinity') || !x.vicinity) {
+								x.vicinity = '';
+							}
+							
+							// Div
 							var dv = document.createElement('div');
 							d1.appendChild(dv);
 							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
