@@ -67889,7 +67889,7 @@ qatar,80
 							// div.onclick
 							div.onclick = function(e) {
 								this.style.backgroundColor = 'teal';
-								// // SET ALL WITH SAME PHONE AS TEAL
+								set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
 								q.value = this.yphone;
 								if (q2)
 									q2.value = this.yhref;
@@ -67927,6 +67927,18 @@ qatar,80
 						check_if_yp_init();
 					}
 				});
+			}
+			/**
+			 * function set_divs_clicked
+			 * @desc Set all related div background colors to teal.
+			 */
+			function set_divs_clicked(div) {
+				var cls = div.className.replace(/^exe /, '');
+				var el = document.getElementsByClassName(cls);
+				for (var i in el) {
+					if (i == 'length') break;
+					el[i].style.backgroundColor = 'teal';
+				}
 			}
 			/**
 			 * function mouseev
@@ -68124,7 +68136,7 @@ qatar,80
 							r = r.replace(/[^\d]/g, '').replace(/^1/, '');
 							
 							div.innerText  += '\n' + r;
-							div.gphone		=  r;
+							div.gphone		= r;
 							div.gurl		= rs.result.url.replace(/about\?hl=en-US/, '');
 							
 							console.log('div:');
@@ -68134,6 +68146,9 @@ qatar,80
 								//~ console.log(this);
 								//~ console.log('isAuto:'+this.isAuto);return;
 								this.style.backgroundColor = 'teal';
+								
+								// set_divs_clicked
+								set_divs_clicked(this.gphone);
 								
 								q.value = this.gphone;
 								if (q2)
