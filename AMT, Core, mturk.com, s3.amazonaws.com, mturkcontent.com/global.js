@@ -4926,18 +4926,18 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.response.vars.error = true;
 			opts.response.vars.error_type = str;
 			opts.response.vars.num_search_results = 0;
-			return;
+			return true;
 		}
 		
 		var str = '<div id="no-results-main" class="no-results-term-error"><h4>No results found for <strong>';
 		if (rs.indexOf(str) != -1) {
 			opts.response.vars.num_search_results = 0;
-			return; // Quit here
+			return true; // Quit here
 		}
 		var str = '<header>We did not find any business listings for&nbsp;<strong>';
 		if (rs.indexOf(str) != -1) {
 			opts.response.vars.num_search_results = 0;
-			return; // Quit here
+			return true; // Quit here
 		}
 		
 		// Distances
@@ -5064,9 +5064,9 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		// It must be greater than 0 at this point!
 		if (opts.response.vars.results.length == 0) {
 			opts.response.vars.error = true;
-			opts.response.vars.error_type = 'num_search_results==0 but search did not specify 0! Is the scrape regexp broken?';
+			opts.response.vars.error_type = 'Is the scrape regexp broken? num_search_results==0 but search did not specify 0!';
 			opts.response.vars.num_search_results = 0;
-			return;
+			return true;
 		}
 		else {
 			opts.response.vars.num_search_results = opts.response.vars.results.length;

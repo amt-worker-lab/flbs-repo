@@ -67764,8 +67764,10 @@ qatar,80
 								// Format phone
 								ph = ph.replace(/[\- \(\)]/g, '');
 								ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
-								// ...
+								// yphone
 								div.yphone = ph.replace(/[^\d]/g, '');
+								// className
+								div.className += ' ' + div.yphone;
 							}
 							// Name, href
 							//
@@ -67862,6 +67864,11 @@ qatar,80
 							
 							// Increment count
 							o.stats.num_yelp_results++;
+						}
+						if (o.stats.num_yelp_results != 0) {
+							d1c.appendChild(
+								''.div({style:'height:1400px;'});
+							);
 						}
 						
 						// Finished
