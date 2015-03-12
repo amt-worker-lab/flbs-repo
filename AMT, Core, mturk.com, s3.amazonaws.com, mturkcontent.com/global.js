@@ -2743,8 +2743,8 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
 	
 	var u = 'https://www.google.com/search?'+
 		'q='+encodeURIComponent(opts.query)+
-		'&aqs=chrome..69i57.791j0j7'+
-		'&sourceid=chrome&es_sm=93&ie=UTF-8';
+		//~ '&aqs=chrome..69i57.791j0j7'+
+		//~ '&sourceid=chrome&es_sm=93&ie=UTF-8';
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: u,
@@ -2796,6 +2796,8 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
 					m[2] = m[2].replace(/`/g, '<b>');
 					
 					// Assoc. array
+					// 0 = URL
+					// 1 = Body
 					opts.results.push(
 						[
 							m[1],
