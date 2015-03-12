@@ -67636,25 +67636,33 @@ qatar,80
 					
 					// .onclick
 					dv.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						
 						var p = this.phone;
 						if (p == null) return;
+						// Let's test this! (Must be 10 numbers not including a-z)
+						var test = p;
+						test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
+						test = test.replace(/^1/, ''); // Remove "^1"
+						test = test.substr(0,10); // Substring 0,10
+						test = test.replace(/[^\d]/g, ''); // Remove non-digit
+						if  (
+							test.length != 10 // Length==10?
+							)
+						{
+							d2.value = 'Invalid phone!';
+							q.style.border = '4px solid teal';
+							return;
+						}
 						
-						//~ if (/[a-z]/i.exec(p)) {
-							//~ q.value = p;
-							//~ q.style.border = '4px solid teal';
-							//~ return;
-						//~ }
-						
+						// ...
 						p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
-						
+						// set_divs_clicked
+						set_divs_clicked(p);
+						// ...
 						q.value = p;
 						if (q2)
 							q2.value = this.link;
-						
+						// Test for bad phones
 						if  (
-							//~ p == o.bad_phone ||
 							o.bad_phones_obj.hasOwnProperty( p ) ||
 							p.length != 10 ||
 							!/https?:\/\/[^\/]+\/.*/.exec(this.link)
@@ -67664,7 +67672,7 @@ qatar,80
 							q.style.border = '4px solid teal';
 							return;
 						}
-					
+						// Submit
 						if (p.length == 10 && q.value == p) {
 							new AMT___core_factory().nextTab();
 							doSubmit();
@@ -68115,66 +68123,62 @@ qatar,80
 					url: u,
 					onload: function(response) {
 						var rs = response.responseText;
-						
 						if (response.status != 200) {
 							d1.innerHTML = response.status;
 							return;
 						}
-						
 						rs = JSON.parse(rs);
-						console.log(rs);
+						//~ console.log(rs);
 						if (!rs.result) {
 							d1.innerHTML = 'X';
 							return;
 						}
-						
 						var r;
 						var sbm = true;
-						
 						r = rs.result.formatted_phone_number;
-						if (r) {
-							r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+						if (!r) return; // do nothing
+						
+						// ...
+						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+						
+						div.innerText  += '\n' + r;
+						div.gphone		= r;
+						div.gurl		= rs.result.url.replace(/about\?(hl=en-US|[^$]*)/, '');
+						div.className += ' ' + r; // Add to className
+						
+						// .onclick
+						div.onclick = function() {
+							//~ console.log(this);
+							//~ console.log('isAuto:'+this.isAuto);return;
+							this.style.backgroundColor = 'teal';
 							
-							div.innerText  += '\n' + r;
-							div.gphone		= r;
-							div.gurl		= rs.result.url.replace(/about\?hl=en-US/, '');
+							// set_divs_clicked
+							set_divs_clicked(this.gphone);
 							
-							console.log('div:');
-							console.log(div);
+							q.value = this.gphone;
+							if (q2)
+								q2.value = this.gurl;
 							
-							div.onclick = function() {
-								//~ console.log(this);
-								//~ console.log('isAuto:'+this.isAuto);return;
-								this.style.backgroundColor = 'teal';
-								
-								// set_divs_clicked
-								set_divs_clicked(this.gphone);
-								
-								q.value = this.gphone;
-								if (q2)
-									q2.value = this.gurl;
-								
-								if  (
-									//~ this.gphone == o.bad_phone ||
-									o.bad_phones_obj.hasOwnProperty( this.gphone ) ||
-									this.gphone.length != 10 ||
-									!/^https?:\/\/[^\/]+/.exec(this.gurl)
-									)
-								{
-									d2.value = 'bad phone!';
-									d2.style.backgroundColor = 'LightGreen';
-									q.style.border = '4px solid teal';
-									return;
-								}
-								
-								// Here?
-								new AMT___core_factory().nextTab();
-								doSubmit();
+							if  (
+								//~ this.gphone == o.bad_phone ||
+								o.bad_phones_obj.hasOwnProperty( this.gphone ) ||
+								this.gphone.length != 10 ||
+								!/^https?:\/\/[^\/]+/.exec(this.gurl)
+								)
+							{
+								d2.value = 'bad phone!';
+								d2.style.backgroundColor = 'LightGreen';
+								q.style.border = '4px solid teal';
+								return;
 							}
 							
-							// is good?
-							div.click();
+							// Here?
+							new AMT___core_factory().nextTab();
+							doSubmit();
 						}
+						
+						// is good?
+						div.click();
 					}
 				});
 			}
