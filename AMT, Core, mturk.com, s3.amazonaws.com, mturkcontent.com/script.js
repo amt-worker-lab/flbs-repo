@@ -103303,6 +103303,7 @@ qatar,80
 	}
 	//
 	// Carol Chen
+	// Gerard Garromone
 	// Find the Website Address for Companies
 	// 
 	var s = '<p>Find the website address for this company.</p>\n\n<ul>\n	<li>Enter the website address for the <strong>official website </strong>of the company.</li>\n	<li>Include the full address, e.g. http://www.thecheesecakefactory.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>\n</ul>';
@@ -103318,15 +103319,28 @@ qatar,80
 		
 		var td = document.getElementsByTagName('td');
 		
+		var stateReg = /,[\s]*([\w]{2})[\s]*[\d]+$/;
+		var state = stateReg.exec((td[3].innerText.trim()))[1];
+		state = state.stateAbbrToFull();
+		
+		var zipReg = /([\d]+)$/;
+		var zip = zipReg.exec((td[3].innerText.trim()))[1].trim();
+		
 		var o = {
 			name: td[1].innerText.trim(),
 			name_short: null,
+			addr: td[3].innerText.trim(),
+			state: state,
+			zip: zip,
 			bold_array: []
 		}
+
+		
 		o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-		if (o.bold_array.length > 2) {
-			o.name_short = o.bold_array.slice(0, 2).join(' ');
-		}
+		o.bold_array = o.bold_array.concat(o.addr.replace(/,/g, ' ').replace(/[\s]{2}/g,"").split(' '));
+		o.name_short = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+
+		console.log(o);
 		
 		/* BEGINS ITEMS */
 		//
@@ -103413,8 +103427,8 @@ qatar,80
 		
 		// ...
 		d3.value  = o.name;
-		d3b.value = '"' + o.name + '"';
-		d3c.value = (o.name_short) ? '"' + o.name_short + '"' : '';
+		d3b.value = '"' + o.name_short + '"';
+		d3c.value = o.name + ' ' + o.state + ' ' + o.zip;
 		
 		var load_first = true;
 		var FOUND_ONE_NONSKIP = false;
