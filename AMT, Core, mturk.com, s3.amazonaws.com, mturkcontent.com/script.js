@@ -67164,7 +67164,7 @@ qatar,80
 					yelp_search_complete: false,
 					num_google_results: 0,
 					num_fb_results: 0,
-					yelp_fb_results: 0
+					num_yelp_results: 0
 				}
 				this.value = this.value.trim();
 				google_find_phone();
@@ -67322,11 +67322,6 @@ qatar,80
 			// var skip
 			// This is when no FB match and no 20% or higher google matches
 			var no_good_match = 0; // 2 signifies skip
-			
-			//
-			// INIT
-			// Init yellow pages. Wait for Lat/Long for Google & FB.
-			//XXfind_phone__YellowPages();
 			
 			// google places api
 			MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
@@ -67524,18 +67519,41 @@ qatar,80
 					}
 				});
 			}
-			function check_if_yp_init() {
+			function check_if_yp_init() {//console.log('check_if_yp_init');console.log(o);
 				if  (
 					o.stats.fb_search_complete		&&
 					o.stats.google_search_complete	&&
 					o.stats.yelp_search_complete	&&
 					o.stats.num_fb_results == 0		&&
 					o.stats.num_google_results == 0	&&
-					o.stats.yelp_google_results == 0
+					o.stats.num_yelp_results == 0
 					)
 				{
 					find_phone__YellowPages(); // Init YP.
 				}
+			}
+			/**
+			 * function find_phone__YellowPages
+			 */
+			function find_phone__YellowPages() {
+				
+				d1d.innerHTML = '';
+				var dv = document.createElement('div');
+				d1d.appendChild(dv);
+				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+				dv.innerText = d2.value;
+				
+				// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+				var u = 'http://www.yellowpages.com/search'+
+					'?search_terms='+encodeURIComponent(d2.value)+
+					'&geo_location_terms='+encodeURIComponent(d2b.value);
+				//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				
+				new AMT___site_scrapes().scrape({
+					site: 'http://www.yellowpages.com/search',
+					url: u,
+					callback_function: find_phone__YellowPages_process
+				});
 			}
 			/**
 			 * 
@@ -67563,9 +67581,15 @@ qatar,80
 				
 				if (!opts || !opts.response || !opts.response.vars) return;
 				
+				if (opts.response.status != 200) {
+					d1d.style.backgroundColor = 'pink !important';
+					d1d.innerText = opts.response.status;
+					return;
+				}
 				if (opts.response.vars.error != null) {
 					d1d.style.backgroundColor = 'pink !important';
 					d1d.style.border = '2px solid pink';
+					d1d.innerText = opts.response.vars.error;
 					return;
 				}
 				
@@ -67653,29 +67677,6 @@ qatar,80
 					dv.setAttribute('style', 'height:1400px;');
 					d1d.appendChild(dv);
 				}
-			}
-			/**
-			 * function find_phone__YellowPages
-			 */
-			function find_phone__YellowPages() {
-				
-				d1d.innerHTML = '';
-				var dv = document.createElement('div');
-				d1d.appendChild(dv);
-				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
-				dv.innerText = d2.value;
-				
-				// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
-				var u = 'http://www.yellowpages.com/search'+
-					'?search_terms='+encodeURIComponent(d2.value)+
-					'&geo_location_terms='+encodeURIComponent(d2b.value);
-				//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-				
-				new AMT___site_scrapes().scrape({
-					site: 'http://www.yellowpages.com/search',
-					url: u,
-					callback_function: find_phone__YellowPages_process
-				});
 			}
 			/**
 			 * function google_find_phone__setll
@@ -67856,6 +67857,9 @@ qatar,80
 								doSubmit();
 							}
 							
+							// Add mouse events to div
+							mouseev(div);
+							
 							// Increment count
 							o.stats.num_yelp_results++;
 						}
@@ -67867,7 +67871,18 @@ qatar,80
 				});
 			}
 			/**
-			 * function
+			 * function mouseev
+			 */
+			function mouseev(div) {
+				div.onmouseover = function() {
+					
+				}
+				div.onmouseout = function() {
+					
+				}
+			}
+			/**
+			 * function google_find_phone
 			 */
 			function google_find_phone() {
 				

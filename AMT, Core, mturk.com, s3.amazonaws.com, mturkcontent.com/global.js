@@ -4725,8 +4725,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				
 				// not 200 response.status
 				if (response.status > 200) { // 400 - 599
-					console.log(response.status);
-					return;
+					//~ console.log(response.status);
+					//~ return;
 				}
 				
 				opts.response = response;
