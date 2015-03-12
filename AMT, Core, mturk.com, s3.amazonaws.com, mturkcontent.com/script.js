@@ -20,6 +20,11 @@
 // @grant			GM_xmlhttpRequest
 // ==/UserScript==
 
+
+
+
+
+
 /**
  * Document Changes
  * 
@@ -96864,7 +96869,7 @@ qatar,80
 	// Does the church website come up in Google search (.02 Bonus available)
 	// 
 	var s = '<li>Enter the website address for the <strong>official website </strong>of the company.</li>';
-	if (ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1 && ih.indexOf('church_website') != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
