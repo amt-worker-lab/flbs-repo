@@ -67457,40 +67457,52 @@ qatar,80
 							// ...
 							var y = JSON.stringify(r[i]);
 							
-							// ...
+							// Clean phone
+							var cln_ph = r[i].phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10);
+							
+							// Div
 							var dv = document.createElement('div');
 							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
-							dv.className = 'exe';
+							dv.className = 'exe ' + cln_ph;
 							dv.phone = r[i].phone;
 							dv.fblink = r[i].link;
 							dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
-							dv.innerHTML += '<br>Like:'+r[i].likes;
+							dv.innerHTML += '<br>Likes:'+r[i].likes;
 							dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
 							dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
-							//~ dv.innerHTML += '<br>phone:<b>'+r[i].phone+'<br>';
 							d1b.appendChild(dv);
 							
 							// .onclick
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
-								
 								var p = this.phone;
 								
-								//~ if (/[a-z]/i.exec(p)) {
-									//~ q.value = p;
-									//~ q.style.border = '4px solid teal';
-									//~ return;
-								//~ }
+								// Let's test this! (Must be 10 numbers not including a-z)
+								var test = p;
+								test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
+								test = test.replace(/^1/, ''); // Remove "^1"
+								test = test.substr(0,10); // Substring 0,10
+								test = test.replace(/[^\d]/g, ''); // Remove non-digit
+								if  (
+									test.length != 10 // Length==10?
+									)
+								{
+									d2.value = 'Invalid phone!';
+									q.style.border = '4px solid teal';
+									return;
+								}
 								
 								p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
-								
+								// set divs clicked
+								set_divs_clicked(p);
+								// Set q.value
 								q.value = p;
+								// Set q2.value
 								if (q2) {
 									q2.value = this.fblink;
 								}
-								
+								// Test bad phone
 								if  (
-									//~ p == o.bad_phone ||
 									o.bad_phones_obj.hasOwnProperty( p ) ||
 									p.length != 10 ||
 									!/https?:\/\/[^\/]+\/.*/.exec(this.fblink)
@@ -67500,7 +67512,7 @@ qatar,80
 									q.style.border = '4px solid teal';
 									return;
 								}
-							
+								// Submit
 								if (p.length == 10 && q.value == p) {
 									new AMT___core_factory().nextTab();
 									doSubmit();
@@ -67626,6 +67638,7 @@ qatar,80
 					dv.className = 'exe';
 					dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
 					dv.link = r[i].profile_url;
+					// innerHTML
 					dv.innerHTML  = MT__bold(r[i].name, o.name_arr);
 					dv.innerHTML += '('+dist+')<br>';
 					if (r[i].address != null)
@@ -67634,24 +67647,17 @@ qatar,80
 						dv.innerHTML += '-';
 					dv.innerHTML += '<br>P:'+r[i].phones.join(',');
 					
+					// Clean phone
+					if (dv.phone) {
+						var cln_ph;
+						cln_ph = dv.phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						dv.className += ' ' + cln_ph;
+					}
+					
 					// .onclick
 					dv.onclick = function() {
 						var p = this.phone;
 						if (p == null) return;
-						// Let's test this! (Must be 10 numbers not including a-z)
-						var test = p;
-						test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
-						test = test.replace(/^1/, ''); // Remove "^1"
-						test = test.substr(0,10); // Substring 0,10
-						test = test.replace(/[^\d]/g, ''); // Remove non-digit
-						if  (
-							test.length != 10 // Length==10?
-							)
-						{
-							d2.value = 'Invalid phone!';
-							q.style.border = '4px solid teal';
-							return;
-						}
 						
 						// ...
 						p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
@@ -67940,9 +67946,9 @@ qatar,80
 			 * function set_divs_clicked
 			 * @desc Set all related div background colors to teal.
 			 */
-			function set_divs_clicked(div) {
-				var cls = div.className.replace(/^exe /, '');
-				var el = document.getElementsByClassName(cls);
+			function set_divs_clicked(className) {
+				var className = className.replace(/^exe /, '');
+				var el = document.getElementsByClassName(className);
 				for (var i in el) {
 					if (i == 'length') break;
 					el[i].style.backgroundColor = 'teal';
