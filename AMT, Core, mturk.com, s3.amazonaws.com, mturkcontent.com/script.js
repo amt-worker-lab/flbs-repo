@@ -67714,27 +67714,27 @@ qatar,80
 						
 						var sh = rs.search_header;
 						var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+						var amt = '';
 						if (r) {
 							r = r[1];
-							d1c.innerHTML = r + ' results.';
+							amt = r + ' results.';
 						} else {
-							d1c.innerHTML = 0 + ' results.';
+							amt = '0 results.';
 						}
-						var div = document.createElement('div'); // hr
-						div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-						d1c.appendChild(div);
+						d1c.appendChild(
+							amt.div({style:'width:100%;border-bottom:1px solid #a2a2a2;'}) // Add HR border
+						);
 						
-						
+						// While loop
 						var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
 						var m;
 						while (m = r.exec(rs.search_results)) {
 							
 							// Replace all highlights!
 							m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
-							// ...
-							console.log(m);
+							//~ console.log(m);
 							
-							
+							// Div
 							var div = document.createElement('div');
 							div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
 							div.className = 'exe';
@@ -67800,11 +67800,8 @@ qatar,80
 								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
 								div.yzip = (z) ? z[1] : null;
 							}
-							//~ console.log(div.ylocn);
 							
 							// Diff
-							console.log(div.yname);
-							console.log(o.name);
 							var df = MT___diffString(
 								div.yname,
 								o.name
@@ -67831,34 +67828,27 @@ qatar,80
 								return false;
 							}
 							div.appendChild(link);
-							div.onclick = function(e) { // div.onclick
-								this.style.backgroundColor = 'aqua';
-								o.q.phone.value = this.yphone;
-								o.q.address.value = this.ystreet;
-								o.q.zip.value = this.yzip;
-								// Name?
+							// div.onclick
+							div.onclick = function(e) {
+								this.style.backgroundColor = 'teal';
+								q.value = this.yphone;
+								if (q2)
+									q2.value = this.yhref;
 								if  (
-									o.q.name.value.replace(/[^\w\d]/gi, '').toLowerCase() != this.yname.replace(/[^\w\d]/gi, '').toLowerCase()
+									o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
+									this.yphone.length != 10 ||
+									!/^https?:\/\/[^\/]+/.exec(this.yhref)
 									)
 								{
-									o.q.name.style.border = '4px solid blue';
-									o.q.name.value = this.yname;
-								}
-								// y.yurl is already scraped?
-								//
-								if (this.yurl) {
-									o.q.url.value = this.yurl;
-									if (e.ctrlKey)
-										try_submit();
-								}
-								// URL?
-								// If URL is blank then scrape profile page.
-								else if (o.q.url.value == '') {
-									yelp_profile(this);
+									d2.value = 'bad phone!';
+									d2.style.backgroundColor = 'LightGreen';
+									q.style.border = '4px solid teal';
+									return;
 								}
 								
-								//~ // Form focus
-								//~ o.q.name.focus();
+								// Here?
+								new AMT___core_factory().nextTab();
+								doSubmit();
 							}
 						}
 					}
@@ -68080,10 +68070,6 @@ qatar,80
 								// Here?
 								new AMT___core_factory().nextTab();
 								doSubmit();
-								
-								//~ // isAuto?
-								//~ if (!this.isAuto)
-									//~ new AMT___core_factory().nextTab();
 							}
 							
 							// is good?
