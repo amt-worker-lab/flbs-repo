@@ -103337,8 +103337,8 @@ qatar,80
 
 		
 		o.bold_array = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-		o.bold_array = o.bold_array.concat(o.addr.replace(/,/g, ' ').replace(/[\s]{2}/g,"").split(' '));
-		o.name_short = o.name.replace(/[^\w\d]/g, ' ').split(' ');
+		o.bold_array = o.bold_array.concat(o.addr.replace(/,/g, ' ').replace(/[\s]{2}/g," ").split(' '));
+		o.name_short = o.name.replace(/[^\w\d]/g, ' ').split(' ').slice(0,2).join(" ")
 
 		console.log(o);
 		
