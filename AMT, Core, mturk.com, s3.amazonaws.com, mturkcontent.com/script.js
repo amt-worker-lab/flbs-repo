@@ -67170,7 +67170,6 @@ qatar,80
 				google_find_phone();
 				find_phone__FB();
 				yelp();
-				//~ find_phone__YellowPages();
 			}
 			
 			// vars
@@ -67697,8 +67696,8 @@ qatar,80
 					d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
 				);
 				var u = 'http://www.yelp.com/search/snippet'+
-						'?find_desc='	+encodeURIComponent(o.name)+
-						'&find_loc='	+encodeURIComponent(o.locn);
+						'?find_desc='	+encodeURIComponent(d2.value)+
+						'&find_loc='	+encodeURIComponent(d2b.value);
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
 				// Xhr request.
 				GM_xmlhttpRequest({
@@ -67723,12 +67722,12 @@ qatar,80
 						var amt = '';
 						if (r) {
 							r = r[1];
-							amt = r + ' results.';
+							amt = r + ' results';
 						} else {
-							amt = '0 results.';
+							amt = '0 results';
 						}
 						d1c.appendChild(
-							amt.div({style:'width:100%;border-bottom:1px solid #a2a2a2;'}) // Add HR border
+							amt.div({style:'width:100%;border-bottom:4px solid teal;'}) // Add HR border
 						);
 						
 						// While loop
@@ -67743,7 +67742,7 @@ qatar,80
 							// Div
 							var div = document.createElement('div');
 							div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-							div.className = 'exe';
+							div.className = 'exe test'; // exe & test
 							div.yname = null;
 							div.yhref = null;
 							div.yphone = '';
@@ -67772,7 +67771,7 @@ qatar,80
 							var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
 							if (reg) {
 								//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
-								div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]);
+								div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
 								div.yname = __js_clean_html_str(reg[2]).trim();
 								// Replace "’" with "'" in name
 								div.yname = div.yname.replace(/’/g, "'");
@@ -67807,19 +67806,19 @@ qatar,80
 								div.yzip = (z) ? z[1] : null;
 							}
 							
-							// Diff
-							var df = MT___diffString(
-								div.yname,
-								o.name
-							);
+							//~ // Diff
+							//~ var df = MT___diffString(
+								//~ div.yname,
+								//~ o.name
+							//~ );
 							
 							// Display
 							div.innerHTML = 
 								':'+ MT__bold(div.yname, o.name_arr) + '<br>' +
 								':'+ div.ystreet + '<br>' +
-								':'+ div.ylocn + (div.yzip != '' ? '('+div.yzip+')' : '') + '<br>' +
-								':'+ div.yphone + '<br>' +
-								':'+ df + '<br>' +
+								':'+ div.ylocn + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
+								':'+ ph + '<br>' +
+								//~ ':'+ df + '<br>' +
 								//~ 'reviews:'+ div.yreviews + '<br>' +
 								//~ 'catg.:'+ div.ycategories + '<br>' +
 								':'
