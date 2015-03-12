@@ -103319,7 +103319,7 @@ qatar,80
 		
 		var td = document.getElementsByTagName('td');
 		
-		var stateReg = /,[\s]*([\w]{2})[\s]*[\d]+$/;
+		var stateReg = /,[\s]*([\w]{2})[\s]*[\w]+$/;
 		var state = stateReg.exec((td[3].innerText.trim()))[1];
 		state = state.stateAbbrToFull();
 		
