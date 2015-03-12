@@ -67715,9 +67715,36 @@ qatar,80
 							return;
 						}
 						
+						
+						// Parse
+						//
+						//
 						rs = JSON.parse(rs); // Must be valid to continue.
 						console.log(rs);
 						
+						// Yelp Lat/Lng.
+						// rs.search_map.markers has location data.
+						// Loop through markers. Markers is an object.
+						var markers = {};
+						if  (
+							rs.hasOwnProperty('search_map') &&
+							rs.search_map &&
+							rs.search_map.hasOwnProperty('markers') &&
+							rs.search_map.markers//.length
+							)
+						{console.log('x');
+							for (var i in rs.search_map.markers) {
+								var sm = rs.search_map.markers[ i ];
+								if  (
+									sm.hasOwnProperty('location') &&
+									sm.location.hasOwnProperty('latitude') &&
+									sm.location.hasOwnProperty('longitude')
+									)
+									markers[ sm.url ] = sm.location; // {latitude, longitude}
+							}
+						}
+						
+						// Search header
 						var sh = rs.search_header;
 						var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
 						var amt = '';
@@ -67753,6 +67780,7 @@ qatar,80
 							div.ylocn = '';
 							div.yzip = '';
 							div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
+							div.yslug = null;
 							d1c.appendChild(div);
 							
 							
@@ -67774,7 +67802,8 @@ qatar,80
 							var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
 							if (reg) {
 								//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
-								div.yhref = 'http://www.yelp.com' + __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
+								div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
+								div.yhref = 'http://www.yelp.com' + div.yslug;
 								div.yname = __js_clean_html_str(reg[2]).trim();
 								// Replace "’" with "'" in name
 								div.yname = div.yname.replace(/’/g, "'");
@@ -67809,6 +67838,27 @@ qatar,80
 								div.yzip = (z) ? z[1] : null;
 							}
 							
+							// Distance
+							var dist = '';
+							var dist_bgc = '';
+							console.log(div.yslug);
+							console.log(markers);
+							if ( div.yslug && markers.hasOwnProperty( div.yslug ) ) { // e.g. /biz/staples-walnut
+								dist = MT___lat_lng_distance(
+									ll.lat*1,
+									ll.lng*1,
+									markers[ div.yslug ].latitude*1,
+									markers[ div.yslug ].longitude*1
+								);
+								if (dist) {
+									dist = Math.round(dist*100) / 100;
+									if (dist*1 >= 4) {
+										div.style.backgroundColor = 'aqua';
+										//~ dist_bgc = 'background-color:aqua;';
+									}
+								}
+							}
+							
 							//~ // Diff
 							//~ var df = MT___diffString(
 								//~ div.yname,
@@ -67817,7 +67867,7 @@ qatar,80
 							
 							// Display
 							div.innerHTML = 
-								':'+ MT__bold(div.yname, o.name_arr) + '<br>' +
+								':'+ MT__bold(div.yname, o.name_arr) + (dist != '' ? '('+dist+')' : '') + '<br>' +
 								':'+ div.ystreet + '<br>' +
 								':'+ div.ylocn + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
 								':'+ ph + '<br>' +
@@ -67867,7 +67917,7 @@ qatar,80
 						}
 						if (o.stats.num_yelp_results != 0) {
 							d1c.appendChild(
-								''.div({style:'height:1400px;'});
+								''.div({style:'height:1400px;'})
 							);
 						}
 						
