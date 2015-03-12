@@ -2898,6 +2898,13 @@ function MT__RUN() {
 				href: a[0].href,
 				q: document.getElementById('web_url')
 			}
+			
+			// Change ... to ...
+			// http://www.google.com/search?q=Zillow+98330+median+home+price
+			// http://www.google.com/search?q=site:zillow.com+98330+"median+home+value"
+			o.href = o.href.replace(/q=Zillow/, 'q=site:zillow.com');
+			o.href = o.href.replace(/median\+home\+price/, '"median+home+value"');
+			
 			// sb
 			document.getElementById('submitButton').onclick = function() {
 				o.q.value = o.q.value.trim();
