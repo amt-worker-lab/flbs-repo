@@ -67889,6 +67889,7 @@ qatar,80
 							// div.onclick
 							div.onclick = function(e) {
 								this.style.backgroundColor = 'teal';
+								// // SET ALL WITH SAME PHONE AS TEAL
 								q.value = this.yphone;
 								if (q2)
 									q2.value = this.yhref;
