@@ -2934,10 +2934,18 @@ function MT__RUN() {
 							return;
 						}
 						
+						// First type...
+						// Second type=When no <em> surrounding the location. Inexact match. E.g. "Qville" rather than "14850".
 						var first_res = arr[0];
-						var reg = /The (<em>|)median home value(<\/em>|) in (<em>|)\d+(<\/em>|) is \$([\d,]+)\./.exec(first_res);
+						var reg =
+							/The (<em>| *)median home value(<\/em>| *) in (<em>| *)\d+(<\/em>| *) is (\$[\d,]+)\./.exec(first_res);
+						var reg2 =
+							/The (<em>| *)median home value(<\/em>| *) in [^\$\.]+(\$[\d,]+)\./.exec(first_res);
 						if (reg) {
-							o.q.value = reg[1];
+							o.q.value = reg[5];
+							doSubmit();
+						} else if (reg2) {
+							o.q.value = reg2[3];
 							doSubmit();
 						} else {
 							document.body.style.backgroundColor = 'aqua';
