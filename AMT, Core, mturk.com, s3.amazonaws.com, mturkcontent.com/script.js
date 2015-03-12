@@ -67696,11 +67696,13 @@ qatar,80
 					d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
 				);
 				var u = 'http://www.yelp.com/search/snippet'+
-				'?find_desc='	+encodeURIComponent(o.name)+
-				'&find_loc='	+encodeURIComponent(o.locn);
+						'?find_desc='	+encodeURIComponent(o.name)+
+						'&find_loc='	+encodeURIComponent(o.locn);
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
+				// Xhr request.
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+					url: u,
 					onload: function (response) {
 						var rs = response.responseText;
 						
@@ -67714,13 +67716,13 @@ qatar,80
 						var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
 						if (r) {
 							r = r[1];
-							d1.innerHTML = r + ' results.';
+							d1c.innerHTML = r + ' results.';
 						} else {
-							d1.innerHTML = 0 + ' results.';
+							d1c.innerHTML = 0 + ' results.';
 						}
 						var div = document.createElement('div'); // hr
 						div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-						d1.appendChild(div);
+						d1c.appendChild(div);
 						
 						
 						var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
@@ -67745,7 +67747,7 @@ qatar,80
 							div.ylocn = '';
 							div.yzip = '';
 							div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
-							d1.appendChild(div);
+							d1c.appendChild(div);
 							
 							
 							// (619) 238-4949
@@ -67798,7 +67800,7 @@ qatar,80
 								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
 								div.yzip = (z) ? z[1] : null;
 							}
-							console.log(div.ylocn);
+							//~ console.log(div.ylocn);
 							
 							// Diff
 							console.log(div.yname);
@@ -67855,8 +67857,8 @@ qatar,80
 									yelp_profile(this);
 								}
 								
-								// Form focus
-								o.q.name.focus();
+								//~ // Form focus
+								//~ o.q.name.focus();
 							}
 						}
 					}
