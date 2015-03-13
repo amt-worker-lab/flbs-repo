@@ -72,14 +72,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			
 			console.log('REMOVE');
 			console.log(tabIdsToRemove);
-			try {
+			//try {
 				if(tabIdsToRemove.length) {
 					chrome.tabs.remove(tabIdsToRemove);
 				}
-			}
-			catch(e) {
+			//}
+			//catch(e) {
 				//console.log('err');
-			}
+			//}
 		}
 		
 		
