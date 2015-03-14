@@ -6275,7 +6275,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 	
 	//
 	// CROWDSOURCE
-	//
+	// aka CrowdSource Keywords
 	//
 	//
 	//
@@ -6455,8 +6455,8 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 		}
 		
 		//
-		// Search: Keyword on Google.com (US)
-		//
+		// Search: Keyword on Google.com (com|uk|ie...)
+		// 
 		//
 		var s,s2;
 		s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on Google\.[\w\.]+<\/h1>/;
@@ -6466,7 +6466,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				s2.exec(ih)
 			)
 		{
-			console.log('x');
+			console.log('');
 			
 			var NUMLINKS;
 			//var NUMLINKS=11;
@@ -6620,7 +6620,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 							x = document.getElementById('URL-'+num);
 						else
 							x = document.getElementById('URL'+num+'-1');
-						x.value = m[1];//console.log(x);
+						x.value = m[1];
 						
 						break; // ENDS HERE
 					}
@@ -6665,9 +6665,12 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 				if (subm) {
 					clearInterval(xint2);
-					document.getElementById('submitButton').click();
+					var rand_time = (Math.random() * 6) + 6; // ~6-12 seconds (plus delays getting here)
+					setTimeout(function() {
+						document.getElementById('submitButton').click();
+					}, rand_time); // Wait
 				}
-			},400);
+			},1000);
 		}
 		
 		//
@@ -6975,77 +6978,6 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 			
 			
 			
-			//~ if (document.getElementById('URL-1')) {
-				//~ type = 1;
-			//~ } else type = 2;
-			//~ a = /h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;">Keyword: ([^<]+)/g;
-			//~ 
-			//~ if (ih.indexOf('<cufontext>') != -1) {
-				//~ type = 3;
-				//~ a = /<h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;"><cufon class="cufon cufon-canvas" alt="Keyword: " style="width: 78px; height: 16px;"><canvas width="89" height="17" style="width: 89px; height: 17px; top: -1px; left: -1px;"><\/canvas><cufontext>Keyword: <\/cufontext>((.|\s)*?(?=<\/h2>|$)|$)/g;
-			//~ }
-			//~ 
-			//~ array_urls = new Array();
-			//~ 
-			//~ if (a.exec(ih)) {
-				//~ 
-				//~ a.lastIndex = 0;
-				//~ 
-				//~ count=1;
-				//~ 
-				//~ global_count=1;
-				//~ 
-				//~ if (type === 1 || type == 2) {
-					//~ while (match = a.exec(ih)) {
-						//~ match[1] = match[1].replace(/&amp;/g,'&');
-						//~ match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8';
-						//~ //match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8&num=1';
-						//~ array_urls.push(match[1]);
-						//~ count++;
-					//~ }
-				//~ }
-				//~ else if (type == 3) {
-					//~ var a2, match2, string;
-					//~ while (match = a.exec(ih)) {
-						//~ 
-						//~ string = '';
-						//~ a2 = /<cufontext>([^<]+)<\/cufontext>/g;
-						//~ if (a2.exec(match[1])) {
-							//~ 
-							//~ a2.lastIndex = 0;
-							//~ while (match2 = a2.exec(match[1])) {
-								//~ match2[1] = match2[1].replace(/&amp;/g,'&');
-								//~ string += match2[1];
-							//~ }
-							//~ 
-							//~ string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8';
-							//~ //string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
-							//~ //string = 'https://www.google.com/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
-							//~ 
-							//~ array_urls.push(string);
-						//~ }
-						//~ 
-						//~ count++;
-						//~ 
-					//~ }
-				//~ }
-				//~ 
-				//~ NUMLINKS = array_urls.length;
-				//~ 
-				//~ 
-				//~ var c = 1;
-				//~ for (var i in array_urls) {
-					//~ cs_read(array_urls[i], c);
-					//~ c++;
-				//~ }
-			//~ }
-			
-			
-			
-			
-			
-			
-			
 			
 			function cs_read(u, num) {
 				GM_xmlhttpRequest({
@@ -7150,9 +7082,13 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 				if (subm) {
 					clearInterval(xint2);
-					document.getElementById('submitButton').click();
+					var rand_time = (Math.random() * 6) + 6; // ~6-12 seconds (plus delays getting here)
+					setTimeout(function() {
+						document.getElementById('submitButton').click();
+					}, rand_time); // Wait
+					//~ document.getElementById('submitButton').click();
 				}
-			},400);
+			}, 1000);
 		}
 	}
 	
