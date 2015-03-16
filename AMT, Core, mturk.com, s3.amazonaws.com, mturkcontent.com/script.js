@@ -67937,6 +67937,16 @@ qatar,80
 								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
 								div.yzip = (z) ? z[1] : null;
 							}
+							else { // Try "Service Area"
+								var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
+								// Serving Chicago and the Surrounding Area
+								if (reg && div.ylocn == '') {
+									var x = __js_clean_html_str(reg[1]).trim();
+									if (/^Serving/.exec(x) && / and the Surrounding Area$/.exec(x))
+										x = x.replace(/^Serving /, '').replace(/ and the Surrounding Area$/, '');
+									div.ylocn = x;
+								}
+							}
 							
 							// Distance
 							var dist = '';
