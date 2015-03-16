@@ -53391,9 +53391,10 @@ function MT__RUN() {
 							//link/title
 							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
 							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
-							reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							reg = /<h2 class="a-size-medium( a-color-null|) s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							if (reg) {
-								title = __js_clean_html_str(reg[1]);
+								title = __js_clean_html_str(reg[2]);
 								
 								// div.title
 								div.title = title;
@@ -53467,8 +53468,10 @@ function MT__RUN() {
 							}
 							//
 							// Try <i class="a-icon a-icon-prime a-icon-small s-align-text-bottom"></i>
+							// ...
 							
 							// ...
+							//~ console.log('Title' + title);
 							div.innerHTML += MT__bold(title, o.bold_array) + '<br>';
 							div.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
 							
