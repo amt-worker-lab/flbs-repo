@@ -67929,6 +67929,7 @@ qatar,80
 							// addr
 							// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
 							var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
+							var reg2= /<address>[\r\n\t\s]+([^<]+)<\/address>/.exec(m[1]);
 							if (reg) {
 								reg[1] = __js_clean_html_str(reg[1]).trim();
 								reg[2] = __js_clean_html_str(reg[2]).trim();
@@ -67937,7 +67938,12 @@ qatar,80
 								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
 								div.yzip = (z) ? z[1] : null;
 							}
-							else { // Try "Service Area"
+							else if (reg2) { // Try ONLY CITY/STATE INFO
+								var x = __js_clean_html_str(reg2[1]).trim();
+								div.ylocn = x;
+								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+								div.yzip = (z) ? z[1] : null;
+							} else { // Try "Service Area"
 								var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
 								// Serving Chicago and the Surrounding Area
 								if (reg && div.ylocn == '') {
@@ -67947,6 +67953,7 @@ qatar,80
 									div.ylocn = x;
 								}
 							}
+							console.log('x'+div.ylocn);
 							
 							// Distance
 							var dist = '';
@@ -67978,8 +67985,8 @@ qatar,80
 							// Display
 							div.innerHTML = 
 								':'+ MT__bold(div.yname, o.name_arr) + (dist != '' ? '('+dist+')' : '') + '<br>' +
-								':'+ div.ystreet + '<br>' +
-								':'+ div.ylocn + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
+								':'+ MT__bold(div.ystreet, o.locn_arr) + '<br>' +
+								':'+ MT__bold(div.ylocn, o.locn_arr) + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
 								':'+ ph + '<br>' +
 								//~ ':'+ df + '<br>' +
 								//~ 'reviews:'+ div.yreviews + '<br>' +
