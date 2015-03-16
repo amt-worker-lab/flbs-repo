@@ -53411,7 +53411,10 @@ function MT__RUN() {
 							// 1=Ex: DVD|Blu-ray|DVD-R
 							// 2=DP/ASIN
 							// 3=Ex: DVD|Blu-Ray|DVD-R
-							reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							//OLD reg = /<a class="a-link-normal a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="a-size-small *s-inline *a-text-normal">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							var reg = /<a class="a-link-normal[\r\n\t\s]+a-text-normal" title="([^"]+)" href="http:\/\/www\.amazon\.com\/[^\/]+\/dp\/([^\/]+)\/[^"]*"><h3 class="[^"]+">([^<]+)((.|\s)*?(?=<\/h3>|$)|$)/gi;
+							// xx <a class="a-link-normal a-text-normal" href="http://www.amazon.com/Dark-Knight-Single-Disc-Widescreen/dp/B001GZ6QC4/ref=sr_1_1_twi_1_dvd?ie=UTF8&amp;qid=1426529273&amp;sr=8-1&amp;keywords=The+Dark+Knight+DVD">
+							// e.g. <a class="a-link-normal   a-text-normal" title="DVD" href="http://www.amazon.com/Knight-Trilogy-Batman-Begins-Rises/dp/B009JBWOU0/ref=sr_1_2_twi_1_dvd?ie=UTF8&amp;qid=1426529273&amp;sr=8-2&amp;keywords=The+Dark+Knight+DVD"><h3 class="a-size-small a-color-null s-inline  a-text-normal">DVD<span class="a-letter-space"></span><span class="a-color-secondary">Batman Begins / The Dark Knight / The Dark Knight Rises</span></h3>
 							var m2;
 							var movs_array = [];
 							while (m2 = reg.exec(m[1])) {
