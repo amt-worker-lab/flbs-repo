@@ -67704,6 +67704,8 @@ qatar,80
 				var c = 0;
 				var found = false;
 				var r = opts.response.vars.results;
+				console.log('YP RESULTS:');
+				console.log(r);
 				for (var i in r) {
 					
 					//r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
