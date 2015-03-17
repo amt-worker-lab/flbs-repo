@@ -55,11 +55,17 @@ function MT__RUN() {
 			document.getElementsByTagName('div')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.top = '1100px';
+			var o = {
+				link: document.getElementsByTagName('a')[0].href
+			}
 			
+			/* Begin Elements */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;width:99%;height:1000px;background-color:gray;');
+			document.body.appendChild(d1);
 			
-			/* Create Elements */
 			var buttonsDiv = document.createElement('div');
-			buttonsDiv.setAttribute('style', 'position:absolute;left:0%;width:20%;height:30px;backgroundColor:gray;top:0px;');
+			buttonsDiv.setAttribute('style', 'position:absolute;left:0%;height:30px;background-color:gray;top:0px;width:30%;');
 			document.body.appendChild(buttonsDiv);
 			
 			var maleChoice = document.createElement('input');
@@ -76,13 +82,18 @@ function MT__RUN() {
 
 
 			var unclearChoice = document.createElement('input');
-			unclearChoice.setAttribute('style','width:30%;height:30px');
+			unclearChoice.setAttribute('style','height:30px;width:30%');
 			buttonsDiv.appendChild(unclearChoice);
 			unclearChoice.type = 'button';
-			unclearChoice.value = 'Unclear';
-
+			unclearChoice.value = 'Unclear from filing';
 			/*End of Elements*/
 			
+			maleChoice.onclick = femaleChoice.onclick = unclearChoice.onclick = function() {
+				document.body.getElementsByTagName('select')[0].value = this.value;
+				
+				new AMT___core_factory().nextTab();
+				//doSubmit();				
+			}
 			
 		}
 		new run().f();
