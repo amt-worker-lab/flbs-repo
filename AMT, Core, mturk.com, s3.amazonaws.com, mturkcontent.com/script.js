@@ -55,9 +55,14 @@ function MT__RUN() {
 			document.getElementsByTagName('div')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.top = '1100px';
+			var b = document.getElementsByTagName('b');
 			var o = {
-				link: document.getElementsByTagName('a')[0].href
+				link: document.getElementsByTagName('a')[0].href,
+				first: b[1].innerText.split(' ')[0].trim(),
+				last: b[1].innerText.split(' ').slice(1,1).join(" ").trim()
 			}
+			
+			console.log(o);
 			
 			/* Begin Elements */
 			var d1 = document.createElement('div');
@@ -94,6 +99,16 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				//doSubmit();				
 			}
+			
+			
+			document.getElementById('not_in_filing')[0].style.zoom = '4';
+			document.getElementById('not_in_filing')[0].onclick = function() {
+				document.body.getElementsByTagName('select')[0].value = 'Unclear from filing';
+				new AMT___core_factory().nextTab();
+				//doSubmit();								
+			}
+			
+			
 			
 		}
 		new run().f();
