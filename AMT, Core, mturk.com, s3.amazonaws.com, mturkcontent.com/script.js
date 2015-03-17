@@ -51,6 +51,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {		
 			GM_addStyle('ul {position:absolute;top:1600px;}');
+			GM_addStyle('#d1>b {zoom:1.8}');
 			document.getElementsByTagName('div')[0].style.top = '1000px';
 			document.getElementsByTagName('div')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
@@ -69,7 +70,8 @@ function MT__RUN() {
 			
 			/* Begin Elements */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:99%;height:1000px;background-color:gray;');
+			d1.setAttribute('style','position:absolute;left:0%;width:99%;height:1000px;background-color:#eee;');
+			d1.setAttribute('id','d1');
 			document.body.appendChild(d1);
 			
 			var buttonsDiv = document.createElement('div');
@@ -132,12 +134,12 @@ function MT__RUN() {
 						// e.g.
 						// <td><a href="0001053949-01-000097-0001.txt">0001053949-01-000097-0001.txt</a></td>
 						// Href must not start with "/".
-						var reg = /<td><a href="[^\/]([^"]+)">[^<]+<\/a><\/td>/g;
+						var reg = /<td><a href="([^\/][^"]+)">[^<]+<\/a><\/td>/g;
 						var m;
 						//var pages = [];
 						var doc;
-						while (reg.exec(rs)) {
-							doc = __js_clean_html_str(reg[1]);
+						while (m = reg.exec(rs)) {
+							doc = __js_clean_html_str(m[1]);
 							if (doc.toLowerCase().indexOf('.jpg') != -1)
 								continue;
 							o.pages.push(doc);
@@ -169,16 +171,21 @@ function MT__RUN() {
 							exit(response.status);
 						}
 						
+						//Clean
+						rs = rs.replace(/[<>]/g, ''); // Remove arrows.
+						rs = __js_clean_html_str(rs);
+						
+						rs = rs.replace(/&#146;/g,'\'');
+						
 						// xhr_document
 						// @o.break_float This is currently for 2 divs. Use a modulus to float more than 2 divs.
 						var reg = new RegExp('[\\d\\D]{0,100}' + __js_escape_regEx(o.last) + '[\\d\\D]{0,100}', 'gi');
 						console.log(reg);
-						return;
 						var m;
 						//var break_float = false;
 						var content;
-						while (reg.exec(rs)) {
-							content = reg[0].replace(/[<>]/g, ''); // Remove arrows.
+						while (m = reg.exec(rs)) {
+							content = m[0].replace(/[<>]/g, ''); // Remove arrows.
 							content = __js_clean_html_str(content); // Clean
 							content = content.replace(/[<>]/g, ''); // Remove arrows again.
 							// Div
