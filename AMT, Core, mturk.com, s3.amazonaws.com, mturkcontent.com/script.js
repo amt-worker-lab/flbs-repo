@@ -70,12 +70,12 @@ function MT__RUN() {
 			
 			/* Begin Elements */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:99%;height:1000px;background-color:#eee;');
+			d1.setAttribute('style','position:absolute;left:0%;width:99%;height:400px;top:200px;background-color:#eee;overflow:auto;');
 			d1.setAttribute('id','d1');
 			document.body.appendChild(d1);
 			
 			var buttonsDiv = document.createElement('div');
-			buttonsDiv.setAttribute('style', 'position:absolute;left:0%;height:30px;background-color:gray;top:0px;width:30%;');
+			buttonsDiv.setAttribute('style', 'position:absolute;left:0%;height:80px;background-color:gray;top:0px;width:30%;');
 			document.body.appendChild(buttonsDiv);
 			
 			var maleChoice = document.createElement('input');
@@ -89,15 +89,20 @@ function MT__RUN() {
 			buttonsDiv.appendChild(femaleChoice);
 			femaleChoice.type = 'button';
 			femaleChoice.value = 'Female';
-
-
+			
 			var unclearChoice = document.createElement('input');
 			unclearChoice.setAttribute('style','height:30px;width:30%');
 			buttonsDiv.appendChild(unclearChoice);
 			unclearChoice.type = 'button';
 			unclearChoice.value = 'Unclear from filing';
+			
+			var d2 = document.createElement('input');
+			d2.setAttribute('style','height:30px;width:30%;');
+			buttonsDiv.appendChild(d2);
+			d2.value = o.last;
 			/*End of Elements*/
 			
+			// .onclick
 			maleChoice.onclick = femaleChoice.onclick = unclearChoice.onclick = function() {
 				document.body.getElementsByTagName('select')[0].value = this.value;
 				
@@ -105,7 +110,14 @@ function MT__RUN() {
 				doSubmit();				
 			}
 			
+			// .onblur
+			d2.onblur = function() {
+				index_page(); // Start again.
+			}
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			
+			// ...
 			document.getElementById('not_in_filing').style.zoom = '2';
 			document.getElementById('not_in_filing').onclick = function() {
 				document.body.getElementsByTagName('select')[0].value = 'Unclear from filing';
@@ -113,6 +125,23 @@ function MT__RUN() {
 				doSubmit();								
 			}
 			
+			// Change bgcolor if name contains [^a-z]
+			if (/[^a-z]/i.exec(o.last)) {
+				document.body.style.backgroundColor = 'aqua';
+			}
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 200 // offset top
+			});
+			
+			// Init
 			index_page();
 			
 			
@@ -120,6 +149,8 @@ function MT__RUN() {
 			 * function index_page
 			 */
 			function index_page() {
+				// Reset d1
+				d1.innerHTML = '';
 				// url
 				var url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.link);
 				// xhr
@@ -184,7 +215,8 @@ function MT__RUN() {
 						
 						// xhr_document
 						// @o.break_float This is currently for 2 divs. Use a modulus to float more than 2 divs.
-						var reg = new RegExp('[\\d\\D]{0,100}' + __js_escape_regEx(o.last) + '[\\d\\D]{0,100}', 'gi');
+						// @d2.value Search for d2.value. Rather than o.last.
+						var reg = new RegExp('[\\d\\D]{0,100}' + __js_escape_regEx(d2.value) + '[\\d\\D]{0,100}', 'gi');
 						console.log(reg);
 						var m;
 						//var break_float = false;
@@ -198,7 +230,7 @@ function MT__RUN() {
 							div.setAttribute('style',
 								'width:49%;float:left;height:100px;overflow:hidden;border:1px solid teal;border-collapse:collapse;'
 							);
-							div.innerHTML = MT__bold(content, [o.last]); // Bold the last name.
+							div.innerHTML = MT__bold(content, [d2.value]); // Bold the last name.
 							d1.appendChild(div);
 							if (o.break_float) {
 								d1.appendChild(''.div({style:'clear:both;'}));
