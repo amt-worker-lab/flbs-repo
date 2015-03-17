@@ -42,6 +42,22 @@ var beginRunTime = new Date().getTime();
  */
 function MT__RUN() {
 	
+	//
+	//
+	// DCF
+	// Transcribe gender information from SEC 14A filing
+	s = ' <li> You will be presented with a number of documents one of which will be a 14-A proxy statement filing </li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {		
+			GM_addStyle('ul {position:absolute;top:1600px;}');
+			document.getElementsByTagName('div')[0].style.top = '1000px';
+			document.getElementsByTagName('div')[0].style.position = 'absolute';
+			document.getElementsByTagName('h2')[0].style.position = 'absolute';
+			document.getElementsByTagName('h2')[0].style.top = '1100px';
+		}
+		new run().f();
+	}
 	
 	
 	
