@@ -102,7 +102,7 @@ function MT__RUN() {
 				document.body.getElementsByTagName('select')[0].value = this.value;
 				
 				new AMT___core_factory().nextTab();
-				//doSubmit();				
+				doSubmit();				
 			}
 			
 			
@@ -110,7 +110,7 @@ function MT__RUN() {
 			document.getElementById('not_in_filing').onclick = function() {
 				document.body.getElementsByTagName('select')[0].value = 'Unclear from filing';
 				new AMT___core_factory().nextTab();
-				//doSubmit();								
+				doSubmit();								
 			}
 			
 			index_page();
