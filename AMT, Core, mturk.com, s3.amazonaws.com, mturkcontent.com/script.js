@@ -149926,58 +149926,81 @@ function top_window(okay_to_run) {
 							rs &&
 							rs.hasOwnProperty('user_price') &&
 							rs.user_price.hasOwnProperty('item') &&
-							rs.user_price.hasOwnProperty('item') &&
+							rs.user_price.item.hasOwnProperty('name') &&
+							rs.user_price.item.hasOwnProperty('slug') &&
+							rs.user_price.item.hasOwnProperty('upc') &&
+							rs.user_price.item.upc == upc
+							)
+						{
+							var itm = rs.user_price.item;
+							result.smoopa = true;
+							d3e.value = itm.name;
+							d3e.style.border = '4px solid blue';
+							d3e.sm_url = 'http://www.smoopa.com/u/'+itm.slug+'/'+upc; // e.g. http://www.smoopa.com/u/6-pack-washcloths/665721072899
+							d3e.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								q[0].value = this.value;
+								q[1].value = this.sm_url;
+								q[0].focus();
+								q[0].blur();
+								q[0].focus();
+							}
+						}
+						else
+						{
+							result.smoopa = false;
+						}
 					} catch(err) {
 						result.smoopa = false;
 						console.log(err);
-						// CALL NEXT
-						A9_Snaptell_VSR__next();
 						return;
-					}
-					
-					
-					var r = {
-						title: '',
-						url: null
-					};
-					
-					var x;
-					
-					x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
-					if (x) {
-						r.title = __js_clean_html_str(x[1]).trim();
-						r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
-					}// else
-					
-					x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
-					if (x) {
-						r.url = 'http://' + __js_clean_html_str(x[1]).trim()
-					} else
-						r.url = response.finalUrl;
-					
-					if (r.title != '') {
-						d3e.value = r.title;
-						d3e.style.border = '4px solid blue';
-						d3e.sm_url = r.url;
-						d3e.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							q[0].value = this.value;
-							q[1].value = this.sm_url;
-							q[0].focus();
-							q[0].blur();
-							q[0].focus();
-						}
-						
-						result.smoopa = true;
-						
-					} else {
-						
-						result.smoopa = false;
-						
 					}
 					
 					// CALL NEXT
 					A9_Snaptell_VSR__next();
+					
+					//~ var r = {
+						//~ title: '',
+						//~ url: null
+					//~ };
+					//~ 
+					//~ var x;
+					//~ 
+					//~ x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
+					//~ if (x) {
+						//~ r.title = __js_clean_html_str(x[1]).trim();
+						//~ r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
+					//~ }// else
+					//~ 
+					//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
+					//~ if (x) {
+						//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
+					//~ } else
+						//~ r.url = response.finalUrl;
+					//~ 
+					//~ if (r.title != '') {
+						//~ d3e.value = r.title;
+						//~ d3e.style.border = '4px solid blue';
+						//~ d3e.sm_url = r.url;
+						//~ d3e.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ q[0].value = this.value;
+							//~ q[1].value = this.sm_url;
+							//~ q[0].focus();
+							//~ q[0].blur();
+							//~ q[0].focus();
+						//~ }
+						//~ 
+						//~ result.smoopa = true;
+						//~ 
+					//~ } else {
+						//~ 
+						//~ result.smoopa = false;
+						//~ 
+					//~ }
+					//~ 
+					//~ // CALL NEXT
+					//~ A9_Snaptell_VSR__next();
 				}
 			});
 		}
