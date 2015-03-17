@@ -210,6 +210,230 @@ function AMT__all_pages_util(r) {
 	}
 }
 
+// THESE ARE SOME GENERAL FUNCTIONS...
+//
+//
+//
+
+//
+// Email scrollIntoView all pages
+//
+function MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight) { // scrollIntoView true/false
+	var scrollIntoView = scrollIntoView;
+	
+	
+	var el = document.body.getElementsByTagName("*");
+	
+	var last_el = false;
+	
+	var r;
+	var by_email = true;
+	if (!regex_highlight)
+		r = /^([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}\[at\][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})$/i;
+	else {
+		by_email = false;
+		r = regex_highlight;
+	}
+	
+	console.log(r);
+	
+	var arrMatchedStrings = [];
+	var el_innerText;
+	var reset_all_items = []; // this will contain reset zooms!
+	
+	for (var i = el.length - 1; i>=0; i--) {
+	//~ for (var i in el) {
+	//~ for (var i in el) {
+		if (!el[i]) continue;
+		if (!el[i].innerText) continue;
+		if (!el[i].tagName) continue;
+		if (el[i].tagName.toUpperCase() == 'SCRIPT') continue;
+		if (el[i].tagName.toUpperCase() == 'STYLE') continue;
+		
+		if  (
+			el[i].innerText.indexOf('@') == -1 &&
+			el[i].innerText.indexOf('[at]') == -1 &&
+			el[i].innerText.indexOf('&#064;') == -1 &&
+			by_email
+			//~ !regex_highlight // !!
+			)
+		{
+			continue;
+		}
+		
+		// ...
+		el_innerText = el[i].innerText.trim();
+		
+		//~ if (r != /\.youtube\.com/i)
+		//~ {
+			//~ el_innerText = el[i].innerText.trim();
+		//~ }
+		//~ else
+		//~ {
+			//~ el_innerText = el[i].innerHTML;
+		//~ }
+		
+		// replace prev. matched
+		for (var j in arrMatchedStrings) {
+			el_innerText = el_innerText.replace( // replaces first occurrence
+				arrMatchedStrings[j],
+				''
+			);
+		}
+		
+		//~ console.log(el[i].innerText);
+		//~ console.log(el_innerText);
+		
+		if (r.exec(el_innerText)) {
+			
+			if (!last_el)
+				last_el = el[i];
+			
+			arrMatchedStrings.push(el[i].innerText.trim());
+			//~ if (r != /\.youtube\.com/i)
+			//~ {
+				//~ arrMatchedStrings.push(el[i].innerText.trim());
+			//~ }
+			//~ else
+			//~ {
+				//~ arrMatchedStrings.push(el[i].innerHTML.trim());
+			//~ }
+			
+			
+			console.log(el[i]);
+			
+			reset_all_items.push(el[i]);
+			
+			el[i].style.fontWeight = 'bold';
+			el[i].style.zoom = '2';
+			el[i].style.border = '10px dashed #a2a2a2;';
+			//~ el[i].style.fontSize = '1.2em';
+			//~ el[i].style.zoom = '2';
+			
+			//~ el[i].parentNode.style.border = '4px dashed #a2a2a2;';
+		
+			//break; // BREAK HERE ... IF FIRST...
+		}
+	}
+	
+	//~ console.log(arrMatchedStrings);
+	
+	if (last_el && scrollIntoView) {
+		//last_el.parentNode.scrollTop = last_el.offsetTop - last_el.parentNode.offsetTop;
+		
+		// ...
+		setTimeout(function() {
+			last_el.scrollIntoView(false); // BOTTOM
+		}, 600);
+		
+		// addEventListener
+		window.addEventListener('dblclick', function() {
+			
+			console.log('reset_all_items');
+			console.log(reset_all_items);
+			
+			if (!reset_all_items.length) return;
+			
+			for (var i in reset_all_items) {
+				reset_all_items[i].style.fontWeight = '';
+				reset_all_items[i].style.zoom = '';
+				reset_all_items[i].style.border = '';
+				document.body.scrollIntoView(true); // true == align with top
+			}
+		}, false);
+	}
+	
+	console.log('arrMatchedStrings');
+	console.log(arrMatchedStrings);
+	
+	return arrMatchedStrings; // RETURNS!
+	
+	//}, 800);  // !!
+}
+
+function MT___all_pages_highlightText(regex_highlight, scrollIntoView) {
+	MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight);
+}
+
+//~ if(HIGHLIGHT_UK_COUNTIES) {
+	//~ for(var county in allUkCounties) {
+		//~ if(county) {
+			//~ document.body.innerHTML = document.body.innerHTML.replace((new RegExp(county,'gi')), '<span style="background-color:yellow">'+county+'</span>');
+		//~ }
+	//~ }
+//~ }
+
+//~ if  (
+		//~ RUN__ALL_PAGES_ZOOM
+	//~ )
+//~ {
+	//~ MT___all_pages_zoom();
+//~ }
+//
+// Zoom all pages
+// 
+function MT___all_pages_zoom() {
+	document.body.style.zoom = "70%";
+}
+//
+// Extend all pages
+// 
+//~ if  (
+		//~ RUN__ALL_PAGES_EXTEND
+	//~ )
+//~ {
+	//~ MT___all_pages_extend();
+//~ }
+function MT___all_pages_extend() {
+	// lengthen
+	var d;
+	d = document.createElement('div');
+	d.setAttribute('id','d1');
+	d.setAttribute('style','height:2400px;background-color:pink;');
+	document.body.appendChild(d);
+}
+//
+// Show href all pages
+// 
+function MT___all_pages_showhref() {
+	
+	// Does "add_panel" div exist?
+	// If it does then add to div. Else
+	// if it does not then add to page.
+	var add_panel = document.getElementById('DIV_ADD_PANEL__RANDOM_71765847293864762532874523764');
+	if (add_panel) {
+		MT___all_pages_showhref__input(add_panel);
+	} else {
+		MT___all_pages_showhref__input(false);
+	}
+	
+	function MT___all_pages_showhref__input(div) {
+		var d = document.createElement('input');
+		d.value = document.location.href;
+		d.addEventListener('keydown', function(e) { //?
+			var k = e.keyCode;
+			console.log(k);
+			if (k == 27) {
+				this.parentNode.removeChild(this);
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+		}, false);
+		d.addEventListener('blur', function() { // change src
+			document.location.href = this.value;
+		}, false);
+		
+		if (!div) {
+			d.setAttribute('style','position:fixed;top:0;left:0;width:10%;height:30px;z-index:1000000000;border:4px solid orange;background-color:#eee;');
+			document.body.appendChild(d);
+		} else {
+			d.setAttribute('style','width:100%;height:30px;z-index:1000000000;');
+			div.appendChild(d);
+		}
+	}
+}
+
 // o is a string
 // arr is an array of strings to be bolded
 function MT__bold(o, arr, options_object) {
