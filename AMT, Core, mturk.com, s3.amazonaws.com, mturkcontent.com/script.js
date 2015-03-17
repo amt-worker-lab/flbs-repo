@@ -56,10 +56,13 @@ function MT__RUN() {
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.top = '1100px';
 			var b = document.getElementsByTagName('b');
+			var name_split = b[1].innerText.split(' ');
 			var o = {
 				link: document.getElementsByTagName('a')[0].href,
 				first: b[1].innerText.split(' ')[0].trim(),
-				last: b[1].innerText.split(' ').slice(1,1).join(" ").trim()
+				last: b[1].innerText.split(' ').slice(1,name_split.length).join(" ").trim(),
+				break_float: false,
+				pages: []
 			}
 			
 			console.log(o);
@@ -101,14 +104,102 @@ function MT__RUN() {
 			}
 			
 			
-			document.getElementById('not_in_filing')[0].style.zoom = '4';
-			document.getElementById('not_in_filing')[0].onclick = function() {
+			document.getElementById('not_in_filing').style.zoom = '2';
+			document.getElementById('not_in_filing').onclick = function() {
 				document.body.getElementsByTagName('select')[0].value = 'Unclear from filing';
 				new AMT___core_factory().nextTab();
 				//doSubmit();								
 			}
 			
+			index_page();
 			
+			
+			/**
+			 * function index_page
+			 */
+			function index_page() {
+				// xhr
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.link,
+					onload: function (response) {
+						var rs = response.responseText;
+						if (response.status > 200) {
+							exit(response.status);
+						}
+						
+						// Scrape for the documents
+						// e.g.
+						// <td><a href="0001053949-01-000097-0001.txt">0001053949-01-000097-0001.txt</a></td>
+						// Href must not start with "/".
+						var reg = /<td><a href="[^\/]([^"]+)">[^<]+<\/a><\/td>/g;
+						var m;
+						//var pages = [];
+						var doc;
+						while (reg.exec(rs)) {
+							doc = __js_clean_html_str(reg[1]);
+							if (doc.toLowerCase().indexOf('.jpg') != -1)
+								continue;
+							o.pages.push(doc);
+						}
+						
+						console.log(o.pages);
+						// Initialize the document scrapes.
+						xhr_document();
+					}
+				});
+			}
+			/**
+			 * function xhr_document
+			 */
+			function xhr_document() {
+				// Are there more docs to get?
+				if (o.pages.length == 0) {
+					return; // Nope, we're done.
+				}
+				// url
+				var url = o.link + '/' + o.pages.shift(); // +Next doc in array.
+				// xhr
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					onload: function (response) {
+						var rs = response.responseText;
+						if (response.status > 200) {
+							exit(response.status);
+						}
+						
+						// xhr_document
+						// @o.break_float This is currently for 2 divs. Use a modulus to float more than 2 divs.
+						var reg = new RegExp('[\\d\\D]{0,100}' + __js_escape_regEx(o.last) + '[\\d\\D]{0,100}', 'gi');
+						console.log(reg);
+						return;
+						var m;
+						//var break_float = false;
+						var content;
+						while (reg.exec(rs)) {
+							content = reg[0].replace(/[<>]/g, ''); // Remove arrows.
+							content = __js_clean_html_str(content); // Clean
+							content = content.replace(/[<>]/g, ''); // Remove arrows again.
+							// Div
+							var div = document.createElement('div');
+							div.setAttribute('style',
+								'width:49%;float:left;height:100px;overflow:hidden;border:1px solid teal;border-collapse:collapse;'
+							);
+							div.innerHTML = MT__bold(content, [o.last]); // Bold the last name.
+							d1.appendChild(div);
+							if (o.break_float) {
+								d1.appendChild(''.div({style:'clear:both;'}));
+								o.break_float = false;
+							} else {
+								o.break_float = true;
+							}
+						}
+						// Call next
+						xhr_document();
+					}
+				});
+			}
 			
 		}
 		new run().f();
