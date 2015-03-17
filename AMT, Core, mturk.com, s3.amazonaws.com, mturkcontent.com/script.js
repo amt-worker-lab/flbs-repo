@@ -55,6 +55,35 @@ function MT__RUN() {
 			document.getElementsByTagName('div')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.top = '1100px';
+			
+			
+			/* Create Elements */
+			var buttonsDiv = document.createElement('div');
+			buttonsDiv.setAttribute('style', 'position:absolute;left:0%;width:20%;height:30px;backgroundColor:gray;top:0px;');
+			document.body.appendChild(buttonsDiv);
+			
+			var maleChoice = document.createElement('input');
+			maleChoice.setAttribute('style','width:30%;height:30px');
+			buttonsDiv.appendChild(maleChoice);
+			maleChoice.type = 'button';
+			maleChoice.value = 'Male';
+			
+			var femaleChoice = document.createElement('input');
+			femaleChoice.setAttribute('style','width:30%;height:30px');
+			buttonsDiv.appendChild(femaleChoice);
+			femaleChoice.type = 'button';
+			femaleChoice.value = 'Female';
+
+
+			var unclearChoice = document.createElement('input');
+			unclearChoice.setAttribute('style','width:30%;height:30px');
+			buttonsDiv.appendChild(unclearChoice);
+			unclearChoice.type = 'button';
+			unclearChoice.value = 'Unclear';
+
+			/*End of Elements*/
+			
+			
 		}
 		new run().f();
 	}
