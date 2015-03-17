@@ -149711,7 +149711,7 @@ function top_window(okay_to_run) {
 			smoopa:			null,
 			upcindex:		null, // upcindex.com
 			google:			null,
-			array_all: ['de','su','sp','yh','ss','sm','up','g'], // Remove 'su' to remove searchupc.com
+			array_all: ['de','su','sp','yh','ss','sm','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip
 			
 			// This is the first URL for iframe d1.src.
 			first_url: null
