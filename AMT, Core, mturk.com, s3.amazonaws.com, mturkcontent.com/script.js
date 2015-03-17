@@ -120,10 +120,12 @@ function MT__RUN() {
 			 * function index_page
 			 */
 			function index_page() {
+				// url
+				var url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.link);
 				// xhr
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: o.link,
+					url: url,
 					onload: function (response) {
 						var rs = response.responseText;
 						if (response.status > 200) {
@@ -161,6 +163,7 @@ function MT__RUN() {
 				}
 				// url
 				var url = o.link + '/' + o.pages.shift(); // +Next doc in array.
+				url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(url);
 				// xhr
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -172,10 +175,12 @@ function MT__RUN() {
 						}
 						
 						//Clean
-						rs = rs.replace(/[<>]/g, ''); // Remove arrows.
-						rs = __js_clean_html_str(rs);
-						
+						//~ rs = rs.replace(/[<>]/g, ''); // Remove arrows.
+						//~ console.log(rs);
+						//~ rs = __js_clean_html_str(rs);
+						//~ console.log(rs);
 						rs = rs.replace(/&#146;/g,'\'');
+						o.last = o.last.replace(/&#146;/g,'\'');
 						
 						// xhr_document
 						// @o.break_float This is currently for 2 divs. Use a modulus to float more than 2 divs.
