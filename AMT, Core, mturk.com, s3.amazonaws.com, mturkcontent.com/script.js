@@ -149761,6 +149761,7 @@ function top_window(okay_to_run) {
 				case 'g':
 					console.log(result);
 					if (result.startpage == false && result.yahoo == false) {
+						A9_Snaptell_VSR__google(); // DO IT
 						//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 					} else {
 						//
