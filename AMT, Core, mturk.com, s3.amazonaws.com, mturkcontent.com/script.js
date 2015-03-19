@@ -36535,7 +36535,9 @@ function MT__RUN() {
 			
 			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
 			//~ + "charCode: " + e.charCode);
-			console.log(e.keyCode);
+			console.log('keyCode'+e.keyCode);
+			console.log('charCode'+e.charCode);
+			console.log('getKey'+e.getKey);
 			
 			var char = String.fromCharCode(e.charCode);
 			
