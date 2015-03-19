@@ -46,12 +46,13 @@ function MT__RUN() {
 	//
 	// DCF
 	// Transcribe gender information from SEC 14A filing
-	s = ' <li> You will be presented with a number of documents one of which will be a 14-A proxy statement filing </li>';
+	//~ s = ' <li> You will be presented with a number of documents one of which will be a 14-A proxy statement filing </li>';
+	s = '<li> You will be presented with a number of documents one of which will be a 14-A proxy statement filing (usually contained within a .txt or .htm file)</li>';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {		
 			GM_addStyle('ul {position:absolute;top:1600px;}');
-			GM_addStyle('#d1>b {zoom:1.8}');
+			GM_addStyle('b {zoom:1.6;}');
 			document.getElementsByTagName('div')[0].style.top = '1000px';
 			document.getElementsByTagName('div')[0].style.position = 'absolute';
 			document.getElementsByTagName('h2')[0].style.position = 'absolute';
@@ -63,7 +64,8 @@ function MT__RUN() {
 				first: b[1].innerText.split(' ')[0].trim(),
 				last: b[1].innerText.split(' ').slice(1,name_split.length).join(" ").trim(),
 				break_float: false,
-				pages: []
+				pages: [],
+				bold: ['mr','mrs','ms','miss']
 			}
 			
 			console.log(o);
@@ -230,7 +232,7 @@ function MT__RUN() {
 							div.setAttribute('style',
 								'width:49%;float:left;height:100px;overflow:hidden;border:1px solid teal;border-collapse:collapse;'
 							);
-							div.innerHTML = MT__bold(content, [d2.value]); // Bold the last name.
+							div.innerHTML = MT__bold(content, o.bold.concat([d2.value])); // Bold the last name. Also bold any "mr." "ms." etc.
 							d1.appendChild(div);
 							if (o.break_float) {
 								d1.appendChild(''.div({style:'clear:both;'}));
@@ -150616,12 +150618,8 @@ function top_window(okay_to_run) {
 		}
 		// ...
 		function A9_Snaptell_VSR__load_first() {
-			//~ console.log(result);
-			//~ console.log(d1.src);
 			if (d1.src == '' && result.first_url != null) {
 				d1.src = result.first_url;
-				
-				
 				//~ d1.output_url = this.output_url; //.output_url
 			}
 		}
@@ -150636,16 +150634,6 @@ function top_window(okay_to_run) {
 			req_proxy.proxy_waitComplete(
 				A9_Snaptell_VSR__yahoo_complete
 			);
-			
-			//
-			//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				//~ url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(upc),
-				//~ yahoo_array: true
-			//~ });
-			//~ req_proxy.proxy_init();
-			//~ req_proxy.proxy_waitComplete(
-				//~ A9_Snaptell_VSR__yahoo_complete
-			//~ );
 		}
 		// ...
 		function A9_Snaptell_VSR__yahoo_init() {
@@ -150727,16 +150715,19 @@ function top_window(okay_to_run) {
 			// ADDITIONAL TERMS
 			r = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
 			if (r) {
-				var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
-				var div = document.createElement('div');
-				div.setAttribute('style', 'cursor:pointer');
-				div.innerText = __js_clean_html_str(r[1]).trim();
-				div.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					//~ x1.value += ' ' + this.innerText;
-					//~ x1.focus();
-				}
-				x3.appendChild(div);
+				// Add to button
+				d3_de.value += ' ' + __js_clean_html_str(r[1]).trim();
+				
+				//~ var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
+				//~ var div = document.createElement('div');
+				//~ div.setAttribute('style', 'cursor:pointer');
+				//~ div.innerText = __js_clean_html_str(r[1]).trim();
+				//~ div.onclick = function() {
+					//~ this.style.backgroundColor = 'LightGreen';
+					//x1.value += ' ' + this.innerText;
+					//x1.focus();
+				//~ }
+				//~ x3.appendChild(div);
 			}
 			
 			//~ // whole table
