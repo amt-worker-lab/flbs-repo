@@ -219,16 +219,32 @@ function addLoaderElement(name, value) {
 }
 
 function createGlobal_load_varsUI() {
+	var createGlobalBtn = document.createElement('input');
+	createGlobalBtn.setAttribute('style', 'width:50%;height:30px;display:inline-block;');
+	document.body.appendChild(createGlobalBtn);
+	createGlobalBtn.type = 'button';
+	createGlobalBtn.value = 'Add New Global';
+
+	var createGlobalField = document.createElement('input');
+	createGlobalField.setAttribute('style', 'width:50%;height:30px;display:inline-block;');
+	document.body.appendChild(createGlobalField);
+	
+	createGlobalBtn.onclick = function() {
+		if(createGlobalField.value != '') {
+			var obj = {};
+			obj[createGlobalField.value] = 'setMe';
+			addLoaderElement(createGlobalField.value, 'setMe');
+			chrome.storage.local.set(obj, function(e) {
+				
+			});
+		}
+	}
+
 	chrome.storage.local.get(null, function(global_load_vars) {
 		for(var i in global_load_vars) {
 			addLoaderElement(i, global_load_vars[i]);
 		}
 	});
-	var createGlobalBtn = document.createElement('input');
-	createGlobalBtn.style = 'width:100%';
-	createGlobalBtn.type = 'button';
-	createGlobalBtn.value = 'Add New Global';
-	document.body.appendChild(createGlobalBtn);
 }
 
 // Once the DOM is ready
