@@ -24,6 +24,7 @@
       "scripts": ["eventPage.js"]
    },
    "permissions": [
+		"storage",
 		"http://*/",
 		"https://*/",
 		"tabs",
