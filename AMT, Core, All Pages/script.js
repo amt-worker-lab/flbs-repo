@@ -6415,7 +6415,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 				if (subm) {
 					clearInterval(xint2);
-					var rand_time = (Math.random() * 6) + 6; // ~6-12 seconds (plus delays getting here)
+					var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
 					setTimeout(function() {
 						document.getElementById('submitButton').click();
 					}, rand_time); // Wait
@@ -6832,11 +6832,10 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 				if (subm) {
 					clearInterval(xint2);
-					var rand_time = (Math.random() * 6) + 6; // ~6-12 seconds (plus delays getting here)
+					var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
 					setTimeout(function() {
 						document.getElementById('submitButton').click();
 					}, rand_time); // Wait
-					//~ document.getElementById('submitButton').click();
 				}
 			}, 1000);
 		}
