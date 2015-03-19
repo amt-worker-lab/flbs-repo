@@ -35982,6 +35982,7 @@ function MT__RUN() {
 		GM_addStyle('body {margin-top:0px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
+		GM_addStyle('#polygon {position:absolute;top:20px;left:40%;width:50%;height:20px;}');
 		
 		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
@@ -36539,7 +36540,7 @@ function MT__RUN() {
 			console.log('charCode'+e.charCode); //Always=0
 			
 			// Submit button (CTRL key)
-			if (e.keyCode == '18') {
+			if (e.keyCode == '17') {
 				document.getElementById('submitButton').click();
 			}
 		}, false);
