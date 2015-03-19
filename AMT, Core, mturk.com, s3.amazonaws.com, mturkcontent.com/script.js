@@ -36529,22 +36529,29 @@ function MT__RUN() {
 		}
 		
 		/**
+		 * window.onkeydown
+		 * This is somewhat different from keypress. For example "e.keyCode" for CTRL only comes in 
+		 * on keydown NOT keypress. Er wtf?
+		 */
+		window.addEventListener('keyup', function(e) {
+			
+			console.log('keyCode'+e.keyCode);
+			console.log('charCode'+e.charCode); //Always=0
+			
+			// Submit button (CTRL key)
+			if (e.keyCode == '18') {
+				document.getElementById('submitButton').click();
+			}
+		}, false);
+		/**
 		 * window.onkeypress
 		 */
 		window.addEventListener('keypress', function(e) {
 			
 			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
 			//~ + "charCode: " + e.charCode);
-			console.log('keyCode'+e.keyCode);
-			console.log('charCode'+e.charCode);
-			console.log('getKey'+e.getKey);
 			
 			var char = String.fromCharCode(e.charCode);
-			
-			// Submit button (CTRL key)
-			if (e.keyCode == '17') {
-				document.getElementById('submitButton').click();
-			}
 			
 			// Exit Steet View
 			if (char == 'z' || char == 'Z') {
