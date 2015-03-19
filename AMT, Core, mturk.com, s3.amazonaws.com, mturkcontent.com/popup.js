@@ -195,8 +195,31 @@ function init_func_getIsSpecialWorkflowWindow() {
 			TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW.value = rs.SPECIAL_WORKFLOW_WINDOW;
 		});	
 }
-//getNTPassBy
-//toggleNAPassBy
+
+
+function addLoaderElement(name, value) {
+	var newDiv = document.createElement('div');
+	newDiv.setAttribute('style', "display:inline-block;width:150px;");
+	newDiv.innerText = name;
+	document.body.appendChild(newDiv);
+	var newInput = document.createElement('input');
+	newInput.setAttribute('style',"width:280px;clear:both;");
+	document.body.appendChild(newInput);
+	newInput.value = value;
+	newInput.name = name;
+	newInput.onblur = function() {
+		chrome.storage.local.set({(this.name):(this.value)});
+	}
+	document.body.appendChild(document.createElement('br'));
+}
+
+function createGlobal_load_varsUI() {
+	chrome.storage.local.get(null, function(global_load_vars) {
+		for(var i in global_load_vars) {
+			addLoaderElement(i, global_load_vars[i]);
+		}
+	});
+}
 
 // Once the DOM is ready
 document.addEventListener("DOMContentLoaded", function() {
@@ -332,6 +355,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		);
 	}
+	
+	
+	
+	createGlobal_load_varsUI();
 	
 	
 	SELECT.onchange = SELECT.onblur = EL_STG_MIN.onchange = EL_STG_MIN.onblur = EL_STG_TO.onchange = EL_STG_TO.onblur = function() {
