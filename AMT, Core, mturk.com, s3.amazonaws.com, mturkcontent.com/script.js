@@ -154561,7 +154561,7 @@ function loadGlobalsFromBird(callback) {
 			AMT__Global_Vars[i] = global_load_vars[i];
 		}
 		console.log(AMT__Global_Vars);
-		callback();
+		callback();//should be mturk_load
 	});
 }
 
