@@ -208,12 +208,18 @@ function addLoaderElement(name, value) {
 	newInput.value = value;
 	newInput.name = name;
 	newInput.onblur = function() {
-		console.log(this.name);
-		var thisName = this.name;
-		var value = this.value;
-		var obj = {};
-		obj[this.name] = this.value;
-		chrome.storage.local.set(obj);
+		if(this.value != '') {
+			console.log(this.name);
+			var thisName = this.name;
+			var value = this.value;
+			var obj = {};
+			obj[this.name] = this.value;
+			chrome.storage.local.set(obj);
+		}
+		else {
+			chrome.storage.local.remove(this.name);
+		}
+		this.style.border = '2px solid green';
 	}
 	document.body.appendChild(document.createElement('br'));
 }
