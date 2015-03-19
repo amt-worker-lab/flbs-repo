@@ -154552,6 +154552,19 @@ function mturk_load()
  */
 
 
+
+
+function loadGlobalsFromBird(callback) {
+	var callback = callback;
+	chrome.storage.local.get(null, function(global_load_vars) {
+		for(var i in global_load_vars) {
+			AMT__Global_Vars[i] = global_load_vars[i];
+		}
+		console.log(AMT__Global_Vars);
+		callback();
+	});
+}
+
 /**
  * RUN DOCUMENT
  *
@@ -154565,13 +154578,13 @@ function mturk_load()
 var ih;
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
-	mturk_load();
+	loadGlobalsFromBird(mturk_load);
 }
 else {
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete" || document.readyState == "interactive") {
 			ih = document.body.innerHTML;
-			mturk_load();
+			loadGlobalsFromBird(mturk_load);
 		}
 	}
 }
