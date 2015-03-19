@@ -36222,7 +36222,9 @@ function MT__RUN() {
 				
 				//~ console.log('x');
 				
-				var new_h = (innerHeight-160) + 'px';
+				//~ var new_h = (innerHeight-160) + 'px'; // PRIOR TO MARCH 19, 2015
+				
+				var new_h = (innerHeight-80) + 'px'; //...
 				
 				// 100 px offset from bottom
 				d2.style.height = new_h;
@@ -36533,8 +36535,14 @@ function MT__RUN() {
 			
 			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
 			//~ + "charCode: " + e.charCode);
-      
+			console.log(e.keyCode);
+			
 			var char = String.fromCharCode(e.charCode);
+			
+			// Submit button (CTRL key)
+			if (e.keyCode == '17') {
+				document.getElementById('submitButton').click();
+			}
 			
 			// Exit Steet View
 			if (char == 'z' || char == 'Z') {
