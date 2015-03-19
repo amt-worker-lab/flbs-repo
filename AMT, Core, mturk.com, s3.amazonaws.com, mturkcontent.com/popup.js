@@ -208,7 +208,12 @@ function addLoaderElement(name, value) {
 	newInput.value = value;
 	newInput.name = name;
 	newInput.onblur = function() {
-		chrome.storage.local.set({(this.name):(this.value)});
+		console.log(this.name);
+		var thisName = this.name;
+		var value = this.value;
+		var obj = {};
+		obj[this.name] = this.value;
+		chrome.storage.local.set(obj);
 	}
 	document.body.appendChild(document.createElement('br'));
 }
@@ -219,6 +224,11 @@ function createGlobal_load_varsUI() {
 			addLoaderElement(i, global_load_vars[i]);
 		}
 	});
+	var createGlobalBtn = document.createElement('input');
+	createGlobalBtn.style = 'width:100%';
+	createGlobalBtn.type = 'button';
+	createGlobalBtn.value = 'Add New Global';
+	document.body.appendChild(createGlobalBtn);
 }
 
 // Once the DOM is ready
