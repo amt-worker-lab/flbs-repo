@@ -35990,13 +35990,13 @@ function MT__RUN() {
 		var x = document.getElementsByTagName('h3')[0];
 		x.innerText = x.innerText.replace(/\n/g, ' ');
 		
-		//...
-		var HEIGHT = screen.height;
-		var tmp_h = (HEIGHT*1 - 400)+ 'px';
-
-		//...
+		//~ //...
+		//~ var HEIGHT = screen.height;
+		//~ var tmp_h = (HEIGHT*1 - 400)+ 'px';
+//~ 
+		//~ //...
 		document.getElementById('map').style.width = '100%';
-		document.getElementById('map').style.height = tmp_h;
+		//~ document.getElementById('map').style.height = tmp_h;
 		
 		//...
 		// This will change occasionally.
@@ -36230,9 +36230,12 @@ function MT__RUN() {
 				// 100 px offset from bottom
 				d2.style.height = new_h;
 				
-				//~ document.getElementById('map').style.height = new_h + ' !important';
-				
-				document.getElementById('map').style.height = new_h;
+				// Set a timeout
+				// There is a problem here. It goes gray sometimes.
+				// Which happens to be the background color of the map div.
+				setTimeout(function() {
+					document.getElementById('map').style.height = new_h;
+				}, 1000);
 				
 				// DO NOT USE THIS (IMAGES WINDOW)
 				//~ // d4 is 40px lower and so 40px shorter.
