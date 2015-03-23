@@ -3116,7 +3116,8 @@ function MT__RUN() {
 			var o = {
 				name: p,
 				q: document.getElementsByName('Q6MultiLineTextInput')[0],
-				bold: null
+				bold: null,
+				has_auto_clicked: false // for autos
 			}
 			o.bold = o.name.clean_string_to_array();
 			
@@ -3188,6 +3189,7 @@ function MT__RUN() {
 						// regex
 						var reg = /<li class="artist">((.|\s)*?(?=<\/li>|$)|$)/g;
 						var m;
+						var first = true;
 						while (m = reg.exec(rs)) {
 							var item = m[1];
 							var rslt = {
@@ -3195,10 +3197,18 @@ function MT__RUN() {
 								href:'',
 								name:'',
 								genres:'',
-								decades:''
+								decades:'',
+								first: first // for autos
 							}
+							first = false; // set false
+							
+							// Parse
 							var p = new DOMParser();
-							p = p.parseFromString(item, 'text/html');//console.log(p);return;
+							p = p.parseFromString(item, 'text/html');
+							// Get "Info" section. Sometimes there is a section before this
+							// which contains an image. (And a link.)
+							p = p.getElementsByClassName('info')[0];
+								//~ console.log(p);//return;
 							rslt.type = p.getElementsByTagName('h4')[0].innerText;
 							rslt.name = p.getElementsByTagName('a')[0].innerText;
 							rslt.href = p.getElementsByTagName('a')[0].href;
@@ -3206,6 +3216,9 @@ function MT__RUN() {
 							rslt.genres = p.getElementsByClassName('genres')[0].innerText;
 							if (p.getElementsByClassName('decades').length)
 								rslt.decades = p.getElementsByClassName('decades')[0].innerText;
+							
+							console.log(rslt);
+							rslt_div(rslt);
 							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
 							//~ if (reg2) {
 								//~ rslt.href = __js_clean_html_str(reg2[1]);
@@ -3222,8 +3235,6 @@ function MT__RUN() {
 							//~ if (reg2) {
 								//~ rslt.decades = __js_clean_html_str(reg2[1]);
 							//~ }
-							
-							rslt_div(rslt);
 						}
 					}
 				});
@@ -3246,6 +3257,20 @@ function MT__RUN() {
 					this.style.backgroundColor = 'aqua';
 					o.q.value = this.href;
 					document.getElementById('submitButton').click();
+				}
+				
+				// auto?
+				console.log(o.name == rslt.name.toLowerCase());
+				if  (
+					!o.has_auto_clicked &&
+					rslt.name.toLowerCase() == o.name &&
+					o.name.length >= 4 &&
+					rslt.type == 'Artist' &&
+					rslt.first
+					)
+				{
+					o.has_auto_clicked = true;
+					div.click();
 				}
 			}
 		}
