@@ -3090,6 +3090,168 @@ function MT__RUN() {
 	}
 	
 	// 
+	// James Block
+	// Find the Website of A Given Artist
+	//
+	s = '<p>In this task you will see the name of a music artist and a search link. Your task is to click on the search link given, and find the link that corresponds to the artist.</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:800px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var p = document.getElementsByTagName('p')[5];
+			if (p.innerHTML.indexOf('<strong>Artist: </strong>') != 0) {
+				alert('wrong p?');
+				return;
+			}
+			p = p.innerHTML.replace(/^<strong>Artist: <\/strong>/, '').trim();
+			
+			var o = {
+				name: p,
+				q: document.getElementsByName('Q6MultiLineTextInput')[0],
+				bold: null
+			}
+			o.bold = o.name.clean_string_to_array();
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:20px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:20px;');
+			document.body.appendChild(d2);
+			d2.value = o.name;
+			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 20 // offset top
+			});
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				console.log('sbm:'+o.q.value+'<<');
+				if (!/^https?:\/\/www\.allmusic\.com\/artist\/[^\/]+$/.exec(o.q.value)) {
+					return false;
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
+				return false;
+			}
+			
+			// init
+			init();
+			
+			//
+			function init() {
+				// xhr
+				// e.g. http://www.allmusic.com/search/artists/eats%20everything
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://www.allmusic.com/search/artists/' + encodeURIComponent(d2.value),
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// num rslt
+						// e.g. 858
+						var reg = /<h1>[\r\n\t\s]+([\d,]+) artist search results? for /.exec(rs);
+						if (reg) {
+							//~ console.log(reg[1] + ' results'.div({
+									//~ style: 'border-bottom:4px solid teal;'
+								//~ }));
+							d1.appendChild(
+								(reg[1] + ' results').div({
+									style: 'border-bottom:4px solid teal;'
+								})
+							)
+						}
+						
+						// regex
+						var reg = /<li class="artist">((.|\s)*?(?=<\/li>|$)|$)/g;
+						var m;
+						while (m = reg.exec(rs)) {
+							var item = m[1];
+							var rslt = {
+								type:'',
+								href:'',
+								name:'',
+								genres:'',
+								decades:''
+							}
+							var p = new DOMParser();
+							p = p.parseFromString(item, 'text/html');//console.log(p);return;
+							rslt.type = p.getElementsByTagName('h4')[0].innerText;
+							rslt.name = p.getElementsByTagName('a')[0].innerText;
+							rslt.href = p.getElementsByTagName('a')[0].href;
+							if (p.getElementsByClassName('genres').length)
+							rslt.genres = p.getElementsByClassName('genres')[0].innerText;
+							if (p.getElementsByClassName('decades').length)
+								rslt.decades = p.getElementsByClassName('decades')[0].innerText;
+							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
+							//~ if (reg2) {
+								//~ rslt.href = __js_clean_html_str(reg2[1]);
+							//~ }
+							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
+							//~ if (reg2) {
+								//~ rslt.name = __js_clean_html_str(reg2[1]);
+							//~ }
+							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
+							//~ if (reg2) {
+								//~ rslt.genres = __js_clean_html_str(reg2[1]);
+							//~ }
+							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
+							//~ if (reg2) {
+								//~ rslt.decades = __js_clean_html_str(reg2[1]);
+							//~ }
+							
+							rslt_div(rslt);
+						}
+					}
+				});
+			}
+			// helper
+			function rslt_div(rslt) {
+				var div = document.createElement('div');
+				div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+				div.className = 'exe';
+				div.href = rslt.href;
+				d1.appendChild(div);
+				div.innerHTML =
+					MT__bold(rslt.name, o.bold)+'<br>'+
+					rslt.type+'<br>'+
+					rslt.genres+'<br>'+
+					rslt.decades
+				;
+				// .onclick
+				div.onclick = function() {
+					this.style.backgroundColor = 'aqua';
+					o.q.value = this.href;
+					document.getElementById('submitButton').click();
+				}
+			}
+		}
+		new run().f();
+	}
+	// 
 	// William Hohman
 	// Google Search to Find Median Home Price for a Zip Code
 	//
