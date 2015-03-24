@@ -3106,8 +3106,8 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
-			var p = document.getElementsByTagName('p')[5];
-			if (p.innerHTML.indexOf('<strong>Artist: </strong>') != 0) {
+			var p = document.getElementsByTagName('p')[6];
+			if (p.innerHTML.indexOf('<strong>Artist: </strong>') == -1) {
 				alert('wrong p?');
 				return;
 			}
