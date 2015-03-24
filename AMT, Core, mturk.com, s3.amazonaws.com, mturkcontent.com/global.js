@@ -11362,7 +11362,12 @@ function AMT___returnAndAcceptButton() {
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
 			//
 			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
-				new AMT___core_factory().nextTab({focusOnPage:true});
+				if(AMT__Global_Vars['R&A NextTab Iframe Focus']) {				
+					new AMT___core_factory().nextTab({focusOnPage:false, isTopWindow:false});
+				}
+				else {
+					new AMT___core_factory().nextTab();
+				}				
 			}
 			// END HOOK nextTab()
 			
