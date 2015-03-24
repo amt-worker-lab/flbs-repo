@@ -11362,7 +11362,7 @@ function AMT___returnAndAcceptButton() {
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
 			//
 			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
-				new AMT___core_factory().nextTab();
+				new AMT___core_factory().nextTab({focusOnPage:true});
 			}
 			// END HOOK nextTab()
 			

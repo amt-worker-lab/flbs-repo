@@ -3129,7 +3129,7 @@ function MT__RUN() {
 			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
 			document.body.appendChild(d2);
 			d2.value = o.name;
-			var naBut = document.createElement('button');
+			var naBut = document.createElement('input');
 			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
 			document.body.appendChild(naBut);
 			naBut.type = 'button';
@@ -3169,7 +3169,7 @@ function MT__RUN() {
 				    o.q.value != 'N/A') {
 					return false;
 				}
-				new AMT___core_factory().nextTab();
+				new AMT___core_factory().nextTab({focusOnPage:true});
 				new AMT___core_factory().shiftFarLeft();
 				doSubmit();
 				return false;
