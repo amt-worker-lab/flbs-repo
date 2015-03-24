@@ -372,6 +372,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 	 
 	
+	if(request.shiftFarLeft) {
+		chrome.tabs.move(tabId, {index: 0}, function (tab) {
+				console.log('Moved tab');
+			});
+	}
+	
 	/**
 	 * request.addToTabsQ
 	 */

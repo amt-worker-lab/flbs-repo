@@ -9580,6 +9580,17 @@ function MT___diff( o, n ) {
 
 
 
+AMT___core_factory.prototype.shiftFarLeft = function() {
+	chrome.extension.sendRequest(
+			{
+				shiftFarLeft:true
+			},
+			function(r) {
+			}
+		);
+	console.log('attempt shift far left');
+}
+
 
 
 /**
