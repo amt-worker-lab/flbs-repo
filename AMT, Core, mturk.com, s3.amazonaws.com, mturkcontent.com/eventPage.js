@@ -373,6 +373,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 
 	
 	if(request.shiftFarLeft) {
+		var tabId = sender.tab.id;
 		chrome.tabs.move(tabId, {index: 0}, function (tab) {
 				console.log('Moved tab');
 			});

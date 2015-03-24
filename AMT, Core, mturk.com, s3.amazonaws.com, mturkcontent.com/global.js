@@ -9588,7 +9588,6 @@ AMT___core_factory.prototype.shiftFarLeft = function() {
 			function(r) {
 			}
 		);
-	console.log('attempt shift far left');
 }
 
 
