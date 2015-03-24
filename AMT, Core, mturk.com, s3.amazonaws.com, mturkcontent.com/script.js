@@ -3143,8 +3143,9 @@ function MT__RUN() {
 				document.getElementById('submitButton').click();
 			}
 			
-			window.addEventListener('keydown', function(e) {
-				if(e.keyCode == 87) {
+			window.addEventListener('keypress', function(e) {
+				console.log(e);
+				if(e.keyCode == 119) {
 					naBut.click();
 				}
 			});
