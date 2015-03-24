@@ -3126,10 +3126,25 @@ function MT__RUN() {
 			d1.setAttribute('style', 'position:absolute;top:20px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:20px;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
 			document.body.appendChild(d2);
 			d2.value = o.name;
+			var naBut = document.createElment('button');
+			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			document.body.appendChild(naBut);
+			naBut.type = 'button';
+			naBut.value = 'N/A'
 			/*END ITEMS*/
+			
+			
+			naBut.onclick = function() {
+				o.q.value = 'N/A';
+				document.getElementById('submitButton').click();
+			}
+			
+			window.addEventListener('keydown', function(e) {
+				console.log('e');
+			});
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
