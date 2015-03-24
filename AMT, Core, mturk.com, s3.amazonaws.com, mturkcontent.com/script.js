@@ -3129,21 +3129,24 @@ function MT__RUN() {
 			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
 			document.body.appendChild(d2);
 			d2.value = o.name;
-			var naBut = document.createElment('button');
+			var naBut = document.createElement('button');
 			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
 			document.body.appendChild(naBut);
 			naBut.type = 'button';
-			naBut.value = 'N/A'
+			naBut.value = 'N/A';
 			/*END ITEMS*/
 			
 			
 			naBut.onclick = function() {
 				o.q.value = 'N/A';
+				d1.backgroundColor = 'pink';
 				document.getElementById('submitButton').click();
 			}
 			
 			window.addEventListener('keydown', function(e) {
-				console.log('e');
+				if(e.keyCode == 87) {
+					naBut.click();
+				}
 			});
 			
 			// innerHeight
@@ -3161,7 +3164,8 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function() {
 				o.q.value = o.q.value.trim();
 				console.log('sbm:'+o.q.value+'<<');
-				if (!/^https?:\/\/www\.allmusic\.com\/artist\/[^\/]+$/.exec(o.q.value)) {
+				if (!/^https?:\/\/www\.allmusic\.com\/artist\/[^\/]+$/.exec(o.q.value) && 
+				    o.q.value != 'N/A') {
 					return false;
 				}
 				new AMT___core_factory().nextTab();
