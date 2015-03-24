@@ -11353,9 +11353,6 @@ function AMT___returnAndAcceptButton() {
 		// local
 		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
 			//console.log(AMT__Global_Vars);
-			if(AMT__Global_Vars['R&A ShiftFarLeft']) {
-				new AMT___core_factory().shiftFarLeft();
-			}
 			this.style.backgroundColor='#9e9e9e';
 			//Record what tab we're returning on
 			recordReturn();
@@ -11368,6 +11365,11 @@ function AMT___returnAndAcceptButton() {
 				new AMT___core_factory().nextTab();
 			}
 			// END HOOK nextTab()
+			
+			if(AMT__Global_Vars['R&A ShiftFarLeft']) {
+				new AMT___core_factory().shiftFarLeft();
+			}
+
 			
 			function MT__RETURN_AND_ACCEPT(time_to_submit) {
 				setTimeout(function() {
@@ -11391,13 +11393,11 @@ function AMT___returnAndAcceptButton() {
 		
 		// serverSide
 		document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
-			if(AMT__Global_Vars['R&A ShiftFarLeft']) {
-				new AMT___core_factory().shiftFarLeft();
-			}
 			this.style.backgroundColor='#9e9e9e';
 			//Record what tab we're returning on
 			recordReturn();
 			
+
 			
 			
 			function MT__RETURN_AND_ACCEPT_serverSide(time_to_submit) {
