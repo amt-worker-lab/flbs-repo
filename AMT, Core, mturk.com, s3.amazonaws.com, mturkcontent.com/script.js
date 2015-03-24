@@ -3152,7 +3152,7 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				new AMT___core_factory().shiftFarLeft();
 				doSubmit();
-				//return false;
+				return false;
 			}
 			
 			// init
