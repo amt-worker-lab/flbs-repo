@@ -36582,10 +36582,12 @@ function MT__RUN() {
 				}
 				
 AMT___RunPageScript("function() {" +
+"if(google && google.maps && google.maps.geometry && google.maps.geometry.spherical) {"+
 "google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 "console.log('visible changed');"+
 "if(!window.notFirstDrop) {"+
 "console.log('first drop');"+
+"if(google && google.maps && google.maps.spherical) { "+
 "var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
 "var fromLoc = this.getPosition();"+
 "var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
@@ -36596,7 +36598,9 @@ AMT___RunPageScript("function() {" +
 "window.notFirstDrop = true;"+
 "}"+
 "}"+
+"}"+
 ");"+
+"}"+
 "}");
 
 
@@ -36708,7 +36712,6 @@ AMT___RunPageScript("function() {" +
 
 								"window.addEventListener('keypress', function(e) {if(e.keyCode == 115) {orientToFirstPoint()} if(e.keyCode == 100) {orientToSecondPoint()};"+
 								"if(e.keyCode == 99) {"+
-								"if(map.getTilt() == 45) {map.setTilt(0)} else {map.setTilt(45)};"+
 								"}})"+
 
 
