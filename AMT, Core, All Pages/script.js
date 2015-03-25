@@ -247,7 +247,7 @@ function load()
 	if(loc.indexOf('ChiosSpecial') != -1) {
 		window.setTimeout(function() {
 			var innerH = document.body.innerHTML;
-			var latLngReg = /http:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
+			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
 			var rslt = latLngReg.exec(innerH);
 			console.log(rslt);
