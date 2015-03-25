@@ -3092,7 +3092,7 @@ function MT__RUN() {
 	// 
 	// James Block
 	// Find the Website of A Given Artist
-	//
+	// 37TLCE26HLHBKVMEOJEEFU13T3ZM5Q
 	s = '<p>In this task you will see the name of a music artist and a search link. Your task is to click on the search link given, and find the link that corresponds to the artist.</p>';
 	if  (
 		ih.indexOf(s) != -1
@@ -3106,7 +3106,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
-			var p = document.getElementsByTagName('p')[6];
+			var p = document.getElementsByTagName('p')[7];
 			if (p.innerHTML.indexOf('<strong>Artist: </strong>') == -1) {
 				alert('wrong p?');
 				return;
@@ -3117,9 +3117,11 @@ function MT__RUN() {
 				name: p,
 				q: document.getElementsByName('Q6MultiLineTextInput')[0],
 				bold: null,
-				has_auto_clicked: false // for autos
+				has_auto_clicked: false, // for autos
+				name_clean: null
 			}
 			o.bold = o.name.clean_string_to_array();
+			o.name_clean = o.name.replace(/[^\w\d]/g, '');
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -3229,7 +3231,6 @@ function MT__RUN() {
 							// Get "Info" section. Sometimes there is a section before this
 							// which contains an image. (And a link.)
 							p = p.getElementsByClassName('info')[0];
-								//~ console.log(p);//return;
 							rslt.type = p.getElementsByTagName('h4')[0].innerText;
 							rslt.name = p.getElementsByTagName('a')[0].innerText;
 							rslt.href = p.getElementsByTagName('a')[0].href;
@@ -3240,22 +3241,6 @@ function MT__RUN() {
 							
 							console.log(rslt);
 							rslt_div(rslt);
-							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
-							//~ if (reg2) {
-								//~ rslt.href = __js_clean_html_str(reg2[1]);
-							//~ }
-							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
-							//~ if (reg2) {
-								//~ rslt.name = __js_clean_html_str(reg2[1]);
-							//~ }
-							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
-							//~ if (reg2) {
-								//~ rslt.genres = __js_clean_html_str(reg2[1]);
-							//~ }
-							//~ var reg2 = /href="(http:\/\/www\.allmusic\.com[^"]+)"/.exec(item);
-							//~ if (reg2) {
-								//~ rslt.decades = __js_clean_html_str(reg2[1]);
-							//~ }
 						}
 					}
 				});
@@ -3280,18 +3265,32 @@ function MT__RUN() {
 					document.getElementById('submitButton').click();
 				}
 				
-				// auto?
-				console.log(o.name == rslt.name.toLowerCase());
+				// Auto?
+				// Only on first
+				//~ console.log(o.name == rslt.name.toLowerCase().replace(//g, ''));
 				if  (
 					!o.has_auto_clicked &&
-					rslt.name.toLowerCase() == o.name &&
-					o.name.length >= 4 &&
+					rslt.name.toLowerCase().replace(/[^\w\d]/g, '') == o.name_clean &&
+					o.name_clean.length >= 4 &&
 					rslt.type == 'Artist' &&
 					rslt.first
 					)
 				{
 					o.has_auto_clicked = true;
-					div.click();
+					// If preview
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.accept();
+					} else {
+						div.click();
+					}
+				}
+				// Skip if not found and first
+				else if (
+					AMT__Global_Vars.isPreview &&
+					rslt.first
+					)
+				{
+					AMT___Floater.skip();
 				}
 			}
 		}
@@ -154547,6 +154546,9 @@ function mturk_load()
 					AMT___Floater({runMT_Run:true});
 					break;
 				case '3VKZWROWWHDRYOHCACV5A8TXOY08G2': // Steve Murch, emails
+					AMT___Floater({runMT_Run:true});
+					break;
+				case '37TLCE26HLHBKVMEOJEEFU13T3ZM5Q': // James Block
 					AMT___Floater({runMT_Run:true});
 					break;
 				
