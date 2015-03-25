@@ -36517,15 +36517,16 @@ function MT__RUN() {
 				console.log(lat +','+ lng);
 				
 				//Draw a marker onto the map for center of map
-				AMT___RunPageScript(function() {
-						var marker = new google.maps.Marker({
-								position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),
-								map: map,
-								title: 'testing'
-							});
-						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-						map.setZoom(18);
-					});
+				AMT___RunPageScript("function() {"+
+						"var marker = new google.maps.Marker({"+
+						"		position: new google.maps.LatLng(map.getCenter().k,map.getCenter().D),"+
+						"		map: map,"+
+						"		title: 'testing'"+
+						"	});"+
+						"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
+						"map.setZoom(("+AMT__Global_Vars.InitialChiosZoom+")*1);"+
+					"}"
+					);
 				
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript("function() {"+
