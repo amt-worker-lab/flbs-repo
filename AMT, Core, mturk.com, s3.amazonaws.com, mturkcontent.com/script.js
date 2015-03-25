@@ -36514,6 +36514,88 @@ function MT__RUN() {
 					return;
 				}
 				
+				AMT___RunPageScript("function() {"+
+								"var currentLat = map.getCenter().k;"+
+								"var currentLng = map.getCenter().D;"+
+								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
+							    "				new google.maps.LatLng("+lat+","+ lng+")"+
+							    "			    ];"+
+								" console.log(document.body.tempLat);"+
+								" console.log('running in here');"+
+								""+
+								"var otherLocShower = new google.maps.Polyline({"+
+								"		path: path,"+
+								"		geodesic: true,"+
+								"		strokeColor: '#0000FF',"+
+								"		strokeOpacity: 1.0,"+
+								"		strokeWeight: 4"+
+								"	});"+
+								"otherLocShower.setMap(map);"+
+								"function distance(lat1, lon1, lat2, lon2, unit) {" +
+								"var radlat1 = Math.PI * lat1/180;" +
+								"var radlat2 = Math.PI * lat2/180;" +
+								"var radlon1 = Math.PI * lon1/180;" +
+								"var radlon2 = Math.PI * lon2/180;" +
+								"var theta = lon1-lon2;" +
+								"var radtheta = Math.PI * theta/180;" +
+								"var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);" +
+								"dist = Math.acos(dist);" +
+								"dist = dist * 180/Math.PI;" +
+								"dist = dist * 60 * 1.1515;" +
+								"if (unit=='K') { dist = dist * 1.609344 };" +
+								"if (unit=='N') { dist = dist * 0.8684 };" +
+								"return dist;" +
+								"};" +
+								"var dst = distance(currentLat,currentLng,"+lat+","+lng+",'M');"+
+								"dst = Math.round(dst*100)/100;"+
+								"dstShower = document.createElement('label');"+
+								"dstShower.setAttribute('style','position:absolute;left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
+								"dstShower.setAttribute('id','dstShower');"+
+								"document.body.appendChild(dstShower);"+
+								"dstShower.innerText = dst +' mi';"+
+								"console.log('dst is' + dst);"+ 
+								"function difference(link) {"+
+								"var pano = map.streetView;"+
+								"return Math.abs(pano.pov.heading%360 - link.heading);"+
+								"}"+
+
+								"function moveForward() {"+
+								  "var pano = map.streetView;"+
+								  "var curr;"+
+								  "for(i=0; i < pano.links.length; i++) {"+
+									"var differ = difference(pano.links[i]);"+
+									"if(curr == undefined) {"+
+									 "curr = pano.links[i];"+
+									"}"+
+									"if(difference(curr) > difference(pano.links[i])) {"+
+									  "curr = curr = pano.links[i];"+
+									"}"+
+								  "}"+
+								  "pano.setPano(curr.pano);"+
+								"}"+
+								"function moveBackward() {"+
+								 "var pano = map.streetView;"+
+								  "var curr;"+
+								  "for(i=0; i < pano.links.length; i++) {"+
+									"var differ = difference(pano.links[i]);"+
+									"if(curr == undefined) {"+
+									  "curr = pano.links[i];"+
+									"}"+
+									"if(difference(curr) < difference(pano.links[i])) {"+
+									  "curr = curr = pano.links[i];"+
+									"}"+
+								  "}"+
+								  "pano.setPano(curr.pano);"+
+								"}"+
+								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {moveBackward()} if(e.keyCode == 115) {moveForward()};"+
+								"if(e.keyCode == 99) {"+
+								"if(map.getTilt() == 45) {map.setTilt(0)} else {map.setTilt(45)};"+
+								"}})"+
+
+
+						"}");
+				
+				
 				console.log(lat +','+ lng);
 				
 				//Draw a marker onto the map for center of map
@@ -36592,86 +36674,7 @@ function MT__RUN() {
 						
 						
 						
-						AMT___RunPageScript("function() {"+
-								"var currentLat = map.getCenter().k;"+
-								"var currentLng = map.getCenter().D;"+
-								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
-							    "				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
-							    "			    ];"+
-								" console.log(document.body.tempLat);"+
-								" console.log('running in here');"+
-								""+
-								"var otherLocShower = new google.maps.Polyline({"+
-								"		path: path,"+
-								"		geodesic: true,"+
-								"		strokeColor: '#0000FF',"+
-								"		strokeOpacity: 1.0,"+
-								"		strokeWeight: 4"+
-								"	});"+
-								"otherLocShower.setMap(map);"+
-								"function distance(lat1, lon1, lat2, lon2, unit) {" +
-								"var radlat1 = Math.PI * lat1/180;" +
-								"var radlat2 = Math.PI * lat2/180;" +
-								"var radlon1 = Math.PI * lon1/180;" +
-								"var radlon2 = Math.PI * lon2/180;" +
-								"var theta = lon1-lon2;" +
-								"var radtheta = Math.PI * theta/180;" +
-								"var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);" +
-								"dist = Math.acos(dist);" +
-								"dist = dist * 180/Math.PI;" +
-								"dist = dist * 60 * 1.1515;" +
-								"if (unit=='K') { dist = dist * 1.609344 };" +
-								"if (unit=='N') { dist = dist * 0.8684 };" +
-								"return dist;" +
-								"};" +
-								"var dst = distance(currentLat,currentLng,"+obj.latLng.lat+","+obj.latLng.lng+",'M');"+
-								"dst = Math.round(dst*100)/100;"+
-								"dstShower = document.createElement('label');"+
-								"dstShower.setAttribute('style','position:absolute;left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
-								"dstShower.setAttribute('id','dstShower');"+
-								"document.body.appendChild(dstShower);"+
-								"dstShower.innerText = dst +' mi';"+
-								"console.log('dst is' + dst);"+ 
-								"function difference(link) {"+
-								"var pano = map.streetView;"+
-								"return Math.abs(pano.pov.heading%360 - link.heading);"+
-								"}"+
-
-								"function moveForward() {"+
-								  "var pano = map.streetView;"+
-								  "var curr;"+
-								  "for(i=0; i < pano.links.length; i++) {"+
-									"var differ = difference(pano.links[i]);"+
-									"if(curr == undefined) {"+
-									 "curr = pano.links[i];"+
-									"}"+
-									"if(difference(curr) > difference(pano.links[i])) {"+
-									  "curr = curr = pano.links[i];"+
-									"}"+
-								  "}"+
-								  "pano.setPano(curr.pano);"+
-								"}"+
-								"function moveBackward() {"+
-								 "var pano = map.streetView;"+
-								  "var curr;"+
-								  "for(i=0; i < pano.links.length; i++) {"+
-									"var differ = difference(pano.links[i]);"+
-									"if(curr == undefined) {"+
-									  "curr = pano.links[i];"+
-									"}"+
-									"if(difference(curr) < difference(pano.links[i])) {"+
-									  "curr = curr = pano.links[i];"+
-									"}"+
-								  "}"+
-								  "pano.setPano(curr.pano);"+
-								"}"+
-								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {moveBackward()} if(e.keyCode == 115) {moveForward()};"+
-								"if(e.keyCode == 99) {"+
-								"if(map.getTilt() == 45) {map.setTilt(0)} else {map.setTilt(45)};"+
-								"}})"+
-
-
-						"}");
+						
 					});
 				
 				//~ // Get street view images
