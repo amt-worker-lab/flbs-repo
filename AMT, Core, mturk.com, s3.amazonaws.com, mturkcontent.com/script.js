@@ -3242,6 +3242,13 @@ function MT__RUN() {
 							console.log(rslt);
 							rslt_div(rslt);
 						}
+						
+						// No results?
+						reg.lastIndex = 0;
+						if (!reg.exec(rs)) {
+							d1.innerText = '0 results';
+							AMT___Floater.skip();
+						}
 					}
 				});
 			}
