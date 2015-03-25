@@ -36693,14 +36693,14 @@ AMT___RunPageScript("function() {" +
 								"map.streetView.setPov({heading:heading, pitch:0});" +
 								"};"+
 								"function orientToSecondPoint() {" +
-								"var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
+								"var toLoc = new google.maps.LatLng("+obj.latLng.lat+","+obj.latLng.lng+");"+
 								"var fromLoc = map.streetView.getPosition();"+
 								"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
 								"map.streetView.setPov({heading:heading, pitch:0});" +
 								"};"+
 								
 
-								"window.addEventListener('keypress', function(e) {if(e.keyCode == 100) {orientToFirstPoint()} if(e.keyCode == 115) {orientToSecondPoint()};"+
+								"window.addEventListener('keypress', function(e) {if(e.keyCode == 115) {orientToFirstPoint()} if(e.keyCode == 100) {orientToSecondPoint()};"+
 								"if(e.keyCode == 99) {"+
 								"if(map.getTilt() == 45) {map.setTilt(0)} else {map.setTilt(45)};"+
 								"}})"+
