@@ -36574,6 +36574,26 @@ function MT__RUN() {
 					);
 				}
 				
+AMT___RunPageScript("function() {" +
+"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
+"console.log('visible changed');"+
+"if(!window.notFirstDrop) {"+
+"console.log('first drop');"+
+"var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
+"var fromLoc = this.getPosition();"+
+"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+"console.log(fromLoc);"+
+"console.log(toLoc);"+
+"console.log(heading);"+
+"map.streetView.setPov({heading:heading, pitch:0});"+
+"window.notFirstDrop = true;"+
+"}"+
+"}"+
+");"+
+"}");
+
+
+				
 				AMT__setUtilityTabs([
 					{
 						//~ url: '',
@@ -36787,6 +36807,8 @@ function MT__RUN() {
 								//console.log('haha! PageScript has run!');
 								var headingAngle = map.streetView.pov.heading;
 								headingAngle *= -1;
+								
+								 map.streetView.pov.heading
 
 								console.log(headingAngle);
 								headingAngle = headingAngle * Math.PI / 180;
