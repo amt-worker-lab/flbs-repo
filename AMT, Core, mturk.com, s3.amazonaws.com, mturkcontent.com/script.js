@@ -36582,7 +36582,6 @@ function MT__RUN() {
 				}
 				
 AMT___RunPageScript("function() {" +
-"if(google && google.maps && google.maps.geometry && google.maps.geometry.spherical) {"+
 "google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 "console.log('visible changed');"+
 "if(!window.notFirstDrop) {"+
@@ -36598,9 +36597,8 @@ AMT___RunPageScript("function() {" +
 "window.notFirstDrop = true;"+
 "}"+
 "}"+
-"}"+
+//"}"+
 ");"+
-"}"+
 "}");
 
 
