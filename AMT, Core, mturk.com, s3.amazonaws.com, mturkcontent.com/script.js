@@ -36586,9 +36586,8 @@ function MT__RUN() {
 AMT___RunPageScript("function() {" +
 "google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 "console.log('visible changed');"+
-"if(!window.notFirstDrop) {"+
+"if(window.notFirstDrop == undefined) {"+
 "console.log('first drop');"+
-"if(google && google.maps && google.maps.spherical) { "+
 "var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
 "var fromLoc = this.getPosition();"+
 "var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
@@ -36597,7 +36596,6 @@ AMT___RunPageScript("function() {" +
 "console.log(heading);"+
 "map.streetView.setPov({heading:heading, pitch:0});"+
 "window.notFirstDrop = true;"+
-"}"+
 "}"+
 "}"+
 ");"+
