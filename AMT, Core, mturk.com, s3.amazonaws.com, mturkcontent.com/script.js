@@ -3184,10 +3184,12 @@ function MT__RUN() {
 			function init() {
 				// xhr
 				// e.g. http://www.allmusic.com/search/artists/eats%20everything
+				var u = 'http://www.allmusic.com/search/artists/' + encodeURIComponent(d2.value);
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
 				
 				GM_xmlhttpRequest({
 					method: "GET",
-					url: 'http://www.allmusic.com/search/artists/' + encodeURIComponent(d2.value),
+					url: u,
 					onload: function(response) {
 						var rs=response.responseText;
 						if (response.status != 200) {
