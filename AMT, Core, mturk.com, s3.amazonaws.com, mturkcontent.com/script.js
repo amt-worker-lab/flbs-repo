@@ -36599,8 +36599,8 @@ AMT___RunPageScript("function() {" +
 "window.notFirstDrop = true;"+
 "}"+
 "}"+
-");"+
 "}"+
+");"+
 "}");
 
 
