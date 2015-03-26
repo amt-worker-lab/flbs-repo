@@ -36582,7 +36582,7 @@ function MT__RUN() {
 							'&key=_GOOGLE_API_KEY_REDACTED_'
 					);
 				}
-				
+window.setTimeout(function() {				
 AMT___RunPageScript("function() {" +
 "google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 "console.log('visible changed');"+
@@ -36600,6 +36600,7 @@ AMT___RunPageScript("function() {" +
 "}"+
 ");"+
 "}");
+},2000);
 
 
 				
