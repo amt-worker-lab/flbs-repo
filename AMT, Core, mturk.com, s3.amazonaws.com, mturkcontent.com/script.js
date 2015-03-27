@@ -46241,9 +46241,9 @@ AMT___RunPageScript("function() {" +
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
 	//
-	// 
+	// Andrew Chin
 	// Categorization, Masters
-	// 
+	// trucar.com
 	s = 'After clicking the URL you are given and entering the provided zip code, check to see if there is a TrueCar Dealer:';
 	if  (
 		ih.indexOf(s) != -1
@@ -46257,8 +46257,8 @@ AMT___RunPageScript("function() {" +
 			
 			//[{"name":"TrueCar Dealer = Yes"},{"name":"TrueCar Dealer = No"}]
 			var p = document.getElementsByTagName('p');
-			var a = p[3].innerText.trim().replace(/^URL:[\r\n\t\s]+*/, '');
-			var b = p[4].innerText.trim().replace(/^Zip Code:[\r\n\t\s]+*/, '');
+			var a = p[3].innerText.trim().replace(/^URL:[\r\n\t\s]*/, '');
+			var b = p[4].innerText.trim().replace(/^Zip Code:[\r\n\t\s]*/, '');
 			var o = {
 				url: a,
 				id: null,
@@ -46280,7 +46280,8 @@ AMT___RunPageScript("function() {" +
 							return;
 						}
 						
-						var reg = /TC\.s\.chromeTrimId = TC\.s\.trimId = ([\d]+)[\r\n\t\s]+/.exec(rs);
+						// e.g. TC.s.chromeTrimId = TC.s.trimId = 373978;
+						var reg = /TC\.s\.chromeTrimId = TC\.s\.trimId = ([\d]+);[\r\n\t\s]+/.exec(rs);
 						if (reg) {
 							o.id = reg[1];
 							console.log(o.id);
@@ -46304,6 +46305,24 @@ AMT___RunPageScript("function() {" +
 						var r = JSON.parse(rs);
 						
 						console.log(r);
+						
+						if (r.hasOwnProperty('data') &&
+							r.data.hasOwnProperty('pricing3') &&
+							r.data.pricing3.hasOwnProperty(o.id) &&
+							r.data.pricing3[o.id].hasOwnProperty('dealer_count'))
+						{
+							console.log('x');
+							var dc = r.data.pricing3[o.id].dealer_count;
+							if (dc == 0) {
+								document.getElementById('TrueCar Dealer = No').click();
+								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = No';
+								doSubmit();
+							} else if (dc > 0) {
+								document.getElementById('TrueCar Dealer = Yes').click();
+								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = Yes';
+								doSubmit();
+							}
+						}
 					}
 				});
 			}
