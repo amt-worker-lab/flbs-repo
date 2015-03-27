@@ -3090,6 +3090,199 @@ function MT__RUN() {
 	}
 	
 	// 
+	// 
+	//
+	//
+	s = '<p>Locate the exhibitor on: http://www.himssconference.org/ExhibitorList.aspx&nbsp;</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:800px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var q = document.getElementsByName('web_url');
+			var o = {
+				name: td[1].innerText.trim(),
+				bold: null,
+				q: [
+					q[0],
+					q[1],
+					q[2],
+					q[3],
+					q[4],
+				],
+				has_auto_clicked: false
+			}
+			o.bold = o.name.clean_string_to_array();
+			o.name_clean = o.name.replace(/[^\w\d]/g, '');
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:20px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
+			document.body.appendChild(d2);
+			d2.value = o.name;
+			var naBut = document.createElement('input');
+			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			document.body.appendChild(naBut);
+			naBut.type = 'button';
+			naBut.value = 'N/A';
+			/*END ITEMS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 20 // offset top
+			});
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				//~ console.log('sbm:'+o.q.value+'<<');
+				//~ if (!/^https?:\/\/www\.allmusic\.com\/artist\/[^\/]+$/.exec(o.q.value) && 
+				    //~ o.q.value != 'N/A') {
+					//~ return false;
+				//~ }
+				new AMT___core_factory().nextTab({focusOnPage:true});
+				new AMT___core_factory().shiftFarLeft();
+				doSubmit();
+				return false;
+			}
+			
+			// init
+			init();
+			
+			// http://www.himssconference.org/ExhibitorList.aspx?Keywords=a.d.a.m.
+			function init() {
+				// xhr
+				// e.g. http://www.allmusic.com/search/artists/eats%20everything
+				var u = 'http://www.himssconference.org/ExhibitorList.aspx?Keywords=' + encodeURIComponent(d2.value);
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// e.g.
+						// /ExhibitorDetail.aspx?ItemNumber=35943
+						// A.D.A.M., A Business Unit of Ebix
+						var reg = /<h4><a href="([^"]+)">([^<]+)<\/a><\/h4>/g;
+						var m;
+						var first = true;
+						while (m = reg.exec(rs)) {
+							
+							m[1] = __js_clean_html_str(m[1]);
+							m[2] = __js_clean_html_str(m[2]);
+							m[3] = first;
+							rslt_div(m);
+							
+							first = false; // set first=false
+						}
+					}
+				});
+			}
+			// helper
+			function rslt_div(rslt) {
+				var div = document.createElement('div');
+				div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+				div.className = 'exe';
+				div.href = 'http://www.himssconference.org' + m[1];
+				d1.appendChild(div);
+				div.innerHTML =
+					MT__bold(m[2], o.bold)
+				;
+				// .onclick
+				div.onclick = function() {
+					this.style.backgroundColor = 'aqua';
+					//
+					final(this);
+				}
+				
+				// Auto?
+				// Only on first
+				//~ console.log(o.name == rslt.name.toLowerCase().replace(//g, ''));
+				if  (
+					!o.has_auto_clicked &&
+					rslt.name.toLowerCase().replace(/[^\w\d]/g, '') == o.name_clean &&
+					o.name_clean.length >= 4 &&
+					rslt[3]
+					)
+				{
+					o.has_auto_clicked = true;
+					// If preview
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.accept();
+					} else {
+						div.click();
+					}
+				}
+				// Skip if not found and first
+				else if (
+					AMT__Global_Vars.isPreview &&
+					rslt.first
+					)
+				{
+					AMT___Floater.skip();
+				}
+			}
+			// 
+			function final(div) {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: div.href,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// 
+						var reg = /<div class="col-md-9 col-sm-12">[\r\n\t\s]+<h3>[^<]+<\/h3>((.|\s)*?(?=<!-- FOOTER -->|$)|$)/g;
+						if (reg) {
+							var p = new DOMParser();
+							p = p.parseFromString(reg[1], 'text/html');
+							console.log(p);
+						}
+						//~ var m;
+						//~ var first = true;
+						//~ while (m = reg.exec(rs)) {
+							//~ 
+							//~ m[1] = __js_clean_html_str(m[1]);
+							//~ m[2] = __js_clean_html_str(m[2]);
+							//~ m[3] = first;
+							//~ rslt_div(m);
+							//~ 
+							//~ first = false; // set first=false
+						//~ }
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
+	// 
 	// James Block
 	// Find the Website of A Given Artist
 	// 37TLCE26HLHBKVMEOJEEFU13T3ZM5Q
