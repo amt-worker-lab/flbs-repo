@@ -155371,15 +155371,18 @@ function mturk_load()
 		//~ MT___page1_show_jobs(); // findhits?match=false
 		new AMT___core_factory().amt_home_show_tasks();
 		
+		
 		// Run myHITs
 		// John Roberts
 		if  (
 				1 == 1 &&
 				AMT__Global_Vars['JohnRobertsCheckHistory'] &&
+				AMT__Global_Vars['JohnRobertsCheckHistory'] != 0 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
 			console.log('MyHits John Roberts');
+			console.log('JohnRobertsCheckHistory != 0: ' + AMT__Global_Vars['JohnRobertsCheckHistory'] != 0);
 			
 			// Are we at "All HITs Available to You"?
 			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
