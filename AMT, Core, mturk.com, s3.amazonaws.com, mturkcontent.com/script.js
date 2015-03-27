@@ -46234,10 +46234,82 @@ AMT___RunPageScript("function() {" +
 	 * 
 	 * Dustin Smith
 	 * Chris Anderson
+	 * "Megan"
+	 * 
 	 * ...
 	 * 
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
+	//
+	// 
+	// Categorization, Masters
+	// 
+	s = 'After clicking the URL you are given and entering the provided zip code, check to see if there is a TrueCar Dealer:';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;}');
+			
+			//[{"name":"TrueCar Dealer = Yes"},{"name":"TrueCar Dealer = No"}]
+			var p = document.getElementsByTagName('p');
+			var a = p[3].innerText.trim().replace(/^URL:[\r\n\t\s]+*/, '');
+			var b = p[4].innerText.trim().replace(/^Zip Code:[\r\n\t\s]+*/, '');
+			var o = {
+				url: a,
+				id: null,
+				zip: b
+			}
+			
+			init();
+			
+			// Get ID
+			//TC.s.chromeTrimId = TC.s.trimId = 
+			function init() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.url),
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200 && response.status < 600) {
+							return;
+						}
+						
+						var reg = /TC\.s\.chromeTrimId = TC\.s\.trimId = ([\d]+)[\r\n\t\s]+/.exec(rs);
+						if (reg) {
+							o.id = reg[1];
+							console.log(o.id);
+							final();
+						}
+					}
+				});
+			}
+			function final() {
+				var u = 'https://www.truecar.com/api/omni/v1?types=trim%2Coption%2Cpopular_configs%2Cvehicle_media%2Cmax_savings%2Cbase_pricing_with_color%2Cincentive3%2Cpricing3%2Cprice_trend&trim_ids='+encodeURIComponent(o.id)+'&zipcode=' + encodeURIComponent(o.zip);
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							return;
+						}
+						
+						var r = JSON.parse(rs);
+						
+						console.log(r);
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	//
 	// "Megan"
 	// Categorization, Masters
