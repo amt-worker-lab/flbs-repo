@@ -155375,6 +155375,7 @@ function mturk_load()
 		// John Roberts
 		if  (
 				1 == 1 &&
+				AMT__Global_Vars['JohnRobertsCheckHistory'] &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
