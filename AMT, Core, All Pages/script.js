@@ -6216,211 +6216,224 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				s2.exec(ih)
 			)
 		{
-			console.log('');
-			
-			var NUMLINKS;
-			//var NUMLINKS=11;
-			//var NUMLINKS=4;
-			//var NUMLINKS=3;
-			
-			GM_addStyle('body {margin:0;padding:0;zoom:0.6;}');
-			GM_addStyle('p {margin:0;padding:0;}');
-			GM_addStyle('ul {margin:0;padding:0;}');
-			
-			
-			var domain;
-			var s, s2;
-			s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on (Google\.[\w\.]+)<\/h1>/.exec(ih);
-			s2=/<div id="assignment"><h1 class="projectTitle">Keyword Search on (Google\.[\w\.]+)<\/h1>/.exec(ih);
-			if (s) {
-				domain = 'http://'+s[2].toLowerCase();
-			}
-			else if (s2) {
-				domain = 'http://'+s2[1].toLowerCase();
-			}
-			
-			var type;
-			
-			if (document.getElementById('URL-1')) {
-				type = 1;
-			} else type = 2;
-			
-			var a, count, array_urls, global_count;
-			
-			a = /h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;">Keyword: ([^<]+)/g;
-			
-			if (ih.indexOf('<cufontext>') != -1) {
-				type = 3;
-				a = /<h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;"><cufon class="cufon cufon-canvas" alt="Keyword: " style="width: 78px; height: 16px;"><canvas width="89" height="17" style="width: 89px; height: 17px; top: -1px; left: -1px;"><\/canvas><cufontext>Keyword: <\/cufontext>((.|\s)*?(?=<\/h2>|$)|$)/g;
-			}
-			
-			array_urls = new Array();
-			
-			if (a.exec(ih)) {
+			var run = new function() {};
+			run.prototype.f = function() {
+				console.log('');
 				
-				a.lastIndex = 0;
+				var NUMLINKS;
+				//var NUMLINKS=11;
+				//var NUMLINKS=4;
+				//var NUMLINKS=3;
 				
-				count=1;
+				GM_addStyle('body {margin:0;padding:0;zoom:0.6;}');
+				GM_addStyle('p {margin:0;padding:0;}');
+				GM_addStyle('ul {margin:0;padding:0;}');
 				
-				global_count=1;
 				
-				if (type === 1 || type == 2) {
-					while (match = a.exec(ih)) {
-						match[1] = match[1].replace(/&amp;/g,'&');
-						match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8';
-						//match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8&num=1';
-						array_urls.push(match[1]);
-						count++;
-					}
+				var domain;
+				var s, s2;
+				s =/<div id="assignment"><h1 class="projectTitle">Search: (\d{1,2} |)Keywords? on (Google\.[\w\.]+)<\/h1>/.exec(ih);
+				s2=/<div id="assignment"><h1 class="projectTitle">Keyword Search on (Google\.[\w\.]+)<\/h1>/.exec(ih);
+				if (s) {
+					domain = 'http://'+s[2].toLowerCase();
 				}
-				else if (type == 3) {
-					var a2, match2, string;
-					while (match = a.exec(ih)) {
-						
-						string = '';
-						a2 = /<cufontext>([^<]+)<\/cufontext>/g;
-						if (a2.exec(match[1])) {
+				else if (s2) {
+					domain = 'http://'+s2[1].toLowerCase();
+				}
+				
+				var type;
+				
+				if (document.getElementById('URL-1')) {
+					type = 1;
+				} else type = 2;
+				
+				var a, count, array_urls, global_count;
+				
+				a = /h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;">Keyword: ([^<]+)/g;
+				
+				if (ih.indexOf('<cufontext>') != -1) {
+					type = 3;
+					a = /<h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;"><cufon class="cufon cufon-canvas" alt="Keyword: " style="width: 78px; height: 16px;"><canvas width="89" height="17" style="width: 89px; height: 17px; top: -1px; left: -1px;"><\/canvas><cufontext>Keyword: <\/cufontext>((.|\s)*?(?=<\/h2>|$)|$)/g;
+				}
+				
+				array_urls = new Array();
+				
+				if (a.exec(ih)) {
+					
+					a.lastIndex = 0;
+					
+					count=1;
+					
+					global_count=1;
+					
+					if (type === 1 || type == 2) {
+						while (match = a.exec(ih)) {
+							match[1] = match[1].replace(/&amp;/g,'&');
+							match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8';
+							//match[1] = domain+'/search?q='+encodeURIComponent(match[1])+'&hl=en&ie=UTF-8&num=1';
+							array_urls.push(match[1]);
+							count++;
+						}
+					}
+					else if (type == 3) {
+						var a2, match2, string;
+						while (match = a.exec(ih)) {
 							
-							a2.lastIndex = 0;
-							while (match2 = a2.exec(match[1])) {
-								match2[1] = match2[1].replace(/&amp;/g,'&');
-								string += match2[1];
+							string = '';
+							a2 = /<cufontext>([^<]+)<\/cufontext>/g;
+							if (a2.exec(match[1])) {
+								
+								a2.lastIndex = 0;
+								while (match2 = a2.exec(match[1])) {
+									match2[1] = match2[1].replace(/&amp;/g,'&');
+									string += match2[1];
+								}
+								
+								string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8';
+								//string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
+								//string = 'https://www.google.com/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
+								
+								array_urls.push(string);
 							}
 							
-							string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8';
-							//string = domain+'/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
-							//string = 'https://www.google.com/search?q='+encodeURIComponent(string)+'&hl=en&ie=UTF-8&num=1';
+							count++;
 							
-							array_urls.push(string);
-						}
-						
-						count++;
-						
-					}
-				}
-				
-				NUMLINKS = array_urls.length;
-				
-				//~ console.log(NUMLINKS);
-				//~ console.log(array_urls);
-				
-				var c = 1;
-				for (var i in array_urls) {
-					cs_read(array_urls[i], c);
-					c++;
-				}
-			}
-			
-			
-			function cs_read(u, num) {
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: MT___host + '/mturk/util.php?mt__read_cache='+encodeURIComponent(u),
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (rs.trim() == '') {
-							cs_get_new(u, num); // new
-						} else {
-							cs_finish(u, num, rs);
 						}
 					}
-				});
-			}
-			function cs_write(u, num, rs) {
-				GM_xmlhttpRequest({
-					method: "POST",
-					url: MT___host + '/mturk/util.php',
-					data: 'mt__write_cache_value='+encodeURIComponent(rs)+'&mt__write_cache='+encodeURIComponent(u),
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded"
-					},
-					onload: function (response) {
-						var rs_tmp = response.responseText;
-						if (rs_tmp.trim() == '') {
-							cs_finish(u, num, rs);
-						} else
-							console.log(rs_tmp+'cs_write');
-					}
-				});
-			}
-			function cs_finish(u, num, rs) {
-				var r;
-				r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
-				var count = 0;
-				if (r.exec(rs)) {
-					r.lastIndex = 0;
-					var c = 1;
-					var sbm = true;
-					while (m = r.exec(rs)) {
-						
-						m[1] = __js_clean_html_str(m[1]);
-						
-						if (/^https?:\/\/([^\.]+\.|)google\./i.exec(m[1]))
-							continue;
-						
-						// replace "harm your comp."
-						m[1] = m[1].replace(/^\/interstitial\?url=/, '');
-						
-						// google.com
-						if (/^\//i.exec(m[1]))
-							continue;
+					
+					NUMLINKS = array_urls.length;
+					
+					//~ console.log(NUMLINKS);
+					//~ console.log(array_urls);
+					
+					// NEW March 30 2015. Add a timeout here before each cs_read call.
+					// This may be where CS is counting seconds.
+					//
+					cs_read
+					
+					// OLD
+					// This is the old method. This retrieves all pages
+					// at once.
+					//
+					//~ var c = 1;
+					//~ for (var i in array_urls) {
+						//~ cs_read(array_urls[i], c);
+						//~ c++;
+					//~ }
+				}
+				
+				
+				function cs_read(u, num) {
+					GM_xmlhttpRequest({
+						method: 'GET',
+						url: MT___host + '/mturk/util.php?mt__read_cache='+encodeURIComponent(u),
+						onload: function (response) {
+							var rs = response.responseText;
 							
+							if (rs.trim() == '') {
+								cs_get_new(u, num); // new
+							} else {
+								cs_finish(u, num, rs);
+							}
+						}
+					});
+				}
+				function cs_write(u, num, rs) {
+					GM_xmlhttpRequest({
+						method: "POST",
+						url: MT___host + '/mturk/util.php',
+						data: 'mt__write_cache_value='+encodeURIComponent(rs)+'&mt__write_cache='+encodeURIComponent(u),
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded"
+						},
+						onload: function (response) {
+							var rs_tmp = response.responseText;
+							if (rs_tmp.trim() == '') {
+								cs_finish(u, num, rs);
+							} else
+								console.log(rs_tmp+'cs_write');
+						}
+					});
+				}
+				function cs_finish(u, num, rs) {
+					var r;
+					r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
+					var count = 0;
+					if (r.exec(rs)) {
+						r.lastIndex = 0;
+						var c = 1;
+						var sbm = true;
+						while (m = r.exec(rs)) {
+							
+							m[1] = __js_clean_html_str(m[1]);
+							
+							if (/^https?:\/\/([^\.]+\.|)google\./i.exec(m[1]))
+								continue;
+							
+							// replace "harm your comp."
+							m[1] = m[1].replace(/^\/interstitial\?url=/, '');
+							
+							// google.com
+							if (/^\//i.exec(m[1]))
+								continue;
+								
+							if (type === 1 || type == 3)
+								x = document.getElementById('URL-'+num);
+							else
+								x = document.getElementById('URL'+num+'-1');
+							x.value = m[1];
+							
+							break; // ENDS HERE
+						}
+					}
+				}
+				function cs_get_new(u, num) {
+					GM_xmlhttpRequest({
+						method: 'GET',
+						url: u,
+						onload: function (response) {
+							var rs = response.responseText;
+							
+							if (response.status > 200) {
+								document.body.style.backgroundColor = 'pink';
+								return;
+							} else if (/captcha/.exec(rs)) {
+								document.body.style.backgroundColor = 'pink';
+								return;
+							}
+							
+							// still here?
+							// write to file
+							cs_write(u, num, rs);
+						}
+					});
+				}
+				
+				var xint2 = setInterval(function() {
+					var subm=true;
+					var x;
+					for (var i = 1; i <= NUMLINKS; i++) {
 						if (type === 1 || type == 3)
-							x = document.getElementById('URL-'+num);
+							x = document.getElementById('URL-'+i);
 						else
-							x = document.getElementById('URL'+num+'-1');
-						x.value = m[1];
-						
-						break; // ENDS HERE
-					}
-				}
-			}
-			function cs_get_new(u, num) {
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: u,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status > 200) {
-							document.body.style.backgroundColor = 'pink';
-							return;
-						} else if (/captcha/.exec(rs)) {
-							document.body.style.backgroundColor = 'pink';
-							return;
+							x = document.getElementById('URL'+i+'-1');
+						if (!x || x == undefined) {
+							sbm = false;
+							break;
 						}
-						
-						// still here?
-						// write to file
-						cs_write(u, num, rs);
+						if (x.value.trim() == '' || x.value.trim() == 'http://')
+							subm = false;
 					}
-				});
+					if (subm) {
+						clearInterval(xint2);
+						var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
+						setTimeout(function() {
+							document.getElementById('submitButton').click();
+						}, rand_time); // Wait
+					}
+				},1000);
 			}
-			
-			var xint2 = setInterval(function() {
-				var subm=true;
-				var x;
-				for (var i = 1; i <= NUMLINKS; i++) {
-					if (type === 1 || type == 3)
-						x = document.getElementById('URL-'+i);
-					else
-						x = document.getElementById('URL'+i+'-1');
-					if (!x || x == undefined) {
-						sbm = false;
-						break;
-					}
-					if (x.value.trim() == '' || x.value.trim() == 'http://')
-						subm = false;
-				}
-				if (subm) {
-					clearInterval(xint2);
-					var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
-					setTimeout(function() {
-						document.getElementById('submitButton').click();
-					}, rand_time); // Wait
-				}
-			},1000);
+			new run().f();
 		}
 		
 		//
@@ -6433,6 +6446,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 		if  (
 				s.exec(ih)// ||
 				//s2.exec(ih)
+				&& 0 == 1 // ????
 			)
 		{
 			console.log('');

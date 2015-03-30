@@ -1994,11 +1994,13 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 }
 
 AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue) {
-	if(defaultValue == undefined) {
-		defaultValue = 0;
+	if(AMT__Global_Vars[stringName] == undefined) {
+		if(defaultValue == undefined) {
+			defaultValue = 0;
+		}
+		AMT__Global_Vars[stringName] = defaultValue;
+		chrome.storage.local.set({stringName: defaultValue})
 	}
-	AMT__Global_Vars[stringName] = defaultValue;
-	chrome.storage.local.set({stringName: defaultValue})
 }
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
