@@ -92,7 +92,7 @@ function MT__RUN() {
 								o.q[5].value = PAs.join(", ");
 							}
 							
-							//document.getElementById('submitButton').focus();
+							document.getElementById('submitButton').focus();
 						});
 	}
 	
