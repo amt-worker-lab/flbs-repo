@@ -6220,15 +6220,14 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 			run.prototype.f = function() {
 				console.log('');
 				
-				var NUMLINKS;
-				//var NUMLINKS=11;
-				//var NUMLINKS=4;
-				//var NUMLINKS=3;
-				
 				GM_addStyle('body {margin:0;padding:0;zoom:0.6;}');
 				GM_addStyle('p {margin:0;padding:0;}');
 				GM_addStyle('ul {margin:0;padding:0;}');
 				
+				var o = {
+					row_idx: 1 // This is row index. It starts at 1.
+				}
+				var NUMLINKS;
 				
 				var domain;
 				var s, s2;
@@ -6242,12 +6241,11 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				}
 				
 				var type;
-				
 				if (document.getElementById('URL-1')) {
 					type = 1;
 				} else type = 2;
 				
-				var a, count, array_urls, global_count;
+				var a, count, array_urls = new Array(), global_count;
 				
 				a = /h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;">Keyword: ([^<]+)/g;
 				
@@ -6255,8 +6253,6 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 					type = 3;
 					a = /<h2 class="text-rep" unselectable="on" style="-webkit-user-select: none;"><cufon class="cufon cufon-canvas" alt="Keyword: " style="width: 78px; height: 16px;"><canvas width="89" height="17" style="width: 89px; height: 17px; top: -1px; left: -1px;"><\/canvas><cufontext>Keyword: <\/cufontext>((.|\s)*?(?=<\/h2>|$)|$)/g;
 				}
-				
-				array_urls = new Array();
 				
 				if (a.exec(ih)) {
 					
@@ -6309,7 +6305,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 					// NEW March 30 2015. Add a timeout here before each cs_read call.
 					// This may be where CS is counting seconds.
 					//
-					cs_read
+					cs_read();
 					
 					// OLD
 					// This is the old method. This retrieves all pages
@@ -6322,21 +6318,45 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 					//~ }
 				}
 				
-				
-				function cs_read(u, num) {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: MT___host + '/mturk/util.php?mt__read_cache='+encodeURIComponent(u),
-						onload: function (response) {
-							var rs = response.responseText;
-							
-							if (rs.trim() == '') {
-								cs_get_new(u, num); // new
-							} else {
-								cs_finish(u, num, rs);
+				/**
+				 * function cs_read
+				 */
+				function cs_read() { // Old args (u, num)
+					var rand = (Math.random() * 6000) + 4000;
+					console.log('CrowdSource random:' + rand);
+					var url = array_urls.shift(); // Gets first URL from array.
+					var num = o.row_idx; // Gets the row index.
+					o.row_idx++; // Set row index +1
+					setTimeout(function() {
+						GM_xmlhttpRequest({
+							method: 'GET',
+							url: MT___host + '/mturk/util.php?mt__read_cache='+encodeURIComponent(url),
+							onload: function (response) {
+								var rs = response.responseText;
+								
+								if (rs.trim() == '') {
+									cs_get_new(url, num); // new
+								} else {
+									cs_finish(url, num, rs);
+								}
 							}
-						}
-					});
+						});
+					}, rand);
+					//OLD
+					//OLD
+					//~ GM_xmlhttpRequest({
+						//~ method: 'GET',
+						//~ url: MT___host + '/mturk/util.php?mt__read_cache='+encodeURIComponent(u),
+						//~ onload: function (response) {
+							//~ var rs = response.responseText;
+							//~ 
+							//~ if (rs.trim() == '') {
+								//~ cs_get_new(u, num); // new
+							//~ } else {
+								//~ cs_finish(u, num, rs);
+							//~ }
+						//~ }
+					//~ });
 				}
 				function cs_write(u, num, rs) {
 					GM_xmlhttpRequest({
@@ -6428,7 +6448,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 						clearInterval(xint2);
 						var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
 						setTimeout(function() {
-							document.getElementById('submitButton').click();
+							//~ document.getElementById('submitButton').click();
 						}, rand_time); // Wait
 					}
 				},1000);
