@@ -41,13 +41,28 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
-	s = '';
+	
+	//
+	// Gerry Gorman
+	// Canada Lawyer Practice Area Search -3
+	//
+	s = '<p>All the lawyers are active&nbsp;Canadian lawyers and we need their practice area.<';
 	if(ih.indexOf(s) != -1) {
 		var l = document.getElementsByTagName('a');
 		
 		var o = {
-			url: l[5].innerText
+			url: l[5].innerText,
+			q: [
+				document.getElementById('PA1'),
+				document.getElementById('PA2'),
+				document.getElementById('PA3'),
+				document.getElementById('PA4'),
+				document.getElementById('PA5'),
+				document.getElementById('PA_Others')								
+			]
 		}
+		
+		console.log(o);
 		
 		
 		AMT__setUtilityTabs([
@@ -63,18 +78,21 @@ function MT__RUN() {
 						function(response){
 							console.log(response);
 							var text = response.data.text_range;
-					
 							console.log(text);
 							
-							if(o.q.value) {
-								o.q.value += '\n' + text;
+							var text = text.replace(/,/g, "\n");
+							var PAs = text.split('\n');
+							console.log(PAs);
+							for(var i = 0; i < 5; i++) {
+								if(PAs[0]) {
+									o.q[i].value = PAs.shift();
+								}
 							}
-							else {
-								o.q.value = text;
+							if(PAs[0]) {
+								o.q[5].value = PAs.join(", ");
 							}
-							o.q.value.trim();
 							
-							document.getElementById('submitButton').focus();
+							//document.getElementById('submitButton').focus();
 						});
 	}
 	
