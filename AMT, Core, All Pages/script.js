@@ -6448,6 +6448,8 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 						clearInterval(xint2);
 						var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
 						setTimeout(function() {
+							// 
+							alert('Check the console to ensure that wait time was about than 4 + rand(6) seconds. Then enable auto.');
 							//~ document.getElementById('submitButton').click();
 						}, rand_time); // Wait
 					}

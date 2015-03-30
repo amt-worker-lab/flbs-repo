@@ -41,6 +41,43 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
+	s = '';
+	if(ih.indexOf(s) != -1) {
+		var l = document.getElementsByTagName('a');
+		
+		var o = {
+			url: l[5].innerText
+		}
+		
+		
+		AMT__setUtilityTabs([
+							{
+								url: o.url,
+								options: {
+									task: 'AMT__all_pages_util',
+									highlight_range_to_parent: true
+									// highlight range to parent
+								}								
+							}
+						], null, {backgroundColor:'pink'}, false,
+						function(response){
+							console.log(response);
+							var text = response.data.text_range;
+					
+							console.log(text);
+							
+							if(o.q.value) {
+								o.q.value += '\n' + text;
+							}
+							else {
+								o.q.value = text;
+							}
+							o.q.value.trim();
+							
+							document.getElementById('submitButton').focus();
+						});
+	}
+	
 	
 	//
 	//
