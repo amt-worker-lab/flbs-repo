@@ -48558,13 +48558,19 @@ AMT___RunPageScript("function() {" +
 			// Seat
 			switch (o.seat) {
 				case 'CC':
-					o.party = 'common council';
+					o.seat = 'common council';
 					break;
 				case 'SC':
-					o.party = 'supreme court';
+					o.seat = 'supreme court';
 					break;
 				case 'SMC':
-					o.party = 'supreme court';
+					o.seat = 'supreme court';
+					break;
+				case 'CM':
+					o.seat = 'city commissioner';
+					break;
+				case 'SH':
+					o.seat = 'sherriff';
 					break;
 				case 'Mayor':
 					// nothing
