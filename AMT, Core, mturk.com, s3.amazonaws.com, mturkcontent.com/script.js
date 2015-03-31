@@ -1,30 +1,3 @@
-
-
-
-// ==UserScript==
-// @name			AMT, Core, mturk.com, s3.amazonaws.com, mturkcontent.com
-// @include			https://www.mturk.com/*
-// @include			https://www.mturk.com/mturk/preview?*
-// @include			https://www.mturk.com/mturk/previewandaccept?*
-// @include			https://www.mturk.com/mturk/continue?*
-// @include			https://www.mturk.com/mturk/accept?*
-// @include			https://www.mturk.com/mturk/submit
-// @include			https://www.mturk.com/mturk/return*
-// @include			https://s3.amazonaws.com/*
-// @include			https://www.mturkcontent.com/dynamic/hit*
-// @grant			GM_getValue
-// @grant			GM_setValue
-// @grant			GM_deleteValue
-// @grant			GM_listValues
-// @grant			GM_addStyle
-// @grant			GM_xmlhttpRequest
-// ==/UserScript==
-
-
-
-
-
-
 /**
  * Document Changes
  * 
@@ -48517,11 +48490,11 @@ AMT___RunPageScript("function() {" +
 	// 
 	// 
 	//~ s = '<h2>Find the official image of the <u>California Federal or State level</u><b>&nbsp;</b>candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
-	s = '<h2>Find the official image of the&nbsp;<u>Federal</u><b>&nbsp;</b>candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
-	s2= '<h2>Find the official image of the <u>Congressional candidate</u>&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
+	//~ s = '<h2>Find the official image of the&nbsp;<u>Federal</u><b>&nbsp;</b>candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
+	//~ s2= '<h2>Find the official image of the <u>Congressional candidate</u>&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong>photos@crowdpac.com </strong></h2>';
+	s= '<h3>Important: the file should be named after the candidate. Example: for candidate John Smith, the image file name should be <strong>johnsmith.jpg</strong>.&nbsp;</h3>';
 	if (
-		ih.indexOf(s)  != -1 ||
-		ih.indexOf(s2) != -1
+		ih.indexOf(s)  != -1
 	) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
