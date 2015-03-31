@@ -48570,7 +48570,7 @@ AMT___RunPageScript("function() {" +
 					o.seat = 'city commissioner';
 					break;
 				case 'SH':
-					o.seat = 'sherriff';
+					o.seat = 'sheriff';
 					break;
 				case 'Mayor':
 					// nothing
