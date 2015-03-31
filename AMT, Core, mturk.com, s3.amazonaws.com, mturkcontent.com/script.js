@@ -48518,11 +48518,24 @@ AMT___RunPageScript("function() {" +
 			
 			var o = {
 				state: st[3].innerText.trim(),
-				name: nm
+				name: nm,
 				filename: nm.toLowerCase().replace(/ /g, '') + '.jpg', // Remove spaces and toLowerCase()
-				seat: st[4].innerText.trim(),
-				party: st[3].innerText.trim()
+				seat: st[4].innerText.trim().replace(/^ *: */, ''), // Remove initial colon
+				party: st[3].innerText.trim(),
+				em_subject: null//,
+				//~ em_body: null
 			}
+			
+			// Phil.
+			if (ih.indexOf('Philadelphia local or state') != -1) {
+				state = '("philadelphia", "philly", "pennsylvania")';
+			}
+			
+			// subject
+			o.em_subject = o.seat + ' - ' + o.name;
+			
+			//~ // Add seat to filename
+			//~ o.filename = o.seat + o.filename;
 			
 			// No state?
 			if (o.state == 'D' || o.state == 'R' || o.state == 'I') {
@@ -48542,9 +48555,26 @@ AMT___RunPageScript("function() {" +
 				default:
 					o.party = '';
 			}
+			// Seat
+			switch (o.seat) {
+				case 'CC':
+					o.party = 'common council';
+					break;
+				case 'SC':
+					o.party = 'supreme court';
+					break;
+				case 'SMC':
+					o.party = 'supreme court';
+					break;
+				case 'Mayor':
+					// nothing
+					break;
+				default:
+					o.party = '';
+			}
 			
 			// Open window
-			window.open('https://www.google.com/search?q='+encodeURIComponent(o.name + ' ' + o.state + ' ' + o.party), 'new');
+			window.open('https://www.google.com/search?q='+encodeURIComponent(o.name + ' ' + o.state + ' ' + o.party + ' ' + o.seat), 'new');
 			
 			// q
 			var q = document.getElementById('file name');
@@ -48568,9 +48598,9 @@ AMT___RunPageScript("function() {" +
 			d1 = document.createElement('input');
 			d1.setAttribute('type','text');
 			d1.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:30px;');
-			d1.value = o.state + ' - ' + nm;
+			d1.value = o.em_subject; // OLD // o.state + ' - ' + nm;
 			document.body.appendChild(d1);
-			//
+			// filename
 			var d2;
 			d2 = document.createElement('input');
 			d2.setAttribute('type','text');
@@ -48621,7 +48651,7 @@ AMT___RunPageScript("function() {" +
 				AMT__mail__mailer_object.filename		= '/var/www/html/mturk/.cached/' + d2.value;
 				
 				// new March 30 2015
-				AMT__mail__mailer_object.subject		= o.state + ' - ' + o.name;
+				AMT__mail__mailer_object.subject		= o.em_subject;
 				AMT__mail__mailer_object.body			= d2.value;
 				
 				//~ AMT__mail__mailer_object.subject		= d1.value;
