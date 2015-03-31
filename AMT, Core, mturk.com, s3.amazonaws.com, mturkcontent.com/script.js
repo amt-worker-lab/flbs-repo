@@ -48500,7 +48500,7 @@ AMT___RunPageScript("function() {" +
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('body {margin-top:80px;}');
+			GM_addStyle('body {margin-top:160px;}');
 			GM_addStyle('h3, ul {position:absolute;margin-top:200px;}');
 			GM_addStyle('#submitButton {width:100%;height:80px;}');
 			
@@ -48528,7 +48528,7 @@ AMT___RunPageScript("function() {" +
 			
 			// Phil.
 			if (ih.indexOf('Philadelphia local or state') != -1) {
-				state = '("philadelphia", "philly", "pennsylvania")';
+				o.state = '("philadelphia", "philly", "pennsylvania")';
 			}
 			
 			// subject
@@ -48611,24 +48611,25 @@ AMT___RunPageScript("function() {" +
 			var d3 = document.createElement('input');
 			d3.setAttribute('type','text');
 			d3.setAttribute('style','position:absolute;top:60px;left:0;width:60%;height:30px;');
-			d3.value = 'url';
+			d3.value = '';
+			d3.placeholder = 'Put Image URL Here';
 			d3.onmouseover = d3.onclick = function() {
-				if (this.value == 'url') this.value = '';
+				//~ if (this.value == 'url') this.value = '';
 			}
 			document.body.appendChild(d3);
 			//
 			var d4 = document.createElement('input');
 			d4.setAttribute('type','button');
 			d4.setAttribute('style','position:absolute;top:90px;left:0;height:30px;');
-			d4.value = ' submit ';
-			d4.onclick = Fernando_Velloso_Neto_convert_and_mail__init;
+			d4.value = ' Begin Mail/Convert ';
+			d4.onclick = convert_and_mail__init;
 			document.body.appendChild(d4);
 			/* END ITEMS */
 			
 			// rf
 			var rf = new AMT___requests_factory();
 			
-			function Fernando_Velloso_Neto_convert_and_mail__complete(email_object) {
+			function convert_and_mail__complete(email_object) {
 				console.log(email_object);
 				if (email_object.responseText.indexOf('Message has been sent.') != -1 && q.value != '') {
 					//doSubmit();
@@ -48636,7 +48637,7 @@ AMT___RunPageScript("function() {" +
 				}
 			}
 			// 
-			function Fernando_Velloso_Neto_convert_and_mail__mail(write_object) {// send email
+			function mail(write_object) {// send email
 				
 				if (write_object.responseText != '') {
 					//~ exit('email:'+write_object.responseText);
@@ -48663,32 +48664,35 @@ AMT___RunPageScript("function() {" +
 						data:	'AMT__mail='+
 								'&AMT__mail__mailer_object='+encodeURIComponent(JSON.stringify(AMT__mail__mailer_object))
 					},
-					Fernando_Velloso_Neto_convert_and_mail__complete
+					convert_and_mail__complete
 				);
 			}
-			// function Fernando_Velloso_Neto_convert_and_mail__convert()
+			// function convert()
 			// @param: write_object.filename
 			// convert file
-			function Fernando_Velloso_Neto_convert_and_mail__convert(write_object) {
+			function convert(write_object) {
 				rf.io__imagemagick_convert(
 					{
 						data:	'?AMT__im_convert__folder=.cached'+
 								'&AMT__im_convert__old_file='+write_object.filename+
 								'&AMT__im_convert__new_file='+d2.value,
 					},
-					Fernando_Velloso_Neto_convert_and_mail__mail
+					mail
 				);
 			}
-			function Fernando_Velloso_Neto_convert_and_mail__init() {
+			function convert_and_mail__init() {
+				
+				// bg
+				this.style.backgroundColor = 'LightGreen';
 				
 				var nextStep_func;
 				var filename;
 				
 				if (/\.jpg$/i.exec(d3.value)) {
-					nextStep_func = Fernando_Velloso_Neto_convert_and_mail__mail;
+					nextStep_func = mail;
 					filename = d2.value;
 				} else {
-					nextStep_func = Fernando_Velloso_Neto_convert_and_mail__convert;
+					nextStep_func = convert;
 					filename = any_md5(d3.value, '0123456789ABCDEF');
 				}
 				
