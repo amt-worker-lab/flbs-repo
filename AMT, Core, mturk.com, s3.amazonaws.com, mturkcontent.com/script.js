@@ -48641,6 +48641,10 @@ AMT___RunPageScript("function() {" +
 				
 				if (write_object.responseText != '') {
 					//~ exit('email:'+write_object.responseText);
+					if (write_object.responseText == '0') {
+						alert('Not mailing. Download response is:'+write_object.responseText);
+						return;
+					}
 				}
 				
 				if (d1.value.trim() == '') {
