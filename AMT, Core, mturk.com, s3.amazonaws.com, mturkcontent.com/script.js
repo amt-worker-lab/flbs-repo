@@ -48496,156 +48496,185 @@ AMT___RunPageScript("function() {" +
 	if (
 		ih.indexOf(s)  != -1
 	) {
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		GM_addStyle('body {margin-top:80px;}');
-		GM_addStyle('h3, ul {position:absolute;margin-top:200px;}');
-		GM_addStyle('#submitButton {width:100%;height:80px;}');
-		
-		var nm = document.getElementsByTagName('b')[0].innerText;
-		
-		var candID = /<p>Candidate ID: <strong>(cand[\d]+|)[^<]*<\/strong>/.exec(ih)[1];
-		candID = __js_clean_html_str(candID);
-		if (candID == '') {
-			candID = nm;
-		}
-		
-		var st = document.getElementsByTagName('strong');
-		
-		var o = {
-			state: st[3].innerText.trim(),
-			name: nm
-		}
-		
-		window.open('https://www.google.com/search?q='+encodeURIComponent(o.name + ' ' + o.state), 'new');
-		
-		var q = document.getElementById('file name');
-		q.value = candID + '.jpg';
-		
-		//~ 
-		//~ setTimeout(function() {
-			//~ document.getElementById('file name').focus();
-		//~ }, 800);
-		//~ 
-		//~ document.getElementById('file name').onmouseover = function() {
-			//~ this.select();
-		//~ }
-		
-		
-		/* BEGIN ITEMS */
-		var d1;
-		d1 = document.createElement('input');
-		d1.setAttribute('type','text');
-		d1.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:30px;');
-		d1.value = o.state + ' - ' + nm;
-		document.body.appendChild(d1);
-		//
-		var d2;
-		d2 = document.createElement('input');
-		d2.setAttribute('type','text');
-		d2.setAttribute('style','position:absolute;top:30px;left:0;width:60%;height:30px;');
-		d2.value = candID + '.jpg';
-		document.body.appendChild(d2);
-		//
-		var d3 = document.createElement('input');
-		d3.setAttribute('type','text');
-		d3.setAttribute('style','position:absolute;top:60px;left:0;width:60%;height:30px;');
-		d3.value = 'url';
-		d3.onmouseover = d3.onclick = function() {
-			if (this.value == 'url') this.value = '';
-		}
-		document.body.appendChild(d3);
-		//
-		var d4 = document.createElement('input');
-		d4.setAttribute('type','button');
-		d4.setAttribute('style','position:absolute;top:90px;left:0;height:30px;');
-		d4.value = ' submit ';
-		d4.onclick = Fernando_Velloso_Neto_convert_and_mail__init;
-		document.body.appendChild(d4);
-		/* END ITEMS */
-		
-		// rf
-		var rf = new AMT___requests_factory();
-		//var filename; // global!
-		
-		function Fernando_Velloso_Neto_convert_and_mail__complete(email_object) {
-			console.log(email_object);
-			if (email_object.responseText.indexOf('Message has been sent.') != -1 && q.value != '') {
-				//doSubmit();
-				q.style.border = '8px solid LightGreen';
+		var run = function(){};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('body {margin-top:80px;}');
+			GM_addStyle('h3, ul {position:absolute;margin-top:200px;}');
+			GM_addStyle('#submitButton {width:100%;height:80px;}');
+			
+			var nm = document.getElementsByTagName('b')[0].innerText;
+			
+			
+			// OLD
+			//~ var candID = /<p>Candidate ID: <strong>(cand[\d]+|)[^<]*<\/strong>/.exec(ih)[1];
+			//~ candID = __js_clean_html_str(candID);
+			//~ if (candID == '') {
+				//~ candID = nm;
+			//~ }
+			
+			var st = document.getElementsByTagName('strong');
+			
+			var o = {
+				state: st[3].innerText.trim(),
+				name: nm
+				filename: nm.toLowerCase().replace(/ /g, '') + '.jpg', // Remove spaces and toLowerCase()
+				seat: st[4].innerText.trim(),
+				party: st[3].innerText.trim()
 			}
 			
-			//if (email_object.responseText == 'Message has been sent.' && q.value != '') {
-		}
-		// 
-		function Fernando_Velloso_Neto_convert_and_mail__mail(write_object) {// send email
-			
-			if (write_object.responseText != '') {
-				//~ exit('email:'+write_object.responseText);
+			// No state?
+			if (o.state == 'D' || o.state == 'R' || o.state == 'I') {
+				o.state = '';
+			}
+			// Party
+			switch (o.party) {
+				case 'D':
+					o.party = 'democrat';
+					break;
+				case 'R':
+					o.party = 'republican';
+					break;
+				case 'I':
+					o.party = 'independent';
+					break;
+				default:
+					o.party = '';
 			}
 			
-			if (d1.value.trim() == '') {
-				alert('subject');
-				return;
-			}
+			// Open window
+			window.open('https://www.google.com/search?q='+encodeURIComponent(o.name + ' ' + o.state + ' ' + o.party), 'new');
+			
+			// q
+			var q = document.getElementById('file name');
+			q.value = o.filename;
+			
+			// OLD
+			//~ q.value = candID + '.jpg';
+			
+			//~ 
+			//~ setTimeout(function() {
+				//~ document.getElementById('file name').focus();
+			//~ }, 800);
+			//~ 
+			//~ document.getElementById('file name').onmouseover = function() {
+				//~ this.select();
+			//~ }
+			
+			
+			/* BEGIN ITEMS */
+			var d1;
+			d1 = document.createElement('input');
+			d1.setAttribute('type','text');
+			d1.setAttribute('style','position:absolute;top:0px;left:0;width:60%;height:30px;');
+			d1.value = o.state + ' - ' + nm;
+			document.body.appendChild(d1);
 			//
-			var AMT__mail__mailer_object = {};
-			AMT__mail__mailer_object.filename		= '/var/www/html/mturk/.cached/' + d2.value;
-			
-			// new June 18, 2014
-			AMT__mail__mailer_object.subject		= o.state + ' - ' + o.name;
-			AMT__mail__mailer_object.body			= d2.value;
-			
-			//~ AMT__mail__mailer_object.subject		= d1.value;
-			
-			
-			// rf.io__send_email
-			rf.io__send_email(
-				{
-					data:	'AMT__mail='+
-							'&AMT__mail__mailer_object='+encodeURIComponent(JSON.stringify(AMT__mail__mailer_object))
-				},
-				Fernando_Velloso_Neto_convert_and_mail__complete
-			);
-		}
-		// function Fernando_Velloso_Neto_convert_and_mail__convert()
-		// @param: write_object.filename
-		// convert file
-		function Fernando_Velloso_Neto_convert_and_mail__convert(write_object) {
-			rf.io__imagemagick_convert(
-				{
-					data:	'?AMT__im_convert__folder=.cached'+
-							'&AMT__im_convert__old_file='+write_object.filename+
-							'&AMT__im_convert__new_file='+d2.value,
-				},
-				Fernando_Velloso_Neto_convert_and_mail__mail
-			);
-		}
-		function Fernando_Velloso_Neto_convert_and_mail__init() {
-			
-			var nextStep_func;
-			var filename;
-			
-			if (/\.jpg$/i.exec(d3.value)) {
-				nextStep_func = Fernando_Velloso_Neto_convert_and_mail__mail;
-				filename = d2.value;
-			} else {
-				nextStep_func = Fernando_Velloso_Neto_convert_and_mail__convert;
-				filename = any_md5(d3.value, '0123456789ABCDEF');
-				//~ filename = rf.general_functions__md5(d3.value); // MD5!
+			var d2;
+			d2 = document.createElement('input');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:30px;left:0;width:60%;height:30px;');
+			d2.value = o.filename; // OLD // candID + '.jpg';
+			document.body.appendChild(d2);
+			//
+			var d3 = document.createElement('input');
+			d3.setAttribute('type','text');
+			d3.setAttribute('style','position:absolute;top:60px;left:0;width:60%;height:30px;');
+			d3.value = 'url';
+			d3.onmouseover = d3.onclick = function() {
+				if (this.value == 'url') this.value = '';
 			}
+			document.body.appendChild(d3);
+			//
+			var d4 = document.createElement('input');
+			d4.setAttribute('type','button');
+			d4.setAttribute('style','position:absolute;top:90px;left:0;height:30px;');
+			d4.value = ' submit ';
+			d4.onclick = Fernando_Velloso_Neto_convert_and_mail__init;
+			document.body.appendChild(d4);
+			/* END ITEMS */
 			
-			// rf.io__download_file
-			rf.io__download_file(
-				{
-					data:	'?AMT__download_file__url='+encodeURIComponent(d3.value)+
-							'&AMT__download_file__folder=.cached'+
-							'&AMT__download_file__filename=' + encodeURIComponent(filename),
-					filename: filename
-				},
-				nextStep_func
-			);
+			// rf
+			var rf = new AMT___requests_factory();
+			
+			function Fernando_Velloso_Neto_convert_and_mail__complete(email_object) {
+				console.log(email_object);
+				if (email_object.responseText.indexOf('Message has been sent.') != -1 && q.value != '') {
+					//doSubmit();
+					q.style.border = '8px solid LightGreen';
+				}
+			}
+			// 
+			function Fernando_Velloso_Neto_convert_and_mail__mail(write_object) {// send email
+				
+				if (write_object.responseText != '') {
+					//~ exit('email:'+write_object.responseText);
+				}
+				
+				if (d1.value.trim() == '') {
+					alert('subject');
+					return;
+				}
+				//
+				var AMT__mail__mailer_object = {};
+				AMT__mail__mailer_object.filename		= '/var/www/html/mturk/.cached/' + d2.value;
+				
+				// new March 30 2015
+				AMT__mail__mailer_object.subject		= o.state + ' - ' + o.name;
+				AMT__mail__mailer_object.body			= d2.value;
+				
+				//~ AMT__mail__mailer_object.subject		= d1.value;
+				
+				
+				// rf.io__send_email
+				rf.io__send_email(
+					{
+						data:	'AMT__mail='+
+								'&AMT__mail__mailer_object='+encodeURIComponent(JSON.stringify(AMT__mail__mailer_object))
+					},
+					Fernando_Velloso_Neto_convert_and_mail__complete
+				);
+			}
+			// function Fernando_Velloso_Neto_convert_and_mail__convert()
+			// @param: write_object.filename
+			// convert file
+			function Fernando_Velloso_Neto_convert_and_mail__convert(write_object) {
+				rf.io__imagemagick_convert(
+					{
+						data:	'?AMT__im_convert__folder=.cached'+
+								'&AMT__im_convert__old_file='+write_object.filename+
+								'&AMT__im_convert__new_file='+d2.value,
+					},
+					Fernando_Velloso_Neto_convert_and_mail__mail
+				);
+			}
+			function Fernando_Velloso_Neto_convert_and_mail__init() {
+				
+				var nextStep_func;
+				var filename;
+				
+				if (/\.jpg$/i.exec(d3.value)) {
+					nextStep_func = Fernando_Velloso_Neto_convert_and_mail__mail;
+					filename = d2.value;
+				} else {
+					nextStep_func = Fernando_Velloso_Neto_convert_and_mail__convert;
+					filename = any_md5(d3.value, '0123456789ABCDEF');
+				}
+				
+				// rf.io__download_file
+				rf.io__download_file(
+					{
+						data:	'?AMT__download_file__url='+encodeURIComponent(d3.value)+
+								'&AMT__download_file__folder=.cached'+
+								'&AMT__download_file__filename=' + encodeURIComponent(filename),
+						filename: filename
+					},
+					nextStep_func
+				);
+			}
 		}
+		new run().f();
 	}
 	// TRY 2
 	//~ //
