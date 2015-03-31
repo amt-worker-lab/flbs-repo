@@ -48647,89 +48647,91 @@ AMT___RunPageScript("function() {" +
 			);
 		}
 	}
-	//
-	// Fernando Velloso Neto
-	// 
-	// 
-	s = '<h3>Find the official image of the <strong>Texas state-level</strong> candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong><u>photos@crowdpac.com</u>';
-	if (
-		ih.indexOf(s) != -1
-	) {
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		GM_addStyle('body {margin-top:80px;}');
-		//GM_addStyle('.highlight-box {position:absolute;margin-top:800px;}');
-		
-		var nm = document.getElementsByTagName('b')[0].innerText;
-		
-		window.open('https://www.google.com/search?q='+encodeURIComponent(nm) + ' texas', 'new');
-		
-		var b = /<p>Candidate ID: ([^<]+)/.exec(ih)[1];
-		b = __js_clean_html_str(b);
-		
-		document.getElementById('file name').value = b + '.';
-		
-		setTimeout(function() {
-			document.getElementById('file name').focus();
-		}, 800);
-		
-		document.getElementById('file name').onmouseover = function() {
-			this.select();
-		}
-		
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('id','d1');
-		d.setAttribute('type','text');
-		d.setAttribute('style','position:absolute;top:0px;left:0;width:100px;height:40px;');
-		d.value = nm;
-		d.onmouseover = d.onclick = function() {
-			this.select();
-		}
-		document.body.appendChild(d);
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('id','d2');
-		d.setAttribute('type','text');
-		d.setAttribute('style','position:absolute;top:40px;left:0;width:100px;height:40px;');
-		d.value = b;
-		d.onmouseover = d.onclick = function() {
-			this.select();
-		}
-		document.body.appendChild(d);
-		
-	}
-	//
-	// Fernando Velloso Neto
-	// 
-	// 
-	s = '<h3>Please submit&nbsp;only high-quality images. <u>The candidate\'s campaign website usually provides the official candidate image</u>. If it\'s not available in the campaign website, search online and email us the best, most adequate candidate image.</h3>';
-	if (
-		ih.indexOf(s) != -1
-	) {
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		GM_addStyle('body {margin-top:40px;}');
-		//GM_addStyle('.highlight-box {position:absolute;margin-top:800px;}');
-		
-		var b = document.getElementsByTagName('b')[0].innerText;
-		
-		window.open('https://www.google.com/search?q='+encodeURIComponent(b) + ' texas', 'new');
-		
-		document.getElementById('Q1Url').value = 'Emily _REDACTED_4_';
-		document.getElementById('Q1Url').focus();
-		
-		var d;
-		d = document.createElement('input');
-		d.setAttribute('id','d1');
-		d.setAttribute('type','text');
-		d.setAttribute('style','position:absolute;top:0px;left:0;width:200px;height:40px;');
-		d.value = b;
-		document.body.appendChild(d);
-		d.onmouseover = d.onclick = function() {
-			this.select();
-		}
-	}
+	// TRY 2
+	//~ //
+	//~ // Fernando Velloso Neto
+	//~ // 
+	//~ // 
+	//~ s = '<h3>Find the official image of the <strong>Texas state-level</strong> candidate&nbsp;below and email it <u>as an attachment</u>&nbsp;to <strong><u>photos@crowdpac.com</u>';
+	//~ if (
+		//~ ih.indexOf(s) != -1
+	//~ ) {
+		//~ console.log('');
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		//~ GM_addStyle('body {margin-top:80px;}');
+		//~ //GM_addStyle('.highlight-box {position:absolute;margin-top:800px;}');
+		//~ 
+		//~ var nm = document.getElementsByTagName('b')[0].innerText;
+		//~ 
+		//~ window.open('https://www.google.com/search?q='+encodeURIComponent(nm) + ' texas', 'new');
+		//~ 
+		//~ var b = /<p>Candidate ID: ([^<]+)/.exec(ih)[1];
+		//~ b = __js_clean_html_str(b);
+		//~ 
+		//~ document.getElementById('file name').value = b + '.';
+		//~ 
+		//~ setTimeout(function() {
+			//~ document.getElementById('file name').focus();
+		//~ }, 800);
+		//~ 
+		//~ document.getElementById('file name').onmouseover = function() {
+			//~ this.select();
+		//~ }
+		//~ 
+		//~ var d;
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d1');
+		//~ d.setAttribute('type','text');
+		//~ d.setAttribute('style','position:absolute;top:0px;left:0;width:100px;height:40px;');
+		//~ d.value = nm;
+		//~ d.onmouseover = d.onclick = function() {
+			//~ this.select();
+		//~ }
+		//~ document.body.appendChild(d);
+		//~ var d;
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d2');
+		//~ d.setAttribute('type','text');
+		//~ d.setAttribute('style','position:absolute;top:40px;left:0;width:100px;height:40px;');
+		//~ d.value = b;
+		//~ d.onmouseover = d.onclick = function() {
+			//~ this.select();
+		//~ }
+		//~ document.body.appendChild(d);
+		//~ 
+	//~ }
+	// TRY 1
+	//~ //
+	//~ // Fernando Velloso Neto
+	//~ // 
+	//~ // 
+	//~ s = '<h3>Please submit&nbsp;only high-quality images. <u>The candidate\'s campaign website usually provides the official candidate image</u>. If it\'s not available in the campaign website, search online and email us the best, most adequate candidate image.</h3>';
+	//~ if (
+		//~ ih.indexOf(s) != -1
+	//~ ) {
+		//~ console.log('');
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+		//~ GM_addStyle('body {margin-top:40px;}');
+		//~ //GM_addStyle('.highlight-box {position:absolute;margin-top:800px;}');
+		//~ 
+		//~ var b = document.getElementsByTagName('b')[0].innerText;
+		//~ 
+		//~ window.open('https://www.google.com/search?q='+encodeURIComponent(b) + ' texas', 'new');
+		//~ 
+		//~ document.getElementById('Q1Url').value = 'Emily _REDACTED_4_';
+		//~ document.getElementById('Q1Url').focus();
+		//~ 
+		//~ var d;
+		//~ d = document.createElement('input');
+		//~ d.setAttribute('id','d1');
+		//~ d.setAttribute('type','text');
+		//~ d.setAttribute('style','position:absolute;top:0px;left:0;width:200px;height:40px;');
+		//~ d.value = b;
+		//~ document.body.appendChild(d);
+		//~ d.onmouseover = d.onclick = function() {
+			//~ this.select();
+		//~ }
+	//~ }
 	
 	//
 	// Bryant Wolf
