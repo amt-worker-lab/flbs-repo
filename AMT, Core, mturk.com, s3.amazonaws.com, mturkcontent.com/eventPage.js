@@ -1446,7 +1446,9 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 		}
 	})
 
+function shiftFarRight() {
 
+}
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {

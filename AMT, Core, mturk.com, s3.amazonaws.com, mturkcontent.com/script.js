@@ -3200,8 +3200,8 @@ function MT__RUN() {
 			}
 			
 			/*BEGIN ITEMS*/
-			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;background-color:#eee;border:1px solid blue;overflow:auto;'); //width:99%;height:400px;
+			var d1 = document.createElement('img');
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
@@ -3236,9 +3236,11 @@ function MT__RUN() {
 			
 			// d2
 			d2.addEventListener('keyup', function(e) {
+				//~ console.log(e.keyCode);
 				console.log('CAPTCHA Length:' + this.value.length);
-				if (this.value.length == 5) {
+				if (this.value.length == 5 || e.keyCode == '16') { // 5 OR shift keys (left/right). CAPTCHAs are 4 or 5 chars.
 					this.blur();
+					console.log(this.value);
 					post_captcha();
 				}
 			}, false);
@@ -3270,11 +3272,13 @@ function MT__RUN() {
 						'Accept: */*',
 						'Referer: https://www.icloud.com/activationlock/',
 						'Connection: keep-alive'
-					]
+					],
+					do_not_save_to_file: true // Do not ever save this to file. (Always new.)
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					encodeURIComponent(ux) +
-					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
 						opts
 					));
 				
@@ -3302,11 +3306,16 @@ function MT__RUN() {
 				// POST data to icloud.com
 				//curl 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock' -H 'Origin: https://www.icloud.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' -H 'Content-Type: text/plain' -H 'Accept: */*' -H 'Referer: https://www.icloud.com/activationlock/' -H 'Connection: keep-alive' --data-binary '{"deviceId":"990002648443768","captchaContext":{"id":"XXX"},"captchaCode":"xld3"}' --compressed
 				
+				var data =
+					'{"deviceId":"'+encodeURIComponent(o.id)+
+					'","captchaContext":{"id":"'+o.cid+ //encodeURIComponent(o.cid)
+					'"},"captchaCode":"'+encodeURIComponent(d2.value)+
+					'"}';
+				console.log(data);
 				GM_xmlhttpRequest({
 					method: "POST",
 					url: 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock',
-					data:
-					'{"deviceId":"'+encodeURIComponent(o.id)+'","captchaContext":{"id":"'+encodeURIComponent(o.cid)+'"},"captchaCode":"'+encodeURIComponent(d2.value)+'"}',
+					data: data,
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
