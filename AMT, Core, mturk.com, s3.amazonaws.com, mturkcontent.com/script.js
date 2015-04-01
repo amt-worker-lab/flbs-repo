@@ -16,6 +16,27 @@ var beginRunTime = new Date().getTime();
 function MT__RUN() {
 	
 	//
+	//Demand Studios
+	//Watch the video to see if it answers the question
+	//
+	s = 'Does the video answer the question posed in the provided "Title" (not to be mistaken with the video title)?';
+	if(ih.indexOf(s) != -1) {
+		var a = document.getElementsByTagName('a');
+		var o = {
+			url: a[0[
+		}
+		AMT__setUtilityTabs([
+							{
+								url: o.url,
+								options: {
+									task: 'AMT__all_pages_util',
+									highlight_range_to_parent: true
+								}								
+							}]);
+		
+	}
+	
+	//
 	// Gerry Gorman
 	// Canada Lawyer Practice Area Search -3
 	//
