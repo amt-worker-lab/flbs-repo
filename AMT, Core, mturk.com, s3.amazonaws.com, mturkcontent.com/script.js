@@ -68156,10 +68156,22 @@ qatar,80
 			};
 			
 			// Biz name
+			// e.g. two styles:
 			//<p style="line-height: 20.7999992370605px;">Business Name (U.S. City and State):&nbsp;<b>John Kruger Construction (Lake Hughes, CA)</b></p>
 			// John Kruger Construction \(Lake Hughes, CA\)
+			//<span style="line-height: 20.7999992370605px;">Business Name (U.S. City and State):&nbsp;</span><b style="line-height: 20.7999992370605px;">Healing Hands Massage: Ram Arceri, LMT (Lake Worth, FL)</b>
+			//Healing Hands Massage: Ram Arceri, LMT (Lake Worth, FL)
 			var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):&nbsp;<b>([^<]+)<\/b><\/p>/.exec(ih);
+			var reg2= /<span[^>]*>Business Name \(U\.S\. City and State\):&nbsp;<\/span><b[^>]*>([^<]+)<\/b>/.exec(ih);
 			if (reg) {
+				name_locn(reg);
+			} else if (reg2) {
+				name_locn(reg2)
+			} else {
+				alert('Name/Location not found!');
+				return;
+			}
+			function name_locn(reg) {
 				reg = __js_clean_html_str(reg[1]).trim();
 				var tmpcs = / *\(([^\)]*)\)$/.exec(reg);
 				if (tmpcs) {
