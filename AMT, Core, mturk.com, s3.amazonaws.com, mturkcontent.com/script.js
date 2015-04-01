@@ -3204,7 +3204,7 @@ function MT__RUN() {
 			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
 			document.body.appendChild(d2);
 			//~ d2.value = o.id;
 			var naBut = document.createElement('input');
@@ -3366,11 +3366,13 @@ function MT__RUN() {
 						
 						if  (
 							rs.statusCode == 200 &&
-							rs.locked == 'true' &&
-							rs.deviceId == o.id
+							rs.locked == true &&
+							rs.deviceId == o.id &&
+							rs.type == 'IMEI'
 							)
 						{
 							o.q.value = 'ON';
+							document.getElementById('submitButton').click();
 						}
 					}
 				});
