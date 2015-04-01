@@ -68195,6 +68195,9 @@ qatar,80
 			if (ih.indexOf('Not interested in information&nbsp;fromThumbtack websites or these phone numbers:') != -1) {
 				by_phone = true;
 			}
+			if (ih.indexOf('*Do not enter the phone number&nbsp;') != -1) {
+				by_phone = true;
+			}
 			// If by phone...
 			// innerHTML reg for phone #s.
 			if (by_phone) {
@@ -68205,68 +68208,20 @@ qatar,80
 					o.bad_phones.push( m[1] );
 					o.bad_phones_obj[ m[1] ] = true;
 				}
+				// Try this also
+				var reg = /Do not enter the phone number&nbsp;([\d]+), ([\d]+), or ([\d]+)/.exec(ih);
+				if (reg) {
+					for (var i=1; i<=3; i++) {
+						o.bad_phones.push( reg[i] );
+						o.bad_phones_obj[ reg[i] ] = true;
+					}
+				}
 			}
 			// Not by phone
 			if (!by_phone) {
-				
-				//~ // New Method?
-				//~ //
-				//~ //Charlestown Yoga (Charlestown MA)
-				//~ var reg = /<p[^>]*>Business Name \(U\.S\. City and State\):(&nbsp;| )<b>([^<]+)<\/b><\/p>/.exec(ih);
-				//~ if (reg) {
-					//~ reg = reg[2];
-					//~ var reg2 = / \(([^\)]*)\) *$/.exec(reg);
-					//~ if (reg2) {
-						//~ reg2 = reg2[1];
-						//~ reg = reg.replace('(' + reg2 + ')', '');
-					//~ } else {
-						//~ reg2 = '';
-					//~ }
-					//~ var o = {
-						//~ name: __js_clean_html_str(reg) .trim(),
-						//~ locn: __js_clean_html_str(reg2).trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-					//~ }
-				//~ } else {
-				//~ 
-					//~ // Regular / old method
-					//~ //
-					//~ var o = {
-						//~ name: b[0].innerText.trim(),
-						//~ locn: strong[0].innerText.trim().replace(/ (\d{4})$/, ' 0$1') // add 0
-					//~ }
-				//~ }
-				//~ o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-				//~ o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-				//~ o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-				//~ o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 			}
 			// Is by phone
 			if (by_phone) {
-				//~ 
-				//~ var reg = /<em>Business Name with city and state:<\/em> <b>([^<]+)<\/b>/.exec(ih);
-				//~ if (reg) {
-					//~ var reg2 = / ([^ ]+ [A-Z]{2})$/.exec(reg[1]);
-					//~ var o = {
-						//~ name: __js_clean_html_str(reg[1]).trim(),
-						//~ locn: __js_clean_html_str(reg2[1]).trim()
-					//~ };
-					//~ o.name = o.name.replace(o.locn, ''); // string replacement
-				//~ } else {
-					//~ exit(reg);
-				//~ }
-				//~ // New Method?
-				//~ //
-				//~ 
-				//~ o.bad_phone = b[0].innerText.trim().replace(/[^\d]/g, '')
-				//~ o.name_arr = o.name.replace(/[^\w\d]/g, ' ').split(' ');
-				//~ o.locn_arr = o.locn.replace(/[^\w\d]/g, ' ').split(' ');
-				//~ o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
-				//~ o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
-				//~ 
-				//~ if (o.bad_phone.length != 10) {
-					//~ alert('Initial phone is bad:' + o.bad_phone);
-					//~ return;
-				//~ }
 			}
 			console.log(o);
 			
