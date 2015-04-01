@@ -3176,8 +3176,243 @@ function MT__RUN() {
 	}
 	
 	// 
-	// 
+	// Alex Jenkins
+	// Check activation lock status for a phone
 	//
+	s = '<p>On the webpage, in the box <strong>underneath the text “Enter the Device IMEI or Serial Number”</strong>, put in this IMEI value (also displayed below):</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:800px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var o = {
+				id: st[3].innerText.trim(),
+				q: document.getElementById('web_url'),
+				cid: null // This is Apple captcha ID
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;background-color:#eee;border:1px solid blue;overflow:auto;'); //width:99%;height:400px;
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:75%;height:20px;');
+			document.body.appendChild(d2);
+			//~ d2.value = o.id;
+			var naBut = document.createElement('input');
+			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			document.body.appendChild(naBut);
+			naBut.type = 'button';
+			naBut.value = 'N/A';
+			/*END ITEMS*/
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 60 // offset top
+			//~ });
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				new AMT___core_factory().nextTab({focusOnPage:true});
+				new AMT___core_factory().shiftFarLeft();
+				doSubmit();
+				return false;
+			}
+			
+			// d2
+			d2.addEventListener('keyup', function(e) {
+				console.log('CAPTCHA Length:' + this.length);
+				if (this.length == 5) {
+					this.blur();
+					post_captcha();
+				}
+			}, false);
+			setTimeout(function() { d2.focus(); }, 2000); // 2 seconds.
+			
+			// init
+			captcha();
+			
+			// 
+			function captcha() {
+				
+				// GET a new CAPTCHA.
+				// Remove all but digits in random #.
+				var url = 'https://fmipalcweb.icloud.com/fmipalcservice/client/getCaptchaImage?rnd=' + (Math.random().replace(/[^\d]/g, ''));
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						rs = JSON.parse(rs);
+						
+						//{"captchaContext":{"id":"XXX"},"image":"data:image/jpeg;base64,XXX","showCaptcha":true}
+						o.cid = rs.captchaContext.id;
+						d1.src = rs.image;
+					}
+				});
+			}
+			// 
+			function post_captcha() {
+				// POST data to icloud.com
+				//curl 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock' -H 'Origin: https://www.icloud.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' -H 'Content-Type: text/plain' -H 'Accept: */*' -H 'Referer: https://www.icloud.com/activationlock/' -H 'Connection: keep-alive' --data-binary '{"deviceId":"990002648443768","captchaContext":{"id":"XXX"},"captchaCode":"xld3"}' --compressed
+				
+				GM_xmlhttpRequest({
+					method: "POST",
+					url: 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock',
+					data: '',
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+						}
+					}
+				});
+			}
+
+				
+				
+				
+				// xhr
+				// e.g. http://www.allmusic.com/search/artists/eats%20everything
+				var u = 'http://www.himssconference.org/ExhibitorList.aspx?Keywords=' + encodeURIComponent(d2.value);
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// e.g.
+						// /ExhibitorDetail.aspx?ItemNumber=35943
+						// A.D.A.M., A Business Unit of Ebix
+						var reg = /<h4><a href="([^"]+)">([^<]+)<\/a><\/h4>/g;
+						var m;
+						var first = true;
+						while (m = reg.exec(rs)) {
+							
+							m[1] = __js_clean_html_str(m[1]);
+							m[2] = __js_clean_html_str(m[2]);
+							m[3] = first;
+							rslt_div(m);
+							
+							first = false; // set first=false
+						}
+					}
+				});
+			}
+			// helper
+			function rslt_div(rslt) {
+				var div = document.createElement('div');
+				div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+				div.className = 'exe';
+				div.href = 'http://www.himssconference.org' + m[1];
+				d1.appendChild(div);
+				div.innerHTML =
+					MT__bold(m[2], o.bold)
+				;
+				// .onclick
+				div.onclick = function() {
+					this.style.backgroundColor = 'aqua';
+					//
+					final(this);
+				}
+				
+				// Auto?
+				// Only on first
+				//~ console.log(o.name == rslt.name.toLowerCase().replace(//g, ''));
+				if  (
+					!o.has_auto_clicked &&
+					rslt.name.toLowerCase().replace(/[^\w\d]/g, '') == o.name_clean &&
+					o.name_clean.length >= 4 &&
+					rslt[3]
+					)
+				{
+					o.has_auto_clicked = true;
+					// If preview
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.accept();
+					} else {
+						div.click();
+					}
+				}
+				// Skip if not found and first
+				else if (
+					AMT__Global_Vars.isPreview &&
+					rslt.first
+					)
+				{
+					AMT___Floater.skip();
+				}
+			}
+			// 
+			function final(div) {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: div.href,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// 
+						var reg = /<div class="col-md-9 col-sm-12">[\r\n\t\s]+<h3>[^<]+<\/h3>((.|\s)*?(?=<!-- FOOTER -->|$)|$)/g;
+						if (reg) {
+							var p = new DOMParser();
+							p = p.parseFromString(reg[1], 'text/html');
+							console.log(p);
+						}
+						//~ var m;
+						//~ var first = true;
+						//~ while (m = reg.exec(rs)) {
+							//~ 
+							//~ m[1] = __js_clean_html_str(m[1]);
+							//~ m[2] = __js_clean_html_str(m[2]);
+							//~ m[3] = first;
+							//~ rslt_div(m);
+							//~ 
+							//~ first = false; // set first=false
+						//~ }
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
+	// 
+	// 
+	// TODO: Requester name?
 	//
 	s = '<p>Locate the exhibitor on: http://www.himssconference.org/ExhibitorList.aspx&nbsp;</p>';
 	if  (
@@ -17016,7 +17251,7 @@ function MT__RUN() {
 					return false;
 				}
 				new AMT___core_factory().shiftFarLeft();
-				
+				alert('here?');
 				
 				//~ // Here?
 				//~ new AMT___core_factory().nextTab();
