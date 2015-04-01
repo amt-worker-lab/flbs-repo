@@ -23,16 +23,38 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		var a = document.getElementsByTagName('a');
 		var o = {
-			url: a[0[
+			url: a[0]
 		}
-		AMT__setUtilityTabs([
-							{
-								url: o.url,
-								options: {
-									task: 'AMT__all_pages_util',
-									highlight_range_to_parent: true
-								}								
-							}]);
+		//~ AMT__setUtilityTabs([
+							//~ {
+								//~ url: o.url,
+								//~ options: {
+									//~ task: 'AMT__all_pages_util',
+									//~ highlight_range_to_parent: true
+								//~ }								
+							//~ }]);
+		
+		AMT___RunPageScript(function() {
+			 	var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/iframe_api";
+		var form = document.getElementById("submitButton").appendChild(tag);
+	
+			  var player;
+			  function onYouTubeIframeAPIReady() {
+				player = new YT.Player('player', {
+				  height: '390',
+				  width: '640',
+				  videoId: 'M7lc1UVf-VE',
+				  events: {
+					'onReady': onPlayerReady,
+					'onStateChange': onPlayerStateChange
+				  }
+				});
+			  }		
+		  }
+		);
+		
+		
 		
 	}
 	
