@@ -44,13 +44,14 @@ function MT__RUN() {
 			tag.type = 'text/javascript'; 
 			tag.src = "https://www.youtube.com/iframe_api";
 			
-			var firstScriptTag = document.getElementsByTagName('script')[0];
-			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			
-			tag.onreadystatechange = function(e) {
+			//var firstScriptTag = document.getElementsByTagName('script')[0];
+			//firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			document.body.appendChild(tag);
+			tag.onload = tag.onreadystatechange = function(e) {
 				console.log(1001+200);
 				console.log(e);
 			}
+			
 			
 			var player;
 			
