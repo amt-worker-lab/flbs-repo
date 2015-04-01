@@ -16950,9 +16950,9 @@ function MT__RUN() {
 	 
 	 
 	//
-	// Steve Murch
-	// Find the contact email if it exists, or contact url for this blog
-	// 3VKZWROWWHDRYOHCACV5A8TXOY08G2
+	// Brent Anderson
+	// Find the contact email for business
+	// 
 	s = '<li>Enter the <strong>official&nbsp;email address </strong>for contacting this business</li>';
 	if(ih.indexOf(s) != -1)
 	{
@@ -16972,7 +16972,7 @@ function MT__RUN() {
 			
 			var o = {
 				sd_start_urls: [a[0].innerText.trim()],
-				sd_allowed_domains: [p[1].innerText.trim()],
+				sd_allowed_domains: [a[0].innerText.trim()],
 				q: [
 					document.getElementById('email')
 				]
@@ -156196,11 +156196,14 @@ function mturk_load()
 function loadGlobalsFromBird(callback) {
 	var callback = callback;
 	chrome.storage.local.get(null, function(global_load_vars) {
-		for(var i in global_load_vars) {
-			AMT__Global_Vars[i] = global_load_vars[i];
+		if(global_load_vars) {
+			for(var i in global_load_vars) {
+				if(global_load_vars[i] != undefined)
+					AMT__Global_Vars[i] = global_load_vars[i];
+			}
+			console.log(AMT__Global_Vars);
+			callback();//should be mturk_load
 		}
-		console.log(AMT__Global_Vars);
-		callback();//should be mturk_load
 	});
 }
 
