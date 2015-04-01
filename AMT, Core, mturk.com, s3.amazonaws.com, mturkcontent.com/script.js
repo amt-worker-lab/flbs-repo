@@ -3309,7 +3309,7 @@ function MT__RUN() {
 				// Not working as plain post.
 				var data =
 					'{"deviceId":"'+encodeURIComponent(o.id)+
-					'","captchaContext":{"id":"'+encodeURIComponent(o.cid)+ //o.cid+ //encodeURIComponent(o.cid)
+					'","captchaContext":{"id":"'+o.cid+//encodeURIComponent(o.cid)+ //o.cid+ //encodeURIComponent(o.cid)
 					'"},"captchaCode":"'+encodeURIComponent(d2.value)+
 					'"}';
 				console.log(data);
@@ -3328,6 +3328,7 @@ function MT__RUN() {
 						'Referer: https://www.icloud.com/activationlock/',
 						'Connection: keep-alive'
 					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
 					post_object_as_str: data // As string.
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
@@ -3338,6 +3339,8 @@ function MT__RUN() {
 					));
 					
 					
+				// Response is e.g.
+				// {"statusCode":"200", "deviceDisplayName":"iPad", "serverTimeAsEpoch":1427929048059, "locked":true, "type":"IMEI", "deviceId":"990003080206655", "deviceImageBaseURL":"https://statici.icloud.com/fmipmobile/deviceImages-4.0/iPad/iPad3,6"}
 				
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -3358,6 +3361,17 @@ function MT__RUN() {
 						
 						rs = JSON.parse(rs);
 						console.log(rs);
+						
+						document.body.style.backgroundColor = 'aqua'; // Show complete.
+						
+						if  (
+							rs.statusCode == 200 &&
+							rs.locked == 'true' &&
+							rs.deviceId == o.id
+							)
+						{
+							o.q.value = 'ON';
+						}
 					}
 				});
 			}
