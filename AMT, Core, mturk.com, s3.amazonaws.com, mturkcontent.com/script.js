@@ -3236,8 +3236,8 @@ function MT__RUN() {
 			
 			// d2
 			d2.addEventListener('keyup', function(e) {
-				console.log('CAPTCHA Length:' + this.length);
-				if (this.length == 5) {
+				console.log('CAPTCHA Length:' + this.value.length);
+				if (this.value.length == 5) {
 					this.blur();
 					post_captcha();
 				}
@@ -3252,8 +3252,33 @@ function MT__RUN() {
 				
 				// GET a new CAPTCHA.
 				// Remove all but digits in random #.
-				var url = 'https://fmipalcweb.icloud.com/fmipalcservice/client/getCaptchaImage?rnd=' + (Math.random().replace(/[^\d]/g, ''));
 				
+				// e.g. 
+				// curl 'https://fmipalcweb.icloud.com/fmipalcservice/client/getCaptchaImage?rnd=1427927046892' -H 'Origin: https://www.icloud.com' -H 'Accept-Encoding: gzip, deflate, sdch' -H 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' -H 'Content-Type: text/plain' -H 'Accept: */*' -H 'Referer: https://www.icloud.com/activationlock/' -H 'Connection: keep-alive' --compressed
+				
+				// This URL as a plain GET request does not work.
+				//var u = 'https://fmipalcweb.icloud.com/fmipalcservice/client/getCaptchaImage?rnd=' + ((Math.random() + '').replace(/[^\d]/g, ''));
+				
+				var ux = 'https://fmipalcweb.icloud.com/fmipalcservice/client/getCaptchaImage?rnd=' + ((Math.random() + '').replace(/[^\d]/g, ''));
+				var opts = {
+					headers_array: [
+						'Origin: https://www.icloud.com',
+						'Accept-Encoding: gzip, deflate, sdch',
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36',
+						'Content-Type: text/plain',
+						'Accept: */*',
+						'Referer: https://www.icloud.com/activationlock/',
+						'Connection: keep-alive'
+					]
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+						opts
+					));
+				
+				// Xhr
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
@@ -3280,7 +3305,8 @@ function MT__RUN() {
 				GM_xmlhttpRequest({
 					method: "POST",
 					url: 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock',
-					data: '',
+					data:
+					'{"deviceId":"'+encodeURIComponent(o.id)+'","captchaContext":{"id":"'+encodeURIComponent(o.cid)+'"},"captchaCode":"'+encodeURIComponent(d2.value)+'"}',
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
@@ -3288,121 +3314,12 @@ function MT__RUN() {
 						var rs = response.responseText;
 						
 						if (response.status != 200) {
-						}
-					}
-				});
-			}
-
-				
-				
-				
-				// xhr
-				// e.g. http://www.allmusic.com/search/artists/eats%20everything
-				var u = 'http://www.himssconference.org/ExhibitorList.aspx?Keywords=' + encodeURIComponent(d2.value);
-				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u),
-				
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs=response.responseText;
-						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
 							document.body.style.backgroundColor = 'pink';
 							return;
 						}
 						
-						// e.g.
-						// /ExhibitorDetail.aspx?ItemNumber=35943
-						// A.D.A.M., A Business Unit of Ebix
-						var reg = /<h4><a href="([^"]+)">([^<]+)<\/a><\/h4>/g;
-						var m;
-						var first = true;
-						while (m = reg.exec(rs)) {
-							
-							m[1] = __js_clean_html_str(m[1]);
-							m[2] = __js_clean_html_str(m[2]);
-							m[3] = first;
-							rslt_div(m);
-							
-							first = false; // set first=false
-						}
-					}
-				});
-			}
-			// helper
-			function rslt_div(rslt) {
-				var div = document.createElement('div');
-				div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
-				div.className = 'exe';
-				div.href = 'http://www.himssconference.org' + m[1];
-				d1.appendChild(div);
-				div.innerHTML =
-					MT__bold(m[2], o.bold)
-				;
-				// .onclick
-				div.onclick = function() {
-					this.style.backgroundColor = 'aqua';
-					//
-					final(this);
-				}
-				
-				// Auto?
-				// Only on first
-				//~ console.log(o.name == rslt.name.toLowerCase().replace(//g, ''));
-				if  (
-					!o.has_auto_clicked &&
-					rslt.name.toLowerCase().replace(/[^\w\d]/g, '') == o.name_clean &&
-					o.name_clean.length >= 4 &&
-					rslt[3]
-					)
-				{
-					o.has_auto_clicked = true;
-					// If preview
-					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.accept();
-					} else {
-						div.click();
-					}
-				}
-				// Skip if not found and first
-				else if (
-					AMT__Global_Vars.isPreview &&
-					rslt.first
-					)
-				{
-					AMT___Floater.skip();
-				}
-			}
-			// 
-			function final(div) {
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: div.href,
-					onload: function(response) {
-						var rs=response.responseText;
-						if (response.status != 200 || (rs*1 > 200 && rs*1<600)) {
-							document.body.style.backgroundColor = 'pink';
-							return;
-						}
-						
-						// 
-						var reg = /<div class="col-md-9 col-sm-12">[\r\n\t\s]+<h3>[^<]+<\/h3>((.|\s)*?(?=<!-- FOOTER -->|$)|$)/g;
-						if (reg) {
-							var p = new DOMParser();
-							p = p.parseFromString(reg[1], 'text/html');
-							console.log(p);
-						}
-						//~ var m;
-						//~ var first = true;
-						//~ while (m = reg.exec(rs)) {
-							//~ 
-							//~ m[1] = __js_clean_html_str(m[1]);
-							//~ m[2] = __js_clean_html_str(m[2]);
-							//~ m[3] = first;
-							//~ rslt_div(m);
-							//~ 
-							//~ first = false; // set first=false
-						//~ }
+						rs = JSON.parse(rs);
+						console.log(rs);
 					}
 				});
 			}
