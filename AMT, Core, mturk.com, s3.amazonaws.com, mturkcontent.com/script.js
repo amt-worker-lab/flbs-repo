@@ -17015,6 +17015,8 @@ function MT__RUN() {
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
 					return false;
 				}
+				new AMT___core_factory().shiftFarLeft();
+				alert('here?');
 				
 				//~ // Here?
 				//~ new AMT___core_factory().nextTab();
