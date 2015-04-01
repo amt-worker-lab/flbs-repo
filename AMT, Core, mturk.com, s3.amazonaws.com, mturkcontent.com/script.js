@@ -34,41 +34,40 @@ function MT__RUN() {
 								//~ }								
 							//~ }]);
 		
-		AMT___RunPageScript(function() {
-			
-			var divPlayer = document.createElement('div');
-			divPlayer.setAttribute('id',"player");
-			document.body.appendChild(divPlayer);
-			
-			var tag = document.createElement('script');
-			tag.type = 'text/javascript'; 
-			tag.src = "https://www.youtube.com/iframe_api";
-			
-			//var firstScriptTag = document.getElementsByTagName('script')[0];
-			//firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			document.body.appendChild(tag);
-			tag.onload = tag.onreadystatechange = function(e) {
-				console.log(1001+200);
-				console.log(e);
-			}
-			
-			
-			var player;
-			
-			function onYouTubeIframeAPIReady() {
-			player = new YT.Player('player', {
-				  height: '390',
-				  width: '640',
-				  videoId: 'M7lc1UVf-VE',
-				  events: {
-					'onReady': onPlayerReady,
-					'onStateChange': onPlayerStateChange
-				  }
-				});
-			  }	
-			
-		  }
-		);
+		//~ AMT___RunPageScript(function() {
+			//~ 
+			//~ var divPlayer = document.createElement('div');
+			//~ divPlayer.setAttribute('id',"player");
+			//~ document.body.appendChild(divPlayer);
+			//~ 
+			//~ var tag = document.createElement('script');
+			//~ tag.type = 'text/javascript'; 
+			//~ tag.src = "https://www.youtube.com/iframe_api";
+			//~ 
+			//~ //var firstScriptTag = document.getElementsByTagName('script')[0];
+			//~ //firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			//~ document.body.appendChild(tag);
+			//~ tag.onload = tag.onreadystatechange = function(e) {
+				//~ console.log(1001+200);
+				//~ console.log(e);
+			//~ }
+			//~ 
+			//~ 
+			//~ var player;
+			//~ 
+			//~ function onYouTubeIframeAPIReady() {
+			//~ player = new YT.Player('player', {
+				  //~ height: '390',
+				  //~ width: '640',
+				  //~ videoId: 'M7lc1UVf-VE',
+				  //~ events: {
+					//~ 'onReady': onPlayerReady,
+					//~ 'onStateChange': onPlayerStateChange
+				  //~ }
+				//~ });
+			  //~ }	
+		  //~ }
+		//~ );
 		
 		
 		
@@ -16948,6 +16947,169 @@ function MT__RUN() {
 	 * Steve Murch
 	 * 
 	 */
+	 
+	 
+	//
+	// Steve Murch
+	// Find the contact email if it exists, or contact url for this blog
+	// 3VKZWROWWHDRYOHCACV5A8TXOY08G2
+	s = '<li>Enter the <strong>official&nbsp;email address </strong>for contacting this business</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			var a = document.getElementsByTagName('a');
+			
+			
+			var o = {
+				sd_start_urls: [a[0].innerText.trim()],
+				sd_allowed_domains: [p[1].innerText.trim()],
+				q: [
+					document.getElementById('email')
+				]
+			}
+			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			console.log(o);
+			
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:200px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 100 // offset top
+			});
+			
+			// return button function!
+			var cf = new AMT___core_factory()
+			new AMT___core_factory()
+				.iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_button__showNextTab'
+					}
+				);
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					return false;
+				}
+				
+				//~ // Here?
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+
+			scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			
+			/**
+			 * function scrapy
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//~ console.log(start_urls);
+				//~ console.log(allowed_domains);
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1,
+								input_send_success: o.q[0],
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									
+									
+									if (AMT__Global_Vars.isPreview) {
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											AMT___Floater.skip();
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									} else { // Add to tabs queue if not in preview
+										addToTabsQ();
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								},
+								//~ do_submit_callback: function() {
+									//~ 
+									//~ // NOTE: DEC1 2014
+									//~ // THIS NEEDS TO BE TESTED FIRST!!
+									//~ //document.getElementById('submitButton').click();
+								//~ },
+								//~ // What to do onclick
+								//~ input_onclick_callback: function() {
+									//~ document.getElementById('Q1Email').value = 
+									//~ document.getElementById('submitButton').click();
+								//~ },
+								//~ do_submit_next_tab: true
+								do_submit_add_to_tabs_queue: true
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+	}
 	
 	//
 	// Steve Murch
