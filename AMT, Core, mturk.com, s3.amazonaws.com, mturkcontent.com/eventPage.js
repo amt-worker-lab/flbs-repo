@@ -393,9 +393,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var tabId  = sender.tab.id;
 		var winId = sender.tab.windowId;
 		
-		
+		console.log('testing whether this runs');
 		console.log('attempting to move');
-		
 		
 		chrome.tabs.move(tabId, {index: 0}, function (tab) {
 				console.log('Moved tab');
@@ -447,7 +446,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					
 					//is the lowest tab the same as the tab sending 'shownexttab', if so, remove from the Q, tell the tab that it's not longer in the Q, and call showNextTabAttempt again.
 					
-					console.log(sender.tab.id)
+					//console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
 						allQTabs.splice(lowestTabIndex,1);
 
@@ -466,7 +465,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 							}
 						}
 						if(!nextTabId) {
-							console.log('no next tab to jump to');
+							//console.log('no next tab to jump to');
 						}
 						else {
 							chrome.tabs.update(nextTabId, {active:true});

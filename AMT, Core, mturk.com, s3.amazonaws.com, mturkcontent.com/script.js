@@ -3288,7 +3288,7 @@ function MT__RUN() {
 					url: u,
 					onload: function(response) {
 						var rs=response.responseText;
-						if (response.status != 200) {
+						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
 							document.body.style.backgroundColor = 'pink';
 							return;
 						}
@@ -3306,23 +3306,52 @@ function MT__RUN() {
 				// POST data to icloud.com
 				//curl 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock' -H 'Origin: https://www.icloud.com' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36' -H 'Content-Type: text/plain' -H 'Accept: */*' -H 'Referer: https://www.icloud.com/activationlock/' -H 'Connection: keep-alive' --data-binary '{"deviceId":"990002648443768","captchaContext":{"id":"XXX"},"captchaCode":"xld3"}' --compressed
 				
+				// Not working as plain post.
 				var data =
 					'{"deviceId":"'+encodeURIComponent(o.id)+
-					'","captchaContext":{"id":"'+o.cid+ //encodeURIComponent(o.cid)
+					'","captchaContext":{"id":"'+encodeURIComponent(o.cid)+ //o.cid+ //encodeURIComponent(o.cid)
 					'"},"captchaCode":"'+encodeURIComponent(d2.value)+
 					'"}';
 				console.log(data);
+				
+				//post_object
+				
+				var ux = 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock';
+				var opts = {
+					headers_array: [
+						'Origin: https://www.icloud.com',
+						'Accept-Encoding: gzip, deflate',
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36',
+						'Content-Type: text/plain',
+						'Accept: */*',
+						'Referer: https://www.icloud.com/activationlock/',
+						'Connection: keep-alive'
+					],
+					post_object_as_str: data // As string.
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+					
+					
+				
 				GM_xmlhttpRequest({
-					method: "POST",
-					url: 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock',
-					data: data,
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded"
-					},
+					method: "GET",
+					url: u,
+					//~ method: "POST",
+					//~ url: 'https://fmipalcweb.icloud.com/fmipalcservice/client/checkActivationLock',
+					//~ data: data,
+					//~ headers: {
+						//~ "Content-Type": "application/x-www-form-urlencoded"
+					//~ },
 					onload: function(response) {
 						var rs = response.responseText;
 						
-						if (response.status != 200) {
+						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
 							document.body.style.backgroundColor = 'pink';
 							return;
 						}
