@@ -1925,9 +1925,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				AMT__Global_Vars.core.return_run_nextTab = true;
 				break;
 			case 'return_and_accept':
-				if(AMT__Global_Vars.hasOwnProperty('ShowNextTabIframe') && AMT__Global_Vars['ShowNextTabIframe']) {
-					showNextTab({isTopWindow: false});
-				}
 				document.getElementById('MT__gm_returnaccept').click();
 				break;
 			case 'changeWindowNotifier':
@@ -11374,6 +11371,9 @@ function AMT___returnAndAcceptButton() {
 		
 		// local
 		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
+			
+			
+			
 			//console.log(AMT__Global_Vars);
 			this.style.backgroundColor='#9e9e9e';
 			//Record what tab we're returning on
@@ -11396,7 +11396,10 @@ function AMT___returnAndAcceptButton() {
 			if(AMT__Global_Vars['R&A ShiftFarLeft']) {
 				new AMT___core_factory().shiftFarLeft();
 			}
-
+			
+			if(AMT__Global_Vars.hasOwnProperty('ShowNextTabIframe') && AMT__Global_Vars['ShowNextTabIframe']) {
+				showNextTab({isTopWindow: false});
+			}
 			
 			function MT__RETURN_AND_ACCEPT(time_to_submit) {
 				setTimeout(function() {
