@@ -17190,7 +17190,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:200px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:140px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -17309,8 +17309,8 @@ function MT__RUN() {
 									//~ document.getElementById('Q1Email').value = 
 									//~ document.getElementById('submitButton').click();
 								//~ },
-								do_submit_next_tab: true
-								//do_submit_add_to_tabs_queue: true
+								//do_submit_next_tab: true
+								do_submit_add_to_tabs_queue: true
 							}
 						);
 					}
