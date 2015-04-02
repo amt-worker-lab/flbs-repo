@@ -17166,7 +17166,7 @@ function MT__RUN() {
 	// Emily McHale (scrapy + startpage)
 	// on_submit check that bad emails are not here
 	// 
-	s = '<li>Enter the <strong>official&nbsp;email address </strong>for contacting this business</li>';
+	s = '	<li><strong>Exclude:</strong> catering@, reservations@, and&nbsp;events@ emails and any&nbsp;emails ending in @grubhub.com,&nbsp;@foodler.com, or other online ordering platform emails.</li>';
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -17176,29 +17176,29 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');// Set width
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
 			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			
-			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
 			var o = {
-				sd_start_urls: [a[0].innerText.trim()],
-				sd_allowed_domains: [a[0].innerText.trim()],
+				sd_start_urls: [td[11].innerText.trim()],
+				sd_allowed_domains: null,
 				q: [
 					document.getElementById('email')
 				]//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
-			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1")]; // Remove https & trailing / if present
 			console.log(o);
 			
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:140px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:20%;width:80%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -17211,7 +17211,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 100 // offset top
+				offset: 0 // offset top
 			});
 			
 			// return button function!
@@ -17225,19 +17225,59 @@ function MT__RUN() {
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
-				o.q[0].value = o.q[0].value.trim();
-				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
-					return false;
-				}
-				new AMT___core_factory().shiftFarLeft();
-				alert('here?');
+				//~ o.q[0].value = o.q[0].value.trim();
+				//~ if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					//~ return false;
+				//~ }
+				//~ new AMT___core_factory().shiftFarLeft();
+				//~ alert('here?');
 				
 				//~ // Here?
 				//~ new AMT___core_factory().nextTab();
 				//~ doSubmit();
 			}
 
-			scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			// SP top 3 for start
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:' + o.domain + ' contact OR about OR team OR webmaster OR owner OR email'),
+				callback_function: sp
+			});
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				console.log(response_obj.length);
+				var rs = response_obj;
+				console.log(rs);
+				
+				if (!rs.length) {
+					// No URLs
+					// Init
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					return;
+				} else {
+					/*([{
+						url: rs[0][0]
+					}]);*/
+				}
+				
+				// Look for Facebook pages in results.
+				// And secondly check if first result is a "non-skip" result,
+				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				var first = true;
+				for (var i in rs) {
+					var dm = rs[i][0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/, "$1");
+					if (dm == 'facebook.com') {
+						o.sd_start_urls.push(rs[i][0]); // Push URL
+					}
+					else if (first) {
+						
+					}
+					first = false;
+				}
+			}
+			
+			//scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			
 			/**
 			 * function scrapy
