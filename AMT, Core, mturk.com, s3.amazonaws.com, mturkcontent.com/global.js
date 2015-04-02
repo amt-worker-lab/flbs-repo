@@ -15,13 +15,6 @@
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
 
 
-var defaultPersistantScriptVars = [
-	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
-	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
-	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
-	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
-	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true}
-];
 
 
 /**
@@ -53,7 +46,13 @@ var AMT__Global_Vars = //function()
 	//~ //
 	//~ var isQProduct = false;
 	
-	
+	defaultPersistantScriptVars : [
+	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
+	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
+	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
+	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
+	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true}
+	],
 	isTopWindow: null,
 	isPreview: null,
 	groupId: '',

@@ -156439,24 +156439,41 @@ function mturk_load()
 
 
 function checkIfLocalScriptVarsExists(callback) {
-	
+	var tmpDefaultPersistantScriptVars = AMT__Global_Vars.defaultPersistantScriptVars;
 	chrome.storage.local.get('scriptVars', function(storageObj) {
 		if(!storageObj.scriptVars) {
 			chrome.storage.local.set({'scriptVars': {}},function(asdf) {
-				loadGlobalsFromBird(callback);
+				initializePermanentScriptVars(tmpDefaultPersistantScriptVars);
 			})
 		}
 		else {
-			loadGlobalsFromBird(callback);
+			initializePermanentScriptVars(tmpDefaultPersistantScriptVars);
 		}
 	});
+}
+
+function initializePermanentScriptVars(tmpDPSV) {
+	if(!tmpDPSV.length) {
+		loadGlobalsFromBird();
+		return;
+	}
+	var nextObj = tmpDPSV.shift();
 	
-	
+	chrome.storage.local.get('scriptVars', function(storageObj) {
+		var scriptVars = storageObj.scriptVars;
+		if(!scriptVars[nextObj.name]) {
+			scriptVars[nextObj.name] = nextObj;
+			chrome.storage.local.set({'scriptVars': scriptVars}, function() {
+				initializePermanentScriptVars(tmpDPSV);
+			});
+		} else {
+			initializePermanentScriptVars(tmpDPSV);
+		}
+	});
 }
 
 
-function loadGlobalsFromBird(callback) {
-	var callback = callback;
+function loadGlobalsFromBird() {	
 	chrome.storage.local.get(null, function(global_load_vars) {
 		if(global_load_vars && global_load_vars.scriptVars) {
 			for(var i in global_load_vars.scriptVars) {
@@ -156464,10 +156481,9 @@ function loadGlobalsFromBird(callback) {
 					AMT__Global_Vars.scriptVars[i] = global_load_vars.scriptVars[i].value;
 			}
 		}
-		if(callback)
-			callback();//should be mturk_load
-
+		mturk_load();
 	});
+	
 }
 
 
@@ -156484,71 +156500,16 @@ function loadGlobalsFromBird(callback) {
 var ih;
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
-	checkIfLocalScriptVarsExists(mturk_load);
+	checkIfLocalScriptVarsExists();
 }
 else {
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete" || document.readyState == "interactive") {
 			ih = document.body.innerHTML;
-			checkIfLocalScriptVarsExists(mturk_load);
+			checkIfLocalScriptVarsExists();
 		}
 	}
 }
-/*
- * 
- * OLD iframe sizing
- *
-// 
-if (window.top == window.self) {
-	var MT__IFRAME_MARGIN_TOP = (GM_getValue('MT__IFRAME_MARGIN_TOP') != null) ? GM_getValue('MT__IFRAME_MARGIN_TOP') : '100';
 
-	var x = document.createElement('select');
-	x.setAttribute('style','position:absolute;top:0;left:0;z-index:10000;width:10px;');
-	//var sel;
-	for (var i = 0; i <= 200; i += 20) {
-		if (MT__IFRAME_MARGIN_TOP == i)
-			x.innerHTML += '<option value="'+i+'" selected>'+i+'</option>';
-		else
-			x.innerHTML += '<option value="'+i+'">'+i+'</option>';
-	}
-	x.onchange = function() {
-		var i;
-		i = document.getElementsByName('HTMLQuestionIFrame');
-		if (!i || !i[0]) {
-			i = document.getElementsByName('ExternalQuestionIFrame');
-		}
-		if (i[0])
-			i[0].style.top = this.value + 'px';
-		GM_setValue('MT__IFRAME_MARGIN_TOP', this.value);
-	}
-	x.onclick = function() {
-		this.style.width = '200px';
-	}
-	document.body.appendChild(x);
 
-	var i;
-	i = document.getElementsByName('HTMLQuestionIFrame');
-	if (!i || !i[0]) {
-		i = document.getElementsByName('ExternalQuestionIFrame');
-	}
-	if (i[0]) {
-		i[0].style.height = '4000px';
-		i[0].style.width = '100%';
-		i[0].style.margin = '0px';
-		i[0].style.padding = '0px';
-		//i[0].style.marginLeft = '-0px';
-		
-		i[0].style.position = 'absolute';
-		i[0].style.top = MT__IFRAME_MARGIN_TOP+'px';
-		i[0].style.left = '0px';
-		i[0].style.backgroundColor = 'white';
-	}
-	i = document.getElementsByName('hitForm');
-	if (i) {
-		if (i[0]) {
-			i[0].style.width = '100%';
-			i[0].style.margin = '0px';
-			i[0].style.padding = '0px';
-		}
-	}
-}*/
+
