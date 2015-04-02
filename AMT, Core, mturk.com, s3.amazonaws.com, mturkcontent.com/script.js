@@ -36868,6 +36868,7 @@ function MT__RUN() {
 	s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
 	s7= '<li>Draw a complete polygon around the store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	s8= '<li>Draw a complete polygon around the hospital/medical facility&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	s9= '	<li>Use street-view to confirm hotel and building identity when unsure (e.g., some hotels are actually located across the street from the official&nbsp;address).</li>';
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
@@ -36876,7 +36877,8 @@ function MT__RUN() {
 		ih.indexOf(s5) != -1 ||
 		ih.indexOf(s6) != -1 ||
 		ih.indexOf(s7) != -1 ||
-		ih.indexOf(s8) != -1
+		ih.indexOf(s8) != -1 ||
+		ih.indexOf(s9) != -1
 		)
 	{		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
@@ -37655,17 +37657,17 @@ AMT___RunPageScript("function() {" +
 				};
 			}
 			
-			//~ // Go to satellite
-			//~ else if (char == 'c' || char == 'C') {
-				//~ var x=document.getElementsByTagName('div');
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
-						//~ x[i].click();
-						//~ break;
-					//~ }
-				//~ };
-			//~ }
+			// Go to satellite
+			else if (char == 'c' || char == 'C') {
+				var x=document.getElementsByTagName('div');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show 45 degree view') {
+						x[i].click();
+						break;
+					}
+				};
+			}
 		}, false);
 		
 		// Zoom map exit button
