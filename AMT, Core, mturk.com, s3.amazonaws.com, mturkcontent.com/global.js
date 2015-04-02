@@ -4475,9 +4475,73 @@ AMT___requests_factory.prototype.parse_yahoo_result = function(rs) //
 		return [];
 	}
 }
-//
+// TRY #1
 AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_get, callback_function) //
 {
+	var url = MT___host+
+			'/mturk/util.php?'+
+			encodeURIComponent(skips_key_php_get)+'=';
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: url,
+		onload: function (response) {
+			var rs = response.responseText;
+			
+			var tmp_skip_sites = rs.split("\n");
+			
+			callback_function(tmp_skip_sites);
+		}
+	});
+}
+// TRY #2
+AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
+{
+	// required = skips_key, callback, callback_err (optional)
+	if  (
+		!opts_obj.hasOwnProperty('skips_key') ||
+		!opts_obj.hasOwnProperty('callback') 
+		)
+	{
+		console.log('failed fs__load_skips');
+		return;
+	}
+	if (!opts_obj.hasOwnProperty('callback_err')) {
+		opts_obj.callback_err = function() {};
+	}
+	// Xhr.
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: MT___host+'/mturk/util.php?'+encodeURIComponent(opts.skips_key)+'=',
+		onload: function (response) {
+			var rs=response.responseText;
+			
+			if (response.status != 200) {
+				opts_obj.callback_err();
+				return;
+			}
+			
+			var x = rs.split("\n");
+			
+			SKIP_SITES = {}; // ASSOC.
+			
+			// FULL
+			for (var i in x) {
+				SKIP_SITES[x[i]] = true;
+			}
+			
+			// SUBDOMAINS!
+			for (var i in x) {
+				var y;
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+					SKIP_SITES[y[1]] = true;
+				}
+			}
+			
+			// init
+			opts_obj.callback(SKIP_SITES);
+		}
+	});
+	
 	var url = MT___host+
 			'/mturk/util.php?'+
 			encodeURIComponent(skips_key_php_get)+'=';
