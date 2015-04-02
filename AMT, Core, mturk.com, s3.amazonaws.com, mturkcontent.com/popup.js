@@ -235,10 +235,18 @@ function createGlobal_load_varsUI() {
 	createGlobalField.setAttribute('style', 'width:50%;height:30px;display:inline-block;');
 	document.body.appendChild(createGlobalField);
 	
+	
+	
+	
 	createGlobalBtn.onclick = function() {
 		if(createGlobalField.value != '') {
 			var obj = {};
-			obj[createGlobalField.value] = 'setMe';
+			obj[createGlobalField.value] =
+			{
+				currentValue: 'setMe',
+				expirationDate: 0,
+				isPersistant: false,
+			}
 			addLoaderElement(createGlobalField.value, 'setMe');
 			chrome.storage.local.set(obj, function(e) {
 				
