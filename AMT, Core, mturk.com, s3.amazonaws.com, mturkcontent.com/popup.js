@@ -274,7 +274,7 @@ function createGlobal_load_varsUI() {
 				var scriptVar = global_load_vars.scriptVars[i];
 				if(scriptVar.isPersistant) {
 					addLoaderElement(i, scriptVar.value, topDiv);				
-				} else if(scriptVar.expirationDate < new Date().getTime()){
+				} else if(scriptVar.expirationDate > new Date().getTime()){
 					addLoaderElement(i, scriptVar.value, bottomDiv);
 				}
 			}

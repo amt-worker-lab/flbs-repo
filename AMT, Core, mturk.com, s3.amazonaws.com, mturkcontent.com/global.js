@@ -37,15 +37,6 @@ var MT___host = 'http://192.168.1.2';
 //		AMT__Global_Vars.groupId
 var AMT__Global_Vars = //function()
 {
-	//~ var isTopWindow;
-	//~ var isPreview;
-	//~ var groupId;
-	//~ var hitId;
-	//~ 
-	//~ 
-	//~ //
-	//~ var isQProduct = false;
-	
 	defaultPersistantScriptVars : [
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
