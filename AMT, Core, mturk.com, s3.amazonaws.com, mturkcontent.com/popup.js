@@ -197,11 +197,11 @@ function init_func_getIsSpecialWorkflowWindow() {
 }
 
 
-function addLoaderElement(name, value) {
+function addLoaderElement(name, value, div) {
 	var newDiv = document.createElement('div');
 	newDiv.setAttribute('style', "display:inline-block;width:150px;");
 	newDiv.innerText = name;
-	document.body.appendChild(newDiv);
+	div.appendChild(newDiv);
 	var newInput = document.createElement('input');
 	newInput.setAttribute('style',"width:280px;clear:both;");
 	document.body.appendChild(newInput);
@@ -235,7 +235,16 @@ function createGlobal_load_varsUI() {
 	createGlobalField.setAttribute('style', 'width:50%;height:30px;display:inline-block;');
 	document.body.appendChild(createGlobalField);
 	
+	var topDiv = document.createElement('div');
+	topDiv.setAttribute('style','width:100%;border-top:1px solid #888; border-bottom: 1px solid #888');
+	topDiv.setAttribute('id','topDiv');
+	document.body.appendChild(topDiv);
 	
+	
+	var bottomDiv = document.createElement('div');
+	bottomDiv.setAttribute('style','width:100%;border-bottom: 1px solid #888');
+	topDiv.setAttribute('id','bottomDiv');
+	document.body.appendChild(bottomDiv);
 	
 	
 	createGlobalBtn.onclick = function() {
@@ -255,8 +264,14 @@ function createGlobal_load_varsUI() {
 	}
 
 	chrome.storage.local.get(null, function(global_load_vars) {
-		for(var i in global_load_vars) {
-			addLoaderElement(i, global_load_vars[i]);
+		if(global_load_vars && global_load_vars.scriptVars) {
+			for(var i in global_load_vars.scriptVars) {
+				if(global_load_vars.scriptVar[i].isPersistant) {
+					addLoaderElement(i, global_load_vars[i], topDiv);				
+				} else if(global_load_vars.scriptVar[i].expirationDate < new Date().getTime()){
+					addLoaderElement(i, global_load_vars[i], bottomDiv);
+				}
+			}
 		}
 	});
 }
