@@ -37209,6 +37209,8 @@ function MT__RUN() {
 				
 				console.log(lat +','+ lng);
 				
+				new AMT___core_factory().createScriptVar('InitialChiosZoom', 18);
+				
 				//Draw a marker onto the map for center of map
 				AMT___RunPageScript("function() {"+
 						"var marker = new google.maps.Marker({"+
@@ -37217,7 +37219,7 @@ function MT__RUN() {
 						"		title: 'testing'"+
 						"	});"+
 						"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
-						"map.setZoom(("+AMT__Global_Vars.InitialChiosZoom+")*1);"+
+						"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
 					"}"
 					);
 				
@@ -155906,17 +155908,19 @@ function mturk_load()
 		new AMT___core_factory().amt_home_show_tasks();
 		
 		
+		new AMT___core_factory().createScriptVar('JohnRobertsCheckHistory', 0, true);
+		
 		// Run myHITs
 		// John Roberts
 		if  (
 				1 == 1 &&
-				AMT__Global_Vars['JohnRobertsCheckHistory'] &&
-				AMT__Global_Vars['JohnRobertsCheckHistory'] != 0 &&
+				AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] &&
+				AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] != 0 &&
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
 			console.log('MyHits John Roberts');
-			console.log('JohnRobertsCheckHistory != 0: ' + AMT__Global_Vars['JohnRobertsCheckHistory'] != 0);
+			console.log('JohnRobertsCheckHistory != 0: ' + AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] != 0);
 			
 			// Are we at "All HITs Available to You"?
 			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
@@ -156444,7 +156448,8 @@ function loadGlobalsFromBird(callback) {
 					AMT__Global_Vars.scriptVars[i] = global_load_vars.scriptVars[i].value;
 			}
 			console.log(AMT__Global_Vars);
-			callback();//should be mturk_load
+			if(callback)
+				callback();//should be mturk_load
 		}
 	});
 }

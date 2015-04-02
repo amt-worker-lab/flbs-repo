@@ -2017,7 +2017,7 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 			name: stringName,
 			value: defaultValue,
 			isPersistant: isPersistant,
-			expirationDate: expirationDate
+			expirationDate: expirationDate,
 		}
 	
 		
@@ -7563,8 +7563,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		if (add_to_tabs_queue)
 		{
 			showNextTab();
-		}
-		if(AMT__Global_Vars['EmailsJobs DS ShiftLeft'] != undefined && AMT__Global_Vars['EmailsJobs DS ShiftLeft']) {
+		}		
+		new AMT___core_factory().createScriptVar('EmailJobs DS ShiftLeft', 1);
+		if(AMT__Global_Vars['EmailJobs DS ShiftLeft'] != undefined && AMT__Global_Vars['EmailJobs DS ShiftLeft']) {
 			new AMT___core_factory().shiftFarLeft();
 		}
 		doSubmit();
@@ -11431,6 +11432,7 @@ function AMT___returnAndAcceptButton() {
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
 			//
 			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
+				new AMT___core_factory().createScriptVar('ShowNextTabIframe', 0, true);
 				if(AMT__Global_Vars['R&A NextTab Iframe Focus']) {				
 					new AMT___core_factory().nextTab({focusOnPage:false, isTopWindow:false});
 				}
@@ -11440,12 +11442,12 @@ function AMT___returnAndAcceptButton() {
 			}
 			// END HOOK nextTab()
 			
-			createScriptVar('R&A ShiftFarLeft', 1, true);
+			new AMT___core_factory().createScriptVar('R&A ShiftFarLeft', 1, true);
 			if(AMT__Global_Vars.scriptVars['R&A ShiftFarLeft']  != '0') {
 				new AMT___core_factory().shiftFarLeft();
 			}
 			
-			createScriptVar('ShowNextTabIframe', 0, true);				
+			new AMT___core_factory().createScriptVar('ShowNextTabIframe', 0, true);				
 			if(AMT__Global_Vars['ShowNextTabIframe'] != '0') {
 				showNextTab({isTopWindow: false});
 			}
