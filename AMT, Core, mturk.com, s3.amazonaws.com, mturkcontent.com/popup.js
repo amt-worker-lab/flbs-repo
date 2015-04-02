@@ -247,8 +247,8 @@ function createGlobal_load_varsUI() {
 	
 	
 	var bottomDiv = document.createElement('div');
-	bottomDiv.setAttribute('style','width:100%;border-bottom: 1px solid #888');
-	topDiv.setAttribute('id','bottomDiv');
+	bottomDiv.setAttribute('style','width:100%;border-bottom: 1px solid #888;');
+	bottomDiv.setAttribute('id','bottomDiv');
 	document.body.appendChild(bottomDiv);
 	
 	

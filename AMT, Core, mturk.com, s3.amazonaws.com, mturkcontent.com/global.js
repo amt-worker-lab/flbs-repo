@@ -2029,7 +2029,7 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 		}
 	
 		
-		AMT__Global_Vars[stringName] = defaultValue;
+		AMT__Global_Vars.scriptVars[stringName] = defaultValue;
 		
 		setScriptVarObj(scriptVar); 
 	}

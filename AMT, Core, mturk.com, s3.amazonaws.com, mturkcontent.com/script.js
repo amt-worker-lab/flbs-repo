@@ -37209,8 +37209,9 @@ function MT__RUN() {
 				
 				console.log(lat +','+ lng);
 				
-				new AMT___core_factory().createScriptVar('InitialChiosZoom', 18);
-				
+				new AMT___core_factory().createScriptVar('InitialChiosZoom', 18, false);
+				console.log('careful look at me');
+				console.log(AMT__Global_Vars);
 				//Draw a marker onto the map for center of map
 				AMT___RunPageScript("function() {"+
 						"var marker = new google.maps.Marker({"+
