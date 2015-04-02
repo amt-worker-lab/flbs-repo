@@ -156438,7 +156438,6 @@ function mturk_load()
 
 
 
-
 function loadGlobalsFromBird(callback) {
 	var callback = callback;
 	chrome.storage.local.get(null, function(global_load_vars) {
@@ -156447,10 +156446,10 @@ function loadGlobalsFromBird(callback) {
 				if(global_load_vars.scriptVars[i] != undefined)
 					AMT__Global_Vars.scriptVars[i] = global_load_vars.scriptVars[i].value;
 			}
-			console.log(AMT__Global_Vars);
-			if(callback)
-				callback();//should be mturk_load
 		}
+		if(callback)
+			callback();//should be mturk_load
+
 	});
 }
 

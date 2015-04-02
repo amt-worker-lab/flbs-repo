@@ -2042,7 +2042,7 @@ function setScriptVar(stringName, key, value) {
 		var scriptVars = obj.scriptVars;
 		scriptVars[stringName][key] = value;
 		chrome.storage.local.set({'scriptVars': scriptVars});
-	}
+	});
 }
 
 function setScriptVarObj(obj) {
@@ -2050,7 +2050,7 @@ function setScriptVarObj(obj) {
 		var scriptVars = obj.scriptVars;
 		scriptVars[obj.name] = obj;
 		chrome.storage.local.set({'scriptVars': scriptVars});
-	}
+	});
 }
 
 

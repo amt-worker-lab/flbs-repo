@@ -225,7 +225,7 @@ function setScriptVar(stringName, key, value) {
 		var scriptVars = obj.scriptVars;
 		scriptVars[stringName][key] = value;
 		chrome.storage.local.set({'scriptVars': scriptVars});
-	}
+	});
 }
 
 
