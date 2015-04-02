@@ -17214,14 +17214,15 @@ function MT__RUN() {
 			for (var i=0; i<td.length -1; i++) {
 				var key = td[i].innerText.trim();
 				if (o.minimize_tds.hasOwnProperty( key )) {
-					td[i].innerText = td[i].innerText.charAt(0);
+					td[i].innerText = td[i].innerText.charAt(0); // remove text
+					td[i].style.width = '20px'; // resize
 				}
 			}
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:30%;width:60%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:30%;width:70%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
