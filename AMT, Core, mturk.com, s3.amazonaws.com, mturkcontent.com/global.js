@@ -600,10 +600,11 @@ qProductId = false;
 function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
-	new AMT___core_factory().iframe2parent__postMessage({
-		action: 'tabsQTitleChange'
-	});
+	
+	console.log('adding to tabsq in global');
+	console.log(AMT__Global_Vars);
 	if(AMT__Global_Vars.isInitializingTabId) {
+		console.log('isInitializingTabId');
 		AMT__Global_Vars.initializeTabIdCallback = function() {
 			//Tell eventPage to add this to the Q
 			console.log(AMT__Global_Vars);
@@ -616,6 +617,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 		}
 	}
 	else {
+		console.log('!isInitializingTabId');
+
 		//Tell eventPage to add this to the Q
 		console.log(AMT__Global_Vars);
 		chrome.extension.sendRequest({
@@ -625,6 +628,9 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 									qProductId = response.qProductId;
 								});
 	}
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'tabsQTitleChange'
+	});
 }
 
 

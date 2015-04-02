@@ -17291,6 +17291,7 @@ function MT__RUN() {
 										// ENDS SCRIPT PROCESSING
 										return true;
 									} else { // Add to tabs queue if not in preview
+										console.log('addint to tabs q');
 										addToTabsQ();
 									}
 									
