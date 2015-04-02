@@ -138,8 +138,6 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			
-			addToTabsQ();
-					
 			GM_addStyle('ul {position:absolute;top:1600px;}');
 			GM_addStyle('b {zoom:1.6;}');
 			document.getElementsByTagName('div')[0].style.top = '1000px';
@@ -17165,8 +17163,8 @@ function MT__RUN() {
 	 
 	 
 	//
-	// 
-	// 
+	// Emily McHale (scrapy + startpage)
+	// on_submit check that bad emails are not here
 	// 
 	s = '<li>Enter the <strong>official&nbsp;email address </strong>for contacting this business</li>';
 	if(ih.indexOf(s) != -1)

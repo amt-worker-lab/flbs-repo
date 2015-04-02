@@ -380,9 +380,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			});
 	}
 	
-	if(request.shiftFarLeft) {
+	if(request.shiftFarRight) {
 		var tabId = sender.tab.id;
-		chrome.tabs.getAllInWindow(tabId, function (tabs) {
+		chrome.tabs.getAllInWindow(sender.tab.windowId, function (tabs) {
 				if(!tabs.length) {
 					tabs = [tabs];
 				}
@@ -406,9 +406,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('testing whether this runs');
 		console.log('attempting to move');
 		
-		chrome.tabs.move(tabId, {index: 0}, function (tab) {
-				console.log('Moved tab');
-			});
+		
 		
 		
 
