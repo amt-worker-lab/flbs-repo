@@ -38,6 +38,7 @@ var MT___host = 'http://192.168.1.2';
 var AMT__Global_Vars = //function()
 {
 	defaultPersistantScriptVars : [
+	{name: 'RecordAllHits', value: 1, isPersistant:true},
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},

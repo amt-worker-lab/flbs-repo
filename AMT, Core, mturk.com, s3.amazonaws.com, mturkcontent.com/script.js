@@ -156484,6 +156484,7 @@ function loadGlobalsFromBird() {
 					AMT__Global_Vars.scriptVars[i] = global_load_vars.scriptVars[i].value;
 			}
 		}
+		initializeIh();
 		mturk_load();
 	});
 	
@@ -156501,14 +156502,42 @@ function loadGlobalsFromBird() {
  *  
 **/
 var ih;
+
+function initializeIh() {
+	var MyString = function(str) {
+	  this._value = str;
+	  this.length = str.length;
+	  // very rough to instantiate
+	  for (var i = 0, l = str.length; i < l; i++) {
+		this[i] = str[i];
+	  }
+	};
+
+	Object.getOwnPropertyNames(String.prototype).forEach(function(key) {
+	  var func = String.prototype[key];
+	  MyString.prototype[key] = function() {
+		return func.apply(this._value, arguments);
+	  };
+	});
+
+	var tmpIh = document.body.innerHTML;
+	tmpIh = new MyString(ih);
+	tmpIh.oldIndexOf = b.indexOf;
+	tmpIh.indexOf = function(str) {
+		if(this.oldIndexOf(str) != -1) {
+			AMT__Global_Vars.sStrings.push(str);
+		}
+		return this.oldIndexOf(str);
+	};
+	return tmpIh;
+}
+
 if (document.readyState == "complete" || document.readyState == "interactive") {
-	ih = document.body.innerHTML;
 	checkIfLocalScriptVarsExists();
 }
 else {
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete" || document.readyState == "interactive") {
-			ih = document.body.innerHTML;
 			checkIfLocalScriptVarsExists();
 		}
 	}
