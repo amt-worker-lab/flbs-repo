@@ -1925,6 +1925,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				AMT__Global_Vars.core.return_run_nextTab = true;
 				break;
 			case 'return_and_accept':
+				if(AMT__Global_Vars.hasOwnProperty('ShowNextTabIframe') && AMT__Global_Vars['ShowNextTabIframe']) {
+					showNextTab({isTopWindow: false});
+				}
 				document.getElementById('MT__gm_returnaccept').click();
 				break;
 			case 'changeWindowNotifier':
