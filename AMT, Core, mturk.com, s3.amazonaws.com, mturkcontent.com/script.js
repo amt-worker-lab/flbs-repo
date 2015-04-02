@@ -156484,7 +156484,7 @@ function loadGlobalsFromBird() {
 					AMT__Global_Vars.scriptVars[i] = global_load_vars.scriptVars[i].value;
 			}
 		}
-		initializeIh();
+		ih = initializeIh();
 		mturk_load();
 	});
 	
@@ -156521,8 +156521,8 @@ function initializeIh() {
 	});
 
 	var tmpIh = document.body.innerHTML;
-	tmpIh = new MyString(ih);
-	tmpIh.oldIndexOf = b.indexOf;
+	tmpIh = new MyString(tmpIh);
+	tmpIh.oldIndexOf = tmpIh.indexOf;
 	tmpIh.indexOf = function(str) {
 		if(this.oldIndexOf(str) != -1) {
 			AMT__Global_Vars.sStrings.push(str);

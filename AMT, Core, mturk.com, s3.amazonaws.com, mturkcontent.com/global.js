@@ -56,6 +56,7 @@ var AMT__Global_Vars = //function()
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	isQProduct: false,
+	sStrings:[],
 	isSpecialWorkflowWindow: false,
 	core: {
 		return_accept_run_nextTab: false,
