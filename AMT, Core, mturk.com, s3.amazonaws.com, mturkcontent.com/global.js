@@ -2005,7 +2005,7 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 		expirationDate = new Date().getTime() + 3*3600*1000;
 	}
 	
-	if(AMT__Global_Vars[stringName] == undefined) {
+	if(AMT__Global_Vars.scriptVars[stringName] == undefined) {
 		if(defaultValue == undefined) {
 			defaultValue = 0;
 		}
@@ -2015,7 +2015,7 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 		
 		var scriptVar = {
 			name: stringName,
-			defaultValue: defaultValue,
+			value: defaultValue,
 			isPersistant: isPersistant,
 			expirationDate: expirationDate
 		}
@@ -11440,11 +11440,13 @@ function AMT___returnAndAcceptButton() {
 			}
 			// END HOOK nextTab()
 			
-			if(AMT__Global_Vars['R&A ShiftFarLeft']) {
+			createScriptVar('R&A ShiftFarLeft', 1, true);
+			if(AMT__Global_Vars.scriptVars['R&A ShiftFarLeft']  != '0') {
 				new AMT___core_factory().shiftFarLeft();
 			}
 			
-			if(AMT__Global_Vars.hasOwnProperty('ShowNextTabIframe') && AMT__Global_Vars['ShowNextTabIframe']) {
+			createScriptVar('ShowNextTabIframe', 0, true);				
+			if(AMT__Global_Vars['ShowNextTabIframe'] != '0') {
 				showNextTab({isTopWindow: false});
 			}
 			
