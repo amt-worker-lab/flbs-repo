@@ -17174,9 +17174,9 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');// Set width
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important;}');// Set width
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
@@ -17203,7 +17203,7 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:20%;width:80%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:40%;width:60%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
