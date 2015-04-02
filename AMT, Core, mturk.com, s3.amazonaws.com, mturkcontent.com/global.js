@@ -2006,6 +2006,12 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 	}
 	
 	if(AMT__Global_Vars[stringName] == undefined) {
+		if(defaultValue == undefined) {
+			defaultValue = 0;
+		}
+		if(isPersistant == undefined) {
+			isPersistant = false;
+		}
 		
 		var scriptVar = {
 			name: stringName,
@@ -2014,14 +2020,10 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 			expirationDate: expirationDate
 		}
 	
-
-		if(defaultValue == undefined) {
-			defaultValue = 0;
-		}
+		
 		AMT__Global_Vars[stringName] = defaultValue;
 		
-		chrome.storage.local.set(
-			{stringName: scriptVar})
+		setScriptVarObj(scriptVar); 
 	}
 	else if(!isPersistant) {
 		setScriptVar(stringName, 'expirationDate', expirationDate);		
@@ -2043,10 +2045,10 @@ function setScriptVar(stringName, key, value) {
 	}
 }
 
-function setScriptVarObj(stringName, obj) {
+function setScriptVarObj(obj) {
 	chrome.storage.local.get('scriptVars', function(obj) {
 		var scriptVars = obj.scriptVars;
-		scriptVars[stringName] = obj;
+		scriptVars[obj.name] = obj;
 		chrome.storage.local.set({'scriptVars': scriptVars});
 	}
 }

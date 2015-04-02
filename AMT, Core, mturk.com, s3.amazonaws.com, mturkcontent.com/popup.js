@@ -204,25 +204,30 @@ function addLoaderElement(name, value, div) {
 	div.appendChild(newDiv);
 	var newInput = document.createElement('input');
 	newInput.setAttribute('style',"width:280px;clear:both;");
-	document.body.appendChild(newInput);
+	div.appendChild(newInput);
 	newInput.value = value;
 	newInput.name = name;
 	newInput.onblur = function() {
 		if(this.value != '') {
-			console.log(this.name);
-			var thisName = this.name;
-			var value = this.value;
-			var obj = {};
-			obj[this.name] = this.value;
-			chrome.storage.local.set(obj);
+			setScriptVar(this.name, 'value', this.value);
 		}
 		else {
-			chrome.storage.local.remove(this.name);
+			//chrome.storage.local.remove(this.name);
 		}
 		this.style.border = '2px solid green';
 	}
 	document.body.appendChild(document.createElement('br'));
 }
+
+
+function setScriptVar(stringName, key, value) {
+	chrome.storage.get('scriptVars', function(obj) {
+		var scriptVars = obj.scriptVars;
+		scriptVars[stringName][key] = value;
+		chrome.storage.local.set({'scriptVars': scriptVars});
+	}
+}
+
 
 function createGlobal_load_varsUI() {
 	var createGlobalBtn = document.createElement('input');
