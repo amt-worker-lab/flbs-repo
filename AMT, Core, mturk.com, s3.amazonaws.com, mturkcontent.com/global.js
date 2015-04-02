@@ -4541,23 +4541,7 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 			// init
 			opts_obj.callback(SKIP_SITES);
 		}
-	});
-	
-	var url = MT___host+
-			'/mturk/util.php?'+
-			encodeURIComponent(skips_key_php_get)+'=';
-	GM_xmlhttpRequest({
-		method: 'GET',
-		url: url,
-		onload: function (response) {
-			var rs = response.responseText;
-			
-			var tmp_skip_sites = rs.split("\n");
-			
-			callback_function(tmp_skip_sites);
-		}
-	});
-}
+	});}
 /**
  * AMT___gen_functions
  * 

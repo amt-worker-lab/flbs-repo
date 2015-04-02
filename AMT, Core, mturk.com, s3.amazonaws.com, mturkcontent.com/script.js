@@ -17176,7 +17176,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important;}');// Set width
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
@@ -17192,18 +17192,36 @@ function MT__RUN() {
 				q: [
 					document.getElementById('web_url')
 				],
-				SKIP_SITES: {}
+				SKIP_SITES: {},
+				minimize_tds: {
+					'Business name:':true,
+					'Street:':true,
+					'City:':true,
+					'State:':true,
+					'Country:':true,
+					'URL:':true,
+					'Google Search (paste in address bar):':true,
+					'Internal ID - Disregard:':true
+				}
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1")]; // Remove https & trailing / if present
 			console.log(o);
 			
+			// Remove first tds
+			//~ var tr = document.getElementsByTagName('tr');
+			for (var i=0; i<td.length -1; i++) {
+				var key = td[i].innerText.trim();
+				if (o.minimize_tds.hasOwnProperty( key )) {
+					td[i].innerText = td[i].innerText.charAt(0);
+				}
+			}
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:40%;width:60%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:30%;width:60%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
