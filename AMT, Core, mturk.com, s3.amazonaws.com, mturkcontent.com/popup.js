@@ -271,10 +271,11 @@ function createGlobal_load_varsUI() {
 	chrome.storage.local.get(null, function(global_load_vars) {
 		if(global_load_vars && global_load_vars.scriptVars) {
 			for(var i in global_load_vars.scriptVars) {
-				if(global_load_vars.scriptVars[i].isPersistant) {
-					addLoaderElement(i, global_load_vars[i], topDiv);				
-				} else if(global_load_vars.scriptVars[i].expirationDate < new Date().getTime()){
-					addLoaderElement(i, global_load_vars[i], bottomDiv);
+				var scriptVar = global_load_vars.scriptVars[i];
+				if(scriptVar.isPersistant) {
+					addLoaderElement(i, scriptVar.value, topDiv);				
+				} else if(scriptVar.expirationDate < new Date().getTime()){
+					addLoaderElement(i, scriptVar.value, bottomDiv);
 				}
 			}
 		}
