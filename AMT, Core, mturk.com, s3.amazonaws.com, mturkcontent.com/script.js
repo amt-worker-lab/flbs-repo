@@ -156153,7 +156153,6 @@ function mturk_load()
 				break;
 			}
 			console.log('after case ran' + ', AMT___Floater.groupId:' +AMT___Floater.groupId);
-			
 			if(AMT___Floater.groupId)
 			{
 				AMT___Floater.float();

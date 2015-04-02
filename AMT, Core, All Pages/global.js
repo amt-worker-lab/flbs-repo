@@ -603,7 +603,10 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 	new AMT___core_factory().iframe2parent__postMessage({
 		action: 'tabsQTitleChange'
 	});
+	console.log('tabsQ');
+
 	if(AMT__Global_Vars.isInitializingTabId) {
+		console.log('telling addToTabsQ2');
 		AMT__Global_Vars.initializeTabIdCallback = function() {
 			//Tell eventPage to add this to the Q
 			console.log(AMT__Global_Vars);
@@ -612,17 +615,20 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 				  isTopWindow: AMT__Global_Vars.isTopWindow
 			  }, function(response) {
 				qProductId = response.qProductId;
+				console.log('qProductId: ' + qProductId);
 			});
 		}
 	}
 	else {
 		//Tell eventPage to add this to the Q
 		console.log(AMT__Global_Vars);
+		console.log('telling addToTabsQ');
 		chrome.extension.sendRequest({
 									  addToTabsQ: true,
 									  isTopWindow: AMT__Global_Vars.isTopWindow
 								  }, function(response) {
 									qProductId = response.qProductId;
+													console.log('qProductId: ' + qProductId);
 								});
 	}
 }
