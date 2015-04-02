@@ -380,6 +380,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			});
 	}
 	
+	if(request.shiftFarLeft) {
+		var tabId = sender.tab.id;
+		chrome.tabs.getAllInWindow(tabId, function (tabs) {
+				if(!tabs.length) {
+					tabs = [tabs];
+				}
+					chrome.tabs.move(tabId, {index: tabs.length-1}, function (tab) {
+					console.log('Moved tab far right');
+				});
+			});
+	}
+	
+	
+	
 	/**
 	 * request.addToTabsQ
 	 */

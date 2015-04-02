@@ -603,6 +603,9 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	
+	new AMT___core_factory().shiftFarRight();
+	
+	
 	console.log('adding to tabsq in global');
 	console.log(AMT__Global_Vars);
 	if(AMT__Global_Vars.isInitializingTabId) {
@@ -9652,6 +9655,16 @@ AMT___core_factory.prototype.shiftFarLeft = function() {
 	chrome.extension.sendRequest(
 			{
 				shiftFarLeft:true
+			},
+			function(r) {
+			}
+		);
+}
+
+AMT___core_factory.prototype.shiftFarRight = function() {
+	chrome.extension.sendRequest(
+			{
+				shiftFarRight:true
 			},
 			function(r) {
 			}
