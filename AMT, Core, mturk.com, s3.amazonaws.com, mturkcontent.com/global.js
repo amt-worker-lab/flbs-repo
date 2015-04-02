@@ -43,7 +43,8 @@ var AMT__Global_Vars = //function()
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
-	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true}
+	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
+	{name: 'ShowNextTab Hotkey:', value: 1, isPersistant:true},
 	],
 	isTopWindow: null,
 	isPreview: null,
