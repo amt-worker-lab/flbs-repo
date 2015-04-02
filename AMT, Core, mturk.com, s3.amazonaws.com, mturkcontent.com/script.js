@@ -17173,16 +17173,16 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
+			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
+			
 			var a = document.getElementsByTagName('a');
-			
-			
 			var o = {
 				sd_start_urls: [a[0].innerText.trim()],
 				sd_allowed_domains: [a[0].innerText.trim()],
 				q: [
 					document.getElementById('email')
-				],
-				auto_emails: ['info','contact','contactus']
+				]//,
+				//~ auto_emails: ['info','contact','contactus']
 			}
 			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			console.log(o);
@@ -17293,14 +17293,36 @@ function MT__RUN() {
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
 										addToTabsQ();
+										document.body.style.backgroundColor = 'white';
 										
 										// Let's try for some autos.
 										// o.auto_emails = []
+										/**
+										 * {
+										 *  email_contexts: Array[1]
+										 *  email_email: "info@vaultcrossfit.com"
+										 *  url: "https://www.facebook.com/VaultCrossfit/info
+										 * }
+										 */
 										if (callback_obj.matches && callback_obj.matches.length) {
 											var mt = callback_obj.matches;
 											console.log(mt);
+											var reg = new RegExp(
+												'^(info|contact|contactus|owner)@' + __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												'i'
+											);
 											for (var i in mt) {
-												
+												if  (
+													mt[i].email_email &&
+													mt[i].email_email.length &&
+													reg.exec(mt[i].email_email)
+													)
+												{
+													alert('auto');
+													o.q[0].value = mt[i].email_email;
+													//showNextTab();
+													return false; // Stop here
+												}
 											}
 										}
 									}
