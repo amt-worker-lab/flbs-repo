@@ -257,7 +257,7 @@ function createGlobal_load_varsUI() {
 			var obj = {};
 			obj[createGlobalField.value] =
 			{
-				currentValue: 'setMe',
+				value: 'setMe',
 				expirationDate: 0,
 				isPersistant: false,
 			}
@@ -271,9 +271,9 @@ function createGlobal_load_varsUI() {
 	chrome.storage.local.get(null, function(global_load_vars) {
 		if(global_load_vars && global_load_vars.scriptVars) {
 			for(var i in global_load_vars.scriptVars) {
-				if(global_load_vars.scriptVar[i].isPersistant) {
+				if(global_load_vars.scriptVars[i].isPersistant) {
 					addLoaderElement(i, global_load_vars[i], topDiv);				
-				} else if(global_load_vars.scriptVar[i].expirationDate < new Date().getTime()){
+				} else if(global_load_vars.scriptVars[i].expirationDate < new Date().getTime()){
 					addLoaderElement(i, global_load_vars[i], bottomDiv);
 				}
 			}

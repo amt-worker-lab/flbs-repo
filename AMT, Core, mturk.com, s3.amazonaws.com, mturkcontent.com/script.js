@@ -156438,6 +156438,23 @@ function mturk_load()
 
 
 
+function checkIfLocalScriptVarsExists(callback) {
+	
+	chrome.storage.local.get('scriptVars', function(storageObj) {
+		if(!storageObj.scriptVars) {
+			chrome.storage.local.set({'scriptVars': {}},function(asdf) {
+				loadGlobalsFromBird(callback);
+			})
+		}
+		else {
+			loadGlobalsFromBird(callback);
+		}
+	});
+	
+	
+}
+
+
 function loadGlobalsFromBird(callback) {
 	var callback = callback;
 	chrome.storage.local.get(null, function(global_load_vars) {
@@ -156453,6 +156470,7 @@ function loadGlobalsFromBird(callback) {
 	});
 }
 
+
 /**
  * RUN DOCUMENT
  *
@@ -156466,13 +156484,13 @@ function loadGlobalsFromBird(callback) {
 var ih;
 if (document.readyState == "complete" || document.readyState == "interactive") {
 	ih = document.body.innerHTML;
-	loadGlobalsFromBird(mturk_load);
+	checkIfLocalScriptVarsExists(mturk_load);
 }
 else {
 	document.onreadystatechange = function () {
 		if (document.readyState == "complete" || document.readyState == "interactive") {
 			ih = document.body.innerHTML;
-			loadGlobalsFromBird(mturk_load);
+			checkIfLocalScriptVarsExists(mturk_load);
 		}
 	}
 }
