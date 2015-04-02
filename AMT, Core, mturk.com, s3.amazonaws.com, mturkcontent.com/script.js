@@ -17188,11 +17188,11 @@ function MT__RUN() {
 				sd_allowed_domains: null,
 				name: td[1].innerText.trim(),
 				city: td[5].innerText.trim(),
-				country: td[9].innerText.trim()
+				country: td[9].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				],
-				SKIP_SITES
+				SKIP_SITES: {}
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
@@ -17244,8 +17244,8 @@ function MT__RUN() {
 
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips({
-				skips_key:
-				callback: init
+				skips_key: 'austin_load_skips',
+				callback: init,
 				callback_err: function() {}
 			});
 			// Init
@@ -17346,53 +17346,53 @@ function MT__RUN() {
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
-										// If no email match results
-										if (!callback_obj.matches || !callback_obj.matches.length) {
-											AMT___Floater.skip();
-										}
-										else
-										{
-											AMT___Floater.accept();
-										}
-										// ENDS SCRIPT PROCESSING
-										return true;
+										//~ // If no email match results
+										//~ if (!callback_obj.matches || !callback_obj.matches.length) {
+											//~ AMT___Floater.skip();
+										//~ }
+										//~ else
+										//~ {
+											//~ AMT___Floater.accept();
+										//~ }
+										//~ // ENDS SCRIPT PROCESSING
+										//~ return true;
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
 										addToTabsQ();
 										document.body.style.backgroundColor = 'white';
 										
-										// Let's try for some autos.
-										// o.auto_emails = []
-										/**
-										 * {
-										 *  email_contexts: Array[1]
-										 *  email_email: "info@vaultcrossfit.com"
-										 *  url: "https://www.facebook.com/VaultCrossfit/info
-										 * }
-										 */
-										if (callback_obj.matches && callback_obj.matches.length) {
-											var mt = callback_obj.matches;
-											console.log(mt);
-											var reg = new RegExp(
-												'^(info|contact|contactus|owner)@' + __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
-												'i'
-											);
-											for (var i in mt) {
-												if  (
-													mt[i].email_email &&
-													mt[i].email_email.length &&
-													reg.exec(mt[i].email_email)
-													)
-												{
-													//alert('auto');
-													o.q[0].value = mt[i].email_email;
-													new AMT___core_factory().shiftFarLeft();
-													doSubmit();
-													return false; // Stop here
-													//showNextTab();
-												}
-											}
-										}
+										//~ // Let's try for some autos.
+										//~ // o.auto_emails = []
+										//~ /**
+										 //~ * {
+										 //~ *  email_contexts: Array[1]
+										 //~ *  email_email: "info@vaultcrossfit.com"
+										 //~ *  url: "https://www.facebook.com/VaultCrossfit/info
+										 //~ * }
+										 //~ */
+										//~ if (callback_obj.matches && callback_obj.matches.length) {
+											//~ var mt = callback_obj.matches;
+											//~ console.log(mt);
+											//~ var reg = new RegExp(
+												//~ '^(info|contact|contactus|owner)@' + __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												//~ 'i'
+											//~ );
+											//~ for (var i in mt) {
+												//~ if  (
+													//~ mt[i].email_email &&
+													//~ mt[i].email_email.length &&
+													//~ reg.exec(mt[i].email_email)
+													//~ )
+												//~ {
+													//~ //alert('auto');
+													//~ o.q[0].value = mt[i].email_email;
+													//~ new AMT___core_factory().shiftFarLeft();
+													//~ doSubmit();
+													//~ return false; // Stop here
+													//~ //showNextTab();
+												//~ }
+											//~ }
+										//~ }
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
@@ -17405,12 +17405,36 @@ function MT__RUN() {
 									//~ //document.getElementById('submitButton').click();
 								//~ },
 								//~ // What to do onclick
-								//~ input_onclick_callback: function() {
-									//~ document.getElementById('Q1Email').value = 
-									//~ document.getElementById('submitButton').click();
-								//~ },
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/^(catering|reservations|events)@/i.exec(this.email) &&
+										!/@(grubhub\.com|foodler\.com)$/i.exec(this.email)
+										)
+									{
+										
+										o.q[0].value = this.email;
+										showNextTab();
+										
+										//~ if (next_tab)
+										//~ {
+											//~ new AMT___core_factory().nextTab();
+										//~ }
+										//~ if (add_to_tabs_queue)
+										//~ {
+											//~ showNextTab();
+										//~ }
+										
+										if(AMT__Global_Vars.scriptVars['EmailJobs DS ShiftLeft'] != '0') {
+											new AMT___core_factory().shiftFarLeft();
+										}
+										doSubmit();
+									}
+								},
 								//do_submit_next_tab: true
-								do_submit_add_to_tabs_queue: true
+								//~ do_submit_add_to_tabs_queue: true
 							}
 						);
 					}

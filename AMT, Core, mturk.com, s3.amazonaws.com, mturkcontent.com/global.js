@@ -4496,6 +4496,7 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 // TRY #2
 AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 {
+	var opts_obj = opts_obj;
 	// required = skips_key, callback, callback_err (optional)
 	if  (
 		!opts_obj.hasOwnProperty('skips_key') ||
@@ -4511,7 +4512,7 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 	// Xhr.
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: MT___host+'/mturk/util.php?'+encodeURIComponent(opts.skips_key)+'=',
+		url: MT___host+'/mturk/util.php?'+encodeURIComponent(opts_obj.skips_key)+'=',
 		onload: function (response) {
 			var rs=response.responseText;
 			
@@ -4522,7 +4523,7 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 			
 			var x = rs.split("\n");
 			
-			SKIP_SITES = {}; // ASSOC.
+			var SKIP_SITES = {}; // ASSOC.
 			
 			// FULL
 			for (var i in x) {
@@ -7689,8 +7690,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 					//~ doSubmit();
 				
 				}
-				
-				//this.style.border = '8px solid LightGreen';
 			}
 		}
 		else
