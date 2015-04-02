@@ -52,6 +52,7 @@ var AMT__Global_Vars = //function()
 	numSubmitQueries: 0,
 	isSubmitting: false,
 	copyInp: false,
+	scriptVars: {},
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	isQProduct: false,
@@ -1999,15 +2000,55 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	}
 }
 
-AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue) {
+AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue, isPersistant, expirationDate) {
 	if(AMT__Global_Vars[stringName] == undefined) {
+		if(!expirationDate) {
+			expirationDate = new Date().getTime() + 3*3600*1000;
+		}
+		var scriptVar = {
+			name: stringName,
+			defaultValue: defaultValue,
+			isPersistant: isPersistant,
+			expirationDate: expirationDate
+		}
+	
+
 		if(defaultValue == undefined) {
 			defaultValue = 0;
 		}
 		AMT__Global_Vars[stringName] = defaultValue;
-		chrome.storage.local.set({stringName: defaultValue})
+		chrome.storage.local.set(
+			{stringName: scriptVar})
+	}
+	else if(!isPersistant) {
+		chrome.storage.local.get(stringName, function(obj) {
+			var obj = obj[stringName];
+			expirationDate = new Date().getTime() + 3*3600*1000;
+			chrome.storage.local.set(
+				{stringName: obj})			
+		});
+
+		
 	}
 }
+
+//~ function getScriptVar(stringName, callback) {
+	//~ if(callback) {
+		//~ 
+		//~ callback();
+	//~ }
+//~ }
+
+function setScriptVar(stringName, key, value) {
+	chrome.storage.get('scriptVars', function(obj) {
+		var scriptVars = obj.scriptVars;
+		scriptVars[stringName][key] = value;
+		chrome.storage.set({'scriptVars': scriptVars});
+	}
+}
+
+
+
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
 	//~ console.log(options);
