@@ -17181,7 +17181,8 @@ function MT__RUN() {
 				sd_allowed_domains: [a[0].innerText.trim()],
 				q: [
 					document.getElementById('email')
-				]
+				],
+				auto_emails: ['info','contact','contactus']
 			}
 			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			console.log(o);
@@ -17278,7 +17279,6 @@ function MT__RUN() {
 								input_send_success: o.q[0],
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
-									
 									if (AMT__Global_Vars.isPreview) {
 										// If no email match results
 										if (!callback_obj.matches || !callback_obj.matches.length) {
@@ -17293,6 +17293,16 @@ function MT__RUN() {
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
 										addToTabsQ();
+										
+										// Let's try for some autos.
+										// o.auto_emails = []
+										if (callback_obj.matches && callback_obj.matches.length) {
+											var mt = callback_obj.matches;
+											console.log(mt);
+											for (var i in mt) {
+												
+											}
+										}
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
