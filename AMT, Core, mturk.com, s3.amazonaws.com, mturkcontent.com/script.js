@@ -17318,10 +17318,12 @@ function MT__RUN() {
 													reg.exec(mt[i].email_email)
 													)
 												{
-													alert('auto');
+													//alert('auto');
 													o.q[0].value = mt[i].email_email;
-													//showNextTab();
+													new AMT___core_factory().shiftFarLeft();
+													doSubmit();
 													return false; // Stop here
+													//showNextTab();
 												}
 											}
 										}
