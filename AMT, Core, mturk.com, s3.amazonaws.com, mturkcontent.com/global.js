@@ -7631,9 +7631,8 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		if (add_to_tabs_queue)
 		{
 			showNextTab();
-		}		
-
-		if(AMT__Global_Vars['EmailJobs DS ShiftLeft'] != undefined && AMT__Global_Vars['EmailJobs DS ShiftLeft']) {
+		}
+		if(AMT__Global_Vars.scriptVars['EmailJobs DS ShiftLeft'] != '0') {
 			new AMT___core_factory().shiftFarLeft();
 		}
 		doSubmit();
