@@ -221,7 +221,7 @@ function addLoaderElement(name, value, div) {
 
 
 function setScriptVar(stringName, key, value) {
-	chrome.storage.get('scriptVars', function(obj) {
+	chrome.storage.local.get('scriptVars', function(obj) {
 		var scriptVars = obj.scriptVars;
 		scriptVars[stringName][key] = value;
 		chrome.storage.local.set({'scriptVars': scriptVars});
