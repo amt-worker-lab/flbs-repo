@@ -1,3 +1,4 @@
+console.log('test');
 /**
  * Problem:
  * Solution:
@@ -384,6 +385,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.addToTabsQ)
 	{
+		alert('test');
+		return;
 		var isTopWindow = request.isTopWindow;
 		//~ chrome.tabs.executeScript(sender.tab.id, {
 					//~ code: 
