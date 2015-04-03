@@ -17364,6 +17364,7 @@ function MT__RUN() {
 								div: d1,
 								input_send_success: o.q[0],
 								skip_if_no_emails: true,
+								accept_if_emails: true,
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
@@ -156641,7 +156642,7 @@ function mturk_load()
 		
 		window.addEventListener('message', function(e) {
 			//~ console.log(e);
-			if(e.data && e.data.runPreview)
+			if(e.data && e.data.runPreview && !e.data.hasOwnProperty('isAllPagesScript'))
 			{
 				//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
 				setTimeout(function() {MT___RUN_MANUAL.click();}, 200);

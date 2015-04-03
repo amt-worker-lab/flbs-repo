@@ -9625,7 +9625,7 @@ function load__allPages_AMT_combo__btn() {
 	
 	// Have a watcher
 	window.addEventListener('message', function(e) {
-		if(e.data && e.data.runPreview)
+		if(e.data && e.data.runPreview && e.data.hasOwnProperty('isAllPagesScript'))
 		{
 			//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
 			setTimeout(function() {MT___RUN_MANUAL.click();}, 200);

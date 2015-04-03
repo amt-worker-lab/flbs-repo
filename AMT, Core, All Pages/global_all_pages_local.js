@@ -1249,5 +1249,44 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	}
 }
 
+//Overwrite for runPreview (allows coreContent and core-allpages to know which is being told to skip
+AMT___Floater.runPreview = function() {
+	console.log(AMT___Floater.runMT_Run);
+	if(AMT___Floater.runMT_Run)
+	{
+		var ifr = document.getElementsByTagName('iframe');//console.log(ifr);
+		if (!ifr || !ifr.length) {//console.log('run');
+			top_window( true ); // Run top_window( okay_to_run ) :)
+			return;
+		} else 
+			ifr = ifr[0];
+		
+		ifr.contentWindow.postMessage({runPreview: true, isAllPagesScript: true}, '*');
+		
+		var ran = false;
+		
+		var interval =  setInterval(function(){
+			var ifr = document.getElementsByTagName('iframe')[0];
+			ifr.contentWindow.postMessage({runPreview: true}, '*');
+			console.log('sedning runpreview');
+		}
+		,200);
+		
+		//count?
+
+		
+		window.addEventListener('message',function(event) {
+			if(event.data && event.data.MT_Ran)
+			{
+				clearInterval(interval);
+			}
+		},false);
+	}
+	else if(AMT___Floater.runTop_Window)
+	{
+		top_window();
+	}
+}
+
 
 

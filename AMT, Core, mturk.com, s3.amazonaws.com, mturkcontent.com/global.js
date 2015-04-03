@@ -699,6 +699,7 @@ var AMT___Floater = function (options) {
 AMT___Floater.float = function() {
 	
 
+
 	if(AMT___Floater.runMT_Run || AMT___Floater.runTop_Window)
 	{
 		AMT___Floater.runPreview();
@@ -765,13 +766,11 @@ AMT___Floater.runPreview = function() {
 			console.log('sedning runpreview');
 		}
 		,200);
-		
 
 		
 		window.addEventListener('message',function(event) {
 			if(event.data && event.data.MT_Ran)
 			{
-
 				clearInterval(interval);
 			}
 		},false);
@@ -7780,6 +7779,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		)
 	{
 		AMT___Floater.skip();
+		return;
 		//~ if (object_response.matches.length == 0) {
 			//~ AMT___Floater.skip();
 			//~ return;
@@ -7787,6 +7787,21 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ AMT___Floater.accept();
 			//~ return;
 		//~ }
+	}
+	
+	//
+	// seed_object.accept_if_emails
+	//
+	//
+	if  (
+		seed_object.hasOwnProperty('accept_if_emails') &&
+		seed_object.accept_if_emails &&
+		AMT__Global_Vars.isPreview &&
+		object_response.matches.length != 0
+		)
+	{
+		AMT___Floater.accept();
+		return;
 	}
 	
 	// matches select
