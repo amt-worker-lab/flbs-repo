@@ -17165,7 +17165,7 @@ function MT__RUN() {
 	//
 	// Emily McHale (scrapy + startpage)
 	// on_submit check that bad emails are not here
-	// 
+	// 37CCAM3CRMK5Y2OY7OB68QP9IHIDI9
 	s = '	<li><strong>Exclude:</strong> catering@, reservations@, and&nbsp;events@ emails and any&nbsp;emails ending in @grubhub.com,&nbsp;@foodler.com, or other online ordering platform emails.</li>';
 	if(ih.indexOf(s) != -1)
 	{
@@ -156499,6 +156499,8 @@ function mturk_load()
 					break;
 				case '37TLCE26HLHBKVMEOJEEFU13T3ZM5Q': // James Block
 					AMT___Floater({runMT_Run:true});
+				case '37CCAM3CRMK5Y2OY7OB68QP9IHIDI9': // Emily McHale, find emails
+					AMT___Floater({runMT_Run:true});
 					break;
 				
 				console.log('case ran');
@@ -156638,7 +156640,7 @@ function mturk_load()
 		}
 		
 		window.addEventListener('message', function(e) {
-			//console.log(e);
+			//~ console.log(e);
 			if(e.data && e.data.runPreview)
 			{
 				//ToDo: instead of a 200 millisecond wait, perform the click as soon as the DOM object loads.
