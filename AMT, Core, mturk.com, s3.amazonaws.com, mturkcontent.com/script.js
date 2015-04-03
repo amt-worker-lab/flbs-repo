@@ -17206,7 +17206,7 @@ function MT__RUN() {
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
-			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?\:\/\/[w]*\.?([^\/]*)\/*/,"$1")]; // Remove https & trailing / if present
+			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			console.log(o);
 			
 			// Remove first tds
@@ -17302,7 +17302,8 @@ function MT__RUN() {
 				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
 				var first = true;
 				for (var i in rs) {
-					var dm = rs[i][0].replace(/https?\:\/\/[w]*\.?([^\/]*)\/*/, "$1");
+					var dm = rs[i][0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
+					//~ console.log(dm);continue;
 					if (dm == 'facebook.com') {
 						o.sd_start_urls.push(rs[i][0]); // Push URL
 					}
@@ -17312,7 +17313,7 @@ function MT__RUN() {
 					}
 					first = false;
 				}
-				
+				//~ return;
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			}
