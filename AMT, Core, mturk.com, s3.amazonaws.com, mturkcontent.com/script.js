@@ -17493,7 +17493,7 @@ function MT__RUN() {
 				]//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
-			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			console.log(o);
 			
 			
@@ -17692,7 +17692,7 @@ function MT__RUN() {
 					document.getElementById('email')
 				]
 			}
-			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			console.log(o);
 			
 			
@@ -17853,7 +17853,7 @@ function MT__RUN() {
 					document.getElementById('web_url')
 				]
 			}
-			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");//.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			console.log(o);
 			
 			
@@ -20260,7 +20260,7 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var labels = document.getElementsByTagName('label');
 			var o = {
-				domain: td[3].innerText.replace(/https?:\/\/[w]*\.?/, '').trim(), // /$ or /[...]$
+				domain: td[3].innerText.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"), //XXX.replace(/https?:\/\/[w]*\.?/, '').trim(), // /$ or /[...]$
 				url: td[3],
 				name: td[1].innerText.trim(),
 				name_cleaned: td[0].innerText.trim().replace(/ \w\.* /g, '    ').replace(/\s+/g, ' '),
