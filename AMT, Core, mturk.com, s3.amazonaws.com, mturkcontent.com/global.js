@@ -7745,6 +7745,10 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 // IS NOT REQUIRED !! jobid !! IS NOT REQUIRED
 AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
 {
+	var out_div = seed_object.div;
+	
+	out_div.innerHTML = '';
+	
 	//~ console.log(object_response);
 	//~ console.log(seed_object);return;
 	
@@ -7764,15 +7768,18 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// RESULTS
 	//var object_response = ALL_SCRAPES[d3.selectedIndex].object_response; // [] array !!
 	
-	var out_div = seed_object.div;
-	
-	out_div.innerHTML = '';
-	
-	// xx
-	// THIS WOULD BE DEFAULT SKIP WHEN AVAILABLE IF NO EMAILS !!!
+	// 
+	// seed_object.skip_if_no_emails
 	//
 	//
-	//~ if (AMT__Global_Vars.isPreview) {
+	if  (
+		seed_object.hasOwnProperty('skip_if_no_emails') &&
+		seed_object.skip_if_no_emails &&
+		AMT__Global_Vars.isPreview &&
+		object_response.matches.length == 0
+		)
+	{
+		AMT___Floater.skip();
 		//~ if (object_response.matches.length == 0) {
 			//~ AMT___Floater.skip();
 			//~ return;
@@ -7780,7 +7787,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ AMT___Floater.accept();
 			//~ return;
 		//~ }
-	//~ }
+	}
 	
 	// matches select
 	var el_select = document.createElement('select');

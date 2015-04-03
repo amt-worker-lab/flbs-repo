@@ -17363,6 +17363,7 @@ function MT__RUN() {
 								// add PREVIEW all snippets
 								div: d1,
 								input_send_success: o.q[0],
+								skip_if_no_emails: true,
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
