@@ -46,7 +46,7 @@ var AMT__Global_Vars = //function()
 	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 	{name: 'ShowNextTab Hotkey', value: 1, isPersistant:true},
 	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
-	{name: 'Return Button ShowNextTab', value: '`', isPersistant:true},
+	{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
 	],
 	isTopWindow: null,
 	isPreview: null,
@@ -1888,7 +1888,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		switch(v.action) {
 			case 'return_button_click': 
 				if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != '0') {
-					document.getElementById('AMT_return_button_top_window ').click();
+					document.getElementById('AMT_return_button_top_window').click();
 				}
 				else {
 					var b = getReturnButton();
@@ -11457,13 +11457,12 @@ function AMT___ReturnAndAcceptKeyPress(event) {
 					}
 				});
 				break;
-				case AMT__Global_Vars.scriptVars['Return Button Hotkey']: 
+				case AMT__Global_Vars.scriptVars['Return Button Hotkey'].toLowerCase().charCodeAt(): 
 					if(AMT__Global_Vars.scriptVars['Return Button Hotkey'] != "0") {
-						new AMT___core_factory().iframe2parent__postMessage({
-							{
+						new AMT___core_factory().iframe2parent__postMessage({	
 								action: 'return_button_click'
 							}
-						}
+						
 						);
 						event.preventDefault();
 						return false;
