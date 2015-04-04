@@ -144,7 +144,7 @@ AMT__Global_Vars.initializeReturnButton = function () {
 			for(var i = 0; i < allAs.length; i++) {
 				if(allAs[i].href.indexOf('/mturk/return') != -1) {
 					
-					if(AMT__Global_Vars.scriptVars('AMT_return_button_top_window') != "0") {
+					if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != "0") {
 						showNextTab({isTopWindow:true});
 						showNextTab({isTopWindow:false});
 					}
