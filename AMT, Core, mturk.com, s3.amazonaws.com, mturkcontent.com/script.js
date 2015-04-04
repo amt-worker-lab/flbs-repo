@@ -156767,36 +156767,42 @@ function mturk_load()
 
 
 function checkIfLocalScriptVarsExists(callback) {
-	var tmpDefaultPersistantScriptVars = AMT__Global_Vars.defaultPersistantScriptVars;
 	chrome.storage.local.get('scriptVars', function(storageObj) {
 		if(!storageObj.scriptVars) {
 			chrome.storage.local.set({'scriptVars': {}},function(asdf) {
-				initializePermanentScriptVars(tmpDefaultPersistantScriptVars);
+				initializePermanentScriptVars();
 			})
 		}
 		else {
-			initializePermanentScriptVars(tmpDefaultPersistantScriptVars);
+			initializePermanentScriptVars();
 		}
 	});
 }
 
-function initializePermanentScriptVars(tmpDPSV) {
-	if(!tmpDPSV.length) {
-		loadGlobalsFromBird();
-		return;
-	}
-	var nextObj = tmpDPSV.shift();
+function initializePermanentScriptVars() {
 	
 	chrome.storage.local.get('scriptVars', function(storageObj) {
 		var scriptVars = storageObj.scriptVars;
-		if(!scriptVars[nextObj.name]) {
-			scriptVars[nextObj.name] = nextObj;
-			chrome.storage.local.set({'scriptVars': scriptVars}, function() {
-				initializePermanentScriptVars(tmpDPSV);
-			});
-		} else {
-			initializePermanentScriptVars(tmpDPSV);
+		
+		//Get rid of any persistent vars in scriptvars that's not in the global
+		for(var i in scriptVars) {
+			if(scriptVars[i] && scriptVars[i].name && scriptVars[i].isPersistant) {
+				if(!AMT__Global_Vars.associativeArrayofDPSV.hasOwnProperty(i)) {
+					delete scriptVars[i];
+				}
+			}
 		}
+		
+		//Put variables into scriptVars that aren't already there.
+		for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
+			if(!scriptVars.hasOwnProperty(AMT__Global_Vars.defaultPersistantScriptVars[i].name)) {
+				scriptVars[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
+			}
+		}
+		
+		chrome.storage.local.set({'scriptVars': scriptVars}, function() {
+			loadGlobalsFromBird()l
+		}); 
 	});
 }
 
