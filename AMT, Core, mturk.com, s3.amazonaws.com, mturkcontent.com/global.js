@@ -41,7 +41,7 @@ var AMT__Global_Vars = //function()
 	//{name: 'RecordAllHits', value: 1, isPersistant:true},
 	{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
-	{name: 'JohnRobertsCheckHistory', 0, isPersistant:true},
+	{name: 'JohnRobertsCheckHistory',value: 0, isPersistant:true},
 	{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
 	//{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
@@ -1887,6 +1887,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		switch(v.action) {
 			case 'return_button_click': 
 				if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != '0') {
+					showNextTab({isTopWindow:true});
+					showNextTab({isTopWindow:false});
 					document.getElementById('AMT_return_button_top_window').click();
 				}
 				else {
