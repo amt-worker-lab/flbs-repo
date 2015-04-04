@@ -143,9 +143,15 @@ AMT__Global_Vars.initializeReturnButton = function () {
 			var allAs = document.getElementsByTagName('a');
 			for(var i = 0; i < allAs.length; i++) {
 				if(allAs[i].href.indexOf('/mturk/return') != -1) {
-					if (AMT__Global_Vars.core.getR_Button_NextTab) { // getR_Button_NextTab
+					
+					if(AMT__Global_Vars.scriptVars('AMT_return_button_top_window') != "0") {
+						showNextTab({isTopWindow:true});
+						showNextTab({isTopWindow:false});
+					}
+					else if (AMT__Global_Vars.core.getR_Button_NextTab) { // getR_Button_NextTab
 						new AMT___core_factory().nextTab(); // do nextTab
 					}
+					
 					allAs[i].click();
 					return;
 				}
@@ -1887,8 +1893,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		switch(v.action) {
 			case 'return_button_click': 
 				if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != '0') {
-					showNextTab({isTopWindow:true});
-					showNextTab({isTopWindow:false});
 					document.getElementById('AMT_return_button_top_window').click();
 				}
 				else {

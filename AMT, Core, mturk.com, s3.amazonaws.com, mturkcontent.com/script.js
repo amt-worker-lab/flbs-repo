@@ -96835,14 +96835,14 @@ qatar,80
 	 * Kunal Shah
 	 * Laura Enstad
 	 * Joe ("Joe")
-	 * 
+	 * John White
 	 */
 	 
 	 
 	 
 	 
 	 //
-	// Joe ("Joe")
+	// John White
 	// Find the Website Address for a Company
 	// 
 	var s = '<li>Include the full address, e.g. http://www.microsoft.com.</li>';
