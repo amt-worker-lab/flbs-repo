@@ -156784,9 +156784,13 @@ function initializePermanentScriptVars() {
 	chrome.storage.local.get('scriptVars', function(storageObj) {
 		var scriptVars = storageObj.scriptVars;
 		
+		console.log(AMT__Global_Vars.associativeArrayofDPSV);
+		
 		//Get rid of any persistent vars in scriptvars that's not in the global
 		for(var i in scriptVars) {
-			if(scriptVars[i] && scriptVars[i].name && scriptVars[i].isPersistant) {
+			if(scriptVars[i] && scriptVars[i].isPersistant) {
+				console.log(i);
+				console.log(AMT__Global_Vars.associativeArrayofDPSV.hasOwnProperty(i));
 				if(!AMT__Global_Vars.associativeArrayofDPSV.hasOwnProperty(i)) {
 					delete scriptVars[i];
 				}
@@ -156801,7 +156805,7 @@ function initializePermanentScriptVars() {
 		}
 		
 		chrome.storage.local.set({'scriptVars': scriptVars}, function() {
-			loadGlobalsFromBird()l
+			loadGlobalsFromBird();
 		}); 
 	});
 }

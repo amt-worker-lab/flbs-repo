@@ -38,15 +38,16 @@ var MT___host = 'http://192.168.1.2';
 var AMT__Global_Vars = //function()
 {
 	defaultPersistantScriptVars : [
-	{name: 'RecordAllHits', value: 1, isPersistant:true},
+	//{name: 'RecordAllHits', value: 1, isPersistant:true},
 	{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
+	{name: 'JohnRobertsCheckHistory', 0, isPersistant:true},
 	{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
-	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
-	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
+	//{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
 	{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
 	],
+	associativeArrayofDPSV: {},
 	isTopWindow: null,
 	isPreview: null,
 	groupId: '',
@@ -76,9 +77,8 @@ var AMT__Global_Vars = //function()
 		staggered_timeout_per_tab:		200
 	}
 }
-AMT__Global_Vars.associativeArrayofDPSV = {};
-for(var i = 0; i < defaultPersistantScriptVars.length; i++) {
-	AMT__Global_Vars.associativeArrayofDPSV[defaultPersistantScriptVars[i].name] = defaultPersistantScriptVars[i];
+for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
+	AMT__Global_Vars.associativeArrayofDPSV[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
 }
 
 
