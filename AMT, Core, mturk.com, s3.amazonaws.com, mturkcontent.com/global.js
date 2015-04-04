@@ -44,7 +44,9 @@ var AMT__Global_Vars = //function()
 	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
 	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
-	{name: 'ShowNextTab Hotkey:', value: 1, isPersistant:true},
+	{name: 'ShowNextTab Hotkey', value: 1, isPersistant:true},
+	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
+	{name: 'Return Button ShowNextTab', value: '`', isPersistant:true},
 	],
 	isTopWindow: null,
 	isPreview: null,
@@ -1884,6 +1886,15 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//~ console.log(v);
 		
 		switch(v.action) {
+			case 'return_button_click': 
+				if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != '0') {
+					document.getElementById('AMT_return_button_top_window ').click();
+				}
+				else {
+					var b = getReturnButton();
+					b.click();
+				}
+				break;
 			case 'tabsQTitleChange': 
 				//console.log("Changing document title to TQ");
 				document.title = "TQ";
@@ -11416,6 +11427,7 @@ function AMT___InitializeReturnAndAcceptKeyPress() {
 		});
 	document.addEventListener("keypress", AMT___ReturnAndAcceptKeyPress);	
 }
+//Also handles retun button keyproess
 function AMT___ReturnAndAcceptKeyPress(event) {
 		//console.log(event.keyCode);
 		switch (event.keyCode) {
@@ -11444,6 +11456,18 @@ function AMT___ReturnAndAcceptKeyPress(event) {
 
 					}
 				});
+				break;
+				case AMT__Global_Vars.scriptVars['Return Button Hotkey']: 
+					if(AMT__Global_Vars.scriptVars['Return Button Hotkey'] != "0") {
+						new AMT___core_factory().iframe2parent__postMessage({
+							{
+								action: 'return_button_click'
+							}
+						}
+						);
+						event.preventDefault();
+						return false;
+					}
 				break;
 			default:
 				break;
