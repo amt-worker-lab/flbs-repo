@@ -17249,14 +17249,14 @@ function MT__RUN() {
 				offset: 0 // offset top
 			});
 			
-			// return button function!
-			var cf = new AMT___core_factory()
-			new AMT___core_factory()
-				.iframe2parent__postMessage( // options  , XXXXX >callback_function
-					{
-						action: 'return_button__showNextTab'
-					}
-				);
+			//~ // Return button function!
+			//~ var cf = new AMT___core_factory()
+			//~ new AMT___core_factory()
+				//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
+					//~ {
+						//~ action: 'return_button__showNextTab'
+					//~ }
+				//~ );
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
