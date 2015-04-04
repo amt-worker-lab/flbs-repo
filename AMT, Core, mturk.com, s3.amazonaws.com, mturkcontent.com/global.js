@@ -76,10 +76,10 @@ var AMT__Global_Vars = //function()
 		staggered_timeout_per_tab:		200
 	}
 }
-//~ AMT__Global_Vars();
-//~ console.log(AMT__Global_Vars);
-//~ console.log(AMT__Global_Vars.isTopWindow);
-//~ console.log(AMT__Global_Vars.core);
+AMT__Global_Vars.associativeArrayofDPSV = {};
+for(var i = 0; i < defaultPersistantScriptVars.length; i++) {
+	AMT__Global_Vars.associativeArrayofDPSV[defaultPersistantScriptVars[i].name] = defaultPersistantScriptVars[i];
+}
 
 
 
