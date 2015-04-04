@@ -17336,7 +17336,7 @@ function MT__RUN() {
 				//~ console.log(start_urls);
 				//~ console.log(allowed_domains);
 				//
-				var s_obj = 
+				var s_obj =
 				{
 					project: 'scrapy_amt',
 					spider: 'AMTSpider',

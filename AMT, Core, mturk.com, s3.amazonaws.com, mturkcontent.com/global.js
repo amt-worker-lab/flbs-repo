@@ -39,7 +39,7 @@ var AMT__Global_Vars = //function()
 {
 	defaultPersistantScriptVars : [
 	{name: 'RecordAllHits', value: 1, isPersistant:true},
-	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
+	{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
@@ -7628,9 +7628,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		{
 			showNextTab();
 		}
-		if(AMT__Global_Vars.scriptVars['EmailJobs DS ShiftLeft'] != '0') {
-			new AMT___core_factory().shiftFarLeft();
-		}
 		doSubmit();
 	}
 	
@@ -9150,6 +9147,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		);
 	}
 	
+	if(AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+		new AMT___core_factory().shiftFarLeft();
+	}
 	
 	// Which form to submit
 	if (!form)
