@@ -41,10 +41,9 @@ var AMT__Global_Vars = //function()
 	{name: 'RecordAllHits', value: 1, isPersistant:true},
 	{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
 	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
-	{name: 'ShowNextTabIframe', value: 1, isPersistant:true},
+	{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
 	{name: 'EmailJobs DS ShiftLeft', value: 1, isPersistant:true},
 	{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
-	{name: 'ShowNextTab Hotkey', value: 1, isPersistant:true},
 	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
 	{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
 	],
@@ -11553,7 +11552,8 @@ function AMT___returnAndAcceptButton() {
 			}
 			
 		
-			if(AMT__Global_Vars['ShowNextTabIframe'] != '0') {
+			if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
+				showNextTab({isTopWindow: true});
 				showNextTab({isTopWindow: false});
 			}
 			
