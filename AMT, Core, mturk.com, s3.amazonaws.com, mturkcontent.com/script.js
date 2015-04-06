@@ -3177,10 +3177,10 @@ function MT__RUN() {
 	}
 	
 	// 
-	// Alex Jenkins
-	// Check activation lock status for a phone
+	// A11UUJ359IVS59
+	// usabox.com scrape
 	//
-	s = '<p>On the webpage, in the box <strong>underneath the text “Enter the Device IMEI or Serial Number”</strong>, put in this IMEI value (also displayed below):</p>';
+	s = '	<li>Go to this website: <a href="http://usabox.com/rates.asp" target="_blank">http://usabox.com/rates.asp</a></li>';
 	if  (
 		ih.indexOf(s) != -1
 		)
@@ -3189,31 +3189,47 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:800px !important;}'); // width:1100px=default
-			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var st = document.getElementsByTagName('strong');
 			var o = {
 				country: st[1].innerText.trim(),
 				weight: st[2].innerText.trim(),
-				q: document.getElementById('web_url'),
-				cid: null // This is Apple captcha ID
+				q: [
+					document.getElementById('dhl'),
+					document.getElementById('fedex1'),
+					document.getElementById('fedex2'),
+					document.getElementById('mail1'),
+					document.getElementById('mail2'),
+					document.getElementById('ups1'),
+					document.getElementById('ups2')
+				],
+				
+				scrapes: [
+					'DHL',
+					'FedEx Economy',
+					'FedEx',
+					'Mail (6-12 days)',
+					'Mail Express (3-7 days)',
+					'UPS Expedited (3-5 days)',
+					'UPS Saver (2-3 days)'
+				]
 			}
 			
 			/*BEGIN ITEMS*/
-			var d1 = document.createElement('img');
-			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
-			document.body.appendChild(d1);
-			var d2 = document.createElement('textarea');
-			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
-			document.body.appendChild(d2);
-			//~ d2.value = o.id;
-			var naBut = document.createElement('input');
-			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
-			document.body.appendChild(naBut);
-			naBut.type = 'button';
-			naBut.value = 'N/A';
+			//~ var d1 = document.createElement('img');
+			//~ d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
+			//~ document.body.appendChild(d1);
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			//~ document.body.appendChild(d2);
+			//~ var naBut = document.createElement('input');
+			//~ naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			//~ document.body.appendChild(naBut);
+			//~ naBut.type = 'button';
+			//~ naBut.value = 'N/A';
 			/*END ITEMS*/
 			
 			//~ // innerHeight
@@ -3229,11 +3245,60 @@ function MT__RUN() {
 			
 			// sbm
 			document.getElementById('submitButton').onclick = function() {
-				o.q.value = o.q.value.trim();
-				new AMT___core_factory().nextTab({focusOnPage:true});
-				new AMT___core_factory().shiftFarLeft();
-				doSubmit();
-				return false;
+				//~ o.q.value = o.q.value.trim();
+				//~ new AMT___core_factory().nextTab({focusOnPage:true});
+				//~ new AMT___core_factory().shiftFarLeft();
+				//~ doSubmit();
+				//~ return false;
+			}
+			
+			// Init
+			rates();
+			
+			function rates() {
+				var u = 'http://usabox.com/rates.asp?Country='+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+				
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText; console.log(rs);
+						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// bool sbm
+						var sbm = true;
+						
+						// e.g.
+						// <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$129.92<tr><td bgcolor='#E1E1EA'>Mail Express (3-7 days)<td bgcolor='#FFFFFF' align=right>$147.75<tr>
+						// <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
+						for (var count in o.scrapes) { // 0...6
+							var type = o.scrapes[count];
+							var inp = o.q[count];
+							var reg = new RegExp(
+								"<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
+								''
+							);
+							console.log(reg);
+							reg = reg.exec(rs);
+							if (reg) {
+								inp.value = reg[1];
+							} else {
+								sbm = false;
+								inp.style.border = '4px solid blue';
+							}
+						}
+						
+						console.log(sbm);
+						if (sbm) {
+							//doSubmit();
+						}
+					}
+				});
+				
 			}
 		}
 		new run().f();
