@@ -3200,16 +3200,18 @@ function MT__RUN() {
 				q: [
 					document.getElementById('web_url')
 				],
-				bold: null
+				bold: null,
+				comp_auto: null
 			}
 			if (o.zip.length == 4) {
 				o.zip = '0' + o.zip; // Add 0.
 			}
-			o.bold = o.comp.clean_string_to_array();
+			o.bold = o.comp.clean_string_to_array().concat( [o.zip] );
+			o.comp_auto = o.comp.clean_str_to_auto();
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('img');
-			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;width:99%;height:400px;border:1px solid blue;'); //
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;width:99%;height:400px;border:1px solid blue;background-color:#eee;'); //
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
@@ -3273,11 +3275,12 @@ function MT__RUN() {
 						}
 						
 						// Still here?
-						var ol = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
-						console.log(ol);
+						var doc = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
+						console.log(doc);
 						
 						// LIs
-						var li = ol.getElementsByClassName('b_algo');
+						var li = doc.getElementsByClassName('b_algo');
+						var found_auto = false; // Bool, found auto. Set to true if there is an auto.
 						for (var i=0; i<=li.length-1; i++) {
 							var title = li[i].getElementsByTagName('h2'); // Title
 							if (!title.length) {
@@ -3334,6 +3337,17 @@ function MT__RUN() {
 							}
 							
 							// Auto?
+							var tmp_auto = title.clean_str_to_auto();
+							if  (
+								o.comp_auto.indexOf( tmp_auto ) == 0 && // Starts with.
+								o.comp_auto.length > 4 &&
+								tmp_auto.length > 4 &&
+								!found_auto
+								)
+							{
+								found_auto = true;
+								div.click();
+							}
 						}
 					}
 				});

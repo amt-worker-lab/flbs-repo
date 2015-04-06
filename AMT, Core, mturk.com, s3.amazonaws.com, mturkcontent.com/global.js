@@ -1484,6 +1484,19 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * 
  */
 /**
+ * .clean_str_to_auto
+ */
+ /**
+			 * function 
+			 */
+			function clean_str_to_auto(str) {
+				
+			}
+String.prototype.clean_str_to_auto = function(opts) {
+	var s = this.toString();
+	return s.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, ''); // Replace "&" with "and". Remove all but /[0-9a-z]/i
+}
+/**
  * .div
  */
 String.prototype.div = function(opts) {
