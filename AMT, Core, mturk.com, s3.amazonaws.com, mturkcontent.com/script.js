@@ -3218,6 +3218,33 @@ function MT__RUN() {
 				]
 			}
 			
+			// Ensure placeholder
+			// and ensure order
+			var fms = document.getElementsByClassName('form-control');
+			if (fms.length != 7) {
+				document.body.style.backgroundColor = 'orange';
+				return;
+			}
+			for (var i=0; i<=fms.length-1; i++) {
+				if (o.q[i] != fms[i]) {
+					document.body.style.backgroundColor = 'yellow';
+					return;
+				}
+				if  (
+					fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
+					fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
+					fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
+					fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
+					)
+				{
+					document.body.style.backgroundColor = 'aqua';
+					console.log(fms[i].placeholder);
+					console.log(o.scrapes[i] + ' - Type the Rate here');
+					return;
+				}
+			}
+			
+			
 			/*BEGIN ITEMS*/
 			//~ var d1 = document.createElement('img');
 			//~ d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
@@ -3294,7 +3321,7 @@ function MT__RUN() {
 						
 						console.log(sbm);
 						if (sbm) {
-							//doSubmit();
+							doSubmit();
 						}
 					}
 				});
