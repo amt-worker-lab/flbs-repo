@@ -4315,7 +4315,52 @@ function MT__RUN() {
 						}
 						
 						// First result
+						var doc = /<code class="hidden_elem" id="u_0_1l"><!--((.|\s)*?(?= --><\/code>|$)|$)/.exec(rs);
+						if (!doc) {
+							document.body.style.backgroundColor = 'yellow';
+							return;
+						}
+						doc = new DOMParser().parseFromString(doc[1], 'text/html');
+						var items = doc.getElementsByClassName('clearfix _zw');
+						if (!items.length) {
+							document.body.style.backgroundColor = 'orange';
+							return;
+						}
+						for (var i in items) {
+							if (i == 'length') break;
+							var item = items[i];
+							// Is person?
+							if (item.innerText.indexOf('Add Friend') == 0) { // Is not a person
+								continue; // Skip
+							}
+							var divc = item.getElementsByClassName('_zs fwb');
+							if (!divc.length) {
+								console.log('No name');
+								document.body.style.backgroundColor = 'blue';
+								return;
+							}
+							var href = divc[0].getElementsByTagName('a');
+							if (!href.length) {
+								console.log('No href');
+								document.body.style.backgroundColor = 'blue';
+								return;
+							}
+							href = href[0].getAttribute('href');
+							if (!/(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)/.exec(href)) {
+								console.log('Bad href');
+								document.body.style.backgroundColor = 'blue';
+								return;
+							}
+							o.q[0].value = href;
+							o.q[1].checked = false;
+							doSubmit();
+						}
+						
+						/*
+						// First result
 						var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
+						// e.g.
+						// <div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="https://www.facebook.com/kevin.mahoney?ref=br_rs&amp;fref=browse_search">Kevin Mahoney</a><span class="_5dgp"></span></div><div class="_pac _dj_" data-bt="&#123;&quot;ct&quot;:&quot;sub_headers&quot;&#125;"><a href="https://www.facebook.com/pages/NYU/111851825501258?ref=br_rs" data-gt="&#123;&quot;entity_id&quot;:&quot;111851825501258&quot;,&quot;entity_path&quot;:&quot;SeeMoreSearchController&quot;&#125;" data-hovercard="/ajax/hovercard/page.php?id=111851825501258">NYU</a></div><div class="_946" data-bt="&#123;&quot;ct&quot;:&quot;snippets&quot;&#125;"><div><div class="_ajw"><div class="_52eh">Former Partner at <a href="https://www.facebook.com/pages/Director-Technology-Partners/431245916992844?ref=br_rs" data-gt="&#123;&quot;entity_id&quot;:&quot;431245916992844&quot;,&quot;entity_path&quot;:&quot;SeeMoreSearchController&quot;&#125;" data-hovercard="/ajax/hovercard/page.php?id=431245916992844">Director Technology Partners</a></div></div><div class="_ajw"><div class="_52eh">Studied at <a href="https://www.facebook.com/pages/NYU/111851825501258?ref=br_rs" data-gt="&#123;&quot;entity_id&quot;:&quot;111851825501258&quot;,&quot;entity_path&quot;:&quot;SeeMoreSearchController&quot;&#125;" data-hovercard="/ajax/hovercard/page
 						if (reg3) {
 							// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
 							//e.g. "https://...", "James Yates"|"James <span> Yates"
@@ -4335,6 +4380,7 @@ function MT__RUN() {
 							//~ o.q[2].checked = false;
 							//~ doSubmit();
 						}
+						*/
 						
 						//~ // Here?
 						//~ // One result?
