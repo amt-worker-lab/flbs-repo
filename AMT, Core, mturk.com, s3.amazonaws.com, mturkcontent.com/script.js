@@ -4256,7 +4256,7 @@ function MT__RUN() {
 	// Richard Yeung
 	// 
 	//
-	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by phone number in facebook. &nbsp;If there is a match, click the profile url and record the <strong>full name of the person</strong> and the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
+	//~ s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by phone number in facebook. &nbsp;If there is a match, click the profile url and record the <strong>full name of the person</strong> and the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
 	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by email in facebook. &nbsp;If there is a match, click the first person profile url and record&nbsp;the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
 	if  (
 		ih.indexOf(s) != -1
@@ -4280,76 +4280,80 @@ function MT__RUN() {
 				]
 			}
 			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: o.url,
-				onload: function(response) {
-					var rs=response.responseText;
-					if (response.status != 200) {
-						o.q[0].value = response.status;
-						document.body.style.backgroundColor = 'pink';
-						return;
-					}
-					
-					if  (
-						rs.indexOf(
-							'<div class="_26l">Sorry, we couldn&#039;t find any results for this search.</div>'
-						) != -1
-					)
-					{
-						o.q[0].value = '';
-						o.q[1].checked = true;
-						doSubmit();
-						return;
-					}
-					
-					// First result
-					var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
-					if (reg3) {
-						// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
-						//e.g. "https://...", "James Yates"|"James <span> Yates"
-						var content = reg3[0];
-						if (content.indexOf('Add Friend') != -1) { // Is a person
-							o.q[0].value = __js_clean_html_str(reg3[1]).trim();
-							o.q[1].checked = false; // Make sure not checked.
-							doSubmit();
-						} else {
-							// err
-							document.body.style.backgroundColor = 'aqua';
+			// every 10s
+			fb();
+			function fb() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: o.url,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							o.q[0].value = response.status;
+							document.body.style.backgroundColor = 'pink';
 							return;
 						}
 						
-						//~ o.q[1].value = __js_clean_html_str(reg3[1]).trim();
-						//~ o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
-						//~ o.q[2].checked = false;
-						//~ doSubmit();
-					}
-					
-					//~ // Here?
-					//~ // One result?
-					//~ var reg1 = /<div class="_1zf">/g; //document.body.innerText.match(/<div class="_1zf">/g).length; //1
-					//~ var reg2 = /<div class="_zs fwb"/g;
-					//~ if  (
-						//~ rs.match(reg1) && rs.match(reg1).length == 1 &&
-						//~ rs.match(reg2) && rs.match(reg2).length == 1
-						//~ )
-					//~ {
-						//~ var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
-						//~ if (reg3) {
-							//~ // e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
-							//~ //e.g. "https://...", "James Yates"|"James <span> Yates"
-							//~ o.q[0].value = __js_clean_html_str(reg3[1]).trim();
-							//~ o.q[1].checked = false; // Make sure not checked.
+						if  (
+							rs.indexOf(
+								'<div class="_26l">Sorry, we couldn&#039;t find any results for this search.</div>'
+							) != -1
+						)
+						{
+							o.q[0].value = '';
+							o.q[1].checked = true;
+							doSubmit();
+							return;
+						}
+						
+						// First result
+						var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
+						if (reg3) {
+							// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
+							//e.g. "https://...", "James Yates"|"James <span> Yates"
+							var content = reg3[0];
+							if (content.indexOf('Add Friend') != -1) { // Is a person
+								o.q[0].value = __js_clean_html_str(reg3[1]).trim();
+								o.q[1].checked = false; // Make sure not checked.
+								//~ doSubmit(false, false, false, 10000);
+							} else {
+								// err
+								document.body.style.backgroundColor = 'aqua';
+								return;
+							}
+							
+							//~ o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+							//~ o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
+							//~ o.q[2].checked = false;
 							//~ doSubmit();
-							//~ 
-							//o.q[1].value = __js_clean_html_str(reg3[1]).trim();
-							//o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
-							//o.q[2].checked = false;
-							//doSubmit();
+						}
+						
+						//~ // Here?
+						//~ // One result?
+						//~ var reg1 = /<div class="_1zf">/g; //document.body.innerText.match(/<div class="_1zf">/g).length; //1
+						//~ var reg2 = /<div class="_zs fwb"/g;
+						//~ if  (
+							//~ rs.match(reg1) && rs.match(reg1).length == 1 &&
+							//~ rs.match(reg2) && rs.match(reg2).length == 1
+							//~ )
+						//~ {
+							//~ var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
+							//~ if (reg3) {
+								//~ // e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
+								//~ //e.g. "https://...", "James Yates"|"James <span> Yates"
+								//~ o.q[0].value = __js_clean_html_str(reg3[1]).trim();
+								//~ o.q[1].checked = false; // Make sure not checked.
+								//~ doSubmit();
+								//~ 
+								//o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+								//o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
+								//o.q[2].checked = false;
+								//doSubmit();
+							//~ }
 						//~ }
-					//~ }
-				}
-			});
+					}
+				});
+			}
 		}
 		new run().f();
 	}
@@ -157616,8 +157620,8 @@ function addScriptVarsListener() {
 	chrome.storage.onChanged.addListener(function(change) {
 		//write scriptVars back into Global
 		var scriptVars = change.newValue;
+		console.log(scriptVars);
 		if(scriptVars) {
-		console.log(scriptVars)
 			for(var i in scriptVars) {
 				AMT__Global_Vars.scriptVars[i] = scriptVars[i];
 			}
