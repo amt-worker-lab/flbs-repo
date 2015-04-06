@@ -3260,7 +3260,7 @@ function MT__RUN() {
 					method: "GET",
 					url: u,
 					onload: function(response) {
-						var rs=response.responseText; console.log(rs);
+						var rs=response.responseText; //console.log(rs);
 						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
 							document.body.style.backgroundColor = 'pink';
 							return;
@@ -3293,10 +3293,13 @@ function MT__RUN() {
 							var body = li[i].innerText.trim();
 							
 							// Has local, Bool
-							var sa_uc = li[i].getElementsByClassName('sa_uc');
+							//~ var sa_uc = li[i].getElementsByClassName('sa_uc');
+							var sa_uc = li[i].getElementsByClassName('b_vList');
 							if (!sa_uc.length) {
+								console.log('No local container.');
 								continue; // Skip
 							}
+							console.log('Found local container.');
 							
 							// Still here?
 							// Has sa_uc (local div).
@@ -4271,29 +4274,51 @@ function MT__RUN() {
 						return;
 					}
 					
-					// Here?
-					// One result?
-					var reg1 = /<div class="_1zf">/g; //document.body.innerText.match(/<div class="_1zf">/g).length; //1
-					var reg2 = /<div class="_zs fwb"/g;
-					if  (
-						rs.match(reg1) && rs.match(reg1).length == 1 &&
-						rs.match(reg2) && rs.match(reg2).length == 1
-						)
-					{
-						var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
-						if (reg3) {
-							// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
-							//e.g. "https://...", "James Yates"|"James <span> Yates"
+					// First result
+					var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
+					if (reg3) {
+						// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
+						//e.g. "https://...", "James Yates"|"James <span> Yates"
+						var content = reg3[0];
+						if (content.indexOf('Add Friend') != -1) { // Is a person
 							o.q[0].value = __js_clean_html_str(reg3[1]).trim();
 							o.q[1].checked = false; // Make sure not checked.
 							doSubmit();
-							
-							//~ o.q[1].value = __js_clean_html_str(reg3[1]).trim();
-							//~ o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
-							//~ o.q[2].checked = false;
-							//~ doSubmit();
+						} else {
+							// err
+							document.body.style.backgroundColor = 'aqua';
+							return;
 						}
+						
+						//~ o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+						//~ o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
+						//~ o.q[2].checked = false;
+						//~ doSubmit();
 					}
+					
+					//~ // Here?
+					//~ // One result?
+					//~ var reg1 = /<div class="_1zf">/g; //document.body.innerText.match(/<div class="_1zf">/g).length; //1
+					//~ var reg2 = /<div class="_zs fwb"/g;
+					//~ if  (
+						//~ rs.match(reg1) && rs.match(reg1).length == 1 &&
+						//~ rs.match(reg2) && rs.match(reg2).length == 1
+						//~ )
+					//~ {
+						//~ var reg3 = /<div class="_1zf"><div class="_zs fwb" data-bt="&#123;&quot;ct&quot;:&quot;title&quot;&#125;"><a href="(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)">((.|\s)*?(?=<\/a>|$)|$)/.exec(rs);
+						//~ if (reg3) {
+							//~ // e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
+							//~ //e.g. "https://...", "James Yates"|"James <span> Yates"
+							//~ o.q[0].value = __js_clean_html_str(reg3[1]).trim();
+							//~ o.q[1].checked = false; // Make sure not checked.
+							//~ doSubmit();
+							//~ 
+							//o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+							//o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
+							//o.q[2].checked = false;
+							//doSubmit();
+						//~ }
+					//~ }
 				}
 			});
 		}
