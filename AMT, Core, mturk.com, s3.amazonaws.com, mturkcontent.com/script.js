@@ -3252,7 +3252,9 @@ function MT__RUN() {
 					'?q='+encodeURIComponent(o.comp + ',' + o.zip)+
 					'&go=Submit&qs=n&form=QBLH'+
 					'&pq='+encodeURIComponent(o.comp + ',' + o.zip)+
-					'&sc=0-14&sp=-1&sk=&cvid=';//5e48dafe464143ef9252bf30003ab08f+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+					'&sc=0-14&sp=-1&sk='+
+					'';
+					//~ '&cvid=';//5e48dafe464143ef9252bf30003ab08f
 				console.log('URL:' + u);
 				
 				// Xhr
@@ -3270,10 +3272,18 @@ function MT__RUN() {
 						var sbm = true;
 						
 						var reg = /<ol id="b_results">((.|\s)*?(?=<\/ol>|$)|$)/.exec(rs);
-						if (!reg) { // No results
-							
+						if  (
+							//~ !reg ||
+							rs.indexOf('<ol id="b_results"><li class="b_no"><h1>No results found for <strong>') != -1
+							)
+						{ // No results
+							o.q[0].value = response.finalUrl;
+							doSubmit();
 							return;
 						}
+						//~ if () {
+							//~ 
+						//~ }
 						
 						// Still here?
 						var doc = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
@@ -3283,8 +3293,13 @@ function MT__RUN() {
 						//~ var li = doc.getElementsByClassName('b_algo');
 						var li = doc.querySelectorAll('.b_algo, .b_ans');
 						var found_auto = false; // Bool, found auto. Set to true if there is an auto.
+						var found_valid_result = false;
+						var has_results = false;
 						for (var i in li) {
 							if (i == 'length') break;
+							
+							has_results = true;
+							
 							var title = li[i].getElementsByTagName('h2'); // Title
 							if (!title.length) {
 								title = '';
@@ -3331,6 +3346,10 @@ function MT__RUN() {
 								return;
 							}
 							
+							// Found valid!
+							found_valid_result = true;
+							
+							// Div
 							var div = document.createElement('div');
 							div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
 							div.className = 'exe';
@@ -3345,6 +3364,7 @@ function MT__RUN() {
 							div.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								o.q[0].value = this.bhref;
+								new AMT___core_factory().nextTab();
 								doSubmit();
 							}
 							//~ console.log(div);
@@ -3363,6 +3383,11 @@ function MT__RUN() {
 								found_auto = true;
 								div.click();
 							}
+						}
+						
+						if (!found_valid_result && has_results) { // No local. But has results.
+							o.q[0].value = response.finalUrl;
+							doSubmit();
 						}
 					}
 				});
@@ -157593,7 +157618,7 @@ function addScriptVarsListener() {
 		if(scriptVars) {
 		console.log(scriptVars)
 			for(var i in scriptVars) {
-				AMT__Global_Vars[i] = scriptVars[i];
+				AMT__Global_Vars.scriptVars[i] = scriptVars[i];
 			}
 		}
 	});
