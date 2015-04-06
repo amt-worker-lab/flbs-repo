@@ -3195,8 +3195,8 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
-				zip: td[2].innerText.trim(),
+				comp: td[3].innerText.trim(),
+				zip: td[5].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				],
@@ -3253,6 +3253,7 @@ function MT__RUN() {
 					'&go=Submit&qs=n&form=QBLH'+
 					'&pq='+encodeURIComponent(o.comp + ',' + o.zip)+
 					'&sc=0-14&sp=-1&sk=&cvid=';//5e48dafe464143ef9252bf30003ab08f+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+				console.log('URL:' + u);
 				
 				// Xhr
 				GM_xmlhttpRequest({
@@ -3281,7 +3282,8 @@ function MT__RUN() {
 						// LIs
 						var li = doc.getElementsByClassName('b_algo');
 						var found_auto = false; // Bool, found auto. Set to true if there is an auto.
-						for (var i=0; i<=li.length-1; i++) {
+						for (var i in li) {
+							if (i == 'length') break;
 							var title = li[i].getElementsByTagName('h2'); // Title
 							if (!title.length) {
 								title = '';
@@ -3306,6 +3308,13 @@ function MT__RUN() {
 							var a = sa_uc.getElementsByTagName('a');
 							var href = null;
 							for (var j in a) {
+								if (j == 'length') break;
+								console.log(a[j]);
+								console.log(a[j].toString());
+								console.log(a[j].href);
+								console.log(a[j].title);
+								console.log(a[j].innerText);
+								console.log(a[j].h);
 								if  (
 									a[j].innerText == 'Details' &&
 									a[j].href.indexOf('/local?lid=') == 0 // Starts with.
