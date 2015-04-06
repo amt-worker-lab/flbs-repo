@@ -38,14 +38,14 @@ var MT___host = 'http://192.168.1.2';
 var AMT__Global_Vars = //function()
 {
 	defaultPersistantScriptVars : [
-	//{name: 'RecordAllHits', value: 1, isPersistant:true},
-	{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
-	{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
-	{name: 'JohnRobertsCheckHistory',value: 0, isPersistant:true},
-	{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
-	//{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
-	{name: 'Return Button Hotkey', value: '`', isPersistant:true},
-	{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
+		//{name: 'RecordAllHits', value: 1, isPersistant:true},
+		{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
+		{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
+		{name: 'JohnRobertsCheckHistory',value: 0, isPersistant:true},
+		{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
+		//{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
+		{name: 'Return Button Hotkey', value: '`', isPersistant:true},
+		{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,
@@ -55,7 +55,7 @@ var AMT__Global_Vars = //function()
 	numSubmitQueries: 0,
 	isSubmitting: false,
 	copyInp: false,
-	scriptVars: {},
+	scriptVars: {}, //scriptVars
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	isQProduct: false,

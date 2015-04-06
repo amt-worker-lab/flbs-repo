@@ -4281,8 +4281,13 @@ function MT__RUN() {
 			}
 			
 			// every 10s
+			new AMT___core_factory().createScriptVar('RYeung Divisor', '1');
+			
+			var divisor = AMT__Global_Vars.scriptVars['RYeung Divisor'] * 1;
+			
 			var time = (new Date().getTime() / 1000) + ''; // seconds as string
 			var last_second = (time.substr( time.length -1 )) * 1000; // i.e. 0,1,2,3,4,5,6,7,8,9
+			last_second = last_second / divisor; // Divide by divisor.
 			console.log('Timeout:'+last_second);
 			setTimeout(function() {
 				console.log('Starting fb()');
@@ -4318,12 +4323,14 @@ function MT__RUN() {
 						var doc = /<code class="hidden_elem" id="u_0_1l"><!--((.|\s)*?(?= --><\/code>|$)|$)/.exec(rs);
 						if (!doc) {
 							document.body.style.backgroundColor = 'yellow';
+							console.log(doc);
 							return;
 						}
 						doc = new DOMParser().parseFromString(doc[1], 'text/html');
 						var items = doc.getElementsByClassName('clearfix _zw');
 						if (!items.length) {
 							document.body.style.backgroundColor = 'orange';
+							console.log(doc);
 							return;
 						}
 						for (var i in items) {
