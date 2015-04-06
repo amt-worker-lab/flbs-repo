@@ -4281,7 +4281,15 @@ function MT__RUN() {
 			}
 			
 			// every 10s
-			fb();
+			var time = (new Date().getTime() / 1000) + ''; // seconds as string
+			var last_second = (time.substr( time.length -1 )) * 1000; // i.e. 0,1,2,3,4,5,6,7,8,9
+			console.log('Timeout:'+last_second);
+			setTimeout(function() {
+				console.log('Starting fb()');
+				fb();
+			}, last_second);
+			
+			// fb
 			function fb() {
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -157620,8 +157628,8 @@ function addScriptVarsListener() {
 	chrome.storage.onChanged.addListener(function(change) {
 		//write scriptVars back into Global
 		var scriptVars = change.newValue;
-		console.log(scriptVars);
 		if(scriptVars) {
+		console.log(scriptVars)
 			for(var i in scriptVars) {
 				AMT__Global_Vars.scriptVars[i] = scriptVars[i];
 			}
