@@ -3189,7 +3189,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:20px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -3211,10 +3211,10 @@ function MT__RUN() {
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:100px;left:0%;width:99%;height:400px;border:1px solid blue;background-color:#eee;'); //
+			d1.setAttribute('style', 'position:absolute;top:300px;left:0%;width:99%;height:200px;border:1px solid blue;background-color:#eee;'); //
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:20%;height:20px;zoom:2;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:20%;height:20px;zoom:1.2;');
 			document.body.appendChild(d2);
 			var naBut = document.createElement('input');
 			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
@@ -3231,7 +3231,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 100 // offset top
+				offset: 300 // offset top
 			});
 			
 			// sbm
@@ -3278,6 +3278,7 @@ function MT__RUN() {
 							)
 						{ // No results
 							o.q[0].value = response.finalUrl;
+							new AMT___core_factory().nextTab();
 							doSubmit();
 							return;
 						}
@@ -3387,6 +3388,7 @@ function MT__RUN() {
 						
 						if (!found_valid_result && has_results) { // No local. But has results.
 							o.q[0].value = response.finalUrl;
+							new AMT___core_factory().nextTab();
 							doSubmit();
 						}
 					}
@@ -4296,8 +4298,7 @@ function MT__RUN() {
 					)
 					{
 						o.q[0].value = '';
-						o.q[1].value = '';
-						o.q[2].checked = true;
+						o.q[1].checked = true;
 						doSubmit();
 						return;
 					}
@@ -157614,7 +157615,7 @@ function initializePermanentScriptVars() {
 function addScriptVarsListener() {
 	chrome.storage.onChanged.addListener(function(change) {
 		//write scriptVars back into Global
-		var scriptVars = change.scriptVars;
+		var scriptVars = change.newValue;
 		if(scriptVars) {
 		console.log(scriptVars)
 			for(var i in scriptVars) {
