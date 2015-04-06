@@ -3280,7 +3280,8 @@ function MT__RUN() {
 						//~ console.log(doc);
 						
 						// LIs
-						var li = doc.getElementsByClassName('b_algo');
+						//~ var li = doc.getElementsByClassName('b_algo');
+						var li = doc.querySelectorAll('.b_algo, .b_ans');
 						var found_auto = false; // Bool, found auto. Set to true if there is an auto.
 						for (var i in li) {
 							if (i == 'length') break;
@@ -3295,6 +3296,7 @@ function MT__RUN() {
 							// Has local, Bool
 							//~ var sa_uc = li[i].getElementsByClassName('sa_uc');
 							var sa_uc = li[i].getElementsByClassName('b_vList');
+							//~ var sa_uc = li[i].querySelectorAll('.b_algo, .b_ans');
 							if (!sa_uc.length) {
 								console.log('No local container.');
 								continue; // Skip
@@ -3324,7 +3326,8 @@ function MT__RUN() {
 								}
 							}
 							if (!href) {
-								alert('Could not find Href!');
+								d1.innerText = 'Local results but no "blue dot".'
+								//~ alert('Could not find Href!');
 								return;
 							}
 							
@@ -3342,7 +3345,7 @@ function MT__RUN() {
 							div.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								o.q[0].value = this.bhref;
-								//~ doSubmit();
+								doSubmit();
 							}
 							//~ console.log(div);
 							
