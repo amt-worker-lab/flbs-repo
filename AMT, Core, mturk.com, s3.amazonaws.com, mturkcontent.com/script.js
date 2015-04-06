@@ -3191,87 +3191,44 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
-			var st = document.getElementsByTagName('strong');
+			var td = document.getElementsByTagName('td');
 			var o = {
-				country: st[1].innerText.trim(),
-				weight: st[2].innerText.trim(),
+				comp: td[1].innerText.trim(),
+				zip: td[2].innerText.trim(),
 				q: [
-					document.getElementById('dhl'),
-					document.getElementById('fedex1'),
-					document.getElementById('fedex2'),
-					document.getElementById('mail1'),
-					document.getElementById('mail2'),
-					document.getElementById('ups1'),
-					document.getElementById('ups2')
-				],
-				
-				scrapes: [
-					'DHL',
-					'FedEx Economy',
-					'FedEx',
-					'Mail (6-12 days)',
-					'Mail Express (3-7 days)',
-					'UPS Expedited (3-5 days)',
-					'UPS Saver (2-3 days)'
+					document.getElementById('web_url')
 				]
 			}
-			
-			// Ensure placeholder
-			// and ensure order
-			var fms = document.getElementsByClassName('form-control');
-			if (fms.length != 7) {
-				document.body.style.backgroundColor = 'orange';
-				return;
+			if (o.zip.length == 4) {
+				o.zip = '0' + o.zip; // Add 0.
 			}
-			for (var i=0; i<=fms.length-1; i++) {
-				if (o.q[i] != fms[i]) {
-					document.body.style.backgroundColor = 'yellow';
-					return;
-				}
-				var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
-				var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
-				if  (
-					test1 != test2
-					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
-					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
-					//~ fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
-					//~ fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
-					)
-				{
-					document.body.style.backgroundColor = 'aqua';
-					console.log(fms[i].placeholder);
-					console.log(o.scrapes[i] + ' - Type the Rate here');
-					return;
-				}
-			}
-			
 			
 			/*BEGIN ITEMS*/
-			//~ var d1 = document.createElement('img');
-			//~ d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
-			//~ document.body.appendChild(d1);
-			//~ var d2 = document.createElement('textarea');
-			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
-			//~ document.body.appendChild(d2);
-			//~ var naBut = document.createElement('input');
-			//~ naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
-			//~ document.body.appendChild(naBut);
-			//~ naBut.type = 'button';
-			//~ naBut.value = 'N/A';
+			var d1 = document.createElement('img');
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;width:99%;height:400px;border:1px solid blue;'); //
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			document.body.appendChild(d2);
+			var naBut = document.createElement('input');
+			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			document.body.appendChild(naBut);
+			naBut.type = 'button';
+			naBut.value = 'N/A';
 			/*END ITEMS*/
 			
-			//~ // innerHeight
-			//~ new AMT___core_factory().el_innerHeight({
-				//~ // This set the elements d1,d1b, and d1c
-				//~ // to fill up the whole window, minus their
-				//~ // distance from page top (top:XX pixels;).
-				//~ elements: [
-					//~ d1
-				//~ ],
-				//~ offset: 60 // offset top
-			//~ });
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 60 // offset top
+			});
 			
 			// sbm
 			document.getElementById('submitButton').onclick = function() {
@@ -3283,10 +3240,15 @@ function MT__RUN() {
 			}
 			
 			// Init
-			rates();
-			
-			function rates() {
-				var u = 'http://usabox.com/rates.asp?Country='+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+			bing();
+			// bing
+			function bing() {
+				var u =
+					'http://www.bing.com/search'+
+					'?q='+encodeURIComponent(o.comp + ',' + o.zip)+
+					'&go=Submit&qs=n&form=QBLH'+
+					'&pq='+encodeURIComponent(o.comp + ',' + o.zip)+
+					'&sc=0-14&sp=-1&sk=&cvid=';//5e48dafe464143ef9252bf30003ab08f+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
 				
 				// Xhr
 				GM_xmlhttpRequest({
@@ -3301,6 +3263,15 @@ function MT__RUN() {
 						
 						// bool sbm
 						var sbm = true;
+						
+						var reg = /<ol id="b_results">((.|\s)*?(?=<\/ol>|$)|$)/.exec(rs);
+						if (!reg) { // No results
+							
+						} else {
+							console.log()
+							var ol = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
+							
+						}
 					}
 				});
 			}
