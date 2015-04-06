@@ -4346,12 +4346,12 @@ function MT__RUN() {
 								return;
 							}
 							href = href[0].getAttribute('href');
-							if (!/(https:\/\/www\.facebook\.com\/[^\?]+\?[^"]+)/.exec(href)) {
+							if (!/(https:\/\/www\.facebook\.com\/[^\?]+)\?[^"]+/.exec(href)) {
 								console.log('Bad href');
 								document.body.style.backgroundColor = 'blue';
 								return;
 							}
-							o.q[0].value = href;
+							o.q[0].value = href.replace(/\?[\d\D]*$/, '');
 							o.q[1].checked = false;
 							doSubmit();
 						}
