@@ -3195,6 +3195,69 @@ function MT__RUN() {
 			
 			var st = document.getElementsByTagName('strong');
 			var o = {
+				country: st[1].innerText.trim(),
+				weight: st[2].innerText.trim(),
+				q: document.getElementById('web_url'),
+				cid: null // This is Apple captcha ID
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('img');
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			document.body.appendChild(d2);
+			//~ d2.value = o.id;
+			var naBut = document.createElement('input');
+			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			document.body.appendChild(naBut);
+			naBut.type = 'button';
+			naBut.value = 'N/A';
+			/*END ITEMS*/
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 60 // offset top
+			//~ });
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				new AMT___core_factory().nextTab({focusOnPage:true});
+				new AMT___core_factory().shiftFarLeft();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();
+	}
+	
+	// 
+	// Alex Jenkins
+	// Check activation lock status for a phone
+	//
+	s = '<p>On the webpage, in the box <strong>underneath the text “Enter the Device IMEI or Serial Number”</strong>, put in this IMEI value (also displayed below):</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:800px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var o = {
 				id: st[3].innerText.trim(),
 				q: document.getElementById('web_url'),
 				cid: null // This is Apple captcha ID
