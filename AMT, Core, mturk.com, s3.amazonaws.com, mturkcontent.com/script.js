@@ -157496,6 +157496,19 @@ function initializePermanentScriptVars() {
 }
 
 
+function addScriptVarsListener() {
+	chrome.storage.onChanged.addListener(function(change) {
+		//write scriptVars back into Global
+		var scriptVars = change.scriptVars;
+		if(scriptVars) {
+		console.log(scriptVars)
+			for(var i in scriptVars) {
+				AMT__Global_Vars[i] = scriptVars[i];
+			}
+		}
+	});
+}
+
 function loadGlobalsFromBird() {	
 	chrome.storage.local.get(null, function(global_load_vars) {
 		if(global_load_vars && global_load_vars.scriptVars) {
@@ -157505,10 +157518,13 @@ function loadGlobalsFromBird() {
 			}
 		}
 		ih = initializeIh();
+		addScriptVarsListener();
 		mturk_load();
 	});
 	
 }
+
+
 
 
 /**
