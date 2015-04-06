@@ -3177,6 +3177,138 @@ function MT__RUN() {
 	}
 	
 	// 
+	// Derek Browers
+	// Find the Bing location ID for individual business locations
+	//
+	s = '<li><strong style="font-family: Verdana, Geneva, sans-serif; font-size: 12px; line-height: 20.7999992370605px;">Click&nbsp;the "Details" link</strong><span style="font-family: Verdana, Geneva, sans-serif; font-size: 12px; line-height: 20.7999992370605px;">&nbsp;(it should be directly to the right of another link for "Directions", see the sample search results for A.B. Carpet below).</span></li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var o = {
+				country: st[1].innerText.trim(),
+				weight: st[2].innerText.trim(),
+				q: [
+					document.getElementById('dhl'),
+					document.getElementById('fedex1'),
+					document.getElementById('fedex2'),
+					document.getElementById('mail1'),
+					document.getElementById('mail2'),
+					document.getElementById('ups1'),
+					document.getElementById('ups2')
+				],
+				
+				scrapes: [
+					'DHL',
+					'FedEx Economy',
+					'FedEx',
+					'Mail (6-12 days)',
+					'Mail Express (3-7 days)',
+					'UPS Expedited (3-5 days)',
+					'UPS Saver (2-3 days)'
+				]
+			}
+			
+			// Ensure placeholder
+			// and ensure order
+			var fms = document.getElementsByClassName('form-control');
+			if (fms.length != 7) {
+				document.body.style.backgroundColor = 'orange';
+				return;
+			}
+			for (var i=0; i<=fms.length-1; i++) {
+				if (o.q[i] != fms[i]) {
+					document.body.style.backgroundColor = 'yellow';
+					return;
+				}
+				var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
+				var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
+				if  (
+					test1 != test2
+					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
+					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
+					//~ fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
+					//~ fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
+					)
+				{
+					document.body.style.backgroundColor = 'aqua';
+					console.log(fms[i].placeholder);
+					console.log(o.scrapes[i] + ' - Type the Rate here');
+					return;
+				}
+			}
+			
+			
+			/*BEGIN ITEMS*/
+			//~ var d1 = document.createElement('img');
+			//~ d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
+			//~ document.body.appendChild(d1);
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			//~ document.body.appendChild(d2);
+			//~ var naBut = document.createElement('input');
+			//~ naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			//~ document.body.appendChild(naBut);
+			//~ naBut.type = 'button';
+			//~ naBut.value = 'N/A';
+			/*END ITEMS*/
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 60 // offset top
+			//~ });
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+				//~ o.q.value = o.q.value.trim();
+				//~ new AMT___core_factory().nextTab({focusOnPage:true});
+				//~ new AMT___core_factory().shiftFarLeft();
+				//~ doSubmit();
+				//~ return false;
+			}
+			
+			// Init
+			rates();
+			
+			function rates() {
+				var u = 'http://usabox.com/rates.asp?Country='+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+				
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText; console.log(rs);
+						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// bool sbm
+						var sbm = true;
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
+	// 
 	// A11UUJ359IVS59
 	// usabox.com scrape
 	//
@@ -3230,11 +3362,14 @@ function MT__RUN() {
 					document.body.style.backgroundColor = 'yellow';
 					return;
 				}
+				var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
+				var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
 				if  (
-					fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
-					fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
-					fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
-					fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
+					test1 != test2
+					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
+					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
+					//~ fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
+					//~ fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
 					)
 				{
 					document.body.style.backgroundColor = 'aqua';
