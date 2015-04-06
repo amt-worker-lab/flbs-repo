@@ -3199,11 +3199,13 @@ function MT__RUN() {
 				zip: td[2].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
-				]
+				],
+				bold: null
 			}
 			if (o.zip.length == 4) {
 				o.zip = '0' + o.zip; // Add 0.
 			}
+			o.bold = o.comp.clean_string_to_array();
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('img');
@@ -3267,10 +3269,71 @@ function MT__RUN() {
 						var reg = /<ol id="b_results">((.|\s)*?(?=<\/ol>|$)|$)/.exec(rs);
 						if (!reg) { // No results
 							
-						} else {
-							console.log()
-							var ol = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
+							return;
+						}
+						
+						// Still here?
+						var ol = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
+						console.log(ol);
+						
+						// LIs
+						var li = ol.getElementsByClassName('b_algo');
+						for (var i=0; i<=li.length-1; i++) {
+							var title = li[i].getElementsByTagName('h2'); // Title
+							if (!title.length) {
+								title = '';
+							} else {
+								title = title[0].innerText.trim();
+							}
+							var body = li[i].innerText.trim();
 							
+							// Has local, Bool
+							var sa_uc = li[i].getElementsByClassName('sa_uc');
+							if (!sa_uc.length) {
+								continue; // Skip
+							}
+							
+							// Still here?
+							// Has sa_uc (local div).
+							sa_uc = sa_uc[0];
+							
+							// Href
+							// e.g.
+							// <a href="/local?lid=YN158x3009492&amp;id=YN158x3009492&amp;q=The+Feed+Bag+Old+Saybrook+CT" h="ID=SERP,5290.1">Details</a>
+							var a = sa_uc.getElementsByTagName('a');
+							var href = null;
+							for (var j in a) {
+								if  (
+									a[j].innerText == 'Details' &&
+									a[j].href.indexOf('/local?lid=') == 0 // Starts with.
+									)
+								{
+									href = 'http://www.bing.com' + a[j].href;
+								}
+							}
+							if (!href) {
+								alert('Could not find Href!');
+								return;
+							}
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'border-bottom:1px #a2a2a2;');
+							div.className = 'exe';
+							div.bhref = href;
+							d1.appendChild(div);
+							d1.innerHTML =
+								MT__bold(title, o.bold) + '<br>' +
+								MT__bold(href, o.bold) + '<br>' +
+								MT__bold(body, o.bold);
+								
+							// .onclick
+							div.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.bhref;
+								//~ doSubmit();
+							}
+							
+							// Auto?
 						}
 					}
 				});
