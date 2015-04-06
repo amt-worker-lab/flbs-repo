@@ -3189,7 +3189,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -3210,11 +3210,11 @@ function MT__RUN() {
 			o.comp_auto = o.comp.clean_str_to_auto();
 			
 			/*BEGIN ITEMS*/
-			var d1 = document.createElement('img');
-			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;width:99%;height:400px;border:1px solid blue;background-color:#eee;'); //
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:100px;left:0%;width:99%;height:400px;border:1px solid blue;background-color:#eee;'); //
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:20%;height:20px;zoom:2;');
 			document.body.appendChild(d2);
 			var naBut = document.createElement('input');
 			naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
@@ -3231,7 +3231,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 60 // offset top
+				offset: 100 // offset top
 			});
 			
 			// sbm
@@ -3277,7 +3277,7 @@ function MT__RUN() {
 						
 						// Still here?
 						var doc = new DOMParser().parseFromString(reg[0] + '</ol>', 'text/html'); // Inlude "</ol>".
-						console.log(doc);
+						//~ console.log(doc);
 						
 						// LIs
 						var li = doc.getElementsByClassName('b_algo');
@@ -3309,18 +3309,15 @@ function MT__RUN() {
 							var href = null;
 							for (var j in a) {
 								if (j == 'length') break;
-								console.log(a[j]);
-								console.log(a[j].toString());
-								console.log(a[j].href);
-								console.log(a[j].title);
-								console.log(a[j].innerText);
-								console.log(a[j].h);
+								//~ console.log(a[j].getAttribute('href')); // This works!
+								//~ a[j].href // This does not work!
+								var getAttb = a[j].getAttribute('href'); 
 								if  (
 									a[j].innerText == 'Details' &&
-									a[j].href.indexOf('/local?lid=') == 0 // Starts with.
+									getAttb.indexOf('/local?lid=') == 0 // Starts with.
 									)
 								{
-									href = 'http://www.bing.com' + a[j].href;
+									href = 'http://www.bing.com' + getAttb;
 								}
 							}
 							if (!href) {
@@ -3333,7 +3330,7 @@ function MT__RUN() {
 							div.className = 'exe';
 							div.bhref = href;
 							d1.appendChild(div);
-							d1.innerHTML =
+							div.innerHTML =
 								MT__bold(title, o.bold) + '<br>' +
 								MT__bold(href, o.bold) + '<br>' +
 								MT__bold(body, o.bold);
@@ -3344,6 +3341,7 @@ function MT__RUN() {
 								o.q[0].value = this.bhref;
 								//~ doSubmit();
 							}
+							console.log(div);
 							
 							// Auto?
 							var tmp_auto = title.clean_str_to_auto();
