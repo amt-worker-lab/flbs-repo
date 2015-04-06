@@ -3326,7 +3326,7 @@ function MT__RUN() {
 							}
 							
 							var div = document.createElement('div');
-							div.setAttribute('style', 'border-bottom:1px #a2a2a2;');
+							div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
 							div.className = 'exe';
 							div.bhref = href;
 							d1.appendChild(div);
@@ -3341,12 +3341,14 @@ function MT__RUN() {
 								o.q[0].value = this.bhref;
 								//~ doSubmit();
 							}
-							console.log(div);
+							//~ console.log(div);
 							
 							// Auto?
 							var tmp_auto = title.clean_str_to_auto();
+							console.log(tmp_auto);
+							console.log(o.comp_auto);
 							if  (
-								o.comp_auto.indexOf( tmp_auto ) == 0 && // Starts with.
+								tmp_auto.indexOf( o.comp_auto ) == 0 && // Starts with.
 								o.comp_auto.length > 4 &&
 								tmp_auto.length > 4 &&
 								!found_auto
@@ -4222,6 +4224,7 @@ function MT__RUN() {
 	// 
 	//
 	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by phone number in facebook. &nbsp;If there is a match, click the profile url and record the <strong>full name of the person</strong> and the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
+	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Visit the Facebook URL provided below by clicking on the link. &nbsp;This will take you to a landing page of a&nbsp;search by email in facebook. &nbsp;If there is a match, click the first person profile url and record&nbsp;the <strong>facebook profile URL</strong> below. &nbsp;If there is no match, select \'No Results\' in the last step below.</span></p>';
 	if  (
 		ih.indexOf(s) != -1
 		)
@@ -4238,7 +4241,7 @@ function MT__RUN() {
 			var o = {
 				url: a[0].href,
 				q: [
-					document.getElementById('FB_profile_NAME'),
+					//~ document.getElementById('FB_profile_NAME'),
 					document.getElementById('FB_profile_URL'),
 					document.getElementsByName('no_results')[0]
 				]
@@ -4281,10 +4284,14 @@ function MT__RUN() {
 						if (reg3) {
 							// e.g. https://www.facebook.com/profile.php?id=100005335096803&amp;ref=br_rs&amp;fref=browse_search
 							//e.g. "https://...", "James Yates"|"James <span> Yates"
-							o.q[1].value = __js_clean_html_str(reg3[1]).trim();
-							o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
-							o.q[2].checked = false;
+							o.q[0].value = __js_clean_html_str(reg3[1]).trim();
+							o.q[1].checked = false; // Make sure not checked.
 							doSubmit();
+							
+							//~ o.q[1].value = __js_clean_html_str(reg3[1]).trim();
+							//~ o.q[0].value = __js_clean_html_str(reg3[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ')).trim();
+							//~ o.q[2].checked = false;
+							//~ doSubmit();
 						}
 					}
 				}
