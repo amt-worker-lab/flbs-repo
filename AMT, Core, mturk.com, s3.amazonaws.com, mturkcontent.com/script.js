@@ -157190,6 +157190,7 @@ function initializePermanentScriptVars() {
 		//Put variables into scriptVars that aren't already there.
 		for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
 			if(!scriptVars.hasOwnProperty(AMT__Global_Vars.defaultPersistantScriptVars[i].name)) {
+				hasChanged = true;
 				scriptVars[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
 			}
 		}
