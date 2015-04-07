@@ -157680,12 +157680,10 @@ function initializePermanentScriptVars() {
 function addScriptVarsListener() {
 	chrome.storage.onChanged.addListener(function(change) {
 		//write scriptVars back into Global
-		var scriptVars = change.newValue;
-		console.log(change);
+		var scriptVars = change.scriptVars.newValue;
 		if(scriptVars) {
-		console.log(scriptVars)
 			for(var i in scriptVars) {
-				AMT__Global_Vars.scriptVars[i] = scriptVars[i];
+				AMT__Global_Vars.scriptVars[i] = scriptVars[i].value;
 			}
 		}
 	});
