@@ -3416,6 +3416,7 @@ function MT__RUN() {
 			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var st = document.getElementsByTagName('strong');
+			var href = document.location.href; //https://www.mturkcontent.com/dynamic/hit?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=3A520CCNWN06P9R8GR9C4JHP6XDEAA
 			var o = {
 				country: st[1].innerText.trim().replace(/ & /g, ' '), // Replace &
 				weight: st[2].innerText.trim(),
@@ -3429,9 +3430,58 @@ function MT__RUN() {
 					'Mail Express (3-7 days)':0,
 					'UPS Expedited (3-5 days)':0,
 					'UPS Saver (2-3 days)':0
-				}
+				},
+				
+				rf: new AMT___requests_factory(),
+				hitId: /&hitId=([\w\d]+)$/.exec(href)[1]
 			}
 			
+			// Tasks Correction
+			// Nov5 2014
+			// 
+			//
+			function correct_select() {
+				o.rf.database__select(
+					{
+						query: 'AMT_Requester__correct_tasks'
+					},
+					function(response) {
+						
+						var hi = response.responseObject.hit_id;
+						
+						// Go to this URL
+						window.location.href = 'https://www.mturkcontent.com/dynamic/hit?assignmentId='+
+							'&workerId=&turkSubmitTo=&hitId='+encodeURIComponent(hi);
+					}
+				);
+			}
+			
+			// WRITE
+			// Send to db "rating,rating_url" as 1 field.
+			// Send {hit_id, correct_value}
+			function correct_write() {
+				o.rf.database__write(
+					{
+						query: 'AMT_Requester__correct_tasks_write',
+						encodeStrings: {
+							hit_id:			o.hitId,
+							correct_value:	'"' + o.country + '","' + o.weight + '","' + o.q.value;
+						}
+					},
+					function(response) {
+						console.log(response);
+						if (response.responseText != '') {
+							alert(response.responseText);
+							return;
+						}
+						// next
+						Stephanie_Hass_Hotel_Data__correct__select();
+					}
+				);
+			}
+		
+		
+		
 			//~ // Ensure placeholder
 			//~ // and ensure order
 			//~ var fms = document.getElementsByClassName('form-control');
@@ -3539,7 +3589,9 @@ function MT__RUN() {
 						console.log(sbm);
 						console.log(o);
 						if (sbm && o.q.value.length > 20) {
-							doSubmit();
+							//doSubmit();
+							
+							correct_write(); // write
 						}
 						
 						//~ // e.g.
