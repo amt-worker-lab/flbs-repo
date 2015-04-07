@@ -3420,13 +3420,13 @@ function MT__RUN() {
 				country: st[1].innerText.trim(),
 				weight: st[2].innerText.trim(),
 				q: [
-					document.getElementById('dhl'),
-					document.getElementById('fedex1'),
-					document.getElementById('fedex2'),
-					document.getElementById('mail1'),
-					document.getElementById('mail2'),
-					document.getElementById('ups1'),
-					document.getElementById('ups2')
+					document.getElementById('dhl') //,
+					//~ document.getElementById('fedex1'),
+					//~ document.getElementById('fedex2'),
+					//~ document.getElementById('mail1'),
+					//~ document.getElementById('mail2'),
+					//~ document.getElementById('ups1'),
+					//~ document.getElementById('ups2')
 				],
 				
 				scrapes: [
@@ -3440,34 +3440,30 @@ function MT__RUN() {
 				]
 			}
 			
-			// Ensure placeholder
-			// and ensure order
-			var fms = document.getElementsByClassName('form-control');
-			if (fms.length != 7) {
-				document.body.style.backgroundColor = 'orange';
-				return;
-			}
-			for (var i=0; i<=fms.length-1; i++) {
-				if (o.q[i] != fms[i]) {
-					document.body.style.backgroundColor = 'yellow';
-					return;
-				}
-				var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
-				var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
-				if  (
-					test1 != test2
-					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the Rate here' &&	// Try 1
-					//~ fms[i].placeholder != o.scrapes[i] + ' - Type the  Rate here'&&	// Try 2
-					//~ fms[i].placeholder != o.scrapes[i] + '- Type the  Rate here' &&	// Try 3
-					//~ fms[i].placeholder != o.scrapes[i] + '- Type the Rate here'		// Try 4
-					)
-				{
-					document.body.style.backgroundColor = 'aqua';
-					console.log(fms[i].placeholder);
-					console.log(o.scrapes[i] + ' - Type the Rate here');
-					return;
-				}
-			}
+			//~ // Ensure placeholder
+			//~ // and ensure order
+			//~ var fms = document.getElementsByClassName('form-control');
+			//~ if (fms.length != 7) {
+				//~ document.body.style.backgroundColor = 'orange';
+				//~ return;
+			//~ }
+			//~ for (var i=0; i<=fms.length-1; i++) {
+				//~ if (o.q[i] != fms[i]) {
+					//~ document.body.style.backgroundColor = 'yellow';
+					//~ return;
+				//~ }
+				//~ var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
+				//~ var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
+				//~ if  (
+					//~ test1 != test2
+					//~ )
+				//~ {
+					//~ document.body.style.backgroundColor = 'aqua';
+					//~ console.log(fms[i].placeholder);
+					//~ console.log(o.scrapes[i] + ' - Type the Rate here');
+					//~ return;
+				//~ }
+			//~ }
 			
 			
 			/*BEGIN ITEMS*/
@@ -3497,11 +3493,6 @@ function MT__RUN() {
 			
 			// sbm
 			document.getElementById('submitButton').onclick = function() {
-				//~ o.q.value = o.q.value.trim();
-				//~ new AMT___core_factory().nextTab({focusOnPage:true});
-				//~ new AMT___core_factory().shiftFarLeft();
-				//~ doSubmit();
-				//~ return false;
 			}
 			
 			// Init
@@ -3529,7 +3520,7 @@ function MT__RUN() {
 						// <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
 						for (var count in o.scrapes) { // 0...6
 							var type = o.scrapes[count];
-							var inp = o.q[count];
+							var inp = o.q[0];
 							var reg = new RegExp(
 								"<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
 								''
@@ -3537,7 +3528,7 @@ function MT__RUN() {
 							console.log(reg);
 							reg = reg.exec(rs);
 							if (reg) {
-								inp.value = reg[1];
+								inp.value += type + reg[1];
 							} else {
 								sbm = false;
 								inp.style.border = '4px solid blue';
@@ -3546,7 +3537,7 @@ function MT__RUN() {
 						
 						console.log(sbm);
 						if (sbm) {
-							doSubmit();
+							//~ doSubmit();
 						}
 					}
 				});
@@ -3555,6 +3546,126 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	//~ // TASK CHANGED! SEE ABOVE.
+	//~ // A11UUJ359IVS59
+	//~ // usabox.com scrape
+	//~ //
+	//~ s = '	<li>Go to this website: <a href="http://usabox.com/rates.asp" target="_blank">http://usabox.com/rates.asp</a></li>';
+	//~ if  (
+		//~ ih.indexOf(s) != -1
+		//~ )
+	//~ {
+		//~ var run = function() {};
+		//~ run.prototype.f = function() {
+			//~ console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ 
+			//~ var st = document.getElementsByTagName('strong');
+			//~ var o = {
+				//~ country: st[1].innerText.trim(),
+				//~ weight: st[2].innerText.trim(),
+				//~ q: [
+					//~ document.getElementById('dhl'),
+					//~ document.getElementById('fedex1'),
+					//~ document.getElementById('fedex2'),
+					//~ document.getElementById('mail1'),
+					//~ document.getElementById('mail2'),
+					//~ document.getElementById('ups1'),
+					//~ document.getElementById('ups2')
+				//~ ],
+				//~ 
+				//~ scrapes: [
+					//~ 'DHL',
+					//~ 'FedEx Economy',
+					//~ 'FedEx',
+					//~ 'Mail (6-12 days)',
+					//~ 'Mail Express (3-7 days)',
+					//~ 'UPS Expedited (3-5 days)',
+					//~ 'UPS Saver (2-3 days)'
+				//~ ]
+			//~ }
+			//~ 
+			//~ // Ensure placeholder
+			//~ // and ensure order
+			//~ var fms = document.getElementsByClassName('form-control');
+			//~ if (fms.length != 7) {
+				//~ document.body.style.backgroundColor = 'orange';
+				//~ return;
+			//~ }
+			//~ for (var i=0; i<=fms.length-1; i++) {
+				//~ if (o.q[i] != fms[i]) {
+					//~ document.body.style.backgroundColor = 'yellow';
+					//~ return;
+				//~ }
+				//~ var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
+				//~ var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
+				//~ if  (
+					//~ test1 != test2
+					//~ )
+				//~ {
+					//~ document.body.style.backgroundColor = 'aqua';
+					//~ console.log(fms[i].placeholder);
+					//~ console.log(o.scrapes[i] + ' - Type the Rate here');
+					//~ return;
+				//~ }
+			//~ }
+			//~ // sbm
+			//~ document.getElementById('submitButton').onclick = function() {
+			//~ }
+			//~ 
+			//~ // Init
+			//~ rates();
+			//~ 
+			//~ function rates() {
+				//~ var u = 'http://usabox.com/rates.asp?Country='+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+				//~ 
+				//~ // Xhr
+				//~ GM_xmlhttpRequest({
+					//~ method: "GET",
+					//~ url: u,
+					//~ onload: function(response) {
+						//~ var rs=response.responseText; console.log(rs);
+						//~ if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+							//~ document.body.style.backgroundColor = 'pink';
+							//~ return;
+						//~ }
+						//~ 
+						//~ // bool sbm
+						//~ var sbm = true;
+						//~ 
+						//~ // e.g.
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$129.92<tr><td bgcolor='#E1E1EA'>Mail Express (3-7 days)<td bgcolor='#FFFFFF' align=right>$147.75<tr>
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
+						//~ for (var count in o.scrapes) { // 0...6
+							//~ var type = o.scrapes[count];
+							//~ var inp = o.q[count];
+							//~ var reg = new RegExp(
+								//~ "<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
+								//~ ''
+							//~ );
+							//~ console.log(reg);
+							//~ reg = reg.exec(rs);
+							//~ if (reg) {
+								//~ inp.value = reg[1];
+							//~ } else {
+								//~ sbm = false;
+								//~ inp.style.border = '4px solid blue';
+							//~ }
+						//~ }
+						//~ 
+						//~ console.log(sbm);
+						//~ if (sbm) {
+							//~ doSubmit();
+						//~ }
+					//~ }
+				//~ });
+				//~ 
+			//~ }
+		//~ }
+		//~ new run().f();
+	//~ }
 	
 	// 
 	// Alex Jenkins
@@ -79262,7 +79373,7 @@ qatar,80
 			 * serr
 			 */
 			function serr(err) {
-				d1b.innerText = err;
+				d1b.innerText += err + '\n';
 				d1b.style.border = '8px solid orange';
 				d1b.style.backgroundColor = 'LightGreen';
 			}
@@ -79431,6 +79542,19 @@ qatar,80
 							if (r.length < 4) // 7/10
 								sbm = false;
 							
+							
+							// However...
+							// Does the page have either
+							// a) <h2>My Commitment to You</h2>
+							// or b) <h2>Tailored Financial Strategies. Personal Service.</h2>
+							if  (
+								rs.indexOf('<h2>My Commitment to You</h2>') != -1 ||
+								rs.indexOf('<h2>Tailored Financial Strategies. Personal Service.</h2>') != -1
+								)
+							{
+								sbm = false;
+								serr('Page has "MY COMMITMENT TO YOU..." or "TAILORED FINANCIAL..." AND also has "My Background"! Do not continue!!!');
+							}
 						} else {
 							document.getElementsByName('Q3fBackground')[1].checked = true;
 							document.getElementsByName('Q3gFirstPersonPoV')[1].checked = true;
@@ -79450,17 +79574,6 @@ qatar,80
 							//~ }
 						}
 						
-						// Does the page have either
-						// a) <h2>My Commitment to You</h2>
-						// or b) <h2>Tailored Financial Strategies. Personal Service.</h2>
-						if  (
-							rs.indexOf('<h2>My Commitment to You</h2>') != -1 ||
-							rs.indexOf('<h2>Tailored Financial Strategies. Personal Service.</h2>') != -1
-							)
-						{
-							sbm = false;
-							serr('Page has "MY COMMITMENT TO YOU..." or "TAILORED FINANCIAL..." AND also has "My Background"! Do not continue!!!');
-						}
 						
 						
 						// img
