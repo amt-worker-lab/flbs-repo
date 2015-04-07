@@ -78960,7 +78960,8 @@ qatar,80
 	}
 	
 	//
-	// LinkedIn Test ""
+	// LinkedIn Test "" OLD
+	// Web Test (aka)
 	// Masters, WF 2
 	// 
 	s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
@@ -79104,390 +79105,407 @@ qatar,80
 	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
 	//~ s = 'd. Email';
 	//~ s2 = '';
-	if (ih.indexOf(s) != -1) {//console.log('x');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:30%;margin-top:500px;}');
-		GM_addStyle('#submitButton {position:absolute;top:440px;left:0;width:100%;height:60px;}');
-		GM_addStyle('input[type="radio"] {zoom:2.2;}');
+	if (ih.indexOf(s) != -1) {
 		
-		GM_addStyle('strong {zoom:2;}');
-		
-		// move to top
-		var prof_rad = document.getElementsByTagName('table')[5]; // profile image?
-		prof_rad.setAttribute('style', 'position:absolute;top:0;');
-		prof_rad = prof_rad.getElementsByTagName('input');
-		var prof_rad = document.getElementsByTagName('table')[7]; // profile is in first person point of view?
-		prof_rad.setAttribute('style', 'position:absolute;top:40;');
-		prof_rad = prof_rad.getElementsByTagName('input');
-		
-		var a = document.getElementsByTagName('a')[0].href;
-		//~ a = 'https://home.wellsfargoadvisors.com/vernon.gang';
-		
-		/*  */
-		var d1;
-		d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:220px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
-		document.body.appendChild(d1);
-		var d2;
-		d2 = document.createElement('img');
-		d2.setAttribute('style','position:absolute;top:80px;left:80%;width:20%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
-		document.body.appendChild(d2);
-		/*  */
-		
-		//~ // innerHeight
-		//~ new AMT___core_factory().el_innerHeight({
-			//~ // This set the elements d1,d1b, and d1c
-			//~ // to fill up the whole window, minus their
-			//~ // distance from page top (top:XX pixels;).
-			//~ elements: [
-				//~ d1
-			//~ ],
-			//~ offset: 80 // offset top
-		//~ });
-		
-		// GLOBAL
-		var sbm = true;
-		
-		// Elements
-		var elements = [
-			[
-				document.getElementsByName('1LinktoWebpage')[0],
-				document.getElementsByName('Q5LinktoWebpage')[0]
-			],
-			[
-				document.getElementsByName('Q3aName')[0],
-				document.getElementsByName('Q3aName')[1]
-			],
-			[
-				document.getElementsByName('Q3bAddress')[0],
-				document.getElementsByName('Q3bAddress')[1]
-			],
-			[
-				document.getElementsByName('Q3cPhone')[0],
-				document.getElementsByName('Q3cPhone')[1]
-			],
-			[
-				document.getElementsByName('Q3dEmail')[0],
-				document.getElementsByName('Q3dEmail')[1]
-			],
-			[
-				document.getElementsByName('Q3ePhoto')[0],
-				document.getElementsByName('Q3ePhoto')[1]
-			],
-			[
-				document.getElementsByName('Q3fBackground')[0],
-				document.getElementsByName('Q3fBackground')[1]
-			],
-			[
-				document.getElementsByName('Q3gFirstPersonPoV')[0],
-				document.getElementsByName('Q3gFirstPersonPoV')[1]
-			],
-			[
-				document.getElementsByName('Q3hAssociate')[0],
-				document.getElementsByName('Q3hAssociate')[1]
-			],
-			[
-				document.getElementsByName('Q3iExperience')[0],
-				document.getElementsByName('Q3iExperience')[1]
-			],
-			[
-				document.getElementsByName('Q3jEducation')[0],
-				document.getElementsByName('Q3jEducation')[1]
-			],
-			[
-				document.getElementsByName('Q3kAreasofFocus')[0],
-				document.getElementsByName('Q3kAreasofFocus')[1]
-			],
-			[
-				document.getElementsByName('Q3lCommunityInvolvement')[0],
-				document.getElementsByName('Q3lCommunityInvolvement')[1]
-			],
-			[
-				// This has only one element, b/c it's an text field
-				document.getElementById('Q2JobTitle')
-			]
-		];
-		
-		// onclick
-		// Click the submit button every time a radio
-		// button is clicked.
-		for (var i in elements) {
-			if (elements[i].length == 2) {
-				
-				elements[i][0].onclick = elements[i][1].onclick = function() {
-					this.checked = true;
-					document.getElementById('submitButton').click();
-				}
-				
-			}
-		}
-		
-		// ...
-		document.getElementById('submitButton').onclick = function() {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body {width:30%;margin-top:500px;}');
+			GM_addStyle('#submitButton {position:absolute;top:440px;left:0;width:100%;height:60px;}');
+			GM_addStyle('input[type="radio"] {zoom:2.2;}');
 			
-			var tmp_sbm = true;
+			GM_addStyle('strong {zoom:2;}');
+			
+			// move to top
+			var prof_rad = document.getElementsByTagName('table')[5]; // profile image?
+			prof_rad.setAttribute('style', 'position:absolute;top:0;');
+			prof_rad = prof_rad.getElementsByTagName('input');
+			var prof_rad = document.getElementsByTagName('table')[7]; // profile is in first person point of view?
+			prof_rad.setAttribute('style', 'position:absolute;top:40;');
+			prof_rad = prof_rad.getElementsByTagName('input');
+			
+			var a = document.getElementsByTagName('a')[0].href;
+			//~ a = 'https://home.wellsfargoadvisors.com/vernon.gang';
+			
+			/*  */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:220px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div'); // debug
+			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:80px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('img');
+			d2.setAttribute('style','position:absolute;top:80px;left:80%;width:20%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d2);
+			/*  */
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 80 // offset top
+			//~ });
+			
+			// GLOBAL
+			var sbm = true;
+			
+			// Elements
+			var elements = [
+				[
+					document.getElementsByName('1LinktoWebpage')[0],
+					document.getElementsByName('Q5LinktoWebpage')[0]
+				],
+				[
+					document.getElementsByName('Q3aName')[0],
+					document.getElementsByName('Q3aName')[1]
+				],
+				[
+					document.getElementsByName('Q3bAddress')[0],
+					document.getElementsByName('Q3bAddress')[1]
+				],
+				[
+					document.getElementsByName('Q3cPhone')[0],
+					document.getElementsByName('Q3cPhone')[1]
+				],
+				[
+					document.getElementsByName('Q3dEmail')[0],
+					document.getElementsByName('Q3dEmail')[1]
+				],
+				[
+					document.getElementsByName('Q3ePhoto')[0],
+					document.getElementsByName('Q3ePhoto')[1]
+				],
+				[
+					document.getElementsByName('Q3fBackground')[0],
+					document.getElementsByName('Q3fBackground')[1]
+				],
+				[
+					document.getElementsByName('Q3gFirstPersonPoV')[0],
+					document.getElementsByName('Q3gFirstPersonPoV')[1]
+				],
+				[
+					document.getElementsByName('Q3hAssociate')[0],
+					document.getElementsByName('Q3hAssociate')[1]
+				],
+				[
+					document.getElementsByName('Q3iExperience')[0],
+					document.getElementsByName('Q3iExperience')[1]
+				],
+				[
+					document.getElementsByName('Q3jEducation')[0],
+					document.getElementsByName('Q3jEducation')[1]
+				],
+				[
+					document.getElementsByName('Q3kAreasofFocus')[0],
+					document.getElementsByName('Q3kAreasofFocus')[1]
+				],
+				[
+					document.getElementsByName('Q3lCommunityInvolvement')[0],
+					document.getElementsByName('Q3lCommunityInvolvement')[1]
+				],
+				[
+					// This has only one element, b/c it's an text field
+					document.getElementById('Q2JobTitle')
+				]
+			];
+			
+			// onclick
+			// Click the submit button every time a radio
+			// button is clicked.
 			for (var i in elements) {
 				if (elements[i].length == 2) {
 					
-					// Either 0 or 1 must be checked
-					if (!elements[i][0].checked && !elements[i][1].checked) {
-						tmp_sbm = false;
-						console.log(elements[i]);
+					elements[i][0].onclick = elements[i][1].onclick = function() {
+						this.checked = true;
+						document.getElementById('submitButton').click();
 					}
 					
-				} else {
-					if (elements[i][0].value.trim() == '') {
-						tmp_sbm = false;
-						console.log(elements[i]);
-					}
 				}
 			}
 			
-			if (tmp_sbm) {
-				new AMT___core_factory().nextTab();
-				doSubmit();
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				
+				var tmp_sbm = true;
+				for (var i in elements) {
+					if (elements[i].length == 2) {
+						
+						// Either 0 or 1 must be checked
+						if (!elements[i][0].checked && !elements[i][1].checked) {
+							tmp_sbm = false;
+							console.log(elements[i]);
+						}
+						
+					} else {
+						if (elements[i][0].value.trim() == '') {
+							tmp_sbm = false;
+							console.log(elements[i]);
+						}
+					}
+				}
+				
+				if (tmp_sbm) {
+					new AMT___core_factory().nextTab();
+					doSubmit();
+				}
+				return false;
+				//~ if (sbm) {
+					//~ document.body.style.backgroundColor = 'LightGreen';
+					//~ doSubmit();
+				//~ }
+				//~ return false;
 			}
-			return false;
-			//~ if (sbm) {
-				//~ document.body.style.backgroundColor = 'LightGreen';
-				//~ doSubmit();
+			//~ prof_rad[0].onclick = prof_rad[1].onclick = function() {
+				//~ this.checked = true;
+				//~ if (sbm) {
+					//~ document.body.style.backgroundColor = 'LightGreen';
+					//~ doSubmit();
+				//~ }
 			//~ }
-			//~ return false;
-		}
-		//~ prof_rad[0].onclick = prof_rad[1].onclick = function() {
-			//~ this.checked = true;
-			//~ if (sbm) {
-				//~ document.body.style.backgroundColor = 'LightGreen';
-				//~ doSubmit();
-			//~ }
-		//~ }
-		
-		LinkedIn_Test_Profile_Checking_WF();
-		function LinkedIn_Test_Profile_Checking_WF() {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(a),
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						out.innerHTML = response.status;
-						return;
-					}
-					
-					//console.log(rs);
-					
-					var r;
-					
-					// NOT FOUND, GOES TO HOME PAGE!
-					r = /<img alt="Should Your Game Plan Change for 2014’s Second Half\? Find out our top strategist’s thoughts\. Watch the videos\." border="0" src="images\/myo\/home-a\.gif"/.exec(rs); //
-					//~ r = '<img alt="Should Your Game Plan Change for 2014’s Second Half? Find out our top strategist’s thoughts. Watch the videos." border="0" src="images/myo/home-a.gif"';
-					//~ r = '<title>Investing Services, Financial Advisors | Wells Fargo Advisors</title>';
-					if (rs.indexOf(r) != -1) {
+			
+			LinkedIn_Test_Profile_Checking_WF();
+			function LinkedIn_Test_Profile_Checking_WF() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(a),
+					onload: function(response) {
+						var rs = response.responseText;
 						
-						document.body.style.backgroundColor = 'LightGreen';
-						document.getElementById('Q5LinktoWebpage').checked = true;
-						doSubmit();
+						if (response.status != 200) {
+							out.innerHTML = response.status;
+							return;
+						}
 						
-						return;
-					} else {
+						//console.log(rs);
 						
-						document.getElementById('Q1LinktoWebpage').checked = true;
+						var r;
 						
-					}
-					
-					
-					//ALLAN ZENDEL
-					//, CFP&reg;
-					r = /<div id="nameTitle">[\r\n\t\s]*<h1>([^,<]+)([^<]*)<\/h1>/i.exec(rs); //Financial Advisor
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						d1.innerText += 'Name:' + r +'\n';
-						document.getElementsByName('Q3aName')[0].checked = true;
-						if (r.length < 3)
-							sbm = false;
-					} else {
-						document.getElementsByName('Q3aName')[1].checked = true;
-						d1.innerText += 'Name:\n';
-					}
-					
-					r = /<h2><\/h2>[\r\n\t\s]+<h2>([^<]+)<\/h2>/.exec(rs); //Financial Advisor
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						document.getElementById('Q2JobTitle').value = r;
-						if (r.length < 3)
-							sbm = false;
-					} else {
-						r = /nameTitle">[^<]*<h1>[^<]*<\/h1>[\r\n\t\s]+<h2>([^<]+)<\/h2>/.exec(rs); //Financial Advisor
+						// NOT FOUND, GOES TO HOME PAGE!
+						r = /<img alt="Should Your Game Plan Change for 2014’s Second Half\? Find out our top strategist’s thoughts\. Watch the videos\." border="0" src="images\/myo\/home-a\.gif"/.exec(rs); //
+						//~ r = '<img alt="Should Your Game Plan Change for 2014’s Second Half? Find out our top strategist’s thoughts. Watch the videos." border="0" src="images/myo/home-a.gif"';
+						//~ r = '<title>Investing Services, Financial Advisors | Wells Fargo Advisors</title>';
+						if (rs.indexOf(r) != -1) {
+							
+							document.body.style.backgroundColor = 'LightGreen';
+							document.getElementById('Q5LinktoWebpage').checked = true;
+							doSubmit();
+							
+							return;
+						} else {
+							
+							document.getElementById('Q1LinktoWebpage').checked = true;
+							
+						}
+						
+						
+						//ALLAN ZENDEL
+						//, CFP&reg;
+						r = /<div id="nameTitle">[\r\n\t\s]*<h1>([^,<]+)([^<]*)<\/h1>/i.exec(rs); //Financial Advisor
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							d1.innerText += 'Name:' + r +'\n';
+							document.getElementsByName('Q3aName')[0].checked = true;
+							if (r.length < 3)
+								sbm = false;
+						} else {
+							document.getElementsByName('Q3aName')[1].checked = true;
+							d1.innerText += 'Name:\n';
+						}
+						
+						r = /<h2><\/h2>[\r\n\t\s]+<h2>([^<]+)<\/h2>/.exec(rs); //Financial Advisor
 						if (r) {
 							r = __js_clean_html_str(r[1]).trim();
 							document.getElementById('Q2JobTitle').value = r;
 							if (r.length < 3)
 								sbm = false;
-						} else
-							sbm = false;
-					}
-					
-					r = /<strong>Address:<\/strong> ([^<]+) <br \/>/.exec(rs); //Financial Advisor
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						d1.innerText += 'Address:' + r +'\n';
-						document.getElementsByName('Q3bAddress')[0].checked = true;
-						if (r.length < 8)
-							sbm = false;
-					} else {
-						document.getElementsByName('Q3bAddress')[1].checked = true;
-						d1.innerText += 'Address:\n';
-					}
-					
-					r = /<strong>Phone:<\/strong> ([\d\-]+) /.exec(rs); //501-217-3002 | 800-482-9654
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						d1.innerText += 'Ph:' + r +'\n';
-						document.getElementsByName('Q3cPhone')[0].checked = true;
-						if (r.length < 7) // 7/10
-							sbm = false;
-					} else {
-						document.getElementsByName('Q3cPhone')[1].checked = true;
-						d1.innerText += 'Ph:\n';
-					}
-					
-					// ""amanda\x2Ewebb\x40wellsfargoadvisors\x2Ecom\""
-					r = /<strong>Email:<\/strong> <a href=\\"mailto:([^"]+)">[^<]+<span class=\\"adaFAWebHidden\\"> Compose mail in a new window<\/span><\/a>/.exec(rs); //
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						r = r.replace(/\\x/g, '%');
-						r = decodeURIComponent(r).trim();
-						d1.innerText += 'Em:' + r +'\n';
-						document.getElementsByName('Q3dEmail')[0].checked = true;
-						if (r.length < 6 || r.indexOf('@') == -1) // 7/10
-							sbm = false;
-					} else {
-						document.getElementsByName('Q3dEmail')[1].checked = true;
-						d1.innerText += 'Em:\n';
-					}
-					
-					
-					//
-					r = /<div id="myAssociates">[\r\n\s\t]*<strong>My Associate\(s\):<\/strong>/.exec(rs); //
-					if (r) {
-						document.getElementsByName('Q3hAssociate')[0].checked = true;
-					} else {
-						document.getElementsByName('Q3hAssociate')[1].checked = true;
-					}
-					//
-					r = /<div id="experience">[\r\n\s\t]*<h2>My Experience<\/h2>/.exec(rs); //
-					if (r) {
-						document.getElementsByName('Q3iExperience')[0].checked = true;
-					} else {
-						document.getElementsByName('Q3iExperience')[1].checked = true;
-					}
-					// 
-					r = /<h2>My Education &amp; Credentials<\/h2>[\r\n\s\t]*<ul class="bulletsNoLeftIndent">[\r\n\s\t]*<li>[^<]*<\/li>/.exec(rs); //
-					if (r) {
-						document.getElementsByName('Q3jEducation')[0].checked = true;
-					} else {
-						document.getElementsByName('Q3jEducation')[1].checked = true;
-					}
-					// 
-					r = /<div id="areasOfFocus">[\r\n\s\t]*<h2>My Areas of Focus<\/h2>/.exec(rs); //
-					if (r) {
-						document.getElementsByName('Q3kAreasofFocus')[0].checked = true;
-					} else {
-						document.getElementsByName('Q3kAreasofFocus')[1].checked = true;
-					}
-					// 
-					r = /<div id="communityInvolvement">[\r\n\s\t]*<h2>My Community Involvement<\/h2>/.exec(rs); //
-					if (r) {
-						document.getElementsByName('Q3lCommunityInvolvement')[0].checked = true;
-					} else {
-						document.getElementsByName('Q3lCommunityInvolvement')[1].checked = true;
-					}
-					
-					// 
-					r = /<div id="myBackground">[\r\n\t\s]*<h2>My Background<\/h2>[\r\n\t\s]*<script language="javascript" type="text\/javascript">[\r\n\t\s]*document\.write\("<p>([^<]*)<\/p>"\);[\r\n\t\s]*<\/script>/.exec(rs); //
-					if (r) {
-						r = __js_clean_html_str(r[1]).trim();
-						r = r.replace(/\\x/g, '%');
-						r = decodeURIComponent(r).trim();
-						//~ r = JSON.parse(r); // str?
+						} else {
+							r = /nameTitle">[^<]*<h1>[^<]*<\/h1>[\r\n\t\s]+<h2>([^<]+)<\/h2>/.exec(rs); //Financial Advisor
+							if (r) {
+								r = __js_clean_html_str(r[1]).trim();
+								document.getElementById('Q2JobTitle').value = r;
+								if (r.length < 3)
+									sbm = false;
+							} else
+								sbm = false;
+						}
+						
+						r = /<strong>Address:<\/strong> ([^<]+) <br \/>/.exec(rs); //Financial Advisor
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							d1.innerText += 'Address:' + r +'\n';
+							document.getElementsByName('Q3bAddress')[0].checked = true;
+							if (r.length < 8)
+								sbm = false;
+						} else {
+							document.getElementsByName('Q3bAddress')[1].checked = true;
+							d1.innerText += 'Address:\n';
+						}
+						
+						r = /<strong>Phone:<\/strong> ([\d\-]+) /.exec(rs); //501-217-3002 | 800-482-9654
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							d1.innerText += 'Ph:' + r +'\n';
+							document.getElementsByName('Q3cPhone')[0].checked = true;
+							if (r.length < 7) // 7/10
+								sbm = false;
+						} else {
+							document.getElementsByName('Q3cPhone')[1].checked = true;
+							d1.innerText += 'Ph:\n';
+						}
+						
+						// ""amanda\x2Ewebb\x40wellsfargoadvisors\x2Ecom\""
+						r = /<strong>Email:<\/strong> <a href=\\"mailto:([^"]+)">[^<]+<span class=\\"adaFAWebHidden\\"> Compose mail in a new window<\/span><\/a>/.exec(rs); //
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							r = r.replace(/\\x/g, '%');
+							r = decodeURIComponent(r).trim();
+							d1.innerText += 'Em:' + r +'\n';
+							document.getElementsByName('Q3dEmail')[0].checked = true;
+							if (r.length < 6 || r.indexOf('@') == -1) // 7/10
+								sbm = false;
+						} else {
+							document.getElementsByName('Q3dEmail')[1].checked = true;
+							d1.innerText += 'Em:\n';
+						}
+						
+						
+						//
+						r = /<div id="myAssociates">[\r\n\s\t]*<strong>My Associate\(s\):<\/strong>/.exec(rs); //
+						if (r) {
+							document.getElementsByName('Q3hAssociate')[0].checked = true;
+						} else {
+							document.getElementsByName('Q3hAssociate')[1].checked = true;
+						}
+						//
+						r = /<div id="experience">[\r\n\s\t]*<h2>My Experience<\/h2>/.exec(rs); //
+						if (r) {
+							document.getElementsByName('Q3iExperience')[0].checked = true;
+						} else {
+							document.getElementsByName('Q3iExperience')[1].checked = true;
+						}
+						// 
+						r = /<h2>My Education &amp; Credentials<\/h2>[\r\n\s\t]*<ul class="bulletsNoLeftIndent">[\r\n\s\t]*<li>[^<]*<\/li>/.exec(rs); //
+						if (r) {
+							document.getElementsByName('Q3jEducation')[0].checked = true;
+						} else {
+							document.getElementsByName('Q3jEducation')[1].checked = true;
+						}
+						// 
+						r = /<div id="areasOfFocus">[\r\n\s\t]*<h2>My Areas of Focus<\/h2>/.exec(rs); //
+						if (r) {
+							document.getElementsByName('Q3kAreasofFocus')[0].checked = true;
+						} else {
+							document.getElementsByName('Q3kAreasofFocus')[1].checked = true;
+						}
+						// 
+						r = /<div id="communityInvolvement">[\r\n\s\t]*<h2>My Community Involvement<\/h2>/.exec(rs); //
+						if (r) {
+							document.getElementsByName('Q3lCommunityInvolvement')[0].checked = true;
+						} else {
+							document.getElementsByName('Q3lCommunityInvolvement')[1].checked = true;
+						}
+						
+						// 
+						r = /<div id="myBackground">[\r\n\t\s]*<h2>My Background<\/h2>[\r\n\t\s]*<script language="javascript" type="text\/javascript">[\r\n\t\s]*document\.write\("<p>([^<]*)<\/p>"\);[\r\n\t\s]*<\/script>/.exec(rs); //
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							r = r.replace(/\\x/g, '%');
+							r = decodeURIComponent(r).trim();
+							//~ r = JSON.parse(r); // str?
 
-						//console.log(r);
+							//console.log(r);
 
+							
+							var iReg = /(I )/g;
+							r = r.replace(iReg, '<strong>$1</strong>');
+							
+							d1.innerHTML += '<hr>';
+							d1.innerHTML += 'BG:' + r +'<br>';
+							document.getElementsByName('Q3fBackground')[0].checked = true;
+							if (r.length < 4) // 7/10
+								sbm = false;
+							
+						} else {
+							document.getElementsByName('Q3fBackground')[1].checked = true;
+							document.getElementsByName('Q3gFirstPersonPoV')[1].checked = true;
+							d1.innerText += 'BG:\n';
+							
+							// SUBMIT AUTO!!
+							//~ if (sbm) {
+								//~ document.body.style.backgroundColor = 'LightGreen';
+								//~ doSubmit();
+							//~ }
+						}
 						
-						var iReg = /(I )/g;
-						r = r.replace(iReg, '<strong>$1</strong>');
-						
-						d1.innerHTML += '<hr>';
-						d1.innerHTML += 'BG:' + r +'<br>';
-						document.getElementsByName('Q3fBackground')[0].checked = true;
-						if (r.length < 4) // 7/10
+						// Does the page have either
+						// a) <h2>My Commitment to You</h2>
+						// or b) <h2>Tailored Financial Strategies. Personal Service.</h2>
+						if  (
+							rs.indexOf('<h2>My Commitment to You</h2>') != -1 ||
+							rs.indexOf('<h2>Tailored Financial Strategies. Personal Service.</h2>') != -1
+							)
+						{
 							sbm = false;
+							serr();
+						}
 						
-					} else {
-						document.getElementsByName('Q3fBackground')[1].checked = true;
-						document.getElementsByName('Q3gFirstPersonPoV')[1].checked = true;
-						d1.innerText += 'BG:\n';
 						
-						// SUBMIT AUTO!!
-						//~ if (sbm) {
-							//~ document.body.style.backgroundColor = 'LightGreen';
-							//~ doSubmit();
-						//~ }
-					}
-					
-					
-					
-					// img
-					//https://saf.wellsfargoadvisors.com/faphotos/Photos/75/669275.jpg
-					//url_to_status_code
-					r = /<img id="faimg" src="([^"]+)" onerror="faImg2txt\(\)" alt=""/.exec(rs);
-					if (r) {
-						r = __js_clean_html_str(r[1]);
-						
-						// Is 200
-						new AMT___requests_factory().url_to_status_code({
-							url: r,
-							callback_function: function(callback_object) {
-								console.log(callback_object);
-								if (callback_object.status == 200) {
-									document.getElementsByName('Q3ePhoto')[0].checked = true;
-								} else {
-									document.getElementsByName('Q3ePhoto')[1].checked = true;
+						// img
+						//https://saf.wellsfargoadvisors.com/faphotos/Photos/75/669275.jpg
+						//url_to_status_code
+						r = /<img id="faimg" src="([^"]+)" onerror="faImg2txt\(\)" alt=""/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]);
+							
+							// Is 200
+							new AMT___requests_factory().url_to_status_code({
+								url: r,
+								callback_function: function(callback_object) {
+									console.log(callback_object);
+									if (callback_object.status == 200) {
+										document.getElementsByName('Q3ePhoto')[0].checked = true;
+									} else {
+										document.getElementsByName('Q3ePhoto')[1].checked = true;
+									}
+									
+									if (sbm) {
+										document.getElementById('submitButton').click();
+										//~ doSubmit();
+									} else {
+										document.body.style.backgroundColor = 'LightGreen';
+									}
 								}
-								
-								if (sbm) {
-									document.getElementById('submitButton').click();
-									//~ doSubmit();
-								} else {
-									document.body.style.backgroundColor = 'LightGreen';
-								}
-							}
-						});
-						//~ console.log(r);
-						//~ var img = document.createElement('img');
-						//~ img.src = __js_clean_html_str(r[1]);
-						//~ d1.appendChild(img);
-						//~ d1.appendChild(document.createElement('br'));
+							});
+							//~ console.log(r);
+							//~ var img = document.createElement('img');
+							//~ img.src = __js_clean_html_str(r[1]);
+							//~ d1.appendChild(img);
+							//~ d1.appendChild(document.createElement('br'));
+							
+							d2.src = r;
+							//~ d1.innerHTML += '<img src="'+__js_clean_html_str(r[1])+'"><br>'; 
+							//~ sbm = false;
+						} else {
+							document.getElementsByName('Q3ePhoto')[1].checked = true;
+							
+							if (sbm) {
+								document.getElementById('submitButton').click();
+								//~ doSubmit();
+							} else
+								document.body.style.backgroundColor = 'pink';
+						}
 						
-						d2.src = r;
-						//~ d1.innerHTML += '<img src="'+__js_clean_html_str(r[1])+'"><br>'; 
-						//~ sbm = false;
-					} else {
-						document.getElementsByName('Q3ePhoto')[1].checked = true;
 						
-						if (sbm) {
-							document.getElementById('submitButton').click();
-							//~ doSubmit();
-						} else
-							document.body.style.backgroundColor = 'pink';
+						
 					}
-					
-					
-					
-				}
-			});
+				});
+			}
 		}
+		new run().f();return;
 	}
 	
 	//
