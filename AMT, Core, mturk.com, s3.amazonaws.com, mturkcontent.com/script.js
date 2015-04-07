@@ -3421,14 +3421,14 @@ function MT__RUN() {
 				weight: st[2].innerText.trim(),
 				q: document.getElementById('dhl'),
 				
-				scrapes: {
-					'DHL':false,
-					'FedEx Economy':false,
-					'FedEx':false,
-					'Mail (6-12 days)':false,
-					'Mail Express (3-7 days)':false,
-					'UPS Expedited (3-5 days)':false,
-					'UPS Saver (2-3 days)':false,
+				scrapes: { // counts on page
+					'DHL':0,
+					'FedEx Economy':0,
+					'FedEx':0,
+					'Mail (6-12 days)':0,
+					'Mail Express (3-7 days)':0,
+					'UPS Expedited (3-5 days)':0,
+					'UPS Saver (2-3 days)':0
 				}
 			}
 			
@@ -3508,24 +3508,38 @@ function MT__RUN() {
 						var sbm = true;
 						
 						// Table container
-						var contain = /<table border=0 cellspacing=1 cellpadding=15  bgcolor='#666' width='800'>[\r\n\t\s]+<tr valign=top>[\r\n\t\s]+<th bgcolor='#E1E1EA' width='400'>[\r\n\t\s]+<h2>Fast Track:<\/h2>((.|\s)*?(?=<\/tabe>|$)|$)/.exec(rs);
+						var contain = /<table border=0 cellspacing=1 cellpadding=15  bgcolor='#666' width='800'>[\r\n\t\s]+<tr valign=top>[\r\n\t\s]+<th bgcolor='#E1E1EA' width='400'>[\r\n\t\s]+<h2>Fast Track:<\/h2>((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
 						if (!contain) {
 							document.body.style.backgroundColor = 'LightGreen';
 							return;
 						}
 						contain = contain[1];
 						
-						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>\$([\d\.]+)/g;
+						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.]+)/g;
 						var m;
 						var count = 0;
 						while (m = reg.exec(contain)) {
-							o.q.value += m[1] + m[2];
+							if (o.scrapes.hasOwnProperty( m[1] )) {
+								o.q.value += m[1] + m[2]; // Add first instance.
+							}
+							if (o.scrapes.hasOwnProperty( m[1] )) {
+								o.scrapes[ m[1] ]++; // Increment
+							}
 						}
 						o.q.value = o.q.value.trim();
 						
+						// Any not "1"
+						for (var type in o.scrapes) {
+							var count = o.scrapes[ type ];
+							if (count != 1) {
+								sbm = false;
+							}
+						}
+						
 						console.log(sbm);
-						if (sbm && count == 7 && o.q.value != '') {
-							//~ doSubmit();
+						console.log(o);
+						if (sbm && o.q.value.length > 20) {
+							doSubmit();
 						}
 						
 						//~ // e.g.
