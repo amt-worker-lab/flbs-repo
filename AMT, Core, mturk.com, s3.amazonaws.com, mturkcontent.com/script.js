@@ -79132,10 +79132,10 @@ qatar,80
 			d1.setAttribute('style','position:absolute;top:80px;left:0%;width:80%;height:220px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div'); // debug
-			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:80px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:18%;height:80px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1b);
 			var d2 = document.createElement('img');
-			d2.setAttribute('style','position:absolute;top:80px;left:80%;width:20%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+			d2.setAttribute('style','position:absolute;top:80px;left:80%;width:18%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d2);
 			/*  */
 			
@@ -79253,21 +79253,23 @@ qatar,80
 					doSubmit();
 				}
 				return false;
-				//~ if (sbm) {
-					//~ document.body.style.backgroundColor = 'LightGreen';
-					//~ doSubmit();
-				//~ }
-				//~ return false;
 			}
-			//~ prof_rad[0].onclick = prof_rad[1].onclick = function() {
-				//~ this.checked = true;
-				//~ if (sbm) {
-					//~ document.body.style.backgroundColor = 'LightGreen';
-					//~ doSubmit();
-				//~ }
-			//~ }
 			
+			// Init
 			LinkedIn_Test_Profile_Checking_WF();
+			
+			/**
+			 * serr
+			 */
+			function serr(err) {
+				d1b.value = err;
+				d1b.style.border = '8px solid orange';
+				d1b.style.backgroundColor = 'LightGreen';
+			}
+			
+			/**
+			 * LinkedIn_Test_Profile_Checking_WF
+			 */
 			function LinkedIn_Test_Profile_Checking_WF() {
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -79434,6 +79436,13 @@ qatar,80
 							document.getElementsByName('Q3gFirstPersonPoV')[1].checked = true;
 							d1.innerText += 'BG:\n';
 							
+							// Has background not standard???
+							// Quality check, Apr 2015.
+							if (rs.indexOf('<h2>My Background</h2>') != -1) {
+								sbm = false;
+								serr('Page has "<h2>My Background</h2>". Quality check (Apr2015). Ensure correct then remove this!');
+							}
+							
 							// SUBMIT AUTO!!
 							//~ if (sbm) {
 								//~ document.body.style.backgroundColor = 'LightGreen';
@@ -79450,7 +79459,7 @@ qatar,80
 							)
 						{
 							sbm = false;
-							serr();
+							serr('Page has "MY COMMITMENT TO YOU..." or "TAILORED FINANCIAL..." AND also has "My Background"! Do not continue!!!');
 						}
 						
 						
@@ -79480,27 +79489,17 @@ qatar,80
 									}
 								}
 							});
-							//~ console.log(r);
-							//~ var img = document.createElement('img');
-							//~ img.src = __js_clean_html_str(r[1]);
-							//~ d1.appendChild(img);
-							//~ d1.appendChild(document.createElement('br'));
 							
 							d2.src = r;
-							//~ d1.innerHTML += '<img src="'+__js_clean_html_str(r[1])+'"><br>'; 
-							//~ sbm = false;
 						} else {
 							document.getElementsByName('Q3ePhoto')[1].checked = true;
 							
 							if (sbm) {
 								document.getElementById('submitButton').click();
-								//~ doSubmit();
-							} else
+							} else {
 								document.body.style.backgroundColor = 'pink';
+							}
 						}
-						
-						
-						
 					}
 				});
 			}
