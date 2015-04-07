@@ -3419,25 +3419,17 @@ function MT__RUN() {
 			var o = {
 				country: st[1].innerText.trim(),
 				weight: st[2].innerText.trim(),
-				q: [
-					document.getElementById('dhl') //,
-					//~ document.getElementById('fedex1'),
-					//~ document.getElementById('fedex2'),
-					//~ document.getElementById('mail1'),
-					//~ document.getElementById('mail2'),
-					//~ document.getElementById('ups1'),
-					//~ document.getElementById('ups2')
-				],
+				q: document.getElementById('dhl'),
 				
-				scrapes: [
-					'DHL',
-					'FedEx Economy',
-					'FedEx',
-					'Mail (6-12 days)',
-					'Mail Express (3-7 days)',
-					'UPS Expedited (3-5 days)',
-					'UPS Saver (2-3 days)'
-				]
+				scrapes: {
+					'DHL':false,
+					'FedEx Economy':false,
+					'FedEx':false,
+					'Mail (6-12 days)':false,
+					'Mail Express (3-7 days)':false,
+					'UPS Expedited (3-5 days)':false,
+					'UPS Saver (2-3 days)':false,
+				}
 			}
 			
 			//~ // Ensure placeholder
@@ -3515,30 +3507,48 @@ function MT__RUN() {
 						// bool sbm
 						var sbm = true;
 						
-						// e.g.
-						// <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$129.92<tr><td bgcolor='#E1E1EA'>Mail Express (3-7 days)<td bgcolor='#FFFFFF' align=right>$147.75<tr>
-						// <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
-						for (var count in o.scrapes) { // 0...6
-							var type = o.scrapes[count];
-							var inp = o.q[0];
-							var reg = new RegExp(
-								"<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
-								''
-							);
-							console.log(reg);
-							reg = reg.exec(rs);
-							if (reg) {
-								inp.value += type + reg[1];
-							} else {
-								sbm = false;
-								inp.style.border = '4px solid blue';
-							}
+						// Table container
+						var contain = /<table border=0 cellspacing=1 cellpadding=15  bgcolor='#666' width='800'>[\r\n\t\s]+<tr valign=top>[\r\n\t\s]+<th bgcolor='#E1E1EA' width='400'>[\r\n\t\s]+<h2>Fast Track:<\/h2>((.|\s)*?(?=<\/tabe>|$)|$)/.exec(rs);
+						if (!contain) {
+							document.body.style.backgroundColor = 'LightGreen';
+							return;
 						}
+						contain = contain[1];
+						
+						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>\$([\d\.]+)/g;
+						var m;
+						var count = 0;
+						while (m = reg.exec(contain)) {
+							o.q.value += m[1] + m[2];
+						}
+						o.q.value = o.q.value.trim();
 						
 						console.log(sbm);
-						if (sbm) {
+						if (sbm && count == 7 && o.q.value != '') {
 							//~ doSubmit();
 						}
+						
+						//~ // e.g.
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$129.92<tr><td bgcolor='#E1E1EA'>Mail Express (3-7 days)<td bgcolor='#FFFFFF' align=right>$147.75<tr>
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
+						//~ for (var count in o.scrapes) { // 0...6
+							//~ var type = o.scrapes[count];
+							//~ var inp = o.q[0];
+							//~ var reg = new RegExp(
+								//~ "<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
+								//~ ''
+							//~ );
+							//~ console.log(reg);
+							//~ reg = reg.exec(rs);
+							//~ if (reg) {
+								//~ inp.value += type + reg[1];
+							//~ } else {
+								//~ sbm = false;
+								//~ inp.style.border = '4px solid blue';
+							//~ }
+						//~ }
+						
+						
 					}
 				});
 				
