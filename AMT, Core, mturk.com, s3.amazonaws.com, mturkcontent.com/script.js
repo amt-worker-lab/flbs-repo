@@ -9597,17 +9597,17 @@ function MT__RUN() {
 	// Convert this task to use a database queue (based on assignment_id).
 	 *
 	 *
-	INSERT INTO AMT_batch_correct.assignment_ids_to_correct SET assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN', requester_name='Stephanie Hass';
-	LOAD DATA LOCAL INFILE '/var/www/html/development/AMT_batch_correct/tasks_accomplished.csv'
-		INTO TABLE AMT_batch_correct.HIT_ids_to_correct
-		FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
-		(@hit_id) set hit_id=@hit_id,assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN'; 
-	
-	id	int(10) UN PK AI
-	hit_id	varchar(60) 
-	locked_timestamp	int(10) UN 
-	correct_value	text 
-	assignment_id	varchar(60) 
+			INSERT INTO AMT_batch_correct.assignment_ids_to_correct SET assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN', requester_name='Stephanie Hass';
+			LOAD DATA LOCAL INFILE '/var/www/html/development/AMT_batch_correct/tasks_accomplished.csv'
+				INTO TABLE AMT_batch_correct.HIT_ids_to_correct
+				FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+				(@hit_id) set hit_id=@hit_id,assignment_id='3SKEMFQBZ4FQJE4CBNF8VZ8QR9O8KN'; 
+			
+			id	int(10) UN PK AI
+			hit_id	varchar(60) 
+			locked_timestamp	int(10) UN 
+			correct_value	text 
+			assignment_id	varchar(60) 
 	 * 
 	 * 
 	 * NOTE: Change all references "Stephanie_Hass_Hotel_Data__correct__next_row();" back to "doSubmit();" when complete. (Done.)
