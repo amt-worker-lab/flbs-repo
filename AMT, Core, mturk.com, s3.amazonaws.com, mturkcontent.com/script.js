@@ -3417,7 +3417,7 @@ function MT__RUN() {
 			
 			var st = document.getElementsByTagName('strong');
 			var o = {
-				country: st[1].innerText.trim(),
+				country: st[1].innerText.trim().replace(/ & /g, ' '), // Replace &
 				weight: st[2].innerText.trim(),
 				q: document.getElementById('dhl'),
 				
