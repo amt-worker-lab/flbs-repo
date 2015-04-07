@@ -5413,7 +5413,7 @@ James Strate, CFP®
 Investment Representative at Fidelity Investments
 Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
  		 */ 
-		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title *">((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
+		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title *"[^>]*>((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
 		if (r.exec(rs)) {
 			var hd = r.exec(rs)[1];
 			hd = hd.replace(/<[^>]*>/g, '');
