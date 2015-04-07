@@ -3464,8 +3464,8 @@ function MT__RUN() {
 					{
 						query: 'AMT_Requester__correct_tasks_write',
 						encodeStrings: {
-							hit_id:			o.hitId,
-							correct_value:	'"' + o.country + '","' + o.weight + '","' + o.q.value;
+							hitId:			o.hitId,
+							correct_value:	'"' + o.hitId + '","' + o.country + '","' + o.weight + '","' + o.q.value + '"';
 						}
 					},
 					function(response) {
