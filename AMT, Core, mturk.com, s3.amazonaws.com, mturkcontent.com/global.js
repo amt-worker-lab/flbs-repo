@@ -5669,7 +5669,8 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		EX:
 Professional Financial Management of Assets and Liabilities of Individuals and  ......
 		 */ 
-		r = /<div class="summary"><p class="description">((.|\s)*?(?=<\/p><\/div>|$)|$)/;
+		//~ r = /<div class="summary"><p class="description">((.|\s)*?(?=<\/p><\/div>|$)|$)/;
+		r = /<div class="summary"><p class="description"[^>]*>((.|\s)*?(?=<\/p><\/div>|$)|$)/;
 		if (r.exec(rs)) {
 			var sm = r.exec(rs)[1];
 			sm = sm.replace(/<[^>]*>/g, '');

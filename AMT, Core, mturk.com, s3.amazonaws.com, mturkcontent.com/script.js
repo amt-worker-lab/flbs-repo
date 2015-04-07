@@ -3515,7 +3515,7 @@ function MT__RUN() {
 						}
 						contain = contain[1];
 						
-						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.]+)/g;
+						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.,]+)</g;
 						var m;
 						var count = 0;
 						while (m = reg.exec(contain)) {
