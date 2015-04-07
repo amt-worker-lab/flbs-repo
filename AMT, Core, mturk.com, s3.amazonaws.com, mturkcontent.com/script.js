@@ -3548,7 +3548,7 @@ function MT__RUN() {
 					method: "GET",
 					url: u,
 					onload: function(response) {
-						var rs=response.responseText; console.log(rs);
+						var rs=response.responseText; //console.log(rs);
 						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
 							document.body.style.backgroundColor = 'pink';
 							return;
@@ -3558,14 +3558,16 @@ function MT__RUN() {
 						var sbm = true;
 						
 						// Table container
+						// Goes to end of the first table.
 						var contain = /<table border=0 cellspacing=1 cellpadding=15  bgcolor='#666' width='800'>[\r\n\t\s]+<tr valign=top>[\r\n\t\s]+<th bgcolor='#E1E1EA' width='400'>[\r\n\t\s]+<h2>Fast Track:<\/h2>((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
 						if (!contain) {
 							document.body.style.backgroundColor = 'LightGreen';
 							return;
 						}
 						contain = contain[1];
+						console.log(contain);
 						
-						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.,]+)</g;
+						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.,]+)(<|$)/g; // End of string of <
 						var m;
 						var count = 0;
 						while (m = reg.exec(contain)) {
