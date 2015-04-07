@@ -79262,7 +79262,7 @@ qatar,80
 			 * serr
 			 */
 			function serr(err) {
-				d1b.value = err;
+				d1b.innerText = err;
 				d1b.style.border = '8px solid orange';
 				d1b.style.backgroundColor = 'LightGreen';
 			}
