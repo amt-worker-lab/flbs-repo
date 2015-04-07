@@ -157681,6 +157681,7 @@ function addScriptVarsListener() {
 	chrome.storage.onChanged.addListener(function(change) {
 		//write scriptVars back into Global
 		var scriptVars = change.newValue;
+		console.log(change);
 		if(scriptVars) {
 		console.log(scriptVars)
 			for(var i in scriptVars) {
