@@ -14,7 +14,84 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
+	//
+	//
+	// Corey Bonasorte
+	//
+	s = '<li>If there is no information, please copy/paste what website text was. For example "Your search yielded no results"</li>'
+	if(ih.indexOf('s') != -1) {
+		var run = function() {};
+		run.prototype.f = function() {	
+			var pNameInps = [];
+			var pPriceInps = [];
+			for(var i = 1; i < 5; i++) {
+				pNameInps.push(document.getElementById('prod' + i));
+				pPriceInps.push(document.getElementById('price' + i));
+			} 
+			
+			var o = {
+				sbm: true,
+				domain: null,
+				url: document.getElementsByTagName('a')[0].href.trim(),
+				pNames : [],
+				pPrices: [],
+				q: {
+				  pNames: pNameInps,
+				  pPrices: pPriceInps
+				} 
+			}
+			o.domain = o.url.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2");
+			console.log(o);
+			switch(o.domain) {
+				case 'yoopsie.com': scrapeYoopsie();
+		}
+		function scrapeYoopsie() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'yellow';
+							exit(response.status);
+						}
+					
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						console.log(dom);
+						var td = dom.getElementsByTagName('table')[3].getElementsByTagName('tbody')[0].getElementsByClassName('info')
+						if(!td) {
+						   alert('no table 3');
+						   o.sbm = false;
+						}
+						console.log(td);
+						for(var i = 0; i < td.length; i++) {
+						  o.pNames[i] = td[i].getElementsByTagName('a')[0].title.trim();
+						  o.pPrices[i] = td[i].getElementsByClassName('price')[0].innerText.trim();
+						  var errorCheck = /\$[1-9\.]+/;
+						  if(!o.pPrices[i].match(errorCheck) && o.pPrices[i] != '') {
+							 console.log('error');
+							 console.log(o.pPrices[i] + ' does not match ' + errorCheck);
+							 o.sbm = false;
+						  }
+						  if(o.pPrices[i] == '') {
+							o.pPrices[i] = 'N/A';
+						  }
+						  if(o.pNames[i] == '' || o.pNames[i].length < 3) {
+							console.log('error ' + o.pNames[i] + ' = o.pNames[i]');
+							o.sbm = false;
+						  }
+						}
+						console.log(o);
+					}
+			});
+		}
+	}
+	new run().f();
+}
 	
+	
+
+
 	//
 	//Demand Studios
 	//Watch the video to see if it answers the question
