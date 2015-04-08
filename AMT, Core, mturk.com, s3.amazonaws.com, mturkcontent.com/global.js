@@ -3599,12 +3599,48 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		
 		var btn = btn;
 		
-		
-		// USE .SCRAPE
+		// USE .SCRAPE()
 		new AMT___site_scrapes().scrape({
-			site: 'https://www.yellowpages.com/whitepages/address',
-			url: 'https://www.yellowpages.com/whitepages/address?street='+encodeURIComponent(o.mail1)+'&zip='+o.zip+'&state=',
+			site: 'LINKEDIN_PROFILE',
+			url: btn.url_li,
 			callback_function: function(options) {
+				
+				// Error?
+				var err = options.response.vars.error;
+				if (err != null) {
+					var pn = btn.parentNode;
+					pn.style.border = '8px solid pink';//innerText += errType;
+					pn.innerText += '\n' + err;
+					return;
+				}
+				
+				var result = options.response.vars.result;
+				var pu = btn.url_li; // Default=Searched Profile URL
+				var found_valid = false; // Default=False
+				
+				//profile_has_public_url: null,
+				//public_url: null,
+				
+				if  (
+					result.profile_has_public_url != null &&
+					result.public_url != null
+					)
+				{
+					pu = result.public_url;
+					found_valid = true;
+				}
+				
+				// CALLBACK FUNCTION
+				// Object
+				//
+				//
+				ps_object.callback_function({
+					profile_url: pu,
+					found_valid_li_url: found_valid,
+					image_thumbnail_url: btn.src,
+					image_full_url: btn.img_li,
+					image: btn
+				});
 				
 			}
 		});

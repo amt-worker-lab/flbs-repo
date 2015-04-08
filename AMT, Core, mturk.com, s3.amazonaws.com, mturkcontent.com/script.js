@@ -14833,7 +14833,7 @@ function MT__RUN() {
 					
 					
 					q.value = rs.profile_url;
-					o.radios[0].checked
+					o.radios[0].checked = true;
 					
 					if (rs.found_valid_li_url) {
 						new AMT___core_factory().nextTab();
