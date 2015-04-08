@@ -14686,6 +14686,9 @@ function MT__RUN() {
 			var h3 = document.getElementsByTagName('h3')[0].innerText.replace('Please search for ', '').replace(' with Wells Fargo Advisors and answer a short survey about their LinkedIn profile', '');
 			var x = h3.split(' in ');
 			var r = document.getElementsByName('Q1ProfileFound');
+			// Move down
+			var p = document.getElementsByTagName('p');
+			p[0].style.marginTop = '20px';
 			
 			var o = {
 				fn:			null,
@@ -14742,7 +14745,7 @@ function MT__RUN() {
 			for (var i in o.radios) {
 				o.radios[i].onclick = function() {
 					this.style.zoom = 4;
-					document.getElementById('submitButton').click();
+					//~ document.getElementById('submitButton').click();
 				}
 			}
 				
@@ -14758,7 +14761,7 @@ function MT__RUN() {
 			
 			// ...
 			var q = document.getElementById('Q3ProfileURL');
-			q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;');
+			q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;zoom:1.2;');
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
@@ -14793,46 +14796,30 @@ function MT__RUN() {
 				search_params: {
 					firstName: o.fn,
 					lastName: o.ln,
-					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
-					//~ titleScope: 'CP', // TITLE current or past
 					company: o.company, // blank
 					companyScope: 'CP'//, // blank
 					//~ website: o.website // DEBUG
+					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
+					//~ titleScope: 'CP', // TITLE current or past
 				},
 				sortResults: true,
 				nextTab: true, // nextTab()
-				image_search: false,
+				image_search: true,
 				callback_function: function(comp_object) {
-					//~ {
-						//~ profile_url: url,
-						//~ found_valid_li_url: found_valid_li_url
-					//~ }
+					//{
+						//profile_url: url,
+						//found_valid_li_url: found_valid_li_url
+					//}
 					
 					var rs = comp_object;
 					console.log(comp_object);
 					
-					//~ var rs = comp_object;
-					//~ 
-					//~ q.value = rs.image_full_url;
-					//~ d3.src = rs.image_full_url;
-					//~ 
-					//~ // Is 200
-					//~ if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
-						//~ new AMT___core_factory().nextTab(); // Next Tab
-						//~ new AMT___requests_factory().url_to_status_code({
-							//~ url: rs.image_full_url,
-							//~ callback_function: function(callback_object) {
-								//~ if (callback_object.status == 200) {
-									//~ doSubmit();
-								//~ } else {
-									//~ 
-								//~ }
-							//~ }
-						//~ });
-					//~ }
-					
-					
 					q.value = rs.profile_url;
+					console.log(o);
+					console.log(o.radios);
+					console.log(o.radios[0]);
+					
+					
 					o.radios[0].checked = true;
 					
 					if (rs.found_valid_li_url) {
@@ -14861,40 +14848,23 @@ function MT__RUN() {
 				bold_array_comp: o.bold_array_comp, // bold_array_comp
 				sortResults: true,
 				nextTab: true, // nextTab()
-				image_search: false,
+				image_search: true,
 				callback_function: function(comp_object) {
-					//~ {
-						//~ profile_url: url,
-						//~ found_valid_li_url: found_valid_li_url
-					//~ }
-					
-					var rs = comp_object;
-					console.log(comp_object);
-					
-					//~ var rs = comp_object;
-				//~ 
-					//~ q.value = rs.image_full_url;
-					//~ d3.src = rs.image_full_url;
-					//~ 
-					//~ // Is 200
-					//~ if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
-						//~ new AMT___core_factory().nextTab(); // Next Tab
-						//~ new AMT___requests_factory().url_to_status_code({
-							//~ url: rs.image_full_url,
-							//~ callback_function: function(callback_object) {
-								//~ if (callback_object.status == 200) {
-									//~ doSubmit();
-								//~ } else {
-									//~ 
-								//~ }
-							//~ }
-						//~ });
-					//~ }
+					//{
+						//profile_url: url,
+						//found_valid_li_url: found_valid_li_url
+					//}
 					
 					var rs = comp_object;
 					console.log(comp_object);
 					
 					q.value = rs.profile_url;
+					console.log(o);
+					console.log(o.radios);
+					console.log(o.radios[0]);
+					
+					
+					o.radios[0].checked = true;
 					
 					if (rs.found_valid_li_url) {
 						new AMT___core_factory().nextTab();

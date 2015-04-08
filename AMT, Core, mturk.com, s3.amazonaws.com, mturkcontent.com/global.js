@@ -3547,9 +3547,9 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				}
 				
 				// If not an image search
-				if (!ps_object.hasOwnProperty('image_search')) {
+				if (!ps_object.hasOwnProperty('image_search') || !ps_object.image_search) {
 					this.style.border = '4px solid LightGreen';
-					linkedin_people_location__profile(this.url_li);
+					linkedin_people_location__profile(this); // But not...this.url_li
 				}
 				// If it is an image search
 				// Click 1 = ...
