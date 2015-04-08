@@ -1746,7 +1746,7 @@ function AMT___core_factory() {
 //Shows the tab on the right of the current tab
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function(options) {
-	console.log(options);
+	//~ console.log(options);
 	chrome.extension.sendRequest(
 		{
 			nextTab: true,

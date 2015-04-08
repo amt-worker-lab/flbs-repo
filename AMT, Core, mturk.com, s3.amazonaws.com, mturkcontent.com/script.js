@@ -14722,16 +14722,16 @@ function MT__RUN() {
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
-			var d2 = document.createElement('input');
-			d2.type = 'button';
-			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
-			document.body.appendChild(d2);
-			d2.value = 'no image';
-			var d2b = document.createElement('input');
-			d2b.type = 'button';
-			d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
-			document.body.appendChild(d2b);
-			d2b.value = 'no profile';
+			//~ var d2 = document.createElement('input');
+			//~ d2.type = 'button';
+			//~ d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
+			//~ document.body.appendChild(d2);
+			//~ d2.value = 'no image';
+			//~ var d2b = document.createElement('input');
+			//~ d2b.type = 'button';
+			//~ d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
+			//~ document.body.appendChild(d2b);
+			//~ d2b.value = 'no profile';
 			var d3 = document.createElement('img');
 			d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
 			document.body.appendChild(d3);
@@ -14747,14 +14747,14 @@ function MT__RUN() {
 			}
 				
 			// ...
-			d2.onclick = d2b.onclick = function() {
+			//~ d2.onclick = d2b.onclick = function() {
 				//~ this.style.backgroundColor = 'LightGreen';
 				//~ q.value = this.value;
 				//~ if (q.value == this.value && q.value.trim() != '') {
 					//~ new AMT___core_factory().nextTab();
 					//~ doSubmit();
 				//~ }
-			}
+			//~ }
 			
 			// ...
 			var q = document.getElementById('Q3ProfileURL');
@@ -14763,7 +14763,7 @@ function MT__RUN() {
 			// ...
 			document.getElementById('submitButton').onclick = function() {
 				if (q.value.length > 10) {
-					o.radios[0].checked = false;
+					o.radios[0].checked = true;
 					o.radios[1].checked = false;
 					new AMT___core_factory().nextTab();
 					doSubmit();
@@ -14833,6 +14833,7 @@ function MT__RUN() {
 					
 					
 					q.value = rs.profile_url;
+					o.radios[0].checked
 					
 					if (rs.found_valid_li_url) {
 						new AMT___core_factory().nextTab();
