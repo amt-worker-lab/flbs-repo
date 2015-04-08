@@ -2982,9 +2982,12 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		cx_elements: [],
 		
 		// bolds
-		bold_nm_array: [],
-		bold_comp_array: [],
-		bold_title_array: []
+		bold_nm_array:		[],
+		bold_comp_array:	[],
+		bold_title_array:	[],
+		
+		// New
+		bold_locn_array:	[]
 		
 	};
 	
@@ -3012,7 +3015,7 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				o.cx_elements.push(d);
 				
 				// bolds
-				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.clean_string_to_array()); // Rather than ".split(' ')"
 				break;
 			case 'lastName':
 				found = true;
@@ -3026,7 +3029,7 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				o.cx_elements.push(d);
 				
 				// bolds
-				o.bold_nm_array = o.bold_nm_array.concat(input_value.split(' '));
+				o.bold_nm_array = o.bold_nm_array.concat(input_value.clean_string_to_array());
 				break;
 			case 'title':
 				found = true;
@@ -3040,7 +3043,7 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				o.cx_elements.push(d);
 				
 				// bolds
-				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
+				o.bold_title_array = o.bold_title_array.concat(input_value.clean_string_to_array());
 				break;
 			case 'company':
 				found = true;
@@ -3054,8 +3057,20 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				o.cx_elements.push(d);
 				
 				// bolds
-				o.bold_title_array = o.bold_title_array.concat(input_value.split(' '));
-				//~ o.bold_title_array = input_value.split(' ');
+				o.bold_title_array = o.bold_title_array.concat(input_value.clean_string_to_array());
+				break;
+			case 'location': // location (general)
+				found = false; // Does not show.
+				var d = document.createElement('input'); // Hidden
+				d.type = 'hidden';
+				d.cx_id = input_name;
+				div_cx_l.appendChild(d);
+				
+				// push
+				o.cx_elements.push(d);
+				
+				// bolds
+				o.bold_locn_array = o.bold_locn_array.concat(input_value.clean_string_to_array());
 				break;
 				
 			// Hidden elements
@@ -3157,7 +3172,7 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			//~ console.log(input_value);
 			
 			
-			switch(input_name) {
+			switch (input_name) {
 				case 'firstName':
 					if (input_value != '')
 						url += '&' + input_name + '=' + encodeURIComponent(input_value);
@@ -3187,9 +3202,12 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 					if (url.indexOf('&company=') != -1)
 						url += '&' + input_name + '=' + encodeURIComponent(input_value);
 					break;
+				case 'location': // Location general. Do nothing with this.
+					break;
 			}
 		}
 		
+		// Set out.innerHTML
 		out.innerHTML = '';
 		
 		
@@ -3374,10 +3392,16 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			s = s.replace(/<hr>/g, '')
 			s = s.replace(/^<br>/g, '')
 			
+			console.log('locn');
+			console.log(y);
+			console.log(y.fmt_location);
+			
 			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
 			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
 			y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
 			y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
+			
+			console.log(y.fmt_location);
 			
 			var z;
 			var headline;

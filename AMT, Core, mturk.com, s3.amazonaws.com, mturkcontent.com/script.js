@@ -14699,7 +14699,9 @@ function MT__RUN() {
 				ln:			null,
 				name:		x[0],
 				company:	'Wells Fargo',
+				locn:		x[1],
 				bold_array_comp: [],
+				bold_locn:	[],
 				
 				radios: [
 					r[0], r[1]
@@ -14708,6 +14710,7 @@ function MT__RUN() {
 			o.bold_array_comp = o.company.clean_string_to_array().concat(
 				o.name.clean_string_to_array()
 			);
+			//~ o.bold_locn = o.locn.clean_string_to_array(); // Set bold_locn
 			var x = o.name.split(' ');
 			if (x.length == 1) {
 				o.fn = x[0];
@@ -14799,7 +14802,8 @@ function MT__RUN() {
 					firstName: o.fn,
 					lastName: o.ln,
 					company: o.company, // blank
-					companyScope: 'CP'//, // blank
+					companyScope: 'CP',//, // blank
+					location: o.locn // general
 					//~ website: o.website // DEBUG
 					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
 					//~ titleScope: 'CP', // TITLE current or past
@@ -14842,6 +14846,7 @@ function MT__RUN() {
 				search_params: {
 					firstName: o.fn,
 					lastName: o.ln,
+					location: o.locn // general
 					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
 					//~ titleScope: 'CP', // TITLE current or past
 					//~ company: o.company, // blank
