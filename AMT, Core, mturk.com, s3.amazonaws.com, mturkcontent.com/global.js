@@ -1548,6 +1548,8 @@ String.prototype.string_to_mixed_case = function(options) {
 /**
  * .clean_string_to_array
  * 
+ * Description: Remove [^\w\d] from string. Return array split by space.
+ * 
  * @param options						object
  * @param .string						str		String to clean.
  * @param .least_characters_per_word	int		Number of least amount of characters allowed per word. 0 is no limit. Default=1. This means single letters are not bolded.
@@ -1556,9 +1558,7 @@ String.prototype.string_to_mixed_case = function(options) {
  */
 String.prototype.clean_string_to_array = function(options) {
 	
-	//~ console.log(this);
-	
-	var s = this.toString(); // this['[[PrimitiveValue]]']; //options.string;
+	var s = this.toString();
 	var min;
 	
 	if (options && typeof options == 'object')
@@ -3647,64 +3647,64 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		
 		
 		
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: btn.url_li,
-			onload: function(response) {
-				var rs = response.responseText;
-				
-				if (response.status != 200) {
-					div_cx_r.innerHTML = response.status;
-					return;
-				}
-				
-				// URL
-				// Default is btn.url_li
-				var url = btn.url_li;
-				var found_valid_li_url = false;
-				
-				// Dashes
-				rs = rs.replace(/\\u002d/g, '-');
-				
-				// topcard
-				var found = false;
-				r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
-				if (r) {
-					r = JSON.parse('{'+r[1]+'}');
-					r = r.content;
-					console.log(r);
-					
-					if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
-						url = r.TopCard.public_url.canonicalUrl;
-						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
-							found_valid_li_url = true;
-						}
-						found = true;
-					}
-				}
-				if (!found) {
-					var r2;
-					if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
-						url = __js_clean_html_str(r2[1]).trim();
-						if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
-							found_valid_li_url = true;
-						}
-					}
-				}
-				
-				// CALLBACK FUNCTION
-				// Object
-				//
-				//
-				ps_object.callback_function({
-					profile_url: url,
-					found_valid_li_url: found_valid_li_url,
-					image_thumbnail_url: btn.src,
-					image_full_url: btn.img_li,
-					image: btn
-				});
-			}
-		});
+		//~ GM_xmlhttpRequest({
+			//~ method: "GET",
+			//~ url: btn.url_li,
+			//~ onload: function(response) {
+				//~ var rs = response.responseText;
+				//~ 
+				//~ if (response.status != 200) {
+					//~ div_cx_r.innerHTML = response.status;
+					//~ return;
+				//~ }
+				//~ 
+				//~ // URL
+				//~ // Default is btn.url_li
+				//~ var url = btn.url_li;
+				//~ var found_valid_li_url = false;
+				//~ 
+				//~ // Dashes
+				//~ rs = rs.replace(/\\u002d/g, '-');
+				//~ 
+				//~ // topcard
+				//~ var found = false;
+				//~ r = /<code id="top_card-content" style="display:none;"><!--\{((.|\s)*?(?=\}--><\/code>|$)|$)/.exec(rs);
+				//~ if (r) {
+					//~ r = JSON.parse('{'+r[1]+'}');
+					//~ r = r.content;
+					//~ console.log(r);
+					//~ 
+					//~ if (r.TopCard && r.TopCard.public_url && r.TopCard.public_url.canonicalUrl) {
+						//~ url = r.TopCard.public_url.canonicalUrl;
+						//~ if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							//~ found_valid_li_url = true;
+						//~ }
+						//~ found = true;
+					//~ }
+				//~ }
+				//~ if (!found) {
+					//~ var r2;
+					//~ if (r2 = /"public_url":\{("deferImg":[^,]*,|)"canonicalUrlToShow":"[^"]+","canonicalUrl":"([^"]+)","showPublicProfileURL":true\}/.exec(rs)) {
+						//~ url = __js_clean_html_str(r2[1]).trim();
+						//~ if (/^https?:\/\/(\w+\.|)linkedin\.com\/(pub|in)\//.exec(url)) {
+							//~ found_valid_li_url = true;
+						//~ }
+					//~ }
+				//~ }
+				//~ 
+				//~ // CALLBACK FUNCTION
+				//~ // Object
+				//~ //
+				//~ //
+				//~ ps_object.callback_function({
+					//~ profile_url: url,
+					//~ found_valid_li_url: found_valid_li_url,
+					//~ image_thumbnail_url: btn.src,
+					//~ image_full_url: btn.img_li,
+					//~ image: btn
+				//~ });
+			//~ }
+		//~ });
 	}
 	function linkedin_people_location__profile(u) {
 		

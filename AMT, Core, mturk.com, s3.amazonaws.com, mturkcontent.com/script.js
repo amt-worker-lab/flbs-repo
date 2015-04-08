@@ -14683,12 +14683,16 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('input[type="radio"] {zoom:2.2;cursor:pointer;}');
 			
+			// Get the Name and location
 			var h3 = document.getElementsByTagName('h3')[0].innerText.replace('Please search for ', '').replace(' with Wells Fargo Advisors and answer a short survey about their LinkedIn profile', '');
 			var x = h3.split(' in ');
+			console.log(x);
+			
+			// ...
 			var r = document.getElementsByName('Q1ProfileFound');
 			// Move down
-			var p = document.getElementsByTagName('p');
-			p[0].style.marginTop = '20px';
+			var h = document.getElementsByTagName('h3');
+			h[0].style.marginTop = '40px';
 			
 			var o = {
 				fn:			null,
@@ -14735,9 +14739,9 @@ function MT__RUN() {
 			//~ d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
 			//~ document.body.appendChild(d2b);
 			//~ d2b.value = 'no profile';
-			var d3 = document.createElement('img');
-			d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
-			document.body.appendChild(d3);
+			//~ var d3 = document.createElement('img');
+			//~ d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
+			//~ document.body.appendChild(d3);
 			/*END ITEMS*/
 			
 			// Yes/No radios
@@ -14745,19 +14749,17 @@ function MT__RUN() {
 			for (var i in o.radios) {
 				o.radios[i].onclick = function() {
 					this.style.zoom = 4;
+					q.value = q.value.trim();
 					//~ document.getElementById('submitButton').click();
+					if (o.radios[1].checked && q.value.length > 10) { // If "Yes" is checked and URL is complete.
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					} else if (o.radios[1].checked && q.value == '') { // Else if "No" is checked and URL is blank.
+						new AMT___core_factory().nextTab();
+						doSubmit();
+					}
 				}
 			}
-				
-			// ...
-			//~ d2.onclick = d2b.onclick = function() {
-				//~ this.style.backgroundColor = 'LightGreen';
-				//~ q.value = this.value;
-				//~ if (q.value == this.value && q.value.trim() != '') {
-					//~ new AMT___core_factory().nextTab();
-					//~ doSubmit();
-				//~ }
-			//~ }
 			
 			// ...
 			var q = document.getElementById('Q3ProfileURL');
@@ -14823,6 +14825,7 @@ function MT__RUN() {
 					o.radios[0].checked = true;
 					
 					if (rs.found_valid_li_url) {
+						o.radios[0].checked = true;
 						new AMT___core_factory().nextTab();
 						doSubmit();
 					} else {
@@ -14859,14 +14862,9 @@ function MT__RUN() {
 					console.log(comp_object);
 					
 					q.value = rs.profile_url;
-					console.log(o);
-					console.log(o.radios);
-					console.log(o.radios[0]);
-					
-					
-					o.radios[0].checked = true;
 					
 					if (rs.found_valid_li_url) {
+						o.radios[0].checked = true;
 						new AMT___core_factory().nextTab();
 						doSubmit();
 					} else {
