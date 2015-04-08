@@ -14754,7 +14754,7 @@ function MT__RUN() {
 					this.style.zoom = 4;
 					q.value = q.value.trim();
 					//~ document.getElementById('submitButton').click();
-					if (o.radios[1].checked && q.value.length > 10) { // If "Yes" is checked and URL is complete.
+					if (o.radios[0].checked && q.value.length > 10) { // If "Yes" is checked and URL is complete.
 						new AMT___core_factory().nextTab();
 						doSubmit();
 					} else if (o.radios[1].checked && q.value == '') { // Else if "No" is checked and URL is blank.

@@ -1498,6 +1498,9 @@ String.prototype.clean_str_to_auto = function(opts) {
 }
 /**
  * .div
+ * 
+ * @style		...
+ * @innerHTML	Default=false.
  */
 String.prototype.div = function(opts) {
 	var s = this.toString();
@@ -1505,7 +1508,11 @@ String.prototype.div = function(opts) {
 	if (opts && opts.hasOwnProperty('style')) {
 		div.setAttribute('style', opts.style);
 	}
-	div.innerText = s;
+	if (opts && opts.hasOwnProperty('innerHTML') && opts.innerHTML) {
+		div.innerHTML = s;
+	} else { // Default
+		div.innerText = s;
+	}
 	return div;
 }
 /**
@@ -3392,23 +3399,20 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			s = s.replace(/<hr>/g, '')
 			s = s.replace(/^<br>/g, '')
 			
-			console.log('locn');
-			console.log(y);
-			console.log(y.fmt_location);
+			//~ console.log('locn');
+			//~ console.log(y);
+			//~ console.log(y.fmt_location);
 			
-			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]{0,}>/gi, '');
-			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]{0,}>/gi, '');
-			y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]{0,}>/gi, '');
-			y.fmt_location = y.fmt_location.replace(/<\/?b[^>]{0,}>/gi, '');
-			
-			console.log(y.fmt_location);
+			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]*>/gi, '');
+			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]*>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?strong[^>]*>/gi, '');
+			y.fmt_location = y.fmt_location.replace(/<\/?b[^>]*>/gi, '');
 			
 			var z;
 			var headline;
 			var et, ec;
 			
 			y.fmt_headline = __js_clean_html_str(y.fmt_headline.replace(/<[^>]*>/g, '').replace(/[<>]/g, ''));
-			
 			z = y.fmt_headline;
 			
 			var headline_match = false;
@@ -3484,6 +3488,11 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			el_inp.setAttribute('style', 'width:12px;text-align:left;background-color:transparent;border:0;border-right:1px solid #3a3a3a;');
 			el_inp.value = 'L';
 			dv.appendChild(el_inp);
+			dv.appendChild(
+				MT__bold(' '+y.fmt_location, o.bold_locn_array).div(
+					{style: 'display:inline;', innerHTML: true}
+				)
+			)
 			
 			//~ /*
 			 //~ * Location
