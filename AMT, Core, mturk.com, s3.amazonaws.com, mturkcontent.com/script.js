@@ -3465,7 +3465,7 @@ function MT__RUN() {
 						query: 'AMT_Requester__correct_tasks_write',
 						encodeStrings: {
 							hitId:			o.hitId,
-							correct_value:	'"' + o.hitId + '","' + o.country + '","' + o.weight + '","' + o.q.value + '"';
+							correct_value:	'"' + o.hitId + '","' + o.country + '","' + o.weight + '","' + o.q.value + '"'
 						}
 					},
 					function(response) {
@@ -3475,7 +3475,7 @@ function MT__RUN() {
 							return;
 						}
 						// next
-						Stephanie_Hass_Hotel_Data__correct__select();
+						correct_select();
 					}
 				);
 			}
@@ -3565,7 +3565,7 @@ function MT__RUN() {
 							return;
 						}
 						contain = contain[1];
-						console.log(contain);
+						//~ console.log(contain);
 						
 						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.,]+)(<|$)/g; // End of string of <
 						var m;
