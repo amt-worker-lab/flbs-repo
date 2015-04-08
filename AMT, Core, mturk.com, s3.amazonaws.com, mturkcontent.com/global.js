@@ -3599,6 +3599,18 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		
 		var btn = btn;
 		
+		
+		// USE .SCRAPE
+		new AMT___site_scrapes().scrape({
+			site: 'https://www.yellowpages.com/whitepages/address',
+			url: 'https://www.yellowpages.com/whitepages/address?street='+encodeURIComponent(o.mail1)+'&zip='+o.zip+'&state=',
+			callback_function: function(options) {
+				
+			}
+		});
+		
+		
+		
 		GM_xmlhttpRequest({
 			method: "GET",
 			url: btn.url_li,
