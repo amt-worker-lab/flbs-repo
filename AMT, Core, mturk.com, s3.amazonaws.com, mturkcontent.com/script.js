@@ -3402,6 +3402,19 @@ function MT__RUN() {
 	// A11UUJ359IVS59
 	// usabox.com scrape
 	//
+	/**
+	 *
+	 	# AMT CORRECT
+		INSERT INTO AMT_Alerts.HIT_ids_to_correct (hit_id)
+			SELECT
+				amt_hit_id
+			FROM AMT_Alerts.tasks_accomplished 
+			WHERE fk_amt_account = 'Sora' && fk_amt_date='2015-04-07' && fk_requesterUserId='A11UUJ359IVS59' 
+		;
+		SELECT * FROM AMT_Alerts.HIT_ids_to_correct;
+		# Download this query to a CSV file.
+		SELECT correct_value FROM AMT_Alerts.HIT_ids_to_correct;
+	 */
 	s = '	<li>Go to this website: <a href="http://usabox.com/rates.asp" target="_blank">http://usabox.com/rates.asp</a></li>';
 	if  (
 		ih.indexOf(s) != -1
