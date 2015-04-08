@@ -3433,7 +3433,7 @@ function MT__RUN() {
 				},
 				
 				rf: new AMT___requests_factory(),
-				hitId: /&hitId=([\w\d]+)$/.exec(href)[1]
+				hit_id: /&hitId=([\w\d]+)$/.exec(href)[1]
 			}
 			
 			// Tasks Correction
@@ -3464,8 +3464,8 @@ function MT__RUN() {
 					{
 						query: 'AMT_Requester__correct_tasks_write',
 						encodeStrings: {
-							hitId:			o.hitId,
-							correct_value:	'"' + o.hitId + '","' + o.country + '","' + o.weight + '","' + o.q.value + '"'
+							hit_id:			o.hit_id,
+							correct_value:	'"' + o.hit_id + '","' + o.country + '","' + o.weight + '","' + o.q.value + '"'
 						}
 					},
 					function(response) {
