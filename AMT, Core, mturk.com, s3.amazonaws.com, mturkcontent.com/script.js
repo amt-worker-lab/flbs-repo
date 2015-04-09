@@ -19,7 +19,7 @@ function MT__RUN() {
 	// Corey Bonasorte
 	//
 	s = '<li>If there is no information, please copy/paste what website text was. For example "Your search yielded no results"</li>'
-	if(ih.indexOf('s') != -1) {
+	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {	
 			var pNameInps = [];
