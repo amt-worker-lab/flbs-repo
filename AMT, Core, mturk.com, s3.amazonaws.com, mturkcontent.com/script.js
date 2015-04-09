@@ -22,6 +22,7 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {	
+			console.log('inside corey bonasorte');
 			var pNameInps = [];
 			var pPriceInps = [];
 			for(var i = 1; i < 5; i++) {
