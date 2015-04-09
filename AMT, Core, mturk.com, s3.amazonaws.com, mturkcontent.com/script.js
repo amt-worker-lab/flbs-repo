@@ -47972,6 +47972,7 @@ AMT___RunPageScript("function() {" +
 	 * Dustin Smith
 	 * Chris Anderson
 	 * "Megan"
+	 * Andrew Chin
 	 * 
 	 * ...
 	 * 
@@ -48002,12 +48003,13 @@ AMT___RunPageScript("function() {" +
 				zip: b
 			}
 			
-			/*Begin Elements*/
+			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;left:0%;width:10%;height:200px;top:400px;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
 			
+			// Init
 			init();
 			
 			// Get ID
