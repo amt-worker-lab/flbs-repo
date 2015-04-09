@@ -48002,6 +48002,12 @@ AMT___RunPageScript("function() {" +
 				zip: b
 			}
 			
+			/*Begin Elements*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;width:10%;height:200px;top:400px;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			/*END ELEMENTS*/
+			
 			init();
 			
 			// Get ID
@@ -48050,6 +48056,7 @@ AMT___RunPageScript("function() {" +
 						{
 							console.log('x');
 							var dc = r.data.pricing3[o.id].dealer_count;
+							d1.innerText = 'COUNT:'+dc;
 							if (dc == 0) {
 								document.getElementById('TrueCar Dealer = No').click();
 								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = No';
