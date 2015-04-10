@@ -66,7 +66,7 @@ var AMT__Global_Vars = //function()
 		// AMT__Global_Vars.core.captcha_string
 		captcha_string: 'In order to accept your next HIT, please type this word into the text box below',
 		getR_Button_NextTab: false,
-		is_running_on_dv_localhost: false // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
+		is_running_on_local_dev: false // This is boolean for e.g. http://localhost/mturk/.dev/HITs/CHIOS%20TESTING.html
 	},
 	
 	num_amt_tabs: null,

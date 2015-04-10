@@ -157744,27 +157744,22 @@ function mturk_load()
 	AMT__Global_Vars.initializeGroupId();
 	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
-
+	AMT__Global_Vars.core.is_running_on_local_dev = (0==1) ? true : false;
 		
 		
-	// This is running at mturkcontent.com or amazonaws.com
+	// This is running at mturkcontent.com or amazonaws.com or http://localhost/mturk/.dev/HITs/
 	// If top window or job is ... then always run.
+	// ADDED TO DESCRIPTION: http://localhost/mturk/.dev/HITs/
+	//
 	if  (
 		window.top == window.self ||
 		document.location.href.indexOf('assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE') == -1
 		)
 	{
 		AMT__Global_Vars.isPreview = false;
-		
-		//~ AMT__Global_Vars.isTopWindow = false;
-		//~ AMT__Global_Vars.initializeGroupId();
-		//~ AMT__Global_Vars.initializeHitId();
-		
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
-		//console.log('h-go, in mturk.com/s3.amazonaws.com/mturkcontent.com');
-			
-			
+		// Init MT__RUN();
 		MT__RUN();
 	}
 	// Else if framed window then only run
@@ -157773,16 +157768,15 @@ function mturk_load()
 	{
 		AMT__Global_Vars.isPreview = true;
 		
-		//~ AMT__Global_Vars.isTopWindow = false;
-		//~ AMT__Global_Vars.initializeGroupId();
-		//~ AMT__Global_Vars.initializeHitId();
+		// Inside of iframe that is not accepted
+		// Unaccepted
 		
-		// inside of iframe that is not accepted
-		// unaccepted
-		
-		console.log('h-stop');
+		//~ console.log('h-stop');
 		
 		// Have a run button
+		//
+		//
+		//
 		var d;
 		d = document.createElement('input');
 		d.setAttribute('id','MT___RUN_MANUAL_vlskclbdkbpskfkxpclsk');
@@ -157798,7 +157792,7 @@ function mturk_load()
 			AMT__Global_Vars.initializeTabId();
 			MT__RUN();
 		}
-		
+		// AddEventListener
 		window.addEventListener('message', function(e) {
 			//~ console.log(e);
 			if(e.data && e.data.runPreview && !e.data.hasOwnProperty('isAllPagesScript'))
@@ -157809,8 +157803,7 @@ function mturk_load()
 				this.removeEventListener('click',arguments.callee,false)
 			}
 		}, false);
-			
-			
+		
 		// Run regardless
 		//
 		//
@@ -157878,7 +157871,7 @@ function mturk_load()
 			}
 		}
 		
-		// Return. End script now.
+		// End of script.
 		//
 		//
 		//
