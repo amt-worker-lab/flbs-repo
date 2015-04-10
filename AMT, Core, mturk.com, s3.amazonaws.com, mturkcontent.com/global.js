@@ -43,7 +43,7 @@ var AMT__Global_Vars = //function()
 		{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
 		{name: 'JohnRobertsCheckHistory',value: 0, isPersistant:true},
 		{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
-		//{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
+		{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 		{name: 'Return Button Hotkey', value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
 	],
@@ -11640,7 +11640,7 @@ function AMT___returnAndAcceptButton() {
 			//
 			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
 				if(AMT__Global_Vars['R&A NextTab Iframe Focus']) {				
-					new AMT___core_factory().nextTab({focusOnPage:false, isTopWindow:false});
+					new AMT___core_factory().nextTab({focusOnPage:true, isTopWindow:false});
 				}
 				else {
 					new AMT___core_factory().nextTab();
