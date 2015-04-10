@@ -37978,24 +37978,24 @@ function MT__RUN() {
 			curr_map_view: null // For Z hotkey
 		};
 		console.log(o);
-		//~ console.log(o.name);
-		//~ console.log('name');
 		//~ if(o.name.toLowerCase() == 'marshalls') {
 			//~ document.body.style.backgroundColor = 'green';
 		//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
 			//~ document.body.style.backgroundColor = 'pink';
-		//~ 
 		//~ }
 		
-		AMT___addUserDecision('Chios Polygon - Quality Control',
-			function() {
-				console.log(o);
-				console.log(AMT__Global_Vars);
-				return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-			},
-			['Id(polygon)',
-			 'Id(reasons)']
-		);
+		// Only add user decision if not running @ dev.
+		if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+			AMT___addUserDecision('Chios Polygon - Quality Control',
+				function() {
+					return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+				},
+				[
+					'Id(polygon)',
+					'Id(reasons)'
+				]
+			);
+		}
 		
 		// ...
 		var q = document.getElementById('polygon');
@@ -38010,13 +38010,6 @@ function MT__RUN() {
 				q.focus();
 			}
 		}, false);
-		
-		//37.4419 -122.1419
-		//~ var x = /new google\.maps\.LatLng\(([^,]+), ([^\)]+)\);/.exec(ih);
-		//~ if (x) {
-			//~ o.lat = x[1];
-			//~ o.lon = x[2];
-		//~ }
 		
 		// hide Ps
 		var p = document.getElementsByTagName('p');
@@ -38069,7 +38062,6 @@ function MT__RUN() {
 		// ...
 		// Removed "near"
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +o.addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		
 		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
 		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
 		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
@@ -38092,13 +38084,13 @@ function MT__RUN() {
 		if (ih.indexOf('Planet Fitness') != -1)
 			first_url = withNameSearch;
 		
-		/* BEGIN ITEMS */
+		/*BEGIN ITEMS*/
 		// Left iframe
-		var d2 = document.createElement('iframe');
-		d2.setAttribute('style',
-			'position:absolute;top:80px;left:0;width:1px;border:1px solid blue;background-color:#eee;visibility:visible;'
-		);//sandbox:allow-scripts allow-same-origin;
-		document.body.appendChild(d2);
+		//~ var d2 = document.createElement('iframe');
+		//~ d2.setAttribute('style',
+			//~ 'position:absolute;top:80px;left:0;width:1px;border:1px solid blue;background-color:#eee;visibility:visible;'
+		//~ );//sandbox:allow-scripts allow-same-origin;
+		//~ document.body.appendChild(d2);
 		// Change map button, for google
  		var d3 = document.createElement('button');
  		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
@@ -38145,15 +38137,15 @@ function MT__RUN() {
 			} else {
 				this.style.backgroundColor = '';
 			}
-			d2.style.width='90%';
-			if (this.innerText == 'Change Map (Bing)') {
-				
-				d2.src = woutNameSearchBing
-				this.innerText = 'Change Map (Bing+Name)'
-			} else if (this.innerText == 'Change Map (Bing+Name)') {
-				d2.src = withNameSearchBing
-				this.innerText = 'Change Map (Bing)';
-			}
+			//~ d2.style.width='90%';
+			//~ if (this.innerText == 'Change Map (Bing)') {
+				//~ 
+				//~ d2.src = woutNameSearchBing
+				//~ this.innerText = 'Change Map (Bing+Name)'
+			//~ } else if (this.innerText == 'Change Map (Bing+Name)') {
+				//~ d2.src = withNameSearchBing
+				//~ this.innerText = 'Change Map (Bing)';
+			//~ }
 		}
 		d3c.onclick = function() {
 			if (this.style.backgroundColor == '') {
@@ -38180,9 +38172,6 @@ function MT__RUN() {
 				
 				var new_h = (innerHeight-80) + 'px'; //...
 				
-				// 100 px offset from bottom
-				d2.style.height = new_h;
-				
 				// Set a timeout
 				// There is a problem here. It goes gray sometimes.
 				// Which happens to be the background color of the map div.
@@ -38204,32 +38193,6 @@ function MT__RUN() {
 				chios_system_geocoding__lat_lng();
 			}
 		});
-		
-		//~ var d3 = document.createElement('button');
-		//~ d3.setAttribute('style',
-			//~ 'position:absolute;top:0;left:40%;width:59%;height:78px;'
-		//~ );
-		//~ d3.innerText = 'Change Map';
-		//~ d3.onclick = function() {
-			//~ if (this.style.backgroundColor == '') {
-				//~ this.style.backgroundColor = 'LightGreen';
-			//~ } else {
-				//~ this.style.backgroundColor = '';
-			//~ }
-			//~ 
-			//~ if (d2.src == withNameSearch) {
-				//~ d2.src = woutNameSearch
-			//~ } else if (d2.src == woutNameSearch) {
-				//~ d2.src = withNameSearch
-			//~ }
-		//~ }
-		//~ document.body.appendChild(d3);
-			
-		//~ // flicker...
-		//~ d2.addEventListener('load', function() {
-			//~ this.style.visibility = 'visible';
-		//~ }, false);
-		//~ var iframe_url = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr)+'&hnear='+encodeURIComponent(addr)+'&z=17&iwloc=A&output=embed';
 		
 		// ...
 		document.getElementById('submitButton').onclick = function() {
@@ -38299,16 +38262,15 @@ function MT__RUN() {
 				// Send street view URLs to Utility Window
 				var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
 				
-				// postMessage
-				var ifr_intv = setInterval(function() {
-					
-					
-					d2.contentWindow.postMessage({
-						task: task,
-						code: o.code//,
-						//~ status:		o.status
-					}, "*");
-				}, 600);
+				//~ // postMessage
+				//~ var ifr_intv = setInterval(function() {
+					//~ 
+					//~ 
+					//~ d2.contentWindow.postMessage({
+						//~ task: task,
+						//~ code: o.code
+					//~ }, "*");
+				//~ }, 600);
 				
 				var hds = [0, 45, 90, 135, 180, 225, 270, 315];
 				var img_urls = [];
@@ -157740,11 +157702,14 @@ function mturk_load()
 	
 	
 	// Set some global vars
+	var lc = document.location.href;
+	var ext_dv = '/mturk/.dev/HITs/';
+	var rl = (lc.indexOf('http://localhost'+ext_dv) == 0 || lc.indexOf(MT___host+ext_dv) == 0);
 	AMT__Global_Vars.isTopWindow = false;
 	AMT__Global_Vars.initializeGroupId();
 	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
-	AMT__Global_Vars.core.is_running_on_local_dev = (0==1) ? true : false;
+	AMT__Global_Vars.core.is_running_on_local_dev = rl; // Boolean, True or False.
 		
 		
 	// This is running at mturkcontent.com or amazonaws.com or http://localhost/mturk/.dev/HITs/
