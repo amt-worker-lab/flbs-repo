@@ -37935,7 +37935,7 @@ function MT__RUN() {
 		GM_addStyle('body {margin-top:0px;}');
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
-		GM_addStyle('#polygon {position:absolute;top:20px;left:40%;width:50%;height:20px;}');
+		GM_addStyle('#polygon {position:absolute;top:0px;left:42%;width:40%;height:20px;}');
 		
 		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
@@ -37972,7 +37972,11 @@ function MT__RUN() {
 			button_cannot_find: btns[0],
 			max_streetview_height: 600, // default=600
 			curr_map_view: null, // For Z hotkey
-			q: document.getElementById('polygon')
+			q: document.getElementById('polygon'),
+			search: {
+				withNameSearch:'',
+				woutNameSearch:''
+			}
 		};
 		console.log(o);
 		//~ if(o.name.toLowerCase() == 'marshalls') {
@@ -38050,36 +38054,9 @@ function MT__RUN() {
 		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
 		document.body.appendChild(d);*/
 		
-		// ...
-		var l = name;
-		if (l == 'Walmart')
-			l = 'Wal';
-		if (l == 'Macy\'s')
-			l = 'Macy';
-		// ...
-		// Removed "near"
-		var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +o.addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
-		//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-		//&sll=41.021458,-80.660332
-		//~ if (o.lat != null && o.lon != null)
-			//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
-		//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
-		//~ // ...
-		//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
-		
-		// ...
-		var woutNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(o.addr)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(o.addr)+'&hnear='+encodeURIComponent(o.addr)+'&z=17&iwloc=A&output=embed';
-		
-		// BING
-		var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		
-		// First URL ...
-		var first_url = woutNameSearch;
-		if (ih.indexOf('Planet Fitness') != -1)
-			first_url = withNameSearch;
+		//~ // BING
+		//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+		//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
 		
 		/*BEGIN ITEMS*/
 		// Middle line
@@ -38158,8 +38135,15 @@ function MT__RUN() {
 				}, 1000);
 				
 				// Start the lat long func.
-				chios_system_geocoding__lat_lng();
-				
+				// If not running @ dev.
+				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+					chios_system_geocoding__lat_lng();
+				}
+				else
+				{
+					// Load results of past HITs from DB
+					// 
+				}
 				// DO NOT USE THIS (IMAGES WINDOW)
 				//~ // d4 is 40px lower and so 40px shorter.
 				//~ var d4_height = innerHeight-280;
@@ -38192,6 +38176,35 @@ function MT__RUN() {
 		//
 		function chios_system_geocoding__lat_lng() {
 			
+			// ...
+			var l = o.name;
+			if (l == 'Walmart')
+				l = 'Wal';
+			if (l == 'Macy\'s')
+				l = 'Macy';
+			// ...
+			// Removed "near"
+			o.search.withNameSearch =
+				'https://maps.google.com/maps?hl=en&geocode='+
+				'&q='+encodeURIComponent(l + ' ' +o.addr)+
+				'&output=embed&t=h&z=17'; //&iwloc=A
+			// ...
+			o.search.woutNameSearch =
+				'https://maps.google.com/maps?'+
+				'q='+encodeURIComponent(o.addr)+
+				'&hl=en&t=h&gl=us'+
+				'&hq='+encodeURIComponent(o.addr)+
+				'&hnear='+encodeURIComponent(o.addr)+
+				'&z=17&iwloc=A&output=embed';
+			//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
+			//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+			//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+			//&sll=41.021458,-80.660332
+			//~ if (o.lat != null && o.lon != null)
+				//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
+			//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
+			//~ // ...
+			//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
 			
 			// 
 			//
@@ -38206,8 +38219,7 @@ function MT__RUN() {
 				{
 					return;
 				}
-				
-				console.log(lat +','+ lng);
+				console.log('Google Lat/Lng:' + lat + ',' + lng);
 				
 				new AMT___core_factory().createScriptVar('InitialChiosZoom', 18, false);
 				console.log('careful look at me');
@@ -38242,7 +38254,11 @@ function MT__RUN() {
 					"}");
 				
 				// UPDATE
-				withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(o.name)+'&ll='+lat+','+lng+'&output=embed&t=h&z=15'; //&iwloc=A
+				o.search.withNameSearch =
+					'https://maps.google.com/maps?hl=en'
+					'&q='+encodeURIComponent(o.name)+
+					'&ll='+lat+','+lng+
+					'&output=embed&t=h&z=15';
 				
 				// Send street view URLs to Utility Window
 				var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
@@ -38403,50 +38419,8 @@ AMT___RunPageScript("function() {" +
 
 						"}");
 					});
-				
-				//~ // Get street view images
-				//~ var hds = [0, 90, 180, 270];
-				//~ for (var i in hds) {
-					//~ 
-					//~ var img = document.createElement('img');
-					//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
-					//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
-							//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-							//~ '&location='+encodeURIComponent(o.addr)+
-							//~ //'&location='+lat+','+lng+
-							//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
-					//~ d4.appendChild(img);
-					//~ 
-					//~ // Actions
-					//~ img.onclick = function() {
-						//~ if (this.style.zoom != '0.5') {
-							//~ this.style.zoom = '0.5';
-						//~ } else {
-							//~ this.style.zoom = '0.25';
-						//~ }
-					//~ }
-				//~ }
-				//~ // Append an extend div
-				//~ var dv = document.createElement('div');
-				//~ dv.setAttribute('style','height:1400px;');
-				//~ d4.appendChild(dv);
-				
-				//~ document.getElementById('lat').value = lat;
-				//~ document.getElementById('lon').value = lng;
-				//~ 
-				//~ doSubmit();
 			}, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
 		}
-		
-		//~ // r&a
-		//~ new AMT___core_factory()
-			//~ .iframe2parent__postMessage( // options  , XXXXX >callback_function
-				//~ {
-					//~ action: 'return_and_accept_button__nextTab'
-				//~ }
-			//~ );
-		
-		// ...
 		
 		/**
 		 * window.onkeydown
@@ -38667,6 +38641,38 @@ AMT___RunPageScript("function() {" +
 		sc.innerText = 'google.maps.event.trigger(map, "resize");';
 		document.body.appendChild(sc);
 		
+		/* OLD, Get street view images*/
+		//~ // Get street view images
+			//~ var hds = [0, 90, 180, 270];
+			//~ for (var i in hds) {
+				//~ 
+				//~ var img = document.createElement('img');
+				//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
+				//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
+						//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
+						//~ '&location='+encodeURIComponent(o.addr)+
+						//~ //'&location='+lat+','+lng+
+						//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
+				//~ d4.appendChild(img);
+				//~ 
+				//~ // Actions
+				//~ img.onclick = function() {
+					//~ if (this.style.zoom != '0.5') {
+						//~ this.style.zoom = '0.5';
+					//~ } else {
+						//~ this.style.zoom = '0.25';
+					//~ }
+				//~ }
+			//~ }
+			//~ // Append an extend div
+			//~ var dv = document.createElement('div');
+			//~ dv.setAttribute('style','height:1400px;');
+			//~ d4.appendChild(dv);
+			
+			//~ document.getElementById('lat').value = lat;
+			//~ document.getElementById('lon').value = lng;
+			//~ 
+			//~ doSubmit();
 		/* OLD ........ BODY.ONDBLCLICK ........
 		// ...
 		document.body.ondblclick = function() {
