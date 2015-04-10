@@ -37943,11 +37943,7 @@ function MT__RUN() {
 		var x = document.getElementsByTagName('h3')[0];
 		x.innerText = x.innerText.replace(/\n/g, ' ');
 		
-		//~ //...
-		//~ var HEIGHT = screen.height;
-		//~ var tmp_h = (HEIGHT*1 - 400)+ 'px';
-//~ 
-		//~ //...
+		//...
 		document.getElementById('map').style.width = '100%';
 		//~ document.getElementById('map').style.height = tmp_h;
 		
@@ -37975,7 +37971,8 @@ function MT__RUN() {
 			addr: addr,
 			button_cannot_find: btns[0],
 			max_streetview_height: 600, // default=600
-			curr_map_view: null // For Z hotkey
+			curr_map_view: null, // For Z hotkey
+			q: document.getElementById('polygon')
 		};
 		console.log(o);
 		//~ if(o.name.toLowerCase() == 'marshalls') {
@@ -37996,9 +37993,9 @@ function MT__RUN() {
 				]
 			);
 		}
-		
-		// ...
-		var q = document.getElementById('polygon');
+		//~ 
+		//~ // ...
+		//~ var q = document.getElementById('polygon');
 		
 		// o.button_cannot_find
 		o.button_cannot_find.addEventListener('click', function(e) {
@@ -38006,8 +38003,8 @@ function MT__RUN() {
 			if (r) {
 				r.focus();
 				r.value = 'cannot find it';
-			} else if (q) { // input polygon
-				q.focus();
+			} else if (o.q) { // input polygon
+				o.q.focus();
 			}
 		}, false);
 		
@@ -38195,12 +38192,17 @@ function MT__RUN() {
 		});
 		
 		// ...
-		document.getElementById('submitButton').onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			if (q.value.trim() == '')
-				return false;
-			(new AMT___core_factory()).nextTab();
-			AMT___recordAndSubmit();
+		document.getElementById('submitButton').onclick = function(e) {
+			// Run here if not running @ dev.
+			if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+				this.style.backgroundColor = 'LightGreen';
+				if (o.q.value.trim() == '')
+					return false;
+				(new AMT___core_factory()).nextTab();
+				AMT___recordAndSubmit();
+			}
+			e.preventDefault();
+			e.stopPropagation();
 			return false;
 		}
 		
