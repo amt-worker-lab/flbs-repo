@@ -48034,7 +48034,6 @@ AMT___RunPageScript("function() {" +
 			var b = p[4].innerText.trim().replace(/^Zip Code:[\r\n\t\s]*/, '');
 			var o = {
 				url: a,
-				id: null,
 				zip: b
 			}
 			console.log(o);
@@ -48062,49 +48061,29 @@ AMT___RunPageScript("function() {" +
 							return;
 						}
 						
-						// e.g. TC.s.chromeTrimId = TC.s.trimId = 373978;
-						var reg = /TC\.s\.chromeTrimId = TC\.s\.trimId = ([\d]+);[\r\n\t\s]+/.exec(rs);
-						if (reg) {
-							o.id = reg[1];
-							console.log(o.id);
-							final();
-						}
-					}
-				});
-			}
-			function final() {
-				var u = 'https://www.truecar.com/api/omni/v1?types=trim%2Coption%2Cpopular_configs%2Cvehicle_media%2Cmax_savings%2Cbase_pricing_with_color%2Cincentive3%2Cpricing3%2Cprice_trend&trim_ids='+encodeURIComponent(o.id)+'&zipcode=' + encodeURIComponent(o.zip);
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: u,
-					onload: function (response) {
-						var rs = response.responseText;
+						//<div id="review" class="grid-23 module" data-view="review">
 						
-						if (response.status != 200) {
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						//
+						if (!dom || !dom.getElementsByTagName('div').length) {
+							document.getElementById('TrueCar Review = No').click();
+							document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
+							doSubmit();
 							return;
 						}
-						
-						var r = JSON.parse(rs);
-						
-						console.log(r);
-						
-						if (r.hasOwnProperty('data') &&
-							r.data.hasOwnProperty('pricing3') &&
-							r.data.pricing3.hasOwnProperty(o.id) &&
-							r.data.pricing3[o.id].hasOwnProperty('dealer_count'))
-						{
-							console.log('x');
-							var dc = r.data.pricing3[o.id].dealer_count;
-							d1.innerText = 'COUNT:'+dc;
-							if (dc == 0) {
-								document.getElementById('TrueCar Dealer = No').click();
-								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = No';
-								doSubmit();
-							} else if (dc > 0) {
-								document.getElementById('TrueCar Dealer = Yes').click();
-								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = Yes';
-								doSubmit();
-							}
+						// review
+						var rev = dom.getElementById('review');
+						if (rev && rev.innerText.length > 400) {
+							document.getElementById('TrueCar Review = Yes').click();
+							document.getElementsByName('Category')[0].value = 'TrueCar Review = Yes';
+							doSubmit();
+						} else if (!rev) { // None
+							document.getElementById('TrueCar Review = No').click();
+							document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
+							doSubmit();
+						} else { // Small content? Check valid. No submit.
+							document.getElementById('TrueCar Review = No').click();
+							document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
 						}
 					}
 				});
