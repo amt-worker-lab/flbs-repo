@@ -38036,8 +38036,8 @@ function MT__RUN() {
 		
 		// h3[0]
 		var x = document.getElementsByTagName('h3')[0];
-		x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
-		x.onclick		= chios_system_geocoding__hide_show; //xx onclick
+		//~ x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
+		//~ x.onclick		= chios_system_geocoding__hide_show; //xx onclick
 		x.setAttribute('style', 'overflow:auto;');
 		x.style.border = '2px solid LightGreen';
 		x.style.cursor = 'pointer';
@@ -38082,6 +38082,10 @@ function MT__RUN() {
 			first_url = withNameSearch;
 		
 		/*BEGIN ITEMS*/
+		// Middle line
+		var middleLine = document.createElement('div');
+		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
+		document.body.appendChild(middleLine);
 		// Left iframe
 		//~ var d2 = document.createElement('iframe');
 		//~ d2.setAttribute('style',
@@ -38089,23 +38093,20 @@ function MT__RUN() {
 		//~ );//sandbox:allow-scripts allow-same-origin;
 		//~ document.body.appendChild(d2);
 		// Change map button, for google
- 		var d3 = document.createElement('button');
- 		d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
-		d3.innerText = 'Change Map (Google+Name)';
-		document.body.appendChild(d3);
+ 		//~ var d3 = document.createElement('button');
+ 		//~ d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
+		//~ d3.innerText = 'Change Map (Google+Name)';
+		//~ document.body.appendChild(d3);
 		// Change map button, for bing
-		var d3b = document.createElement('button');
-		d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:20px;');
-		document.body.appendChild(d3b);
-		d3b.innerText = 'Change Map (Bing+Name)';
+		//~ var d3b = document.createElement('button');
+		//~ d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:20px;');
+		//~ document.body.appendChild(d3b);
+		//~ d3b.innerText = 'Change Map (Bing+Name)';
 		// Hide/show street view images
-		var d3c = document.createElement('button');
-		d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:20px;');
-		document.body.appendChild(d3c);
-		d3c.innerText = 'Hide/Show Street View';
-		var middleLine = document.createElement('div');
-		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
-		document.body.appendChild(middleLine);
+		//~ var d3c = document.createElement('button');
+		//~ d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:20px;');
+		//~ document.body.appendChild(d3c);
+		//~ d3c.innerText = 'Hide/Show Street View';
 		//~ // Images div
 		//~ var d4 = document.createElement('div');
 		//~ d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
@@ -38113,27 +38114,12 @@ function MT__RUN() {
 		/*END ITEMS*/
 		
 		/*ACTIONS*/
- 		//~ d3.onclick = function() {
-			//~ d2.style.width='30%';
- 			//~ if (this.style.backgroundColor == '') {
- 				//~ this.style.backgroundColor = 'LightGreen';
- 			//~ } else {
- 				//~ this.style.backgroundColor = '';
- 			//~ }
-			//~ if (this.innerText == 'Change Map (Google)') {
- 				//~ d2.src = woutNameSearch;
-				//~ this.innerText = 'Change Map (Google+Name)'
-			//~ } else if (this.innerText == 'Change Map (Google+Name)') {
- 				//~ d2.src = withNameSearch
-				//~ this.innerText = 'Change Map (Google)';
- 			//~ }
- 		//~ }
-		d3b.onclick = function() {
-			if (this.style.backgroundColor == '') {
-				this.style.backgroundColor = 'LightGreen';
-			} else {
-				this.style.backgroundColor = '';
-			}
+		//~ d3b.onclick = function() {
+			//~ if (this.style.backgroundColor == '') {
+				//~ this.style.backgroundColor = 'LightGreen';
+			//~ } else {
+				//~ this.style.backgroundColor = '';
+			//~ }
 			//~ d2.style.width='90%';
 			//~ if (this.innerText == 'Change Map (Bing)') {
 				//~ 
@@ -38143,16 +38129,16 @@ function MT__RUN() {
 				//~ d2.src = withNameSearchBing
 				//~ this.innerText = 'Change Map (Bing)';
 			//~ }
-		}
-		d3c.onclick = function() {
-			if (this.style.backgroundColor == '') {
-				this.style.backgroundColor = 'LightGreen';
-				d4.style.display = 'none';
-			} else {
-				this.style.backgroundColor = '';
-				d4.style.display = '';
-			}
-		}
+		//~ }
+		//~ d3c.onclick = function() {
+			//~ if (this.style.backgroundColor == '') {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ d4.style.display = 'none';
+			//~ } else {
+				//~ this.style.backgroundColor = '';
+				//~ d4.style.display = '';
+			//~ }
+		//~ }
 		/*END ACTIONS*/
 		
 		// innerHeight
@@ -38160,13 +38146,8 @@ function MT__RUN() {
 			// This set the elements d1,d1b, and d1c
 			// to fill up the whole window, minus their
 			// distance from page top (top:XX pixels;).
-			// XX OFFSET NOT HERE XX //offset: 80, // offset top
 			callback_function: function(innerHeight) {
-				
-				//~ console.log('x');
-				
-				//~ var new_h = (innerHeight-160) + 'px'; // PRIOR TO MARCH 19, 2015
-				
+
 				var new_h = (innerHeight-80) + 'px'; //...
 				
 				// Set a timeout
@@ -38175,6 +38156,9 @@ function MT__RUN() {
 				setTimeout(function() {
 					document.getElementById('map').style.height = new_h;
 				}, 1000);
+				
+				// Start the lat long func.
+				chios_system_geocoding__lat_lng();
 				
 				// DO NOT USE THIS (IMAGES WINDOW)
 				//~ // d4 is 40px lower and so 40px shorter.
@@ -38185,9 +38169,6 @@ function MT__RUN() {
 				// Max Streetview image height
 				// Double it then set zoom=0.5
 				//o.max_streetview_height = Math.floor((d4_height / 4) * 4);
-				
-				// Start the lat long func.
-				chios_system_geocoding__lat_lng();
 			}
 		});
 		
@@ -38206,9 +38187,12 @@ function MT__RUN() {
 			return false;
 		}
 		
-		
 		// Get the lat/long.
+		// Set the necessary searches.
+		//
 		function chios_system_geocoding__lat_lng() {
+			
+			
 			// 
 			//
 			MT___google_api_geocode(o.addr, function(lat,lng) {
@@ -38220,7 +38204,6 @@ function MT__RUN() {
 					!/^-?[\d\.]{4,}$/.exec(lng)
 					)
 				{
-					//d5.style.display = 'none';
 					return;
 				}
 				
@@ -38464,28 +38447,6 @@ AMT___RunPageScript("function() {" +
 			//~ );
 		
 		// ...
-		function chios_system_geocoding__hide_show() {
-			
-			this.onmouseover	= false; // DISABLE !
-			//this.onclick		= chios_system_geocoding__hide_show;
-			
-			if (d2.style.visibility == 'hidden') {
-				var l = encodeURIComponent(b);
-				d2.src = first_url;
-				//d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
-				d2.style.visibility = 'visible';
-				//~ if (d2.src == '') {
-					//~ var l = encodeURIComponent(b);
-					//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=13&iwloc=A&output=embed';
-				//~ } else {
-					//~ d2.style.visibility = 'visible';
-					//~ 
-				//~ }
-			} else {
-				d2.style.visibility = 'hidden';
-				d2.src = '';
-			}
-		}
 		
 		/**
 		 * window.onkeydown
