@@ -38141,8 +38141,10 @@ function MT__RUN() {
 				}
 				else
 				{
-					// Load results of past HITs from DB
-					// 
+					// Load results of past HITs from DB:
+					//  SELECT amt_hit_id FROM AMT_Alerts.tasks_accomplished
+					//  WHERE fk_amt_status="Rejected" && fk_requesterUserId="AU06FWQZTTRD1"
+					//  ORDER BY id DESC; #Chios, Order By Latest
 				}
 				// DO NOT USE THIS (IMAGES WINDOW)
 				//~ // d4 is 40px lower and so 40px shorter.
