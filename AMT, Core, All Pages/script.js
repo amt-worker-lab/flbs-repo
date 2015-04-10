@@ -6322,7 +6322,10 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				 * function cs_read
 				 */
 				function cs_read() { // Old args (u, num)
-					var rand = (Math.random() * 6000) + 4000;
+					if (!array_urls.length) { // Done
+						return;
+					}
+					var rand = (Math.random() * 6000) + 2000;
 					console.log('CrowdSource random:' + rand);
 					var url = array_urls.shift(); // Gets first URL from array.
 					var num = o.row_idx; // Gets the row index.
@@ -6370,8 +6373,9 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 							var rs_tmp = response.responseText;
 							if (rs_tmp.trim() == '') {
 								cs_finish(u, num, rs);
-							} else
+							} else {
 								console.log(rs_tmp+'cs_write');
+							}
 						}
 					});
 				}
@@ -6405,6 +6409,10 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 							
 							break; // ENDS HERE
 						}
+						
+						// Done?
+						// Next
+						cs_read();
 					}
 				}
 				function cs_get_new(u, num) {
@@ -6446,11 +6454,11 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 					}
 					if (subm) {
 						clearInterval(xint2);
-						var rand_time = ((Math.random() * 6) + 6) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
+						var rand_time = ((Math.random() * 6) + 2) * 1000; // ~6-12 seconds (plus delays getting here). Times 1k for milliseconds.
 						setTimeout(function() {
 							// 
-							alert('Check the console to ensure that wait time was about than 4 + rand(6) seconds. Then enable auto.');
-							//~ document.getElementById('submitButton').click();
+							//~ alert('Check the console to ensure that wait time was about than 4 + rand(6) seconds. Then enable auto.');
+							document.getElementById('submitButton').click();
 						}, rand_time); // Wait
 					}
 				},1000);
