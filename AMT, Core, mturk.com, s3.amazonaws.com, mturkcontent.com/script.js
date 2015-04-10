@@ -47941,7 +47941,7 @@ AMT___RunPageScript("function() {" +
 			
 			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:10%;height:200px;top:400px;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;left:0%;width:20%;height:200px;top:300px;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
 			
@@ -47993,7 +47993,7 @@ AMT___RunPageScript("function() {" +
 							r.data.pricing3[o.id].hasOwnProperty('dealer_count'))
 						{
 							console.log('x');
-							var dc = r.data.pricing3[o.id].dealer_count;
+							var dc = r.data.pricing3[ o.id ].dealer_count;
 							d1.innerText = 'COUNT:'+dc;
 							if (dc == 0) {
 								document.getElementById('TrueCar Dealer = No').click();
@@ -48041,7 +48041,7 @@ AMT___RunPageScript("function() {" +
 			
 			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:10%;height:200px;top:400px;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;left:0%;width:20%;height:200px;top:300px;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
 			
@@ -48066,9 +48066,10 @@ AMT___RunPageScript("function() {" +
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						//
 						if (!dom || !dom.getElementsByTagName('div').length) {
-							document.getElementById('TrueCar Review = No').click();
-							document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
-							doSubmit();
+							d1.innerText = '!dom or !divs.length';
+							//~ document.getElementById('TrueCar Review = No').click();
+							//~ document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
+							//~ doSubmit();
 							return;
 						}
 						// review
@@ -48084,6 +48085,7 @@ AMT___RunPageScript("function() {" +
 						} else { // Small content? Check valid. No submit.
 							document.getElementById('TrueCar Review = No').click();
 							document.getElementsByName('Category')[0].value = 'TrueCar Review = No';
+							d1.innerText = 'Reviews.length <= 400. Is this valid review?';
 						}
 					}
 				});
