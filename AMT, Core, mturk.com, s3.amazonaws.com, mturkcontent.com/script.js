@@ -38165,7 +38165,7 @@ function MT__RUN() {
 				this.style.backgroundColor = 'LightGreen';
 				if (o.q.value.trim() == '')
 					return false;
-				(new AMT___core_factory()).nextTab();
+				(new AMT___core_factory()).nextTab({focusOnPage: true});
 				AMT___recordAndSubmit();
 			}
 			e.preventDefault();
