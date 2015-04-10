@@ -6216,7 +6216,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 				s2.exec(ih)
 			)
 		{
-			var run = new function() {};
+			var run = function() {};
 			run.prototype.f = function() {
 				console.log('');
 				
