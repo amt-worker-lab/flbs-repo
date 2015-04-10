@@ -45,8 +45,8 @@ function MT__RUN() {
 			console.log(o);
 			switch(o.domain) {
 				case 'yoopsie.com': scrapeYoopsie();
-		}
-		function scrapeYoopsie() {
+			}
+			function scrapeYoopsie() {
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: o.url,
@@ -84,11 +84,11 @@ function MT__RUN() {
 						}
 						console.log(o);
 					}
-			});
+				});
+			}
 		}
+		new run().f();
 	}
-	new run().f();
-}
 	
 	
 
@@ -416,9 +416,6 @@ function MT__RUN() {
 		new run().f();
 	}
 	
-	
-	
-	
 	//
 	//
 	// get date publisher
@@ -689,8 +686,8 @@ function MT__RUN() {
 	
 	
 	//
-	//Travel Data
-	//Find Hotel Web Page
+	// Travel Data
+	// Find Hotel Web Page
 	//
 	s = 'Using the hotel name and location destination found on the linked website';
 	if(ih.indexOf(s) != -1) {
@@ -717,7 +714,6 @@ function MT__RUN() {
 		
 	
 	}
-	
 	function Travel_Data__Get_Details_From_Website() {
 		GM_xmlhttpRequest({
 				method:'GET',
@@ -1158,6 +1154,10 @@ function MT__RUN() {
 		});
 	}
 	
+	//
+	//
+	//
+	//
 	s = 'Include the complete street address, e.g. 100 Main St, Suite A, San Francisco, CA 94103'
 	if(ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,section {margin:0 !important; padding:0 !important;font-size:14px;}');
@@ -1168,8 +1168,10 @@ function MT__RUN() {
 		
 	}
 	
-	
-	
+	//
+	//
+	//
+	//
 	s = 'DO NOT provide links to contact forms, this is not acceptable, and'
 	if(ih.indexOf(s) != -1) {
 		console.log('RUNNING TEST OF UTILITY WINDOW');
@@ -1183,6 +1185,7 @@ function MT__RUN() {
 														},
 													   {url: 'http://www.youtube.com'}], {placeholder:'placeholder for options lol'});
 	}
+	
 	//
 	//
 	//
@@ -157881,31 +157884,12 @@ function mturk_load()
 		//
 		return;
 	}
-	// OLD //
-	/*// Page reload after request rate
-	s=/You have exceeded the maximum allowed page request rate for this website/g
-	if ( s.exec(document.body.innerHTML) && window.top==window.self && GM_getValue('mt_captcha') == '0' )
-	{
-		var __d2=setInterval(function(){
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: 'http://localhost/mturk_captcha',
-				onload: function (response) {
-					var rs=response.responseText;
-					clearInterval(__d2);
-					if (rs == '0')
-						window.location.reload();
-				}
-			});
-		},6000);
-	}*/
 }
-
-
-
-
-/*
+/**
  * END MTURK_LOAD
+ * 
+ * 
+ * 
  */
 
 
