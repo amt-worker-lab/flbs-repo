@@ -48011,6 +48011,108 @@ AMT___RunPageScript("function() {" +
 		}
 		new run().f();
 	}
+	
+	
+	//
+	// Andrew Chin
+	// Categorization, Masters
+	// trucar.com, TrueCar Review
+	s = 'After clicking the URL you are given and entering the provided zip code, scroll towards the bottom and you will see a "Reviews" button. Click on the Reviews button and determine if a description of the vehicle is there or not.';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;}');
+			
+			//[{"name":"TrueCar Dealer = Yes"},{"name":"TrueCar Dealer = No"}]
+			var p = document.getElementsByTagName('p');
+			var a = p[3].innerText.trim().replace(/^URL:[\r\n\t\s]*/, '');
+			var b = p[4].innerText.trim().replace(/^Zip Code:[\r\n\t\s]*/, '');
+			var o = {
+				url: a,
+				id: null,
+				zip: b
+			}
+			console.log(o);
+			
+			
+			/*BEGIN ELEMENTS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;width:10%;height:200px;top:400px;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			/*END ELEMENTS*/
+			
+			// Init
+			init();
+			
+			// Get ID
+			//TC.s.chromeTrimId = TC.s.trimId = 
+			function init() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.url),
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200 && response.status < 600) {
+							return;
+						}
+						
+						// e.g. TC.s.chromeTrimId = TC.s.trimId = 373978;
+						var reg = /TC\.s\.chromeTrimId = TC\.s\.trimId = ([\d]+);[\r\n\t\s]+/.exec(rs);
+						if (reg) {
+							o.id = reg[1];
+							console.log(o.id);
+							final();
+						}
+					}
+				});
+			}
+			function final() {
+				var u = 'https://www.truecar.com/api/omni/v1?types=trim%2Coption%2Cpopular_configs%2Cvehicle_media%2Cmax_savings%2Cbase_pricing_with_color%2Cincentive3%2Cpricing3%2Cprice_trend&trim_ids='+encodeURIComponent(o.id)+'&zipcode=' + encodeURIComponent(o.zip);
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							return;
+						}
+						
+						var r = JSON.parse(rs);
+						
+						console.log(r);
+						
+						if (r.hasOwnProperty('data') &&
+							r.data.hasOwnProperty('pricing3') &&
+							r.data.pricing3.hasOwnProperty(o.id) &&
+							r.data.pricing3[o.id].hasOwnProperty('dealer_count'))
+						{
+							console.log('x');
+							var dc = r.data.pricing3[o.id].dealer_count;
+							d1.innerText = 'COUNT:'+dc;
+							if (dc == 0) {
+								document.getElementById('TrueCar Dealer = No').click();
+								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = No';
+								doSubmit();
+							} else if (dc > 0) {
+								document.getElementById('TrueCar Dealer = Yes').click();
+								document.getElementsByName('Category')[0].value = 'TrueCar Dealer = Yes';
+								doSubmit();
+							}
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
 	//
 	// "Megan"
 	// Categorization, Masters
