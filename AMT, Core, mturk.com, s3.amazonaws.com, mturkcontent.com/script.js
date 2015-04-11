@@ -38194,7 +38194,14 @@ function MT__RUN() {
 			/**
 			 * function review_submitted
 			 * 
-			 * Database query result
+			 * Description: Database query result.
+			 * 
+			 * E.g. $arr = [
+					$row['amt_hit_id'],
+					$row['matchString'],
+					$row['outputs'],
+					$row['lastTimeOfSubmit']
+				];
 			 */
 			function db_review_submitted() {
 				
