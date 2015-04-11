@@ -38203,7 +38203,7 @@ function MT__RUN() {
 					$row['lastTimeOfSubmit']
 				];
 			 */
-			function db_review_submitted() {
+			function db_review_submitted(results) {
 				
 			}
 			
