@@ -38064,6 +38064,14 @@ function MT__RUN() {
 		var middleLine = document.createElement('div');
 		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
 		document.body.appendChild(middleLine);
+		// Chios submitted check
+		if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+			var d4 = document.createElement('div');
+			d4.setAttribute('style',
+				'position:absolute;top:20px;left:42%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			);
+			document.body.appendChild(d4);
+		}
 		// Left iframe
 		//~ var d2 = document.createElement('iframe');
 		//~ d2.setAttribute('style',
@@ -38289,28 +38297,30 @@ function MT__RUN() {
 							'&key=_GOOGLE_API_KEY_REDACTED_'
 					);
 				}
-window.setTimeout(function() {				
-AMT___RunPageScript("function() {" +
-"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
-"console.log('visible changed');"+
-"if(window.notFirstDrop == undefined) {"+
-"console.log('first drop');"+
-"var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
-"var fromLoc = this.getPosition();"+
-"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
-"console.log(fromLoc);"+
-"console.log(toLoc);"+
-"console.log(heading);"+
-"map.streetView.setPov({heading:heading, pitch:0});"+
-"window.notFirstDrop = true;"+
-"}"+
-"}"+
-");"+
-"}");
-},2000);
-
-
 				
+				// AMT___RunPageScript
+				window.setTimeout(function() {				
+					AMT___RunPageScript(
+					"function() {" +
+						"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
+								"console.log('visible changed');"+
+								"if(window.notFirstDrop == undefined) {"+
+									"console.log('first drop');"+
+									"var toLoc = new google.maps.LatLng("+lat+","+lng+");"+
+									"var fromLoc = this.getPosition();"+
+									"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+									"console.log(fromLoc);"+
+									"console.log(toLoc);"+
+									"console.log(heading);"+
+									"map.streetView.setPov({heading:heading, pitch:0});"+
+									"window.notFirstDrop = true;"+
+								"}"+
+							"}"+
+						");"+
+					"}");
+				}, 2000);
+				
+				// AMT__setUtilityTabs
 				AMT__setUtilityTabs([
 					{
 						//~ url: '',
