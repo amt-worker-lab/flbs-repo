@@ -47909,11 +47909,113 @@ AMT___RunPageScript("function() {" +
 	 * Chris Anderson
 	 * "Megan"
 	 * Andrew Chin
+	 * Andrew Chin 2
+	 * Stanford Political Science
 	 * 
 	 * ...
 	 * 
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
+	//
+	// Stanford Political Science
+	// Short task - report two numbers from webpage
+	// 
+	s = '	<li>On the top of the page is a table showing the number of Democrats and Republicans to vote "YEA".</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[0].href,
+				q: [
+					document.getElementsByName('reps')[0],
+					document.getElementsByName('dems')[0]
+				]
+			}
+			
+			/*BEGIN ELEMENTS*/
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;left:0%;width:20%;height:200px;top:300px;background-color:#eee;overflow:auto;');
+			//~ document.body.appendChild(d1);
+			/*END ELEMENTS*/
+			
+			// Init
+			init();
+			
+			// Get ID
+			function init() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.url,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200 && response.status < 600) {
+							return;
+						}
+						
+						// Parse
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						//
+						if (!dom || !dom.getElementsByTagName('div').length) {
+							console.log(dom);
+							return;
+						}
+						// length
+						var stats = dom.getElementsByClassName('stats');
+						if (stats.length != 1) {
+							console.log('stats.length=' + stats.length);
+							return;
+						}
+						stats = stats[0];
+						// th
+						var th = stats.getElementsByTagName('th');
+						if (!th || !th.length || th.length < 4 || th[2].innerText.indexOf('Republican') == -1 || th[3].innerText.indexOf('Democrat') == -1) {
+							console.log('th innerText missing!');
+							return;
+						}
+						// tbody
+						var tbody = stats.getElementsByTagName('tbody');
+						if (!tbody || tbody.length != 1) {
+							console.log('tbody.length=' + tbody.length);
+							return;
+						}
+						tbody = tbody[0];
+						// tr
+						var tr = tbody.getElementsByTagName('tr');
+						if (!tr || !tr.length) {
+							console.log('tr.length=' + tr.length);
+							return;
+						}
+						tr = tr[0];
+						// td
+						var td = tr.getElementsByTagName('td');
+						if (!td || !td.length || td.length != 5) {
+							console.log('td.length=' + td.length);
+							return;
+						}
+						// Aye
+						if (td[0].innerText.indexOf('Aye') == -1 || /^\d+$/.exec(td[3].innerText) || /^\d+$/.exec(td[4].innerText)) {
+							console.log('td innerText missing!');
+							return;
+						}
+						o.q[0].value = td[3].innerText;
+						o.q[1].value = td[4].innerText;
+						doSubmit();
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
 	//
 	// Andrew Chin
 	// Categorization, Masters
@@ -48011,7 +48113,6 @@ AMT___RunPageScript("function() {" +
 		}
 		new run().f();
 	}
-	
 	
 	//
 	// Andrew Chin
