@@ -37936,15 +37936,16 @@ function MT__RUN() {
 		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
 		GM_addStyle('#polygon {position:absolute;top:0px;left:42%;width:40%;height:20px;}');
+		GM_addStyle('#map {width:100% !important;}');
 		
 		// h3
 		GM_addStyle('h3:hover {background-color:aqua;}');
 		GM_addStyle('h3 {width:40%;}');
 		var x = document.getElementsByTagName('h3')[0];
 		x.innerText = x.innerText.replace(/\n/g, ' ');
-		
-		//...
-		document.getElementById('map').style.width = '100%';
+		//~ 
+		//~ //...
+		//~ document.getElementById('map').style.width = '100%';
 		//~ document.getElementById('map').style.height = tmp_h;
 		
 		//...
