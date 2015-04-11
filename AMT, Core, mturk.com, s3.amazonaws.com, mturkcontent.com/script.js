@@ -48000,9 +48000,9 @@ AMT___RunPageScript("function() {" +
 						if (!td || !td.length || td.length != 5) {
 							console.log('td.length=' + td.length);
 							return;
-						}
+						} console.log(td);
 						// Aye
-						if (td[0].innerText.indexOf('Aye') == -1 || /^\d+$/.exec(td[3].innerText) || /^\d+$/.exec(td[4].innerText)) {
+						if (td[0].innerText.indexOf('Aye') == -1 || !/^\d+$/.exec(td[3].innerText) || !/^\d+$/.exec(td[4].innerText)) {
 							console.log('td innerText missing!');
 							return;
 						}
