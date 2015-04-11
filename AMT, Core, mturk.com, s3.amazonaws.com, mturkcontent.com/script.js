@@ -37930,298 +37930,323 @@ function MT__RUN() {
 		ih.indexOf(s8) != -1 ||
 		ih.indexOf(s9) != -1
 		)
-	{		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
-		GM_addStyle('body {margin-top:0px;}');
-		GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
-		GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
-		GM_addStyle('#polygon {position:absolute;top:0px;left:42%;width:40%;height:20px;}');
-		GM_addStyle('#map {width:100% !important;}');
-		
-		// h3
-		GM_addStyle('h3:hover {background-color:aqua;}');
-		GM_addStyle('h3 {width:40%;}');
-		var x = document.getElementsByTagName('h3')[0];
-		x.innerText = x.innerText.replace(/\n/g, ' ');
-		//~ 
-		//~ //...
-		//~ document.getElementById('map').style.width = '100%';
-		//~ document.getElementById('map').style.height = tmp_h;
-		
-		//...
-		// This will change occasionally.
-		// Sometimes the first <b> on the page will be
-		// a note rather than the name!
-		var b		= document.getElementsByTagName('b');
-		var name	= b[0].innerText.trim();
-		var addr	= b[1].innerText.trim();
-		var btns	= document.getElementsByTagName('button');
-		// Is this one with b[1] b[2]?
-		if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
-			name = b[1].innerText.trim();
-			addr = b[2].innerText.trim();
-		}
-		
-		// vars
-		var o = {
-			lat: null,
-			lon: null,
-			centerMapLat: null,
-			centerMapLng: null,
-			name: name,
-			addr: addr,
-			button_cannot_find: btns[0],
-			max_streetview_height: 600, // default=600
-			curr_map_view: null, // For Z hotkey
-			q: document.getElementById('polygon'),
-			search: {
-				withNameSearch:'',
-				woutNameSearch:''
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('body {margin-top:0px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+			GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
+			GM_addStyle('#polygon {position:absolute;top:0px;left:42%;width:40%;height:20px;}');
+			GM_addStyle('#map {width:100% !important;}');
+			
+			// h3
+			GM_addStyle('h3:hover {background-color:aqua;}');
+			GM_addStyle('h3 {width:40%;}');
+			var x = document.getElementsByTagName('h3')[0];
+			x.innerText = x.innerText.replace(/\n/g, ' ');
+			//~ 
+			//~ //...
+			//~ document.getElementById('map').style.width = '100%';
+			//~ document.getElementById('map').style.height = tmp_h;
+			
+			//...
+			// This will change occasionally.
+			// Sometimes the first <b> on the page will be
+			// a note rather than the name!
+			var b		= document.getElementsByTagName('b');
+			var name	= b[0].innerText.trim();
+			var addr	= b[1].innerText.trim();
+			var btns	= document.getElementsByTagName('button');
+			// Is this one with b[1] b[2]?
+			if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
+				name = b[1].innerText.trim();
+				addr = b[2].innerText.trim();
 			}
-		};
-		console.log(o);
-		//~ if(o.name.toLowerCase() == 'marshalls') {
-			//~ document.body.style.backgroundColor = 'green';
-		//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
-			//~ document.body.style.backgroundColor = 'pink';
-		//~ }
-		
-		// Only add user decision if not running @ dev.
-		if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-			AMT___addUserDecision('Chios Polygon - Quality Control',
-				function() {
-					return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
-				},
-				[
-					'Id(polygon)',
-					'Id(reasons)'
-				]
-			);
-		}
-		//~ 
-		//~ // ...
-		//~ var q = document.getElementById('polygon');
-		
-		// o.button_cannot_find
-		o.button_cannot_find.addEventListener('click', function(e) {
-			var r = document.getElementById('reasons');
-			if (r) {
-				r.focus();
-				r.value = 'cannot find it';
-			} else if (o.q) { // input polygon
-				o.q.focus();
-			}
-		}, false);
-		
-		// hide Ps
-		var p = document.getElementsByTagName('p');
-		var i,x;
-		for (i in p) {
-			if (i == 'length') break;
-			x = p[i].getElementsByTagName('img'); // Images
-			if (x.length && (x.length == 4 || x.length == 3 || x.length == 2)) {
-				p[i].style.position = 'absolute';
-				p[i].style.marginTop = '400px';
-				break;
-			}
-		}
-		var p = document.getElementsByTagName('p');
-		for (i = p.length - 2; i>=0; i--) { // Blank Ps
-			console.log(i);
-			if (i == 'length') continue;
-			console.log(p[i].innerHTML);
-			if  (
-				p[i].innerHTML.trim() == '&nbsp;' ||
-				p[i].innerHTML.trim() == 'Polygon:'
-				)
-			{
-				p[i].parentNode.removeChild(p[i]);
-			}
-		}
-		
-		// h3[0]
-		var x = document.getElementsByTagName('h3')[0];
-		//~ x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
-		//~ x.onclick		= chios_system_geocoding__hide_show; //xx onclick
-		x.setAttribute('style', 'overflow:auto;');
-		x.style.border = '2px solid LightGreen';
-		x.style.cursor = 'pointer';
-		x.style.height = '28px';
-		x.style.fontSize = '24px';
-		x.innerText = name + '\n' + x.innerText;
-		
-		/** TESTING // ... script
-		var d = document.createElement('script');
-		//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
-		document.body.appendChild(d);*/
-		
-		//~ // BING
-		//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-		
-		/*BEGIN ITEMS*/
-		// Middle line
-		var middleLine = document.createElement('div');
-		middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
-		document.body.appendChild(middleLine);
-		// Chios submitted check
-		if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-			var d4 = document.createElement('div');
-			d4.setAttribute('style',
-				'position:absolute;top:20px;left:42%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
-			);
-			document.body.appendChild(d4);
-		}
-		// Left iframe
-		//~ var d2 = document.createElement('iframe');
-		//~ d2.setAttribute('style',
-			//~ 'position:absolute;top:80px;left:0;width:1px;border:1px solid blue;background-color:#eee;visibility:visible;'
-		//~ );//sandbox:allow-scripts allow-same-origin;
-		//~ document.body.appendChild(d2);
-		// Change map button, for google
- 		//~ var d3 = document.createElement('button');
- 		//~ d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
-		//~ d3.innerText = 'Change Map (Google+Name)';
-		//~ document.body.appendChild(d3);
-		// Change map button, for bing
-		//~ var d3b = document.createElement('button');
-		//~ d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:20px;');
-		//~ document.body.appendChild(d3b);
-		//~ d3b.innerText = 'Change Map (Bing+Name)';
-		// Hide/show street view images
-		//~ var d3c = document.createElement('button');
-		//~ d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:20px;');
-		//~ document.body.appendChild(d3c);
-		//~ d3c.innerText = 'Hide/Show Street View';
-		//~ // Images div
-		//~ var d4 = document.createElement('div');
-		//~ d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
-		//~ document.body.appendChild(d4);
-		/*END ITEMS*/
-		
-		/*ACTIONS*/
-		//~ d3b.onclick = function() {
-			//~ if (this.style.backgroundColor == '') {
-				//~ this.style.backgroundColor = 'LightGreen';
-			//~ } else {
-				//~ this.style.backgroundColor = '';
-			//~ }
-			//~ d2.style.width='90%';
-			//~ if (this.innerText == 'Change Map (Bing)') {
-				//~ 
-				//~ d2.src = woutNameSearchBing
-				//~ this.innerText = 'Change Map (Bing+Name)'
-			//~ } else if (this.innerText == 'Change Map (Bing+Name)') {
-				//~ d2.src = withNameSearchBing
-				//~ this.innerText = 'Change Map (Bing)';
-			//~ }
-		//~ }
-		//~ d3c.onclick = function() {
-			//~ if (this.style.backgroundColor == '') {
-				//~ this.style.backgroundColor = 'LightGreen';
-				//~ d4.style.display = 'none';
-			//~ } else {
-				//~ this.style.backgroundColor = '';
-				//~ d4.style.display = '';
-			//~ }
-		//~ }
-		/*END ACTIONS*/
-		
-		// innerHeight
-		new AMT___core_factory().el_innerHeight({
-			// This set the elements d1,d1b, and d1c
-			// to fill up the whole window, minus their
-			// distance from page top (top:XX pixels;).
-			callback_function: function(innerHeight) {
-
-				var new_h = (innerHeight-80) + 'px'; //...
-				
-				// Set a timeout
-				// There is a problem here. It goes gray sometimes.
-				// Which happens to be the background color of the map div.
-				setTimeout(function() {
-					document.getElementById('map').style.height = new_h;
-				}, 1000);
-				
-				// Start the lat long func.
-				// If not running @ dev.
-				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-					chios_system_geocoding__lat_lng();
+			
+			// vars
+			var o = {
+				lat: null,
+				lon: null,
+				centerMapLat: null,
+				centerMapLng: null,
+				name: name,
+				addr: addr,
+				button_cannot_find: btns[0],
+				max_streetview_height: 600, // default=600
+				curr_map_view: null, // For Z hotkey
+				q: document.getElementById('polygon'),
+				search: {
+					withNameSearch:'',
+					woutNameSearch:''
 				}
-				else
-				{
-					// Load results of past HITs from DB:
-					//  SELECT amt_hit_id FROM AMT_Alerts.tasks_accomplished
-					//  WHERE fk_amt_status="Rejected" && fk_requesterUserId="AU06FWQZTTRD1"
-					//  ORDER BY id DESC; #Chios, Order By Latest
-					
-				}
-				// DO NOT USE THIS (IMAGES WINDOW)
-				//~ // d4 is 40px lower and so 40px shorter.
-				//~ var d4_height = innerHeight-280;
-				//~ d4.style.height = d4_height + 'px';
-				
-				// DO NOT USE THIS
-				// Max Streetview image height
-				// Double it then set zoom=0.5
-				//o.max_streetview_height = Math.floor((d4_height / 4) * 4);
-			}
-		});
-		
-		// ...
-		document.getElementById('submitButton').onclick = function(e) {
-			// Run here if not running @ dev.
+			};
+			console.log(o);
+			//~ if(o.name.toLowerCase() == 'marshalls') {
+				//~ document.body.style.backgroundColor = 'green';
+			//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
+				//~ document.body.style.backgroundColor = 'pink';
+			//~ }
+			
+			// Only add user decision if not running @ dev.
 			if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-				this.style.backgroundColor = 'LightGreen';
-				if (o.q.value.trim() == '')
-					return false;
-				(new AMT___core_factory()).nextTab({focusOnPage: true});
-				AMT___recordAndSubmit();
+				AMT___addUserDecision('Chios Polygon - Quality Control',
+					function() {
+						return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+					},
+					[
+						'Id(polygon)',
+						'Id(reasons)'
+					]
+				);
 			}
-			e.preventDefault();
-			e.stopPropagation();
-			return false;
-		}
-		
-		// Get the lat/long.
-		// Set the necessary searches.
-		//
-		function chios_system_geocoding__lat_lng() {
-			
-			// ...
-			var l = o.name;
-			if (l == 'Walmart')
-				l = 'Wal';
-			if (l == 'Macy\'s')
-				l = 'Macy';
-			// ...
-			// Removed "near"
-			o.search.withNameSearch =
-				'https://maps.google.com/maps?hl=en&geocode='+
-				'&q='+encodeURIComponent(l + ' ' +o.addr)+
-				'&output=embed&t=h&z=17'; //&iwloc=A
-			// ...
-			o.search.woutNameSearch =
-				'https://maps.google.com/maps?'+
-				'q='+encodeURIComponent(o.addr)+
-				'&hl=en&t=h&gl=us'+
-				'&hq='+encodeURIComponent(o.addr)+
-				'&hnear='+encodeURIComponent(o.addr)+
-				'&z=17&iwloc=A&output=embed';
-			//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
-			//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-			//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
-			//&sll=41.021458,-80.660332
-			//~ if (o.lat != null && o.lon != null)
-				//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
-			//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
+			//~ 
 			//~ // ...
-			//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
+			//~ var q = document.getElementById('polygon');
 			
-			// 
-			//
-			MT___google_api_geocode(o.addr, function(lat,lng) {
+			// o.button_cannot_find
+			o.button_cannot_find.addEventListener('click', function(e) {
+				var r = document.getElementById('reasons');
+				if (r) {
+					r.focus();
+					r.value = 'cannot find it';
+				} else if (o.q) { // input polygon
+					o.q.focus();
+				}
+			}, false);
+			
+			// hide Ps
+			var p = document.getElementsByTagName('p');
+			var i,x;
+			for (i in p) {
+				if (i == 'length') break;
+				x = p[i].getElementsByTagName('img'); // Images
+				if (x.length && (x.length == 4 || x.length == 3 || x.length == 2)) {
+					p[i].style.position = 'absolute';
+					p[i].style.marginTop = '400px';
+					break;
+				}
+			}
+			var p = document.getElementsByTagName('p');
+			for (i = p.length - 2; i>=0; i--) { // Blank Ps
+				console.log(i);
+				if (i == 'length') continue;
+				console.log(p[i].innerHTML);
+				if  (
+					p[i].innerHTML.trim() == '&nbsp;' ||
+					p[i].innerHTML.trim() == 'Polygon:'
+					)
+				{
+					p[i].parentNode.removeChild(p[i]);
+				}
+			}
+			
+			// h3[0]
+			var x = document.getElementsByTagName('h3')[0];
+			//~ x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
+			//~ x.onclick		= chios_system_geocoding__hide_show; //xx onclick
+			x.setAttribute('style', 'overflow:auto;');
+			x.style.border = '2px solid LightGreen';
+			x.style.cursor = 'pointer';
+			x.style.height = '28px';
+			x.style.fontSize = '24px';
+			x.innerText = name + '\n' + x.innerText;
+			
+			/** TESTING // ... script
+			var d = document.createElement('script');
+			//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
+			document.body.appendChild(d);*/
+			
+			//~ // BING
+			//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+			//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
+			
+			/*BEGIN ITEMS*/
+			// Middle line
+			var middleLine = document.createElement('div');
+			middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
+			document.body.appendChild(middleLine);
+			// Chios submitted check
+			if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+				var d4 = document.createElement('div');
+				d4.setAttribute('style',
+					'position:absolute;top:20px;left:42%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				);
+				document.body.appendChild(d4);
+			}
+			// Left iframe
+			//~ var d2 = document.createElement('iframe');
+			//~ d2.setAttribute('style',
+				//~ 'position:absolute;top:80px;left:0;width:1px;border:1px solid blue;background-color:#eee;visibility:visible;'
+			//~ );//sandbox:allow-scripts allow-same-origin;
+			//~ document.body.appendChild(d2);
+			// Change map button, for google
+			//~ var d3 = document.createElement('button');
+			//~ d3 .setAttribute('style','position:absolute;top:0;left:40%;width:20%;height:20px;');
+			//~ d3.innerText = 'Change Map (Google+Name)';
+			//~ document.body.appendChild(d3);
+			// Change map button, for bing
+			//~ var d3b = document.createElement('button');
+			//~ d3b.setAttribute('style', 'position:absolute;top:0;left:60%;width:20%;height:20px;');
+			//~ document.body.appendChild(d3b);
+			//~ d3b.innerText = 'Change Map (Bing+Name)';
+			// Hide/show street view images
+			//~ var d3c = document.createElement('button');
+			//~ d3c.setAttribute('style', 'position:absolute;top:0;left:80%;width:19%;height:20px;');
+			//~ document.body.appendChild(d3c);
+			//~ d3c.innerText = 'Hide/Show Street View';
+			//~ // Images div
+			//~ var d4 = document.createElement('div');
+			//~ d4.setAttribute('style', 'position:absolute;top:120px;left:80%;width:19%;background-color:#eee;border:1px solid blue;overflow:auto;'); // This is 40px lower than "map" and "iframe".
+			//~ document.body.appendChild(d4);
+			/*END ITEMS*/
+			
+			/*ACTIONS*/
+			//~ d3b.onclick = function() {
+				//~ if (this.style.backgroundColor == '') {
+					//~ this.style.backgroundColor = 'LightGreen';
+				//~ } else {
+					//~ this.style.backgroundColor = '';
+				//~ }
+				//~ d2.style.width='90%';
+				//~ if (this.innerText == 'Change Map (Bing)') {
+					//~ 
+					//~ d2.src = woutNameSearchBing
+					//~ this.innerText = 'Change Map (Bing+Name)'
+				//~ } else if (this.innerText == 'Change Map (Bing+Name)') {
+					//~ d2.src = withNameSearchBing
+					//~ this.innerText = 'Change Map (Bing)';
+				//~ }
+			//~ }
+			//~ d3c.onclick = function() {
+				//~ if (this.style.backgroundColor == '') {
+					//~ this.style.backgroundColor = 'LightGreen';
+					//~ d4.style.display = 'none';
+				//~ } else {
+					//~ this.style.backgroundColor = '';
+					//~ d4.style.display = '';
+				//~ }
+			//~ }
+			/*END ACTIONS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				callback_function: function(innerHeight) {
+
+					var new_h = (innerHeight-80) + 'px'; //...
+					
+					// Set a timeout
+					// There is a problem here. It goes gray sometimes.
+					// Which happens to be the background color of the map div.
+					setTimeout(function() {
+						document.getElementById('map').style.height = new_h;
+					}, 1000);
+					
+					// Start the lat long func.
+					// If not running @ dev.
+					if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+						chios_system_geocoding__lat_lng();
+					}
+					else
+					{
+						// Load results of past HITs from DB:
+						//  SELECT amt_hit_id FROM AMT_Alerts.tasks_accomplished
+						//  WHERE fk_amt_status="Rejected" && fk_requesterUserId="AU06FWQZTTRD1"
+						//  ORDER BY id DESC; #Chios, Order By Latest
+						new AMT___requests_factory().
+						database__select(
+							{
+								query: 'AMT_Requester__Chios_System_Review_Submitted'
+							},
+							db_review_submitted
+						);
+					}
+					// DO NOT USE THIS (IMAGES WINDOW)
+					//~ // d4 is 40px lower and so 40px shorter.
+					//~ var d4_height = innerHeight-280;
+					//~ d4.style.height = d4_height + 'px';
+					
+					// DO NOT USE THIS
+					// Max Streetview image height
+					// Double it then set zoom=0.5
+					//o.max_streetview_height = Math.floor((d4_height / 4) * 4);
+				}
+			});
+			
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				// Run here if not running @ dev.
+				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+					this.style.backgroundColor = 'LightGreen';
+					if (o.q.value.trim() == '')
+						return false;
+					(new AMT___core_factory()).nextTab({focusOnPage: true});
+					AMT___recordAndSubmit();
+				}
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			
+			/**
+			 * function review_submitted
+			 * 
+			 * Database query result
+			 */
+			function db_review_submitted() {
 				
+			}
+			
+			// Get the lat/long.
+			// Set the necessary searches.
+			//
+			function chios_system_geocoding__lat_lng() {
+				
+				// ...
+				var l = o.name;
+				if (l == 'Walmart')
+					l = 'Wal';
+				if (l == 'Macy\'s')
+					l = 'Macy';
+				// ...
+				// Removed "near"
+				o.search.withNameSearch =
+					'https://maps.google.com/maps?hl=en&geocode='+
+					'&q='+encodeURIComponent(l + ' ' +o.addr)+
+					'&output=embed&t=h&z=17'; //&iwloc=A
+				// ...
+				o.search.woutNameSearch =
+					'https://maps.google.com/maps?'+
+					'q='+encodeURIComponent(o.addr)+
+					'&hl=en&t=h&gl=us'+
+					'&hq='+encodeURIComponent(o.addr)+
+					'&hnear='+encodeURIComponent(o.addr)+
+					'&z=17&iwloc=A&output=embed';
+				//~ var withNameSearch = 'https://maps.google.com/maps?f=q&source=s_q&output=embed&hl=en&geocode=&abauth=54342bc9orlyJ7sud852qJPoyUmlNd5XYA4&authuser=0&q='+encodeURIComponent(l + ' ' +addr)+'&aq=&vps=3&ei=9Cw0VLTgKI7WswTlt4DgAQ&jsv=490b&sspn=0.010443%2C0.033023&vpsrc=0&sll='+o.lat + ',' + o.lon;//&sll=42.394509%2C-76.504906
+				//https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+				//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&output=embed&t=h&z=17'; //&iwloc=A
+				//&sll=41.021458,-80.660332
+				//~ if (o.lat != null && o.lon != null)
+					//~ withNameSearch += '&sll='+o.lat + ',' + o.lon;
+				//~ var withNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(l + ' ' +addr)+'&t=h&gl=us&z=17&output=embed'; //&iwloc=A
+				//~ // ...
+				//~ var withNameSearch = 'https://maps.google.com/maps?q='+encodeURIComponent(addr+' '+l)+'&hl=en&t=h&gl=us&hq='+encodeURIComponent(addr+' '+l)+'&hnear='+encodeURIComponent(addr+' '+l)+'&z=17&iwloc=A&output=embed';
+				
+				// 
+				//
+				MT___google_api_geocode(o.addr, geocode_result, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
+			}
+			
+			/**
+			 * function geocode_result
+			 * 
+			 * @param lat
+			 * @param lng
+			 */
+			function geocode_result(lat, lng) {
 				if  (
 					!lat ||
 					!lng ||
@@ -38343,8 +38368,8 @@ function MT__RUN() {
 								"var currentLat = map.getCenter().k;"+
 								"var currentLng = map.getCenter().D;"+
 								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
-							    "				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
-							    "			    ];"+
+								"				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
+								"			    ];"+
 								" console.log(document.body.tempLat);"+
 								" console.log('running in here');"+
 								""+
@@ -38433,274 +38458,276 @@ function MT__RUN() {
 
 						"}");
 					});
-			}, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
-		}
-		
-		/**
-		 * window.onkeydown
-		 * This is somewhat different from keypress. For example "e.keyCode" for CTRL only comes in 
-		 * on keydown NOT keypress. Er wtf?
-		 */
-		window.addEventListener('keyup', function(e) {
-			
-			console.log('keyCode'+e.keyCode);
-			console.log('charCode'+e.charCode); //Always=0
-			
-			// Submit button (CTRL key)
-			if (e.keyCode == '17') {
-				document.getElementById('submitButton').click();
 			}
-		}, false);
-		/**
-		 * window.onkeypress
-		 */
-		window.addEventListener('keypress', function(e) {
 			
-			//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
-			//~ + "charCode: " + e.charCode);
+			/**
+			 * window.onkeydown
+			 * This is somewhat different from keypress. For example "e.keyCode" for CTRL only comes in 
+			 * on keydown NOT keypress. Er wtf?
+			 */
+			window.addEventListener('keyup', function(e) {
+				
+				console.log('keyCode'+e.keyCode);
+				console.log('charCode'+e.charCode); //Always=0
+				
+				// Submit button (CTRL key)
+				if (e.keyCode == '17') {
+					document.getElementById('submitButton').click();
+				}
+			}, false);
+			/**
+			 * window.onkeypress
+			 */
+			window.addEventListener('keypress', function(e) {
+				
+				//~ alert("Key Pressed: " + String.fromCharCode(e.charCode) + "\n"
+				//~ + "charCode: " + e.charCode);
+				
+				var char = String.fromCharCode(e.charCode);
+				
+				// Exit Steet View
+				if (char == 'z' || char == 'Z') {
+					console.log('Exit:' + char);
+					var x = document.getElementsByTagName('div');
+					for (var i in x) {
+						if (i == 'length') break;
+						
+						// Exit Steet View
+						if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
+							x[i].click();
+							console.log(x[i]);
+							
+							/*AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
+								console.log('Got AMT___GetPageScriptVars callback');
+								console.log(obj);
+								console.log(testParams)
+							}, {test: 'test'});*/
+							
+							AMT___RunPageScript(function() {
+									//console.log('haha! PageScript has run!');
+									var headingAngle = map.streetView.pov.heading;
+									headingAngle *= -1;
+									
+									 map.streetView.pov.heading
+
+									console.log(headingAngle);
+									headingAngle = headingAngle * Math.PI / 180;
+									
+									console.log(headingAngle);
+									var currentLat = map.streetView.location.latLng.k;
+									var currentLng = map.streetView.location.latLng.D;
+									
+									var nextLat = currentLat + 0.003*Math.cos(headingAngle);
+									var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
+									var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
+									var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
+									var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
+									var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
+									console.log(currentLat);
+									console.log(currentLng);
+									console.log(nextLat);
+									console.log(nextLng);
+									var path = [new google.maps.LatLng(currentLat, currentLng),
+												new google.maps.LatLng(nextLat, nextLng)
+												];
+									var path2 = [new google.maps.LatLng(currentLat, currentLng),
+												new google.maps.LatLng(nextLat2, nextLng2)
+												];
+									var path3 = [new google.maps.LatLng(currentLat, currentLng),
+												new google.maps.LatLng(nextLat3, nextLng3)
+												];
+									 
+									//~ var path = [new google.maps.LatLng(currentLat, currentLng),
+												//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
+											//	];
+
+									var lineSymbol = {
+										path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+									};
+									if(window.angleShower)
+										window.angleShower.setMap(null);
+									window.angleShower = new google.maps.Polyline({
+											path: path,
+											geodesic: true,
+											icons: [{
+												  icon: lineSymbol,
+												  offset: '100%'
+												}],
+											strokeColor: '#00FF00',
+											strokeOpacity: 1.0,
+											strokeWeight: 4
+										});
+									window.angleShower.setMap(map);
+									
+									if(window.angleShower2)
+										window.angleShower2.setMap(null);
+									window.angleShower2 = new google.maps.Polyline({
+											path: path2,
+											geodesic: true,
+											icons: [{
+												  icon: lineSymbol,
+												  offset: '100%'
+												}],
+											strokeColor: '#00FF00',
+											strokeOpacity: 1.0,
+											strokeWeight: 4
+										});
+									window.angleShower2.setMap(map);
+									
+									if(window.angleShower3)
+										window.angleShower3.setMap(null);
+									window.angleShower3 = new google.maps.Polyline({
+											path: path3,
+											geodesic: true,
+											icons: [{
+												  icon: lineSymbol,
+												  offset: '100%'
+												}],
+											strokeColor: '#00FF00',
+											strokeOpacity: 1.0,
+											strokeWeight: 4
+										});
+									window.angleShower3.setMap(map);
+									
+									
+									//console.log(angleShower);
+									return;
+								})
+							
+
+							
+							break;
+						}
+						//~ 
+						//~ // Go to map view
+						//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
+							//~ x[i].click();
+						//~ }
+						//~ 
+						//~ // Go to satellite
+						//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
+							//~ x[i].click();
+						//~ }
+					};
+				}
+				
+				//...
+				// Go to map view
+				else if (char == 'x' || char == 'X') {
+					var x=document.getElementsByTagName('div');
+					for (var i in x) {
+						if (i == 'length') break;
+						
+						// Go to map view
+						if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
+							x[i].click();
+							o.curr_map_view = 'map';
+							
+							break;
+							//~ console.log('map');
+							//~ console.log(x[i].style.fontWeight);
+							//~ console.log(x[i].style);
+							//~ console.log(JSON.stringify(x[i].style));
+								
+						}
+						
+						// Go to satellite
+						if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
+							x[i].click();
+							o.curr_map_view = null;
+							break;
+							//~ console.log('sat');
+							//~ console.log(x[i].style.fontWeight);
+							//~ console.log(x[i].style);
+							//~ console.log(JSON.stringify(x[i].style));
+						}
+					};
+				}
+				
+				// Go to satellite
+				else if (char == 'c' || char == 'C') {
+					var x=document.getElementsByTagName('div');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show 45 degree view') {
+							x[i].click();
+							break;
+						}
+					};
+				}
+			}, false);
 			
-			var char = String.fromCharCode(e.charCode);
-			
-			// Exit Steet View
-			if (char == 'z' || char == 'Z') {
-				console.log('Exit:' + char);
+			// Zoom map exit button
+			var xintv = setInterval(function() {
 				var x = document.getElementsByTagName('div');
 				for (var i in x) {
 					if (i == 'length') break;
-					
-					// Exit Steet View
 					if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
-						x[i].click();
-						console.log(x[i]);
-						
-						/*AMT___GetPageScriptVars(['map.streetView.pov.heading'], function(obj, testParams) {
-							console.log('Got AMT___GetPageScriptVars callback');
-							console.log(obj);
-							console.log(testParams)
-						}, {test: 'test'});*/
-						
-						AMT___RunPageScript(function() {
-								//console.log('haha! PageScript has run!');
-								var headingAngle = map.streetView.pov.heading;
-								headingAngle *= -1;
-								
-								 map.streetView.pov.heading
-
-								console.log(headingAngle);
-								headingAngle = headingAngle * Math.PI / 180;
-								
-								console.log(headingAngle);
-								var currentLat = map.streetView.location.latLng.k;
-								var currentLng = map.streetView.location.latLng.D;
-								
-								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
-								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
-								var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
-								var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
-								var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
-								var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
-								console.log(currentLat);
-								console.log(currentLng);
-								console.log(nextLat);
-								console.log(nextLng);
-								var path = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat, nextLng)
-										    ];
-								var path2 = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat2, nextLng2)
-										    ];
-								var path3 = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat3, nextLng3)
-										    ];
-								 
-								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
-											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
-										//	];
-
-								var lineSymbol = {
-									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-								};
-								if(window.angleShower)
-									window.angleShower.setMap(null);
-								window.angleShower = new google.maps.Polyline({
-										path: path,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower.setMap(map);
-								
-								if(window.angleShower2)
-									window.angleShower2.setMap(null);
-								window.angleShower2 = new google.maps.Polyline({
-										path: path2,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower2.setMap(map);
-								
-								if(window.angleShower3)
-									window.angleShower3.setMap(null);
-								window.angleShower3 = new google.maps.Polyline({
-										path: path3,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower3.setMap(map);
-								
-								
-								//console.log(angleShower);
-								return;
-							})
-						
-
-						
+						x[i].style.zoom = 2.4;
+						clearInterval(xintv);
 						break;
 					}
-					//~ 
-					//~ // Go to map view
-					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map') {
-						//~ x[i].click();
-					//~ }
-					//~ 
-					//~ // Go to satellite
-					//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery') {
-						//~ x[i].click();
-					//~ }
 				};
-			}
+			}, 1000);
 			
-			//...
-			// Go to map view
-			else if (char == 'x' || char == 'X') {
-				var x=document.getElementsByTagName('div');
-				for (var i in x) {
-					if (i == 'length') break;
-					
-					// Go to map view
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
-						x[i].click();
-						o.curr_map_view = 'map';
-						
-						break;
-						//~ console.log('map');
-						//~ console.log(x[i].style.fontWeight);
-						//~ console.log(x[i].style);
-						//~ console.log(JSON.stringify(x[i].style));
-							
-					}
-					
-					// Go to satellite
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
-						x[i].click();
-						o.curr_map_view = null;
-						break;
-						//~ console.log('sat');
-						//~ console.log(x[i].style.fontWeight);
-						//~ console.log(x[i].style);
-						//~ console.log(JSON.stringify(x[i].style));
-					}
-				};
-			}
+			/**
+			 * Do a map resize
+			 * Script embed
+			 * .....?
+			 */
+			var sc = document.createElement('script');
+			sc.innerText = 'google.maps.event.trigger(map, "resize");';
+			document.body.appendChild(sc);
 			
-			// Go to satellite
-			else if (char == 'c' || char == 'C') {
-				var x=document.getElementsByTagName('div');
-				for (var i in x) {
-					if (i == 'length') break;
-					if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show 45 degree view') {
-						x[i].click();
-						break;
-					}
-				};
-			}
-		}, false);
-		
-		// Zoom map exit button
-		var xintv = setInterval(function() {
-			var x = document.getElementsByTagName('div');
-			for (var i in x) {
-				if (i == 'length') break;
-				if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
-					x[i].style.zoom = 2.4;
-					clearInterval(xintv);
-					break;
-				}
-			};
-		}, 1000);
-		
-		/**
-		 * Do a map resize
-		 * Script embed
-		 * .....?
-		 */
-		var sc = document.createElement('script');
-		sc.innerText = 'google.maps.event.trigger(map, "resize");';
-		document.body.appendChild(sc);
-		
-		/* OLD, Get street view images*/
-		//~ // Get street view images
-			//~ var hds = [0, 90, 180, 270];
-			//~ for (var i in hds) {
-				//~ 
-				//~ var img = document.createElement('img');
-				//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
-				//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
-						//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-						//~ '&location='+encodeURIComponent(o.addr)+
-						//~ //'&location='+lat+','+lng+
-						//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
-				//~ d4.appendChild(img);
-				//~ 
-				//~ // Actions
-				//~ img.onclick = function() {
-					//~ if (this.style.zoom != '0.5') {
-						//~ this.style.zoom = '0.5';
-					//~ } else {
-						//~ this.style.zoom = '0.25';
+			/* OLD, Get street view images*/
+			//~ // Get street view images
+				//~ var hds = [0, 90, 180, 270];
+				//~ for (var i in hds) {
+					//~ 
+					//~ var img = document.createElement('img');
+					//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
+					//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
+							//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
+							//~ '&location='+encodeURIComponent(o.addr)+
+							//~ //'&location='+lat+','+lng+
+							//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
+					//~ d4.appendChild(img);
+					//~ 
+					//~ // Actions
+					//~ img.onclick = function() {
+						//~ if (this.style.zoom != '0.5') {
+							//~ this.style.zoom = '0.5';
+						//~ } else {
+							//~ this.style.zoom = '0.25';
+						//~ }
 					//~ }
 				//~ }
-			//~ }
-			//~ // Append an extend div
-			//~ var dv = document.createElement('div');
-			//~ dv.setAttribute('style','height:1400px;');
-			//~ d4.appendChild(dv);
-			
-			//~ document.getElementById('lat').value = lat;
-			//~ document.getElementById('lon').value = lng;
-			//~ 
-			//~ doSubmit();
-		/* OLD ........ BODY.ONDBLCLICK ........
-		// ...
-		document.body.ondblclick = function() {
-			if (d2.src == withNameSearch) {
-				d2.src = woutNameSearch
-			} else if (d2.src == woutNameSearch) {
-				d2.src = withNameSearch
-			}
-			
-			
-			// home+depot?
-			//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
-			//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
-		}*/
+				//~ // Append an extend div
+				//~ var dv = document.createElement('div');
+				//~ dv.setAttribute('style','height:1400px;');
+				//~ d4.appendChild(dv);
+				
+				//~ document.getElementById('lat').value = lat;
+				//~ document.getElementById('lon').value = lng;
+				//~ 
+				//~ doSubmit();
+			/* OLD ........ BODY.ONDBLCLICK ........
+			// ...
+			document.body.ondblclick = function() {
+				if (d2.src == withNameSearch) {
+					d2.src = woutNameSearch
+				} else if (d2.src == woutNameSearch) {
+					d2.src = withNameSearch
+				}
+				
+				
+				// home+depot?
+				//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
+				//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
+			}*/
+		}
+		new run().f();
+		return;
 	}
 	
 	// Rob Bertholf
