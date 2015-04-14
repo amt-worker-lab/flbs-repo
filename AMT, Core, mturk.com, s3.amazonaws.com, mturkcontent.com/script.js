@@ -4455,10 +4455,10 @@ function MT__RUN() {
 		new run().f();
 	}
 	// 
-	// 
-	// 
+	// Dotmenu Web
+	// What are the restaurant's top 3 results on Google Search?
 	//
-	s = '	<li>Find the Median Home Value in the first search result (no need to click the link).</li>';
+	s = '<p><b style="line-height: 1.6em; color: rgb(34, 34, 34); font-family: arial, sans-serif;">Please copy the URL links to the top 3 organic results below (it is easiest to click on the actual&nbsp;search result and copy the link from the address bar on the site). TAKE THE URLs from the ORGANIC SEARCH RESULTS!<span style="color:#FF0000;">&nbsp;NOT PAID RESULTS (Noted by the Orange Ad marker to the left of the URL)&nbsp;OR URLs from the INFORMATION PANEL on the right side of the screen.</span></b></p>';
 	if  (
 		ih.indexOf(s) != -1
 		)
@@ -4470,21 +4470,19 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
 			
-			var a = document.getElementsByTagName('a');
+			// e.g. Sunshine Wings Hollywood 33025
+			var a = /<h2><b>Restaurant&nbsp;Google Search Term \(Copy this\): ([^<]+)<\/b><\/h2>/.exec(ih)[1]; // 
 			
 			var o = {
-				href: a[0].href,
-				q: document.getElementById('web_url')
+				s: a,
+				q: [
+					document.getElementsByName('SearchResult1')[0],
+					document.getElementsByName('SearchResult2')[0],
+					document.getElementsByName('SearchResult3')[0]
+				]
 			}
-			
-			// Change ... to ...
-			// http://www.google.com/search?q=Zillow+98330+median+home+price
-			// http://www.google.com/search?q=site:zillow.com+98330+"median+home+value"
-			o.href = o.href.replace(/q=Zillow/, 'q=site:zillow.com');
-			o.href = o.href.replace(/median\+home\+price/, '"median+home+value"');
-			
 			// sb
-			document.getElementById('submitButton').onclick = function() {
+			document.getElementById('submitButton').onclick = function(e) {
 				o.q.value = o.q.value.trim();
 				if (o.q.value == 'N/A') {
 					// continue
@@ -4492,11 +4490,14 @@ function MT__RUN() {
 				else if (!/^[\d,]+$/.exec(o.q.value)) { // Has more than one but only digits and commas.
 					return false; // stops here
 				}
+				e.preventDefault();
+				e.preventStopPropagation();
+				return false; // stops here
 			}
 			// gs
 			new AMT___requests_factory().google_search(
 				{
-					url: o.href,
+					url: 'https://www.google.com/search?q=' + encodeURIComponent(o.s),
 					//~ query: upc,
 					callback_error: function() {
 						document.body.style.backgroundColor = 'pink';
@@ -4505,30 +4506,28 @@ function MT__RUN() {
 					callback_success: function(result_object) {
 						var arr = result_object.results;
 						// 0=URL, 1=Body
+						console.log(arr);
 						
 						if (arr.length == 0) {
-							o.q.value = 'N/A';
-							doSubmit();
+							//~ o.q.value = 'N/A';
+							//~ doSubmit();
 							return;
 						}
 						
-						// First type...
-						// Second type=When no <em> surrounding the location. Inexact match. E.g. "Qville" rather than "14850".
-						var first_res = arr[0];
-						var reg =
-							/The (<em>| *)median home value(<\/em>| *) in (<em>| *)\d+(<\/em>| *) is (\$[\d,]+)\./.exec(first_res);
-						var reg2 =
-							/The (<em>| *)median home value(<\/em>| *) in [^\$\.]+(\$[\d,]+)\./.exec(first_res);
-						if (reg) {
-							o.q.value = reg[5];
-							doSubmit();
-						} else if (reg2) {
-							o.q.value = reg2[3];
-							doSubmit();
-						} else {
-							document.body.style.backgroundColor = 'aqua';
-							o.q.value = '???' + first_res;
+						
+						for (var i=0; i<=2; i++) {
+							o.q[ i ].value = arr[i][0];
 						}
+						
+						for (var i in o.q) {
+							if (o.q[i].value.trim() == '') {
+								return;
+							}
+						}
+						
+						// Here?
+						doSubmit();
+						
 					}
 				}
 			);
