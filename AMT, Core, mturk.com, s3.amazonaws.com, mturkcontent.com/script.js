@@ -4455,6 +4455,87 @@ function MT__RUN() {
 		new run().f();
 	}
 	// 
+	// 
+	// 
+	//
+	s = '	<li>Find the Median Home Value in the first search result (no need to click the link).</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:150px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			
+			var a = document.getElementsByTagName('a');
+			
+			var o = {
+				href: a[0].href,
+				q: document.getElementById('web_url')
+			}
+			
+			// Change ... to ...
+			// http://www.google.com/search?q=Zillow+98330+median+home+price
+			// http://www.google.com/search?q=site:zillow.com+98330+"median+home+value"
+			o.href = o.href.replace(/q=Zillow/, 'q=site:zillow.com');
+			o.href = o.href.replace(/median\+home\+price/, '"median+home+value"');
+			
+			// sb
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				if (o.q.value == 'N/A') {
+					// continue
+				}
+				else if (!/^[\d,]+$/.exec(o.q.value)) { // Has more than one but only digits and commas.
+					return false; // stops here
+				}
+			}
+			// gs
+			new AMT___requests_factory().google_search(
+				{
+					url: o.href,
+					//~ query: upc,
+					callback_error: function() {
+						document.body.style.backgroundColor = 'pink';
+						window.open('https://www.google.com/search?q='+Math.random());
+					},
+					callback_success: function(result_object) {
+						var arr = result_object.results;
+						// 0=URL, 1=Body
+						
+						if (arr.length == 0) {
+							o.q.value = 'N/A';
+							doSubmit();
+							return;
+						}
+						
+						// First type...
+						// Second type=When no <em> surrounding the location. Inexact match. E.g. "Qville" rather than "14850".
+						var first_res = arr[0];
+						var reg =
+							/The (<em>| *)median home value(<\/em>| *) in (<em>| *)\d+(<\/em>| *) is (\$[\d,]+)\./.exec(first_res);
+						var reg2 =
+							/The (<em>| *)median home value(<\/em>| *) in [^\$\.]+(\$[\d,]+)\./.exec(first_res);
+						if (reg) {
+							o.q.value = reg[5];
+							doSubmit();
+						} else if (reg2) {
+							o.q.value = reg2[3];
+							doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'aqua';
+							o.q.value = '???' + first_res;
+						}
+					}
+				}
+			);
+		}
+		new run().f();
+	}
+	// 
 	// William Hohman
 	// Google Search to Find Median Home Price for a Zip Code
 	//
