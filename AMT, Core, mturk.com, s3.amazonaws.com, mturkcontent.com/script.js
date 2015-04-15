@@ -7569,15 +7569,24 @@ function MT__RUN() {
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var td = document.getElementsByTagName('td');
+			var st = document.getElementsByTagName('strong');
 			var o = {
 				url: td[3].innerText.trim(),
 				domain: null,
+				states_on_page_obj: {
 				
+				},
 				// q
 				q: document.getElementsByTagName('input')[1] // Hmm
 			};
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
 			//~ o.domain = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
+			for (var i in st) {
+				if (i == 'length') break;
+				var nm = st[i].innerText.toUpperCase().trim();
+				if (nm.length != 2) continue;
+				o.states_on_page_obj[ nm ] = true;
+			}
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -7587,8 +7596,10 @@ function MT__RUN() {
 			
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
-				//~ o.q.value = o.q.value.trim();
-				//~ if (o.q.value == '') return false;
+				o.q.value = o.q.value.trim();
+				if (o.q.value == '') return false; // not blank
+				if (o.q.value.length < 2 || o.q.value.length > 3) return false; // 2-3
+				
 				//~ 
 				//~ if (!/^[a-z0-9]{3} [a-z0-9]{3}$/i.exec(o.q.value)) {
 					//~ if (o.q.value == 'NR' || o.q.value == 'NA' || o.q.value == 'NC') {
@@ -7653,6 +7664,18 @@ function MT__RUN() {
 							}
 							else { // sbm = false
 								sbm = false;
+							}
+							
+							// Is this a valid State based on the states on this page?
+							// Where some states in our object (i.e. Dominican Republic)
+							// are not listed in this task.
+							if (!o.states_on_page_obj.hasOwnProperty( tr )) {
+								sbm = false;
+							}
+							
+							// bgcolor
+							if (sbm) {
+								o.q.style.border = '6px solid orange';
 							}
 							
 							if (!response.data.control_key_is_active) { // submit
