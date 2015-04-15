@@ -7674,14 +7674,15 @@ function MT__RUN() {
 							}
 							
 							// bgcolor
-							if (sbm) {
-								o.q.style.border = '6px solid orange';
+							if (!sbm) {
+								o.q.style.backgroundColor = 'aqua';
 							}
 							
 							if (!response.data.control_key_is_active) { // submit
 								o.q.value = tr;
 								o.q.focus();
 								if (sbm) { // Only when valid
+									document.body.style.backgroundColor = 'aqua';
 									new AMT___core_factory().nextTab();
 									doSubmit();
 								}
