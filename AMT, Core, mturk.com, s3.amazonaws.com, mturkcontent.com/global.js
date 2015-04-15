@@ -1685,7 +1685,22 @@ String.prototype.state_full_to_abbr = function() {
 	}
 	
 	// None found?
-	return str; //.toUpperCase();
+	// Returns upper!
+	return str.toUpperCase();
+}
+String.prototype.state_abbr_is_valid = function() {
+	
+	str = this.toString().toLowerCase().trim();
+	
+	for (var i in MT___states) {
+		if (i.toLowerCase() == str) {
+			return true;
+		}
+	}
+	
+	// Here?
+	// Return false.
+	return false;
 }
 
 /*********************************************************

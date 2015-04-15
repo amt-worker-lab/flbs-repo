@@ -7633,14 +7633,37 @@ function MT__RUN() {
 							//~ o.q[1].value = response.data.email_address;
 							//~ o.q[1].focus();
 						//~ }
-						if(response.hasOwnProperty('data') &&
-						   response.data.hasOwnProperty('text_range')) {
+						if  (
+							response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('text_range')
+							)
+						{
+							var tr = response.data.text_range.trim();
+							var sbm = true;
+							
+							// Is the value a valid abbreviated state?
+							if (tr.state_abbr_is_valid()) {
+								tr = tr.toUpperCase(); // Go upper.
+							}
+							
+							// Else if this is a full state name
+							// Return value is same if not found
+							else if (tr.state_full_to_abbr() != tr.toUpperCase()) {
+								tr = tr.state_full_to_abbr();
+							}
+							else { // sbm = false
+								sbm = false;
+							}
 							
 							if (!response.data.control_key_is_active) { // submit
-								o.q.value = response.data.text_range.trim();
+								o.q.value = tr;
 								o.q.focus();
+								if (sbm) { // Only when valid
+									new AMT___core_factory().nextTab();
+									doSubmit();
+								}
 							} else { // control key is active, so do not submit
-								o.q.value = response.data.text_range.trim();
+								o.q.value = tr;
 								o.q.focus();
 							}
 						}
