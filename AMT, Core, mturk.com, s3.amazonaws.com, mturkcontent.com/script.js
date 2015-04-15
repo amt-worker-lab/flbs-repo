@@ -7542,6 +7542,148 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	/**
+	 * Startpage + Utility Window
+	 * 
+	 * Steve Sears
+	 * Isaac Oates
+	 * 
+	 * 
+	 */
+	// 
+	// Isaac Oates
+	// Find the U.S. State that the company is located in.
+	// 
+	s = '	<li>If company is not located in the United States, please write "OOC" (for \'Out of Country\').</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[1].innerText.trim()
+				
+				// q
+				q: document.getElementsByTagName('input')[1] // Hmm
+			};
+			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:200px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				//~ o.q.value = o.q.value.trim();
+				//~ if (o.q.value == '') return false;
+				//~ 
+				//~ if (!/^[a-z0-9]{3} [a-z0-9]{3}$/i.exec(o.q.value)) {
+					//~ if (o.q.value == 'NR' || o.q.value == 'NA' || o.q.value == 'NC') {
+						//~ // Submit here.
+						//~ new AMT___core_factory().nextTab();
+						//~ doSubmit();
+					//~ } else {
+						//~ o.q.style.border = '3px solid blue';
+						//~ return false;
+					//~ }
+				//~ } else {
+					//~ // VALID POSTAL
+					//~ // Submit here.
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			
+			// Init
+			SP_init();
+			//
+			function SP_init() {
+				var u = 'site:'+b+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					callback_function: SP_process
+					//~ return_init_object: true
+				});
+			}
+			//
+			function SP_process(object) {
+			
+				console.log(object);
+				
+				var rs = object;
+				//~ var rs = object.rs;
+				var out = d1;
+				var uw = [];
+				
+				if (rs.length == 0) {
+					out.innerText = '0 results';
+					uw.push({
+						url: o.url
+					});
+				} else {
+					var tmp_domain = rs[0][0].replace(/^https?:\/\/w*\.*/i, '').replace(/\/$/, '');
+					console.log(o.domain);
+					console.log(tmp_domain);
+					if (tmp_domain != o.domain.toLowerCase()) {
+						uw.push({
+							url: rs[0][0]
+						});
+					}
+					uw.push({
+						url: o.url
+					});
+					//~ AMT__setUtilityTabs([
+						//~ {
+							//~ url: rs[0][0]
+						//~ },
+						//~ {
+							//~ url: o.url
+						//~ }
+					//~ ]);
+				}
+				// AMT__setUtilityTabs
+				AMT__setUtilityTabs(uw);
+				
+				for (var i in rs) {
+					
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'); //height:40px;overflow:auto;
+					div.className = 'exe';
+					div.innerHTML = '<b>' + rs[i][0] + '</b><br>' + rs[i][1];
+					div.url = rs[i][0];
+					out.appendChild(div);
+					div.onclick = function() {
+						this.style.backgroundColor = 'aqua';
+						AMT__setUtilityTabs([{
+							url: this.url
+						}]);
+					}
+					
+				}
+				
+				// Length
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:2000px;');
+				out.appendChild(div);
+			}
+		}
+		new run().f();
+	}
 	// 
 	// Steve Sears
 	// Find the Company Headquarters' Postal Code
