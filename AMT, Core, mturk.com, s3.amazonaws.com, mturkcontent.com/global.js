@@ -1685,7 +1685,7 @@ String.prototype.state_full_to_abbr = function() {
 	}
 	
 	// None found?
-	return str.toUpperCase();
+	return str; //.toUpperCase();
 }
 
 /*********************************************************

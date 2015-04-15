@@ -369,17 +369,20 @@ function MT___all_pages_highlightText(regex_highlight, scrollIntoView) {
 //~ {
 	//~ MT___all_pages_zoom();
 //~ }
-//
-// Zoom all pages
-// Description: Default=70%, so smaller.
-//
-// @param zoom_level, string OR ==false
-// 
+/**
+ * function MT___all_pages_zoom
+ * Description: Zoom all pages. Default=70%, so smaller.
+ * 
+ * @param zoom_level, string OR ==false
+ * 
+ * Btw, console.log(typeof true) = 'boolean'
+ */
 function MT___all_pages_zoom( zoom_level ) {
-	if (zoom_level) {
+	var typ = typeof zoom_level;
+	if (typ == 'string' || typ == 'number') {
 		document.body.style.zoom = zoom_level; // Default
 	} else {
-		document.body.style.zoom = "70%"; // Default
+		document.body.style.zoom = 0.7; //"70%"; // Default
 	}
 }
 //

@@ -7570,7 +7570,7 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				url: td[1].innerText.trim(),
+				url: td[3].innerText.trim(),
 				domain: null,
 				
 				// q
@@ -7664,7 +7664,8 @@ function MT__RUN() {
 						options: {
 							task: 'AMT__all_pages_util',
 							show_remove_links_button: true,
-							highlight_range_to_parent: true
+							highlight_range_to_parent: true,
+							MT___all_pages_zoom: '1.6' // Larger
 						}
 					});
 					set_util(uw);
@@ -7676,7 +7677,8 @@ function MT__RUN() {
 						options: {
 							task: 'AMT__all_pages_util',
 							show_remove_links_button: true,
-							highlight_range_to_parent: true
+							highlight_range_to_parent: true,
+							MT___all_pages_zoom: '1.6' // Larger
 						}
 					});
 					set_util(uw);
@@ -7697,7 +7699,8 @@ function MT__RUN() {
 							options: {
 								task: 'AMT__all_pages_util',
 								show_remove_links_button: true,
-								highlight_range_to_parent: true
+								highlight_range_to_parent: true,
+								MT___all_pages_zoom: '1.6' // Larger
 							}
 						}]);
 					}
