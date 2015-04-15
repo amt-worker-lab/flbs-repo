@@ -7570,12 +7570,14 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				url: td[1].innerText.trim()
+				url: td[1].innerText.trim(),
+				domain: null,
 				
 				// q
 				q: document.getElementsByTagName('input')[1] // Hmm
 			};
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
+			//~ o.domain = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -7612,13 +7614,38 @@ function MT__RUN() {
 			SP_init();
 			//
 			function SP_init() {
-				var u = 'site:'+b+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
+				var u = 'site:'+o.url+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
 					callback_function: SP_process
 					//~ return_init_object: true
 				});
+			}
+			// @param uw, array
+			function set_util(uw) {
+				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, false,
+					function(response) {
+						//~ console.log('victory!');
+						//~ console.log(response);
+						//~ if(response.hasOwnProperty('data') &&
+						   //~ response.data.hasOwnProperty('email_address')) {
+							//~ o.q[1].value = response.data.email_address;
+							//~ o.q[1].focus();
+						//~ }
+						if(response.hasOwnProperty('data') &&
+						   response.data.hasOwnProperty('text_range')) {
+							
+							if (!response.data.control_key_is_active) { // submit
+								o.q.value = response.data.text_range.trim();
+								o.q.focus();
+							} else { // control key is active, so do not submit
+								o.q.value = response.data.text_range.trim();
+								o.q.focus();
+							}
+						}
+					}
+				);
 			}
 			//
 			function SP_process(object) {
@@ -7633,34 +7660,30 @@ function MT__RUN() {
 				if (rs.length == 0) {
 					out.innerText = '0 results';
 					uw.push({
-						url: o.url
+						url: o.url,
+						options: {
+							task: 'AMT__all_pages_util',
+							show_remove_links_button: true,
+							highlight_range_to_parent: true
+						}
 					});
+					set_util(uw);
 				} else {
-					var tmp_domain = rs[0][0].replace(/^https?:\/\/w*\.*/i, '').replace(/\/$/, '');
-					console.log(o.domain);
-					console.log(tmp_domain);
-					if (tmp_domain != o.domain.toLowerCase()) {
-						uw.push({
-							url: rs[0][0]
-						});
-					}
-					uw.push({
-						url: o.url
-					});
-					//~ AMT__setUtilityTabs([
-						//~ {
-							//~ url: rs[0][0]
-						//~ },
-						//~ {
-							//~ url: o.url
-						//~ }
-					//~ ]);
-				}
-				// AMT__setUtilityTabs
-				AMT__setUtilityTabs(uw);
-				
-				for (var i in rs) {
 					
+					// Do first
+					uw.push({
+						url: rs[0][0],
+						options: {
+							task: 'AMT__all_pages_util',
+							show_remove_links_button: true,
+							highlight_range_to_parent: true
+						}
+					});
+					set_util(uw);
+				}
+				
+				// Optionals
+				for (var i in rs) {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'); //height:40px;overflow:auto;
 					div.className = 'exe';
@@ -7669,11 +7692,19 @@ function MT__RUN() {
 					out.appendChild(div);
 					div.onclick = function() {
 						this.style.backgroundColor = 'aqua';
-						AMT__setUtilityTabs([{
-							url: this.url
+						set_util([{
+							url: this.url,
+							options: {
+								task: 'AMT__all_pages_util',
+								show_remove_links_button: true,
+								highlight_range_to_parent: true
+							}
 						}]);
 					}
-					
+					// If 0
+					if (i == 0) {
+						div.style.backgroundColor = 'aqua';
+					}
 				}
 				
 				// Length
@@ -7684,6 +7715,7 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	
 	// 
 	// Steve Sears
 	// Find the Company Headquarters' Postal Code
@@ -97979,6 +98011,10 @@ qatar,80
 	 * Laura Enstad
 	 * Joe ("Joe")
 	 * John White
+	 * Isaac Oates
+	 * 
+	 * 
+	 * 
 	 */
 	 
 	//

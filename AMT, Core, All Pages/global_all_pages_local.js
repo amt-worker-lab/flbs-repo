@@ -109,7 +109,7 @@ function AMT__all_pages_util(r) {
 	
 	// zoom
 	if ( r.MT___all_pages_zoom )
-		MT___all_pages_zoom();
+		MT___all_pages_zoom( r.MT___all_pages_zoom );
 	
 	// showhref
 	if ( r.MT___all_pages_showhref )
@@ -371,9 +371,16 @@ function MT___all_pages_highlightText(regex_highlight, scrollIntoView) {
 //~ }
 //
 // Zoom all pages
+// Description: Default=70%, so smaller.
+//
+// @param zoom_level, string OR ==false
 // 
-function MT___all_pages_zoom() {
-	document.body.style.zoom = "70%";
+function MT___all_pages_zoom( zoom_level ) {
+	if (zoom_level) {
+		document.body.style.zoom = zoom_level; // Default
+	} else {
+		document.body.style.zoom = "70%"; // Default
+	}
 }
 //
 // Extend all pages
