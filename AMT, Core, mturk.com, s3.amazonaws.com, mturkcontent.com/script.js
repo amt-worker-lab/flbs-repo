@@ -7719,6 +7719,8 @@ function MT__RUN() {
 				if (nm.length != 2) continue;
 				o.states_on_page_obj[ nm ] = true;
 			}
+			// OOC
+			o.states_on_page_obj[ 'OOC' ] = true;
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -7732,6 +7734,11 @@ function MT__RUN() {
 				if (o.q.value == '') return false; // not blank
 				if (o.q.value.length < 2 || o.q.value.length > 3) return false; // 2-3
 				
+				if (!o.states_on_page_obj.hasOwnProperty( o.q.value )) {
+					return false;
+				}
+				
+				doSubmit();
 				//~ 
 				//~ if (!/^[a-z0-9]{3} [a-z0-9]{3}$/i.exec(o.q.value)) {
 					//~ if (o.q.value == 'NR' || o.q.value == 'NA' || o.q.value == 'NC') {
