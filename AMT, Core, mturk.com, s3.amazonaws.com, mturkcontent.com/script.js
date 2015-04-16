@@ -7553,7 +7553,7 @@ function MT__RUN() {
 	// 
 	// Isaac Oates
 	// Find the U.S. State that the company is located in.
-	// 
+	// 38DARXHY7PFWI8FPQGVX4T15O4308D
 	s = '	<li>If company is not located in the United States, please write "OOC" (for \'Out of Country\').</li>';
 	if (
 		ih.indexOf(s) != -1
@@ -7633,6 +7633,8 @@ function MT__RUN() {
 				return;
 			} else if (AMT__Global_Vars.isPreview) {
 				AMT___Floater.accept();
+			} else if (!AMT__Global_Vars.isPreview && AMT__Global_Vars.scriptVars['DS ShowNextTab'] == '1') {
+				addToTabsQ();
 			}
 			
 			// Init
@@ -7714,7 +7716,9 @@ function MT__RUN() {
 								o.q.focus();
 								if (sbm) { // Only when valid
 									document.body.style.backgroundColor = 'aqua';
-									new AMT___core_factory().nextTab();
+									
+									// shownexttab or nexttab
+									//~ new AMT___core_factory().nextTab();
 									doSubmit();
 								}
 							} else { // control key is active, so do not submit
@@ -158541,6 +158545,8 @@ function mturk_load()
 				case '37CCAM3CRMK5Y2OY7OB68QP9IHIDI9': // Emily McHale, find emails
 				case '36TBNKR9193TIXMCB5LFNBRHRGHDER': // Emily McHale, find emails
 				case '37CCAM3CRMK5Y2OY7OB68QP9J8MDIW': // Emily McHale, find emails
+					AMT___Floater({runMT_Run:true});
+				case '38DARXHY7PFWI8FPQGVX4T15O4308D': // Isaac Oates, Find U.S. State
 					AMT___Floater({runMT_Run:true});
 					break;
 				

@@ -38,14 +38,16 @@ var MT___host = 'http://192.168.1.2';
 var AMT__Global_Vars = //function()
 {
 	defaultPersistantScriptVars : [
-		//{name: 'RecordAllHits', value: 1, isPersistant:true},
-		{name: 'DS ShiftFarLeft', value: 1, isPersistant:true},
-		{name: 'R&A ShiftFarLeft', value: 1, isPersistant:true},
-		{name: 'JohnRobertsCheckHistory',value: 0, isPersistant:true},
-		{name: 'R&A ShowNextTab', value: 1, isPersistant:true},
-		{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
-		{name: 'Return Button Hotkey', value: '`', isPersistant:true},
-		{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
+		//{name: 'RecordAllHits',			value: 1, isPersistant:true},
+		{name: 'DS ShiftFarLeft',			value: '1', isPersistant:true},
+		{name: 'DS ShowNextTab',			value: '1', isPersistant:true},
+		{name: 'DS NextTab',				value: '1', isPersistant:true},
+		{name: 'R&A ShiftFarLeft',			value: '1', isPersistant:true},
+		{name: 'JohnRobertsCheckHistory',	value: '0', isPersistant:true},
+		{name: 'R&A ShowNextTab',			value: '1', isPersistant:true},
+		{name: 'R&A NextTab Iframe Focus',	value: '1', isPersistant:true},
+		{name: 'Return Button Hotkey',		value: '`', isPersistant:true},
+		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
@@ -9264,9 +9266,18 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		);
 	}
 	
-	if(AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
-		new AMT___core_factory().shiftFarLeft();
+	if (!AMT__Global_Vars.isPreview) {
+		if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+			new AMT___core_factory().shiftFarLeft();
+		}
+		if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
+			new AMT___core_factory().showNextTab();
+		}
+		if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
+			new AMT___core_factory().nextTab();
+		}
 	}
+	
 	
 	// Which form to submit
 	if (!form)
