@@ -46,7 +46,7 @@ var AMT__Global_Vars = //function()
 		{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 		{name: 'Return Button Hotkey', value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
-		{name: 'SkipInPreviewMode', value: '1', isPersistant:true},
+		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,

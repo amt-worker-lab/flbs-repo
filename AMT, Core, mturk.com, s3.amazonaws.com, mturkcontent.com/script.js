@@ -7623,11 +7623,28 @@ function MT__RUN() {
 				return false;
 			}
 			
+			// Skip in preview mode?
+			if  (
+				AMT__Global_Vars.isPreview && // && AMT__Global_Vars.scriptVars.SkipInPreviewMode == '1'
+				o.url == ''
+				)
+			{
+				AMT___Floater.skip();
+				return;
+			} else if (AMT__Global_Vars.isPreview) {
+				AMT___Floater.accept();
+			}
+			
 			// Init
 			SP_init();
 			//
 			function SP_init() {
-				var u = 'site:'+o.url+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
+				var u;
+				if (o.url != '') { // URL search
+					u = 'site:'+o.url+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
+				} else { // Comp. name search
+					u = o.comp+' "contact" OR "contact us" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us"';
+				}
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
