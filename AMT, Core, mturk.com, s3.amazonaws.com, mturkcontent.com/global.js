@@ -46,6 +46,7 @@ var AMT__Global_Vars = //function()
 		{name: 'R&A NextTab Iframe Focus', value: 1, isPersistant:true},
 		{name: 'Return Button Hotkey', value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab', value: '1', isPersistant:true},
+		{name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,
@@ -55,7 +56,7 @@ var AMT__Global_Vars = //function()
 	numSubmitQueries: 0,
 	isSubmitting: false,
 	copyInp: false,
-	scriptVars: {}, //scriptVars
+	scriptVars: {}, // scriptVars object. This is filled in before mturk_load with persistent & non-persistent vars.
 	RACustomKey: false,
 	initializedScriptInjection: false,
 	isQProduct: false,

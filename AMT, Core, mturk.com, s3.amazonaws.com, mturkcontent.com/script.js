@@ -7573,14 +7573,14 @@ function MT__RUN() {
 			var o = {
 				url: td[3].innerText.trim(),
 				comp: td[1].innerText.trim(),
-				domain: null,
+				//~ domain: null,
 				states_on_page_obj: {
 				},
 				hl_strings: [], // For Util Window
 				// q
 				q: document.getElementsByTagName('input')[1] // Hmm
 			};
-			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
+			o.url = (!/^http/i.exec(o.url) && o.url != '') ? 'http://' + o.url : o.url;
 			o.hl_strings = o.comp.clean_string_to_array();
 			//~ o.domain = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
 			for (var i in st) {
