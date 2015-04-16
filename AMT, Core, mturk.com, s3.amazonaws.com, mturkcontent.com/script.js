@@ -39082,7 +39082,7 @@ function MT__RUN() {
 				
 				//...
 				// Go to map view
-				else if (char == 'x' || char == 'X') {
+				else if (char == 'c' || char == 'C') {
 					var x=document.getElementsByTagName('div');
 					for (var i in x) {
 						if (i == 'length') break;
@@ -39114,7 +39114,7 @@ function MT__RUN() {
 				}
 				
 				// Go to satellite
-				else if (char == 'c' || char == 'C') {
+				else if (char == 'x' || char == 'X') {
 					var x=document.getElementsByTagName('div');
 					for (var i in x) {
 						if (i == 'length') break;
