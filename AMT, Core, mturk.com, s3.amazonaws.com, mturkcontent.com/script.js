@@ -3483,6 +3483,164 @@ function MT__RUN() {
 	
 	// 
 	// A11UUJ359IVS59
+	// borderlinx.com/en/tcc scrape
+	//
+	s = '<p><span style="font-size: 0.9em; line-height: 1.6em;">Press the </span><strong style="font-size: 0.9em; line-height: 1.6em;">Calculate button</strong> and copy the <strong>Standard</strong>&nbsp;<strong>shipping cost</strong> and paste it in the first box<strong>&nbsp;</strong></p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var href = document.location.href; //https://www.mturkcontent.com/dynamic/hit?assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE&hitId=3A520CCNWN06P9R8GR9C4JHP6XDEAA
+			var o = {
+				country: st[1].innerText.trim().replace(/ & /g, ' '), // Replace &
+				weight: st[2].innerText.trim(),
+				q: document.getElementById('dhl'),
+				
+				scrapes: { // counts on page
+					'DHL':0,
+					'FedEx Economy':0,
+					'FedEx':0,
+					'Mail (6-12 days)':0,
+					'Mail Express (3-7 days)':0,
+					'UPS Expedited (3-5 days)':0,
+					'UPS Saver (2-3 days)':0
+				},
+				
+				rf: new AMT___requests_factory(),
+				hit_id: /&hitId=([\w\d]+)$/.exec(href)[1]
+			}
+			
+			// Tasks Correction
+			// Nov5 2014
+			// 
+			
+			/*BEGIN ITEMS*/
+			//~ var d1 = document.createElement('img');
+			//~ d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
+			//~ document.body.appendChild(d1);
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
+			//~ document.body.appendChild(d2);
+			//~ var naBut = document.createElement('input');
+			//~ naBut.setAttribute('style','position:absolute;top:0px;left:75%;width:24%;height:20px;');
+			//~ document.body.appendChild(naBut);
+			//~ naBut.type = 'button';
+			//~ naBut.value = 'N/A';
+			/*END ITEMS*/
+			
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 60 // offset top
+			//~ });
+			
+			// sbm
+			document.getElementById('submitButton').onclick = function() {
+			}
+			
+			// Init
+			rates();
+			
+			function rates() {
+				var u = 'http://usabox.com/rates.asp?Country='+encodeURIComponent(o.country)+'&weight='+encodeURIComponent(o.weight);
+				
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText; //console.log(rs);
+						if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						
+						// bool sbm
+						var sbm = true;
+						
+						// Table container
+						// Goes to end of the first table.
+						var contain = /<table border=0 cellspacing=1 cellpadding=15  bgcolor='#666' width='800'>[\r\n\t\s]+<tr valign=top>[\r\n\t\s]+<th bgcolor='#E1E1EA' width='400'>[\r\n\t\s]+<h2>Fast Track:<\/h2>((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
+						if (!contain) {
+							document.body.style.backgroundColor = 'LightGreen';
+							return;
+						}
+						contain = contain[1];
+						//~ console.log(contain);
+						
+						var reg = /<td bgcolor='#E1E1EA'>([^<]+)<td bgcolor='#FFFFFF' align=right>(\$[\d\.,]+)(<|$)/g; // End of string of <
+						var m;
+						var count = 0;
+						while (m = reg.exec(contain)) {
+							if (o.scrapes.hasOwnProperty( m[1] )) {
+								o.q.value += m[1] + m[2]; // Add first instance.
+							}
+							if (o.scrapes.hasOwnProperty( m[1] )) {
+								o.scrapes[ m[1] ]++; // Increment
+							}
+						}
+						o.q.value = o.q.value.trim();
+						
+						// Any not "1"
+						for (var type in o.scrapes) {
+							var count = o.scrapes[ type ];
+							if (count != 1) {
+								sbm = false;
+							}
+						}
+						
+						console.log(sbm);
+						console.log(o);
+						if (sbm && o.q.value.length > 20) {
+							//doSubmit();
+							
+							correct_write(); // write
+						}
+						
+						//~ // e.g.
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$129.92<tr><td bgcolor='#E1E1EA'>Mail Express (3-7 days)<td bgcolor='#FFFFFF' align=right>$147.75<tr>
+						//~ // <td bgcolor='#E1E1EA'>Mail (6-12 days)<td bgcolor='#FFFFFF' align=right>$565.28<tr>
+						//~ for (var count in o.scrapes) { // 0...6
+							//~ var type = o.scrapes[count];
+							//~ var inp = o.q[0];
+							//~ var reg = new RegExp(
+								//~ "<td bgcolor='#E1E1EA'>"+__js_escape_regEx(type)+"<td bgcolor='#FFFFFF' align=right>\\$([\\d\\.]+)",
+								//~ ''
+							//~ );
+							//~ console.log(reg);
+							//~ reg = reg.exec(rs);
+							//~ if (reg) {
+								//~ inp.value += type + reg[1];
+							//~ } else {
+								//~ sbm = false;
+								//~ inp.style.border = '4px solid blue';
+							//~ }
+						//~ }
+						
+						
+					}
+				});
+				
+			}
+		}
+		new run().f();
+	}
+	// 
+	// A11UUJ359IVS59
 	// usabox.com scrape
 	//
 	/**
@@ -3575,34 +3733,6 @@ function MT__RUN() {
 					}
 				);
 			}
-		
-		
-		
-			//~ // Ensure placeholder
-			//~ // and ensure order
-			//~ var fms = document.getElementsByClassName('form-control');
-			//~ if (fms.length != 7) {
-				//~ document.body.style.backgroundColor = 'orange';
-				//~ return;
-			//~ }
-			//~ for (var i=0; i<=fms.length-1; i++) {
-				//~ if (o.q[i] != fms[i]) {
-					//~ document.body.style.backgroundColor = 'yellow';
-					//~ return;
-				//~ }
-				//~ var test1 = fms[i].placeholder.replace(/ /g, '').toLowerCase();
-				//~ var test2 = (o.scrapes[i] + ' - Type the Rate here').replace(/ /g, '').toLowerCase();
-				//~ if  (
-					//~ test1 != test2
-					//~ )
-				//~ {
-					//~ document.body.style.backgroundColor = 'aqua';
-					//~ console.log(fms[i].placeholder);
-					//~ console.log(o.scrapes[i] + ' - Type the Rate here');
-					//~ return;
-				//~ }
-			//~ }
-			
 			
 			/*BEGIN ITEMS*/
 			//~ var d1 = document.createElement('img');
