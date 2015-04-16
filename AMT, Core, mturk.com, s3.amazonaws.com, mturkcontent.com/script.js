@@ -7572,14 +7572,16 @@ function MT__RUN() {
 			var st = document.getElementsByTagName('strong');
 			var o = {
 				url: td[3].innerText.trim(),
+				comp: td[1].innerText.trim(),
 				domain: null,
 				states_on_page_obj: {
-				
 				},
+				hl_strings: [], // For Util Window
 				// q
 				q: document.getElementsByTagName('input')[1] // Hmm
 			};
 			o.url = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
+			o.hl_strings = o.comp.clean_string_to_array();
 			//~ o.domain = (!/^http/i.exec(o.domain)) ? 'http://' + o.url : o.url;
 			for (var i in st) {
 				if (i == 'length') break;
@@ -7635,6 +7637,18 @@ function MT__RUN() {
 			}
 			// @param uw, array
 			function set_util(uw) {
+				// Set opts
+				uw[0].options = {
+					task: 'AMT__all_pages_util',
+					show_remove_links_button: true,
+					highlight_range_to_parent: true,
+					MT___all_pages_zoom: '1.6', // Larger
+					highlight_strings_in_page: {
+						strings: o.hl_strings
+					}
+				}
+				
+				//
 				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, false,
 					function(response) {
 						//~ console.log('victory!');
@@ -7707,26 +7721,23 @@ function MT__RUN() {
 				if (rs.length == 0) {
 					out.innerText = '0 results';
 					uw.push({
-						url: o.url,
-						options: {
-							task: 'AMT__all_pages_util',
-							show_remove_links_button: true,
-							highlight_range_to_parent: true,
-							MT___all_pages_zoom: '1.6' // Larger
-						}
+						url: o.url//,
+						//~ options: {
+							//~ task: 'AMT__all_pages_util',
+							//~ show_remove_links_button: true,
+							//~ highlight_range_to_parent: true,
+							//~ MT___all_pages_zoom: '1.6', // Larger
+							//~ highlight_strings_in_page: {
+								//~ strings: o.hl_strings
+							//~ }
+						//~ }
 					});
 					set_util(uw);
 				} else {
 					
 					// Do first
 					uw.push({
-						url: rs[0][0],
-						options: {
-							task: 'AMT__all_pages_util',
-							show_remove_links_button: true,
-							highlight_range_to_parent: true,
-							MT___all_pages_zoom: '1.6' // Larger
-						}
+						url: rs[0][0]
 					});
 					set_util(uw);
 				}
@@ -7742,13 +7753,7 @@ function MT__RUN() {
 					div.onclick = function() {
 						this.style.backgroundColor = 'aqua';
 						set_util([{
-							url: this.url,
-							options: {
-								task: 'AMT__all_pages_util',
-								show_remove_links_button: true,
-								highlight_range_to_parent: true,
-								MT___all_pages_zoom: '1.6' // Larger
-							}
+							url: this.url
 						}]);
 					}
 					// If 0
