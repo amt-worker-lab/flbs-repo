@@ -9271,7 +9271,7 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 			new AMT___core_factory().shiftFarLeft();
 		}
 		if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-			new AMT___core_factory().showNextTab();
+			showNextTab();
 		}
 		if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
 			new AMT___core_factory().nextTab();
