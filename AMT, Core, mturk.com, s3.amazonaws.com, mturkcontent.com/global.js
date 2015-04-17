@@ -10456,8 +10456,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.setAttribute('style',
 					''
 				);
-				td.innerHTML = '&nbsp;';
-				td.hidden = row.requester_id;
+				td.innerHTML = '';
+				td.hide_show = row.requester_id;
 				tr.appendChild(td);
 				//~ td.className = 'ro-extended-tb-hide';
 				// TD
@@ -10465,8 +10465,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.setAttribute('style',
 					''
 				);
-				td.innerText = ' ';
-				td.hidden = row.requester_name;
+				td.innerText = '';
+				td.hide_show = row.requester_name;
 				tr.appendChild(td);
 				//~ td.className = 'ro-extended-tb-hide';
 				// TD
@@ -10481,8 +10481,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.setAttribute('style',
 					''
 				);
-				td.innerText = ' ';
-				td.hidden = row.groupId;
+				td.innerText = '';
+				td.hide_show = row.groupId;
 				tr.appendChild(td);
 				//~ td.className = 'ro-extended-tb-hide';
 				// TD
@@ -10509,13 +10509,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			}
 		}
 		function toggle_td_display(e) {
-			var td = this.getElementsByTagName('td');
-			for (var i in td) {
+			var tds = this.getElementsByTagName('td');
+			for (var i in tds) {
 				if (i == 'length') break;
-				if (td[i].innerText == ' ' && td[i].hasOwnProperty('hidden')) {
-					td[i].innerText = td[i].hidden;
+				if (!tds[i].hasOwnProperty('hide_show')) continue;
+				if (tds[i].innerText == '') {
+					tds[i].innerText = tds[i].hide_show;
 				} else {
-					td[i].innerText = ' ';
+					tds[i].innerText = '';
 				}
 			}
 		}
