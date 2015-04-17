@@ -10354,15 +10354,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var td = this; // Container
 		var tr_ro = tr.hidden_tr; // Requester Overview TD Container
 		var td_ro = tr_ro.firstChild; // Requester Overview TD Container
-		console.log(this);
-		console.log(tr.db_obj);
-		// Set this.backgroundColor.transition to transition after click event.
+		
+		// Open?
+		if (tr_ro.style.display == '') {
+			close_extended(); // Close all.
+			return;
+		}
 		
 		// Close any previously opened.
 		close_extended();
 		
 		// Has TD already been populated previously?
-		
 		
 		// Xhr
 		// Returns {...requesterIds...: {...row details...}}
@@ -10435,6 +10437,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tr.setAttribute('style',
 					''
 				);
+				tr.className = 'ro-extended-tb-tr';
 				tr.onclick = toggle_td_display;
 				tb.appendChild(tr);
 				// TD
@@ -10474,7 +10477,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.setAttribute('style',
 					''
 				);
-				td.innerText = row.qualifications;
+				td.innerText = row.qualifications.replace(/^ *\| */, ''); // Remove initial |
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
@@ -11408,7 +11411,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.ro-extended-tb td {border:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
 		//~ GM_addStyle('.ro-extended-tb>tbody>tr:hover {background-color:white;}');
-		GM_addStyle('.ro-extended-tb>tbody:hover tr {background-color:white;}');
+		GM_addStyle('.ro-extended-tb-tr:hover {background-color: #e9daa9;cursor: pointer;}');
 		//~ GM_addStyle('.ro-extended-tb-hide {visibility: hidden;word-wrap: break-word;max-width: 20px;cursor: pointer;}');
 		//~ GM_addStyle('.ro-extended-tb-show {visibility: visible;word-wrap: break-word;max-width: 20px;background-color: aqua;}');
 		
