@@ -10374,14 +10374,90 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	}
 	/**
 	 * function o.ro_extended().table()
+	 * 
+	 * *** RESULTS with e.g. "<span class=\"tags\"><\/span>" are broken and ignorable.
+	 * It is okay to remove these from the DB. Comes from when
+	 * AMT adds random NEW tags which "break" the scrape.
 	 */
 	tasks_obj.ro_extended.prototype.table = function(rs) {
 		var tb = document.createElement('table');
 		tb.setAttribute('style',
 			'width:100%;border:0;'
 		);
-		for (var rid in rs) {
-			
+		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
+			for (var dbr in rs[rid]) {
+				// id, title, requester_id, requester_name, qualifications, groupId, reward, time_allotted, description
+				var row = rs[rid][dbr];
+				// TR
+				var tr = document.createElement('tr');
+				tr.setAttribute('style',
+					''
+				);
+				tb.appendChild(tr);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.id;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.title;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.requester_id;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.requester_name;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.qualifications;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.groupId;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.reward;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.time_allotted;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.setAttribute('style',
+					'border-right:1px solid #a4a4a4;'
+				);
+				td.innerText = row.description;
+				tr.appendChild(td);
+			}
 		}
 	}
 	/**
