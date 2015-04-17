@@ -10342,14 +10342,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * Note 3:	Ratings are 0-4, i.e 0,1,2,3,4, where middle=2, good=4, bad=0.
 	 * 
 	 * NEW: task_comment: '', comment_last_mod: 0
+	 * 
+	 * Note:	tr special attributes are: .hidden_tr=Hidden tr element, .hits_available=HITs avail. td element
 	 */
 	function makeRow(row, isIgnored) {
-		
-		// Set globals!
-		if (!isIgnored)
-			tasks_obj.table1_row_ids[row.db_id] = true;
-		else
-			tasks_obj.table2_row_ids[row.db_id] = true;
 		
 		// TR
 		//
@@ -10360,8 +10356,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		);
 		//~ tr.className = 'show_tasks_table_row';
 		
+		// Set globals!
+		if (!isIgnored)
+			tasks_obj.table1_row_ids[ row.db_id ] = true;
+		else
+			tasks_obj.table2_row_ids[ row.db_id ] = true;
 		// Add to global!
-		tasks_obj.table_rows[row.db_id] = tr;
+		tasks_obj.table_rows[ row.db_id ] = tr;
 		
 		/**
 		 * TDs ... ...
@@ -10383,8 +10384,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.setAttribute('style',
 			'border-right:1px solid #a4a4a4;'//width:8px;
 		);
-		td.innerText = row.db_id;
+		td.innerHTML = '&#10549;';
+		//~ td.innerText = row.db_id; // OLD
 		tr.appendChild(td);
+		td.className = 'exe-hover';
+		td.pn = tr; // This is short-hand for .parentNode.
+		td.onclick = get_extended;
 		
 		// Rate TD
 		var td = document.createElement('td');
