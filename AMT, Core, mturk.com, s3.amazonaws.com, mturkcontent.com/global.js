@@ -10335,13 +10335,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * function close_extended
 	 * 
 	 */
-	function close_extended() {
+	function close_extended(tr_clicked) {
 		var all_rows = tasks_obj.table_rows;
+		var one_open = false;
 		for (var dbid in all_rows) {
 			var tr = all_rows[ dbid ];
+			if (tr.hidden_tr.style.display == 'none' && tr == tr_clicked) {
+				one_open = tr;
+			}
 			tr.hidden_tr.style.display = 'none';
 			//tr.hidden_tr.td.innerText = '';
+			
 		}
+		if (one_open)
+			one_open.scrollIntoView();
 	}
 	/**
 	 * function get_extended
@@ -10357,14 +10364,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		// Open?
 		if (tr_ro.style.display == '') {
-			close_extended(); // Close all.
-			tr.scrollIntoView(false);
+			close_extended(tr); // Close all.
 			return;
 		}
 		
 		// Close any previously opened.
-		close_extended();
-		tr.scrollIntoView(false);
+		close_extended(tr);
 		
 		// Has TD already been populated previously?
 		
