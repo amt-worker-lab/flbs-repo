@@ -10204,7 +10204,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// 
 		console.log('Checking for new');
 		
-		//xhr
+		// Xhr
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: MT___page1_host + '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random()*10000,
@@ -10330,7 +10330,30 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//~ function ()
 	
 	/**
-	 * function makeRow()
+	 * function get_extended
+	 * 
+	 * td click event
+	 */
+	function get_extended() {
+		
+		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
+		
+		// Xhr
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___page1_host + '?requester-overview='+encodeURIComponent({requesterIDs: [ tr.db_obj.requester_id ]}),
+			onload: function (response) {
+				var rs = response.responseText;
+				// last_update_check_host
+				// Returns false if response.status != 200
+				if (!last_update_check_host(response)) {
+					return;
+				}
+			}
+		});
+	}
+	/**
+	 * function makeRow
 	 * 
 	 * @param 	row			object	DB row.
 	 * @param 	isIgnored	bool	Local object of ignored requesters.
@@ -10344,6 +10367,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * NEW: task_comment: '', comment_last_mod: 0
 	 * 
 	 * Note:	tr special attributes are: .hidden_tr=Hidden tr element, .hits_available=HITs avail. td element
+	 * 
+	 * TODO: After X minutes if the row has been removed (HITs available=='----') then...remove the row?
 	 */
 	function makeRow(row, isIgnored) {
 		
@@ -10354,6 +10379,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tr.setAttribute('style',
 			''
 		);
+		// Set tr DB row
+		tr.db_obj = row;
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Set globals!
@@ -10363,6 +10390,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			tasks_obj.table2_row_ids[ row.db_id ] = true;
 		// Add to global!
 		tasks_obj.table_rows[ row.db_id ] = tr;
+		
 		
 		/**
 		 * TDs ... ...
@@ -10388,7 +10416,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//~ td.innerText = row.db_id; // OLD
 		tr.appendChild(td);
 		td.className = 'exe-hover';
-		td.pn = tr; // This is short-hand for .parentNode.
+		//~ td.pn = tr; // This is short-hand for .parentNode.
 		td.onclick = get_extended;
 		
 		// Rate TD
