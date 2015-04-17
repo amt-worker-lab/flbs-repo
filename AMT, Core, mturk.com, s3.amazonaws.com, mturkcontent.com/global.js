@@ -11368,9 +11368,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
 		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
 		
-		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}'); // TD
-		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: opacity 2.0s ease-in-out;}');
-		GM_addStyle('.exe-hover:active {background-color:LightGreen;opacity:0.2;}');
+		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}');
+		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: background-color 0.6s ease-in-out; opacity:1;}');//,opacity .5s ease-in-out
+		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.2;}');
 		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
 		
