@@ -10340,15 +10340,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		var one_open = false;
 		for (var dbid in all_rows) {
 			var tr = all_rows[ dbid ];
-			if (tr.hidden_tr.style.display == 'none' && tr == tr_clicked) {
-				one_open = tr;
+			var hidden = (tr.hidden_tr.style.display == '') ? true : false;
+			if (hidden && tr != tr_clicked) {
+				one_open = true;
 			}
 			tr.hidden_tr.style.display = 'none';
 			//tr.hidden_tr.td.innerText = '';
 			
 		}
 		if (one_open)
-			one_open.scrollIntoView();
+			tr_clicked.scrollIntoView();
 	}
 	/**
 	 * function get_extended
@@ -10371,7 +10372,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Close any previously opened.
 		close_extended(tr);
 		
+		// Unhide TD container
+		tr_ro.style.display = '';//inline-block
+		
 		// Has TD already been populated previously?
+		// Quick method...
+		if (td_ro.innerHTML != '') return;
 		
 		// Xhr
 		// Returns {...requesterIds...: {...row details...}}
@@ -10391,9 +10397,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
-				
-				// Unhide TD container
-				tr_ro.style.display = '';//inline-block
 				
 				// Add table
 				new tasks_obj.ro_extended().table({
@@ -10459,7 +10462,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.setAttribute('style',
 					''
 				);
-				td.innerText = row.title;
+				td.innerText = __js_clean_html_str(row.title);
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
@@ -10476,7 +10479,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					''
 				);
 				td.innerText = '';
-				td.hide_show = row.requester_name;
+				td.hide_show = __js_clean_html_str(row.requester_name);
 				tr.appendChild(td);
 				//~ td.className = 'ro-extended-tb-hide';
 				// TD
