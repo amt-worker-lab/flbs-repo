@@ -10433,85 +10433,90 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TR
 				var tr = document.createElement('tr');
 				tr.setAttribute('style',
-					''//'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
+					''
 				);
+				tr.onclick = toggle_td_display;
 				tb.appendChild(tr);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.id;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.title;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
-				td.innerText = row.requester_id;
+				td.innerHTML = '&nbsp;';
+				td.hidden = row.requester_id;
 				tr.appendChild(td);
-				td.className = 'ro-extended-tb-hide';
-				td.onclick = toggle_td_display;
+				//~ td.className = 'ro-extended-tb-hide';
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
-				td.innerText = row.requester_name;
+				td.innerText = ' ';
+				td.hidden = row.requester_name;
 				tr.appendChild(td);
-				td.className = 'ro-extended-tb-hide';
-				td.onclick = toggle_td_display;
+				//~ td.className = 'ro-extended-tb-hide';
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.qualifications;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
-				td.innerText = row.groupId;
+				td.innerText = ' ';
+				td.hidden = row.groupId;
 				tr.appendChild(td);
-				td.className = 'ro-extended-tb-hide';
-				td.onclick = toggle_td_display;
+				//~ td.className = 'ro-extended-tb-hide';
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.reward;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.time_allotted;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
-					'border-right:1px solid #a4a4a4;'
+					''
 				);
 				td.innerText = row.description;
 				tr.appendChild(td);
 			}
 		}
 		function toggle_td_display(e) {
-			if (this.className == 'ro-extended-tb-hide') {
-				this.className = 'ro-extended-tb-show';
-			} else {
-				this.className = 'ro-extended-tb-hide';
+			var td = this.getElementsByTagName('td');
+			for (var i in td) {
+				if (i == 'length') break;
+				if (td[i].innerText == ' ' && td[i].hasOwnProperty('hidden')) {
+					td[i].innerText = td[i].hidden;
+				} else {
+					td[i].innerText = ' ';
+				}
 			}
 		}
 	}
@@ -11401,8 +11406,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.3;}');
 		GM_addStyle('.ro-extended-tb td {border:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
-		GM_addStyle('.ro-extended-tb-hide {visibility: hidden;word-wrap: break-word;max-width: 20px;cursor: pointer;}');
-		GM_addStyle('.ro-extended-tb-show {visibility: visible;word-wrap: break-word;max-width: 20px;background-color: aqua;}');
+		//~ GM_addStyle('.ro-extended-tb-hide {visibility: hidden;word-wrap: break-word;max-width: 20px;cursor: pointer;}');
+		//~ GM_addStyle('.ro-extended-tb-show {visibility: visible;word-wrap: break-word;max-width: 20px;background-color: aqua;}');
 		
 		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
 		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
