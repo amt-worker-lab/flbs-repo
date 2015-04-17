@@ -10340,6 +10340,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
 		var td = this; // Container
+		var tr_ro = tr.hidden_tr; // Requester Overview TD Container
+		var td_ro = tr_ro.firstChild; // Requester Overview TD Container
 		
 		// Set this.backgroundColor.transition to transition after click event.
 		
@@ -10366,12 +10368,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				rs = JSON.parse(rs);
 				
 				// Unhide TD container
-				td.style.display = '';//inline-block
+				tr_ro.style.display = '';//inline-block
 				
 				// Add table
 				new tasks_obj.ro_extended().table({
 					result_set: rs,
-					parent_td: td
+					parent_td: td_ro
 				});
 			}
 		});
@@ -10496,7 +10498,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			''
 		);
 		// Set tr DB row
-		tr.db_obj = row;
+		tr.db_obj = row;console.log(row);
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Set globals!
@@ -10521,7 +10523,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		 * Chart Controller
 		 * Chart
 		 */
-		
 		
 		// ID
 		var td = document.createElement('td');
@@ -10744,7 +10745,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		hidden_tr.setAttribute('style',
 			'display:none;'
 		);
-		hidden_tr.colspan = tr.getElementsByTagName('td');
+		hidden_tr.colSpan = tr.getElementsByTagName('td');
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			''
