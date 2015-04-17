@@ -10413,16 +10413,18 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		obj.parent_td.appendChild(tb); // Append to parent_td
 		// TH
 		var headers = ['ID', 'Title', 'Requester ID', 'Requester Name', 'Qualifications', 'Group ID', 'RWD', 'Time Allotted', 'Description'];
-		var th = document.createElement('th');
-		th.setAttribute('style',
-			''//'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
+		var thead = document.createElement('thead');
+		tb.appendChild(thead);
+		var tr = document.createElement('tr');
+		tb.appendChild(tr);
+		tr.setAttribute('style',
+			''
 		);
 		for (var i in headers) {
 			var td = document.createElement('td');
-			td.innerText = headers[i]
-			th.appendChild(td);
+			td.innerText = headers[i];
+			tr.appendChild(td);
 		}
-		tb.appendChild(th);
 		// Loop
 		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
 			for (var dbr in rs[rid]) {
@@ -10455,6 +10457,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				);
 				td.innerText = row.requester_id;
 				tr.appendChild(td);
+				td.className = 'ro-extended-tb-hide';
+				td.onclick = toggle_td_display;
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
@@ -10462,6 +10466,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				);
 				td.innerText = row.requester_name;
 				tr.appendChild(td);
+				td.className = 'ro-extended-tb-hide';
+				td.onclick = toggle_td_display;
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
@@ -10476,6 +10482,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				);
 				td.innerText = row.groupId;
 				tr.appendChild(td);
+				td.className = 'ro-extended-tb-hide';
+				td.onclick = toggle_td_display;
 				// TD
 				var td = document.createElement('td');
 				td.setAttribute('style',
@@ -10497,6 +10505,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				);
 				td.innerText = row.description;
 				tr.appendChild(td);
+			}
+		}
+		function toggle_td_display(e) {
+			if (this.className == 'ro-extended-tb-hide') {
+				this.className = 'ro-extended-tb-show';
+			} else {
+				this.className = 'ro-extended-tb-hide';
 			}
 		}
 	}
@@ -11384,8 +11399,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}');
 		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: background-color 0.6s ease-in-out; opacity:1;}');//,opacity .5s ease-in-out
 		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.3;}');
-		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}'); // Requester Overview Table
+		GM_addStyle('.ro-extended-tb td {border:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
+		GM_addStyle('.ro-extended-tb-hide {display:none;}');
+		GM_addStyle('.ro-extended-tb-show {display:block;background-color:aqua;}');
 		
 		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
 		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
