@@ -10332,12 +10332,23 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	//~ function ()
 	
 	/**
+	 * function close_extended
+	 * 
+	 */
+	function close_extended() {
+		var all_rows = tasks_obj.table_rows;
+		for (var dbid in all_rows) {
+			var tr = all_rows[ dbid ];
+			tr.hidden_tr.style.display = 'none';
+			//tr.hidden_tr.td.innerText = '';
+		}
+	}
+	/**
 	 * function get_extended
 	 * 
 	 * @param e, td click event
 	 */
 	function get_extended(e) {
-		
 		
 		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
 		var td = this; // Container
@@ -10346,6 +10357,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		console.log(this);
 		console.log(tr.db_obj);
 		// Set this.backgroundColor.transition to transition after click event.
+		
+		// Close any previously opened.
+		close_extended();
 		
 		// Has TD already been populated previously?
 		
@@ -10754,6 +10768,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		);
 		td.colSpan = tr.getElementsByTagName('td').length;
 		hidden_tr.appendChild(td);
+		hidden_tr.td = td; // Shortcut
 		// Sets tr "hidden_tr" attribute.
 		tr.hidden_tr = hidden_tr;
 		
@@ -11353,10 +11368,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
 		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
 		
-		GM_addStyle('.exe-hover>td:hover {background-color:LightGreen !important; cursor:pointer !important;}');
-		GM_addStyle('.exe-hover>td {background-color:none; cursor:pointer; transition: opacity 2.0s ease-in-out;}');
-		GM_addStyle('.exe-hover>td:active {background-color:LightGreen;opacity:0.2;}');
-		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}');
+		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}'); // TD
+		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: opacity 2.0s ease-in-out;}');
+		GM_addStyle('.exe-hover:active {background-color:LightGreen;opacity:0.2;}');
+		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}'); // Requester Overview Table
+		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
 		
 		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
 		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
