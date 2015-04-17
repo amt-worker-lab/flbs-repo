@@ -10348,9 +10348,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		// Xhr
 		// Returns {...requesterIds...: {...row details...}}
+		var obj = {
+			requesterIDs: [ tr.db_obj.requester_id ]
+		};
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?requester-overview='+encodeURIComponent({requesterIDs: [ tr.db_obj.requester_id ]}),
+			url: MT___page1_host + '?requester-overview='+encodeURIComponent(JSON.stringify(obj)),
 			onload: function (response) {
 				var rs = response.responseText;
 				// last_update_check_host
