@@ -10395,6 +10395,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tb.setAttribute('style',
 			'width:100%;border:0;'
 		);
+		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb);
 		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
 			for (var dbr in rs[rid]) {
@@ -10403,7 +10404,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TR
 				var tr = document.createElement('tr');
 				tr.setAttribute('style',
-					''
+					'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
 				);
 				tb.appendChild(tr);
 				// TD
@@ -10747,11 +10748,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		hidden_tr.setAttribute('style',
 			'display:none;'
 		);
-		hidden_tr.colSpan = tr.getElementsByTagName('td');
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			''
 		);
+		td.colSpan = tr.getElementsByTagName('td').length;
 		hidden_tr.appendChild(td);
 		// Sets tr "hidden_tr" attribute.
 		tr.hidden_tr = hidden_tr;
@@ -11352,9 +11353,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
 		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
 		
-		GM_addStyle('.exe-hover>td:hover {background-color:LightGreen ; cursor:pointer;}');
+		GM_addStyle('.exe-hover>td:hover {background-color:LightGreen !important; cursor:pointer !important;}');
 		GM_addStyle('.exe-hover>td {background-color:none; cursor:pointer; transition: opacity 2.0s ease-in-out;}');
 		GM_addStyle('.exe-hover>td:active {background-color:LightGreen;opacity:0.2;}');
+		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}');
 		
 		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
 		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
