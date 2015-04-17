@@ -10338,11 +10338,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 */
 	function get_extended(e) {
 		
+		
 		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
 		var td = this; // Container
 		var tr_ro = tr.hidden_tr; // Requester Overview TD Container
 		var td_ro = tr_ro.firstChild; // Requester Overview TD Container
-		
+		console.log(this);
+		console.log(tr.db_obj);
 		// Set this.backgroundColor.transition to transition after click event.
 		
 		// Has TD already been populated previously?
@@ -10498,7 +10500,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			''
 		);
 		// Set tr DB row
-		tr.db_obj = row;console.log(row);
+		tr.db_obj = row;//console.log(row);
 		//~ tr.className = 'show_tasks_table_row';
 		
 		// Set globals!
@@ -11069,38 +11071,25 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		 * 10-13 are objects.
 		 * 
 		*/
-		var d = {
-			db_id: '',
-			on_page_number: '',
-			title: '',
-			requester_name: '',
-			hits_available: '',
-			time_since_posted: '',
-			requester_id: '',
-			group_id: '',
-			history_id: '',
-			reward: '',
-			task_comment: '',
-			comment_last_mod: 0
-			//~ title_ratings: null,
-			//~ title_comments: null,
-			//~ requester_ratings: null,
-			//~ requester_comments: null
-		};
 		for (var i = 0; i < rs[0].length; i++) {
-			
-			d.db_id				= rs[0][i];
-			d.on_page_number	= rs[1][i];
-			d.title				= rs[2][i];
-			d.requester_name	= rs[3][i];
-			d.hits_available	= rs[4][i];
-			d.time_since_posted	= rs[5][i];
-			d.requester_id		= rs[6][i];
-			d.group_id			= rs[7][i];
-			d.history_id		= (rs[8]) ? rs[8][i]	: null;
-			d.reward			= (rs[9]) ? rs[9][i]	: null;
-			d.task_comment		= (rs[10]) ? rs[10][i] : null;
-			d.comment_last_mod	= (rs[11]) ? rs[11][i] : 0;
+			var d = {
+				db_id:				rs[0][i],
+				on_page_number:		rs[1][i],
+				title:				rs[2][i],
+				requester_name:		rs[3][i],
+				hits_available:		rs[4][i],
+				time_since_posted:	rs[5][i],
+				requester_id:		rs[6][i],
+				group_id:			rs[7][i],
+				history_id:			(rs[8]) ? rs[8][i]	: null,
+				reward:				(rs[9]) ? rs[9][i]	: null,
+				task_comment:		(rs[10]) ? rs[10][i] : null,
+				comment_last_mod:	(rs[11]) ? rs[11][i] : 0
+				//~ title_ratings: null,
+				//~ title_comments: null,
+				//~ requester_ratings: null,
+				//~ requester_comments: null
+			};
 			
 			// TODO
 			//~ d.title_ratings			= (rs[10]) ? null	: null;
