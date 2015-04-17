@@ -10366,24 +10366,32 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				rs = JSON.parse(rs);
 				
 				// Unhide TD container
-				td.style.display = '';
+				td.style.display = '';//inline-block
 				
-				new tasks_obj.ro_extended().table(rs);
+				// Add table
+				new tasks_obj.ro_extended().table({
+					result_set: rs,
+					parent_td: td
+				});
 			}
 		});
 	}
 	/**
 	 * function o.ro_extended().table()
 	 * 
+	 * @param obj, obj.result_set, obj.parent_td
+	 * 
 	 * *** RESULTS with e.g. "<span class=\"tags\"><\/span>" are broken and ignorable.
 	 * It is okay to remove these from the DB. Comes from when
 	 * AMT adds random NEW tags which "break" the scrape.
 	 */
-	tasks_obj.ro_extended.prototype.table = function(rs) {
+	tasks_obj.ro_extended.prototype.table = function(obj) {
+		var rs = obj.result_set;
 		var tb = document.createElement('table');
 		tb.setAttribute('style',
 			'width:100%;border:0;'
 		);
+		obj.parent_td.appendChild(tb);
 		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
 			for (var dbr in rs[rid]) {
 				// id, title, requester_id, requester_name, qualifications, groupId, reward, time_allotted, description
@@ -10736,7 +10744,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		hidden_tr.setAttribute('style',
 			'display:none;'
 		);
-		hidden_tr.cols = tr.getElementsByTagName('td');
+		hidden_tr.colspan = tr.getElementsByTagName('td');
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			''
