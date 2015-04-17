@@ -10020,9 +10020,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	tasks_obj.div_container.setAttribute('style',
 		'position:absolute;'+
 		'top:40px;'+
-		'width:98%;'+
+		'width:99%;'+
 		'background-color:none;'+
-		'margin:0 1%;'
+		'margin:0 0.5% 0 0;'
 	);
 	document.body.appendChild(tasks_obj.div_container);
 	
@@ -10358,11 +10358,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Open?
 		if (tr_ro.style.display == '') {
 			close_extended(); // Close all.
+			tr.scrollIntoView(false);
 			return;
 		}
 		
 		// Close any previously opened.
 		close_extended();
+		tr.scrollIntoView(false);
 		
 		// Has TD already been populated previously?
 		
@@ -10583,7 +10585,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.setAttribute('style',
 			'border-right:1px solid #a4a4a4;'//width:8px;
 		);
-		td.innerHTML = '&#10549;';
+		td.innerHTML = '&nbsp;&#10549;&nbsp;';
 		//~ td.innerText = row.db_id; // OLD
 		tr.appendChild(td);
 		td.className = 'exe-hover';
@@ -11406,8 +11408,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
 		
 		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}');
-		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: background-color 0.6s ease-in-out; opacity:1;}');//,opacity .5s ease-in-out
-		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.3;}');
+		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: background-color 0.8s ease-in-out; opacity:1;}');//,opacity .5s ease-in-out
+		GM_addStyle('.exe-hover:active {opacity:0.3;}');//background-color:aqua;
 		GM_addStyle('.ro-extended-tb td {border:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
 		//~ GM_addStyle('.ro-extended-tb>tbody>tr:hover {background-color:white;}');
