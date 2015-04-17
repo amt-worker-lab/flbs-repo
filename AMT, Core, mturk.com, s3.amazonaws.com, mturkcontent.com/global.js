@@ -9929,7 +9929,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * tasks_obj.table2_row_ids: {} db_id:true
 	 * tasks_obj.table_rows:     {} db_id:row _ element
 	 */ 
-	tasks_obj = {
+	var tasks_obj = {
 		current_db_ids: {},
 		
 		// Timestamp of the last update. This matches
@@ -9987,6 +9987,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// this var will be populated.
 		//
 		ro_cached: {},
+		
+		ro_extended: function(){}, // This is prototype holder
 		
 		// Chart types
 		// 
@@ -10332,12 +10334,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	/**
 	 * function get_extended
 	 * 
-	 * td click event
+	 * @param e, td click event
 	 */
-	function get_extended() {
+	function get_extended(e) {
 		
 		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
 		var td = this; // Container
+		
+		// Set this.backgroundColor.transition to transition after click event.
+		
+		// Has TD already been populated previously?
+		
 		
 		// Xhr
 		// Returns {...requesterIds...: {...row details...}}
@@ -10357,8 +10364,22 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Unhide TD container
 				td.style.display = '';
+				
+				new tasks_obj.ro_extended().table(rs);
 			}
 		});
+	}
+	/**
+	 * function o.ro_extended().table()
+	 */
+	tasks_obj.ro_extended.prototype.table = function(rs) {
+		var tb = document.createElement('table');
+		tb.setAttribute('style',
+			'width:100%;border:0;'
+		);
+		for (var rid in rs) {
+			
+		}
 	}
 	/**
 	 * function makeRow
@@ -11253,6 +11274,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		GM_addStyle('.amt_show_tasks_table {width:100%;background-color:#efefef;border:2px solid #a0a0a0;margin: 0 auto;border-collapse:collapse;}'); // must use :collapse:
 		GM_addStyle('.amt_show_tasks_table>tr:hover {background-color:#e9d8e9;}');
 		GM_addStyle('.amt_show_tasks_table>tr {border:1px solid #a4a4a4;}');
+		
+		GM_addStyle('.exe-hover>td:hover {background-color:LightGreen ; cursor:pointer;}');
+		GM_addStyle('.exe-hover>td {background-color:none; cursor:pointer; transition: opacity 2.0s ease-in-out;}');
+		GM_addStyle('.exe-hover>td:active {background-color:LightGreen;opacity:0.2;}');
+		
 		//~ GM_addStyle('.show_tasks_table_row {border:1px solid #a4a4a4;}');
 		//~ GM_addStyle('table>td {border:1px solid #a4a4a4;}');
 	}
