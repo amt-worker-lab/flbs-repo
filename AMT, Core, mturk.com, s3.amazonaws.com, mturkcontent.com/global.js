@@ -10337,8 +10337,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	function get_extended() {
 		
 		var tr = this.parentNode; // This is parent TR. Contains info. for DB row, .db_obj.
+		var td = this; // Container
 		
 		// Xhr
+		// Returns {...requesterIds...: {...row details...}}
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: MT___page1_host + '?requester-overview='+encodeURIComponent({requesterIDs: [ tr.db_obj.requester_id ]}),
@@ -10349,6 +10351,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				if (!last_update_check_host(response)) {
 					return;
 				}
+				
+				// Parse
+				rs = JSON.parse(rs);
+				
+				// Unhide TD container
+				td.style.display = '';
 			}
 		});
 	}
