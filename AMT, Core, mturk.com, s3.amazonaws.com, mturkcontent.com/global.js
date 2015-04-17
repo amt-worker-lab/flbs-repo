@@ -9982,9 +9982,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//
 		graph_rows_by_history_id: {},
 		
-		// Chart types
-		// chart_types
+		// Requesters overview
+		// When checking in DB for all tasks from requesters,
+		// this var will be populated.
 		//
+		ro_cached: {},
+		
+		// Chart types
+		// 
 		//
 		//
 		chart_types: [
@@ -10314,7 +10319,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * @param	event
 	 */
 	function rate_show_hide_button(e) {
-		
 		if (this.isHidden) {
 			this.isHidden = false;
 			this.style.backgroundColor = 'LightGreen';
@@ -10322,7 +10326,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			this.isHidden = false;
 			this.style.backgroundColor = '';
 		}
-		
 	}
 	//~ function ()
 	
@@ -10332,7 +10335,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * @param 	row			object	DB row.
 	 * @param 	isIgnored	bool	Local object of ignored requesters.
 	 * 
-	 * @returns	TR			element	Returns an HTML TR
+	 * @return	Returns an array of two HTML TR elements. First is main row. Second is a hidden row.
 	 * 
 	 * Note:	tasks_obj.table1_row_ids[row.db_id] = true;
 	 * Note 2:	tasks_obj.table_rows[row.db_id] = tr;
@@ -10432,7 +10435,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				//~ tmp_users_obj[ title_ratings[i].fk_user_name ] = 
 			}
 		}
-		//>> Title Comments
+		// TODO: Title Comments
 		var td = document.createElement('td');
 		td.setAttribute('style',
 			''
@@ -10524,7 +10527,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'width:6%;'//+'max-width:10px;'
 		);
 		tr.appendChild(td);
-		// hidden
+		// Hidden element for TSP.
 		var tsp_input = document.createElement('input');
 		tsp_input.setAttribute('type', 'hidden');
 		tsp_input.value = row.time_since_posted;
@@ -10586,33 +10589,38 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		select.chart_td = td;
 		
+		// Hidden row
+		// Set num columns to "tr".getElementsByTagName('td');
+		var hidden_tr = document.createElement('tr');
+		hidden_tr.setAttribute('style',
+			'display:none;'
+		);
+		hidden_tr.cols = tr.getElementsByTagName('td');
+		var td = document.createElement('td');
+		td.setAttribute('style',
+			''
+		);
+		hidden_tr.appendChild(td);
+		// Sets tr "hidden_tr" attribute.
+		tr.hidden_tr = hidden_tr;
 		
-		//
-		//~ var chart = document.createElement('canvas');
-		//~ chart.setAttribute('style',
-			//~ 'width:100%;height:20px;'
-		//~ );
-		//~ chart.height = '100';
-		//~ td.appendChild(chart);
-		//~ if (row.hasOwnProperty('history_id'))
-			//~ tasks_obj.graph_rows_by_history_id[row.history_id] = chart;
-		
-		
-		//~ if (row.hasOwnProperty('hash_id'))
-			//~ tasks_obj.hash_tds[row.hash_id] = td;
-		
-		return tr;
+		// Return
+		return [tr, hidden_tr];
 	}
 	
 	/**
-	 * function init_graph()
+	 * function init_graph
 	 * 
+	 * Description:
 	 * The hash_ids are tallied in various places, so far.
 	 * A nice place to take them from is tasks_obj.current_db_ids.
 	 * Where: tasks_obj.current_db_ids[db_id] = true;
 	 * 
-	 * Pass in global array of ids-to-initialize: @ current_init_history_ids
+	 * @param chart_type
+	 * @param chart_td
 	 * 
+	 * NOTES:
+	 * Pass in global array of ids-to-initialize: @ current_init_history_ids
 	 * Chart.js is included in manifest.json, in /includes/
 	 * 
 	 * TODO:
@@ -10695,8 +10703,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					
 					var labels = [];
 					var num_tasks = [];
-					
-					
 					
 					// Is longer than 24 hours?
 					// Newest - Oldest
@@ -10806,8 +10812,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					//~ );
 					//~ chart.height = '100';
 					//~ console.log(chart);
-					
-				
 				}
 				
 				
@@ -10838,8 +10842,205 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		return true;
 	}
 	/**
-	 * show_latest
+	 * function check_stale
+	 * 
+	 * Description: Remove table row.
 	 */
+	 function check_stale() {
+		for (var db_id in tasks_obj.table_rows) {
+			// row = HTML element
+			var row = tasks_obj.table_rows[db_id];
+			if (!tasks_obj.current_db_ids.hasOwnProperty(db_id))
+			{
+				remove_row(row); // remove
+			}
+			else
+			{ //
+			}
+		}
+	}
+	/**
+	 * function remove_row
+	 * 
+	 * Description: Remove table row.
+	 * 
+	 * TODO: Remove or hide?
+	 */
+	function remove_row(row) {
+		// ...
+		//
+		//
+		//
+		row.hits_available.innerText = '----';
+		//~ alert('remove');
+		//~ console.log(row);
+		//~ console.log(row.innerHTML);
+		
+		//~ // THIS DELETES
+		//~ row.parentNode.removeChild(row);
+		//~ delete tasks_obj.table1_row_ids[db_id]; // exists?
+		//~ delete tasks_obj.table2_row_ids[db_id]; // exists?
+		//~ delete tasks_obj.table_rows[db_id];
+		
+		//~ delete tasks_obj.table1_history_ids[db_id]; // exists?
+		//~ delete tasks_obj.table2_history_ids[db_id]; // exists?
+		
+		// ro_cached Here
+	}
+	/**
+	 * update_rows
+	 * 
+	 * Description: Loop through the results of the latest from the database. If
+	 * this is a first run (e.g. page is reloaded) then add all DB results to the
+	 * table. Else if this is an update then loop through all results from DB and
+	 * either a) Add new row, b) Delete and/or Hide row, or c) Update the contents
+	 * of the hits_available TD.
+	 */
+	function update_rows(rs) {
+		/**
+		 * rs
+		 * Set history_id=null if not available.
+		 * Set reward=null if not available.
+			rs
+			0 job DB id
+			1 on_page_number
+			2 job title
+			3 requester name
+			4 HITs avail.
+			5 time since posted
+			6 requesterid
+			7 groupid
+			* 8 histID
+			* 9 reward
+			* 10 title_ratings
+			* 11 title_comments
+			* 12 requester_ratings
+			* 13 requester_comments
+		 * 10-13 are objects.
+		 * 
+		*/
+		var d = {
+			db_id: '',
+			on_page_number: '',
+			title: '',
+			requester_name: '',
+			hits_available: '',
+			time_since_posted: '',
+			requester_id: '',
+			group_id: '',
+			history_id: '',
+			reward: '',
+			task_comment: '',
+			comment_last_mod: 0
+			//~ title_ratings: null,
+			//~ title_comments: null,
+			//~ requester_ratings: null,
+			//~ requester_comments: null
+		};
+		for (var i = 0; i < rs[0].length; i++) {
+			
+			d.db_id				= rs[0][i];
+			d.on_page_number	= rs[1][i];
+			d.title				= rs[2][i];
+			d.requester_name	= rs[3][i];
+			d.hits_available	= rs[4][i];
+			d.time_since_posted	= rs[5][i];
+			d.requester_id		= rs[6][i];
+			d.group_id			= rs[7][i];
+			d.history_id		= (rs[8]) ? rs[8][i]	: null;
+			d.reward			= (rs[9]) ? rs[9][i]	: null;
+			d.task_comment		= (rs[10]) ? rs[10][i] : null;
+			d.comment_last_mod	= (rs[11]) ? rs[11][i] : 0;
+			
+			// TODO
+			//~ d.title_ratings			= (rs[10]) ? null	: null;
+			//~ d.title_comments		= (rs[11]) ? null	: null;
+			//~ d.requester_ratings		= (rs[12]) ? null	: null;
+			//~ d.requester_comments	= (rs[13]) ? null	: null;
+			//~ d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
+			//~ d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
+			//~ d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
+			//~ d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
+			
+			// Set the tasks_obj.comments_timestamp.
+			// If tasks_obj.comments_timestamp is older than DB comment_last_mod.
+			//
+			if (d.comment_last_mod > tasks_obj.comments_timestamp) {
+				tasks_obj.comments_timestamp = d.comment_last_mod;
+			}
+			
+			// Update this row!
+			//
+			//
+			//
+			if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
+			{
+				var row = tasks_obj.table_rows[ d.db_id ];
+				row.hits_available.innerText = d.hits_available;
+				
+				// IF updating graphs
+				// THEN update them here (add the newest data point)
+				//
+				//
+				continue;
+			}
+			
+			// Create a new row. Then append or insert.
+			// If global tasks_obj.firstRun is true,
+			// (firstRun == true) then for all rows
+			// treat them as appendChild. If firstRun
+			// is false then treat all rows as insertBefore.
+			var new_row;
+			
+			// New make_extended_row()
+			// Apr. 16 2015
+			//
+			
+			// Regular
+			if  (
+				!ignore_requesters.hasOwnProperty( d.requester_name ) &&
+				!ignore_requesters__ids.hasOwnProperty( d.requester_id )
+				)
+			{
+				new_row = makeRow(d); // array 0,1
+				var len = tasks_obj.table1.getElementsByTagName('tr').length;
+				
+				// append
+				if (!tasks_obj.isFirstRun && len)
+				{
+					var first = tasks_obj.table1.getElementsByTagName('tr')[0];
+					tasks_obj.table1.insertBefore(new_row[0], first); // tr before "first tr"
+					tasks_obj.table1.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
+				}
+				// insert
+				else
+				{
+					tasks_obj.table1.appendChild(new_row[0]);
+					tasks_obj.table1.appendChild(new_row[1]);
+				}
+			}
+			// Ignored
+			else
+			{	
+				new_row = makeRow(d, true);
+				var len = tasks_obj.table2.getElementsByTagName('tr').length;
+				
+				// append
+				if (!tasks_obj.isFirstRun && len)
+				{	
+					var first = tasks_obj.table2.getElementsByTagName('tr')[0];
+					tasks_obj.table2.insertBefore(new_row[0], first); // tr before "first tr"
+					tasks_obj.table2.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
+				}
+				// insert
+				else
+				{
+					tasks_obj.table2.appendChild(new_row[0]);
+					tasks_obj.table2.appendChild(new_row[1]);
+				}
+			}
+		}
+	}
 	/**
 	 * function MT___page1_async()
 	 */
@@ -10862,8 +11063,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
-				//~ 
-				//~ console.log(rs);
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
@@ -10878,182 +11077,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// Also updates current_db_ids.
 				has_new_alertable(rs);
 				
-				// First loop through all table rows and check 
+				// Loop through all table rows and check 
 				// against current_db_ids to ensure that all rows
 				// in table are still active.
 				// Delete all non-active/removed jobs from table.
-				
-				for (var db_id in tasks_obj.table_rows) {
-					
-					// row = HTML element
-					var row = tasks_obj.table_rows[db_id];
-					
-					//~ var db_id = row.db_id;
-					
-					if (!tasks_obj.current_db_ids.hasOwnProperty(db_id))
-					{ // remove
-						row.parentNode.removeChild(row);
-						
-						delete tasks_obj.table1_row_ids[db_id]; // exists?
-						delete tasks_obj.table2_row_ids[db_id]; // exists?
-						
-						//~ delete tasks_obj.table1_history_ids[db_id]; // exists?
-						//~ delete tasks_obj.table2_history_ids[db_id]; // exists?
-						
-						delete tasks_obj.table_rows[db_id];
-					}
-					else
-					{ //
-						
-					}
-					
-				}
+				check_stale();
 				
 				// Loop through response object and check if table elements
 				// contain this task. If so then update table entry.
 				// However, if it does not exist in either table, determine which
 				// table it ought to go in and put it there!
-				
-				/**
-				 * rs
-				 * Set history_id=null if not available.
-				 * Set reward=null if not available.
-					rs
-					0 job DB id
-					1 on_page_number
-					2 job title
-					3 requester name
-					4 HITs avail.
-					5 time since posted
-					6 requesterid
-					7 groupid
-					* 8 histID
-					* 9 reward
-					* 10 title_ratings
-					* 11 title_comments
-					* 12 requester_ratings
-					* 13 requester_comments
-				 * 10-13 are objects.
-				 * 
-				*/
-				var d = {
-					db_id: '',
-					on_page_number: '',
-					title: '',
-					requester_name: '',
-					hits_available: '',
-					time_since_posted: '',
-					requester_id: '',
-					group_id: '',
-					history_id: '',
-					reward: '',
-					task_comment: '',
-					comment_last_mod: 0
-					//~ title_ratings: null,
-					//~ title_comments: null,
-					//~ requester_ratings: null,
-					//~ requester_comments: null
-				};
-				for (var i = 0; i < rs[0].length; i++) {
-					
-					d.db_id				= rs[0][i];
-					d.on_page_number	= rs[1][i];
-					d.title				= rs[2][i];
-					d.requester_name	= rs[3][i];
-					d.hits_available	= rs[4][i];
-					d.time_since_posted	= rs[5][i];
-					d.requester_id		= rs[6][i];
-					d.group_id			= rs[7][i];
-					d.history_id		= (rs[8]) ? rs[8][i]	: null;
-					d.reward			= (rs[9]) ? rs[9][i]	: null;
-					d.task_comment		= (rs[10]) ? rs[10][i] : null;
-					d.comment_last_mod	= (rs[11]) ? rs[11][i] : 0;
-					
-					//~ d.title_ratings			= (rs[10]) ? null	: null;
-					//~ d.title_comments		= (rs[11]) ? null	: null;
-					//~ d.requester_ratings		= (rs[12]) ? null	: null;
-					//~ d.requester_comments	= (rs[13]) ? null	: null;
-					//~ d.title_ratings			= (rs[10]) ? JSON.parse(rs[10][i])	: null;
-					//~ d.title_comments		= (rs[11]) ? JSON.parse(rs[11][i])	: null;
-					//~ d.requester_ratings		= (rs[12]) ? JSON.parse(rs[12][i])	: null;
-					//~ d.requester_comments	= (rs[13]) ? JSON.parse(rs[13][i])	: null;
-					
-					// Set the tasks_obj.comments_timestamp.
-					// If tasks_obj.comments_timestamp is older than DB comment_last_mod.
-					//
-					if (d.comment_last_mod > tasks_obj.comments_timestamp) {
-						tasks_obj.comments_timestamp = d.comment_last_mod;
-					}
-					
-					// UPDATE THIS ROW!
-					if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
-					{
-						var row = tasks_obj.table_rows[d.db_id]
-						row.hits_available.innerText = d.hits_available;
-						
-						// IF updating graphs
-						// THEN update them here (add the newest data point)
-						//
-						//
-						
-						
-						continue;
-					}
-					//~ // Else
-					//~ else
-					//~ {
-						//~ 
-					//~ }
-					
-					// Create a new row.
-					// And then append or insert.
-					// If global tasks_obj.firstRun is true,
-					// (firstRun == true) then for all rows
-					// treat them as appendChild. If firstRun
-					// is false then treat all rows as insertBefore.
-					
-					var new_row;
-					
-					// Regular
-					if  (
-						!ignore_requesters.hasOwnProperty(d.requester_name) &&
-						!ignore_requesters__ids.hasOwnProperty(d.requester_id)
-						)
-					{ 
-						
-						new_row = makeRow(d); // false
-						
-						// append
-						if (!tasks_obj.isFirstRun && tasks_obj.table1.getElementsByTagName('tr').length)
-						{
-							var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-							tasks_obj.table1.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
-						}
-						// insert
-						else
-						{
-							tasks_obj.table1.appendChild(new_row);
-						}
-					}
-					// Ignored
-					else
-					{
-						
-						new_row = makeRow(d, true);
-						
-						// append
-						if (!tasks_obj.isFirstRun && tasks_obj.table2.getElementsByTagName('tr').length)
-						{	
-							var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-							tasks_obj.table2.insertBefore(new_row, first); // appendChild(makeRow(d), true); // true == ignored
-						}
-						// insert
-						else
-						{	
-							tasks_obj.table2.appendChild(new_row); // true == ignored
-						}
-					}
-				}
+				update_rows(rs);
 				
 				// If first run ...
 				// Then load full graph data.
