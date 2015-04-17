@@ -10410,7 +10410,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'width:100%;border:0;'
 		);
 		tb.className = 'ro-extended-tb';
-		obj.parent_td.appendChild(tb);
+		obj.parent_td.appendChild(tb); // Append to parent_td
+		// TH
+		var headers = ['ID', 'Title', 'Requester ID', 'Requester Name', 'Qualifications', 'Group ID', 'RWD', 'Time Allotted', 'Description'];
+		var th = document.createElement('th');
+		th.setAttribute('style',
+			''//'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
+		);
+		for (var i in headers) {
+			var td = document.createElement('td');
+			td.innerText = headers[i]
+			th.appendChild(td);
+		}
+		tb.appendChild(th);
+		// Loop
 		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
 			for (var dbr in rs[rid]) {
 				// id, title, requester_id, requester_name, qualifications, groupId, reward, time_allotted, description
@@ -10418,7 +10431,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// TR
 				var tr = document.createElement('tr');
 				tr.setAttribute('style',
-					'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
+					''//'border-bottom: 1px solid #a4a4a4;border-top: 1px solid #a4a4a4;'
 				);
 				tb.appendChild(tr);
 				// TD
@@ -11370,7 +11383,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		
 		GM_addStyle('.exe-hover:hover {background-color:LightGreen !important; cursor:pointer !important;}');
 		GM_addStyle('.exe-hover {background-color:none; cursor:pointer; transition: background-color 0.6s ease-in-out; opacity:1;}');//,opacity .5s ease-in-out
-		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.2;}');
+		GM_addStyle('.exe-hover:active {background-color:aqua;opacity:0.3;}');
 		GM_addStyle('.ro-extended-tb td {border-bottom:1px solid #a4a4a4;}'); // Requester Overview Table
 		GM_addStyle('.ro-extended-tb {border-collapse:collapse;}');
 		
