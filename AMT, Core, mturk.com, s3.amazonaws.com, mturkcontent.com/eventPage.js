@@ -46,6 +46,44 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	console.log(request);
 	
+	if(request.removeMyUitilityTabs) {
+		console.log('sender');
+		console.log(sender.tab);
+		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+			alert('no utility window set');
+			return false;
+		}
+		
+		var senderId = sender.tab.id;
+		if(UtilityAMTPairs[senderId] &&
+		   UtilityAMTPairs[senderId].utilities &&
+		   UtilityAMTPairs[senderId].utilities.length > 0) {
+			//Remove all of the old utility tabs
+			var tabIdsToRemove = []
+			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+				console.log('TABID');
+				console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
+				console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
+						(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+						);
+				//~ if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+					tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+			}
+			//tabId is null
+			
+			console.log('REMOVE');
+			console.log(tabIdsToRemove);
+			//try {
+				if(tabIdsToRemove.length) {
+					chrome.tabs.remove(tabIdsToRemove);
+				}
+			//}
+			//catch(e) {
+				//console.log('err');
+			//}
+		}
+	}
+	
 	if(request.setUtilityTabs) {
 		console.log('sender');
 		console.log(sender.tab);

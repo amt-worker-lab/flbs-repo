@@ -9279,6 +9279,11 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	}
 	
 	
+	if(document.getElementById('AMT__UtilityContainer')) {
+		chrome.extension.sendRequest({removeMyUitilityTabs: true});
+	}
+	
+	
 	// Which form to submit
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
