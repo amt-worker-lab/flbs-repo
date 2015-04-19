@@ -148202,6 +148202,7 @@ qatar,80
 	// Howard EIFERMAN
 	//
 	//
+	// Solutions? : Go to nyserv.nyc.gov
 	s='lot numbers of individual properties located in Brooklyn, NY that have overdue, unpaid property taxes and/or water bills.';
 	if (ih.indexOf(s) != -1) {
 		console.log('');
