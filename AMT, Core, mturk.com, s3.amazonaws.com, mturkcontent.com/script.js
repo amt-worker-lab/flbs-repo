@@ -148442,14 +148442,20 @@ qatar,80
 					/**
 					 * 
 					 * NEW
-					 * <td width="120" valign="top" class="detailStatus"><b>Name(s):</b></td>
+					 <td width="120" valign="top" class="detailStatus"><b>Name(s):</b></td>
 		 <td width="160" valign="top" class="detailStatus">COYNE, HAROD/TRUSTTE 
 		 <!-- Code Changes for defect NYCS200006185  -->
 		</td>
 					*/
+					/**
+					 * NEW 2
+					 <a href="javascript:browserpopupNames('ELLISON, JEFFREY<br>ELLISON, DEBRA')">    more...</a> </td>
+					 */
 					//names
 					r = /<a href="javascript:browserpopup\([\r\n\t\s]+'([^']+)',/.exec(rs);
 					r2 =/<td width="120" valign="top" class="detailStatus"><b>Name\(s\):<\/b><\/td>[\r\n\t\s]+<td width="160" valign="top" class="detailStatus">([^<]+)<!-- Code Changes for defect NYCS200006185  -->[\r\n\t\s]+<\/td>/.exec(rs);
+					// E.G. ELLISON, JEFFREY<br>ELLISON, DEBRA
+					r3 =/<a href="javascript:browserpopupNames\('((.|\s)*?(?='\)">    *more...<\/a> <\/td>|$)|$)/.exec(rs); //
 					if (r) {
 						r = r[1];
 						d1.innerHTML += r+'<br>';
@@ -148457,6 +148463,9 @@ qatar,80
 						//~ alert('x');
 						r2 = r2[1];
 						d1.innerHTML += r2+'<br>';
+					} else if (r3) {
+						r3 = r3[1];
+						d1.innerHTML += r3+'<br>';
 					} else sb++;
 					// amounts
 					r = /<input name="check0"/.exec(rs);
