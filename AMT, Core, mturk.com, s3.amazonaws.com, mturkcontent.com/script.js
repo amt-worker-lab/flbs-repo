@@ -148203,6 +148203,7 @@ qatar,80
 	//
 	//
 	// Solutions? : Go to nyserv.nyc.gov
+	// #2 : 3/2/2 is pretty steady. 2/2/2 is probably steadier.
 	s='lot numbers of individual properties located in Brooklyn, NY that have overdue, unpaid property taxes and/or water bills.';
 	if (ih.indexOf(s) != -1) {
 		console.log('');
