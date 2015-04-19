@@ -148315,13 +148315,14 @@ qatar,80
 		var date = new Date();
 		var m = {
 			month: date.getMonth() + 1, // 0-11
-			year:  date.getFullYear() + 1, // 0-11
+			year:  date.getFullYear(), // 0-11
 			day:   date.getDate(), // 0-11
 		}
 		m.month = (m.month < 10) ? '0' + m.month : m.month;
 		m.day   = (m.day < 10)   ? '0' + m.day   : m.day;
-		var d2_1 = 'BBL_BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D'+m.month+'%7CINTEREST_THROUGH_DAY%3D07%7CINTEREST_THROUGH_YEAR%3D2013%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH='+m.month+'&INTEREST_THROUGH_DAY=07&INTEREST_THROUGH_YEAR=2013&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
-			
+		var d2_1 = 'BBL_BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D'+m.month+'%7CINTEREST_THROUGH_DAY%3D'+m.day+'%7CINTEREST_THROUGH_YEAR%3D'+m.year+'%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH='+m.month+'&INTEREST_THROUGH_DAY='+m.day+'&INTEREST_THROUGH_YEAR='+m.year+'&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
+		console.log(d2_1);
+		console.log(m);
 			
 		
 		//function() {
