@@ -148240,14 +148240,18 @@ qatar,80
 		//~ document.getElementById('Field4').focus();
 		//~ document.getElementById('Field4').select();
 		
-		document.getElementById('submitButton').onclick = function() {
+		document.getElementById('submitButton').onclick = function(e) {
 			this.style.backgroundColor = 'LightGreen';
 			for (var i = 1; i<=4; i++) {
 				if (document.getElementById('Field'+i).value.trim() == '') {
+					e.preventDefault();
+					e.stopPropagation();
 					return false;
 				}
 			}
 			doSubmit();
+			e.preventDefault();
+			e.stopPropagation();
 			return false;
 		}
 		
@@ -148260,10 +148264,12 @@ qatar,80
 		}
 		
 		
-		document.getElementById('mturk_form').onsubmit = function() {
+		document.getElementById('mturk_form').onsubmit = function(e) {
 			var s = true;
 			for (var i = 1; i<=4; i++) {
 				if (document.getElementById('Field'+i).value.trim() == '') {
+					e.stopPropagation();
+					e.preventDefault();
 					return false;
 				}
 			}
