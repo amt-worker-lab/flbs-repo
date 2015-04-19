@@ -148205,6 +148205,7 @@ qatar,80
 	// Solutions? : Go to nyserv.nyc.gov
 	// #2 : 3/2/2 is pretty steady. 2/2/2 is probably steadier.
 	s='lot numbers of individual properties located in Brooklyn, NY that have overdue, unpaid property taxes and/or water bills.';
+	s='lot numbers of individual properties located in Bronx, NY that have overdue, unpaid property taxes and/or water bills.';
 	if (ih.indexOf(s) != -1) {
 		console.log('');
 		
@@ -148232,7 +148233,17 @@ qatar,80
 		document.body.appendChild(d);
 		var d2 = document.getElementById('d2');
 		
-		
+		var x = /located in (Brooklyn|Bronx), NY that/.exec(ih);
+		if (!x) {
+			return;
+		} else if (x[1] == 'Brooklyn') {
+			x = 3;
+		} else if (x[1] == 'Bronx') {
+			x = 2;
+		}
+		var o = {
+			br: x
+		}
 		
 		document.getElementById('Field4').value = 'Y';
 		document.getElementById('Field4').style.position = 'absolute';
@@ -148297,7 +148308,7 @@ qatar,80
 		
 		var AUTO_SUBMIT = 0;
 		
-		var d2_1 = 'BBL_BOROUGH=3&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D3%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D05%7CINTEREST_THROUGH_DAY%3D07%7CINTEREST_THROUGH_YEAR%3D2013%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH=05&INTEREST_THROUGH_DAY=07&INTEREST_THROUGH_YEAR=2013&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
+		var d2_1 = 'BBL_BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D05%7CINTEREST_THROUGH_DAY%3D07%7CINTEREST_THROUGH_YEAR%3D2013%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH=05&INTEREST_THROUGH_DAY=07&INTEREST_THROUGH_YEAR=2013&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
 			
 			
 		
@@ -148315,9 +148326,9 @@ qatar,80
 		function HOWARD_EIFERMAN_water__init(watch_for_alarm) {
 			console.log('init');
 			
-			var d1_1 = 'WATER_CHARGE_ACC_NUMBER=&BOROUGH=3&BLOCK='+
+			var d1_1 = 'WATER_CHARGE_ACC_NUMBER=&BOROUGH='+o.br+'&BLOCK='+
 			block+
-			'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D3%7CBLOCK%3D'+
+			'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+
 			block2+
 			'%7CLOT%3D'+lot2+
 			'%7CPageID%3DWaterChargeSearch%7CLinkType%3DEMPTY'+'&random='+Math.random();
@@ -148466,7 +148477,6 @@ qatar,80
 						r = r[1];
 						d1.innerHTML += r+'<br>';
 					} else if (r2) {
-						//~ alert('x');
 						r2 = r2[1];
 						d1.innerHTML += r2+'<br>';
 					} else if (r3) {
@@ -148544,7 +148554,7 @@ qatar,80
 			var n2 = encodeURIComponent(n);
 			var a2 = encodeURIComponent(a);
 			var an2 = encodeURIComponent(an);
-			var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH=3&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D'+an2+'%7CBOROUGH%3D3%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D'+an2+'%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER='+an+'&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'+'&random='+Math.random();
+			var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D'+an2+'%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D'+an2+'%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER='+an+'&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'+'&random='+Math.random();
 			
 			//&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch
 			//var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH=3&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D7000271267001%7CBOROUGH%3D3%7CBLOCK%3D01174%7CLOT%3D0001%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D7000271267001%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER=7000271267001&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'
