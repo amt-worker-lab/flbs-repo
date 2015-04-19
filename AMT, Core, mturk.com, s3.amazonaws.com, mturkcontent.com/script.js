@@ -148398,6 +148398,11 @@ qatar,80
 								AMT___Floater.skip();
 							d2.value += 'water:"BBL was not found"'+"\n";
 							d2.style.border = '4px solid orange';
+							
+							// GO TO HOWARD_EIFERMAN_tax__property_init!
+							//
+							document.getElementById('Field1').value = '0';
+							HOWARD_EIFERMAN_tax__property_init();
 							return;
 						}
 						
