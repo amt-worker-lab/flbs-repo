@@ -148436,11 +148436,27 @@ qatar,80
 
 					var sb = 0;
 					
+					console.log(rs);
+					var r, r2;
+					
+					/**
+					 * 
+					 * NEW
+					 * <td width="120" valign="top" class="detailStatus"><b>Name(s):</b></td>
+		 <td width="160" valign="top" class="detailStatus">COYNE, HAROD/TRUSTTE 
+		 <!-- Code Changes for defect NYCS200006185  -->
+		</td>
+					*/
 					//names
 					r = /<a href="javascript:browserpopup\([\r\n\t\s]+'([^']+)',/.exec(rs);
+					r2 =/<td width="120" valign="top" class="detailStatus"><b>Name\(s\):<\/b><\/td>[\r\n\t\s]+<td width="160" valign="top" class="detailStatus">([^<]+)<!-- Code Changes for defect NYCS200006185  -->[\r\n\t\s]+<\/td>/.exec(rs);
 					if (r) {
 						r = r[1];
 						d1.innerHTML += r+'<br>';
+					} else if (r2) {
+						//~ alert('x');
+						r2 = r2[1];
+						d1.innerHTML += r2+'<br>';
 					} else sb++;
 					// amounts
 					r = /<input name="check0"/.exec(rs);
