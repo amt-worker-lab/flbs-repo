@@ -148237,6 +148237,7 @@ qatar,80
 		document.getElementById('Field4').style.top = '60px';
 		document.getElementById('Field4').style.width = '100px';
 		document.getElementById('Field4').style.height = '20px';
+		document.getElementById('Field4').style.cursor = 'pointer';
 		//~ document.getElementById('Field4').focus();
 		//~ document.getElementById('Field4').select();
 		
