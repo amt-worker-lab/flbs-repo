@@ -22625,8 +22625,6 @@ function MT__RUN() {
 
 			function secondSearch(data) {
 				var data = data;
-				//~ var div = div;
-				//~ var input = input;
 
 				GM_xmlhttpRequest({
 					method: 'POST',
@@ -22654,13 +22652,24 @@ function MT__RUN() {
 							'i'
 						);
 						
+						// Block
+						var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
+						if (block) {
+							d1.innerText = response.status;
+							window.open('https://www.guidestar.org', '_blank');
+							return;
+						}
+						//
+						if (response.status != 200) {
+							console.log(response.status);
+							d1.innerText = response.status;
+							return;
+						}
+						
+						// ..
 						if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
 							if(o.numRuns < 4)
 								init_gs();
-							return;
-						}
-						if (response.status != 200) {
-							console.log(response.status);
 							return;
 						}
 						
@@ -22793,6 +22802,7 @@ function MT__RUN() {
 						state: '',
 						zip: '',
 						locn: '',
+						income: '',
 						hash: null,
 						ein: null,
 						url: null
@@ -22809,27 +22819,27 @@ function MT__RUN() {
 					
 					// AKA, Location
 					var sr12 = trs[i].getElementsByClassName('sr12')[0];
-					var sp_sr12 = sr12.getElementsByTagName('span');
-					if (sp_sr12) {
+					var spans = sr12.getElementsByTagName('span');
+					if (spans) {
 						var x;
-						//~ console.log(sp_sr12);
-						if (sp_sr12[0].id.indexOf('AkaName') != -1) {
-							row.aka = sp_sr12[0].innerText.trim().replace(/^Also known as: /, '');
-						}
-						if (sp_sr12[0].id.indexOf('spAddress') != -1) {
-							x = sp_sr12[0].innerText.trim();
-						}
-						else if (sp_sr12.length > 1 && sp_sr12[1].id.indexOf('spAddress') != -1) {
-							x = sp_sr12[1].innerText.trim();
-						}
-						if (x) {
-							row.locn = x;
-							x = x.split('\n');
-							if (x.length == 3) {
-								row.city = x[0].trim().replace(/ *,/, '').trim();
-								row.state = x[1].trim();
-								row.zip = x[2].trim();
-								row.hash = row.city + '|' + row.state;
+						for (var j in spans) {
+							if (j == 'length') break;
+							if (spans[j].id.indexOf('AkaName') != -1) {
+								row.aka = spans[j].innerText.trim().replace(/^Also known as: /, '');
+							}
+							else if (spans[j].id.indexOf('IncomeResult') != -1) {
+								row.income = spans[j].innerText.trim();
+							}
+							else if (spans[j].id.indexOf('spAddress') != -1) {
+								row.locn = spans[j].innerText.trim();
+								var x = row.locn;
+								x = x.split('\n');
+								if (x.length == 3) {
+									row.city = x[0].trim().replace(/ *,/, '').trim();
+									row.state = x[1].trim();
+									row.zip = x[2].trim();
+									row.hash = row.city + '|' + row.state;
+								}
 							}
 						}
 					}
