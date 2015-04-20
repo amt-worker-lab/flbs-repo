@@ -22445,6 +22445,7 @@ function MT__RUN() {
 				zip: td[13].innerText.trim(),
 				state_full: null,
 				city_st_hash: null,
+				zip_cln: null,
 				
 				bold: [],
 				bold_locn: [],
@@ -22459,16 +22460,20 @@ function MT__RUN() {
 			o.city_st_hash = o.city + '|' + o.state;
 			o.bold = o.name.clean_string_to_array();
 			o.bold_locn = o.city.clean_string_to_array().concat( o.state.clean_string_to_array() ).concat( o.zip.clean_string_to_array() ).concat( o.state_full.clean_string_to_array() );
+			o.zip_cln = o.zip.replace(/^(\d+)[\d\D]*$/, '$1');
 			console.log(o);
 			
 			// createScriptVar
 			new AMT___core_factory().createScriptVar('Daniel O\'Mahoney NT', '1', false);
 			
 			/* BEGIN ITEMS */
-			var d1 = document.createElement('div'); // formerly d1
-			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:80%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:60%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
-			var div_debug = document.createElement('div'); // formerly d1
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			var div_debug = document.createElement('div');
 			div_debug.setAttribute('style', 'position:absolute;left:0%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(div_debug);
 			var d2 = document.createElement('textarea');
@@ -22480,6 +22485,7 @@ function MT__RUN() {
 					new AMT___core_factory().nextTab();
 				}
 				init_gs();
+				init_nces();
 			};
 			d2.value = o.name;
 			/* END ITEMS */
@@ -22506,7 +22512,7 @@ function MT__RUN() {
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				elements: [
-					d1
+					d1,d1b
 				],
 				offset: 0
 			});
@@ -22528,7 +22534,7 @@ function MT__RUN() {
 				d1b.innerHTML = d2.value + '\n' + o.zip;
 				var u =
 					'http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&miles='+
-					'&zipcode='+encodeURIComponent(o.zip)+
+					'&zipcode='+encodeURIComponent(o.zip_cln)+ // Remove all but first digits.
 					'&itemname='+encodeURIComponent(d2.value)+
 					'&sortby=name&School=1&PrivSchool=1';
 				// Xhr
@@ -22537,7 +22543,7 @@ function MT__RUN() {
 					url: u,
 					onload: function(response) {
 						var rs = response.responseText;
-						console.log({'rs':rs});
+						//~ console.log({'rs':rs});
 						if (response.status != 200) {
 							d1b.innerText = response.status;
 							return;
@@ -22545,9 +22551,10 @@ function MT__RUN() {
 						
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						
-						var pub  = document.getElementById('hiddenitems_school');
-						if (pub && pub.length) {
-							pub = pub[0];
+						// Public
+						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
+						var pub = dom.getElementById('hiddenitems_school');
+						if (pub) {
 							pub = pub.getElementsByTagName('tr');
 							for (var i in pub) {
 								if (i == 'length') break;
@@ -22558,8 +22565,9 @@ function MT__RUN() {
 								var grd = pub[i].getElementsByClassName('InstDetail')[0].innerText;
 								var url;
 								var nces;
+								console.log(a);
 								
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&#38;ID=(\d{6,})'\);/.exec(href);
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&#38;ID=(\d{6,})'\);/.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
@@ -22582,9 +22590,10 @@ function MT__RUN() {
 								d1b.appendChild(eldiv);
 							}
 						}
-						var priv = document.getElementById('hiddenitems_privschool');
-						if (priv && priv.length) {
-							priv = priv[0];
+						// Private
+						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
+						var priv = dom.getElementById('hiddenitems_privschool');
+						if (priv) {
 							priv = priv.getElementsByTagName('tr');
 							for (var i in priv) {
 								if (i == 'length') break;
