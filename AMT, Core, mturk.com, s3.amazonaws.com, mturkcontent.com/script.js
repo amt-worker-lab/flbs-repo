@@ -22431,7 +22431,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
 			GM_addStyle('body {width:40%;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.6;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.4;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -22482,7 +22482,10 @@ function MT__RUN() {
 				],
 				offset: 200
 			});
-			
+			// EF
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		
 			// Init
 			init_gs();
 			
@@ -22739,7 +22742,7 @@ function MT__RUN() {
 					console.log(hash);
 					for (var i in x) {
 						if (i == 'length') break;
-						x[i].innerHTML = str;
+						x[i].innerHTML = ' ('+str+')';
 					}
 					
 					var divs = o.distance_divs[hash];
@@ -22817,7 +22820,7 @@ function MT__RUN() {
 							x = sp_sr12[0].innerText.trim();
 						}
 						else if (sp_sr12.length > 1 && sp_sr12[1].id.indexOf('spAddress') != -1) {
-							x = sp_sr12[0].innerText.trim();
+							x = sp_sr12[1].innerText.trim();
 						}
 						if (x) {
 							row.locn = x;
@@ -22842,8 +22845,8 @@ function MT__RUN() {
 					eldiv = document.createElement('div');
 					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
 					eldiv.className = 'div_result';
-					eldiv.ein = o.ein;
-					eldiv.url = o.url;
+					eldiv.ein = row.ein;
+					eldiv.url = row.url;
 					if(row.state != o.state){
 						eldiv.style.backgroundColor = 'pink';
 					}
