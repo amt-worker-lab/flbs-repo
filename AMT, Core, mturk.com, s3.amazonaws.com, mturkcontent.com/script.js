@@ -22472,7 +22472,7 @@ function MT__RUN() {
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;left:0%;top:0px;height:100px;width:19%;');
 			document.body.appendChild(d2);
-			d2.onblur = init_gs;
+			d2.onblur = function() { new AMT___core_factory().nextTab(); init_gs(); };
 			d2.value = o.name;
 			/* END ITEMS */
 			
@@ -22648,12 +22648,14 @@ function MT__RUN() {
 				// Block
 				var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
 				if (block) {
+					o.numRuns = 0;// reset o.numRuns
 					d1.innerText = response.status;
 					window.open('https://www.guidestar.org', '_blank');
 					exit();
 				}
 				//
 				if (response.status != 200) {
+					o.numRuns = 0;// reset o.numRuns
 					console.log(response.status);
 					d1.innerText = response.status;
 					window.open('https://www.guidestar.org', '_blank');
