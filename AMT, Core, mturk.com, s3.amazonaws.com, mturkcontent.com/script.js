@@ -22431,7 +22431,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
 			GM_addStyle('body {width:40%;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.4;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.8;width:15% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -22463,17 +22463,36 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div'); // formerly d1
-			d1.setAttribute('style', 'position:absolute;left:0%;top:200px;height:200px;width:99%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;left:15%;top:0px;height:200px;width:60%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var div_debug = document.createElement('div'); // formerly d1
-			div_debug.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			div_debug.setAttribute('style', 'position:absolute;left:75%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(div_debug);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;left:60%;top:0px;height:100px;width:20%;');
+			d2.setAttribute('style','position:absolute;left:75%;top:0px;height:100px;width:19%;');
 			document.body.appendChild(d2);
 			d2.onblur = init_gs;
 			d2.value = o.name;
 			/* END ITEMS */
+			
+			// Empty tds
+			var skip = {
+				'Unique ID':true,
+				'Organization Name':true,
+				'Address 1':true,
+				'Address 2':true,
+				'City':true,
+				'State':true,
+				'Post-Code':true
+			}
+			for (var i in tds) {
+				if (i == 'length') break;
+				var k = tds[i].innerText.trim();
+				if (!skip.hasOwnProperty( k )) continue;
+				if (tds[i].innerHTML.toLowerCase().indexOf('name') == -1) { // NO FORM ELEMENTS
+					tds[i].innerText = tds[i].innerText[0];
+				}
+			}
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -22601,7 +22620,7 @@ function MT__RUN() {
 							var u = encodeURIComponent(d2.value);
 							
 							var data = o.hv.af2;
-							var st = (o.state_full.indexOf(' ') != -1) ? '&quot;'+o.state_full+'&quot;': o.state_full;
+							var st = (o.state_full.indexOf(' ') != -1) ? '"'+o.state_full+'"': o.state_full;
 							data = data.replace(
 								/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
 								'ctl00$SearchBar2$txtKeywords=' + u
@@ -22662,17 +22681,17 @@ function MT__RUN() {
 							'[\\r\\n\\s\\t]*' + __js_escape_regEx(d2.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;')) +
 							//(input.includeCitySearch ? ' ' + city : '')) +
 							'[\\r\\n\\s\\t]*(<\\/strong>|<\\/a>)', 'i'
-						);
+						).exec(rs);
 						
 						// Successful -> State
 						var successStateReg = new RegExp(
 							'<a id="ctl00_phMainBody_statename_lbRemoveNavElement"[^>]*><img src="[^"]*" width="10" height="10" alt="Close"[^>]*>&nbsp;'+__js_escape_regEx(o.state_full.replace(/"/g, ''))+'<\\/a>',
 							'i'
-						);
+						).exec(rs);
 						
 						console.log('HERE ARE secondSearch VARS:');
 						console.log('successfulRunReg');
-						console.log(successfulRunReg.exec(rs));
+						console.log(successfulRunReg);
 						console.log('successStateReg');
 						console.log(successStateReg);
 						console.log('brokenPage');
@@ -22682,7 +22701,7 @@ function MT__RUN() {
 						gs_error(response);
 						
 						// ..
-						if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
+						if(!successfulRunReg || !successStateReg || brokenPage){
 							o.numRuns++;
 							if(o.numRuns < 4)
 								init_gs();
