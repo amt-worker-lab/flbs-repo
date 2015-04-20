@@ -22532,11 +22532,12 @@ function MT__RUN() {
 			 * 
 			 */
 			function init_nces() {
-				d1b.innerHTML = d2.value + '\n' + o.zip_cln;
+				var abbr = d2.value.replace(/ *school *$/gi, '');
+				d1b.innerHTML = abbr + '\n' + o.zip_cln;
 				var u =
 					'http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&miles='+
 					'&zipcode='+encodeURIComponent(o.zip_cln)+ // Remove all but first digits.
-					'&itemname='+encodeURIComponent(d2.value)+
+					'&itemname='+encodeURIComponent(abbr)+
 					'&sortby=name&School=1&PrivSchool=1';
 				// Xhr
 				GM_xmlhttpRequest({
