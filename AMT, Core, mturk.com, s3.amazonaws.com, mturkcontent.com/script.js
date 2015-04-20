@@ -22433,7 +22433,8 @@ function MT__RUN() {
 			GM_addStyle('body {width:40%;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;width:40% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.div-result:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -22655,6 +22656,7 @@ function MT__RUN() {
 				if (response.status != 200) {
 					console.log(response.status);
 					d1.innerText = response.status;
+					window.open('https://www.guidestar.org', '_blank');
 					exit();
 				}
 			}
@@ -22798,7 +22800,7 @@ function MT__RUN() {
 						// city match then highlight parent div.
 						if  (
 							less_than_20 &&
-							p.className == 'div_result'
+							p.className == 'div-result'
 							)
 						{
 							p.style.backgroundColor = 'aqua';
@@ -22889,7 +22891,7 @@ function MT__RUN() {
 					// Div for each result
 					eldiv = document.createElement('div');
 					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
-					eldiv.className = 'div_result';
+					eldiv.className = 'div-result';
 					eldiv.ein = row.ein;
 					eldiv.url = row.url;
 					if(row.state != o.state){
