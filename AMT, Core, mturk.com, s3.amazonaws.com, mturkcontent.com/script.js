@@ -22759,7 +22759,7 @@ function MT__RUN() {
 				var rs = xhrRes;
 				var r, r2;
 				var r0;
-				
+				d1.innerHTML = '';
 				
 				var dom = new DOMParser().parseFromString(rs, 'text/html');
 				var tds = dom.getElementsByClassName('sr11');
@@ -22794,8 +22794,9 @@ function MT__RUN() {
 					var a = trs[i].getElementsByTagName('a')[0];
 					console.log(a);
 					console.log(a.href);
-					row.ein = /organizations\/(\d{2}-\d{4,})\//.exec(a.href)[1];
-					row.url = a.href;
+					var href = a.getAttribute('href'); 
+					row.ein = /organizations\/(\d{2}-\d{4,})\//.exec(href)[1];
+					row.url = href;
 					row.name = a.innerText.trim();
 					
 					// AKA, Location
@@ -22813,16 +22814,17 @@ function MT__RUN() {
 							x = sp_sr12[0].innerText.trim();
 						}
 						if (x) {
-							o.locn = x;
+							row.locn = x;
 							x = x.split('\n');
 							if (x.length == 3) {
-								row.city = x[0].trim().replace(/ *,/).trim();
+								row.city = x[0].trim().replace(/ *,/, '').trim();
 								row.state = x[1].trim();
 								row.zip = x[2].trim();
 								o.hash = row.city + '|' + row.state;
 							}
 						}
 					}
+					console.log(row);
 					
 					//~ var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
 					//~ if (comp_aka) {
@@ -22855,7 +22857,7 @@ function MT__RUN() {
 					
 					// Span of city
 					var span_loc = document.createElement('span');
-					span_loc.innerHTML = o.locn; // MT__bold(m3, o.locn_array);
+					span_loc.innerHTML = row.locn; // MT__bold(m3, o.locn_array);
 					eldiv.appendChild(span_loc);
 					
 					// Distance div
@@ -22876,7 +22878,7 @@ function MT__RUN() {
 					}
 					
 					// Add all_locations
-					all_locations.push([o.city, o.state]);
+					all_locations.push([row.city, row.state]);
 					
 					// ...				
 					eldiv.onclick = function() {
