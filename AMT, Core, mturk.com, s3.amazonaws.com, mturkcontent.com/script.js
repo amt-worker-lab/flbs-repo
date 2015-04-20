@@ -22442,6 +22442,7 @@ function MT__RUN() {
 				city: td[9].innerText.trim(),
 				state: td[11].innerText.trim(),
 				zip: td[13].innerText.trim(),
+				state_full: null,
 				
 				bold: [],
 				
@@ -22450,6 +22451,9 @@ function MT__RUN() {
 				hv: new AMT___huge_vars_factory().Andrew_Ryan_charities_ein__vars() // o.hv.af1, o.hv.af2
 			};
 			var viewState2;
+			o.state_full = o.state.stateAbbrToFull();
+			console.log(o);
+			
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div'); // formerly d1
@@ -22549,8 +22553,9 @@ function MT__RUN() {
 							return;
 						}
 						
+						// stateSearchAvailableReg
 						var stateSearchAvailableReg = /<label>[\r\n\s\t]*By[\r\n\s\t]*State[\r\n\s\t]*<\/label>/;
-						
+						// isInStateSelectField
 						var isInStateSelectField;
 						var x = /<select size="6" name="ctl00\$phMainBody\$statenavigator\$listNavValues"((.|\s)*?(?=<\/select>|$)|$)/.exec(rs);
 						if (!x)
@@ -22561,6 +22566,10 @@ function MT__RUN() {
 								isInStateSelectField = true;
 							}
 						}
+						console.log('stateSearchAvailableReg');
+						console.log(stateSearchAvailableReg.exec(rs));
+						console.log('isInStateSelectField');
+						console.log(isInStateSelectField);
 						
 						if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
 							parseResponse(rs);
@@ -22745,7 +22754,7 @@ function MT__RUN() {
 				}
 			}
 			
-			function Andrew_Ryan_charities_ein__guidestar__parseResponse(xhrRes) {
+			function parseResponse(xhrRes) {
 				var rs = xhrRes;
 				var r, r2;
 				var r0;
@@ -22777,7 +22786,9 @@ function MT__RUN() {
 					// nextindex
 					m0 = r0.exec(rs)[1];
 					
-					m2 = r2.exec(rs)[1];
+					//
+					//~ m2 = r2.exec(rs)[1];
+					m2 = '-IncomeHere-';
 					
 					// City, ST => city comma state abbr.
 					m3 = r3.exec(rs)[1];
@@ -22795,14 +22806,14 @@ function MT__RUN() {
 					eldiv.guidestar_url = 'http://www.guidestar.org/' + m[1];
 					m3 = m3.replace(/[\r\n\s\t]+/g,' ');
 					
-					if(m3.indexOf(', ' + state.trim().toUpperCase()) == -1 && m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1){
+					if(m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1 && m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1){
 						eldiv.style.backgroundColor = 'pink';
 					}
 					
 					var x = document.createElement('div');
 					//x.
 					x.innerHTML =
-						MT__bold(__js_clean_html_str(m[3]), o.comp_array) +
+						MT__bold(__js_clean_html_str(m[3]), o.bold) +
 						'(' + m2 + ')' +
 						comp_aka +
 						'<br>';
