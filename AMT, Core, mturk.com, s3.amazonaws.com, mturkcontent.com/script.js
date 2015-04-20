@@ -22716,6 +22716,8 @@ function MT__RUN() {
 							o.numRuns++;
 							if(o.numRuns < 4)
 								init_gs();
+							else 
+								d1.innerText = 'numRuns=' + o.numRuns;
 							return;
 						}
 						
