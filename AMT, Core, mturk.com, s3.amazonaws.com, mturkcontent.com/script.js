@@ -22431,7 +22431,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
 			GM_addStyle('body {width:40%;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.6;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -22717,17 +22717,12 @@ function MT__RUN() {
 				
 				// 
 				for (var hash in r) {
-					var matches = r[hash];
+					var matches = r[ hash ];
 					var less_than_20 = false;
 					
 					var str = '';
 					for (var i in matches) {
 						var match = matches[i];
-						//~ console.log(main_point.lat);
-						//~ console.log(main_point.lon);
-						//~ console.log(match.lat);
-						//~ console.log(match.lon);
-						
 						var dist = MT___lat_lng_distance(main_point.lat, main_point.lon, match.lat * 1, match.lon * 1); // Mult by one
 						if (dist <= 20) {
 							less_than_20 = true;
@@ -22738,7 +22733,14 @@ function MT__RUN() {
 						str += '\n';
 					}
 					str = str.trim();
-					str = str.replace(/\n/g, '<br>');
+					// Add to className 'dist-'+o.hash
+					var x = document.getElementsByClassName('dist-' + hash);
+					console.log(x);
+					console.log(hash);
+					for (var i in x) {
+						if (i == 'length') break;
+						x[i].innerHTML = str;
+					}
 					
 					var divs = o.distance_divs[hash];
 					for (var i in divs) {
@@ -22807,7 +22809,7 @@ function MT__RUN() {
 					var sp_sr12 = sr12.getElementsByTagName('span');
 					if (sp_sr12) {
 						var x;
-						console.log(sp_sr12);
+						//~ console.log(sp_sr12);
 						if (sp_sr12[0].id.indexOf('AkaName') != -1) {
 							row.aka = sp_sr12[0].innerText.trim().replace(/^Also known as: /, '');
 						}
@@ -22866,6 +22868,11 @@ function MT__RUN() {
 					var span_loc = document.createElement('span');
 					span_loc.innerHTML = MT__bold(row.locn, o.bold_locn);
 					eldiv.appendChild(span_loc);
+					
+					// Span of distance offset
+					var span = document.createElement('span');
+					span.className = 'dist-'+row.hash;
+					eldiv.appendChild(span);
 					
 					// Distance div
 					var eldiv_dist = document.createElement('div');
