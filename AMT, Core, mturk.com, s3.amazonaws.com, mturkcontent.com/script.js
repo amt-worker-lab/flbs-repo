@@ -22446,6 +22446,7 @@ function MT__RUN() {
 				city_st_hash: null,
 				
 				bold: [],
+				bold_locn: [],
 				
 				viewState2: null,
 				distance_divs: {},
@@ -22455,6 +22456,8 @@ function MT__RUN() {
 			//~ var viewState2;
 			o.state_full = o.state.stateAbbrToFull();
 			o.city_st_hash = o.city + '|' + o.state;
+			o.bold = o.name.clean_string_to_array();
+			o.bold_locn = o.city.clean_string_to_array().concat( o.state.clean_string_to_array() ).concat( o.zip.clean_string_to_array() ).concat( o.state_full.clean_string_to_array() );
 			console.log(o);
 			
 			
@@ -22792,11 +22795,11 @@ function MT__RUN() {
 					
 					// Name, EIN
 					var a = trs[i].getElementsByTagName('a')[0];
-					console.log(a);
-					console.log(a.href);
+					//~ console.log(a);
+					//~ console.log(a.href);
 					var href = a.getAttribute('href'); 
 					row.ein = /organizations\/(\d{2}-\d{4,})\//.exec(href)[1];
-					row.url = href;
+					row.url = 'http://www.guidestar.org/' + href;
 					row.name = a.innerText.trim();
 					
 					// AKA, Location
@@ -22804,6 +22807,7 @@ function MT__RUN() {
 					var sp_sr12 = sr12.getElementsByTagName('span');
 					if (sp_sr12) {
 						var x;
+						console.log(sp_sr12);
 						if (sp_sr12[0].id.indexOf('AkaName') != -1) {
 							row.aka = sp_sr12[0].innerText.trim().replace(/^Also known as: /, '');
 						}
@@ -22820,7 +22824,7 @@ function MT__RUN() {
 								row.city = x[0].trim().replace(/ *,/, '').trim();
 								row.state = x[1].trim();
 								row.zip = x[2].trim();
-								o.hash = row.city + '|' + row.state;
+								row.hash = row.city + '|' + row.state;
 							}
 						}
 					}
@@ -22846,7 +22850,10 @@ function MT__RUN() {
 					//x.
 					x.innerHTML =
 						MT__bold(row.name, o.bold) +
-						'(' + MT__bold(row.aka, o.bold) + ')' +
+						(row.aka != '' ? '(' + MT__bold(row.aka, o.bold) + ')' : '' ) +
+						'<br>'+
+						row.ein + ' :: ' +
+						row.url +
 						'<br>';
 					eldiv.appendChild(x);
 					//~ 
@@ -22857,7 +22864,7 @@ function MT__RUN() {
 					
 					// Span of city
 					var span_loc = document.createElement('span');
-					span_loc.innerHTML = row.locn; // MT__bold(m3, o.locn_array);
+					span_loc.innerHTML = MT__bold(row.locn, o.bold_locn);
 					eldiv.appendChild(span_loc);
 					
 					// Distance div
@@ -22869,11 +22876,11 @@ function MT__RUN() {
 					eldiv.appendChild(eldiv_dist);
 					
 					// Add eldiv_dist element to o.distance_divs
-					if (o.hash) {
-						if (o.distance_divs.hasOwnProperty(o.hash))
-							o.distance_divs[o.hash].push(eldiv_dist);
+					if (row.hash) {
+						if (o.distance_divs.hasOwnProperty(row.hash))
+							o.distance_divs[row.hash].push(eldiv_dist);
 						else {
-							o.distance_divs[o.hash] = [ eldiv_dist ];
+							o.distance_divs[row.hash] = [ eldiv_dist ];
 						}
 					}
 					
@@ -22883,10 +22890,10 @@ function MT__RUN() {
 					// ...				
 					eldiv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						document.getElementsByName('EIN').value = this.ein;
-						document.getElementsByName('Source').value = this.url;
+						document.getElementsByName('EIN')[0].value = this.ein;
+						document.getElementsByName('Source')[0].value = this.url;
 						if (this.ein && this.url && this.ein.length > 4 && this.url.length > 10) {
-							
+							doSubmit();
 						}
 					}
 					
