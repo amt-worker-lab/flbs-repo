@@ -71510,12 +71510,12 @@ qatar,80
 						'&find_loc='	+encodeURIComponent(d2b.value);
 				var opts = {
 						url: u,
-						strings_do_not_save_to_file: "Hey there! Before you continue, we just need to check that you're not a robot."
+						strings_do_not_save_to_file: ["Hey there! Before you continue, we just need to check that you're not a robot."]
 				}
+				
 				u = JSON.stringify(opts);
-				if(!o.gotYelpCaptcha) {
-					u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&opts=' + encodeURIComponent(u);
-				}
+				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(u);
+			
 				
 				// Xhr request.
 				
@@ -71532,13 +71532,14 @@ qatar,80
 						var rs = response.responseText;
 						
 						// Status
-						if (response.status != 200) {
+						if (response.status != 200 || /^\d{3}$/.exec(rs)) {
 							if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-								//window.open('http://www.yelp.com');
-								if(o.gotYelpCaptcha)
-									window.open(u);
-								o.gotYelpCaptcha = true;
-								yelp();
+								d1c.style.backgroundColor = 'yellow';
+								window.open(opts.url);
+							}
+							else {
+								console.log('yelp acting strange');
+								console.log('status: ' + rs);
 							}
 							// Finished
 							o.stats.yelp_search_complete = true;
@@ -71548,10 +71549,9 @@ qatar,80
 						
 						
 						if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-							if(o.gotYelpCaptcha)
-								window.open(u);
-							o.gotYelpCaptcha = true;
-							yelp();
+							window.open(opts.url);
+							d1c.style.backgroundColor = 'yellow';
+							return;
 						}
 						
 						// Parse
