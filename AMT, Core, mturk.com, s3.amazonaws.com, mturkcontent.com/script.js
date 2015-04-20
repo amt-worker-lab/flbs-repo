@@ -71496,6 +71496,13 @@ qatar,80
 						'&find_loc='	+encodeURIComponent(d2b.value);
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
 				// Xhr request.
+				
+				//TEMPORARY, TURN OFF YELP!
+				
+				check_if_yp_init();
+				
+				return;
+				
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: u,
@@ -71512,9 +71519,7 @@ qatar,80
 						
 						
 						if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-							window.open('http://www.yelp.com/search/snippet'+
-										'?find_desc='	+encodeURIComponent(d2.value)+
-										'&find_loc='	+encodeURIComponent(d2b.value));
+							window.open('http://www.yelp.com');
 						}
 						
 						// Parse
