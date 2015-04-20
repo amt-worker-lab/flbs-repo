@@ -22533,7 +22533,7 @@ function MT__RUN() {
 					},
 					onload: function(response) {
 						var rs = response.responseText;
-						console.log(rs);
+						console.log({'rs':rs});
 						
 						// Check error
 						gs_error(response);
@@ -22601,22 +22601,22 @@ function MT__RUN() {
 							var u = encodeURIComponent(d2.value);
 							
 							var data = o.hv.af2;
+							var st = (o.state_full.indexOf(' ') != -1) ? '&quot;'+o.state_full+'&quot;': o.state_full;
 							data = data.replace(
 								/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
 								'ctl00$SearchBar2$txtKeywords=' + u
 							);
-
 							data = data.replace(
 								/listNavValues=%5E[^%]*%24/,
-								'listNavValues=%5E' + encodeURIComponent(o.state_full) + '%24'
+								'listNavValues=%5E' + encodeURIComponent(st) + '%24'
 							);
-							
 							data = data.replace(/__VIEWSTATE=[^&]+/, '__VIEWSTATE=' + encodeURIComponent(o.viewState2))// + '&'+ af2;
 							//console.log(data);
 							data = data.replace(
 								/ctl00%24phMainBody%24keywordsAlliance%24txtFieldValue=[^&]*/,
 								'ctl00$phMainBody$keywordsAlliance$txtFieldValue=' + encodeURIComponent(u));
 							
+							// Do secondSearch
 							secondSearch(data);
 						}
 					}
@@ -22672,7 +22672,7 @@ function MT__RUN() {
 						
 						console.log('HERE ARE secondSearch VARS:');
 						console.log('successfulRunReg');
-						console.log(successfulRunReg);
+						console.log(successfulRunReg.exec(rs));
 						console.log('successStateReg');
 						console.log(successStateReg);
 						console.log('brokenPage');
