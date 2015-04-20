@@ -22466,9 +22466,7 @@ function MT__RUN() {
 			div_debug.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(div_debug);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style',
-				'position:absolute;left:80%;top:60px;height:40px;width:19%;'
-			);
+			d2.setAttribute('style','position:absolute;left:70%;top:0px;height:0px;width:10%;');
 			document.body.appendChild(d2);
 			d2.onblur = init_gs;
 			d2.value = o.name;
@@ -22481,6 +22479,9 @@ function MT__RUN() {
 				],
 				offset: 200
 			});
+			
+			// Init
+			init_gs();
 			
 			// function 
 			function init_gs() {
