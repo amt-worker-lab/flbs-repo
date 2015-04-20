@@ -22461,6 +22461,8 @@ function MT__RUN() {
 			o.bold_locn = o.city.clean_string_to_array().concat( o.state.clean_string_to_array() ).concat( o.zip.clean_string_to_array() ).concat( o.state_full.clean_string_to_array() );
 			console.log(o);
 			
+			// createScriptVar
+			new AMT___core_factory().createScriptVar('Daniel O\'Mahoney NT', '1', false);
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div'); // formerly d1
@@ -22472,7 +22474,12 @@ function MT__RUN() {
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;left:0%;top:0px;height:100px;width:19%;');
 			document.body.appendChild(d2);
-			d2.onblur = function() { new AMT___core_factory().nextTab(); init_gs(); };
+			d2.onblur = function() {
+				if (AMT__Global_Vars.scriptVars['Daniel O\'Mahoney NT'] == '1') {
+					new AMT___core_factory().nextTab();
+				}
+				init_gs();
+			};
 			d2.value = o.name;
 			/* END ITEMS */
 			
