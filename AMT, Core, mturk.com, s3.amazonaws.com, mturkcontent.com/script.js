@@ -22421,6 +22421,483 @@ function MT__RUN() {
 	// XXXX Not doing this =)
 	
 	//
+	// Mike O'Mahoney
+	// Search for EIN or NCES Codes - March 25, 2015
+	//
+	s = '	<li>You may use other resources to recover the EIN as well - just include a URL for where you retrieved this info.</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
+			GM_addStyle('body {width:40%;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				name: td[3].innerText.trim(),
+				address: td[5].innerText.trim(),
+				city: td[9].innerText.trim(),
+				state: td[11].innerText.trim(),
+				zip: td[13].innerText.trim(),
+				
+				bold: [],
+				
+				distance_divs: {},
+				numRuns: 0, // counter
+				hv: new AMT___huge_vars_factory().Andrew_Ryan_charities_ein__vars() // o.hv.af1, o.hv.af2
+			};
+			var viewState2;
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div'); // formerly d1
+			d1.setAttribute('style', 'position:absolute;left:0%;top:200px;height:200px;width:99%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var div_debug = document.createElement('div'); // formerly d1
+			div_debug.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(div_debug);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style',
+				'position:absolute;left:80%;top:60px;height:40px;width:19%;'
+			);
+			document.body.appendChild(d2);
+			d2.onblur = init_gs;
+			d2.value = o.name;
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1
+				],
+				offset: 200
+			});
+			
+			// function 
+			function init_gs() {
+				
+				// Show display of status
+				//
+				//
+				d1.innerHTML = d2.value + '<hr>';
+				
+				var dataStarter = o.hv.af1; // INIT!!
+				
+				var u = encodeURIComponent(d2.value); // + (input.includeCitySearch ? ' ' + city : ''));
+				dataStarter = dataStarter.replace(
+					/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
+					'ctl00$SearchBar2$txtKeywords=' + u
+				);
+				dataStarter = dataStarter.replace(
+					/ctl00%24phMainBody%24keywordsCarrollAreaChildCareCenter51401%24txtFieldValue=[^&]*/,
+					'ctl00$phMainBody$keywordsCarrollAreaChildCareCenter51401$txtFieldValue=' + encodeURIComponent(u)
+				);
+				
+				//~ if(!runStateSearch) {
+					//~ alert('no state');
+					//~ return;
+				//~ }
+				
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: 'http://www.guidestar.org/SearchResults.aspx',
+					data: dataStarter,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						console.log(rs);
+						
+						var oneResultReg = /produced[\r\n\s\t]*1[\r\n\s\t]*result/
+						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
+						var brokenPage = brokenPageReg.exec(rs);
+						var successfulRunReg = new RegExp(
+							'<strong>[\\r\\n\\s\\t]*' +
+							__js_escape_regEx(d2.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;')) +
+							//(input.includeCitySearch ? ' ' + city : '')) +
+							'[\\r\\n\\s\\t]*<\\/strong>',
+							'i'
+						);
+						
+						//~ console.log('numRuns: ' + div.numRuns);
+						//~ console.log(input.value.trim());
+						console.log('successfulRunReg');
+						console.log(successfulRunReg.exec(rs));
+						console.log('brokenPage');
+						console.log(brokenPage);
+						
+						if(!successfulRunReg.exec(rs) || brokenPage){
+							if (o.numRuns < 4) {
+								o.numRuns++;
+								console.log('broken');
+								init_gs() // try again
+								//Andrew_Ryan_charities_ein__guidestar(input, div);
+							}
+							return;
+						}
+						
+						var stateSearchAvailableReg = /<label>[\r\n\s\t]*By[\r\n\s\t]*State[\r\n\s\t]*<\/label>/;
+						
+						var isInStateSelectField;
+						var x = /<select size="6" name="ctl00\$phMainBody\$statenavigator\$listNavValues"((.|\s)*?(?=<\/select>|$)|$)/.exec(rs);
+						if (!x)
+							isInStateSelectField = false;
+						else {
+							x = x[1];
+							if (x.indexOf(o.state.replace(/"/g, '')) != -1) {
+								isInStateSelectField = true;
+							}
+						}
+						
+						if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
+							parseResponse(rs);
+							return;
+						}
+						else {
+							var vsReg = /id="__VIEWSTATE"[\r\n\s\t]*value="([^"]+)"/
+							if(viewState2 = vsReg.exec(rs)) {
+								viewState2 = __js_clean_html_str(viewState2[1]);
+							}
+							else {
+								alert('failed to scrape 2nd viewstate');
+							}
+						}
+					
+						if(viewState2) {
+							var u = encodeURIComponent(input.value + (input.includeCitySearch ? ' ' + city : ''));
+							
+							var data = af2;
+							data = data.replace(
+								/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
+								'ctl00$SearchBar2$txtKeywords=' + u
+							);
+
+							data = data.replace(
+								/listNavValues=%5E[^%]*%24/,
+								'listNavValues=%5E' + encodeURIComponent(o.state) + '%24'
+							);
+							
+							data = data.replace(/__VIEWSTATE=[^&]+/, '__VIEWSTATE=' + encodeURIComponent(viewState2))// + '&'+ af2;
+							//console.log(data);
+							data = data.replace(
+								/ctl00%24phMainBody%24keywordsAlliance%24txtFieldValue=[^&]*/,
+								'ctl00$phMainBody$keywordsAlliance$txtFieldValue=' + encodeURIComponent(u));
+							
+							Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input);
+						}
+					}
+				});
+			}
+
+
+			function Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input) {
+				var data = data;
+				var div = div;
+				var input = input;
+
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: 'http://www.guidestar.org/SearchResults.aspx',
+					data: data,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
+						var brokenPage = brokenPageReg.exec(rs);
+						
+						
+						
+						// Successful -> Title + Optional City
+						var successfulRunReg = new RegExp(
+							'[\\r\\n\\s\\t]*' + __js_escape_regEx(input.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;') +
+							(input.includeCitySearch ? ' ' + city : '')) +
+							'[\\r\\n\\s\\t]*(<\\/strong>|<\\/a>)', 'i'
+						);
+						
+						// Successful -> State
+						var successStateReg = new RegExp(
+							'<a id="ctl00_phMainBody_statename_lbRemoveNavElement"[^>]*><img src="[^"]*" width="10" height="10" alt="Close"[^>]*>&nbsp;'+__js_escape_regEx(o.state.replace(/"/g, ''))+'<\\/a>',
+							'i'
+						);
+						
+						if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
+							if(o.numRuns < 20)
+								Andrew_Ryan_charities_ein__guidestar(input,div);
+							return;
+						}
+						
+						
+						if (response.status != 200) {
+							console.log(response.status);
+							return;
+						}
+						
+						Andrew_Ryan_charities_ein__guidestar__parseResponse(div,rs);
+					}
+						
+				});
+			}
+
+
+			/**
+			 * function Andrew_Ryan_charities_ein__city_match
+			 * 
+			 */
+			function Andrew_Ryan_charities_ein__city_match(all_locations) {
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'Geo__US_Cities',
+						encodeStrings: all_locations
+					},
+					city_match_process
+				);
+			}
+			// ...
+			function city_match_process(database_object) {
+				
+				// {} // Object of matches ($match objects)
+				// $match->name,lat,lon
+				// $match KEY = hash "city|state"
+				
+				// Distance is...
+				// MT___lat_lng_distance(lat1, lon1, lat2, lon2)
+				
+				//~ if (database_object.responseObject.length == 0) {
+					//~ return;
+				//~ }
+				
+				var r = database_object.responseObject;
+				
+				console.log(r);
+				
+				// Set main/first point.
+				// It is the first result for search.
+				// Multiply by 1.
+				// o.city_st_hash
+				div_debug.innerText += '\n';
+				if (r[o.city_st_hash].length) {
+					div_debug.innerText += 'D'+r[o.city_st_hash][0].name;
+					var main_point = {
+						lat:r[o.city_st_hash][0].lat * 1,
+						lon:r[o.city_st_hash][0].lon * 1
+					}
+				} else {
+					return; //?
+				}
+				
+				// 
+				for (var hash in r) {
+					var matches = r[hash];
+					var less_than_20 = false;
+					
+					var str = '';
+					for (var i in matches) {
+						var match = matches[i];
+						//~ console.log(main_point.lat);
+						//~ console.log(main_point.lon);
+						//~ console.log(match.lat);
+						//~ console.log(match.lon);
+						
+						var dist = MT___lat_lng_distance(main_point.lat, main_point.lon, match.lat * 1, match.lon * 1); // Mult by one
+						if (dist <= 20) {
+							less_than_20 = true;
+							str += '<b>' + match.name + ' ' +(Math.round(dist * 10) / 10) + '</b>';
+						} else {
+							str += match.name + ' ' +(Math.round(dist * 10) / 10);
+						}
+						str += '\n';
+					}
+					str = str.trim();
+					str = str.replace(/\n/g, '<br>');
+					
+					var divs = o.distance_divs[hash];
+					for (var i in divs) {
+						divs[i].innerHTML = str;
+						var p = divs[i].parentNode;
+						// If parent node is .div_result
+						// and distance is less than 20 miles for *ANY*
+						// city match then highlight parent div.
+						if  (
+							less_than_20 &&
+							p.className == 'div_result'
+							)
+						{
+							p.style.backgroundColor = 'aqua';
+						}
+					}
+				}
+			}
+			
+			function Andrew_Ryan_charities_ein__guidestar__parseResponse(xhrRes) {
+				var rs = xhrRes;
+				var r, r2;
+				var r0;
+				
+				r0 = /<tr>[\r\n\t\s]*<td class="sr11"[^>]*>((.|\s)*?(?=<\/tr>|$)|$)/g;
+				
+				//HOPALONG ANIMAL RESCUE
+				r = /<a href="(organizations\/(\d{2}-\d+)\/[^"]+)" id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_aOrganizationName" class="red_link"><strong>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/strong><\/a>/g;
+			
+				r2 = /<a href="http:\/\/www\.guidestar\.org\/rxg\/help\/glossary\.aspx#i">Income<\/a>:[\s]*([^<]+)/g;
+				
+				r3 = /<span id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_spAddress">([^<]+)/g; //Gets the location
+				
+				
+				var m;
+				var eldiv;
+				var c = 0;
+				var m0, m2;
+				var locn = {
+					city: null,
+					state: null,
+					hash: null // "city|state"
+				}
+				// all locations
+				var all_locations = [ [o.city,o.state_abbr] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
+				//
+				while (m = r.exec(rs)) {
+					
+					// nextindex
+					m0 = r0.exec(rs)[1];
+					
+					m2 = r2.exec(rs)[1];
+					
+					// City, ST => city comma state abbr.
+					m3 = r3.exec(rs)[1];
+					
+					var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
+					if (comp_aka) {
+						comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
+					}
+					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.comp_array) : '';
+					
+					// Div for each result
+					eldiv = document.createElement('div');
+					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
+					eldiv.className = 'div_result';
+					eldiv.guidestar_url = 'http://www.guidestar.org/' + m[1];
+					m3 = m3.replace(/[\r\n\s\t]+/g,' ');
+					
+					if(m3.indexOf(', ' + state.trim().toUpperCase()) == -1 && m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1){
+						eldiv.style.backgroundColor = 'pink';
+					}
+					
+					var x = document.createElement('div');
+					//x.
+					x.innerHTML =
+						MT__bold(__js_clean_html_str(m[3]), o.comp_array) +
+						'(' + m2 + ')' +
+						comp_aka +
+						'<br>';
+						
+					eldiv.appendChild(x);
+					
+					var n = m3.split(',');
+					locn.city = n[0].trim();
+					locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
+					locn.hash = locn.city + '|' + locn.state;
+					
+					// Button to stay here
+					var stay_link = document.createElement('a');
+					stay_link.setAttribute('style', '');//display:inline;
+					stay_link.innerText = 'check';
+					stay_link.className = 'stay_link'; // :hover
+					stay_link.onclick = function(e) {
+						var p = this.parentNode;
+						this.style.zoom = '1.3';
+						this.style.fontWeight = 'bold';
+						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(p, p.guidestar_url, false,false);
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					eldiv.appendChild(stay_link);
+					
+					// Single button
+					var naOnNone_link = document.createElement('input');
+					naOnNone_link.setAttribute('style', 'display:inline;width:70px;backgroundColor:#777;');//display:inline;
+					naOnNone_link.setAttribute('type', 'button');//display:inline;
+					naOnNone_link.value = 'single';
+					naOnNone_link.className = 'naOnNone_link'; // :hover
+					naOnNone_link.onclick = function(e) {
+						
+						// Set to true
+						o.singleButtonIsClicked = true;
+						
+						var p = this.parentNode;
+						this.style.zoom = '1.3';
+						this.style.fontWeight = 'bold';
+						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(p, p.guidestar_url, true,true);
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					eldiv.appendChild(naOnNone_link);
+					
+					
+					// Span of city
+					var span_loc = document.createElement('span');
+					span_loc.innerHTML = MT__bold(m3, o.loc_array);
+					eldiv.appendChild(span_loc);
+					
+					// Distance div
+					var eldiv_dist = document.createElement('div');
+					eldiv_dist.setAttribute('style', 'visibility:hidden;position:absolute;background-color:#eee;border:1px solid teal;z-index:100;');
+					eldiv_dist.className = 'div_distance'; // GM_addStyle // GM_addStyle('div:hover .div_distance {visibility:visible;}');
+					eldiv_dist.city = locn.city;
+					eldiv_dist.state = locn.state;
+					eldiv.appendChild(eldiv_dist);
+					
+					// Add eldiv_dist element to o.distance_divs
+					if (o.distance_divs.hasOwnProperty(locn.hash))
+						o.distance_divs[locn.hash].push(eldiv_dist);
+					else {
+						o.distance_divs[locn.hash] = [ eldiv_dist ];
+					}
+					
+					// Add all_locations
+					all_locations.push([locn.city, locn.state]);
+					
+					// ...				
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(this, this.guidestar_url, true, false); // ,,goToNextTab=true
+					}
+					
+					d1.appendChild(eldiv);
+					c = 1;
+				}
+				
+				if (c == 0) {
+					d1.innerText += '\n0';
+					
+					console.log('Here is 0 responseText:');
+					console.log({rs:rs});
+				} else { // append
+					var d = document.createElement('div');
+					d.setAttribute('style', 'height:1400px;');
+					d1.appendChild(d);
+				}
+				
+				// Get all of the city distances for this div.
+				// All of this div only.
+				//
+				//
+				if (all_locations.length > 1)
+					city_match(all_locations);
+			}
+		}
+		new run().f();
+	}
+	
+	//
 	// Andrew Ryan
 	// 
 	//
@@ -22523,16 +23000,9 @@ function MT__RUN() {
 		if(o.state.indexOf(' ') != -1) {
 			o.state = '"' + o.state + '"';
 		}
-		
 		if(!o.state) {
 			runStateSearch = false;
 		}
-
-		//b = b.replace(new RegExp(o.state+'$',i), '');
-		//b = b.replace(/,[\s]*$/, '');
-		
-		
-			
 		
 		/**
 		 * BEGIN ITEMS
