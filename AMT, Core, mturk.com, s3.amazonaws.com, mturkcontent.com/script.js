@@ -22431,7 +22431,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
 			GM_addStyle('body {width:40%;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;zoom:0.8;width:15% !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;width:40% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
@@ -22463,13 +22463,13 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div'); // formerly d1
-			d1.setAttribute('style', 'position:absolute;left:15%;top:0px;height:200px;width:60%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:80%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var div_debug = document.createElement('div'); // formerly d1
-			div_debug.setAttribute('style', 'position:absolute;left:75%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			div_debug.setAttribute('style', 'position:absolute;left:0%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(div_debug);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;left:75%;top:0px;height:100px;width:19%;');
+			d2.setAttribute('style','position:absolute;left:0%;top:0px;height:100px;width:19%;');
 			document.body.appendChild(d2);
 			d2.onblur = init_gs;
 			d2.value = o.name;
@@ -22485,12 +22485,12 @@ function MT__RUN() {
 				'State':true,
 				'Post-Code':true
 			}
-			for (var i in tds) {
+			for (var i in td) {
 				if (i == 'length') break;
-				var k = tds[i].innerText.trim();
+				var k = td[i].innerText.trim();
 				if (!skip.hasOwnProperty( k )) continue;
-				if (tds[i].innerHTML.toLowerCase().indexOf('name') == -1) { // NO FORM ELEMENTS
-					tds[i].innerText = tds[i].innerText[0];
+				if (td[i].innerHTML.toLowerCase().indexOf('name=') == -1 && td[i].innerHTML.toLowerCase().indexOf('name =') == -1) { // NO FORM ELEMENTS
+					td[i].innerText = td[i].innerText[0];
 				}
 			}
 			
@@ -22499,7 +22499,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 200
+				offset: 0
 			});
 			// EF
 			var ef = new AMT___events_factory();
@@ -22514,7 +22514,7 @@ function MT__RUN() {
 				// Show display of status
 				//
 				//
-				d1.innerHTML = d2.value + '<hr>';
+				d1.innerHTML = d2.value;// + '<hr>';
 				
 				var dataStarter = o.hv.af1; // INIT!!
 				
@@ -22811,12 +22811,12 @@ function MT__RUN() {
 				var rs = xhrRes;
 				var r, r2;
 				var r0;
-				d1.innerHTML = 'x';
+				d1.innerHTML = '';
 				
 				var dom = new DOMParser().parseFromString(rs, 'text/html');
 				var tds = dom.getElementsByClassName('sr11');
-				if (!tds) {
-					d1.innerText += '\n0';
+				if (!tds || !tds.length) {
+					d1.innerText += d2.value+'\n0';
 					console.log('Here is 0 responseText:');
 					console.log({rs:rs});
 					return;
