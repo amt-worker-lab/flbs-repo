@@ -22486,20 +22486,30 @@ function MT__RUN() {
 				var dataStarter = o.hv.af1; // INIT!!
 				
 				var u = encodeURIComponent(d2.value); // + (input.includeCitySearch ? ' ' + city : ''));
+				//24txtKeywords=cheese
 				dataStarter = dataStarter.replace(
-					/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
-					'ctl00$SearchBar2$txtKeywords=' + u
-				);
-				dataStarter = dataStarter.replace(
-					/ctl00%24phMainBody%24keywordsCarrollAreaChildCareCenter51401%24txtFieldValue=[^&]*/,
-					'ctl00$phMainBody$keywordsCarrollAreaChildCareCenter51401$txtFieldValue=' + encodeURIComponent(u)
+					/24txtKeywords=cheese[^&]*/,
+					'24txtKeywords=' + u
 				);
 				
+				//~ dataStarter = dataStarter.replace(
+					//~ /ctl00%24SearchBar2%24txtKeywords=[^&]*/,
+					//~ 'ctl00$SearchBar2$txtKeywords=' + u
+				//~ );
+				//~ dataStarter = dataStarter.replace(
+					//~ /ctl00%24phMainBody%24keywordsCarrollAreaChildCareCenter51401%24txtFieldValue=[^&]*/,
+					//~ 'ctl00$phMainBody$keywordsCarrollAreaChildCareCenter51401$txtFieldValue=' + encodeURIComponent(u)
+				//~ );
+				
+				//
+				//
+				//
 				//~ if(!runStateSearch) {
 					//~ alert('no state');
 					//~ return;
 				//~ }
 				
+				// Xhr
 				GM_xmlhttpRequest({
 					method: 'POST',
 					url: 'http://www.guidestar.org/SearchResults.aspx',
