@@ -22475,6 +22475,7 @@ function MT__RUN() {
 			d2.setAttribute('style','position:absolute;left:0%;top:0px;height:100px;width:19%;');
 			document.body.appendChild(d2);
 			d2.onblur = function() {
+				o.numRuns = 0;
 				if (AMT__Global_Vars.scriptVars['Daniel O\'Mahoney NT'] == '1') {
 					new AMT___core_factory().nextTab();
 				}
