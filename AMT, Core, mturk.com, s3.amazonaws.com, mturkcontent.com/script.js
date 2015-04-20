@@ -22466,7 +22466,7 @@ function MT__RUN() {
 			div_debug.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(div_debug);
 			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;left:70%;top:0px;height:0px;width:10%;');
+			d2.setAttribute('style','position:absolute;left:60%;top:0px;height:100px;width:20%;');
 			document.body.appendChild(d2);
 			d2.onblur = init_gs;
 			d2.value = o.name;
@@ -22774,6 +22774,8 @@ function MT__RUN() {
 					if (i == 'length') break;
 					trs.push(tds[i].parentNode);
 				}
+				var c = 0;
+				var all_locations = [ [o.city, o.state] ];
 				for (var i in trs) {
 					
 					var row = {
@@ -22784,12 +22786,16 @@ function MT__RUN() {
 						zip: '',
 						locn: '',
 						hash: null,
-						ein: ''
+						ein: null,
+						url: null
 					}
 					
 					// Name, EIN
 					var a = trs[i].getElementsByTagName('a')[0];
-					row.ein = /^organizations\/(\d{2}-\d{4,})\//.exec(a.href)[1]
+					console.log(a);
+					console.log(a.href);
+					row.ein = /organizations\/(\d{2}-\d{4,})\//.exec(a.href)[1];
+					row.url = a.href;
 					row.name = a.innerText.trim();
 					
 					// AKA, Location
@@ -22818,18 +22824,18 @@ function MT__RUN() {
 						}
 					}
 					
-					
-					
-					var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
-					if (comp_aka) {
-						comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
-					}
-					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
+					//~ var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
+					//~ if (comp_aka) {
+						//~ comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
+					//~ }
+					//~ comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
 					
 					// Div for each result
 					eldiv = document.createElement('div');
 					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
 					eldiv.className = 'div_result';
+					eldiv.ein = o.ein;
+					eldiv.url = o.url;
 					if(row.state != o.state){
 						eldiv.style.backgroundColor = 'pink';
 					}
@@ -22838,14 +22844,14 @@ function MT__RUN() {
 					//x.
 					x.innerHTML =
 						MT__bold(row.name, o.bold) +
-						'(' + MT__bold(row.aka + ')' +
+						'(' + MT__bold(row.aka, o.bold) + ')' +
 						'<br>';
 					eldiv.appendChild(x);
-					
-					var n = m3.split(',');
-					locn.city = n[0].trim();
-					locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
-					locn.hash = locn.city + '|' + locn.state;
+					//~ 
+					//~ var n = m3.split(',');
+					//~ locn.city = n[0].trim();
+					//~ locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
+					//~ locn.hash = locn.city + '|' + locn.state;
 					
 					// Span of city
 					var span_loc = document.createElement('span');
@@ -22861,124 +22867,35 @@ function MT__RUN() {
 					eldiv.appendChild(eldiv_dist);
 					
 					// Add eldiv_dist element to o.distance_divs
-					if (o.distance_divs.hasOwnProperty(locn.hash))
-						o.distance_divs[locn.hash].push(eldiv_dist);
-					else {
-						o.distance_divs[locn.hash] = [ eldiv_dist ];
+					if (o.hash) {
+						if (o.distance_divs.hasOwnProperty(o.hash))
+							o.distance_divs[o.hash].push(eldiv_dist);
+						else {
+							o.distance_divs[o.hash] = [ eldiv_dist ];
+						}
 					}
 					
 					// Add all_locations
-					all_locations.push([locn.city, locn.state]);
+					all_locations.push([o.city, o.state]);
 					
 					// ...				
 					eldiv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(this, this.guidestar_url, true, false); // ,,goToNextTab=true
+						document.getElementsByName('EIN').value = this.ein;
+						document.getElementsByName('Source').value = this.url;
+						if (this.ein && this.url && this.ein.length > 4 && this.url.length > 10) {
+							
+						}
 					}
 					
+					// Append
 					d1.appendChild(eldiv);
-					c = 1;
-				}
-				
-				
-				// reg
-				r0 = /<tr>[\r\n\t\s]*<td class="sr11"[^>]*>((.|\s)*?(?=<\/tr>|$)|$)/g;
-				// e.g. HOPALONG ANIMAL RESCUE
-				r = /<a href="(organizations\/(\d{2}-\d+)\/[^"]+)" id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_aOrganizationName" class="red_link"><strong>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/strong><\/a>/g;
-				r2 = /<a href="http:\/\/www\.guidestar\.org\/rxg\/help\/glossary\.aspx#i">Income<\/a>:[\s]*([^<]+)/g;
-				r3 = /<span id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_spAddress">([^<]+)/g; //Gets the location
-				
-				
-				var m;
-				var eldiv;
-				var c = 0;
-				var m0, m2;
-				var locn = {
-					city: null,
-					state: null,
-					hash: null // "city|state"
-				}
-				// all locations
-				var all_locations = [ [o.city, o.state] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
-				//
-				while (m = r.exec(rs)) {
-					// nextindex
-					m0 = r0.exec(rs)[1];
 					
-					//
-					//~ m2 = r2.exec(rs)[1];
-					m2 = '-IncomeHere-';
-					
-					// City, ST => city comma state abbr.
-					m3 = r3.exec(rs)[1];
-					
-					var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
-					if (comp_aka) {
-						comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
-					}
-					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
-					
-					// Div for each result
-					eldiv = document.createElement('div');
-					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
-					eldiv.className = 'div_result';
-					eldiv.guidestar_url = 'http://www.guidestar.org/' + m[1];
-					m3 = m3.replace(/[\r\n\s\t]+/g,' ');
-					
-					if(m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1 && m3.indexOf(', ' + o.state.trim().toUpperCase()) == -1){
-						eldiv.style.backgroundColor = 'pink';
-					}
-					
-					var x = document.createElement('div');
-					//x.
-					x.innerHTML =
-						MT__bold(__js_clean_html_str(m[3]), o.bold) +
-						'(' + m2 + ')' +
-						comp_aka +
-						'<br>';
-						
-					eldiv.appendChild(x);
-					
-					var n = m3.split(',');
-					locn.city = n[0].trim();
-					locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
-					locn.hash = locn.city + '|' + locn.state;
-					
-					// Span of city
-					var span_loc = document.createElement('span');
-					span_loc.innerHTML = m3; // MT__bold(m3, o.locn_array);
-					eldiv.appendChild(span_loc);
-					
-					// Distance div
-					var eldiv_dist = document.createElement('div');
-					eldiv_dist.setAttribute('style', 'visibility:hidden;position:absolute;background-color:#eee;border:1px solid teal;z-index:100;');
-					eldiv_dist.className = 'div_distance'; // GM_addStyle // GM_addStyle('div:hover .div_distance {visibility:visible;}');
-					eldiv_dist.city = locn.city;
-					eldiv_dist.state = locn.state;
-					eldiv.appendChild(eldiv_dist);
-					
-					// Add eldiv_dist element to o.distance_divs
-					if (o.distance_divs.hasOwnProperty(locn.hash))
-						o.distance_divs[locn.hash].push(eldiv_dist);
-					else {
-						o.distance_divs[locn.hash] = [ eldiv_dist ];
-					}
-					
-					// Add all_locations
-					all_locations.push([locn.city, locn.state]);
-					
-					// ...				
-					eldiv.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(this, this.guidestar_url, true, false); // ,,goToNextTab=true
-					}
-					
-					d1.appendChild(eldiv);
+					// Matches
 					c = 1;
 				}
 				
 				if (c == 0) {
-					
 				} else { // append
 					var d = document.createElement('div');
 					d.setAttribute('style', 'height:1400px;');
