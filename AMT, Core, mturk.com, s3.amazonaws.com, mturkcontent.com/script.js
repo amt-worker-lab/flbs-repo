@@ -4000,7 +4000,7 @@ function MT__RUN() {
 			var d1 = document.createElement('img');
 			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;border:1px solid blue;'); //width:99%;height:400px;
 			document.body.appendChild(d1);
-			var d2 = document.createElement('textarea');
+			var d2 = document.createElement('input');
 			d2.setAttribute('style', 'position:absolute;top:0px;left:2%;width:75%;height:20px;zoom:2;');
 			document.body.appendChild(d2);
 			//~ d2.value = o.id;
@@ -4162,14 +4162,27 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'aqua'; // Show complete.
 						
 						if  (
-							rs.statusCode == 200 &&
-							rs.locked == true &&
-							rs.deviceId == o.id &&
+							rs.statusCode == '200' &&
+							//~ rs.locked == true &&
+							//~ rs.deviceId == o.id &&
 							rs.type == 'IMEI'
 							)
 						{
-							o.q.value = 'ON';
-							document.getElementById('submitButton').click();
+							if (rs.locked == true) {
+								o.q.value = 'ON';
+								document.getElementById('submitButton').click();
+							}
+							else if (rs.locked == false) {
+								o.q.value = 'OFF';
+								document.getElementById('submitButton').click();
+							}
+							else {
+								o.q.value = rs.locked;
+								o.q.style.border = '4px solid blue';
+								o.q.scrollIntoView();
+							}
+							
+							
 						}
 					}
 				});
@@ -71498,7 +71511,7 @@ qatar,80
 				// Xhr request.
 				
 				//TEMPORARY, TURN OFF YELP!
-				
+				o.stats.yelp_search_complete = true;
 				check_if_yp_init();
 				
 				return;
