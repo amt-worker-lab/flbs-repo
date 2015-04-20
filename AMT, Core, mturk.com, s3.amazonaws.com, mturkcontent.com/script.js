@@ -22535,6 +22535,9 @@ function MT__RUN() {
 						var rs = response.responseText;
 						console.log(rs);
 						
+						// Check error
+						gs_error(response);
+						
 						var oneResultReg = /produced[\r\n\s\t]*1[\r\n\s\t]*result/
 						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
 						var brokenPage = brokenPageReg.exec(rs);
@@ -22548,17 +22551,15 @@ function MT__RUN() {
 						
 						//~ console.log('numRuns: ' + div.numRuns);
 						//~ console.log(input.value.trim());
-						console.log('successfulRunReg');
-						console.log(successfulRunReg.exec(rs));
-						console.log('brokenPage');
-						console.log(brokenPage);
+						//~ console.log('successfulRunReg');
+						//~ console.log(successfulRunReg.exec(rs));
+						//~ console.log('brokenPage');
+						//~ console.log(brokenPage);
 						
 						if(!successfulRunReg.exec(rs) || brokenPage){
 							if (o.numRuns < 4) {
 								o.numRuns++;
-								console.log('broken');
 								init_gs() // try again
-								//Andrew_Ryan_charities_ein__guidestar(input, div);
 							}
 							return;
 						}
@@ -22621,6 +22622,23 @@ function MT__RUN() {
 					}
 				});
 			}
+			
+			function gs_error(response) {
+				var rs = response.responseText;
+				// Block
+				var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
+				if (block) {
+					d1.innerText = response.status;
+					window.open('https://www.guidestar.org', '_blank');
+					exit();
+				}
+				//
+				if (response.status != 200) {
+					console.log(response.status);
+					d1.innerText = response.status;
+					exit();
+				}
+			}
 
 
 			function secondSearch(data) {
@@ -22652,22 +22670,20 @@ function MT__RUN() {
 							'i'
 						);
 						
-						// Block
-						var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
-						if (block) {
-							d1.innerText = response.status;
-							window.open('https://www.guidestar.org', '_blank');
-							return;
-						}
-						//
-						if (response.status != 200) {
-							console.log(response.status);
-							d1.innerText = response.status;
-							return;
-						}
+						console.log('HERE ARE secondSearch VARS:');
+						console.log('successfulRunReg');
+						console.log(successfulRunReg);
+						console.log('successStateReg');
+						console.log(successStateReg);
+						console.log('brokenPage');
+						console.log(brokenPage);
+						
+						// Check error
+						gs_error(response);
 						
 						// ..
 						if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
+							o.numRuns++;
 							if(o.numRuns < 4)
 								init_gs();
 							return;
@@ -22776,7 +22792,7 @@ function MT__RUN() {
 				var rs = xhrRes;
 				var r, r2;
 				var r0;
-				d1.innerHTML = '';
+				d1.innerHTML = 'x';
 				
 				var dom = new DOMParser().parseFromString(rs, 'text/html');
 				var tds = dom.getElementsByClassName('sr11');
