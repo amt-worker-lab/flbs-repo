@@ -22449,6 +22449,7 @@ function MT__RUN() {
 				
 				bold: [],
 				bold_locn: [],
+				gs_popup: false, // Boolean to only open so many popups.
 				
 				viewState2: null,
 				distance_divs: {},
@@ -22468,10 +22469,10 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:60%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:50%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style', 'position:absolute;left:80%;top:0px;height:200px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			d1b.setAttribute('style', 'position:absolute;left:70%;top:0px;height:200px;width:29%;background-color:#eee;overflow:auto;border:1px solid blue;');
 			document.body.appendChild(d1b);
 			var div_debug = document.createElement('div');
 			div_debug.setAttribute('style', 'position:absolute;left:0%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
@@ -22554,7 +22555,9 @@ function MT__RUN() {
 						// Public
 						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
 						var pub = dom.getElementById('hiddenitems_school');
-						if (pub) {
+						if (!pub) {
+							d1b.appendChild('0'.div());
+						} else if (pub) {
 							pub = pub.getElementsByTagName('tr');
 							for (var i in pub) {
 								if (i == 'length') break;
@@ -22567,7 +22570,6 @@ function MT__RUN() {
 								var grd = pub[i].getElementsByClassName('InstDetail')[0].innerText;
 								var url;
 								var nces;
-								console.log(href);
 								
 								//JavaScript:MoreInfo('sch_info_popup.asp'+'?Type=Public'+'&ID=061440001673');
 								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&ID=(\d{6,})'\);/.exec(href);
@@ -22581,7 +22583,9 @@ function MT__RUN() {
 								eldiv.className = 'div-result';
 								eldiv.nces = nces;
 								eldiv.url = url;
-								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc +
+									'<br>'+nces+
+									'<br>'+url;
 								eldiv.onclick = function() {
 									this.style.backgroundColor = 'LightGreen';
 									document.getElementsByName('NCES School ID')[0].value = this.nces;
@@ -22596,7 +22600,9 @@ function MT__RUN() {
 						// Private
 						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
 						var priv = dom.getElementById('hiddenitems_privschool');
-						if (priv) {
+						if (!priv) {
+							d1b.appendChild('0'.div());
+						} else if (priv) {
 							priv = priv.getElementsByTagName('tr');
 							for (var i in priv) {
 								if (i == 'length') break;
@@ -22608,9 +22614,9 @@ function MT__RUN() {
 								var desc = priv[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
 								var grd = priv[i].getElementsByClassName('InstDetail')[0].innerText;
 								var url;
-								var nces;
+								var nces;console.log(href);
 								
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&ID=(\d{6,})'\);/.exec(href);
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)&ID=(\d{6,})'\);/.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
@@ -22621,7 +22627,9 @@ function MT__RUN() {
 								eldiv.className = 'div-result';
 								eldiv.nces = nces;
 								eldiv.url = url;
-								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc +
+									'<br>'+nces+
+									'<br>'+url;
 								eldiv.onclick = function() {
 									this.style.backgroundColor = 'LightGreen';
 									document.getElementsByName('NCES School ID')[0].value = this.nces;
@@ -22773,20 +22781,28 @@ function MT__RUN() {
 			
 			function gs_error(response) {
 				var rs = response.responseText;
+				var err = false;
 				// Block
 				var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
 				if (block) {
 					o.numRuns = 0;// reset o.numRuns
-					d1.innerText = response.status;
-					window.open('https://www.guidestar.org', '_blank');
-					exit();
+					err = true;
 				}
 				//
 				if (response.status != 200) {
 					o.numRuns = 0;// reset o.numRuns
-					console.log(response.status);
+					err = true;
+				}
+				
+				if (err) {
 					d1.innerText = response.status;
-					window.open('https://www.guidestar.org', '_blank');
+					if (!o.gs_popup) {
+						o.gs_popup = true;
+						window.open('https://www.guidestar.org', '_blank');
+						setTimeout(function() { // Reset this in 6 seconds.
+							o.gs_popup = false;
+						}, 6000);
+					}
 					exit();
 				}
 			}
