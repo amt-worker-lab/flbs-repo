@@ -70989,7 +70989,8 @@ qatar,80
 					yelp_search_complete: false,
 					num_google_results: 0,
 					num_fb_results: 0,
-					num_yelp_results: 0
+					num_yelp_results: 0,
+					gotYelpCaptcha: false
 				}
 				this.value = this.value.trim();
 				google_find_phone();
@@ -71507,7 +71508,15 @@ qatar,80
 				var u = 'http://www.yelp.com/search/snippet'+
 						'?find_desc='	+encodeURIComponent(d2.value)+
 						'&find_loc='	+encodeURIComponent(d2b.value);
-				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
+				var opts = {
+						url: u,
+						strings_do_not_save_to_file: "Hey there! Before you continue, we just need to check that you're not a robot."
+				}
+				u = JSON.stringify(opts);
+				if(!o.gotYelpCaptcha) {
+					u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&opts=' + encodeURIComponent(u);
+				}
+				
 				// Xhr request.
 				
 				//TEMPORARY, TURN OFF YELP!
@@ -71525,7 +71534,11 @@ qatar,80
 						// Status
 						if (response.status != 200) {
 							if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-								window.open('http://www.yelp.com');
+								//window.open('http://www.yelp.com');
+								if(o.gotYelpCaptcha)
+									window.open(u);
+								o.gotYelpCaptcha = true;
+								yelp();
 							}
 							// Finished
 							o.stats.yelp_search_complete = true;
@@ -71535,7 +71548,10 @@ qatar,80
 						
 						
 						if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-							window.open('http://www.yelp.com');
+							if(o.gotYelpCaptcha)
+								window.open(u);
+							o.gotYelpCaptcha = true;
+							yelp();
 						}
 						
 						// Parse
