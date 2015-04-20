@@ -4026,7 +4026,7 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function() {
 				o.q.value = o.q.value.trim();
 				new AMT___core_factory().nextTab({focusOnPage:true});
-				new AMT___core_factory().shiftFarLeft();
+				//~ new AMT___core_factory().shiftFarLeft();
 				doSubmit();
 				return false;
 			}
@@ -71511,10 +71511,10 @@ qatar,80
 				// Xhr request.
 				
 				//TEMPORARY, TURN OFF YELP!
-				o.stats.yelp_search_complete = true;
-				check_if_yp_init();
+				//o.stats.yelp_search_complete = true;
+				//check_if_yp_init();
 				
-				return;
+				//return;
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
@@ -71524,6 +71524,9 @@ qatar,80
 						
 						// Status
 						if (response.status != 200) {
+							if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
+								window.open('http://www.yelp.com');
+							}
 							// Finished
 							o.stats.yelp_search_complete = true;
 							check_if_yp_init();
