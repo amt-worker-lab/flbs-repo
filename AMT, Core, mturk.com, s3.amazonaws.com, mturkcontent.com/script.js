@@ -22531,7 +22531,7 @@ function MT__RUN() {
 			 * 
 			 */
 			function init_nces() {
-				d1b.innerHTML = d2.value + '\n' + o.zip;
+				d1b.innerHTML = d2.value + '\n' + o.zip_cln;
 				var u =
 					'http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&miles='+
 					'&zipcode='+encodeURIComponent(o.zip_cln)+ // Remove all but first digits.
@@ -22558,16 +22558,19 @@ function MT__RUN() {
 							pub = pub.getElementsByTagName('tr');
 							for (var i in pub) {
 								if (i == 'length') break;
-								var a = pub[i].getElementsByTagName('a')[0];
+								var a = pub[i].getElementsByTagName('a');
+								if (!a.length) continue;
+								a = a[0]; // Must be at least one href. Non-schools TRs are at end of table.
 								var href = a.getAttribute('href');
 								var title = a.innerText;
 								var desc = pub[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
 								var grd = pub[i].getElementsByClassName('InstDetail')[0].innerText;
 								var url;
 								var nces;
-								console.log(a);
+								console.log(href);
 								
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&#38;ID=(\d{6,})'\);/.exec(href);
+								//JavaScript:MoreInfo('sch_info_popup.asp'+'?Type=Public'+'&ID=061440001673');
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&ID=(\d{6,})'\);/.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
@@ -22578,7 +22581,7 @@ function MT__RUN() {
 								eldiv.className = 'div-result';
 								eldiv.nces = nces;
 								eldiv.url = url;
-								eldiv.innerHTML = desc;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc;
 								eldiv.onclick = function() {
 									this.style.backgroundColor = 'LightGreen';
 									document.getElementsByName('NCES School ID')[0].value = this.nces;
@@ -22597,7 +22600,9 @@ function MT__RUN() {
 							priv = priv.getElementsByTagName('tr');
 							for (var i in priv) {
 								if (i == 'length') break;
-								var a = priv[i].getElementsByTagName('a')[0];
+								var a = priv[i].getElementsByTagName('a');
+								if (!a.length) continue;
+								a = a[0]; // Must be at least one href. Non-schools TRs are at end of table.
 								var href = a.getAttribute('href');
 								var title = a.innerText;
 								var desc = priv[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
@@ -22605,7 +22610,7 @@ function MT__RUN() {
 								var url;
 								var nces;
 								
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&#38;ID=(\d{6,})'\);/.exec(href);
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&ID=(\d{6,})'\);/.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
@@ -22616,7 +22621,7 @@ function MT__RUN() {
 								eldiv.className = 'div-result';
 								eldiv.nces = nces;
 								eldiv.url = url;
-								eldiv.innerHTML = desc;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc;
 								eldiv.onclick = function() {
 									this.style.backgroundColor = 'LightGreen';
 									document.getElementsByName('NCES School ID')[0].value = this.nces;
