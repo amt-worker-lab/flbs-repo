@@ -22516,6 +22516,112 @@ function MT__RUN() {
 		
 			// Init
 			init_gs();
+			init_nces();
+			
+			/**
+			 * function init_nces
+			 * 
+			 * http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&zipcode=94539&miles=&itemname=j&sortby=name&School=1&PrivSchool=1
+			 * 
+			 */
+			function init_nces() {
+				d1b.innerHTML = d2.value + '\n' + o.zip;
+				var u =
+					'http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&miles='+
+					'&zipcode='+encodeURIComponent(o.zip)+
+					'&itemname='+encodeURIComponent(d2.value)+
+					'&sortby=name&School=1&PrivSchool=1';
+				// Xhr
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						console.log({'rs':rs});
+						if (response.status != 200) {
+							d1b.innerText = response.status;
+							return;
+						}
+						
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						
+						var pub  = document.getElementById('hiddenitems_school');
+						if (pub && pub.length) {
+							pub = pub[0];
+							pub = pub.getElementsByTagName('tr');
+							for (var i in pub) {
+								if (i == 'length') break;
+								var a = pub[i].getElementsByTagName('a')[0];
+								var href = a.getAttribute('href');
+								var title = a.innerText;
+								var desc = pub[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
+								var grd = pub[i].getElementsByClassName('InstDetail')[0].innerText;
+								var url;
+								var nces;
+								
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&#38;ID=(\d{6,})'\);/.exec(href);
+								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
+								nces = x[2];
+								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
+								
+								// Div for each result
+								eldiv = document.createElement('div');
+								eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+								eldiv.className = 'div-result';
+								eldiv.nces = nces;
+								eldiv.url = url;
+								eldiv.innerHTML = desc;
+								eldiv.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									document.getElementsByName('NCES School ID')[0].value = this.nces;
+									document.getElementsByName('Source')[0].value = this.url;
+									if (this.nces.length >=6 && this.nces.length<=20 && this.url.length>8) {
+										doSubmit();
+									}
+								}
+								d1b.appendChild(eldiv);
+							}
+						}
+						var priv = document.getElementById('hiddenitems_privschool');
+						if (priv && priv.length) {
+							priv = priv[0];
+							priv = priv.getElementsByTagName('tr');
+							for (var i in priv) {
+								if (i == 'length') break;
+								var a = priv[i].getElementsByTagName('a')[0];
+								var href = a.getAttribute('href');
+								var title = a.innerText;
+								var desc = priv[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
+								var grd = priv[i].getElementsByClassName('InstDetail')[0].innerText;
+								var url;
+								var nces;
+								
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'+'\?Type=(Public|Private)'+'&#38;ID=(\d{6,})'\);/.exec(href);
+								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
+								nces = x[2];
+								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
+								
+								// Div for each result
+								eldiv = document.createElement('div');
+								eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+								eldiv.className = 'div-result';
+								eldiv.nces = nces;
+								eldiv.url = url;
+								eldiv.innerHTML = desc;
+								eldiv.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									document.getElementsByName('NCES School ID')[0].value = this.nces;
+									document.getElementsByName('Source')[0].value = this.url;
+									if (this.nces.length >=6 && this.nces.length<=20 && this.url.length>8) {
+										doSubmit();
+									}
+								}
+								d1b.appendChild(eldiv);
+							}
+						}
+					}
+				});
+			}
 			
 			// function 
 			function init_gs() {
