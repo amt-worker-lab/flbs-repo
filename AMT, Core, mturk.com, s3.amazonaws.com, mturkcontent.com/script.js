@@ -22573,7 +22573,7 @@ function MT__RUN() {
 								var nces;
 								
 								//JavaScript:MoreInfo('sch_info_popup.asp'+'?Type=Public'+'&ID=061440001673');
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&ID=(\d{6,})'\);/.exec(href);
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&ID=([a-z\d]{6,})'\);/.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
@@ -22617,7 +22617,7 @@ function MT__RUN() {
 								var url;
 								var nces;console.log(href);
 								
-								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)&ID=(\d{6,})'\);/.exec(href);
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)&ID=([a-z\d]{6,})'\);/i.exec(href);
 								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
 								nces = x[2];
 								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
