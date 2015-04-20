@@ -3994,6 +3994,7 @@ function MT__RUN() {
 				q: document.getElementById('web_url'),
 				cid: null // This is Apple captcha ID
 			}
+			console.log(o);
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('img');
