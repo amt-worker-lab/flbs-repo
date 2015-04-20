@@ -71510,6 +71510,12 @@ qatar,80
 						}
 						
 						
+						if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
+							window.open('http://www.yelp.com/search/snippet'+
+										'?find_desc='	+encodeURIComponent(d2.value)+
+										'&find_loc='	+encodeURIComponent(d2b.value));
+						}
+						
 						// Parse
 						//
 						//
