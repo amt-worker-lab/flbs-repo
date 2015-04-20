@@ -23075,11 +23075,6 @@ function MT__RUN() {
 						'i'
 					);
 					
-					//console.log(rs);
-					//exit('abc123');
-
-					
-					
 					if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
 						if(div.numRuns < 20)
 							Andrew_Ryan_charities_ein__guidestar(input,div);
@@ -23092,10 +23087,10 @@ function MT__RUN() {
 						return;
 					}
 					
-					console.log('successStateReg');
-					console.log(successStateReg.exec(rs));
-					console.log('successfulRunReg');
-					console.log(successfulRunReg.exec(rs));
+					//~ console.log('successStateReg');
+					//~ console.log(successStateReg.exec(rs));
+					//~ console.log('successfulRunReg');
+					//~ console.log(successfulRunReg.exec(rs));
 					
 					Andrew_Ryan_charities_ein__guidestar__parseResponse(div,rs);
 				}
@@ -23137,9 +23132,6 @@ function MT__RUN() {
 			var all_locations = [ [o.city,o.state_abbr] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
 			
 			while (m = r.exec(rs)) {
-				//console.log(m);
-				
-				//~ r2 = 
 				
 				// nextindex
 				m0 = r0.exec(rs)[1];
@@ -23217,7 +23209,6 @@ function MT__RUN() {
 					return false;
 				}
 				eldiv.appendChild(naOnNone_link);
-				
 				
 				
 				// Span of city
@@ -23303,7 +23294,6 @@ function MT__RUN() {
 			var r = database_object.responseObject;
 			
 			console.log(r);
-			
 			
 			// Set main/first point.
 			// It is the first result for search.
@@ -23391,70 +23381,70 @@ function MT__RUN() {
 				'ctl00$phMainBody$keywordsCarrollAreaChildCareCenter51401$txtFieldValue=' + encodeURIComponent(u)
 			);
 			
-			if(!runStateSearch)
+			if(!runStateSearch) {
 				alert('no state');
-			else 
-			{
-				GM_xmlhttpRequest({
-					method: 'POST',
-					url: 'http://www.guidestar.org/SearchResults.aspx',
-					data: dataStarter,
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded"
-					},
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						var oneResultReg = /produced[\r\n\s\t]*1[\r\n\s\t]*result/
-						
-						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
-						var brokenPage = brokenPageReg.exec(rs);
-						
-						var successfulRunReg = new RegExp(
-							'<strong>[\\r\\n\\s\\t]*' + __js_escape_regEx(input.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;') +
-							(input.includeCitySearch ? ' ' + city : '')) +
-							'[\\r\\n\\s\\t]*<\\/strong>', 'i'
-						);
-						
-						console.log('numRuns: ' + div.numRuns);
-						console.log(input.value.trim());
-						console.log('successfulRunReg');
-						console.log(successfulRunReg.exec(rs));
-						
-						if(!successfulRunReg.exec(rs) || brokenPage){
-							if(div.numRuns < 20) {
-								Andrew_Ryan_charities_ein__guidestar(input, div);
-							}
-							return;
-						}
-						
-						var stateSearchAvailableReg = /<label>[\r\n\s\t]*By[\r\n\s\t]*State[\r\n\s\t]*<\/label>/
-						
-						var isInStateSelectField;
-						var x = /<select size="6" name="ctl00\$phMainBody\$statenavigator\$listNavValues"((.|\s)*?(?=<\/select>|$)|$)/.exec(rs);
-						if (!x)
-							isInStateSelectField = false;
-						else {
-							x = x[1];
-							if (x.indexOf(o.state.replace(/"/g, '')) != -1) {
-								isInStateSelectField = true;
-							}
-						}
-						
-						if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
-							Andrew_Ryan_charities_ein__guidestar__parseResponse(div, rs);
-							return;
-						}
-						else {
-							var vsReg = /id="__VIEWSTATE"[\r\n\s\t]*value="([^"]+)"/
-							if(viewState2 = vsReg.exec(rs)) {
-								viewState2 = __js_clean_html_str(viewState2[1]);
-							}
-							else {
-								alert('failed to scrape 2nd viewstate');
-							}
-						}
+				return;
+			}
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: 'http://www.guidestar.org/SearchResults.aspx',
+				data: dataStarter,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function(response) {
+					var rs = response.responseText;
 					
+					var oneResultReg = /produced[\r\n\s\t]*1[\r\n\s\t]*result/
+					
+					var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
+					var brokenPage = brokenPageReg.exec(rs);
+					
+					var successfulRunReg = new RegExp(
+						'<strong>[\\r\\n\\s\\t]*' + __js_escape_regEx(input.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;') +
+						(input.includeCitySearch ? ' ' + city : '')) +
+						'[\\r\\n\\s\\t]*<\\/strong>', 'i'
+					);
+					
+					console.log('numRuns: ' + div.numRuns);
+					console.log(input.value.trim());
+					console.log('successfulRunReg');
+					console.log(successfulRunReg.exec(rs));
+					
+					if(!successfulRunReg.exec(rs) || brokenPage){
+						if(div.numRuns < 20) {
+							Andrew_Ryan_charities_ein__guidestar(input, div);
+						}
+						return;
+					}
+					
+					var stateSearchAvailableReg = /<label>[\r\n\s\t]*By[\r\n\s\t]*State[\r\n\s\t]*<\/label>/
+					
+					var isInStateSelectField;
+					var x = /<select size="6" name="ctl00\$phMainBody\$statenavigator\$listNavValues"((.|\s)*?(?=<\/select>|$)|$)/.exec(rs);
+					if (!x)
+						isInStateSelectField = false;
+					else {
+						x = x[1];
+						if (x.indexOf(o.state.replace(/"/g, '')) != -1) {
+							isInStateSelectField = true;
+						}
+					}
+					
+					if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
+						Andrew_Ryan_charities_ein__guidestar__parseResponse(div, rs);
+						return;
+					}
+					else {
+						var vsReg = /id="__VIEWSTATE"[\r\n\s\t]*value="([^"]+)"/
+						if(viewState2 = vsReg.exec(rs)) {
+							viewState2 = __js_clean_html_str(viewState2[1]);
+						}
+						else {
+							alert('failed to scrape 2nd viewstate');
+						}
+					}
+				
 					if(viewState2) {
 						var u = encodeURIComponent(input.value + (input.includeCitySearch ? ' ' + city : ''));
 						
@@ -23474,12 +23464,11 @@ function MT__RUN() {
 						data = data.replace(
 							/ctl00%24phMainBody%24keywordsAlliance%24txtFieldValue=[^&]*/,
 							'ctl00$phMainBody$keywordsAlliance$txtFieldValue=' + encodeURIComponent(u));
+						
 						Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input);
-					}	
 					}
-				});
-			}
-
+				}
+			});
 		}
 		
 		/**
