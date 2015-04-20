@@ -22446,11 +22446,12 @@ function MT__RUN() {
 				
 				bold: [],
 				
+				viewState2: null,
 				distance_divs: {},
 				numRuns: 0, // counter
 				hv: new AMT___huge_vars_factory().Andrew_Ryan_charities_ein__vars() // o.hv.af1, o.hv.af2
 			};
-			var viewState2;
+			//~ var viewState2;
 			o.state_full = o.state.stateAbbrToFull();
 			console.log(o);
 			
@@ -22562,7 +22563,7 @@ function MT__RUN() {
 							isInStateSelectField = false;
 						else {
 							x = x[1];
-							if (x.indexOf(o.state.replace(/"/g, '')) != -1) {
+							if (x.indexOf(o.state_full.replace(/"/g, '')) != -1) {
 								isInStateSelectField = true;
 							}
 						}
@@ -22573,22 +22574,23 @@ function MT__RUN() {
 						
 						if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
 							parseResponse(rs);
+							console.log('running parseResponse');
 							return;
 						}
 						else {
 							var vsReg = /id="__VIEWSTATE"[\r\n\s\t]*value="([^"]+)"/
-							if(viewState2 = vsReg.exec(rs)) {
-								viewState2 = __js_clean_html_str(viewState2[1]);
+							if(o.viewState2 = vsReg.exec(rs)) {
+								o.viewState2 = __js_clean_html_str(o.viewState2[1]);
 							}
 							else {
 								alert('failed to scrape 2nd viewstate');
 							}
 						}
 					
-						if(viewState2) {
-							var u = encodeURIComponent(input.value + (input.includeCitySearch ? ' ' + city : ''));
+						if(o.viewState2) {
+							var u = encodeURIComponent(d2.value);
 							
-							var data = af2;
+							var data = o.hv.af2;
 							data = data.replace(
 								/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
 								'ctl00$SearchBar2$txtKeywords=' + u
@@ -22596,26 +22598,26 @@ function MT__RUN() {
 
 							data = data.replace(
 								/listNavValues=%5E[^%]*%24/,
-								'listNavValues=%5E' + encodeURIComponent(o.state) + '%24'
+								'listNavValues=%5E' + encodeURIComponent(o.state_full) + '%24'
 							);
 							
-							data = data.replace(/__VIEWSTATE=[^&]+/, '__VIEWSTATE=' + encodeURIComponent(viewState2))// + '&'+ af2;
+							data = data.replace(/__VIEWSTATE=[^&]+/, '__VIEWSTATE=' + encodeURIComponent(o.viewState2))// + '&'+ af2;
 							//console.log(data);
 							data = data.replace(
 								/ctl00%24phMainBody%24keywordsAlliance%24txtFieldValue=[^&]*/,
 								'ctl00$phMainBody$keywordsAlliance$txtFieldValue=' + encodeURIComponent(u));
 							
-							Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input);
+							secondSearch(data);
 						}
 					}
 				});
 			}
 
 
-			function Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input) {
+			function secondSearch(data) {
 				var data = data;
-				var div = div;
-				var input = input;
+				//~ var div = div;
+				//~ var input = input;
 
 				GM_xmlhttpRequest({
 					method: 'POST',
@@ -22797,7 +22799,7 @@ function MT__RUN() {
 					if (comp_aka) {
 						comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
 					}
-					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.comp_array) : '';
+					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
 					
 					// Div for each result
 					eldiv = document.createElement('div');
@@ -22865,7 +22867,7 @@ function MT__RUN() {
 					
 					// Span of city
 					var span_loc = document.createElement('span');
-					span_loc.innerHTML = MT__bold(m3, o.loc_array);
+					span_loc.innerHTML = m3; // MT__bold(m3, o.locn_array);
 					eldiv.appendChild(span_loc);
 					
 					// Distance div
