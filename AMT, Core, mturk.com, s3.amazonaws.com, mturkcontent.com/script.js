@@ -22760,13 +22760,132 @@ function MT__RUN() {
 				var r, r2;
 				var r0;
 				
+				
+				var dom = new DOMParser().parseFromString(rs, 'text/html');
+				var tds = dom.getElementsByClassName('sr11');
+				if (!tds) {
+					d1.innerText += '\n0';
+					console.log('Here is 0 responseText:');
+					console.log({rs:rs});
+					return;
+				}
+				var trs = [];
+				for (var i in tds) {
+					if (i == 'length') break;
+					trs.push(tds[i].parentNode);
+				}
+				for (var i in trs) {
+					
+					var row = {
+						name: '',
+						aka: '',
+						city: '',
+						state: '',
+						zip: '',
+						locn: '',
+						hash: null,
+						ein: ''
+					}
+					
+					// Name, EIN
+					var a = trs[i].getElementsByTagName('a')[0];
+					row.ein = /^organizations\/(\d{2}-\d{4,})\//.exec(a.href)[1]
+					row.name = a.innerText.trim();
+					
+					// AKA, Location
+					var sr12 = trs[i].getElementsByClassName('sr12')[0];
+					var sp_sr12 = sr12.getElementsByTagName('span');
+					if (sp_sr12) {
+						var x;
+						if (sp_sr12[0].id.indexOf('AkaName') != -1) {
+							row.aka = sp_sr12[0].innerText.trim().replace(/^Also known as: /, '');
+						}
+						if (sp_sr12[0].id.indexOf('spAddress') != -1) {
+							x = sp_sr12[0].innerText.trim();
+						}
+						else if (sp_sr12.length > 1 && sp_sr12[1].id.indexOf('spAddress') != -1) {
+							x = sp_sr12[0].innerText.trim();
+						}
+						if (x) {
+							o.locn = x;
+							x = x.split('\n');
+							if (x.length == 3) {
+								row.city = x[0].trim().replace(/ *,/).trim();
+								row.state = x[1].trim();
+								row.zip = x[2].trim();
+								o.hash = row.city + '|' + row.state;
+							}
+						}
+					}
+					
+					
+					
+					var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
+					if (comp_aka) {
+						comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
+					}
+					comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
+					
+					// Div for each result
+					eldiv = document.createElement('div');
+					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
+					eldiv.className = 'div_result';
+					if(row.state != o.state){
+						eldiv.style.backgroundColor = 'pink';
+					}
+					
+					var x = document.createElement('div');
+					//x.
+					x.innerHTML =
+						MT__bold(row.name, o.bold) +
+						'(' + MT__bold(row.aka + ')' +
+						'<br>';
+					eldiv.appendChild(x);
+					
+					var n = m3.split(',');
+					locn.city = n[0].trim();
+					locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
+					locn.hash = locn.city + '|' + locn.state;
+					
+					// Span of city
+					var span_loc = document.createElement('span');
+					span_loc.innerHTML = o.locn; // MT__bold(m3, o.locn_array);
+					eldiv.appendChild(span_loc);
+					
+					// Distance div
+					var eldiv_dist = document.createElement('div');
+					eldiv_dist.setAttribute('style', 'visibility:hidden;position:absolute;background-color:#eee;border:1px solid teal;z-index:100;');
+					eldiv_dist.className = 'div_distance'; // GM_addStyle // GM_addStyle('div:hover .div_distance {visibility:visible;}');
+					eldiv_dist.city = row.city;
+					eldiv_dist.state = row.state;
+					eldiv.appendChild(eldiv_dist);
+					
+					// Add eldiv_dist element to o.distance_divs
+					if (o.distance_divs.hasOwnProperty(locn.hash))
+						o.distance_divs[locn.hash].push(eldiv_dist);
+					else {
+						o.distance_divs[locn.hash] = [ eldiv_dist ];
+					}
+					
+					// Add all_locations
+					all_locations.push([locn.city, locn.state]);
+					
+					// ...				
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(this, this.guidestar_url, true, false); // ,,goToNextTab=true
+					}
+					
+					d1.appendChild(eldiv);
+					c = 1;
+				}
+				
+				
+				// reg
 				r0 = /<tr>[\r\n\t\s]*<td class="sr11"[^>]*>((.|\s)*?(?=<\/tr>|$)|$)/g;
-				
-				//HOPALONG ANIMAL RESCUE
+				// e.g. HOPALONG ANIMAL RESCUE
 				r = /<a href="(organizations\/(\d{2}-\d+)\/[^"]+)" id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_aOrganizationName" class="red_link"><strong>[\r\n\t\s]*([^\r\n]+)[\r\n\t\s]*<\/strong><\/a>/g;
-			
 				r2 = /<a href="http:\/\/www\.guidestar\.org\/rxg\/help\/glossary\.aspx#i">Income<\/a>:[\s]*([^<]+)/g;
-				
 				r3 = /<span id="ctl\d+_phMainBody_rptSearchResults_ctl\d+_spAddress">([^<]+)/g; //Gets the location
 				
 				
@@ -22783,7 +22902,6 @@ function MT__RUN() {
 				var all_locations = [ [o.city, o.state] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
 				//
 				while (m = r.exec(rs)) {
-					
 					// nextindex
 					m0 = r0.exec(rs)[1];
 					
@@ -22826,44 +22944,6 @@ function MT__RUN() {
 					locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
 					locn.hash = locn.city + '|' + locn.state;
 					
-					// Button to stay here
-					var stay_link = document.createElement('a');
-					stay_link.setAttribute('style', '');//display:inline;
-					stay_link.innerText = 'check';
-					stay_link.className = 'stay_link'; // :hover
-					stay_link.onclick = function(e) {
-						var p = this.parentNode;
-						this.style.zoom = '1.3';
-						this.style.fontWeight = 'bold';
-						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(p, p.guidestar_url, false,false);
-						e.stopPropagation();
-						e.preventDefault();
-						return false;
-					}
-					eldiv.appendChild(stay_link);
-					
-					// Single button
-					var naOnNone_link = document.createElement('input');
-					naOnNone_link.setAttribute('style', 'display:inline;width:70px;backgroundColor:#777;');//display:inline;
-					naOnNone_link.setAttribute('type', 'button');//display:inline;
-					naOnNone_link.value = 'single';
-					naOnNone_link.className = 'naOnNone_link'; // :hover
-					naOnNone_link.onclick = function(e) {
-						
-						// Set to true
-						o.singleButtonIsClicked = true;
-						
-						var p = this.parentNode;
-						this.style.zoom = '1.3';
-						this.style.fontWeight = 'bold';
-						Andrew_Ryan_guidestar_stats__scrapeGuidestarProfile(p, p.guidestar_url, true,true);
-						e.stopPropagation();
-						e.preventDefault();
-						return false;
-					}
-					eldiv.appendChild(naOnNone_link);
-					
-					
 					// Span of city
 					var span_loc = document.createElement('span');
 					span_loc.innerHTML = m3; // MT__bold(m3, o.locn_array);
@@ -22898,10 +22978,7 @@ function MT__RUN() {
 				}
 				
 				if (c == 0) {
-					d1.innerText += '\n0';
 					
-					console.log('Here is 0 responseText:');
-					console.log({rs:rs});
 				} else { // append
 					var d = document.createElement('div');
 					d.setAttribute('style', 'height:1400px;');
