@@ -22443,6 +22443,7 @@ function MT__RUN() {
 				state: td[11].innerText.trim(),
 				zip: td[13].innerText.trim(),
 				state_full: null,
+				city_st_hash: null,
 				
 				bold: [],
 				
@@ -22453,6 +22454,7 @@ function MT__RUN() {
 			};
 			//~ var viewState2;
 			o.state_full = o.state.stateAbbrToFull();
+			o.city_st_hash = o.city + '|' + o.state;
 			console.log(o);
 			
 			
@@ -22632,34 +22634,30 @@ function MT__RUN() {
 						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
 						var brokenPage = brokenPageReg.exec(rs);
 						
-						
-						
 						// Successful -> Title + Optional City
 						var successfulRunReg = new RegExp(
-							'[\\r\\n\\s\\t]*' + __js_escape_regEx(input.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;') +
-							(input.includeCitySearch ? ' ' + city : '')) +
+							'[\\r\\n\\s\\t]*' + __js_escape_regEx(d2.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;')) +
+							//(input.includeCitySearch ? ' ' + city : '')) +
 							'[\\r\\n\\s\\t]*(<\\/strong>|<\\/a>)', 'i'
 						);
 						
 						// Successful -> State
 						var successStateReg = new RegExp(
-							'<a id="ctl00_phMainBody_statename_lbRemoveNavElement"[^>]*><img src="[^"]*" width="10" height="10" alt="Close"[^>]*>&nbsp;'+__js_escape_regEx(o.state.replace(/"/g, ''))+'<\\/a>',
+							'<a id="ctl00_phMainBody_statename_lbRemoveNavElement"[^>]*><img src="[^"]*" width="10" height="10" alt="Close"[^>]*>&nbsp;'+__js_escape_regEx(o.state_full.replace(/"/g, ''))+'<\\/a>',
 							'i'
 						);
 						
 						if(!successfulRunReg.exec(rs) || !successStateReg || brokenPage){
-							if(o.numRuns < 20)
-								Andrew_Ryan_charities_ein__guidestar(input,div);
+							if(o.numRuns < 4)
+								init_gs();
 							return;
 						}
-						
-						
 						if (response.status != 200) {
 							console.log(response.status);
 							return;
 						}
 						
-						Andrew_Ryan_charities_ein__guidestar__parseResponse(div,rs);
+						parseResponse(rs);
 					}
 						
 				});
@@ -22670,7 +22668,7 @@ function MT__RUN() {
 			 * function Andrew_Ryan_charities_ein__city_match
 			 * 
 			 */
-			function Andrew_Ryan_charities_ein__city_match(all_locations) {
+			function city_match(all_locations) {
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
@@ -22703,11 +22701,11 @@ function MT__RUN() {
 				// Multiply by 1.
 				// o.city_st_hash
 				div_debug.innerText += '\n';
-				if (r[o.city_st_hash].length) {
-					div_debug.innerText += 'D'+r[o.city_st_hash][0].name;
+				if (r.hasOwnProperty( o.city_st_hash ) && r[ o.city_st_hash ].length) {
+					div_debug.innerText += 'D'+r[ o.city_st_hash ][0].name;
 					var main_point = {
-						lat:r[o.city_st_hash][0].lat * 1,
-						lon:r[o.city_st_hash][0].lon * 1
+						lat:r[ o.city_st_hash ][0].lat * 1,
+						lon:r[ o.city_st_hash ][0].lon * 1
 					}
 				} else {
 					return; //?
@@ -22781,7 +22779,7 @@ function MT__RUN() {
 					hash: null // "city|state"
 				}
 				// all locations
-				var all_locations = [ [o.city,o.state_abbr] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
+				var all_locations = [ [o.city, o.state] ]; // array of arrays, inner array is 0=city,1=state // first array is main city/state
 				//
 				while (m = r.exec(rs)) {
 					
