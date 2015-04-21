@@ -3517,7 +3517,7 @@ function MT__RUN() {
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
 			o.url = (!/^https?:\/\//i.exec(o.url)) ? 'http://' + o.url : o.url;
 			o.url = o.url.replace(/([a-z])\?/i, '$1/?'); // Replace com?asdf with com/?asdf
-			o.domain = o.url.replace(/^https?:\/\//i, '').replace(/[\/\?&][\d\D]*/, ''); // / OR ? OR &
+			o.domain = o.url.replace(/^https?:\/\//i, '').replace(/[\/\?&][\d\D]*/, '').replace(/^(www|m)\./, ''); // / OR ? OR &
 			//https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&url=http%3A%2F%2Fwww.google.com%2F&strategy=mobile&filter_third_party_resources=false&callback=x
 			
 			o.u =
@@ -3545,13 +3545,17 @@ function MT__RUN() {
 					console.log(rs);
 					console.log(o);
 					if (rs.hasOwnProperty('error')) {
-						document.getElementById('PA1').value = rs.error.errors[0].message;
+						document.getElementById('PA_Others').value = rs.error.errors[0].message;
+						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
+							o.q[0].checked = false;
+							o.q[1].checked = true;
+							doSubmit();
+						}
 						return;
 					}
 					
 					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
 						o.q[2].value = 'URL DOES NOT MATCH:' + rs.id;
-						
 						console.log('id');
 						return;
 					}
