@@ -3501,10 +3501,16 @@ function MT__RUN() {
 			var a = document.getElementsByTagName('a');
 			var o = {
 				url: a[1].innerText.trim(),
-				u: null
+				domain: null,
+				u: null,
+				q: [
+					document.getElementsByName('Yes')[0],
+					document.getElementsByName('No')[0]
+				]
 			}
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
-			o.url = (!/^https?:\/\//i.exec()) ? 'http://' + o.url : o.url;
+			o.url = (!/^https?:\/\//i.exec(o.url)) ? 'http://' + o.url : o.url;
+			o.domain = o.url.replace(/^https?:\/\//i, '').replace(/[\/\?&][\d\D]*/, ''); // / OR ? OR &
 			//https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&url=http%3A%2F%2Fwww.google.com%2F&strategy=mobile&filter_third_party_resources=false&callback=x
 			
 			o.u =
@@ -3530,6 +3536,34 @@ function MT__RUN() {
 					rs = JSON.parse(rs);
 					
 					console.log(rs);
+					console.log(o);
+					
+					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
+						console.log('id');
+						return;
+					}
+					//~ console.log(!rs.hasOwnProperty('ruleGroups'));
+					//~ console.log(!rs.ruleGroups );
+					//~ console.log(!rs.ruleGroups.hasOwnProperty('USABILITY'));
+					//~ console.log(!rs.ruleGroups.USABILITY);
+					//~ console.log(!rs.ruleGroups.USABILITY.hasOwnProperty('pass'));
+					if  (
+						!rs.hasOwnProperty('ruleGroups') || !rs.ruleGroups ||
+						!rs.ruleGroups.hasOwnProperty('USABILITY') || !rs.ruleGroups.USABILITY ||
+						!rs.ruleGroups.USABILITY.hasOwnProperty('pass')
+						)
+					{
+						console.log('ruleGroups');
+						return;
+					}
+					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.score >= 92 && rs.ruleGroups.USABILITY.pass != false) {
+						o.q[0].checked = true;
+						o.q[1].checked = false;
+						doSubmit();
+					} else if (rs.ruleGroups.USABILITY.pass == false) {
+						
+					}
+					
 				}
 			});
 		}
