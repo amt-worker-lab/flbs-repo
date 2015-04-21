@@ -3496,7 +3496,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('#submitButton {width:100%;height:100px;}');
 			
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -3546,17 +3546,21 @@ function MT__RUN() {
 					console.log(o);
 					if (rs.hasOwnProperty('error')) {
 						document.getElementById('PA_Others').value = rs.error.errors[0].message;
+						o.q[0].checked = false;
+						o.q[1].checked = true;
 						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
 							o.q[0].checked = false;
 							o.q[1].checked = true;
 							doSubmit();
 						}
+						//~ addToTabsQ();
 						return;
 					}
 					
 					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
 						o.q[2].value = 'URL DOES NOT MATCH:' + rs.id;
-						console.log('id');
+						document.body.style.backgroundColor = 'LightGreen';
+						//~ addToTabsQ();
 						return;
 					}
 					//~ console.log(!rs.hasOwnProperty('ruleGroups'));
