@@ -4916,6 +4916,7 @@ function AMT___site_scrapes(obj_vars) {
  * 
  * TODO: Add ability to cache XHR requests. Bool cache_xhr Default = ?
  * 
+ * TODO: For tasks such as signpost: Add "xhr__PROXY_REDACTED_" functionality.
  */
 AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
@@ -10424,7 +10425,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
 		// TH
-		var headers = ['ID', 'Title', 'Requester ID', 'Requester Name', 'Qualifications', 'Group ID', 'RWD', 'Time Allotted', 'Description'];
+		var headers = ['ID', 'Title', 'Requester ID', 'Requester Name', 'Qualifications', 'Group ID', 'RWD', 'Time Allotted', 'Description', 'ID Dup.', 'Hash ID'];
 		var thead = document.createElement('thead');
 		tb.appendChild(thead);
 		var tr = document.createElement('tr');
