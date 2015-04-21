@@ -3505,7 +3505,13 @@ function MT__RUN() {
 				u: null,
 				q: [
 					document.getElementsByName('Yes')[0],
-					document.getElementsByName('No')[0]
+					document.getElementsByName('No')[0],
+					document.getElementById('PA1'),
+					document.getElementById('PA2'),
+					document.getElementById('PA3'),
+					document.getElementById('PA4'),
+					document.getElementById('PA5'),
+					document.getElementById('PA_Others')
 				]
 			}
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
@@ -3544,6 +3550,8 @@ function MT__RUN() {
 					}
 					
 					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
+						o.q[2].value = 'URL DOES NOT MATCH:' + rs.id;
+						
 						console.log('id');
 						return;
 					}
@@ -3561,7 +3569,7 @@ function MT__RUN() {
 						console.log('ruleGroups');
 						return;
 					}
-					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.score >= 92 && rs.ruleGroups.USABILITY.pass != false) {
+					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.pass != false) {
 						o.q[0].checked = true;
 						o.q[1].checked = false;
 						doSubmit();
@@ -3570,12 +3578,25 @@ function MT__RUN() {
 						o.q[1].checked = true;
 						
 						// Sort errors
-						var errors = rs.formattedResults.ruleResults;
-						console.log(errors);
+						var x = rs.formattedResults.ruleResults;
+						var errors = [];
+						for (var i in x) {
+							errors.push(x[i]);
+						}
+						//~ console.log(errors);
 						errors = errors.sort(function(a, b) {
-							return a.ruleImpact - b.ruleImpact;
+							return b.ruleImpact - a.ruleImpact;
 						})
 						console.log(errors);
+						var st = 2
+						for (var i in errors) {
+							if (errors[i].ruleImpact == 0) continue;
+							o.q[ st ].value = errors[i].localizedRuleName;
+							st++;
+						}
+						if (o.q[2].value != '') {
+							doSubmit();
+						}
 					}
 					
 				}
