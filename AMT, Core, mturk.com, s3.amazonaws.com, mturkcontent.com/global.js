@@ -11167,6 +11167,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					if (first == row) continue; // Do not move if row is already first.
 					row.parentNode.insertBefore(hidden, first);	// Move the row's hidden row before first (has extended details).
 					row.parentNode.insertBefore(row, hidden);	// Move row before hidden row.
+					// Debug
+					console.log('Moved rows to top (row, hidden):' + row.innerText);
+					console.log(row);
+					console.log(hidden);
+					console.log('Before first row:' + first.innerText);
+					console.log(first);
 				} else { // Update
 					row.hits_available.innerText = d.hits_available;
 				}
@@ -11186,7 +11192,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			//
 			// New make_extended_row()
 			// Apr. 16 2015
+			//
 			var new_row;
+			var table;
+			var len;
 			
 			// Regular
 			if  (
@@ -11195,42 +11204,71 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				)
 			{
 				new_row = makeRow(d); // array 0,1
-				var len = tasks_obj.table1.getElementsByTagName('tr').length;
-				
-				// append
-				if (!tasks_obj.isFirstRun && len)
-				{
-					var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-					tasks_obj.table1.insertBefore(new_row[0], first); // tr before "first tr"
-					tasks_obj.table1.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				}
-				// insert
-				else
-				{
-					tasks_obj.table1.appendChild(new_row[0]);
-					tasks_obj.table1.appendChild(new_row[1]);
-				}
+				table = tasks_obj.table1;
 			}
 			// Ignored
 			else
-			{	
+			{
 				new_row = makeRow(d, true);
-				var len = tasks_obj.table2.getElementsByTagName('tr').length;
-				
-				// append
-				if (!tasks_obj.isFirstRun && len)
-				{	
-					var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-					tasks_obj.table2.insertBefore(new_row[0], first); // tr before "first tr"
-					tasks_obj.table2.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				}
-				// insert
-				else
-				{
-					tasks_obj.table2.appendChild(new_row[0]);
-					tasks_obj.table2.appendChild(new_row[1]);
-				}
+				table = tasks_obj.table2;
 			}
+			// Num rows
+			len = table.getElementsByTagName('tr').length;
+			// Append
+			if (!tasks_obj.isFirstRun && len) {
+				var first = table.getElementsByTagName('tr')[0];
+				table.insertBefore(new_row[0], first); // TR before "first" TR
+				table.insertBefore(new_row[1], first); // Hidden TR before "first" TR (after above TR)
+			}
+			// Insert
+			else
+			{
+				table.appendChild(new_row[0]);
+				table.appendChild(new_row[1]);
+			}
+			//~ // Regular
+			//~ if  (
+				//~ !ignore_requesters.hasOwnProperty( d.requester_name ) &&
+				//~ !ignore_requesters__ids.hasOwnProperty( d.requester_id )
+				//~ )
+			//~ {
+				//~ new_row = makeRow(d); // array 0,1
+				//~ var len = tasks_obj.table1.getElementsByTagName('tr').length;
+				//~ 
+				//~ // append
+				//~ if (!tasks_obj.isFirstRun && len)
+				//~ {
+					//~ var first = tasks_obj.table1.getElementsByTagName('tr')[0];
+					//~ tasks_obj.table1.insertBefore(new_row[0], first); // tr before "first tr"
+					//~ tasks_obj.table1.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
+				//~ }
+				//~ // insert
+				//~ else
+				//~ {
+					//~ tasks_obj.table1.appendChild(new_row[0]);
+					//~ tasks_obj.table1.appendChild(new_row[1]);
+				//~ }
+			//~ }
+			//~ // Ignored
+			//~ else
+			//~ {	
+				//~ new_row = makeRow(d, true);
+				//~ var len = tasks_obj.table2.getElementsByTagName('tr').length;
+				//~ 
+				//~ // append
+				//~ if (!tasks_obj.isFirstRun && len)
+				//~ {	
+					//~ var first = tasks_obj.table2.getElementsByTagName('tr')[0];
+					//~ tasks_obj.table2.insertBefore(new_row[0], first); // tr before "first tr"
+					//~ tasks_obj.table2.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
+				//~ }
+				//~ // insert
+				//~ else
+				//~ {
+					//~ tasks_obj.table2.appendChild(new_row[0]);
+					//~ tasks_obj.table2.appendChild(new_row[1]);
+				//~ }
+			//~ }
 		}
 	}
 	/**

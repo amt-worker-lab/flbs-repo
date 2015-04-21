@@ -305,7 +305,7 @@ function recordReturn() {
 
 //handleF5AndEsc
 document.addEventListener("keydown", function(event) {
-	console.log(event.keyCode);
+	//~ console.log(event.keyCode);
     switch (event.keyCode) {
         case 116 : // 'F5'
 			if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
