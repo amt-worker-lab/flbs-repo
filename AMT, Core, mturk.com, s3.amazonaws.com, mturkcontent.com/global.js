@@ -10425,7 +10425,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
 		// TH
-		var headers = ['ID', 'Title', 'Requester ID', 'Requester Name', 'Qualifications', 'Group ID', 'RWD', 'Time Allotted', 'Description', 'ID Dup.', 'Hash ID'];
+		var headers = ['ID', 'Title', 'Qualifications', 'RWD', 'Time Allotted', 'Description', 'Requester ID', 'Requester Name', 'Group ID', 'ID Dup.', 'Hash ID'];
 		var thead = document.createElement('thead');
 		tb.appendChild(thead);
 		var tr = document.createElement('tr');
@@ -10445,80 +10445,57 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				var row = rs[rid][dbr];
 				// TR
 				var tr = document.createElement('tr');
-				tr.setAttribute('style',
-					''
-				);
 				tr.className = 'ro-extended-tb-tr';
 				tr.onclick = toggle_td_display;
 				tb.appendChild(tr);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = row.id;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = __js_clean_html_str(row.title);
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
-				td.innerHTML = '';
-				td.hide_show = row.requester_id;
-				tr.appendChild(td);
-				//~ td.className = 'ro-extended-tb-hide';
-				// TD
-				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
-				td.innerText = '';
-				td.hide_show = __js_clean_html_str(row.requester_name);
-				tr.appendChild(td);
-				//~ td.className = 'ro-extended-tb-hide';
-				// TD
-				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = row.qualifications.replace(/^ *\| */, ''); // Remove initial |
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
-				td.innerText = '';
-				td.hide_show = row.groupId;
-				tr.appendChild(td);
-				//~ td.className = 'ro-extended-tb-hide';
-				// TD
-				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = row.reward;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = row.time_allotted;
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.setAttribute('style',
-					''
-				);
 				td.innerText = row.description;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerHTML = '';
+				td.hide_show = row.requester_id;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerText = '';
+				td.hide_show = __js_clean_html_str(row.requester_name);
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerText = '';
+				td.hide_show = row.groupId;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerText = '';
+				td.hide_show = row.id_duplicate_jobs;
+				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerText = '';
+				td.hide_show = row.hash_id;
 				tr.appendChild(td);
 			}
 		}
