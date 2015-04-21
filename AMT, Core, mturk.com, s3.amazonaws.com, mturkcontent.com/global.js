@@ -11156,7 +11156,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
 			{
 				var row = tasks_obj.table_rows[ d.db_id ];
-				row.hits_available.innerText = d.hits_available;
+				
+				// Is .innerText == '----'? If so, then this HIT
+				// is coming back after previously leaving. So
+				// let's move it back to the top of the table.
+				var hai = row.hits_available.innerText;
+				if (hai == '----') { // Append
+					var first = row.parentNode.getElementsByTagName('tr')[0];
+					var hidden = row.hidden_tr;
+					if (first == row) continue; // Do not move if row is already first.
+					row.parentNode.insertBefore(hidden, first);	// Move the row's hidden row before first (has extended details).
+					row.parentNode.insertBefore(row, hidden);	// Move row before hidden row.
+				} else { // Update
+					row.hits_available.innerText = d.hits_available;
+				}
 				
 				// IF updating graphs
 				// THEN update them here (add the newest data point)
