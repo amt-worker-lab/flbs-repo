@@ -11183,11 +11183,10 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			// (firstRun == true) then for all rows
 			// treat them as appendChild. If firstRun
 			// is false then treat all rows as insertBefore.
-			var new_row;
-			
+			//
 			// New make_extended_row()
 			// Apr. 16 2015
-			//
+			var new_row;
 			
 			// Regular
 			if  (
