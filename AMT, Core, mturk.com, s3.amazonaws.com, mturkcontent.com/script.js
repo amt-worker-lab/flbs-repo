@@ -3538,6 +3538,10 @@ function MT__RUN() {
 					
 					console.log(rs);
 					console.log(o);
+					if (rs.hasOwnProperty('error')) {
+						document.getElementById('PA1').value = rs.error.errors[0].message;
+						return;
+					}
 					
 					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
 						console.log('id');
@@ -3562,7 +3566,16 @@ function MT__RUN() {
 						o.q[1].checked = false;
 						doSubmit();
 					} else if (rs.ruleGroups.USABILITY.pass == false) {
+						o.q[0].checked = false;
+						o.q[1].checked = true;
 						
+						// Sort errors
+						var errors = rs.formattedResults.ruleResults;
+						console.log(errors);
+						errors = errors.sort(function(a, b) {
+							return a.ruleImpact - b.ruleImpact;
+						})
+						console.log(errors);
 					}
 					
 				}
