@@ -3482,6 +3482,61 @@ function MT__RUN() {
 	}
 	
 	// 
+	// 
+	// 
+	//
+	s = '<p><span style="line-height: 1.2em;">If the Result returns as "Mobile Friendly", choose "Yes" in the following option, otherwise, choose "No" and record the reasons given by Google</span></p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				url: a[1].innerText.trim(),
+				u: null
+			}
+			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
+			o.url = (!/^https?:\/\//i.exec()) ? 'http://' + o.url : o.url;
+			//https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&url=http%3A%2F%2Fwww.google.com%2F&strategy=mobile&filter_third_party_resources=false&callback=x
+			
+			o.u =
+				'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?'+
+				'key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&'+
+				'url='+ encodeURIComponent(o.url)+
+				'&strategy=mobile&filter_third_party_resources=false&callback=x';
+			o.u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.u);
+			
+			// Xhr
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.u,
+				onload: function(response) {
+					var rs=response.responseText; //console.log(rs);
+					if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					rs = rs.replace(/^\/\/ API callback[\r\n\t\s]+x\(/, '');
+					rs = rs.replace(/[\r\n\t\s]+\); *$/, '');
+					rs = JSON.parse(rs);
+					
+					console.log(rs);
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
+	// 
 	// A11UUJ359IVS59
 	// borderlinx.com/en/tcc scrape
 	//
