@@ -44930,7 +44930,6 @@ function MT__RUN() {
 								"console.log(map.getCenter());"+
 								"var lat = map.getCenter().G;" +
 								"var lng = map.getCenter().K;" +
-								"if(!lat || !lng) {alert('google changed lat/lng again')};" +
 								"console.log(lat);"+
 								"map.setTilt(45);"+
 								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
@@ -45654,8 +45653,8 @@ function MT__RUN() {
 										headingAngle = headingAngle * Math.PI / 180;
 										
 										console.log(headingAngle);
-										var currentLat = map.streetView.location.latLng.G;
-										var currentLng = map.streetView.location.latLng.K;
+										var currentLat = map.streetView.location.latLng.A;
+										var currentLng = map.streetView.location.latLng.F;
 										
 										var nextLat = currentLat + 0.003*Math.cos(headingAngle);
 										var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
