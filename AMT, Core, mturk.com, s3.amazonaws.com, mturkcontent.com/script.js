@@ -44928,8 +44928,8 @@ function MT__RUN() {
 							    "console.log('here is de map');" +
 								"console.log(map);"+
 								"console.log(map.getCenter());"+
-								"var lat = map.getCenter().A;" +
-								"var lng = map.getCenter().F;" +
+								"var lat = map.getCenter().G;" +
+								"var lng = map.getCenter().K;" +
 								"console.log(lat);"+
 								"map.setTilt(45);"+
 								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
@@ -45411,6 +45411,8 @@ function MT__RUN() {
 					// 
 					//
 					//MT___google_api_geocode(o.addr, geocodze_result, false, true); //(location, callback_function, return_complete_response, use_a_proxy)
+					console.log('this is o');
+					console.log(o);
 					geocode_result(o.centerMapLat, o.centerMapLng);
 				}
 				
