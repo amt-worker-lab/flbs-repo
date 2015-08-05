@@ -46247,8 +46247,8 @@ function MT__RUN() {
 				
 				AMT___RunPageScript("function() {"+
 							"window.setTimeout(function() {"+
-								"var lat = map.getCenter().G;" +
-								"var lng = map.getCenter().K;" +
+								"var lat = map.getCenter().A;" +
+								"var lng = map.getCenter().F;" +
 								"map.setTilt(45);"+
 								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
 								
