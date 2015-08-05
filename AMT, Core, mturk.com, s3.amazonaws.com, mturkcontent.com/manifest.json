@@ -14,13 +14,17 @@
 		
 		"includes/Chart.js",
 		"includes/jshash-2.2/md5.js",
+		"includes/sha1.js",
+		"includes/oauth.js",
 		"huge_vars.js",
 		"global.js",
 		"includes/Event.js",
 		"includes/Magnifier.js",
 		"includes/color-thief.js",
 		"test.js",
-		"script.js"
+		"scrapy.js",
+		"script.js",
+		"mturk_load.js" // Initialize
 	  ],
       "matches": ["http://*/*","https://*/*"],
       "run_at": "document_idle",
@@ -30,6 +34,7 @@
       "scripts": ["eventPage.js"]
    },
    "permissions": [
+		"cookies",
 		"storage",
 		"http://*/",
 		"https://*/",

@@ -85,7 +85,7 @@ var initializeIsSpecialWorkflowWindow__all_pages = function() {
  * @param		object
  */
 function AMT__all_pages_util(r) {
-	
+	console.log(r);
 	/**
 	 * Add the current URL to r
 	 * 
@@ -148,10 +148,17 @@ function AMT__all_pages_util(r) {
 	// Highlight strings
 	// @param highlight_strings_in_page 		object
 	// @param highlight_strings_in_page.strings	array
+	console.log(r);
 	if ( r.highlight_strings_in_page ) {
 		new AMT___global_factory().highlight_strings_in_page(
 			r.highlight_strings_in_page
 		);
+	}
+	
+	if(r.listenForKeyPress) {
+		new AMT___global_factory().listenForKeyPress(
+				r.listenForKeyPress
+			);
 	}
 	
 	// email_links_remove_mailto
@@ -161,6 +168,31 @@ function AMT__all_pages_util(r) {
 		);
 	}
 	
+	// up_button_to_all_links
+	// Added April 26, 2015
+	// 
+	if ( r.up_button_to_all_links ) {
+		new AMT___global_factory().up_button_to_all_links(
+			r
+		);
+	}
+	
+	if(r.shortcutPanel) {
+		console.log('r.shortcutPanel');
+		new AMT___global_factory().shortcutPanel(
+			r
+		);
+	}
+	
+	//~ // email_links_remove_mailto
+	//~ // @param 
+	//~ if ( r.email_links_remove_mailto ) {
+		//~ new AMT___global_factory().email_links_remove_mailto(
+		//~ );
+	//~ }
+	
+	// Scroll to page botton
+	//
 	if(r.ScrollToPageButtom) {
 		window.setTimeout(function () {
 			window.scroll(0,100000);
@@ -187,13 +219,8 @@ function AMT__all_pages_util(r) {
 	// make_element_words_click
 	// @param 
 	if ( r.make_element_words_click ) {
-		//~ new AMT___global_factory().make_element_words_click({
-			//~ element: document.body
-		//~ });
+		
 	}
-	//~ new AMT___global_factory().make_element_words_click({
-		//~ element: document.body
-	//~ });
 	
 	//debug_display: o.name
 	if ( r.debug_display ) {
@@ -667,6 +694,276 @@ function AMT___global_factory() {
 	
 }
 /**
+ * .up_button_to_all_links
+ * 
+ * Description: Add a button to pass the URL of any LINK element to
+ * the parent window.
+ * 
+ * @param	options
+ * 
+ * @return 
+ * 
+ */
+AMT___global_factory.prototype.up_button_to_all_links = function(options) {
+	var x = document.getElementsByTagName('a');
+	for (var i in x) {
+		if (i == 'length') break;
+		var d = document.createElement('button');
+		d.setAttribute('style', 'cursor:pointer;');
+		d.innerText = 'up';
+		d.href = x[i].href;
+		x[i].parentNode.insertBefore(d, x[i]);
+		d.onclick = function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			this.style.backgroundColor = 'LightGreen';
+			if(options.hasOwnProperty('isUtilityTab')) {
+				chrome.runtime.sendMessage(
+					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						data: {
+							href: this.href
+						},
+						init_object: options,
+						focus: true
+					},
+					function(response) {
+						// response=object
+					}
+				);
+			}
+			else {
+				parent.postMessage(
+					{
+						key: options.completion_key,
+						href: this.href
+					},
+					"*"
+				);
+			}
+			return false;
+		}
+	}
+}
+
+
+AMT___global_factory.prototype.getLinksContaining = function(strOrArrayOfStr) {
+	var sArray;
+	if((typeof strOrArrayOfStr) == 'string') {
+		sArray = [strOrArrayOfStr];
+	} else {
+		//Assume it's an array
+		sArray = strOrArrayOfStr;
+	}
+	
+	var a = document.getElementsByTagName('a');
+	var matchingLinks = [];
+	var str;
+	var currentDomain = window.location.href.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2").toLowerCase();
+	for(var i = 0; i < sArray.length; i++) {
+		str = sArray[i].toLowerCase();
+		for(var j = 0; j < a.length; j++) {
+			if(a[j].innerText && a[j].innerText.length > 50 || a[j].childElementCount > 3 ||
+			   a[j].href && a[j].href.indexOf('@') != -1  ||
+			   a[j].href && a[j].href.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2").toLowerCase() != currentDomain
+			   ) {
+				//a[j].testText = a[j].innerText.match(/^[\d\D]{20}/;
+				continue;
+			}
+			else 
+				a[j].testText = a[j].innerText;
+			if(
+			//a[j].href && a[j].href.toLowerCase().indexOf(str) != -1 ||
+			a[j].testText && a[j].testText.toLowerCase().indexOf(str) != -1
+			  ) {
+			   console.log(a[j]);
+			   console.log(str);
+			   matchingLinks.push(a[j]);
+			}
+		}
+	}
+	return matchingLinks;
+}
+
+AMT___global_factory.prototype.shortcutPanel = function(options) {
+	/*
+	 * Profile is has a tiers object which is an array of shortcutTierObj's (and is also the primary panel)
+	 * 	each shortcutTierObj designates its type, matchstrings, how many utility windows it auto-opens etc.
+	 *  	the tier objects are also divs in the panel and contain a typeDiv (which displays the type), and any number of clickable 
+	 *   	linkDivs which send you either to the utility tab or opens a new tab.
+	 **/
+	 var options = options;
+	 
+	 var profile = options.shortcutPanel;
+	 switch(profile) {
+	 case 'real estate agents': 
+			profile = {
+				tiers:
+				[{
+					matchStrings: ['agent','associates','realtor','team', 'meet'],
+					autoOpen: 1
+				}, {
+					matchStrings: ['about'],
+					autoOpen: 1
+				},
+				{
+					matchStrings: ['contact'],
+					autoOpen: 0
+				}
+				],
+				maxAutoOpen: 5,
+				maxLinksPerTier: 3,
+			}	 
+	case 'ceo/owner/founder/cfo': profile = {
+			tiers:[
+				{
+						matchStrings:['ceo','owner','founder','cfo','chief']
+				},
+				{
+						matchStrings:['team','meet','associates']
+				},
+				{
+						matchStrings:['about','contact']
+				},
+			],
+			maxAutoOpen:1,
+			maxLinksPerTier:1,
+		}
+	}
+	
+	profile.numOpened = 0;
+	
+	var primaryPanel = document.createElement('div');
+	primaryPanel.setAttribute('style','position:fixed;z-index:999999;left:0px;top:0px;width:20%;background-color:gray;');
+	document.body.appendChild(primaryPanel);
+	for(var i = 0; i < profile.tiers.length; i++) {
+		var matchingLinks = new AMT___global_factory().getLinksContaining(profile.tiers[i].matchStrings);
+		console.log(matchingLinks);
+		
+		if(matchingLinks.length) {
+			var typeDiv = document.createElement('div');
+			typeDiv.setAttribute('style','float:left;width:100%;background-Color:LightGray;');
+			primaryPanel.appendChild(typeDiv);
+			typeDiv.innerText = profile.tiers[i].type ? profile.tiers[i].type : i;
+			for(var j = 0; j < matchingLinks.length; j++) {
+				var shortCutDiv = document.createElement('div');
+				shortCutDiv.setAttribute('style','float:left;width:100%;background-Color:LightGray;border:1px solid black');
+
+				primaryPanel.appendChild(shortCutDiv);
+				shortCutDiv.innerText = matchingLinks[j].innerText;
+				shortCutDiv.link = matchingLinks[j];
+				shortCutDiv.link.initialBackgroundColor = shortCutDiv.link.style.backgroundColor;
+				shortCutDiv.link.initialBorder = shortCutDiv.link.style.border;
+				shortCutDiv.className = 'scDiv';
+				//shortCutDiv.options = options;
+				shortCutDiv.addEventListener('mouseover', function() {
+					this.link.style.zoom = 2.5;
+					this.link.style.textDecoration = 'underline';
+					this.link.scrollIntoView();
+					this.link.style.fontWeight = 'bold';
+					this.link.style.backgroundColor = '#FDFF47';
+					this.link.style.border = '1px solid black';
+					this.style.backgroundColor = 'LightGreen';
+					this.style.cursor = 'pointer'
+				});
+				shortCutDiv.addEventListener('mouseout', function() {
+					this.link.style.zoom = 1;
+					this.link.style.fontWeight = 'normal';
+					this.style.backgroundColor = '#EEE';
+					this.style.cursor = 'pointer';
+					this.link.style.textDecoration = '';
+					this.link.style.backgroundColor = this.link.initialBackgroundColor;
+					this.link.style.border = this.link.initialBorder;
+				});
+				shortCutDiv.addEventListener('click', function() {
+					if(this.utilityId) {
+						console.log(this.utilityId);
+						chrome.runtime.sendMessage(
+							'gcfnekbbpmbgadddbojhlojhddnkcpje',
+							{
+								switchToUtilityTab: this.utilityId
+							});
+					} else if(options.linkIdArray) {
+						var found = false;
+						for(var i = 0; i < options.linkIdArray.length; i+=2) {
+							if(options.linkIdArray[i].trim() == this.link.href.trim()) {
+								chrome.runtime.sendMessage(
+									'gcfnekbbpmbgadddbojhlojhddnkcpje',
+									{
+										switchToUtilityTab: options.linkIdArray[i+1]
+									});
+								return;
+							}
+						}
+						this.link.click();
+					} else {
+						this.link.click();
+					}
+				});
+				if(profile.tiers[i].autoOpen > 0 && profile.numOpened < profile.maxAutoOpen && !options.dontAutoloadFurther) {
+					console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb');
+					profile.tiers[i].autoOpen--;
+					profile.numOpened++;
+					console.log('options');
+					console.log(options);
+					var newOptions = {};
+					for(var k in options) {
+						newOptions[k] = options[k];
+					}
+					newOptions['dontAutoloadFurther'] = true;
+					if(options.hasOwnProperty('isUtilityTab')) {
+						var id = Math.random();
+						shortCutDiv.utilityId = id;
+						chrome.runtime.sendMessage(
+							'gcfnekbbpmbgadddbojhlojhddnkcpje',
+							{
+								addUtilityTab: {
+									utility:{
+										url: matchingLinks[j].href,
+										id: id,
+										options:newOptions
+									},
+									addIFFPrimaryUtilityTab:true
+								}
+							}
+						);
+					}
+				}
+			}
+		}
+	}
+	//~ console.log('options');
+	//~ console.log(options);
+	//~ console.log(options.dontAutoloadFurther);
+	if(!options.dontAutoloadFurther) {
+		chrome.runtime.sendMessage(
+							'gcfnekbbpmbgadddbojhlojhddnkcpje',
+							{
+								addUtilityOptionsToSelf: {
+									dontAutoloadFurther: true
+								}
+							});
+		sDivs = document.getElementsByClassName('scDiv');
+		var linkIdArray = [];
+		for(var i = 0; i < sDivs.length; i++) {
+			if(sDivs[i].utilityId) {
+				linkIdArray.push(sDivs[i].link.href);
+				linkIdArray.push(sDivs[i].utilityId);
+			}
+		}
+		
+		chrome.runtime.sendMessage(
+							'gcfnekbbpmbgadddbojhlojhddnkcpje',
+							{
+								addOptionsToAllRelatedUtilities: {
+									linkIdArray : linkIdArray
+								}
+							});
+	}
+}
+
+/**
  * .add_panel
  * 
  * @param	options	object
@@ -941,7 +1238,7 @@ AMT___global_factory.prototype.email_links_remove_mailto = function() {
  * @return 
  */
 AMT___global_factory.prototype.highlight_strings_in_page = function(options_object) {
-	
+	console.log('GOT TO HIGHLIGHT STRINGS');
 	// ADD A DOUBLE CLICK TO RESET PAGE
 	//
 	//~ var all_elements_zoomed = [];
@@ -952,14 +1249,68 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 	//~ }, false);
 	//~ console.log(options_object);
 	
-	var s = options_object.strings;
-	for (var i in s) {
-		highlightWord(document.body, s[i].toLowerCase());
-	}
+	// Already highlighted...
+	// TODO
+	//
+	//~ var already_highlighted = [];
 	
+	//if it's a string, highlight it yellow. 
+	//If it's an object, it has the attribute: string, color
+	var s = options_object.strings;
+	
+	s.sort(function(a,b) {
+		var strLen;
+		var str2Len;
+		if(typeof a == 'object')
+			strLen = a.string.length
+		else
+			strLen = a.length
+		if(typeof b == 'object')
+			str2Len = b.string.length
+		else
+			str2Len = b.length
+		return str2Len - strLen;
+	});
+	
+	// Remove old highlights 
+	function removeHighlights(root){     
+	  [].forEach.call(root.querySelectorAll('span._--_--_highlight_--_--_'),function(el){
+		el.parentNode.replaceChild(el.firstChild,el);
+	  });
+	}
+	removeHighlights(document.body);
+	
+	console.log(s);
+	// Highlight. Skip blank strings.
+	for (var i in s) {
+		if(typeof s[i] == 'object') {
+			if (s[i].string.trim() == '') continue;
+			highlightWord(document.body, s[i].string.toLowerCase(), s[i].color);
+		}
+		else {
+			if (s[i].trim() == '') continue;
+			highlightWord(document.body, s[i].toLowerCase());
+		}
+	}
+	var allSpans = document.getElementsByTagName('span');
+	for(var i in s) {
+		if(s[i].scrollIntoView) {
+			for(var j = 0; j < allSpans.length; j++) {
+				console.log(allSpans[j].word);
+				if(allSpans[j].word && allSpans[j].word.trim() == s[i].string.toLowerCase().trim()) {
+					allSpans[j].scrollIntoView(true);
+					break;
+				}
+			}
+			break;
+		}
+	}
 	//~ http://stackoverflow.com/questions/10729983/highlight-word-in-html-text-but-not-markup
 	//~ http://jsfiddle.net/crgTU/7/
-	function highlightWord(root, word){
+	function highlightWord(root, word,color){
+		if(!color) {
+			color = 'yellow';
+		}
 		textNodesUnder(root).forEach(highlightWords);
 
 		function textNodesUnder(root){
@@ -968,22 +1319,46 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 				node;
 			while(node=walk.nextNode())
 				text.push(node);
+			console.log(text);
 			return text;
 		}
 
 		function highlightWords(n){
+			//~ var x = n.nodeValue.toLowerCase // already_highlighted[ highlighted ] = true;
 			for (var i; (i=n.nodeValue.toLowerCase().indexOf(word,i)) > -1; n=after){
 				var after = n.splitText(i+word.length);
 				var highlighted = n.splitText(i);
 				var span = document.createElement('span');
-				span.setAttribute('style', 'background-color:yellow;color:black;zoom:1.2;');
-				span.className = '_--_--_highlighted_--_--_';
+				span.setAttribute('style', 'background-color:'+color+';color:black;zoom:1.2;');
+				span.word = word;
+				span.className = '_--_--_highlight_--_--_';
 				span.appendChild(highlighted);
 				after.parentNode.insertBefore(span,after);
 			}
 		}
 	}
 }
+
+AMT___global_factory.prototype.listenForKeyPress = function(options) {
+	console.log('ran in listenForKeys');
+	window.addEventListener('keypress', function(e) {
+			console.log('got key');
+			console.log(e);
+				chrome.runtime.sendMessage(
+					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						keyCode: e.keyCode, 
+						charCode: e.charCode,
+						focus: true
+					},
+					function(response) {
+						
+					}
+				);		
+	});
+};
+
 /**
  * .highlight_range_to_parent
  * 
@@ -1042,6 +1417,35 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 			}
 		}
 	}
+}
+AMT___global_factory.prototype.callNextTabInCoreMturk = function(options) {
+	//~ console.log(options);
+	if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
+		if(!options)
+			options = {};
+		options['focusOnPage'] = true;
+	}
+	if(AMT__Global_Vars.scriptVars['Record Job Timings'] != '0') {
+		if(!options)
+			options = {};
+		options['Record Job Timings'] = true;
+	}
+	else if(!options) {
+		options = {};
+	}
+	chrome.runtime.sendMessage(
+						'gcfnekbbpmbgadddbojhlojhddnkcpje',
+						{
+							nextTab: true,
+							options: options,
+							isTopWindow: (AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' ? false : AMT__Global_Vars.isTopWindow),
+							focus: true
+						},
+						function(response) {
+							// response=object
+						}
+					);
+
 }
 /**
  * .highlight_photos
@@ -1146,6 +1550,7 @@ AMT___global_factory.prototype.highlight_photos = function(options_object) {
 		//~ console.log(d_);
 	}
 }
+
 
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
 	

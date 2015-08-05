@@ -1,3 +1,4 @@
+console.log('test2');
 /**
  * Problem:
  * Solution:
@@ -34,6 +35,78 @@
 		//~ 
 	//~ }, 4000);
 //~ });
+
+
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	/**
+	 * request.nextTab
+	 */
+	if(request.nextTab)
+	{
+		window.request = request;
+		//~ console.log(request.isTopWindow) //true
+		//~ console.log(window.request) // object
+		//~ console.log(window.request.options) // undefined
+		//~ console.log(window.request.options.isTopWindow)
+		
+		//XXXXXXXXXXXXXXXXX
+		//window.request.options.isTopWindow = request.isTopWindow;
+		
+		//window.request.isTopWindow = request.isTopWindow;
+		
+		console.log('nexttab');
+		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
+			
+			//~ console.log('Here2');
+			//~ console.log(sender);
+			
+			var currentIndex = -1;
+			for(var i = 0; i < allTabs.length; i++)
+			{
+				if(allTabs[i].active && allTabs[i].id == sender.tab.id)
+				{
+					var currentIndex = allTabs[i].index;
+					break;
+				}
+			}
+			if(currentIndex == -1) {
+				//We left the tab that we wanted to switch out of
+				//Consider processing option's object even though we will not switch
+			}
+			else {
+				//~ console.log(currentIndex);
+				//~ console.log(currentIndex);
+				
+				var nextTab =  false;
+				for(var i = 0; i < allTabs.length; i++)
+				{
+					if( (currentIndex + 1) == allTabs[i].index)
+					{
+						var nextTab = allTabs[i].id;
+					}
+				}
+				if(!nextTab)
+				{
+					nextTab = allTabs[0].id;
+				}
+				
+				chrome.tabs.update(nextTab, {active: true}, function() {
+					//~ alert('here1');
+					if(window.request && window.request.options) {
+						console.log('told to focus on page, here here');
+						chrome.tabs.sendRequest(nextTab, window.request.options, function(response) {
+							//squelch response
+						});
+					}
+					chrome.tabs.sendMessage(nextTab,{checkNTPassBy: true}, function(response) {
+					
+					});				
+				});
+			}
+		});
+	}	
+});
+	
 /**
  * chrome.extension.onRequest.addListener
  * Listen for messages from core-mturk scripts
@@ -43,7 +116,87 @@
  */
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
+	console.log(request);
 	
+	if(request.removeMyUitilityTabs) {
+		//Foremostly, don't close any tabs if there's only 1 tab in the utility window
+		chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
+			if(allTabs.length && allTabs.length > 1) {
+				console.log('sender');
+				console.log(sender.tab);
+				if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+					alert('no utility window set');
+					return false;
+				}
+				
+				var senderId = sender.tab.id;
+				if(UtilityAMTPairs[senderId] &&
+				   UtilityAMTPairs[senderId].utilities &&
+				   UtilityAMTPairs[senderId].utilities.length > 0) {
+					//Remove all of the old utility tabs
+					var tabIdsToRemove = []
+					for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+						console.log('TABID');
+						console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
+						console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
+								(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+								);
+						//~ if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+							tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+					}
+					//tabId is null
+					
+					console.log('REMOVE');
+					console.log(tabIdsToRemove);
+					//try {
+						if(tabIdsToRemove.length) {
+							chrome.tabs.remove(tabIdsToRemove);
+						}
+					//}
+					//catch(e) {
+						//console.log('err');
+					//}
+				}
+				
+				//Finally if this is being called from the tab that is currently active, close all instances of non-utility tabs
+				if(sender.tab.active) {
+					chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
+						//Make sure if there's only one tab in the window that we don't accidentally close it
+						var found;
+						if(allTabs.length && allTabs.length > 1) {
+							for(var i = 0; i < allTabs.length; i++) {
+								found = false;
+								//Now we're looping through the array of all tabs, lets loop through all utility tabs
+								//~ console.log('UtilityAMTPairs[j]:');
+								//~ console.log(UtilityAMTPairs[j]);
+								//~ alert('wuh');
+								for(var j in UtilityAMTPairs) {
+									if(UtilityAMTPairs[j] && UtilityAMTPairs[j].utilities && UtilityAMTPairs[j].utilities.length) {
+										//~ console.log('UtilityAMTPairs[j]:');
+										//~ console.log(UtilityAMTPairs[j]);
+										for(var k = 0; k < UtilityAMTPairs[j].utilities.length; k++) {
+											console.log(UtilityAMTPairs[j].utilities[k].tabId + ' == ' + allTabs[i].id);
+											if(UtilityAMTPairs[j].utilities[k].tabId == allTabs[i].id) {
+												found = true;
+												console.log('found = true');
+												break;
+											}
+										}
+									}
+									if(found)
+										break;
+								}
+								if(!found) {
+									chrome.tabs.remove(allTabs[i].id);
+								}
+							}
+						}
+					});
+				}
+			}
+			sendResponse({continueOn: true});
+		});
+    }
 	
 	if(request.setUtilityTabs) {
 		console.log('sender');
@@ -53,6 +206,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return false;
 		}
 		
+		
 		var senderId = sender.tab.id;
 		if(UtilityAMTPairs[senderId] &&
 		   UtilityAMTPairs[senderId].utilities &&
@@ -60,18 +214,37 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//Remove all of the old utility tabs
 			var tabIdsToRemove = []
 			for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
-				tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+				console.log('TABID');
+				console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
+				console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
+						(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+						);
+				//~ if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+					tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 			}
-			chrome.tabs.remove(tabIdsToRemove);
+			//tabId is null
+			
+			console.log('REMOVE');
+			console.log(tabIdsToRemove);
+			//try {
+				if(tabIdsToRemove.length) {
+					chrome.tabs.remove(tabIdsToRemove);
+				}
+			//}
+			//catch(e) {
+				//console.log('err');
+			//}
 		}
 		
 		
-		UtilityAMTPairs[senderId] = new AMTUtilitiesObj({
-															ownerTabId:senderId,
-															utilities: request.setUtilityTabs.utilities
-														});
-		UtilityAMTPairs.options = request.setUtilityTabs.options;
-		console.log(UtilityAMTPairs);
+		UtilityAMTPairs[senderId] = new AMTUtilitiesObj(
+			{
+				ownerTabId:senderId,
+				utilities: request.setUtilityTabs.utilities
+			}
+		);
+		//UtilityAMTPairs.options = request.setUtilityTabs.options;
+		//~ console.log(UtilityAMTPairs);
 		//console.log(a.b.c);
 			//~ chrome.windows.get(localStorage['UTILITY_WINDOW'], {populate:true}, function() { 
 					//~ //Get the latest index of what's here
@@ -79,29 +252,109 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				//~ });
 			
 		for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
-				//Create a tab for each utilityTab in utilities
-				currentUtility = UtilityAMTPairs[senderId].utilities[i];
-				var tabIdentifier = '###tabId'+senderId+'###at'+i;
-				if(!currentUtility.url || currentUtility.url.trim() == '') {
-					currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
-					//~ currentUtility.url = 'includes/blankUtilityTab.html';
-				}
-				currentUtility.url += tabIdentifier;
-				chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
-																				active: (currentUtility.active != null ? currentUtility.active : 
-																														 (sender.tab.active && i == 0 ? true :false))}, 
-					function(newTab) {
-						console.log('New Tab Created with url:' +newTab.url);
-						var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
-						console.log('ownerTabId:' + ownerTabId);
-						var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
-						console.log('utTabPos:' + utTabPos);
-						UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
-						console.log(UtilityAMTPairs);
-						
+			//Create a tab for each utilityTab in utilities
+			currentUtility = UtilityAMTPairs[senderId].utilities[i];
+			var tabIdentifier = '###tabId'+senderId+'###at'+i;
+			if(!currentUtility.url || currentUtility.url.trim() == '') {
+				currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
+				//~ currentUtility.url = 'includes/blankUtilityTab.html';
+			}
+			currentUtility.url += tabIdentifier;
+			chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
+																			active: (currentUtility.active != null ? currentUtility.active : 
+																													 (sender.tab.active && i == 0 ? true :false))}, 
+				function(newTab) {
+					//~ console.log('New Tab Created with url:' +newTab.url);
+					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+					//~ console.log('ownerTabId:' + ownerTabId);
+					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+					//~ console.log('utTabPos:' + utTabPos);
+					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
+					//~ console.log(UtilityAMTPairs);
+					
 
-					});
+				});
 		}
+		
+		
+		//Finally if this is being called from the tab that is currently active, close all instances of non-utility tabs
+		if(sender.tab.active) {
+			chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
+				//Make sure if there's only one tab in the window that we don't accidentally close it
+				var found;
+				if(allTabs.length && allTabs.length > 1) {
+					for(var i = 0; i < allTabs.length; i++) {
+						found = false;
+						//Now we're looping through the array of all tabs, lets loop through all utility tabs
+						//~ console.log('UtilityAMTPairs[j]:');
+						//~ console.log(UtilityAMTPairs[j]);
+						//~ alert('wuh');
+						for(var j in UtilityAMTPairs) {
+							if(UtilityAMTPairs[j] && UtilityAMTPairs[j].utilities && UtilityAMTPairs[j].utilities.length) {
+								//~ console.log('UtilityAMTPairs[j]:');
+								//~ console.log(UtilityAMTPairs[j]);
+								for(var k = 0; k < UtilityAMTPairs[j].utilities.length; k++) {
+									console.log(UtilityAMTPairs[j].utilities[k].tabId + ' == ' + allTabs[i].id);
+									if(UtilityAMTPairs[j].utilities[k].tabId == allTabs[i].id) {
+										found = true;
+										console.log('found = true');
+										break;
+									}
+								}
+							}
+							if(found)
+								break;
+						}
+						if(!found) {
+							chrome.tabs.remove(allTabs[i].id);
+						}
+					}
+				}
+			});
+		}
+	}
+	
+	if(request.addUtilityTab) {
+		var senderId = sender.tab.id;
+		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+			alert('no utility window set');
+			return false;
+		}
+		var newTabPos;
+		var currentUtility;
+		if(!UtilityAMTPairs[senderId]){
+			UtilityAMTPairs[senderId] = new AMTUtilitiesObj(
+				{
+					ownerTabId:senderId,
+					utilities: [request.addUtilityTab.utility]
+				});
+			newTabPos = 0;
+			currentUtility = UtilityAMTPairs[senderId].utilities[0];
+		}
+		else {
+			newTabPos = UtilityAMTPairs[senderId].utilities.length;
+			UtilityAMTPairs[senderId].utilities.push(request.addUtilityTab.utility);
+			currentUtility = UtilityAMTPairs[senderId].utilities[newTabPos];		
+		}
+		
+		var tabIdentifier = '###tabId'+senderId+'###at'+newTabPos;
+		if(!currentUtility.url || currentUtility.url.trim() == '') {
+			currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
+		}
+		currentUtility.url += tabIdentifier;
+		
+		chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
+																			active: (currentUtility.active != null ? currentUtility.active : 
+																													 (sender.tab.active && newTabPos == 0 ? true :false))}, 
+				function(newTab) {
+					//~ console.log('New Tab Created with url:' +newTab.url);
+					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+					//~ console.log('ownerTabId:' + ownerTabId);
+					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+					//~ console.log('utTabPos:' + utTabPos);
+					UtilityAMTPairs[senderId].utilities[utTabPos].tabId = newTab.id;
+					//~ console.log(UtilityAMTPairs);
+				})
 	}
 	
 	if(request.switchToUtilityTab) {
@@ -116,6 +369,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			}
 		}
 	}
+	
+	
+	
+	
 	
 	//~ /**
 	 //~ * request.count_number_of_captcha_tabs
@@ -237,7 +494,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			try {
 				chrome.windows.get(localStorage['SPECIAL_WORKFLOW_WINDOW'] *1 , function(window) {
 					if(!window || window.length == 0) {
-						localStorage[SPECIAL_WORKFLOW_WINDOW] = 'unset';
+						localStorage['SPECIAL_WORKFLOW_WINDOW'] = 'unset';
 					}
 				
 					sendResponse({SPECIAL_WORKFLOW_WINDOW:localStorage['SPECIAL_WORKFLOW_WINDOW']});
@@ -245,7 +502,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				console.log('returning true to keep connection alive');
 			} 
 			catch(err) {
-				localStorage[SPECIAL_WORKFLOW_WINDOW] = 'unset';
+				localStorage['SPECIAL_WORKFLOW_WINDOW'] = 'unset';
 				sendResponse({SPECIAL_WORKFLOW_WINDOW:localStorage['SPECIAL_WORKFLOW_WINDOW']});
 			}
 			return true;
@@ -331,11 +588,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		 chrome.tabs.executeScript(sender.tab.id, {
 					code: 
 						"(function() {console.log('green light!');var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2/83n8/+BzvL/Qbjv/4/S8v+P0vL/dMry/7Tf8//29vb/9vb2//b29v/29vb/9vb2//b29v/N5/P/gc7y/0G47/+aAQL/kQAB/48AAP+P0vL/j9Ly/6MKBf+bAAH/nQAE/3TK8v+03/P/9vb2//b29v/29vb/lAYB/5kAAv+XAAL/kwAC/40AAP+SAgH/j9Ly/4/S8v+gAgH/owgD/54BAv+fAwD/owkC/6MGBf/29vb/9vb2/5cEAf+VAQH/jQAC/4sAAf+QAQH/mAMC/4/S8v+P0vL/pA0F/6cTBP+cBQH/nAcA/6IPAP+bBQD/9vb2//b29v+zKAj/lA0A/4YBAP+IAAD/lgAC/6AHAv+P0vL/j9Ly/7UuCv+tGAX/qA8I/6cRAf+tGgH/pxEG//b29v/29vb/5JYQ/8ZjCv+gGQL/mQYB/5gDBP+kGQP/j9Ly/4/S8v+uHQT/owoF/6oZAv+4Lgn/sikL/58UCP/29vb/9vb2/81wBf/lkg7/0mMK/741Cv+mIwL/x2YM/4/S8v+P0vL/pwkB/7kjA//ENg7/ty8N/5EKAf+LAgf/9vb2//b29v+kGgP/rS8D/7s9C/+oIwP/zWsO/+60J/+P0vL/j9Ly/6QFAv+mBQL/nwUB/5UFAf+IAAL/hAAI//b29v/29vb/nwEC/58GAP+mFwT/rygE/8l2Bv/Qhgb/j9Ly/4/S8v+XAAL/nAAB/5kAA/+RAAT/iAAC/4QAAf/29vb/9vb2/50AAf+aAQL/mwMD/7IcA//Sfwj/Tr3x/8Pk9P/C4/P/Tr3x/5kJAP+SAgD/jwAD/4wAA/+JAAH/9/f3//f39/+KAQD/igAE/0698f+b1vL/3e31/9rt9v+O1/b/jtf2/9rt9v/d7fX/m9by/0698f+fBgH/kgMA//f39//39/f/nNfz/93t9f/b7vf/jtf2/zi+9//Uhgb/4ZoL/9J3Bf+zPgL/OL73/4/Y9//a7fb/3u72/5vW8v/4+Pj/+Pj4//j4+P+C1Pf/fgEE/4kJAP/HXAz/zYAD/9OEBv/GXQn/sDcH/5wDAv+RAgD/kgUB/4LU9//4+Pj/+Pj4//j4+P/5+fn/+Pj4//n5+f/L6/j/gtT3/0bC9//CXwf/pCAB/0fD+P+C1Pf/zOz5//j4+P/5+fn/+Pj4//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
-					});
-	 
-	 
-	 
-	 
+					});	 
 	 }
 	/**
 	 * 
@@ -353,27 +606,45 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 	 
 	
+	if(request.shiftFarLeft) {
+		var tabId = sender.tab.id;
+		chrome.tabs.move(tabId, {index: 0}, function (tab) {
+				console.log('Moved tab');
+			});
+	}
+	
+	if(request.shiftFarRight) {
+		var tabId = sender.tab.id;
+		chrome.tabs.getAllInWindow(sender.tab.windowId, function (tabs) {
+				if(!tabs.length) {
+					tabs = [tabs];
+				}
+					chrome.tabs.move(tabId, {index: tabs.length-1}, function (tab) {
+					console.log('Moved tab far right');
+				});
+			});
+	}
+	
+	
+	
 	/**
 	 * request.addToTabsQ
 	 */
 	if(request.addToTabsQ)
 	{
-		var isTopWindow = request.isTopWindow;
-		chrome.tabs.executeScript(sender.tab.id, {
-					code: 
-						"(function() {var link = document.createElement('link');document.title = 'TQ';link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
-					});		
-		
+		var isTopWindow = request.isTopWindow;		
 		var tabId  = sender.tab.id;
 		var winId = sender.tab.windowId;
 		
+		console.log('testing whether this runs');
+		console.log('attempting to move');
+		
+		
+		
+		
+
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		console.log('isTopWindow: ' + request.isTopWindow);
-		
-		chrome.tabs.move(tabId, {index: 0}, function (tab) {
-				console.log('Moved tab');
-			});
-		
 		getAllTabsInQ(function(allQTabs) {
 			if(allQTabs.length > 0) {
 
@@ -416,7 +687,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					
 					//is the lowest tab the same as the tab sending 'shownexttab', if so, remove from the Q, tell the tab that it's not longer in the Q, and call showNextTabAttempt again.
 					
-					console.log(sender.tab.id)
+					//console.log(sender.tab.id)
 					if(senderTabId == nextTabId) {
 						allQTabs.splice(lowestTabIndex,1);
 
@@ -435,7 +706,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 							}
 						}
 						if(!nextTabId) {
-							console.log('no next tab to jump to');
+							//console.log('no next tab to jump to');
 						}
 						else {
 							chrome.tabs.update(nextTabId, {active:true});
@@ -501,67 +772,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({id:sender.tab.id});
 	}
 	
-	/**
-	 * request.nextTab
-	 */
-	if(request.nextTab)
-	{
-		window.request = request;
-		window.request.isTopWindow = request.isTopWindow;
-		chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
-			
-			//~ console.log('Here2');
-			//~ console.log(sender);
-			
-			var currentIndex = -1;
-			for(var i = 0; i < allTabs.length; i++)
-			{
-				if(allTabs[i].active && allTabs[i].id == sender.tab.id)
-				{
-					var currentIndex = allTabs[i].index;
-					break;
-				}
-			}
-			if(currentIndex == -1) {
-				//We left the tab that we wanted to switch out of
-				//Consider processing option's object even though we will not switch
-			}
-			else {
-				//~ console.log(currentIndex);
-				//~ console.log(currentIndex);
-				
-				var nextTab =  false;
-				for(var i = 0; i < allTabs.length; i++)
-				{
-					if( (currentIndex + 1) == allTabs[i].index)
-					{
-						var nextTab = allTabs[i].id;
-					}
-				}
-				if(!nextTab)
-				{
-					nextTab = allTabs[0].id;
-				}
-				
-				chrome.tabs.update(nextTab, {active: true}, function() {
-					//~ alert('here1');
-					if(window.request && window.request.options && window.request.options.focusOnPage) {
-						console.log('told to focus on page');
-						chrome.tabs.sendRequest(nextTab, {focusOnPage: true, isTopWindow:window.request.isTopWindow}, function(response) {
-							//squelch response
-						});
-					}				
-				});
-				
-				if(window.request && window.request.options) {
-					chrome.tabs.sendRequest(nextTab, window.request.options, function(response) {
-						//squelch response
-					});
-				}
-			}
-			
-		});
-	}
+	
 	
 	/**
 	 * request.core_nextWindow
@@ -817,14 +1028,19 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     if(request.amIUtilityTab) {
 		console.log('recieved msg from:');
 		console.log(sender.tab);
+		if(!sender.tab) {
+			console.log('no sender tab for asking amIUtilityTab');
+			sendResponse({});
+			return;
+		}
 		if(sender.tab.windowId == localStorage['UTILITY_WINDOW']) {
 			console.log(UtilityAMTPairs);
 			//Set all the global options that every utility tab should have
 			
 			var optionsToSet = {};
-			for(var i in UtilityAMTPairs.options) {
-				optionsToSet[i] = UtilityAMTPairs.options[i]
-			}
+			//~ for(var i in UtilityAMTPairs.options) {
+				//~ optionsToSet[i] = UtilityAMTPairs.options[i]
+			//~ }
 
 			//UtilityAMTPairs
 			
@@ -877,6 +1093,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		console.log(sender);
 		console.log(request);
 		
+		
+		//Pass whatever the message is to the top:
 		for_loop_break_dance_if_you_want_to:
 		for(var i in UtilityAMTPairs) {
 				if(UtilityAMTPairs[i] &&
@@ -908,21 +1126,125 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						}
 					}
 				}
-			}
-		
-		//var tabId = sender.tab.id;
-	
-		
-		
-		
+			}		
 	}
-      
-    /*else if (request.getTargetData)
-      sendResponse({targetData: targetData});
-    else if (request.activateLasers) {
-      var success = activateLasers();
-      sendResponse({activateLasers: success});
-    }*/
+	
+	if(request.addUtilityTab) {
+			var senderId = sender.tab.id;
+			if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+				alert('no utility window set');
+				return false;
+			}
+			var newTabPos;
+			var currentUtility;
+			var parentTabId;
+			
+			//Loop through UtilityAMTPairs to find which parent I am
+			
+			for(var i in UtilityAMTPairs) {
+				if(UtilityAMTPairs[i] &&
+				   UtilityAMTPairs[i].utilities &&
+				   UtilityAMTPairs[i].utilities.length > 0) {
+					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+						if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+							console.log('found ' + sender.tab.id + ' so determining that utilityId is ' + i); 	
+							parentTabId = i;
+							break;
+						}
+					}
+				}
+			}
+			if(parentTabId == null || parentTabId == undefined) {
+				return;
+			}
+			
+			console.log('UtilityAMTPairs');
+			console.log(UtilityAMTPairs);
+			console.log(parentTabId);
+			newTabPos = UtilityAMTPairs[parentTabId].utilities.length;
+			UtilityAMTPairs[parentTabId].utilities.push(request.addUtilityTab.utility);
+			currentUtility = UtilityAMTPairs[parentTabId].utilities[newTabPos];
+			
+			if(request.addIFFPrimaryUtilityTab) {
+				//If we're not the 1st utility tab in the array, then end the script here
+				if(UtilityAMTPairs[parentTabId].utilities[0].tabId != senderId) {
+					return;
+				}
+			}
+			
+			var tabIdentifier = '###tabId'+parentTabId+'###at'+newTabPos;
+			if(!currentUtility.url || currentUtility.url.trim() == '') {
+				currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
+			}
+			currentUtility.url += tabIdentifier;
+			
+			chrome.tabs.create({windowId: localStorage['UTILITY_WINDOW']*1, url:currentUtility.url, 
+																				active: (currentUtility.active != null ? currentUtility.active : false)}, 
+				function(newTab) {
+					//~ console.log('New Tab Created with url:' +newTab.url);
+					var ownerTabId = /###tabId(\d+)/.exec(newTab.url)[1];
+					//~ console.log('ownerTabId:' + ownerTabId);
+					var utTabPos = /###at(\d+)/.exec(newTab.url)[1];
+					//~ console.log('utTabPos:' + utTabPos);
+					UtilityAMTPairs[parentTabId].utilities[utTabPos].tabId = newTab.id;
+					//~ console.log(UtilityAMTPairs);
+				})
+	}
+	
+	if(request.addUtilityOptionsToSelf) {
+		//console.log(sender.tab.id);
+		for(var i in UtilityAMTPairs) {
+			if(UtilityAMTPairs[i] && UtilityAMTPairs[i].utilities && UtilityAMTPairs[i].utilities.length) {
+				for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+					if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+						for(var k in request.addUtilityOptionsToSelf) {
+							//console.log('adding option') + request.addUtilityOptionsToSelf;
+							UtilityAMTPairs[i].utilities[j].options[k] = request.addUtilityOptionsToSelf[k];
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	if(request.switchToUtilityTab) {
+		for(var i in UtilityAMTPairs) {
+			if(UtilityAMTPairs[i] && UtilityAMTPairs[i].utilities && UtilityAMTPairs[i].utilities.length) {
+				for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+					if(UtilityAMTPairs[i].utilities[j].id == request.switchToUtilityTab) {
+						chrome.tabs.update(UtilityAMTPairs[i].utilities[j].tabId, {active:true});
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	if(request.addOptionsToAllRelatedUtilities) {
+		var toAdd = request.addOptionsToAllRelatedUtilities;
+		console.log('addOptionsToAllRelatedUtilities');
+		//console.log(request.addOptionsToAllRelatedUtilities);
+
+		for(var l in toAdd) {
+			console.log(toAdd[l]);
+		}
+		
+		for(var i in UtilityAMTPairs) {
+			if(UtilityAMTPairs[i] && UtilityAMTPairs[i].utilities && UtilityAMTPairs[i].utilities.length) {
+				for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
+					if(UtilityAMTPairs[i].utilities[j].tabId == sender.tab.id) {
+						for(var k = 0;  k < UtilityAMTPairs[i].utilities.length; k++) {
+							for(var l in toAdd) {
+								UtilityAMTPairs[i].utilities[k].options[l] = toAdd[l];
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
 
 });
 
@@ -1372,7 +1694,9 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 					for(var j = 0; j < UtilityAMTPairs[i].utilities.length; j++) {
 						tabIdsToRemove.push(UtilityAMTPairs[i].utilities[j].tabId);
 					}
-					chrome.tabs.remove(tabIdsToRemove);
+					if(tabIdsToRemove.length) {
+						chrome.tabs.remove(tabIdsToRemove);
+					}
 					delete UtilityAMTPairs[i]; 
 					console.log(UtilityAMTPairs);
 					break;
@@ -1403,7 +1727,9 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 		}
 	})
 
+function shiftFarRight() {
 
+}
 
 function GM_xmlhttpRequest(details) {
 	function setupEvent(xhr, url, eventName, callback) {

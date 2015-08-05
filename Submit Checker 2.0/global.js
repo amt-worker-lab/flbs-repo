@@ -1,28 +1,81 @@
+console.log(window.top == window.self);
+
+
+window.addEventListener('keyup', function(e) {
+	function signIn(id) {
+		console.log('signing in');
+		var id = id;
+		chrome.extension.sendMessage(
+		{
+			signIn: true,
+			id: id
+		},
+		function(response) {
+			//console.log('id: '+id);
+			var allSignInButtons = document.getElementsByName('signin');
+			//console.log(document.getElementById(id));
+			for(var i = 0; i < allSignInButtons.length; i++) {
+				if(allSignInButtons[i].id != id) {
+					allSignInButtons[i].style.backgroundColor = '';
+				}
+			}
+			chrome.runtime.sendMessage({ "changeIcon" : id});
+
+		}
+		);
+		
+	}
+	//console.log(e.shiftKey);
+	//console.log(e.keyCode);
+	if(e.shiftKey) {
+		switch(''+e.keyCode) {
+			case '35':
+			case '49':
+			case '97':
+			signIn('Dave')
+			break;
+			case '40':
+			case'50':
+			case '98':
+			signIn('Mom')
+			break;
+			case '34':
+			case '51':
+			case '99':
+			signIn('Ben')
+			break;
+		}
+	}
+});
+
 
 var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
 if(document.location.href.match(locReg)) {
 
 
 function HIT(rew, reqId, reqName, jName,gId, hId, dur, worker) {
-			this.reward = rew;
-			this.requesterId = reqId;
-			this.requesterName = reqName;
-			this.jobName = jName;
-			this.groupId = gId;
-			this.hitId = hId;
-			this.duration = dur;
-			this.workerName = worker;
-			
-			
-			this.time = (new Date()).getTime();
-			
-			this.accountName = document.getElementById('user_name_field').innerText; 
-			this.userName = AMT__Global_Vars.userName;
-			
-			//console.log('userName: ' + this.userName);
-			
-			this.computerId = AMT__Global_Vars.computerId; //Not passed in via sessionStorage
-	}
+	this.reward = rew;
+	this.requesterId = reqId;
+	this.requesterName = reqName;
+	this.jobName = jName;
+	this.groupId = gId;
+	this.hitId = hId;
+	this.duration = dur;
+	this.workerName = worker;
+	
+	
+	this.time = (new Date()).getTime();
+	
+	this.accountName = document.getElementById('user_name_field').innerText; 
+	this.userName = AMT__Global_Vars.userName;
+	
+	//console.log('userName: ' + this.userName);
+	
+	this.computerId = AMT__Global_Vars.computerId; //Not passed in via sessionStorage
+	
+	console.log('Submit Checker 2.0: HIT:');// Debug June 27, 2015
+	console.log(this);
+}
 
 
 
@@ -207,23 +260,23 @@ AMT__Global_Vars.initializeTabId = function() {
 							});
  }
   
- //Assumption: we're in top window
- //Assumption: Job has been accepted
- //Assumption: initializeGroupId has already run
- AMT__Global_Vars.initializeHitRecordDetails= function() {
+//Assumption: we're in top window
+//Assumption: Job has been accepted
+//Assumption: initializeGroupId has already run
+AMT__Global_Vars.initializeHitRecordDetails= function() {
 	 //alert('hit');
-		//Check Assumptions
-		if(!AMT__Global_Vars.isTopWindow)
-			alert('error in initializeHitRecordDetails');
-		if(AMT__Global_Vars.isPreview)
-			alert('error in initializeHitRecordDetails');	
-		
-		
-		//Get COMPUTER_ID and Current User from localhost 
-		GM_xmlhttpRequest({
-			method: 'GET',
-			url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
-			onload: function(response) {
+	//Check Assumptions
+	if(!AMT__Global_Vars.isTopWindow)
+		alert('error in initializeHitRecordDetails');
+	if(AMT__Global_Vars.isPreview)
+		alert('error in initializeHitRecordDetails');	
+	
+	
+	//Get COMPUTER_ID and Current User from localhost 
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
+		onload: function(response) {
 			//console.log(response);
 
 			var compAndName = JSON.parse(response.responseText);
@@ -274,27 +327,27 @@ AMT__Global_Vars.initializeTabId = function() {
 			AMT__Global_Vars.hitRecordDetails = new HIT(rew, reqId, reqName,jName, gId, hId, dur);
 			//alert('here');
 			GM_xmlhttpRequest({
-			method: 'GET',
-			asynchronous: false,
-			url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
-			onload: function(response) {
-							//console.log('Response Recieved');
-							if(response) {
-							
-							var rs = response.responseText;
-							
-							if (response.status == 200) {
-									//console.log(rs);
-									if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
-										alert('Debug: Failed to record hit b/c it has already been recorded');
-									}
-								}
+				method: 'GET',
+				asynchronous: false,
+				url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + AMT__Global_Vars.computerId + '&HIT=' + encodeURIComponent(JSON.stringify(AMT__Global_Vars.hitRecordDetails)),
+				onload: function(response) {
+					//console.log('Response Recieved');
+					if(response) {
+					
+					var rs = response.responseText;
+					
+					if (response.status == 200) {
+							//console.log(rs);
+							if(rs.indexOf('PHP ran, hitId+UserName has already been added') != -1) {
+								alert('Debug: Failed to record hit b/c it has already been recorded');
 							}
-			}
+						}
+					}
+				}
 			}); 
 
-			}
-			});
+		}
+	});
  }
  
  

@@ -169,13 +169,13 @@ function init_func_ra_button_nextTab() {
 		});	
 }
 
-function init_func_r_button_nextTab() {
-	chrome.extension.sendRequest({getR_Button_NextTab: true}, 
-		function(rs) 
-		{
-			TOGGLE_R_BUTTON_NEXTTAB.value = rs.R_Button_NextTab;
-		});	
-}
+//~ function init_func_r_button_nextTab() {
+	//~ chrome.extension.sendRequest({getR_Button_NextTab: true}, 
+		//~ function(rs) 
+		//~ {
+			//~ TOGGLE_R_BUTTON_NEXTTAB.value = rs.R_Button_NextTab;
+		//~ });	
+//~ }
 
 function init_func_getIsUtilityWindow() {
 	chrome.extension.sendRequest({getIsUtilityWindow: true}, 
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	RA_CUSTOMKEY = document.getElementById('rACustomKey')
 	TOGGLE_NTPASSBY = document.getElementById('toggleNTPassBy');
 	TOGGLE_RA_BUTTON_NEXTTAB = document.getElementById('R&A NextTab');
-	TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab');
+	//TOGGLE_R_BUTTON_NEXTTAB = document.getElementById('Return NexTab'); //deprecated
 	TOGGLE_IS_UTILITY_WINDOW = document.getElementById('isUtilityWindow');
 	TOGGLE_IS_SPECIAL_WORKFLOW_WINDOW = document.getElementById('isSpecialWorkflowWindow');
 	EL_STG_ACTIVE	= document.getElementById('CAPTCHA_stagger_is_active');
@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	init_func_getIsSpecialWorkflowWindow();
 	
 	init_func_ra_button_nextTab();
-	init_func_r_button_nextTab();
+	//init_func_r_button_nextTab();
 	
 	
 	SELECT.onfocus = function() {
@@ -377,20 +377,20 @@ document.addEventListener("DOMContentLoaded", function() {
 		);
 	}
 	
-	TOGGLE_R_BUTTON_NEXTTAB.onclick = function() {
-		this.style.border = '4px solid LightGreen';
-		if(this.value == 'On') {
-			this.value = 'Off';
-		}
-		else
-			this.value = 'On';
-		chrome.extension.sendRequest(
-			{toggleR_Button_NextTab: TOGGLE_R_BUTTON_NEXTTAB.value}, 
-			function(rs) {
-				//squelch rs
-			}
-		);
-	}
+	//~ TOGGLE_R_BUTTON_NEXTTAB.onclick = function() {
+		//~ this.style.border = '4px solid LightGreen';
+		//~ if(this.value == 'On') {
+			//~ this.value = 'Off';
+		//~ }
+		//~ else
+			//~ this.value = 'On';
+		//~ chrome.extension.sendRequest(
+			//~ {toggleR_Button_NextTab: TOGGLE_R_BUTTON_NEXTTAB.value}, 
+			//~ function(rs) {
+				//~ //squelch rs
+			//~ }
+		//~ );
+	//~ }
 	
 	
 	TOGGLE_IS_UTILITY_WINDOW.onclick = function() {

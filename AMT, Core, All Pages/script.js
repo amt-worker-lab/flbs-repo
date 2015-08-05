@@ -25,6 +25,10 @@ var RUN__ALL_PAGES__Matt_Tarjeft = false;
 // See "* REQUESTER TASKS" below for more tasks.
 var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 
+var SCRIPT_IDS_FOR_UTILITY_CHECKING = ['gcfnekbbpmbgadddbojhlojhddnkcpje',//core mturk
+										'bpbbmbgkdconjgghffedjkojaoebdnii', //work localhost
+										'mabgkkenedddfkfmpocdekdjckalpddc' //work localhost, from David's chrome extension
+										]
 // scripts
 var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
@@ -55,23 +59,24 @@ chrome.runtime.onMessage.addListener(
 				
 				
 				
-				
-				var theForm = document.forms['aspnetForm'];
-				if (theForm) {
-					var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
-					if (rg) {
-						document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
-						theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
-						theForm.__EVENTARGUMENT.value = '';
-						theForm.submit();
-						//~ 
-						//~ console.log(new AMT___core_factory().nextWindow());
-						//~ 
-						//~ // GO TO NEXT 
-						//~ 
-						//~ // submit
+				window.setTimeout(function() {
+					var theForm = document.forms['aspnetForm'];
+					if (theForm) {
+						var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
+						if (rg) {
+							document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
+							theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
+							theForm.__EVENTARGUMENT.value = '';
+							theForm.submit();
+							//~ 
+							//~ console.log(new AMT___core_factory().nextWindow());
+							//~ 
+							//~ // GO TO NEXT 
+							//~ 
+							//~ // submit
+						}
 					}
-				}
+				},1000);
 			}
 		}
 	}
@@ -153,6 +158,48 @@ function load()
 		console.log('Stop. Run:load__allPages_AMT_combo.');
 		
 		this.global_vars.is_running_on_amt = false; // Apparently? This need to be false?
+		return;
+	}
+	
+	//
+	// CAPTCHA FOCUS...
+	//
+	// http://www.hotelscombined.com/TrafficInspection.aspx?requestId=...&requestUrl=...
+	if (loc.indexOf('http://www.hotelscombined.com/TrafficInspection.aspx') == 0) {
+		setTimeout(function() {
+			document.getElementById('recaptcha_response_field').focus();
+		}, 200);
+		setTimeout(function() {
+			document.getElementById('recaptcha_response_field').focus();
+		}, 600);
+		setTimeout(function() {
+			document.getElementById('recaptcha_response_field').focus();
+		}, 1200);
+		setTimeout(function() {
+			document.getElementById('recaptcha_response_field').focus();
+		}, 2400);
+		return;
+	}
+	//
+	//
+	//
+	if (loc.indexOf('http://www.upcindex.com/') == 0) {
+		setTimeout(function() {
+			if (document.getElementById('recaptcha_response_field'))
+				document.getElementById('recaptcha_response_field').focus();
+		}, 200);
+		setTimeout(function() {
+			if (document.getElementById('recaptcha_response_field'))
+				document.getElementById('recaptcha_response_field').focus();
+		}, 600);
+		setTimeout(function() {
+			if (document.getElementById('recaptcha_response_field'))
+				document.getElementById('recaptcha_response_field').focus();
+		}, 2000);
+		setTimeout(function() {
+			if (document.getElementById('recaptcha_response_field'))
+				document.getElementById('recaptcha_response_field').focus();
+		}, 6000);
 		return;
 	}
 	
@@ -256,6 +303,16 @@ function load()
 			
 			chrome.runtime.sendMessage(
 					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						latLng: {lat: lat, lng: lng}
+					},
+					function(response) {
+						// response=object
+					}
+				)
+			chrome.runtime.sendMessage(
+					'bpbbmbgkdconjgghffedjkojaoebdnii',
 					{
 						util_window_message_passing: true,
 						latLng: {lat: lat, lng: lng}
@@ -454,7 +511,8 @@ function load()
 			}
 			if (event.data == 'AMT__Newline_Financial_cookcountyclerk_com' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
-				AMT__Newline_Financial_cookcountyclerk_com();
+				new AMT__rq().AMT__Newline_Financial_cookcountyclerk_com();
+				//AMT__Newline_Financial_cookcountyclerk_com();
 			}
 			if (event.data == 'AMT__Tim_Edwards_Email' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
@@ -583,21 +641,23 @@ function load()
 	// For example Michael Lai
 	this.AMT__init_utility_window = function() {
 		if(window.top == window.self) {
-			chrome.runtime.sendMessage('gcfnekbbpmbgadddbojhlojhddnkcpje', {amIUtilityTab: true},  
-				function(response) {
-					if(response &&
-					   response.isUtilityTab) {
-						//We are a utility tab! :D
-						//the response is an options obj
-						console.log('Got options from Core-Mturk:');
-						console.log(response);
-						response.isUtilityTab = true;
-						AMT__iframeReceiveMessage({
-							data: response // Pass this in as ".data"
-						});
+			for(var i = 0; i < SCRIPT_IDS_FOR_UTILITY_CHECKING.length; i++) {
+				chrome.runtime.sendMessage(SCRIPT_IDS_FOR_UTILITY_CHECKING[i], {amIUtilityTab: true},  
+					function(response) {
+						if(response &&
+						   response.isUtilityTab) {
+							//We are a utility tab! :D
+							//the response is an options obj
+							console.log('Got options from Core-Mturk:');
+							console.log(response);
+							response.isUtilityTab = true;
+							AMT__iframeReceiveMessage({
+								data: response // Pass this in as ".data"
+							});
+						}
 					}
-				}
-			);
+				);
+			}
 		}
 	}
 	
@@ -1473,152 +1533,42 @@ function load()
 	}
 	
 	
-	/*
+	/**
 	 * Newline Financial
-	 * 
+	 * Jordan A Gross (aka)
+	 * (From parent frame)
 	 */
-	// POLL COMPLETE
-	function AMT__Newline_Financial_cookcountyclerk_com__auto_captcha_complete() {
-		
-	}
-	// AUTO INIT
-	function AMT__Newline_Financial_cookcountyclerk_com__auto_captcha_init(IMAGE_SRC, id) {
-		//~ var CINTV;
-		AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC);
-		
-		var IMAGE_SRC = IMAGE_SRC;
-		
-		console.log(IMAGE_SRC);
-		
-		var id = id;
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(IMAGE_SRC)+'&init',
-			onload: function(response) {
-				var rs = response.responseText;
-				
-				var CINTV = setInterval(function() {
-					GM_xmlhttpRequest({
-						method: "GET",
-						url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(IMAGE_SRC)+'&complete',
-						onload: function(response) {
-							var rs=response.responseText;
-							if (rs != '') {
-								clearInterval(CINTV);
-							}
-							else return;
-							
-							rs = rs.replace(/ /g, ''); // SPACES!
-							rs = rs.trim();
-							
-							console.log(rs);
-							
-							// TRY TO FILL IN THIS VALUE
-							// RETURNS ' '.ocr!!
-							if (rs.length == 5) {
-								var y, z; // stage 1
-								z = document.getElementsByClassName('delinquentForm');
-								if (z) {
-									if (z[0]) {
-										z = z[0];
-										z = z.getElementsByTagName('td');
-										if (z) {
-											y = z[1].getElementsByTagName('input')[0];
-											
-											if (y.value == '') {// ISBLANK
-												y.value = rs;
-												
-												//
-												var SUBMIT_BTN = z[2].getElementsByTagName('input')[0];
-												SUBMIT_BTN.click();
-											}
-										}
-									}
-								}
-								console.log('x');
-								return;
-							}
-							
-							// still here?
-							// Mark this as ocr complete
-							var z = document.getElementsByClassName('delinquentForm')[0];
-							z.style.backgroundColor = 'LightGreen';
-							
-							// ELSE do manual!
-							//AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC);
-						}
-					});
-				}, 400);
-			}
-		});
-		return;
-	}
-	// SET INTV
-	function AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC) {
-		var IMAGE_SRC = IMAGE_SRC;
-		var form = document.getElementsByClassName('delinquentForm');
-		var y, z; // stage 1
-		z = document.getElementsByClassName('delinquentForm');
-		if (z) {
-			if (z[0]) {
-				z = z[0];
-				z = z.getElementsByTagName('td');
-				if (z) {
-					y = z[1].getElementsByTagName('input')[0];
-					
-					var CAPTCHA_VAL;
-					
-					y.addEventListener('keyup', function() {
-						//~ clearInterval(CINTV);// GLOBAL SETINT
-						
-						if (this.value.length == 5) {
-							
-							var CAPTCHA_VAL = this.value;
-							
-							chrome.extension.sendRequest({
-									nextTab: true
-								},
-								function(response)
-								{
-								}
-							);
-
-							//
-							// SAVE THE IMAGE FILE + THE CURRENT CAPTCHA HERE!
-							//
-							var rf = new AMT___requests_factory();
-							rf.io__write_to_file(
-								{
-									data:	'AMT__serverSide_write__value='		+ encodeURIComponent(CAPTCHA_VAL + '|' + IMAGE_SRC) +
-											'&AMT__serverSide_write__folder=.cached'+
-											'&AMT__serverSide_write__file='		+ encodeURIComponent('NEWLINE_FINANCIAL_'+CAPTCHA_VAL)//,
-									//rs:		rs // for callback !!
-								},
-								function() {
-									var SUBMIT_BTN = form[0].getElementsByTagName('input')[6];
-									SUBMIT_BTN.click()
-								}
-							);
-						}
-					}, false);
+	AMT__rq.prototype.AMT__Newline_Financial_cookcountyclerk_com = function() {
+		init();
+		function init() {
+			var x = document.location;
+			
+			//
+			// t==0
+			// on second run
+			// replace this !!: <form name="aspnetForm" method="post" action="DelinquentTaxSearch.aspx?u=xxx"
+			
+			// Scroll into view
+			setTimeout(function() { JordanAGross__scrollIntoView(); }, 400);
+			setTimeout(function() { JordanAGross__scrollIntoView(); }, 800);
+			setTimeout(function() { JordanAGross__scrollIntoView(); }, 1000);
+			function JordanAGross__scrollIntoView() {
+				var x = document.getElementById('WebPartWPQ1');
+				var y = document.getElementById('printDoc');
+				if (x && y) {
+					x.scrollIntoView();
+					y.scrollIntoView();
 				}
 			}
-		}
-		
-	}
-	// FROM PARENT FRAME!
-	function AMT__Newline_Financial_cookcountyclerk_com() {
-		var x = document.location;
-		
-		//
-		// t==0
-		// on second run
-		// replace this !!: <form name="aspnetForm" method="post" action="DelinquentTaxSearch.aspx?u=xxx"
-		
-		var r, id;
-		r = /http:\/\/www\.cookcountyclerk\.com\/tsd\/delinquenttaxsearch\/Pages\/DelinquentTaxSearch\.aspx\/\?u=([^&]+)&t=([\d])/.exec(x);
-		//~ r = /http:\/\/www\.cookcountyclerk\.com\/tsd\/delinquenttaxsearch\/Pages\/DelinquentTaxSearch\.aspx\/\?u=([\d\D]+)/.exec(x);
-		if (r) {
+			
+			var r, id;
+			r = /http:\/\/www\.cookcountyclerk\.com\/tsd\/delinquenttaxsearch\/Pages\/DelinquentTaxSearch\.aspx\/?\?u=([^&]+)&t=([\d])/.exec(x);
+			
+			// http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/DelinquentTaxSearch.aspx/DelinquentTaxSearch.aspx/?u=24-24-300-044-1007&t=1
+			
+			if (!r) {
+				return;
+			}
 			
 			var id = r[1]; // ORIGINAL
 			var action = r[2]; // NUM TRIES!
@@ -1697,12 +1647,12 @@ function load()
 						if (action == '0')
 						{ // SET TIMEOUT
 							setTimeout(function() {
-								AMT__Newline_Financial_cookcountyclerk_com__auto_captcha_init(IMAGE_SRC, id);
+								auto_captcha_init(IMAGE_SRC, id);
 							}, 1200);
 						}
 						else
 						{
-							AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC);
+							setInterval_manual(IMAGE_SRC);
 						}
 						
 						
@@ -1814,7 +1764,8 @@ function load()
 					}
 				}
 			}
-			
+			console.log('------SAVE ARRAY------');
+			console.log(arr);
 			if (arr.length) {
 				// save
 				GM_xmlhttpRequest({
@@ -1826,21 +1777,147 @@ function load()
 				});
 			}
 		}
-		
-		// Scroll into view
-		setTimeout(function() { JordanAGross__scrollIntoView(); }, 400);
-		setTimeout(function() { JordanAGross__scrollIntoView(); }, 800);
-		setTimeout(function() { JordanAGross__scrollIntoView(); }, 1000);
-		function JordanAGross__scrollIntoView() {
-			var x = document.getElementById('WebPartWPQ1');
-			var y = document.getElementById('printDoc');
-			if (x && y) {
-				x.scrollIntoView();
-				y.scrollIntoView();
+		/*
+		 * Newline Financial
+		 * 
+		 */
+		// AUTO INIT
+		function auto_captcha_init(IMAGE_SRC, id) {
+			setInterval_manual(IMAGE_SRC);
+			
+			var IMAGE_SRC = IMAGE_SRC;
+			
+			console.log(IMAGE_SRC);
+			
+			var start = new Date().getTime();
+			var id = id;
+			
+			return;
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(IMAGE_SRC)+'&init',
+				onload: function(response) {
+					var rs = response.responseText;
+					
+					var CINTV = setInterval(function() {
+						GM_xmlhttpRequest({
+							method: "GET",
+							url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(IMAGE_SRC)+'&complete',
+							onload: function(response) {
+								var rs=response.responseText;
+								if (rs != '') {
+									clearInterval(CINTV);
+								}
+								else return;
+								
+								rs = rs.replace(/ /g, ''); // SPACES!
+								rs = rs.trim();
+								console.log(rs);
+								rs = rs.replace(/\|\|\|\|[\d\D]*$/, '');// REPLACE DEBUG, e.g. '||||FILENAME'
+								
+								// Mark this as ocr complete
+								var z = document.getElementsByClassName('delinquentForm')[0];
+								z.style.backgroundColor = 'LightGreen';
+								
+								// TRY TO FILL IN THIS VALUE
+								// RETURNS ' '.ocr!!
+								if (rs.length == 5) {
+									var y, z; // stage 1
+									z = document.getElementsByClassName('delinquentForm');
+									if (z) {
+										if (z[0]) {
+											z = z[0];
+											z = z.getElementsByTagName('td');
+											if (z) {
+												y = z[1].getElementsByTagName('input')[0];
+												
+												if (y.value == '') {// ISBLANK
+													y.value = rs;
+													
+													// DO NOT SUBMIT IMMEDIATELY. Check that it has been at least 3000 ms!
+													var timeout = new Date().getTime() - start;
+													// If > 3
+													timeout = (timeout >= 3000) ? 0 : 3000 - timeout;
+													setTimeout(function() {
+														var SUBMIT_BTN = z[2].getElementsByTagName('input')[0];
+														SUBMIT_BTN.click();
+													}, timeout);
+												}
+											}
+										}
+									}
+									return;
+								}
+								
+								// ELSE do manual!
+								//AMT__Newline_Financial_cookcountyclerk_com__setInterval_manual(IMAGE_SRC);
+							}
+						});
+					}, 400);
+				}
+			});
+			return;
+		}
+		// SET INTV
+		function setInterval_manual(IMAGE_SRC) {
+			var IMAGE_SRC = IMAGE_SRC;
+			var form = document.getElementsByClassName('delinquentForm');
+			var y, z; // stage 1
+			z = document.getElementsByClassName('delinquentForm');
+			var start_time = new Date().getTime(); // TIME
+			if (z) {
+				if (z[0]) {
+					z = z[0];
+					z = z.getElementsByTagName('td');
+					if (z) {
+						y = z[1].getElementsByTagName('input')[0];
+						
+						var CAPTCHA_VAL;
+						y.addEventListener('keyup', function(e) {
+							
+							if (this.value.length < 5) {
+								return;
+							}
+							
+							// If here...
+							var CAPTCHA_VAL = this.value;
+							new AMT___global_factory().callNextTabInCoreMturk(); // Next tab
+							
+							// guid
+							// http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/CaptchaImage.axd?guid=4602e124-1969-4aef-91bc-68b739837c81
+							// guid=4602e124-1969-4aef-91bc-68b739837c81
+							var guid = /guid=([^&$]+)/.exec(IMAGE_SRC)[1];
+							guid = guid.replace(/[^\d\w\-]/g, ''); // Filename safe
+							guid = guid.substr(0,100); // Filename safe, 100 max characters (Default=36 chars.)
+
+							// SAVE THE IMAGE FILE + THE CURRENT CAPTCHA HERE!
+							//
+							//
+							var rf = new AMT___requests_factory();
+							rf.io__write_to_file(
+								{
+									data:	'AMT__serverSide_write__value='		+ encodeURIComponent(CAPTCHA_VAL) +
+											'&AMT__serverSide_write__folder=.cached'+
+											'&AMT__serverSide_write__file='		+ encodeURIComponent('NEWLINE_FINANCIAL_'+guid)//,
+									//rs:		rs // for callback !!
+								},
+								function() {
+									var SUBMIT_BTN = form[0].getElementsByTagName('input')[6];
+									// CHECK FOR START TIME!
+									var now = new Date().getTime();
+									var tts = 3000 - (now - start_time); // In ms. 0 to 3000 or negative.
+									//if (tts < 0) tts = 0; // Unnecessary
+									setTimeout(function() {
+										SUBMIT_BTN.click();
+									}, tts);
+								}
+							);
+						}, false);
+					}
+				}
 			}
 		}
 	}
-	
 	/**
 	 * new AMT__rq().AMT__Michael_Lai_ib_tok
 	 * 
@@ -1874,6 +1951,9 @@ function load()
 	 */
 	AMT__rq.prototype.AMT__Kristin_Howe_agent_photos2__utility_window = function(data) {
 		console.log(data);
+		
+		if(window.self != window.top)
+			return;
 		
 		// init
 		activate_images();
@@ -1912,100 +1992,142 @@ function load()
 		}, 4000);
 		
 		// add_image
-		function add_image(page_img, pos_left) {
+		//~ function add_image(page_img, pos_left) {
 			//create an image
 			//getBounding
-			var b = page_img.getBoundingClientRect();
-			var left = b.left *1;
+			//~ var b = page_img.getBoundingClientRect();
+			//~ var left = b.left *1;
 			//left -= 60;
-			left += pos_left;
-			var top = b.top *1;
-			top += document.body.scrollTop*1;
-			
-			var d = document.createElement('div');
-			d.setAttribute(
-				'style',
-				'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
-			);
-			d.setAttribute('class', 'manual__exe_div_162435168649');
-			var d_= document.createElement('img');
-			d_.setAttribute('class', 'manual__exe_image_162435168649');
-			d_.setAttribute(
-				'style',
-				'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
-			);
-			d_.src = page_img.src;
-			d.appendChild(d_);
-			document.body.appendChild(d);
+			//~ left += pos_left;
+			//~ var top = b.top *1;
+			//~ top += document.body.scrollTop*1;
+			//~ 
+			//~ var d = document.createElement('div');
+			//~ d.setAttribute(
+				//~ 'style',
+				//~ 'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
+			//~ );
+			//~ d.setAttribute('class', 'manual__exe_div_162435168649');
+			//~ var d_= document.createElement('img');
+			//~ d_.setAttribute('class', 'manual__exe_image_162435168649');
+			//~ d_.setAttribute(
+				//~ 'style',
+				//~ 'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
+			//~ );
+			//~ d_.src = page_img.src;
+			//~ d.appendChild(d_);
+			//~ document.body.appendChild(d);
 			
 			//~ console.log('pos_left:'+pos_left+' left:'+left);
 			//~ console.log(d_);
-		}
+		//~ }
 		
 		// activate_images
 		// activate images function
-		function activate_images() {
+		//~ function activate_images() {
 			// Iterate through all images and add an image "button."
 			// Background color is set from domain.
 			// (getBoundingClientRect())
 			// Remove all images from any previous runs.
 			
 			// remove old
-			var a = document.getElementsByClassName('manual__exe_image_162435168649');
-			var i;
-			for (i=a.length - 1; i >= 0; i--) {
-				if (!a[i]) continue;
-				if (!a[i].href) continue;
-				a[i].parentNode.removeChild(a[i]);
-			}
-			var a = document.getElementsByClassName('manual__exe_div_162435168649');
-			for (i=a.length - 1; i >= 0; i--) {
-				if (!a[i]) continue;
-				if (!a[i].href) continue;
-				a[i].parentNode.removeChild(a[i]);
-			}
+			//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
+			//~ var i;
+			//~ for (i=a.length - 1; i >= 0; i--) {
+				//~ if (!a[i]) continue;
+				//~ if (!a[i].href) continue;
+				//~ a[i].parentNode.removeChild(a[i]);
+			//~ }
+			//~ var a = document.getElementsByClassName('manual__exe_div_162435168649');
+			//~ for (i=a.length - 1; i >= 0; i--) {
+				//~ if (!a[i]) continue;
+				//~ if (!a[i].href) continue;
+				//~ a[i].parentNode.removeChild(a[i]);
+			//~ }
 			
 			
 			// new
 			//var bgc = (IMAGES_ARE_FZ == 1) ? 'Green' : '#aeaeae';
-			var a = document.getElementsByTagName('img');
-			for (var i in a) {
-				if (i == 'length') break;
-				if (!a[i].src || a[i].src == '') continue;
-				add_image(a[i], 200);
-				//KristinHowe_agent_photo_images__add_image(a[i], 20);
-				add_image(a[i], -200);
-			}
+			//~ var a = document.getElementsByTagName('img');
+			//~ for (var i in a) {
+				//~ if (i == 'length') break;
+				//~ if (!a[i].src || a[i].src == '') continue;
+				//~ add_image(a[i], 200);
+				//~ //KristinHowe_agent_photo_images__add_image(a[i], 20);
+				//~ add_image(a[i], -200);
+			//~ }
 			
 			// Send to parent/job window
 			// Write value to db
-			var a = document.getElementsByClassName('manual__exe_image_162435168649');
-			for (var i in a) {
-				a[i].onclick = function() {
-					this.style.border = '4px solid LightGreen';
-					
-					chrome.runtime.sendMessage(
-						'gcfnekbbpmbgadddbojhlojhddnkcpje',
-						{
-							util_window_message_passing: true,
-							data: {
-								src: this.src
-							}
-						},
-						function(response) {
-							// response=object
-						}
-					);
-					
-					//~ parent.postMessage(
+			//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
+			//~ for (var i in a) {
+				//~ a[i].onclick = function() {
+					//~ this.style.border = '4px solid LightGreen';
+					//~ 
+					//~ var theDomain = window.location.href.replace(/^https?:\/\/(www\.|)([^\/]+)[\w\W]*/i, '$2');
+					//~ 
+					//~ chrome.runtime.sendMessage(
+						//~ 'gcfnekbbpmbgadddbojhlojhddnkcpje',
 						//~ {
-							//~ key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
-							//~ data: this.src
+							//~ util_window_message_passing: true,
+							//~ data: {
+								//~ src: this.src,
+								//~ theDomain: theDomain
+							//~ },
+							//~ focus:true
 						//~ },
-					//~ "*");
-				}
-			}
-		}
+						//~ function(response) {
+							//~ // response=object
+						//~ }
+					//~ );
+					//~ 
+					parent.postMessage(
+						{
+							key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
+							data: this.src
+						},
+					"*");
+				//~ }
+			//~ }
+		//~ }
+		
+		//Attempt to pre-fetch the 1st 50 a's
+		//~ var a = document.getElementsByTagName('a');
+		//Convert a from an htmlcollectrion to an array (stack overflow)
+		//~ a = [].slice.call(a);
+		//~ console.log(a);
+		//Remove all of the a's that have an @ symbol
+		//~ for(var i = 0; i < a.length; i++) {
+			//~ if(!a[i].href || a[i].href.indexOf('@') != -1) {
+				//~ a.splice(i, 1);
+				//~ i--;
+			//~ }
+		//~ }
+		//~ console.log(a);
+		//~ 
+		//~ for(var i = 0; i < a.length && i < 50; i++) {
+			//~ var link = document.createElement('link');
+			//~ link.setAttribute('rel', 'prefetch');
+			//~ link.setAttribute('href', a[i].href);
+			//~ document.body.appendChild(link);
+		//~ }
+		
+		//~ function prefetch(url) {
+		  //~ var f=document.createElement('iframe'); f.src=url;
+		  //~ f.style.display='none';
+		  //~ document.body.appendChild(f);
+		  //~ //alert(url);
+		//~ }
+//~ 
+		//~ function startFetching() {
+			//~ var links = document.getElementsByTagName('link'), i=links.length, re=RegExp(/\bprefetch\b/);
+			//~ while (i--) {
+			  //~ if (links[i].getAttribute('rel').match(re)) prefetch(links[i].getAttribute('href'));
+			//~ }
+		//~ }
+		//~ //Only create iframes on the page where there isn't an iframe (avoids an infinite loop
+		//~ if(window.self == window.top)
+			//~ startFetching();
 		
 	}
 	/**
@@ -2026,13 +2148,10 @@ function load()
 	AMT__rq.prototype.AMT__chios_system_draw_polygon__utility_window = function(data) {
 		
 		document.body.innerHTML = '';
-		
+		console.log(data);
 		// Iframes
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(data.task__name)+'&ll='+data.task__ll.lat+','+data.task__ll.lng+'&output=embed&t=h&z=16'; //&iwloc=A
 		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__address)+'&output=embed&t=h&z=17' + '####ChiosSpecial###'; //&iwloc=A
-		
-		
-		
 		
 		var d2 = document.createElement('iframe');
 		d2.setAttribute('style',
@@ -2987,25 +3106,16 @@ function load()
 	/**
 	 * AMT__Newline_Financial_cookcountyclerk_com__payment
 	 * 
+	 * From parent frame:
+	 * 		.id
+	 * 		.task
+	 * 		.filename
 	 */
-	// FROM PARENT FRAME!
-	// .id
-	// .task
-	// 
 	// TODO: WRITE_TO_FILE ADD HOST: = mt___host
 	AMT__rq.prototype.AMT__Newline_Financial_cookcountyclerk_com__payment = function(data) {
 		
 		var x = document.location.href;
 		var ih = document.body.innerHTML;
-		
-	//~ function AMT__Newline_Financial_cookcountyclerk_com__payment(data) {
-		//~ console.log('messaged');
-		//~ console.log(x);
-		//~ 
-		//~ //
-		//~ // t==0
-		//~ // on second run
-		//~ // replace this !!: <form name="aspnetForm" method="post" action="DelinquentTaxSearch.aspx?u=xxx"
 		
 		// COMPLETE
 		// http://cookcountytreasurer.com/pinsummary.aspx 
@@ -3014,54 +3124,60 @@ function load()
 			ih.indexOf('<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year ') != -1
 			)
 		{
-			
-			//~ console.log('run complete');
-			
-			var complete = {
-				total: '',
-				amt1: '',
-				amt2: ''
+			if (new Date().getFullYear() != '2015') {
+				alert('_YEAR_');
+				return;
 			};
 			
-			//2,455.82
-			var r = /<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year 2013 \(payable in 2014\)<\/span>[\r\n\t\s]*<\/td>[\r\n\t\s]*<td style="padding-top: 8px; width: 10px;">[\r\n\t\s]*<span id="ContentPlaceHolder1_lblCurrentTaxYearDollarSign">\$<\/span>[\r\n\t\s]*<\/td>[\r\n\t\s]*<td style="padding-top: 8px; text-align: right;">[\r\n\t\s]*<span id="ContentPlaceHolder1_lblCurrentTaxYearAmount" class="blacktextbold">([^<]+)<\/span>/.exec(document.body.innerHTML);
-			if (!r) {
-				console.log('1');
-				return;
-			}
-			complete.total = r[1];
+			var complete = {
+				ContentPlaceHolder1_CP_TotalAmount1: '',
+				ContentPlaceHolder1_CP_TotalAmount2: '',
+				ContentPlaceHolder1_CP_TaxAmount1: '',
+				ContentPlaceHolder1_CP_TaxAmount2: '',
+				ContentPlaceHolder1_CP_BalanceDue: '',
+			};
 			
-			//1390.3200
-			var r = /<input type="hidden" name="ctl00\$ContentPlaceHolder1\$CP_TotalAmount1" id="ContentPlaceHolder1_CP_TotalAmount1" value="([^"]+)">/.exec(ih);
-			if (!r) {
-				console.log('2');
-				//~ console.log(ih);
+			var dv = document.getElementsByClassName('pinsummarytaxyearbox');
+			var dvc;
+			for (var i in dv) {
+				if (i == 'length') break;
+				if (dv[i].getElementsByClassName('pinsummarytaxyeardisplay')[0].innerText.trim() == '2014') {
+					dvc = dv[i];
+					break;
+				}
+			}
+			if (!dvc) {
+				console.log('No 2014 Div');
 				return;
 			}
-			complete.amt1 = Math.round(r[1] * 100) / 100;
-			complete.amt1 = MT___numberWithCommas(complete.amt1);
-			complete.amt1 = complete.amt1.replace(/(\.\d)$/, '$1' + '0');
-			if (complete.amt1.indexOf('.') == -1)
-				complete.amt1 += '.00';
-			//
+			complete.ContentPlaceHolder1_CP_BalanceDue = dvc.getElementsByClassName('pinsummaryamountduevalue')[0].innerText.trim();
 			
-			//1390.3200
-			var r = /<input type="hidden" name="ctl00\$ContentPlaceHolder1\$CP_TotalAmount2" id="ContentPlaceHolder1_CP_TotalAmount2" value="([^"]+)">/.exec(ih);
-			if (!r) {
-				console.log('3');
-				return;
+			//ContentPlaceHolder1_CP_TotalAmount1
+			//ContentPlaceHolder1_CP_TotalAmount2
+			//ContentPlaceHolder1_CP_TaxAmount1
+			//ContentPlaceHolder1_CP_TaxAmount2
+			//ContentPlaceHolder1_CP_BalanceDue
+			for (var id in complete) {
+				if (id == 'ContentPlaceHolder1_CP_BalanceDue') continue; // Better from above, else you get "(00001223509),(1223509),(1,223,509),(1,223,509)"
+				var x = document.getElementById( id );
+				if (!x) {
+					alert('missing '+id);
+					return;
+				}
+				var y = x.value;console.log(y);
+				var y = Math.round(y * 100) / 100;console.log(y);
+				y = MT___numberWithCommas(y);console.log(y);
+				y = y.replace(/(\.\d)$/, '$1' + '0');console.log(y);
+				if (y.indexOf('.') == -1)
+					y += '.00';
+				complete[ id ] = y;
 			}
-			complete.amt2 = Math.round(r[1] * 100) / 100;
-			complete.amt2 = MT___numberWithCommas(complete.amt2);
-			complete.amt2 = complete.amt2.replace(/(\.\d)$/, '$1' + '0');
-			if (complete.amt2.indexOf('.') == -1)
-				complete.amt2 += '.00';
 			
 			console.log(complete);
-			
-			var filename = 'newline_financial_' + data.id.replace(/[^\d\-]/g, '').substr(0, 20);
-			
+			//~ var filename = 'newline_financial_' + (data.id.replace(/[^\d]/g, '').substr(0, 20));
+			var filename = data.filename;
 			// WRITE TO FILE!
+			// e.g. http://192.168.1.2/mturk/.cached/newline_financial_16234080470000
 			var rf = new AMT___requests_factory();
 			rf.io__write_to_file(
 				{
@@ -3074,9 +3190,6 @@ function load()
 					parent.postMessage({key: 'AMT__Newline_Financial_cookcountyclerk_com__payment__complete', data: complete}, "*");
 				}
 			);
-			
-			
-			
 			// END HERE
 			return;
 		}
@@ -3135,6 +3248,7 @@ function load()
 		img.scrollIntoView(true);
 		img.style.marginTop = '10px';
 		
+		//ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch
 		var search;
 		search = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_cmdSearch');
 		if (search) {
@@ -3142,7 +3256,6 @@ function load()
 		} else {
 			search = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
 		}
-		//ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch
 		
 		var CAPTCHA_INT;
 		input.addEventListener('keydown', function() {
@@ -3151,20 +3264,7 @@ function load()
 		}, false);
 		input.addEventListener('keyup', function() {
 			if (this.value.length == 6) {
-				
 				new AMT___core_factory().nextTab();
-				
-				//~ setTimeout(function() {
-					//~ new AMT___core_factory().nextTab();
-					//~ document.getElementById('form1').submit();
-				//~ }, 40);
-				//~ var search;
-				//~ search = document.getElementById('ContentPlaceHolder1_PaymentSearchBox1_cmdSearch');
-				//~ if (search) {
-					//~ //
-				//~ } else {
-					//~ search = document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch');
-				//~ }
 				search.click();
 			}
 		}, false);
@@ -3183,11 +3283,11 @@ function load()
 			
 		var id = data.id + 'cookcountytreasurer';
 		
-		captcha();
+		// DO NOT DO CAPTCHA ON THIS!
+		// BAD SUCCESS RATE!
+		// IT IS 6 CHARACTERS LONG AND HAS VERY BAD SUCCESS RATE.
+		//~ captcha();
 		function captcha() {
-			
-			//var id
-			
 			GM_xmlhttpRequest({
 				method: "GET",
 				url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(img.src)+'&init&cookcountytreasurer',
@@ -3230,7 +3330,6 @@ function load()
 				}
 			});
 		}
-		
 	}
 	
 	/*
@@ -3503,35 +3602,18 @@ function load()
 		if (ih.indexOf(s) != -1) {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,button {margin:0;padding:0;font-size:12px;}');
-			
-			//~ GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;width:30%;zoom:0.6;}');
-			//~ GM_addStyle('.panel {position:absolute;top:1600px;}');
-			//~ GM_addStyle('.divs-yahoo:hover {background-color:aqua;cursor:pointer;}');
-			
 			GM_addStyle('body {width:30%;}');
 			GM_addStyle('.highlight-box {position:absolute;top:2000px;}');
 			
-			//~ 
-			//~ GM_addStyle('body {margin-top:0px;}');
-			//~ GM_addStyle('.highlight-box {position:absolute;top:1200px;}');
-			//~ GM_addStyle('input {width:90%;}');
-			//~ GM_addStyle('.divs-yahoo:hover {background-color:LightGreen;}');
-			
 			var b = document.getElementById('schoollisturl').innerText.trim();
-			//~ var o = {
-				//~ website: b[9].innerText.trim()
-			//~ }
+			
+			var o = {
+				q: [
+					document.getElementById('QSchoolListItemNumber')
+				]
+			}
 			
 			/* BEGIN ITEMS */
-			//~ var d1;
-			//~ d1 = document.createElement('div');
-			//~ d1.setAttribute('style','position:absolute;top:0px;left:20%;width:78%;height:500px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
-			//~ document.body.appendChild(d1);
-			//~ //
-			//~ var d1b = document.createElement('div');
-			//~ d1b.setAttribute('style','margin-left:20%;width:78%;height:98%;border-left:1px solid blue;background-color:#eee;');
-			//~ d1.appendChild(d1b);
-			//~ //
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:30%;width:69%;height:200px;');
 			d2.onblur = function() {
@@ -3542,17 +3624,26 @@ function load()
 			document.body.appendChild(d2);
 			// ...
 			var d1c = document.createElement('iframe');
-			d1c.setAttribute('style','position:absolute;top:260px;left:1%;width:98%;height:600px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
+			d1c.setAttribute('style','position:absolute;top:260px;left:0.5%;width:99%;height:600px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin;');
 			// Flicker
 			d1c.style.visibility = 'hidden';
 			d1c.addEventListener('load', function() {
 				this.style.visibility = 'visible';
 			}, false);
 			document.body.appendChild(d1c);
+			d1c.src = b;
 			/* END ITEMS */
 			
-			d1c.src = b;
-			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1c
+				],
+				offset: 260 // offset top
+			});
 			
 			// zoom out d1c!
 			// post msg
@@ -3563,6 +3654,14 @@ function load()
 			document.getElementById('QValidURL').value = 1;
 			document.getElementById('QSchoolYear').value = 1;
 			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value == '') return false;
+				doSubmit();
+				return false;
+			}
 		}
 	}
 	
@@ -5589,7 +5688,7 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 			}
 		
 		} else if (document.location.href == 'http://researchcu.ncua.gov/Views/creditUnionInfo.aspx') {
-			var rg=/Charter Number:&nbsp;&nbsp;<\/td>[\r\n\t\s]+<td class="FieldCell_1">([\d]+)<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr style="font-size:1\.5em;line-height:18px;color: Black; background-color:#FFF;">[\r\n\t\s]+<td class="LabelCell">Credit Union Name:&nbsp;&nbsp;<\/td>[\r\n\t\s]+<td class="FieldCell_1">([^<]+)/.exec(ih);
+			var rg=/Charter Number:&nbsp;&nbsp;<\/td>[\r\n\t\s]+<td class="FieldCell_1">([\d]+)<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr style="font-size:1\.5em;line-height:18px;color: Black; background-color:#FFF;">[\r\n\t\s]+<td class="LabelCell">Credit Union Name:&nbsp;&nbsp;<\/td>[\r\n\t\s]+<td class="FieldCell_1">([^<]+)<\/td>/.exec(ih);
 			if (rg) {
 				rg[2] = __js_clean_html_str(rg[2]);
 				//rg[2] = rg[2].replace(/&amp;/g, '&');
@@ -5617,6 +5716,11 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 									
 									// Do this here.
 									this.blur();
+									// Next
+									chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
+									function(response) {
+										//squelch response
+									});
 									
 									//~ 
 									//~ // SET A TIMEOUT TO CLICK
@@ -5628,12 +5732,20 @@ https:// ....>> .googleusercontent.com/gadgets/ifr
 										//~ document.getElementsByName('ctl00$MainContent$GetCallReport')[0].click();
 									//~ }, 20000);
 									
-									//new AMT___core_factory().nextTab();
-									chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
-									function(response) {
-										//squelch response
-									});
-									
+									//~ // Go to next window immediately
+									//~ chrome.extension.sendRequest({allPagesNextTab: true, options:{websocketNextWindow:true}},
+									//~ function(response) {
+										//~ //squelch response
+									//~ });
+									//~ // Go to next tab
+									//~ // Set a timeout for this. Try 1000ms.
+									//~ setTimeout(function() {
+										//~ chrome.extension.sendRequest({allPagesNextTab: true, options:{tellNextPageThatItIsOkayToRun: true, websocketNextWindow:true}},
+										//~ function(response) {
+											//~ //squelch response
+										//~ });
+									//~ }, 1000);
+									//~ 
 									/**chrome.extension.sendRequest({nextWindow: true, option:'tellNextPageThatItIsOkayToRun'},
 									function(response) {
 										//squelch response
@@ -11545,25 +11657,25 @@ var allUkCounties = {
 }
 
 
-if (document.readyState == "complete" || document.readyState == "interactive") {
-	ih = document.body.innerHTML;
-	var loader = new load();
-	if (loader.global_vars.is_running_on_amt) {
-		if(loader.AMT__init_utility_window) {
-			loader.AMT__init_utility_window();
-		}
-	}
-}
-else {
-	document.onreadystatechange = function () {
-		if (document.readyState == "complete" || document.readyState == "interactive") {
-			ih = document.body.innerHTML;
-			var loader = new load();
-			if (loader.global_vars.is_running_on_amt) {
-				if(loader.AMT__init_utility_window){
-					loader.AMT__init_utility_window();
-				}
-			}
-		}
-	}
-}
+//~ if (document.readyState == "complete" || document.readyState == "interactive") {
+	//~ ih = document.body.innerHTML;
+	//~ var loader = new load();
+	//~ if (loader.global_vars.is_running_on_amt) {
+		//~ if(loader.AMT__init_utility_window) {
+			//~ loader.AMT__init_utility_window();
+		//~ }
+	//~ }
+//~ }
+//~ else {
+	//~ document.onreadystatechange = function () {
+		//~ if (document.readyState == "complete" || document.readyState == "interactive") {
+			//~ ih = document.body.innerHTML;
+			//~ var loader = new load();
+			//~ if (loader.global_vars.is_running_on_amt) {
+				//~ if(loader.AMT__init_utility_window){
+					//~ loader.AMT__init_utility_window();
+				//~ }
+			//~ }
+		//~ }
+	//~ }
+//~ }

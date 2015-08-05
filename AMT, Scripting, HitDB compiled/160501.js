@@ -620,7 +620,6 @@ HITStorage.indexedDB.getHITs = function(options) {
         else if(options.export_xhr && options.export_xhr == true && options.getRStats == true)
         {
           HITStorage.export_xhr(results, true);
-		  //console.log("sent xhr updates");
 		}
 		else if(options.export_xhr && options.export_xhr == true && options.getRStats == false)
 		{
@@ -1191,32 +1190,32 @@ HITStorage.indexedDB.get_pending_approvals = function() {
     return;  
   
   var request = indexedDB.open("HITDB", v);
-	request.onsuccess = function(e) {
-    HITStorage.indexedDB.db = e.target.result;
-    var db = HITStorage.indexedDB.db;
-    var trans = db.transaction(["HIT"], HITStorage.IDBTransactionModes.READ_ONLY);
-    var store = trans.objectStore("HIT");
-    
-    var result = 0;
-    var index;
-    var range;
+  request.onsuccess = function(e) {
+	HITStorage.indexedDB.db = e.target.result;
+	var db = HITStorage.indexedDB.db;
+	var trans = db.transaction(["HIT"], HITStorage.IDBTransactionModes.READ_ONLY);
+	var store = trans.objectStore("HIT");
+	
+	var result = 0;
+	var index;
+	var range;
 
-    index = store.index('status');
-    range = IDBKeyRange.only('Pending Approval');
-    
-    index.openCursor(range).onsuccess = function(event) {
-      var cursor = event.target.result;
-      if (cursor) {
-        result += cursor.value.reward;
-        cursor.continue();
-      }
-      else {
-        element.textContent = '$' + result.toFixed(2);
-        if (header_element != null)
-          header_element.textContent = 'Pending earnings (HITDB updated: ' + localStorage['HITDB UPDATED']+ ')';
-      }
-      db.close();
-    };
+	index = store.index('status');
+	range = IDBKeyRange.only('Pending Approval');
+	
+	index.openCursor(range).onsuccess = function(event) {
+	  var cursor = event.target.result;
+	  if (cursor) {
+		result += cursor.value.reward;
+		cursor.continue();
+	  }
+	  else {
+		element.textContent = '$' + result.toFixed(2);
+		if (header_element != null)
+		  header_element.textContent = 'Pending earnings (HITDB updated: ' + localStorage['HITDB UPDATED']+ ')';
+	  }
+	  db.close();
+	};
   };
   request.onerror = HITStorage.indexedDB.onerror;
 };
@@ -1556,15 +1555,21 @@ HITStorage.parse_data = function(page_text, date, hitData)
       requesterName = requesters[k].textContent;
       requesterLink = requesters[k].childNodes[1].href;
       hitTitle      = titles[k].textContent;
-      index = amounts[k].innerHTML.indexOf('$');
+      index			= amounts[k].innerHTML.indexOf('$');
       hitReward     = parseFloat(amounts[k].innerHTML.substring(index+1));
       hitStatus     = statuses[k].innerHTML;
       hitFeedback   = feedbacks[k].textContent;
-
- 
-      index = requesterLink.search("requesterId=");
-      requesterId = requesterLink.substring(index+12, requesterLink.lastIndexOf('&'));
-      hitId = requesterLink.substring(81, index-1);
+		
+		
+		// UPDATED JUNE 11, 2015
+		// ~DS
+		//
+		requesterId = /requesterId=([^&]+)/.exec(requesterLink)[1];
+		hitId = /&subject=Regarding\+Amazon\+Mechanical\+Turk\+HIT\+([A-Z0-9]+)/.exec(requesterLink)[1];
+		
+      //~ index = requesterLink.search("requesterId=");
+      //~ requesterId = requesterLink.substring(index+12, requesterLink.lastIndexOf('&'));
+      //~ hitId = requesterLink.substring(81, index-1);
 
       var hit = {
         hitId         : hitId,
@@ -2360,45 +2365,42 @@ HITStorage.export_csv = function(results)
 
 HITStorage.export_xhr = function(results, doRStats)
 {
-  var name = document.getElementsByClassName('title_orange_text_bold')[0].innerText;
-  var nameReg = /Dashboard - ([\d\D]+)/;
-  name = nameReg.exec(name)[1].trim();
-  if(name == '_REDACTED_4_')
-  {
+	var name = document.getElementsByClassName('title_orange_text_bold')[0].innerText;
+	var nameReg = /Dashboard - ([\d\D]+)/;
+	name = nameReg.exec(name)[1].trim();
+	if(name == '_REDACTED_4_')
+	{
 	  name = 'Ben';
-  }
-  else if (name == 'Emily _REDACTED_4_')
-  {
+	}
+	else if (name == 'Emily _REDACTED_4_')
+	{
 	  name = 'Emily';
-  }
-  else if(name == 'Sora _REDACTED_4_')
-  {
+	}
+	else if(name == 'Sora _REDACTED_4_')
+	{
 	  name = 'Sora';
-  }
-  else if(name == 'Gloria Perry')
-  {
-	  name = 'Gloria';
-  }
-  else
-  {
-	  alert('Error, name not properly scraped');
-	  return;
-  }
-  
-  
-  
-  var csvData = 'hitId,date,requesterName,requesterId,title,reward,status,feedback\n';
-  for (var i=0; i< results.length;i++){//results.length; i++) {
-	  //console.log(i);
-    csvData += HITStorage.format_csv_line(results[i]);
-  }
-  
-  console.log("Sending Info. to alerter.php, updating " + name);
-  if(doRStats == true)
-  {
-	  console.log('Will do R Stats afterward');
-  }
-  else
+	}
+	else if(name == 'Gloria Perry')
+	{
+		name = 'Gloria';
+	}
+	else
+	{
+		alert('Error, name not properly scraped');
+		return;
+	}
+
+	var csvData = 'hitId,date,requesterName,requesterId,title,reward,status,feedback\n';
+	for (var i=0; i< results.length;i++){//results.length; i++) {
+		csvData += HITStorage.format_csv_line(results[i]);
+	}
+
+	console.log("Sending Info. to alerter.php, updating " + name);
+	if(doRStats == true)
+	{
+		console.log('Will do R Stats afterward');
+	}
+	else
 	console.log('R Stats not selected');
 
 	/**
@@ -2450,23 +2452,6 @@ HITStorage.export_xhr = function(results, doRStats)
 		file_date,
 		name
 	);
-	
- //~ GM_xmlhttpRequest({
-	  //~ method: "POST",
-	  //~ data: 'name=' + encodeURIComponent(name) + ((doRStats == true) ? '&doRStats=' + encodeURIComponent('true') : '') + "&csvData=" + encodeURIComponent(csvData),
-	  //~ url: xhrSendLoc,
-	  //~ headers: {
-		//~ "Content-Type": "application/x-www-form-urlencoded"
-	  //~ },
-	  //~ onload: function(response) {
-		  //~ var rs = response.responseText;
-		  //~ //console.log(rs);
-		  //~ //console.log("header:" + response.header);
-		  //~ console.log("response: " + rs);
-		//~ }  
-	//~ });
-  
-  
   
   //Uncomment the line below to save the last date of xhr update
   //localStorage["DAVIDBENMOD_XHR_UPDATES_Last_Date"] = JSON.stringify(new Date()); 
@@ -2483,8 +2468,6 @@ HITStorage.post_export_chunk = function(num, num_total, array_csvData_chunks, do
 		name = name;
 	
 	var curr_chunk = array_csvData_chunks[ num-1 ];
-	//~ console.log(array_csvData_chunks);
-	//~ console.log(curr_chunk);return;
 	
 	var exp = {
 		name: name,
@@ -2507,7 +2490,6 @@ HITStorage.post_export_chunk = function(num, num_total, array_csvData_chunks, do
 		//~ '&file_date=' + encodeURIComponent(num_total)+;
 	
 	var xhrSendLoc = "http://192.168.1.2/mturk/.scripts/AMT_Alerts/alerter.php";
-	
 	GM_xmlhttpRequest({
 		method: "POST",
 		data: data,
@@ -2517,8 +2499,6 @@ HITStorage.post_export_chunk = function(num, num_total, array_csvData_chunks, do
 		},
 		onload: function(response) {
 			var rs = response.responseText;
-			//console.log(rs);
-			//console.log("header:" + response.header);
 			console.log("response: " + rs);
 			
 			if (num < num_total) {

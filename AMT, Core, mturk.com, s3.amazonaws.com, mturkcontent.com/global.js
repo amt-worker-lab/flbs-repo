@@ -42,12 +42,19 @@ var AMT__Global_Vars = //function()
 		{name: 'DS ShiftFarLeft',			value: '1', isPersistant:true},
 		{name: 'DS ShowNextTab',			value: '1', isPersistant:true},
 		{name: 'DS NextTab',				value: '1', isPersistant:true},
+		{name: 'DS Offset Time (s)',		value: '0', isPersistant:true},
 		{name: 'R&A ShiftFarLeft',			value: '1', isPersistant:true},
 		{name: 'JohnRobertsCheckHistory',	value: '0', isPersistant:true},
 		{name: 'R&A ShowNextTab',			value: '1', isPersistant:true},
-		{name: 'R&A NextTab Iframe Focus',	value: '1', isPersistant:true},
+		{name: 'NextTab Iframe Focus',		value: '1', isPersistant:true},
+		{name: 'RJTStyleTop',				value: '1000', isPersistant:true},
+		{name: 'Record Job Timings',		value: '0', isPersistant:true},
 		{name: 'Return Button Hotkey',		value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
+		{name: 'NumPassby',	value: '3', isPersistant:true},
+		{name: 'PassbyDelay',	value: '100', isPersistant:true},
+		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
+		{name: 'Return NextTab',	value: '0', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
@@ -63,7 +70,16 @@ var AMT__Global_Vars = //function()
 	initializedScriptInjection: false,
 	isQProduct: false,
 	sStrings:[],
+	showPastReturnsContent: false,
 	isSpecialWorkflowWindow: false,
+	timer: {
+		startJobTimer: false,
+		nullify: false,
+		namespace: '',
+		recordString: 'default',
+		interval: null,
+		isShowingDefaultString: false
+	},
 	core: {
 		return_accept_run_nextTab: false,
 		// AMT__Global_Vars.core.captcha_string
@@ -79,13 +95,43 @@ var AMT__Global_Vars = //function()
 		stagger_is_active:				false,
 		min_tabs_to_initiate_staggered:	4,
 		staggered_timeout_per_tab:		200
-	}
+	},
+	startTimerOnSMatch: false
 }
 for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
 	AMT__Global_Vars.associativeArrayofDPSV[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
 }
+//console.log(AMT__Global_Vars);
 
-
+/**
+ * var getReturnButton
+ */
+var getReturnButton = function() {
+	
+	/*<a href="/mturk/return?groupId=394TEHR260Y0TAZL4P5WWJA29V265A&amp;requesterId=A1DPN0ELREA8BX&amp;hitId=337RC3OW06B1S9HP5GO231XZJR8LVQ&amp;signature=69fiOfplYPuNDOqYG2nIVj%2F1V0Y%3D&amp;externalHit=true&amp;canAccept="><img src="/images/return_hit.gif" alt="" border="0" width="82" height="22"></a>*/
+	
+	var a = document.getElementsByTagName('a');
+	for (var i in a) {
+		if (i == 'length') break;
+		//~ console.log(a[i].href);
+		if (a[i].href && a[i].href.indexOf('https://www.mturk.com/mturk/return?') == 0) {
+			return a[i];
+			break;
+		}
+	}
+	
+	// here?
+	return false;
+}
+/**
+ * var getReturnButton2
+ * 
+ * @returns Button or false
+ */
+var getReturnButton2 = function() {
+	var a = document.getElementById('AMT_return_button_top_window');
+	return a;
+}
 
 
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
@@ -134,9 +180,9 @@ AMT__Global_Vars.initializeReturnButton = function () {
 			hasReturnButton = true;
 		}
 	}
-	//~ console.log('ran inside initializeReturnButton');
+	//console.log('ran inside initializeReturnButton');
 	if(AMT__Global_Vars.isTopWindow && hasReturnButton) {
-		//~ console.log('ran inside initializeReturnButton');
+		console.log('ran inside initializeReturnButton');
 		var returnButton = document.createElement('input');
 		returnButton.setAttribute('style', 'position:absolute;height:20px;top:0px;width:100px;left:0px;z-index:99999;cursor:pointer;');
 		returnButton.setAttribute('type', 'button');
@@ -150,11 +196,14 @@ AMT__Global_Vars.initializeReturnButton = function () {
 					
 					if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != "0") {
 						showNextTab({isTopWindow:true});
-						showNextTab({isTopWindow:false});
+						//showNextTab({isTopWindow:false});
 					}
-					else if (AMT__Global_Vars.core.getR_Button_NextTab) { // getR_Button_NextTab
+					else if (AMT__Global_Vars.scriptVars['Return NextTab'] != '0') {
 						new AMT___core_factory().nextTab(); // do nextTab
 					}
+					
+					AMT__Global_Vars.isSubmitting = true;
+					
 					
 					allAs[i].click();
 					return;
@@ -166,13 +215,16 @@ AMT__Global_Vars.initializeReturnButton = function () {
 
 //var allAs = document.getElementsByTagName('a');
 
+
+//This function is deprecated, now uses scriptVar 'Return NextTab'
 AMT__Global_Vars.initializeR_Button_NextTab = function() {
-	chrome.extension.sendRequest({getR_Button_NextTab: true}, 
-		function(rs) 
-		{
-			if(rs.R_Button_NextTab == 'On') {
-				AMT__Global_Vars.core.getR_Button_NextTab = true;
-			}
+	
+	//~ chrome.extension.sendRequest({getR_Button_NextTab: true}, 
+		//~ function(rs) 
+		//~ {
+			//~ if(rs.R_Button_NextTab == 'On') {
+				//~ AMT__Global_Vars.core.getR_Button_NextTab = true;
+			//~ }
 			//~ getR_Button_NextTab
 			//~ console.log(rs);alert('initializeR_Button_NextTab');
 			//~ if(rs.R_Button_NextTab == rs.R_Button_NextTab == 'On') { alert('ra nextab=on');
@@ -185,8 +237,8 @@ AMT__Global_Vars.initializeR_Button_NextTab = function() {
 					//~ }
 				//~ }
 			//~ }
-		}
-	);
+		//~ }
+	//~ );
 }
 
 AMT__Global_Vars.initializeIsSpecialWorkflowWindow = function(callback) {
@@ -205,11 +257,12 @@ AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
 		var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
-		var groupId = groupIdReg.exec(ih)[1];
-		if(!groupId)
+		var groupId = groupIdReg.exec(ih);
+		if(!groupId || groupId.length == 0)
 		{
 			//alert('Error initializing groupId');
-		}
+			return;
+		} else groupId = groupId[1];
 		AMT__Global_Vars.groupId = groupId;		
 		
 		// Now that we have the groupId, listen for whether the child frame wants to learn it as well.
@@ -248,29 +301,27 @@ AMT__Global_Vars.initializeGroupId = function () {
 			parent.postMessage({groupIdRequest: true}, '*');
 		}, 200);
 		
-		
-		
 		window.addEventListener('message', function(e) {
-				if(!AMT__Global_Vars.groupId)
+			if(!AMT__Global_Vars.groupId)
+			{
+				if(e.data && e.data.groupId)
 				{
-					if(e.data && e.data.groupId)
+					AMT__Global_Vars.groupId = e.data.groupId;
+					
+					//Record the groupId if we aren't in preview. This way we know which HITs we've already done/returned
+					if(!AMT__Global_Vars.isPreview)
 					{
-						AMT__Global_Vars.groupId = e.data.groupId;
-						
-						//Record the groupId if we aren't in preview. This way we know which HITs we've already done/returned
-						if(!AMT__Global_Vars.isPreview)
-						{
-							//Record the HitId so we know if we've already been here
-							AMT___addQuestionAnswer('Skip Returns - ' + AMT__Global_Vars.groupId,
-										AMT__Global_Vars.hitId,
-										'');
-						}
-						clearInterval(interval);					
-						this.removeEventListener('click',arguments.callee,false);
+						//Record the HitId so we know if we've already been here
+						AMT___addQuestionAnswer('Skip Returns - ' + AMT__Global_Vars.groupId,
+									AMT__Global_Vars.hitId,
+									'');
 					}
+					clearInterval(interval);					
+					this.removeEventListener('click',arguments.callee,false);
 				}
-			}, false);
-		}
+			}
+		}, false);
+	}
 }
 
 AMT__Global_Vars.initializeHitId = function () {
@@ -286,7 +337,7 @@ AMT__Global_Vars.initializeHitId = function () {
 			hitId = hitIdReg.exec(innerIframeSrc);
 			if(!hitId)
 			{
-				alert('Caution: Failed to get hitId from frame source. Proceeding to get hitId from topWindow instead.');
+				//alert('Caution: Failed to get hitId from frame source. Proceeding to get hitId from topWindow instead.');
 			}
 			else
 			{
@@ -301,8 +352,7 @@ AMT__Global_Vars.initializeHitId = function () {
 			if(!hitId)
 			{
 				//alert('Error initializing groupId');
-			}
-			hitId = hitId[1];
+			} else hitId = hitId[1];
 		}
 		AMT__Global_Vars.hitId = hitId;
 	}
@@ -342,6 +392,15 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	if(request.isAcceptedAndTopWindow) {
+		if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && !AMT__Global_Vars.isSubmitting) {
+			sendResponse({
+					isAcceptedAndTopWindow: true,
+					tabId: AMT__Global_Vars.tabId
+				}, function() {/*Squelch response*/});
+		}
+	}
+	
 	if(request.playFirstElement) {
 		console.log('recieved: play first element');
 		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
@@ -351,10 +410,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	if(request.focusOnPage) {
-		console.log('toldtofocus');
-		if(AMT__Global_Vars.isTopWindow == request.isTopWindow) {
+		//~ console.log('told to focus on page');
+		//~ console.log('AMT__Global_Vars.isTopWindow' + AMT__Global_Vars.isTopWindow + ' == request.isTopWindow' + request.isTopWindow);
+		if(!AMT__Global_Vars.isTopWindow == !request.isTopWindow) {
 			window.focus();
 		}
+	}
+	if(request['Record Job Timings']) {
+		new AMT___items_factory().startJobTimer();
 	}
 	if(request.checkPreview)
 	{
@@ -369,7 +432,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
+		//if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
+		if(AMT__Global_Vars.sStrings.length > 0)
 		{
 			//console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
@@ -382,13 +446,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		qProductId = null;
 	}
 	else if(request.focus) {
-		//console.log('told to focus');
+		console.log('told to focus');
 		
-		if(request.isTopWindow == AMT__Global_Vars.isTopWindow) {
-			document.body.focus();
-			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
-				AMT__Global_Vars.callbackOnShowNextTabArrival();
-			console.log('focusing');
+		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && AMT__Global_Vars.isTopWindow) {
+			//document.body.focus();
+			document.getElementsByTagName('iframe')[0].focus();
+			//~ console.log('clicked to focus on');
+			//~ console.log(document.getElementsByTagName('iframe')[0]);
+		} else if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && !AMT__Global_Vars.isTopWindow){
+			window.focus();
 		}
 	}
 	else if(request.switchTabNotifier) {
@@ -404,13 +470,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 		
 		
-		if(AMT__Global_Vars.isSubmitting && AMT__Global_Vars.numSubmitQueries < 1 && !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
-			AMT__Global_Vars.numSubmitQueries++;
-			new AMT___core_factory().nextTab();
-			//alert('here here');
-		}else {
-			//Do nothing
-		}
 		
 	
 	}
@@ -445,7 +504,30 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 //
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	console.log(request);
+	//~ console.log(request);
+	
+	if(request.checkNTPassBy) {
+		//~ console.log('got nexttab passby');
+		//~ console.log (AMT__Global_Vars.scriptVars['NumPassby']);
+		//~ console.log (AMT__Global_Vars.toggle_ntpassby);
+		//~ console.log (AMT__Global_Vars.numSubmitQueries);
+		//~ console.log(AMT__Global_Vars.isSubmitting);
+		//~ console.log(AMT__Global_Vars.numSubmitQueries)
+		//~ console.log(AMT__Global_Vars.isPreview);
+		//~ console.log(AMT__Global_Vars.toggle_ntpassby);
+		
+		if(AMT__Global_Vars.isSubmitting && 
+		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
+		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
+			window.setTimeout(function() {
+				AMT__Global_Vars.numSubmitQueries++;
+				new AMT___core_factory().nextTab();
+			}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
+			//alert('here here');
+		}else {
+			//Do nothing
+		}
+	}
 		
 	/**
 	 * request.CAPTCHA_queue_reload
@@ -545,16 +627,39 @@ function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,
 		console.log(utilityTabsAndOptions);
 		for(var i = 0; i < utilityTabs.length; i++) {
 			utilityTabs[i].id = "" + i + ":" + Math.random();
+			//~ if(globalTabOptions && globalTabOptions.options) {
+				//~ for(var j in globalTabOptions.options) {
+					//~ if(!utilityTabs[i][j]) {
+						//~ utilityTabs[i][j] = globalTabOptions.options[j];
+					//~ }
+				//~ }
+			//~ }
 		}
+		
 		chrome.extension.sendRequest({setUtilityTabs: utilityTabsAndOptions},
 				function(rs){
 
 				});
-		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility);
+		return createAMT__utilityWindowDiv(utilityTabs,utilityPanelOptions, callbackFromUtility, globalTabOptions);
 	}
 }
 
-function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackFromUtility) {
+function getUtilityTabButton(index) {
+	var allInps = document.getElementsByTagName('input');
+	var inpReg = /utilityTabBtn([\d]+)\:0\.[\d]+/;
+	var buttonIndex;
+	for(var i = 0; i < allInps.length; i++) {
+		if(inpReg.match(allInps.id)) {
+			var inpReg = /utilityTabBtn([\d]+)\:0\.[\d]+/;
+			buttonIndex = inpReg.exec(allInps[i].id)[1];
+			if(buttonIndex*1 == index) {
+				return allInps[i];
+			}
+		}
+	}
+}
+
+function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackFromUtility, globalTabOptions) {
 	var containerDiv = document.createElement('div');
 	if(utilityPanelOptions &&
 	   utilityPanelOptions.style)
@@ -567,7 +672,12 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackF
 	
 	for(var i = 0; i < utilityTabs.length; i++) {
 		var utilityTabBtn = document.createElement('input');
-		utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px');
+		if(utilityTabs[i].style)
+			utilityTabBtn.setAttribute('style', utilityTabs[i].style)
+		else if(globalTabOptions && globalTabOptions.style)
+			utilityTabBtn.setAttribute('style', globalTabOptions.style)
+		else
+			utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px;');
 		utilityTabBtn.setAttribute('id','utilityTabBtn'+utilityTabs[i].id);
 		utilityTabBtn.setAttribute('type','button');
 		containerDiv.appendChild(utilityTabBtn);
@@ -575,12 +685,62 @@ function createAMT__utilityWindowDiv(utilityTabs, utilityPanelOptions, callbackF
 		utilityTabBtn.utilityTab = utilityTabs[i];
 		utilityTabBtn.onclick = function() {
 			var switchToId = this.id.replace(/utilityTabBtn/, '');
+			var utButs = document.getElementById('AMT__UtilityContainer').getElementsByTagName('input');
+			for(var i = 0; i < utButs.length; i++) {
+				utButs[i].style.backgroundColor = '';
+			}
+			this.style.backgroundColor = 'LightGreen';
+			
 			chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
 				function(rs) {
 					/*squelch response*/
 				});
 		}
 	}
+}
+
+//Returns the utilityTabBtn associated with the new utility tab
+function addUtilityTab(utilityTab, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
+		containerDiv = doucment.getElementById('AMT__UtilityContainer');
+		//Get the index of this newly added utility tab
+		var i = containDiv.getElementsByTagName('input').length;
+		var id = "" + i + ":" +Math.random();
+
+		var utilityTabBtn = document.createElement('input');		
+		if(utilityTab.style)
+			utilityTabBtn.setAttribute('style', utilityTab.style)
+		else if(globalTabOptions && globalTabOptions.style)
+			utilityTabBtn.setAttribute('style', globalTabOptions.style)
+		else
+			utilityTabBtn.setAttribute('style','float:left;width:100px;height:25px;');
+		utilityTabBtn.setAttribute('id','utilityTabBtn'+id);
+		utilityTabBtn.setAttribute('type','button');
+		containerDiv.appendChild(utilityTabBtn);
+		utilityTabBtn.value = 'Tab' + i;
+		utilityTabBtn.utilityTab = utilityTab;
+		utilityTabBtn.onclick = function() {
+			var switchToId = this.id.replace(/utilityTabBtn/, '');
+			var utButs = document.getElementById('AMT__UtilityContainer').getElementsByTagName('input');
+			for(var i = 0; i < utButs.length; i++) {
+				utButs[i].style.backgroundColor = '';
+			}
+			this.style.backgroundColor = 'LightGreen';
+			
+			chrome.extension.sendRequest({switchToUtilityTab:switchToId}, 
+				function(rs) {
+					/*squelch response*/
+				});
+		}
+		
+		
+		var utilityTabsAndOptions = {};
+		utilityTabsAndOptions.utilities = utilityTabs;
+		utilityTabsAndOptions.options = globalTabOptions;
+		chrome.extension.sendRequest({addUtilityTab: utilityTab},
+			function(rs){
+
+			});
+		return utilityTabBtn;
 }
 
 
@@ -611,10 +771,12 @@ qProductId = false;
 
 
 
-function addToTabsQ(callbackOnShowNextTabArrival) {
+function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
-	
+	if(!jumpToFirst) {
+		var jumpToFirst = AMT__Global_Vars.scriptVars['TabsQ JumpToFirst'] != '0';
+	}
 	new AMT___core_factory().shiftFarRight();
 	
 	
@@ -627,7 +789,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 			console.log(AMT__Global_Vars);
 			chrome.extension.sendRequest({
 				  addToTabsQ: true,
-				  isTopWindow: AMT__Global_Vars.isTopWindow
+				  isTopWindow: AMT__Global_Vars.isTopWindow,
+				  jumpToFirst: jumpToFirst
 			  }, function(response) {
 				qProductId = response.qProductId;
 			});
@@ -640,14 +803,20 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 		console.log(AMT__Global_Vars);
 		chrome.extension.sendRequest({
 									  addToTabsQ: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow
+									  isTopWindow: AMT__Global_Vars.isTopWindow,
+									  jumpToFirst: jumpToFirst
 								  }, function(response) {
 									qProductId = response.qProductId;
 								});
 	}
-	new AMT___core_factory().iframe2parent__postMessage({
-		action: 'tabsQTitleChange'
-	});
+	if(!AMT__Global_Vars.isTopWindow) {
+		new AMT___core_factory().iframe2parent__postMessage({
+			action: 'tabsQTitleChange'
+		});
+	} else {
+		document.title = "TQ";
+		(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();
+	}
 }
 
 
@@ -670,6 +839,9 @@ function showNextTab(options) {
 									  }, function(response) {
 									});
 	}
+	new AMT___core_factory().iframe2parent__postMessage({
+			action: 'showNextTabIconChange'
+		});
 }
 
 
@@ -818,8 +990,10 @@ AMT___Floater.accept = function() {
 AMT___Floater.skip = function() {
 	if(!AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
+		console.log('posting to window to skip... in the future');
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
+						console.log('posting to window to skip... now!');
 						parent.postMessage({skipJob: true}, '*')
 						}
 						, timeToSkip);
@@ -829,6 +1003,9 @@ AMT___Floater.skip = function() {
 	}
 	else if (AMT__Global_Vars.isTopWindow && AMT__Global_Vars.isPreview)
 	{
+		
+
+		
 		doSubmit(false, false, function(timeToSkip){
 				window.setTimeout(function() {
 						window.postMessage({skipJob: true}, '*') // This could also be: AMT___Floater.acceptOrSkip({data: {skipJob:true}})
@@ -1037,7 +1214,11 @@ function AMT___doPastBehavior(recordName, threshold, submitObject, callback, cal
 //Sends match objects to the database based on the namespaces, match string functions, and input identifiers in AMT___DECISION_RECORD (most commonly setup by calls to AMT___addUserDecision)
 function AMT___recordAndSubmit(form, location, callback_function, offsetTime, doServerSideSubmit)
 {
-	AMT___record();
+	try {
+		AMT___record();
+	} catch(e) {
+		alert(e);
+	}
 	doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit);
 }
 
@@ -1070,16 +1251,56 @@ function AMT___record()
 	}
 }
 
+function showPastReturns(matchString, callback) {
+	if(!AMT__Global_Vars.isTopWindow) {
+	
+		window.parent.postMessage({
+				action: 'ShowPastReturns',
+				matchString: matchString
+			}, 'https://www.mturk.com');
+		AMT___getMatch('ShowPastReturns', matchString, function(match, callback) {
+			if(callback) {
+				if(match)
+					callback(match);
+			}
+		},callback);
+	}
+	else {
+		AMT__Global_Vars.showPastReturnsContent = matchString;
+		AMT___getMatch('ShowPastReturns', matchString, function(match, callback) {
+			if(callback) {
+				if(match)
+					callback(match);
+			}
+			//console.log('got match?');
+			if(match)
+				document.body.style.backgroundColor = 'silver';
+		},callback);
+		
+		if(!document.getElementsByName('HTMLQuestionIFrame').length) {
+			getReturnButton().addEventListener('click', function() {
+				if(AMT__Global_Vars.showPastReturnsContent) {
+					console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+					AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+				}				
+			});
+		}
+	}
+}
+
 
 //Gets a match of matchString/UserInput from the databse
 //Parameters:
 //recordName - The namespace of the match you are asking for
 //matchString - the matchString you want to check against in the database
 //callback(match) - a function that gets called as soon as a match is discovered (or undiscovered) from the database. match is a match object (see below)
-function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff)
+function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff, returnAllMatches)
 {
-	var find = new FindObject(recordName, matchString.replace(/\s/g," "), timeCutOff);
+	var find = new FindObject(recordName, matchString.replace(/\s/g," "), timeCutOff, returnAllMatches);
 	var find = JSON.stringify(find);
+	var callback = callback;
+	var returnAllMatches = returnAllMatches;
+	console.log(find);
 	//alert("find has been triggered");
 	var reference = reference;
 	//console.log("ref b4 gm: " + reference);
@@ -1093,17 +1314,26 @@ function AMT___getMatch(recordName, matchString, callback, reference, timeCutOff
 		},
 		onload: function(response) {
 			var rs= response.responseText;
-			//console.log(rs);
+			console.log('rs from php');
+			console.log(rs);
 			if(rs.trim() == "No Match")
 			{
-				//console.log("got here");
-				callback(undefined)
+				if(!reference)
+					callback(null);
+				else			
+					callback(null, reference);
 				return;
 			}
 			//console.log("got here 2");
 			rs = JSON.parse(rs);
-			rs.outputs = JSON.parse(rs.outputs);
-			console.log("ref in gm: " + reference);
+			if(!returnAllMatches)
+				rs.outputs = JSON.parse(rs.outputs);
+			else {
+				for(var i = 0; i < rs.length; i++) {
+					rs[i].outputs = JSON.parse(rs[i].outputs);
+				}
+			}
+			//console.log("ref in gm: " + reference);
 			if(!reference)
 				callback(rs);
 			else			
@@ -1124,7 +1354,6 @@ function AMT___addQuestionAnswer(recordName, matchString, outputPairs)
 	chrome.extension.sendRequest({
 								   match: match					
 								  }, function(response) {
-			//console.log(response.farewell);
 		});
 }
 
@@ -1272,12 +1501,13 @@ function Match(recordName, matchString,outputPairs,lastTimeOfSubmit,count)
 }
 
 //An object that gets passed to eventPage, then passed into PHP to query the database looking for a match
-function FindObject(recordName,matchString, timeCutOff) {
+function FindObject(recordName,matchString, timeCutOff, returnAllMatches) {
 	if(!timeCutOff)
 		timeCutOff = 0;
 	this.matchString = matchString;
 	this.recordName = recordName;
-	this.timeCutOff = timeCutOff;	
+	this.timeCutOff = timeCutOff
+	this.returnAllMatches = returnAllMatches;	
 }
 
 
@@ -1505,10 +1735,15 @@ String.prototype.clean_str_to_auto = function(opts) {
  * 
  * @style		...
  * @innerHTML	Default=false.
+ * @ce			Default='div'. createElement. E.g. 'br'.
  */
 String.prototype.div = function(opts) {
 	var s = this.toString();
-	var div = document.createElement('div');
+	var div;
+	if (opts && opts.hasOwnProperty('ce')) {
+		div = document.createElement(opts.ce); // e.g. createElement('br');
+	} else 
+		div = document.createElement('div');
 	if (opts && opts.hasOwnProperty('style')) {
 		div.setAttribute('style', opts.style);
 	}
@@ -1569,6 +1804,7 @@ String.prototype.string_to_mixed_case = function(options) {
  */
 String.prototype.clean_string_to_array = function(options) {
 	
+	var original = this.toString();
 	var s = this.toString();
 	var min;
 	
@@ -1576,18 +1812,32 @@ String.prototype.clean_string_to_array = function(options) {
 		min = (options.hasOwnProperty('least_characters_per_word')) ? options.least_characters_per_word : 1;
 	else
 		min = 1
-	
 	var reg = new RegExp('(^| )[\\w\\d]{'+min+'}($| )', 'g');
 	
-	s = s.replace(/[^\w\d]/g, '  ');
+	// FIRST, make an array of the complete words to match, including all foreign characters, except <>
+	// Get rid of html-encoded characters:
+	var tmp = s;
+    tmp = tmp.replace(/&nbsp;/gi,' ');
+    tmp = tmp.replace(/&quot;/gi,'"');
+    tmp = tmp.replace(/&[^ ;]+;/g,''); // Any
+    tmp = tmp.replace(/[<>\/\\]/g,''); // <> and \ and /
+	tmp = tmp.replace(reg, '   ');
+	tmp = tmp.replace(/[\r\n\t\s]+/g, ' '); // Spaces
+	tmp = tmp.split(' ');
 	
-	s = s.replace(reg, '  ');
-	
-	s = s.replace(/[\r\n\t\s]+/g, ' ');
-	
+	// ...
+	s = s.replace(/[^\w\d]/g, '   ');
+	s = s.replace(reg, '   ');
+	s = s.replace(/[\r\n\t\s]+/g, ' '); // Spaces
 	s = s.split(' ');
 	
-	return s;
+	// Debug
+	//~ console.log(original);
+	//~ console.log(s);
+	//~ console.log(tmp);
+	//~ console.log('-----------------------------------');
+	
+	return s.concat(tmp);
 }
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561
@@ -1675,7 +1925,10 @@ String.prototype.stateAbbrToFull = function() {
 	}
 	
 	// None found?
-	return str.toUpperCase();
+	return this.toString();
+	
+	// toUpperCase() ?
+	//~ return str.toUpperCase();
 }
 String.prototype.state_full_to_abbr = function() {
 	
@@ -1773,11 +2026,25 @@ function AMT___core_factory() {
 //If there is no tab on the right, it shows the tab at the far left
 AMT___core_factory.prototype.nextTab = function(options) {
 	//~ console.log(options);
-	chrome.extension.sendRequest(
+	if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
+		if(!options)
+			options = {};
+		options['focusOnPage'] = true;
+	}
+	if(AMT__Global_Vars.scriptVars['Record Job Timings'] != '0') {
+		if(!options)
+			options = {};
+		options['Record Job Timings'] = true;
+	}
+	else if(!options) {
+		options = {};
+	}
+
+	chrome.extension.sendMessage(
 		{
 			nextTab: true,
 			options: options,
-			isTopWindow: AMT__Global_Vars.isTopWindow
+			isTopWindow: (AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' ? false : AMT__Global_Vars.isTopWindow) 
 		},
 		function(response)
 		{
@@ -1845,8 +2112,7 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 		
 		// v.action
 		// v.innerHeight
-		
-		console.log(v);
+		//~ console.log(v);
 		
 		// If callback
 		if (options.hasOwnProperty('callback_function')) {
@@ -1858,13 +2124,8 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 		// Set element heights.
 		// options.elements
 		// options.offset
-		
-		console.log('parent innerHeight:' + v.innerHeight);
-		
 		var new_height = (v.innerHeight*1 - options.offset - 14) + 'px';
-		
-		console.log('new_height:' + new_height);
-		
+		//~ console.log(options);
 		var els = options.elements;
 		for (var i in els) {
 			var el = els[i];
@@ -1931,19 +2192,17 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		
 		switch(v.action) {
 			case 'return_button_click': 
-				if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != '0') {
-					document.getElementById('AMT_return_button_top_window').click();
-				}
-				else {
-					var b = getReturnButton();
-					b.click();
-				}
+				document.getElementById('AMT_return_button_top_window').click();
 				break;
 			case 'tabsQTitleChange': 
 				//console.log("Changing document title to TQ");
 				document.title = "TQ";
 				(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAD9/f0F/Pz8DP///wD///8P////Dv///xL///8P////A////wD///8A/v7+Cf///wX///8A////APv7+wr9/f0D+/v7Dv///wb///81+vv8i/v7/Iv3+PqL4+nxi+ru9JHy9Piu5+zzru3w9ZD+/v5x/v7+H////wr///8A9/f3H/7+/g7///8J////HNDX5Pyaq8j/m6zJ/5esy/+QpcX/larK/5uwzv+MoMH/mqrG/5qlv+7Q0Nty/f3+Af///wD///8A/v7+A////wz+/v6b2d/q/4abvf+Emr7/jKHD/5Gnyf+Uqsz/fpW5/4mXuP/U1OL/e3ui+MPE0l7///8A////AP///wD///8P////Xa680/9/lrr/kafJ/5yy0/+WrM7/nbPT/52uyv+ktM7/1NTi/8LC1f+lpr3n////AP///wD///8A////AP7+/mDo7PL/ytPi/5yv0fehsuXuuMvl0Kq81drS2uf8+/z9bff3+SG5uM1r8vL1ff///wD///8A////AP///wr+/v4H/v7+jufq8umIg/Sut7L9YKul/W7PzvlMnZn03Ozq/x/+/v4H////AP///wD///8A////AP///wD///8A5OH/IpuS/pF3cfPploz/hH5y/6F/dP+gl47/gkw++e7Hwv9Fta//XPj4/gf///8A////AP///wD///8A+vn/BoyB/pGlnf5vfHfxy4mA/JlIOf/lmZD+f1lK/89kWPrPmZD+f9zY/yu3sP5ar6j/ZP///wD///8A6uj/GbSt/l6imv9yVkf/1HBm+MJ5eOrlhX/1s2JY+dRpYPfPv7/zb4+F/41WR//Uloz/hI6E/47///8A////AOro/xmnn/9teW3/qH5y/6HKxf9B9/n7Fc3N9VfMyvlQraj6cbWv/1zj4f4h2tf/Lks7/+NmWP+/0s7/OP///wCvqP9kjoT/jo6E/46Sif+I+vn/Bt3a/ypsX/+5////AH90/6Dj4f4h0Mz/OrWv/1yyq/9gkon/iNzY/yv///8A19P/MvLx/g////8A////APX0/wxvYv6119P/MtzY/ytmWP+/oZj/df///wBQQP/dt7D+Wv///wD///8A////AP///wD///8A////AKyk/2makf9+UUL/283J/z/l4/8f1dH/M////wD///8At7D+Wv39/gH///8A////AP///wD///8A////AP///wDa1/8u2tf/LtrX/y719P8M////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAOAfAADgBwAA4AMAAPABAADwHwAA8d8AAPAfAADonwAA8CEAAOf5AADGvQAA/bcAAP3/AAD//wAA//8AAA==';document.getElementsByTagName('head')[0].appendChild(link);})();
 
+				break;
+			case 'showNextTabIconChange':
+				document.title = "SN";
+				(function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYxIDY0LjE0MDk0OSwgMjAxMC8xMi8wNy0xMDo1NzowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNS4xIFdpbmRvd3MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QzZBNTRBOUI1QTg2MTFFMkJDRDNGNUJGMzY0MjI2QjkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QzZBNTRBOUM1QTg2MTFFMkJDRDNGNUJGMzY0MjI2QjkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDNkE1NEE5OTVBODYxMUUyQkNEM0Y1QkYzNjQyMjZCOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDNkE1NEE5QTVBODYxMUUyQkNEM0Y1QkYzNjQyMjZCOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PmP0ow8AAAGAUExURW/PP2vPObzppR5aALDolCp+AanijFrAJhI1ADedBEivFoHVVmjMNyI0GX2JeUKrDRM5ADKSAhpMABdGAA8tAAodAXHQQh9fACd3AIXXXI3ZZ1vCKDGLBKPghBAyACRsAGhuZorZY4vYZKbiiCRvAMHrrcPrr23PPFO5HyuCACZyAEuxGOjo6C6NAGHILT+nCzWaAuH11yBgAL6/vTOWAkmwFkSrES6EAzCOAUWtEUeuE0yzGaLggz6lCjSYAli/JX+BfdLS0tvb27bnntnyzO3t7Vm/JlpeV8/Pzw4jAhIfC36AfCxoD1S6IPDw8Pf395mcl5Pbbx9AD7m6uGvOOn1/e/X88R4wFmHILyBfAOPj46Giofn5+UJvLJ+gnzFsFbOzs1O5IGTKMle9I5mamYCCflG7Henp6VK7HRk7CUGnDd3d3WLILri4t5udmiY4Hevr6+7u7u/v79zc3Nra2kVKQ0hNRtPT087OznHQQVhcVZygmp2hmxAlBUBuKv///ycJ03cAAACAdFJOU/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AOAVLZwAAAP1JREFUeNpiqAeBQuOagGAdMJMBiP354s1lWMWDFFwhAlGx1ozqehn8Fsz5HiCBmLokFiZlRQZ7S0Hm8AKgAJ81S5ihqqwkj4a+pnBVPUORDyOToYsam5QYu5WJkWcxg7G5urKqmrONkpi0KaeKXBxDtYyeoiybTSB3CDsXp5aAA0MAaxqDpJQSt1hOopmdPEcoQ644vz1PpVhIRLK2rW6kSApDeqaFpQa7tJuvdpaBhJBoOUO9ArOgvpUpl5mtASszRynQHX68zJomnJx2uhLMAl7ZIKdX8AobqWjJiwtxeCVAPKfjXisnwCEiWuYE9W19fUl0qneeI5gJEGAAUhZAbR2keegAAAAASUVORK5CYII=';document.getElementsByTagName('head')[0].appendChild(link);})();
 				break;
 			case 'return_button_hotkey':
 				window.addEventListener('keydown', function(e) {
@@ -1958,14 +2217,31 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				var b = getReturnButton();
 				b.click();
 				break;
+			case 'ShowPastReturns':
+				var b = getReturnButton();
+				AMT__Global_Vars.showPastReturnsContent = event.data.matchString;
+				console.log('set to record return of' + AMT__Global_Vars.showPastReturnsContent);
+				b.addEventListener('click', function() {
+						if(AMT__Global_Vars.showPastReturnsContent) {
+							console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+							AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+						}
+					}, false);
+				showPastReturns(event.data.matchString);
+				break;
 			case 'return_button__showNextTab':
 				//~ console.log('Will showNextTab on return');
 				
 				var b = getReturnButton();
 				if (b) {
 					b.addEventListener('click', function() {
+						if(AMT__Global_Vars.showPastReturnsContent) {
+							AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+						}
+						
+						
 						showNextTab({isTopWindow:true});
-						showNextTab({isTopWindow:false});
+						//showNextTab({isTopWindow:false});
 					}, false);
 				}
 				// 2nd return button
@@ -1999,7 +2275,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 					localStorage['ChangeWindowCount'] = 0;
 					document.body.style.backgroundColor = 'silver';
 					chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
-					//~ new AMT___core_factory().nextWindow();
 				}
 				break;
 			
@@ -2008,6 +2283,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			 * 
 			 * If offsetTop > 60 then do not use this
 			 * in the calculation.
+			 * 
+			 * FIX: Sometimes fails to run.
 			 */
 			case 'window.innerHeight':
 				
@@ -2026,36 +2303,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 				}, '*');
 				break;
 		}
-	}
-	
-	/**
-	 * var getReturnButton
-	 */
-	var getReturnButton = function() {
-		
-		/*<a href="/mturk/return?groupId=394TEHR260Y0TAZL4P5WWJA29V265A&amp;requesterId=A1DPN0ELREA8BX&amp;hitId=337RC3OW06B1S9HP5GO231XZJR8LVQ&amp;signature=69fiOfplYPuNDOqYG2nIVj%2F1V0Y%3D&amp;externalHit=true&amp;canAccept="><img src="/images/return_hit.gif" alt="" border="0" width="82" height="22"></a>*/
-		
-		var a = document.getElementsByTagName('a');
-		for (var i in a) {
-			if (i == 'length') break;
-			//~ console.log(a[i].href);
-			if (a[i].href && a[i].href.indexOf('https://www.mturk.com/mturk/return?') == 0) {
-				return a[i];
-				break;
-			}
-		}
-		
-		// here?
-		return false;
-	}
-	/**
-	 * var getReturnButton2
-	 * 
-	 * @returns Button or false
-	 */
-	var getReturnButton2 = function() {
-		var a = document.getElementById('AMT_return_button_top_window');
-		return a;
 	}
 }
 
@@ -2281,7 +2528,7 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 			if (options_object.hasOwnProperty('callback')) {
 				options_object.callback(options_object);
 			} else if (options_object.hasOwnProperty('blur_element')) {
-				el.blur();
+				this.blur();
 			}
 			
 		}, false);
@@ -2311,6 +2558,92 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * function server_load_asynchronously
+ * 
+ * URL					Required. String.
+ * success_callback		Function. Callback for completed.
+ * 
+ * @return	.success_filename
+ * 			.options {}, initial object passed in
+ * 			.response {responseText, status, finalUrl,... etc.}
+ */
+AMT___requests_factory.prototype.server_load_asynchronously = function(options) {
+	// e.g.
+	//~ // Load the image asynchronously.
+	//~ new AMT___core_factory().server_load_asynchronously({ // Default=to MD5 the URL to create a filename. Default=Saved to .cached.
+		//~ url: x,
+		//~ __seed: imgs[i],// Used only in callback `on_success`!
+		//~ on_success: function(completed_obj) { // callback
+			//~ var options = completed_obj.options;
+			//~ options.__seed.src = completed_obj.
+		//~ }
+	//~ });
+	
+	//~ setInterval(check_complete, 1000);
+	
+	options.host = MT___host;
+	options.filename = new AMT___requests_factory().md5(options.URL); // md5 URL
+	options.file_folder = '.cached';
+	options.method = 'get';
+	
+	init_dl();
+	read_from_disk(); // init watcher
+	
+	function init_dl() {
+		// Opts
+		var opts = {
+			url: options.URL,
+			short_filename: options.filename, // Save as filename // i.e. o.basename + o.cuname + '.pdf'
+			browser_exit: true, // Tell PHP to kill the browser XHR request.
+			silent_output: true, // No output!
+		}
+		opts = JSON.stringify(opts);
+		
+		// XHR to download PDF
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+			data: 'AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;//console.log(rs);//alert(rs);
+				if (/^\d{3}$/.exec(rs)) { // If status code is returned
+					alert(rs);
+					return;
+				}
+			}
+		});
+	}
+	
+	function read_from_disk() {
+		var time_init = new Date().getTime(); // ms
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;console.log(rs);
+				
+				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+					// Reset
+					var now = new Date().getTime(); // ms
+					var next = 1000 - (now - time_init); // e.g. 1 - (5-2) = -2; 1 - (2.5-2) = 0.5.
+					console.log('NEXT:'+next);
+					setTimeout(read_from_disk, next);
+				} else {
+					console.log('-----\nRESPONSE CACHED!\n-----');
+					options.success_callback({
+						response: response,
+						options: options,
+						success_filename: MT___host + '/mturk/.cached/' + options.filename
+					});
+				}
+			}
+		});
+	}
+}
+/**
  * function xhr_with_disk_cache
  * 
  * URL							(Required. String.)
@@ -2320,9 +2653,8 @@ function AMT___requests_factory(obj_vars) {
  * file_folder					(Optional. String. Default=.cached)
  * method						(Optional. String. "get" or "post". Default="get")
  * data							(Optional. String. Used with xhr post.)
- * success_callback				(Optional. Function. Optional but is almost always included.)
+ * success_callback				(Optional. Function. Optional but almost always included.)
  * check_pre_write_to_disk		(Optional. Function. Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
- * 
  * 
  * XXX NOT THIS XXX fail_xhr_if_not_200			(Optional. Boolean. Default=True.)
  * 
@@ -2355,8 +2687,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 		if (!options.hasOwnProperty('file_folder')) {
 			options.file_folder = '.cached';
 		}
-		if (!options.hasOwnProperty('filename')) {
-			options.filename = new AMT___requests_factory().general_functions__md5(options.URL); // md5 URL
+		if (!options.hasOwnProperty('filename')) { // Called "short_filename" in util.php
+			options.filename = new AMT___requests_factory().md5(options.URL); // md5 URL
+		} else {
+			
 		}
 		if (!options.hasOwnProperty('host')) {
 			options.host = MT___host;
@@ -2371,7 +2705,6 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 			options.check_pre_write_to_disk = bool_check_write_to_disk;
 			//~ options.check_pre_write_to_disk = function() { return true; }; // Default=Returns true
 		}
-		
 		
 		//
 		options.tmp_response_text = null; // THIS IS ONLY WHEN write_to_file is called. It is only tmp.
@@ -2389,15 +2722,18 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	 * @param completed_response
 	 */	
 	function success(completed_response) {
-		// options.response
-		options.response = {
-			response:		response,
-			status:			response.status,
-			responseText:	response.responseText
-		}
-		
-		// Success callback
+		options.response = completed_response;
 		options.success_callback(options);
+		
+		//~ // options.response
+		//~ options.response = {
+			//~ response:		response,
+			//~ status:			response.status,
+			//~ responseText:	response.responseText
+		//~ }
+		//~ 
+		//~ // Success callback
+		//~ options.success_callback(options);
 	}
 	/**
 	 * function read_from_disk
@@ -2415,6 +2751,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
 					read_from_xhr();
 				} else {
+					console.log('-----\nRESPONSE CACHED!\n-----');
 					success(response);
 				}
 			}
@@ -2433,7 +2770,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				onload: function (response) {
 					//~ var rs = response.responseText;
 					
-					if (options.check_pre_write_to_disk(response)) {
+					options.response = response;
+					
+					if (options.check_pre_write_to_disk(options)) {
 						write_to_disk(response);
 					} else {
 						return false;
@@ -2441,7 +2780,25 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				}
 			});
 		} else if (options.method == 'post') {
-			
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: options.URL,
+				data: options.data,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					//~ var rs = response.responseText;
+					
+					options.response = response;
+					
+					if (options.check_pre_write_to_disk(options)) {
+						write_to_disk(response);
+					} else {
+						return false;
+					}
+				}
+			});
 		}
 	}
 	/**
@@ -2794,14 +3151,12 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
 	return [hexToR(hex), hexToG(hex), hexToB(hex)];
 }
 //
-AMT___requests_factory.prototype.general_functions__md5 = function(str)
+AMT___requests_factory.prototype.general_functions__md5 = 
+AMT___requests_factory.prototype.md5 =
+function(str)
 {
 	return any_md5(str, '0123456789ABCDEF');
-	
-	//xxxxx
-	//xxxxx
-	//xxxxx
-	//xxxxx
+  //........	
   //  discuss at: http://phpjs.org/functions/md5/
   // original by: Webtoolkit.info (http://www.webtoolkit.info/)
   // improved by: Michael White (http://getsprink.com)
@@ -4459,14 +4814,22 @@ AMT___requests_factory.prototype.io__write_to_file = function(write_object, call
 	});
 }
 //
-AMT___requests_factory.prototype.io__file_exists = function(filename, callback_function) //
+//
+//
+AMT___requests_factory.prototype.io__file_exists = function(filename, callback_function, options_object) //
 {
+	var host = (options_object && options_object.host) ? options_object.host : AMT___POPUP___PROXY_REDACTED_;
+	
+	// Generate opts object
+	options_object.filename = filename;
+	options_object.folder = (options_object.folder) ? options_object.folder : '.cached'; // Default=.cached
+	var o = JSON.stringify(options_object);
+	
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__io_file_exists='+encodeURIComponent(filename),
+		url: host + '/mturk/util.php?AMT__io_file_exists='+encodeURIComponent(o),
 		onload: function (response) {
 			var rs = response.responseText;
-			
 			if (response.status == 200 && rs == '1') {
 				callback_function(true);
 			} else {
@@ -4478,10 +4841,6 @@ AMT___requests_factory.prototype.io__file_exists = function(filename, callback_f
 //
 AMT___requests_factory.prototype.io__read_file = function(file_object, callback_function) //
 {
-	//~ var url = MT___host+
-			//~ '/mturk/util.php?'+
-			//~ encodeURIComponent(skips_key_php_get)+'=';
-			
 	var file_object = file_object;
 	
 	GM_xmlhttpRequest({
@@ -4495,9 +4854,6 @@ AMT___requests_factory.prototype.io__read_file = function(file_object, callback_
 			file_object.status			= response.status;
 			
 			callback_function(file_object);
-			//~ var tmp_skip_sites = rs.split("\n");
-			//~ 
-			//~ callback_function(tmp_skip_sites);
 		}
 	});
 }
@@ -4950,6 +5306,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = healthgrades_profile;
 			xhr_get();
 			break;
+		case 'http://www.amazon.com/ AMAZON_PRODUCT_PAGE': // e.g. http://www.amazon.com/Rheem-Furnace-Parts-Product-FP-22/dp/B00EZHB6MK/
+			opts.tmp_callback = amazon_product_page;
+			xhr_get();
+			break;
 		case 'LINKEDIN_PROFILE':
 			opts.tmp_callback = linkedin_person_profile;
 			xhr_get();
@@ -4996,6 +5356,51 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	}
 	
 	/**
+	 * amazon_product_page
+	 * 
+	 * e.g. http://www.amazon.com/Rheem-Furnace-Parts-Product-FP-22/dp/B00EZHB6MK/
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function amazon_product_page() {
+		opts.response.vars = {
+			result: {
+				asin: null,
+				isbn_10: null,
+				isbn_13: null
+			},
+			error: null,
+			error_type: null
+		}
+		
+		var rs = opts.response.responseText;
+		
+		// ASIN
+		var asin = /<tr><td class='label'>ASIN<\/td><td class='value'>([A-Z\d]+)<\/td><\/tr>/.exec(rs);
+		if (!asin) {
+			asin = /<li><b>ASIN: *<\/b> *([A-Z\d]+)<\/li>/.exec(rs); //<li><b>ASIN:</b> B00PY9S6PS</li>
+		}
+		if (!asin) {
+			asin = /<span class="a-text-bold">ASIN:[\r\n\t\s]*<\/span>[\r\n\t\s]*<span>([A-Z\d]+)<\/span>/.exec(rs);
+		}
+		if (!asin) {
+			// Nothing
+		} else {
+			opts.response.vars.result.asin = asin[1];
+		}
+		
+		// ISBN 10
+		var isbn_10 = /<li><b>ISBN-10: *<\/b> *([A-Z\d\-]+)<\/li>/.exec(rs);
+		if (!isbn_10) {
+			// Nothing
+		} else {
+			opts.response.vars.result.isbn_10 = isbn_10[1];
+		}
+		
+		return true;
+	}
+	/**
 	 * tripadvisor_profile_page
 	 * 
 	 * e.g. http://www.tripadvisor.com/Hotel_Review-g297887-d6378639-Reviews-Lotte_City_Hotel_Daejeon-Daejeon.html
@@ -5009,7 +5414,17 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			result: {
 				prices: [],		// objects {price, fees, source}
 				date_ci: null,	// string, check in
-				date_co: null	// string, check out
+				date_co: null,	// string, check out
+				
+				// reviews
+				reviewcount_exists: false, // Set to true
+				reviewcount: {
+					excellent: 0,
+					very_good: 0,
+					average: 0,
+					poor: 0,
+					terrible: 0
+				}
 			},
 			error: null,
 			error_type: null
@@ -5017,9 +5432,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		var rs = opts.response.responseText;
 		//~ console.log(rs);
-		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
-		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
 		
+		// Price & date... seems like...
+		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
+		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);	
 		if (r) {
 			r = r[1].replace(/\\/g, '\n');
 			console.log(r);
@@ -5064,15 +5480,71 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			if (r2) {
 				opts.response.vars.result.date_co = r2[1];
 			}
-			
-			
 		}
+		
+		// Reviews.
+		//
+		// 'wrap row'
+		var dom = new DOMParser().parseFromString(rs, 'text/html');
+			//~ console.log(rs);
+		var co = dom.getElementsByClassName('wrap row'); // Not 'line clickable'
+		var rce_tmp = true;
+		if (co.length != 5) {
+			rce_tmp = false;
+				console.log('x2');
+		}
+		for (var i in co) {
+			if (i == 'length') break;
+			var count = co[i].getElementsByClassName('compositeCount');
+			if (!count || !count[0] || !count[0].innerText || !/^[\d,]+$/.exec(count[0].innerText)) {
+				rce_tmp = false;
+					console.log('x3');
+				continue;
+			}
+			var type = /'traveler_rating','([^']+)',/.exec(co[i].innerHTML); // e.g. "terrible"
+			if (!type) {
+				type = co[i].getElementsByClassName('text');
+				if (!type || !type[0] || !type[0].innerText) {
+					rce_tmp = false;
+						console.log('x4');
+					continue;
+				}
+				type = type[0].innerText.toLowerCase();
+			} else type = __js_clean_html_str(type[1]);
+			type = type . replace(/\s+/g, '_'); // Replace ' ' with '_'
+				//~ console.log(type);
+			if (!opts.response.vars.result.reviewcount.hasOwnProperty( type )) {
+				rce_tmp = false;
+					console.log('x5');
+				continue;
+			}
+			opts.response.vars.result.reviewcount[ type ] = count[0].innerText;
+		}
+		// If rce_tmp...
+		if (rce_tmp) {
+			opts.response.vars.result.reviewcount_exists = true;
+		}
+		
 		return true;
 	}
 	/**
 	 * tripadvisor_search_page
 	 * 
 	 * e.g. http://www.tripadvisor.com/Search?q=Lotte+City+Hotel+Daejeon&geo=1&pid=3826&returnTo=__2F__
+	 * 
+	 * NEW JUNE 15, 2015: Change to an AJAX-like request. It is:
+	 * http://www.tripadvisor.com/Search?q=Super+8+%2C+%2C+Missouri&c=global&verbose=&hur=&returnTo=__2F__&ssrc=h&ajax=search
+	 * Old is still compatible.
+	 * 
+	 *	List of tripadvisor AJAX "ssrc" arguments
+		Retrieved from "http://www.tripadvisor.com/Search?q=a&c=local&geo=56003&pid=3826&sid=D159D57AA0BA5ADC708995BCC8BADF861435302767341&rf=1"
+		June 26, 2015
+		h=hotel
+		l=locations, e.g. Houston, Texas Gulf Coast, Texas
+		v=vacation rentals, e.g. Executive Home Tropical Pool Whimsical Features!
+		e=restaurants, e.g. starbucks
+		A=attractions, e.g. Space Center Houston
+		r=reviews, e.g. "A+ service A+ price A+ clenliness"
 	 * 
 	 * @results [{}]
 	 * 
@@ -5086,18 +5558,23 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			error_type: null
 		}
 		
-		var rs = opts.response.responseText; //console.log(rs);
+		var rs = opts.response.responseText;
 		
 		var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
 		if (r) {
 			opts.response.vars.num_search_results = r[1];
+		} else {
+			var x = rs.match(/class="searchResult/g);
+			if (x) {
+				opts.response.vars.num_search_results = x.length;
+			}
 		}
 		
 		// Listings
 		//
 		//
 		
-		var r = /<div class="searchResult ([^ ]*)[^"]*">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		var r = /<div class="searchResult ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
 		//~ var r = /<div class="searchResult([^"]*)">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
 		var m;
 		while (m = r.exec(rs)) {
@@ -5110,8 +5587,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			console.log(type_of_searchResult);
 			//~ if (type_of_searchResult.indexOf('srREVIEWS') != -1)
 				//~ continue;
-			if (type_of_searchResult == 'srREVIEWS')
-				continue;
+			//~ if (type_of_searchResult == 'srREVIEWS')
+				//~ continue;
 			if (type_of_searchResult == 'srFORUMS')
 				continue;
 			
@@ -5132,11 +5609,11 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			//
 			// e.g. <a target="_blank" href="/Restaurant_Review-g806325-d4594024-Reviews-New_Acropol_restaurant-Morogoro_Morogoro_Region.html" onclick="setOneTimeCookie('NORDINAL','B2'); ta.call('ta.servlet.SearchPage.recordSelection', event, this, 'B2', 'EATERY');">\n<b>New Acropol</b> restaurant</a>
 			//
-			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*(<b>[^<]+<\/b>[^<]*)<\/a>/.exec(m[2]);
+			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*([^\r\n]+)/.exec(m[2]);//<b>[^<]+<\/b>
 			if (r2) {
 				rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
 				rslt.name = __js_clean_html_str(
-					r2[2].replace(/<\/?b>/g, '')
+					r2[2].replace(/(<\/?b>|<\/a>)/g, '')
 				);
 			}
 			
@@ -5444,6 +5921,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				skills: null,
 				education: null,
 				interests: null,
+				people_also_viewed: [], // An array of people
 				
 				profile_is_in_preview_mode: false // default=false
 			},
@@ -5453,6 +5931,22 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		var rs = opts.response.responseText;
 		var r;
+		//~ console.log(rs); // debug
+		
+		var test = function() {};
+		test.only_one = function(rg_source) {
+			// rs=global
+			var r = new RegExp(rg_source, 'g');
+			if (rs.match(r).length != 1) {
+				console.log(rs.match(r));
+				console.log(r);
+				alert('Length!=1:'+r);
+				exit(); // Stop
+			}
+		}
+		
+		// DOM
+		var dom = new DOMParser().parseFromString(rs,'text/html');
 		
 		/**
 		 * Public Profile URL
@@ -5464,13 +5958,7 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 			opts.response.vars.result.public_url = 'https://' + __js_clean_html_str(r.exec(rs)[1]);
 			opts.response.vars.result.profile_has_public_url = true;
 			// Must have only one match
-			r = new RegExp(r.source, 'g');
-			if (rs.match(r).length != 1) {
-				console.log(rs.match(r));
-				console.log(r);
-				alert('Length:'+r);
-				return false;
-			}
+			test.only_one(r.source);
 		} else {
 			// in/xx
 			r = /<dd><a href="(https?:\/\/\w+\.linkedin\.com\/[^"]+)" class="view-public-profile">[^<]+<\/a><\/dd>/;
@@ -5493,18 +5981,13 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 		 * Name
 		EX:
 James Strate, CFP®
-		 */ 
-		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="n fn"><span class="full-name"[^>]*>([^<]*)<\/span><span><\/span><\/span><\/h1><\/div><\/div>/;
+		 */
+		//<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="fn"><span class="full-name" dir="auto">Dalton Volpato</span><span></span></span></h1>
+		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="[^"]*"><span class="full-name"[^>]*>([^<]*)<\/span>(<span><\/span>|)<\/span><\/h1><\/div><\/div>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
 			// Must have only one match
-			r = new RegExp(r.source, 'g');
-			if (rs.match(r).length != 1) {
-				console.log(rs.match(r));
-				console.log(r);
-				alert('Length:'+r);
-				return false;
-			}
+			test.only_one(r.source);
 		} else {
 			
 		}
@@ -5540,14 +6023,15 @@ OR <div class="member-connections"><strong><a href="#connections" class="connect
 		r = /<div class="member-connections"><strong>(<a href="#connections" class="connections-link">|)([^<]*)(<\/a>|)<\/strong>connections<\/div>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.num_connections = __js_clean_html_str(r.exec(rs)[2]);
-			// Must have only one match
-			r = new RegExp(r.source, 'g');
-			if (rs.match(r).length != 1) {
-				console.log(rs.match(r));
-				console.log(r);
-				alert('Length:'+r);
-				return false;
-			}
+			// Remove must have only. May 22, 2015.
+			//~ // Must have only one match
+			//~ r = new RegExp(r.source, 'g');
+			//~ if (rs.match(r).length != 1) {
+				//~ console.log(rs.match(r));
+				//~ console.log(r);
+				//~ alert('Length:'+r);
+				//~ return false;
+			//~ }
 		} else {
 			// Has different match?
 			r = />connections</;
@@ -5562,8 +6046,9 @@ OR <div class="member-connections"><strong><a href="#connections" class="connect
 		 * Image
 		EX:
 https://media.licdn.com/media/p/3/000/031/13c/113ad79.jpg
-		 */ 
-		r = /<div class="profile-picture">[\r\n\t\s]*(<a href="javascript:void\(0\)">|) *<img src='([^']+)'/;
+		 */
+		// LOGGED OUT=<div class="profile-picture"><a href="/reg/join-pprofile?_ed=0_1juIla4xhA4CFr0Cj73Lsht1xr0t0ZUqIgoujj7RAh3oPEelqZ9dylNp0Re_iq9S0Mf3MQlb4Zku8Gv9M_RRTz&amp;trk=pprof-0-ts-view_full-0"> <img src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/3/005/08e/19c/1b82732.jpg' width="200" height="200" alt="Graham Ellis"/>
+		r = /<div class="profile-picture">[\r\n\t\s]*(<a href="[^"]*">|) *<img src='([^']+)'/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.image_url = __js_clean_html_str(r.exec(rs)[2]);
 			// Must have only one match
@@ -5668,7 +6153,7 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		 * .experience {comp_name: null, logo_url: null, current_or_past: null}
 		 * .profile_has_section_contact_info
 		EX:
-<h3>Experience</h3>
+			<h3>Experience</h3>
 		 */
 		r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
 		if (r.exec(rs)) {
@@ -5702,7 +6187,8 @@ http%3A%2F%2Fdeancdawson%2Ecom
 						var itm = {
 							comp_name: null,
 							logo_url: null,
-							current_or_past: null
+							current_or_past: null,
+							title: null
 						};
 						
 						var rg_it;
@@ -5714,11 +6200,28 @@ http%3A%2F%2Fdeancdawson%2Ecom
 						if (rg_m = rg_it.exec(i)) {
 							itm.comp_name = __js_clean_html_str(rg_m[1]);
 						} else {
-							//EX Kleinmann Family Investments, LLC
 							rg_it = /<a href="\/vsearch\/p\?company=[^"]*" name="company" title="Find others who have worked at this company">([^<]*)<\/a>/;
 							if (rg_m = rg_it.exec(i)) {
 								itm.comp_name = __js_clean_html_str(rg_m[1]);
+							} else {
+								// ...
+								// e.g. href="http://www.linkedin.com/company/915994?trk=ppro_cprof"
+								var rg_it1 = /<h5><a href="[^"]+" dir="auto">([^<]+)<\/a><\/h5>/;
+								var rg_it2 = /<h5><span dir="auto">([^<]+)<\/span><\/h5>/;
+								if (rg_m = rg_it1.exec(i)) {
+									itm.comp_name = __js_clean_html_str(rg_m[1]);
+								} else if (rg_m = rg_it2.exec(i)){
+									itm.comp_name = __js_clean_html_str(rg_m[1]);
+								} else {
+									console.log('x:comp name');
+								}
 							}
+						}
+						// Title
+						var t = /<h4><a href="[^"]+" title="Learn more about this title">([^<]+)<\/a><\/h4>/;
+						var rg_m;
+						if (rg_m = t.exec(rs)) {
+							itm.title = __js_clean_html_str(rg_m[1]);
 						}
 						// Img
 						//https://media.licdn.com/media/p/8/000/22c/122/29e1504.png
@@ -5757,18 +6260,19 @@ http%3A%2F%2Fdeancdawson%2Ecom
 			}
 		} else {
 			// Bool. match.
-			r = /<div id="background-experience" class="background-experience edit-default hidden"><div class="hd"><h3>Experience<\/h3>/;
-			if (!r.test(rs)) {
-				console.log(r.exec(rs));
-				console.log(r);
-				alert('Bool:'+r);
-				return false;
-			}
+			// Ignore "hidden" experience.
+			//~ r = /<div id="background-experience" class="background-experience edit-default hidden"><div class="hd"><h3>Experience<\/h3>/;
+			//~ if (!r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Bool:'+r);
+				//~ return false;
+			//~ }
 		}
 		/**
 		 * Summary
 		EX:
-Professional Financial Management of Assets and Liabilities of Individuals and  ......
+			Professional Financial Management of Assets and Liabilities of Individuals and  ......
 		 */ 
 		//~ r = /<div class="summary"><p class="description">((.|\s)*?(?=<\/p><\/div>|$)|$)/;
 		r = /<div class="summary"><p class="description"[^>]*>((.|\s)*?(?=<\/p><\/div>|$)|$)/;
@@ -5798,7 +6302,7 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 		/**
 		 * Skills
 		EX:
-Professional Financial Management of Assets and Liabilities of Individuals and  ......
+			Professional Financial Management of Assets and Liabilities of Individuals and  ......
 		 */ 
 		//~ r = /<h3>Skills<\/h3>/;
 		r = /<div id="background-skills" class="background-skills edit-default ">(<div class="hd">|)<h3>Skills<\/h3>/;
@@ -5814,13 +6318,14 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 			}
 		} else {
 			// Bool. match.
-			r = /<div id="background-skills" class="background-skills edit-default hidden">(<div class="hd">|)<h3>Skills<\/h3>/;
-			if (!r.test(rs)) {
-				console.log(r.exec(rs));
-				console.log(r);
-				alert('Bool:'+r);
-				return false;
-			}
+			// Ignore hidden
+			//~ r = /<div id="background-skills" class="background-skills edit-default hidden">(<div class="hd">|)<h3>Skills<\/h3>/;
+			//~ if (!r.test(rs)) {
+				//~ console.log(r.exec(rs));
+				//~ console.log(r);
+				//~ alert('Bool:'+r);
+				//~ return false;
+			//~ }
 		}
 		/**
 		 * Education
@@ -5856,7 +6361,7 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 		HIDDEN: ???
 <li id="interests" class="section-item editable-item no-additional-info">
 		 */ 
-		r = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>/;
+		r = /(<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>|<div id="background-interests" class="" tabindex="0"><h3 class="header">Interests<\/h3>)/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.profile_has_section_interests = true;
 			// Must have only one match
@@ -5869,16 +6374,41 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
 			}
 		} else {
 			// Bool. match.
+			// To Ignore (when logged out): <div id="background-interests" class="hidden" tabindex="0"><h3 class="header">Interests</h3>
 			var x;
+			var hidden_int = rs.indexOf('<div id="background-interests" class="hidden" tabindex="0"><h3 class="header">Interests</h3>');
 			r = /<li id="interests" class="section-item editable-item no-additional-info"><h4>Interests<\/h4>/;
 			x = /<li id="interests" class="section-item editable-item "><h4>Interests<\/h4><\/li>/; // BLANK
-			if (!r.test(rs) && !x.exec(rs) && rs.indexOf('>Interests<') != -1) {
+			if (hidden_int != -1) {
+				// Do nothing
+			} else if (!r.test(rs) && !x.exec(rs) && rs.indexOf('>Interests<') != -1) {
 				console.log(r.exec(rs));
 				console.log(r);
 				alert('Bool:'+r);
 				return false;
 			}
 			//~ r = /<h4>Interests<\/h4>/;
+		}
+		/**
+		 * people_also_viewed
+		 * 
+		 */
+		var av = dom.getElementsByClassName('insights-browse-map');
+		if (av && av.length) {
+			if (av.length > 1 && av[0].className.indexOf('same-name-search') != -1) {
+				av = av[1];
+			} else av = av[0];
+			var li = av.getElementsByTagName('li');
+			for (var i in li) {
+				if (i == 'length') break;
+				var pav_person = {
+					name: null,
+					title: null
+				}
+				pav_person.name = li[i].getElementsByTagName('h4')[0].innerText; // True or error
+				pav_person.title = li[i].getElementsByClassName('browse-map-title')[0].innerText; // True or error
+				opts.response.vars.result.people_also_viewed.push( pav_person );
+			}
 		}
 		
 		/**
@@ -6008,13 +6538,1763 @@ Professional Financial Management of Assets and Liabilities of Individuals and  
  * create__input_scrapy_button
  * create__input_skip_button2
  * create__input_skip_button
+ * create_dashboard_find_phone
  * create_dashboard_find_address
+ * create_dashboard_find_url
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
+ * 
+ * search_container
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * search_container
+ * 
+ * @param	`options_object`
+ * @param	`options_object.divs`
+ * @param	`options_object.style`
+ * @param	`options_object.textareas`
+ * @param	`options_object.offset_top` INT, Default=0.
+ * @return	`container` HTML DIV, Div with keys {.search{.divs[],.textareas[]}}
+ */
+AMT___items_factory.prototype.search_container = function(options_object) {
+	// E.g. create 3 search+textarea divs
+	//~ o.container = new AMT___items_factory().search_container({
+		//~ divs: {num: 3} // Horizontal divs: yelp, tripadv, foursq. Default height=100%.
+		//~ style: 'width:99%;position:absolute;left:0;top:0;height:200px;overflow:hidden;',
+		//~ textareas: {num: 2} // Vertical textareas per div. Default height=40px.
+	//~ });
+	// RETURN:
+	//~ o.container.search[0].textareas[0].value = o.comp;
+	//~ o.container.search[0].textareas[1].value = o.addr;
+	//~ o.container.search[1].textareas[0].value = o.comp;
+	//~ o.container.search[1].textareas[1].value = o.addr;
+	//~ o.container.search[2].textareas[0].value = o.comp;
+	//~ o.container.search[2].textareas[1].value = o.addr;
+	
+	//~ 
+	//~ var d1 = document.createElement('div');
+	//~ d1.setAttribute('style','position:absolute;top:160px;left:0;width:80%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+	//~ document.body.appendChild(d1);
+	//~ var d2  = document.createElement('textarea');
+	//~ d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
+	//~ document.body.appendChild(d2);
+	//~ var d2b = document.createElement('textarea');
+	//~ d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:20%;height:30px;');
+	//~ document.body.appendChild(d2b);
+	/*END ITEMS*/
+	
+	// Defaults
+	if (!options_object.hasOwnProperty('offset_top')) {
+		options_object.offset_top = 0;
+	}
+	
+	// ef
+	var ef = new AMT___events_factory(); // For mouseup+keydown
+	var container = ''.div({style: options_object.style});
+	container.search = []; // Array. Fill in.
+	var width = (99 / options_object.divs.num) + '%'; // e.g. 99 / 3 = 33%
+	for (var i=0; i<options_object.divs.num; i++) {
+		var col = ''.div({style: 'width:'+width+';height:100%;float:left;'});
+		container.appendChild(col);
+		container.search[i] = {
+			textareas: [],
+			divs: [],
+			col: col
+		}
+		for (var j=0; j<options_object.textareas.num; j++) {
+			var tx = document.createElement('textarea');
+			tx.setAttribute('style', 'width:99%;height:40px;');
+			col.appendChild(tx);
+			container.search[i].textareas[j] = tx;
+			// Mouseup + Keydown. Default=On.
+			tx.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [tx],
+				blur_element: true
+			});
+		}
+		var dv = ''.div({style: 'width:99%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+		col.appendChild(dv);
+		container.search[i].divs[0] = dv; // Only one.
+	}
+	
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		callback_function: function(inh) {
+			inh -= options_object.offset_top;
+			container.style.height = inh + 'px';
+			// Set children div heights.
+			var ch = (inh - (options_object.textareas.num * 41)) + 'px'; // Add 1px
+			for (var i=0; i<container.search.length; i++) {
+				container.search[i].divs[0].style.height = ch;
+			}
+		}
+	});
+	
+	return container;
+}
+/**
+ * create_dashboard_find_url
+ * 
+ * .bold_array		Array
+ * .searches		Array, Array of strings to search (3=default)
+ * .out_element		HTML input element, Where to put URL
+ * .onclick_success	Function, Callback function for successful find URL
+ * .parent			HTML div element, Container
+ * .offsetTop		Int, Parent div offset top
+ * .innerHeight_callback	Function
+ * .load_success_callback	Function, Callback after all panels have loaded
+ * .search_results	Object
+ * .search_results.use_full_urls					Boolean
+ * .search_results.replace_urls_in_result_body		Boolean, Default=False
+ * .search_results.url_ignore_test					Function(url), True=Skip, False=Keep
+ * .search_results.url_modifier_callback			Function(url)
+ * .search			Object
+ * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
+ * 
+ * @return Not much to return. However, `options_object` is modified / modifiable.
+ * 		options_object.results.divs
+ * 		options_object.results.textareas
+ * 		options_object.results...
+ * 
+ */
+AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
+
+	GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr,table,thead,tbody,tr,td {margin:0;padding:0;font-size:12px;}');
+	GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
+	
+	//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
+	
+	// REMOVED THESE THREE!
+	// JULY 25, 2015
+	//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
+	//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+	//~ GM_addStyle('form {position:absolute;top:1000px;}');
+	
+	GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
+	GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+	GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
+	
+	
+	var options_object = options_object;
+	// Defaults
+	if (!options_object.hasOwnProperty('search')) {// search_results
+		options_object.search = {}
+	}
+	if (!options_object.search.hasOwnProperty('str_add_to_searches_hidden')) {// search_results
+		options_object.search.str_add_to_searches_hidden = '';
+	}
+	if (!options_object.hasOwnProperty('search_results')) {// search_results
+		options_object.search_results = {}
+	}
+	if (!options_object.search_results.hasOwnProperty('use_full_urls')) {// use_full_urls
+		options_object.search_results.use_full_urls = false;
+	}
+	if (!options_object.search_results.hasOwnProperty('replace_urls_in_result_body')) {// replace_urls_in_result_body
+		options_object.search_results.replace_urls_in_result_body = false;
+	}
+	// Fills in
+	options_object.results = {
+		divs: [],
+		textareas: [] //TODO
+		// ...
+	}
+	
+	var td = document.getElementsByTagName('td');
+	
+	new AMT___core_factory().createScriptVar('Skip For High Yield','0');
+	new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
+	
+	var o = {
+		bold_array: options_object.bold_array,
+		panels_loaded: 0,
+		num_panels: 3,
+		domain_counts: {}, // obj
+		first_domains: [],
+		first_full_urls: [],
+		first_in_each_column: [],
+		txas:[[],[],[]], //And array of arrays, where 1st array is column, 2nd array is row. E.g. o.txas[0][1] will give you the txa at first column, 2nd row
+		q: [
+			options_object.out_element
+		],
+		onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
+		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
+	}
+	//~ console.log(o);
+	options_object.o = o; // ...
+	
+	/* BEGINS ITEMS */
+	//
+	var na = document.createElement('input');
+	na.setAttribute('type','button');
+	na.setAttribute('style','width:19%;height:20px;cursor:pointer;');
+	options_object.parent.appendChild(na);
+	na.value = (options_object.naText) ? options_object.naText : "N/A";
+	//
+	var inp_top = document.createElement('input');
+	inp_top.setAttribute('type','input');
+	inp_top.setAttribute('style','width:80%;height:20px;');
+	options_object.parent.appendChild(inp_top);
+	// textareas
+	var d3 = document.createElement('textarea');
+	d3.setAttribute('style','float:left;width:33%;height:50px;');
+	options_object.parent.appendChild(d3);
+	//
+	var d3b = document.createElement('textarea');
+	d3b.setAttribute('style','float:left;width:33%;height:50px;');
+	options_object.parent.appendChild(d3b);
+	//
+	var d3c = document.createElement('textarea');
+	d3c.setAttribute('style','float:left;width:33%;height:50px;');
+	options_object.parent.appendChild(d3c);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// divs
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1);
+	d1.id = 'd1a';
+	d1.txa = d3;
+	d1.results = []; // Fill in later
+	options_object.results.divs.push(d1);
+	//
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1b);
+	d1b.id = 'd1b';
+	d1b.txa = d3b;
+	d1b.results = [];
+	options_object.results.divs.push(d1b);
+	//
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1c);
+	d1c.id = 'd1c';
+	d1c.txa = d3c;
+	d1c.results = [];
+	options_object.results.divs.push(d1c);
+	/*END ITEMS*/
+	//
+	d3.onblur = function() {
+		company_URL__SP_init(d1,  this);
+	}
+	d3b.onblur = function() {
+		company_URL__SP_init(d1b, this);
+	}
+	d3c.onblur = function() {
+		company_URL__SP_init(d1c, this);
+	}
+	
+	if (options_object.naText) {
+		na.onclick = function() {
+			this.style.backgroundColor = 'LightGreen';
+			o.q[0].value = this.value;
+			doSubmit();
+		}
+	}
+	
+	// ...
+	var ef = new AMT___events_factory();
+	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+	
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		elements: [
+			d1, d1b, d1c
+		],
+		offset: options_object.offsetTop*1 + 70 // Offset top. Add to this 70px.
+	});
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		elements: [
+			options_object.parent
+		],
+		offset: options_object.offsetTop*1 -4 // Offset top + a bit
+	});
+	
+	// ...
+	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0] : '';
+	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1] : '';
+	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2] : '';
+	
+	var load_first = true;
+	var FOUND_ONE_NONSKIP = false;
+	var TOTAL_CALLS = 0;
+	var ARRAY_FIRST_FINDS = [];
+	var NUM_FOUND_SEARCH = 0;
+	var SKIP_SITES;
+	function company_URL__load_skips() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: MT___host+'/mturk/util.php?austin_load_skips=',
+			onload: function (response) {
+				var rs=response.responseText;
+				
+				var x = rs.split("\n");
+				
+				SKIP_SITES = {}; // ASSOC.
+				
+				// FULL
+				for (var i in x) {
+					SKIP_SITES[x[i]] = true;
+				}
+				
+				// SUBDOMAINS!
+				for (var i in x) {
+					var y;
+					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+						SKIP_SITES[y[1]] = true;
+					}
+				}
+				
+				company_URL__SP_init();
+			}
+		});
+	}
+	company_URL__load_skips();
+	
+	function company_URL__SP_init(el_div, el_inp) {
+		var req_proxy;
+		var add = options_object.search.str_add_to_searches_hidden;
+		//
+		if (el_inp && el_div) { // single! (+dynamic!)
+			el_div.innerHTML = '';
+			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				startPage: true,
+				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(el_inp.value + add),
+				seed: el_div,
+				callback_function: company_URL__processProxyResponse,
+				return_init_object: true
+			});
+			return;
+		}
+		
+		d1.innerHTML = d1b.innerHTML = d1c.innerHTML = '';
+		
+		// Do not search if blank!
+		//count_domains(); innerText = 'Blank!'
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3.value + add),
+			seed: d1,
+			callback_function: company_URL__processProxyResponse,
+			return_init_object: true
+		});
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3b.value + add),
+			seed: d1b,
+			callback_function: company_URL__processProxyResponse,
+			return_init_object: true
+		});
+		if (d3c.value == '') return;
+		var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+			startPage: true,
+			url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(d3c.value + add),
+			seed: d1c,
+			callback_function: company_URL__processProxyResponse,
+			return_init_object: true
+		});
+	}
+	/**
+	 * function company_URL__processProxyResponse
+	 * 
+	 * @param		response		object
+	 */
+	function company_URL__processProxyResponse(response) {
+		
+		var rs = response.rs;
+		
+		// rs
+		// 0=url
+		// 1=full
+		
+		// seed_arg
+		var out_div = response.seed;
+		out_div.innerHTML = '';
+		
+		if (!rs.length) {
+			out_div.innerHTML = '0';
+			count_domains();
+			return;
+		}
+		
+		var count = 0;
+		var col;
+		if(out_div == d1)
+			col = 0;
+		else if(out_div == d1b)
+			col = 1;
+		else if(out_div == d1c)
+			col = 2;
+		for (var i in rs) {
+			
+			var x = rs[i][0];
+			var link = rs[i][0];
+			var full = rs[i][1];
+			var div_result = {
+				p: null,
+				url: null, //TODO
+				body: null, //TODO
+				textarea: null,
+			}
+			
+			// Skip here?
+			// This is a callback function test.
+			// True=Skip. False=Okay.
+			if 	(
+				options_object.search_results &&
+				options_object.search_results.url_ignore_test &&
+				typeof options_object.search_results.url_ignore_test == 'function' &&
+				options_object.search_results.url_ignore_test({url:link}) == true
+				)
+			{
+				continue;
+			}
+			
+			//~ // ..
+			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+
+			
+			// TRAILING
+			if (!options_object.search_results.use_full_urls)
+				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+			
+			if (options_object.search_results.url_modifier_callback) {
+				x = options_object.search_results.url_modifier_callback( x );
+			}
+
+			div_result.url = x;
+			
+			//~ // DOMAIN
+			var domain = x.replace(/^https?:\/\//, ''); // beginning
+			
+			// SKIP BUTTON CREATE
+			// returns obj.el_button, obj.isSkip
+			var el_inp_skip2__obj = new AMT___items_factory().
+				create__input_skip_button2(
+					{
+						domain: x,
+						load_file: 'austin_load_skips', 
+						var_skip_sites: SKIP_SITES, 
+						callback_function: false
+					}
+				);
+			
+			// Remove search engine bolding!
+			full = full.replace(/<\/?b[^>]*>/gi, '');
+			
+			// Replace URLs in result body?
+			// Boolean. If true then replace first instance ONLY.
+			if (options_object.search_results.replace_urls_in_result_body == true) {
+				full = full.replace(link, ''); //
+			}
+			
+			// Add bold (bold_array)
+			full = MT__bold(full, o.bold_array);
+			
+			// classname is http://(www. = '')x.com (no www)
+			var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
+			
+			// ...
+			var d = document.createElement('p');
+			d.setAttribute('style','margin:4px 0 4px 0;');
+			d.className = 'class_'+cls;
+			d.full_url = link;
+			d.original_bg_color = '';
+			div_result.p = d;
+			out_div.appendChild(d);
+			
+			// IS SKIP?
+			if (el_inp_skip2__obj.isSkip) {
+				d.appendChild(el_inp_skip2__obj.el_btn);
+				continue; // END
+			} else {
+				FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
+			}
+			
+			// domain_counts
+			if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
+				o.domain_counts[ 'class_' + cls ]++;
+			} else {
+				o.domain_counts[ 'class_' + cls ] = 1;
+			}
+			if(count < 3) {
+				if(count == 0)
+					o.first_in_each_column.push(domain);
+				o.first_domains.push(domain);
+				o.first_full_urls.push(link);
+				count++;
+			}
+			// IS NOT SKIP?
+			var txa = document.createElement('textarea');
+			txa.setAttribute('style','width:100%;zoom:1;cursor:pointer;padding:0;margin:0;resize:none;'); //resize:none;
+			txa.readOnly = true;
+			txa.value = x;
+			txa.full_url = link;
+			txa.parent_div	= out_div;
+			txa.parent_txa	= out_div.txa;
+			txa.parent_p	= d;
+			txa.row = i;
+			txa.col = col;
+			div_result.textarea = txa;
+			d.appendChild(txa);
+			// ...
+			var a = document.createElement('a');
+			a.setAttribute('style','margin-right:6px;');
+			a.target = '_blank';
+			a.innerText = 'link';
+			a.href = link;
+			o.txas[col].push(txa);
+			d.appendChild(a);
+			// ...
+			d.appendChild(el_inp_skip2__obj.el_btn);
+			//~ // ...
+			//~ d.appendChild(document.createElement('br'));
+			// ...
+			var pbody = document.createElement('p');
+			pbody.setAttribute('style','');
+			pbody.innerHTML = full;
+			d.appendChild(pbody);
+			
+			// Actions
+			// 
+			//
+			//
+			
+			// onclick
+			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success : function(e) {
+				if(options_object.clickIntoUtilityTabs) { //Utility behavior: jump into utility tab
+					if(!this.utilityTabBtn) {
+						this.utilityTabBtn = addUtilityTab({
+								url: this.full_url,
+								options: options_object.clickIntoUtilityTabs 
+							}
+							);
+					}else {
+						//click on my associated utility tab
+						this.utilityTabBtn.click();
+						
+					}
+				}
+				else { //Standard behavior, put url in out_element
+					this.style.backgroundColor = 'LightGreen';
+					// Has CTRL key?
+					if (!e.ctrlKey)
+						options_object.out_element.value = this.value;
+					else
+						options_object.out_element.value = this.full_url;
+					
+					if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
+						doSubmit();
+					else {
+						showNextTab();
+						doSubmit();
+					}
+				}
+			};
+			//mouseover
+			d.addEventListener('mouseover', function() {
+				inp_top.value = this.full_url;
+				var x = document.getElementsByTagName('p');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i].className == this.className) {
+						x[i].style.backgroundColor = 'LightGreen';
+					} else {
+						x[i].style.backgroundColor = x[i].original_bg_color;
+					}
+				}
+				// Could do this also! .getElementsByClassName('class_');
+			}, false);
+			//mouseout
+			d.addEventListener('mouseout', function() {
+				inp_top.value = '';
+				var x = document.getElementsByTagName('p');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i].className == this.className) {
+						x[i].style.backgroundColor = x[i].original_bg_color;
+					}
+				}
+			}, false);
+			
+			// ADD THIS TO out_div RESULTS!
+			out_div.results.push(div_result); // Add this element to DIV.results
+		}
+		count_domains();
+		if (out_div.innerHTML == '')
+			out_div.innerHTML = '0';
+		else {
+			var d = document.createElement('div');
+			d.setAttribute('style','height:2000px;');
+			out_div.appendChild(d);
+		}
+	}
+	
+	function createUtilityTabsAndRewriteExeBehavior() {
+		var urls =[];
+		for(var i = 0; i < o.first_full_urls.length; i++){
+			urls.push({
+				url: o.first_full_urls[i],
+			});
+			if(o.clickIntoUtilityTabs.options) {
+				urls[i].options = clickIntoUtilityTabs[i];
+			}
+		}
+		
+
+		AMT__setUtilityTabs(
+			urls,
+			null,
+			{style:'position:absolute;top:2500px;height:27px;left:80%;background-color:gray;border: 1px solid green'},
+			false,
+			function(response) {
+				if(o.clickIntoUtilityTabs.callback) {
+					o.clickIntoUtilityTabs.callback(response);
+				}
+			}
+		)
+		
+		//Associate each of the top utilities with its corresponding utility tab button
+		for(var i = 0; i < o.txas.length; i++) {
+			o.txas[i][0].utilityTabBtn = getUtilityTabButton(i);
+		}
+		
+		
+		
+	}
+	
+	/**
+	 * count_domains
+	 * 
+	 * NOTE: Would it be best to only count domains in the top 1-4? Problem: Domains at the bottom of page (ignored) sometimes
+	 * 		seem to rack up the #s!
+	 */
+	function count_domains() {
+		// Is a tie?
+		var count_domains_is_a_tie = false;
+		// increment
+		o.panels_loaded++;
+		// check complete
+		var tmp_cls = false;
+		if (o.panels_loaded == o.num_panels) {
+			// If all are ready and .load_success_callback
+			if (options_object.hasOwnProperty('load_success_callback')) {
+				options_object.load_success_callback( options_object );
+			}
+			
+			// Mark most domains...
+			var max = 0;
+			for (var i in o.domain_counts) {
+				if (o.domain_counts[i] > max) {
+					max = o.domain_counts[i];
+					tmp_cls = i; // key
+				}
+			}
+			if (tmp_cls) { // This is an html className
+				var n = document.getElementsByClassName(tmp_cls);
+				console.log(n);
+				for (var i in n) {
+					if (i == 'length') break;
+					n[i].style.backgroundColor = 'beige';
+					n[i].style.border = '3px solid brown';
+					n[i].original_bg_color = 'beige';
+				}
+			}
+			
+			if(o.panels_loaded == o.num_panels && o.clickIntoUtilityTabs) {
+				createUtilityTabsAndRewriteExeBehavior();
+			}
+			
+			if(o.panels_loaded == o.num_panels && o.onLoadAddToTabsQ) {
+				onLoadAddToTabsQ();
+			}
+			
+			// WE ARE READY TO CHECK FOR FLOAT SKIPPING/ACCEPTING SCRIPT
+			// ...
+			// Conditions:
+			// 1) 60% of top windows (9 max.) are same domain. Change to 5 of 9 (56%)?
+			// 2) First result in each of three windows is same domain.
+			// 3) All three panels are "0 results"
+			//
+			// MUST BE IN PREVIEW MODE
+			if(AMT__Global_Vars.scriptVars['Skip For High Yield'] != '0') {				
+				if (o.panels_loaded != o.num_panels) {
+					return;
+				}
+				if(!AMT__Global_Vars.isPreview) {
+					addToTabsQ();
+					if(AMT__Global_Vars.scriptVars['NumAcceptedAlert'] != '0') {
+						var num = AMT__Global_Vars.scriptVars['NumAcceptedAlert'] * 1;
+							chrome.extension.sendRequest(
+								{
+									NumAcceptedAlert: num,
+								}, function() {/*squelch response*/});
+					}
+				}
+				if (AMT__Global_Vars.isPreview) {
+					console.log(o);
+					
+					// 1...
+					// Tally all domains
+					var all_domains = {};
+					var num_unique_dm = 0;
+					var num_tot = o.first_domains.length;
+					for (var dom in o.first_domains) {
+						var dm = o.first_domains[dom]; //o.first_domains[out_div].push(cls);
+						if (!all_domains.hasOwnProperty(dm)) {
+							all_domains[dm] = 1;
+							num_unique_dm++; //not using this...
+						} else {
+							all_domains[dm]++;
+						}
+					}
+					var most = 0;
+					var most_dm;
+					for (var i in all_domains) {
+						if (all_domains[i] > most) {
+							most_dm = i; // The most popular domain
+							most = all_domains[i];
+						}
+					}
+					if (most_dm && (most / num_tot) >= 0.55) { // MOST E.G. 4, NUM_DM E.G. 9 // SO 4/9 = .44, 5/9 = .55, 6/9 = .66
+						console.log('#1 most');
+						console.log(most / num_tot);
+						console.log('most'+most);
+						console.log('num_tot'+num_tot);
+						AMT___Floater.accept();
+						return;
+					}
+					
+					// 2...
+					// First in each column is same
+					// All three have something? Use Object.keys(obj) to test for the size of object.
+					if (o.first_in_each_column.length == o.num_panels) {
+						var first = o.first_in_each_column[0];
+						var success = true;
+						for (var dom in o.first_in_each_column) {
+							if (dom != first) {
+								success = false;
+							}
+						}
+						// Success?
+						if (success) {
+							console.log('#2');
+							console.log(o.first_in_each_column);
+							AMT___Floater.accept();
+							return;
+						}
+					}
+					
+					// 3...
+					// All 0s?
+					// Tested?
+					if (o.first_in_each_column.length == 0) {
+						console.log('#3');
+						AMT___Floater.accept();
+						return;
+					}
+				}
+				// STILL HERE?
+				// THAT MEANS THAT SKIPS FAILS
+				// So skip this.
+				AMT___Floater.skip();
+			}
+		}
+	}
+}
+/**
+ * function create_dashboard_find_phone
+ *
+ * -xxxxxxxx----------------------------
+ * @param options_object						object	
+ * @param "".parent								element
+ * @param "".distance_close_match	integer, The distance in miles considered to be "close". Where "far" appears as bgcolor=aqua.
+ * @param "".input_phone			integer,
+ * @param "".search_term			string,
+ * @param "".location				string,
+ * 
+ * @return
+ */
+AMT___items_factory.prototype.create_dashboard_find_phone = function(options_object) {
+
+	GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+	GM_addStyle('body {margin-top:1000px;}');
+	GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+	GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+	
+	var options_object = options_object;
+	var parent = options_object.parent;
+	var q = options_object.input_phone;
+	var callback = options_object.callback;
+	
+	//~ var q  = document.getElementById('Q1Url');
+	//~ var q2 = document.getElementById('Q1Url2');
+	//~ var b = document.getElementsByTagName('b');
+	//~ var strong = document.getElementsByTagName('strong');
+	//~ 
+	//~ document.getElementById('mturk_form').onsubmit = function() {
+		//~ q.value = q.value.trim();
+		//~ var x = q.value.replace(/[^\d]/g,'');
+		//~ if (x.length != 10) return false;
+		//~ if (q1.value == '' || q2.value == '')
+			//~ return false;
+	//~ }
+	
+	
+	
+	/* BEGIN ITEMS */
+	// d2
+	var d2 = document.createElement('input');
+	d2.type = 'text';
+	d2.setAttribute('style','width:99%;height:30px;');
+	parent.appendChild(d2);
+	// d2b
+	var d2b = document.createElement('input');
+	d2b.type = 'text';
+	d2b.setAttribute('style','width:99%;height:30px;');
+	parent.appendChild(d2b);
+	// d1
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
+	parent.appendChild(d1);
+	// d1b
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
+	parent.appendChild(d1b);
+	// d1c
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
+	parent.appendChild(d1c);
+	// d1d
+	var d1d = document.createElement('div');
+	d1d.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
+	parent.appendChild(d1d);
+	// clear both
+	var x = document.createElement('br');
+	x.setAttribute('style','clear:both;');
+	parent.appendChild(x);
+	/* END ITEMS */
+	
+	// setTimeout resize divs. This is because parent element is 
+	// resizing with AMT___core_factory().el_innerHeight();
+	setTimeout(function() {
+		var h = (parent.style.height.replace(/px/g, '') * 1) - 62; // 60 is the inputs. At 60 this causes a scrollbar to appear.
+		h += 'px';
+		d1 .style.height = h;
+		d1b.style.height = h;
+		d1c.style.height = h;
+		d1d.style.height = h;
+	}, 800);
+	
+	// Actions
+	d2.onblur = function() {
+		o.stats = {// RESET THIS!!!
+			google_search_complete: false,
+			fb_search_complete: false,
+			yelp_search_complete: false,
+			num_google_results: 0,
+			num_fb_results: 0,
+			num_yelp_results: 0,
+			gotYelpCaptcha: false
+		}
+		this.value = this.value.trim();
+		google_find_phone();
+		find_phone__FB();
+		yelp();
+	}
+	
+	// vars
+	var o = {
+		name: options_object.search_term,
+		locn: options_object.location,
+		name_arr: [],
+		locn_arr: [],
+		
+		stats: { // stats
+			google_search_complete:	false,
+			fb_search_complete:		false,
+			yelp_search_complete:	false,
+			num_google_results:		0,
+			num_fb_results:			0,
+			num_yelp_results:		0
+		}
+	};
+	o.name_arr = o.name.clean_string_to_array();
+	o.locn_arr = o.locn.clean_string_to_array();
+	console.log(o);
+	
+	// Values
+	d2.value  = o.name;
+	d2b.value = o.locn;
+	
+	// ef
+	var ef = new AMT___events_factory();
+	d2.addEventListener('keydown', ef.keydown__blur_field, true);
+	
+	//~ // innerHeight
+	//~ new AMT___core_factory().el_innerHeight({
+		//~ // This set the elements d1,d1b, and d1c
+		//~ // to fill up the whole window, minus their
+		//~ // distance from page top (top:XX pixels;).
+		//~ elements: [
+			//~ d1, d1b, d1c, d1d
+		//~ ],
+		//~ offset: 80 // offset top
+	//~ });
+	
+	// global lat long
+	var ll = {};
+	
+	// var skip
+	// This is when no FB match and no 20% or higher google matches
+	var no_good_match = 0; // 2 signifies skip
+	
+	// google places api
+	MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
+	
+	//~ /**
+	 //~ * function
+	 //~ */
+	//~ function find_phone__check_no_good_match(){
+		//~ no_good_match++;
+		//~ 
+		//~ if (no_good_match >= 2) {
+			//~ if (AMT__Global_Vars.isPreview) {
+				//~ AMT___Floater.skip();
+			//~ }
+		//~ }
+	//~ }
+	/**
+	 * function
+	 */
+	function find_phone__FB() {
+		
+		d1b.innerHTML = '';
+		var dv = document.createElement('div');
+		d1b.appendChild(dv);
+		dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+		dv.innerText = d2.value;
+		
+		// URL
+		var u = 
+			'https://graph.facebook.com/search'+
+			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
+			//~ '?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
+			'&fields=category,id,name,likes,talking_about_count,location,link,phone'+
+			'&limit=10'+ //8 to 10 Mar11,2015
+			'&center='+ll.lat+','+ll.lng+ //
+			'&distance=30000'+ // 30k ~ 19mi
+			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+		
+			//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
+			// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		// Xhr
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = JSON.parse(rs);
+				if (!r.data) { // No data?
+					d1b.appendChild('0'.div());
+					// 
+					o.stats.fb_search_complete = true;
+					check_if_yp_init();
+					// quit
+					return;
+				}
+				r = r.data;
+				
+				// 0 results.
+				if (r.length == 0) {
+					d1b.appendChild('0'.div());
+					// Finished
+					o.stats.fb_search_complete = true;
+					check_if_yp_init();
+					return;
+				}
+				//~ // More than 0 results.
+				//~ else {
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.accept();
+						//~ return;
+					//~ }
+				//~ }
+				
+				// Loop
+				var c = 0;
+				var found = false;
+				for (var i in r) {
+					
+					// Type != event
+					if (r[i].type) {
+						if (r[i].type == 'event') continue;
+					}
+					
+					// Here? Increment result count.
+					o.stats.num_fb_results++;
+					
+					// Talking about count
+					if (r[i].talking_about_count != null) {
+					} else
+						r[i].talking_about_count = '';
+					if (r[i].likes != null) {
+					} else
+						r[i].likes = '';
+					
+					// Phone
+					r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
+					
+					// Location
+					var dist = '-';
+					var dist_bgc = '';
+					if (r[i].location) {
+						//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
+						if (r[i].location.latitude && r[i].location.longitude) {
+							dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
+							if (dist) {
+								dist = Math.round(dist*100) / 100;
+								if (dist*1 >= 4)
+									dist_bgc = 'background-color:aqua;';
+							}
+						}
+						
+						if (r[i].location.latitude) {
+							delete r[i].location.latitude;
+						}
+						if (r[i].location.longitude) {
+							delete r[i].location.longitude;
+						}
+					}
+					// ...
+					var locn__ = '';
+					if (r[i].location) {
+						for (var j in r[i].location) {
+							locn__ += ', ' + r[i].location[j];
+						}
+					}
+					locn__ = locn__.replace(/^,/, '').trim();
+					
+					// ...
+					var y = JSON.stringify(r[i]);
+					
+					// Clean phone
+					var cln_ph = r[i].phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10);
+					
+					// Div
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+					dv.className = 'exe ' + cln_ph;
+					dv.phone = r[i].phone;
+					dv.fblink = r[i].link;
+					dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
+					dv.innerHTML += '<br>Likes:'+r[i].likes;
+					dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
+					dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
+					d1b.appendChild(dv);
+					
+					// .onclick
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						var p = this.phone;
+						
+						// Let's test this! (Must be 10 numbers not including a-z)
+						var test = p;
+						test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
+						test = test.replace(/^1/, ''); // Remove "^1"
+						test = test.substr(0,10); // Substring 0,10
+						test = test.replace(/[^\d]/g, ''); // Remove non-digit
+						if  (
+							test.length != 10 // Length==10?
+							)
+						{
+							d2.value = 'Invalid phone!';
+							q.style.border = '4px solid teal';
+							return;
+						}
+						
+						p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						// set divs clicked
+						set_divs_clicked(p);
+						// Set q.value
+						q.value = p;
+						callback(); // Callback
+					}
+				}
+				if (d1b.innerHTML != '') {
+					var dv = document.createElement('div');
+					dv.setAttribute('style', 'height:1400px;');
+					d1b.appendChild(dv);
+				}
+				
+				// 
+				o.stats.fb_search_complete = true;
+				check_if_yp_init();
+			}
+		});
+	}
+	function check_if_yp_init() {//console.log('check_if_yp_init');console.log(o);
+		if  (
+			o.stats.fb_search_complete		&&
+			o.stats.google_search_complete	&&
+			o.stats.yelp_search_complete	&&
+			o.stats.num_fb_results == 0		&&
+			o.stats.num_google_results == 0	&&
+			o.stats.num_yelp_results == 0
+			)
+		{
+			find_phone__YellowPages(); // Init YP.
+		}
+	}
+	/**
+	 * function find_phone__YellowPages
+	 */
+	function find_phone__YellowPages() {
+		
+		d1d.innerHTML = '';
+		var dv = document.createElement('div');
+		d1d.appendChild(dv);
+		dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+		dv.innerText = d2.value;
+		
+		// e.g. http://www.yellowpages.com/search?search_terms=ithaca+diner&geo_location_terms=Ithaca%2C+NY
+		var u = 'http://www.yellowpages.com/search'+
+			'?search_terms='+encodeURIComponent(d2.value)+
+			'&geo_location_terms='+encodeURIComponent(d2b.value);
+		//u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		new AMT___site_scrapes().scrape({
+			site: 'http://www.yellowpages.com/search',
+			url: u,
+			callback_function: find_phone__YellowPages_process
+		});
+	}
+	/**
+	 * function find_phone__YellowPages_process
+	 * 
+		opts.response.vars = {
+			results: [],
+			num_search_results: null, // integer, default=0
+			error: null,
+			error_type: null
+		}
+		var rslt = {
+			name:					null,	// string
+			address:				null,	// string
+			phones:					[],		// array of strings
+			profile_url:			null,	// string
+			distance_from_address:	null,	// float
+			
+			listing_id:				null	// string, private
+		};
+	*/
+	function find_phone__YellowPages_process(opts) {
+		
+		console.log(opts);
+		
+		if (!opts || !opts.response || !opts.response.vars) return;
+		
+		if (opts.response.status != 200) {
+			d1d.style.backgroundColor = 'pink !important';
+			d1d.innerText = opts.response.status;
+			return;
+		}
+		if (opts.response.vars.error != null) {
+			d1d.style.backgroundColor = 'pink !important';
+			d1d.style.border = '2px solid pink';
+			d1d.innerText = opts.response.vars.error;
+			return;
+		}
+		
+		var dv = document.createElement('div');
+		dv.setAttribute('style', 'border-bottom:1px solid teal');
+		d1d.appendChild(dv);
+		dv.innerText = opts.response.vars.num_search_results + ' results';
+		
+		if (opts.response.vars.num_search_results == 0) {
+			return;
+		}
+					
+		// Loop
+		var c = 0;
+		var found = false;
+		var r = opts.response.vars.results;
+		console.log('YP RESULTS:');
+		console.log(r);
+		for (var i in r) {
+			
+			// Distance
+			var dist = '-';
+			var dist_bgc = '';
+			if (r[i].distance_from_address) {
+				dist = Math.round(r[i].distance_from_address*100) / 100;
+				if (dist*1 > 4)
+					dist_bgc = 'background-color:aqua;';
+			}
+			
+			// ...
+			var dv = document.createElement('div');
+			d1d.appendChild(dv);
+			dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+			dv.className = 'exe';
+			dv.phone = (r[i].phones.length && r[i].phones[0]) ? r[i].phones[0].replace(/[^\d]/g, '') : null;
+			dv.link = r[i].profile_url;
+			// innerHTML
+			dv.innerHTML  = MT__bold(r[i].name, o.name_arr);
+			dv.innerHTML += '('+dist+')<br>';
+			if (r[i].address != null)
+				dv.innerHTML += MT__bold(r[i].address, o.locn_arr);
+			else
+				dv.innerHTML += '-';
+			dv.innerHTML += '<br>P:'+r[i].phones.join(',');
+			
+			// Clean phone
+			if (dv.phone) {
+				var cln_ph;
+				cln_ph = dv.phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+				dv.className += ' ' + cln_ph;
+			}
+			
+			// .onclick
+			dv.onclick = function() {
+				var p = this.phone;
+				if (p == null) return;
+				
+				// ...
+				p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+				// set_divs_clicked
+				set_divs_clicked(p);
+				// ...
+				q.value = p;
+				callback(); // Callback
+			}
+		}
+		// ...
+		if (d1d.innerHTML != '') {
+			var dv = document.createElement('div');
+			dv.setAttribute('style', 'height:1400px;');
+			d1d.appendChild(dv);
+		}
+	}
+	/**
+	 * function google_find_phone__setll
+	 */
+	function google_find_phone__setll(lat, lng) {
+		ll.lat = lat;
+		ll.lng = lng;
+		google_find_phone(); // Init Google
+		find_phone__FB(); // Init FB
+		yelp(); // Init FB
+	}
+	/**
+	 * function
+	 */
+	function yelp() {
+		d1c.innerHTML = '';
+		d1c.appendChild(
+			d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
+		);
+		var u = 'http://www.yelp.com/search/snippet'+
+				'?find_desc='	+encodeURIComponent(d2.value)+
+				'&find_loc='	+encodeURIComponent(d2b.value);
+		var opts = {
+				url: u,
+				strings_do_not_save_to_file: ["Hey there! Before you continue, we just need to check that you're not a robot."]
+		}
+		u = JSON.stringify(opts);
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(u);
+		
+		// Xhr request.
+		
+		//TEMPORARY, TURN OFF YELP!
+		//o.stats.yelp_search_complete = true;
+		//check_if_yp_init();
+		//return;
+		
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: u,
+			onload: function (response) {
+				var rs = response.responseText;
+				
+				// Status
+				if (response.status != 200 || /^\d{3}$/.exec(rs)) {
+					if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
+						d1c.style.backgroundColor = 'yellow';
+						window.open(opts.url);
+					}
+					else {
+						console.log('yelp acting strange');
+						console.log('status: ' + rs);
+					}
+					// Finished
+					o.stats.yelp_search_complete = true;
+					check_if_yp_init();
+					return;
+				}
+				
+				
+				if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
+					window.open(opts.url);
+					d1c.style.backgroundColor = 'yellow';
+					return;
+				}
+				
+				// Parse
+				//
+				//
+				rs = JSON.parse(rs); // Must be valid to continue.
+				console.log(rs);
+				
+				// Yelp Lat/Lng.
+				// rs.search_map.markers has location data.
+				// Loop through markers. Markers is an object.
+				var markers = {};
+				if  (
+					rs.hasOwnProperty('search_map') &&
+					rs.search_map &&
+					rs.search_map.hasOwnProperty('markers') &&
+					rs.search_map.markers//.length
+					)
+				{
+					for (var i in rs.search_map.markers) {
+						var sm = rs.search_map.markers[ i ];
+						if  (
+							sm.hasOwnProperty('location') &&
+							sm.location.hasOwnProperty('latitude') &&
+							sm.location.hasOwnProperty('longitude')
+							)
+							markers[ sm.url ] = sm.location; // {latitude, longitude}
+					}
+				}
+				
+				// Search header
+				var sh = rs.search_header;
+				var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
+				var amt = '';
+				if (r) {
+					r = r[1];
+					amt = r + ' results';
+				} else {
+					amt = '0 results';
+				}
+				d1c.appendChild(
+					amt.div({style:'width:100%;border-bottom:4px solid teal;'}) // Add HR border
+				);
+				
+				// While loop
+				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+				var m;
+				while (m = r.exec(rs.search_results)) {
+					
+					// Replace all highlights!
+					m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+					//~ console.log(m);
+					
+					// Div
+					var div = document.createElement('div');
+					div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
+					div.className = 'exe test'; // exe & test
+					div.yname = null;
+					div.yhref = null;
+					div.yphone = '';
+					div.yreviews = null;
+					div.ycategories = '';
+					div.ystreet = '';
+					div.ylocn = '';
+					div.yzip = '';
+					div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
+					div.yslug = null;
+					d1c.appendChild(div);
+					
+					
+					// (619) 238-4949
+					// 
+					var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+					if (ph) {
+						ph = __js_clean_html_str(ph[1]).trim();
+						// Format phone
+						ph = ph.replace(/[\- \(\)]/g, '');
+						ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
+						// yphone
+						div.yphone = ph.replace(/[^\d]/g, '');
+						// className
+						div.className += ' ' + div.yphone;
+					}
+					// Name, href
+					//
+					var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
+					if (reg) {
+						//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
+						div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
+						div.yhref = 'http://www.yelp.com' + div.yslug;
+						div.yname = __js_clean_html_str(reg[2]).trim();
+						// Replace "’" with "'" in name
+						div.yname = div.yname.replace(/’/g, "'");
+					}
+					// IF NO NAME THEN DO NOT CONTINUE
+					else {
+						continue;
+					}
+					// reviews
+					//
+					var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
+					if (reg) {
+						reg = reg[1];
+						div.yreviews = reg;
+					}
+					// catg.
+					// e.g. <a href="/search?find_desc=Pok+Pok+Noi&amp;find_loc=Portland%2C+Oregon&amp;cflt=thai">Thai</a>    
+					var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+					if (reg) {
+						reg = reg[1].replace(/<[^>]*>/g, '').trim();
+						div.ycategories = reg;
+					}
+					// addr
+					// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
+					var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
+					var reg2= /<address>[\r\n\t\s]+([^<]+)<\/address>/.exec(m[1]);
+					if (reg) {
+						reg[1] = __js_clean_html_str(reg[1]).trim();
+						reg[2] = __js_clean_html_str(reg[2]).trim();
+						div.ystreet = reg[1];
+						div.ylocn = reg[2];
+						var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+						div.yzip = (z) ? z[1] : null;
+					}
+					else if (reg2) { // Try ONLY CITY/STATE INFO
+						var x = __js_clean_html_str(reg2[1]).trim();
+						div.ylocn = x;
+						var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+						div.yzip = (z) ? z[1] : null;
+					} else { // Try "Service Area"
+						var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
+						// Serving Chicago and the Surrounding Area
+						if (reg && div.ylocn == '') {
+							var x = __js_clean_html_str(reg[1]).trim();
+							if (/^Serving/.exec(x) && / and the Surrounding Area$/.exec(x))
+								x = x.replace(/^Serving /, '').replace(/ and the Surrounding Area$/, '');
+							div.ylocn = x;
+						}
+					}
+					
+					// Distance
+					var dist = '';
+					var dist_bgc = '';
+					if ( div.yslug && markers.hasOwnProperty( div.yslug ) ) { // e.g. /biz/staples-walnut
+						dist = MT___lat_lng_distance(
+							ll.lat*1,
+							ll.lng*1,
+							markers[ div.yslug ].latitude*1,
+							markers[ div.yslug ].longitude*1
+						);
+						if (dist) {
+							dist = Math.round(dist*100) / 100;
+							if (dist*1 >= 4) {
+								div.style.backgroundColor = 'aqua';
+							}
+						}
+					}
+					
+					//~ // Diff
+					//~ var df = MT___diffString(
+						//~ div.yname,
+						//~ o.name
+					//~ );
+					
+					// Display
+					div.innerHTML = 
+						':'+ MT__bold(div.yname, o.name_arr) + (dist != '' ? '('+dist+')' : '') + '<br>' +
+						':'+ MT__bold(div.ystreet, o.locn_arr) + '<br>' +
+						':'+ MT__bold(div.ylocn, o.locn_arr) + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
+						':'+ ph + '<br>' +
+						':'
+					;
+					var link = document.createElement('a'); // Link
+					link.innerText = 'link';
+					link.href = div.yhref;
+					link.onclick = function(e) {
+						window.open(this.href, 'new');
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+					div.appendChild(link);
+					// div.onclick
+					div.onclick = function(e) {
+						this.style.backgroundColor = 'teal';
+						set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
+						q.value = this.yphone;
+						callback(); // Callback
+					}
+					
+					// Add mouse events to div
+					mouseev(div);
+					
+					// Increment count
+					o.stats.num_yelp_results++;
+				}
+				if (o.stats.num_yelp_results != 0) {
+					d1c.appendChild(
+						''.div({style:'height:1400px;'})
+					);
+				}
+				
+				// Finished
+				o.stats.yelp_search_complete = true;
+				check_if_yp_init();
+			}
+		});
+	}
+	/**
+	 * function set_divs_clicked
+	 * @desc Set all related div background colors to teal.
+	 */
+	function set_divs_clicked(className) {
+		var className = className.replace(/^exe /, '');
+		var el = document.getElementsByClassName(className);
+		for (var i in el) {
+			if (i == 'length') break;
+			el[i].style.backgroundColor = 'teal';
+		}
+	}
+	/**
+	 * function mouseev
+	 */
+	function mouseev(div) {
+		div.onmouseover = function() {
+			
+		}
+		div.onmouseout = function() {
+			
+		}
+	}
+	/**
+	 * function google_find_phone
+	 */
+	function google_find_phone() {
+		
+		d1.innerHTML = '';
+		var dv = document.createElement('div');
+		d1.appendChild(dv);
+		dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
+		dv.innerText = d2.value;
+		
+		// 2
+		var u;
+		u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+		u+= 'location='+ll.lat+','+ll.lng; //lat,lng
+		u+= '&keyword=' + encodeURIComponent(d2.value);
+		//u+= '&rankby=distance';
+		u+= '&radius=50000';
+		u+= '&sensor=false';
+		u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+		// Set to MT___host
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		//u+= '&radius=40000'; // 5k = 3.1 mi.
+		//u+= '&types=accounting|atm|bank';
+		//u+= '&name=' + encodeURIComponent(b[0].innerText);
+		//u+= '&name=';
+		//u+= '&name='+encodeURIComponent(b[0].innerText);
+		
+		// Xhr request.
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				
+				rs = JSON.parse(rs);
+				console.log(rs);
+				
+				if (!rs.results || !rs.results.length) {
+					d1.innerHTML += '0';
+					// 
+					o.stats.google_search_complete = true;
+					check_if_yp_init();
+					return;
+				}
+				
+				// Loop
+				var x;
+				var icon;
+				var count = 0;
+				var m_comp;
+				var m_locn;
+				for (var i in rs.results) {
+					
+					if (i > 20) break; // 20 only!
+					
+					// Increment
+					o.stats.num_google_results++;
+					
+					// ...
+					x = rs.results[i];
+					console.log(x);
+					
+					// Dist
+					//~ geometry: Object
+					//~ location: Object
+					//~ lat: 34.049662
+					//~ lng: -118.25385
+					var dist = '';
+					var dist_bgc = '';
+					if (x.geometry && x.geometry.location) {
+						dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
+						if (dist) {
+							dist = Math.round(dist*100) / 100;
+							if (dist*1 >= 4)
+								dist_bgc = 'background-color:aqua;';
+						}
+					}
+					
+					// Set vicinity to '' if it does not exist.
+					if (!x.hasOwnProperty('vicinity') || !x.vicinity) {
+						x.vicinity = '';
+					}
+					
+					// Div
+					var dv = document.createElement('div');
+					d1.appendChild(dv);
+					dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
+					dv.className = 'exe';
+					dv.isAuto = false;
+					dv.greference = x.reference;
+					//~ dv.gurl = x.url.replace(/about\?hl=en-US/, '');
+					
+					var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
+					var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
+					
+					// Check for skip based on bolding!
+					//
+					//						
+					if (tmp_nm.pm.percent_matched * 1 >= 0.4) { // JUST THE NAME!
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.accept();
+							return;
+						}
+					}
+					//~ if (tmp_nm.pm.percent_matched * 1 + tmp_vc.pm.percent_matched * 1 < 0.2) { // combined 
+					//~ console.log(tmp_nm);
+					// ...
+					dv.innerHTML = tmp_nm.pm.bold_string + '('+dist+')<br>' + tmp_vc.pm.bold_string;
+					
+					dv.onclick = function() {
+						dv.onclick = function() {}; // clear!
+						this.style.backgroundColor = 'LightGreen';
+						google_find_phone__profile(this);
+					}
+					
+					m_comp = x.name.replace(/[^\w\d]/g, '').toLowerCase();
+					m_locn = x.vicinity.replace(/[^\w\d]/g, '').toLowerCase();
+					
+					count++;
+				}
+				// ...
+				var dv = document.createElement('div');
+				dv.setAttribute('style', 'height:1400px;');
+				d1.appendChild(dv);
+				
+				// ...
+				o.stats.google_search_complete = true;
+				check_if_yp_init();
+			}
+		});
+	}
+	/**
+	 * function google_find_phone__profile
+	 * 
+	 * Update Oct10 2014:
+	 * Add .url from response.
+	 */
+	function google_find_phone__profile(div) {
+		
+		//greference
+		
+		var u;
+		u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+div.greference+'&sensor=true&key=_GOOGLE_API_KEY_REDACTED_';
+		
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		
+		var div = div;
+		
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) {
+					d1.innerHTML = response.status;
+					return;
+				}
+				rs = JSON.parse(rs);
+				if (!rs || !rs.result) {
+					d1.innerHTML = 'X';
+					return;
+				}
+				var r;
+				var sbm = true;
+				r = rs.result.formatted_phone_number;
+				if (!r) {
+					// Debug
+					return; // do nothing
+				}
+				
+				// ...
+				r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+				
+				div.innerText  += '\n' + r;
+				div.gphone		= r;
+				div.gurl		= rs.result.url.replace(/about\?(hl=en-US|[^$]*)/, '');
+				div.className += ' ' + r; // Add to className
+				
+				// set_divs_clicked
+				set_divs_clicked(div.gphone);
+				// set value
+				q.value = div.gphone;
+				// callback
+				callback();
+				
+				// .onclick
+				//~ div.onclick = function() {
+					//~ this.style.backgroundColor = 'teal';
+					//~ 
+					//~ // set_divs_clicked
+					//~ set_divs_clicked(this.gphone);
+					//~ 
+					//~ q.value = this.gphone;
+					//~ 
+					//~ callback(); // Callback
+				//~ }
+				//~ 
+				//~ // Is good?
+				//~ div.click();
+			}
+		});
+	}
 }
 /**
  * function create_dashboard_find_address
@@ -6028,6 +8308,9 @@ function AMT___items_factory(obj_vars) {
  * @param ""."". city							element
  * @param ""."". state							element
  * @param ""."". country						element
+ * @param "".accept_skip_us						boolean
+ * @param "".build_complete_callback			function
+ * @param "".profile_url						string		This is to be set! Is part of "return" for callbacks.
  */
 AMT___items_factory.prototype.create_dashboard_find_address = function(options_object) {
 	
@@ -6043,7 +8326,30 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		break;
 	}
 	
-	
+	var o = {
+		s_complete: {
+			fb: false,
+			hoovers: false,
+			bw: false,
+			google: false
+		},
+		final_location: {
+			name: null,
+			street: null,
+			street2: null,
+			city: null,
+			state: null,
+			country: null,
+			zip: null,
+			phone: null,
+			website: null,
+			lat: null,
+			lng: null,
+			full_address: null
+		},
+		first_fb_or_google_us: null // First FB or Google result is in US
+	}
+	opts.o = o;// Set opts.o
 	
 	/* BEGIN ITEMS */
 	if (!opts.hasOwnProperty('parent_controller_el')) {
@@ -6053,6 +8359,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	} else {
 		var d2 = opts.parent_controller_el;
 	}
+	// Hidden div
+	var dv_debug = document.createElement('div');
+	dv_debug.setAttribute('style','width:99%;height:40px;border:1px solid blue;overflow:auto;background-color:#eee;display:none;');
+	opts.parent.appendChild(dv_debug);
 	//
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:25%;height:100%;border:1px solid blue;overflow:auto;background-color:#eee;');
@@ -6081,14 +8391,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	match_o = match_o.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
 	
 	// ...
-	//~ d2.value = b.replace(/"/g, '') + ' ' + location;
-	//~ d2.value = d2.value.trim();
-	
-	//Turn the company name into a google search
-	//~ d2d.href = 'http://www.google.com/search?q='+encodeURIComponent(COMP);
-	//~ d2d.innerText = COMP;
-	
-	// ...
 	d2.onblur = function() {
 		this.value = this.value.trim();
 		FB_addr();
@@ -6100,16 +8402,19 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	// ...
 	var ef = new AMT___events_factory();
 	d2.addEventListener('keydown', ef.keydown__blur_field, true);
+	ef.mouseup__delete_range({
+		element: d2,
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
 	
 	// onsubmit
 	if (opts.hasOwnProperty('submitButton_onclick_callback')) {
 		//~ document.getElementById('submitButton').onclick = opts.submitButton_onclick_callback;
 	} else {
-		document.getElementById('submitButton').onclick = function() {
-			//...
-			alert('x');
-			//~ new AMT___core_factory().nextTab();
-		}
+		//~ document.getElementById('submitButton').onclick = function() {
+		//~ }
 	}
 	
 	// ...
@@ -6125,6 +8430,31 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		google_addr();
 	}
 	
+	// 
+	function complete(type) {
+		o.s_complete[ type ] = true;
+		// Check done
+		check_done();
+	}
+	function check_done() {
+		for (var type in o.s_complete) {
+			if (!o.s_complete[ type ]) {
+				return; // Stop
+			}
+		}
+		// Is there a complete callback?
+		if (opts.hasOwnProperty('build_complete_callback') && opts.build_complete_callback) {
+			opts.build_complete_callback(opts);
+		}
+		// If here then done.
+		if (opts.hasOwnProperty('accept_skip_us') && opts.accept_skip_us && AMT__Global_Vars.isPreview) {
+			if (o.first_fb_or_google_us) {
+				AMT___Floater.accept();
+			} else {
+				AMT___Floater.skip();
+			}
+		}
+	}
 	// function Fiber_Data_Co_find_company_addr__country2abbr
 	function Fiber_Data_Co_find_company_addr__country2abbr(country) {
 		var abbr = new AMT___requests_factory().general_functions__countryToAbbreviatedCountry(country);
@@ -6136,104 +8466,164 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		return abbr;
 	}
 	
-	// function Fiber_Data_Co_find_company_addr__google_addr_prof
-	function google_addr_prof(el) {
-		
-		// update button bgc
-		el.style.backgroundColor = 'MintCream';
-		
-		// obj
-		var id = JSON.parse(el.json_response); // obj -> prediction
-		
-		var u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+
-			id.reference+
-			'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
-			
-		//~ var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(gu);
-		
-		GM_xmlhttpRequest({ // init
-			method: "GET",
-			url: u,
-			onload: function(response) {
-				var rs = response.responseText;
-				if (response.status != 200) return;
-				
-				var s = rs;
-				
-				rs = JSON.parse(rs);
-				
-				if (rs.status != 'OK') {
-					console.log(rs.status);
-					return;
-				}
-				
-				console.log(rs);
-				
-				// update button id/value
-				//~ el.innerText += "\n"+rs.result.formatted_address;
-				
-				el.appendChild(document.createElement('br'));
-				el.appendChild(document.createTextNode(rs.result.formatted_address));
-				el.json_response = s; // JSON!
-			}
-		});
-	}
-	
 	function clear_output_elements() {
 		for (var i in opts.output_elements) {
 			opts.output_elements[i].value = '';
 		}
 	}
-	
-	// function google_addr
-	//
-	// 100 000 requests per 24 hour period	
-	// The Text Search service is subject to a 10-times multiplier.
-	// The Radar Search Service is subject to a 5-times multiplier
-	//
-	// 0,0 20000000 = world search
-	//
-	function google_addr() {
-	
-		d1d.innerHTML = '';
+	/**
+	 * function geocode()
+	 * 
+	 * Uses d2, hidden div.
+	 */
+	function geocode(location) {
+		dv_debug.style.display = '';
+		dv_debug.innerText += 'Trying address:"'+location+'"'+"\n";
+		MT___google_api_geocode(location, function(lat,lng) {
+			dv_debug.innerText += 'Result:'+lat+','+lng+"\n";
+			if (lat == false) {
+				document.body.backgroundColor = 'blue';
+			}
+			else {
+				opts.output_elements.lat.value = lat;
+				opts.output_elements.lng.value = lng;
+				i.final_location.lat = lat;
+				i.final_location.lng = lng;
+				if(opts.hasOwnProperty('onclick_callback')) {
+					opts.onclick_callback(opts);
+				}
+			}
+		});
+	}
+	/**
+	 * function fill_form_fields
+	 * Create an annotation after fields have been filled initially.
+	 */
+	function fill_form_fields() {
+		//~ var obj = {
+			//~ name: null,
+			//~ street: null,
+			//~ city: null,
+			//~ state: null,
+			//~ zip: null,
+			//~ country: null,
+			//~ lat: null,
+			//~ lng: null
+		//~ }
+		//~ fill_form_fields(obj);
+		// Annotate
+		// Create an annotation after fields have been filled initially.
+		if (opts.hasOwnProperty('annotate_fields')) {
+			for (var field_type in opts.annotate_fields) {
+				var callback = opts.annotate_fields[ field_type ];
+				if (!callback) continue; // ...
+				if (!opts.output_elements.hasOwnProperty( field_type )) { // Only annotate those in output fields
+					continue;
+				}
+				//~ var inp = opts.output_elements[ field_type ];
+				//~ var div_buttons = new AMT___items_factory().create_annotation_to_output_fields(
+					//~ {
+						//~ textToAnnotate: inp.value,
+						//~ output_fields:  o.q_annotate_fields,
+						//~ callback_mouseup: function(output_field) {
+						//~ }
+					//~ }
+				//~ );
+				//
+			}
+		}
+	}
+	/**
+	 * function Fiber_Data_Co_find_company_addr__google_addr_prof
+	 */
+	function google_addr_prof(el) {
+		// Update button bgc
+		el.style.backgroundColor = 'MintCream';
 		
-		var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
-			encodeURIComponent(d2.value)+
-			'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+		// obj
+		var id = el.json_response;
+		var u =
+			'https://maps.googleapis.com/maps/api/place/details/json?reference='+
+			id.reference+
+			'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
 		
-		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-		
+		// XHR
 		GM_xmlhttpRequest({ // init
 			method: "GET",
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
 				if (response.status != 200) return;
+				//~ 
+				//~ var s = rs;
 				
 				rs = JSON.parse(rs);
+				if (rs.status != 'OK') {
+					console.log(rs.status);
+					return;
+				}
+				console.log(rs);
 				
+				// Update button id/value
+				el.appendChild(document.createElement('br'));
+				el.appendChild(document.createTextNode(rs.result.formatted_address));
+				el.json_response = rs; // Update this field!
+			}
+		});
+	}
+	/**
+	 * function google_addr
+	 * 100 000 requests per 24 hour period	
+	 * The Text Search service is subject to a 10-times multiplier.
+	 * The Radar Search Service is subject to a 5-times multiplier
+	 * 0,0 20000000 = world search
+	 */
+	function google_addr() {
+		d1d.innerHTML = '';
+		var u= 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input='+
+			encodeURIComponent(d2.value)+
+			'&types=establishment&location=0,0&radius=20000000&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+		// Xhr
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) {
+					complete('google');// Mark complete
+					return;
+				}
+				
+				rs = JSON.parse(rs);
 				if (rs.status != 'OK') {
 					console.log(rs.status);
 					d1d.innerText = rs.status;
+					complete('google');// Mark complete
 					return;
 				}
 				
 				rs = rs.predictions;
-				
-				for (var i in rs) { //obj
+				for (var i in rs) {
 					
 					var div = document.createElement('div');
 					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
-					div.innerText = rs[i].description;
-					div.json_response = JSON.stringify(rs[i]);
+					div.innerHTML = (opts.bold_locn_array ? MT__bold(""+rs[i].description, opts.bold_locn_array) :
+									rs[i].description);
 					
+					// Set o.first_fb_or_google_us
+					if (rs[i].description.match(/United States$/i)) {
+						o.first_fb_or_google_us = true;
+					}
+					
+					//~ div.json_response = JSON.stringify(rs[i]);
+					div.json_response = rs[i];
+					// .onclick
 					div.onclick = function() {
-						
-						//~ console.log(this.style.backgroundColor);
 						
 						// focus
 						opts.first_element.focus();
-						
+						//
 						if  (
 							this.style.backgroundColor != 'LightGreen' &&
 							this.style.backgroundColor != 'rgb(245, 255, 250)' // MintCream
@@ -6242,73 +8632,172 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							this.style.backgroundColor = 'LightGreen';
 							google_addr_prof(this);
 						}
-						else {
-							// fill in details
-							
+						else // Fill in details
+						{
 							// clear
 							clear_output_elements();
+							var id = this.json_response;
+							console.log(id);
 							
-							//~ document.getElementById('address1').value =	'';
-							//~ document.getElementById('city').value =		'';
-							//~ document.getElementById('state').value =	'';
-							//~ document.getElementById('postalcode').value =		'';
+							//~ var obj = {
+								//~ name: null,
+								//~ street: null,
+								//~ city: null,
+								//~ state: null,
+								//~ zip: null,
+								//~ country: null,
+								//~ lat: null,
+								//~ lng: null
+							//~ }
 							
-							var id = JSON.parse(this.json_response); // obj -> place detail
-							//~ console.log(id);
-							
-							var j;
-							var type;
-							
-							for (var i in id.result.address_components) {
-								type = id.result.address_components[i].types[0];
-								j = id.result.address_components[i].long_name;
-								
-								if (opts.output_elements.hasOwnProperty('street') && type == 'street_number')
-									opts.output_elements.street.value = (j + ' ' + opts.output_elements.street.value).trim();
-								
-								if (opts.output_elements.hasOwnProperty('street') && type == 'route')
-									opts.output_elements.street.value = (opts.output_elements.street.value+' '+j).trim();
-								
-								if (opts.output_elements.hasOwnProperty('city') && (type == 'locality' || type == 'sublocality_level_1'))
-									opts.output_elements.city.value = j;
-								
-								if (opts.output_elements.hasOwnProperty('state') && type == 'administrative_area_level_1')
-									opts.output_elements.state.value = j;
-								
-								if (opts.output_elements.hasOwnProperty('zip') && type == 'postal_code')
-									opts.output_elements.zip.value = j;
-								
-								if (opts.output_elements.hasOwnProperty('country') && type == 'country')
-									opts.output_elements.country.value = j;
+							// Lat/Lng
+							if  (
+								opts.output_elements.hasOwnProperty('lat') &&
+								opts.output_elements.hasOwnProperty('lng') &&
+								id.result.hasOwnProperty('geometry') &&
+								typeof id.result.geometry == 'object' &&
+								id.result.geometry.hasOwnProperty('location') &&
+								typeof id.result.geometry.location == 'object'
+								)
+							{
+								var g = id.result.geometry.location;
+								opts.output_elements.lat.value = g.lat;
+								opts.output_elements.lng.value = g.lng;
+								o.final_location.lat = g.lat;
+								o.final_location.lat = g.lng;
 							}
+							// Name
+							if  (
+								opts.output_elements.hasOwnProperty('name') &&
+								id.result.hasOwnProperty('name')
+								)
+							{
+								opts.output_elements.name.value = id.result.name;
+								o.final_location.name = id.result.name;
+							}
+							// Website
+							if  (
+								opts.output_elements.hasOwnProperty('website') &&
+								id.result.hasOwnProperty('website')
+								)
+							{
+								opts.output_elements.website.value = id.result.website;
+								o.final_location.website = id.result.website;
+							}
+							// Address
+							var country;
+							for (var i in id.result.address_components) {
+								var type = id.result.address_components[i].types[0];
+								var j = id.result.address_components[i].long_name;
+								
+								if (opts.output_elements.hasOwnProperty('city') && (type == 'locality' || type == 'sublocality_level_1')) {
+									opts.output_elements.city.value = j;
+									o.final_location.city = j;
+								}
+								
+								if (opts.output_elements.hasOwnProperty('state') && type == 'administrative_area_level_1') {
+									opts.output_elements.state.value = j;
+									o.final_location.state = j;
+								}
+								
+								if (opts.output_elements.hasOwnProperty('zip') && type == 'postal_code') {
+									opts.output_elements.zip.value = j;
+									o.final_location.zip = j;
+								}
+								
+								if (opts.output_elements.hasOwnProperty('country') && type == 'country') {
+									opts.output_elements.country.value = j;
+									o.final_location.country = j;
+								}
+									
+								// Set country
+								if (type == 'country')
+									country = j;
+								
+								//~ if  (
+									//~ opts.output_elements.hasOwnProperty('street') &&
+									//~ (
+										//~ type == 'street_number' ||
+										//~ type == 'street_address' ||
+										//~ type == 'sublocality_level_2'
+									//~ )
+									//~ )
+								//~ {
+									// OLD TRY //opts.output_elements.street.value = (j + ' ' + opts.output_elements.street.value).trim();
+									//~ opts.output_elements.street.value = (opts.output_elements.street.value + ' ' + j).trim();
+								//~ } // TODO: Does this value = formatted address? If not the border then ... outline?
+								//~ if (opts.output_elements.hasOwnProperty('street') && type == 'route')
+									//~ opts.output_elements.street.value = (opts.output_elements.street.value+' '+j).trim();
+							}
+							
+							// Set street address from formatted...
+							if (opts.output_elements.hasOwnProperty('street') && id.result.hasOwnProperty('formatted_address')) {
+								var s = id.result.formatted_address.replace(/,[\d\D]*$/, '');
+								opts.output_elements.street.value = s;
+								o.final_location.street = s;
+							}
+							
+							// Full address
+							if (opts.output_elements.hasOwnProperty('full_address') && id.result.hasOwnProperty('formatted_address')) {
+								opts.output_elements.full_address.value = id.result.formatted_address;
+								o.final_location.full_address = id.result.formatted_address;
+							}
+							
+							// Phone
+							// If not United States then use international phone?
+							if  (
+								opts.output_elements.hasOwnProperty('phone') &&
+								id.result.hasOwnProperty('formatted_phone_number')
+								)
+							{
+								var p;
+								if (country && country == 'United States') {
+									p = opts.output_elements.phone.value = id.result.formatted_phone_number;
+								} else if (country && country != 'United States' && id.result.hasOwnProperty('international_phone_number')) {
+									p = opts.output_elements.phone.value = id.result.international_phone_number;
+								} else { // any
+									p = opts.output_elements.phone.value = id.result.formatted_phone_number;
+								}
+								o.final_location.phone = p;
+							}
+							
+							// opts.profile_url
+							opts.profile_url = id.result.url.replace(/\/about\?[\d\D]*$/, ''); // e.g. "https://plus.google.com/101686557708089217019/about?hl=en-US" 
+							
+							// Call callback
+							if (opts.hasOwnProperty('onclick_callback'))
+								opts.onclick_callback(opts);
+								
+							fill_form_fields();
 						}
 					}
-					
 					d1d.appendChild(div);
 				}
-				
 				if (rs.length) {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:1200px;');
 					d1d.appendChild(div);
 				}
+				// Mark complete
+				complete('google');
 			}
 		});
 	}
 	
 	// function
-	function businessweek_addr_prof(u) {
+	function businessweek_addr_prof(btn) {
 		
 		// clear
 		clear_output_elements();
 		
 		GM_xmlhttpRequest({ // init
 			method: "GET",
-			url: u,
+			url: btn.url_bw,
 			onload: function(response) {
 				var rs = response.responseText;
-				if (response.status != 200) return;
 				
+				btn.style.border = '2px solid teal';
+				if (response.status != 200) return;
 				
 				// WORKS
 				//"<span itemprop="streetAddress">1 N Field Ct</span><br /><span itemprop="addressLocality">Lake Forest</span>, <span itemprop="addressRegion">IL</span>, 60045 <span itemprop="addressCountry">United States</span>"
@@ -6345,44 +8834,55 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					// 6= Country
 					
 					// BECOMES
-					
 					// 0=Street
 					// 1=City
 					// 2=State
 					// 3=Zip
 					// 4=Country
 					
-					console.log(addr);
+					var is_geocoding = false;
+					var location = addr[0] + ', ' + addr[1] + ', ' + addr[2] + ', ' + addr[3] + ', ' + addr[4];
 					
-					if (opts.output_elements.hasOwnProperty('street'))
+					if (opts.output_elements.hasOwnProperty('street')) {
 						opts.output_elements.street.value = addr[0];
-					
-					if (opts.output_elements.hasOwnProperty('city'))
+						o.final_location.street = addr[0];
+					}
+					if (opts.output_elements.hasOwnProperty('city')) {
 						opts.output_elements.city.value = addr[1];
-					
-					if (opts.output_elements.hasOwnProperty('state'))
+						o.final_location.city = addr[1];
+					}
+					if (opts.output_elements.hasOwnProperty('state')) {
 						opts.output_elements.state.value = addr[2];
-					
-					if (opts.output_elements.hasOwnProperty('zip'))
+						o.final_location.state = addr[2];
+					}
+					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = addr[3];
-					
-					if (opts.output_elements.hasOwnProperty('country'))
+						o.final_location.zip = addr[3];
+					}
+					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = addr[4];
+						o.final_location.country = addr[4];
+					}
+					if 	(
+						opts.output_elements.hasOwnProperty('lat') &&
+						opts.output_elements.hasOwnProperty('lng')
+						)
+					{
+						is_geocoding = true;
+						geocode(location);
+					}
 					
-					//~ document.getElementById('address1').value = r[1];
-					//~ // in reverse
-					//~ document.getElementById('city').value = r[r.length - 4];
-					//~ document.getElementById('state').value = r[r.length - 3];
-					//~ document.getElementById('postalcode').value = r[r.length - 2];
+					// Full address
+					if (opts.output_elements.hasOwnProperty('full_address')) {
+						opts.output_elements.full_address.value = location;
+						o.final_location.full_address = location;
+					}
+					
+					// onclick_callback
+					if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
+						opts.onclick_callback(opts);
+					}
 				}
-				
-				//~ if (!r1 && r2) {
-					//~ r = r2;
-					//~ // First el?
-					//~ opts.output_elements.value = __js_clean_html_str(
-						//~ r[1].replace(/<[^>]*>/g,'')
-					//~ );
-				//~ }
 				
 				// Bug: This doubles street.
 				// <div itemprop="address"><p>Via Pian Scairolo 9</p><p>Pazzallo</p><p>Lugano, &nbsp;6912</p><p style="margin:5px 0;">Switzerland</p></div>
@@ -6392,21 +8892,24 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					delete r.index;
 					delete r.input;
 					for (var i = 0; i<r.length; i++) {
-						//~ console.log(r[i]);
-						r[i] = __js_clean_html_str(r[i].replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+						if(r[i])
+							r[i] = __js_clean_html_str(r[i].replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 					}
 					
-					if (opts.output_elements.hasOwnProperty('country'))
+					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = r[r.length - 1];
-					
+						o.final_location.country = r[r.length - 1];
+					}
 					// DEBUG
-					var dbg = r.slice(0, r.length - 1).join(' ');
-					if (opts.output_elements.hasOwnProperty('street'))
-						opts.output_elements.street.value	= dbg;
-					else if (opts.output_elements.hasOwnProperty('city'))
-						opts.output_elements.city.value		= dbg;
-					else if (opts.output_elements.hasOwnProperty('state'))
-						opts.output_elements.state.value	= dbg;
+					//~ var dbg = r.slice(0, r.length - 1).join(' ');
+					// DEFAULT=Put it in the first output element
+					opts.first_element.value = r[0];
+					//~ if (opts.output_elements.hasOwnProperty('street'))
+						//~ opts.output_elements.street.value	= dbg;
+					//~ else if (opts.output_elements.hasOwnProperty('city'))
+						//~ opts.output_elements.city.value		= dbg;
+					//~ else if (opts.output_elements.hasOwnProperty('state'))
+						//~ opts.output_elements.state.value	= dbg;
 				}
 			}
 		});
@@ -6431,7 +8934,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
-				if (response.status != 200) return;
+				if (response.status != 200) {
+					complete('bw');// Mark complete
+					return;
+				}
 				
 				var r = /<div id="resultCaption">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
 				if (r) {
@@ -6448,12 +8954,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				// United States
 				// Specialty Retail
 				var r = /<tr>\s*<td><a href="([^"]+)">([^<]+)<\/a><\/td>\s*<td>([^<]+)<\/td>\s*<td>([^<]*)<\/td>\s*<\/tr>/g;
-				
 				if (!r.exec(rs)) {
 					// SHOUGANG GENERACION ELECT-C
 					//
 				}
-				
 				r.lastIndex = 0;
 				
 				var m;
@@ -6481,16 +8985,27 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						// focus
 						opts.first_element.focus();
 						
-						businessweek_addr_prof(this.url_bw);
+						businessweek_addr_prof(this);
 					}
 					
 					div.appendChild(inp);
-					
 					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createTextNode(m[3]));
+					
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						if(m[3].toLowerCase().indexOf('united states') == -1) {
+							continue;
+						}					
+					}
+					
+					var locSpan = document.createElement('span');
+					locSpan.innerHTML = (opts.bold_locn_array ? ''+ MT__bold(m[3], opts.bold_locn_array) :
+										 m[3]);
+					div.appendChild(locSpan);
+					
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode(m[4]));
-					
 					d1c.appendChild(div);
 					
 					c++;
@@ -6511,6 +9026,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					businessweek_addr(false);
 					return;
 				}
+				
+				complete('bw');// Mark complete
 			}
 		});
 	}
@@ -6521,8 +9038,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	 * @returns	none	
 	 */
 	function hoovers_addr_prof(btn) {
-		
-		//~ this.url_hv
 		var btn = btn;
 		
 		GM_xmlhttpRequest({ // init
@@ -6544,9 +9059,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 				var r, r1, r2;//, r3;
 				r1 = /<span itemprop="streetAddress">([^<]*)<\/span><br \/><span itemprop="addressLocality">([^<]*)<\/span>, <span itemprop="addressRegion">([^<]*)<\/span>, ([^<]+)<span itemprop="addressCountry">([^<]*)<\/span>/.exec(rs);
 				r2 = /<p div itemprop="address" itemscope itemtype="[^"]*">((.|\s)*?(?=<\/p>|$)|$)/.exec(rs);
-				console.log(r1);
-				console.log(r2);
-				//~ console.log(r3);
+				//~ console.log(r1);
+				//~ console.log(r2);
 				
 				if (r1) {
 					r = r1;
@@ -6556,34 +9070,87 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					delete r.input;
 					delete r.length;
 					
+					var is_geocoding = false;
+					
 					// ...
 					for (var i = 1; i<= 5; i++) {
 						r[i] = __js_clean_html_str(r[i]).trim().replace(/\s+/g, ' ');
 					}
 					
-					if (opts.output_elements.hasOwnProperty('street'))
+					var location = r[1] + ', ' + r[2] + ', ' + r[3] + ', ' + r[4] + ', ' + r[5];
+					
+					if (opts.output_elements.hasOwnProperty('street')) {
 						opts.output_elements.street.value = r[1];
-					
-					if (opts.output_elements.hasOwnProperty('city'))
+						o.final_location.street = r[1];
+					}
+					if (opts.output_elements.hasOwnProperty('city')) {
 						opts.output_elements.city.value = r[2];
-					
-					if (opts.output_elements.hasOwnProperty('state'))
+						o.final_location.city = r[2];
+					}
+					if (opts.output_elements.hasOwnProperty('state')) {
 						opts.output_elements.state.value = r[3];
-					
-					if (opts.output_elements.hasOwnProperty('zip'))
+						o.final_location.state = r[3];
+					}
+					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = r[4];
-					
-					if (opts.output_elements.hasOwnProperty('country'))
+						o.final_location.zip = r[4];
+					}
+					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = r[5];
-						
-					//~ document.getElementById('address1').value = r[1];
-					//~ document.getElementById('city').value = r[2];
-					//~ document.getElementById('state').value = r[3];
-					//~ document.getElementById('postalcode').value = r[4];
+						o.final_location.country = r[5];
+					}
 					
+					if 	(
+						opts.output_elements.hasOwnProperty('lat') &&
+						opts.output_elements.hasOwnProperty('lng')
+						)
+					{
+						is_geocoding = true;
+						geocode(location);
+					}
 					
+					// Full address
+					if (opts.output_elements.hasOwnProperty('full_address')) {
+						opts.output_elements.full_address.value = location;
+						o.final_location.full_address = location;
+					}
+					
+					// opts.profile_url
+					opts.profile_url = btn.url_hv;
+					
+					// onclick_callback
+					if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
+						opts.onclick_callback(opts);
+					}
 				}
 				
+				// WEBSITE & TELELPHONE
+				// dom parse
+				var dom =  new DOMParser().parseFromString(rs, 'text/html');
+				var d = dom.getElementsByClassName('left-content');
+				// e.g. <div class="left-content" itemscope itemtype="http://schema.org/Organization">
+				if (!d || !d.length || d.length != 1) {}
+				else {
+					d = d[0];
+					if (opts.output_elements.hasOwnProperty('website')) {
+						var a = d.getElementsByTagName('a');
+						if (a && a.length && a[0].getAttribute('href') && a[0].getAttribute('href').trim().length > 0) {
+							a = a[0]; // First, if any.
+							opts.output_elements.website.value = a.getAttribute('href').trim();
+						}
+					}
+					// span
+					if (opts.output_elements.hasOwnProperty('phone')) {
+						var sp = d.getElementsByTagName('span');
+						for (var i=0; i<sp.length; i++) {
+							if (sp[i].getAttribute('itemprop') && sp[i].getAttribute('itemprop') == 'telephone' && sp[i].innerText) {
+								opts.output_elements.phone.value = sp[i].innerText.trim();
+							}
+						}
+					}
+				}
+				
+				// Is this the name???
 				if (!r1 && r2) {
 					r = r2;
 					r[1] = r[1]
@@ -6595,6 +9162,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					// First el?
 					opts.output_elements[0].value = r[1];
+					o.final_location.name = r[1];
 				}
 			}
 		});
@@ -6605,10 +9173,12 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		GM_xmlhttpRequest({ // init
 			method: "GET",
 			url: 'http://www.hoovers.com/company-information/company-search.html?term=+'+encodeURIComponent(d2.value)+'&sortDir=Descending&sort=SalesUS&maxitems=50', //#
-			//~ timeout:30000,
 			onload: function(response) {
 				var rs = response.responseText;
-				if (response.status != 200) return;
+				if (response.status != 200) {
+					complete('hoovers');// Mark complete
+					return;
+				}
 				
 				// /company-information/cs/company-profile.Cap_Gemini_SA.6af800b9fd01669c.html
 				// Cap Gemini S.A.
@@ -6637,11 +9207,23 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					}
 					
 					div.appendChild(inp);
-					
 					div.appendChild(document.createElement('br'));
-					div.appendChild(document.createTextNode(m[3]));
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						if(m[3].toLowerCase().indexOf('united states') == -1) {
+							continue;
+						}					
+					}
+					
+					var locSpan = document.createElement('span');
+					locSpan.innerHTML = (opts.bold_locn_array ? ''+ MT__bold(m[3], opts.bold_locn_array) :
+										 m[3]);
+					div.appendChild(locSpan);
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode(m[4]));
+					
+					
 					
 					d1b.appendChild(div);
 				}
@@ -6652,38 +9234,54 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					div.setAttribute('style', 'height:1400px;');
 					d1b.appendChild(div);
 				}
+				complete('hoovers');// Mark complete
 			}
 		});
 	}
+	function FB_test_phone(phone) {
+		var p = phone;
+		// Let's test this! (Must be 10 numbers not including a-z)
+		var test = p;
+		test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
+		test = test.replace(/^1/, ''); // Remove "^1"
+		test = test.substr(0,10); // Substring 0,10
+		test = test.replace(/[^\d]/g, ''); // Remove non-digit
+		if  (
+			test.length != 10 // Length==10?
+			)
+		{
+			opts.output_elements.phone.style.border = '4px solid orange';
+		}
+	}
 	function FB_addr() {
 		d1.innerHTML = '';
-		
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(d2.value)+'&type=user&type=page'+
-			'&fields=category,id,name,likes,talking_about_count,location,link'+
+			'&fields=category,id,name,likes,talking_about_count,location,link,phone,website'+
 			'&limit=6'+
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
-			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-		
-		// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-		
+		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+		// XHR
 		GM_xmlhttpRequest({ // init
 			method: "GET",
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
-				if (response.status != 200) return;
-				
-				var r = JSON.parse(rs);
-				
-				if (!r.data) {
-					d1.innerHTML = '!r.data';
+				if (response.status != 200) {
+					complete('fb');// Mark complete
 					return;
 				}
 				
+				var r = JSON.parse(rs);
+				if (!r.data) {
+					d1.innerHTML = '!r.data';
+					complete('fb');// Mark complete
+					return;
+				}
 				r = r.data;
 				
+				// Loop
 				var c = 0;
 				for (var i in r) {
 					
@@ -6695,76 +9293,149 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					} else
 						r[i].talking_about_count = '';
 					if (r[i].likes != null) {
-					} else
+						//
+					} else {
 						r[i].likes = '';
-					
-					if (r[i].location) {
-						if (r[i].location.latitude) {
-							delete r[i].location.latitude;
-						}
-						if (r[i].location.longitude) {
-							delete r[i].location.longitude;
-						}
 					}
 					
-					//~ 
-					//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-					//~ 
+					// Set o.first_fb_or_google_us
+					if 	(
+						c == 0 &&
+						r[i].location &&
+						r[i].location.country &&
+							(
+							r[i].location.country == 'United States'||
+							r[i].location.country == 'US'||
+							r[i].location.country == 'USA'
+							)
+						)
+					{
+						o.first_fb_or_google_us = true;
+					}
 					
 					var div = document.createElement('div');
 					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;');
-					
 					var inp = document.createElement('button');
 					inp.setAttribute('style', 'width:98%;text-align:left;cursor:pointer;');
 					inp.innerHTML = r[i].name;
 					inp.json_object = r[i];
-					
 					inp.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
+						
+						var is_geocoding = false;
 						
 						// focus
 						opts.first_element.focus();
 						
 						// clear
 						clear_output_elements();
-							
-						//~ console.log(this.id);
-						//~ var i = JSON.parse(this.id);
-						//~ 
-						//~ console.log(i);
 						
 						var i = this.json_object;
 						
-						if (i.name) {
-							//~ document.getElementById('OtherNames').value = i.name;
+						// Phone
+						if (i.phone && opts.output_elements.hasOwnProperty('phone')) {
+							FB_test_phone(i.phone); // Test
+							opts.output_elements.phone.value = i.phone;
+							o.final_location.phone = i.phone;
+						}
+						// Website
+						if (i.website && opts.output_elements.hasOwnProperty('website')) {
+							opts.output_elements.website.value = i.website;
+							o.final_location.website = i.website;
+						}
+						// Name
+						if  (
+							opts.output_elements.hasOwnProperty('name') &&
+							i.name
+							)
+						{
+							opts.output_elements.name.value = i.name;
+							o.final_location.name = i.name;
 						}
 						if (i.link) {
-							//~ document.getElementById('SourceURL').value = i.link;
+							//~ 
 						}
+						// opts.profile_url
+						opts.profile_url = i.link;
+						// ...
 						if (i.location) {
 							i = i.location;
-							if (i.street && opts.output_elements.hasOwnProperty('street')) {
+							if(i.zip) {
+								i.zip = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+							}
+							if(i.street) {
 								i.street = i.street.replace(/\s+/g, ' ');
+							}
+							var location = [];
+							
+							if (i.street && opts.output_elements.hasOwnProperty('street')) {
 								opts.output_elements.street.value = i.street;
+								o.final_location.street = i.street;
 							}
 							if (i.city && opts.output_elements.hasOwnProperty('city')) {
 								opts.output_elements.city.value = i.city;
+								o.final_location.city = i.city;
 							}
 							if (i.state && opts.output_elements.hasOwnProperty('state')) {
 								opts.output_elements.state.value = i.state;
+								o.final_location.state = i.state;
 							}
 							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
-								opts.output_elements.zip.value = i.zip.replace(/-\d{4}$/, ''); // REPLACE -XXXX
+								opts.output_elements.zip.value = i.zip;
+								o.final_location.zip = i.zip;
 							}
 							if (i.country && opts.output_elements.hasOwnProperty('country')) {
 								opts.output_elements.country.value = i.country;
+								o.final_location.country = i.country;
+							}
+							if (opts.output_elements.hasOwnProperty('lat') && opts.output_elements.hasOwnProperty('lng')) {
+								if (i.latitude && i.longitude) {
+									opts.output_elements.lat.value = i.latitude;
+									opts.output_elements.lng.value = i.longitude;
+									o.final_location.lat = i.latitude;
+									o.final_location.lng = i.longitude;
+								} else {
+									is_geocoding = true;
+									var location =  (i.street ? i.street + ", ": "") +
+													(i.city ? i.city + ", ": "") +
+													(i.zip ? i.zip + ", ": "") +
+													(i.country ? i.country : "");
+									location = location.replace(/, $/,'');		   
+									geocode(location);
+								}
+							}
+							// Full address
+							if (opts.output_elements.hasOwnProperty('full_address')) {
+								if (i.street && i.street != '') location.push(i.street);
+								if (i.city && i.city != '') location.push(i.city);
+								if (i.state && i.state != '') location.push(i.state);
+								if (i.country && i.country != '') location.push(i.country);
+								if (i.zip && i.zip != '') location.push(i.zip);
+								opts.output_elements.full_address.value = location.join(', ');
+								o.final_location.full_address = location.join(', ');
 							}
 						}
-						//~ document.getElementById('OtherNames').focus();
-						//~ document.getElementById('OtherNames').select();
+						// onclick_callback
+						if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
+							opts.onclick_callback(opts);
+						}
 					}
-					div.appendChild(inp);
 					
+					if(opts.filter_for_only &&
+					   opts.filter_for_only.country &&
+					   opts.filter_for_only.country == 'USA') {
+						if(r[i] && r[i].location && r[i].location.country) {
+							var country = r[i].location.country.toLowerCase();
+							if(country.indexOf('united states') == -1) {
+								continue;
+							}
+						}
+						else if(!r[i].location) {
+							continue;
+						}
+					}
+					
+					div.appendChild(inp);
 					div.appendChild(document.createElement('br'));
 					div.appendChild(document.createTextNode('L:'+r[i].likes));
 					div.appendChild(document.createElement('br'));
@@ -6774,47 +9445,62 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						div.appendChild(document.createElement('br'));
 						div.appendChild(document.createTextNode('C:'+r[i].category));
 					}
-					
 					if (r[i].location) {
-						for (var j in r[i].location) {
+						// NEW. JULY 25, 2015.
+						/**
+						 * e.g. ?? city: "Bay City" country: "United States" latitude: 28.969652956053 longitude: -95.969258666212 state: "TX" street: "3317 Avenue F" zip: "77414"
+						 **/
+						var l = r[i].location;
+						var a = [];
+						if (l.street) {
+							a.push(l.street);
+						}
+						if (l.city) {
+							a.push(l.city);
+						}
+						if (l.country) {
+							a.push(l.country);
+						}
+						if (l.zip) {
+							a.push(l.zip);
+						}
+						if (a.length) {
+							var tmploc = a.join(', ');
+							var locSpan = document.createElement('span');
+								locSpan.innerHTML =
+									(opts.bold_locn_array) ?
+									'A:' + MT__bold(tmploc, opts.bold_locn_array) :
+									'A:' + tmploc;
 							div.appendChild(document.createElement('br'));
-							div.appendChild(document.createTextNode('A::'+r[i].location[j]));
+							div.appendChild(locSpan);
 						}
+						//~ console.log(r[i].location);
+						//~ //OLD
+						//~ for (var j in r[i].location) {
+							//~ div.appendChild(document.createElement('br'));
+							//~ var locSpan = document.createElement('span');
+							//~ locSpan.innerHTML =
+								//~ (opts.bold_locn_array) ?
+								//~ 'A::' + MT__bold(""+r[i].location[j], opts.bold_locn_array) :
+								//~ 'A::' + r[i].location[j];
+							//~ div.appendChild(locSpan);
+						//~ }
 					}
 					
+					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
+						div.appendChild(('W:'+r[i].website).div());
+					}
+							
+					// Append
 					d1.appendChild(div);
-					
-					if (c==0) { // && !found
-						
-						var match__ = r[i].name;
-						match__ = match__.replace(/&/g, 'and');
-						match__ = match__.replace(/^the /i, '');
-						match__ = match__.replace(/[^\d\w\-_]/g, '').trim().toLowerCase();
-						match__ = match__.replace(/(official|music)$/i, '');
-						
-						console.log(match__);
-						console.log(match_o);
-						
-						if  (
-							match_o == match__ &&
-							match_o.length >= 3
-							)
-						{
-							//~ found = true;
-							//~ 
-							//~ var x = d1.getElementsByTagName('input');
-							//~ x = x[x.length - 1];
-							//~ x.style.backgroundColor = 'LightGreen';
-						}
-					}
-					c++;
+					c++; // Increment
 				}
 				
+				complete('fb');// Mark complete
 				if (c == 0) {
 					d1.innerHTML = '0';
 					return;
 				}
-				
 				// Here?
 				var div = document.createElement('div');
 				div.setAttribute('style', 'height:1400px;');
@@ -7122,11 +9808,13 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		isDragging = false;
 	}
-	//~ document.body.onmousedown = document.body.onmouseup = function() {
 	
 	// return for *append*
 	return div;
 	
+	/**
+	 * function style_mouseUpButton_success
+	 */
 	function style_mouseUpButton_success(btn) {
 		//
 		//
@@ -7167,10 +9855,12 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		s = s.trim();
 		
 		// callback_mouseup_pre_apply
-		//
+		// This could be made to stop or go on TRUE/FALSE RETURN
 		//
 		if (options_object.hasOwnProperty('callback_mouseup_pre_apply')) {
 			options_object.callback_mouseup_pre_apply(options_object);
+			//~ var continue_on = options_object.callback_mouseup_pre_apply(options_object);
+			//~ if (!continue_on) return;
 		}
 		
 		// appendToField
@@ -7206,8 +9896,10 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		 
 		//
+		var found = false;
 		for (var i in output_fields) {
 			if (output_fields[i].value == '') {
+				found = true;
 				output_fields[i].value = s;
 				output_fields[i].focus();
 				output_fields[i].select();
@@ -7218,6 +9910,16 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
 				}
 				break;
+			}
+		}
+		if (!found) {
+			var of = output_fields[ output_fields.length-1 ];
+			of.value = s;
+			of.focus();
+			of.select();
+			// CALLBACK
+			if (options_object.callback_mouseup) {
+				options_object.callback_mouseup( of );	// THIS SENDS THE FIELD BACK
 			}
 		}
 	}
@@ -7742,11 +10444,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 		
 		if (next_tab)
 		{
-			new AMT___core_factory().nextTab();
+			//~ new AMT___core_factory().nextTab();
 		}
 		if (add_to_tabs_queue)
 		{
-			showNextTab();
+			//~ showNextTeab();
 		}
 		doSubmit();
 	}
@@ -7817,6 +10519,147 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	el_div.setAttribute('style','height:1400px;');
 	out_div.appendChild(el_div);
 }
+
+/*
+ * 
+ * 
+ * 
+ * 
+ * */
+AMT___items_factory.prototype.createJobTimer = function(options) {
+	if(AMT__Global_Vars.timer.startJobTimer == true && document.getElementById('AMT___JobTimer')) {
+		new AMT___items_factory().startJobTimer();
+	}
+	else if(!document.getElementById('AMT___JobTimer')) {
+		var top = AMT__Global_Vars.scriptVars.RJTStyleTop != '0' ? AMT__Global_Vars.scriptVars.RJTStyleTop : 2000;
+		
+		console.log('creating job timer');
+		AMT__Global_Vars.timer.namespace = AMT__Global_Vars.sStrings[0];
+
+		var jobTimerDiv = document.createElement('div');
+		jobTimerDiv.setAttribute('style','top:' + top +'px;left:0%;width:100%;position:absolute;height:20px;backgroundColor:LightGray;');
+		document.body.appendChild(jobTimerDiv);
+		jobTimerDiv.id = 'AMT___JobTimer';
+		
+		//job timer contains: a timerState, a start/restart, and a disable button
+		var timerState = document.createElement('div');
+		timerState.setAttribute('style','left:0px;width:100px;height:20px;background-color:LightGray;float:left;font-size:20px;border:1px solid blue;');
+		GM_addStyle('#AMT___timerState:hover {background-color:yellow !important;cursor:pointer;}');
+		jobTimerDiv.appendChild(timerState);
+		timerState.id = 'AMT___timerState';
+		
+		var startRestart = document.createElement('div');
+		startRestart.setAttribute('style','left:100px;width:100px;height:20px;background-color:LightGray;float:left;font-size:20px;border:1px solid blue;');
+		GM_addStyle('#AMT___startRestart:hover {background-color:yellow !important;cursor:pointer;}');
+		jobTimerDiv.appendChild(startRestart);
+		startRestart.innerText = "Start/Restart";
+		startRestart.id = 'AMT___startRestart';
+		
+		var nullifyTimer = document.createElement('div');
+		nullifyTimer.setAttribute('style','left:200px;width:100px;height:20px;background-color:LightGray;float:left;font-size:20px;border:1px solid blue;');
+		GM_addStyle('#AMT___nullifyTimer:hover {background-color:yellow !important;cursor:pointer;}');
+		jobTimerDiv.appendChild(nullifyTimer);
+		nullifyTimer.id = 'AMT___nullifyTimer';
+		nullifyTimer.on = false;
+		nullifyTimer.innerText = "nullifyTimer";
+		
+		
+		var recordNameSpaceInp = document.createElement('textarea');
+		recordNameSpaceInp.setAttribute('style','top:' + (top*1+20) +'px;left:0px;width:49%;position:absolute;height:20px;border:2px solid black;');
+		document.body.appendChild(recordNameSpaceInp);
+		recordNameSpaceInp.value = AMT__Global_Vars.timer.namespace;
+		recordNameSpaceInp.id = 'AMT___recordNameSpaceInp';
+		recordNameSpaceInp.onblur = function() {
+			AMT__Global_Vars.timer.namespace = this.value;
+			this.style.border = '2px solid blue';
+		}
+		
+		var recordStringInp = document.createElement('textarea');
+		recordStringInp.setAttribute('style','top:' + (top*1+20) + 'px;left:49%;width:49%;position:absolute;height:20px;border:2px solid black;');
+		document.body.appendChild(recordStringInp);
+		recordStringInp.id = 'AMT___recordStringInp';
+		recordStringInp.onblur = function() {
+			AMT__Global_Vars.timer.recordString = this.value;
+			this.style.border = '2px solid blue';
+		}
+		recordStringInp.value = '';
+		
+		console.log('arrived here');
+		
+		
+		
+		
+		function timerClickEvent(e) {
+			if(this.id == 'AMT___startRestart' && AMT__Global_Vars.timer.nullify == false) {
+				new AMT___items_factory().startJobTimer();
+			}
+			if(this.id == 'AMT___nullifyTimer') {
+				AMT__Global_Vars.timer.nullify = true;
+				document.getElementById('AMT___timerState').innerText = 'Nullified';
+				clearInterval(AMT__Global_Vars.timer.interval);
+			}
+			
+			e.stopPropagation();
+			e.preventDefault();
+			this.style.backgroundColor = 'LightGreen';
+			window.setTimeout(function() {
+				this.style.backgroundColor = '';
+			}, 1500);
+			return false;
+		}
+		
+		timerState.addEventListener('click', timerClickEvent);
+		startRestart.addEventListener('click', timerClickEvent);
+		nullifyTimer.addEventListener('click', timerClickEvent);
+		
+		
+		//job timer contains: a timerState, a start/restart, and a disable button
+		var timerStats = document.createElement('div');
+		timerStats.setAttribute('style','left:300px;width:600px;height:20px;background-color:LightGray;float:left;font-size:20px;border:1px solid blue;');
+		GM_addStyle('#AMT___timerStats:hover {background-color:yellow !important;}');
+		jobTimerDiv.appendChild(timerStats);
+		timerStats.id = 'AMT___timerStats';
+		AMT__Global_Vars.timer.isShowingDefaultString = true;
+		new AMT___core_factory().getAverageTiming({
+			isDefaultInitialization: true,
+			callback: function(e) {
+			console.log('back in AMT___timerStats initializer');
+			console.log(e);
+			//To avoid race conditions, only show default record string if it hasn't been changed to something else
+			if(AMT__Global_Vars.timer.isShowingDefaultString) {
+				//document.getElementById('AMT___timerStats').innerText = 'Avg. Time: ' + e.avgTime;
+			}
+		}
+		});
+		
+	}
+}
+
+AMT___items_factory.prototype.startJobTimer = function() {
+	if(!AMT__Global_Vars.sStrings.length) {
+		AMT__Global_Vars.startTimerOnSMatch = true;
+		return;
+	}
+	if(!AMT__Global_Vars.isPreview) {
+		AMT__Global_Vars.timer.startJobTimer = true;
+		if(!document.getElementById('AMT___JobTimer')) {
+			new AMT___items_factory().createJobTimer();
+		}
+		if(!AMT__Global_Vars.timer.nullify) {
+			document.getElementById('AMT___timerState').innerText = 0;
+			if(AMT__Global_Vars.timer.interval)
+				clearInterval(AMT__Global_Vars.timer.interval);
+			AMT__Global_Vars.timer.interval = window.setInterval(function() {
+				if(!AMT__Global_Vars.timer.nullify) {
+					var time = Math.round(document.getElementById('AMT___timerState').innerText *1);
+					time += 1;
+					document.getElementById('AMT___timerState').innerText = time;
+				}
+			}, 1000);
+		}
+	}
+}
+
 /**
  * .create_dashboard__powers_v2
  * 
@@ -8370,8 +11213,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	var o = {
 		local_URL_init: '',
 		local_URL_complete: '',
-		obj_vars: null,
-		
+		obj_vars: null
 	}
 	
 	var local_URL;
@@ -8393,6 +11235,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
 		
 		this.obj_vars.catch_include_array = [
+			'We apologize for the inconvenience: to prevent possible abuse of the Startpage service',
 			'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.',
 			
 			// CAPTCHA, 2 DIFFERENT STRINGS FROM THE CAPTCHA ENTER PAGE.
@@ -8401,11 +11244,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		]
 		// UPDATE
 		// As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
-		
-		//~ this.obj_vars.url = 'https://startpage.com/do/search';
-		//~ this.obj_vars.url = 'https://startpage.com/do/metasearch.pl';
-		//~ this.obj_vars.url = 'http://216.218.239.213:443';
-		//~ var query = this.obj_vars.post_request.query;
 		
 		/*this.obj_vars.post_request = {
 			cmd: 'process_search',
@@ -8533,11 +11371,11 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	
 	
 	// function array_startPage_results
+	// 
+	// UPDATE TO startpage results container June 11, 2015.
 	//
-	//
-	//~ this.array_startPage_results = function(rs) {
 	function array_startPage_results(rs) {
-		var r = /<ol>[\r\n\s\t]*<li><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
+		var r = /<ol[^>]*>[\r\n\s\t]*<li[^>]*><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
 		if(!(rslts = r.exec(rs))) {
@@ -8558,15 +11396,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			//r.lastIndex = 0;	<-- no need, not testing
 			
 			var ol = rslts[0];
-			//~ console.log(ol);
 			
-			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 			var content;
 			var arr = [];
 			while(content = contentReg.exec(ol)) {				
 				content[2] = content[2].replace(/<b[^>]*>/gi, '(`)'); // MUST REMOVE ^>* HERE ! 3 SEP 2014
 				content[2] = content[2].replace(/<\/b>/gi, '(``)');
 				content[2] = content[2].replace(/<A[^>]*>((.|\s)*?(?=<\/A>|$)|$)/gi, ' ');
+				content[2] = content[2].replace(/<script>[^<]+<\/script>/g, '');//NEW Jun15,2015: <script>/*adjustTitleDesc('result3');*/adjustUrl('result3');</script>
 				content[2] = content[2].replace(/<[^>]+>/g, ' ');
 				content[2] = content[2].replace(/[<>]/g, ' ');
 				// Clean it now
@@ -8658,12 +11496,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		AMT___POPUP__initializeGlobals(
 			function() {
 				
-				//~ console.log('AMT___POPUP___PROXY_REDACTED_:');
-				//~ console.log(AMT___POPUP___PROXY_REDACTED_);
-				
 				o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
 				o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
-
+				// Xhr
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: o.local_URL_init,
@@ -9040,6 +11875,7 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
 	
+	
 	// Set global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
@@ -9254,7 +12090,6 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
  *   -return time_to_submit, offsetTime(x) > regularInterval+x
  */
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
-	
 	if(!AMT__Global_Vars.isPreview) {
 		AMT__Global_Vars.isSubmitting = true;
 		chrome.extension.sendRequest(
@@ -9267,23 +12102,59 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		);
 	}
 	
-	if (!AMT__Global_Vars.isPreview) {
-		if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
-			new AMT___core_factory().shiftFarLeft();
+	//if(document.getElementById('AMT__UtilityContainer')) {
+		chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {
+			//~ if (!AMT__Global_Vars.isPreview) {
+				//~ if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+					//~ new AMT___core_factory().shiftFarLeft();
+				//~ }
+				//~ if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
+					//~ showNextTab();
+				//~ }
+				//~ if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
+					//~ new AMT___core_factory().nextTab();
+				//~ }
+			//~ }
+		});
+	//}
+	//else {
+		if (!AMT__Global_Vars.isPreview) {
+			if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+				new AMT___core_factory().shiftFarLeft();
+			}
+			if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
+				showNextTab();
+			}
+			if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
+				new AMT___core_factory().nextTab();
+			}
 		}
-		if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-			showNextTab();
-		}
-		if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
-			new AMT___core_factory().nextTab();
-		}
+	//}
+	
+	if(AMT__Global_Vars.scriptVars['DS Offset Time (s)'] != '0' && !offsetTime) {
+		offsetTime = AMT__Global_Vars.scriptVars['DS Offset Time (s)']*1000;
 	}
 	
-	
-	if(document.getElementById('AMT__UtilityContainer')) {
-		chrome.extension.sendRequest({removeMyUitilityTabs: true});
+	try {
+		if(document.getElementById('AMT___JobTimer') && !document.getElementById('AMT___nullifyTimer').on && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
+		  && !callback_function //no callback function means, this isn't an exception case to a regular dosubmit
+		) {
+			var time = document.getElementById('AMT___timerState').innerText * 1;
+			var namespace = AMT__Global_Vars.timer.namespace;
+			var recordString = AMT__Global_Vars.timer.recordString;
+			AMT___addQuestionAnswer(namespace, recordString, [new OutputPair("Id(placeholderJustInCase)", time)]);
+			//alert('recorded' + time + recordString + namespace); 
+			//return;
+		}
+	} catch (err) {
+		alert(err);
 	}
-	
+	//alert('hit enter?');
+	//~ console.log(document.getElementById('AMT___JobTimer'))
+	//~ console.log(!document.getElementById('AMT___nullifyTimer').on)
+	//~ console.log(!AMT__Global_Vars.isPreview)
+	//~ console.log(document.getElementById('AMT___timerState').innerText != '')
+	//~ console.log(!callback_function);
 	
 	// Which form to submit
 	if (!form)
@@ -9292,6 +12163,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		MT__DOSUBMIT__FORM = document.getElementById(form);
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	//~ if (form && form.opts_obj) // This is an options object instead of form! // TESTING
+	//~ 
+	//~ else
 	
 	// Debug
 	if (MT___TEST_DEBUG) {
@@ -9886,6 +12760,81 @@ AMT___core_factory.prototype.shiftFarRight = function() {
 }
 
 
+//Options
+/*
+ * matchString 	//If not specified is 'default'
+ * callback 	
+ * namespace	//Optional, if unset is the 's'
+ * Returns the following:
+ * {
+ * avgTime:
+ * numHits:
+ * }
+ * isDefaultInitialization //Used when script is initializing
+ **/
+AMT___core_factory.prototype.getAverageTiming = function(options) {
+	var namespace = (options.namespace ? options.namespace : AMT__Global_Vars.timer.namespace);
+	var matchString = (options.matchString ? options.matchString : AMT__Global_Vars.timer.recordString);
+	
+	console.log('options in getAverageTiming');
+	console.log(options);
+	
+	if(options.isDefaultInitialization && AMT__Global_Vars.timer.isShowingDefaultString) {
+		new AMT___core_factory().setTimerNamespace(namespace);
+		new AMT___core_factory().setTimerRecordString(matchString);
+	}
+	else {
+		AMT__Global_Vars.timer.isShowingDefaultString;
+		console.log('is not showing default string');
+		new AMT___core_factory().setTimerNamespace(namespace);
+		new AMT___core_factory().setTimerRecordString(matchString);
+		console.log(AMT__Global_Vars);	
+	}
+	
+	AMT___getMatch(namespace, matchString, function(matches, callback) {
+			//console.log('back from AMT___getMatch in getAverageTiming');
+			//console.log(matches);
+			if(matches) {
+				var avgTime;
+				var totalTime = 0;
+				var totalCount = 0;
+				for(var i = 0; i < matches.length; i++) {
+					if( matches[i].outputs[0].value) {
+						console.log(matches[i].outputs[0].value);
+						var timeOutput = matches[i].outputs[0].value *1;
+						totalTime += timeOutput *1;
+						totalCount += (matches[i].count*1);
+					}
+				}
+				avgTime = totalTime/totalCount;
+				document.getElementById('AMT___timerStats').innerText = 'Avg Time: ' + avgTime + ' out of ' + totalCount;
+				callback(
+				{
+					avgTime:avgTime,
+					numHits:matches.length,
+					hits: matches
+				}
+				);
+			}
+			else {
+				document.getElementById('AMT___timerStats').innerText = 'Unrecorded Hit Type';
+				if(callback)
+					callback(null);
+			}
+		},options.callback, null, true);
+}
+
+AMT___core_factory.prototype.setTimerRecordString = function(str) {
+	AMT__Global_Vars.timer.isShowingDefaultString = false;
+	document.getElementById('AMT___recordStringInp').value = str;
+	AMT__Global_Vars.timer.recordString = str;
+}
+AMT___core_factory.prototype.setTimerNamespace = function(str) {
+	AMT__Global_Vars.timer.isShowingDefaultString = false;
+	document.getElementById('AMT___recordNameSpaceInp').value = str;
+	AMT__Global_Vars.timer.recordString = str;
+}
+
 
 /**
  * Page 1 mturk.com MT___page1_show_jobs
@@ -9897,21 +12846,13 @@ AMT___core_factory.prototype.shiftFarRight = function() {
  * TODO: ratings
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
-	
 	// Check if the page is currently at /mturk/findhits
 	//
 	//
 	var s = location.href;
 	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
-	
-	// Ignored
 	var ignore_requesters__ids, ignore_requesters;
-	set_ignored_vars();
-	
-	// Add styles to page
-	add_styles();
-	
 	// Hosts
 	var MT___page1_hosts = [
 		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
@@ -9919,7 +12860,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	];
 	var MT___page1_host = MT___page1_hosts[0];
 	var MT___page1_host_num = 0;
-	
 	// Timers intervals
 	var xint, xint2;
 	
@@ -9948,10 +12888,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		table1: null,
 		table2: null,
 		
+		// Controllers
+		// To be created
 		// ...
 		close_btn: null,
 		timer_btn: null,
 		user_select: null,
+		show_hide_btn: null,
 		
 		// ...
 		db_users: [
@@ -10016,41 +12959,59 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		comments_timestamp: 0
 	}
 	
-	// Container
-	tasks_obj.div_container = document.createElement('div');
-	tasks_obj.div_container.setAttribute('style',
-		'position:absolute;'+
-		'top:40px;'+
-		'width:99%;'+
-		'background-color:none;'+
-		'margin:0 0.5% 0 0;'
-	);
-	document.body.appendChild(tasks_obj.div_container);
+	// Init
+	//
+	//
+	init();
 	
-	// Tables
-	// Table 1 = jobs (minus ignored)
-	// Table 2 = jobs ignored
-	// ...
-	tasks_obj.table1 = document.createElement('table');
-	tasks_obj.table1.setAttribute('style',
-		'width:100%'
-	);
-	tasks_obj.table1.className = 'amt_show_tasks_table';
-	tasks_obj.div_container.appendChild(tasks_obj.table1);
-	// ...
-	tasks_obj.table2 = document.createElement('table');
-	tasks_obj.table2.setAttribute('style',
-		'width:100%'
-	);
-	tasks_obj.table2.className = 'amt_show_tasks_table';
-	tasks_obj.div_container.appendChild(tasks_obj.table2);
+	/**
+	 * function init
+	 */
+	function init() {
+		// Ignored
+		set_ignored_vars();
+		
+		// Add styles to page
+		add_styles();
+		
+		// Container
+		tasks_obj.div_container = document.createElement('div');
+		tasks_obj.div_container.setAttribute('style',
+			'position:absolute;'+
+			'top:40px;'+
+			'width:99%;'+
+			'background-color:none;'+
+			'margin:0 0.5% 0 0;'
+		);
+		document.body.appendChild(tasks_obj.div_container);
+		
+		// Tables
+		// Table 1 = jobs (minus ignored)
+		// Table 2 = jobs ignored
+		// ...
+		tasks_obj.table1 = document.createElement('table');
+		tasks_obj.table1.setAttribute('style',
+			'width:100%'
+		);
+		tasks_obj.table1.className = 'amt_show_tasks_table';
+		tasks_obj.div_container.appendChild(tasks_obj.table1);
+		// ...
+		tasks_obj.table2 = document.createElement('table');
+		tasks_obj.table2.setAttribute('style',
+			'width:100%'
+		);
+		tasks_obj.table2.className = 'amt_show_tasks_table';
+		tasks_obj.div_container.appendChild(tasks_obj.table2);
+		
+		// INIT !
+		MT___page1_async_last_update();
+		
+		// Creates the Pause and Close buttons.
+		// Starts the update intervals.
+		interval_update_timers();
+	}
 	
-	// INIT !
-	MT___page1_async_last_update();
 	
-	// Creates the Pause and Close buttons.
-	// Starts the update intervals.
-	interval_update_timers();
 	
 	
 	/**
@@ -10062,46 +13023,42 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * Creates the "user" select field (tasks_obj.user_select)
 	 */
 	function interval_update_timers() {
-		
 		// timer
 		var d = document.createElement('input');
-		//~ d.setAttribute('id','input__reload');
 		d.setAttribute('type','button');
 		d.setAttribute('style','position:absolute;top:0px;left:60px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;cursor:pointer;');
 		document.body.appendChild(d);
 		tasks_obj.timer_btn = d;
-		// close
+		// Close button
 		var d = document.createElement('input');
-		//~ d.setAttribute('id','input2__reload');
 		d.setAttribute('type','button');
 		d.setAttribute('style','position:absolute;top:0px;left:0px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		document.body.appendChild(d);
 		tasks_obj.close_btn = d;
 		// tasks_obj.user_select
-		// .onchange?
 		var d = document.createElement('select');
 		d.setAttribute('style','position:absolute;top:0px;left:120px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		d.innerHTML = '<option value="Ben">Ben</option><option value="Dave">Dave</option><option value="Sora">Sora</option>';
 		document.body.appendChild(d);
 		tasks_obj.user_select = d;
+		// Show / Hide old tasks button!
+		var d = document.createElement('input');
+		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:180px;height:30px;width:120px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
+		document.body.appendChild(d);
+		tasks_obj.show_hide_btn = d;
 		
-		// Value, onclick
-		// timer_btn
+		// timer_btn.value
+		// timer_btn.onclick
 		tasks_obj.timer_btn.value = '20';
-		tasks_obj.timer_btn.onclick = function() {
-			//~ clearInterval(xint);
-			//~ clearInterval(xint2);
-			//~ dx.value = 'Press reload to continue...';
+		tasks_obj.timer_btn.onclick = function(e) {
 		}
-		// close_btn
+		// tasks_obj.close_btn.value
+		// tasks_obj.close_btn.onclick
 		tasks_obj.close_btn.value = 'Close!'; 
-		tasks_obj.close_btn.onclick = function() {
+		tasks_obj.close_btn.onclick = function(e) {
 			clearInterval(xint);
 			clearInterval(xint2);
-			//~ if (dx) {
-				//~ document.body.removeChild(dx);
-			//~ }
-			// this
 			this.parentNode.removeChild(this);
 			// timer_btn
 			tasks_obj.timer_btn.parentNode.removeChild(tasks_obj.timer_btn);
@@ -10110,7 +13067,25 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tasks_obj.div_container.parentNode.removeChild(tasks_obj.div_container);
 			}
 		}
-		//
+		// tasks_obj.show_hide_btn.value
+		// tasks_obj.show_hide_btn.onclick
+		tasks_obj.show_hide_btn.value = 'Show Hidden Rows';
+		tasks_obj.show_hide_btn.onclick = function(e) {
+			var x = document.getElementsByClassName('hidden_rows');
+			if (this.value == 'Show Hidden Rows') {
+				this.value = 'Hide Hidden Rows';
+				this.style.backgroundColor = 'LightGreen';
+				for (var i=0;i<x.length;i++) {
+					x[i].style.display = '';
+				}
+			} else {
+				this.value = 'Show Hidden Rows';
+				this.style.backgroundColor = '';
+				for (var i=0;i<x.length;i++) {
+					x[i].style.display = 'none';
+				}
+			}
+		}
 		
 		// The countdown timer for when last_update runs.
 		//
@@ -10330,7 +13305,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			this.style.backgroundColor = '';
 		}
 	}
-	//~ function ()
 	
 	/**
 	 * function close_extended
@@ -10425,7 +13399,19 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
 		// TH
-		var headers = ['ID', 'Title', 'Qualifications', 'RWD', 'Time Allotted', 'Description', 'Requester ID', 'Requester Name', 'Group ID', 'ID Dup.', 'Hash ID'];
+		var headers = [
+			'ID',
+			'Title',
+			'Qualifications',
+			'RWD',
+			'Time Allotted',
+			'Description',
+			'# Dup.',
+			'Requester ID',
+			'Requester Name',
+			'Group/Hash ID',
+			'Distinct Dates'
+		];
 		var thead = document.createElement('thead');
 		tb.appendChild(thead);
 		var tr = document.createElement('tr');
@@ -10439,10 +13425,17 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			tr.appendChild(td);
 		}
 		// Loop
+		// TODO: Add "Last date seen" column, Default=Show.
 		for (var rid in rs) { //{...requesterIds...:[...{db rows}...]}
 			for (var dbr in rs[rid]) {
 				// id, title, requester_id, requester_name, qualifications, groupId, reward, time_allotted, description
 				var row = rs[rid][dbr];
+				var short_desc = row.description.substr(0, 34).trim();
+				short_desc += (short_desc != row.description) ? '...' : '';
+				row.groupId = row.groupId == '' ? 'N/A' : row.groupId;
+				row.qualifications = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); // Remove initial |, Break into new lines
+				var short_qual = row.qualifications.substr(0, 34).trim();
+				short_qual += (short_qual != row.qualifications) ? '...' : '';
 				// TR
 				var tr = document.createElement('tr');
 				tr.className = 'ro-extended-tb-tr';
@@ -10458,8 +13451,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.innerText = row.qualifications.replace(/^ *\| */, ''); // Remove initial |
+				td.innerText = short_qual;
+				td.hide_show3 = [short_qual, row.qualifications];
 				tr.appendChild(td);
+				//~ var td = document.createElement('td');
+				//~ td.innerText = row.qualifications.replace(/^ *\| */, '').replace(/ \| /g, '\n'); 
+				//~ tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.innerText = row.reward;
@@ -10470,8 +13467,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.innerText = row.description;
+				td.innerText = short_desc;
+				td.hide_show3 = [short_desc, row.description];
 				tr.appendChild(td);
+				// TD
+				var td = document.createElement('td');
+				td.innerText = row.id_duplicate_jobs;
+				tr.appendChild(td);
+				//~ var td = document.createElement('td');
+				//~ td.innerText = row.description;
+				//~ tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
 				td.innerHTML = '';
@@ -10482,20 +13487,35 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				td.innerText = '';
 				td.hide_show = __js_clean_html_str(row.requester_name);
 				tr.appendChild(td);
-				// TD
+				// TD (groupId + hash_id)
 				var td = document.createElement('td');
 				td.innerText = '';
-				td.hide_show = row.groupId;
+				//~ td.hide_show = row.groupId;// + '\n' + row.hash_id;
+				td.hide_show = row.groupId + '\n' + row.hash_id;
 				tr.appendChild(td);
+				//~ // TD
+				//~ var td = document.createElement('td');
+				//~ td.innerText = '';
+				//~ td.hide_show = row.hash_id;
+				//~ tr.appendChild(td);
 				// TD
 				var td = document.createElement('td');
-				td.innerText = '';
-				td.hide_show = row.id_duplicate_jobs;
-				tr.appendChild(td);
-				// TD
-				var td = document.createElement('td');
-				td.innerText = '';
-				td.hide_show = row.hash_id;
+				td.setAttribute('style', 'white-space: nowrap;');
+				//~ td.hide_show = row.distinct_dates.replace(/,/g, '\n');
+				//~ td.innerText = '';
+				td.hide_show2 = true;
+				var dv = document.createElement('div');
+				dv.setAttribute('style',
+					'white-space: nowrap;display:none;max-height: 180px;overflow-y: auto;overflow-x:hidden;padding:0 12px 0 0;border: 1px solid #a4a4a4;'
+				); // Add overflow only to Y-axis, no X-axis. Add padding to right side to avoid hiding the text.
+				var dates = row.distinct_dates; //NOT DOING THIS:+ ',' + row.distinct_dates2; //NOT DOING THIS:Combine these. Dates OLD Ascending + Dates NEW Ascending
+				dates = dates.split(','); // Split by comma
+				dates.reverse(); // ! Reverse the order of the dates (latest first), from db is 2013 before 2014. So, e.g. 2014 before 2013.
+				dates = dates.join('\n'); // Join by new line
+				//~ dates = dates.replace(/,/g, '\n');
+				dv.innerText = dates;
+				td.div = dv;
+				td.appendChild(dv);
 				tr.appendChild(td);
 			}
 		}
@@ -10503,6 +13523,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			var tds = this.getElementsByTagName('td');
 			for (var i in tds) {
 				if (i == 'length') break;
+				if (tds[i].hasOwnProperty('hide_show3')) { // This is for the description column. Switch between two values.
+					if (tds[i].innerText == tds[i].hide_show3[0]) {
+						tds[i].innerText = tds[i].hide_show3[1];
+					} else {
+						tds[i].innerText = tds[i].hide_show3[0];
+					}
+					continue;
+				}
+				if (tds[i].hasOwnProperty('hide_show2')) { // This is for the dates column.
+					if (tds[i].div.style.display == 'none')
+						tds[i].div.style.display = 'block';
+					else
+						tds[i].div.style.display = 'none';
+					continue;
+				}
 				if (!tds[i].hasOwnProperty('hide_show')) continue;
 				if (tds[i].innerText == '') {
 					tds[i].innerText = tds[i].hide_show;
@@ -10550,7 +13585,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			tasks_obj.table2_row_ids[ row.db_id ] = true;
 		// Add to global!
 		tasks_obj.table_rows[ row.db_id ] = tr;
-		
 		
 		/**
 		 * TDs ... ...
@@ -11065,6 +14099,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//
 		//
 		row.hits_available.innerText = '----';
+		row.className = 'hidden_rows';
+		
+		// Hidden or showing?
+		if (tasks_obj.show_hide_btn.value == 'Show Hidden Rows') {
+			row.style.display = 'none';
+		} else {
+			row.style.display = '';
+		}
+		
 		//~ alert('remove');
 		//~ console.log(row);
 		//~ console.log(row.innerHTML);
@@ -11150,12 +14193,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			}
 			
 			// Update this row!
+			// NOTE: 
 			//
 			//
-			//
-			if (tasks_obj.table_rows.hasOwnProperty(d.db_id))
+			if (tasks_obj.table_rows.hasOwnProperty( d.db_id ))
 			{
 				var row = tasks_obj.table_rows[ d.db_id ];
+				// row d
+				//~ var history_id = tasks_obj.table1_history_ids[db_id]
 				
 				// Is .innerText == '----'? If so, then this HIT
 				// is coming back after previously leaving. So
@@ -11226,49 +14271,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				table.appendChild(new_row[0]);
 				table.appendChild(new_row[1]);
 			}
-			//~ // Regular
-			//~ if  (
-				//~ !ignore_requesters.hasOwnProperty( d.requester_name ) &&
-				//~ !ignore_requesters__ids.hasOwnProperty( d.requester_id )
-				//~ )
-			//~ {
-				//~ new_row = makeRow(d); // array 0,1
-				//~ var len = tasks_obj.table1.getElementsByTagName('tr').length;
-				//~ 
-				//~ // append
-				//~ if (!tasks_obj.isFirstRun && len)
-				//~ {
-					//~ var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-					//~ tasks_obj.table1.insertBefore(new_row[0], first); // tr before "first tr"
-					//~ tasks_obj.table1.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				//~ }
-				//~ // insert
-				//~ else
-				//~ {
-					//~ tasks_obj.table1.appendChild(new_row[0]);
-					//~ tasks_obj.table1.appendChild(new_row[1]);
-				//~ }
-			//~ }
-			//~ // Ignored
-			//~ else
-			//~ {	
-				//~ new_row = makeRow(d, true);
-				//~ var len = tasks_obj.table2.getElementsByTagName('tr').length;
-				//~ 
-				//~ // append
-				//~ if (!tasks_obj.isFirstRun && len)
-				//~ {	
-					//~ var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-					//~ tasks_obj.table2.insertBefore(new_row[0], first); // tr before "first tr"
-					//~ tasks_obj.table2.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				//~ }
-				//~ // insert
-				//~ else
-				//~ {
-					//~ tasks_obj.table2.appendChild(new_row[0]);
-					//~ tasks_obj.table2.appendChild(new_row[1]);
-				//~ }
-			//~ }
 		}
 	}
 	/**
@@ -11307,6 +14309,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// Also updates current_db_ids.
 				has_new_alertable(rs);
 				
+				// New APR. 16, 2015: Set HA to '----' rather than delete. 
 				// Loop through all table rows and check 
 				// against current_db_ids to ensure that all rows
 				// in table are still active.
@@ -11466,7 +14469,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//
 		//
 		ignore_requesters__ids = {
-			'A3A0N4OPTWRYPD':true //Research Project
+			'A3A0N4OPTWRYPD':true, //Research Project
+			'A2GGMBBJ00PKKX':true //AdultNetHITs
 		};
 		ignore_requesters = {
 			'CrowdFlower':true,
@@ -11893,30 +14897,33 @@ function AMT___returnAndAcceptButton() {
 		/^https?:\/\/(www\.)mturk.com\/mturk\/preview\?/i.exec(document.location.href)
 		)
 		return;
-	
 	// return and accept
+	// return link and group id
 	if  (
 			/<a href="\/mturk\/return\?/.exec(ih) &&
-			(
-				/<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih) ||
-				/<a href="\/mturk\/return\?requesterId=([^&]+)/.exec(ih)
-			)
-		) // return link and group id
-	{
-
-		
+			ih.indexOf('<input type="hidden" name="groupId" value="">') == -1 // Must have a group id
+			//~ (
+				//~ /<a href="\/mturk\/return\?groupId=/.exec(ih) ||
+				//~ /<a href="\/mturk\/return\?requesterId=/.exec(ih) // <a href="/mturk/return?requesterId=
+			//~ )
+		)
+	{	
 		var u;
 		u = /<a href="\/mturk\/return\?[^"]+/.exec(ih)[0];
 		
 		var MT__url_returnaccept;
 		MT__url_returnaccept = u;
 		MT__url_returnaccept = MT__url_returnaccept.replace('<a href="', 'https://www.mturk.com');
-		MT__url_returnaccept = MT__url_returnaccept.replace(/&amp;/g, '&');
+		MT__url_returnaccept = __js_clean_html_str(MT__url_returnaccept);
 		//u = '';
 		
+		//<a href="/mturk/return?requesterId=AU06FWQZTTRD1&amp;hitId=33PPUNGG39GOP2WBVVLN4CROCUZRZ4&amp;signature=w7gq5x81cqAtP4ftfXGkA7pFN%2BY%3D&amp;groupId=3XCMB0010QC1BC9LPZSYHFBV3LL3PB&amp;canAccept=&amp;externalHit=true">
 		var MT__gm_groupId;
-		MT__gm_groupId = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih)[1];
-		
+		MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
+		MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
+		MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId)[1];
+		//~ MT__gm_groupId = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih)[1];
+		console.log('HERE');
 		var d = document.createElement('input');
 		d.setAttribute('id','MT__gm_returnaccept');
 		d.setAttribute('type','button');
@@ -11933,7 +14940,10 @@ function AMT___returnAndAcceptButton() {
 		
 		// local
 		document.getElementById('MT__gm_returnaccept').addEventListener('click', function() {
-			
+			if(AMT__Global_Vars.showPastReturnsContent) {
+				console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+				AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+			}
 			
 			
 			//console.log(AMT__Global_Vars);
@@ -11946,12 +14956,7 @@ function AMT___returnAndAcceptButton() {
 			// @param: bool() AMT__Global_Vars.core.return_accept_run_nextTab 
 			//
 			if (AMT__Global_Vars.core.return_accept_run_nextTab) {
-				if(AMT__Global_Vars['R&A NextTab Iframe Focus']) {				
-					new AMT___core_factory().nextTab({focusOnPage:true, isTopWindow:false});
-				}
-				else {
-					new AMT___core_factory().nextTab();
-				}				
+				new AMT___core_factory().nextTab();
 			}
 			// END HOOK nextTab()
 			
@@ -11963,7 +14968,7 @@ function AMT___returnAndAcceptButton() {
 		
 			if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
 				showNextTab({isTopWindow: true});
-				showNextTab({isTopWindow: false});
+				//showNextTab({isTopWindow: false});
 			}
 			
 			function MT__RETURN_AND_ACCEPT(time_to_submit) {
@@ -11989,7 +14994,15 @@ function AMT___returnAndAcceptButton() {
 		// serverSide
 		document.getElementById('MT__gm_returnaccept_non_serverSide').addEventListener('click', function() {
 			this.style.backgroundColor='#9e9e9e';
+			
+			
+			if(AMT__Global_Vars.showPastReturnsContent) {
+				//console.log('recording return of' + AMT__Global_Vars.showPastReturnsContent);
+				//AMT___addQuestionAnswer("ShowPastReturns", AMT__Global_Vars.showPastReturnsContent, [new OutputPair("Id(placeholderJustInCase)", "placeholderJustInCase")])
+			}
+			
 			//Record what tab we're returning on
+			//For income recording purposes
 			recordReturn();
 			
 
@@ -12045,14 +15058,6 @@ function AMT___checkCaptchaStatus() {
 				//Squelch response
 				}
 			);
-			//~ chrome.extension.sendRequest(
-			//~ {
-				//~ add_tab_to_captcha_queue: true
-			//~ }, 
-			//~ function(response) {
-				//~ //Squelch response
-				//~ }
-			//~ );
 			chrome.extension.sendRequest(
 			{
 				CAPTCHA_tab_queue_process: true
@@ -12142,102 +15147,52 @@ function AMT___checkCaptchaStatus() {
 		   )
 			GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
 		
-		// AS OF OCT28 THIS IS NO LONGER USED. THE METHOD USED IS EVENT PAGE QUEUEING.
-		//~ // New 23 Sep 2014
-		//~ // Set an eventListener for storage which will monitor other tabs.
-		//~ // Another tab will set localStorage['mt_captcha'] = 0.
-		//~ //
-		//~ // New 17 Oct 2014
-		//~ // Read localStorage value (later, global value) for CAPTCHA vars (CAPTCHA_staggered__min_tabs_to_initiate_staggered, CAPTCHA_staggered__staggered_timeout_per_tab)
-		//~ //
-		//~ //
-		//~ var reset_after_captcha = false;
-		//~ window.addEventListener('storage', function() {
-			//~ 
-			//~ if  (
-				//~ GM_getValue('mt_captcha') == '0' &&
-				//~ !reset_after_captcha
-			    //~ )
-			//~ {
-				//~ // Set true
-				//~ reset_after_captcha = true;
-				//~ 
-				//~ // OLD.......
-				//~ // TODO: 23 Sep 2014
-				//~ // Ask the background page how many tabs are currently on mturk.com.
-				//~ // (This is topWindow.) Then reload / location.href based on this amount.
-				//~ //
-				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
-					//~ 
-					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-					//~ if (i)
-						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-					//~ 
-				//~ } else
-					//~ window.location.reload();
-			//~ }
-			//~ 
-		//~ }, false);
-		
-		
-		// int
-		//~ var xint_CONTINUE_CAPTCHA = setInterval(function() {
-			//~ 
-			//~ var d = new Date();
-			//~ d = Math.round(d.getTime() / 1000);
-			//~ 
-			//~ var numt = GM_getValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES') * 1;
-			//~ 
-			//~ if (
-				//~ GM_getValue('mt_captcha') == '0'
-			   //~ )
-			//~ {
-				//~ clearInterval(xint_CONTINUE_CAPTCHA);
-				//~ 
-				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', 0);
-				//~ 
-				//~ if (document.location.href == 'https://www.mturk.com/mturk/submit') { // i.e. amicus labs
-					//~ 
-					//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-					//~ if (i)
-						//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-					//~ 
-				//~ } else
-					//~ window.location.reload();
-				//~ 
-				//~ /*if (ih.indexOf('Copy and paste the HTML from the links') != -1) { // amicus labs
-					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOOIR6U04FONQSDV7O118';
-					//~ //window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
-					//~ window.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
-				//~ } else
-					//~ window.location.reload();*/
-			//~ }
-			//~ else if
-			//~ (
-				//~ GM_getValue('MT_CAPTCHA__LAST_RELOAD')*1 < d - 30 &&
-				//~ numt < 30 // 20 is 10m, 30 is 15m
-			//~ )
-			//~ {
-				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD', d);
-				//~ GM_setValue('MT_CAPTCHA__LAST_RELOAD_NUMTRIES', numt + 1);
-			//~ }
-		//~ }, ((Math.random()*20) * 100) + 100); // 100 + 0~2000 ms
-		//~ // END LAST RELOAD
-		//~ 
-		
+		// Add a timer to the page. It is also necessary to modify some of the CSS on the page.
+		var cpim;
+		var x = document.getElementsByTagName('img');
+		for (var i in x) {
+			if (i == 'length') break;
+			if (x[i] && x[i].src && x[i].src.indexOf('capi-na') != -1) {
+				cpim = x[i];
+				break;
+			}
+		}
+		cpim.style.verticalAlign = 'middle'; // Set to "middle".
+		cpim.style.border = '1px dashed black'; // Set border to "blue".
+		// Input
+		var inp = document.createElement('input');
+		inp.size = 4; // 0-1000
+		inp.setAttribute('style',
+			'text-align:center;zoom:1;height:60px;font-size:26px;border:1px dashed black;background-color:transparent;margin-right:-80px;'
+		); // Add same border. Move -80px, i.e. move right, 80px, which is about the width of the input.
+		inp.value = 0;
+		inp.disabled = true;
+		inp.startDate = new Date().getTime() / 1000; // In seconds.
+		// Append
+		cpim.parentNode.appendChild(inp);
+		// SetInterval
+		setInterval(function() {
+			var now = new Date().getTime() / 1000; // In seconds.
+			var elapsed = now - inp.startDate;
+			elapsed = Math.round(elapsed); // Round to integer.
+			inp.value = elapsed;
+		}, 1000);
+		//~ cpim.parentNode.insertBefore(inp, cmip);
+		//~ GM_addStyle('{}');
 	}
 	/**
-	 * No Captcha
+	 * No CAPTCHA
 	 * Begin background page -> CAPTCHA_tab_queue.queue
 	 * CAPTCHA_tab_queue_process
 	 * 
 	 * NOTE:
 	 * This is where mt_captcha is set to 0.
 	 * 
+	 * NOTE #2:
+	 * Not allowed to set `GM_setValue('mt_captcha','0');` at https://www.mturk.com/mturk/continue
 	 * 
 	 */
-	else if (!/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href))
+	else if (!/^https?:\/\/(www\.)mturk\.com\/mturk\/continue\?/i.exec(document.location.href))
 	{
 		//
 		GM_setValue('mt_captcha','0');
@@ -12253,45 +15208,6 @@ function AMT___checkCaptchaStatus() {
 			//Squelch response
 			}
 		);
-		
-		//~ 
-		//~ if  (
-				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				//~ ih.indexOf('Copy and paste a webpage\'s HTML (Chrome and Firefox only, please)') != -1 &&
-				//~ ih.indexOf('Automan LLC') != -1
-			//~ )
-		//~ {
-			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			//~ if (i) {
-				//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-			//~ }
-		//~ }
-		//~ if  (
-				//~ ih.indexOf('The HIT you were viewing has expired') != -1 &&
-				//~ ih.indexOf('KronoPin') != -1
-			//~ )
-		//~ {
-			//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-			//~ if (i) {
-				//~ var xint_dup = setInterval(function() {
-					//~ GM_xmlhttpRequest({
-						//~ method: 'GET',
-						//~ url: 'http://www.linkedin.com/nhome/',
-						//~ onload: function (response) {
-							//~ if (response.status < 400) {
-								//~ 
-								//~ clearInterval(xint_dup);
-								//~ 
-								//~ // get new
-								//~ var i = /<input type="hidden" name="groupId" value="([^"]+)">/.exec(ih);
-								//~ window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId=' + i[1];
-								//~ 
-							//~ }
-						//~ }
-					//~ });
-				//~ }, 60000);
-			//~ }
-		//~ }
 		
 		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
@@ -12541,7 +15457,8 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 			//{ "results" : [], "status" : "UNKNOWN_ERROR" }
 			//'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )
 			var ci_array = [
-				'"error_message" : "You have exceeded your daily request quota for this API."',
+				'"error_message" : "You have exceeded your daily request quota for this API."', // OLD // As of May 15, 2015.
+				' "error_message" : "You have exceeded your daily request quota for this API.', // NEW as of May 15, 2015.
 				'{ "results" : [], "status" : "UNKNOWN_ERROR" }'
 			];
 			if (use_a_proxy) {
@@ -12609,13 +15526,12 @@ function __js_clean_html_str(s) {
 	s = div.firstChild.nodeValue;
 	return s;
 }
-// MT__bold
 // o is a string
 // arr is an array of strings to be bolded
 // avoid b
 // go from longest to shortest
 /**
- * 
+ * function MT__bold
  * 
  * 
  * Ex:
@@ -12640,9 +15556,6 @@ function MT__bold(o, arr, options_object) {
 	arr.sort(function(a, b){
 	  return b.length - a.length; // ASC -> a - b; DESC -> b - a
 	});
-	
-	//~ console.log(o);
-	//~ console.log(arr);
 	
 	var x = o;
 	var word;
