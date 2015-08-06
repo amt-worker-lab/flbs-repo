@@ -46432,27 +46432,34 @@ function MT__RUN() {
 					
 					//...
 					// Go to map view
-					else if (char == 'c' || char == 'C') {
-						var x=document.getElementsByTagName('div');
-						for (var i in x) {
-							if (i == 'length') break;
-							
-							// Go to map view
-							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
-								x[i].click();
-								o.curr_map_view = 'map';
-								
-								break;
-									
-							}
-							
-							// Go to satellite
-							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
-								x[i].click();
-								o.curr_map_view = null;
-								break;
-							}
-						};
+					else if (char == 'b' || char == 'B') {
+						AMT___RunPageScript(function() {
+							if(map.getMapTypeId().toLowerCase() == "hybrid")
+								map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+							else
+								map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+						});
+						
+						//~ var x=document.getElementsByTagName('div');
+						//~ for (var i in x) {
+							//~ if (i == 'length') break;
+							//~ 
+							//~ // Go to map view
+							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
+								//~ x[i].click();
+								//~ o.curr_map_view = 'map';
+								//~ 
+								//~ break;
+									//~ 
+							//~ }
+							//~ 
+							//~ // Go to satellite
+							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
+								//~ x[i].click();
+								//~ o.curr_map_view = null;
+								//~ break;
+							//~ }
+						//~ };
 					}
 					
 					// Go to satellite
@@ -46464,7 +46471,7 @@ function MT__RUN() {
 								map.setTilt(45);
 						});
 					}
-					else if (char == 'v' || char == 'V') {
+					else if (char == 'c' || char == 'C') {
 						AMT___RunPageScript(function() {
 							if(!map.getHeading() && map.getHeading() != 0) {
 								map.setHeading(90);
@@ -46474,7 +46481,7 @@ function MT__RUN() {
 							}
 						});
 					}
-					else if (char == 'b' || char == 'B') {
+					else if (char == 'v' || char == 'V') {
 						AMT___RunPageScript(function() {
 							if(!map.getHeading() && map.getHeading() != 0) {
 								map.setHeading(-90);
