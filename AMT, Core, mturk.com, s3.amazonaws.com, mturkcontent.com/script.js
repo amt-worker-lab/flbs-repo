@@ -44923,7 +44923,7 @@ function MT__RUN() {
 										"	  {lat:lat,lng:lng}," +
 										"	  window.threeRectPoints[1].position]);"+
 										"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
-							"}});"+
+							"}})7;"+
 							"window.setTimeout(function() {"+
 							    "console.log('here is de map');" +
 								"console.log(map);"+
@@ -46312,6 +46312,55 @@ function MT__RUN() {
 				
 				AMT___RunPageScript("function() {"+
 							"window.setTimeout(function() {"+
+							
+							
+								"window.mouseMoveShowRect = false;" +
+								"window.demoPolyLine = new google.maps.Polyline({"+
+												"     path:[],"+
+												"     clickable:true,"+
+												"	  strokeWeight:3,"+
+												"	  strokeColor:'#00FFFF'});"+
+								"google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {"+
+									"console.log(e.latLng);"+
+									"google.maps.event.trigger(map, 'rightclick', e);"+
+								"});"+
+								"window.getLatLngByOffset = function( map, offsetX, offsetY ){"+
+									"var currentBounds = map.getBounds();"+
+									"var topLeftLatLng = new google.maps.LatLng( currentBounds.getNorthEast().lat(),"+
+																				"currentBounds.getSouthWest().lng());"+
+									"var point = map.getProjection().fromLatLngToPoint( topLeftLatLng );"+
+									"point.x += offsetX / ( 1<<map.getZoom() );"+
+									"point.y += offsetY / ( 1<<map.getZoom() );"+
+									"return map.getProjection().fromPointToLatLng( point );"+
+								"};"+
+								"document.getElementById('map').addEventListener('mousemove', function(e) {"+
+									//"console.log(e);"+
+									"if(window.mouseMoveShowRect) {" +
+										"console.log('mouseMoveShowRect');"+
+										"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
+										"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
+										"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
+										"var lat = latLng.A;"+
+										"var lng = latLng.F;"+
+										"var diffLat = lat - window.threeRectPoints[1].position.A;"+
+											"var diffLng = lng - window.threeRectPoints[1].position.F;"+
+											"var newLatLng = {"+
+													"lat: diffLat + window.threeRectPoints[0].position.A,"+
+													"lng: diffLng + window.threeRectPoints[0].position.F"+
+												"};"+
+											
+
+											"	window.demoPolyLine.setPath(["+
+											"	  window.threeRectPoints[0].position,"+
+											"	  newLatLng,"+
+											"	  {lat:lat,lng:lng}," +
+											"	  window.threeRectPoints[1].position]);"+
+											"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
+								"}});"+
+							
+							
+							
+							
 								"var lat = map.getCenter().A;" +
 								"var lng = map.getCenter().F;" +
 								"map.setTilt(45);"+
