@@ -46093,7 +46093,7 @@ function MT__RUN() {
 					return;
 				}
 				js_append(loader_func1);
-				// append loader2
+				// Append loader2
 				setTimeout(function() {
 					js_append(loader_func2, JSON.stringify({lat:lat, lng:lng}));
 					getCenterBeforeChiosRuns();
