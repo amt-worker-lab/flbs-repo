@@ -45998,13 +45998,12 @@ function MT__RUN() {
 					p[i].innerText.indexOf('Insert store name and ') != -1 
 					) {
 					var reg = /Insert (store|venue) name and ad+ress:([\d\D]+)$/.exec(p[i].innerText);
-					//~ console.log(reg);
-					console.log(p[i].innerText);
-					tmp_full_addr = reg[1];
+					console.log('STRING:'+p[i].innerText);
+					tmp_full_addr = reg[2];
 					if (p[i].innerText.indexOf('or coordinates') != -1) {
-						tmp_full_addr = tmp_full_addr.replace(/ *or coordinates[\d\D]*/, '').trim();
+						tmp_full_addr = tmp_full_addr.replace(/or coordinates[\d\D]*/, '').trim();
 						tmp_has_cd = true;
-						var reg2 = /or coordinates([\d ,\-\.]+)/.exec(reg[1]);
+						var reg2 = /or coordinates[\r\n\t\s]*([\d,\-\.\r\n\t\s]+)/.exec(reg[2]);
 						tmp_cd = reg2[1].trim();
 						tmp_cd = tmp_cd.split(',');
 						tmp_cd[0] = tmp_cd[0].trim();
@@ -46016,7 +46015,7 @@ function MT__RUN() {
 					break;
 				}
 			}
-			var r = tmp_full_addr;return;
+			var r = tmp_full_addr;
 			
 			//OLD METHOD
 			//X
@@ -46676,6 +46675,8 @@ function MT__RUN() {
 						//Compute distance between two points;
 						
 						// coordinates
+						console.log(xo);
+						console.log('==========================================');
 						var tmp_hc = '';
 						if (!xo.has_coordinates) {
 							// 
@@ -46693,6 +46694,7 @@ function MT__RUN() {
 										"	});"+
 										"otherLocShower.setMap(map);"
 						}
+						console.log(tmp_hc);
 						AMT___RunPageScript("function() {"+
 								"var currentLat = " + o.centerMapLat + ";"+
 								"var currentLng = " + o.centerMapLng + ";" + 
