@@ -46158,13 +46158,21 @@ function MT__RUN() {
 					document.body.style.backgroundColor = 'LightGreen';
 					return;
 				}
-				js_append(loader_func1);
+				var latLngOnPage = document.createElement('script');
+				latLngOnPage.textContent = "var latLngOnPage = {lat:" + lat +",lng:" + lng + "};" ; 
+				document.head.appendChild(latLngOnPage);
+				var scr = document.createElement('script');
+				scr.textContent = loader_func2;
+				document.head.appendChild(scr);				
+				loader_func1();
 				// Append loader2
 				setTimeout(function() {
-					js_append(loader_func2, JSON.stringify({lat:lat, lng:lng}));
+					//js_append(loader_func2, JSON.stringify({lat:lat, lng:lng}));
 					getCenterBeforeChiosRuns();
 				}, 2000);
 			}, false);
+			
+			
 			
 			
 			
@@ -46172,35 +46180,44 @@ function MT__RUN() {
 			 * function loader_func
 			 */
 			function loader_func1() {
+				  var script = document.createElement('script');
+				  script.type = 'text/javascript';
+				  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
+					  '&signed_in=true&libraries=drawing&callback=loader_func2&key=_GOOGLE_API_KEY_REDACTED_';
+				  document.head.appendChild(script);
+				
+				
 				/*************** MAPS.GOOGLEAPIS.COM **************/
-				window.google = window.google || {};
-				google.maps = google.maps || {};
-				(function() {
-				  
-				  var modules = google.maps.modules = {};
-				  google.maps.__gjsload__ = function(name, text) {
-					modules[name] = text;
-				  };
-				  
-				  google.maps.Load = function(apiLoad) {
-					delete google.maps.Load;
-					apiLoad([0.009999999776482582,[[["https://mts0.googleapis.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"m@310000000",["https://mts0.google.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026"]],[["https://khms0.googleapis.com/kh?v=175\u0026hl=en-US\u0026","https://khms1.googleapis.com/kh?v=175\u0026hl=en-US\u0026"],null,null,null,1,"175",["https://khms0.google.com/kh?v=175\u0026hl=en-US\u0026","https://khms1.google.com/kh?v=175\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"h@310000000",["https://mts0.google.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"t@132,r@310000000",["https://mts0.google.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026"]],null,null,[["https://cbks0.googleapis.com/cbk?","https://cbks1.googleapis.com/cbk?"]],[["https://khms0.googleapis.com/kh?v=86\u0026hl=en-US\u0026","https://khms1.googleapis.com/kh?v=86\u0026hl=en-US\u0026"],null,null,null,null,"86",["https://khms0.google.com/kh?v=86\u0026hl=en-US\u0026","https://khms1.google.com/kh?v=86\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt?hl=en-US\u0026","https://mts1.googleapis.com/mapslt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/ft?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/ft?hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?hl=en-US\u0026","https://mts1.googleapis.com/vt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/loom?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/loom?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt?hl=en-US\u0026","https://mts1.googleapis.com/mapslt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/ft?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/ft?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/loom?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/loom?hl=en-US\u0026"]]],["en-US","US",null,0,null,null,"https://maps.gstatic.com/mapfiles/","https://csi.gstatic.com","https://maps.googleapis.com","https://maps.googleapis.com",null,"https://maps.google.com","https://gg.google.com","https://maps.gstatic.com/maps-api-v3/api/images/","https://www.google.com/maps",0],["https://maps.gstatic.com/maps-api-v3/api/js/21/5a","3.21.5a"],[3465787430],1,null,null,null,null,null,"",["drawing"],null,1,"https://khms.googleapis.com/mz?v=175\u0026","_GOOGLE_API_KEY_REDACTED_","https://earthbuilder.googleapis.com","https://earthbuilder.googleapis.com",null,"https://mts.googleapis.com/vt/icon",[["https://mts0.googleapis.com/vt","https://mts1.googleapis.com/vt"],["https://mts0.googleapis.com/vt","https://mts1.googleapis.com/vt"],null,null,null,null,null,null,null,null,null,null,["https://mts0.google.com/vt","https://mts1.google.com/vt"],"/maps/vt",310000000,132],2,500,[null,"https://g0.gstatic.com/landmark/tour","https://g0.gstatic.com/landmark/config",null,"https://www.google.com/maps/preview/log204","","https://static.panoramio.com.storage.googleapis.com/photos/",["https://geo0.ggpht.com/cbk","https://geo1.ggpht.com/cbk","https://geo2.ggpht.com/cbk","https://geo3.ggpht.com/cbk"]],["https://www.google.com/maps/api/js/master?pb=!1m2!1u21!2s5a!2sen-US!3sUS!4s21/5a","https://www.google.com/maps/api/js/widget?pb=!1m2!1u21!2s5a!2sen-US"],null,0,0,"/maps/api/js/ApplicationService.GetEntityDetails",0], loadScriptTime);
-				  };
-				  var loadScriptTime = (new Date).getTime();
-				  
-					var sc = document.createElement('script');
-					sc.src = 'https://maps.gstatic.com/maps-api-v3/api/js/21/5a/main.js';
-					document.head.appendChild(sc);
-					var sc = document.createElement('script');
-					sc.src = 'https://maps.gstatic.com/maps-api-v3/api/js/21/5a/drawing.js';
-					document.head.appendChild(sc);
-				})();
+				//~ window.google = window.google || {};
+				//~ google.maps = google.maps || {};
+				//~ (function() {
+				  //~ 
+				  //~ var modules = google.maps.modules = {};
+				  //~ google.maps.__gjsload__ = function(name, text) {
+					//~ modules[name] = text;
+				  //~ };
+				  //~ 
+				  //~ google.maps.Load = function(apiLoad) {
+					//~ delete google.maps.Load;
+					//~ apiLoad([0.009999999776482582,[[["https://mts0.googleapis.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"m@310000000",["https://mts0.google.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=m@310000000\u0026src=api\u0026hl=en-US\u0026"]],[["https://khms0.googleapis.com/kh?v=175\u0026hl=en-US\u0026","https://khms1.googleapis.com/kh?v=175\u0026hl=en-US\u0026"],null,null,null,1,"175",["https://khms0.google.com/kh?v=175\u0026hl=en-US\u0026","https://khms1.google.com/kh?v=175\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"h@310000000",["https://mts0.google.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=h@310000000\u0026src=api\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.googleapis.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026"],null,null,null,null,"t@132,r@310000000",["https://mts0.google.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026","https://mts1.google.com/vt?lyrs=t@132,r@310000000\u0026src=api\u0026hl=en-US\u0026"]],null,null,[["https://cbks0.googleapis.com/cbk?","https://cbks1.googleapis.com/cbk?"]],[["https://khms0.googleapis.com/kh?v=86\u0026hl=en-US\u0026","https://khms1.googleapis.com/kh?v=86\u0026hl=en-US\u0026"],null,null,null,null,"86",["https://khms0.google.com/kh?v=86\u0026hl=en-US\u0026","https://khms1.google.com/kh?v=86\u0026hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt?hl=en-US\u0026","https://mts1.googleapis.com/mapslt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/ft?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/ft?hl=en-US\u0026"]],[["https://mts0.googleapis.com/vt?hl=en-US\u0026","https://mts1.googleapis.com/vt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/loom?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/loom?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt?hl=en-US\u0026","https://mts1.googleapis.com/mapslt?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/ft?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/ft?hl=en-US\u0026"]],[["https://mts0.googleapis.com/mapslt/loom?hl=en-US\u0026","https://mts1.googleapis.com/mapslt/loom?hl=en-US\u0026"]]],["en-US","US",null,0,null,null,"https://maps.gstatic.com/mapfiles/","https://csi.gstatic.com","https://maps.googleapis.com","https://maps.googleapis.com",null,"https://maps.google.com","https://gg.google.com","https://maps.gstatic.com/maps-api-v3/api/images/","https://www.google.com/maps",0],["https://maps.gstatic.com/maps-api-v3/api/js/21/5a","3.21.5a"],[3465787430],1,null,null,null,null,null,"",["drawing"],null,1,"https://khms.googleapis.com/mz?v=175\u0026","_GOOGLE_API_KEY_REDACTED_","https://earthbuilder.googleapis.com","https://earthbuilder.googleapis.com",null,"https://mts.googleapis.com/vt/icon",[["https://mts0.googleapis.com/vt","https://mts1.googleapis.com/vt"],["https://mts0.googleapis.com/vt","https://mts1.googleapis.com/vt"],null,null,null,null,null,null,null,null,null,null,["https://mts0.google.com/vt","https://mts1.google.com/vt"],"/maps/vt",310000000,132],2,500,[null,"https://g0.gstatic.com/landmark/tour","https://g0.gstatic.com/landmark/config",null,"https://www.google.com/maps/preview/log204","","https://static.panoramio.com.storage.googleapis.com/photos/",["https://geo0.ggpht.com/cbk","https://geo1.ggpht.com/cbk","https://geo2.ggpht.com/cbk","https://geo3.ggpht.com/cbk"]],["https://www.google.com/maps/api/js/master?pb=!1m2!1u21!2s5a!2sen-US!3sUS!4s21/5a","https://www.google.com/maps/api/js/widget?pb=!1m2!1u21!2s5a!2sen-US"],null,0,0,"/maps/api/js/ApplicationService.GetEntityDetails",0], loadScriptTime);
+				  //~ };
+				  //~ var loadScriptTime = (new Date).getTime();
+				  //~ 
+					//~ var sc = document.createElement('script');
+					//~ sc.src = 'https://maps.gstatic.com/maps-api-v3/api/js/21/5a/main.js';
+					//~ document.head.appendChild(sc);
+					//~ var sc = document.createElement('script');
+					//~ sc.src = 'https://maps.gstatic.com/maps-api-v3/api/js/21/5a/drawing.js';
+					//~ document.head.appendChild(sc);
+				//~ })();
+				
+				
 				/*************** END MAPS.GOOGLEAPIS.COM **************/
 			}
 			/**
 			 * function loader_func
 			 */
-			function loader_func2(lat_lng) {
+			function loader_func2() {
 				var drawingManager = new google.maps.drawing.DrawingManager({
 					drawingMode: google.maps.drawing.OverlayType.POLYLINE,
 					drawingControl: true,
@@ -46283,7 +46300,7 @@ function MT__RUN() {
 					//~ x.value+= '\n' + tgid.value.trim(); // ADD "ID"
 				}
 				
-				map.setCenter(lat_lng);
+				map.setCenter(latLngOnPage);
 			}
 			
 			function getCenterBeforeChiosRuns() {
@@ -46341,13 +46358,13 @@ function MT__RUN() {
 										"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
 										"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
 										"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
-										"var lat = latLng.A;"+
-										"var lng = latLng.F;"+
-										"var diffLat = lat - window.threeRectPoints[1].position.A;"+
-											"var diffLng = lng - window.threeRectPoints[1].position.F;"+
+										"var lat = latLng.G;"+
+										"var lng = latLng.K;"+
+										"var diffLat = lat - window.threeRectPoints[1].position.G;"+
+											"var diffLng = lng - window.threeRectPoints[1].position.K;"+
 											"var newLatLng = {"+
-													"lat: diffLat + window.threeRectPoints[0].position.A,"+
-													"lng: diffLng + window.threeRectPoints[0].position.F"+
+													"lat: diffLat + window.threeRectPoints[0].position.G,"+
+													"lng: diffLng + window.threeRectPoints[0].position.K"+
 												"};"+
 											
 
@@ -46362,8 +46379,8 @@ function MT__RUN() {
 							
 							
 							
-								"var lat = map.getCenter().A;" +
-								"var lng = map.getCenter().F;" +
+								"var lat = map.getCenter().G;" +
+								"var lng = map.getCenter().K;" +
 								"map.setTilt(45);"+
 								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
 								
@@ -46445,11 +46462,11 @@ function MT__RUN() {
 											"}"+
 											
 											"if(window.threeRectPoints.length == 3) {"+
-												"var diffLat = window.threeRectPoints[2].position.A - window.threeRectPoints[1].position.A;"+
-												"var diffLng = window.threeRectPoints[2].position.F - window.threeRectPoints[1].position.F;"+
+												"var diffLat = window.threeRectPoints[2].position.G - window.threeRectPoints[1].position.G;"+
+												"var diffLng = window.threeRectPoints[2].position.K - window.threeRectPoints[1].position.K;"+
 												"var newLatLng = {"+
-													"lat: diffLat + window.threeRectPoints[0].position.A,"+
-													"lng: diffLng + window.threeRectPoints[0].position.F"+
+													"lat: diffLat + window.threeRectPoints[0].position.G,"+
+													"lng: diffLng + window.threeRectPoints[0].position.K"+
 												"};"+
 													
 													
@@ -46487,9 +46504,9 @@ function MT__RUN() {
 												"var x = document.getElementsByName('Q6MultiLineTextInput')[0];"+
 												"x.value = '';"+
 												"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
-													"x.value += window.threeRectPoints[i].position.F + ',' + window.threeRectPoints[i].position.A +',0 ';"+
+													"x.value += window.threeRectPoints[i].position.K + ',' + window.threeRectPoints[i].position.G +',0 ';"+
 												"}"+
-												"x.value += window.threeRectPoints[0].position.F + ',' + window.threeRectPoints[0].position.A+',0 ';"+
+												"x.value += window.threeRectPoints[0].position.K + ',' + window.threeRectPoints[0].position.G+',0 ';"+
 												"x.value = x.value.trim();"+
 												//~ "x.value+= '\\n' + tgid.value.trim();"+
 											"}"+ 
@@ -46898,8 +46915,8 @@ function MT__RUN() {
 
 								headingAngle = headingAngle * Math.PI / 180;
 								
-								var currentLat = map.streetView.location.latLng.A;
-								var currentLng = map.streetView.location.latLng.F;
+								var currentLat = map.streetView.location.latLng.G;
+								var currentLng = map.streetView.location.latLng.K;
 								
 								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
 								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
