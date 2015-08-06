@@ -46025,7 +46025,7 @@ function MT__RUN() {
 				state_abbr: null,
 				naTypes: [
 					"N/A Choices",
-					"The suspected hotel is too far away to been seen accurately in streetview.",
+					"The suspected hotel is too far away from any streetview-enabled roads to been seen accurately in streetview, nor can it be identified in 45-degree view.",
 					"I cannot get a streetview angle that shows what kind of hotel it is.",
 					"I cannot find the hotel anywhere around the desired address.",
 					"The hotel appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
