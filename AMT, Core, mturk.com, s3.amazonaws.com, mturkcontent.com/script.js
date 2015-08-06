@@ -45973,8 +45973,6 @@ function MT__RUN() {
 				}
 			}
 			
-			
-			
 			// __hidden_target_id__
 			var d3 = document.createElement('textarea');
 			d3.setAttribute('style',
@@ -46065,6 +46063,9 @@ function MT__RUN() {
 				//~ //
 			//~ }
 			
+			new AMT___core_factory().createScriptVar('WeFi Type', 'store', false); // "hotel" or "store"
+			var type_wefi = AMT__Global_Vars.scriptVars['WeFi Type'];
+			
 			// xo
 			//
 			//
@@ -46089,12 +46090,12 @@ function MT__RUN() {
 				state_abbr: null,
 				naTypes: [
 					"N/A Choices",
-					"The suspected hotel is too far away from any streetview-enabled roads to been seen accurately in streetview, nor can it be identified in 45-degree view.",
-					"I cannot get a streetview angle that shows what kind of hotel it is.",
-					"I cannot find the hotel anywhere around the desired address.",
-					"The hotel appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
-					"The hotel does not appear in streetview, the trees are blocking the view.",
-					"I've searched the area and cannot find any signs or indicators of the hotel."
+					"The suspected "+type_wefi+" is too far away from any streetview-enabled roads to been seen accurately in streetview, nor can it be identified in 45-degree view.",
+					"I cannot get a streetview angle that shows what kind of "+type_wefi+" it is.",
+					"I cannot find the "+type_wefi+" near the desired address.",
+					"The "+type_wefi+" appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
+					"The "+type_wefi+" does not appear in streetview, the trees are blocking the view.",
+					"I've searched the area and cannot find any signs or indicators of the "+type_wefi+"."
 				],
 				
 				q: [
@@ -46644,19 +46645,19 @@ function MT__RUN() {
 					
 					// Send street view URLs to Utility Window
 					var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
-					
-					var hds = [0, 45, 90, 135, 180, 225, 270, 315];
-					var img_urls = [];
-					for (var i in hds) {
-						img_urls.push(
-							'https://maps.googleapis.com/maps/api/streetview' +
-								'?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-								'&location='+encodeURIComponent(o.addr)+
-								//'&location='+lat+','+lng+
-								'&heading='+hds[i]+
-								'&key=_GOOGLE_API_KEY_REDACTED_'
-						);
-					}
+					//~ 
+					//~ var hds = [0, 45, 90, 135, 180, 225, 270, 315];
+					//~ var img_urls = [];
+					//~ for (var i in hds) {
+						//~ img_urls.push(
+							//~ 'https://maps.googleapis.com/maps/api/streetview' +
+								//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
+								//~ '&location='+encodeURIComponent(o.addr)+
+								//~ //'&location='+lat+','+lng+
+								//~ '&heading='+hds[i]+
+								//~ '&key=_GOOGLE_API_KEY_REDACTED_'
+						//~ );
+					//~ }
 					
 					// AMT__setUtilityTabs
 					AMT__setUtilityTabs([
@@ -46665,7 +46666,7 @@ function MT__RUN() {
 							options:
 							{
 								task:'AMT__chios_system_draw_polygon__utility_window',
-								images: img_urls, // []
+								//~ images: img_urls, // []
 								task__address: o.addr,
 								task__ll: {lat:lat, lng: lng},
 								task__name: o.name
