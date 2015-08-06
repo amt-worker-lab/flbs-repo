@@ -45956,22 +45956,7 @@ function MT__RUN() {
 			//d5.type = 'button'
 			
 			
-			d5.onclick = function() {
-				if(this.value != "N/A Choices") {
-					var val = document.getElementsByName('Q6MultiLineTextInput')[0].value;
-					if(/^[\d\,\.\s\-]{80,}$/.exec(val)) {
-						document.getElementsByName('Q6MultiLineTextInput')[0].value = "Can't be located accurately: " + this.value + 
-													' I suspect the coordinates are: ' + val; 
-					}
-					else {
-						document.getElementsByName('Q6MultiLineTextInput')[0].value = "Can't be located accurately: " + this.value;
-					}
-					// "Can't be located accurately: The store does not seem to be anywhere near the desired address.";
-					o.cannotFindIt = true;
-					
-					//try_sbm();
-				}
-			}
+			
 			
 			// __hidden_target_id__
 			var d3 = document.createElement('textarea');
@@ -46086,7 +46071,8 @@ function MT__RUN() {
 				
 				name: nm,
 				addr: r,
-				
+				cannotFindIt: false,
+
 				has_coordinates: tmp_has_cd,
 				coordinates: {
 					lat: tmp_cd[0],
@@ -46113,6 +46099,23 @@ function MT__RUN() {
 				q: [
 					document.getElementsByName('Q6MultiLineTextInput')[0]
 				]
+			}
+			
+			d5.onclick = function() {
+				if(this.value != "N/A Choices") {
+					var val = document.getElementsByName('Q6MultiLineTextInput')[0].value;
+					if(/^[\d\,\.\s\-]{80,}$/.exec(val)) {
+						document.getElementsByName('Q6MultiLineTextInput')[0].value = "Can't be located accurately: " + this.value + 
+													' I suspect the coordinates are: ' + val; 
+					}
+					else {
+						document.getElementsByName('Q6MultiLineTextInput')[0].value = "Can't be located accurately: " + this.value;
+					}
+					// "Can't be located accurately: The store does not seem to be anywhere near the desired address.";
+					xo.cannotFindIt = true;
+					
+					//try_sbm();
+				}
 			}
 			
 			
@@ -46595,7 +46598,6 @@ function MT__RUN() {
 					max_streetview_height: 600, // default=600
 					curr_map_view: null, // For Z hotkey
 					q: document.getElementsByName('Q6MultiLineTextInput')[0],
-					cannotFindIt: false,
 					search: {
 						withNameSearch:'',
 						woutNameSearch:''
@@ -46659,7 +46661,7 @@ function MT__RUN() {
 						//~ this.style.backgroundColor = 'LightGreen';
 						if (o.q.value.trim() == '' && o.q.value.length > 10)
 							return false;
-						if (!/^[\d\D]{80,}$/.exec(o.q.value) && !o.cannotFindIt) // At least 80 chars.
+						if (!/^[\d\D]{80,}$/.exec(o.q.value) && !xo.cannotFindIt) // At least 80 chars.
 							return false;
 						new AMT___core_factory().nextTab({focusOnPage: true});
 						AMT___recordAndSubmit();
@@ -47043,12 +47045,12 @@ function MT__RUN() {
 					}
 					else if (char == 'v' || char == 'V') {
 						AMT___RunPageScript(function() {
-							map.setHeading(map.getHeading() + 90 || 0);
+							map.setHeading(map.getHeading() + 90 || 90);
 						});
 					}
 					else if (char == 'b' || char == 'B') {
 						AMT___RunPageScript(function() {
-							map.setHeading(map.getHeading() - 90 || 0);
+							map.setHeading(map.getHeading() - 90 || -90);
 						});
 					}
 				}, false);
