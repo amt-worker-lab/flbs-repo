@@ -46437,9 +46437,9 @@ function MT__RUN() {
 												"var x = document.getElementsByName('Q6MultiLineTextInput')[0];"+
 												"x.value = '';"+
 												"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
-													"x.value += window.threeRectPoints[i].position.A + ',' + window.threeRectPoints[i].position.F +',0 ';"+
+													"x.value += window.threeRectPoints[i].position.F + ',' + window.threeRectPoints[i].position.A +',0 ';"+
 												"}"+
-												"x.value += window.threeRectPoints[0].position.A + ',' + window.threeRectPoints[0].position.F+',0 ';"+
+												"x.value += window.threeRectPoints[0].position.F + ',' + window.threeRectPoints[0].position.A+',0 ';"+
 												"x.value = x.value.trim();"+
 												//~ "x.value+= '\\n' + tgid.value.trim();"+
 											"}"+ 
@@ -46689,7 +46689,7 @@ function MT__RUN() {
 										"var otherLocShower = new google.maps.Polyline({"+
 										"		path: path,"+
 										"		geodesic: true,"+
-										"		strokeColor: '#0000FF',"+
+										"		strokeColor: '#00FF00',"+
 										"		strokeOpacity: 1.0,"+
 										"		strokeWeight: 4"+
 										"	});"+
