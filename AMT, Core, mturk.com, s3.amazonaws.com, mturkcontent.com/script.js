@@ -46226,7 +46226,7 @@ function MT__RUN() {
 				// tmp map
 				var mapOptions = {
 					zoom: 18,
-					mapTypeId: google.maps.MapTypeId.HYBRID,
+					//mapTypeId: google.maps.MapTypeId.HYBRID,
 					styles:[
 							{
 								elementType: "labels",
