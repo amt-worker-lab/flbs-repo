@@ -46336,7 +46336,7 @@ function MT__RUN() {
 								"document.getElementById('map').addEventListener('mousemove', function(e) {"+
 									//"console.log(e);"+
 									"if(window.mouseMoveShowRect) {" +
-										"console.log('mouseMoveShowRect');"+
+										//"console.log('mouseMoveShowRect');"+
 										"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
 										"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
 										"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
@@ -46502,6 +46502,9 @@ function MT__RUN() {
 												"window.fourLines = [];"+
 												"window.threeRectPoints.push(m);"+
 										"}"+
+									"if(window.threeRectPoints.length == 2) {" +
+										"window.mouseMoveShowRect = true;" +
+										"} else {window.mouseMoveShowRect = false;window.demoPolyLine.setMap(null);}"+
 									"} else {"+
 										"var panorama = map.getStreetView();"+
 										"panorama.setPosition(e.latLng);"+
