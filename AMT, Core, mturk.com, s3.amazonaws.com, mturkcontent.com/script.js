@@ -46048,6 +46048,18 @@ function MT__RUN() {
 			else { // Not found
 				nm = r;
 			}
+			// IN ADDITION TO THIS...
+			// TRY REMOVING ANYTHING BEFORE \d...
+			// e.g. "Walgreens -San Jose-California 2680 Union Ave San Jose, California"
+			// Becomes "2680 Union Ave San Jose, California".
+			var x = /^([^\d]+)/.exec(r);
+			if (x) {
+				var y = r.replace(x[1], ''); // Replaces first instance
+				if (y.length > 10) {
+					r = y; // UPDATE r!
+				}
+			}
+			
 			
 			//~ // Coordinates 
 			//~ //
