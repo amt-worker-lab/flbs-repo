@@ -46184,6 +46184,7 @@ function MT__RUN() {
 				setTimeout(function() {
 					//js_append(loader_func2, JSON.stringify({lat:lat, lng:lng}));
 					getCenterBeforeChiosRuns();
+					
 				}, 2000);
 			}, false);
 			
@@ -46266,6 +46267,10 @@ function MT__RUN() {
 					mapOptions
 				);
 				
+				
+				
+				
+				
 				// Add lisenter to polygon complete
 				drawingManager.setMap(map);
 				google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
@@ -46273,7 +46278,10 @@ function MT__RUN() {
 						coors = event.overlay.getPath();
 						displayNewCoors(coors);
 					}
-				});
+				})
+				
+				
+				
 
 				/////////////////////////////////////////////////////////////////////
 
@@ -46319,6 +46327,166 @@ function MT__RUN() {
 			}
 			
 			function getCenterBeforeChiosRuns() {
+				
+				/**
+				 * window.onkeypress
+				 */
+				window.addEventListener('keypress', function(e) {
+					
+					var char = String.fromCharCode(e.charCode);
+					
+					// Exit Steet View
+					if (char == 'z' || char == 'Z') {
+						var x = document.getElementsByTagName('div');
+						
+						AMT___RunPageScript(
+							function() {
+							
+								//console.log('haha! PageScript has run!');
+								var headingAngle = map.streetView.pov.heading;
+								headingAngle *= -1;
+								
+								 map.streetView.pov.heading
+
+								headingAngle = headingAngle * Math.PI / 180;
+								
+								var currentLat = map.streetView.location.latLng.G;
+								var currentLng = map.streetView.location.latLng.K;
+								
+								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
+								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
+								var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
+								var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
+								var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
+								var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
+								var path = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat, nextLng)
+											];
+								var path2 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat2, nextLng2)
+											];
+								var path3 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat3, nextLng3)
+											];
+								 
+								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
+											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
+										//	];
+
+								var lineSymbol = {
+									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+								};
+								if(window.angleShower)
+									window.angleShower.setMap(null);
+								window.angleShower = new google.maps.Polyline({
+										path: path,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower.setMap(map);
+								
+								if(window.angleShower2)
+									window.angleShower2.setMap(null);
+								window.angleShower2 = new google.maps.Polyline({
+										path: path2,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower2.setMap(map);
+								
+								if(window.angleShower3)
+									window.angleShower3.setMap(null);
+								window.angleShower3 = new google.maps.Polyline({
+										path: path3,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower3.setMap(map);
+								return;
+							}
+						);
+						
+						AMT___RunPageScript(function() {
+							var panorama = map.getStreetView();
+							panorama.setVisible(false);
+						});
+					}
+					
+					//...
+					// Go to map view
+					else if (char == 'c' || char == 'C') {
+						var x=document.getElementsByTagName('div');
+						for (var i in x) {
+							if (i == 'length') break;
+							
+							// Go to map view
+							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
+								x[i].click();
+								o.curr_map_view = 'map';
+								
+								break;
+									
+							}
+							
+							// Go to satellite
+							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
+								x[i].click();
+								o.curr_map_view = null;
+								break;
+							}
+						};
+					}
+					
+					// Go to satellite
+					else if (char == 'x' || char == 'X') {
+						AMT___RunPageScript(function() {
+							if(map.getTilt()*1 == 45)
+								map.setTilt(0);
+							else
+								map.setTilt(45);
+						});
+					}
+					else if (char == 'v' || char == 'V') {
+						AMT___RunPageScript(function() {
+							if(!map.getHeading() && map.getHeading() != 0) {
+								map.setHeading(90);
+							}
+							else { 
+								map.setHeading(map.getHeading() + 90);
+							}
+						});
+					}
+					else if (char == 'b' || char == 'B') {
+						AMT___RunPageScript(function() {
+							if(!map.getHeading() && map.getHeading() != 0) {
+								map.setHeading(-90);
+							}
+							else { 
+								map.setHeading(map.getHeading() - 90);
+							}						});
+					}
+				}, false);
+				
+				
+				
 				new AMT___core_factory().createScriptVar('Start in top-down view', 0, false);
 				var inp = document.createElement('input')
 				inp.setAttribute('style', 'width:20%;top:2000px;position:absolute;left:40%;');
@@ -46907,153 +47075,7 @@ function MT__RUN() {
 						try_sbm();
 					}
 				}, false);
-				/**
-				 * window.onkeypress
-				 */
-				window.addEventListener('keypress', function(e) {
-					
-					var char = String.fromCharCode(e.charCode);
-					
-					// Exit Steet View
-					if (char == 'z' || char == 'Z') {
-						var x = document.getElementsByTagName('div');
-						
-						AMT___RunPageScript(
-							function() {
-							
-								//console.log('haha! PageScript has run!');
-								var headingAngle = map.streetView.pov.heading;
-								headingAngle *= -1;
-								
-								 map.streetView.pov.heading
-
-								headingAngle = headingAngle * Math.PI / 180;
-								
-								var currentLat = map.streetView.location.latLng.G;
-								var currentLng = map.streetView.location.latLng.K;
-								
-								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
-								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
-								var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
-								var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
-								var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
-								var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
-								var path = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat, nextLng)
-											];
-								var path2 = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat2, nextLng2)
-											];
-								var path3 = [new google.maps.LatLng(currentLat, currentLng),
-											new google.maps.LatLng(nextLat3, nextLng3)
-											];
-								 
-								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
-											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
-										//	];
-
-								var lineSymbol = {
-									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-								};
-								if(window.angleShower)
-									window.angleShower.setMap(null);
-								window.angleShower = new google.maps.Polyline({
-										path: path,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower.setMap(map);
-								
-								if(window.angleShower2)
-									window.angleShower2.setMap(null);
-								window.angleShower2 = new google.maps.Polyline({
-										path: path2,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower2.setMap(map);
-								
-								if(window.angleShower3)
-									window.angleShower3.setMap(null);
-								window.angleShower3 = new google.maps.Polyline({
-										path: path3,
-										geodesic: true,
-										icons: [{
-											  icon: lineSymbol,
-											  offset: '100%'
-											}],
-										strokeColor: '#00FF00',
-										strokeOpacity: 1.0,
-										strokeWeight: 4
-									});
-								window.angleShower3.setMap(map);
-								return;
-							}
-						);
-						
-						AMT___RunPageScript(function() {
-							var panorama = map.getStreetView();
-							panorama.setVisible(false);
-						});
-					}
-					
-					//...
-					// Go to map view
-					else if (char == 'c' || char == 'C') {
-						var x=document.getElementsByTagName('div');
-						for (var i in x) {
-							if (i == 'length') break;
-							
-							// Go to map view
-							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
-								x[i].click();
-								o.curr_map_view = 'map';
-								
-								break;
-									
-							}
-							
-							// Go to satellite
-							if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
-								x[i].click();
-								o.curr_map_view = null;
-								break;
-							}
-						};
-					}
-					
-					// Go to satellite
-					else if (char == 'x' || char == 'X') {
-						AMT___RunPageScript(function() {
-							if(map.getTilt()*1 == 45)
-								map.setTilt(0);
-							else
-								map.setTilt(45);
-						});
-					}
-					else if (char == 'v' || char == 'V') {
-						AMT___RunPageScript(function() {
-							map.setHeading(map.getHeading() + 90 || 90);
-						});
-					}
-					else if (char == 'b' || char == 'B') {
-						AMT___RunPageScript(function() {
-							map.setHeading(map.getHeading() - 90 || -90);
-						});
-					}
-				}, false);
+				
 				
 				// Zoom map exit button
 				var xintv = setInterval(function() {
