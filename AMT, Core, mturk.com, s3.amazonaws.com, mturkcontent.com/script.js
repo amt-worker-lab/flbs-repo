@@ -45984,12 +45984,51 @@ function MT__RUN() {
 			document.body.appendChild(d3);
 			/*END ITEMS*/
 			
-			// OLD IS e.g. "Rite Aid Pharmacy - Porterville 66 West Morton Avenue Porterville"
-			// NEW IS e.g. "Allen North SuperTarget 150 E Stacy Rd Allen, TX75002-8756"
-			var reg = /Insert (store|venue) name and ad+ress:<strong>&nbsp;([^<]+)<\/strong>/.exec(ih);
-			var r = __js_clean_html_str(reg[2]).trim();
-			r = r.replace(/([\d\-]+)$/, ' $1');// Separate zip
-			console.log(r);return;
+			// 
+			//
+			// e.g. "Insert venue name and address: Walgreens 4306 Ming Ave Bakersfield CA or coordinates 35.340335, -119.050648 to the Search box. Press Search button. If you have several results check which one really matches an adress you've entered."
+			var p = document.getElementsByTagName('p');
+			var tmp_full_addr;
+			var tmp_has_cd;
+			var tmp_cd = ['','']; // Init. as empty
+			for (var i in p) {
+				if (i == 'length') break;
+				if  (
+					p[i].innerText.indexOf('Insert venue name and ') != -1 ||
+					p[i].innerText.indexOf('Insert store name and ') != -1 
+					) {
+					var reg = /Insert (store|venue) name and ad+ress:([\d\D]+)$/.exec(p[i].innerText);
+					//~ console.log(reg);
+					console.log(p[i].innerText);
+					tmp_full_addr = reg[1];
+					if (p[i].innerText.indexOf('or coordinates') != -1) {
+						tmp_full_addr = tmp_full_addr.replace(/ *or coordinates[\d\D]*/, '').trim();
+						tmp_has_cd = true;
+						var reg2 = /or coordinates([\d ,\-\.]+)/.exec(reg[1]);
+						tmp_cd = reg2[1].trim();
+						tmp_cd = tmp_cd.split(',');
+						tmp_cd[0] = tmp_cd[0].trim();
+						tmp_cd[1] = tmp_cd[1].trim();
+					} else {
+						tmp_full_addr = tmp_full_addr.replace(/ *to the Search box[\d\D]*/, '').trim();
+						tmp_has_cd = false;
+					}
+					break;
+				}
+			}
+			var r = tmp_full_addr;return;
+			
+			//OLD METHOD
+			//X
+			//X
+			//X OLD IS e.g. "Rite Aid Pharmacy - Porterville 66 West Morton Avenue Porterville"
+			//X NEW IS e.g. "Allen North SuperTarget 150 E Stacy Rd Allen, TX75002-8756"
+			//var reg = /Insert (store|venue) name and ad+ress:<strong>&nbsp;([^<]+)<\/strong>/.exec(ih);
+			//var r = __js_clean_html_str(reg[2]).trim();
+			//r = r.replace(/([\d\-]+)$/, ' $1');// Separate zip
+			
+			
+			
 			var full_ = r;
 			// TODO: Get Address, Street, City, StateFull.
 			// STORES...
@@ -46013,19 +46052,19 @@ function MT__RUN() {
 				nm = r;
 			}
 			
-			// Coordinates 
-			//
-			//
-			var reg = /<span[^>]*>or coordinates<\/span><strong[^>]*>([^<]+)<\/strong>/.exec(ih);
-			var coords = ['', '']; 
-			var hc = false;
-			if (reg) {
-				var coords = __js_clean_html_str(reg[1]).trim(); // e.g. &nbsp;35.340335,&nbsp;-119.050648&nbsp;
-				coords = coords.split(',');
-				hc = true;
-			} else {
-				//
-			}
+			//~ // Coordinates 
+			//~ //
+			//~ //
+			//~ var reg = /<span[^>]*>or coordinates<\/span><strong[^>]*>([^<]+)<\/strong>/.exec(ih);
+			//~ var coords = ['', '']; 
+			//~ var hc = false;
+			//~ if (reg) {
+				//~ var coords = __js_clean_html_str(reg[1]).trim(); // e.g. &nbsp;35.340335,&nbsp;-119.050648&nbsp;
+				//~ coords = coords.split(',');
+				//~ hc = true;
+			//~ } else {
+				//~ //
+			//~ }
 			
 			// xo
 			//
@@ -46036,11 +46075,16 @@ function MT__RUN() {
 				name: nm,
 				addr: r,
 				
-				has_coordinates: hc,
+				has_coordinates: tmp_has_cd,
 				coordinates: {
-					lat: coords[0].trim(),
-					lng: coords[1].trim()
+					lat: tmp_cd[0],
+					lng: tmp_cd[1]
 				},
+				//~ has_coordinates: hc,
+				//~ coordinates: {
+					//~ lat: coords[0].trim(),
+					//~ lng: coords[1].trim()
+				//~ },
 				
 				city: null,
 				state_abbr: null,
