@@ -45989,6 +45989,7 @@ function MT__RUN() {
 			var reg = /Insert (store|venue) name and ad+ress:<strong>&nbsp;([^<]+)<\/strong>/.exec(ih);
 			var r = __js_clean_html_str(reg[2]).trim();
 			r = r.replace(/([\d\-]+)$/, ' $1');// Separate zip
+			console.log(r);return;
 			var full_ = r;
 			// TODO: Get Address, Street, City, StateFull.
 			// STORES...
@@ -45997,7 +45998,7 @@ function MT__RUN() {
 			// STORE NAME
 			var store_names = /(supertarget|target| hotel |best buy|rite aid|walmart|walgreens)/i.exec(r);
 			if (store_names) {
-				var nm = /((.|\s)*?(?=(supertarget|target| hotel |best buy|rite aid|walmart)|$)|$)/i.exec(r);
+				var nm = /((.|\s)*?(?=(supertarget|target| hotel |best buy|rite aid|walmart|walgreens)|$)|$)/i.exec(r);
 				if (nm) { // e.g. ["Flushing ", "Flushing ", " ", "Target"]
 					store_cty = nm[0].trim();
 					nm = nm[0] + nm[3];
@@ -46012,6 +46013,20 @@ function MT__RUN() {
 				nm = r;
 			}
 			
+			// Coordinates 
+			//
+			//
+			var reg = /<span[^>]*>or coordinates<\/span><strong[^>]*>([^<]+)<\/strong>/.exec(ih);
+			var coords = ['', '']; 
+			var hc = false;
+			if (reg) {
+				var coords = __js_clean_html_str(reg[1]).trim(); // e.g. &nbsp;35.340335,&nbsp;-119.050648&nbsp;
+				coords = coords.split(',');
+				hc = true;
+			} else {
+				//
+			}
+			
 			// xo
 			//
 			//
@@ -46020,6 +46035,12 @@ function MT__RUN() {
 				
 				name: nm,
 				addr: r,
+				
+				has_coordinates: hc,
+				coordinates: {
+					lat: coords[0].trim(),
+					lng: coords[1].trim()
+				},
 				
 				city: null,
 				state_abbr: null,
@@ -46082,6 +46103,7 @@ function MT__RUN() {
 			
 			// Loading the address in
 			MT___google_api_geocode(xo.addr, function(lat,lng) {
+				console.log('MT___google_api_geocode');
 				if  (
 					!lat ||
 					!lng ||
@@ -46609,9 +46631,40 @@ function MT__RUN() {
 					], null, null, false, function(obj) {
 						//Compute distance between two points;
 						
+						// coordinates
+						var tmp_hc = '';
+						if (!xo.has_coordinates) {
+							// 
+						} else {
+							tmp_hc = 	"var path = [new google.maps.LatLng(currentLat, currentLng),"+
+										"				new google.maps.LatLng("+xo.coordinates.lat+","+ xo.coordinates.lng+")"+
+										"			    ];"+
+										""+
+										"var otherLocShower = new google.maps.Polyline({"+
+										"		path: path,"+
+										"		geodesic: true,"+
+										"		strokeColor: '#0000FF',"+
+										"		strokeOpacity: 1.0,"+
+										"		strokeWeight: 4"+
+										"	});"+
+										"otherLocShower.setMap(map);"
+						}
 						AMT___RunPageScript("function() {"+
 								"var currentLat = " + o.centerMapLat + ";"+
 								"var currentLng = " + o.centerMapLng + ";" + 
+								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
+								"				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
+								"			    ];"+
+								""+
+								"var otherLocShower = new google.maps.Polyline({"+
+								"		path: path,"+
+								"		geodesic: true,"+
+								"		strokeColor: '#0000FF',"+
+								"		strokeOpacity: 1.0,"+
+								"		strokeWeight: 4"+
+								"	});"+
+								"otherLocShower.setMap(map);"+
+								tmp_hc+
 								"var path = [new google.maps.LatLng(currentLat, currentLng),"+
 								"				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
 								"			    ];"+
