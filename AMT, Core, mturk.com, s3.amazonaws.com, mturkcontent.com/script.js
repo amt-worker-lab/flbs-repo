@@ -174781,7 +174781,7 @@ function top_window(okay_to_run) {
 			
 			var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0&num=10';
 			
-			createScriptVar('JR_Wakeup_Alarm', 0);
+			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
 			
 			console.log(url);
 			
@@ -175081,7 +175081,7 @@ function top_window(okay_to_run) {
 			//~ var a = document.getElementsByTagName('a')[0].href;
 			//~ a += '&hl=en';
 			
-			createScriptVar('JR_Wakeup_Alarm', 0);
+			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
 			
 			// Init.
 			page();
