@@ -46225,21 +46225,16 @@ function MT__RUN() {
 				
 				// tmp map
 				var mapOptions = {
-					zoom: 18,
-					mapTypeId: google.maps.MapTypeId.HYBRID,
-					styles:[
-							{
-								elementType: "labels",
-								stylers: [
-									{ visibility: "on" }
-								]
-							}
-						]
-				};
+					    center: new google.maps.LatLng(33.94201150489447,-118.04765045642853),
+						zoom: 18,
+						mapTypeControlOptions: {
+							mapTypeIds: [google.maps.MapTypeId.HYBRID]
+						},
+						mapTypeId: google.maps.MapTypeId.HYBRID
+					};
 				map = new google.maps.Map(
-					document.getElementById('map'),
-					mapOptions
-				);
+						document.getElementById('map'),
+						mapOptions);
 				
 				// Add lisenter to polygon complete
 				drawingManager.setMap(map);
@@ -46290,7 +46285,7 @@ function MT__RUN() {
 					//~ x.value+= '\n' + tgid.value.trim(); // ADD "ID"
 				}
 				
-				map.setCenter(lat_lng);
+				//map.setCenter(lat_lng);
 			}
 			
 			function getCenterBeforeChiosRuns() {
@@ -46371,7 +46366,7 @@ function MT__RUN() {
 							
 								"var lat = map.getCenter().A;" +
 								"var lng = map.getCenter().F;" +
-								"map.setTilt(45);"+
+								//"map.setTilt(45);"+
 								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
 								
 								"var marker2 = new google.maps.Marker({"+
@@ -46387,9 +46382,9 @@ function MT__RUN() {
 								"		map: map,"+
 								"		title: 'testing'"+
 								"	});"+
-								"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
-								"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
-								"map.setCenter(new google.maps.LatLng(lat,lng));" +
+								//"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
+								//"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
+								//"map.setCenter(new google.maps.LatLng(lat,lng));" +
 								
 								"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
 									"if(window.notFirstDrop == undefined && google.maps.geometry && google.maps.geometry.spherical) {"+
