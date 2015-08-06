@@ -44923,7 +44923,7 @@ function MT__RUN() {
 										"	  {lat:lat,lng:lng}," +
 										"	  window.threeRectPoints[1].position]);"+
 										"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
-							"}})7;"+
+							"}});"+
 							"window.setTimeout(function() {"+
 							    "console.log('here is de map');" +
 								"console.log(map);"+
