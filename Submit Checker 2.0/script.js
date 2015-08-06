@@ -5,12 +5,6 @@ MAX_PAGE_FAIL = 'You have exceeded the maximum allowed page request rate for thi
 PROBLEM_FAIL = 'There was a problem submitting your results for this HIT';
 EXPIRED_FAIL = 'The HIT you were viewing has expired.';
 
-
-//console.log('testing running here, delete this console');
-
-
-
-
 //Do not run during external submit. You will lose the race
 //Only run in top window
 if(window.location.href != 'https://www.mturk.com/mturk/externalSubmit') {
@@ -155,7 +149,8 @@ chrome.extension.sendMessage({
 
 function mturk_load()
 {	
-
+	
+	
 	if (window.top == window.self && /^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href)) {
 		
 		// Only run on these pages!
@@ -237,7 +232,7 @@ function mturk_load()
 }
 
 var locReg = /(https?:\/\/[w]*.mturk.com|https?:\/\/[w]*s3.amazonaws.com|https?:\/\/[w]*.mturkcontent.com\/dynamic\/hit)/i;
-if(document.location.href.match(locReg) != null && window.top == window.self) {
+if(document.location.href.match(locReg) != null) {
 	var ih;
 	if (document.readyState == "complete" || document.readyState == "interactive") {
 		ih = document.body.innerHTML;
@@ -252,10 +247,4 @@ if(document.location.href.match(locReg) != null && window.top == window.self) {
 		}
 	}
 }
-
-
-
-
-
-
 

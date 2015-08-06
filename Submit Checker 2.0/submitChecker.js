@@ -29,14 +29,14 @@ function changeIcon(id) {
  
 //Figure out who's logged into this computer, and set the icon accordingly
 GM_xmlhttpRequest({
-	method: 'GET',
-	url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignIn=1',
-	onload: function(response) {
-		var rs = response.responseText;
-		console.log(rs);
-		changeIcon(rs);
-	}
-});
+			method: 'GET',
+			url: 'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignIn=1',
+			onload: function(response) {
+				var rs = response.responseText;
+				console.log(rs);
+				changeIcon(rs);
+			}
+		});
  
 
 chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
@@ -109,32 +109,33 @@ chrome.runtime.onMessage.addListener( function(request,sender,sendResponse)
     if(request.resolvedHit){
 		//Get the computerId and UserName
 		GM_xmlhttpRequest({
-			method: 'GET',
-			url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
-			onload: function(response) {
-				console.log(response);
+						method: 'GET',
+						url:'http://localhost/mturk/.scripts/AMT_IncomeRecords/currentUser.php?getSignInAndCompId=1',
+						onload: function(response) {
+						console.log(response);
 
-				var compAndName = JSON.parse(response.responseText);
-				computerId = compAndName.ComputerId;
-				userName = compAndName.User;
-				//alert(userName);
-				request.resolvedHit.computerId = computerId;
-				request.resolvedHit.userName = userName;
-				//alert(request.resolvedHit.userName);
-				console.log(request.resolvedHit);
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
-					onload: function(response) {
-						console.log('Response Recieved');
-						if(response) {										
-							var rs = response.responseText;
-							console.log(rs);
+						var compAndName = JSON.parse(response.responseText);
+						computerId = compAndName.ComputerId;
+						userName = compAndName.User;
+						//alert(userName);
+						request.resolvedHit.computerId = computerId;
+						request.resolvedHit.userName = userName;
+						//alert(request.resolvedHit.userName);
+						console.log(request.resolvedHit);
+						GM_xmlhttpRequest({
+						method: 'GET',
+						url: 'http://192.168.1.2/mturk/.scripts/AMT_IncomeRecords/IncomeRecords.php?ComputerId=' + request.resolvedHit.computerId + '&resolvedHit=' + encodeURIComponent(JSON.stringify(request.resolvedHit)),
+						onload: function(response) {
+										console.log('Response Recieved');
+										if(response) {										
+											var rs = response.responseText;
+											console.log(rs);
+										}
 						}
+						});
 					}
-				});
-			}
-		});
+					})
+ 
 	}
     
     
