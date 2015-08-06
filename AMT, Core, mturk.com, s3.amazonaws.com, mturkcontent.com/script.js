@@ -174950,6 +174950,13 @@ function top_window(okay_to_run) {
 									// replace "harm your comp."
 									m[1] = m[1].replace(/^\/interstitial\?url=/, '');
 									
+									// "/url?url=http://www.oregonlive.com/blazers/index.ssf/2015/04/10_adjustments_for_the_blazers_to_win_game_2.html&amp;rct=j&amp;q=&amp;esrc=s&amp;sa=U&amp;ved=0CCIQFjAAahUKEwiWiZT505THAhUMooAKHbnqCEc&amp;sig2=FUjgtEbgHmIeAOosyDcDvQ&amp;usg=AFQjCNEnjPmevSe7Kvf1-aSBKOpt1UUpEA"
+									if (m[1].indexOf('/url?url=') == 0) {
+										m[1] = m[1].replace('/url?url=', ''); // Replace first
+										m[1] = m[1].replace(/&amp;[\d\D]+/, ''); // Replace rest
+										m[1] = decodeURIComponent(m[1]);
+									}
+									
 									if (!/^(https?|ftpXXXXXXX):\/\//.exec(m[1])) {
 										alert('x');
 										console.log(m);
