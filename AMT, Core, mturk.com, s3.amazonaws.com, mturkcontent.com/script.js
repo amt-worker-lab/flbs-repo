@@ -45986,7 +45986,7 @@ function MT__RUN() {
 			
 			// OLD IS e.g. "Rite Aid Pharmacy - Porterville 66 West Morton Avenue Porterville"
 			// NEW IS e.g. "Allen North SuperTarget 150 E Stacy Rd Allen, TX75002-8756"
-			var reg = /Insert (store|venue) name and adress:<strong>&nbsp;([^<]+)<\/strong>/.exec(ih);
+			var reg = /Insert (store|venue) name and ad+ress:<strong>&nbsp;([^<]+)<\/strong>/.exec(ih);
 			var r = __js_clean_html_str(reg[2]).trim();
 			r = r.replace(/([\d\-]+)$/, ' $1');// Separate zip
 			var full_ = r;
@@ -45995,7 +45995,7 @@ function MT__RUN() {
 			var found_store_name = false;
 			var store_cty = '';
 			// STORE NAME
-			var store_names = /(supertarget|target| hotel |best buy|rite aid|walmart)/i.exec(r);
+			var store_names = /(supertarget|target| hotel |best buy|rite aid|walmart|walgreens)/i.exec(r);
 			if (store_names) {
 				var nm = /((.|\s)*?(?=(supertarget|target| hotel |best buy|rite aid|walmart)|$)|$)/i.exec(r);
 				if (nm) { // e.g. ["Flushing ", "Flushing ", " ", "Target"]
@@ -46892,53 +46892,6 @@ function MT__RUN() {
 				var sc = document.createElement('script');
 				sc.innerText = 'google.maps.event.trigger(map, "resize");';
 				document.body.appendChild(sc);
-				
-				/* OLD, Get street view images*/
-				//~ // Get street view images
-					//~ var hds = [0, 90, 180, 270];
-					//~ for (var i in hds) {
-						//~ 
-						//~ var img = document.createElement('img');
-						//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
-						//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
-								//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-								//~ '&location='+encodeURIComponent(o.addr)+
-								//~ //'&location='+lat+','+lng+
-								//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
-						//~ d4.appendChild(img);
-						//~ 
-						//~ // Actions
-						//~ img.onclick = function() {
-							//~ if (this.style.zoom != '0.5') {
-								//~ this.style.zoom = '0.5';
-							//~ } else {
-								//~ this.style.zoom = '0.25';
-							//~ }
-						//~ }
-					//~ }
-					//~ // Append an extend div
-					//~ var dv = document.createElement('div');
-					//~ dv.setAttribute('style','height:1400px;');
-					//~ d4.appendChild(dv);
-					
-					//~ document.getElementById('lat').value = lat;
-					//~ document.getElementById('lon').value = lng;
-					//~ 
-					//~ doSubmit();
-				/* OLD ........ BODY.ONDBLCLICK ........
-				// ...
-				document.body.ondblclick = function() {
-					if (d2.src == withNameSearch) {
-						d2.src = woutNameSearch
-					} else if (d2.src == woutNameSearch) {
-						d2.src = withNameSearch
-					}
-					
-					
-					// home+depot?
-					//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
-					//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
-				}*/
 			}
 		}
 		new run().f();
