@@ -44907,13 +44907,13 @@ function MT__RUN() {
 									"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
 									"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
 									"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
-									"var lat = latLng.A;"+
-									"var lng = latLng.F;"+
-									"var diffLat = lat - window.threeRectPoints[1].position.A;"+
-										"var diffLng = lng - window.threeRectPoints[1].position.F;"+
+									"var lat = latLng.G;"+
+									"var lng = latLng.K;"+
+									"var diffLat = lat - window.threeRectPoints[1].position.G;"+
+										"var diffLng = lng - window.threeRectPoints[1].position.K;"+
 										"var newLatLng = {"+
-												"lat: diffLat + window.threeRectPoints[0].position.A,"+
-												"lng: diffLng + window.threeRectPoints[0].position.F"+
+												"lat: diffLat + window.threeRectPoints[0].position.G,"+
+												"lng: diffLng + window.threeRectPoints[0].position.K"+
 											"};"+
 										
 
@@ -45041,11 +45041,11 @@ function MT__RUN() {
 										"}"+
 										
 										"if(window.threeRectPoints.length == 3) {"+
-											"var diffLat = window.threeRectPoints[2].position.A - window.threeRectPoints[1].position.A;"+
-											"var diffLng = window.threeRectPoints[2].position.F - window.threeRectPoints[1].position.F;"+
+											"var diffLat = window.threeRectPoints[2].position.G - window.threeRectPoints[1].position.G;"+
+											"var diffLng = window.threeRectPoints[2].position.K - window.threeRectPoints[1].position.K;"+
 											"var newLatLng = {"+
-													"lat: diffLat + window.threeRectPoints[0].position.A,"+
-													"lng: diffLng + window.threeRectPoints[0].position.F"+
+													"lat: diffLat + window.threeRectPoints[0].position.G,"+
+													"lng: diffLng + window.threeRectPoints[0].position.K"+
 												"};"+
 												
 												
@@ -45083,9 +45083,9 @@ function MT__RUN() {
 											
 											"document.getElementById('polygon').value = '';"+
 											"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
-												"document.getElementById('polygon').value += window.threeRectPoints[i].position.A + ',' + window.threeRectPoints[i].position.F +';';"+
+												"document.getElementById('polygon').value += window.threeRectPoints[i].position.G + ',' + window.threeRectPoints[i].position.K +';';"+
 											"}"+
-											"document.getElementById('polygon').value += window.threeRectPoints[0].position.A + ',' + window.threeRectPoints[0].position.F+';';"+
+											"document.getElementById('polygon').value += window.threeRectPoints[0].position.G + ',' + window.threeRectPoints[0].position.K+';';"+
 										"}"+ 
 									"}"+
 									"else {"+
@@ -45653,8 +45653,8 @@ function MT__RUN() {
 										headingAngle = headingAngle * Math.PI / 180;
 										
 										console.log(headingAngle);
-										var currentLat = map.streetView.location.latLng.A;
-										var currentLng = map.streetView.location.latLng.F;
+										var currentLat = map.streetView.location.latLng.G;
+										var currentLng = map.streetView.location.latLng.K;
 										
 										var nextLat = currentLat + 0.003*Math.cos(headingAngle);
 										var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
