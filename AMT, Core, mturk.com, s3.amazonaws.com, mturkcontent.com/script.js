@@ -175027,7 +175027,7 @@ function top_window(okay_to_run) {
 							document.body.style.backgroundColor = 'pink';
 							
 							chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-							if(AMT__Global_Vars.scriptVarsp['JR_Wakeup_Alarm'] != '0') {
+							if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
 								setInterval(function() {
 									chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 								},2000);
