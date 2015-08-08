@@ -51,34 +51,30 @@ var HIGHLIGHT_UK_COUNTIES = false;
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		
-		//JANET LEE
-		if(request.itsOkayToRun) {
-			if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
-				
-				//new AMT___core_factory().nextWindow();
-				
-				
-				
-				window.setTimeout(function() {
-					var theForm = document.forms['aspnetForm'];
-					if (theForm) {
-						var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
-						if (rg) {
-							document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
-							theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
-							theForm.__EVENTARGUMENT.value = '';
-							theForm.submit();
-							//~ 
-							//~ console.log(new AMT___core_factory().nextWindow());
-							//~ 
-							//~ // GO TO NEXT 
-							//~ 
-							//~ // submit
-						}
-					}
-				},1000);
-			}
-		}
+		//~ //JANET LEE
+		//~ if(request.itsOkayToRun) {
+			//~ if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
+				//~ //new AMT___core_factory().nextWindow();
+				//~ window.setTimeout(function() {
+					//~ var theForm = document.forms['aspnetForm'];
+					//~ if (theForm) {
+						//~ var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
+						//~ if (rg) {
+							//~ document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
+							//~ theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
+							//~ theForm.__EVENTARGUMENT.value = '';
+							//~ theForm.submit();
+							
+							console.log(new AMT___core_factory().nextWindow());
+							
+							// GO TO NEXT 
+							
+							// submit
+						//~ }
+					//~ }
+				//~ },1000);
+			//~ }
+		//~ }
 	}
 );
 	
@@ -5019,45 +5015,45 @@ function load()
 		}
 	}
 	
-	//
-	// Textarea ondblclick, all pages
-	// 
-	//
-	//
-	//
-	var loc = document.location.href;
-	if  (
-			RUN__ALL_PAGES_TEXTAREA
-		)
-	{
-		document.ondblclick = function(event) {
-			var d;
-			d = document.createElement('textarea');
-			//d.setAttribute('id','MT___textarea___');
-			d.setAttribute('style','\
-				position:absolute;\
-				top:'+Math.round(event.clientY + document.body.scrollTop)+'px;\
-				left:'+Math.round(event.clientX + document.body.scrollLeft)+'px;\
-				width:300px;\
-				height:80px;\
-				z-index:10000000000000000000000000000000000000000000000000000000000000;\
-				background-color:#fefeff;\
-				border:4px dashed #0a0a0a;\
-			');
-			d.value = "\n"+document.location.href;
-			d.onkeyup = function(e) {
-				//console.log(this);
-				//console.log(e);
-				//console.log(e.keyCode);
-				//console.log(e.charCode);
-				if (e.keyCode == 27) {
-					this.parentNode.removeChild(this);
-				}
-			}
-			document.body.appendChild(d);
-			//var d = document.getElementById('MT___textarea___');
-		}
-	}
+	//~ //
+	//~ // Textarea ondblclick, all pages
+	//~ // 
+	//~ //
+	//~ //
+	//~ //
+	//~ var loc = document.location.href;
+	//~ if  (
+			//~ RUN__ALL_PAGES_TEXTAREA
+		//~ )
+	//~ {
+		//~ document.ondblclick = function(event) {
+			//~ var d;
+			//~ d = document.createElement('textarea');
+			//~ //d.setAttribute('id','MT___textarea___');
+			//~ d.setAttribute('style','\
+				//~ position:absolute;\
+				//~ top:'+Math.round(event.clientY + document.body.scrollTop)+'px;\
+				//~ left:'+Math.round(event.clientX + document.body.scrollLeft)+'px;\
+				//~ width:300px;\
+				//~ height:80px;\
+				//~ z-index:10000000000000000000000000000000000000000000000000000000000000;\
+				//~ background-color:#fefeff;\
+				//~ border:4px dashed #0a0a0a;\
+			//~ ');
+			//~ d.value = "\n"+document.location.href;
+			//~ d.onkeyup = function(e) {
+				//~ //console.log(this);
+				//~ //console.log(e);
+				//~ //console.log(e.keyCode);
+				//~ //console.log(e.charCode);
+				//~ if (e.keyCode == 27) {
+					//~ this.parentNode.removeChild(this);
+				//~ }
+			//~ }
+			//~ document.body.appendChild(d);
+			//~ //var d = document.getElementById('MT___textarea___');
+		//~ }
+	//~ }
 	
 	/**
 	 * REQUESTER TASKS
@@ -11578,9 +11574,6 @@ function load__allPages_AMT_combo() {
 var ih;
 
 var SCRIPT_NAME = 'sBjbERoTskUbPjSsoQcZksMjxFobkapd';
-
-
-
 
 /** Big Vars **/
 var allUkCounties = {
