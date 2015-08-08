@@ -24,6 +24,8 @@ var RUN__ALL_PAGES_TEXTAREA__Jordan_Mills = false;
 var RUN__ALL_PAGES__Matt_Tarjeft = false;
 // See "* REQUESTER TASKS" below for more tasks.
 var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
+// JR
+var RUN__JR_Amazon_Login_Alert = true;
 
 var SCRIPT_IDS_FOR_UTILITY_CHECKING = ['gcfnekbbpmbgadddbojhlojhddnkcpje',//core mturk
 										'bpbbmbgkdconjgghffedjkojaoebdnii', //work localhost
@@ -38,19 +40,21 @@ var HIGHLIGHT_UK_COUNTIES = false;
 /***
  * Messaging with core-mturk
  ***/
-
-
 /**
  * End of messages with core-mturk
  **/
 
 /**
- * Trevor Faden / Gopi Parikh / Janet Lee
+ * chrome.runtime.onMessage
  * 
  */
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		
+		// OLD JANET LEE.....
+		// Trevor Faden / Gopi Parikh / Janet Lee
+		// ...
+		// ...
 		//~ //JANET LEE
 		//~ if(request.itsOkayToRun) {
 			//~ if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
@@ -64,12 +68,6 @@ chrome.runtime.onMessage.addListener(
 							//~ theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
 							//~ theForm.__EVENTARGUMENT.value = '';
 							//~ theForm.submit();
-							
-							console.log(new AMT___core_factory().nextWindow());
-							
-							// GO TO NEXT 
-							
-							// submit
 						//~ }
 					//~ }
 				//~ },1000);
@@ -329,8 +327,8 @@ function load()
 	//~ }, false, true)
 	
 	//
-	//
-	//
+	// UK address task.
+	// Which requester?
 	//
 	s="We ask you to split the postal addresses of business listings from United Kingdom into several address lines";
 	if(
@@ -656,7 +654,6 @@ function load()
 			}
 		}
 	}
-	
 	
 	/**
 	 * Leonid
@@ -3578,6 +3575,18 @@ function load()
 				//~ this.parentNode.removeChild(this);
 			//~ }
 		}, false);
+	}
+	
+	//
+	// RUN__JR_Amazon_Login_Alert
+	// 40 second alert to login to AMT.
+	//
+	if (RUN__JR_Amazon_Login_Alert && document.location.href.indexOf('https://www.amazon.com/ap/signin') != -1) {
+		console.log('RUN__JR_Amazon_Login_Alert');
+		// Could do initial play here before 60s ... but ... (chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});)
+		setInterval(function() {
+			chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+		}, 40000);
 	}
 	
 	//
