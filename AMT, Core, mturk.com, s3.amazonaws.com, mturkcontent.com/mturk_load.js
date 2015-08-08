@@ -57,13 +57,13 @@ function mturk_load()
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
-			//~ console.log('MyHits John Roberts');
-			//~ console.log('JohnRobertsCheckHistory != 0: ' + AMT__Global_Vars.scriptVars['JohnRobertsCheckHistory'] != 0);
-			
 			// If not signed in the make alert!
 			if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
-				chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
-				alert('MTURK.COM IS SIGNED OUT! (Sign in again for John Roberts.)');
+				setInterval(function() {
+					chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+				}, 30000);
+				document.style.backgroundColor = 'pink';
+				//~ alert('MTURK.COM IS SIGNED OUT! (Sign in again for John Roberts.)');
 				return;
 			}
 			
