@@ -3579,14 +3579,14 @@ function load()
 	
 	//
 	// RUN__JR_Amazon_Login_Alert
-	// 40 second alert to login to AMT.
+	// 30 second alert to login to AMT.
 	//
 	if (RUN__JR_Amazon_Login_Alert && document.location.href.indexOf('https://www.amazon.com/ap/signin') != -1) {
 		console.log('RUN__JR_Amazon_Login_Alert');
 		// Could do initial play here before 60s ... but ... (chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});)
 		setInterval(function() {
 			chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-		}, 40000);
+		}, 30000);
 	}
 	
 	//
