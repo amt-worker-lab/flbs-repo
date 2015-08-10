@@ -669,6 +669,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		console.log('isTopWindow: ' + request.isTopWindow);
 		getAllTabsInQ(function(allQTabs) {
+			console.log('allQTabs');
+			console.log(allQTabs);
 			if(allQTabs.length < 2 && jumpToFirst) {
 				//We are the only tab in the Q, so simply jump us there
 				console.log('We are the only tab in the Q');

@@ -9125,6 +9125,7 @@ function MT__RUN() {
 				'&strategy=mobile&filter_third_party_resources=false&callback=x';
 			o.u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.u);
 			
+			
 			// Xhr
 			GM_xmlhttpRequest({
 				method: "GET",
@@ -9150,12 +9151,13 @@ function MT__RUN() {
 							//o.q[0].checked = false;
 							//o.q[1].checked = true;
 							//doSubmit();
+							addToTabsQ();
 						} else {
 							document.body.style.backgroundColor = 'LightGreen';
 							
 							// Here is one where trying again sometimes fixes the problem:
 							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
-							
+							addToTabsQ();
 						}
 						return;
 					}
@@ -9163,6 +9165,7 @@ function MT__RUN() {
 					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
 						//~ alert('URL DOES NOT MATCH:' + rs.id);
 						document.body.style.backgroundColor = 'LightGreen';
+						addToTabsQ();
 						return;
 					}
 					if  (
@@ -9173,6 +9176,7 @@ function MT__RUN() {
 					{
 						console.log('ruleGroups');
 						document.body.style.backgroundColor = 'pink';
+						addToTabsQ();
 						return;
 					}
 					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.pass != false) {
