@@ -9085,6 +9085,112 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
+	
+	// 
+	// Ad Ops
+	// Test the Mobile-Friendliness of a Web Page
+	//
+	s = '<li>Paste and run it on google\'s Mobile Friendly Test page under&nbsp;https://www.google.com/webmasters/tools/mobile-friendly/&nbsp;</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:100px;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[1].innerText.trim(),
+				domain: null,
+				u: null,
+				q: [
+					document.getElementsByName('web_url')[0]
+				]
+			}
+			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
+			o.url = (!/^https?:\/\//i.exec(o.url)) ? 'http://' + o.url : o.url;
+			o.url = o.url.replace(/([a-z])\?/i, '$1/?'); // Replace com?asdf with com/?asdf
+			o.domain = o.url.replace(/^https?:\/\//i, '').replace(/[\/\?&][\d\D]*/, '').replace(/^(www|m)\./, ''); // / OR ? OR &
+			//https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&url=http%3A%2F%2Fwww.google.com%2F&strategy=mobile&filter_third_party_resources=false&callback=x
+			
+			o.u =
+				'https://www.googleapis.com/pagespeedonline/v3beta1/mobileReady?'+
+				'key=_GOOGLE_API_KEY_REDACTED_&screenshot=false&snapshots=false&locale=en_US&'+
+				'url='+ encodeURIComponent(o.url)+
+				'&strategy=mobile&filter_third_party_resources=false&callback=x';
+			o.u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(o.u);
+			
+			// Xhr
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.u,
+				onload: function(response) {
+					var rs=response.responseText; //console.log(rs);
+					if (response.status != 200 || (rs*1>200 && rs*1<600)) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					
+					rs = rs.replace(/^\/\/ API callback[\r\n\t\s]+x\(/, '');
+					rs = rs.replace(/[\r\n\t\s]+\); *$/, '');
+					rs = JSON.parse(rs);
+					
+					console.log(rs);
+					console.log(o);
+					if (rs.hasOwnProperty('error')) {
+						//~ document.body.innerText = 'error';
+						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
+							o.q[0].checked = false;
+							o.q[1].checked = true;
+							//doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'LightGreen';
+							
+							// Here is one where trying again sometimes fixes the problem:
+							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
+							
+						}
+						return;
+					}
+					
+					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
+						//~ alert('URL DOES NOT MATCH:' + rs.id);
+						document.body.style.backgroundColor = 'LightGreen';
+						return;
+					}
+					if  (
+						!rs.hasOwnProperty('ruleGroups') || !rs.ruleGroups ||
+						!rs.ruleGroups.hasOwnProperty('USABILITY') || !rs.ruleGroups.USABILITY ||
+						!rs.ruleGroups.USABILITY.hasOwnProperty('pass')
+						)
+					{
+						console.log('ruleGroups');
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.pass != false) {
+						o.q[0].checked = true;
+						o.q[1].checked = false;
+						//doSubmit();
+					} else if (rs.ruleGroups.USABILITY.pass == false) {
+						o.q[0].checked = false;
+						o.q[1].checked = true;
+						//doSubmit();
+					}
+					
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
+	
+	
 	// 
 	// Gerry Gorman
 	// 
