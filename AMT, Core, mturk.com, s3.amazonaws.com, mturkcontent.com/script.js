@@ -9146,7 +9146,7 @@ function MT__RUN() {
 						//~ document.body.innerText = 'error';
 						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
 							//o.q[0].value = 'no';
-							
+							document.body.style.backgroundColor = 'LightGreen';							
 							//o.q[0].checked = false;
 							//o.q[1].checked = true;
 							//doSubmit();
@@ -9184,7 +9184,7 @@ function MT__RUN() {
 						o.q[0].value = 'no';
 						//o.q[0].checked = false;
 						//o.q[1].checked = true;
-						//doSubmit();
+						doSubmit();
 					}
 					
 				}
