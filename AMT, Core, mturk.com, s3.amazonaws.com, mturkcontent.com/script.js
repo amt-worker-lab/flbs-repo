@@ -9109,7 +9109,7 @@ function MT__RUN() {
 				domain: null,
 				u: null,
 				q: [
-					document.getElementsByName('web_url')[0]
+					document.getElementById('web_url')
 				]
 			}
 			//message: "Invalid value 'Google Mobile Frienly Test'. Values must match the following regular expression: 'http(s)?://.*'"
@@ -9145,8 +9145,10 @@ function MT__RUN() {
 					if (rs.hasOwnProperty('error')) {
 						//~ document.body.innerText = 'error';
 						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
-							o.q[0].checked = false;
-							o.q[1].checked = true;
+							//o.q[0].value = 'no';
+							
+							//o.q[0].checked = false;
+							//o.q[1].checked = true;
 							//doSubmit();
 						} else {
 							document.body.style.backgroundColor = 'LightGreen';
@@ -9174,12 +9176,14 @@ function MT__RUN() {
 						return;
 					}
 					if (rs.ruleGroups.USABILITY.pass == true && rs.ruleGroups.USABILITY.pass != false) {
-						o.q[0].checked = true;
-						o.q[1].checked = false;
-						//doSubmit();
+						o.q[0].value = 'yes';
+						//o.q[0].checked = true;
+						//o.q[1].checked = false;
+						doSubmit();
 					} else if (rs.ruleGroups.USABILITY.pass == false) {
-						o.q[0].checked = false;
-						o.q[1].checked = true;
+						o.q[0].value = 'no';
+						//o.q[0].checked = false;
+						//o.q[1].checked = true;
 						//doSubmit();
 					}
 					
