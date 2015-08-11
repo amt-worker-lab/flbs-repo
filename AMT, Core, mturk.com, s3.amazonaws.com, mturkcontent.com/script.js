@@ -1495,6 +1495,7 @@ function MT__RUN() {
 			var a = document.getElementsByTagName('a');
 			var o = {
 				site: a[0].innerText,
+				hl_strings: ['contact'],
 				q: [
 					document.getElementsByName('State')[0],
 					document.getElementsByName('Q5FreeTextInput')[0]
@@ -1542,7 +1543,7 @@ function MT__RUN() {
 						var isState = false;
 						console.log(MT___states);
 						for (var i in MT___states) {
-							if (i.toLowerCase() == text) {
+							if (i.toLowerCase() == text || MT___states[i].toLowerCase() == text) {
 								text = MT___states[i];
 								isState = true;
 								break;
@@ -1551,6 +1552,10 @@ function MT__RUN() {
 						
 						switch(text) {
 							case "District Of Columbia": text = "DC";
+							break;
+							case "connecticut": 
+							case "ct":
+							text = "Conneticut";
 							break;
 							case "Federated States Of Micronesia":
 							case "American Samoa":
