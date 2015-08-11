@@ -1123,6 +1123,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
      //~ */  
     //~ if(request.amIUtilityTab) {
     
+    
+    
     if(request.nextTab)
 	{
 		nextTab(request,sender,sendResponse);

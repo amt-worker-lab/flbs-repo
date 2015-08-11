@@ -128,6 +128,11 @@ function AMT__all_pages_util(r) {
 		);
 	}
 	
+	//listenForKeyPress
+	if(r.listenForKeyPress) {
+		new AMT___global_factory().listenForKeyPress();
+	}
+	
 	// highlight_ranges_to_parent
 	// e.g. highlight_ranges_to_parent: {completion_key: 'Dan_Shaffer_site_eval'}
 	// Pass in an options object
@@ -784,6 +789,17 @@ AMT___global_factory.prototype.getLinksContaining = function(strOrArrayOfStr) {
 		}
 	}
 	return matchingLinks;
+}
+
+AMT___global_factory.prototype.listenForKeyPress = function() {
+	window.addEventListener('keypress', function(e) {
+		console.log(e);
+		chrome.runtime.sendMessage(
+							'gcfnekbbpmbgadddbojhlojhddnkcpje',
+							{
+								util_window_message_passing: e
+							});
+	});
 }
 
 AMT___global_factory.prototype.shortcutPanel = function(options) {

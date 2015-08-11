@@ -1501,6 +1501,17 @@ function MT__RUN() {
 					document.getElementsByName('Q5FreeTextInput')[0]
 				]
 			}
+			
+			new AMT___core_factory().createScriptVar('SubmitKey',50);
+			window.addEventListener('keypress', function(e) {
+				console.log(e);
+				if(e.keyCode == AMT__Global_Vars.scriptVars.SubmitKey*1) {
+					if(o.q[0].value != '' || (o.q[1].value != '' && o.q[0].value == '')) {
+						document.getElementById('submitButton').click();
+					}
+				}
+			});
+			
 			document.getElementById('submitButton').onclick = function(e) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -1578,7 +1589,17 @@ function MT__RUN() {
 						console.log(isState);
 					} else {
 						//It was a key press
+						var eventObj = document.createEventObject ?
+						document.createEventObject() : document.createEvent("Events");
+					  
+						if(eventObj.initEvent){
+						  eventObj.initEvent("keypress", true, true);
+						}
+					  
+						eventObj.keyCode = response.keyCode;
+						eventObj.which = response.keyCode;
 						
+						document.body.dispatchEvent ? document.body.dispatchEvent(eventObj) : document.body.fireEvent("keypress", eventObj);	
 					}
 				}
 			);
