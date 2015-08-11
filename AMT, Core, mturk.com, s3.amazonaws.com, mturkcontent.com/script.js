@@ -1505,10 +1505,15 @@ function MT__RUN() {
 			new AMT___core_factory().createScriptVar('SubmitKey',50);
 			window.addEventListener('keypress', function(e) {
 				console.log(e);
+
+				
 				if(e.keyCode == AMT__Global_Vars.scriptVars.SubmitKey*1) {
+					e.preventDefault();
+					e.stopPropagation();
 					if(o.q[0].value != '' || (o.q[1].value != '' && o.q[0].value == '')) {
 						document.getElementById('submitButton').click();
 					}
+					return false;
 				}
 			});
 			

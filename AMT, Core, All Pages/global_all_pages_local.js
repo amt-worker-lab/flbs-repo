@@ -791,16 +791,6 @@ AMT___global_factory.prototype.getLinksContaining = function(strOrArrayOfStr) {
 	return matchingLinks;
 }
 
-AMT___global_factory.prototype.listenForKeyPress = function() {
-	window.addEventListener('keypress', function(e) {
-		console.log(e);
-		chrome.runtime.sendMessage(
-							'gcfnekbbpmbgadddbojhlojhddnkcpje',
-							{
-								util_window_message_passing: e
-							});
-	});
-}
 
 AMT___global_factory.prototype.shortcutPanel = function(options) {
 	/*
