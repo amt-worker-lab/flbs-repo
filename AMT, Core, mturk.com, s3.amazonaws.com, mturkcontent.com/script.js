@@ -1536,7 +1536,40 @@ function MT__RUN() {
 				function(response){
 					console.log(response);
 					if(response.data && response.data.text_range) {
-						var text = response.data.text_range.trim();
+						o.q[1].value = '';
+						var text = response.data.text_range.trim().toLowerCase();
+						var tmp = text;
+						var isState = false;
+						console.log(MT___states);
+						for (var i in MT___states) {
+							if (i.toLowerCase() == text) {
+								text = MT___states[i];
+								isState = true;
+								break;
+							}
+						}
+						
+						switch(text) {
+							case "District Of Columbia": text = "DC";
+							break;
+							case "Federated States Of Micronesia":
+							case "American Samoa":
+							case "Marshall Islands":
+							case "Puerto Rico":
+							case "Palau","Guam":
+								text = tmp;
+								isState = false;
+							break;
+						}
+						
+						if(isState) {
+							o.q[0].value = text;
+						}
+						else {
+							o.q[1].value = text;
+						}
+						console.log(text);
+						console.log(isState);
 					} else {
 						//It was a key press
 						
