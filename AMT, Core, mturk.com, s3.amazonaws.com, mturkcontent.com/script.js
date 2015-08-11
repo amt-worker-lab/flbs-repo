@@ -1553,9 +1553,10 @@ function MT__RUN() {
 						switch(text) {
 							case "District Of Columbia": text = "DC";
 							break;
-							case "connecticut": 
+							case "Connecticut": 
 							case "ct":
 							text = "Conneticut";
+							isState = true;
 							break;
 							case "Federated States Of Micronesia":
 							case "American Samoa":
