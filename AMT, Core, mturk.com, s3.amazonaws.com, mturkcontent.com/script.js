@@ -1474,6 +1474,80 @@ function MT__RUN() {
 		new run().f();
 	}
 	
+	//
+	// Teddy
+	// Short Website Review for 1 Piece of Information
+	//
+	s='<li><b>Question 1 -&nbsp;</b>Determine what state the company is based in. If outside of the United States, put \'International\'</li>'
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			//~ GM_addStyle('input {width:100% !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:100px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('td {border:1px solid black;}');
+			//GM_addStyle('table {width:100% !important;}');
+
+			var a = document.getElementsByTagName('a');
+			var o = {
+				site: a[0].innerText,
+				q: [
+					document.getElementsByName('State')[0],
+					document.getElementsByName('Q5FreeTextInput')[0]
+				]
+			}
+			document.getElementById('submitButton').onclick = function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				doSubmit();
+				return false;
+			}
+			
+			var opts = {
+				task: 'AMT__all_pages_util',
+				highlight_strings_in_page: {
+					strings: o.hl_strings
+				},
+				highlight_range_to_parent: true,
+				listenForKeyPress:true
+			}
+			
+			AMT__setUtilityTabs(
+				[
+					{
+						url: o.site,
+						options: opts
+					}
+				],
+				{
+					options: {
+						//~ task: 'AMT__all_pages_util',
+						//~ highlight_range_to_parent: true,
+						//~ up_button_to_all_links: true
+					},
+					style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
+				},
+				{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+				false,
+				function(response){
+					console.log(response);
+					if(response.data && response.data.text_range) {
+						var text = response.data.text_range.trim();
+					} else {
+						//It was a key press
+						
+					}
+				}
+			);
+			
+		}
+		new run().f();
+	}
+	
 	
 	//
 	// Amy Wick
