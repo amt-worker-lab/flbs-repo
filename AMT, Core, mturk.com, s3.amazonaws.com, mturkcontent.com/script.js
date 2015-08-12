@@ -46270,9 +46270,9 @@ function MT__RUN() {
 			var found_store_name = false;
 			var store_cty = '';
 			// STORE NAME
-			var store_names = /(supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy)/i.exec(r);
+			var store_names = /(Days Inn|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy)/i.exec(r);
 			if (store_names) {
-				var nm = /((.|\s)*?(?=(supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy)|$)|$)/i.exec(r);
+				var nm = /((.|\s)*?(?=(Days Inn|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy)|$)|$)/i.exec(r);
 				if (nm) { // e.g. ["Flushing ", "Flushing ", " ", "Target"]
 					store_cty = nm[0].trim();
 					nm = nm[0] + nm[3];
