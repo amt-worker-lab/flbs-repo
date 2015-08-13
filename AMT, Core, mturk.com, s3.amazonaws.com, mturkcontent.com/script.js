@@ -46286,6 +46286,15 @@ function MT__RUN() {
 			else { // Not found
 				nm = r;
 			}
+			
+			//Special cases for cutting out # 7896 address
+			var numCut = /(cvs pharmacy[^#]+# [\d]+)([\d\D]+)$/i.exec(full_);
+			if(numCut) {
+				r = numCut[2].trim();
+				console.log('this is r');
+				console.log(r);
+			}
+			
 			// IN ADDITION TO THIS...
 			// TRY REMOVING ANYTHING BEFORE \d...
 			// e.g. "Walgreens -San Jose-California 2680 Union Ave San Jose, California"
