@@ -26,6 +26,73 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	
+	//
+	//
+	// Visual Search Requester
+	// Identify Cellphone Cases
+	s=''
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset,img,table {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:2000px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('td {border:1px solid black;}');
+			
+			var o = {
+				item: -1,
+				q : [
+					document.getElementsByName('answer_0')[0]
+					document.getElementsByName('answer_0')[1]
+					document.getElementsByName('answer_1')[0]
+					document.getElementsByName('answer_1')[1]
+					document.getElementsByName('answer_2')[0]
+					document.getElementsByName('answer_2')[1]
+					document.getElementsByName('answer_3')[0]
+					document.getElementsByName('answer_3')[1]
+					document.getElementsByName('answer_4')[0]
+					document.getElementsByName('answer_4')[1]
+				]
+			}
+			
+			for(var i in o.q) {
+				o.q[i].style.zoom = 4;
+			}
+			
+			
+			function moveToNext() {
+				o.item++;
+				
+			}
+			
+			window.oncontextmenu = function(e) {
+					console.log(e);
+					e.preventDefault();
+					e.stopPropagation();
+					o.q[o.item+1].checked = true;
+					moveToNext();
+					return false;
+			}
+			window.onclick = function(e) {
+					console.log(e);
+					e.preventDefault();
+					e.stopPropagation();
+					o.q[o.item].checked = true;
+					moveToNext();
+					return false;
+			}
+			
+			moveToNext();
+		}	
+		new run().f();
+	}
+	
+	
+	
 	//
 	//
 	// Rob
