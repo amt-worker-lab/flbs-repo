@@ -42,10 +42,15 @@ function MT__RUN() {
 			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			GM_addStyle('td {border:1px solid black;}');
-			
+			var labs = document.getElementsByTagName('label');
+			for(var i = 0; i < labs.length; i++) {
+				if(labs[i] && labs[i].innerHTML.indexOf('case') != -1) {
+					labs[i].innerHTML = '';
+				}
+			}
 			var o = {
 				item: -1,
-				bold: ['cases', 'skins', 'vinyl', 'bumpers', 'shells', 'covers'],
+				bold: ['case', 'skin', 'vinyl', 'bumper', 'shell', 'cover'],
 				q : [
 					document.getElementsByName('answer_0')[0],
 					document.getElementsByName('answer_0')[1],
@@ -64,7 +69,7 @@ function MT__RUN() {
 				o.q[i].style.zoom = 3;
 			}
 			for(var i = 0; i < 5; i++) {
-				var tmp = document.getElementsByClassName('caption')[i];
+				var tmp = document.getElementsByClassName('caption')[i].getElementsByTagName('h4')[0];
 				var tmpI = tmp.innerHTML;
 				tmp.innerHTML = MT__bold(tmpI, o.bold);
 			}
@@ -76,14 +81,14 @@ function MT__RUN() {
 				document.getElementsByTagName('img')[o.item].scrollIntoView();
 			}
 			
-			window.oncontextmenu = function(e) {
-					console.log(e);
-					e.preventDefault();
-					e.stopPropagation();
-					o.q[o.item*2+1].checked = true;
-					moveToNext();
-					return false;
-			}
+			//~ window.oncontextmenu = function(e) {
+					//~ console.log(e);
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ o.q[o.item*2+1].checked = true;
+					//~ moveToNext();
+					//~ return false;
+			//~ }
 			window.onclick = function(e) {
 					console.log(e);
 					e.preventDefault();
