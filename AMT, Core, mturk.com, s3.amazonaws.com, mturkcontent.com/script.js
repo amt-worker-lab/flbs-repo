@@ -43,11 +43,21 @@ function MT__RUN() {
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			GM_addStyle('td {border:1px solid black;}');
 			var labs = document.getElementsByTagName('label');
+			var spans = document.getElementsByTagName('span');
 			for(var i = 0; i < labs.length; i++) {
-				if(labs[i] && labs[i].innerHTML.indexOf('case') != -1) {
+				if(labs[i] && labs[i].innerHTML.toLowerCase().indexOf('case') != -1) {
 					labs[i].innerHTML = '';
 				}
 			}
+			
+			
+			for(var i = 0; i < spans.length; i++) {
+				if(spans[i] && spans[i].innerHTML.toLowerCase().indexOf('does the above product contain a') != -1) {
+					spans[i].innerHTML = '';
+				}
+			}
+			
+			
 			var o = {
 				item: -1,
 				bold: ['case', 'skin', 'vinyl', 'bumper', 'shell', 'cover'],
@@ -81,20 +91,58 @@ function MT__RUN() {
 				document.getElementsByTagName('img')[o.item].scrollIntoView();
 			}
 			
-			//~ window.oncontextmenu = function(e) {
-					//~ console.log(e);
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					//~ o.q[o.item*2+1].checked = true;
-					//~ moveToNext();
-					//~ return false;
-			//~ }
+			function trySbm() {
+				var sbm = true;
+				for(var i = 0; i < 5; i++) {
+					if(o.q[i*2] || o.q[i*2+1].checked) {
+						continue;
+					}
+					sbm = false;
+					break;
+				}
+				if(sbm) {
+					document.getElementById('submitButton').click();
+				}
+			}
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var sbm = true;
+				for(var i = 0; i < 5; i++) {
+					if(o.q[i*2] || o.q[i*2+1].checked) {
+						continue;
+					}
+					sbm = false;
+					break;
+				}
+				if(sbm)
+					doSubmit();
+				return false;
+			}
+			
+			window.oncontextmenu = function(e) {
+					console.log(e);
+					e.preventDefault();
+					e.stopPropagation();
+					o.q[o.item*2+1].checked = true;
+					moveToNext();
+					return false;
+			}
 			window.onclick = function(e) {
 					console.log(e);
 					e.preventDefault();
 					e.stopPropagation();
+					if(e.which == 2) {
+						trySbm();
+						return false;
+					}
+					
 					o.q[o.item*2].checked = true;
 					moveToNext();
+					
+					
+					
 					return false;
 			}
 			
