@@ -31,7 +31,7 @@ function MT__RUN() {
 	//
 	// Visual Search Requester
 	// Identify Cellphone Cases
-	s=''
+	s='Visual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search RequesterVisual Search Requester'
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
