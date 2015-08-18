@@ -46493,7 +46493,8 @@ function MT__RUN() {
 					"I cannot find the "+type_wefi+" near the desired address.",
 					"The "+type_wefi+" appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
 					"The "+type_wefi+" does not appear in streetview, the trees are blocking the view.",
-					"I've searched the area and cannot find any signs or indicators of the "+type_wefi+"."
+					"I've searched the area and cannot find any signs or indicators of the "+type_wefi+".",
+					"I've searched the area and cannot find any signs in streetview or 45-degree view indicating the "+type_wefi+".",
 				],
 				
 				q: [
