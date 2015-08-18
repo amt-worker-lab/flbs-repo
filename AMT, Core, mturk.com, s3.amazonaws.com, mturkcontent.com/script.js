@@ -80983,6 +80983,7 @@ qatar,80
 				//form, location, callback_function, offsetTime, doServerSideSubmit
 				//doSubmit(false, false, false, 0, true);
 				//AMT___recordAndSubmit(false, false, false, 0, true);
+				new AMT___core_factory().nextTab();
 				AMT___recordAndSubmit();
 			}
 		}, 60);
