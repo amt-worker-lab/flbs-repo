@@ -80899,12 +80899,25 @@ qatar,80
 			d1.style.position='absolute';
 			d1.style.top='120px';
 			d1.style.left='0%';
-			d1.style.width='800px';
-			d1.style.height='1200px';
-			d1.style.border='1px solid blue';w
+			d1.style.width='400px';
+			d1.style.height='600px';
+			d1.style.border='1px solid blue';
 			d1.style.backgroundColor='#eee';
+			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=16&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			// #2
+			var d = document.createElement('img');
+			document.body.appendChild(d);
+			d.setAttribute('style','position:absolute;top:120px;left:400px;width:400px;height:600px;border:1px solid blue;');
+			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			// #3
+			var d = document.createElement('img');
+			document.body.appendChild(d);
+			d.setAttribute('style','position:absolute;top:120px;left:800px;width:400px;height:600px;border:1px solid blue;');
+			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			
-			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			
+			
 			
 			//d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			
@@ -80960,7 +80973,7 @@ qatar,80
 		//guidelines
 		var d2 = document.createElement('div');
 		d2.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;cursor:pointer;');
-		d2.innerHTML = document.getElementById('guidelines').innerHTML;
+		d2.innerHTML = addr + '<br>' + document.getElementById('guidelines').innerHTML;
 		document.body.appendChild(d2);
 		
 		// d2.onclick zoom
