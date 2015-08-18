@@ -532,6 +532,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 		} else {
 			console.log('other case?');
+			//Attempt to focus regardless if possible
+			if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
+				document.getElementsByTagName('iframe')[0].focus();
+			
+			}
+			//				console.log(document.getElementsByTagName('iframe')[0]);
 		}
 		
 	}
