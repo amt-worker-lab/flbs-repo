@@ -530,7 +530,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				console.log(document.getElementsByTagName('iframe')[0]);
 				document.getElementsByTagName('iframe')[0].focus();
 			}
+		} else {
+			console.log('other case?');
 		}
+		
 	}
 		
 	/**
