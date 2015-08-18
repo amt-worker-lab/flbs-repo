@@ -80988,6 +80988,55 @@ qatar,80
 			}
 		}, 60);
 		
+		var allLi = document.getElementsByTagName('li');
+		for(var i = 0; i < 5; i++) {
+			if(allLi[i].getAttribute('ng-repeat').trim() == 'choice in categories') {
+				switch(i) {
+					case 0:	allLi[i].appendChild(document.createTextNode('a'));
+					break;
+					case 1: allLi[i].appendChild(document.createTextNode('s'));
+					break;
+					case 2: allLi[i].appendChild(document.createTextNode('d'));
+					break;
+					case 3: allLi[i].appendChild(document.createTextNode('f'));
+					break
+					case 4: allLi[i].appendChild(document.createTextNode('v'));
+					break;
+				}
+			}
+		}
+		
+		window.addEventListener('keydown', function(e) {
+			console.log(e.keyCode)
+			var allLi = document.getElementsByTagName('li');
+			var wasPressed = false;
+			switch(e.keyCode) {
+				case 65: //console.log(allLi[0].getElementsByTagName('div')[0].id);
+				document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id;
+				wasPressed = true;
+				break;
+				case 83:
+				document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id;
+				wasPressed = true;
+				break;
+				case 68:
+				document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id;
+				wasPressed = true;
+				break;
+				case 70:
+				document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id;
+				wasPressed = true;
+				break;
+				case 86:
+				document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id;
+				wasPressed = true;
+				break;
+			}
+			if(wasPressed && document.getElementsByName('Category')[0].value) {
+				doSubmit();
+			}
+		});
+		
 		// move
 		document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
 		document.getElementsByClassName('span7 ng-scope')[0].style.height = '0';
