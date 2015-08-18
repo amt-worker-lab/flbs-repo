@@ -80971,36 +80971,36 @@ qatar,80
 		}
 		
 		// categorization submit (new - has 0em test)
-		var xint2 = setInterval(function() {
-			var x = document.getElementById('done_page');
-			if (!x) return;
-			if (!x.style) return;
-			x = x.style.width;
-			if (x != '0em' && x != '') {
-				clearInterval(xint2);
-				
-				//doSubmit();
-				//form, location, callback_function, offsetTime, doServerSideSubmit
-				//doSubmit(false, false, false, 0, true);
-				//AMT___recordAndSubmit(false, false, false, 0, true);
-				new AMT___core_factory().nextTab();
-				AMT___recordAndSubmit();
-			}
-		}, 60);
+		//~ var xint2 = setInterval(function() {
+			//~ var x = document.getElementById('done_page');
+			//~ if (!x) return;
+			//~ if (!x.style) return;
+			//~ x = x.style.width;
+			//~ if (x != '0em' && x != '') {
+				//~ clearInterval(xint2);
+				//~ 
+				//~ //doSubmit();
+				//~ //form, location, callback_function, offsetTime, doServerSideSubmit
+				//~ //doSubmit(false, false, false, 0, true);
+				//~ //AMT___recordAndSubmit(false, false, false, 0, true);
+				//~ new AMT___core_factory().nextTab();
+				//~ AMT___recordAndSubmit();
+			//~ }
+		//~ }, 60);
 		
 		var allLi = document.getElementsByTagName('li');
 		for(var i = 0; i < 5; i++) {
 			if(allLi[i].getAttribute('ng-repeat').trim() == 'choice in categories') {
 				switch(i) {
-					case 0:	allLi[i].appendChild(document.createTextNode('a'));
+					case 0:	allLi[i].appendChild(document.createTextNode('1'));
 					break;
-					case 1: allLi[i].appendChild(document.createTextNode('s'));
+					case 1: allLi[i].appendChild(document.createTextNode('2'));
 					break;
-					case 2: allLi[i].appendChild(document.createTextNode('d'));
+					case 2: allLi[i].appendChild(document.createTextNode('3'));
 					break;
-					case 3: allLi[i].appendChild(document.createTextNode('f'));
+					case 3: allLi[i].appendChild(document.createTextNode('4'));
 					break
-					case 4: allLi[i].appendChild(document.createTextNode('v'));
+					case 4: allLi[i].appendChild(document.createTextNode('r'));
 					break;
 				}
 			}
@@ -81011,24 +81011,24 @@ qatar,80
 			var allLi = document.getElementsByTagName('li');
 			var wasPressed = false;
 			switch(e.keyCode) {
-				case 65: //console.log(allLi[0].getElementsByTagName('div')[0].id);
-				document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id;
+				case 49: //console.log(allLi[0].getElementsByTagName('div')[0].id);
+				document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id; //65a
 				wasPressed = true;
 				break;
-				case 83:
-				document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id;
+				case 50:
+				document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id; //83s
 				wasPressed = true;
 				break;
-				case 68:
-				document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id;
+				case 51:
+				document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id; //68d
 				wasPressed = true;
 				break;
-				case 70:
-				document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id;
+				case 52:
+				document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id; //70f
 				wasPressed = true;
 				break;
-				case 86:
-				document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id;
+				case 82:
+				document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id; //85v
 				wasPressed = true;
 				break;
 			}
