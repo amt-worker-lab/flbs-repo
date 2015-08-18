@@ -80899,8 +80899,8 @@ qatar,80
 			d1.style.position='absolute';
 			d1.style.top='120px';
 			d1.style.left='0%';
-			d1.style.width='600px';
-			d1.style.height='900px';
+			d1.style.width='800px';
+			d1.style.height='1200px';
 			d1.style.border='1px solid blue';w
 			d1.style.backgroundColor='#eee';
 			
@@ -81030,6 +81030,9 @@ qatar,80
 				case 82:
 				document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id; //85v
 				wasPressed = true;
+				break;
+				case 69:
+				document.getElementsByName('Category')[0].value = document.body.style.zoom = .75; //85v
 				break;
 			}
 			if(wasPressed && document.getElementsByName('Category')[0].value) {
