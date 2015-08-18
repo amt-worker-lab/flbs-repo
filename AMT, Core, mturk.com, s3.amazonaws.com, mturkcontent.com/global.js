@@ -524,8 +524,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				new AMT___core_factory().nextTab();
 			}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
 			//alert('here here');
-		}else {
-			//Do nothing
+		}else if(AMT__Global_Vars.isTopWindow) {
+			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
+				console.log('focusing');
+				console.log(document.getElementsByTagName('iframe')[0]);
+				document.getElementsByTagName('iframe')[0].focus();
+			}
 		}
 	}
 		
