@@ -80899,12 +80899,12 @@ qatar,80
 			d1.style.position='absolute';
 			d1.style.top='120px';
 			d1.style.left='0%';
-			d1.style.width='400px';
-			d1.style.height='600px';
+			d1.style.width='600px';
+			d1.style.height='900px';
 			d1.style.border='1px solid blue';w
 			d1.style.backgroundColor='#eee';
 			
-			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			
 			//d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			
