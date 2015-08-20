@@ -46408,9 +46408,9 @@ function MT__RUN() {
 			var found_store_name = false;
 			var store_cty = '';
 			// STORE NAME
-			var store_names = /(food 4 less|Days Inn|travelodge|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy|quick stop market|ralphs)/i.exec(r);
+			var store_names = /(foodsco|food 4 less|Days Inn|travelodge|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy|quick stop market|ralphs)/i.exec(r);
 			if (store_names) {
-				var nm = /((.|\s)*?(?=(food 4 less|Days Inn|travelodge|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy|quick stop market|ralphs)|$)|$)/i.exec(r);
+				var nm = /((.|\s)*?(?=(foodsco|food 4 less|Days Inn|travelodge|supertarget|target| hotel |best buy|rite aid|walmart|walgreens|safeway|cvs pharmacy|quick stop market|ralphs)|$)|$)/i.exec(r);
 				if (nm) { // e.g. ["Flushing ", "Flushing ", " ", "Target"]
 					store_cty = nm[0].trim();
 					nm = nm[0] + nm[3];
@@ -46495,6 +46495,7 @@ function MT__RUN() {
 					"The "+type_wefi+" does not appear in streetview, the trees are blocking the view.",
 					"I've searched the area and cannot find any signs or indicators of the "+type_wefi+".",
 					"I've searched the area and cannot find any signs in streetview or 45-degree view indicating the "+type_wefi+".",
+					//"The " + type_wefi + " is not viewable in streetview.mall." //something about malls...?
 				],
 				
 				q: [
