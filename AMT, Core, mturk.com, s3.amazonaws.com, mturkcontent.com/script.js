@@ -11854,13 +11854,17 @@ function MT__RUN() {
 			d2b.value = 'NA';
 			/*END ITEMS*/
 			
-			var a = document.getElementsByTagName('a');
-			if (a.length) {
-				a = a[0].innerText.trim(); // In A
-			} else {
-				a = document.getElementsByTagName('td');
-				a = a[1].innerText.trim(); // In TD
-			}
+			// TD
+			var td = document.getElementsByTagName('td');
+			var a = td[1].innerText.replace(/\s*Link for more info\.\s*/, '');
+			// A
+			//~ var a = document.getElementsByTagName('a');
+			//~ if (a.length) {
+				//~ a = a[0].innerText.trim(); // In A
+			//~ } else {
+				//~ a = document.getElementsByTagName('td');
+				//~ a = a[1].innerText.trim(); // In TD
+			//~ }
 			var o = {
 				//~ url: a,
 				product: a,
