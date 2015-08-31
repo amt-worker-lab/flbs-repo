@@ -147,11 +147,14 @@ AMT__Global_Vars.setAcceptedFavicon = function() {
 	 }
 	 link.id = 'dynamic-favicon';
 	 link.rel = 'shortcut icon';
-	 link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
+	 //link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
+	 
 	 if (oldLink) {
 	  document.head.removeChild(oldLink);
 	 }
-	 document.head.appendChild(link);
+	 //document.head.appendChild(link);
+	 (function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';document.getElementsByTagName('head')[0].appendChild(link);})();
+				
 }
 
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
