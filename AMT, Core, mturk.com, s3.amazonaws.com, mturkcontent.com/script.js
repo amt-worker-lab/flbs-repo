@@ -84964,7 +84964,7 @@ qatar,80
 						o.bad_phones_obj.hasOwnProperty( div.yphone )
 						)
 					{
-						div.innerHTML = 'X';
+						div.innerHTML = '(RESULT=BAD PHONE!)';
 						continue;
 					}
 					// check_accept
