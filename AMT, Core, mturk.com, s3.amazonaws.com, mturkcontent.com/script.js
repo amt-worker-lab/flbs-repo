@@ -83769,6 +83769,7 @@ qatar,80
 	var s5= '<h3>For the business below, enter the official <strong><u>10 digit</u></strong> US phone number from their preferably their official&nbsp;website or some other source.</h3>';
 	var s6= 'or the business below, enter the official <strong><u>10 digit</u></strong> US phone number from preferably their <strong>official&nbsp;website';
 	var s7= '<h3><strong>For the U.S. Business below, enter the official U.S. 10 digit phone number and website <u><em>(official website, Facebook website, and Yelp website are preferred)</em></u></strong></h3>';
+	var s8 = '<b><i>We will not accept any homeadvisor.com websites or any phone numbers from the business Home Advisor.</i></b></span></h3>';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1 ||
@@ -83776,7 +83777,8 @@ qatar,80
 		ih.indexOf(s4) != -1 ||
 		ih.indexOf(s5) != -1 ||
 		ih.indexOf(s6) != -1 ||
-		ih.indexOf(s7) != -1
+		ih.indexOf(s7) != -1 ||
+		ih.indexOf(s8) != -1 
 		)
 	{
 		var run = function() {};
