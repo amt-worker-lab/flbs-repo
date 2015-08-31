@@ -83983,6 +83983,15 @@ qatar,80
 					}
 				}
 				
+				//Finally try 10-consecutive digits 
+				var reg = /(\d{10})/g;
+				var m;
+				while (m = reg.exec(ih)) {
+					m[1] = m[1].replace(/[^\d]/g, '');
+					o.bad_phones.push( m[1] );
+					o.bad_phones_obj[ m[1] ] = true;
+				}
+				
 			}
 			if (by_phone && o.bad_phones.length == 0) {
 				// In some cases there is no bad phone on the page!
