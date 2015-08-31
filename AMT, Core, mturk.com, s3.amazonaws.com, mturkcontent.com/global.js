@@ -137,12 +137,17 @@ AMT__Global_Vars.setAcceptedFavicon = function() {
 	 var link = document.createElement('link');
 	 var links = document.getElementsByTagName('link');
 	 for(var i =0 ; i < links.length; i++) {
-		if(links[i].href = 'https://www.mturk.com/media/favicon.ico')
-		 oldLink = links[i];
+		if(links[i].href = 'https://www.mturk.com/media/favicon.ico') {
+			oldLink = links[i];
+			//alert('oldlink');
+			break;
+			
+		}
+		 
 	 }
 	 link.id = 'dynamic-favicon';
 	 link.rel = 'shortcut icon';
-	 link.href = 'chrome-extension://gcfnekbbpmbgadddbojhlojhddnkcpje/images/favicon.ico';
+	 link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
 	 if (oldLink) {
 	  document.head.removeChild(oldLink);
 	 }
