@@ -84838,6 +84838,8 @@ qatar,80
 				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
 				var m;
 				while (m = r.exec(rs.search_results)) {
+					console.log('YelpResult:');
+					console.log(m[1]);
 					
 					// Replace all highlights!
 					m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
@@ -84857,6 +84859,7 @@ qatar,80
 					div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
 					div.yslug = null;
 					d1c.appendChild(div);
+					console.log(div);
 					
 					// (619) 238-4949
 					// 
@@ -84873,7 +84876,7 @@ qatar,80
 					}
 					// Name, href
 					//
-					var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
+					var reg = /<span class="indexed-biz-name">\d+\.[^<]*<a class="biz-name" href="(\/biz\/[^"]+)"[^>]*>([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
 					if (reg) {
 						//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
 						div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
