@@ -424,6 +424,8 @@ function mturk_load()
 		AMT__Global_Vars.initialize_return_accept_run_nextTab();
 		AMT__Global_Vars.initializeR_Button_NextTab();
 		AMT__Global_Vars.initializeReturnButton();
+		AMT__Global_Vars.setAcceptedFavicon();
+
 		
 		// Make return/accept button
 		// AMT___returnAndAcceptButton
@@ -483,6 +485,7 @@ function mturk_load()
 		AMT__Global_Vars.isPreview = false;
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
+
 		// Init MT__RUN();
 		MT__RUN();
 	}

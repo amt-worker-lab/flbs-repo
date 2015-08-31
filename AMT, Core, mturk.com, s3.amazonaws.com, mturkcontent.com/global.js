@@ -133,6 +133,17 @@ var getReturnButton2 = function() {
 	return a;
 }
 
+AMT__Global_Vars.setAcceptedFavicon = function() {
+	 var link = document.createElement('link'),
+		 oldLink = document.getElementById('dynamic-favicon');
+	 link.id = 'dynamic-favicon';
+	 link.rel = 'shortcut icon';
+	 link.href = '/images/favicon.ico';
+	 if (oldLink) {
+	  document.head.removeChild(oldLink);
+	 }
+	 document.head.appendChild(link);
+}
 
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
 	chrome.extension.sendRequest({get_num_amt_tabs: true}, 
