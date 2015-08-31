@@ -658,7 +658,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var tabId  = sender.tab.id;
 		var winId = sender.tab.windowId;
 		var jumpToFirst = request.jumpToFirst;
-		alert('?');
+		//alert('?');
 		console.log('testing whether this runs');
 		console.log('attempting to move');
 		
