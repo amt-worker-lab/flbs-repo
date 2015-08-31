@@ -52,7 +52,8 @@
 		"default_popup": "popup.html"			// optional
    },
    "web_accessible_resources": [
-		"audio/next/heavy_medic01.mp3"
+		"audio/next/heavy_medic01.mp3",
+		"images/favicon.ico"
    ],
    "converted_from_user_script": false,
    "description": "Core AMT",
