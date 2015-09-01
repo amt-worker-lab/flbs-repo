@@ -84059,8 +84059,9 @@ qatar,80
 						ll.lng = rs.geonames[0].lng;
 						//~ google_find_phone(); // UPDATE JUN.25,2015 SET=false TO REVERT!
 						find_phone__FB(); // Init FB
-						yelp(); // Init FB
-						foursquare();
+						//~ yelp(); // Init Yelp
+						yelp_api(); // Init Yelp API
+						foursquare(); // Init Foursquare API
 					}
 				});
 			}
@@ -85063,288 +85064,6 @@ qatar,80
 				});
 				
 				return;
-				
-				
-				/* OLD ........
-				 * 
-				 * 
-				 
-				u = JSON.stringify(opts);
-				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(u);
-				
-				
-				// Xhr request.
-				
-				//TEMPORARY, TURN OFF YELP!
-				//o.stats.yelp_search_complete = true;
-				//check_if_yp_init();
-				
-				//return;
-				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: u,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						try {
-							// Status
-							if (response.status != 200 || /^\d{3}$/.exec(rs)) {
-								console.log(rs);
-								if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-									d1c.style.backgroundColor = 'yellow';
-									//window.open(opts.url.replace('/snippet', ''));
-								}
-								else {
-									console.log('yelp acting strange');
-									console.log('status: ' + rs);
-								}
-								// Finished
-								o.stats.yelp_search_complete = true;
-								check_if_yp_init();
-								return;
-							}
-							
-							
-							if(rs.indexOf("Hey there! Before you continue, we just need to check that you're not a robot.") != -1) {				
-								//window.open(opts.url.replace('/snippet', ''));
-								d1c.style.backgroundColor = 'yellow';
-								return;
-							}
-							
-
-								// Parse
-								//
-								//
-								rs = JSON.parse(rs); // Must be valid to continue.
-						} catch(e) {
-							console.log(e);
-							console.log('response.status: ' + response.status)
-							console.log(rs);
-							return;
-						}
-					
-						// Yelp Lat/Lng.
-						// rs.search_map.markers has location data.
-						// Loop through markers. Markers is an object.
-						var markers = {};
-						if  (
-							rs.hasOwnProperty('search_map') &&
-							rs.search_map &&
-							rs.search_map.hasOwnProperty('markers') &&
-							rs.search_map.markers//.length
-							)
-						{
-							for (var i in rs.search_map.markers) {
-								var sm = rs.search_map.markers[ i ];
-								if  (
-									sm.hasOwnProperty('location') &&
-									sm.location.hasOwnProperty('latitude') &&
-									sm.location.hasOwnProperty('longitude')
-									)
-									markers[ sm.url ] = sm.location; // {latitude, longitude}
-							}
-						}
-						
-						// Search header
-						var sh = rs.search_header;
-						var r = /Showing 1-\d+ of ([\d,]+)\n/.exec(rs.search_header);
-						var amt = '';
-						if (r) {
-							r = r[1];
-							amt = r + ' results';
-						} else {
-							amt = '0 results';
-						}
-						d1c.appendChild(
-							amt.div({style:'width:100%;border-bottom:4px solid teal;'}) // Add HR border
-						);
-						
-						// While loop
-						var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
-						var m;
-						while (m = r.exec(rs.search_results)) {
-							
-							// Replace all highlights!
-							m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
-							//~ console.log(m);
-							
-							// Div
-							var div = document.createElement('div');
-							div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-							div.className = 'exe test'; // exe & test
-							div.yname = null;
-							div.yhref = null;
-							div.yphone = '';
-							div.yreviews = null;
-							div.ycategories = '';
-							div.ystreet = '';
-							div.ylocn = '';
-							div.yzip = '';
-							div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
-							div.yslug = null;
-							d1c.appendChild(div);
-							
-							
-							// (619) 238-4949
-							// 
-							var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
-							if (ph) {
-								ph = __js_clean_html_str(ph[1]).trim();
-								// Format phone
-								ph = ph.replace(/[\- \(\)]/g, '');
-								ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
-								// yphone
-								div.yphone = ph.replace(/[^\d]/g, '');
-								// className
-								div.className += ' ' + div.yphone;
-							}
-							// Name, href
-							//
-							var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
-							if (reg) {
-								//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
-								div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
-								div.yhref = 'http://www.yelp.com' + div.yslug;
-								div.yname = __js_clean_html_str(reg[2]).trim();
-								// Replace "’" with "'" in name
-								div.yname = div.yname.replace(/’/g, "'");
-							}
-							// IF NO NAME THEN DO NOT CONTINUE
-							else {
-								continue;
-							}
-							// reviews
-							//
-							var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
-							if (reg) {
-								reg = reg[1];
-								div.yreviews = reg;
-							}
-							// catg.
-							// e.g. <a href="/search?find_desc=Pok+Pok+Noi&amp;find_loc=Portland%2C+Oregon&amp;cflt=thai">Thai</a>    
-							var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
-							if (reg) {
-								reg = reg[1].replace(/<[^>]*>/g, '').trim();
-								div.ycategories = reg;
-							}
-							// addr
-							// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
-							var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
-							var reg2= /<address>[\r\n\t\s]+([^<]+)<\/address>/.exec(m[1]);
-							if (reg) {
-								reg[1] = __js_clean_html_str(reg[1]).trim();
-								reg[2] = __js_clean_html_str(reg[2]).trim();
-								div.ystreet = reg[1];
-								div.ylocn = reg[2];
-								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
-								div.yzip = (z) ? z[1] : null;
-							}
-							else if (reg2) { // Try ONLY CITY/STATE INFO
-								var x = __js_clean_html_str(reg2[1]).trim();
-								div.ylocn = x;
-								var z = / ([\d\-]{4,})$/.exec(div.ylocn);
-								div.yzip = (z) ? z[1] : null;
-							} else { // Try "Service Area"
-								var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
-								// Serving Chicago and the Surrounding Area
-								if (reg && div.ylocn == '') {
-									var x = __js_clean_html_str(reg[1]).trim();
-									if (/^Serving/.exec(x) && / and the Surrounding Area$/.exec(x))
-										x = x.replace(/^Serving /, '').replace(/ and the Surrounding Area$/, '');
-									div.ylocn = x;
-								}
-							}
-							console.log('x'+div.ylocn);
-							
-							// Distance
-							var dist = '';
-							var dist_bgc = '';
-							console.log(div.yslug);
-							console.log(markers);
-							if ( div.yslug && markers.hasOwnProperty( div.yslug ) ) { // e.g. /biz/staples-walnut
-								dist = MT___lat_lng_distance(
-									ll.lat*1,
-									ll.lng*1,
-									markers[ div.yslug ].latitude*1,
-									markers[ div.yslug ].longitude*1
-								);
-								if (dist) {
-									dist = Math.round(dist*100) / 100;
-									if (dist*1 >= 4) {
-										div.style.backgroundColor = 'aqua';
-										//~ dist_bgc = 'background-color:aqua;';
-									}
-								}
-							}
-							
-							//~ // Diff
-							//~ var df = MT___diffString(
-								//~ div.yname,
-								//~ o.name
-							//~ );
-							
-							// Display
-							div.innerHTML = 
-								':'+ MT__bold(div.yname, o.name_arr) + (dist != '' ? '('+dist+')' : '') + '<br>' +
-								':'+ MT__bold(div.ystreet, o.locn_arr) + '<br>' +
-								':'+ MT__bold(div.ylocn, o.locn_arr) + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
-								':'+ ph + '<br>' +
-								//~ ':'+ df + '<br>' +
-								//~ 'reviews:'+ div.yreviews + '<br>' +
-								//~ 'catg.:'+ div.ycategories + '<br>' +
-								':'
-							;
-							var link = document.createElement(a); // Link
-							link.innerText = 'link';
-							link.href = div.yhref;
-							link.onclick = function(e) {
-								window.open(this.href, 'new');
-								e.stopPropagation();
-								e.preventDefault();
-								return false;
-							}
-							div.appendChild(link);
-							// div.onclick
-							div.onclick = function(e) {
-								this.style.backgroundColor = 'teal';
-								set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
-								q.value = this.yphone;
-								if (q2)
-									q2.value = this.yhref;
-								if  (
-									o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
-									this.yphone.length != 10 ||
-									!/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
-									)
-								{
-									d2.value = 'bad phone!';
-									d2.style.backgroundColor = 'LightGreen';
-									q.style.border = '4px solid teal';
-									return;
-								}
-								
-								// Here?
-								doSubmit();
-							}
-							
-							// Add mouse events to div
-							mouseev(div);
-							
-							// Increment count
-							o.stats.num_yelp_results++;
-						}
-						if (o.stats.num_yelp_results != 0) {
-							d1c.appendChild(
-								''.div({style:'height:1400px;'})
-							);
-						}
-						
-						// Finished
-						o.stats.yelp_search_complete = true;
-						check_if_yp_init();
-					}
-				});*/
 			}
 			/**
 			 * function yelp_api
@@ -85404,7 +85123,7 @@ qatar,80
 							rs.indexOf('"text": "Signature was invalid"') != -1
 							)
 						{
-							d1.style.backgroundColor = 'yellow';
+							d1c.style.backgroundColor = 'yellow';
 							return false;
 						}
 						else
@@ -85420,20 +85139,19 @@ qatar,80
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				if (!rs.businesses || rs.businesses.length == 0) {
-					d1.innerText += '\n0 results';
+					d1c.innerText += '\n0 results';
 					// DO RIGHT
 					// TURN OFF FOR NOW........
 					//yelp();
 					return;
 				}
-				d1.innerText = '';
+				d1c.innerText = '';
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
-				new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
 				for (var i in b) {
-					// AUTO + CLEAN
-					b[i].name = yelp_clean_name(b[i].name);
+					//~ // AUTO + CLEAN
+					//~ b[i].name = yelp_clean_name(b[i].name);
 					
 					var fmt_address = '';
 					var fmt_address_match = '';
@@ -85454,18 +85172,6 @@ qatar,80
 							fmt_address = lfmt.join(',');
 					}
 					
-					// Number of bolds in address?
-					// Versus number of words
-					var nb_numwords = fmt_address.split(' ').length;
-					var nb_match = fmt_address.match(/<b>/g);
-					var nb_numbolds = (nb_match) ? nb_match.length : 0;
-					var nb_pct = nb_numbolds / nb_numwords;
-					console.log(nb_pct);
-					if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
-						found_close_enough_street = true;
-						console.log('close enough');
-					}
-					
 					var fmt_cat = [];
 					if (b[i].categories) {
 						var c = b[i].categories;
@@ -85482,7 +85188,7 @@ qatar,80
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 					d.className = 'exe';
 					d.ypurl = b[i].url;
-					d1.appendChild(d);
+					d1c.appendChild(d);
 					d.innerHTML =
 						MT__bold(b[i].name, o.bold_comp) + '<br>' +
 						fmt_address +'<br>'+
@@ -85490,37 +85196,37 @@ qatar,80
 						// UNNECESSARY // 'P:'+(b[i].display_phone ? b[i].display_phone : '')+'<br>'+
 						'C:'+fmt_cat;
 					d.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						// NextTab
-						new AMT___core_factory().nextTab();
-						yp_profile(this);
+						//~ this.style.backgroundColor = 'LightGreen';
+						//~ // NextTab
+						//~ new AMT___core_factory().nextTab();
+						//~ yp_profile(this);
 					}
 					
-					var ypnm_cln = b[i].name.clean_str_to_auto();
-					var ypad_cln = fmt_address_match.clean_str_to_auto();
-					// Auto found?
-					if  (
-						!auto_found &&
-						o.comp_cln == ypnm_cln &&
-						o.addr_cln == ypad_cln &&
-						o.comp_cln.length > 4 &&
-						o.addr_cln.length > 4
-						)
-					{
-						d.click();
-						auto_found = true;
-					}
+					//~ var ypnm_cln = b[i].name.clean_str_to_auto();
+					//~ var ypad_cln = fmt_address_match.clean_str_to_auto();
+					//~ // Auto found?
+					//~ if  (
+						//~ !auto_found &&
+						//~ o.comp_cln == ypnm_cln &&
+						//~ o.addr_cln == ypad_cln &&
+						//~ o.comp_cln.length > 4 &&
+						//~ o.addr_cln.length > 4
+						//~ )
+					//~ {
+						//~ d.click();
+						//~ auto_found = true;
+					//~ }
 				}
-				if (d1.innerHTML != '') {
+				if (d1c.innerHTML != '') {
 					var d = document.createElement('div');
 					d.setAttribute('style','height:2000px;');
-					d1.appendChild(d);
+					d1c.appendChild(d);
 				}
 				// If no street from above is close enough based on 
 				// bolding of street string, then run search snippet.
 				//
 				if (!found_close_enough_street) {
-					yelp_search_snippet();
+					//~ yelp_search_snippet();
 				}
 			}
 			/**
@@ -113707,14 +113413,15 @@ qatar,80
 			if (o.comp.indexOf(' ') == -1) { // If one word...
 				// o.cquotes += ' law firm';
 			}
-			o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
-						o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
 			o.boldArray = o.comp.clean_string_to_array();
 			console.log(o);
 			o.boldArray.push(o.phone[0]+o.phone[1]+o.phone[2])
 			o.boldArray.push(o.phone[3] +o.phone[4] +o.phone[5])
 			o.boldArray.push(o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9]);
-			o.boldArray.push(o.city).push(o.state);
+			o.boldArray.push(o.city)
+			o.boldArray.push(o.state);
+			o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
+			
 			console.log(o);
 			/* BEGIN ITEMS */
 			//
