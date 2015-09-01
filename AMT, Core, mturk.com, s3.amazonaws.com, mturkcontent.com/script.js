@@ -84062,6 +84062,7 @@ qatar,80
 						//~ yelp(); // Init Yelp
 						yelp_api(); // Init Yelp API
 						foursquare(); // Init Foursquare API
+						sp_yelp(); // Init StartPage Yelp
 					}
 				});
 			}
@@ -84102,18 +84103,18 @@ qatar,80
 				}
 			}
 			
-			/**
-			 * function
-			 */
-			function find_phone__check_no_good_match(){
-				if (o.check_accept_found) return;
-				no_good_match++;
-				if (no_good_match >= 2) {
-					if (AMT__Global_Vars.isPreview) {
-						AMT___Floater.skip();
-					}
-				}
-			}
+			//~ /**
+			 //~ * function
+			 //~ */
+			//~ function find_phone__check_no_good_match(){
+				//~ if (o.check_accept_found) return;
+				//~ no_good_match++;
+				//~ if (no_good_match >= 2) {
+					//~ if (AMT__Global_Vars.isPreview) {
+						//~ AMT___Floater.skip();
+					//~ }
+				//~ }
+			//~ }
 			/**
 			 * function find_phone__FB
 			 */
@@ -85075,6 +85076,22 @@ qatar,80
 				// 
 				o.stats.yelp_search_complete = true;
 				check_if_yp_init();
+			}
+			/**
+			 * function sp_yelp
+			 **/
+			function sp_yelp() {
+				// create_dashboard_find_url
+				AMT___items_factory.prototype.create_dashboard_find_url({
+					bold_array: o.name_arr,
+					searches:[
+						d2.value+','+d2b.value
+					],
+					out_element: o.q[0],
+					parent: d1,
+					offsetTop: 0,
+					naText:'Unable to find',
+				});
 			}
 			/**
 			 * function bing
@@ -113223,7 +113240,8 @@ qatar,80
 	 * Chad Warren Etsell
 	 * A2452A20EPP4F2 ""
 	 * John White (UPDATE, law firm) 
-	 * 
+	 * Rob Cardenas
+	 * Atria Media Group
 	 * 
 	 * 
 	 */
