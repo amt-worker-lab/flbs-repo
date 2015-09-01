@@ -85091,7 +85091,7 @@ qatar,80
 					offsetTop: 80,
 					hide_search_fields: true,
 					search_results: {
-						use_full_urls: true
+						use_full_urls: true,
 						callback_link_and_body: function(link, body) {
 							if (o.check_accept_found) return;
 							if (body.indexOf(d2.value) != -1) {
@@ -85153,13 +85153,14 @@ qatar,80
 				p = '?' + p.join('&');
 				
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'http://api.yelp.com/v2/business/'+biz,
+					URL: 'http://api.yelp.com/v2/business/'+biz + p,
 					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/business/'+biz), // Static file name
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if  (
 							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
-							rs.indexOf('"text": "Signature was invalid"') != -1
+							rs.indexOf('"text": "Signature was invalid"') != -1 ||
+							options.response.status != 200
 							)
 						{
 							d1d.style.backgroundColor = 'yellow';
