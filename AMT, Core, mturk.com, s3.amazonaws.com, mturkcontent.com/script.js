@@ -85070,6 +85070,8 @@ qatar,80
 			 *
 			 * e.g. http://api.yelp.com/v2/search/?term=home depot&location=San Francisco, CA&limit=10&radius_filter=30000
 			 * TODO: Error message for 25,000 API limit?
+			 * 
+			 * Uses ll.lat and ll.lng
 			 */
 			function yelp_api() {
 				 var auth = {
@@ -85092,7 +85094,8 @@ qatar,80
 				};
 				parameters = [];
 				parameters.push(['term', terms]);
-				parameters.push(['location', near]);
+				//~ parameters.push(['location', near]);
+				parameters.push(['cll', ll.lat + ',' + ll.lng]); //cll=latitude,longitude
 				parameters.push(['oauth_consumer_key', auth.consumerKey]);
 				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
 				parameters.push(['oauth_token', auth.accessToken]);
@@ -85149,34 +85152,25 @@ qatar,80
 					//yelp();
 					return;
 				}
-				d1c.innerText = '';
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
 				for (var i in b) {
-					//~ // AUTO + CLEAN
-					//~ b[i].name = yelp_clean_name(b[i].name);
 					
-					var fmt_address = '';
-					var fmt_address_match = '';
-					if (b[i].location && b[i].location.display_address && b[i].location.display_address.length) {
-						var l = b[i].location.display_address; // []
-						if (l.length == 3) { // REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
-							l.splice(1, 1); // REMOVES array item #2 ([1,2,3])
-						}
-							//~ var dups = {}; // No duplicates!
-						var lfmt = [];
-						for (var j in l) {
-								//~ if (dups.hasOwnProperty( l[j] )) continue;
-								//~ dups[ l[j] ] = true;
-							//~ lfmt.push( MT__bold(l[j], o.bold_addr) );
-							fmt_address_match += l[j];
-						}
-						//~ if (lfmt.length)
-							//~ fmt_address = lfmt.join(',');
+					var dist;
+					if 	(
+						b[i].location &&
+						b[i].location.coordinate
+						)
+					{
+						dist = MT___lat_lng_distance(//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
+							b[i].location.coordinate.latitude,
+							b[i].location.coordinate.longitude,
+							ll.lat,
+							ll.lng
+						);
+						dist = Math.floor(dist); // e.g. 4.9 is 4. 
 					}
-					
-					var dist = b[i].distance / 1609.34; // Distance in miles
 					
 					// Div
 					var d = document.createElement('div');
@@ -85188,10 +85182,9 @@ qatar,80
 					d1c.appendChild(d);
 					d.innerHTML =
 						MT__bold(b[i].name, o.name_arr) + '<br>' +
-						fmt_address +'<br>'+
 						'P:'+(b[i].display_phone ? b[i].display_phone.replace(/^\+1-/, '') : '')+'<br>'+
 						'A:'+(b[i].location.address != '' ? b[i].location.address : b[i].location.display_address) + '<br>'
-						'D:'+(b[i].distance ? dist + ' mi' : '');
+						'D:'+(dist ? dist + 'mi' : '');
 					d.onclick = function() {
 						this.style.backgroundColor = 'teal';
 						set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
