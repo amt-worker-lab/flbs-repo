@@ -85015,6 +85015,7 @@ qatar,80
 					var bgc = (dist > 4) ? 'background-color:aqua;' : '';
 					
 					// Check skip
+					if (!b[i].phone) continue;
 					var tmp_phone = b[i].phone.replace(/[^\d]/g, '');
 					check_accept(b[i].name, tmp_phone);
 					var tmp_addr = (
