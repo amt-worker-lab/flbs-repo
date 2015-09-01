@@ -85146,7 +85146,7 @@ qatar,80
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				if (!rs.businesses || rs.businesses.length == 0) {
-					d1c.innerText += '\n0 results';
+					d1c.appendChild(document.createTextNode('0 results'));
 					// DO RIGHT
 					// TURN OFF FOR NOW........
 					//yelp();
@@ -85164,17 +85164,18 @@ qatar,80
 						)
 					{
 						dist = MT___lat_lng_distance(//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
-							b[i].location.coordinate.latitude,
-							b[i].location.coordinate.longitude,
-							ll.lat,
-							ll.lng
+							b[i].location.coordinate.latitude*1,
+							b[i].location.coordinate.longitude*1,
+							ll.lat*1,
+							ll.lng*1
 						);
-						dist = Math.floor(dist); // e.g. 4.9 is 4. 
+						dist = Math.ceil(dist); // e.g. 3.9 is 4. 
 					}
+					var bgc = (dist > 4) ? 'background-color:aqua;' : '';
 					
 					// Div
 					var d = document.createElement('div');
-					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;'+bgc);
 					d.className = 'exe';
 					d.ypurl = b[i].url;
 					d.yphone = b[i].phone.replace(/[^\d]/g, '');
@@ -85183,7 +85184,7 @@ qatar,80
 					d.innerHTML =
 						MT__bold(b[i].name, o.name_arr) + '<br>' +
 						'P:'+(b[i].display_phone ? b[i].display_phone.replace(/^\+1-/, '') : '')+'<br>'+
-						'A:'+(b[i].location.address != '' ? b[i].location.address : b[i].location.display_address) + '<br>'
+						'A:'+(b[i].location.address != '' ? b[i].location.address : b[i].location.display_address) + '<br>' +
 						'D:'+(dist ? dist + 'mi' : '');
 					d.onclick = function() {
 						this.style.backgroundColor = 'teal';

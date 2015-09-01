@@ -15284,6 +15284,9 @@ if (typeof Number.prototype.toRad == 'undefined') {
 		return this * Math.PI / 180;
 	}
 }
+/**
+ * NOTE: Lat / Lng must be INT! String causes error! E.g. lat1 * 1!
+ */
 function MT___lat_lng_distance(lat1, lon1, lat2, lon2) {
 	var R = 3963; // 6371km .. use 3963 for miles
 	var dLat = (lat2-lat1).toRad();
