@@ -85146,7 +85146,7 @@ qatar,80
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				if (!rs.businesses || rs.businesses.length == 0) {
-					d1c.appendChild(document.createTextNode('0 results'));
+					d1c.appendChild(document.createTextNode('0'));
 					// DO RIGHT
 					// TURN OFF FOR NOW........
 					//yelp();
@@ -113426,8 +113426,8 @@ qatar,80
 			o.boldArray.push(o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9]);
 			o.boldArray.push(o.city)
 			o.boldArray.push(o.state);
-			o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
-			
+			//o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
+			o.phone = '("'+o.phone[0]+o.phone[1]+o.phone[2]+'") "' + o.phone[3] +o.phone[4] +o.phone[5] + '" - "'+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9] + '"';
 			console.log(o);
 			/* BEGIN ITEMS */
 			//
