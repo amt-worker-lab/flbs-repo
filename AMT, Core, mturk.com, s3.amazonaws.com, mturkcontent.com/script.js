@@ -84342,7 +84342,7 @@ qatar,80
 				// JUNE25, 2015
 				o.stats.num_searches_complete++;
 				//~ console.log(o.stats.num_searches_complete);
-				if (AMT__Global_Vars.isPreview && o.stats.num_searches_complete == 3) { // FB / Yelp / FS
+				if (AMT__Global_Vars.isPreview && o.stats.num_searches_complete == 4) { // FB / Yelp / FS
 					if (!o.check_accept_found) {
 						AMT___Floater.skip();
 					}
@@ -85087,14 +85087,111 @@ qatar,80
 					searches:[
 						'site:yelp.com/biz/ ' + d2.value+',+"'+d2b.value+'"'
 					],
-					//~ out_element: o.q[0],
 					parent: d1d,
-					offsetTop: 0,
+					offsetTop: 80,
 					hide_search_fields: true,
 					search_results: {
 						use_full_urls: true
+						callback_link_and_body: function(link, body) {
+							if (o.check_accept_found) return;
+							if (body.indexOf(d2.value) != -1) {
+								o.check_accept_found = true;
+								AMT___Floater.accept();
+							}
+						}
 					},
-					//~ naText:'Unable to find',
+					load_success_callback: function() {
+						//~ o.stats.sp_yelp_search_complete = true; // UNNECESSARY!
+						check_if_yp_init();
+					},
+					onclick_success: function(e) { // Textarea.onclick
+						sp_yelp_success(/\/biz\/([^\/\?]+)$/.exec(this.value)[1]); // /biz/[not slash or ? to $]
+					},
+				});
+			}
+			function sp_yelp_success(biz) { // e.g. http://api.yelp.com/v2/business/yelp-san-francisco
+				 var auth = {
+					//
+					// Update with your auth tokens.
+					//
+					consumer_API_KEY_REDACTED_,
+					consumer_API_KEY_REDACTED_,
+					access_API_KEY_REDACTED_,
+					accessToken_API_KEY_REDACTED_,
+					serviceProvider : {
+						signatureMethod : "HMAC-SHA1"
+					}
+				};
+				//~ var terms = d2.value;
+				//~ var near = d2b.value;//'San+Francisco';
+				var accessor = {
+					consumerSecret : auth.consumerSecret,
+					tokenSecret : auth.accessTokenSecret
+				};
+				parameters = [];
+				//~ parameters.push(['term', terms]);
+				//~ parameters.push(['location', near]);
+				//~ parameters.push(['cll', ll.lat + ',' + ll.lng]); //cll=latitude,longitude
+				parameters.push(['oauth_consumer_key', auth.consumerKey]);
+				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+				parameters.push(['oauth_token', auth.accessToken]);
+				parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+				var message = {
+					'action' : 'http://api.yelp.com/v2/business/'+biz,
+					'method' : 'GET',
+					'parameters' : parameters
+				};
+
+				OAuth.setTimestampAndNonce(message);
+				OAuth.SignatureMethod.sign(message, accessor);
+
+				var parameterMap = OAuth.getParameterMap(message.parameters);
+				var p = [];
+				for (var i in parameterMap) {
+					p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+				}
+				p = '?' + p.join('&');
+				
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://api.yelp.com/v2/business/'+biz,
+					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/business/'+biz), // Static file name
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1d.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						
+						//~ this.style.backgroundColor = 'teal';
+						//~ set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
+						//~ q.value = this.yphone;
+						//~ if (q2)
+							//~ q2.value = this.yhref;
+						//~ if  (
+							//~ o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
+							//~ this.yphone.length != 10 ||
+							//~ !/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
+							//~ )
+						//~ {
+							//~ d2.value = 'bad phone!';
+							//~ d2.style.backgroundColor = 'LightGreen';
+							//~ q.style.border = '4px solid teal';
+							//~ return;
+						//~ }
+						//~ // Here?
+						//~ doSubmit();
+					}
 				});
 			}
 			/**
@@ -85142,49 +85239,6 @@ qatar,80
 			/**
 			 * function bing_success
 			 */
-			function bing_success(response) {
-				//~ var rs = response.responseText;
-				//~ rs = rs.replace(/^microsoftMapsNetworkCallback\(/, '');
-				//~ rs = rs.replace(/,'[a-z0-9]+'\) *$/i, '');
-				//~ rs = JSON.parse(rs);
-				//~ 
-				//~ // Div
-				//~ var div = document.createElement('div');
-				//~ div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-				//~ div.className = 'exe test'; // exe & test
-				//~ div.yname = name;
-				//~ div.yhref = href;
-				//~ div.yaddr = address;console.log(MT__bold(div.yaddr, o.locn_arr));
-				//~ div.yphone = ph.replace(/[^\d]/g, ''); // yphone
-				//~ div.className += ' ' + div.yphone; // className
-				//~ d1e.appendChild(div);
-				//~ div.innerHTML =
-					//~ MT__bold(div.yname, o.name_arr) + '<br>' +
-					//~ str+
-					//~ MT__bold(div.yaddr, o.locn_arr) + '<br>' +
-					//~ ph;
-				//~ div.onclick = function() {
-					//~ this.style.backgroundColor = 'teal';
-					//~ set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
-					//~ q.value = this.yphone;
-					//~ if (q2)
-						//~ q2.value = this.yhref;
-					//~ if  (
-						//~ o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
-						//~ this.yphone.length != 10 ||
-						//~ !/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
-						//~ )
-					//~ {
-						//~ d2.value = 'bad phone!';
-						//~ d2.style.backgroundColor = 'LightGreen';
-						//~ q.style.border = '4px solid teal';
-						//~ return;
-					//~ }
-					//~ 
-					//~ // Here?
-					//~ doSubmit();
-				//~ }
-			}
 			/**
 			 * function set_divs_clicked
 			 * @desc Set all related div background colors to teal.
