@@ -69663,29 +69663,17 @@ function MT__RUN() {
 				OAuth.SignatureMethod.sign(message, accessor);
 
 				var parameterMap = OAuth.getParameterMap(message.parameters);
-				//console.log(parameterMap);
 				var p = [];
-				//~ parameterMap.oauth_timestamp += 1000000;//1435349067  // Does not work
 				for (var i in parameterMap) {
 					p.push(i + '=' + encodeURIComponent(parameterMap[i]));
 				}
 				p = '?' + p.join('&');
-				//~ $.ajax({
-					//~ 'url' : message.action,
-					//~ 'data' : parameterMap,
-					//~ 'dataType' : 'jsonp',
-					//~ 'jsonpCallback' : 'cb',
-					//~ 'success' : function(data, textStats, XMLHttpRequest) {
-						//~ console.log(data);
-						//~ //$("body").append(output);
-					//~ }
-				//~ });
 				
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'http://api.yelp.com/v2/search' + p,
 					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						var rs = options.response.responseText;//console.log(rs);return false;
+						var rs = options.response.responseText;
 						if  (
 							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
 							rs.indexOf('"text": "Signature was invalid"') != -1
@@ -84132,7 +84120,7 @@ qatar,80
 				//~ }
 			//~ }
 			/**
-			 * function
+			 * function find_phone__FB
 			 */
 			function find_phone__FB() {
 				
@@ -85357,6 +85345,183 @@ qatar,80
 						check_if_yp_init();
 					}
 				});*/
+			}
+			/**
+			 * function yelp_api
+			 *
+			 * e.g. http://api.yelp.com/v2/search/?term=home depot&location=San Francisco, CA&limit=10&radius_filter=30000
+			 * TODO: Error message for 25,000 API limit?
+			 */
+			function yelp_api() {
+				 var auth = {
+					//
+					// Update with your auth tokens.
+					//
+					consumer_API_KEY_REDACTED_,
+					consumer_API_KEY_REDACTED_,
+					access_API_KEY_REDACTED_,
+					accessToken_API_KEY_REDACTED_,
+					serviceProvider : {
+						signatureMethod : "HMAC-SHA1"
+					}
+				};
+				var terms = d2.value;
+				var near = d2b.value;//'San+Francisco';
+				var accessor = {
+					consumerSecret : auth.consumerSecret,
+					tokenSecret : auth.accessTokenSecret
+				};
+				parameters = [];
+				parameters.push(['term', terms]);
+				parameters.push(['location', near]);
+				parameters.push(['oauth_consumer_key', auth.consumerKey]);
+				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+				parameters.push(['oauth_token', auth.accessToken]);
+				parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+				var message = {
+					'action' : 'http://api.yelp.com/v2/search',
+					'method' : 'GET',
+					'parameters' : parameters
+				};
+
+				OAuth.setTimestampAndNonce(message);
+				OAuth.SignatureMethod.sign(message, accessor);
+
+				var parameterMap = OAuth.getParameterMap(message.parameters);
+				var p = [];
+				for (var i in parameterMap) {
+					p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+				}
+				p = '?' + p.join('&');
+				
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://api.yelp.com/v2/search' + p,
+					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						yelp_api_success(options.response);
+					}
+				});
+			}
+			function yelp_api_success(response) { // OUT = d1c
+				var rs = response.responseText;
+				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
+				if (!rs.businesses || rs.businesses.length == 0) {
+					d1.innerText += '\n0 results';
+					// DO RIGHT
+					// TURN OFF FOR NOW........
+					//yelp();
+					return;
+				}
+				d1.innerText = '';
+				var b = rs.businesses;
+				var auto_found = false;
+				var found_close_enough_street = false;
+				new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
+				for (var i in b) {
+					// AUTO + CLEAN
+					b[i].name = yelp_clean_name(b[i].name);
+					
+					var fmt_address = '';
+					var fmt_address_match = '';
+					if (b[i].location && b[i].location.display_address && b[i].location.display_address.length) {
+						var l = b[i].location.display_address; // []
+						if (l.length == 3) { // REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
+							l.splice(1, 1); // REMOVES array item #2 ([1,2,3])
+						}
+							//~ var dups = {}; // No duplicates!
+						var lfmt = [];
+						for (var j in l) {
+								//~ if (dups.hasOwnProperty( l[j] )) continue;
+								//~ dups[ l[j] ] = true;
+							lfmt.push( MT__bold(l[j], o.bold_addr) );
+							fmt_address_match += l[j];
+						}
+						if (lfmt.length)
+							fmt_address = lfmt.join(',');
+					}
+					
+					// Number of bolds in address?
+					// Versus number of words
+					var nb_numwords = fmt_address.split(' ').length;
+					var nb_match = fmt_address.match(/<b>/g);
+					var nb_numbolds = (nb_match) ? nb_match.length : 0;
+					var nb_pct = nb_numbolds / nb_numwords;
+					console.log(nb_pct);
+					if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+						found_close_enough_street = true;
+						console.log('close enough');
+					}
+					
+					var fmt_cat = [];
+					if (b[i].categories) {
+						var c = b[i].categories;
+						for (var j in c) {
+							fmt_cat.push(c[j][0]); // [name,id]
+						}
+					}
+					fmt_cat = fmt_cat.join(','); // Or blank
+					//~ console.log(b[i].review_count);
+					//~ console.log(b[i].review_count*1);
+					//~ continue;
+					// Div
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.className = 'exe';
+					d.ypurl = b[i].url;
+					d1.appendChild(d);
+					d.innerHTML =
+						MT__bold(b[i].name, o.bold_comp) + '<br>' +
+						fmt_address +'<br>'+
+						'R:'+b[i].review_count+'<br>'+
+						// UNNECESSARY // 'P:'+(b[i].display_phone ? b[i].display_phone : '')+'<br>'+
+						'C:'+fmt_cat;
+					d.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						// NextTab
+						new AMT___core_factory().nextTab();
+						yp_profile(this);
+					}
+					
+					var ypnm_cln = b[i].name.clean_str_to_auto();
+					var ypad_cln = fmt_address_match.clean_str_to_auto();
+					// Auto found?
+					if  (
+						!auto_found &&
+						o.comp_cln == ypnm_cln &&
+						o.addr_cln == ypad_cln &&
+						o.comp_cln.length > 4 &&
+						o.addr_cln.length > 4
+						)
+					{
+						d.click();
+						auto_found = true;
+					}
+				}
+				if (d1.innerHTML != '') {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:2000px;');
+					d1.appendChild(d);
+				}
+				// If no street from above is close enough based on 
+				// bolding of street string, then run search snippet.
+				//
+				if (!found_close_enough_street) {
+					yelp_search_snippet();
+				}
 			}
 			/**
 			 * function bing
@@ -113532,6 +113697,7 @@ qatar,80
 				state: td[5].innerText.trim().stateAbbrToFull(),
 				phone: td[7].innerText.trim(),
 				cshort: td[1].innerText.trim().split(' ').slice(0,2).join(' '),
+				boldArray: [],
 				cquotes: '"'+td[1].innerText.trim().split(' ').join('" "')+'"',
 				q: [
 					document.getElementById('web_url')
@@ -113542,7 +113708,14 @@ qatar,80
 				// o.cquotes += ' law firm';
 			}
 			o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
-			
+						o.phone = "("+o.phone[0]+o.phone[1]+o.phone[2]+") " + o.phone[3] +o.phone[4] +o.phone[5] + " - "+ o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9];
+			o.boldArray = o.comp.clean_string_to_array();
+			console.log(o);
+			o.boldArray.push(o.phone[0]+o.phone[1]+o.phone[2])
+			o.boldArray.push(o.phone[3] +o.phone[4] +o.phone[5])
+			o.boldArray.push(o.phone[6] +o.phone[7]+o.phone[8]+o.phone[9]);
+			o.boldArray.push(o.city).push(o.state);
+			console.log(o);
 			/* BEGIN ITEMS */
 			//
 			var d1 = document.createElement('div');
@@ -113572,11 +113745,11 @@ qatar,80
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.comp.clean_string_to_array(),
+				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.cshort + '" "' + o.city + '" ' + o.state,
-					'"'+o.cshort + '" "' + o.phone + '"'
+					'"'+o.cshort + '" "' + o.city + '" ' + '"' + o.state + '"',
+					'"'+o.cshort + '" ' + o.phone + ''
 				],
 				out_element: o.q[0],
 				parent: d1,
