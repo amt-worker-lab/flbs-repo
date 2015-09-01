@@ -85136,6 +85136,10 @@ qatar,80
 				});
 			}
 			function yelp_api_success(response) { // OUT = d1c
+				d1c.innerHTML = '';
+				d1c.appendChild(
+					d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
+				);
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				if (!rs.businesses || rs.businesses.length == 0) {
@@ -85165,41 +85169,49 @@ qatar,80
 						for (var j in l) {
 								//~ if (dups.hasOwnProperty( l[j] )) continue;
 								//~ dups[ l[j] ] = true;
-							lfmt.push( MT__bold(l[j], o.bold_addr) );
+							//~ lfmt.push( MT__bold(l[j], o.bold_addr) );
 							fmt_address_match += l[j];
 						}
-						if (lfmt.length)
-							fmt_address = lfmt.join(',');
+						//~ if (lfmt.length)
+							//~ fmt_address = lfmt.join(',');
 					}
 					
-					var fmt_cat = [];
-					if (b[i].categories) {
-						var c = b[i].categories;
-						for (var j in c) {
-							fmt_cat.push(c[j][0]); // [name,id]
-						}
-					}
-					fmt_cat = fmt_cat.join(','); // Or blank
-					//~ console.log(b[i].review_count);
-					//~ console.log(b[i].review_count*1);
-					//~ continue;
+					var dist = b[i].distance / 1609.34; // Distance in miles
+					
 					// Div
 					var d = document.createElement('div');
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
 					d.className = 'exe';
 					d.ypurl = b[i].url;
+					d.yphone = b[i].phone.replace(/[^\d]/g, '');
+					d.yhref = b[i].url;
 					d1c.appendChild(d);
 					d.innerHTML =
-						MT__bold(b[i].name, o.bold_comp) + '<br>' +
+						MT__bold(b[i].name, o.name_arr) + '<br>' +
 						fmt_address +'<br>'+
-						'R:'+b[i].review_count+'<br>'+
-						// UNNECESSARY // 'P:'+(b[i].display_phone ? b[i].display_phone : '')+'<br>'+
-						'C:'+fmt_cat;
+						'P:'+(b[i].display_phone ? b[i].display_phone.replace(/^\+1-/, '') : '')+'<br>'+
+						'A:'+(b[i].location.address != '' ? b[i].location.address : b[i].location.display_address) + '<br>'
+						'D:'+(b[i].distance ? dist + ' mi' : '');
 					d.onclick = function() {
-						//~ this.style.backgroundColor = 'LightGreen';
-						//~ // NextTab
-						//~ new AMT___core_factory().nextTab();
-						//~ yp_profile(this);
+						this.style.backgroundColor = 'teal';
+						set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
+						q.value = this.yphone;
+						if (q2)
+							q2.value = this.yhref;
+						if  (
+							o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
+							this.yphone.length != 10 ||
+							!/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
+							)
+						{
+							d2.value = 'bad phone!';
+							d2.style.backgroundColor = 'LightGreen';
+							q.style.border = '4px solid teal';
+							return;
+						}
+						
+						// Here?
+						doSubmit();
 					}
 					
 					//~ var ypnm_cln = b[i].name.clean_str_to_auto();
