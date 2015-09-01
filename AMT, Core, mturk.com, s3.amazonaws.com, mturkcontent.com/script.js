@@ -84933,8 +84933,8 @@ qatar,80
 				};
 				parameters = [];
 				parameters.push(['term', terms]);
-				//~ parameters.push(['location', near]);
-				parameters.push(['cll', ll.lat + ',' + ll.lng]); //cll=latitude,longitude
+				parameters.push(['location', near]);
+				//~ parameters.push(['cll', ll.lat + ',' + ll.lng]); // xxxxx
 				parameters.push(['oauth_consumer_key', auth.consumerKey]);
 				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
 				parameters.push(['oauth_token', auth.accessToken]);
@@ -85016,7 +85016,12 @@ qatar,80
 					
 					// Check skip
 					var tmp_phone = b[i].phone.replace(/[^\d]/g, '');
-					check_accept(b.name, tmp_phone);
+					check_accept(b[i].name, tmp_phone);
+					var tmp_addr = (
+						b[i].location.address != '' ?
+						b[i].location.address + ',' + b[i].location.city + ',' + b[i].location.state_code :
+						b[i].location.display_address
+					);
 					
 					// Div
 					var d = document.createElement('div');
@@ -85029,7 +85034,7 @@ qatar,80
 					d.innerHTML =
 						MT__bold(b[i].name, o.name_arr) + '<br>' +
 						'P:'+(b[i].display_phone ? b[i].display_phone.replace(/^\+1-/, '') : '')+'<br>'+
-						'A:'+(b[i].location.address != '' ? b[i].location.address : b[i].location.display_address) + '<br>' +
+						'A:'+ tmp_addr + '<br>' +
 						'D:'+(dist ? dist + 'mi' : '');
 					d.onclick = function() {
 						this.style.backgroundColor = 'teal';
@@ -85172,26 +85177,29 @@ qatar,80
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						rs = JSON.parse(rs);
-						console.log(rs);
+						if (!rs.phone || !rs.url) {
+							d1d.style.backgroundColor = 'pink';
+						}
+						var p = rs.phone.replace(/[^\d]/g, '');
+						var u = rs.url;
 						
-						//~ this.style.backgroundColor = 'teal';
-						//~ set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
-						//~ q.value = this.yphone;
-						//~ if (q2)
-							//~ q2.value = this.yhref;
-						//~ if  (
-							//~ o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
-							//~ this.yphone.length != 10 ||
-							//~ !/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
-							//~ )
-						//~ {
-							//~ d2.value = 'bad phone!';
-							//~ d2.style.backgroundColor = 'LightGreen';
-							//~ q.style.border = '4px solid teal';
-							//~ return;
-						//~ }
-						//~ // Here?
-						//~ doSubmit();
+						set_divs_clicked(p); // SET ALL WITH SAME PHONE AS TEAL
+						q.value = p;
+						if (q2)
+							q2.value = u;
+						if  (
+							o.bad_phones_obj.hasOwnProperty( p ) ||
+							p.length != 10 ||
+							!/^https?:\/\/[^\/]+\/[^$]+$/.exec( u )
+							)
+						{
+							d2.value = 'bad phone!';
+							d2.style.backgroundColor = 'LightGreen';
+							q.style.border = '4px solid teal';
+							return;
+						}
+						// Here?
+						doSubmit();
 					}
 				});
 			}
