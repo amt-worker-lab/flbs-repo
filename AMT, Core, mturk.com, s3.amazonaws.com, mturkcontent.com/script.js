@@ -84086,15 +84086,9 @@ qatar,80
 					console.log(str);
 					console.log(o.exact_name_match);
 					o.check_accept_found = true;
-					//~ alert('found');
 					AMT___Floater.accept();
 				} else {
 					var ld = new AMT___gen_functions().levensht(str, o.exact_name_match); // Returns INT `changes`
-					//~ console.log(comp);
-					//~ console.log(o.comp);
-					//~ console.log(ldist);
-					// x('jjjjjjjjjj', 'jggggggggggggggggggg'); = 19
-					// x('jjjjjjjjjj', 'j'); = 9
 					var strlen = (str.length > o.exact_name_match.length) ? str.length : o.exact_name_match.length;
 					var pct_similar = (strlen - ld) / strlen; // e.g. 10-9 / 10 = 10%. 20-4 / 20 = 80%.
 					// 0 is completely dissimilar. 1 is identical.
@@ -84108,18 +84102,18 @@ qatar,80
 				}
 			}
 			
-			//~ /**
-			 //~ * function
-			 //~ */
-			//~ function find_phone__check_no_good_match(){
-				//~ no_good_match++;
-				//~ 
-				//~ if (no_good_match >= 2) {
-					//~ if (AMT__Global_Vars.isPreview) {
-						//~ AMT___Floater.skip();
-					//~ }
-				//~ }
-			//~ }
+			/**
+			 * function
+			 */
+			function find_phone__check_no_good_match(){
+				if (o.check_accept_found) return;
+				no_good_match++;
+				if (no_good_match >= 2) {
+					if (AMT__Global_Vars.isPreview) {
+						AMT___Floater.skip();
+					}
+				}
+			}
 			/**
 			 * function find_phone__FB
 			 */
@@ -84623,162 +84617,6 @@ qatar,80
 				yelp(); // Init FB
 				foursquare();
 				return;
-				
-				//~ // MANTA TEST
-				//~ //
-				//~ //
-				//~ //
-				//~ //
-				//~ //
-				//~ var rand_cookie = Math.random();
-				//~ var u = 'http://www.manta.com/distil_identify_cookie.html?uid=0FB98E03-63AF-3430-B733-55C731C85586&d_ref=/&qs=';//0FB98E03-63AF-3430-B733-55C731C85586
-				//~ var opts = {
-					//~ url: u,
-					//~ do_not_save_to_file: true,
-					//~ cookie_filename: 'cookie'+rand_cookie,
-					//~ //display_curl_info: true
-					//~ headers_array: [
-						//~ 'Accept-Encoding: gzip, deflate, sdch',
-						//~ 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						//~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36',
-						//~ 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-						//~ 'Referer: '+u,
-						//~ 'Connection: keep-alive',
-						//~ 'Cache-Control: max-age=0'
-					//~ ]
-				//~ }
-				//~ opts = JSON.stringify(opts);
-				//~ var u = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ if (response.status != 200 || /^\d{3}$/.exec(rs)) { // If status code is returned
-							//~ // Display output
-							//~ console.log('MANTA:x');
-							//~ return;
-						//~ }	
-						//~ //
-						//~ var u = 'http://www.manta.com/search?search_source=nav&pt='+ll.lat+'%2C'+ll.lng+'&search='+encodeURIComponent(d2.value); //28.6143519%2C-81.22977
-						//~ var opts = {
-							//~ url: u,
-							//~ do_not_save_to_file: true,
-							//~ cookie_filename: 'cookie'+rand_cookie,
-							//~ //display_curl_info: true
-							//~ headers_array: [
-								//~ 'Accept-Encoding: gzip, deflate, sdch',
-								//~ 'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-								//~ 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36',
-								//~ 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-								//~ 'Referer: http://www.manta.com/',
-								//~ 'Connection: keep-alive',
-								//~ 'Cache-Control: max-age=0', //74.79.113.254
-							//~ ]
-						//~ }
-						//~ opts = JSON.stringify(opts);
-						//~ var u = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
-						//~ GM_xmlhttpRequest({
-							//~ method: "GET",
-							//~ url: u,
-							//~ onload: function(response) {
-								//~ var rs = response.responseText;
-								//~ if (response.status != 200 || /^\d{3}$/.exec(rs)) { // If status code is returned
-									//~ // Display output
-									//~ console.log('MANTA:x');
-									//~ return;
-								//~ }
-								//~ 
-								//~ var dom = new DOMParser().parseFromString(rs,'text/html');
-								//~ var biz = dom.getElementsByClassName('media-body');
-								//~ for (var i in biz) {
-									//~ if (i == 'length') break;
-									//~ var divs = biz[i].getElementsByTagName('div');
-									//~ for (var j in divs) {
-										//~ if (j == 'length') break;
-										//~ var address = '', ph, name = '';
-										//~ if (divs[j].getAttribute('itemprop') && divs[j].getAttribute('itemprop') == 'address') {
-											//~ var intx = divs[j].innerText.trim();//.replace(/<[^>]*>/g, ''); 
-											//~ intx = intx.replace(/[\t\s]+/g, ' ');
-											//~ intx = intx.replace(/ *\n */g, '');
-											//~ intx = intx.trim();
-											//~ address = intx;
-											//~ console.log(address);
-										//~ }
-										//~ if (divs[j].getAttribute('rel') && divs[j].getAttribute('rel') == 'mainPhone') {
-											//~ var intx = divs[j].innerText.trim();//.replace(/<[^>]*>/g, ''); 
-											//~ intx = intx.replace(/[\t\s]+/g, ' ');
-											//~ intx = intx.replace(/ *\n */g, '\n');
-											//~ intx = intx.trim();
-											//~ ph = intx;
-											//~ // Format phone
-											//~ ph = ph.replace(/[\- \(\)]/g, '');
-											//~ ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
-										//~ } else {
-											//~ // continue;
-											//~ continue;
-										//~ }
-										//~ var href = biz[i].getElementsByTagName('a');
-										//~ if (!href.length) {
-											//~ href = '';
-										//~ } else {
-											//~ var a = href[0];
-											//~ href = a.getAttribute('href');
-											//~ if (!href) {
-												//~ href = '';
-											//~ }
-											//~ name = a.innerText.trim();
-										//~ }
-										//~ 
-										//~ var addr = address.split('\n');
-										//~ var str = '';
-										//~ for (var i in addr) {
-											//console.log(addr
-											//str += MT__bold(addr[i], o.locn_arr) + '<br>';
-										//~ }
-										//~ 
-										//~ // Div
-										//~ var div = document.createElement('div');
-										//~ div.setAttribute('style','width:100%;border-bottom:1px solid #a2a2a2;');
-										//~ div.className = 'exe test'; // exe & test
-										//~ div.yname = name;
-										//~ div.yhref = href;
-										//~ div.yaddr = address;console.log(MT__bold(div.yaddr, o.locn_arr));
-										//~ div.yphone = ph.replace(/[^\d]/g, ''); // yphone
-										//~ div.className += ' ' + div.yphone; // className
-										//~ d1e.appendChild(div);
-										//~ div.innerHTML =
-											//~ MT__bold(div.yname, o.name_arr) + '<br>' +
-											//~ str+
-											//~ MT__bold(div.yaddr, o.locn_arr) + '<br>' +
-											//~ ph;
-										//~ div.onclick = function() {
-											//~ this.style.backgroundColor = 'teal';
-											//~ set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
-											//~ q.value = this.yphone;
-											//~ if (q2)
-												//~ q2.value = this.yhref;
-											//~ if  (
-												//~ o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
-												//~ this.yphone.length != 10 ||
-												//~ !/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
-												//~ )
-											//~ {
-												//~ d2.value = 'bad phone!';
-												//~ d2.style.backgroundColor = 'LightGreen';
-												//~ q.style.border = '4px solid teal';
-												//~ return;
-											//~ }
-											//~ 
-											//~ // Here?
-											//~ doSubmit();
-										//~ }
-									//~ }
-								//~ }
-							//~ }
-						//~ });
-					//~ }
-				//~ });
 			}
 			/**
 			 * function yelp_success
@@ -85150,6 +84988,8 @@ qatar,80
 					// DO RIGHT
 					// TURN OFF FOR NOW........
 					//yelp();
+					o.stats.yelp_search_complete = true;
+					check_if_yp_init();
 					return;
 				}
 				var b = rs.businesses;
@@ -85172,6 +85012,10 @@ qatar,80
 						dist = Math.ceil(dist); // e.g. 3.9 is 4. 
 					}
 					var bgc = (dist > 4) ? 'background-color:aqua;' : '';
+					
+					// Check skip
+					var tmp_phone = b[i].phone.replace(/[^\d]/g, '');
+					check_accept(b.name, tmp_phone);
 					
 					// Div
 					var d = document.createElement('div');
@@ -85228,12 +85072,9 @@ qatar,80
 					d.setAttribute('style','height:2000px;');
 					d1c.appendChild(d);
 				}
-				// If no street from above is close enough based on 
-				// bolding of street string, then run search snippet.
-				//
-				if (!found_close_enough_street) {
-					//~ yelp_search_snippet();
-				}
+				// 
+				o.stats.yelp_search_complete = true;
+				check_if_yp_init();
 			}
 			/**
 			 * function bing
