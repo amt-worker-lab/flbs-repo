@@ -7,7 +7,7 @@
 		"https://s3.amazonaws.com/*",
 		"https://*.mturkcontent.com/dynamic/hit*",
 		"http://localhost/mturk/.dev/*",
-		"http://192.168.1.2/mturk/.dev/*",
+		"http://192.168.1.2/mturk/.dev/*"
 	  ],
       "js": [
 		"includes/pdfobject.js",

@@ -6746,7 +6746,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var td = document.getElementsByTagName('td');
 	
 	new AMT___core_factory().createScriptVar('Skip For High Yield','0');
-	new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
+	//new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
 	
 	var o = {
 		bold_array: options_object.bold_array,

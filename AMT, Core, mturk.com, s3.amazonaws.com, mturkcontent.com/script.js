@@ -85053,6 +85053,9 @@ qatar,80
 							d1c.style.backgroundColor = 'yellow';
 							window.open(options.response.finalUrl.replace('/snippet', ''));
 							return false;
+						} else if (rs.indexOf('Sorry, you\'re not allowed to access this page.')) {
+							d1c.style.backgroundColor = 'yellow';
+							return false;
 						}
 						else
 							return true;
@@ -113508,9 +113511,9 @@ qatar,80
 	 */
 	
 	//
-	// Rob Cardenas
+	// Atria Media Group
 	// Find the Website Address for a Company
-	var s = 'li>Do <strong>NOT</strong>&nbsp;include&nbsp;http:// <strong>OR</strong> www. (for example &nbsp;a website should be entered as familydentist.com <strong>NOT</strong> www.familydentist.com)</li>';
+	var s = 'li>Do <strong>NOT</strong>&nbsp;include&nbsp;http:// <strong>OR</strong> www. (for example &nbsp;a website should be entered as familydentist.com <strong>NOT</strong> www.familydentist.com)</li>'
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -113526,7 +113529,7 @@ qatar,80
 			var o = {
 				comp: td[1].innerText.trim(),
 				city: td[3].innerText.trim(),
-				state: td[5].innerText.trim(),
+				state: td[5].innerText.trim().stateAbbrToFull(),
 				phone: td[7].innerText.trim(),
 				cshort: td[1].innerText.trim().split(' ').slice(0,2).join(' '),
 				cquotes: '"'+td[1].innerText.trim().split(' ').join('" "')+'"',
@@ -113572,13 +113575,13 @@ qatar,80
 				bold_array: o.comp.clean_string_to_array(),
 				searches:[
 					o.comp,
-					o.cshort + " " + o.city + " " + o.state,
-					o.cshort + " " + o.phone
+					'"'+o.cshort + '" "' + o.city + '" ' + o.state,
+					'"'+o.cshort + '" "' + o.phone + '"'
 				],
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
-				naText:'N/A',
+				naText:'Unable to find',
 			});
 		}
 		new run().f();
