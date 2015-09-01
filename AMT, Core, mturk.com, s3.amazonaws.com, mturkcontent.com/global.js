@@ -6858,10 +6858,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		d1b.style.display =
 		d1c.style.display = 'none';
 		d1.style.width = '100%';
+		o.num_panels = 1; // Overwrite!
 	} else if (options_object.searches.length == 2) {
 		d1c.style.display = 'none';
 		d1.style.width =
 		d1b.style.width = '48%';
+		o.num_panels = 2; // Overwrite!
 	}
 	
 	// ...
