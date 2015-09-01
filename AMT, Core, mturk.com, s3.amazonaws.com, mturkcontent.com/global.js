@@ -6694,6 +6694,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .search_results.url_modifier_callback			Function(url)
  * .search			Object
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
+ * .hide_search_fields BOOLEAN
  * 
  * @return Not much to return. However, `options_object` is modified / modifiable.
  * 		options_object.results.divs
@@ -6735,6 +6736,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	if (!options_object.search_results.hasOwnProperty('replace_urls_in_result_body')) {// replace_urls_in_result_body
 		options_object.search_results.replace_urls_in_result_body = false;
+	}
+	if (!options_object.hasOwnProperty('hide_search_fields')) {//
+		options_object.hide_search_fields = false;
 	}
 	// Fills in
 	options_object.results = {
@@ -6835,6 +6839,25 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			this.style.backgroundColor = 'LightGreen';
 			o.q[0].value = this.value;
 			doSubmit();
+		}
+	}
+	
+	// Hide search fields?
+	if (options_object.hide_search_fields) {
+		d3.style.display = 
+		d3b.style.display = 
+		d3b.style.display = 'none';
+	}
+	// Hide empty columns
+	if (options_object.hide_search_fields) {
+		if (options_object.searches.length == 1) {
+			d1b.style.display =
+			d1c.style.display = 'none';
+			d1.style.width = '100%';
+		} else if (options_object.searches.length == 2) {
+			d1c.style.display = 'none';
+			d1.style.width =
+			d1b.style.width = '49%';
 		}
 	}
 	

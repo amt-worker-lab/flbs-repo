@@ -85085,12 +85085,13 @@ qatar,80
 				AMT___items_factory.prototype.create_dashboard_find_url({
 					bold_array: o.name_arr,
 					searches:[
-						d2.value+','+d2b.value
+						'site:yelp.com/biz/ ' + d2.value+',+"'+d2b.value+'"'
 					],
-					out_element: o.q[0],
-					parent: d1,
+					//~ out_element: o.q[0],
+					parent: d1d,
 					offsetTop: 0,
-					naText:'Unable to find',
+					hide_search_fields: true
+					//~ naText:'Unable to find',
 				});
 			}
 			/**
