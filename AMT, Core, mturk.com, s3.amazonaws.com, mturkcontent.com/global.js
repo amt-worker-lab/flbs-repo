@@ -6740,6 +6740,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (!options_object.hasOwnProperty('hide_search_fields')) {//
 		options_object.hide_search_fields = false;
 	}
+	if (!options_object.search_results.hasOwnProperty('callback_link_and_body')) {//
+		options_object.search_results.callback_link_and_body = function(link, full) {}; // Ignore...
+	}
 	// Fills in
 	options_object.results = {
 		divs: [],
@@ -6846,19 +6849,19 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (options_object.hide_search_fields) {
 		d3.style.display = 
 		d3b.style.display = 
-		d3b.style.display = 'none';
+		d3c.style.display = 'none';
 	}
-	// Hide empty columns
-	if (options_object.hide_search_fields) {
-		if (options_object.searches.length == 1) {
-			d1b.style.display =
-			d1c.style.display = 'none';
-			d1.style.width = '100%';
-		} else if (options_object.searches.length == 2) {
-			d1c.style.display = 'none';
-			d1.style.width =
-			d1b.style.width = '49%';
-		}
+	
+	// Hide empty columns !!
+	//
+	if (options_object.searches.length == 1) {
+		d1b.style.display =
+		d1c.style.display = 'none';
+		d1.style.width = '100%';
+	} else if (options_object.searches.length == 2) {
+		d1c.style.display = 'none';
+		d1.style.width =
+		d1b.style.width = '48%';
 	}
 	
 	// ...
@@ -7026,6 +7029,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			{
 				continue;
 			}
+			
+			options_object.search_results.callback_link_and_body(link, full);
 			
 			//~ // ..
 			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');

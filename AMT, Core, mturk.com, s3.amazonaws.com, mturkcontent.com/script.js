@@ -85090,7 +85090,10 @@ qatar,80
 					//~ out_element: o.q[0],
 					parent: d1d,
 					offsetTop: 0,
-					hide_search_fields: true
+					hide_search_fields: true,
+					search_results: {
+						use_full_urls: true
+					},
 					//~ naText:'Unable to find',
 				});
 			}
