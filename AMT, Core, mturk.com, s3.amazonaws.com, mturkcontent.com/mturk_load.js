@@ -79,8 +79,25 @@ function mturk_load()
 				document.body.appendChild(input);
 				
 				var JR_start = new Date().getTime()/1000; // Seconds
+				JR_check_time();
 				John_Roberts_xhr_check_HITs_Assigned_to_You();
 				return;
+			}
+			function JR_check_time() {
+				//~ var x = (input.value.split(' ')[1] * 1) + 1;
+				var p = ((new Date().getTime()/1000) - JR_start) / 60;
+				p = Math.round(p*100) / 100; // Two decimals
+				var n = Math.floor(p); // Int portion
+				var d = p - n; // Decimal portion
+				var elapsed;
+				if (d < 0.25)
+					elapsed = String(n) + ':00';
+				else if (d >= 0.25 && d < .75)
+					elapsed = String(n) + ':30';
+				else // (d >= 0.75)
+					elapsed = String(n+1) + ':00';
+
+				input.value = 'Elapsed: ' + elapsed;
 			}
 			function John_Roberts_xhr_check_HITs_Assigned_to_You() {
 				
@@ -97,24 +114,7 @@ function mturk_load()
 								document.location.href = r[1];
 								return;
 							} else {
-								//~ var x = (input.value.split(' ')[1] * 1) + 1;
-								var p = ((new Date().getTime()/1000) - JR_start) / 60;
-								p = Math.round(p*100) / 100; // Two decimals
-								var n = Math.floor(p); // Int portion
-								var d = p - n; // Decimal portion
-								var elapsed;
-								switch(d) {
-									case (d < .25):
-										elapsed = n + '.0';
-										break;
-									case (d >= .25 && d < .75):
-										elapsed = n + '.5';
-										break;
-									case (d >= .75):
-										elapsed = (n+1) + '.0';
-										break;
-								}
-								input.value = 'Elapsed: ' + elapsed + ' min.';
+								JR_check_time();
 							}
 							// Signed in?
 							if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
