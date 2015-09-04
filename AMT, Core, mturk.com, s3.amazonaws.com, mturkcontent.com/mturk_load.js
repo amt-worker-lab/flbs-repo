@@ -75,7 +75,7 @@ function mturk_load()
 			{
 				var input = document.createElement('input');
 				input.setAttribute('style', 'position:absolute;top:0;left:0;width:140px;zoom:1.8;');
-				input.value = 'Checking 0';
+				input.value = 'Starting...';
 				document.body.appendChild(input);
 				
 				var JR_start = new Date().getTime()/1000; // Seconds
@@ -98,8 +98,23 @@ function mturk_load()
 								return;
 							} else {
 								//~ var x = (input.value.split(' ')[1] * 1) + 1;
-								var elapsed = ((new Date().getTime()/1000) - JR_start) / 60;
-								input.value = 'Elapsed: ' + Math.floor(elapsed) + 'min.';
+								var p = ((new Date().getTime()/1000) - JR_start) / 60;
+								p = Math.round(p*100) / 100; // Two decimals
+								var n = Math.floor(p); // Int portion
+								var d = p - n; // Decimal portion
+								var elapsed;
+								switch(d) {
+									case (d < .25):
+										elapsed = n + '.0';
+										break;
+									case (d >= .25 && d < .75):
+										elapsed = n + '.5';
+										break;
+									case (d >= .75):
+										elapsed = (n+1) + '.0';
+										break;
+								}
+								input.value = 'Elapsed: ' + elapsed + ' min.';
 							}
 							// Signed in?
 							if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
