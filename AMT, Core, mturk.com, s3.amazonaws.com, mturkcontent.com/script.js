@@ -175377,13 +175377,15 @@ function top_window(okay_to_run) {
 	//
 	// John Roberts
 	//
-	//
+	// Old ones...
+	//		s = '<li>For each result in English, click the link and <b>go to that web page in your browser</b></li>';
+	//		s = 'For each web page that is in English, click each search result link  (the underlined blue text) and';
+	//		s = '<li>When all URLs are added, (#4) copy and paste this list into the text box below</li>';
 	s = '<p class=" text">Click the link, wait for the page to load, then copy the URL from your web browser address bar and paste it into the text box below on a line by itself.</p>';
-	//s = '<li>For each result in English, click the link and <b>go to that web page in your browser</b></li>';
-	//s = 'For each web page that is in English, click each search result link  (the underlined blue text) and';
-	//s = '<li>When all URLs are added, (#4) copy and paste this list into the text box below</li>';
+	var l = document.location.href;
 	if  (
-			ih.indexOf(s) != -1
+			ih.indexOf(s) != -1 &&
+			l.indexOf('accept') == -1 // This is temporary. It allows running reloader in Chrome while also running "HITs Assigned".
 		)
 	{
 		var run = function() {};
@@ -175683,11 +175685,13 @@ function top_window(okay_to_run) {
 	// Errors="0"
 	//s = 'Near the top left of the search results page, there is a number, which is the quantity of search results found. The number is in gray text and usually says ';
 	s = 'Near the top of the search results page is a piece of gray text that says "About X results..." Enter the number represented by X.';
+	var l = document.location.href;
 	if  (
 			ih.indexOf(s) != -1 &&
 			GM_getValue('mt_captcha') == '0' &&
 			ih.indexOf('Want to work on this') == -1 &&
-			ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') == -1
+			ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a> ') == -1 &&
+			l.indexOf('accept') == -1 // This is temporary. It allows running reloader in Chrome while also running "HITs Assigned".
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
