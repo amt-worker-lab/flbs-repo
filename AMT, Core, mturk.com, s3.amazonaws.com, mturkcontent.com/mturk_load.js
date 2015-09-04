@@ -63,7 +63,6 @@ function mturk_load()
 					chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 				}, 30000);
 				document.style.backgroundColor = 'pink';
-				//~ alert('MTURK.COM IS SIGNED OUT! (Sign in again for John Roberts.)');
 				return;
 			}
 			
@@ -79,6 +78,7 @@ function mturk_load()
 				input.value = 'Checking 0';
 				document.body.appendChild(input);
 				
+				var JR_start = new Date().getTime()/1000; // Seconds
 				John_Roberts_xhr_check_HITs_Assigned_to_You();
 				return;
 			}
@@ -93,14 +93,17 @@ function mturk_load()
 							if (response.status != 200) return;
 							
 							var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
-							if (r)
-							{
+							if (r) {
 								document.location.href = r[1];
+								return;
+							} else {
+								//~ var x = (input.value.split(' ')[1] * 1) + 1;
+								var elapsed = ((new Date().getTime()/1000) - JR_start) / 60;
+								input.value = 'Elapsed: ' + Math.floor(elapsed) + 'min.';
 							}
-							else
-							{
-								var x = (input.value.split(' ')[1] * 1) + 1;
-								input.value = 'Checking ' + x;
+							// Signed in?
+							if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
+								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 							}
 						}
 					});
