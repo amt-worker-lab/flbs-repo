@@ -45231,6 +45231,7 @@ function MT__RUN() {
 	var s11= "If you cannot find the store, click the 'Can't Label' button <u>and explain reasons briefly";
 	var s12 = 'If the target shares a parking lot with other stores, only include the area of the parking lot that is most';
 	var s13 = "Draw a complete polygon around the target gas station (by clicking on the map). If you don't like the first polygon you drew";
+	var s14 = "Draw a complete polygon around the target&nbsp;hotel (by clicking on the map).";
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
@@ -45244,7 +45245,8 @@ function MT__RUN() {
 		ih.indexOf(s10)!= -1 ||
 		ih.indexOf(s11) != -1 ||
 		ih.indexOf(s12) != -1 ||
-		ih.indexOf(s13) != -1
+		ih.indexOf(s13) != -1 ||
+		ih.indexOf(s14) != -1
 		)
 	{
 		var run = function() {};
