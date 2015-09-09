@@ -2352,6 +2352,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	}
 }
 
+
+var scriptVarWriteQueue = [];
+var isWritingFromSCWQ = false;
 AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue, isPersistant, expirationDate) {
 	if(!expirationDate) {
 		expirationDate = new Date().getTime() + 3*3600*1000;
@@ -2374,8 +2377,12 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 	
 		
 		AMT__Global_Vars.scriptVars[stringName] = defaultValue;
-		
-		setScriptVarObj(scriptVar); 
+		scriptVarWriteQueue.push(scriptVar);
+		if(!isWritingFromSCWQ)
+			setScriptVarFromWriteQueue(scriptVar); 
+		else {
+			//do nothing
+		}
 	}
 	else if(!isPersistant) {
 		setScriptVar(stringName, 'expirationDate', expirationDate);		
@@ -2402,6 +2409,20 @@ function setScriptVarObj(obj) {
 		var scriptVars = storageObj.scriptVars;
 		scriptVars[obj.name] = obj;
 		chrome.storage.local.set({'scriptVars': scriptVars});
+	});
+}
+function setScriptVarFromWriteQueue(obj) {
+	isWritingFromSCWQ = true;
+	var obj = scriptVarWriteQueue[0];
+	chrome.storage.local.get('scriptVars', function(storageObj) {
+		var scriptVars = storageObj.scriptVars;
+		scriptVars[obj.name] = obj;
+		chrome.storage.local.set({'scriptVars': scriptVars});
+		scriptVarWriteQueue.shift();
+		if(scriptVarWriteQueue.length)
+			setScriptVarFromWriteQueue();
+		else 
+			isWritingFromSCWQ = false;
 	});
 }
 
