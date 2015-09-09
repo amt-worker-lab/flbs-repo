@@ -45689,10 +45689,10 @@ function MT__RUN() {
 					d4.id = 'd4';
 				}
 				
-				showPastReturns(name + addr, function() {
-					document.body.style.backgroundColor = 'aqua';
-					document.getElementById('d4').innerHTML += 'Was Returned'
-				});
+				//~ showPastReturns(name + addr, function() {
+					//~ document.body.style.backgroundColor = 'aqua';
+					//~ document.getElementById('d4').innerHTML += 'Was Returned'
+				//~ });
 				
 				console.log('is this code running?');
 				
