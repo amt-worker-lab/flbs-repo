@@ -2188,6 +2188,9 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
 	function complete(event) {
 		console.log('event');
 		console.log(event.data);
+		console.log('has own property?');
+		console.log(event.hasOwnProperty('data'));
+		
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
@@ -2328,6 +2331,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			 * FIX: Sometimes fails to run.
 			 */
 			case 'window.innerHeight':
+				console.log('got to window.innerheight in topwindow');
+				
 				
 				var ifr = document.getElementsByTagName('iframe')[0];
 				
