@@ -2116,6 +2116,8 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	//
 	options.callback__success = success;
 	
+	console.log('attempting el_innerheight');
+	
 	// 
 	if (window.top == window.self) {
 		success(options, {

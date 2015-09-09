@@ -45694,6 +45694,8 @@ function MT__RUN() {
 					document.getElementById('d4').innerHTML += 'Was Returned'
 				});
 				
+				console.log('is this code running?');
+				
 				// innerHeight
 				new AMT___core_factory().el_innerHeight({
 					// This set the elements d1,d1b, and d1c
@@ -45713,6 +45715,7 @@ function MT__RUN() {
 						// Start the lat long func.
 						// If not running @ dev.
 						if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+							console.log('chios system geocoding lat lng');
 							chios_system_geocoding__lat_lng();
 						}
 						else
@@ -45821,6 +45824,7 @@ function MT__RUN() {
 				 * @param lng
 				 */
 				function geocode_result(lat, lng) {
+					console.log('ran geocode result');
 					if  (
 						!lat ||
 						!lng ||

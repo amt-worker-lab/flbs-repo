@@ -478,7 +478,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			try {
 				chrome.windows.get(localStorage['UTILITY_WINDOW'] *1 , function(window) {
 					if(!window || window.length == 0) {
-						localStorage[UTILITY_WINDOW] = 'unset';
+						localStorage['UTILITY_WINDOW'] = 'unset';
 					}
 				
 					sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
@@ -486,7 +486,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				console.log('returning true to keep connection alive');
 			} 
 			catch(err) {
-				localStorage[UTILITY_WINDOW] = 'unset';
+				localStorage['UTILITY_WINDOW'] = 'unset';
 				sendResponse({UTILITY_WINDOW:localStorage['UTILITY_WINDOW']});
 			}
 			return true;
