@@ -45702,7 +45702,7 @@ function MT__RUN() {
 					// to fill up the whole window, minus their
 					// distance from page top (top:XX pixels;).
 					callback_function: function(innerHeight) {
-
+						console.log('got cb from el_innerHeight');
 						var new_h = (innerHeight-80) + 'px'; //...
 						
 						// Set a timeout
@@ -45720,6 +45720,7 @@ function MT__RUN() {
 						}
 						else
 						{
+							console.log('running on local dev');
 							// Load results of past HITs from DB:
 							//  SELECT amt_hit_id FROM AMT_Alerts.tasks_accomplished
 							//  WHERE fk_amt_status="Rejected" && fk_requesterUserId="AU06FWQZTTRD1"
