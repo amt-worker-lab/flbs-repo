@@ -2138,12 +2138,10 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 		options
 	);
 	
-	setTimeout(function() {
-		// Parent
-		new AMT___core_factory().iframe2parent__postMessage({
-			action: 'window.innerHeight'
-		})
-	},1000);
+	// Parent
+	new AMT___core_factory().iframe2parent__postMessage({
+		action: 'window.innerHeight'
+	})
 	
 	// The success function
 	// @param : options
@@ -2189,6 +2187,7 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
 	
 	function complete(event) {
 		console.log('event');
+		console.log(event.data);
 		if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
@@ -2406,7 +2405,7 @@ function setScriptVarObj(obj) {
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
 	//~ console.log(options);
-	
+	console.log('post message testing:');
 	parent.postMessage({
 		action: options.action,
 		options: options
