@@ -2229,12 +2229,19 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// ...
 	function top_window__addEventListener_iframe__complete(event)
 	{
-		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		if (event.data && event.data.groupIdRequest) return; // Ignore this for now.........
+		console.log('Top window event:');
+		console.log(event.data);
+		console.log(event.data.action);
+		
+		if (!event || !event.data) return;
+		
+		// THIS IS BROKEN IN CHROME v 45.{}.{}.{}
+		//
+		//
+		//if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
-		
-		console.log('Top window event:');
-		console.log(v);
 		
 		switch(v.action) {
 			case 'return_button_click': 
@@ -2335,14 +2342,11 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			case 'window.innerHeight':
 				console.log('got to window.innerheight in topwindow');
 				
-				
 				var ifr = document.getElementsByTagName('iframe')[0];
 				
 				// Get the current offset of the iframe!
 				// Usually set by tools.
 				var ot = (ifr.offsetTop <= 60) ? ifr.offsetTop : 0;
-				//~ console.log('ot' + ot);
-				//~ console.log('ih' + window.innerHeight);
 				
 				// Send response
 				ifr.contentWindow.postMessage({
