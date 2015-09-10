@@ -135,6 +135,7 @@ function load()
 		
 		this.global_vars.is_running_on_amt = false;
 		
+		
 		return;
 	}
 	
@@ -247,7 +248,7 @@ function load()
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = false;
 				
-		AMT___InitializeReturnAndAcceptKeyPress();
+		//AMT___InitializeReturnAndAcceptKeyPress();
 
 		console.log('testing john brelig');
 			

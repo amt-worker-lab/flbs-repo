@@ -1717,5 +1717,17 @@ AMT___Floater.runPreview = function() {
 	}
 }
 
+//If not mturk, and this is an iframe
+//~ if  (
+		//~ (loc.indexOf('https://www.mturk.com') != -1 ||
+		//~ loc.indexOf('https://www.mturkcontent.com') != -1 ||
+		//~ loc.indexOf('https://s3.amazonaws.com') != -1 ||
+		//~ loc.indexOf('https://workersandbox.mturk.com') != -1 ) && window.top != window.self
+	//~ )
+//~ { 
+	
+	//~ //AMT___InitializeReturnAndAcceptKeyPress();
+//~ }
+
 
 
