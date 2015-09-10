@@ -2233,7 +2233,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	function top_window__addEventListener_iframe__complete(event)
 	{
 		if (event.data && event.data.groupIdRequest) return; // Ignore this for now.........
-		console.log('Top window event:');
+		console.log('Top window event in core-content:');
 		console.log(event.data);
 		console.log(event.data.action);
 		

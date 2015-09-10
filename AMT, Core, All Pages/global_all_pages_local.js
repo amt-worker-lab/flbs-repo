@@ -1559,7 +1559,6 @@ AMT___global_factory.prototype.highlight_photos = function(options_object) {
 
 
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
-	
 	// Is there an iframe on the page?
 	// If there is not then this is the end!
 	if (!document.getElementsByTagName('iframe').length)
@@ -1570,6 +1569,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// ...
 	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
 	
+	console.log('added event listener for top_window for all-pages');
+	
 	// ...
 	function top_window__addEventListener_iframe__complete(event)
 	{
@@ -1577,9 +1578,13 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 		//
 		//
 		//~ if (!event || !event.hasOwnProperty('data') || !event.data) return;
+
+
+		console.log('got event in core-all-pages');
+		console.log(event);
+
 		
 		if (!event || !event.data) return;
-		
 		var v = event.data;
 		
 		switch(v.action) {
