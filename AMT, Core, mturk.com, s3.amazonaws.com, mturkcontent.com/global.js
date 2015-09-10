@@ -2206,7 +2206,7 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
 				break;
 		}
 	}
-}
+}alert('x');
 /**
  * .top_window__addEventListener_iframe
  * 
@@ -2214,7 +2214,7 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
  * @param v.threshold_to_change => ChangeWindowCount
  */
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
-	
+	alert('x!');
 	// Is there an iframe on the page?
 	// If there is not then this is the end!
 	if (!document.getElementsByTagName('iframe').length)
@@ -2223,6 +2223,8 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// Still here. There is an iframe so listen for any
 	// messages that may come up.
 	// ...
+	console.log('Adding event listener for top window!');
+	alert('Adding event listener for top window!');
 	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
 	
 	// ...
