@@ -237,6 +237,29 @@ function load()
 		return;
 	}
 	
+	//Jon Brelig
+	if  (
+		window.top != window.self &&
+		/^https?:\/\/mturk.infoscoutinc.com/.exec(loc)
+		)
+	{
+		AMT__Global_Vars.initializeTabId();
+		AMT__Global_Vars.isPreview = false;
+		AMT__Global_Vars.isTopWindow = false;
+				
+		AMT___ReturnAndAcceptKeyPressForAllPages();
+
+		console.log('testing john brelig');
+			
+		// have a run button
+		//load__allPages_AMT_combo();
+		// stop
+		//console.log('stop all pages');
+		//this.global_vars.is_running_on_amt = false;
+		
+		return;
+	}
+	
 	/*
 	 {
 		zoom: int, //Default 3
