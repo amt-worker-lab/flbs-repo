@@ -247,7 +247,7 @@ function load()
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = false;
 				
-		AMT___ReturnAndAcceptKeyPressForAllPages();
+		AMT___InitializeReturnAndAcceptKeyPress();
 
 		console.log('testing john brelig');
 			
