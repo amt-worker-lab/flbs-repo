@@ -2148,6 +2148,7 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	// @param : v {}
 	function success(options, v) {
 		
+		console.log('GOT SUCCESSFUL CALLBACK FOR EL_INNERHEIGHT!')
 		// v.action
 		// v.innerHeight
 		
