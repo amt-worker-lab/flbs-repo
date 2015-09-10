@@ -1573,11 +1573,14 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// ...
 	function top_window__addEventListener_iframe__complete(event)
 	{
-		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		// BUG IN CHROME v 45.{}.{}.{}
+		//
+		//
+		//~ if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		if (!event || !event.data) return;
 		
 		var v = event.data;
-		//~ console.log('ASDFASDFASDFASDFASDF');return;
-		//~ console.log(v);
 		
 		switch(v.action) {
 			case 'tabsQTitleChange': 

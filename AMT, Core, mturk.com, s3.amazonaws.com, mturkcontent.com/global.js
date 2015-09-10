@@ -2187,12 +2187,15 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
 	
 	function complete(event) {
 		if (event.data.hasOwnProperty('groupId')) return; // Skip console logs for this!
-		console.log('event');
+		console.log('event.data');
 		console.log(event.data);
-		console.log('has own property?');
-		console.log(event.hasOwnProperty('data'));
 		
-		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		// BROKEN v 45.{}.{}.{}
+		//
+		//
+		//if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		if (!event || !event.data) return;
 		
 		var v = event.data;
 		console.log('got event ' + v.action);

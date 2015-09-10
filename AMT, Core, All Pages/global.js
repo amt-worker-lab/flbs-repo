@@ -53,6 +53,7 @@ var AMT__Global_Vars = //function()
 		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
 		{name: 'NumPassby',	value: '3', isPersistant:true},
 		{name: 'PassbyDelay',	value: '100', isPersistant:true},
+		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
 		{name: 'Return NextTab',	value: '0', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
@@ -132,6 +133,29 @@ var getReturnButton2 = function() {
 	return a;
 }
 
+AMT__Global_Vars.setAcceptedFavicon = function() {
+	 var link = document.createElement('link');
+	 var links = document.getElementsByTagName('link');
+	 for(var i =0 ; i < links.length; i++) {
+		if(links[i].href = 'https://www.mturk.com/media/favicon.ico') {
+			oldLink = links[i];
+			//alert('oldlink');
+			break;
+			
+		}
+		 
+	 }
+	 link.id = 'dynamic-favicon';
+	 link.rel = 'shortcut icon';
+	 //link.href = 'http://www.favicon.cc/favicon/35/811/favicon.png';
+	 
+	 if (oldLink) {
+	  document.head.removeChild(oldLink);
+	 }
+	 //document.head.appendChild(link);
+	 (function() {var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAALklEQVQ4y2NkYGBg6D7s9Z+BDFBqu42RkVzNMMBEieZRA0YNGDUAARgZGCjLzgCKxAq1UuyhoQAAAABJRU5ErkJggg==';document.getElementsByTagName('head')[0].appendChild(link);})();
+				
+}
 
 AMT__Global_Vars.initialize_num_amt_tabs = function() {
 	chrome.extension.sendRequest({get_num_amt_tabs: true}, 
@@ -195,12 +219,13 @@ AMT__Global_Vars.initializeReturnButton = function () {
 					
 					if(AMT__Global_Vars.scriptVars['Return Button ShowNextTab'] != "0") {
 						showNextTab({isTopWindow:true});
-						showNextTab({isTopWindow:false});
+						//showNextTab({isTopWindow:false});
 					}
 					else if (AMT__Global_Vars.scriptVars['Return NextTab'] != '0') {
 						new AMT___core_factory().nextTab(); // do nextTab
 					}
 					
+					AMT__Global_Vars.isSubmitting = true;
 					
 					
 					allAs[i].click();
@@ -255,11 +280,12 @@ AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
 		var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
-		var groupId = groupIdReg.exec(ih)[1];
-		if(!groupId)
+		var groupId = groupIdReg.exec(ih);
+		if(!groupId || groupId.length == 0)
 		{
 			//alert('Error initializing groupId');
-		}
+			return;
+		} else groupId = groupId[1];
 		AMT__Global_Vars.groupId = groupId;		
 		
 		// Now that we have the groupId, listen for whether the child frame wants to learn it as well.
@@ -298,29 +324,27 @@ AMT__Global_Vars.initializeGroupId = function () {
 			parent.postMessage({groupIdRequest: true}, '*');
 		}, 200);
 		
-		
-		
 		window.addEventListener('message', function(e) {
-				if(!AMT__Global_Vars.groupId)
+			if(!AMT__Global_Vars.groupId)
+			{
+				if(e.data && e.data.groupId)
 				{
-					if(e.data && e.data.groupId)
+					AMT__Global_Vars.groupId = e.data.groupId;
+					
+					//Record the groupId if we aren't in preview. This way we know which HITs we've already done/returned
+					if(!AMT__Global_Vars.isPreview)
 					{
-						AMT__Global_Vars.groupId = e.data.groupId;
-						
-						//Record the groupId if we aren't in preview. This way we know which HITs we've already done/returned
-						if(!AMT__Global_Vars.isPreview)
-						{
-							//Record the HitId so we know if we've already been here
-							AMT___addQuestionAnswer('Skip Returns - ' + AMT__Global_Vars.groupId,
-										AMT__Global_Vars.hitId,
-										'');
-						}
-						clearInterval(interval);					
-						this.removeEventListener('click',arguments.callee,false);
+						//Record the HitId so we know if we've already been here
+						AMT___addQuestionAnswer('Skip Returns - ' + AMT__Global_Vars.groupId,
+									AMT__Global_Vars.hitId,
+									'');
 					}
+					clearInterval(interval);					
+					this.removeEventListener('click',arguments.callee,false);
 				}
-			}, false);
-		}
+			}
+		}, false);
+	}
 }
 
 AMT__Global_Vars.initializeHitId = function () {
@@ -351,8 +375,7 @@ AMT__Global_Vars.initializeHitId = function () {
 			if(!hitId)
 			{
 				//alert('Error initializing groupId');
-			}
-			hitId = hitId[1];
+			} else hitId = hitId[1];
 		}
 		AMT__Global_Vars.hitId = hitId;
 	}
@@ -392,7 +415,14 @@ AMT__Global_Vars.initializeTabId = function() {
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	
+	if(request.isAcceptedAndTopWindow) {
+		if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && !AMT__Global_Vars.isSubmitting) {
+			sendResponse({
+					isAcceptedAndTopWindow: true,
+					tabId: AMT__Global_Vars.tabId
+				}, function() {/*Squelch response*/});
+		}
+	}
 	
 	if(request.playFirstElement) {
 		console.log('recieved: play first element');
@@ -403,8 +433,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}
 	}
 	if(request.focusOnPage) {
-		console.log('told to focus on page');
-		console.log('AMT__Global_Vars.isTopWindow' + AMT__Global_Vars.isTopWindow + ' == request.isTopWindow' + request.isTopWindow);
+		//~ console.log('told to focus on page');
+		//~ console.log('AMT__Global_Vars.isTopWindow' + AMT__Global_Vars.isTopWindow + ' == request.isTopWindow' + request.isTopWindow);
 		if(!AMT__Global_Vars.isTopWindow == !request.isTopWindow) {
 			window.focus();
 		}
@@ -425,7 +455,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		//Only have the top window sending back the response
 		//console.log('Commanded to tell if isQProduct: ' + isQProduct);
-		if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
+		//if(AMT__Global_Vars.isTopWindow == request.isTopWindow)
+		if(AMT__Global_Vars.sStrings.length > 0)
 		{
 			//console.log(AMT__Global_Vars.tabId);
 			sendResponse({isQProduct: isQProduct, qProductId: qProductId, tabId: AMT__Global_Vars.tabId});
@@ -440,11 +471,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	else if(request.focus) {
 		console.log('told to focus');
 		
-		if(request.isTopWindow == AMT__Global_Vars.isTopWindow) {
-			document.body.focus();
-			if(AMT__Global_Vars.callbackOnShowNextTabArrival)
-				AMT__Global_Vars.callbackOnShowNextTabArrival();
-			console.log('focusing');
+		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && AMT__Global_Vars.isTopWindow) {
+			//document.body.focus();
+			document.getElementsByTagName('iframe')[0].focus();
+			//~ console.log('clicked to focus on');
+			//~ console.log(document.getElementsByTagName('iframe')[0]);
+		} else if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && !AMT__Global_Vars.isTopWindow){
+			window.focus();
 		}
 	}
 	else if(request.switchTabNotifier) {
@@ -494,15 +527,17 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 //
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	console.log(request);
-	
+	//~ console.log(request);
 	
 	if(request.checkNTPassBy) {
-		console.log('got nexttab passby');
-		console.log (AMT__Global_Vars.scriptVars['NumPassby']*1);
-		console.log (AMT__Global_Vars.toggle_ntpassby*1);
-		console.log (AMT__Global_Vars.numSubmitQueries);
-		
+		//~ console.log('got nexttab passby');
+		//~ console.log (AMT__Global_Vars.scriptVars['NumPassby']);
+		//~ console.log (AMT__Global_Vars.toggle_ntpassby);
+		//~ console.log (AMT__Global_Vars.numSubmitQueries);
+		//~ console.log(AMT__Global_Vars.isSubmitting);
+		//~ console.log(AMT__Global_Vars.numSubmitQueries)
+		//~ console.log(AMT__Global_Vars.isPreview);
+		//~ console.log(AMT__Global_Vars.toggle_ntpassby);
 		
 		if(AMT__Global_Vars.isSubmitting && 
 		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
@@ -512,9 +547,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				new AMT___core_factory().nextTab();
 			}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
 			//alert('here here');
-		}else {
-			//Do nothing
+		}else if(AMT__Global_Vars.isTopWindow) {
+			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
+				console.log('focusing');
+				console.log(document.getElementsByTagName('iframe')[0]);
+				document.getElementsByTagName('iframe')[0].focus();
+			}
+		} else {
+			//console.log('other case?');
+			//Attempt to focus regardless if possible
+			if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
+				document.getElementsByTagName('iframe')[0].focus();
+			
+			}
+			//				console.log(document.getElementsByTagName('iframe')[0]);
 		}
+		
 	}
 		
 	/**
@@ -759,10 +807,12 @@ qProductId = false;
 
 
 
-function addToTabsQ(callbackOnShowNextTabArrival) {
+function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 	isQProduct = true;
 	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
-	
+	if(!jumpToFirst) {
+		var jumpToFirst = AMT__Global_Vars.scriptVars['TabsQ JumpToFirst'] != '0';
+	}
 	new AMT___core_factory().shiftFarRight();
 	
 	
@@ -775,7 +825,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 			console.log(AMT__Global_Vars);
 			chrome.extension.sendRequest({
 				  addToTabsQ: true,
-				  isTopWindow: AMT__Global_Vars.isTopWindow
+				  isTopWindow: AMT__Global_Vars.isTopWindow,
+				  jumpToFirst: jumpToFirst
 			  }, function(response) {
 				qProductId = response.qProductId;
 			});
@@ -788,7 +839,8 @@ function addToTabsQ(callbackOnShowNextTabArrival) {
 		console.log(AMT__Global_Vars);
 		chrome.extension.sendRequest({
 									  addToTabsQ: true,
-									  isTopWindow: AMT__Global_Vars.isTopWindow
+									  isTopWindow: AMT__Global_Vars.isTopWindow,
+									  jumpToFirst: jumpToFirst
 								  }, function(response) {
 									qProductId = response.qProductId;
 								});
@@ -1719,10 +1771,15 @@ String.prototype.clean_str_to_auto = function(opts) {
  * 
  * @style		...
  * @innerHTML	Default=false.
+ * @ce			Default='div'. createElement. E.g. 'br'.
  */
 String.prototype.div = function(opts) {
 	var s = this.toString();
-	var div = document.createElement('div');
+	var div;
+	if (opts && opts.hasOwnProperty('ce')) {
+		div = document.createElement(opts.ce); // e.g. createElement('br');
+	} else 
+		div = document.createElement('div');
 	if (opts && opts.hasOwnProperty('style')) {
 		div.setAttribute('style', opts.style);
 	}
@@ -2059,6 +2116,8 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	//
 	options.callback__success = success;
 	
+	console.log('attempting el_innerheight');
+	
 	// 
 	if (window.top == window.self) {
 		success(options, {
@@ -2082,16 +2141,16 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	// Parent
 	new AMT___core_factory().iframe2parent__postMessage({
 		action: 'window.innerHeight'
-	});
+	})
 	
 	// The success function
 	// @param : options
 	// @param : v {}
 	function success(options, v) {
 		
+		console.log('GOT SUCCESSFUL CALLBACK FOR EL_INNERHEIGHT!')
 		// v.action
 		// v.innerHeight
-		//~ console.log(v);
 		
 		// If callback
 		if (options.hasOwnProperty('callback_function')) {
@@ -2123,13 +2182,23 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
 	
 	var options = options;
 	
+	console.log('added event listener for child frame to listen');
 	window.addEventListener("message", complete, false);
 	
 	function complete(event) {
-		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		if (event.data.hasOwnProperty('groupId')) return; // Skip console logs for this!
+		console.log('event.data');
+		console.log(event.data);
+		
+		// BROKEN v 45.{}.{}.{}
+		//
+		//
+		//if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		
+		if (!event || !event.data) return;
 		
 		var v = event.data;
-		
+		console.log('got event ' + v.action);
 		switch(v.action) {
 			
 			// window.innerHeight
@@ -2149,7 +2218,6 @@ AMT___core_factory.prototype.childFrame__addEventListener_iframe = function(opti
  * @param v.threshold_to_change => ChangeWindowCount
  */
 AMT___core_factory.prototype.top_window__addEventListener_iframe = function(options, callback_function) {
-	
 	// Is there an iframe on the page?
 	// If there is not then this is the end!
 	if (!document.getElementsByTagName('iframe').length)
@@ -2158,16 +2226,25 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	// Still here. There is an iframe so listen for any
 	// messages that may come up.
 	// ...
+	console.log('Adding event listener for top window!');
 	window.addEventListener("message", top_window__addEventListener_iframe__complete, false);
 	
 	// ...
 	function top_window__addEventListener_iframe__complete(event)
 	{
-		if (!event || !event.hasOwnProperty('data') || !event.data) return;
+		if (event.data && event.data.groupIdRequest) return; // Ignore this for now.........
+		console.log('Top window event:');
+		console.log(event.data);
+		console.log(event.data.action);
+		
+		if (!event || !event.data) return;
+		
+		// THIS IS BROKEN IN CHROME v 45.{}.{}.{}
+		//
+		//
+		//if (!event || !event.hasOwnProperty('data') || !event.data) return;
 		
 		var v = event.data;
-		
-		//~ console.log(v);
 		
 		switch(v.action) {
 			case 'return_button_click': 
@@ -2220,7 +2297,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 						
 						
 						showNextTab({isTopWindow:true});
-						showNextTab({isTopWindow:false});
+						//showNextTab({isTopWindow:false});
 					}, false);
 				}
 				// 2nd return button
@@ -2254,7 +2331,6 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 					localStorage['ChangeWindowCount'] = 0;
 					document.body.style.backgroundColor = 'silver';
 					chrome.extension.sendRequest({play_random_next_sound:true}, function() {/*squelch response*/});
-					//~ new AMT___core_factory().nextWindow();
 				}
 				break;
 			
@@ -2263,16 +2339,17 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 			 * 
 			 * If offsetTop > 60 then do not use this
 			 * in the calculation.
+			 * 
+			 * FIX: Sometimes fails to run.
 			 */
 			case 'window.innerHeight':
+				console.log('got to window.innerheight in topwindow');
 				
 				var ifr = document.getElementsByTagName('iframe')[0];
 				
 				// Get the current offset of the iframe!
 				// Usually set by tools.
 				var ot = (ifr.offsetTop <= 60) ? ifr.offsetTop : 0;
-				//~ console.log('ot' + ot);
-				//~ console.log('ih' + window.innerHeight);
 				
 				// Send response
 				ifr.contentWindow.postMessage({
@@ -2284,6 +2361,9 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	}
 }
 
+
+var scriptVarWriteQueue = [];
+var isWritingFromSCWQ = false;
 AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue, isPersistant, expirationDate) {
 	if(!expirationDate) {
 		expirationDate = new Date().getTime() + 3*3600*1000;
@@ -2306,8 +2386,12 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 	
 		
 		AMT__Global_Vars.scriptVars[stringName] = defaultValue;
-		
-		setScriptVarObj(scriptVar); 
+		scriptVarWriteQueue.push(scriptVar);
+		if(!isWritingFromSCWQ)
+			setScriptVarFromWriteQueue(scriptVar); 
+		else {
+			//do nothing
+		}
 	}
 	else if(!isPersistant) {
 		setScriptVar(stringName, 'expirationDate', expirationDate);		
@@ -2336,17 +2420,33 @@ function setScriptVarObj(obj) {
 		chrome.storage.local.set({'scriptVars': scriptVars});
 	});
 }
+function setScriptVarFromWriteQueue(obj) {
+	isWritingFromSCWQ = true;
+	var obj = scriptVarWriteQueue[0];
+	chrome.storage.local.get('scriptVars', function(storageObj) {
+		var scriptVars = storageObj.scriptVars;
+		scriptVars[obj.name] = obj;
+		chrome.storage.local.set({'scriptVars': scriptVars});
+		scriptVarWriteQueue.shift();
+		if(scriptVarWriteQueue.length)
+			setScriptVarFromWriteQueue();
+		else 
+			isWritingFromSCWQ = false;
+	});
+}
 
 
 
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
 	//~ console.log(options);
-	
+	console.log('post message testing:');
 	parent.postMessage({
 		action: options.action,
 		options: options
 	}, "*");
+	
+	parent.postMessage("test test test", "*");
 	
 	//~ setInterval
 }
@@ -2506,7 +2606,7 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 			if (options_object.hasOwnProperty('callback')) {
 				options_object.callback(options_object);
 			} else if (options_object.hasOwnProperty('blur_element')) {
-				el.blur();
+				this.blur();
 			}
 			
 		}, false);
@@ -2534,6 +2634,92 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function server_load_asynchronously
+ * 
+ * URL					Required. String.
+ * success_callback		Function. Callback for completed.
+ * 
+ * @return	.success_filename
+ * 			.options {}, initial object passed in
+ * 			.response {responseText, status, finalUrl,... etc.}
+ */
+AMT___requests_factory.prototype.server_load_asynchronously = function(options) {
+	// e.g.
+	//~ // Load the image asynchronously.
+	//~ new AMT___core_factory().server_load_asynchronously({ // Default=to MD5 the URL to create a filename. Default=Saved to .cached.
+		//~ url: x,
+		//~ __seed: imgs[i],// Used only in callback `on_success`!
+		//~ on_success: function(completed_obj) { // callback
+			//~ var options = completed_obj.options;
+			//~ options.__seed.src = completed_obj.
+		//~ }
+	//~ });
+	
+	//~ setInterval(check_complete, 1000);
+	
+	options.host = MT___host;
+	options.filename = new AMT___requests_factory().md5(options.URL); // md5 URL
+	options.file_folder = '.cached';
+	options.method = 'get';
+	
+	init_dl();
+	read_from_disk(); // init watcher
+	
+	function init_dl() {
+		// Opts
+		var opts = {
+			url: options.URL,
+			short_filename: options.filename, // Save as filename // i.e. o.basename + o.cuname + '.pdf'
+			browser_exit: true, // Tell PHP to kill the browser XHR request.
+			silent_output: true, // No output!
+		}
+		opts = JSON.stringify(opts);
+		
+		// XHR to download PDF
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php',
+			data: 'AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;//console.log(rs);//alert(rs);
+				if (/^\d{3}$/.exec(rs)) { // If status code is returned
+					alert(rs);
+					return;
+				}
+			}
+		});
+	}
+	
+	function read_from_disk() {
+		var time_init = new Date().getTime(); // ms
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: options.host + '/mturk/util.php?xhr_with_disk_cache__read_from_disk='+encodeURIComponent(JSON.stringify(options))+'&random='+Math.random(),
+			onload: function (response) {
+				var rs = response.responseText;console.log(rs);
+				
+				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+					// Reset
+					var now = new Date().getTime(); // ms
+					var next = 1000 - (now - time_init); // e.g. 1 - (5-2) = -2; 1 - (2.5-2) = 0.5.
+					console.log('NEXT:'+next);
+					setTimeout(read_from_disk, next);
+				} else {
+					console.log('-----\nRESPONSE CACHED!\n-----');
+					options.success_callback({
+						response: response,
+						options: options,
+						success_filename: MT___host + '/mturk/.cached/' + options.filename
+					});
+				}
+			}
+		});
+	}
 }
 /**
  * function xhr_with_disk_cache
@@ -2579,8 +2765,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 		if (!options.hasOwnProperty('file_folder')) {
 			options.file_folder = '.cached';
 		}
-		if (!options.hasOwnProperty('filename')) {
+		if (!options.hasOwnProperty('filename')) { // Called "short_filename" in util.php
 			options.filename = new AMT___requests_factory().md5(options.URL); // md5 URL
+		} else {
+			
 		}
 		if (!options.hasOwnProperty('host')) {
 			options.host = MT___host;
@@ -2641,6 +2829,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
 					read_from_xhr();
 				} else {
+					console.log('-----\nRESPONSE CACHED!\n-----');
 					success(response);
 				}
 			}
@@ -2669,7 +2858,25 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				}
 			});
 		} else if (options.method == 'post') {
-			
+			GM_xmlhttpRequest({
+				method: 'POST',
+				url: options.URL,
+				data: options.data,
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				onload: function (response) {
+					//~ var rs = response.responseText;
+					
+					options.response = response;
+					
+					if (options.check_pre_write_to_disk(options)) {
+						write_to_disk(response);
+					} else {
+						return false;
+					}
+				}
+			});
 		}
 	}
 	/**
@@ -4685,14 +4892,22 @@ AMT___requests_factory.prototype.io__write_to_file = function(write_object, call
 	});
 }
 //
-AMT___requests_factory.prototype.io__file_exists = function(filename, callback_function) //
+//
+//
+AMT___requests_factory.prototype.io__file_exists = function(filename, callback_function, options_object) //
 {
+	var host = (options_object && options_object.host) ? options_object.host : AMT___POPUP___PROXY_REDACTED_;
+	
+	// Generate opts object
+	options_object.filename = filename;
+	options_object.folder = (options_object.folder) ? options_object.folder : '.cached'; // Default=.cached
+	var o = JSON.stringify(options_object);
+	
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__io_file_exists='+encodeURIComponent(filename),
+		url: host + '/mturk/util.php?AMT__io_file_exists='+encodeURIComponent(o),
 		onload: function (response) {
 			var rs = response.responseText;
-			
 			if (response.status == 200 && rs == '1') {
 				callback_function(true);
 			} else {
@@ -4704,10 +4919,6 @@ AMT___requests_factory.prototype.io__file_exists = function(filename, callback_f
 //
 AMT___requests_factory.prototype.io__read_file = function(file_object, callback_function) //
 {
-	//~ var url = MT___host+
-			//~ '/mturk/util.php?'+
-			//~ encodeURIComponent(skips_key_php_get)+'=';
-			
 	var file_object = file_object;
 	
 	GM_xmlhttpRequest({
@@ -4721,9 +4932,6 @@ AMT___requests_factory.prototype.io__read_file = function(file_object, callback_
 			file_object.status			= response.status;
 			
 			callback_function(file_object);
-			//~ var tmp_skip_sites = rs.split("\n");
-			//~ 
-			//~ callback_function(tmp_skip_sites);
 		}
 	});
 }
@@ -5284,7 +5492,17 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			result: {
 				prices: [],		// objects {price, fees, source}
 				date_ci: null,	// string, check in
-				date_co: null	// string, check out
+				date_co: null,	// string, check out
+				
+				// reviews
+				reviewcount_exists: false, // Set to true
+				reviewcount: {
+					excellent: 0,
+					very_good: 0,
+					average: 0,
+					poor: 0,
+					terrible: 0
+				}
 			},
 			error: null,
 			error_type: null
@@ -5292,9 +5510,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		var rs = opts.response.responseText;
 		//~ console.log(rs);
-		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
-		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
 		
+		// Price & date... seems like...
+		// i.e. <!--P:HR_LeftPersistent/V:HO-1.0/DO:24\LS:30\G:2\RR:1\PC:USD\CI:2014-11-29\CO:2014-12-29\IK:6e1f69e7e6424bd2be707a564209c0ac/N:1/L:6378639/SP:0\MP:3\MM:3\UM:1\N:1/PT:meta\PN:BookingCom\PP:121\PF:12\PA:A\PI:7994\PB:142003\OI:56818891\F:chevron\\N:2/PT:meta\PN:Agoda\PP:120\PF:12\PA:A\PI:8054\PB:105262\OI:56507922\F:text\\N:3/PT:meta\PN:BookingeDreamsWL\PP:121\PF:12\PA:A\PI:11939\PB:429618\OI:60837478\F:text\\N:4/PT:meta\PN:Expedia\PA:M\PI:8049\PB:49921\OI:56495272\F:text\\N:5/PT:meta\PN:HotelsCom2\PA:M\PI:8512\PB:79567\OI:56519552\F:text\\N:6/PT:meta\PN:Venere\PA:M\PI:9173\PB:207816\OI:56498841\F:text\\N:7/PT:meta\PN:Tingo1\PA:U\PI:11831\PB:403168\OI:58549038\F:text-->
+		var r = /<div class="impressionTrackingTree" style="display: none;">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);	
 		if (r) {
 			r = r[1].replace(/\\/g, '\n');
 			console.log(r);
@@ -5339,9 +5558,51 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			if (r2) {
 				opts.response.vars.result.date_co = r2[1];
 			}
-			
-			
 		}
+		
+		// Reviews.
+		//
+		// 'wrap row'
+		var dom = new DOMParser().parseFromString(rs, 'text/html');
+			//~ console.log(rs);
+		var co = dom.getElementsByClassName('wrap row'); // Not 'line clickable'
+		var rce_tmp = true;
+		if (co.length != 5) {
+			rce_tmp = false;
+				console.log('x2');
+		}
+		for (var i in co) {
+			if (i == 'length') break;
+			var count = co[i].getElementsByClassName('compositeCount');
+			if (!count || !count[0] || !count[0].innerText || !/^[\d,]+$/.exec(count[0].innerText)) {
+				rce_tmp = false;
+					console.log('x3');
+				continue;
+			}
+			var type = /'traveler_rating','([^']+)',/.exec(co[i].innerHTML); // e.g. "terrible"
+			if (!type) {
+				type = co[i].getElementsByClassName('text');
+				if (!type || !type[0] || !type[0].innerText) {
+					rce_tmp = false;
+						console.log('x4');
+					continue;
+				}
+				type = type[0].innerText.toLowerCase();
+			} else type = __js_clean_html_str(type[1]);
+			type = type . replace(/\s+/g, '_'); // Replace ' ' with '_'
+				//~ console.log(type);
+			if (!opts.response.vars.result.reviewcount.hasOwnProperty( type )) {
+				rce_tmp = false;
+					console.log('x5');
+				continue;
+			}
+			opts.response.vars.result.reviewcount[ type ] = count[0].innerText;
+		}
+		// If rce_tmp...
+		if (rce_tmp) {
+			opts.response.vars.result.reviewcount_exists = true;
+		}
+		
 		return true;
 	}
 	/**
@@ -5352,6 +5613,16 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 * NEW JUNE 15, 2015: Change to an AJAX-like request. It is:
 	 * http://www.tripadvisor.com/Search?q=Super+8+%2C+%2C+Missouri&c=global&verbose=&hur=&returnTo=__2F__&ssrc=h&ajax=search
 	 * Old is still compatible.
+	 * 
+	 *	List of tripadvisor AJAX "ssrc" arguments
+		Retrieved from "http://www.tripadvisor.com/Search?q=a&c=local&geo=56003&pid=3826&sid=D159D57AA0BA5ADC708995BCC8BADF861435302767341&rf=1"
+		June 26, 2015
+		h=hotel
+		l=locations, e.g. Houston, Texas Gulf Coast, Texas
+		v=vacation rentals, e.g. Executive Home Tropical Pool Whimsical Features!
+		e=restaurants, e.g. starbucks
+		A=attractions, e.g. Space Center Houston
+		r=reviews, e.g. "A+ service A+ price A+ clenliness"
 	 * 
 	 * @results [{}]
 	 * 
@@ -5365,7 +5636,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			error_type: null
 		}
 		
-		var rs = opts.response.responseText; //console.log(rs);
+		var rs = opts.response.responseText;
 		
 		var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
 		if (r) {
@@ -5394,8 +5665,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			console.log(type_of_searchResult);
 			//~ if (type_of_searchResult.indexOf('srREVIEWS') != -1)
 				//~ continue;
-			if (type_of_searchResult == 'srREVIEWS')
-				continue;
+			//~ if (type_of_searchResult == 'srREVIEWS')
+				//~ continue;
 			if (type_of_searchResult == 'srFORUMS')
 				continue;
 			
@@ -5728,6 +5999,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				skills: null,
 				education: null,
 				interests: null,
+				people_also_viewed: [], // An array of people
 				
 				profile_is_in_preview_mode: false // default=false
 			},
@@ -5750,6 +6022,9 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				exit(); // Stop
 			}
 		}
+		
+		// DOM
+		var dom = new DOMParser().parseFromString(rs,'text/html');
 		
 		/**
 		 * Public Profile URL
@@ -6192,6 +6467,27 @@ http%3A%2F%2Fdeancdawson%2Ecom
 			}
 			//~ r = /<h4>Interests<\/h4>/;
 		}
+		/**
+		 * people_also_viewed
+		 * 
+		 */
+		var av = dom.getElementsByClassName('insights-browse-map');
+		if (av && av.length) {
+			if (av.length > 1 && av[0].className.indexOf('same-name-search') != -1) {
+				av = av[1];
+			} else av = av[0];
+			var li = av.getElementsByTagName('li');
+			for (var i in li) {
+				if (i == 'length') break;
+				var pav_person = {
+					name: null,
+					title: null
+				}
+				pav_person.name = li[i].getElementsByTagName('h4')[0].innerText; // True or error
+				pav_person.title = li[i].getElementsByClassName('browse-map-title')[0].innerText; // True or error
+				opts.response.vars.result.people_also_viewed.push( pav_person );
+			}
+		}
 		
 		/**
 		 * return true
@@ -6326,11 +6622,104 @@ http%3A%2F%2Fdeancdawson%2Ecom
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
+ * 
+ * search_container
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * search_container
+ * 
+ * @param	`options_object`
+ * @param	`options_object.divs`
+ * @param	`options_object.style`
+ * @param	`options_object.textareas`
+ * @param	`options_object.offset_top` INT, Default=0.
+ * @return	`container` HTML DIV, Div with keys {.search{.divs[],.textareas[]}}
+ */
+AMT___items_factory.prototype.search_container = function(options_object) {
+	// E.g. create 3 search+textarea divs
+	//~ o.container = new AMT___items_factory().search_container({
+		//~ divs: {num: 3} // Horizontal divs: yelp, tripadv, foursq. Default height=100%.
+		//~ style: 'width:99%;position:absolute;left:0;top:0;height:200px;overflow:hidden;',
+		//~ textareas: {num: 2} // Vertical textareas per div. Default height=40px.
+	//~ });
+	// RETURN:
+	//~ o.container.search[0].textareas[0].value = o.comp;
+	//~ o.container.search[0].textareas[1].value = o.addr;
+	//~ o.container.search[1].textareas[0].value = o.comp;
+	//~ o.container.search[1].textareas[1].value = o.addr;
+	//~ o.container.search[2].textareas[0].value = o.comp;
+	//~ o.container.search[2].textareas[1].value = o.addr;
+	
+	//~ 
+	//~ var d1 = document.createElement('div');
+	//~ d1.setAttribute('style','position:absolute;top:160px;left:0;width:80%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+	//~ document.body.appendChild(d1);
+	//~ var d2  = document.createElement('textarea');
+	//~ d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
+	//~ document.body.appendChild(d2);
+	//~ var d2b = document.createElement('textarea');
+	//~ d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:20%;height:30px;');
+	//~ document.body.appendChild(d2b);
+	/*END ITEMS*/
+	
+	// Defaults
+	if (!options_object.hasOwnProperty('offset_top')) {
+		options_object.offset_top = 0;
+	}
+	
+	// ef
+	var ef = new AMT___events_factory(); // For mouseup+keydown
+	var container = ''.div({style: options_object.style});
+	container.search = []; // Array. Fill in.
+	var width = (99 / options_object.divs.num) + '%'; // e.g. 99 / 3 = 33%
+	for (var i=0; i<options_object.divs.num; i++) {
+		var col = ''.div({style: 'width:'+width+';height:100%;float:left;'});
+		container.appendChild(col);
+		container.search[i] = {
+			textareas: [],
+			divs: [],
+			col: col
+		}
+		for (var j=0; j<options_object.textareas.num; j++) {
+			var tx = document.createElement('textarea');
+			tx.setAttribute('style', 'width:99%;height:40px;');
+			col.appendChild(tx);
+			container.search[i].textareas[j] = tx;
+			// Mouseup + Keydown. Default=On.
+			tx.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [tx],
+				blur_element: true
+			});
+		}
+		var dv = ''.div({style: 'width:99%;height:100px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+		col.appendChild(dv);
+		container.search[i].divs[0] = dv; // Only one.
+	}
+	
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		callback_function: function(inh) {
+			inh -= options_object.offset_top;
+			container.style.height = inh + 'px';
+			// Set children div heights.
+			var ch = (inh - (options_object.textareas.num * 41)) + 'px'; // Add 1px
+			for (var i=0; i<container.search.length; i++) {
+				container.search[i].divs[0].style.height = ch;
+			}
+		}
+	});
+	
+	return container;
+}
+/**
+ * create_dashboard_find_url
  * 
  * .bold_array		Array
  * .searches		Array, Array of strings to search (3=default)
@@ -6341,11 +6730,18 @@ function AMT___items_factory(obj_vars) {
  * .innerHeight_callback	Function
  * .load_success_callback	Function, Callback after all panels have loaded
  * .search_results	Object
- * .search_results.use_full_urls	Boolean
- * .search_results.replace_urls_in_result_body	Boolean, Default=False
- * .search_results.url_ignore_test	Function(url), True=Skip, False=Keep
+ * .search_results.use_full_urls					Boolean
+ * .search_results.replace_urls_in_result_body		Boolean, Default=False
+ * .search_results.url_ignore_test					Function(url), True=Skip, False=Keep
+ * .search_results.url_modifier_callback			Function(url)
  * .search			Object
- * .search.str_add_to_searches_hidden	String, A default string to add to all searched. E.g. " site:linkedin.com".
+ * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
+ * .hide_search_fields BOOLEAN
+ * 
+ * @return Not much to return. However, `options_object` is modified / modifiable.
+ * 		options_object.results.divs
+ * 		options_object.results.textareas
+ * 		options_object.results...
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
@@ -6354,12 +6750,17 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
 	
 	//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
-	GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
-	GM_addStyle('.panel {position:absolute;top:2000px;}');
+	
+	// REMOVED THESE THREE!
+	// JULY 25, 2015
+	//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
+	//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
+	//~ GM_addStyle('form {position:absolute;top:1000px;}');
+	
 	GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
 	GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 	GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
-	GM_addStyle('form {position:absolute;top:1000px;}');
+	
 	
 	var options_object = options_object;
 	// Defaults
@@ -6378,10 +6779,23 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (!options_object.search_results.hasOwnProperty('replace_urls_in_result_body')) {// replace_urls_in_result_body
 		options_object.search_results.replace_urls_in_result_body = false;
 	}
+	if (!options_object.hasOwnProperty('hide_search_fields')) {//
+		options_object.hide_search_fields = false;
+	}
+	if (!options_object.search_results.hasOwnProperty('callback_link_and_body')) {//
+		options_object.search_results.callback_link_and_body = function(link, full) {}; // Ignore...
+	}
+	// Fills in
+	options_object.results = {
+		divs: [],
+		textareas: [] //TODO
+		// ...
+	}
 	
 	var td = document.getElementsByTagName('td');
 	
 	new AMT___core_factory().createScriptVar('Skip For High Yield','0');
+	//new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
 	
 	var o = {
 		bold_array: options_object.bold_array,
@@ -6399,6 +6813,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
 	}
 	//~ console.log(o);
+	options_object.o = o; // ...
+	
 	/* BEGINS ITEMS */
 	//
 	var na = document.createElement('input');
@@ -6431,20 +6847,26 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
-	d1.id = 'd1';
+	d1.id = 'd1a';
 	d1.txa = d3;
+	d1.results = []; // Fill in later
+	options_object.results.divs.push(d1);
 	//
 	var d1b = document.createElement('div');
 	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
 	d1b.id = 'd1b';
 	d1b.txa = d3b;
+	d1b.results = [];
+	options_object.results.divs.push(d1b);
 	//
 	var d1c = document.createElement('div');
 	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
 	d1c.id = 'd1c';
 	d1c.txa = d3c;
+	d1c.results = [];
+	options_object.results.divs.push(d1c);
 	/*END ITEMS*/
 	//
 	d3.onblur = function() {
@@ -6463,6 +6885,27 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			o.q[0].value = this.value;
 			doSubmit();
 		}
+	}
+	
+	// Hide search fields?
+	if (options_object.hide_search_fields) {
+		d3.style.display = 
+		d3b.style.display = 
+		d3c.style.display = 'none';
+	}
+	
+	// Hide empty columns !!
+	//
+	if (options_object.searches.length == 1) {
+		d1b.style.display =
+		d1c.style.display = 'none';
+		d1.style.width = '100%';
+		o.num_panels = 1; // Overwrite!
+	} else if (options_object.searches.length == 2) {
+		d1c.style.display = 'none';
+		d1.style.width =
+		d1b.style.width = '48%';
+		o.num_panels = 2; // Overwrite!
 	}
 	
 	// ...
@@ -6611,6 +7054,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			var x = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
+			var div_result = {
+				p: null,
+				url: null, //TODO
+				body: null, //TODO
+				textarea: null,
+			}
 			
 			// Skip here?
 			// This is a callback function test.
@@ -6625,12 +7074,21 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				continue;
 			}
 			
+			options_object.search_results.callback_link_and_body(link, full);
+			
 			//~ // ..
 			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
+
 			
 			// TRAILING
 			if (!options_object.search_results.use_full_urls)
 				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
+			
+			if (options_object.search_results.url_modifier_callback) {
+				x = options_object.search_results.url_modifier_callback( x );
+			}
+
+			div_result.url = x;
 			
 			//~ // DOMAIN
 			var domain = x.replace(/^https?:\/\//, ''); // beginning
@@ -6653,9 +7111,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// Replace URLs in result body?
 			// Boolean. If true then replace first instance ONLY.
 			if (options_object.search_results.replace_urls_in_result_body == true) {
-				//~ console.log('OLD:'+full);
 				full = full.replace(link, ''); //
-				//~ console.log('NEW:'+full);
 			}
 			
 			// Add bold (bold_array)
@@ -6670,6 +7126,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.className = 'class_'+cls;
 			d.full_url = link;
 			d.original_bg_color = '';
+			div_result.p = d;
 			out_div.appendChild(d);
 			
 			// IS SKIP?
@@ -6704,6 +7161,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			txa.parent_p	= d;
 			txa.row = i;
 			txa.col = col;
+			div_result.textarea = txa;
 			d.appendChild(txa);
 			// ...
 			var a = document.createElement('a');
@@ -6785,6 +7243,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 			}, false);
 			
+			// ADD THIS TO out_div RESULTS!
+			out_div.results.push(div_result); // Add this element to DIV.results
 		}
 		count_domains();
 		if (out_div.innerHTML == '')
@@ -6845,7 +7305,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		if (o.panels_loaded == o.num_panels) {
 			// If all are ready and .load_success_callback
 			if (options_object.hasOwnProperty('load_success_callback')) {
-				options_object.load_success_callback();
+				options_object.load_success_callback( options_object );
 			}
 			
 			// Mark most domains...
@@ -6889,6 +7349,13 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 				if(!AMT__Global_Vars.isPreview) {
 					addToTabsQ();
+					if(AMT__Global_Vars.scriptVars['NumAcceptedAlert'] != '0') {
+						var num = AMT__Global_Vars.scriptVars['NumAcceptedAlert'] * 1;
+							chrome.extension.sendRequest(
+								{
+									NumAcceptedAlert: num,
+								}, function() {/*squelch response*/});
+					}
 				}
 				if (AMT__Global_Vars.isPreview) {
 					console.log(o);
@@ -7951,6 +8418,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
  * @param ""."". country						element
  * @param "".accept_skip_us						boolean
  * @param "".build_complete_callback			function
+ * @param "".profile_url						string		This is to be set! Is part of "return" for callbacks.
  */
 AMT___items_factory.prototype.create_dashboard_find_address = function(options_object) {
 	
@@ -8401,6 +8869,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								o.final_location.phone = p;
 							}
 							
+							// opts.profile_url
+							opts.profile_url = id.result.url.replace(/\/about\?[\d\D]*$/, ''); // e.g. "https://plus.google.com/101686557708089217019/about?hl=en-US" 
+							
 							// Call callback
 							if (opts.hasOwnProperty('onclick_callback'))
 								opts.onclick_callback(opts);
@@ -8752,9 +9223,38 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						o.final_location.full_address = location;
 					}
 					
+					// opts.profile_url
+					opts.profile_url = btn.url_hv;
+					
 					// onclick_callback
 					if(opts.hasOwnProperty('onclick_callback') && !is_geocoding) {
 						opts.onclick_callback(opts);
+					}
+				}
+				
+				// WEBSITE & TELELPHONE
+				// dom parse
+				var dom =  new DOMParser().parseFromString(rs, 'text/html');
+				var d = dom.getElementsByClassName('left-content');
+				// e.g. <div class="left-content" itemscope itemtype="http://schema.org/Organization">
+				if (!d || !d.length || d.length != 1) {}
+				else {
+					d = d[0];
+					if (opts.output_elements.hasOwnProperty('website')) {
+						var a = d.getElementsByTagName('a');
+						if (a && a.length && a[0].getAttribute('href') && a[0].getAttribute('href').trim().length > 0) {
+							a = a[0]; // First, if any.
+							opts.output_elements.website.value = a.getAttribute('href').trim();
+						}
+					}
+					// span
+					if (opts.output_elements.hasOwnProperty('phone')) {
+						var sp = d.getElementsByTagName('span');
+						for (var i=0; i<sp.length; i++) {
+							if (sp[i].getAttribute('itemprop') && sp[i].getAttribute('itemprop') == 'telephone' && sp[i].innerText) {
+								opts.output_elements.phone.value = sp[i].innerText.trim();
+							}
+						}
 					}
 				}
 				
@@ -8963,6 +9463,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						if (i.link) {
 							//~ 
 						}
+						// opts.profile_url
+						opts.profile_url = i.link;
+						// ...
 						if (i.location) {
 							i = i.location;
 							if(i.zip) {
@@ -9051,17 +9554,51 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						div.appendChild(document.createTextNode('C:'+r[i].category));
 					}
 					if (r[i].location) {
-						for (var j in r[i].location) {
-							div.appendChild(document.createElement('br'));
+						// NEW. JULY 25, 2015.
+						/**
+						 * e.g. ?? city: "Bay City" country: "United States" latitude: 28.969652956053 longitude: -95.969258666212 state: "TX" street: "3317 Avenue F" zip: "77414"
+						 **/
+						var l = r[i].location;
+						var a = [];
+						if (l.street) {
+							a.push(l.street);
+						}
+						if (l.city) {
+							a.push(l.city);
+						}
+						if (l.country) {
+							a.push(l.country);
+						}
+						if (l.zip) {
+							a.push(l.zip);
+						}
+						if (a.length) {
+							var tmploc = a.join(', ');
 							var locSpan = document.createElement('span');
-							locSpan.innerHTML =
-								(opts.bold_locn_array) ?
-								'A::' + MT__bold(""+r[i].location[j], opts.bold_locn_array) :
-								'A::' + r[i].location[j];
+								locSpan.innerHTML =
+									(opts.bold_locn_array) ?
+									'A:' + MT__bold(tmploc, opts.bold_locn_array) :
+									'A:' + tmploc;
+							div.appendChild(document.createElement('br'));
 							div.appendChild(locSpan);
 						}
+						//~ console.log(r[i].location);
+						//~ //OLD
+						//~ for (var j in r[i].location) {
+							//~ div.appendChild(document.createElement('br'));
+							//~ var locSpan = document.createElement('span');
+							//~ locSpan.innerHTML =
+								//~ (opts.bold_locn_array) ?
+								//~ 'A::' + MT__bold(""+r[i].location[j], opts.bold_locn_array) :
+								//~ 'A::' + r[i].location[j];
+							//~ div.appendChild(locSpan);
+						//~ }
 					}
 					
+					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
+						div.appendChild(('W:'+r[i].website).div());
+					}
+							
 					// Append
 					d1.appendChild(div);
 					c++; // Increment
@@ -9467,8 +10004,10 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		 
 		//
+		var found = false;
 		for (var i in output_fields) {
 			if (output_fields[i].value == '') {
+				found = true;
 				output_fields[i].value = s;
 				output_fields[i].focus();
 				output_fields[i].select();
@@ -9479,6 +10018,16 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
 				}
 				break;
+			}
+		}
+		if (!found) {
+			var of = output_fields[ output_fields.length-1 ];
+			of.value = s;
+			of.focus();
+			of.select();
+			// CALLBACK
+			if (options_object.callback_mouseup) {
+				options_object.callback_mouseup( of );	// THIS SENDS THE FIELD BACK
 			}
 		}
 	}
@@ -10956,7 +11505,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			
 			var ol = rslts[0];
 			
-			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+			var contentReg = /<div class='result'[^>]*>[\r\n\s\t]*<h3[^>]*><a href='([^']+)'[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
 			var content;
 			var arr = [];
 			while(content = contentReg.exec(ol)) {				
@@ -11649,7 +12198,6 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
  *   -return time_to_submit, offsetTime(x) > regularInterval+x
  */
 function doSubmit(form, location, callback_function, offsetTime, doServerSideSubmit) {
-	
 	if(!AMT__Global_Vars.isPreview) {
 		AMT__Global_Vars.isSubmitting = true;
 		chrome.extension.sendRequest(
@@ -11662,22 +12210,22 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		);
 	}
 	
-	if(document.getElementById('AMT__UtilityContainer')) {
+	//if(document.getElementById('AMT__UtilityContainer')) {
 		chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {
-			if (!AMT__Global_Vars.isPreview) {
-				if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
-					new AMT___core_factory().shiftFarLeft();
-				}
-				if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-					showNextTab();
-				}
-				if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
-					new AMT___core_factory().nextTab();
-				}
-			}
+			//~ if (!AMT__Global_Vars.isPreview) {
+				//~ if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+					//~ new AMT___core_factory().shiftFarLeft();
+				//~ }
+				//~ if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
+					//~ showNextTab();
+				//~ }
+				//~ if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
+					//~ new AMT___core_factory().nextTab();
+				//~ }
+			//~ }
 		});
-	}
-	else {
+	//}
+	//else {
 		if (!AMT__Global_Vars.isPreview) {
 			if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
 				new AMT___core_factory().shiftFarLeft();
@@ -11689,39 +12237,32 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 				new AMT___core_factory().nextTab();
 			}
 		}
-	}
+	//}
 	
 	if(AMT__Global_Vars.scriptVars['DS Offset Time (s)'] != '0' && !offsetTime) {
 		offsetTime = AMT__Global_Vars.scriptVars['DS Offset Time (s)']*1000;
 	}
-
-	
-	
-	
 	
 	try {
-	if(document.getElementById('AMT___JobTimer') && !document.getElementById('AMT___nullifyTimer').on && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
-	  && !callback_function //no callback function means, this isn't an exception case to a regular dosubmit
-	) {
-		var time = document.getElementById('AMT___timerState').innerText * 1;
-		var namespace = AMT__Global_Vars.timer.namespace;
-		var recordString = AMT__Global_Vars.timer.recordString;
-		AMT___addQuestionAnswer(namespace, recordString, [new OutputPair("Id(placeholderJustInCase)", time)]);
-		//alert('recorded' + time + recordString + namespace); 
-		//return;
-	}
+		if(document.getElementById('AMT___JobTimer') && !document.getElementById('AMT___nullifyTimer').on && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
+		  && !callback_function //no callback function means, this isn't an exception case to a regular dosubmit
+		) {
+			var time = document.getElementById('AMT___timerState').innerText * 1;
+			var namespace = AMT__Global_Vars.timer.namespace;
+			var recordString = AMT__Global_Vars.timer.recordString;
+			AMT___addQuestionAnswer(namespace, recordString, [new OutputPair("Id(placeholderJustInCase)", time)]);
+			//alert('recorded' + time + recordString + namespace); 
+			//return;
+		}
 	} catch (err) {
 		alert(err);
 	}
-
 	//alert('hit enter?');
 	//~ console.log(document.getElementById('AMT___JobTimer'))
 	//~ console.log(!document.getElementById('AMT___nullifyTimer').on)
 	//~ console.log(!AMT__Global_Vars.isPreview)
 	//~ console.log(document.getElementById('AMT___timerState').innerText != '')
 	//~ console.log(!callback_function);
-	
-	
 	
 	// Which form to submit
 	if (!form)
@@ -11730,6 +12271,9 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		MT__DOSUBMIT__FORM = document.getElementById(form);
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
+	//~ if (form && form.opts_obj) // This is an options object instead of form! // TESTING
+	//~ 
+	//~ else
 	
 	// Debug
 	if (MT___TEST_DEBUG) {
@@ -12410,21 +12954,13 @@ AMT___core_factory.prototype.setTimerNamespace = function(str) {
  * TODO: ratings
  */
 AMT___core_factory.prototype.amt_home_show_tasks = function() {
-	
 	// Check if the page is currently at /mturk/findhits
 	//
 	//
 	var s = location.href;
 	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
-	
-	// Ignored
 	var ignore_requesters__ids, ignore_requesters;
-	set_ignored_vars();
-	
-	// Add styles to page
-	add_styles();
-	
 	// Hosts
 	var MT___page1_hosts = [
 		MT___host+'/mturk/.scripts/AMT_Batch/g.php',
@@ -12432,7 +12968,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	];
 	var MT___page1_host = MT___page1_hosts[0];
 	var MT___page1_host_num = 0;
-	
 	// Timers intervals
 	var xint, xint2;
 	
@@ -12461,10 +12996,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		table1: null,
 		table2: null,
 		
+		// Controllers
+		// To be created
 		// ...
 		close_btn: null,
 		timer_btn: null,
 		user_select: null,
+		show_hide_btn: null,
 		
 		// ...
 		db_users: [
@@ -12529,41 +13067,59 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		comments_timestamp: 0
 	}
 	
-	// Container
-	tasks_obj.div_container = document.createElement('div');
-	tasks_obj.div_container.setAttribute('style',
-		'position:absolute;'+
-		'top:40px;'+
-		'width:99%;'+
-		'background-color:none;'+
-		'margin:0 0.5% 0 0;'
-	);
-	document.body.appendChild(tasks_obj.div_container);
+	// Init
+	//
+	//
+	init();
 	
-	// Tables
-	// Table 1 = jobs (minus ignored)
-	// Table 2 = jobs ignored
-	// ...
-	tasks_obj.table1 = document.createElement('table');
-	tasks_obj.table1.setAttribute('style',
-		'width:100%'
-	);
-	tasks_obj.table1.className = 'amt_show_tasks_table';
-	tasks_obj.div_container.appendChild(tasks_obj.table1);
-	// ...
-	tasks_obj.table2 = document.createElement('table');
-	tasks_obj.table2.setAttribute('style',
-		'width:100%'
-	);
-	tasks_obj.table2.className = 'amt_show_tasks_table';
-	tasks_obj.div_container.appendChild(tasks_obj.table2);
+	/**
+	 * function init
+	 */
+	function init() {
+		// Ignored
+		set_ignored_vars();
+		
+		// Add styles to page
+		add_styles();
+		
+		// Container
+		tasks_obj.div_container = document.createElement('div');
+		tasks_obj.div_container.setAttribute('style',
+			'position:absolute;'+
+			'top:40px;'+
+			'width:99%;'+
+			'background-color:none;'+
+			'margin:0 0.5% 0 0;'
+		);
+		document.body.appendChild(tasks_obj.div_container);
+		
+		// Tables
+		// Table 1 = jobs (minus ignored)
+		// Table 2 = jobs ignored
+		// ...
+		tasks_obj.table1 = document.createElement('table');
+		tasks_obj.table1.setAttribute('style',
+			'width:100%'
+		);
+		tasks_obj.table1.className = 'amt_show_tasks_table';
+		tasks_obj.div_container.appendChild(tasks_obj.table1);
+		// ...
+		tasks_obj.table2 = document.createElement('table');
+		tasks_obj.table2.setAttribute('style',
+			'width:100%'
+		);
+		tasks_obj.table2.className = 'amt_show_tasks_table';
+		tasks_obj.div_container.appendChild(tasks_obj.table2);
+		
+		// INIT !
+		MT___page1_async_last_update();
+		
+		// Creates the Pause and Close buttons.
+		// Starts the update intervals.
+		interval_update_timers();
+	}
 	
-	// INIT !
-	MT___page1_async_last_update();
 	
-	// Creates the Pause and Close buttons.
-	// Starts the update intervals.
-	interval_update_timers();
 	
 	
 	/**
@@ -12575,46 +13131,42 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	 * Creates the "user" select field (tasks_obj.user_select)
 	 */
 	function interval_update_timers() {
-		
 		// timer
 		var d = document.createElement('input');
-		//~ d.setAttribute('id','input__reload');
 		d.setAttribute('type','button');
 		d.setAttribute('style','position:absolute;top:0px;left:60px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;cursor:pointer;');
 		document.body.appendChild(d);
 		tasks_obj.timer_btn = d;
-		// close
+		// Close button
 		var d = document.createElement('input');
-		//~ d.setAttribute('id','input2__reload');
 		d.setAttribute('type','button');
 		d.setAttribute('style','position:absolute;top:0px;left:0px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		document.body.appendChild(d);
 		tasks_obj.close_btn = d;
 		// tasks_obj.user_select
-		// .onchange?
 		var d = document.createElement('select');
 		d.setAttribute('style','position:absolute;top:0px;left:120px;height:30px;width:60px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
 		d.innerHTML = '<option value="Ben">Ben</option><option value="Dave">Dave</option><option value="Sora">Sora</option>';
 		document.body.appendChild(d);
 		tasks_obj.user_select = d;
+		// Show / Hide old tasks button!
+		var d = document.createElement('input');
+		d.setAttribute('type','button');
+		d.setAttribute('style','position:absolute;top:0px;left:180px;height:30px;width:120px;border:2px solid #3b3b3b;border-top:0;border-left:0;cursor:pointer;');
+		document.body.appendChild(d);
+		tasks_obj.show_hide_btn = d;
 		
-		// Value, onclick
-		// timer_btn
+		// timer_btn.value
+		// timer_btn.onclick
 		tasks_obj.timer_btn.value = '20';
-		tasks_obj.timer_btn.onclick = function() {
-			//~ clearInterval(xint);
-			//~ clearInterval(xint2);
-			//~ dx.value = 'Press reload to continue...';
+		tasks_obj.timer_btn.onclick = function(e) {
 		}
-		// close_btn
+		// tasks_obj.close_btn.value
+		// tasks_obj.close_btn.onclick
 		tasks_obj.close_btn.value = 'Close!'; 
-		tasks_obj.close_btn.onclick = function() {
+		tasks_obj.close_btn.onclick = function(e) {
 			clearInterval(xint);
 			clearInterval(xint2);
-			//~ if (dx) {
-				//~ document.body.removeChild(dx);
-			//~ }
-			// this
 			this.parentNode.removeChild(this);
 			// timer_btn
 			tasks_obj.timer_btn.parentNode.removeChild(tasks_obj.timer_btn);
@@ -12623,7 +13175,25 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				tasks_obj.div_container.parentNode.removeChild(tasks_obj.div_container);
 			}
 		}
-		//
+		// tasks_obj.show_hide_btn.value
+		// tasks_obj.show_hide_btn.onclick
+		tasks_obj.show_hide_btn.value = 'Show Hidden Rows';
+		tasks_obj.show_hide_btn.onclick = function(e) {
+			var x = document.getElementsByClassName('hidden_rows');
+			if (this.value == 'Show Hidden Rows') {
+				this.value = 'Hide Hidden Rows';
+				this.style.backgroundColor = 'LightGreen';
+				for (var i=0;i<x.length;i++) {
+					x[i].style.display = '';
+				}
+			} else {
+				this.value = 'Show Hidden Rows';
+				this.style.backgroundColor = '';
+				for (var i=0;i<x.length;i++) {
+					x[i].style.display = 'none';
+				}
+			}
+		}
 		
 		// The countdown timer for when last_update runs.
 		//
@@ -12937,7 +13507,19 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tb.className = 'ro-extended-tb';
 		obj.parent_td.appendChild(tb); // Append to parent_td
 		// TH
-		var headers = ['ID', 'Title', 'Qualifications', 'RWD', 'Time Allotted', 'Description', 'ID Dup.', 'Requester ID', 'Requester Name', 'Group/Hash ID', 'Distinct Dates'];
+		var headers = [
+			'ID',
+			'Title',
+			'Qualifications',
+			'RWD',
+			'Time Allotted',
+			'Description',
+			'# Dup.',
+			'Requester ID',
+			'Requester Name',
+			'Group/Hash ID',
+			'Distinct Dates'
+		];
 		var thead = document.createElement('thead');
 		tb.appendChild(thead);
 		var tr = document.createElement('tr');
@@ -13111,7 +13693,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			tasks_obj.table2_row_ids[ row.db_id ] = true;
 		// Add to global!
 		tasks_obj.table_rows[ row.db_id ] = tr;
-		
 		
 		/**
 		 * TDs ... ...
@@ -13626,6 +14207,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		//
 		//
 		row.hits_available.innerText = '----';
+		row.className = 'hidden_rows';
+		
+		// Hidden or showing?
+		if (tasks_obj.show_hide_btn.value == 'Show Hidden Rows') {
+			row.style.display = 'none';
+		} else {
+			row.style.display = '';
+		}
+		
 		//~ alert('remove');
 		//~ console.log(row);
 		//~ console.log(row.innerHTML);
@@ -13789,49 +14379,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				table.appendChild(new_row[0]);
 				table.appendChild(new_row[1]);
 			}
-			//~ // Regular
-			//~ if  (
-				//~ !ignore_requesters.hasOwnProperty( d.requester_name ) &&
-				//~ !ignore_requesters__ids.hasOwnProperty( d.requester_id )
-				//~ )
-			//~ {
-				//~ new_row = makeRow(d); // array 0,1
-				//~ var len = tasks_obj.table1.getElementsByTagName('tr').length;
-				//~ 
-				//~ // append
-				//~ if (!tasks_obj.isFirstRun && len)
-				//~ {
-					//~ var first = tasks_obj.table1.getElementsByTagName('tr')[0];
-					//~ tasks_obj.table1.insertBefore(new_row[0], first); // tr before "first tr"
-					//~ tasks_obj.table1.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				//~ }
-				//~ // insert
-				//~ else
-				//~ {
-					//~ tasks_obj.table1.appendChild(new_row[0]);
-					//~ tasks_obj.table1.appendChild(new_row[1]);
-				//~ }
-			//~ }
-			//~ // Ignored
-			//~ else
-			//~ {	
-				//~ new_row = makeRow(d, true);
-				//~ var len = tasks_obj.table2.getElementsByTagName('tr').length;
-				//~ 
-				//~ // append
-				//~ if (!tasks_obj.isFirstRun && len)
-				//~ {	
-					//~ var first = tasks_obj.table2.getElementsByTagName('tr')[0];
-					//~ tasks_obj.table2.insertBefore(new_row[0], first); // tr before "first tr"
-					//~ tasks_obj.table2.insertBefore(new_row[1], first); // hidden tr before "first tr" (bottom)
-				//~ }
-				//~ // insert
-				//~ else
-				//~ {
-					//~ tasks_obj.table2.appendChild(new_row[0]);
-					//~ tasks_obj.table2.appendChild(new_row[1]);
-				//~ }
-			//~ }
 		}
 	}
 	/**
@@ -14529,7 +15076,7 @@ function AMT___returnAndAcceptButton() {
 		
 			if(AMT__Global_Vars['R&A ShowNextTab'] != '0') {
 				showNextTab({isTopWindow: true});
-				showNextTab({isTopWindow: false});
+				//showNextTab({isTopWindow: false});
 			}
 			
 			function MT__RETURN_AND_ACCEPT(time_to_submit) {
@@ -14742,16 +15289,18 @@ function AMT___checkCaptchaStatus() {
 		//~ GM_addStyle('{}');
 	}
 	/**
-	 * No Captcha
+	 * No CAPTCHA
 	 * Begin background page -> CAPTCHA_tab_queue.queue
 	 * CAPTCHA_tab_queue_process
 	 * 
 	 * NOTE:
 	 * This is where mt_captcha is set to 0.
 	 * 
+	 * NOTE #2:
+	 * Not allowed to set `GM_setValue('mt_captcha','0');` at https://www.mturk.com/mturk/continue
 	 * 
 	 */
-	else if (!/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href))
+	else if (!/^https?:\/\/(www\.)mturk\.com\/mturk\/continue\?/i.exec(document.location.href))
 	{
 		//
 		GM_setValue('mt_captcha','0');
@@ -14807,6 +15356,9 @@ if (typeof Number.prototype.toRad == 'undefined') {
 		return this * Math.PI / 180;
 	}
 }
+/**
+ * NOTE: Lat / Lng must be INT! String causes error! E.g. lat1 * 1!
+ */
 function MT___lat_lng_distance(lat1, lon1, lat2, lon2) {
 	var R = 3963; // 6371km .. use 3963 for miles
 	var dLat = (lat2-lat1).toRad();
