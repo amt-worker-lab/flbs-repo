@@ -671,7 +671,7 @@ function load()
 							response.isUtilityTab = true;
 							AMT__iframeReceiveMessage({
 								data: response // Pass this in as ".data"
-							});try
+							});
 						}
 					}
 				);
@@ -793,7 +793,7 @@ function load()
 					return false;
 				}
 			}
-		}, false);try
+		}, false);
 		
 	}
 	
