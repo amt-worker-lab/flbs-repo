@@ -166,14 +166,15 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					
 					console.log('REMOVE');
 					console.log(tabIdsToRemove);
-					//try {
+					try {
 						if(tabIdsToRemove.length) {
 							chrome.tabs.remove(tabIdsToRemove);
 						}
-					//}
-					//catch(e) {
-						//console.log('err');
-					//}
+					}
+					catch(e) {
+						console.log('err');
+						console.log(e);
+					}
 				}
 				
 				//Finally if this is being called from the tab that is currently active, close all instances of non-utility tabs
