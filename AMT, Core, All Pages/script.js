@@ -116,7 +116,7 @@ function load()
 	{
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = true;
-		new AMT___core_factory().top_window__addEventListener_iframe();
+		//new AMT___core_factory().top_window__addEventListener_iframe();
 		
 		return;
 	}
@@ -386,7 +386,7 @@ function load()
 			document.getElementsByClassName("cc-input text   agent_zip_geocoded optional answerInput")[0].value = postal;
 		}
 		
-		document.getElementsByClassName("cc-input agent_state_not_in_domicile_country required  answerInput")[0].checked = true;
+		document.getElementsByClassName("cc-inptryut agent_state_not_in_domicile_country required  answerInput")[0].checked = true;
 		
 		
 		address = address.split(" ");
@@ -671,7 +671,7 @@ function load()
 							response.isUtilityTab = true;
 							AMT__iframeReceiveMessage({
 								data: response // Pass this in as ".data"
-							});
+							});try
 						}
 					}
 				);
@@ -793,7 +793,7 @@ function load()
 					return false;
 				}
 			}
-		}, false);
+		}, false);try
 		
 	}
 	
