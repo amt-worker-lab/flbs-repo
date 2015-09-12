@@ -171962,7 +171962,6 @@ function top_window(okay_to_run) {
 								result.yahoo == false &&
 								result.searchupc == false &&
 								result.shopsavvy == false &&
-								result.smoopa == false &&
 								result.upcindex == false &&
 								result.upcitemdb == false
 								)
