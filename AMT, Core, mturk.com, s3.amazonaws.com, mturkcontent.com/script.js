@@ -171641,7 +171641,8 @@ function top_window(okay_to_run) {
 			upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 			upcitemdb:		null, // upcindex.com, Set to false for N/A, if skipping
 			google:			null,
-			array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+			array_all: ['de','su','sp','yh','ss','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+			//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			
 			// This is the first URL for iframe d1.src.
 			first_url: null
