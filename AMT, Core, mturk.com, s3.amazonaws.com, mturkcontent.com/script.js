@@ -171344,11 +171344,15 @@ function top_window(okay_to_run) {
 		GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
 		GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 		GM_addStyle('option:hover {background-color:aqua;}'); // ...
+		GM_addStyle('.answer .text {vertical-align:top;}'); // ...
 		
 		
 		// MOVE "THETIME"
 		document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
 		//~ document.getElementsByTagName('img')[0].parentNode.parentNode.appendChild(document.getElementById('theTime'));
+		
+		// Item not found text
+		document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 		
 		// ...
 		var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
@@ -171408,12 +171412,6 @@ function top_window(okay_to_run) {
 		}
 		
 		// ...
-		//~ var d = document.getElementsByTagName('h3')[1];
-		
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 200 );
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 1200);
-		//~ setTimeout(function() {dqw.scrollIntoView();}, 1400);
-		//~ var d = document.getElementsByClassName('question-wrapper')[0];
 		
 		/* BEGIN ITEMS */
 		// Wrapper for top
@@ -171563,21 +171561,13 @@ function top_window(okay_to_run) {
 					) &&
 					!o.q[3].checked
 				)
-				return false;
-			//~ new AMT___core_factory().nextTab();
-			
+				return false;			
 			doSubmit('hitForm');
 			return false;
 		}
 		
 		// ...
 		AMT__Global_Vars.core.return_accept_run_nextTab = true;
-		//~ new AMT___core_factory().
-			//~ iframe2parent__postMessage( //
-				//~ {
-					//~ action: 'return_and_accept_button__nextTab'
-				//~ }
-			//~ );
 		// ...
 		var naBut = document.getElementsByClassName('question selection')[0];
 		naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
@@ -171588,7 +171578,6 @@ function top_window(okay_to_run) {
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 			this.checked = true;
 			doSubmit('hitForm');
-			//~ new AMT___core_factory().nextTab();
 		}
 		
 		// Zoom
