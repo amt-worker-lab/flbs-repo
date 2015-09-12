@@ -171498,7 +171498,7 @@ function top_window(okay_to_run) {
 		var d3e = document.createElement('input');
 		d3e.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
 		d3e.type = 'button';
-		d3e.value = 'smoopa';
+		d3e.value = '...'; // old smoopa
 		x.appendChild(d3e);
 		//
 		var d3f = document.createElement('input');
@@ -171580,7 +171580,7 @@ function top_window(okay_to_run) {
 			//~ );
 		// ...
 		var naBut = document.getElementsByClassName('question selection')[0];
-		naBut.setAttribute('style', 'zoom:2;cursor:pointer;');
+		naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
 		naBut.onclick = function() {
 			for(var i = 1; i <=3; i+=2) {
 				document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
@@ -171637,7 +171637,7 @@ function top_window(okay_to_run) {
 			yahoo:			null,
 			shopsavvy:		null,
 			searchupc:		null, // Set to false for N/A, if skipping
-			smoopa:			null,
+			//~ smoopa:			null,
 			upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 			upcitemdb:		null, // upcindex.com, Set to false for N/A, if skipping
 			google:			null,
@@ -171733,7 +171733,6 @@ function top_window(okay_to_run) {
 						// CALL NEXT
 						result.shopsavvy = false;
 						A9_Snaptell_VSR__next();
-						
 						return;
 					}
 					
@@ -171746,7 +171745,7 @@ function top_window(okay_to_run) {
 						// title
 						// ...
 						var r = /<h1 class="title text-caps text-condensed-bold">([^<]*)<\/h1>/.exec(rs); //5 Minute Fairytales- Big Bind Up
-						if (r) {
+						if (r && __js_clean_html_str(r[1]).trim() != '') {
 							result.shopsavvy = true;
 							r = __js_clean_html_str(r[1]).trim();
 							d3d.value = r;
@@ -171759,7 +171758,11 @@ function top_window(okay_to_run) {
 								d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
 								d1.src = this.output_url;
 							}
-							
+						} else { // No title!
+							// CALL NEXT
+							result.shopsavvy = false;
+							A9_Snaptell_VSR__next();
+							return;
 						}
 						
 						// ADDITIONAL TERMS
