@@ -11911,6 +11911,7 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014
+var MT__DOSUBMIT__MIN_SUBMIT_TIME = 3500; // Sep 14, 2015
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var xid = '_';
