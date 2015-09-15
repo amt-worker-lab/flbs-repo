@@ -80856,7 +80856,8 @@ qatar,80
 	// Solar
 	// 
 	s = 'If you cannot immediately locate the house on the map at the address given, please rate &quot;house not visible”.';
-	if (ih.indexOf(s) != -1) {
+	s2 = 'If you cannot immediately locate the house on the map at the address given, please rate &quot;house not visibl';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 		//GM_addStyle('body {width:50%;margin-top:-00px;}');
 		/*GM_addStyle('.highlight-box {position:absolute;width:48%;margin-left:50%;top:0;}');
