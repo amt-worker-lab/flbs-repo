@@ -13853,7 +13853,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.setAttribute('style',
 			'width:4%;'
 		);
-		td.innerText = row.reward.replace(/^\$/, '');
+		td.innerText = (row.reward) ? row.reward.replace(/^\$/, '') : '-';
 		tr.appendChild(td);
 		
 		// Time since posted
