@@ -81052,6 +81052,9 @@ qatar,80
 			}
 			if(wasPressed && document.getElementsByName('Category')[0].value) {
 				doSubmit();
+				// Minimize images
+				GM_addStyle('img {zoom:0.1;}');
+				GM_addStyle('body {background-color:yellow;}');
 			}
 		});
 		
