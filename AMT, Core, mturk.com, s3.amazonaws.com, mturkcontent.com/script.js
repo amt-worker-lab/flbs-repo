@@ -80892,7 +80892,7 @@ qatar,80
 		console.log(addr);
 		
 		// Set timeout body focus
-		setTimout(function() {
+		window.setTimeout(function() {
 			document.body.focus();
 			window.focus();
 		}, 1000);
