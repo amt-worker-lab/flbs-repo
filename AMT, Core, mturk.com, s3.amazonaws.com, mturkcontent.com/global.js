@@ -530,15 +530,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	//~ console.log(request);
 	
 	if(request.checkNTPassBy) {
-		//~ console.log('got nexttab passby');
-		//~ console.log (AMT__Global_Vars.scriptVars['NumPassby']);
-		//~ console.log (AMT__Global_Vars.toggle_ntpassby);
-		//~ console.log (AMT__Global_Vars.numSubmitQueries);
-		//~ console.log(AMT__Global_Vars.isSubmitting);
-		//~ console.log(AMT__Global_Vars.numSubmitQueries)
-		//~ console.log(AMT__Global_Vars.isPreview);
-		//~ console.log(AMT__Global_Vars.toggle_ntpassby);
-		
+		console.log('recieved NTPassBy Check msg');
 		if(AMT__Global_Vars.isSubmitting && 
 		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
 		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
@@ -554,8 +546,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				document.getElementsByTagName('iframe')[0].focus();
 			}
 		} else {
-			//console.log('other case?');
-			//Attempt to focus regardless if possible
+			console.log('other case: Attempt to focus regardless if possible');
 			if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
 				document.getElementsByTagName('iframe')[0].focus();
 			
