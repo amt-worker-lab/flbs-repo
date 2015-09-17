@@ -80891,88 +80891,70 @@ qatar,80
 		var addr = __js_clean_html_str(b[1]).trim();
 		console.log(addr);
 		
-		if (1 == 1) {
-			// google static (plus green marker)
+		// Set timeout body focus
+		setTimout(function() {
+			document.body.focus();
+			window.focus();
+		}, 1000);
+		
+		// google static (plus green marker)
+		var d;
+		d = document.createElement('img');
+		d.setAttribute('id','d1');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		d1.style.position='absolute';
+		d1.style.top='120px';
+		d1.style.left='0%';
+		d1.style.width='400px';
+		d1.style.height='600px';
+		d1.style.border='1px solid blue';
+		d1.style.backgroundColor='#eee';
+		d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		// #2
+		var d = document.createElement('img');
+		document.body.appendChild(d);
+		d.setAttribute('style','position:absolute;top:120px;left:400px;width:400px;height:600px;border:1px solid blue;');
+		d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		// #3
+		var d = document.createElement('img');
+		document.body.appendChild(d);
+		d.setAttribute('style','position:absolute;top:120px;left:800px;width:400px;height:600px;border:1px solid blue;');
+		d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+		
+		// image onmouseover
+		// image onclick
+		d1.onclick = function() {
+			// remove this
+			this.parentNode.removeChild(this);
+			
 			var d;
-			d = document.createElement('img');
+			d = document.createElement('iframe');
 			d.setAttribute('id','d1');
 			document.body.appendChild(d);
 			var d1 = document.getElementById('d1');
 			d1.style.position='absolute';
 			d1.style.top='120px';
 			d1.style.left='0%';
-			d1.style.width='400px';
+			d1.style.width='98%';
 			d1.style.height='600px';
 			d1.style.border='1px solid blue';
+			d1.style.overflow = 'auto';
 			d1.style.backgroundColor='#eee';
-			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-			// #2
-			var d = document.createElement('img');
-			document.body.appendChild(d);
-			d.setAttribute('style','position:absolute;top:120px;left:400px;width:400px;height:600px;border:1px solid blue;');
-			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-			// #3
-			var d = document.createElement('img');
-			document.body.appendChild(d);
-			d.setAttribute('style','position:absolute;top:120px;left:800px;width:400px;height:600px;border:1px solid blue;');
-			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			//d1.sandbox = 'allow-scripts allow-same-origin';
 			
-			
-			
-			
-			
-			//d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-			
-			// image onmouseover
-			// image onclick
-			d1.onclick = function() {
-				// remove this
-				this.parentNode.removeChild(this);
-				
-				var d;
-				d = document.createElement('iframe');
-				d.setAttribute('id','d1');
-				document.body.appendChild(d);
-				var d1 = document.getElementById('d1');
-				d1.style.position='absolute';
-				d1.style.top='120px';
-				d1.style.left='0%';
-				d1.style.width='98%';
-				d1.style.height='600px';
-				d1.style.border='1px solid blue';
-				d1.style.overflow = 'auto';
-				d1.style.backgroundColor='#eee';
-				//d1.sandbox = 'allow-scripts allow-same-origin';
-				
-				// flicker...
-				d1.style.visibility = 'hidden';
-				d1.addEventListener('load', function() {
-					this.style.visibility = 'visible';
-				}, false);
-				//Jan. 15, 2014
-				// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
-				d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&ie=UTF-8&gl=us&ei=&ved=&z=18&output=embed&t=h&iwloc=near';
-				// 21 is max
-			}
-		} else if (0 == 1) {
-			
+			// flicker...
+			d1.style.visibility = 'hidden';
+			d1.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+			}, false);
+			//Jan. 15, 2014
+			// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
+			d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&ie=UTF-8&gl=us&ei=&ved=&z=18&output=embed&t=h&iwloc=near';
+			// 21 is max
 		}
-		// yahoo, requires manual zoom in, (has marker)
-		//d1.src = 'http://maps.yahoo.com/e/?addr='+encodeURIComponent(addr)+'&t=h';
 		
-		//d1.src = 'http://www.bing.com/maps/default.aspx?v=2&lvl=19&dir=0&sty=h&q=67%20comfort%20rd%20ithaca%20ny';
-		// bing
-		// get the lat/lng of this address
-		//MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy)
-		//~ MT___google_api_geocode(addr, Jose_Ramos_solar__latlng);
-		//~ function Jose_Ramos_solar__latlng(lat,lng) { // returns arg1,arg2
-			//~ d1.src = 'http://www.bing.com/maps/embed/viewer.aspx?v=3&cp='+lat+'~'+lng+'&lvl=19&w=&h=&sty=h&typ=d&pp=&ps=&dir=0&mkt=en-us&src=SHELL&form=BMEMJS'; // zoom 20 is max (lvl) // w / h?
-		//~ }
-		
-		
-		
-		// instructions
-		//guidelines
+		// Instructions
 		var d2 = document.createElement('div');
 		d2.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;cursor:pointer;');
 		d2.innerHTML = addr + '<br>' + document.getElementById('guidelines').innerHTML;
@@ -81054,7 +81036,9 @@ qatar,80
 				doSubmit();
 				// Minimize images
 				GM_addStyle('img {zoom:0.1;}');
-				GM_addStyle('body {background-color:yellow;}');
+				setTimeout(function() { // Wait 1 second
+					GM_addStyle('body {background-color:yellow;}');
+				}, 1000);
 			}
 		});
 		
