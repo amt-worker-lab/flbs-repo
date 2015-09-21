@@ -14573,6 +14573,8 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A2GGMBBJ00PKKX':true //AdultNetHITs
 		};
 		ignore_requesters = {
+			'OCMP67':true,
+			'OCMP66':true,
 			'CrowdFlower':true,
 			'CrowdSource':true,
 			'Classify AdImages':true,
