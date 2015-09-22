@@ -237,8 +237,8 @@ function load()
 		
 		return;
 	}
-	
-	//Jon Brelig
+	// 
+	// Jon Brelig
 	if  (
 		window.top != window.self &&
 		/^https?:\/\/mturk.infoscoutinc.com/.exec(loc)
@@ -260,7 +260,12 @@ function load()
 		
 		return;
 	}
-	
+	// testing chrome://gpuclean
+	console.log('HREF:');
+	console.log(document.location.href);
+	//~ if () {
+		
+	//~ }
 	/*
 	 {
 		zoom: int, //Default 3
