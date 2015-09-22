@@ -81068,63 +81068,68 @@ qatar,80
 		ih.indexOf(s2) != -1
 		)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		
-		//http://en.wikipedia.org/wiki/Ghost%3A_Mouichido_Dakishimetai
-		var a = /var zz = "([^"]+)" ;/.exec(ih)[1];
-		a = __js_clean_html_str(a).replace('http', 'https');
-		
-		var d;
-		d = document.createElement('iframe');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='120px';
-		d1.style.left='0%';
-		d1.style.width='98%';
-		d1.style.height='600px';
-		d1.style.border='1px solid blue';
-		d1.style.overflow = 'auto';
-		d1.style.backgroundColor='#eee';
-		//d1.sandbox = 'allow-scripts allow-same-origin';
-		
-		// flicker...
-		d1.style.visibility = 'hidden';
-		d1.addEventListener('load', function() {
-			this.style.visibility = 'visible';
-		}, false);
-		//Jan. 15, 2014
-		d1.src = a;
-		
-		// instructions
-		//guidelines
-		d = document.createElement('div');
-		d.setAttribute('id','d2');
-		d.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;');
-		d.innerHTML = document.getElementById('guidelines').innerHTML;
-		document.body.appendChild(d);
-		
-		// categorization submit (new - has 0em test)
-		var xint2 = setInterval(function() {
-			var x = document.getElementById('done_page');
-			if (!x) return;
-			if (!x.style) return;
-			x = x.style.width;
-			if (x != '0em' && x != '') {
-				clearInterval(xint2);
-				doSubmit();
-			}
-		}, 60);
-		
-		// move
-		document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
-		document.getElementsByClassName('span7 ng-scope')[0].style.height = '0';
-		document.getElementsByClassName('span7 ng-scope')[0].style.overflow = 'hidden';
-		document.getElementsByClassName('span5 ng-scope')[0].style.marginTop = '-100px';
-		document.getElementsByClassName('span5 ng-scope')[0].position = 'absolute';
-		document.getElementsByClassName('span5 ng-scope')[0].float = '';
-		document.getElementsByClassName('span5 ng-scope')[0].left = '50%';
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			
+			//http://en.wikipedia.org/wiki/Ghost%3A_Mouichido_Dakishimetai
+			var a = /var zz = "([^"]+)" ;/.exec(ih)[1];
+			a = __js_clean_html_str(a).replace('http', 'https');
+			
+			var d;
+			d = document.createElement('iframe');
+			d.setAttribute('id','d1');
+			document.body.appendChild(d);
+			var d1 = document.getElementById('d1');
+			d1.style.position='absolute';
+			d1.style.top='120px';
+			d1.style.left='0%';
+			d1.style.width='98%';
+			d1.style.height='600px';
+			d1.style.border='1px solid blue';
+			d1.style.overflow = 'auto';
+			d1.style.backgroundColor='#eee';
+			//d1.sandbox = 'allow-scripts allow-same-origin';
+			
+			// flicker...
+			d1.style.visibility = 'hidden';
+			d1.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+			}, false);
+			//Jan. 15, 2014
+			d1.src = a;
+			
+			// instructions
+			//guidelines
+			d = document.createElement('div');
+			d.setAttribute('id','d2');
+			d.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;');
+			d.innerHTML = document.getElementById('guidelines').innerHTML;
+			document.body.appendChild(d);
+			
+			// categorization submit (new - has 0em test)
+			var xint2 = setInterval(function() {
+				var x = document.getElementById('done_page');
+				if (!x) return;
+				if (!x.style) return;
+				x = x.style.width;
+				if (x != '0em' && x != '') {
+					clearInterval(xint2);
+					doSubmit();
+				}
+			}, 60);
+			
+			// move
+			document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
+			document.getElementsByClassName('span7 ng-scope')[0].style.height = '0';
+			document.getElementsByClassName('span7 ng-scope')[0].style.overflow = 'hidden';
+			document.getElementsByClassName('span5 ng-scope')[0].style.marginTop = '-100px';
+			document.getElementsByClassName('span5 ng-scope')[0].position = 'absolute';
+			document.getElementsByClassName('span5 ng-scope')[0].float = '';
+			document.getElementsByClassName('span5 ng-scope')[0].left = '50%';
+		}
+		new run().f();
+		return;
 	}
 	
 	//
@@ -81133,129 +81138,133 @@ qatar,80
 	// 
 	s = 'For the address below, please answer the following questions. To do this, go to maps.google.com and enter in the address below and zoom in on the house that is brought back.';
 	if (ih.indexOf(s) != -1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		//GM_addStyle('table,td {margin:0;padding:0;}');
-		GM_addStyle('body {margin-top:-40px;}');
-		GM_addStyle('.highlight-box {position:absolute;width:48%;margin-left:50%;top:0;}');
-		GM_addStyle('textarea {position:absolute;width:18%;margin-left:60%;top:40px;}');
-		GM_addStyle('#submitButton {position:absolute;top:160px;width:50%;height:40px;}');
-		GM_addStyle('select {height:100px;}');
-		GM_addStyle('p {overflow:hidden;height:14px;background-color:#fff;}');
-		//GM_addStyle('#solaryesno_yes {cursor:pointer;}');
-		//GM_addStyle('#solaryesno_no {cursor:pointer;}');
-		
-		var b = document.getElementsByTagName('b')[0].innerText;
-		
-		var o = {
-			addr: b
-		}
-		
-		document.getElementById('solaryesno_yes').checked = true;
-		document.getElementsByName('roofdirection')[0].selectedIndex = 2;
-		document.getElementsByName('roofpitch')[0].selectedIndex = 1;
-		document.getElementsByName('roofshade')[0].selectedIndex = 1;
-		
-		var x = document.getElementsByName('roofdirection')[0];
-		x.multiple = true;
-		x.style.position = 'absolute';
-		x.style.top = '60px';
-		x.style.left = '0px';
-		x.style.marginLeft = '0px';
-		x.style.width = '100px';
-		var x = document.getElementsByName('roofpitch')[0];
-		x.multiple = true;
-		x.style.position = 'absolute';
-		x.style.top = '60px';
-		x.style.left = '100px';
-		x.style.marginLeft = '0px';
-		x.style.width = '100px';
-		var x = document.getElementsByName('roofshade')[0];
-		x.multiple = true;
-		x.style.position = 'absolute';
-		x.style.top = '60px';
-		x.style.left = '200px';
-		x.style.marginLeft = '0px';
-		
-		var d;
-		d = document.createElement('iframe');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='200px';
-		d1.style.left='0%';
-		d1.style.width='70%';
-		d1.style.height='600px';
-		d1.style.border='1px solid blue';
-		d1.style.borderBottom='2px solid blue';
-		d1.style.overflow = 'auto';
-		d1.style.backgroundColor='#eee';
-		//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&hq=&hnear=&gl=us&ei=&ved=';
-		//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21'; // OLD
-		// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
-		d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21&output=embed&t=h&iwloc=near';
-		
-		var d2 = document.createElement('img');
-		d2.setAttribute('style','position:absolute;top:200px;left:70%;width:500px;height:600px;border:2px solid blue;');
-		document.body.appendChild(d2);
-		d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.addr)+'&zoom=20&size=500x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(o.addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-		
-		/*d2.innerHTML = '\
-			<option value=""></option>\
-			<option value=""></option>\
-			';
-		d2.onchange = function() {
-			var x = document.getElementsByName('other_notes')[0];
-			x.value = this.options[this.selectedIndex].innerText;
-		}*/
-		document.getElementById('submitButton').onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			new AMT___core_factory().nextTab();
-			doSubmit();
-		}
-		
-		document.getElementsByName('roofshade')[0].onmouseup = function() {
-			if (this.value.indexOf('A Lot') != -1) {
-				document.getElementById('solaryesno_no').parentNode.click();
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			//GM_addStyle('table,td {margin:0;padding:0;}');
+			GM_addStyle('body {margin-top:-40px;}');
+			GM_addStyle('.highlight-box {position:absolute;width:48%;margin-left:50%;top:0;}');
+			GM_addStyle('textarea {position:absolute;width:18%;margin-left:60%;top:40px;}');
+			GM_addStyle('#submitButton {position:absolute;top:160px;width:50%;height:40px;}');
+			GM_addStyle('select {height:100px;}');
+			GM_addStyle('p {overflow:hidden;height:14px;background-color:#fff;}');
+			//GM_addStyle('#solaryesno_yes {cursor:pointer;}');
+			//GM_addStyle('#solaryesno_no {cursor:pointer;}');
+			
+			var b = document.getElementsByTagName('b')[0].innerText;
+			
+			var o = {
+				addr: b
 			}
-		}
-		
-		document.getElementsByName('other_notes')[0].ondblclick = function() {
-			if (this.value == '') {
-				this.value = 'They have solar panels';
-				document.getElementById('solaryesno_no').parentNode.click();
-			}
-			else if (this.value == 'They have solar panels') {
-				this.value = 'Could not find address';
-				document.getElementById('solaryesno_no').parentNode.click();
-				document.getElementsByName('roofdirection')[0].selectedIndex = 0;
-				document.getElementsByName('roofpitch')[0].selectedIndex = 0;
-				document.getElementsByName('roofshade')[0].selectedIndex = 0;
-			}
-			else {
-				this.value = '';
-				document.getElementById('solaryesno_yes').checked = true;
-				document.getElementsByName('roofdirection')[0].selectedIndex = 2;
-				document.getElementsByName('roofpitch')[0].selectedIndex = 1;
-				document.getElementsByName('roofshade')[0].selectedIndex = 1;
-			}
-		}
-		
-		document.getElementById('solaryesno_yes').parentNode.onclick = function() {
+			
 			document.getElementById('solaryesno_yes').checked = true;
-			document.getElementById('solaryesno_yes').focus();
-			this.style.backgroundColor = 'LightGreen';
+			document.getElementsByName('roofdirection')[0].selectedIndex = 2;
+			document.getElementsByName('roofpitch')[0].selectedIndex = 1;
+			document.getElementsByName('roofshade')[0].selectedIndex = 1;
+			
+			var x = document.getElementsByName('roofdirection')[0];
+			x.multiple = true;
+			x.style.position = 'absolute';
+			x.style.top = '60px';
+			x.style.left = '0px';
+			x.style.marginLeft = '0px';
+			x.style.width = '100px';
+			var x = document.getElementsByName('roofpitch')[0];
+			x.multiple = true;
+			x.style.position = 'absolute';
+			x.style.top = '60px';
+			x.style.left = '100px';
+			x.style.marginLeft = '0px';
+			x.style.width = '100px';
+			var x = document.getElementsByName('roofshade')[0];
+			x.multiple = true;
+			x.style.position = 'absolute';
+			x.style.top = '60px';
+			x.style.left = '200px';
+			x.style.marginLeft = '0px';
+			
+			var d;
+			d = document.createElement('iframe');
+			d.setAttribute('id','d1');
+			document.body.appendChild(d);
+			var d1 = document.getElementById('d1');
+			d1.style.position='absolute';
+			d1.style.top='200px';
+			d1.style.left='0%';
+			d1.style.width='70%';
+			d1.style.height='600px';
+			d1.style.border='1px solid blue';
+			d1.style.borderBottom='2px solid blue';
+			d1.style.overflow = 'auto';
+			d1.style.backgroundColor='#eee';
+			//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&hq=&hnear=&gl=us&ei=&ved=';
+			//d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21'; // OLD
+			// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
+			d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(b)+'&ie=UTF-8&gl=us&ei=&ved=&z=21&output=embed&t=h&iwloc=near';
+			
+			var d2 = document.createElement('img');
+			d2.setAttribute('style','position:absolute;top:200px;left:70%;width:500px;height:600px;border:2px solid blue;');
+			document.body.appendChild(d2);
+			d2.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(o.addr)+'&zoom=20&size=500x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(o.addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			
+			/*d2.innerHTML = '\
+				<option value=""></option>\
+				<option value=""></option>\
+				';
+			d2.onchange = function() {
+				var x = document.getElementsByName('other_notes')[0];
+				x.value = this.options[this.selectedIndex].innerText;
+			}*/
+			document.getElementById('submitButton').onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				new AMT___core_factory().nextTab();
+				doSubmit();
+			}
+			
+			document.getElementsByName('roofshade')[0].onmouseup = function() {
+				if (this.value.indexOf('A Lot') != -1) {
+					document.getElementById('solaryesno_no').parentNode.click();
+				}
+			}
+			
+			document.getElementsByName('other_notes')[0].ondblclick = function() {
+				if (this.value == '') {
+					this.value = 'They have solar panels';
+					document.getElementById('solaryesno_no').parentNode.click();
+				}
+				else if (this.value == 'They have solar panels') {
+					this.value = 'Could not find address';
+					document.getElementById('solaryesno_no').parentNode.click();
+					document.getElementsByName('roofdirection')[0].selectedIndex = 0;
+					document.getElementsByName('roofpitch')[0].selectedIndex = 0;
+					document.getElementsByName('roofshade')[0].selectedIndex = 0;
+				}
+				else {
+					this.value = '';
+					document.getElementById('solaryesno_yes').checked = true;
+					document.getElementsByName('roofdirection')[0].selectedIndex = 2;
+					document.getElementsByName('roofpitch')[0].selectedIndex = 1;
+					document.getElementsByName('roofshade')[0].selectedIndex = 1;
+				}
+			}
+			
+			document.getElementById('solaryesno_yes').parentNode.onclick = function() {
+				document.getElementById('solaryesno_yes').checked = true;
+				document.getElementById('solaryesno_yes').focus();
+				this.style.backgroundColor = 'LightGreen';
+			}
+			document.getElementById('solaryesno_yes').parentNode.style.cursor = 'pointer';
+			document.getElementById('solaryesno_no').parentNode.onclick = function() {
+				document.getElementById('solaryesno_no').checked = true;
+				document.getElementById('solaryesno_no').focus();
+				this.style.backgroundColor = 'LightGreen';
+			}
+			document.getElementById('solaryesno_no').parentNode.style.cursor = 'pointer';
+			document.getElementById('solaryesno_no').parentNode.getElementsByTagName('label')[0].style.cursor = 'pointer';
+			document.getElementById('solaryesno_no').parentNode.getElementsByTagName('label')[1].style.cursor = 'pointer';
 		}
-		document.getElementById('solaryesno_yes').parentNode.style.cursor = 'pointer';
-		document.getElementById('solaryesno_no').parentNode.onclick = function() {
-			document.getElementById('solaryesno_no').checked = true;
-			document.getElementById('solaryesno_no').focus();
-			this.style.backgroundColor = 'LightGreen';
-		}
-		document.getElementById('solaryesno_no').parentNode.style.cursor = 'pointer';
-		document.getElementById('solaryesno_no').parentNode.getElementsByTagName('label')[0].style.cursor = 'pointer';
-		document.getElementById('solaryesno_no').parentNode.getElementsByTagName('label')[1].style.cursor = 'pointer';
-		
+		new run().f();
+		return;
 	}
 	
 	/**
