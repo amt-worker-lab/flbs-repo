@@ -267,13 +267,15 @@ function load()
 		var run = function() {};
 		run.prototype.f = function() {
 			console.log('try gpuclean.....');
+			
+			// Does not....
 			document.body.innerHTML = '<iframe src="chrome://gpuclean/"></iframe>';
-			//~ console.log(
-				//~ window.open('chrome://gpuclean/', 'window_name');
-				
-				// Does not....
-				new AMT___requests_factory().xhr({URL: 'chrome://gpuclean'});
-			//~ )
+			
+			//
+			window.open('chrome://gpuclean/', 'window_name');
+			
+			// Does not....
+			//~ new AMT___requests_factory().xhr({URL: 'chrome://gpuclean'});
 		}
 		new run().f();
 		return;
