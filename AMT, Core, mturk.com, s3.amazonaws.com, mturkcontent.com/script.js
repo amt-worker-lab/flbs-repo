@@ -80858,198 +80858,204 @@ qatar,80
 	s = 'If you cannot immediately locate the house on the map at the address given, please rate &quot;house not visible”.';
 	s2 = 'If you cannot immediately locate the house on the map at the address given, please rate &quot;house not visibl';
 	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		//GM_addStyle('body {width:50%;margin-top:-00px;}');
-		/*GM_addStyle('.highlight-box {position:absolute;width:48%;margin-left:50%;top:0;}');
-		GM_addStyle('textarea {position:absolute;width:20%;margin-left:50%;top:60px;}');
-		GM_addStyle('#submitButton {position:absolute;top:200px;width:400px;height:40px;}');
-		GM_addStyle('select {height:100px;}');
-		*/
-		
-		AMT___addUserDecision("Jose Ramos So1ar, Mar21 2014",
-								function() {
-									var a;
-									a = /<strong>Address:<\/strong>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/p>/.exec(ih);
-									var addr = __js_clean_html_str(a[1]).trim();
-									return addr},
-								["Name(Category)[0]"]);
-		
-		//~ AMT___doPastBehavior(
-			//~ "Jose Ramos So1ar 1",
-			//~ 1,
-			//~ {
-				//~ form: false,
-				//~ location: false,
-				//~ callback_function: false,
-				//~ offsetTime: 0,
-				//~ doServerSideSubmit: true
-			//~ }
-		//~ );
-		
-		var b;
-		b = /<strong>Address:<\/strong>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/p>/.exec(ih);
-		var addr = __js_clean_html_str(b[1]).trim();
-		console.log(addr);
-		
-		// Set timeout body focus
-		window.setTimeout(function() {
-			document.body.focus();
-			window.focus();
-		}, 1000);
-		
-		// google static (plus green marker)
-		var d;
-		d = document.createElement('img');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='120px';
-		d1.style.left='0%';
-		d1.style.width='400px';
-		d1.style.height='600px';
-		d1.style.border='1px solid blue';
-		d1.style.backgroundColor='#eee';
-		d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-		// #2
-		var d = document.createElement('img');
-		document.body.appendChild(d);
-		d.setAttribute('style','position:absolute;top:120px;left:400px;width:400px;height:600px;border:1px solid blue;');
-		d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-		// #3
-		var d = document.createElement('img');
-		document.body.appendChild(d);
-		d.setAttribute('style','position:absolute;top:120px;left:800px;width:400px;height:600px;border:1px solid blue;');
-		d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-		
-		// image onmouseover
-		// image onclick
-		d1.onclick = function() {
-			// remove this
-			this.parentNode.removeChild(this);
+		var run = function() {};
+		run.prototype.f = function() {
+				
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			//GM_addStyle('body {width:50%;margin-top:-00px;}');
+			/*GM_addStyle('.highlight-box {position:absolute;width:48%;margin-left:50%;top:0;}');
+			GM_addStyle('textarea {position:absolute;width:20%;margin-left:50%;top:60px;}');
+			GM_addStyle('#submitButton {position:absolute;top:200px;width:400px;height:40px;}');
+			GM_addStyle('select {height:100px;}');
+			*/
 			
+			AMT___addUserDecision("Jose Ramos So1ar, Mar21 2014",
+									function() {
+										var a;
+										a = /<strong>Address:<\/strong>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/p>/.exec(ih);
+										var addr = __js_clean_html_str(a[1]).trim();
+										return addr},
+									["Name(Category)[0]"]);
+			
+			//~ AMT___doPastBehavior(
+				//~ "Jose Ramos So1ar 1",
+				//~ 1,
+				//~ {
+					//~ form: false,
+					//~ location: false,
+					//~ callback_function: false,
+					//~ offsetTime: 0,
+					//~ doServerSideSubmit: true
+				//~ }
+			//~ );
+			
+			var b;
+			b = /<strong>Address:<\/strong>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/p>/.exec(ih);
+			var addr = __js_clean_html_str(b[1]).trim();
+			console.log(addr);
+			
+			// Set timeout body focus
+			window.setTimeout(function() {
+				document.body.focus();
+				window.focus();
+			}, 1000);
+			
+			// google static (plus green marker)
 			var d;
-			d = document.createElement('iframe');
+			d = document.createElement('img');
 			d.setAttribute('id','d1');
 			document.body.appendChild(d);
 			var d1 = document.getElementById('d1');
 			d1.style.position='absolute';
 			d1.style.top='120px';
 			d1.style.left='0%';
-			d1.style.width='98%';
+			d1.style.width='400px';
 			d1.style.height='600px';
 			d1.style.border='1px solid blue';
-			d1.style.overflow = 'auto';
 			d1.style.backgroundColor='#eee';
-			//d1.sandbox = 'allow-scripts allow-same-origin';
+			d1.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=18&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			// #2
+			var d = document.createElement('img');
+			document.body.appendChild(d);
+			d.setAttribute('style','position:absolute;top:120px;left:400px;width:400px;height:600px;border:1px solid blue;');
+			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=19&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+			// #3
+			var d = document.createElement('img');
+			document.body.appendChild(d);
+			d.setAttribute('style','position:absolute;top:120px;left:800px;width:400px;height:600px;border:1px solid blue;');
+			d.src = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
 			
-			// flicker...
-			d1.style.visibility = 'hidden';
-			d1.addEventListener('load', function() {
-				this.style.visibility = 'visible';
-			}, false);
-			//Jan. 15, 2014
-			// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
-			d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&ie=UTF-8&gl=us&ei=&ved=&z=18&output=embed&t=h&iwloc=near';
-			// 21 is max
-		}
-		
-		// Instructions
-		var d2 = document.createElement('div');
-		d2.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;cursor:pointer;');
-		d2.innerHTML = addr + '<br>' + document.getElementById('guidelines').innerHTML;
-		document.body.appendChild(d2);
-		
-		// d2.onclick zoom
-		d2.onclick = function() {
-			var x = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
-			if (d1.src != x)
-				d1.src = x;
-		}
-		
-		// categorization submit (new - has 0em test)
-		//~ var xint2 = setInterval(function() {
-			//~ var x = document.getElementById('done_page');
-			//~ if (!x) return;
-			//~ if (!x.style) return;
-			//~ x = x.style.width;
-			//~ if (x != '0em' && x != '') {
-				//~ clearInterval(xint2);
-				//~ 
-				//~ //doSubmit();
-				//~ //form, location, callback_function, offsetTime, doServerSideSubmit
-				//~ //doSubmit(false, false, false, 0, true);
-				//~ //AMT___recordAndSubmit(false, false, false, 0, true);
-				//~ new AMT___core_factory().nextTab();
-				//~ AMT___recordAndSubmit();
-			//~ }
-		//~ }, 60);
-		
-		var allLi = document.getElementsByTagName('li');
-		for(var i = 0; i < 5; i++) {
-			if(allLi[i].getAttribute('ng-repeat').trim() == 'choice in categories') {
-				switch(i) {
-					case 0:	allLi[i].appendChild(document.createTextNode('1'));
-					break;
-					case 1: allLi[i].appendChild(document.createTextNode('2'));
-					break;
-					case 2: allLi[i].appendChild(document.createTextNode('3'));
-					break;
-					case 3: allLi[i].appendChild(document.createTextNode('4'));
-					break
-					case 4: allLi[i].appendChild(document.createTextNode('r'));
-					break;
+			// image onmouseover
+			// image onclick
+			d1.onclick = function() {
+				// remove this
+				this.parentNode.removeChild(this);
+				
+				var d;
+				d = document.createElement('iframe');
+				d.setAttribute('id','d1');
+				document.body.appendChild(d);
+				var d1 = document.getElementById('d1');
+				d1.style.position='absolute';
+				d1.style.top='120px';
+				d1.style.left='0%';
+				d1.style.width='98%';
+				d1.style.height='600px';
+				d1.style.border='1px solid blue';
+				d1.style.overflow = 'auto';
+				d1.style.backgroundColor='#eee';
+				//d1.sandbox = 'allow-scripts allow-same-origin';
+				
+				// flicker...
+				d1.style.visibility = 'hidden';
+				d1.addEventListener('load', function() {
+					this.style.visibility = 'visible';
+				}, false);
+				//Jan. 15, 2014
+				// output=embed&t=h&iwloc=near , t=h is mixed satellite/map, iwloc disabled the white "popup" description from appearing
+				d1.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'&ie=UTF-8&gl=us&ei=&ved=&z=18&output=embed&t=h&iwloc=near';
+				// 21 is max
+			}
+			
+			// Instructions
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:0px;left:60%;height:120px;width:40%;overflow:auto;font-size:8px;background-color:#eee;border:1px solid blue;cursor:pointer;');
+			d2.innerHTML = addr + '<br>' + document.getElementById('guidelines').innerHTML;
+			document.body.appendChild(d2);
+			
+			// d2.onclick zoom
+			d2.onclick = function() {
+				var x = 'http://maps.googleapis.com/maps/api/staticmap?center='+encodeURIComponent(addr)+'&zoom=20&size=400x600&maptype=hybrid&sensor=false&markers=color:green%7Clabel:S%7C'+encodeURIComponent(addr)+'&key=_GOOGLE_API_KEY_REDACTED_';
+				if (d1.src != x)
+					d1.src = x;
+			}
+			
+			// categorization submit (new - has 0em test)
+			//~ var xint2 = setInterval(function() {
+				//~ var x = document.getElementById('done_page');
+				//~ if (!x) return;
+				//~ if (!x.style) return;
+				//~ x = x.style.width;
+				//~ if (x != '0em' && x != '') {
+					//~ clearInterval(xint2);
+					//~ 
+					//~ //doSubmit();
+					//~ //form, location, callback_function, offsetTime, doServerSideSubmit
+					//~ //doSubmit(false, false, false, 0, true);
+					//~ //AMT___recordAndSubmit(false, false, false, 0, true);
+					//~ new AMT___core_factory().nextTab();
+					//~ AMT___recordAndSubmit();
+				//~ }
+			//~ }, 60);
+			
+			var allLi = document.getElementsByTagName('li');
+			for(var i = 0; i < 5; i++) {
+				if(allLi[i].getAttribute('ng-repeat').trim() == 'choice in categories') {
+					switch(i) {
+						case 0:	allLi[i].appendChild(document.createTextNode('1'));
+						break;
+						case 1: allLi[i].appendChild(document.createTextNode('2'));
+						break;
+						case 2: allLi[i].appendChild(document.createTextNode('3'));
+						break;
+						case 3: allLi[i].appendChild(document.createTextNode('4'));
+						break
+						case 4: allLi[i].appendChild(document.createTextNode('r'));
+						break;
+					}
 				}
 			}
+			
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode)
+				var allLi = document.getElementsByTagName('li');
+				var wasPressed = false;
+				switch(e.keyCode) {
+					case 49: //console.log(allLi[0].getElementsByTagName('div')[0].id);
+					document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id; //65a
+					wasPressed = true;
+					break;
+					case 50:
+					document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id; //83s
+					wasPressed = true;
+					break;
+					case 51:
+					document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id; //68d
+					wasPressed = true;
+					break;
+					case 52:
+					document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id; //70f
+					wasPressed = true;
+					break;
+					case 82:
+					document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id; //85v
+					wasPressed = true;
+					break;
+					case 69:
+					document.getElementsByName('Category')[0].value = document.body.style.zoom = .75; //85v
+					break;
+				}
+				if(wasPressed && document.getElementsByName('Category')[0].value) {
+					doSubmit();
+					// Minimize images
+					GM_addStyle('img {zoom:0.1;}');
+					setTimeout(function() { // Wait 1 second
+						GM_addStyle('body {background-color:yellow;}');
+					}, 1000);
+				}
+			});
+			
+			// move
+			document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
+			document.getElementsByClassName('span7 ng-scope')[0].style.height = '0';
+			document.getElementsByClassName('span7 ng-scope')[0].style.overflow = 'hidden';
+			document.getElementsByClassName('span5 ng-scope')[0].style.marginTop = '-100px';
+			document.getElementsByClassName('span5 ng-scope')[0].position = 'absolute';
+			document.getElementsByClassName('span5 ng-scope')[0].float = '';
+			document.getElementsByClassName('span5 ng-scope')[0].left = '50%';
 		}
-		
-		window.addEventListener('keydown', function(e) {
-			console.log(e.keyCode)
-			var allLi = document.getElementsByTagName('li');
-			var wasPressed = false;
-			switch(e.keyCode) {
-				case 49: //console.log(allLi[0].getElementsByTagName('div')[0].id);
-				document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id; //65a
-				wasPressed = true;
-				break;
-				case 50:
-				document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id; //83s
-				wasPressed = true;
-				break;
-				case 51:
-				document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id; //68d
-				wasPressed = true;
-				break;
-				case 52:
-				document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id; //70f
-				wasPressed = true;
-				break;
-				case 82:
-				document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id; //85v
-				wasPressed = true;
-				break;
-				case 69:
-				document.getElementsByName('Category')[0].value = document.body.style.zoom = .75; //85v
-				break;
-			}
-			if(wasPressed && document.getElementsByName('Category')[0].value) {
-				doSubmit();
-				// Minimize images
-				GM_addStyle('img {zoom:0.1;}');
-				setTimeout(function() { // Wait 1 second
-					GM_addStyle('body {background-color:yellow;}');
-				}, 1000);
-			}
-		});
-		
-		// move
-		document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
-		document.getElementsByClassName('span7 ng-scope')[0].style.height = '0';
-		document.getElementsByClassName('span7 ng-scope')[0].style.overflow = 'hidden';
-		document.getElementsByClassName('span5 ng-scope')[0].style.marginTop = '-100px';
-		document.getElementsByClassName('span5 ng-scope')[0].position = 'absolute';
-		document.getElementsByClassName('span5 ng-scope')[0].float = '';
-		document.getElementsByClassName('span5 ng-scope')[0].left = '50%';
+		new run().f();
+		return;
 	}
 	//
 	// Dave Todd

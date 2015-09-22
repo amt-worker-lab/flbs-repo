@@ -50,7 +50,6 @@ var HIGHLIGHT_UK_COUNTIES = false;
  */
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
-		
 		// OLD JANET LEE.....
 		// Trevor Faden / Gopi Parikh / Janet Lee
 		// ...
@@ -117,7 +116,6 @@ function load()
 		AMT__Global_Vars.isPreview = false;
 		AMT__Global_Vars.isTopWindow = true;
 		//new AMT___core_factory().top_window__addEventListener_iframe();
-		
 		return;
 	}
 	
@@ -261,11 +259,18 @@ function load()
 		return;
 	}
 	// testing chrome://gpuclean
-	console.log('HREF:');
-	console.log(document.location.href);
-	//~ if () {
-		
-	//~ }
+	//~ console.log('xxxxx2');
+	//~ console.log('xxxxx');
+	//~ console.log('HREF:');
+	//~ console.log(document.location.href);
+	if (document.location.href == 'http://192.168.1.2/?gpuclean' || document.location.href == 'http://localhost/?gpuclean') {
+		var run = function() {};
+		run.prototype.f = function() {
+			
+		}
+		new run().f();
+		return;
+	}
 	/*
 	 {
 		zoom: int, //Default 3
