@@ -14575,6 +14575,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		ignore_requesters = {
 			'OCMP67':true,
 			'OCMP66':true,
+			'OCMP5':true,
+			'OCMP6':true,
+			'OCMP7':true,
+			'OCMP8':true,
+			'OCMP9':true,
 			'CrowdFlower':true,
 			'CrowdSource':true,
 			'Classify AdImages':true,
