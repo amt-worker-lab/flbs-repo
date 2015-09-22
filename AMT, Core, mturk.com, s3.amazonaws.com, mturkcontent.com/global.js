@@ -2620,11 +2620,35 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  * 
  * etc...
  * 
+ * xhr
+ * server_load_asynchronously
  * xhr_with_disk_cache
  * 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function server_load_asynchronously
+ * 
+ * URL					Required. String.
+ * success_callback		Function. Callback for completed.
+ * 
+ * @return				.
+ */
+AMT___requests_factory.prototype.xhr = function(options) {
+	//
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: options.URL,
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				//~ d1.innerHTML = response.status;
+				//~ return;
+			}
+		}
+	});
 }
 /**
  * function server_load_asynchronously

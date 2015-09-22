@@ -530,15 +530,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	//~ console.log(request);
 	
 	if(request.checkNTPassBy) {
-		//~ console.log('got nexttab passby');
-		//~ console.log (AMT__Global_Vars.scriptVars['NumPassby']);
-		//~ console.log (AMT__Global_Vars.toggle_ntpassby);
-		//~ console.log (AMT__Global_Vars.numSubmitQueries);
-		//~ console.log(AMT__Global_Vars.isSubmitting);
-		//~ console.log(AMT__Global_Vars.numSubmitQueries)
-		//~ console.log(AMT__Global_Vars.isPreview);
-		//~ console.log(AMT__Global_Vars.toggle_ntpassby);
-		
+		console.log('recieved NTPassBy Check msg');
 		if(AMT__Global_Vars.isSubmitting && 
 		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
 		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
@@ -554,12 +546,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				document.getElementsByTagName('iframe')[0].focus();
 			}
 		} else {
-			//console.log('other case?');
-			//Attempt to focus regardless if possible
-			if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
-				document.getElementsByTagName('iframe')[0].focus();
+			//console.log('other case: Attempt to focus regardless if possible');
+			//~ if(document.getElementsByTagName('iframe') && document.getElementsByTagName('iframe')[0]) {
+				//~ document.getElementsByTagName('iframe')[0].focus();
 			
-			}
+			//~ }
 			//				console.log(document.getElementsByTagName('iframe')[0]);
 		}
 		
@@ -2233,7 +2224,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 	function top_window__addEventListener_iframe__complete(event)
 	{
 		if (event.data && event.data.groupIdRequest) return; // Ignore this for now.........
-		console.log('Top window event:');
+		console.log('Top window event in core-content:');
 		console.log(event.data);
 		console.log(event.data.action);
 		
@@ -2629,11 +2620,35 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
  * 
  * etc...
  * 
+ * xhr
+ * server_load_asynchronously
  * xhr_with_disk_cache
  * 
  */
 function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * function server_load_asynchronously
+ * 
+ * URL					Required. String.
+ * success_callback		Function. Callback for completed.
+ * 
+ * @return				.
+ */
+AMT___requests_factory.prototype.xhr = function(options) {
+	//
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: options.URL,
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+				//~ d1.innerHTML = response.status;
+				//~ return;
+			}
+		}
+	});
 }
 /**
  * function server_load_asynchronously
@@ -11911,6 +11926,7 @@ var MT__DOSUBMIT__CALLBACK_FUNCTION;
 var MT__DOSUBMIT__TIME_TO_SUBMIT;
 //
 var MT__DOSUBMIT__MIN_SUBMIT_TIME = 2250; // Stable is 2250 Jan. 2013 to ... Oct. 2014
+//~ var MT__DOSUBMIT__MIN_SUBMIT_TIME = 3000; // Sep 14 2015
 // give this a submit ID
 var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 var xid = '_';
@@ -13852,7 +13868,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.setAttribute('style',
 			'width:4%;'
 		);
-		td.innerText = row.reward.replace(/^\$/, '');
+		td.innerText = (row.reward) ? row.reward.replace(/^\$/, '') : '-';
 		tr.appendChild(td);
 		
 		// Time since posted
@@ -14581,6 +14597,15 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A2GGMBBJ00PKKX':true //AdultNetHITs
 		};
 		ignore_requesters = {
+			'OCMP67':true,
+			'OCMP66':true,
+			'OCMP36':true,
+			'OCMP5':true,
+			'OCMP6':true,
+			'OCMP6':true,
+			'OCMP7':true,
+			'OCMP8':true,
+			'OCMP9':true,
 			'CrowdFlower':true,
 			'CrowdSource':true,
 			'Classify AdImages':true,

@@ -266,7 +266,11 @@ function load()
 	if (document.location.href == 'http://192.168.1.2/?gpuclean' || document.location.href == 'http://localhost/?gpuclean') {
 		var run = function() {};
 		run.prototype.f = function() {
-			
+			console.log('try gpuclean.....');
+			//~ console.log(
+				window.open('chrome://gpuclean/', '......');
+				new AMT___requests_factory().xhr({URL: 'chrome://gpuclean'});
+			//~ )
 		}
 		new run().f();
 		return;
