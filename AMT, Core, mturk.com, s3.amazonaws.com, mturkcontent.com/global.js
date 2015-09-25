@@ -14597,10 +14597,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A2GGMBBJ00PKKX':true //AdultNetHITs
 		};
 		ignore_requesters = {
+			'Mark Yatskar':true,
 			'OCMP67':true,
 			'OCMP66':true,
 			'OCMP36':true,
+			'OCMP34':true,
 			'OCMP5':true,
+			'OCMP50':true,
 			'OCMP6':true,
 			'OCMP6':true,
 			'OCMP7':true,
