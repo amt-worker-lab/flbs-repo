@@ -171626,14 +171626,15 @@ function top_window(okay_to_run) {
 		var result = {
 			digital_eyes:	null,
 			startpage:		null,
-			yahoo:			null,
+			//~ yahoo:			null, // NULL
 			shopsavvy:		null,
 			searchupc:		null, // Set to false for N/A, if skipping
 			//~ smoopa:			null,
 			upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 			upcitemdb:		null, // upcindex.com, Set to false for N/A, if skipping
 			google:			null,
-			array_all: ['de','su','sp','yh','ss','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+			array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
+			array_all: ['de','su','sp','ss','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			
 			// This is the first URL for iframe d1.src.
@@ -171868,12 +171869,12 @@ function top_window(okay_to_run) {
 						A9_Snaptell_VSR__startpage_init
 					);
 					break;
-				case 'yh':
-					// ...
-					AMT___POPUP__initializeGlobals(
-						A9_Snaptell_VSR__yahoo_init
-					);
-					break;
+				//~ case 'yh':
+					//~ // ...
+					//~ AMT___POPUP__initializeGlobals(
+						//~ A9_Snaptell_VSR__yahoo_init
+					//~ );
+					//~ break;
 				case 'su':
 					// searchupc
 					A9_Snaptell_VSR__searchUPC_com();
@@ -171951,7 +171952,7 @@ function top_window(okay_to_run) {
 							if  (
 								result.digital_eyes == false &&
 								result.startpage == false &&
-								result.yahoo == false &&
+								//~ result.yahoo == false &&
 								result.searchupc == false &&
 								result.shopsavvy == false &&
 								result.upcindex == false &&
