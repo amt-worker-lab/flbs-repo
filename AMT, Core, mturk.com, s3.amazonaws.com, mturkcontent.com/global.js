@@ -6077,12 +6077,19 @@ James Strate, CFP®
 		//<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="fn"><span class="full-name" dir="auto">Dalton Volpato</span><span></span></span></h1>
 		//~ r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="[^"]*"><span class="full-name"[^>]*>([^<]*)<\/span>(<span><\/span>|)<\/span><\/h1><\/div><\/div>/;
 		r = /<h1 id="name" class="fn">([^<]+)<\/h1>/;
-		if (r.exec(rs)) {
-			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
-			// Must have only one match
-			test.only_one(r.source);
+		var r2 = /<h1><span class="fn"><span class="full-name" dir="auto">([^<]+)<\/span><\/span><\/h1>/;
+		if (r.exec(rs) || r2.exec(rs)) {
+			if (r.exec(rs)) {
+				opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
+				// Must have only one match
+				test.only_one(r.source);
+			} else {
+				opts.response.vars.result.name = __js_clean_html_str(r2.exec(rs)[1]);
+				// Must have only one match
+				test.only_one(r2.source);
+			}
 		} else {
-			alert('Error: LI: No name. '+r);
+			alert('Error: LI: No name. '+r+','+r2);
 			return false;
 		}
 		/**

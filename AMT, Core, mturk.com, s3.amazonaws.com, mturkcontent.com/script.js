@@ -81531,7 +81531,8 @@ qatar,80
 							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dv.innerHTML = 
 								MT__bold(exp[i].title, o.bold) + '<br>' +
-								MT__bold(exp[i].comp_name, o.bold);
+								MT__bold(exp[i].comp_name, o.bold) + '<br>' + 
+								'Present:'+dv.current;
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								document.getElementsByName('unable to find')[0].checked = false;
@@ -81791,87 +81792,87 @@ qatar,80
 			}
 			//
 			// ...
-		function zoominfo_people__profile(btn) {
-			
-			var u = 'http://www.zoominfo.com/s/search/profile/personpopup?personId='+encodeURIComponent(btn.value)+'&targetid=profile';
-			
-			var btn = btn;
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						d1.innerHTML = response.status;
-						return;
-					}
-					
-					//rs = rs.replace(/&amp;/gi, '&');
-					rs = rs.replace(/(&[\w#\d]+;)/gi, function(p0, p1) {
-						return __js_clean_html_str(p1);
-					});
-					
-					var rs_original = rs;
-					
-					// name
-					var n = /<input type="hidden" id="personName" value="[^"]*"><h1>[\r\n\t\s]*([^\r\n]*)/.exec(rs);
-					n = (n) ? n[1] : '';
-					
-					var x = /^((.|\s)*?(?=<div class="intelius">[\r\n\t\s]+[^\r\n]*[\r\n\t\s]+<\/div>|$)|$)/.exec(rs);
-					if (x) {
-						rs = rs.replace(x[0], '');
-						rs = '<body><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>' + n + rs;
-					}
-					
-					rs = rs.replace(/<\/?(h|span|a|img|script|iframe|strong)[^>]*>/gi, '');
-					rs = MT__bold(rs, o.comp.split(' '));
-					rs = '<html><style type="text/css">body {zoom:0.7;height:4000px;}</style>' + rs;
-					
-					var rf = new AMT___requests_factory();
-					rf.io__AMT__displayPostStrAsHTML(
-						rs,
-						btn.r_ifrm
-					);
-					
-					// hide other iframes
-					// ifrm-zi
-					var x = document.getElementsByClassName('ifrm-zi');
-					for (var i in x) {
-						if (i == 'length') break;
-						x[i].style.height = '10px';
-					}
-					
-					// ...
-					btn.r_ifrm.style.height = '200px';
-					
-					// auto?
-					var auto = false;
-					if	(
-						btn.nm_match &&
-						o.comp_cln.length > 6 &&
-						rs_original.replace(/[^\w]/g, '').toLowerCase().indexOf(o.comp_cln) != -1
-						)
-					{
-						if (AMT__Global_Vars.isPreview) {
-							AMT___Floater.accept();
+			function zoominfo_people__profile(btn) {
+				
+				var u = 'http://www.zoominfo.com/s/search/profile/personpopup?personId='+encodeURIComponent(btn.value)+'&targetid=profile';
+				
+				var btn = btn;
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status != 200) {
+							d1.innerHTML = response.status;
 							return;
-						} else {
-							//~ auto = true;
-							//~ btn.parentNode.click();
-							//~ return;
 						}
+						
+						//rs = rs.replace(/&amp;/gi, '&');
+						rs = rs.replace(/(&[\w#\d]+;)/gi, function(p0, p1) {
+							return __js_clean_html_str(p1);
+						});
+						
+						var rs_original = rs;
+						
+						// name
+						var n = /<input type="hidden" id="personName" value="[^"]*"><h1>[\r\n\t\s]*([^\r\n]*)/.exec(rs);
+						n = (n) ? n[1] : '';
+						
+						var x = /^((.|\s)*?(?=<div class="intelius">[\r\n\t\s]+[^\r\n]*[\r\n\t\s]+<\/div>|$)|$)/.exec(rs);
+						if (x) {
+							rs = rs.replace(x[0], '');
+							rs = '<body><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div>' + n + rs;
+						}
+						
+						rs = rs.replace(/<\/?(h|span|a|img|script|iframe|strong)[^>]*>/gi, '');
+						rs = MT__bold(rs, o.comp.split(' '));
+						rs = '<html><style type="text/css">body {zoom:0.7;height:4000px;}</style>' + rs;
+						
+						var rf = new AMT___requests_factory();
+						rf.io__AMT__displayPostStrAsHTML(
+							rs,
+							btn.r_ifrm
+						);
+						
+						// hide other iframes
+						// ifrm-zi
+						var x = document.getElementsByClassName('ifrm-zi');
+						for (var i in x) {
+							if (i == 'length') break;
+							x[i].style.height = '10px';
+						}
+						
+						// ...
+						btn.r_ifrm.style.height = '200px';
+						
+						// auto?
+						var auto = false;
+						if	(
+							btn.nm_match &&
+							o.comp_cln.length > 6 &&
+							rs_original.replace(/[^\w]/g, '').toLowerCase().indexOf(o.comp_cln) != -1
+							)
+						{
+							if (AMT__Global_Vars.isPreview) {
+								AMT___Floater.accept();
+								return;
+							} else {
+								//~ auto = true;
+								//~ btn.parentNode.click();
+								//~ return;
+							}
+						}
+						
+						// Here?
+						// btn.r_skip_allowed
+						//~ if (!auto && btn.r_skip_allowed) {
+							//~ Rich_Gentry_zoominfo_people__nextSearch();
+						//~ }
 					}
-					
-					// Here?
-					// btn.r_skip_allowed
-					//~ if (!auto && btn.r_skip_allowed) {
-						//~ Rich_Gentry_zoominfo_people__nextSearch();
-					//~ }
-				}
-			});
-		}
+				});
+			}
 		}
 		new run().f();
 		return;
