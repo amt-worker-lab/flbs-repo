@@ -81488,7 +81488,7 @@ qatar,80
 					url: link,
 					callback_function: function(options) {
 						
-						console.log(options);
+						//~ console.log(options);
 						
 						var err = options.response.vars.error;
 						

@@ -6076,13 +6076,15 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 James Strate, CFP®
 		 */
 		//<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="fn"><span class="full-name" dir="auto">Dalton Volpato</span><span></span></span></h1>
-		r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="[^"]*"><span class="full-name"[^>]*>([^<]*)<\/span>(<span><\/span>|)<\/span><\/h1><\/div><\/div>/;
+		//~ r = /<div id="name-container" data-li-template="name"><div id="name" class="editable-item"><h1><span class="[^"]*"><span class="full-name"[^>]*>([^<]*)<\/span>(<span><\/span>|)<\/span><\/h1><\/div><\/div>/;
+		r = /<h1 id="name" class="fn">([^<]+)<\/h1>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.name = __js_clean_html_str(r.exec(rs)[1]);
 			// Must have only one match
 			test.only_one(r.source);
 		} else {
-			
+			alert('Error: LI: No name. '+r);
+			return false;
 		}
 		/**
 		 * Headline
@@ -6250,7 +6252,8 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		EX:
 			<h3>Experience</h3>
 		 */
-		r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
+		//r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
+		r = /<section id="experience" class="profile-section"><h3 class="title">Experience</h3>/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.profile_has_section_contact_info = true;
 			// Must have only one match
