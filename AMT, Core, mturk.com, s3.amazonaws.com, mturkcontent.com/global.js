@@ -6140,8 +6140,10 @@ OR <div class="member-connections"><strong><a href="#connections" class="connect
 		EX:
 https://media.licdn.com/media/p/3/000/031/13c/113ad79.jpg
 		 */
-		// LOGGED OUT=<div class="profile-picture"><a href="/reg/join-pprofile?_ed=0_1juIla4xhA4CFr0Cj73Lsht1xr0t0ZUqIgoujj7RAh3oPEelqZ9dylNp0Re_iq9S0Mf3MQlb4Zku8Gv9M_RRTz&amp;trk=pprof-0-ts-view_full-0"> <img src='https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/3/005/08e/19c/1b82732.jpg' width="200" height="200" alt="Graham Ellis"/>
-		r = /<div class="profile-picture">[\r\n\t\s]*(<a href="[^"]*">|) *<img src='([^']+)'/;
+		
+		// OLD //r = /<div class="profile-picture">[\r\n\t\s]*(<a href="[^"]*">|) *<img src='([^']+)'/;
+		
+		r = /<meta property="og:image" content="([^"]+)"\/>/; // E.g. https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/1/000/20c/265/33d3929.jpg
 		if (r.exec(rs)) {
 			opts.response.vars.result.image_url = __js_clean_html_str(r.exec(rs)[2]);
 			// Must have only one match

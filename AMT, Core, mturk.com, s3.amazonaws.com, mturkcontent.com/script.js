@@ -81278,6 +81278,7 @@ qatar,80
 	// Find a Person's Job Title
 	// 354DQCRRHIZL2IJZ7PVUW43KBB1LS7
 	s = '	<li>If the name is a fake name then check the first box.&nbsp;</li>\n	<li>Check the final box if the person is no longer with the listed company.&nbsp;</li>';
+	s = '<li><strong>If the person is no longer employed at the company you only need to check the second box.&nbsp;</strong></li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -81304,9 +81305,9 @@ qatar,80
 				bold_nm: [],
 				
 				q: [
-					document.getElementById('job_name'),
-					document.getElementById('junk_name'),
-					document.getElementById('not_current_job')
+					document.getElementById('job_title'),
+					//~ document.getElementById('junk_name'),
+					//~ document.getElementById('not_current_job')
 				]
 			};
 			o.nm_cln = o.nm.replace(/[^\w]/g, '').toLowerCase();
@@ -81389,10 +81390,10 @@ qatar,80
 			var number_of_auto_tries = 0;
 			
 			// 
-			o.q[1].onclick = function(e) {
-				if (this.checked)
-					doSubmit();
-			}
+			//~ o.q[1].onclick = function(e) {
+				//~ if (this.checked)
+					//~ doSubmit();
+			//~ }
 			//
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -81481,7 +81482,7 @@ qatar,80
 					AMT___Floater.skip();
 				}
 			}
-			function liprof(link) {//return;
+			function liprof(link) {
 				new AMT___site_scrapes().scrape({
 					site: 'LINKEDIN_PROFILE',
 					url: link,
