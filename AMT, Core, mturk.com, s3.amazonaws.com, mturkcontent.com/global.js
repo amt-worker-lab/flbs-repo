@@ -6024,7 +6024,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		var rs = opts.response.responseText;
 		var r;
-		//~ console.log(rs); // debug
 		
 		var test = function() {};
 		test.only_one = function(rg_source) {
@@ -6253,21 +6252,65 @@ http%3A%2F%2Fdeancdawson%2Ecom
 			<h3>Experience</h3>
 		 */
 		//r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
-		r = /<section id="experience" class="profile-section"><h3 class="title">Experience</h3>/;
-		if (r.exec(rs)) {
-			opts.response.vars.result.profile_has_section_contact_info = true;
-			// Must have only one match
-			r = new RegExp(r.source, 'g');
-			if (rs.match(r).length != 1) {
-				console.log(rs.match(r));
-				console.log(r);
-				alert('Length:'+r);
-				return false;
+		var exp = dom.getElementById('experience');
+		if (!exp) {
+			 // do nothing
+		} else {
+			var p = exp.getElementsByClassName('position');
+			for (var i=0; i<p.length; i++) {
+				// Item
+				var itm = {
+					comp_name: null,
+					logo_url: null,
+					current_or_past: null,
+					title: null
+				};
+				
+				// Title, company
+				var n = p[i].getElementsByTagName('header');
+				if (n && n.length) {
+					var n2 = n.getElementsByClassName('item-title'); // title
+					var n3 = n.getElementsByClassName('item-subtitle'); // company
+					if (n2) {
+						itm.title = n2.innerText.trim();
+					}
+					if (n3) {
+						itm.comp_name = n3.innerText.trim();
+					}
+				}
+				
+				// current or past?
+				// Output: // current-position OR past-position
+				var n = p[i].getElementsByClassName('date-range');
+				if (n && n.length && n[0].innerText.indexOf('– Present') != -1) {
+					itm.current_or_past = 'current-position';
+				} else {
+					itm.current_or_past = 'past-position';
+					// Test this
+					if (!n || n.length == 0 || n[0].innerText.toLowerCase().indexOf('present') != -1 || n[0].innerText.toLowerCase().indexOf('current') != -1) {
+						alert('Warn: LI: Postition present/past correct? ' + n);
+					}
+				}
+				
+				
 			}
+		}
+		r = /<section id="experience" class="profile-section"><h3 class="title">Experience<\/h3>/;
+		if (r.exec(rs) && 0==1) {
+			//~ opts.response.vars.result.profile_has_section_contact_info = true;
+			//~ // Must have only one match
+			//~ r = new RegExp(r.source, 'g');
+			//~ if (rs.match(r).length != 1) {
+				//~ console.log(rs.match(r));
+				//~ console.log(r);
+				//~ alert('Length:'+r);
+				//~ return false;
+			//~ }
 			
 			// Experience container
 			// This must be present.
-			r = /<div id="background-experience-container"[^>]*>((.|\s)*?(?=<\/div><\/div><script>|$)|$)/
+			//r = /<section id="experience" class="profile-section"[^>]*>((.|\s)*?(?=<\/div><\/div><script>|$)|$)/
+			r = /<section id="experience" class="profile-section"[^>]*>((.|\s)*?(?=<\/section>|$)|$)/
 			if (r.exec(rs)) {
 				r = r.exec(rs)[1];
 				
@@ -6316,14 +6359,14 @@ http%3A%2F%2Fdeancdawson%2Ecom
 							}
 						}
 						// Title
-						var t = /<h4><a href="[^"]+" title="Learn more about this title">([^<]+)<\/a><\/h4>/;
+						var t = /<h4[^>]*>[\r\n\t\s]*<a href="[^"]+">([^<]+)<\/a>[\r\n\t\s]*<\/h4>/;
 						var rg_m;
 						if (rg_m = t.exec(rs)) {
 							itm.title = __js_clean_html_str(rg_m[1]);
 						}
 						// Img
 						//https://media.licdn.com/media/p/8/000/22c/122/29e1504.png
-						var rg_it = /<img class="lazy-load" src="[^"]*" data-li-src="([^"]*)" alt="[^"]*"\/>/
+						var rg_it = /<img class="lazy-loaded" alt="[^"]*" src="([^"]*)">/
 						var rg_m;
 						if (rg_m = rg_it.exec(i)) {
 							itm.logo_url = __js_clean_html_str(rg_m[1]);
