@@ -81534,11 +81534,14 @@ qatar,80
 								MT__bold(exp[i].comp_name, o.bold);
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
-								document.getElementById('not_current_job').checked = !this.current;
+								document.getElementsByName('unable to find')[0].checked = false;
+								document.getElementsByName('not_employed')[0].checked = false;
 								sbm(this.title);
 							}
 							// Current?
 							if (exp[i].current_or_past == 'current-position') {
+								//~ dv.style.backgroundColor = 'aqua';
+							} else {
 								dv.style.backgroundColor = 'aqua';
 							}
 						}

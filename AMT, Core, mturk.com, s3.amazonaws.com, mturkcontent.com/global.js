@@ -6269,13 +6269,13 @@ http%3A%2F%2Fdeancdawson%2Ecom
 				// Title, company
 				var n = p[i].getElementsByTagName('header');
 				if (n && n.length) {
-					var n2 = n.getElementsByClassName('item-title'); // title
-					var n3 = n.getElementsByClassName('item-subtitle'); // company
+					var n2 = n[0].getElementsByClassName('item-title'); // title
+					var n3 = n[0].getElementsByClassName('item-subtitle'); // company
 					if (n2) {
-						itm.title = n2.innerText.trim();
+						itm.title = n2[0].innerText.trim();
 					}
 					if (n3) {
-						itm.comp_name = n3.innerText.trim();
+						itm.comp_name = n3[0].innerText.trim();
 					}
 				}
 				
@@ -6287,12 +6287,27 @@ http%3A%2F%2Fdeancdawson%2Ecom
 				} else {
 					itm.current_or_past = 'past-position';
 					// Test this
+					// All shall have a position.
 					if (!n || n.length == 0 || n[0].innerText.toLowerCase().indexOf('present') != -1 || n[0].innerText.toLowerCase().indexOf('current') != -1) {
 						alert('Warn: LI: Postition present/past correct? ' + n);
 					}
 				}
 				
+				// logo
+				var n = p[i].getElementsByClassName('logo');
+				if (n && n.length) {
+					var n2 = n[0].getElementsByTagName('img');
+					if (n2 && n2[0]) {
+						itm.logo_url = n2[0].getAttribute('src');
+					} else {
+						console.log(n);
+						console.log(n2);
+						alert('Warn: LI: Image logo but no image? ' + n);
+					}
+				}
 				
+				// Push
+				opts.response.vars.result.experience.push(itm);
 			}
 		}
 		r = /<section id="experience" class="profile-section"><h3 class="title">Experience<\/h3>/;
