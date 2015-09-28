@@ -175454,7 +175454,8 @@ function top_window(okay_to_run) {
 	
 	//
 	// John Roberts
-	//
+	// Get URLs
+	// 0.06
 	// Old ones...
 	//		s = '<li>For each result in English, click the link and <b>go to that web page in your browser</b></li>';
 	//		s = 'For each web page that is in English, click each search result link  (the underlined blue text) and';
@@ -175478,7 +175479,7 @@ function top_window(okay_to_run) {
 			
 			//~ var url = document.getElementsByTagName('a')[0].href + '&filter=0&num=10';
 			
-			var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0&num=10';
+			var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
 			
 			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
 			
@@ -175760,6 +175761,7 @@ function top_window(okay_to_run) {
 	//
 	// John Roberts
 	// Get number of search results
+	// 0.01
 	// Errors="0"
 	//s = 'Near the top left of the search results page, there is a number, which is the quantity of search results found. The number is in gray text and usually says ';
 	s = 'Near the top of the search results page is a piece of gray text that says "About X results..." Enter the number represented by X.';
