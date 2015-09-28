@@ -109,6 +109,7 @@ function mturk_load()
 							var rs = response.responseText;
 							if (response.status != 200) return;
 							
+							// TODO: Check for John Roberts in this task!
 							var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
 							if (r) {
 								document.location.href = r[1];
