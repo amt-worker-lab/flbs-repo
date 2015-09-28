@@ -175662,16 +175662,12 @@ function top_window(okay_to_run) {
 										console.log(m);
 										return;
 									}
-									
 									q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
-									
 									d2.value = (d2.value*1) + 1;
-									
 									count++;
 								}
 							}
 						}
-						
 						console.log(count);
 						
 						if (count == 0) {
@@ -175686,32 +175682,6 @@ function top_window(okay_to_run) {
 							o.num_zero_pages = 0;
 						}
 						
-						//~ //save
-						//~ GM_xmlhttpRequest({
-							//~ method: 'POST',
-							//~ url: MT___host + '/mturk/util.php',
-							//~ data: 'johnroberts=&u='+encodeURIComponent(url)+'&v='+encodeURIComponent(q.value),
-							//~ headers: {
-								//~ "Content-Type": "application/x-www-form-urlencoded"
-							//~ },
-							//~ onload: function (response) {
-								//~ //var rs=response.responseText;
-							//~ }
-						//~ });
-						
-						/*if (count === 0 && d2.value*1 > 120 && q.value != '') { // STOP SHORT here
-							//doSubmit(document.getElementsByName('hitForm')[0]);
-							doSubmit('hitForm');
-							return;
-						}*/
-						//start += 10;
-						
-						//var utmp = /<a href="([^"]+)" class="pn" id="pnnext" style="text-decoration:none;text-align:left"><span[^>]{0,}><\/span><span[^>]{0,}>Next</.exec(rs);
-						/*<a class="pn" href="/search?hl=en&amp;tbs=sbi:AMhZZiu3CVrg4XSz3KNKMLCrMcnkTg1R9EvVW7sUiwr1GtylO18G4gjhzstOduehDxXuANEVbIltiGh1Pw8lP9AMOEcDF9i8JyqpyuqRd2fbyHg78yMX2sfaxu2Xjr5Udod_1pRsHAVz4xR1zV7DARFSFxJO26m3mYYodf-K7lL_1fdRZFRvZmeiM3&amp;ei=eKXSU9vHHMmxyATu0IDQCA&amp;start=10&amp;sa=N" id="pnnext" style="text-align:left"><span class="csb gbil ch" style="background:url(/images/nav_logo195.png) no-repeat;background-position:-96px 0;width:71px"></span><span style="display:block;margin-left:53px">Next</span>*/
-						
-						// 
-						//~ var utmp = /href="([^"]+)" id="pnnext" style="text-decoration:none;text-align:left"><span[^>]{0,}><\/span><span[^>]{0,}>Next</.exec(rs);
-						
 						// NEXT BUTTON
 						var utmp = /href="([^"]+)" id="pnnext" style="[^"]+"><span[^>]{0,}><\/span><span[^>]{0,}>Next<\/span>/.exec(rs);
 						
@@ -175719,7 +175689,7 @@ function top_window(okay_to_run) {
 								utmp
 							)
 						{
-							url_current = 'https://www.google.com' + utmp[1].replace(/&amp;/g, '&');
+							url_current = 'https://www.google.com' + utmp[1].replace(/&amp;/g, '&').replace(/(\?|&)num=\d+/g, '$1'); // NOTE (&num=xx) BROKEN! SEP2015
 							
 							console.log(url_current);
 							
@@ -175730,8 +175700,7 @@ function top_window(okay_to_run) {
 								
 							setTimeout(function() {
 								getnextpage();
-							//}, 1100);//tor
-							}, 440);
+							}, 440); // 1100 ?
 						}
 						else if (rs.indexOf('>Next<') == -1) {
 							if (q.value != '') {
@@ -175747,10 +175716,8 @@ function top_window(okay_to_run) {
 								console.log(q);
 							}
 						}
-						
 					}
 				});
-				
 				return;
 			}
 		}
