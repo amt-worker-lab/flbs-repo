@@ -7030,33 +7030,45 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var ARRAY_FIRST_FINDS = [];
 	var NUM_FOUND_SEARCH = 0;
 	var SKIP_SITES;
-	function company_URL__load_skips() {
+	// try_mt_host, Default=true
+	function company_URL__load_skips(try_mt_host) {
+		var tmp_host = MT___host;
+		if (!try_mt_host) {
+			var tmp_host = 'http://'+AMT__Global_Vars.scriptVars['Server Location']; // E.g., change 192.168.1.2 to localhost
+		}
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___host+'/mturk/util.php?austin_load_skips=',
+			url: tmp_host+'/mturk/util.php?austin_load_skips=',
 			onload: function (response) {
-				var rs=response.responseText;
-				
-				var x = rs.split("\n");
-				
-				SKIP_SITES = {}; // ASSOC.
-				
-				// FULL
-				for (var i in x) {
-					SKIP_SITES[x[i]] = true;
+				if (response.status != 200) {
+					company_URL__load_skips(false);
+					return;
 				}
-				
-				// SUBDOMAINS!
-				for (var i in x) {
-					var y;
-					if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
-						SKIP_SITES[y[1]] = true;
-					}
-				}
-				
-				company_URL__SP_init();
+				company_URL__load_skips_success(response)
 			}
 		});
+	}
+	function company_URL__load_skips_success(response) {
+		var rs = response.responseText;
+		
+		var x = rs.split("\n");
+		
+		SKIP_SITES = {}; // ASSOC.
+		
+		// FULL
+		for (var i in x) {
+			SKIP_SITES[x[i]] = true;
+		}
+		
+		// SUBDOMAINS!
+		for (var i in x) {
+			var y;
+			if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+				SKIP_SITES[y[1]] = true;
+			}
+		}
+		
+		company_URL__SP_init();
 	}
 	company_URL__load_skips();
 	
