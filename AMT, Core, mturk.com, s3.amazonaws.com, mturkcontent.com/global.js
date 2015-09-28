@@ -56,6 +56,7 @@ var AMT__Global_Vars = //function()
 		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
 		{name: 'Return NextTab',	value: '0', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
+		{name: 'Server Location',			value: '192.168.1.2', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,
