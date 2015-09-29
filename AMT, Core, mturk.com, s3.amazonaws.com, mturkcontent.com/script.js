@@ -41,25 +41,29 @@ function MT__RUN() {
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
 				fund: td[1].innerText.trim(),
+				bold: [],
 				q: [
 					document.getElementsByName('Symbol')[0],
 					document.getElementsByName('NetExpenseRatio')[0],
 					document.getElementsByName('12b-1 Actual')[0]
 				]
 			}
+			o.bold = o.fund.clean_string_to_array();
 			
 			/*BEGIN ITEMS*/
-			var d1 = ''.div({style:'position:absolute;top:200px;left:0;width:99%;height:200px;background-color:#eee;border:1px solid blue;'});
+			var d1 = ''.div({style:'position:absolute;top:40px;left:20%;width:79%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
-			d2.setAttribute('style', 'position:absolute;top:160px;left:0;width:99%;height:40px;');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:20%;width:79%;height:40px;');
 			document.body.appendChild(d2);
 			d2.value = o.fund;
 			var ef = new AMT___events_factory();
@@ -72,6 +76,17 @@ function MT__RUN() {
 			
 			// Init
 			r();
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 40 // offset top
+			});
 			
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
@@ -90,10 +105,11 @@ function MT__RUN() {
 			// GET
 			// http://quote.morningstar.com/TickerLookupResult.html?rbtnTicker=NameContain&ticker=Jpm+Smart&pageno=0&TLC=M
 			function r() {
+				d1.innerText = '';
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: 'http://quote.morningstar.com/TickerLookupResult.html?rbtnTicker=NameContain&ticker='+
-						encodeURIComponent(d2.value)+
+					url: 'http://quote.morningstar.com/TickerLookupResult.html?ticker='+
+						encodeURIComponent(d2.value).replace(/%20/g, '+')+
 						'&pageno=0&TLC=M',
 					onload: function (response) {
 						var rs = response.responseText;
@@ -104,14 +120,98 @@ function MT__RUN() {
 						
 						// Here...
 						var dom =  new DOMParser().parseFromString(rs, 'text/html');
-						var m = document.querySelectorAll('a.L2');
+						var m = dom.querySelectorAll('a.L2');
 						for (var i=0; i<m.length; i++) {
-							// every second one...
+							// The fund must have a ticker symbol! Otherwise skip here!
+							console.log(m[i].getAttribute('href')); 
+							if (!/&Symbol=([^&]+)/.exec(m[i].getAttribute('href'))) {
+								continue;
+							}
+							var t = /&Symbol=([^&]+)/.exec(m[i].getAttribute('href'))[1];
+							if (t == m[i].innerText.trim()) { // (Skip 1st column)
+								continue;
+							}
+							
+							// 
 							console.log(m[i].innerText);
+							// e.g. http://quicktake.morningstar.com/FundNet/snapshot.aspx?Country=USA&Symbol=JSMRX
+							var d = m[i].innerText.div({style:'border-bottom:1px solid teal;'});
+							d.className = 'exe';
+							d.ticker = t; // Required!
+							d.innerHTML = d.ticker + ' | ' + MT__bold(m[i].innerText, o.bold);
+							d.onclick = function() {
+								o.q[0].value = this.ticker;
+								this.style.backgroundColor = 'aqua';
+								expense(this);
+							}
+							d1.appendChild(d);
+						}
+						
+						// ...
+						if (d1.innerText == '') {
+							d1.innerText = '0 results';
+						} else {
+							d1.appendChild(''.div({style:'height:1600px;'}));
 						}
 					}
-				}
-			});
+				});
+			}
+			// Net expense (annual)
+			// & 12-b
+			function expense(div) {
+				console.log('http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(div.ticker));
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(div.ticker)+
+						'&region=usa&culture=en-US&cur=',
+					//~ url: 'http://financials.morningstar.com/operation/c-expenseRelative.action?&t='+encodeURIComponent(div.ticker)+
+						//~ '&region=usa&culture=en-US&cur=',
+						//url: 'http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(div.ticker)+
+					onload: function (response) {
+						var rs = response.responseText;
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'blue';
+							exit(response.status);
+						}
+						
+						// Parse! (new)
+						var rs = JSON.parse(rs);
+						rs = rs.html;
+						
+						// row_lbl
+						var dom =  new DOMParser().parseFromString(rs, 'text/html');
+						var m = dom.querySelectorAll('th.row_lbl');console.log(m);
+						var found = '';
+						for (var i=0; i<m.length; i++) {
+							console.log(m[i].innerText);
+							if (m[i].innerText.indexOf('Net Expense Ratio: Annual Report') != -1) {
+								o.q[1].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
+								found+='a';
+							} else if (m[i].innerText.indexOf('12b-1 Actual') != -1) {
+								o.q[2].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
+								found+='b';
+							}
+						}
+						// Found == ab is success!
+						console.log(found);
+						if (found == 'ab') {
+							for (var i in o.q) {
+								o.q[i].value = o.q[i].value.trim();
+								if (o.q[i].value == '') {
+									return;
+								} else if (i == 1 || i == 2) {
+									// Test valid
+									// Dash or #Percent
+									if (!/^(—|\d+\.\d+%)$/.exec(o.q[i].value)) {
+										return;
+									}
+								}
+							}
+							doSubmit(); // Here?
+						}
+					}
+				});
+			}
 		}
 		new run().f();
 	}
@@ -120,7 +220,6 @@ function MT__RUN() {
 	// Word Meaning (Sense) Categorization
 	// 3ERA4CZHMXJ6ZDIP9LPVS6CAHUFLMU
 	s = '<p>In this task, a sentence with <span class="predicate">a yellow-highlighted noun</span> is presented, followed by a question about the noun.';
-	console.log('dfdfsdfsdfsdfioshdouhsufd');
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
