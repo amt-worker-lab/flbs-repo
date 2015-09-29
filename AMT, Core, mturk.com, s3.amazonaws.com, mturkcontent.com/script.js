@@ -131,6 +131,8 @@ function MT__RUN() {
 							if (t == m[i].innerText.trim()) { // (Skip 1st column)
 								continue;
 							}
+							// Must be five length only...
+							if (t.length != 5) continue;
 							
 							// 
 							console.log(m[i].innerText);
