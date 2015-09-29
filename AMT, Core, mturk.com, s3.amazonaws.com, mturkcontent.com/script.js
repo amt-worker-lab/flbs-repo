@@ -28,8 +28,8 @@ function MT__RUN() {
 	
 	//
 	//
-	//
-	//
+	// PDS_PN1
+	// 
 	s = "We've displayed item title. Decide whether it is a good product title, needs proofing, is missing a component, or a bad product title.";
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
@@ -65,7 +65,34 @@ function MT__RUN() {
 			}
 			
 			window.addEventListener('keydown', function(e) {
-				console.log(e);
+				console.log(e.keyCode);
+				switch(e.keyCode) {
+					case 49: 
+						var x = document.getElementsByName('Output')[0]
+						x.click();
+						x.checked = true;
+						doSubmit();
+					break;
+					case 50: 
+						var x = document.getElementsByName('Output')[1]//.click();
+						x.click();
+						x.checked = true;
+						doSubmit();
+					break;
+
+					case 51: 
+						var x = document.getElementsByName('Output')[2]//.click();
+						x.click();
+						x.checked = true;
+						doSubmit();
+					break;
+					case 52:
+						var x = document.getElementsByName('Output')[3]//.click();
+						x.click();
+						x.checked = true;
+						doSubmit();
+					break;
+				}
 			});
 			
 		}
