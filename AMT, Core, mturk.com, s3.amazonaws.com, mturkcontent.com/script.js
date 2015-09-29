@@ -30,6 +30,47 @@ function MT__RUN() {
 	
 	
 	//
+	// 
+	// 
+	// 
+	s = '<p>In this task, a sentence with <span class="predicate">a yellow-highlighted noun</span> is presented, followed by a question about the noun.';
+	console.log('dfdfsdfsdfsdfioshdouhsufd');
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			var o = {
+			}
+			
+			// GET
+			// http://quote.morningstar.com/TickerLookupResult.html?rbtnTicker=NameContain&ticker=Jpm+Smart&pageno=0&TLC=M
+			function r() {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: 'http://quote.morningstar.com/TickerLookupResult.html?rbtnTicker=NameContain&ticker='+
+						encodeURIComponent(d2.value)+
+						'&pageno=0&TLC=M',
+					onload: function (response) {
+						var rs = response.responseText;
+						//console.log(rs);
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'aqua';
+							exit(response.status);
+						}
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	//
 	// David Yarowsky
 	// Word Meaning (Sense) Categorization
 	// 3ERA4CZHMXJ6ZDIP9LPVS6CAHUFLMU
