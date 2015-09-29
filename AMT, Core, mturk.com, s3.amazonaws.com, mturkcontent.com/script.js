@@ -34,12 +34,20 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			//GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;	
-		
+			
+			var r = document.getElementsByName('Output');
+			for(var i = 0; i < r.length; i++) {
+				r[i].style.height='100px';
+				//r[i].style.zoom='4';
+				r[i].style.width='100px';
+				console.log(r[i].parentElement.getElementsByTagName('u')[0].innerText)// = '(' + i + ')' + r[i].parentElement.getElementsByTagName('u')[0].innerText
+				console.log(r[i].parentElement)//.getElementsByTagName('u')[0].innerText)// = '(' + i + ')' + r[i].parentElement.getElementsByTagName('u')[0].innerText
+			}
 			
 		}
 		new run().f();
