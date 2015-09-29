@@ -30,10 +30,10 @@ function MT__RUN() {
 	
 	
 	//
-	// Evan J
-	//
-	// Company URL
-	s = '<h3>If there are no available information (<em>VERY RARE</em>) write (NONE) in the description, and select NONE from the dropdown menu <u>this will be verified</u>'
+	// David Yarowsky
+	// Word Meaning (Sense) Categorization
+	// 3ERA4CZHMXJ6ZDIP9LPVS6CAHUFLMU
+	s = '<p>In this task, a sentence with <span class="predicate">a yellow-highlighted noun</span> is presented, followed by a question about the noun.';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
@@ -45,15 +45,29 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
-			var td = document.getElementsByTagName('b');
 			var o = {
-				comp: td[1].innerText.trim(),
-				//region: td[3].innerText.trim(),
-				compShort: null,
-				q: [
-					document.getElementById('URL'),
-					document.getElementsByName('Q2Answer')[0]
-				]
+			}
+			
+			// # opts
+			
+			if  (
+				AMT__Global_Vars.isPreview &&
+				AMT__Global_Vars.scriptVars['Skip For High Yield'] == '1' &&
+				AMT__Global_Vars.scriptVars['David Yarowsky #'] &&
+				AMT__Global_Vars.scriptVars['David Yarowsky <=#'] != '0'
+				) {
+				// Has opts?
+				var l = document.getElementsByName('opt')
+				if (!l || l.length == 0) {
+					AMT___Floater.skip();
+					return;
+				}
+				var n = AMT__Global_Vars.scriptVars['David Yarowsky #'] * 1;
+				if (n <= document.getElementsByName('opt').length) {
+					AMT___Floater.accept();
+				} else {
+					AMT___Floater.skip();
+				}
 			}
 		}
 		new run().f();
