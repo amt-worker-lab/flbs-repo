@@ -55,7 +55,10 @@ function MT__RUN() {
 					document.getElementsByName('Symbol')[0],
 					document.getElementsByName('NetExpenseRatio')[0],
 					document.getElementsByName('12b-1 Actual')[0]
-				]
+				],
+				// These two are for timeout error on MS
+				selected: null,
+				retrieve_interval: null
 			}
 			o.bold = o.fund.clean_string_to_array();
 			
@@ -144,7 +147,9 @@ function MT__RUN() {
 							d.onclick = function() {
 								o.q[0].value = this.ticker;
 								this.style.backgroundColor = 'aqua';
-								expense(this);
+								new AMT___core_factory().nextTab(); // Go next tab
+								o.selected = this;
+								o.retrieve_interval = setInterval(expense, 4000);
 							}
 							d1.appendChild(d);
 						}
@@ -160,11 +165,11 @@ function MT__RUN() {
 			}
 			// Net expense (annual)
 			// & 12-b
-			function expense(div) {
-				console.log('http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(div.ticker));
+			function expense() {
+				console.log('http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(o.selected.ticker));
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(div.ticker)+
+					url: 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(o.selected.ticker)+
 						'&region=usa&culture=en-US&cur=',
 					//~ url: 'http://financials.morningstar.com/operation/c-expenseRelative.action?&t='+encodeURIComponent(div.ticker)+
 						//~ '&region=usa&culture=en-US&cur=',
