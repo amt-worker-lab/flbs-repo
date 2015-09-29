@@ -56,7 +56,7 @@ function MT__RUN() {
 			if  (
 				AMT__Global_Vars.isPreview &&
 				AMT__Global_Vars.scriptVars['Skip For High Yield DY'] == '1' &&
-				AMT__Global_Vars.scriptVars['David Yarowsky'] == '4'
+				AMT__Global_Vars.scriptVars['David Yarowsky']
 				) {
 				console.log('running inside DY if');
 				// Has opts?
