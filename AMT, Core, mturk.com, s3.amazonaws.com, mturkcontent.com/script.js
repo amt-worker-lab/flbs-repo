@@ -34,8 +34,7 @@ function MT__RUN() {
 	// 
 	// 
 	s = 'Enter a mutual fund\'s ticker, net expense ratio, and 12b-1 actual by searching on Morning Star (http://www.morningstar.com)';
-	console.log('xx');
-	if(ih.indexOf(s) != -1) {console.log('xxaa');
+	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
