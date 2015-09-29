@@ -33,9 +33,9 @@ function MT__RUN() {
 	// 
 	// 
 	// 
-	s = '<p>In this task, a sentence with <span class="predicate">a yellow-highlighted noun</span> is presented, followed by a question about the noun.';
-	console.log('dfdfsdfsdfsdfioshdouhsufd');
-	if(ih.indexOf(s) != -1) {
+	s = 'Enter a mutual fund\'s ticker, net expense ratio, and 12b-1 actual by searching on Morning Star (http://www.morningstar.com)';
+	console.log('xx');
+	if(ih.indexOf(s) != -1) {console.log('xxaa');
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
@@ -46,7 +46,46 @@ function MT__RUN() {
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			
+			var td = document.getElementsByTagName('td');
 			var o = {
+				fund: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Symbol')[0],
+					document.getElementsByName('NetExpenseRatio')[0],
+					document.getElementsByName('12b-1 Actual')[0]
+				]
+			}
+			
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({style:'position:absolute;top:200px;left:0;width:99%;height:200px;background-color:#eee;border:1px solid blue;'});
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style', 'position:absolute;top:160px;left:0;width:99%;height:40px;');
+			document.body.appendChild(d2);
+			d2.value = o.fund;
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2.onblur = function() {
+				this.value = this.value.trim()
+				r();
+			}
+			/*END ITEMS*/
+			
+			// Init
+			r();
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				for(var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				doSubmit();
+				return false;
 			}
 			
 			// GET
@@ -59,10 +98,17 @@ function MT__RUN() {
 						'&pageno=0&TLC=M',
 					onload: function (response) {
 						var rs = response.responseText;
-						//console.log(rs);
 						if (response.status > 200) {
 							document.body.style.backgroundColor = 'aqua';
 							exit(response.status);
+						}
+						
+						// Here...
+						var dom =  new DOMParser().parseFromString(rs, 'text/html');
+						var m = document.querySelectorAll('a.L2');
+						for (var i=0; i<m.length; i++) {
+							// every second one...
+							console.log(m[i].innerText);
 						}
 					}
 				}
