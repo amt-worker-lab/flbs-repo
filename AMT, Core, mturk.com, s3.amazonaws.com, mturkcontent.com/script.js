@@ -66,7 +66,7 @@ function MT__RUN() {
 					AMT___Floater.skip();
 					return;
 				}
-				var n = AMT__Global_Vars.scriptVars['David Yarowsky #'] * 1;
+				var n = AMT__Global_Vars.scriptVars['David Yarowsky DY'] * 1;
 				if (n <= document.getElementsByName('opt').length) {
 					console.log('accept DY');
 					AMT___Floater.accept();
