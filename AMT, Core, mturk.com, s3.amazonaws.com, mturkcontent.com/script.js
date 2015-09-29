@@ -22,11 +22,43 @@ function MT__RUN() {
 	if (!init__scrapy()) return;
 	
 	// ...
-	//
+	// Begin one-off tasks...
 	//
 	var s, s2, s3;
 	
 	
+	
+	
+	//
+	// Evan J
+	//
+	// Company URL
+	s = '<h3>If there are no available information (<em>VERY RARE</em>) write (NONE) in the description, and select NONE from the dropdown menu <u>this will be verified</u>'
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			var td = document.getElementsByTagName('b');
+			var o = {
+				comp: td[1].innerText.trim(),
+				//region: td[3].innerText.trim(),
+				compShort: null,
+				q: [
+					document.getElementById('URL'),
+					document.getElementsByName('Q2Answer')[0]
+				]
+			}
+		}
+		new run().f();
+	}
+			
 	//
 	//
 	// Visual Search Requester
@@ -7504,12 +7536,6 @@ function MT__RUN() {
 	d2.style.height='500px';
 	d2.src = "https://www.google.com/search?q=" + r[2] + " "+ r2[2];
 	}*/
-
-	
-	/**
-	 * SMALL TASKS...
-	 * 
-	 */
 	
 	//
 	// Andy K
@@ -114167,8 +114193,6 @@ qatar,80
 				],
 				offset: 30 // offset top
 			});
-			
-			
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
