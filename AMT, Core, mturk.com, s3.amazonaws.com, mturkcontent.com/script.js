@@ -49,14 +49,16 @@ function MT__RUN() {
 			var o = {
 			}
 			
-			new AMT___core_factory().createScriptVar('Skip For High Yield','1');
 			new AMT___core_factory().createScriptVar('David Yarowsky','4');
+			new AMT___core_factory().createScriptVar('Skip For High Yield DY','1');
+			
 			
 			if  (
 				AMT__Global_Vars.isPreview &&
-				AMT__Global_Vars.scriptVars['Skip For High Yield'] == '1' &&
-				AMT__Global_Vars.scriptVars['David Yarowsky #']
+				AMT__Global_Vars.scriptVars['Skip For High Yield DY'] == '1' &&
+				AMT__Global_Vars.scriptVars['David Yarowsky'] == '4'
 				) {
+				console.log('running inside DY if');
 				// Has opts?
 				var l = document.getElementsByName('opt')
 				if (!l || l.length == 0) {

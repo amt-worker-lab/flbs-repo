@@ -2418,6 +2418,8 @@ function setScriptVarFromWriteQueue(obj) {
 		var scriptVars = storageObj.scriptVars;
 		scriptVars[obj.name] = obj;
 		chrome.storage.local.set({'scriptVars': scriptVars});
+		console.log('scriptVar write queue');
+		console.log(scriptVarWriteQueue);
 		scriptVarWriteQueue.shift();
 		if(scriptVarWriteQueue.length)
 			setScriptVarFromWriteQueue();
