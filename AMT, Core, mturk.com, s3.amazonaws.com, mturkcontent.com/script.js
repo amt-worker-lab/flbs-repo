@@ -45,8 +45,14 @@ function MT__RUN() {
 				r[i].style.height='100px';
 				//r[i].style.zoom='4';
 				r[i].style.width='100px';
-				console.log(r[i].parentElement.getElementsByTagName('u')[0].innerText)// = '(' + i + ')' + r[i].parentElement.getElementsByTagName('u')[0].innerText
-				console.log(r[i].parentElement)//.getElementsByTagName('u')[0].innerText)// = '(' + i + ')' + r[i].parentElement.getElementsByTagName('u')[0].innerText
+				if(i != 1)
+					r[i].parentElement.getElementsByTagName('u')[0].innerText = '(' + i + ')' + r[i].parentElement.getElementsByTagName('u')[0].innerText
+				else {
+					console.log(r[i]);
+					console.log(r[i].outerHTML);
+					r[i].parentElement.innerText = '(' + i + ')' + r[i].parentElement.innerText;
+					console.log(r[i].outerText);
+				}
 			}
 			
 		}
