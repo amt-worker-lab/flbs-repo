@@ -34,6 +34,7 @@ function MT__RUN() {
 	// Word Meaning (Sense) Categorization
 	// 3ERA4CZHMXJ6ZDIP9LPVS6CAHUFLMU
 	s = '<p>In this task, a sentence with <span class="predicate">a yellow-highlighted noun</span> is presented, followed by a question about the noun.';
+	console.log('dfdfsdfsdfsdfioshdouhsufd');
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
@@ -48,29 +49,32 @@ function MT__RUN() {
 			var o = {
 			}
 			
-			// # opts
+			new AMT___core_factory().createScriptVar('Skip For High Yield','1');
+			new AMT___core_factory().createScriptVar('David Yarowsky','4');
 			
 			if  (
 				AMT__Global_Vars.isPreview &&
 				AMT__Global_Vars.scriptVars['Skip For High Yield'] == '1' &&
-				AMT__Global_Vars.scriptVars['David Yarowsky #'] &&
-				AMT__Global_Vars.scriptVars['David Yarowsky <=#'] != '0'
+				AMT__Global_Vars.scriptVars['David Yarowsky #']
 				) {
 				// Has opts?
 				var l = document.getElementsByName('opt')
 				if (!l || l.length == 0) {
+					console.log('skip DY');
 					AMT___Floater.skip();
 					return;
 				}
 				var n = AMT__Global_Vars.scriptVars['David Yarowsky #'] * 1;
 				if (n <= document.getElementsByName('opt').length) {
+					console.log('accept DY');
 					AMT___Floater.accept();
 				} else {
+					console.log('skip DY');
 					AMT___Floater.skip();
 				}
 			}
 		}
-		new run().f();
+		new run().f();return;
 	}
 			
 	//
