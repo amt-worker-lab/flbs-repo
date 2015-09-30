@@ -111,7 +111,7 @@ function MT__RUN() {
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {zoom:0.8;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
@@ -123,9 +123,11 @@ function MT__RUN() {
 				city: td[1].innerText.trim(),
 				q: [
 					document.getElementById('lat'),
-					document.getElementById('long')
+					document.getElementById('long'),
+					document.getElementById('na')
 				]
 			};
+			o.q[2].value = 'False';
 			
 			MT___google_api_geocode(o.city, ll, false, true); //(location, callback, return_complete_response, proxy)
 			
