@@ -36,7 +36,6 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('p {margin:0;padding:0;font-size:20px;}');
-			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			//GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;	
@@ -108,13 +107,25 @@ function MT__RUN() {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
-			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('table {zoom:0.8;}');
-			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+		}
+		new run().f();
+	}
+	
+	//
+	// J Stevens
+	// Find the Lat Long Coordinates for the cities listed
+	// 
+	s = '	<li>Make sure the location is in decimal degrees (i.e,&nbsp;47.20528,7.55933)</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
 			
 			AMT___addUserDecision('JStevens,Lat/Lng,Sep2014',
 				function() { 
@@ -162,37 +173,38 @@ function MT__RUN() {
 	}
 			
 	//
-	// ??
+	// Richard Dude
 	// 
 	// 
-	s = 'Enter a mutual fund\'s ticker, net expense ratio, and 12b-1 actual by searching on Morning Star (http://www.morningstar.com)';
+	//s = 'Enter a mutual fund\'s ticker, net expense ratio, and 12b-1 actual by searching on Morning Star (http://www.morningstar.com)';
+	s = 'Enter a mutual fund\'s ticker/symbol, complete name as listed on morningstar.com, net expense ratio (prospectus), and 12b-1 actual by searching on Morning Star (http://www.morningstar.com), typing the name of the fund in the "quote" box at the top, and viewing the data on the "Expense" tab';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;
-			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('table {zoom:0.8;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				fund: td[1].innerText.trim(),
+				fund: td[1].innerText.trim().replace(/(^| )(Fund|Fd)( |$)/g, ' ').replace(/-/g, ' '),
+				original_f: td[1].innerText.trim(),
 				bold: [],
 				q: [
 					document.getElementsByName('Symbol')[0],
 					document.getElementsByName('NetExpenseRatio')[0],
-					document.getElementsByName('12b-1 Actual')[0]
+					document.getElementsByName('12b-1 Actual')[0],
+					document.getElementsByName('FundName')[0]
 				],
 				// These two are for timeout error on MS
 				selected: null,
 				retrieve_interval: null
 			}
 			o.bold = o.fund.clean_string_to_array();
+			o.original_f = o.original_f.clean_str_to_auto();
 			
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({style:'position:absolute;top:40px;left:20%;width:79%;height:300px;background-color:#eee;border:1px solid blue;overflow:auto;'});
@@ -256,6 +268,7 @@ function MT__RUN() {
 						// Here...
 						var dom =  new DOMParser().parseFromString(rs, 'text/html');
 						var m = dom.querySelectorAll('a.L2');
+						var auto = false;
 						for (var i=0; i<m.length; i++) {
 							// The fund must have a ticker symbol! Otherwise skip here!
 							console.log(m[i].getAttribute('href')); 
@@ -268,22 +281,31 @@ function MT__RUN() {
 							}
 							// Must be five length only...
 							if (t.length != 5) continue;
+							var n = m[i].innerText.trim();
 							
 							// 
-							console.log(m[i].innerText);
+							console.log(n);
 							// e.g. http://quicktake.morningstar.com/FundNet/snapshot.aspx?Country=USA&Symbol=JSMRX
-							var d = m[i].innerText.div({style:'border-bottom:1px solid teal;'});
+							var d = n.div({style:'border-bottom:1px solid teal;'});
 							d.className = 'exe';
 							d.ticker = t; // Required!
-							d.innerHTML = d.ticker + ' | ' + MT__bold(m[i].innerText, o.bold);
+							d.fund_name = n; // Required!
+							d.innerHTML = d.ticker + ' | ' + MT__bold(n, o.bold);
 							d.onclick = function() {
 								o.q[0].value = this.ticker;
+								o.q[3].value = this.fund_name;
 								this.style.backgroundColor = 'aqua';
 								new AMT___core_factory().nextTab(); // Go next tab
 								o.selected = this;
-								o.retrieve_interval = setInterval(expense, 4000);
+								expense();
+								//~ o.retrieve_interval = setInterval(expense, 4000);
 							}
 							d1.appendChild(d);
+							
+							if (!auto && o.original_f == n.clean_str_to_auto()) {
+								auto = true;
+								d.click();
+							}
 						}
 						
 						// ...
@@ -297,59 +319,86 @@ function MT__RUN() {
 			}
 			// Net expense (annual)
 			// & 12-b
+			// Note: Add new AMT___requests_factory().xhr_with_disk_cache()
 			function expense() {
 				console.log('http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(o.selected.ticker));
+				//~ console.log(AMT__Global_Vars.scriptVars);
+				//~ console.log(AMT__Global_Vars.scriptVars['Server Location']);return;
+				var u = 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(o.selected.ticker)+
+						'&region=usa&culture=en-US&cur=';
+				
+				// new AMT___requests_factory().xhr_with_disk_cache()
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					host: AMT__Global_Vars.scriptVars['Server Location'],
+					success_callback: function(options) { // options.response[responseText, status, ...]
+						console.log(options);
+						expense_succ(options.response);
+					}
+				});
+				return;
+				
+				//OLD
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(o.selected.ticker)+
-						'&region=usa&culture=en-US&cur=',
+					url: u,
 					//~ url: 'http://financials.morningstar.com/operation/c-expenseRelative.action?&t='+encodeURIComponent(div.ticker)+
 						//~ '&region=usa&culture=en-US&cur=',
 						//url: 'http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(div.ticker)+
+					onerror: function() {
+						alert('error');
+					},
+					ontimeout: function() {
+						alert('timeout');
+					},
 					onload: function (response) {
-						var rs = response.responseText;
-						if (response.status > 200) {
-							document.body.style.backgroundColor = 'blue';
-							exit(response.status);
-						}
-						
-						// Parse! (new)
-						var rs = JSON.parse(rs);
-						rs = rs.html;
-						
-						// row_lbl
-						var dom =  new DOMParser().parseFromString(rs, 'text/html');
-						var m = dom.querySelectorAll('th.row_lbl');console.log(m);
-						var found = '';
-						for (var i=0; i<m.length; i++) {
-							console.log(m[i].innerText);
-							if (m[i].innerText.indexOf('Net Expense Ratio: Annual Report') != -1) {
-								o.q[1].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
-								found+='a';
-							} else if (m[i].innerText.indexOf('12b-1 Actual') != -1) {
-								o.q[2].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
-								found+='b';
-							}
-						}
-						// Found == ab is success!
-						console.log(found);
-						if (found == 'ab') {
-							for (var i in o.q) {
-								o.q[i].value = o.q[i].value.trim();
-								if (o.q[i].value == '') {
-									return;
-								} else if (i == 1 || i == 2) {
-									// Test valid
-									// Dash or #Percent
-									if (!/^(—|\d+\.\d+%)$/.exec(o.q[i].value)) {
-										return;
-									}
-								}
-							}
-							doSubmit(); // Here?
-						}
+						expense_succ(response);
 					}
 				});
+			}
+			function expense_succ(response) {
+				var rs = response.responseText;
+				if (response.status > 200) {
+					document.body.style.backgroundColor = 'blue';
+					exit(response.status);
+				}
+				
+				// Parse! (new)
+				var rs = JSON.parse(rs);
+				rs = rs.html;
+				
+				// row_lbl
+				var dom =  new DOMParser().parseFromString(rs, 'text/html');
+				var m = dom.querySelectorAll('th.row_lbl');console.log(m);
+				var found = '';
+				for (var i=0; i<m.length; i++) {
+					console.log(m[i].innerText);
+					if (m[i].innerText.indexOf('Net Expense Ratio: Prospectus') != -1) {
+					// OLD // if (m[i].innerText.indexOf('Net Expense Ratio: Annual Report') != -1) { // OLD
+						o.q[1].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
+						found+='a';
+					} else if (m[i].innerText.indexOf('12b-1 Actual') != -1) {
+						o.q[2].value = m[i].parentNode.getElementsByTagName('td')[0].innerText.trim(); // Required!
+						found+='b';
+					}
+				}
+				// Found == ab is success!
+				console.log(found);
+				if (found == 'ab') {
+					for (var i in o.q) {
+						o.q[i].value = o.q[i].value.trim();
+						if (o.q[i].value == '') {
+							return;
+						} else if (i == 1 || i == 2) {
+							// Test valid
+							// Dash or #Percent
+							if (!/^(—|\d+\.\d+%)$/.exec(o.q[i].value)) {
+								return;
+							}
+						}
+					}
+					doSubmit(); // Here?
+				}
 			}
 		}
 		new run().f();

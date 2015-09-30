@@ -719,6 +719,10 @@ function loadGlobalsFromBird() {
 		}
 		ih = initializeIh();
 		addScriptVarsListener();
+		//~ Other things to note....... This does not work!!!
+		//~ Set ['Server Location'] to include "http://"!
+		//~ AMT__Global_Vars.scriptVars['Server Location'] = 'http://' + AMT__Global_Vars.scriptVars['Server Location'];
+		//~ alert(AMT__Global_Vars.scriptVars['Server Location']);
 		mturk_load();
 	});
 	

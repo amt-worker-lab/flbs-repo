@@ -56,7 +56,7 @@ var AMT__Global_Vars = //function()
 		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
 		{name: 'Return NextTab',	value: '0', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
-		{name: 'Server Location',			value: '192.168.1.2', isPersistant:true},
+		{name: 'Server Location',			value: 'http://192.168.1.2', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,
@@ -2747,7 +2747,7 @@ AMT___requests_factory.prototype.server_load_asynchronously = function(options) 
  * file_folder					(Optional. String. Default=.cached)
  * method						(Optional. String. "get" or "post". Default="get")
  * data							(Optional. String. Used with xhr post.)
- * success_callback				(Optional. Function. Optional but almost always included.)
+ * success_callback				(Optional. Function. Optional but almost always included. Argument=options, i.e., options.response[responseText, status,...])
  * check_pre_write_to_disk		(Optional. Function. Default=Returns true. Must return true/false. This will test the XHR response prior to disk write.)
  * 
  * XXX NOT THIS XXX fail_xhr_if_not_200			(Optional. Boolean. Default=True.)
@@ -2843,6 +2843,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				var rs = response.responseText;
 				
 				if (rs.trim() == '___FILE_DOES_NOT_EXIST___') {
+					console.log('-----\nFILE DOES NOT EXIST!\n-----');
 					read_from_xhr();
 				} else {
 					console.log('-----\nRESPONSE CACHED!\n-----');
@@ -2866,7 +2867,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 					
 					options.response = response;
 					
-					if (options.check_pre_write_to_disk(options)) {
+					var rslt = options.check_pre_write_to_disk(options);
+					console.log('bool_check_write_to_disk:'+rslt);
+					if (rslt) {
 						write_to_disk(response);
 					} else {
 						return false;
@@ -2886,7 +2889,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 					
 					options.response = response;
 					
-					if (options.check_pre_write_to_disk(options)) {
+					var rslt = options.check_pre_write_to_disk(options);
+					console.log('bool_check_write_to_disk:'+rslt);
+					if (rslt) {
 						write_to_disk(response);
 					} else {
 						return false;
@@ -2901,7 +2906,7 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	 * True=write;False=nowrite. Default: !200=False,200=True. Is overwritable.
 	 * Function is called after read_from_xhr().
 	 */	
-	function bool_check_write_to_disk(response) {
+	function bool_check_write_to_disk(object) {
 		
 		//
 		// Checks before write to disk go here.
@@ -2909,7 +2914,9 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 		//
 		
 		// Status = 200?
-		if (response.status != 200) {
+		if (object.response.status != 200) {
+			console.log('bool_check_write_to_disk:'+object.response.status);
+			console.log(object);
 			return false;
 		}
 		
@@ -2937,9 +2944,14 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 			},
 			onload: function(response) {
 				var rs = response.responseText;
-				if (response.status != 200) return;
-				if (rs.trim() != '') return;
-				
+				if (response.status != 200) {
+					console.log('write_to_disk (status):'+response.status);
+					return;
+				}
+				if (rs.trim() != '') {
+					console.log('write_to_disk:'+rs.trim());
+					return;
+				}
 				success(competed_response);
 			}
 		});
