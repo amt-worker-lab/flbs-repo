@@ -116,7 +116,16 @@ function MT__RUN() {
 			//~ GM_addStyle('table {zoom:0.8;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			
-			//MT___google_api_geocode(this.value, Brittay_Graham_find_zipcode_from_addr, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+			AMT___addUserDecision('JStevens,Lat/Lng,Sep2014',
+				function() { 
+					return o.city;
+				},
+				[
+					'Id(lat)',
+					'Id(long)',
+					'Id(na)'
+				]
+			);
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -143,7 +152,8 @@ function MT__RUN() {
 					/^\-*\d+\.\d+$/.exec(lat) &&
 					/^\-*\d+\.\d+$/.exec(lng)
 					) {
-					doSubmit();
+					AMT___recordAndSubmit();
+					//~ doSubmit();
 				}
 			}
 		}
