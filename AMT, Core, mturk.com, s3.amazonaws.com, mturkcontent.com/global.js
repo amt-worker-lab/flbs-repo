@@ -12329,10 +12329,16 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		}
 	}
 	
+	// DS Offset Time (s)
+	//
+	//
 	if(AMT__Global_Vars.scriptVars['DS Offset Time (s)'] != '0' && !offsetTime) {
 		offsetTime = AMT__Global_Vars.scriptVars['DS Offset Time (s)']*1000;
 	}
 	
+	// AMT___JobTimer
+	//
+	//
 	try {
 		if(document.getElementById('AMT___JobTimer') && !document.getElementById('AMT___nullifyTimer').on && !AMT__Global_Vars.isPreview && document.getElementById('AMT___timerState').innerText != ''
 		  && !callback_function //no callback function means, this isn't an exception case to a regular dosubmit
@@ -12347,12 +12353,6 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	} catch (err) {
 		alert(err);
 	}
-	//alert('hit enter?');
-	//~ console.log(document.getElementById('AMT___JobTimer'))
-	//~ console.log(!document.getElementById('AMT___nullifyTimer').on)
-	//~ console.log(!AMT__Global_Vars.isPreview)
-	//~ console.log(document.getElementById('AMT___timerState').innerText != '')
-	//~ console.log(!callback_function);
 	
 	// Which form to submit
 	if (!form)
@@ -12411,30 +12411,24 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 			key: "MT__DOSUBMIT__ALL_JOBS_CHR"
 		},
 		function(response) {
-		
-		//console.log(response.data);
-		
-		var arr_all_submits = AMT__doSubmit__editSubmitArray(response.data, offsetTime);
-		
-		//console.log(arr_all_submits);return;
-		//
-		
-		console.log('submit queue:'		+arr_all_submits.length);
-		console.log('time_to_submit:'	+MT__DOSUBMIT__TIME_TO_SUBMIT);
-		console.log('ID:'				+MT__DOSUBMIT__BY_ID_THIS_ID);
-		console.log(arr_all_submits);
-		
-		// update the local storage!
-		// & submit
-		chrome.extension.sendRequest(
-			{
-				method: "saveLocalStorage",
-				key: "MT__DOSUBMIT__ALL_JOBS_CHR",
-				data: JSON.stringify(arr_all_submits)
-			},
-			doSubmit_2
-		);
-	});
+			var arr_all_submits = AMT__doSubmit__editSubmitArray(response.data, offsetTime);
+			console.log('submit queue:'		+arr_all_submits.length);
+			console.log('time_to_submit:'	+MT__DOSUBMIT__TIME_TO_SUBMIT);
+			console.log('ID:'				+MT__DOSUBMIT__BY_ID_THIS_ID);
+			console.log(arr_all_submits);
+			
+			// update the local storage!
+			// & submit
+			chrome.extension.sendRequest(
+				{
+					method: "saveLocalStorage",
+					key: "MT__DOSUBMIT__ALL_JOBS_CHR",
+					data: JSON.stringify(arr_all_submits)
+				},
+				doSubmit_2
+			);
+		}
+	);
 }
 function doSubmit_2() {
 		
