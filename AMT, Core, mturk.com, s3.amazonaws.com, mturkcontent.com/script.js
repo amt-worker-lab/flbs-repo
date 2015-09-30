@@ -195,6 +195,8 @@ function MT__RUN() {
 					AMT___Floater.accept();
 					return;
 				}
+				if (a != '' && t !=  '')
+				doSubmit();
 			}
 		}
 		new run().f();
