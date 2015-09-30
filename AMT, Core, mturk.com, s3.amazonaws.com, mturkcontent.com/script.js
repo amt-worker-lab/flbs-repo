@@ -125,9 +125,23 @@ function MT__RUN() {
 			}
 			rg = rg.split(' - ');
 			var o = {
-				n1: rg[0].toLowerCase(),
-				n2: rg.slice(1).join(' - ').toLowerCase(), // Only if there are more than one ' - ' in string. Else just the second half of initial string.
-				original: rg.join(' - ')
+				n1: rg[0].trim(),
+				n2: rg.slice(1).join(' - ').trim(), // Only if there are more than one ' - ' in string. Else just the second half of initial string.
+				n1L: null,
+				n2L: null,
+				original: rg.join(' - '),
+				
+				q: [
+					document.getElementById('artist_name'),
+					document.getElementById('song_title')
+				]
+			}
+			o.n1L = o.n1.toLowerCase();
+			o.n2L = o.n2.toLowerCase();
+			
+			if (o.n1.length == 0 || o.n2.length == 0) {
+				AMT___Floater.skip();
+				return;
 			}
 			
 			// Init
@@ -150,25 +164,41 @@ function MT__RUN() {
 							return;
 						}
 						// Here?
+						rs = rs.results;
 						if  (
-								(
-								rs[0].artistName.toLowerCase() == o.n1 &&
-								rs[0].trackName.toLowerCase() == o.n2
-								)
-								||
-								(
-								rs[0].artistName.toLowerCase() == o.n2 && // reverse
-								rs[0].trackName.toLowerCase() == o.n1
-								)
+							rs[0].artistName.toLowerCase() == o.n1L &&
+							rs[0].trackName.toLowerCase() == o.n2L
 							)
 						{
-							
+							r(o.n1, o.n2);
+						}
+						else if (
+							rs[0].artistName.toLowerCase() == o.n2L && // reverse
+							rs[0].trackName.toLowerCase() == o.n1L
+							)
+						{
+							r(o.n2, o.n1);
+						}
+						else {
+							AMT___Floater.skip();
+							return;
 						}
 					}
 				});
-				return;
+			}
+			
+			//
+			function r(a, t) {
+				o.q[0].value = a; // Artist
+				o.q[1].value = t; // Track
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.accept();
+					return;
+				}
+			}
 		}
 		new run().f();
+		return;
 	}
 	
 	//
@@ -379,8 +409,6 @@ function MT__RUN() {
 			// Note: Add new AMT___requests_factory().xhr_with_disk_cache()
 			function expense() {
 				console.log('http://financials.morningstar.com/fund/expense.html?t='+encodeURIComponent(o.selected.ticker));
-				//~ console.log(AMT__Global_Vars.scriptVars);
-				//~ console.log(AMT__Global_Vars.scriptVars['Server Location']);return;
 				var u = 'http://financials.morningstar.com/operation/c-otherFeesExpenses.action?&t='+encodeURIComponent(o.selected.ticker)+
 						'&region=usa&culture=en-US&cur=';
 				
