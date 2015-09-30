@@ -12310,34 +12310,24 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 		);
 	}
 	
-	//if(document.getElementById('AMT__UtilityContainer')) {
-		chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {
-			//~ if (!AMT__Global_Vars.isPreview) {
-				//~ if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
-					//~ new AMT___core_factory().shiftFarLeft();
-				//~ }
-				//~ if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-					//~ showNextTab();
-				//~ }
-				//~ if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
-					//~ new AMT___core_factory().nextTab();
-				//~ }
-			//~ }
-		});
-	//}
-	//else {
-		if (!AMT__Global_Vars.isPreview) {
-			if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
-				new AMT___core_factory().shiftFarLeft();
-			}
-			if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-				showNextTab();
-			}
-			if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
-				new AMT___core_factory().nextTab();
-			}
+	// removeMyUitilityTabs
+	chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {
+	});
+	
+	// shiftFarLeft
+	// showNextTab
+	// nextTab
+	if (!AMT__Global_Vars.isPreview) {
+		if (AMT__Global_Vars.scriptVars['DS ShiftFarLeft'] != '0') {
+			new AMT___core_factory().shiftFarLeft();
 		}
-	//}
+		if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
+			showNextTab();
+		}
+		if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
+			new AMT___core_factory().nextTab();
+		}
+	}
 	
 	if(AMT__Global_Vars.scriptVars['DS Offset Time (s)'] != '0' && !offsetTime) {
 		offsetTime = AMT__Global_Vars.scriptVars['DS Offset Time (s)']*1000;
