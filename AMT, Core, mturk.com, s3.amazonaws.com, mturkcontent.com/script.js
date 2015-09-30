@@ -99,10 +99,13 @@ function MT__RUN() {
 	}
 	
 	//
-	// J Stevens
-	// Find the Lat Long Coordinates for the cities listed
+	// Smule AWS
+	// Separate artist name from song title
 	// 
-	s = '	<li>Make sure the location is in decimal degrees (i.e,&nbsp;47.20528,7.55933)</li>';
+	// Note: Methods for auto using Itunes API:
+	// 1) match is "IT[artist] - IT[trackname]"
+	// 2) match is "IT[trackname] - IT[artist]"
+	s = 'Below please find the song title and artist name of a song under the header "Raw text."&nbsp;From the raw text, identify which is the song title and which is the artist name.';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
@@ -110,6 +113,60 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			
+			// e.g. "Yellow - ColdPlay"
+			var rg = /<p><strong><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11\.6999998092651px; line-height: 20\.7999992370605px;">Raw text:<\/span><\/strong><\/p>[\r\n\t\s]+<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 16px; line-height: 20\.7999992370605px;">([^<]+)<\/span><\/p>[\r\n\t\s]+<p><span style="font-weight: bold; font-size: 0\.9em; line-height: 1\.6em;">Artist name<\/span><\/p>/.exec(ih);
+			rg = rg[1];
+			
+			// Skip if...
+			if (AMT__Global_Vars.isPreview && rg.indexOf(' - ') == -1) {
+				AMT___Floater.skip();
+				return;
+			}
+			rg = rg.split(' - ');
+			var o = {
+				n1: rg[0].toLowerCase(),
+				n2: rg.slice(1).join(' - ').toLowerCase(), // Only if there are more than one ' - ' in string. Else just the second half of initial string.
+				original: rg.join(' - ')
+			}
+			
+			// Init
+			e();
+			
+			// 
+			function e() {
+				var u = 'https://itunes.apple.com/search?media=music&entity=song&term='+encodeURIComponent(o.original);
+				
+				// new AMT___requests_factory().xhr_with_disk_cache()
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					host: AMT__Global_Vars.scriptVars['Server Location'],
+					success_callback: function(options) { // options.response[responseText, status, ...]
+						//~ console.log(options);
+						//~ expense_succ(options.response);
+						var rs = JSON.parse(options.response.responseText);
+						if (rs.resultCount == 0 || rs.results.length == 0) {
+							AMT___Floater.skip();
+							return;
+						}
+						// Here?
+						if  (
+								(
+								rs[0].artistName.toLowerCase() == o.n1 &&
+								rs[0].trackName.toLowerCase() == o.n2
+								)
+								||
+								(
+								rs[0].artistName.toLowerCase() == o.n2 && // reverse
+								rs[0].trackName.toLowerCase() == o.n1
+								)
+							)
+						{
+							
+						}
+					}
+				});
+				return;
 		}
 		new run().f();
 	}
