@@ -100,7 +100,57 @@ function MT__RUN() {
 	}
 	
 	//
+	// J Stevens
+	// Find the Lat Long Coordinates for the cities listed
 	// 
+	s = '	<li>Make sure the location is in decimal degrees (i.e,&nbsp;47.20528,7.55933)</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			
+			//MT___google_api_geocode(this.value, Brittay_Graham_find_zipcode_from_addr, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				city: td[1].innerText.trim(),
+				q: [
+					document.getElementById('lat'),
+					document.getElementById('long')
+				]
+			};
+			
+			MT___google_api_geocode(o.city, ll, false, true); //(location, callback, return_complete_response, proxy)
+			
+			// Accepts 
+			function ll(lat, lng) {
+				if (!lat || !lng) {
+					document.body.style.backgroundColor = 'aqua';
+					return;
+				}
+				o.q[0].value = lat;
+				o.q[1].value = lng;
+				if (
+					/^\-*\d+\.\d+$/.exec(lat) &&
+					/^\-*\d+\.\d+$/.exec(lng)
+					) {
+					doSubmit();
+				}
+			}
+		}
+		new run().f();
+		return;
+	}
+			
+	//
+	// ??
 	// 
 	// 
 	s = 'Enter a mutual fund\'s ticker, net expense ratio, and 12b-1 actual by searching on Morning Star (http://www.morningstar.com)';
