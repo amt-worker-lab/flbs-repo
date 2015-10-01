@@ -57184,11 +57184,78 @@ function MT__RUN() {
 	 * Andrew Chin 2
 	 * Stanford Political Science
 	 * Neal H. Patel (not standard categorization)
+	 * Kendall
 	 * 
 	 * ...
 	 * 
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
+	// 
+	// Kendall
+	//
+	//
+	s = '<p>\nFor each line on the spreadsheet, please identify which type of organization applies:\n</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td,th,tbody {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			GM_addStyle('#guideline {height:4px;overflow:hidden;display:none !important;}'); // HIDE
+			GM_addStyle('label {cursor:pointer;zoom:1.4;}'); // HIDE
+			GM_addStyle('input[type="radio"] {cursor:pointer;}'); // HIDE
+			GM_addStyle('fieldset {float:left;width:33%;}'); // HIDE
+			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}'); // HIDE
+			
+			//document.getElementsByName('Category')[0]
+			var r = document.querySelectorAll('p.ng-scope')[2];
+			var o = {
+				comp: r.innerText.trim(),
+				bold: []
+			}
+			o.bold = o.comp.clean_string_to_array();
+			
+			/*BEGIN ELEMENTS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;width:20%;height:200px;top:300px;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			/*END ELEMENTS*/
+			
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.bold,
+				searches:[
+					o.comp,
+					'"'+o.comp+'"',
+					'"'+o.comp+'" law firm'
+				],
+				parent: d1,
+				offsetTop: 200,
+				hide_search_fields: true,
+				search_results: {
+					//use_full_urls: true,
+					//~ callback_link_and_body: function(link, body) {
+						//~ if (o.check_accept_found) return;
+						//~ if (body.indexOf(d2.value) != -1) {
+							//~ o.check_accept_found = true;
+							//~ AMT___Floater.accept();
+						//~ }
+					//~ }
+				},
+				load_success_callback: function() {
+					//~ o.stats.sp_yelp_search_complete = true; // UNNECESSARY!
+					//~ check_if_yp_init();
+				},
+				onclick_success: function(e) { // Textarea.onclick
+					//~ sp_yelp_success(/\/biz\/([^\/\?]+)$/.exec(this.value)[1]); // /biz/[not slash or ? to $]
+				},
+			});
+			
+		}
+		new run().f();
+	}
 	// 
 	// Neal H. Patel
 	//
