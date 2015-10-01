@@ -3004,6 +3004,11 @@ function MT__RUN() {
 				this.value = this.value.trim();
 				cb();
 			}
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.value = 'NOT FOUND';
+			d3.setAttribute('style','position:absolute;top:0px;height:40px;left:40%;width:60% !important;');
+			document.body.appendChild(d3);
 			/*End Items*/
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -3015,6 +3020,11 @@ function MT__RUN() {
 				],
 				offset: 340 // offset top
 			});
+			d3.onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = 'NOT FOUND';
+				}
+			}
 			
 			// init
 			cb();
@@ -3135,7 +3145,8 @@ function MT__RUN() {
 					onload: function (response) {
 						var rs = response.responseText;
 						if(response.status != 200) {
-							alert('unsuccessful load');
+							//alert('unsuccessful load');
+							window.open(div.href);
 							return;
 						}
 						var dom =  new DOMParser().parseFromString(rs,'text/html');
@@ -3163,8 +3174,8 @@ function MT__RUN() {
 							// Total funding
 							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
 							var fa = os.getElementsByClassName('funding_amount');
-							if (!fa || !fa.length) {
-								if (os.innerText.indexOf('Funding Received') == -1 || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
+							if (!fa || !fa.length || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
+								if (os.innerText.indexOf('Funding Received') != -1) {
 									o.q[0].value = 'FA!';
 									return;
 								} else {
@@ -3180,7 +3191,9 @@ function MT__RUN() {
 							}
 							
 							// Most recent...
-							if (os.innerText.indexOf('Most Recent Funding') == -1 || os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
+							if (os.innerText.indexOf('Most Recent Funding') == -1) {
+								o.q[1].value = 'N/A';
+							} else if (os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
 								o.q[1].value = 'RF!';
 								return;
 							} else {
