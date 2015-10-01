@@ -3194,18 +3194,18 @@ function MT__RUN() {
 							//
 							//
 							//
-							var fa = os.getElementsByClassName('funding_amount');
+							//~ var fa = os.getElementsByClassName('funding_amount');
 							var dt = os.getElementsByTagName('dt');
 							var dd = os.getElementsByTagName('dd');
-							if (!dt.length || !fa.length || !dd.length) {
+							if (!dt || !dd || !dt.length || !dd.length) {
 								if (os.innerText.indexOf('Funding Received') != -1) {
-									o.q[0].value = 'FA!';
+									o.q[0].value = 'FR!';
 									return;
 								} else {
 									o.q[0].value = 'N/A';
 								}
 								if (os.innerText.indexOf('Most Recent Funding') != -1) {
-									o.q[0].value = 'RF!';
+									o.q[1].value = 'RF!';
 									return;
 								} else {
 									o.q[1].value = 'N/A';
@@ -3213,37 +3213,53 @@ function MT__RUN() {
 							} else {
 								for (var i=0; i<dt.length; i++) {
 									if (dt[i].innerText == 'Funding Received') {
-										
+										var fa = dd[i].getElementsByClassName('funding_amount');
+										if (!fa || !fa.length) {
+											o.q[0].value = 'FA!';
+											return;
+										}
+										var c = convert(fa[0].innerText.replace('$', '').trim());
+										o.q[0].value = c;
+										if (/[^\d,]/.exec(c)) {
+											o.q[0].value += 'FA Not \d,!';
+											return;
+										}
 										continue;
 									}
-									if (dt[i].innerText == 'Most Recent Funding') {
-										
+									if (dt[i].innerText == 'Most Recent Funding') { // Still here...
+										// e.g. September 24, 2015
+										var rg = /<span class="funding-type"><a href="[^"]+">[^<]+<\/a>(|<\/span>) <span class="[^"]+">on<\/span> (\w+ \d+, \d{4})/.exec(dd[i].innerHTML);
+										if (!rg) {
+											o.q[1].value = 'RF! ' + rg;
+											return;
+										} else {
+											o.q[1].value = rg[2].trim();
+										}
 									}
 								}
+							}
+							// General N/A
+							if (os.innerText.indexOf('Most Recent Funding') == -1) {
+								o.q[1].value = 'N/A';
 							}
 							
 							// Total funding
 							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
-							var fa = os.getElementsByClassName('funding_amount');
-							var dt = os.getElementsByTagName('dt')
-							if (!fa || !fa.length) { //  || os.getElementsByTagName('dt')[0].innerText != 'Funding Received'
+							//~ var fa = os.getElementsByClassName('funding_amount');
+							//~ var dt = os.getElementsByTagName('dt')
+							//~ if (!fa || !fa.length) { //  || os.getElementsByTagName('dt')[0].innerText != 'Funding Received'
 								
-							} else {
-								if (dt[0].innerText == 'Funding Received') {
-									fa = fa[0];
-								} else if (dt[1].innerText == 'Funding Received') {
-									fa = fa[1];
-								} else {
-									return;
-								}
+							//~ } else {
+								//~ if (dt[0].innerText == 'Funding Received') {
+									//~ fa = fa[0];
+								//~ } else if (dt[1].innerText == 'Funding Received') {
+									//~ fa = fa[1];
+								//~ } else {
+									//~ return;
+								//~ }
 								
-								var c = convert(fa.innerText.replace('$', '').trim());
-								o.q[0].value = c;
-								if (/[^\d,]/.exec(c)) {
-									o.q[0].value += 'FA Not \d,!';
-									return;
-								}
-							}
+								
+							//~ }
 							
 							//~ // Most recent...
 							//~ if (os.innerText.indexOf('Most Recent Funding') == -1) {
