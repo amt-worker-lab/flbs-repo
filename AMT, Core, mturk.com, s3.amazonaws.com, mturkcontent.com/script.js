@@ -3063,7 +3063,6 @@ function MT__RUN() {
 							return;
 						}
 						rs = rs.hits;
-						console.log(rs);
 						var first = true;
 						for (var i in rs) {
 							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
@@ -3095,6 +3094,11 @@ function MT__RUN() {
 							d1.appendChild(div);
 							
 							// Auto
+							console.log('auto');
+							console.log(o.comp_auto + ' ' + rs[i].name.clean_str_to_auto());
+							console.log(o.comp_auto == rs[i].name.clean_str_to_auto());
+							console.log(o.domain + ' ' + rs[i].domain);
+							console.log(o.domain == rs[i].domain);
 							if  (
 								first &&
 								o.domain == rs[i].domain && 
@@ -3136,28 +3140,53 @@ function MT__RUN() {
 						// overview
 						var os = document.getElementsByClassName('overview-stats');
 						if (!os || !os.length) {
-							o.q[0].value = 'NO OVERVIEW STATS!';
-							return;
-						} else {
-							os = os[0];
-						}
-						
-						// Total funding
-						// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
-						var fa = os.getElementsByClassName('funding_amount');
-						if (!fa || !fa.length || fa.length != 1) {
-							o.q[0].value = 'FA!';
-							return;
-						} else {
-							var c = convert(fa[0].innerText.replace('$', '').trim());
-							o.q[0].value = c;
-							if (/[^\d,]/.exec(c)) {
-								o.q[0].value += 'FA Not \d,!';
+							o.q[0].value = 'N/A';
+							o.q[1].value = 'N/A';
+							if (rs.indexOf('Funding Received') != -1) {
+								o.q[0].value = 'Funding Received EXISTS!';
 								return;
+							} else if (rs.indexOf('Most Recent Funding') != -1) {
+								o.q[0].value = 'Most Recent Funding EXISTS!';
+								return;
+							}
+						} else {
+							// Set os
+							os = os[0];
+							
+							// Total funding
+							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
+							var fa = os.getElementsByClassName('funding_amount');
+							if (!fa || !fa.length || os.innerText.indexOf('Funding Received') == -1 || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
+								o.q[0].value = 'FA!';
+								return;
+							} else {
+								var c = convert(fa[0].innerText.replace('$', '').trim());
+								o.q[0].value = c;
+								if (/[^\d,]/.exec(c)) {
+									o.q[0].value += 'FA Not \d,!';
+									return;
+								}
+							}
+							
+							// Most recent...
+							if (os.innerText.indexOf('Most Recent Funding') == -1 || os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
+								o.q[1].value = 'RF!';
+								return;
+							} else {
+								var dd = os.getElementsByTagName('dd')[1];
+								// e.g. September 24, 2015
+								var rg = /<span class='funding-type'><a href="[^"]+">([^<]+)<\/a> <span class='connecting'>on<\/span> (\w+ \d+, \d{4})<\/dd>/.exec(dd.innerHTML);
+								if (!rg) {
+									o.q[1].value = 'RF! ' + rg;
+									return;
+								} else {
+									o.q[1].value = rg[1].trim();
+								}
+								
 							}
 						}
 						
-						// Here is investors table
+						// The investors table
 						// NOTE: "All Investors" (if there are more than X...)
 						var d = dom.querySelectorAll('.table.section-list.investors>tbody');
 						if (!d || !d.length) {
@@ -3176,7 +3205,7 @@ function MT__RUN() {
 			function convert(n) {
 				n = n.replace('M', ',000,000');
 				n = n.replace('B', ',000,000,000');
-				n = n.replace('T', ',000,000,000,000');
+				//~ n = n.replace('T', ',000,000,000,000');
 				return;
 			}
 		}
