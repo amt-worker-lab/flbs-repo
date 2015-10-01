@@ -2958,6 +2958,123 @@ function MT__RUN() {
 	
 	
 	//
+	// Binoy Bhansali
+	// Find Company Funding Status
+	// 
+	s='Please input the first&nbsp;name cleanly and correctly spelled in the "First Name" box, and do the same for the "Last Name" box, per contact.&nbsp;If you have any comments';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('input {width:100% !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:60% !important;height:100px;top:50px;left:40%;position:absolute;top:50px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			
+			var o = {
+				
+			}
+			
+			
+			function cb(out) {
+				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
+				
+				out.innerHTML = '';
+				inpVal = d2c.value;
+				
+				//post_object
+				var ux = 'https://a0ef2haqr0-2.algolia.io/1/indexes/main_production/query';
+				var opts = {
+					headers_array: [
+						'Origin: https://www.crunchbase.com',
+						'Accept-Encoding: gzip, deflate',
+						'X-Algolia-API-_API_KEY_REDACTED_,
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36',
+						'Content-type: application/json',
+						'Accept: */*',
+						'X-Algolia-Application-Id: A0EF2HAQR0',
+						'Referer: https://www.crunchbase.com/search?show_results=1&navigation_search_input='+encodeURIComponent(inpVal),
+						'Connection: keep-alive'
+					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					post_object_as_str: '{"params":"query='+encodeURIComponent(inpVal)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				
+				out.innerHTML = '';
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						rs = JSON.parse(rs); // Array of objects
+						if (!rs.hasOwnProperty('hits') || !rs.hits.length) {
+							out.innerHTML = '0 - crunchbase';
+							return;
+						}
+						rs = rs.hits;
+						console.log(rs);
+						var first = false;
+						for (var i in rs) {
+							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
+							var div = document.createElement('div');
+							var p = rs[i].profile_image_url;
+							
+							div.className = 'exe';
+							div.compName = rs[i].name;
+
+							div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
+							var div2 = document.createElement('div');
+							div2.innerHTML = MT__bold(rs[i].name, o.bold1) + // o.bold
+								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold1)+
+								'<br>' + MT__bold(div.href, o.bold1);
+							div2.setAttribute('style', 'float:left;');
+							div.appendChild(div2);
+							div.onclick = function() {
+								o.q[2].value = this.compName;
+								o.q[1].value = 'N';
+								this.style.backgroundColor = 'LightGreen';
+								try_sbm();
+							}
+							var br = document.createElement('br');
+							br.clear = 'both';
+							div.appendChild(br);
+							// Append
+							out.appendChild(div);
+							
+							// Auto
+							if (!first && o.compShort.clean_str_to_auto() == rs[i].name.clean_str_to_auto()) {
+								//div.click();
+							}
+							first = true; // Set true
+						}
+						if (out.innerText != '')
+							out.appendChild(''.div({style:'height:1600px;'}));
+						else
+						{
+							out.innerText = '0 - crunchbase';
+						}
+						
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	//
 	//
 	// Sofia Torres
 	// Find the CEO/CFO/Owner/Founder(s) of a business at its website
@@ -2980,11 +3097,11 @@ function MT__RUN() {
 				lastUpdated: null
 			}
 			
-			/**Begin Items**/
+			/*Begin Items*/
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:155px;height:300px;left:40%;background-color:#EEE;width:60%;');
 			document.body.appendChild(d1);
-			/**End Items**/
+			/*End Items*/
 			
 			spawnJobNameShortcuts();
 			
