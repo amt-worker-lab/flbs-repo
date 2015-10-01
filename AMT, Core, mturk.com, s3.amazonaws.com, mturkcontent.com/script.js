@@ -2970,7 +2970,7 @@ function MT__RUN() {
 			GM_addStyle('input {width:100% !important}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('#submitButton {width:60% !important;height:100px;top:50px;left:40%;position:absolute;top:50px}');			
-			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;cursor:pointer;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -2987,19 +2987,23 @@ function MT__RUN() {
 					document.getElementById('investors')
 				]
 			}
-			o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '');
+			o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '').replace(/\/$/, '');
 			o.bold = o.comp.clean_string_to_array();
 			o.comp_auto = o.comp.clean_str_to_auto();
 			o.bolddm = o.domain.clean_string_to_array();
 			
 			/*Begin Items*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;');
+			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
 			d2.setAttribute('style','position:absolute;top:300px;height:40px;left:0%;width:99%;');
 			document.body.appendChild(d2);
 			d2.value = o.comp;
+			d2.onblur = function() {
+				this.value = this.value.trim();
+				cb();
+			}
 			/*End Items*/
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -3067,7 +3071,10 @@ function MT__RUN() {
 						for (var i in rs) {
 							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
 							var div = document.createElement('div');
+							div.setAttribute('style', 'float:left; width:49%;');
 							var p = rs[i].profile_image_url;
+							
+							rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
 							
 							div.className = 'exe';
 							div.compName = rs[i].name;
@@ -3156,9 +3163,13 @@ function MT__RUN() {
 							// Total funding
 							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
 							var fa = os.getElementsByClassName('funding_amount');
-							if (!fa || !fa.length || os.innerText.indexOf('Funding Received') == -1 || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
-								o.q[0].value = 'FA!';
-								return;
+							if (!fa || !fa.length) {
+								if (os.innerText.indexOf('Funding Received') == -1 || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
+									o.q[0].value = 'FA!';
+									return;
+								} else {
+									o.q[0].value = 'N/A';
+								}
 							} else {
 								var c = convert(fa[0].innerText.replace('$', '').trim());
 								o.q[0].value = c;
@@ -3176,7 +3187,7 @@ function MT__RUN() {
 								var dd = os.getElementsByTagName('dd')[1];
 								console.log(dd.innerHTML);
 								// e.g. September 24, 2015
-								var rg = /<span class='funding-type'><a href="[^"]+">([^<]+)<\/a> <span class='connecting'>on<\/span> (\w+ \d+, \d{4})<\/dd>/.exec(dd.innerHTML);
+								var rg = /<span class="funding-type"><a href="[^"]+">[^<]+<\/a> <span class="connecting">on<\/span> (\w+ \d+, \d{4})<\/span>/.exec(dd.innerHTML);
 								if (!rg) {
 									o.q[1].value = 'RF! ' + rg;
 									return;
@@ -3199,8 +3210,10 @@ function MT__RUN() {
 							var inv = [];
 							for (var i=0; i<d.length; i++) {
 								var c = d[i].getElementsByClassName('follow_card')[0].innerText.trim();
-								o.q[2].value = c;
+								inv.push(c);
+								//~ o.q[2].value = c;
 							}
+							o.q[2].value = inv.join(',');
 						}
 						
 						// Here?
@@ -3211,7 +3224,7 @@ function MT__RUN() {
 							}
 						}
 						// Here?
-						document.style.backgroundColor = 'yellow';
+						document.body.style.backgroundColor = 'yellow';
 						//doSubmit();
 					}
 				});
