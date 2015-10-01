@@ -2961,7 +2961,7 @@ function MT__RUN() {
 	// Binoy Bhansali
 	// Find Company Funding Status
 	// 
-	s='Please input the first&nbsp;name cleanly and correctly spelled in the "First Name" box, and do the same for the "Last Name" box, per contact.&nbsp;If you have any comments';
+	s='If exact company name found, in the \'Overview\' section near the top of the page, you will see information under \'Funding Received\' and and \'Most Recent Funding\'';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -2973,17 +2973,48 @@ function MT__RUN() {
 			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			
-			
+			var td = document.getElementsByTagName('td');
 			var o = {
-				
+				comp: td[1].innerText.trim(),
+				url: td[3].innerText.trim(), // e.g. www.abc.com
+				domain: null,
+				bold: null,
+				bolddm: null,
 			}
+			o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '');
+			o.bold = o.comp.clean_string_to_array();
+			o.comp_auto = o.comp.clean_str_to_auto();
+			o.bolddm = o.domain.clean_string_to_array();
 			
+			/*Begin Items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style','position:absolute;top:300px;height:40px;left:0%;width:99%;');
+			document.body.appendChild(d2);
+			d2.value = o.comp;
+			/*End Items*/
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 340 // offset top
+			});
 			
-			function cb(out) {
+			// init
+			cb();
+			
+			function cb() {
 				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
 				
-				out.innerHTML = '';
-				inpVal = d2c.value;
+				d1.innerHTML = '';
+				//~ inpVal = d2c.value;
+				d2.value = d2.value.trim();
 				
 				//post_object
 				var ux = 'https://a0ef2haqr0-2.algolia.io/1/indexes/main_production/query';
@@ -2997,11 +3028,11 @@ function MT__RUN() {
 						'Content-type: application/json',
 						'Accept: */*',
 						'X-Algolia-Application-Id: A0EF2HAQR0',
-						'Referer: https://www.crunchbase.com/search?show_results=1&navigation_search_input='+encodeURIComponent(inpVal),
+						'Referer: https://www.crunchbase.com/search?show_results=1&navigation_search_input='+encodeURIComponent(d2.value),
 						'Connection: keep-alive'
 					],
 					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
-					post_object_as_str: '{"params":"query='+encodeURIComponent(inpVal)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+					post_object_as_str: '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
 				};
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 					encodeURIComponent(ux) +
@@ -3010,7 +3041,7 @@ function MT__RUN() {
 						opts
 					));
 				
-				out.innerHTML = '';
+				d1.innerHTML = '';
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: u,
@@ -3022,12 +3053,12 @@ function MT__RUN() {
 						}
 						rs = JSON.parse(rs); // Array of objects
 						if (!rs.hasOwnProperty('hits') || !rs.hits.length) {
-							out.innerHTML = '0 - crunchbase';
+							d1.innerHTML = '0 - crunchbase';
 							return;
 						}
 						rs = rs.hits;
 						console.log(rs);
-						var first = false;
+						var first = true;
 						for (var i in rs) {
 							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
 							var div = document.createElement('div');
@@ -3038,34 +3069,35 @@ function MT__RUN() {
 
 							div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
 							var div2 = document.createElement('div');
-							div2.innerHTML = MT__bold(rs[i].name, o.bold1) + // o.bold
-								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold1)+
-								'<br>' + MT__bold(div.href, o.bold1);
+							div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
+								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold)+
+								'<br>' + MT__bold(div.href, o.bold)+
+								'<br>' + MT__bold(rs[i].domain, o.bolddm);
 							div2.setAttribute('style', 'float:left;');
 							div.appendChild(div2);
 							div.onclick = function() {
-								o.q[2].value = this.compName;
-								o.q[1].value = 'N';
+								//~ o.q[2].value = this.compName;
+								//~ o.q[1].value = 'N';
 								this.style.backgroundColor = 'LightGreen';
-								try_sbm();
+								//~ try_sbm();
 							}
 							var br = document.createElement('br');
 							br.clear = 'both';
 							div.appendChild(br);
 							// Append
-							out.appendChild(div);
+							d1.appendChild(div);
 							
 							// Auto
-							if (!first && o.compShort.clean_str_to_auto() == rs[i].name.clean_str_to_auto()) {
-								//div.click();
+							if (first && o.domain == rs[i].domain && o.comp_auto == rs[i].name.clean_str_to_auto()) {
+								div.click();
 							}
-							first = true; // Set true
+							first = false; // Set false
 						}
-						if (out.innerText != '')
-							out.appendChild(''.div({style:'height:1600px;'}));
+						if (d1.innerText != '')
+							d1.appendChild(''.div({style:'height:1600px;'}));
 						else
 						{
-							out.innerText = '0 - crunchbase';
+							d1.innerText = '0 - crunchbase';
 						}
 						
 					}
