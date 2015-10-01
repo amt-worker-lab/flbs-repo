@@ -57213,16 +57213,27 @@ function MT__RUN() {
 			//document.getElementsByName('Category')[0]
 			var r = document.querySelectorAll('p.ng-scope')[2];
 			var o = {
-				comp: r.innerText.trim(),
+				comp: r.innerText.replace('Company Name:', '').trim(), // Replace first instance
 				bold: []
 			}
-			o.bold = o.comp.clean_string_to_array();
+			o.bold = o.comp.clean_string_to_array().concat(['law','firm','lawyer','legal']);
 			
 			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:20%;height:200px;top:300px;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;left:0%;width:50%;height:200px;top:100px;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 100 // offset top
+			});
 			
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.bold,
@@ -57232,8 +57243,8 @@ function MT__RUN() {
 					'"'+o.comp+'" law firm'
 				],
 				parent: d1,
-				offsetTop: 200,
-				hide_search_fields: true,
+				offsetTop: 100,
+				//~ hide_search_fields: true,
 				search_results: {
 					//use_full_urls: true,
 					//~ callback_link_and_body: function(link, body) {
