@@ -2507,22 +2507,6 @@ function MT__RUN() {
 			// Removed: //~ o.compShort = o.compShort.replace(/[,\r\n\s\t]group$/i,'');
 			o.compShort = o.comp;
 			o.compShort = o.compShort.replace(/([,\r\n\s\t]+(incorporated|inc\.*|corporation|corp\.*|limited|ltd|public limited comp\.*|public limited company|plc|llc|l\.*p\.*|s\.*a\.*|n\.*v\.*|sponsored adr))*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+incorporated)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+inc\.*)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+corporation)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+limited)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+ltd)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+public limited company)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+plc)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+llc)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+lp)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+l\.p\.)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+sa)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+s\.a\.)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+nv)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+n\.v\.)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+sponsored adr)*$/gi,'');
-				//~ o.compShort = o.compShort.replace(/([,\r\n\s\t]+corp\.*)*$/gi,'');
 			o.compShort = o.compShort.trim();
 			o.compShort = o.compShort.replace(/[,\.]+$/,'').trim();
 			o.bold1 = o.compShort.split(' ');
@@ -2530,9 +2514,6 @@ function MT__RUN() {
 			
 			
 			/**Begin Items**/
-			//~ var d1 = document.createElement('div');
-			//~ d1.setAttribute('style','height:500px;width:98%;top:200px;left:0px;position:absolute;background-color:#DDD');
-			//~ document.body.appendChild(d1);
 			var d1a = document.createElement('div');
 			d1a.setAttribute('style','height:500px;width:33%;top:260px;left:0px;position:absolute;background-color:#DDD;border:1px solid black;overflow:auto;');
 			document.body.appendChild(d1a);
@@ -3785,48 +3766,6 @@ function MT__RUN() {
 							out.appendChild(div);
 						}
 						out.appendChild(''.div({style:'height:1600px;'}));
-						//~ 
-						//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
-						//~ var ul = dom.getElementsByClassName('results container');
-						//~ if (!ul) {
-							//~ //
-							//~ return;
-						//~ }
-						//~ var li = ul.getElementsByTagName('li');
-						//~ if (!li || !li.length) {
-							//~ //
-							//~ return;
-						//~ }
-						//~ for (var i=0; i<li.length; i++) {
-							//~ var logo = li[i].getElementsByTagName('img');
-							//~ var url = li[i].getElementsByTagName('a');
-							//~ var cn = li[i].getElementsByClassName('identity container')[0].split('\n'); // Split newline
-							//~ var div = document.createElement('div');
-							//~ if (logo && logo.length) {
-								//~ logo = logo[0]
-								//~ var im = document.createElement('img');
-								//~ im.setAttribute('style','max-width:100px;float:left;');
-								//~ im.src = logo;
-								//~ div.appendChild(p);
-							//~ }
-							//~ if (url && url.length) {
-								//~ url = url[0].getAttribute('href');
-							//~ } else { alert('no URL'); return; }
-							//~ div.className = 'exe';
-							//~ div.href = url;
-							//~ var div2 = document.createElement('div');
-							//~ div2.innerHTML = MT__bold(cn[0], o.bold) +    // name
-								//~ '<br>' + MT__bold(cn[1], o.bold)+     // desc
-								//~ '<br>' + MT__bold(rs[i].url, o.bold); // url
-							//~ div2.setAttribute('style', 'float:left;');
-							//~ div.appendChild(div2);
-							//~ out.appendChild(div);
-							//~ div.onclick = function() {
-								//~ o.q[0].value = this.href;
-								//~ try_sbm();
-							//~ }
-							//~ 
-						//~ }
 					}
 				});
 			}
@@ -3834,7 +3773,6 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	
 	
 	//
 	//
