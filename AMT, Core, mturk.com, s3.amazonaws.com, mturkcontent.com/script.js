@@ -2997,7 +2997,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
-			d2.setAttribute('style','position:absolute;top:260px;height:80px;left:0%;width:99%;font-size:2em;'); //
+			d2.setAttribute('style','position:absolute;top:260px;height:80px;left:0%;width:99%;font-size:2em !important;'); //
 			document.body.appendChild(d2);
 			d2.value = o.comp;
 			d2.onblur = function() {
@@ -3024,10 +3024,23 @@ function MT__RUN() {
 				for (var i in o.q) {
 					o.q[i].value = 'NOT FOUND';
 				}
+				AMT___recordAndSubmit();
+				//~ doSubmit();
 			}
 			// ef
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// submitButton. Record these.
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit();
+			}
+			AMT___addUserDecision('Binoy Bhansali|Find Company Funding Status', function() {
+					return o.comp +'|||'+ o.url;
+				},
+				['Id(amount)','Id(date)','Id(investors)']
+			)
 			
 			// init
 			cb();
@@ -3216,16 +3229,17 @@ function MT__RUN() {
 						
 						// The investors table
 						// NOTE: "All Investors" (if there are more than X...)
-						var d = dom.querySelectorAll('.table.section-list.investors>tbody');
-						if (!d || !d.length) {
+						var d = dom.getElementById('investors');
+						if (!d) {
 							o.q[2].value = 'N/A';
-							if (dom.getElementById('investors')) { // Has Investors div?
-								return false;
-							}
+							//~ if (dom.getElementById('investors')) { // Has Investors div?
+								//~ return false;
+							//~ }
 						} else {
+							var tb = d.querySelectorAll('.table.section-list.investors>tbody');
 							var inv = [];
-							for (var i=0; i<d.length; i++) {
-								var c = d[i].getElementsByClassName('follow_card')[0].innerText.trim();
+							for (var i=0; i<tb.length; i++) {
+								var c = tb[i].getElementsByClassName('follow_card')[0].innerText.trim();
 								inv.push(c);
 								//~ o.q[2].value = c;
 							}
@@ -3246,6 +3260,7 @@ function MT__RUN() {
 						}
 						// Here?
 						document.body.style.backgroundColor = 'yellow';
+						//AMT___recordAndSubmit();
 						//doSubmit();
 					}
 				});
