@@ -57209,6 +57209,7 @@ function MT__RUN() {
 			GM_addStyle('input[type="radio"] {cursor:pointer;}'); // HIDE
 			GM_addStyle('fieldset {float:left;width:33%;}'); // HIDE
 			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}'); // HIDE
+			GM_addStyle('.span5.ng-scope {position:absolute;left:70%;width:30% !important;}'); // HIDE
 			
 			//document.getElementsByName('Category')[0]
 			var r = document.querySelectorAll('p.ng-scope')[2];
@@ -57220,7 +57221,7 @@ function MT__RUN() {
 			
 			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:0%;width:50%;height:200px;top:100px;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;left:0%;width:70%;height:200px;top:100px;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
 			
@@ -57264,8 +57265,52 @@ function MT__RUN() {
 				},
 			});
 			
+			// keyboard
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode)
+				var allLi = document.getElementsByTagName('li');
+				var wasPressed = false;
+				switch(e.keyCode) {
+					case 49:
+					document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id; //Corp
+					document.getElementById('Corporate').click();
+					wasPressed = true;
+					break;
+					case 50:
+					document.getElementsByName('Category')[0].value = allLi[1].getElementsByTagName('div')[0].id; //Legal
+					document.getElementById('Legal').click();
+					wasPressed = true;
+					break;
+					case 51:
+					document.getElementsByName('Category')[0].value = allLi[2].getElementsByTagName('div')[0].id; //Other
+					document.getElementById('Other').click();
+					wasPressed = true;
+					break;
+					case 52:
+					document.getElementsByName('Category')[0].value = allLi[3].getElementsByTagName('div')[0].id; //Not
+					document.getElementById('Not a real company').click();
+					wasPressed = true;
+					break;
+					//~ case 82:
+					//~ document.getElementsByName('Category')[0].value = allLi[4].getElementsByTagName('div')[0].id; //85v
+					//~ wasPressed = true;
+					//~ break;
+					//~ case 69:
+					//~ document.getElementsByName('Category')[0].value = document.body.style.zoom = .75; //85v
+					//~ break;
+				}
+				if(wasPressed && document.getElementsByName('Category')[0].value) {
+					doSubmit();
+					// Minimize images
+					GM_addStyle('img {zoom:0.1;}');
+					setTimeout(function() { // Wait 1 second
+						GM_addStyle('body {background-color:yellow;}');
+					}, 1000);
+				}
+			});
 		}
 		new run().f();
+		return;
 	}
 	// 
 	// Neal H. Patel
