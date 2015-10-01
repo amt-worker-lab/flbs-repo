@@ -3046,6 +3046,7 @@ function MT__RUN() {
 			cb();
 			// cb
 			function cb() {
+				document.body.style.backgroundColor = '#fff';
 				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
 				
 				d1.innerHTML = '';
@@ -3155,6 +3156,7 @@ function MT__RUN() {
 			}
 			// cb profile
 			function profile(div) {
+				document.body.style.backgroundColor = '#fff';
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: div.href,
@@ -3230,13 +3232,13 @@ function MT__RUN() {
 						// The investors table
 						// NOTE: "All Investors" (if there are more than X...)
 						var d = dom.getElementById('investors');
-						if (!d) {
+						if (!d || d.innerText.indexOf('Investors') == -1) {
 							o.q[2].value = 'N/A';
 							//~ if (dom.getElementById('investors')) { // Has Investors div?
 								//~ return false;
 							//~ }
 						} else {
-							var tb = d.querySelectorAll('.table.section-list.investors>tbody');
+							var tb = d.parentNode.parentNode.querySelectorAll('.table.section-list.investors>tbody');
 							var inv = [];
 							for (var i=0; i<tb.length; i++) {
 								var c = tb[i].getElementsByClassName('follow_card')[0].innerText.trim();
@@ -3260,7 +3262,7 @@ function MT__RUN() {
 						}
 						// Here?
 						document.body.style.backgroundColor = 'yellow';
-						//AMT___recordAndSubmit();
+						AMT___recordAndSubmit();
 						//doSubmit();
 					}
 				});
@@ -3271,6 +3273,7 @@ function MT__RUN() {
 				//~ n = n.replace();
 				n = n.replace('M', ',000,000');
 				n = n.replace('B', ',000,000,000');
+				n = n.replace('k', ',000');
 				//~ n = n.replace('T', ',000,000,000,000');
 				n = n.replace(/^(\d+)\.(\d),000/, '$1,$2'+'00'); // e.g. 29.8,000,000
 				n = n.replace(/^(\d+)\.(\d\d),000/, '$1,$2'+'0'); // e.g. 29.8,000,000
