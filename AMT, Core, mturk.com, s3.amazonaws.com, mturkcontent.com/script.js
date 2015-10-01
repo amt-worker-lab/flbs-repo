@@ -2980,6 +2980,12 @@ function MT__RUN() {
 				domain: null,
 				bold: null,
 				bolddm: null,
+				
+				q: [
+					document.getElementById('amount'),
+					document.getElementById('date'),
+					document.getElementById('investors')
+				]
 			}
 			o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '');
 			o.bold = o.comp.clean_string_to_array();
@@ -3080,6 +3086,7 @@ function MT__RUN() {
 								//~ o.q[1].value = 'N';
 								this.style.backgroundColor = 'LightGreen';
 								//~ try_sbm();
+								profile(this);
 							}
 							var br = document.createElement('br');
 							br.clear = 'both';
@@ -3108,6 +3115,69 @@ function MT__RUN() {
 						
 					}
 				});
+			}
+			// cb profile
+			function profile(div) {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: div.href,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						var dom =  new DOMParser().parseFromString(rs,'text/html');
+						if (rs.indexOf('/distil_r_blocked.html?Ref=/organization') != -1) {
+							window.open(div.href);
+							return;
+						}
+						
+						// overview
+						var os = document.getElementsByClassName('overview-stats');
+						if (!os || !os.length) {
+							o.q[0].value = 'NO OVERVIEW STATS!';
+							return;
+						} else {
+							os = os[0];
+						}
+						
+						// Total funding
+						// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
+						var fa = os.getElementsByClassName('funding_amount');
+						if (!fa || !fa.length || fa.length != 1) {
+							o.q[0].value = 'FA!';
+							return;
+						} else {
+							var c = convert(fa[0].innerText.replace('$', '').trim());
+							o.q[0].value = c;
+							if (/[^\d,]/.exec(c)) {
+								o.q[0].value += 'FA Not \d,!';
+								return;
+							}
+						}
+						
+						// Here is investors table
+						// NOTE: "All Investors" (if there are more than X...)
+						var d = dom.querySelectorAll('.table.section-list.investors>tbody');
+						if (!d || !d.length) {
+							o.q[2].value = 'N/A';
+						} else {
+							var inv = [];
+							for (var i=0; i<d.length; i++) {
+								var c = d[i].getElementsByClassName('follow_card')[0].innerText.trim();
+								o.q[2].value = c;
+							}
+						}
+					}
+				});
+			}
+			// Convert M to ,000,000. Etc.
+			function convert(n) {
+				n = n.replace('M', ',000,000');
+				n = n.replace('B', ',000,000,000');
+				n = n.replace('T', ',000,000,000,000');
+				return;
 			}
 		}
 		new run().f();
@@ -3296,8 +3366,6 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	
-	
 	
 	//
 	// eshares
