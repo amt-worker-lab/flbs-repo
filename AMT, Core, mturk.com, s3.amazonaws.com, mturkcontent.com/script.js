@@ -2997,7 +2997,7 @@ function MT__RUN() {
 			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
-			d2.setAttribute('style','position:absolute;top:300px;height:40px;left:0%;width:99%;');
+			d2.setAttribute('style','position:absolute;top:260px;height:80px;left:0%;width:99%;font-size:2em;'); //
 			document.body.appendChild(d2);
 			d2.value = o.comp;
 			d2.onblur = function() {
@@ -3025,10 +3025,13 @@ function MT__RUN() {
 					o.q[i].value = 'NOT FOUND';
 				}
 			}
+			// ef
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			
 			// init
 			cb();
-			
+			// cb
 			function cb() {
 				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
 				
@@ -3228,6 +3231,11 @@ function MT__RUN() {
 							}
 							o.q[2].value = inv.join(',');
 						}
+						//~ // All investors?
+						//~ if (rs.indexOf('>All Investors<') != -1) {
+							//~ alert('all investors');
+							//~ return;
+						//~ }
 						
 						// Here?
 						for (var i in o.q) {
@@ -3249,7 +3257,8 @@ function MT__RUN() {
 				n = n.replace('M', ',000,000');
 				n = n.replace('B', ',000,000,000');
 				//~ n = n.replace('T', ',000,000,000,000');
-				n = n.replace(/^(\d+)\.(\d+),000/, '$1,$2'+'00'); // e.g. 29.8,000,000
+				n = n.replace(/^(\d+)\.(\d),000/, '$1,$2'+'00'); // e.g. 29.8,000,000
+				n = n.replace(/^(\d+)\.(\d\d),000/, '$1,$2'+'0'); // e.g. 29.8,000,000
 				return n;
 			}
 		}

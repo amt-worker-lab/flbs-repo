@@ -174,9 +174,16 @@ function load()
 		return;
 	}
 	//
+	// document.getElementById('recaptcha_response_field');
 	//
-	//
-	if (loc.indexOf('http://www.upcindex.com/') == 0) {
+	if  (
+		loc.indexOf('http://www.upcindex.com/') == 0 || 
+			(
+			ih.indexOf(' something about your browser made us think you were a bot. There are a few reasons this might happen:') != -1 &&
+			loc.indexOf('https://www.crunchbase.com') != -1
+			)
+		)
+	{ 
 		setTimeout(function() {
 			if (document.getElementById('recaptcha_response_field'))
 				document.getElementById('recaptcha_response_field').focus();
