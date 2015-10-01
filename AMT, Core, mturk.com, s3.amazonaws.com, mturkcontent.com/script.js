@@ -3104,7 +3104,7 @@ function MT__RUN() {
 								o.domain == rs[i].domain && 
 								o.comp_auto == rs[i].name.clean_str_to_auto() &&
 								o.domain.length > 3 &&
-								o.comp_auto > 3
+								o.comp_auto.length > 3
 								) {
 								div.click();
 							}
@@ -3138,7 +3138,7 @@ function MT__RUN() {
 						}
 						
 						// overview
-						var os = document.getElementsByClassName('overview-stats');
+						var os = dom.getElementsByClassName('overview-stats');
 						if (!os || !os.length) {
 							o.q[0].value = 'N/A';
 							o.q[1].value = 'N/A';
@@ -3174,6 +3174,7 @@ function MT__RUN() {
 								return;
 							} else {
 								var dd = os.getElementsByTagName('dd')[1];
+								console.log(dd.innerHTML);
 								// e.g. September 24, 2015
 								var rg = /<span class='funding-type'><a href="[^"]+">([^<]+)<\/a> <span class='connecting'>on<\/span> (\w+ \d+, \d{4})<\/dd>/.exec(dd.innerHTML);
 								if (!rg) {
@@ -3191,6 +3192,9 @@ function MT__RUN() {
 						var d = dom.querySelectorAll('.table.section-list.investors>tbody');
 						if (!d || !d.length) {
 							o.q[2].value = 'N/A';
+							if (dom.getElementById('investors')) { // Has Investors div?
+								return false;
+							}
 						} else {
 							var inv = [];
 							for (var i=0; i<d.length; i++) {
@@ -3198,15 +3202,29 @@ function MT__RUN() {
 								o.q[2].value = c;
 							}
 						}
+						
+						// Here?
+						for (var i in o.q) {
+							o.q[i].value = o.q[i].value.trim();
+							if (o.q[i].value == '') {
+								return false;
+							}
+						}
+						// Here?
+						document.style.backgroundColor = 'yellow';
+						//doSubmit();
 					}
 				});
 			}
 			// Convert M to ,000,000. Etc.
 			function convert(n) {
+				//~ n = n.replace(/^(\d+)\.\d+\w+$/);
+				//~ n = n.replace();
 				n = n.replace('M', ',000,000');
 				n = n.replace('B', ',000,000,000');
 				//~ n = n.replace('T', ',000,000,000,000');
-				return;
+				n = n.replace(/^(\d+)\.(\d+),000/, '$1,$2'+'00'); // e.g. 29.8,000,000
+				return n;
 			}
 		}
 		new run().f();
