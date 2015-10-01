@@ -3189,18 +3189,55 @@ function MT__RUN() {
 							// Set os
 							os = os[0];
 							
-							// Total funding
-							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
+							
+							// Loop through DTs
+							//
+							//
+							//
 							var fa = os.getElementsByClassName('funding_amount');
-							if (!fa || !fa.length || os.getElementsByTagName('dt')[0].innerText != 'Funding Received') {
+							var dt = os.getElementsByTagName('dt');
+							var dd = os.getElementsByTagName('dd');
+							if (!dt.length || !fa.length || !dd.length) {
 								if (os.innerText.indexOf('Funding Received') != -1) {
 									o.q[0].value = 'FA!';
 									return;
 								} else {
 									o.q[0].value = 'N/A';
 								}
+								if (os.innerText.indexOf('Most Recent Funding') != -1) {
+									o.q[0].value = 'RF!';
+									return;
+								} else {
+									o.q[1].value = 'N/A';
+								}
 							} else {
-								var c = convert(fa[0].innerText.replace('$', '').trim());
+								for (var i=0; i<dt.length; i++) {
+									if (dt[i].innerText == 'Funding Received') {
+										
+										continue;
+									}
+									if (dt[i].innerText == 'Most Recent Funding') {
+										
+									}
+								}
+							}
+							
+							// Total funding
+							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
+							var fa = os.getElementsByClassName('funding_amount');
+							var dt = os.getElementsByTagName('dt')
+							if (!fa || !fa.length) { //  || os.getElementsByTagName('dt')[0].innerText != 'Funding Received'
+								
+							} else {
+								if (dt[0].innerText == 'Funding Received') {
+									fa = fa[0];
+								} else if (dt[1].innerText == 'Funding Received') {
+									fa = fa[1];
+								} else {
+									return;
+								}
+								
+								var c = convert(fa.innerText.replace('$', '').trim());
 								o.q[0].value = c;
 								if (/[^\d,]/.exec(c)) {
 									o.q[0].value += 'FA Not \d,!';
@@ -3208,25 +3245,18 @@ function MT__RUN() {
 								}
 							}
 							
-							// Most recent...
-							if (os.innerText.indexOf('Most Recent Funding') == -1) {
-								o.q[1].value = 'N/A';
-							} else if (os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
-								o.q[1].value = 'RF!';
-								return;
-							} else {
-								var dd = os.getElementsByTagName('dd')[1];
-								console.log(dd.innerHTML);
-								// e.g. September 24, 2015
-								var rg = /<span class="funding-type"><a href="[^"]+">[^<]+<\/a> <span class="connecting">on<\/span> (\w+ \d+, \d{4})<\/span>/.exec(dd.innerHTML);
-								if (!rg) {
-									o.q[1].value = 'RF! ' + rg;
-									return;
-								} else {
-									o.q[1].value = rg[1].trim();
-								}
+							//~ // Most recent...
+							//~ if (os.innerText.indexOf('Most Recent Funding') == -1) {
+								//~ o.q[1].value = 'N/A';
+							//~ } else if (os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
+								//~ o.q[1].value = 'RF!';
+								//~ return;
+							//~ } else {
+								//~ var dd = os.getElementsByTagName('dd')[1];
+								//~ console.log(dd.innerHTML);
 								
-							}
+								
+							//~ }
 						}
 						
 						// The investors table
