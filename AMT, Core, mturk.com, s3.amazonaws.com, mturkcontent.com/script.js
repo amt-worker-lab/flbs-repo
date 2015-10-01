@@ -3088,7 +3088,13 @@ function MT__RUN() {
 							d1.appendChild(div);
 							
 							// Auto
-							if (first && o.domain == rs[i].domain && o.comp_auto == rs[i].name.clean_str_to_auto()) {
+							if  (
+								first &&
+								o.domain == rs[i].domain && 
+								o.comp_auto == rs[i].name.clean_str_to_auto() &&
+								o.domain.length > 3 &&
+								o.comp_auto > 3
+								) {
 								div.click();
 							}
 							first = false; // Set false
