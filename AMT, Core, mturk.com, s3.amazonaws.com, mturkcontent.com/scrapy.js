@@ -36,6 +36,7 @@ function init__scrapy() {
 	//
 	// Olga Svensen
 	// Find email addresses of American Universities!
+	// Search for "engineering" or "cs". Then scrapy.
 	// 3QPQKLUN3TJYBG6JVE9BRGPBAUTS6V
 	s = '1. Go to the URL above, go to engineering or computer science department or equivalent.&nbsp;Use google translate if necessary.';
 	if(ih.indexOf(s) != -1)
