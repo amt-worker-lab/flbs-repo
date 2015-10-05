@@ -36,9 +36,9 @@ function init__scrapy() {
 	//
 	// Olga Svensen
 	// Find email addresses of American Universities! (Actually, Peronal/Professional/Facebook/Flickr/Social/Other)
-	// 
+	// Do scrapy. With accepted open URL in utility window.
 	// 3BHDZRMFLO7X781S8JJ88H9E37DV73
-	s = '1. Go to the URL above, go to engineering or computer science department or equivalent.&nbsp;Use google translate if necessary.';
+	s = '<div style=""><label>2. Please select which type of website this is.</label></div>';
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -53,7 +53,7 @@ function init__scrapy() {
 			
 			var spans = document.getElementsByTagName('span');
 			var o = {
-				sd_start_urls: [spans[2].innerText.trim()],
+				sd_start_urls: [spans[0].innerText.trim()],
 				sd_allowed_domains: null,
 				q: [
 					document.getElementById('Q2Url')
@@ -92,8 +92,10 @@ function init__scrapy() {
 					return false;
 				}
 				// Here?
-				doSubmit();
+				//~ doSubmit();
 			}
+			
+			scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			
 			/**
 			 * function scrapy
@@ -157,6 +159,17 @@ function init__scrapy() {
 										console.log('addint to tabs q');
 										addToTabsQ();
 										document.body.style.backgroundColor = 'white';
+										
+										
+										// Open Utility
+										AMT__setUtilityTabs([
+										{
+											url: o.sd_start_urls[0],
+											//~ options: {
+												//~ task: 'AMT__all_pages_util',
+												//~ highlight_range_to_parent: true
+											//~ }								
+										}]);
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)

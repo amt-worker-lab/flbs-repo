@@ -215,6 +215,7 @@ function mturk_load()
 				case '3ERA4CZHMXJ6ZDIP9LPVS6CAHUFLMU': // David Yarowsky
 				case '3061CZCVOYQHKNOVB0ALX29LEUHA1B': // Smule AWS
 				case '3QPQKLUN3TJYBG6JVE9BRGPBAUTS6V': // Olga Svensen
+				case '3BHDZRMFLO7X781S8JJ88H9E37DV73': // Olga Svensen #2
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '32SRECFMFBIEQWWELJ4BDO8IAIEUTZ': //Bart Jansen, track packages #2
