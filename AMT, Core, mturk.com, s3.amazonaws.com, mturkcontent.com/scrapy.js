@@ -43,46 +43,32 @@ function init__scrapy() {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
 			
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
-			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('table {zoom:0.8;}');
+			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			
-			document.body.style.backgroundColor = 'orange';
-			
-			var td = document.getElementsByTagName('td');
-			
+			var sp = document.getElementsByTagName('span');
 			var o = {
-				comp: td[1].innerText.trim(),
-				sd_start_urls: [],
-				sd_allowed_domains: [],
+				sd_start_urls: [sp[2].innerText.trim()],
+				sd_allowed_domains: null,
 				q: [
-					document.getElementById('email')
-				]
+					document.getElementById('Q2Url')
+				],
+				SKIP_SITES: {},
+				//,
+				//~ auto_emails: ['info','contact','contactus']
 			}
-			//~ o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			console.log(o);
-			
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:30px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;z-index:10;'
+				'position:absolute;top:100px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style',
-				'position:absolute;top:30px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;z-index:9;'
-			);
-			document.body.appendChild(d1b);
-			var d2 = document.createElement('textarea');
-			d2.setAttribute('style',
-				'position:absolute;top:0px;height:30px;width:100%;'
-			);
-			document.body.appendChild(d2);
 			/* END ITEMS */
 			
 			// innerHeight
@@ -91,60 +77,73 @@ function init__scrapy() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1b
+					d1
 				],
-				offset: 30 // offset top
-			});
-			
-			// create_dashboard_find_url
-			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.comp.clean_string_to_array(),
-				searches:[
-					o.comp,
-					'"'+o.comp+'"',
-					o.comp+' ("beauty" OR "fashion" OR "company")'
-				],
-				load_success_callback: function() {
-					addToTabsQ(); // Add to tabs queue.
-				},
-				//~ out_element:,
-				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
-					// shownext
-					showNextTab();
-					
-					// ...
-					d1.style.zIndex = '8';
-					d2.value = this.value;
-					o.sd_start_urls = [this.value, this.full_url];
-					o.sd_allowed_domains = [this.value.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/i, "$2")]; //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
-					scrapy(o.sd_start_urls, o.sd_allowed_domains);
-				},
-				parent: d1,
-				offsetTop: 0,
+				offset: 100 // offset top
 			});
 			
 			// ...
-			document.getElementById('submitButton').onclick = function() {
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
 				o.q[0].value = o.q[0].value.trim();
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
 					return false;
 				}
-				//~ // Here?
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
+				// Here?
+				doSubmit();
+			}
+
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips({
+				skips_key: 'austin_load_skips',
+				callback: init,
+				callback_err: function() {}
+			});
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				// SP search.
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' contact'),
+					callback_function: sp
+				});
+			}
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;
+				
+				if (!rs.length) {
+					// No URLs
+					// Init
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					return;
+				} else {
+					/*([{
+						url: rs[0][0]
+					}]);*/
+				}
+				
+				// Look for Facebook pages in results.
+				// And secondly check if first result is a "non-skip" result,
+				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				var first = true;
+				for (var i in rs) {
+					o.sd_start_urls.push(rs[i][0]);
+				}
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			}
 			
-			//~ function init_url() {
-				//~ 
-			//~ }	
 			/**
 			 * function scrapy
 			 */
 			function scrapy(start_urls, allowed_domains) {
-				//~ console.log(start_urls);
-				//~ console.log(allowed_domains);
 				//
-				var s_obj = 
+				var s_obj =
 				{
 					project: 'scrapy_amt',
 					spider: 'AMTSpider',
@@ -180,24 +179,60 @@ function init__scrapy() {
 							(new AMT___items_factory()).create_dashboard__powers_v1,
 							{
 								// add PREVIEW all snippets
-								div: d1b,
+								div: d1,
 								input_send_success: o.q[0],
+								skip_if_no_emails: true,
+								accept_if_emails: true,
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
-										// If no email match results
-										if (!callback_obj.matches || !callback_obj.matches.length) {
-											AMT___Floater.skip();
-										}
-										else
-										{
-											AMT___Floater.accept();
-										}
-										// ENDS SCRIPT PROCESSING
-										return true;
+										//~ // If no email match results
+										//~ if (!callback_obj.matches || !callback_obj.matches.length) {
+											//~ AMT___Floater.skip();
+										//~ }
+										//~ else
+										//~ {
+											//~ AMT___Floater.accept();
+										//~ }
+										//~ // ENDS SCRIPT PROCESSING
+										//~ return true;
 									} else { // Add to tabs queue if not in preview
-										document.body.style.backgroundColor = 'white';
+										console.log('addint to tabs q');
 										addToTabsQ();
+										document.body.style.backgroundColor = 'white';
+										
+										//~ // Let's try for some autos.
+										//~ // o.auto_emails = []
+										//~ /**
+										 //~ * {
+										 //~ *  email_contexts: Array[1]
+										 //~ *  email_email: "info@vaultcrossfit.com"
+										 //~ *  url: "https://www.facebook.com/VaultCrossfit/info
+										 //~ * }
+										 //~ */
+										//~ if (callback_obj.matches && callback_obj.matches.length) {
+											//~ var mt = callback_obj.matches;
+											//~ console.log(mt);
+											//~ var reg = new RegExp(
+												//~ '^(info|contact|contactus|owner)@' + __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												//~ 'i'
+											//~ );
+											//~ for (var i in mt) {
+												//~ if  (
+													//~ mt[i].email_email &&
+													//~ mt[i].email_email.length &&
+													//~ reg.exec(mt[i].email_email)
+													//~ )
+												//~ {
+													//~ //alert('auto');
+													//~ o.q[0].value = mt[i].email_email;
+													//~ new AMT___core_factory().shiftFarLeft();
+													//~ doSubmit();
+													//~ return false; // Stop here
+													//~ //showNextTab();
+												//~ }
+											//~ }
+										//~ }
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
@@ -210,11 +245,21 @@ function init__scrapy() {
 									//~ //document.getElementById('submitButton').click();
 								//~ },
 								//~ // What to do onclick
-								//~ input_onclick_callback: function() {
-									//~ document.getElementById('Q1Email').value = 
-									//~ document.getElementById('submitButton').click();
-								//~ },
-								//~ do_submit_next_tab: true
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/^(catering|reservations|events)@/i.exec(this.email) &&
+										!/@(grubhub\.com|foodler\.com)$/i.exec(this.email) &&
+										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										)
+									{
+										o.q[0].value = this.email;
+										doSubmit();
+									}
+								},
+								//do_submit_next_tab: true
 								//~ do_submit_add_to_tabs_queue: true
 							}
 						);
@@ -228,7 +273,7 @@ function init__scrapy() {
 	//
 	// Mark Carey
 	// Find the Email Address for the Fashion/Beauty Brand
-	// 
+	// Startpage Find URL, then Scrapy
 	s = '	<li>Email addresses labeled&nbsp;<strong>press</strong>&nbsp;are preferred, when available.</li>';
 	if(ih.indexOf(s) != -1)
 	{

@@ -11447,11 +11447,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		this.obj_vars.catch_include = 'Yahoo! - 999 Unable to process request at this time -- error 999';
 	
 	if (this.obj_vars.startPage) {
-		
-		this.obj_vars.startPage_array = true;
-		
-		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';
-		
+		this.obj_vars.startPage_array = true;		
+		//~ this.obj_vars.catch_include = 'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.';		
 		this.obj_vars.catch_include_array = [
 			'We apologize for the inconvenience: to prevent possible abuse of the Startpage service',
 			'We want Tor users to have a great private search experience with Startpage, and we appreciate your patience while we develop a long-term solution.',
@@ -11462,11 +11459,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		]
 		// UPDATE
 		// As part of StartPage's ongoing mission to provide the best experience for our users, we occasionally need to confirm that you are a legitimate user. Completing the CAPTCHA below helps us reduce abuse and improve the quality of our services.
-		
 		/*this.obj_vars.post_request = {
 			cmd: 'process_search',
 			language: 'english',
-			
 			//~ enginecount: 1,
 			//~ pl: '',
 			//~ abp: -1,
@@ -11476,7 +11471,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			//~ flag_ac: 0,
 			//~ cat: 'web',
 			//~ query: query//,
-			
 			//~ enginecount: 1,
 			//~ pl: '',
 			abp: -1,
@@ -11487,15 +11481,14 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			cat: 'web',
 			query: query,
 			engine0:'v1all'
-			
 			//~ x:0,
 			//~ y:0
 			//~ engine0:'v1all'
-			
 			//~ cat=web&cmd=process_search&language=english&engine0=v1all&query=hi+im+yousdf&abp=-1&x=0&y=0
 		}*/
 		
 		this.obj_vars.headers_array = [
+			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
 			//~ 'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 			//~ 'Accept-Encoding:gzip,deflate,sdch',
 			//~ 'Accept-Language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
@@ -11507,10 +11500,8 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			//~ 'Origin:https://startpage.com',
 			//~ 'Referer:https://startpage.com/',
 			//~ 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36',
-			//~ 'Expect:     ',	
-			'Cookie:preferences=lang_homepageEEEs/air/eng/N1NsslEEE1N1Nfont_sizeEEEmediumN1Nrecent_results_filterEEE1N1Nlanguage_uiEEEenglishN1Ndisable_open_in_new_windowEEE1N1Ndisable_family_filterEEE1N1Nnum_of_resultsEEE10N1N'
+			//~ 'Expect:     ',
 		];
-		
 		this.obj_vars.catch_success = '<!DOCTYPE HTML>';
 	}
 	
@@ -11662,9 +11653,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 			r = /yschttl spt" href="([^"]+)"[^>]+>((.|\s)*?(?=<\/li>|$)|$)/g;
 			yahoo_type = 1;
 		}
-		
 		r.lastIndex = 0;
-		
 		if (r.exec(rs) && rs.indexOf('Including results for') == -1) {
 			r.lastIndex = 0;
 			var m;
@@ -11676,7 +11665,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				// Coming in as r.search.yahoo.com rather than ri.search.yahoo.com.
 				//
 				//
-		
 				// Is this ri.search.yahoo.com?
 				if  (
 					/^http:\/\/ri?\.search\.yahoo\.com\//.exec(m[1]) &&
@@ -11688,14 +11676,13 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 				}
 				else if (yahoo_type == 0)
 					m[1] = decodeURIComponent(m[1]);
-				
 				m[2] = m[2].replace(/<b>/g, '`');
 				m[2] = m[2].replace(/<\/b>/g, '``');
 				m[2] = m[2].replace(/<[^>]+>/g, ' ');
 				m[2] = m[2].replace(/[<>]/g, ' ');
 				m[2] = m[2].replace(/``/g, '</b>');
 				m[2] = m[2].replace(/`/g, '<b>');
-				
+				// Push...
 				arr.push([
 					m[1], m[2]
 				]);
@@ -11732,7 +11719,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// function proxy_waitComplete
 	//
 	//
-	//~ this.proxy_waitComplete = function(callback_function) {
 	function proxy_waitComplete(callback_function) {
 		var this_obj = this; // legacy
 		var callback_function = callback_function;
@@ -11781,7 +11767,7 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// AND auto-run the sub-functions here rather
 	// than in script.js.
 	if (this.obj_vars.hasOwnProperty('callback_function')) {
-		
+		console.log(this.obj_vars.callback_function);
 		proxy_init();
 		proxy_waitComplete(
 			this.obj_vars.callback_function
