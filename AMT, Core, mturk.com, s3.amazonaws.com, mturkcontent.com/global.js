@@ -11722,7 +11722,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function proxy_waitComplete(callback_function) {
 		var this_obj = this; // legacy
 		var callback_function = callback_function;
-		
 		var xint = setInterval(function() {
 			GM_xmlhttpRequest({ // init
 				method: "GET",
@@ -11767,7 +11766,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// AND auto-run the sub-functions here rather
 	// than in script.js.
 	if (this.obj_vars.hasOwnProperty('callback_function')) {
-		console.log(this.obj_vars.callback_function);
 		proxy_init();
 		proxy_waitComplete(
 			this.obj_vars.callback_function

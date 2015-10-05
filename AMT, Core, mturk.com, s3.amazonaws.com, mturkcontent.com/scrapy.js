@@ -46,12 +46,13 @@ function init__scrapy() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
+			GM_addStyle('#Q2Url {width:80% !important;}');// Set width
 			
 			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			
-			var sp = document.getElementsByTagName('span');
+			var spans = document.getElementsByTagName('span');
 			var o = {
-				sd_start_urls: [sp[2].innerText.trim()],
+				sd_start_urls: [spans[2].innerText.trim()],
 				sd_allowed_domains: null,
 				q: [
 					document.getElementById('Q2Url')
@@ -66,7 +67,7 @@ function init__scrapy() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:100px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -79,7 +80,7 @@ function init__scrapy() {
 				elements: [
 					d1
 				],
-				offset: 100 // offset top
+				offset: 0 // offset top
 			});
 			
 			// ...
@@ -106,7 +107,7 @@ function init__scrapy() {
 				// SP search.
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' contact'),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' contact engineering computer science'),
 					callback_function: sp
 				});
 			}
