@@ -48,6 +48,7 @@ function init__scrapy() {
 			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
 			GM_addStyle('#Q2Url {width:80% !important;}');// Set width
+			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
 			
 			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			
@@ -56,7 +57,10 @@ function init__scrapy() {
 				sd_start_urls: [spans[0].innerText.trim()],
 				sd_allowed_domains: null,
 				q: [
-					document.getElementById('Q2Url')
+					document.getElementById('Q2Url'),
+					document.getElementsByName('topic')[0],
+					document.getElementsByName('topic')[1],
+					document.getElementsByName('topic')[2],
 				],
 				//,
 				//~ auto_emails: ['info','contact','contactus']
@@ -91,9 +95,22 @@ function init__scrapy() {
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
 					return false;
 				}
+				return false;
 				// Here?
 				//~ doSubmit();
 			}
+			// Radios...
+			o.q[1].onclick = o.q[2].onclick = o.q[3].onclick = function(e) {
+				if (!this.checked) return;
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					//~ return false;
+					return;
+				}
+				// Here?
+				doSubmit();
+			}
+			
 			
 			scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			
