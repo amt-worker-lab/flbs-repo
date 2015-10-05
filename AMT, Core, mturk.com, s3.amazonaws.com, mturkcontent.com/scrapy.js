@@ -67,6 +67,7 @@ function init__scrapy() {
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			console.log(o);
+			o.q[1].checked = true;
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -92,15 +93,18 @@ function init__scrapy() {
 				e.stopPropagation();
 				e.preventDefault();
 				o.q[0].value = o.q[0].value.trim();
-				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+				if  (
+						(o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) ||// not contains @
+						(o.q[0].value.length < 6 || o.q[0].value.indexOf('http') != 0) // not start http 
+					) {
 					return false;
 				}
-				return false;
+				//~ return false;
 				// Here?
-				//~ doSubmit();
+				doSubmit();
 			}
 			// Radios...
-			o.q[1].onclick = o.q[2].onclick = o.q[3].onclick = function(e) {
+			/*o.q[1].onclick = o.q[2].onclick = o.q[3].onclick = function(e) {
 				if (!this.checked) return;
 				o.q[0].value = o.q[0].value.trim();
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
@@ -109,7 +113,7 @@ function init__scrapy() {
 				}
 				// Here?
 				doSubmit();
-			}
+			}*/
 			
 			
 			scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -204,13 +208,20 @@ function init__scrapy() {
 									if  (
 										this.email.length > 6 &&
 										this.email.indexOf('@') != -1 &&
-										!/^(catering|reservations|events)@/i.exec(this.email) &&
-										!/@(grubhub\.com|foodler\.com)$/i.exec(this.email) &&
+										//~ !/^(catering|reservations|events)@/i.exec(this.email) &&
+										//~ !/@(grubhub\.com|foodler\.com)$/i.exec(this.email) &&
 										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
 										)
 									{
 										o.q[0].value = this.email;
-										//~ doSubmit();
+										var found = false;
+										for (var i=1; i<=3; i++) {
+											if (o.q[i].checked) {
+												found = true;
+											}
+										}
+										if (found)
+											doSubmit();
 									}
 								},
 							}
