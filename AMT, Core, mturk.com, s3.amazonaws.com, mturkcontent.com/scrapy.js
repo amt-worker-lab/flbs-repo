@@ -94,8 +94,13 @@ function init__scrapy() {
 				e.preventDefault();
 				o.q[0].value = o.q[0].value.trim();
 				if  (
-						(o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) ||// not contains @
-						(o.q[0].value.length < 6 || o.q[0].value.indexOf('http') != 0) // not start http 
+						o.q[0].value.length < 6
+					) {
+					return false;
+				}
+				if  (
+						o.q[0].value.indexOf('@') == -1 && // not contains @
+						o.q[0].value.indexOf('http') != 0  // not start http 
 					) {
 					return false;
 				}
@@ -178,7 +183,10 @@ function init__scrapy() {
 										//~ return true;
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
-										addToTabsQ();
+										new AMT___core_factory().createScriptVar('olga-s-tabs-queue', '0');
+										if (AMT__Global_Vars.scriptVars['olga-s-tabs-queue'] == '1') {
+											addToTabsQ();
+										}
 										document.body.style.backgroundColor = 'white';
 										
 										
