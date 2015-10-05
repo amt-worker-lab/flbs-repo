@@ -107,7 +107,7 @@ function init__scrapy() {
 				// SP search.
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' contact engineering computer science'),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' contact ("engineering" OR "computer science" OR "cs")'),
 					callback_function: sp
 				});
 			}
