@@ -672,6 +672,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		getAllTabsInQ(function(allQTabs) {
 			console.log('allQTabs');
 			console.log(allQTabs);
+			console.log(allQTabs.length);
 			if(allQTabs.length < 2 && jumpToFirst) {
 				//We are the only tab in the Q, so simply jump us there
 				console.log('We are the only tab in the Q');
