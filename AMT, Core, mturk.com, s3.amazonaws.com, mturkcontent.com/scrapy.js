@@ -65,6 +65,7 @@ function init__scrapy() {
 				//~ auto_emails: ['info','contact','contactus']
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
+			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
 			console.log(o);
 			o.util_url = o.sd_start_urls[0];
 			
