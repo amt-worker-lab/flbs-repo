@@ -194,11 +194,34 @@ function init__scrapy() {
 										AMT__setUtilityTabs([
 										{
 											url: o.sd_start_urls[0],
-											//~ options: {
-												//~ task: 'AMT__all_pages_util',
-												//~ highlight_range_to_parent: true
-											//~ }								
-										}]);
+											options: {
+												task: 'AMT__all_pages_util',
+												highlight_range_to_parent: true,
+												highlight_strings_in_page: {
+													strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
+												},
+											}								
+										}], {}, {}, false,
+										function(response){
+											console.log(response);
+											var text = response.data.text_range.trim();
+											if(text.indexOf('@') != -1) {
+												o.q[0].value = text;
+												o.q[0].focus();
+											}
+											//~ else if(text.replace(/[\D]/g,'').length > 6) {
+												//~ o.q[5].value = text;
+											//~ }
+											//~ else {
+												//~ o.q[3].value = text;
+											//~ }
+											
+											//~ document.getElementById('submitButton').focus();
+											
+											//~ o.q[1].checked = true;
+											//~ o.q[0].checked = false;
+											//~ o.q[2].checked = false;
+										});
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
