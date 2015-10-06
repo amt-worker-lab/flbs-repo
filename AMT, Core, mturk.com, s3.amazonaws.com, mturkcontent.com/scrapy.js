@@ -47,7 +47,7 @@ function init__scrapy() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
-			GM_addStyle('#Q2Url {width:80% !important;}');// Set width
+			GM_addStyle('#Q2Url {width:80% !important;height:40px;}');// Set width
 			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
 			
 			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
