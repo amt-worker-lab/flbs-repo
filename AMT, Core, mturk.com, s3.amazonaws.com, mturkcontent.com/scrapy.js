@@ -62,12 +62,15 @@ function init__scrapy() {
 					document.getElementsByName('topic')[1],
 					document.getElementsByName('topic')[2],
 				],
+				SKIP_SITES: {},
+				util_url: null
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			console.log(o);
 			o.q[1].checked = true;
+			o.util_url = o.sd_start_urls[0];
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -122,6 +125,47 @@ function init__scrapy() {
 			
 			
 			scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips({
+				skips_key: 'austin_load_skips',
+				callback: init,
+				callback_err: function() {}
+			});
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				// SP search.
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ("contact" OR "about")'),
+					callback_function: sp
+				});
+			}
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;
+				if (!rs.length) {
+					// No URLs
+					// Init
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					return;
+				} else {
+				}
+				// Look for Facebook pages in results.
+				// And secondly check if first result is a "non-skip" result,
+				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				var first = true;
+				for (var i in rs) {
+					o.sd_start_urls.push(rs[i][0]);
+				}
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			
+			
 			
 			/**
 			 * function scrapy
@@ -184,65 +228,47 @@ function init__scrapy() {
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
 										new AMT___core_factory().createScriptVar('olga-s-tabs-queue', '0');
+										new AMT___core_factory().createScriptVar('view utility site', '1');
 										if (AMT__Global_Vars.scriptVars['olga-s-tabs-queue'] == '1') {
 											addToTabsQ();
 										}
 										document.body.style.backgroundColor = 'white';
 										
-										
-										// Open Utility
-										AMT__setUtilityTabs([
-										{
-											url: o.sd_start_urls[0],
-											options: {
-												task: 'AMT__all_pages_util',
-												highlight_range_to_parent: true,
-												email_links_remove_mailto: true,
-												email_links_click_to_parent: true,
-												highlight_strings_in_page: {
-													strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
-												},
-											}								
-										}], {}, {}, false,
-										function(response){
-											console.log(response);
-											var text = response.data.text_range.trim();
-											if(text.indexOf('@') != -1) {
-												o.q[0].value = text;
-												o.q[0].focus();
-											}
-											//~ else if(text.replace(/[\D]/g,'').length > 6) {
-												//~ o.q[5].value = text;
-											//~ }
-											//~ else {
-												//~ o.q[3].value = text;
-											//~ }
-											
-											//~ document.getElementById('submitButton').focus();
-											
-											//~ o.q[1].checked = true;
-											//~ o.q[0].checked = false;
-											//~ o.q[2].checked = false;
-										});
+										if(AMT__Global_Vars.scriptVars['view utility site'] != '0') {
+											// Open Utility
+											AMT__setUtilityTabs([
+											{
+												url: o.sd_start_urls[0],
+												options: {
+													task: 'AMT__all_pages_util',
+													highlight_range_to_parent: true,
+													email_links_remove_mailto: true,
+													email_links_click_to_parent: true,
+													highlight_strings_in_page: {
+														strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
+													},
+												}								
+											}], {}, {}, false,
+											function(response){
+												console.log(response);
+												var text = response.data.text_range.trim();
+												if(text.indexOf('@') != -1) {
+													o.q[0].value = text;
+													o.q[0].focus();
+												}
+											});
+										}
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
 									return false;
 								},
-								//~ do_submit_callback: function() {
-									//~ 
-									//~ // NOTE: DEC1 2014
-									//~ // THIS NEEDS TO BE TESTED FIRST!!
-									//~ //document.getElementById('submitButton').click();
-								//~ },
-								//~ // What to do onclick
+								// What to do onclick
 								input_onclick_callback: function() {
 									this.style.backgroundColor = 'LightGreen';
 									if  (
 										this.email.length > 6 &&
 										this.email.indexOf('@') != -1 &&
-										//~ !/^(catering|reservations|events)@/i.exec(this.email) &&
-										//~ !/@(grubhub\.com|foodler\.com)$/i.exec(this.email) &&
 										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
 										)
 									{
