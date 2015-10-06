@@ -124,7 +124,7 @@ function init__scrapy() {
 			}*/
 			
 			
-			scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			//scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips({
@@ -152,7 +152,6 @@ function init__scrapy() {
 					// Init
 					scrapy(o.sd_start_urls, o.sd_allowed_domains);
 					return;
-				} else {
 				}
 				// Look for Facebook pages in results.
 				// And secondly check if first result is a "non-skip" result,
@@ -160,6 +159,10 @@ function init__scrapy() {
 				var first = true;
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
+					if (first) {
+						o.util_url = rs[i][0];
+						first = false;
+					}
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -238,7 +241,7 @@ function init__scrapy() {
 											// Open Utility
 											AMT__setUtilityTabs([
 											{
-												url: o.sd_start_urls[0],
+												url: o.util_url, //o.sd_start_urls[0],
 												options: {
 													task: 'AMT__all_pages_util',
 													highlight_range_to_parent: true,
