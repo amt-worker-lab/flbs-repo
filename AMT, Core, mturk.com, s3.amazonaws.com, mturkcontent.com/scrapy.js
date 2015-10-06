@@ -197,6 +197,7 @@ function init__scrapy() {
 											options: {
 												task: 'AMT__all_pages_util',
 												highlight_range_to_parent: true,
+												email_links_remove_mailto: true,
 												highlight_strings_in_page: {
 													strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
 												},
