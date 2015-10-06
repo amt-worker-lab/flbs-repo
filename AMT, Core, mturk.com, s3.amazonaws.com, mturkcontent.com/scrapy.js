@@ -54,7 +54,7 @@ function init__scrapy() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				sd_start_urls: [td[0].innerText.trim()],
+				sd_start_urls: [td[1].innerText.trim()],
 				sd_allowed_domains: null,
 				q: [
 					document.getElementById('contact_info'),
@@ -272,14 +272,15 @@ function init__scrapy() {
 										)
 									{
 										o.q[0].value = this.email;
-										var found = false;
-										for (var i=1; i<=3; i++) {
-											if (o.q[i].checked) {
-												found = true;
-											}
-										}
-										if (found)
-											doSubmit();
+										doSubmit();
+										//~ var found = false;
+										//~ for (var i=1; i<=3; i++) {
+											//~ if (o.q[i].checked) {
+												//~ found = true;
+											//~ }
+										//~ }
+										//~ if (found)
+											//~ doSubmit();
 									}
 								},
 							}
