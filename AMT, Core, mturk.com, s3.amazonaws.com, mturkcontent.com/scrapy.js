@@ -43,9 +43,6 @@ function init__scrapy() {
 	{
 		var run = function() {}
 		run.prototype.f = function() {
-			
-																alert('testing2');
-							
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
@@ -505,7 +502,7 @@ function init__scrapy() {
 										//~ return true;
 									} else { // Add to tabs queue if not in preview
 										console.log('addint to tabs q');
-										new AMT___core_factory().createScriptVar('olga-s-tabs-queue', '0');
+										//new AMT___core_factory().createScriptVar('olga-s-tabs-queue', '0');
 										new AMT___core_factory().createScriptVar('view utility site', '1');
 										if (AMT__Global_Vars.scriptVars['olga-s-tabs-queue'] == '1') {
 											addToTabsQ();
