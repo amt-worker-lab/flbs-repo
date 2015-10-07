@@ -178,6 +178,8 @@ function MT__RUN() {
 					// Remove trailing commas
 					addField.value = addField.value.replace(/ *,*$/, '');
 					addField.value = addField.value.replace(/ *-*$/, ''); // etc.
+					addField.value = addField.value.replace(/^ *,*/, '');
+					addField.value = addField.value.replace(/^ *-*/, ''); // etc.
 					
 				},
 				//~ appendToField: true,
@@ -195,7 +197,10 @@ function MT__RUN() {
 					// Remove trailing commas
 					addField.value = addField.value.replace(/ *,*$/, '');
 					addField.value = addField.value.replace(/ *-*$/, ''); // etc.
-					
+					addField.value = addField.value.replace(/^ *,*/, '');
+					addField.value = addField.value.replace(/^ *-*/, ''); // etc.
+					// Submit
+					doSubmit();
 				},
 				//~ appendToField: true,
 				//~ appendToField_glue: '\n',
@@ -237,7 +242,8 @@ function MT__RUN() {
 						var rs = JSON.parse(options.response.responseText);console.log(rs);
 						if (rs.resultCount == 0 || rs.results.length == 0) {
 							AMT___Floater.skip();
-							d1.style.backgroundColor = 'blue';
+							//~ d1.style.backgroundColor = 'blue';
+							d1.appendChild('0 results!'.div());
 							return;
 						}
 						
