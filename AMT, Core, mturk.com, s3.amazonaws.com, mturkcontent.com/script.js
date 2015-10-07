@@ -120,7 +120,7 @@ function MT__RUN() {
 			
 			// Skip if... ...Autos
 			var auto = false;
-			if (AMT__Global_Vars.isPreview && rg.indexOf(' - ') == -1) {
+			if (rg.indexOf(' - ') != -1) {
 				auto = true;
 				//~ AMT___Floater.skip();
 				//~ return;
@@ -143,6 +143,7 @@ function MT__RUN() {
 			}
 			o.n1L = o.n1.toLowerCase();
 			o.n2L = o.n2.toLowerCase();
+			console.log(o);
 			
 			// Autos only...
 			//~ if (o.n1.length == 0 || o.n2.length == 0) {
@@ -176,6 +177,7 @@ function MT__RUN() {
 					
 					// Remove trailing commas
 					addField.value = addField.value.replace(/ *,*$/, '');
+					addField.value = addField.value.replace(/ *-*$/, ''); // etc.
 					
 				},
 				//~ appendToField: true,
@@ -192,6 +194,7 @@ function MT__RUN() {
 					
 					// Remove trailing commas
 					addField.value = addField.value.replace(/ *,*$/, '');
+					addField.value = addField.value.replace(/ *-*$/, ''); // etc.
 					
 				},
 				//~ appendToField: true,
@@ -200,6 +203,22 @@ function MT__RUN() {
 				focusToField: true,
 			});
 			d1.appendChild(buttons);
+			
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = o.q[0].value.trim();
+				o.q[1].value = o.q[1].value.trim();
+				if  (
+						o.q[0].value == '' &&
+						o.q[1].value == ''
+					) {
+					return false;
+				}
+				// Here?
+				doSubmit();
+			}
 			
 			// Init Itunes
 			e();
@@ -218,6 +237,7 @@ function MT__RUN() {
 						var rs = JSON.parse(options.response.responseText);console.log(rs);
 						if (rs.resultCount == 0 || rs.results.length == 0) {
 							AMT___Floater.skip();
+							d1.style.backgroundColor = 'blue';
 							return;
 						}
 						
