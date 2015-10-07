@@ -120,9 +120,6 @@ function init__scrapy() {
 				doSubmit();
 			}*/
 			
-			
-			//scrapy(o.sd_start_urls, o.sd_allowed_domains);
-			
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips({
 				skips_key: 'austin_load_skips',
@@ -306,9 +303,10 @@ function init__scrapy() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top: 60px !important;}');// Set width
 			GM_addStyle('#Q2Url {width:80% !important;height:40px;}');// Set width
 			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen !important;cursor:pointer;}');
 			
 			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			
@@ -338,6 +336,12 @@ function init__scrapy() {
 				'position:absolute;top:0px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:30%;height:60px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d2);
+			d2.className = 'exe';
 			/* END ITEMS */
 			
 			// innerHeight
@@ -382,9 +386,13 @@ function init__scrapy() {
 				// Here?
 				doSubmit();
 			}*/
-			
-			
-			//scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			d2.onclick = function() {
+				if (this.contact_url && /^https?:\/\/[\d\D]{6,}/.exec(this.contact_url)) { // 6 or more
+					this.style.backgroundColor = 'yellow';
+					o.q[0].value = this.contact_url;
+					doSubmit();
+				}
+			}
 			
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips({
@@ -422,6 +430,9 @@ function init__scrapy() {
 					if (first) {
 						o.util_url = rs[i][0];
 						first = false;
+						// Set d2
+						d2.innerText = rs[i][0];
+						d2.contact_url = rs[i][0];
 					}
 				}
 				// Init
