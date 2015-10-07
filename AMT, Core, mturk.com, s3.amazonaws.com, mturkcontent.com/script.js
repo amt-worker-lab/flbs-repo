@@ -114447,7 +114447,7 @@ qatar,80
 				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.comp+'"',
+					'"'+o.comp.split(' ').join('" "')+'"', // quotes
 					o.comp + ' ' + o.city_state
 				],
 				out_element: o.q[0],
