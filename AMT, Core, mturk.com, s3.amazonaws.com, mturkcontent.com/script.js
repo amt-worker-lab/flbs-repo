@@ -118,11 +118,14 @@ function MT__RUN() {
 			var rg = /<p><strong><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11\.6999998092651px; line-height: 20\.7999992370605px;">Raw text:<\/span><\/strong><\/p>[\r\n\t\s]+<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 16px; line-height: 20\.7999992370605px;">([^<]+)<\/span><\/p>[\r\n\t\s]+<p><span style="font-weight: bold; font-size: 0\.9em; line-height: 1\.6em;">Artist name<\/span><\/p>/.exec(ih);
 			rg = rg[1];
 			
-			// Skip if...
+			// Skip if... ...Autos
+			var auto = false;
 			if (AMT__Global_Vars.isPreview && rg.indexOf(' - ') == -1) {
-				AMT___Floater.skip();
-				return;
+				auto = true;
+				//~ AMT___Floater.skip();
+				//~ return;
 			}
+			
 			rg = rg.split(' - ');
 			var o = {
 				n1: rg[0].trim(),
@@ -130,7 +133,8 @@ function MT__RUN() {
 				n1L: null,
 				n2L: null,
 				original: rg.join(' - '),
-				bold: rg.clean_string_to_array(),
+				bold: rg.join(' - ').clean_string_to_array(),
+				auto: auto,
 				
 				q: [
 					document.getElementById('artist_name'),
@@ -164,10 +168,26 @@ function MT__RUN() {
 				offset: 0 // offset top
 			});
 			
-			// Annotation.
+			// Annotation 1.
 			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
-				textToAnnotate: str,
-				output_fields: [o.q[0], o.q[1]],
+				textToAnnotate: o.original,
+				output_fields: [o.q[0]],
+				callback_mouseup: function(addField) {
+					
+					// Remove trailing commas
+					addField.value = addField.value.replace(/ *,*$/, '');
+					
+				},
+				//~ appendToField: true,
+				//~ appendToField_glue: '\n',
+				//~ delimeter: '',
+				focusToField: true,
+			});
+			d1.appendChild(buttons);
+			// Annotation 2.
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.original,
+				output_fields: [o.q[1]],
 				callback_mouseup: function(addField) {
 					
 					// Remove trailing commas
@@ -195,7 +215,7 @@ function MT__RUN() {
 					success_callback: function(options) { // options.response[responseText, status, ...]
 						//~ console.log(options);
 						//~ expense_succ(options.response);
-						var rs = JSON.parse(options.response.responseText);
+						var rs = JSON.parse(options.response.responseText);console.log(rs);
 						if (rs.resultCount == 0 || rs.results.length == 0) {
 							AMT___Floater.skip();
 							return;
@@ -207,7 +227,8 @@ function MT__RUN() {
 						rs = rs.results;
 						if  (
 							rs[0].artistName.toLowerCase() == o.n1L &&
-							rs[0].trackName.toLowerCase() == o.n2L
+							rs[0].trackName.toLowerCase() == o.n2L && 
+							o.auto
 							)
 						{
 							r(o.n1, o.n2);
@@ -215,7 +236,8 @@ function MT__RUN() {
 						}
 						else if (
 							rs[0].artistName.toLowerCase() == o.n2L && // reverse
-							rs[0].trackName.toLowerCase() == o.n1L
+							rs[0].trackName.toLowerCase() == o.n1L && 
+							o.auto
 							)
 						{
 							r(o.n2, o.n1);
@@ -223,12 +245,14 @@ function MT__RUN() {
 						}
 						// Here?
 						// There are results... So accept.
-						if (AMT__Global_Vars.isPreview)
+						if (AMT__Global_Vars.isPreview) {
 							AMT___Floater.accept();
 							return;
+						}
 						// Here...
 						// Fill in div d1.
 						//
+						console.log(rs);
 						for (var i in rs) {
 							var d = ''.div({style:'border-bottom:1px solid teal;'});
 							var str = MT__bold(rs[0].artistName, o.bold) + '<br>' + MT__bold(rs[0].trackName, o.bold);
