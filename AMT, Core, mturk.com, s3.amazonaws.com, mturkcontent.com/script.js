@@ -201,7 +201,8 @@ function MT__RUN() {
 					addField.value = addField.value.replace(/^ *,*/, '');
 					addField.value = addField.value.replace(/^ *-*/, ''); // etc.
 					// Submit
-					doSubmit();
+					check_sbm();
+					
 				},
 				//~ appendToField: true,
 				//~ appendToField_glue: '\n',
@@ -229,6 +230,21 @@ function MT__RUN() {
 			// Init Itunes
 			e();
 			
+			function check_sbm() {
+				//~ var all = (o.q[0].value + ' ' + o.q[1].value).trim().replace(//g, '').split(' ');
+				var orig = o.original;
+				//~ if (all.length != orig.length) return;
+				if (
+					(o.q[0].value + ' ' + o.q[1].value).trim() == orig ||
+					(o.q[0].value + ' - ' + o.q[1].value).trim() == orig ||
+					(o.q[1].value + ' ' + o.q[0].value).trim() == orig ||
+					(o.q[1].value + ' - ' + o.q[0].value).trim() == orig
+					) {
+					doSubmit();
+				}
+				//~ // Here?
+				//~ doSubmit();
+			}
 			// 
 			function e() {
 				var u = 'https://itunes.apple.com/search?media=music&entity=song&term='+encodeURIComponent(o.original);
