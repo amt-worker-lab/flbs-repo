@@ -116,7 +116,8 @@ function MT__RUN() {
 			
 			// e.g. "Yellow - ColdPlay"
 			var rg = /<p><strong><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11\.6999998092651px; line-height: 20\.7999992370605px;">Raw text:<\/span><\/strong><\/p>[\r\n\t\s]+<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 16px; line-height: 20\.7999992370605px;">([^<]+)<\/span><\/p>[\r\n\t\s]+<p><span style="font-weight: bold; font-size: 0\.9em; line-height: 1\.6em;">Artist name<\/span><\/p>/.exec(ih);
-			rg = rg[1];
+			rg = __js_clean_html_str(rg[1]); // Clean &amp; !
+			rg = rg.replace(/\s+/g, ' '); // Remove double spaces as this does not show in regular HTML!
 			
 			// Skip if... ...Autos
 			var auto = false;
