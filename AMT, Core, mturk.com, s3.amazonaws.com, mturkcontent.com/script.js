@@ -101,7 +101,7 @@ function MT__RUN() {
 	//
 	// Smule AWS
 	// Separate artist name from song title
-	// 
+	// ... Itunes.
 	// Note: Methods for auto using Itunes API:
 	// 1) match is "IT[artist] - IT[trackname]"
 	// 2) match is "IT[trackname] - IT[artist]"
@@ -112,7 +112,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');//width:40% !important;
 			
 			// e.g. "Yellow - ColdPlay"
 			var rg = /<p><strong><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11\.6999998092651px; line-height: 20\.7999992370605px;">Raw text:<\/span><\/strong><\/p>[\r\n\t\s]+<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 16px; line-height: 20\.7999992370605px;">([^<]+)<\/span><\/p>[\r\n\t\s]+<p><span style="font-weight: bold; font-size: 0\.9em; line-height: 1\.6em;">Artist name<\/span><\/p>/.exec(ih);
@@ -130,6 +130,7 @@ function MT__RUN() {
 				n1L: null,
 				n2L: null,
 				original: rg.join(' - '),
+				bold: rg.clean_string_to_array(),
 				
 				q: [
 					document.getElementById('artist_name'),
@@ -139,12 +140,48 @@ function MT__RUN() {
 			o.n1L = o.n1.toLowerCase();
 			o.n2L = o.n2.toLowerCase();
 			
-			if (o.n1.length == 0 || o.n2.length == 0) {
-				AMT___Floater.skip();
-				return;
-			}
+			// Autos only...
+			//~ if (o.n1.length == 0 || o.n2.length == 0) {
+				//~ AMT___Floater.skip();
+				//~ return;
+			//~ }
 			
-			// Init
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			
+			// Annotation.
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: str,
+				output_fields: [o.q[0], o.q[1]],
+				callback_mouseup: function(addField) {
+					
+					// Remove trailing commas
+					addField.value = addField.value.replace(/ *,*$/, '');
+					
+				},
+				//~ appendToField: true,
+				//~ appendToField_glue: '\n',
+				//~ delimeter: '',
+				focusToField: true,
+			});
+			d1.appendChild(buttons);
+			
+			// Init Itunes
 			e();
 			
 			// 
@@ -163,6 +200,9 @@ function MT__RUN() {
 							AMT___Floater.skip();
 							return;
 						}
+						
+						
+						// This is for autos only...
 						// Here?
 						rs = rs.results;
 						if  (
@@ -171,6 +211,7 @@ function MT__RUN() {
 							)
 						{
 							r(o.n1, o.n2);
+							return;
 						}
 						else if (
 							rs[0].artistName.toLowerCase() == o.n2L && // reverse
@@ -178,11 +219,27 @@ function MT__RUN() {
 							)
 						{
 							r(o.n2, o.n1);
-						}
-						else {
-							AMT___Floater.skip();
 							return;
 						}
+						// Here?
+						// There are results... So accept.
+						if (AMT__Global_Vars.isPreview)
+							AMT___Floater.accept();
+							return;
+						// Here...
+						// Fill in div d1.
+						//
+						for (var i in rs) {
+							var d = ''.div({style:'border-bottom:1px solid teal;'});
+							var str = MT__bold(rs[0].artistName, o.bold) + '<br>' + MT__bold(rs[0].trackName, o.bold);
+							d.innerHTML = str;
+							d1.appendChild(d);
+						}
+						
+						//~ else {
+							//~ AMT___Floater.skip();
+							//~ return;
+						//~ }
 					}
 				});
 			}
