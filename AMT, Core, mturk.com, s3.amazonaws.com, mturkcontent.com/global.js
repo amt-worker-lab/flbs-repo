@@ -6949,6 +6949,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		bold_array: options_object.bold_array,
 		panels_loaded: 0,
 		num_panels: 3,
+		linkedInIgnoreNoBold: options_object.linkedInIgnoreNoBold,
 		domain_counts: {}, // obj
 		first_domains: [],
 		first_full_urls: [],
@@ -7233,6 +7234,25 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			{
 				continue;
 			}
+			
+			// Skip here?
+			// This is a callback function test.
+			// True=Skip. False=Okay.
+			if 	(
+				options_object.linkedInIgnoreNoBold
+				)
+			{
+				console.log('linkedInIgnoreNoBold');
+				console.log(options_object.linkedInIgnoreNoBold);
+				var name = /^([\d\D]+)\|/i.exec(full);
+				console.log('name');
+				console.log(name);
+				if(!name || (name && !name[1].trim())) {
+					continue;
+				}
+			}
+			
+			
 			
 			options_object.search_results.callback_link_and_body(link, full);
 			
