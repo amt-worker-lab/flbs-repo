@@ -46242,13 +46242,13 @@ function MT__RUN() {
 									"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
 									"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
 									"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
-									"var lat = latLng.H;"+
-									"var lng = latLng.L;"+
-									"var diffLat = lat - window.threeRectPoints[1].position.H;"+
-										"var diffLng = lng - window.threeRectPoints[1].position.L;"+
+									"var lat = latLng.lat();"+
+									"var lng = latLng.lng();"+
+									"var diffLat = lat - window.threeRectPoints[1].position.lat();"+
+										"var diffLng = lng - window.threeRectPoints[1].position.lng();"+
 										"var newLatLng = {"+
-												"lat: diffLat + window.threeRectPoints[0].position.H,"+
-												"lng: diffLng + window.threeRectPoints[0].position.L"+
+												"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
+												"lng: diffLng + window.threeRectPoints[0].position.lng()"+
 											"};"+
 										
 
