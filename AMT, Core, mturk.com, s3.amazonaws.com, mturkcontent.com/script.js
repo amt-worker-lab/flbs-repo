@@ -115554,6 +115554,7 @@ qatar,80
 					//~ f: null,
 					//~ l: null
 				//~ },
+				bold: [],
 				bold_locn: [],
 				bold_nm: [],
 				
@@ -115564,6 +115565,7 @@ qatar,80
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
 			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
 			o.bold_nm = o.nm.clean_string_to_array();
+			o.bold = o.bold_nm.concat(o.bold_locn);
 			console.log(o);
 			
 			/* BEGIN ITEMS */
@@ -115608,11 +115610,11 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				parent: d1,
 				offsetTop: 0,
-				bold_array: o.bold_nm.concat(o.bold_locn),
+				bold_array: o.bold,
 				searches:[
 					o.nm,
-					'"' + o.nm + '", ' + o.city + ' lawyer',
-					o.nm + ', ' + o.city + ', (' + o.state + ' OR ' + o.state_full + ') lawyer'
+					o.nm + ', ' + o.city + ' (lawyer OR parallegal)',
+					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') (lawyer OR parallegal)'
 				],
 				search: {
 					str_add_to_searches_hidden: ' site:linkedin.com'
@@ -115712,14 +115714,16 @@ qatar,80
 						
 						var exp = options.response.vars.result.experience;
 						var name = options.response.vars.result.name;
+						var hd = (options.response.vars.result.headline) ? options.response.vars.result.headline : '';
 						var pav = options.response.vars.result.people_also_viewed;
 						
 						// Reset
 						d.innerHTML = '';
 						
 						// Name
+						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>Click to submit!';
 						var dv =
-							('Name: ' + MT__bold(name, o.bold_nm)+'<br>Click to submit!').div(
+							str.div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
 							);
 						dv.className = 'exe-prof';
