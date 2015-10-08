@@ -7248,7 +7248,27 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				console.log('name');
 				console.log(name);
 				if(!name || (name && !name[1].trim())) {
-					continue;
+					console.log('improper formatting?');
+				} else {
+					name = name[1];
+					var n = options_object.linkedInIgnoreNoBold;
+					var found = false;
+					for(var i = 0; i < n.length; i++) {
+						if(n[i].length < 3) {
+							continue;
+						} else {
+							if(name.toLowerCase().indexOf(n[i].trim().toLowerCase()) != -1) {
+							
+							}
+							else {
+								found = true;
+							}
+						}
+					}
+					if(!found) {
+						console.log('not found');
+						continue;
+					}
 				}
 			}
 			

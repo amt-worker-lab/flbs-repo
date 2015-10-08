@@ -115625,6 +115625,7 @@ qatar,80
 				parent: d1,
 				offsetTop: 0,
 				bold_array: o.bold,
+				linkedInIgnoreNoBold: o.nm_array,
 				searches:[
 					o.name_search + ' ',
 					o.name_search + ', ' + o.city + ' ',
@@ -115753,10 +115754,10 @@ qatar,80
 						//~ var hd_bld = MT__bold(hd, o.bold);console.log(hd_bld);
 						//~ hd_bld = MT__bold(hd_bld, o.bold_locn, {color: 'blue'}).bold_string;console.log(hd_bld);
 						var dm_bld, hd_bld;
-						dm_bld = MT__bold(dm_bld, o.bold_locn, {color: 'blue'}).bold_string;
-						dm_bld = MT__bold(dm, o.bold);
-						hd_bld = MT__bold(hd_bld, o.bold_locn, {color: 'blue'}).bold_string;
-						hd_bld = MT__bold(hd, o.bold);
+						dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
+						dm_bld = MT__bold(dm_bld, o.bold);
+						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
+						hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<br>S: ' + MT__bold(sk, o.bold);
 						//+'<br>Click to submit!'
 						var dv =
