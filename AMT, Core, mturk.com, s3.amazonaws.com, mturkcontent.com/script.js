@@ -115610,7 +115610,7 @@ qatar,80
 				offsetTop: 0,
 				bold_array: o.bold_nm.concat(o.bold_locn),
 				searches:[
-					o.nm + ', ' + o.city,
+					o.nm,
 					'"' + o.nm + '", ' + o.city + ' lawyer',
 					o.nm + ', ' + o.city + ', (' + o.state + ' OR ' + o.state_full + ') lawyer'
 				],
