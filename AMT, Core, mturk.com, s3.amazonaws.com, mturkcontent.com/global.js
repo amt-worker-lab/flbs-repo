@@ -7377,8 +7377,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					}
 				}
 			};
-			//mouseover
-			d.addEventListener('mouseover', function() {
+			// Mouse event functions
+			//
+			//
+			//
+			function df_movr_(e) {
 				inp_top.value = this.full_url;
 				var x = document.getElementsByTagName('p');
 				for (var i in x) {
@@ -7390,9 +7393,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					}
 				}
 				// Could do this also! .getElementsByClassName('class_');
-			}, false);
-			//mouseout
-			d.addEventListener('mouseout', function() {
+			}
+			function df_mout_(e) {
 				inp_top.value = '';
 				var x = document.getElementsByTagName('p');
 				for (var i in x) {
@@ -7401,7 +7403,17 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						x[i].style.backgroundColor = x[i].original_bg_color;
 					}
 				}
-			}, false);
+			}
+			// Add Mouse event functions
+			//
+			//
+			//
+			//mouseover
+			d.addEventListener('mouseover', df_movr_, false);
+			//mouseout
+			d.addEventListener('mouseout', df_mout_, false);
+			d._df_mo_ = df_movr_;
+			d._df_mout_ = df_mout_;
 			
 			// ADD THIS TO out_div RESULTS!
 			out_div.results.push(div_result); // Add this element to DIV.results

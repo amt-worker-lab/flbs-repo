@@ -115687,9 +115687,12 @@ qatar,80
 					liprof(this);
 					
 					// Class name...
-					console.log(this.className);
-					console.log(this.parentNode.className);
-					console.log(this.parentNode.parentNode.className);
+					//~ console.log(this.className);
+					//~ console.log(this.parentNode.className); // !!
+					//~ d.addEventListner('mouseover', function() {});
+					//~ console.log( this.parentNode._df_mout_);
+					//~ this.parentNode.removeEventListener('mouseout', this.parentNode._df_mout_);
+					//~ this.parentNode.removeEventListener('mouseover', this.parentNode._df_movr_);
 				},
 			});
 			// function liprof
