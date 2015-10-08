@@ -115688,15 +115688,12 @@ qatar,80
 					
 					// Hide this P!
 					var d = this.parentNode;
+					d.result.body.style.display = 'none';
 					//~ d.result.p.style.display = none;
 					// Class name...
-					console.log(this);
-					console.log(this.parentNode); // !!
-					console.log(this.parentNode.result); // !!
-					//~ d.addEventListner('mouseover', function() {});
-					//~ console.log( this.parentNode._df_mout_);
-					//~ this.parentNode.removeEventListener('mouseout', this.parentNode._df_mout_);
-					//~ this.parentNode.removeEventListener('mouseover', this.parentNode._df_movr_);
+					//~ console.log(this);
+					//~ console.log(this.parentNode); // !!
+					//~ console.log(this.parentNode.result); // !!
 				},
 			});
 			// function liprof

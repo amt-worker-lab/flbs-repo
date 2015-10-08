@@ -7289,6 +7289,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.result = div_result; // Linkifier
 			out_div.appendChild(d);
 			div_result.p = d;
+			//~ console.log(div_result);
+			//~ console.log(d);
 			
 			// IS SKIP?
 			if (el_inp_skip2__obj.isSkip) {
