@@ -115686,9 +115686,13 @@ qatar,80
 					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
 					liprof(this);
 					
+					// Hide this P!
+					var d = this.parentNode;
+					//~ d.result.p.style.display = none;
 					// Class name...
-					//~ console.log(this.className);
-					//~ console.log(this.parentNode.className); // !!
+					console.log(this);
+					console.log(this.parentNode); // !!
+					console.log(this.parentNode.result); // !!
 					//~ d.addEventListner('mouseover', function() {});
 					//~ console.log( this.parentNode._df_mout_);
 					//~ this.parentNode.removeEventListener('mouseout', this.parentNode._df_mout_);
@@ -115749,7 +115753,7 @@ qatar,80
 						dm_bld = MT__bold(dm_bld, o.bold_locn, {color: 'blue'}).bold_string;
 						var hd_bld = MT__bold(hd, o.bold);
 						hd_bld = MT__bold(hd_bld, o.bold_locn, {color: 'blue'}).bold_string;
-						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<br>S: ' + MT__bold(sk, o.bold);
+						var str = 'N: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<br>S: ' + MT__bold(sk, o.bold);
 						//+'<br>Click to submit!'
 						var dv =
 							str.div(

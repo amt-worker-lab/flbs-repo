@@ -7286,8 +7286,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.className = 'class_'+cls;
 			d.full_url = link;
 			d.original_bg_color = '';
-			div_result.p = d;
+			d.result = div_result; // Linkifier
 			out_div.appendChild(d);
+			div_result.p = d;
 			
 			// IS SKIP?
 			if (el_inp_skip2__obj.isSkip) {
@@ -7333,12 +7334,15 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.appendChild(a);
 			// ...
 			d.appendChild(el_inp_skip2__obj.el_btn);
-			//~ // ...
-			//~ d.appendChild(document.createElement('br'));
-			// ...
+			
+			// Body of the result.
+			//
+			//
+			//
 			var pbody = document.createElement('p');
 			pbody.setAttribute('style','');
 			pbody.innerHTML = full;
+			div_result.body = pbody;
 			d.appendChild(pbody);
 			
 			// Actions
