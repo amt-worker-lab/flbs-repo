@@ -115558,6 +115558,7 @@ qatar,80
 				bold_locn: [],
 				bold_nm: [],
 				
+				name_search: '',
 				q: [
 					document.getElementById('Q1Url')
 				]
@@ -115567,7 +115568,18 @@ qatar,80
 			o.bold_nm = o.nm.clean_string_to_array();
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney']);
 			console.log(o);
-			
+			var x = o.nm.split(' ');
+			if (x.length == 1) {
+				o.name_search = o.nm;
+			} else if (x.length == 2) {
+				o.name_search = o.nm;
+			} else { // >=3
+				var fl = x[0] + ' ' + x[x.length - 1];
+				var fm = x[0] + ' ' + x[1][0] + '. ' + x[x.length - 1];
+				o.name_search = '("'+o.nm+'" OR "'+fm+'" OR "'+fl+'")';
+			}
+			 // name as search, that is, ("first middle last", "first m. last", "first last")
+			 
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
@@ -115612,9 +115624,9 @@ qatar,80
 				offsetTop: 0,
 				bold_array: o.bold,
 				searches:[
-					o.nm + ' ',
-					o.nm + ', ' + o.city + ' ',
-					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') '
+					o.name_search + ' ',
+					o.name_search + ', ' + o.city + ' ',
+					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
 				],
 				search: {
 					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law")'
