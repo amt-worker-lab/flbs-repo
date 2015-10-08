@@ -6117,7 +6117,15 @@ Vice President - Investments at <strong class="highlight">Wells</strong> <strong
 		 */
 		var d = dom.getElementById('demographics');
 		if (d) {
-			opts.response.vars.result.demographics = d.innerText.trim();
+			// Clean just a bit by removing DT
+			var x = d.innerHTML.replace(/<dt>[^<]+<\/dt>/gi, '|').replace(/\s+/g, ' ').div({innerHTML:true}).innerText.trim();
+			x = x.replace(/^\|/, '');
+			//~ var x = d;
+			//~ var y = x.getElementsByTagName('dt');
+			//~ for (var i=y.length-1;i>=0;i--) {
+				//~ x.removeChild(y[i]);
+			//~ }
+			opts.response.vars.result.demographics = x;
 		}
 		/**
 		 * num_connections
