@@ -115612,12 +115612,12 @@ qatar,80
 				offsetTop: 0,
 				bold_array: o.bold,
 				searches:[
-					o.nm + ' (lawyer OR parallegal OR attorney)',
-					o.nm + ', ' + o.city + ' (lawyer OR parallegal OR attorney)',
-					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') (lawyer OR parallegal OR attorney)'
+					o.nm + ' ',
+					o.nm + ', ' + o.city + ' ',
+					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') '
 				],
 				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com'
+					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law")'
 				},
 				search_results: {
 					replace_urls_in_result_body: true,
