@@ -115566,7 +115566,7 @@ qatar,80
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
 			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
 			o.bold_nm = o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney']);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law']);
 			console.log(o);
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
@@ -115725,17 +115725,19 @@ qatar,80
 							return;
 						}
 						
-						var exp = options.response.vars.result.experience;
-						var name = options.response.vars.result.name;
-						var hd = (options.response.vars.result.headline) ? options.response.vars.result.headline : '';
-						var dm = (options.response.vars.result.demographics) ? options.response.vars.result.demographics : '';
-						var pav = options.response.vars.result.people_also_viewed;
+						var n = options.response.vars;
+						var exp = n.result.experience;
+						var name = n.result.name;
+						var hd = (n.result.headline) ? n.result.headline : '';
+						var dm = (n.result.demographics) ? n.result.demographics : '';
+						var pav = n.result.people_also_viewed;
+						var sk = (n.result.skills && n.result.skills.length) ? n.result.skills.join('|'): '';
 						
 						// Reset
 						d.innerHTML = '';
 						
 						// Name
-						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>D: ' + MT__bold(dm, o.bold)+'<br>Click to submit!';
+						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>D: ' + MT__bold(dm, o.bold)+'<br>S: ' + MT__bold(sk, o.bold)+'<br>Click to submit!';
 						var dv =
 							str.div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}

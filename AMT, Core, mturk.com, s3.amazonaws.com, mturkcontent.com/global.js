@@ -6534,6 +6534,22 @@ http%3A%2F%2Fdeancdawson%2Ecom
 			//~ }
 		}
 		/**
+		 * Skills
+		 */
+		var d = dom.getElementById('background-skills-container');
+		if (d) {
+			// Remove "see-more-less-skill"
+			var x;
+			if (x = dom.getElementById('see-more-less-skill'))
+				dom.removeChild(x);
+			d = dom.getElementById('background-skills-container'); // Reset
+			opts.response.vars.result.skills = [];
+			var x = d.getElementsByClassName('endorse-item');
+			for (var i=0;i<x.length;i++) {
+				opts.response.vars.result.skills.push(x[i].innerText);
+			}
+		}
+		/**
 		 * Education
 		EX:
 
