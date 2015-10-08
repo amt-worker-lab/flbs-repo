@@ -172014,6 +172014,11 @@ function top_window(okay_to_run) {
 				d1c.parentNode.removeChild(d1c);
 				return;
 			}
+			// If in preview mode then change the display so you know you're in preview mode!
+			if (AMT__Global_Vars.isPreview) {
+				document.body.style.zoom = '0.8';
+				document.body.style.backgroundColor = 'orange';
+			}
 			
 			//...
 			//...
@@ -172063,7 +172068,7 @@ function top_window(okay_to_run) {
 			d3b.value = '"' + o.comp.split(" ").join('" "') + '"';
 			if (o.industry != '') {
 				//d3c.value = '' + o.comp + ' ' + o.industries_quoted;
-				d3c.value = '"' + o.comp.split(" ").join('" "') + '"' + ' ' +  + o.industries_quoted +
+				d3c.value = '"' + o.comp.split(" ").join('" "') + '"' + ' ' + o.industries_quoted
 			}
 			else
 				d3c.value = '"' + o.comp_short + '"';
