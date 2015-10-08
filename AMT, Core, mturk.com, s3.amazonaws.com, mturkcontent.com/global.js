@@ -5958,6 +5958,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			* public url
 			* name
 			* headline
+			* demographics
 			* # connections
 			* image
 			* website / personal website
@@ -5976,6 +5977,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				public_url: null,
 				name: null,
 				headline: null,
+				demographics: null, // new, Oct-8-2015
 				num_connections: null,
 				image_url: null,
 				profile_has_section_contact_info: false, // default=false
@@ -6106,9 +6108,16 @@ Vice President - Investments at <strong class="highlight">Wells</strong> <strong
 			if (d.length > 1) {
 				alert('Dom .headline.title length='+d.length);
 			}
-			if (d) {
+			else if (d.length == 1) {
 				opts.response.vars.result.headline = d[0].innerText.trim();
 			}
+		}
+		/**
+		 * "demographics"
+		 */
+		var d = dom.getElementById('demographics');
+		if (d) {
+			opts.response.vars.result.demographics = d.innerText.trim();
 		}
 		/**
 		 * num_connections
@@ -6549,8 +6558,10 @@ http%3A%2F%2Fdeancdawson%2Ecom
 <li id="interests" class="section-item editable-item ">
 		HIDDEN: ???
 <li id="interests" class="section-item editable-item no-additional-info">
+
+<section id="interests" class="profile-section"><h3 class="title">Interests</h3>
 		 */ 
-		r = /(<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>|<div id="background-interests" class="" tabindex="0"><h3 class="header">Interests<\/h3>)/;
+		r = /(<li id="interests" class="section-item editable-item "><h4>Interests<\/h4>|<div id="background-interests" class="" tabindex="0"><h3 class="header">Interests<\/h3>|<section id="interests"[^>]*><h3 class="title">Interests<\/h3>)/;
 		if (r.exec(rs)) {
 			opts.response.vars.result.profile_has_section_interests = true;
 			// Must have only one match

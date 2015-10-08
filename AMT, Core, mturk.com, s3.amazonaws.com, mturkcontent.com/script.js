@@ -115716,13 +115716,14 @@ qatar,80
 						var exp = options.response.vars.result.experience;
 						var name = options.response.vars.result.name;
 						var hd = (options.response.vars.result.headline) ? options.response.vars.result.headline : '';
+						var dm = (options.response.vars.result.demographics) ? options.response.vars.result.demographics : '';
 						var pav = options.response.vars.result.people_also_viewed;
 						
 						// Reset
 						d.innerHTML = '';
 						
 						// Name
-						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>Click to submit!';
+						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>D: ' + MT__bold(dm, o.bold)+'<br>Click to submit!';
 						var dv =
 							str.div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
