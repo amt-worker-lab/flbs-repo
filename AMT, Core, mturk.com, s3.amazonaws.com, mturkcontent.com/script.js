@@ -171850,6 +171850,16 @@ function top_window(okay_to_run) {
 			na.setAttribute('style','position:absolute;top:0;left:78%;width:20%;height:30px;border:1px solid;cursor:pointer;');
 			document.body.appendChild(na);
 			na.value = "N/A";
+			
+			//createScriptVar('');
+			new AMT___core_factory().createScriptVar('Crowd Task N/A Hotkey', '84');
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode);
+				if(e.keyCode == (AMT__Global_Vars.scriptVars['Crowd Task N/A Hotkey'] *1)) { //t
+					na.click();
+				}
+			});
+			
 			//~ na.style.fontSize='10px';
 			//
 			var txt_top = document.createElement('textarea');
