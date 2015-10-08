@@ -171745,7 +171745,9 @@ function top_window(okay_to_run) {
 	// Top window find URL (No iframe)
 	// (3NVVDJT9G6NCC7MWGLSHAEOQMY0PX3)
 	var s = 'Find this company\'s website and enter the URL below. Country and industry are for reference and do not need to match exactly with what\'s shown on the website.';
-	if (ih.indexOf(s) != -1)
+	var s2 = "Find this company's website and enter the URL below. Country and state are for reference and do not need to match exactly with what's shown on the website.";
+	if (ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
