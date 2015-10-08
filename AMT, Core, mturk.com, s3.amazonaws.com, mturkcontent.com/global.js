@@ -6258,18 +6258,19 @@ http%3A%2F%2Fdeancdawson%2Ecom
 			//~ var p = exp.getElementsByClassName('position');
 			var p = exp.getElementsByClassName('editable-item section-item');
 			// debug
-			console.log(p);
+			//~ console.log(p);
 			for (var i=0; i<p.length; i++) {
 				// Item
 				var itm = {
 					comp_name: null,
 					logo_url: null,
 					current_or_past: null,
-					title: null
+					title: null,
+					headline: null // This is usually "[title] [company]". It is in the field <headline>.
 				};
 				
 				// debug
-				console.log(p[i]);
+				//~ console.log(p[i]);
 				
 				// Title, company
 				var n = p[i].getElementsByTagName('header');
@@ -6289,10 +6290,11 @@ http%3A%2F%2Fdeancdawson%2Ecom
 							itm.title = a[j].innerText.trim();
 							continue;
 						}
-						if (a[j].getAttribute('href').indexOf('/company/') != -1 && itm.comp_name == null) {
-							itm.comp_name = a[j].innerText.trim();
-						}
+						//~ if (a[j].getAttribute('href').indexOf('/company/') != -1 && itm.comp_name == null) {
+							//~ itm.comp_name = a[j].innerText.trim();
+						//~ }
 					}
+					itm.headline = n[0].innerText.trim().replace(itm.title, itm.title+': '); // First instance of "Title"
 				}
 				
 				// current or past?

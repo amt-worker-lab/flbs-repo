@@ -115778,8 +115778,9 @@ qatar,80
 							dvl.appendChild(dv);
 							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dv.innerHTML = 
-								MT__bold(exp[i].title, o.bold_locn) + '<br>' +
-								MT__bold(exp[i].comp_name, o.bold_locn);
+								MT__bold(exp[i].headline, o.bold);
+								//~ MT__bold(exp[i].title, o.bold_locn) + '<br>' +
+								//~ MT__bold(exp[i].comp_name, o.bold_locn);
 							// Current?
 							if (exp[i].current_or_past != 'current-position') {
 								dv.style.backgroundColor = 'aqua';
