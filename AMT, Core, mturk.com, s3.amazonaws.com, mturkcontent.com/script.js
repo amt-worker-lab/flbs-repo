@@ -115558,7 +115558,7 @@ qatar,80
 				bold_nm: [],
 				
 				q: [
-					document.getElementById('web_url')
+					document.getElementById('Q1Url')
 				]
 			};
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
@@ -115608,11 +115608,11 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				parent: d1,
 				offsetTop: 0,
-				bold_array: o.bold,
+				bold_array: o.bold_nm.concat(o.bold_locn),
 				searches:[
-					o.nm,
-					o.nm + ', ' + o.comp,
-					o.nm + ', ' + o.comp + ', ' + o.title
+					o.nm + ', ' + o.city,
+					'"' + o.nm + '", ' + o.city + ' lawyer',
+					o.nm + ', ' + o.city + ', (' + o.state + ' OR ' + o.state_full + ') lawyer'
 				],
 				search: {
 					str_add_to_searches_hidden: ' site:linkedin.com'
@@ -115675,10 +115675,6 @@ qatar,80
 			// function liprof
 			// Textarea.parent_div, Textarea.full_url
 			function liprof(txt_area) {
-				//~ var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;'});
-				//~ txt_area.parent_p.appendChild(d);
-				//~ txt_area.parent_p.profile_div_results = d;
-				//~ d.onclick = function () {};
 				if (!txt_area.parent_p.hasOwnProperty('profile_div_results')) {
 					var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;border-bottom:2px solid teal;'});
 					d.is_showing = true;
@@ -115696,8 +115692,6 @@ qatar,80
 						d.style.display = 'block';
 						d.style.visibility = 'visible';
 					}
-					//~ d.onclick = function () {};
-					//~ d.innerText = 'Retrieving Profile...';
 				}
 				new AMT___site_scrapes().scrape({
 					site: 'LINKEDIN_PROFILE',
@@ -115725,7 +115719,7 @@ qatar,80
 						
 						// Name
 						var dv =
-							('Name: ' + MT__bold(name, o.bold)+'<br>Click to submit!').div(
+							('Name: ' + MT__bold(name, o.bold_nm)+'<br>Click to submit!').div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
 							);
 						dv.className = 'exe-prof';
@@ -115780,8 +115774,8 @@ qatar,80
 							dvl.appendChild(dv);
 							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dv.innerHTML = 
-								MT__bold(exp[i].title, o.bold) + '<br>' +
-								MT__bold(exp[i].comp_name, o.bold);
+								MT__bold(exp[i].title, o.bold_locn) + '<br>' +
+								MT__bold(exp[i].comp_name, o.bold_locn);
 							// Current?
 							if (exp[i].current_or_past != 'current-position') {
 								dv.style.backgroundColor = 'aqua';
@@ -115792,8 +115786,8 @@ qatar,80
 							var dv = ''.div({style:'border-left:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
 							dvr.appendChild(dv);
 							dv.innerHTML = 
-								MT__bold(pav[i].name, o.bold) + '<br>' +
-								MT__bold(pav[i].title, o.bold);
+								MT__bold(pav[i].name, o.bold_locn) + '<br>' +
+								MT__bold(pav[i].title, o.bold_locn);
 						}
 					}
 				});
