@@ -5949,6 +5949,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 * 
 	 * @ opts.response
 	 * 
+	 * LINKEDIN_PROFILE
+	 * 
 	 * NOTE: Sections, Boolean. Showing="background-education edit-default ". Hidden="background-skills edit-default hidden".
 	 * 
 			* Web Test Required fields
@@ -6242,13 +6244,19 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		 * .profile_has_section_contact_info
 		EX:
 			<h3>Experience</h3>
+			* 
+			...editable-item section-item [past|current]-position
 		 */
 		//r = /<div id="background-experience" class="background-experience edit-default "><h3>Experience<\/h3>/;
 		var exp = dom.getElementById('experience');
 		if (!exp) {
+			var exp = dom.getElementById('background-experience');
+		}
+		if (!exp) {
 			 // do nothing
 		} else {
-			var p = exp.getElementsByClassName('position');
+			//~ var p = exp.getElementsByClassName('position');
+			var p = exp.getElementsByClassName('editable-item section-item');
 			for (var i=0; i<p.length; i++) {
 				// Item
 				var itm = {
