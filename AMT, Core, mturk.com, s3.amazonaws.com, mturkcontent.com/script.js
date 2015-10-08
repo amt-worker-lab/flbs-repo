@@ -25678,6 +25678,8 @@ function MT__RUN() {
 	 * Andrew Angus
 	 * Web Test
 	 * 
+	 * 
+	 * 
 	 */
 	//
 	// Web Test
@@ -114377,6 +114379,7 @@ qatar,80
 	 * Evan J
 	 * BOE / Del Jones
 	 * BOE / Del Jones (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
+	 * Gerry Gorman (Also linkedin.com people search)
 	 * Adam Gauvin
 	 * Jamie
 	 * Matt Aster
@@ -115521,6 +115524,282 @@ qatar,80
 		}
 		new run().f();
 		return;
+	}
+	
+	//
+	// Gerry Gorman (Fork BOE / Del Jones)
+	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
+	// 
+	s = '<p style="margin-left: 40px;">Suggested search method: copy paste lawyer\'s full name, plus city, state, plus keywords "lawyer, LinkedIn".&nbsp;</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('.panel {position:absolute;top:1400px;}');
+			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
+			GM_addStyle('tr {float:left;}');
+			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
+			
+			var b = document.getElementsByTagName('b');
+			var o = {
+				nm:			b[0].innerText.trim(),
+				city:		b[1].innerText.trim(),
+				state:		b[2].innerText.trim(),
+				state_full:	b[2].innerText.trim().stateAbbrToFull(),
+				nm_cln:		null,
+				comp_cln:	null,
+				//~ nm_obj: {
+					//~ f: null,
+					//~ l: null
+				//~ },
+				bold_locn: [],
+				bold_nm: [],
+				
+				q: [
+					document.getElementById('web_url')
+				]
+			};
+			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
+			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
+			o.bold_nm = o.nm.clean_string_to_array();
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
+			//~ document.body.appendChild(d1b);
+			/* END ITEMS */
+			
+			//~ //...
+			//~ d1.onclick = function() {
+				//~ this.style.height = d1b.style.height*2;
+				//~ d1b.style.zIndex = -1;
+			//~ }
+			//~ 
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1b
+				//~ ],
+				//~ callback_function: function(inh) {
+					//~ d1b.style.height = inh/2;
+					//~ d1b.style.top = inh/2;
+				//~ }
+			//~ });
+			
+			//
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value == '') { return false; }
+				doSubmit();
+				return false;
+			}
+			
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				parent: d1,
+				offsetTop: 0,
+				bold_array: o.bold,
+				searches:[
+					o.nm,
+					o.nm + ', ' + o.comp,
+					o.nm + ', ' + o.comp + ', ' + o.title
+				],
+				search: {
+					str_add_to_searches_hidden: ' site:linkedin.com'
+				},
+				search_results: {
+					replace_urls_in_result_body: true,
+					use_full_urls: true,
+					url_modifier_callback: function(url) {
+						return url.replace(/\?[\d\D]*$/, '');
+					},
+					url_ignore_test: function(obj_reslt) { // If true then ignore the URL.
+						console.log(obj_reslt.url);
+						if 	(
+								(
+								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||
+								obj_reslt.url.indexOf('linkedin.com/in/') != -1
+								) &&
+								obj_reslt.url.indexOf('linkedin.com/pub/dir/') == -1
+							)
+						{
+							return false; // Good
+						}
+						return true; // Ignore
+					},
+					//~ auto_click_callback: function() { // Function to auto click. This has the scope of the current iterator. Or div argument?
+						//~ 
+					//~ }
+				},
+				load_success_callback: function( options_object ) {
+					//addToTabsQ(); // Add to tabs queue.
+					
+					// CHECK First URL in each div
+					// To decide whether to click on the top / first URL.
+					var divs = options_object.results.divs;
+					var chk_similar = false;
+					for (var i in divs) {
+						var results = divs[i].results; // Array of {p:, url:, body:, textarea:, ...}
+						if (!results.length) return; // End here.
+						if (chk_similar == false) {
+							chk_similar = results[0].url; // Set chk_similar
+							continue;
+						}
+						// chk_similar has been set!
+						if (results[0].url != chk_similar) {
+							return;
+						}
+					}
+					// If still here then all three results match!
+					// So click one!
+					divs[0].results[0].textarea.click();
+				},
+				out_element: o.q[0],
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					// Replace "full_url" ?(trk|...) with ""
+					this.style.backgroundColor = 'Orange';
+					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
+					liprof(this);
+				},
+			});
+			// function liprof
+			// Textarea.parent_div, Textarea.full_url
+			function liprof(txt_area) {
+				//~ var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;'});
+				//~ txt_area.parent_p.appendChild(d);
+				//~ txt_area.parent_p.profile_div_results = d;
+				//~ d.onclick = function () {};
+				if (!txt_area.parent_p.hasOwnProperty('profile_div_results')) {
+					var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;border-bottom:2px solid teal;'});
+					d.is_showing = true;
+					txt_area.parent_p.appendChild(d);
+					txt_area.parent_p.profile_div_results = d;
+					d.onclick = function () {};
+				} else { // Hide/Show
+					var d = txt_area.parent_p.profile_div_results;
+					if (d.is_showing) {
+						d.is_showing = false;
+						d.style.display = 'none';
+						d.style.visibility = 'hidden';
+					} else {
+						d.is_showing = true;
+						d.style.display = 'block';
+						d.style.visibility = 'visible';
+					}
+					//~ d.onclick = function () {};
+					//~ d.innerText = 'Retrieving Profile...';
+				}
+				new AMT___site_scrapes().scrape({
+					site: 'LINKEDIN_PROFILE',
+					url: txt_area.full_url,
+					callback_function: function(options) {
+						
+						console.log(options);
+						// opts.response.vars.result.people_also_viewed.push( pav_person ); ({name:,title:})
+						
+						var d = txt_area.parent_p.profile_div_results;
+						
+						var err = options.response.vars.error;
+						var errType = options.response.vars.error;
+						if (err != null) {
+							d.innerText = errType;
+							return;
+						}
+						
+						var exp = options.response.vars.result.experience;
+						var name = options.response.vars.result.name;
+						var pav = options.response.vars.result.people_also_viewed;
+						
+						// Reset
+						d.innerHTML = '';
+						
+						// Name
+						var dv =
+							('Name: ' + MT__bold(name, o.bold)+'<br>Click to submit!').div(
+								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
+							);
+						dv.className = 'exe-prof';
+						d.appendChild(dv);
+						// onclick
+						dv.purl = options.url;
+						dv.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q[0].value = this.purl;
+							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
+								doSubmit();
+							}
+						}
+						
+						// Container for L/R divs.
+						// `overflow:hidden;` This will force the container to respect the height of all elements within it, regardless of floating elements.
+						// http://stackoverflow.com/questions/7817269/css-container-div-not-getting-height
+						var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
+						d.appendChild(dvc);
+						
+						// Left & Right divs.
+						// Left=Experience
+						// Right=PAV (people alsov viewed)
+						var dvl = ''.div({style:'float:left;width:50%;'});
+						var dvr = ''.div({style:'float:left;width:50%;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
+						dvc.appendChild(dvl);
+						dvc.appendChild(dvr);
+						
+						if (!exp.length) {
+							dvl.appendChild('0 experience'.div({style:'background-color:#eee;'}));
+							//~ d.appendChild('0 experience'.div({style:'background-color:#eee;'}));
+							//~ return;
+						} else {
+							
+						}
+						//~ // Skip
+						//~ if (!exp.length) {
+							//~ d.appendChild('0 experience'.div());
+							//~ skip();
+							//~ return;
+						//~ }
+						//~ // Accept
+						//~ if (AMT__Global_Vars.isPreview) {
+							//~ AMT___Floater.accept();
+							//~ return; // Stop here
+						//~ }
+						
+						// Experience
+						for (var i in exp) {
+							var dv = ''.div({style:'border-right:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
+							//~ dv.className = 'div-zi'; // cursor:pointer
+							dvl.appendChild(dv);
+							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
+							dv.innerHTML = 
+								MT__bold(exp[i].title, o.bold) + '<br>' +
+								MT__bold(exp[i].comp_name, o.bold);
+							// Current?
+							if (exp[i].current_or_past != 'current-position') {
+								dv.style.backgroundColor = 'aqua';
+							}
+						}
+						// PAV
+						for (var i in pav) {
+							var dv = ''.div({style:'border-left:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
+							dvr.appendChild(dv);
+							dv.innerHTML = 
+								MT__bold(pav[i].name, o.bold) + '<br>' +
+								MT__bold(pav[i].title, o.bold);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
 	}
 	
 	//

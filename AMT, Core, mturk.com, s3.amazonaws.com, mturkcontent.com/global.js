@@ -3831,17 +3831,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 				return b.person.connectionCount - a.person.connectionCount;
 			});
 		}
-		//~ if () {
-			//~ var y = y;
-			//~ 
-			//~ for (var i in x) {
-			//~ 
-			//~ if (!x[i].hasOwnProperty('person'))
-				//~ continue;
-				//~ 
-		//~ }
-		
-		//var auto_click_inp = false;
 		for (var i in x) {
 			
 			if (!x[i].hasOwnProperty('person'))
@@ -3878,10 +3867,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 			} else  snp = '';
 			s = s.replace(/<hr>/g, '')
 			s = s.replace(/^<br>/g, '')
-			
-			//~ console.log('locn');
-			//~ console.log(y);
-			//~ console.log(y.fmt_location);
 			
 			y.fmt_headline = y.fmt_headline.replace(/<\/?strong[^>]*>/gi, '');
 			y.fmt_headline = y.fmt_headline.replace(/<\/?b[^>]*>/gi, '');
@@ -3973,19 +3958,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 					{style: 'display:inline;', innerHTML: true}
 				)
 			)
-			
-			//~ /*
-			 //~ * Location
-			 //~ * This uses create_annotation_to_output_fields
-			 //~ */
-			//~ var el_div = document.createElement('div');
-			//~ el_div.setAttribute('style', 'display:inline');
-			//~ el_div.className = 'exe-locn';
-			//~ dv.appendChild(el_div);
-			//~ //
-			//~ el_div.appendChild(
-				//~ Seth_Redmore_linkedin_people_location__makeButtons(y.fmt_location)
-			//~ )
 			
 			dv.appendChild(document.createElement('br'));
 			
