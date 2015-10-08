@@ -115685,6 +115685,11 @@ qatar,80
 					this.style.backgroundColor = 'Orange';
 					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
 					liprof(this);
+					
+					// Class name...
+					console.log(this.className);
+					console.log(this.parentNode.className);
+					console.log(this.parentNode.parentNode.className);
 				},
 			});
 			// function liprof

@@ -6539,9 +6539,11 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		var d = dom.getElementById('background-skills-container');
 		if (d) {
 			// Remove "see-more-less-skill"
-			var x;
-			if (x = dom.getElementById('see-more-less-skill'))
-				dom.removeChild(x);
+			var x = dom.getElementById('see-more-less-skill');
+			if (x) {
+				x.parentNode.removeChild(x);
+				//dom.removeChild(x); // Does not work
+			}
 			d = dom.getElementById('background-skills-container'); // Reset
 			opts.response.vars.result.skills = [];
 			var x = d.getElementsByClassName('endorse-item');
