@@ -171776,6 +171776,7 @@ function top_window(okay_to_run) {
 				industry: null,//li[1].innerText.	replace(/^Industry: */g, '').trim(),
 				country: null,//li[1].innerText.	replace(/^Country: */g, '').trim(),
 				country_full: null,
+				state: null,
 				bold_array: [],
 				bold_array_etc: [],
 				industry_short: null,
@@ -171802,7 +171803,7 @@ function top_window(okay_to_run) {
 				first_domains: {} // There are three elements for three panels inside this object
 			}
 			if (li[2] && li[2].innerText) {
-				o.industry = li[1].innerText.replace(/^Industry: */g, '').trim();
+				o.industry = li[1].innerText.replace(/^(State|Industry): */gi, '').trim();
 				o.country = li[2].innerText.replace(/^Country: */g, '').trim();
 			} else {
 				o.country = li[1].innerText.replace(/^Country: */g, '').trim();
@@ -172059,9 +172060,11 @@ function top_window(okay_to_run) {
 			
 			// ...
 			d3.value  = o.comp;
-			d3b.value = '"' + o.comp.split(" ").join('" ') + '"';
-			if (o.industry != '')
-				d3c.value = '' + o.comp + ' ' + o.industries_quoted;
+			d3b.value = '"' + o.comp.split(" ").join('" "') + '"';
+			if (o.industry != '') {
+				//d3c.value = '' + o.comp + ' ' + o.industries_quoted;
+				d3c.value = '"' + o.comp.split(" ").join('" "') + '"' + ' ' +  + o.industries_quoted +
+			}
 			else
 				d3c.value = '"' + o.comp_short + '"';
 				//~ d3c.value = '"' + o.comp_short + '"';
