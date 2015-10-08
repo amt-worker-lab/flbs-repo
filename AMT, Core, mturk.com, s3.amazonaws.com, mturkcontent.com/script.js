@@ -115744,8 +115744,13 @@ qatar,80
 						// Reset
 						d.innerHTML = '';
 						
-						// Name
-						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + MT__bold(hd, o.bold)+'<br>D: ' + MT__bold(dm, o.bold)+'<br>S: ' + MT__bold(sk, o.bold)+'<br>Click to submit!';
+						// str
+						var dm_bld = MT__bold(dm, o.bold);
+						dm_bld = MT__bold(dm_bld, o.bold_locn, {color: 'blue'}).bold_string;
+						var hd_bld = MT__bold(hd, o.bold);
+						hd_bld = MT__bold(hd_bld, o.bold_locn, {color: 'blue'}).bold_string;
+						var str = 'Name: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<br>S: ' + MT__bold(sk, o.bold);
+						//+'<br>Click to submit!'
 						var dv =
 							str.div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}

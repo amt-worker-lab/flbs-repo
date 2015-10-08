@@ -15798,6 +15798,11 @@ function __js_clean_html_str(s) {
 /**
  * function MT__bold
  * 
+ * params:
+ * o
+ * arr
+ * options_object {return_div_element:, color:, percent_matched:}
+ * 
  * 
  * Ex:
 MT__bold('test <b hahaha>test test test test a</b>', ['test']));
@@ -15806,16 +15811,6 @@ MT__bold('test <b hahaha>test1</b>', ['test1']));
 	test <b hahaha>test1</b> 
  */
 function MT__bold(o, arr, options_object) {
-	
-	
-	
-	
-	// THIS is old
-	// The older way of doing it.
-	//
-	//~ // used bold matches
-	//~ var found_words_bolded = [];
-	//~ console.log(arr);
 	
 	// Sort longest first
 	arr.sort(function(a, b){
