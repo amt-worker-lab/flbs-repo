@@ -6086,7 +6086,7 @@ Investment Representative at Fidelity Investments
 Vice President - Investments at <strong class="highlight">Wells</strong> <strong class="highlight">Fargo</strong> <strong class="highlight">Advisors</strong>, LLC
  		 */ 
 		r = /<div id="headline-container" data-li-template="headline"><div id="headline" class="editable-item"><p class="title *"[^>]*>((.|\s)*?(?=<\/p><\/div><\/div>|$)|$)/;
-		if (r.exec(rs)) {
+		if (r.exec(rs)) { // LEGACY
 			var hd = r.exec(rs)[1];
 			hd = hd.replace(/<[^>]*>/g, '');
 			hd = __js_clean_html_str(hd);
@@ -6100,7 +6100,15 @@ Vice President - Investments at <strong class="highlight">Wells</strong> <strong
 				return false;
 			}
 		} else {
-			
+			// W/dom
+			var d = dom.querySelectorAll('p.headline.title'); // e.g. class="headline title"
+			console.log(d);
+			if (d.length > 1) {
+				alert('Dom .headline.title length='+d.length);
+			}
+			if (d) {
+				opts.response.vars.result.headline = d[0].innerText.trim();
+			}
 		}
 		/**
 		 * num_connections

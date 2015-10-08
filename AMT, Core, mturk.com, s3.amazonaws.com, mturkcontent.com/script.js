@@ -115565,7 +115565,7 @@ qatar,80
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
 			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
 			o.bold_nm = o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney']);
 			console.log(o);
 			
 			/* BEGIN ITEMS */
@@ -115612,9 +115612,9 @@ qatar,80
 				offsetTop: 0,
 				bold_array: o.bold,
 				searches:[
-					o.nm,
-					o.nm + ', ' + o.city + ' (lawyer OR parallegal)',
-					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') (lawyer OR parallegal)'
+					o.nm + ' (lawyer OR parallegal OR attorney)',
+					o.nm + ', ' + o.city + ' (lawyer OR parallegal OR attorney)',
+					o.nm + ', (' + o.state + ' OR ' + o.state_full + ') (lawyer OR parallegal OR attorney)'
 				],
 				search: {
 					str_add_to_searches_hidden: ' site:linkedin.com'
@@ -115632,7 +115632,8 @@ qatar,80
 								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||
 								obj_reslt.url.indexOf('linkedin.com/in/') != -1
 								) &&
-								obj_reslt.url.indexOf('linkedin.com/pub/dir/') == -1
+								obj_reslt.url.indexOf('linkedin.com/pub/dir/') == -1 &&
+								obj_reslt.url.indexOf('linkedin.com/in/updates') == -1
 							)
 						{
 							return false; // Good
