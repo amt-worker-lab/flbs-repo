@@ -6257,6 +6257,8 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		} else {
 			//~ var p = exp.getElementsByClassName('position');
 			var p = exp.getElementsByClassName('editable-item section-item');
+			// debug
+			console.log(p);
 			for (var i=0; i<p.length; i++) {
 				// Item
 				var itm = {
@@ -6266,32 +6268,53 @@ http%3A%2F%2Fdeancdawson%2Ecom
 					title: null
 				};
 				
+				// debug
+				console.log(p[i]);
+				
 				// Title, company
 				var n = p[i].getElementsByTagName('header');
 				if (n && n.length) {
 					var n2 = n[0].getElementsByClassName('item-title'); // title
 					var n3 = n[0].getElementsByClassName('item-subtitle'); // company
-					if (n2) {
+					if (n2 && n2.length) {
 						itm.title = n2[0].innerText.trim();
 					}
-					if (n3) {
+					if (n3 && n3.length) {
 						itm.comp_name = n3[0].innerText.trim();
+					}
+					// Try A
+					var a = n[0].getElementsByTagName('a');
+					for (var j=0;j<a.length;j++) {
+						if (a[j].getAttribute('title') == 'Learn more about this title' && itm.title == null) { // Title
+							itm.title = a[j].innerText.trim();
+							continue;
+						}
+						if (a[j].getAttribute('href').indexOf('/company/') != -1 && itm.comp_name == null) {
+							itm.comp_name = a[j].innerText.trim();
+						}
 					}
 				}
 				
 				// current or past?
-				// Output: // current-position OR past-position
-				var n = p[i].getElementsByClassName('date-range');
-				if (n && n.length && n[0].innerText.indexOf('– Present') != -1) {
+				if (p[i].className.indexOf('current-position') != -1) {
 					itm.current_or_past = 'current-position';
-				} else {
+				} else if (p[i].className.indexOf('past-position') != -1) {
 					itm.current_or_past = 'past-position';
-					// Test this
-					// All shall have a position.
-					if (!n || n.length == 0 || n[0].innerText.toLowerCase().indexOf('present') != -1 || n[0].innerText.toLowerCase().indexOf('current') != -1) {
-						alert('Warn: LI: Postition present/past correct? ' + n);
-					}
+				} else {
+					alert('Warn: LI: Postition present/past correct? ');
 				}
+				//~ // Output: // current-position OR past-position
+				//~ var n = p[i].getElementsByClassName('date-range');
+				//~ if (n && n.length && n[0].innerText.indexOf('– Present') != -1) {
+					//~ itm.current_or_past = 'current-position';
+				//~ } else {
+					//~ itm.current_or_past = 'past-position';
+					//~ // Test this
+					//~ // All shall have a position.
+					//~ if (!n || n.length == 0 || n[0].innerText.toLowerCase().indexOf('present') != -1 || n[0].innerText.toLowerCase().indexOf('current') != -1) {
+						//~ alert('Warn: LI: Postition present/past correct? ' + n);
+					//~ }
+				//~ }
 				
 				// logo
 				var n = p[i].getElementsByClassName('logo');
