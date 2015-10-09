@@ -418,7 +418,7 @@ AMT__Global_Vars.initializeTabId = function() {
 AMT__Global_Vars.initializeRightClickRA = function() {
 	if(AMT__Global_Vars.isTopWindow) {
 			window.addEventListener('contextmenu', function(e) {
-				if(AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+				if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
 					document.getElementById("MT__gm_returnaccept").click();
 					e.stopPropagation();
 					e.preventDefault();
@@ -427,7 +427,7 @@ AMT__Global_Vars.initializeRightClickRA = function() {
 			});
 	} else {
 		window.addEventListener('contextmenu', function(e) {
-			if(AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+			if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
 				new AMT___core_factory().
 					iframe2parent__postMessage( //
 						{
