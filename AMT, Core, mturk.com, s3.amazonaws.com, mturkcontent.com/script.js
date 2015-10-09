@@ -115750,21 +115750,35 @@ qatar,80
 						d.innerHTML = '';
 						
 						// str
-						//~ var dm_bld = MT__bold(dm, o.bold);console.log(dm_bld);
-						//~ dm_bld = MT__bold(dm_bld, o.bold_locn, {color: 'blue'}).bold_string;console.log(dm_bld);
-						//~ var hd_bld = MT__bold(hd, o.bold);console.log(hd_bld);
-						//~ hd_bld = MT__bold(hd_bld, o.bold_locn, {color: 'blue'}).bold_string;console.log(hd_bld);
 						var dm_bld, hd_bld;
 						dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
 						dm_bld = MT__bold(dm_bld, o.bold);
 						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						hd_bld = MT__bold(hd_bld, o.bold);
-						var str = 'N: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<hr style="">S: ' + MT__bold(sk, o.bold);
+						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>H:' + hd_bld +'<br>D:' + dm_bld+'<hr style="">';
+						var sk_fmt = MT__bold(sk, o.bold);
+						var sk_div = 'S:'.div();
+						var sk_inn = document.createElement('span');
+						sk_inn.innerHTML = sk_fmt;
+						sk_inn.style.display = 'none';
+						sk_div.appendChild(sk_inn);
+						sk_div.inner = sk_inn;
+						sk_div.addEventListener('mouseover', function() {
+							this.inner.style.display = 'block';
+						}, false);
+						sk_div.addEventListener('mouseout', function() {
+							this.inner.style.display = 'none';
+						}, false);
+						
 						//+'<br>Click to submit!'
 						var dv =
 							str.div(
 								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
 							);
+						// Add sk_div....
+						//
+						//
+						dv.appendChild(sk_div);
 						dv.className = 'exe-prof';
 						d.appendChild(dv);
 						// onclick
