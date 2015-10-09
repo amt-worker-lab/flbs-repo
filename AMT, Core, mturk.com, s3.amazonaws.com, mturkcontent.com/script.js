@@ -115633,7 +115633,7 @@ qatar,80
 					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
 				],
 				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law")'
+					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law" OR "")'
 				},
 				search_results: {
 					replace_urls_in_result_body: true,
@@ -115780,7 +115780,8 @@ qatar,80
 						// Container for L/R divs.
 						// `overflow:hidden;` This will force the container to respect the height of all elements within it, regardless of floating elements.
 						// http://stackoverflow.com/questions/7817269/css-container-div-not-getting-height
-						var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
+						//~ var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
+						var dvc = ''.div({style:'width:100%;height:100px;background-color:#eee;overflow:auto;'}); 
 						d.appendChild(dvc);
 						
 						// Left & Right divs.
