@@ -115833,6 +115833,8 @@ qatar,80
 						// Left & Right divs.
 						// Left=Experience
 						// Right=PAV (people alsov viewed)
+						//
+						//
 						var dvl = ''.div({style:'float:left;width:50%;'});
 						var dvr = ''.div({style:'float:left;width:50%;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
 						dvc.appendChild(dvl);
@@ -115845,18 +115847,6 @@ qatar,80
 						} else {
 							
 						}
-						//~ // Skip
-						//~ if (!exp.length) {
-							//~ d.appendChild('0 experience'.div());
-							//~ skip();
-							//~ return;
-						//~ }
-						//~ // Accept
-						//~ if (AMT__Global_Vars.isPreview) {
-							//~ AMT___Floater.accept();
-							//~ return; // Stop here
-						//~ }
-						
 						// Experience
 						for (var i in exp) {
 							var dv = ''.div({style:'border-right:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
@@ -115864,13 +115854,7 @@ qatar,80
 							dvl.appendChild(dv);
 							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dv.innerHTML = 
-								MT__bold(exp[i].headline, o.bold);
-								//~ MT__bold(exp[i].title, o.bold_locn) + '<br>' +
-								//~ MT__bold(exp[i].comp_name, o.bold_locn);
-							// Current?
-							if (exp[i].current_or_past != 'current-position') {
-								dv.style.backgroundColor = 'aqua';
-							}
+								(dv.current ? 'C:' : 'P:') + MT__bold(exp[i].headline, o.bold);
 						}
 						// PAV
 						for (var i in pav) {
