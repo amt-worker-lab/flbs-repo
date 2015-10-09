@@ -451,6 +451,7 @@ function mturk_load()
 		AMT__Global_Vars.initializeR_Button_NextTab();
 		AMT__Global_Vars.initializeReturnButton();
 		AMT__Global_Vars.setAcceptedFavicon();
+		AMT__Global_Vars.initializeRightClickRA();
 
 		//If nextTabIframeFocus is on, then focus on the iframe if its name is  (if we happen to have one)
 		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
@@ -526,6 +527,7 @@ function mturk_load()
 		AMT__Global_Vars.isPreview = false;
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
+		AMT__Global_Vars.initializeRightClickRA();
 
 		// Init MT__RUN();
 		MT__RUN();

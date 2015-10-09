@@ -417,9 +417,31 @@ AMT__Global_Vars.initializeTabId = function() {
 
 AMT__Global_Vars.initializeRightClickRA = function() {
 	if(AMT__Global_Vars.isTopWindow) {
-	
+			window.addEventListener('contextmenu', function(e) {
+				if(AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+					document.getElementById("MT__gm_returnaccept").click();
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+			});
 	} else {
-	
+		window.addEventListener('contextmenu', function(e) {
+			if(AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+				new AMT___core_factory().
+					iframe2parent__postMessage( //
+						{
+							action: 'return_and_accept'
+						}
+					);
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+		});
+
+
+		
 	}
 }
 
