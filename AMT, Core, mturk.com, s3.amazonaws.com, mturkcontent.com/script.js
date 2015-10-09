@@ -115567,6 +115567,7 @@ qatar,80
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
 			o.nm_array = o.nm.split(' ');
 			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
+			o.bold_locn = o.bold_locn.concat(['san']);
 			o.bold_nm = o.nm.clean_string_to_array();
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law']);
 			console.log(o);
