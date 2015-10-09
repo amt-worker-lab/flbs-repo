@@ -115840,13 +115840,13 @@ qatar,80
 						dvc.appendChild(dvr);
 						
 						if (!exp.length) {
-							dvl.appendChild('0 experience'.div({style:'background-color:#eee;'}));
+							dvl.appendChild('0 experience'.div({style:''}));
 						} else {
 							
 						}
 						// Experience
 						for (var i in exp) {
-							var dx = ''.div({style:'border:1px solid #a2a2a2;border-collapse:collapse;'}); //background-color:#eee;
+							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
 							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dx.innerHTML = 
 								(dx.current ? 'C:' : 'P:') + MT__bold(exp[i].headline, o.bold);
@@ -115854,7 +115854,7 @@ qatar,80
 						}
 						// PAV
 						for (var i in pav) {
-							var dx = ''.div({style:'border:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;'}); //background-color:#eee;
+							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-left:1px solid #a2a2a2;padding-left:1px;'}); //background-color:#eee;
 							dx.innerHTML = 
 								MT__bold(pav[i].name, o.bold_locn) + '<br>' +
 								MT__bold(pav[i].title, o.bold_locn);
