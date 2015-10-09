@@ -5402,6 +5402,67 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 * xhr_get
 	 */
 	function xhr_get() {
+		
+		new AMT___requests_factory().xhr_with_disk_cache({
+			URL: u,
+			host: AMT__Global_Vars.scriptVars['Server Location'],
+			success_callback: function(options) { // options.response[responseText, status, ...]
+				//~ console.log(options);
+				//~ expense_succ(options.response);
+				var rs = JSON.parse(options.response.responseText);console.log(rs);
+				if (rs.resultCount == 0 || rs.results.length == 0) {
+					AMT___Floater.skip();
+					//~ d1.style.backgroundColor = 'blue';
+					d1.appendChild('0 results!'.div());
+					return;
+				}
+				
+				
+				// This is for autos only...
+				// Here?
+				rs = rs.results;
+				if  (
+					rs[0].artistName.toLowerCase() == o.n1L &&
+					rs[0].trackName.toLowerCase() == o.n2L && 
+					o.auto
+					)
+				{
+					r(o.n1, o.n2);
+					return;
+				}
+				else if (
+					rs[0].artistName.toLowerCase() == o.n2L && // reverse
+					rs[0].trackName.toLowerCase() == o.n1L && 
+					o.auto
+					)
+				{
+					r(o.n2, o.n1);
+					return;
+				}
+				// Here?
+				// There are results... So accept.
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.accept();
+					return;
+				}
+				// Here...
+				// Fill in div d1.
+				//
+				console.log(rs);
+				for (var i in rs) {
+					var d = ''.div({style:'border-bottom:1px solid teal;'});
+					var str = MT__bold(rs[0].artistName, o.bold) + '<br>' + MT__bold(rs[0].trackName, o.bold);
+					d.innerHTML = str;
+					d1.appendChild(d);
+				}
+				
+				//~ else {
+					//~ AMT___Floater.skip();
+					//~ return;
+				//~ }
+			}
+		});
+		
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: opts.url,
@@ -5433,6 +5494,44 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			}
 		});
 	}
+	// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	// XXXXXX OLD, this does not use disk cache.
+	// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	//~ /**
+	 //~ * xhr_get
+	 //~ */
+	//~ function xhr_get() {
+		//~ GM_xmlhttpRequest({
+			//~ method: 'GET',
+			//~ url: opts.url,
+			//~ timeout: 30000,
+			//~ ontimeout: function() {
+				
+			//~ },
+			//~ onerror: function() {
+				
+			//~ },
+			//~ onload: function (response) {
+				//~ var rs = response.responseText;
+				
+				//~ // not 200 response.status
+				//~ if (response.status > 200) { // 400 - 599
+					//console.log(response.status);
+					//return;
+				//~ }
+				
+				//~ opts.response = response;
+				
+				//~ if (!opts.tmp_callback(rs)) {
+					//~ console.log('Returned False');
+					//~ return;
+				//~ }
+				
+				//~ // Callback final
+				//~ opts.callback_function(opts);
+			//~ }
+		//~ });
+	//~ }
 	
 	/**
 	 * amazon_product_page
