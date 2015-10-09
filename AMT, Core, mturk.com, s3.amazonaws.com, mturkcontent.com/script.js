@@ -115659,6 +115659,9 @@ qatar,80
 						}
 						return true; // Ignore
 					},
+					clean_body_regex: [
+					
+					],
 					//~ auto_click_callback: function() { // Function to auto click. This has the scope of the current iterator. Or div argument?
 						//~ 
 					//~ }
@@ -115685,6 +115688,11 @@ qatar,80
 					// If still here then all three results match!
 					// So click one!
 					divs[0].results[0].textarea.click();
+					// Remove all LinkedIn repetetive content!
+					//....................
+					//....................
+					//....................
+					//
 				},
 				out_element: o.q[0],
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p

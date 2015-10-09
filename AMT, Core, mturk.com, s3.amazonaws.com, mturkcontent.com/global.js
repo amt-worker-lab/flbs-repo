@@ -6914,6 +6914,8 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .search_results.replace_urls_in_result_body		Boolean, Default=False
  * .search_results.url_ignore_test					Function(url), True=Skip, False=Keep
  * .search_results.url_modifier_callback			Function(url)
+ * .search_results.clean_body_regex					Array(regexes)
+ * .search_results.clean_body_string				Array(strings)
  * .search			Object
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
  * .hide_search_fields BOOLEAN
@@ -6964,6 +6966,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	if (!options_object.search_results.hasOwnProperty('callback_link_and_body')) {//
 		options_object.search_results.callback_link_and_body = function(link, full) {}; // Ignore...
+	}
+	if (!options_object.search_results.hasOwnProperty('clean_body_regex')) {//
+		options_object.search_results.clean_body_regex = []; // Empty
+	}
+	if (!options_object.search_results.hasOwnProperty('clean_body_strings')) {//
+		options_object.search_results.clean_body_strings = []; // Empty
 	}
 	// Fills in
 	options_object.results = {
@@ -7301,8 +7309,16 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 			}
 			
+			// Clean body of...
+			// clean_body_regex
+			// clean_body_strings
+			//
+			if (options_object.search_results.
 			
-			
+			// callback_link_and_body
+			//
+			//
+			//
 			options_object.search_results.callback_link_and_body(link, full);
 			
 			//~ // ..
