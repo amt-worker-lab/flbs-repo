@@ -172112,7 +172112,8 @@ function top_window(okay_to_run) {
 				bad_industries: {
 					'and':true,
 					'or':true,
-					'':true
+					'':true,
+					//~ 'oregon':true,
 				},
 				
 				// SKIPS
@@ -172151,13 +172152,23 @@ function top_window(okay_to_run) {
 			var x_tmp = [];
 			for (var i in x) {
 				x[i] = x[i].trim().toLowerCase();;
-				//~ console.log(x[i]);
 				if (!o.bad_industries.hasOwnProperty(x[i])) {
 					x_tmp.push(x[i]);
+					
+					// Is this a state?
+					var tmps1 = x[i].stateAbbrToFull().toLowerCase();
+					var tmps2 = x[i].state_full_to_abbr().toLowerCase();
+					if (tmps1 != x[i] && !o.bad_industries.hasOwnProperty(tmps1)) {
+						x_tmp.push(tmps1);
+						continue;
+					}
+					if (tmps2 != x[i] && !o.bad_industries.hasOwnProperty(tmps2)) {
+						x_tmp.push(tmps2);
+					}
 				}
 			}
 			o.industries_quoted	= '("' + x_tmp.join('" OR "') + '")';
-			
+			//
 			console.log(o);
 			
 			/* BEGINS ITEMS */
@@ -172346,13 +172357,9 @@ function top_window(okay_to_run) {
 				document.body.style.zoom = '0.8';
 				document.body.style.backgroundColor = 'orange';
 			}
-			
 			//...
-			//...
-			
 			//
 			var q = document.getElementById('Answer_1_FreeText');
-			
 			// ...
 			var ef = new AMT___events_factory();
 			d3.  addEventListener('keydown', ef.keydown__blur_field, true);
@@ -172360,15 +172367,6 @@ function top_window(okay_to_run) {
 			d3c. addEventListener('keydown', ef.keydown__blur_field, true);
 			if (o.num_panels == 4)
 				d3d. addEventListener('keydown', ef.keydown__blur_field, true);
-			
-			//~ //
-			//~ new AMT___core_factory().
-				//~ iframe2parent__postMessage( // options  , XXXXX >callback_function
-					//~ {
-						//~ action: 'return_and_accept_button__nextTab'
-					//~ }
-				//~ );
-			
 			// innerHeight
 			var ih_els = [d1,d1b,d1c];
 			//
@@ -172405,18 +172403,14 @@ function top_window(okay_to_run) {
 			}
 			
 			// Not US?
-			var country_str = ' ("' + o.country + '" OR "' + o.country_full + '")';
+			var country_str = ' (' + o.country + ' OR ' + o.country_full + ')';
 			if (o.country != 'United States' && o.country.toLowerCase() != 'us' && o.country != '') {
-				//~ d3b.style.border = '4px solid blue';
-				//~ d3c.style.border = '4px solid blue';
-				
 				if (d3b.value != d3c.value)
 					d3b.value += country_str;
 					
 				// Country code to country name
 				if (o.country != o.country_full) {
 					d3c.value += country_str;
-					//~ d3c.value += ' ' + o.country_full;
 				} else {
 					//
 				}

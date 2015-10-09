@@ -542,9 +542,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			//alert('here here');
 		}else if(AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
-				console.log('focusing');
-				console.log(document.getElementsByTagName('iframe')[0]);
-				document.getElementsByTagName('iframe')[0].focus();
+				//~ console.log('focusing');
+				//~ console.log(document.getElementsByTagName('iframe')[0]);
+				if (document.getElementsByTagName('iframe').length != 0)
+					document.getElementsByTagName('iframe')[0].focus();
 			}
 		} else {
 			//console.log('other case: Attempt to focus regardless if possible');
@@ -15153,24 +15154,23 @@ function AMT___ReturnAndAcceptKeyPress(event) {
 				function(rs) 
 				{
 					if(rs.RAHotkey == 'On') {
-						if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview) {
-						document.getElementById('MT__gm_returnaccept').click();
-						event.preventDefault();
-						return false;
-					}
-					else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
-					{
-						//Send a message to the top window and tell it to return and acceptfresh
-						new AMT___core_factory().
-							iframe2parent__postMessage( //
-								{
-									action: 'return_and_accept'
-								}
-							);
+						if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && document.getElementById('MT__gm_returnaccept')) {
+							document.getElementById('MT__gm_returnaccept').click();
 							event.preventDefault();
-							return false; 
-					}
-
+							return false;
+						}
+						else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
+						{
+							//Send a message to the top window and tell it to return and acceptfresh
+							new AMT___core_factory().
+								iframe2parent__postMessage( //
+									{
+										action: 'return_and_accept'
+									}
+								);
+								event.preventDefault();
+								return false; 
+						}
 					}
 				});
 				break;
