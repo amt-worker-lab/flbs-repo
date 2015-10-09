@@ -115669,32 +115669,46 @@ qatar,80
 					//~ }
 				},
 				load_success_callback: function( options_object ) {
-					//addToTabsQ(); // Add to tabs queue.
 					
-					// CHECK First URL in each div
-					// To decide whether to click on the top / first URL.
-					var divs = options_object.results.divs;
-					var chk_similar = false;
-					for (var i in divs) {
-						var results = divs[i].results; // Array of {p:, url:, body:, textarea:, ...}
-						if (!results.length) return; // End here.
-						if (chk_similar == false) {
-							chk_similar = results[0].url; // Set chk_similar
-							continue;
-						}
-						// chk_similar has been set!
-						if (results[0].url != chk_similar) {
-							return;
-						}
-					}
-					// If still here then all three results match!
-					// So click one!
-					divs[0].results[0].textarea.click();
-					// Remove all LinkedIn repetetive content!
-					//....................
-					//....................
-					//....................
 					//
+					var divs = options_object.results.divs;
+					if (divs[0].results.length) // 1st
+						divs[0].results[0].textarea.click();
+					if (divs[1].results.length) {
+						setTimeout(function() { // 2nd column
+							divs[1].results[0].textarea.click();
+						}, 1000);
+					}
+					if (divs[2].results.length) {
+						setTimeout(function() { // 3nd column
+							divs[2].results[0].textarea.click();
+						}, 2000);
+					}
+					
+					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+					// This is to check first in each column!......
+					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+					//~ //
+					//~ //
+					//~ // CHECK First URL in each div
+					//~ // To decide whether to click on the top / first URL.
+					//~ var divs = options_object.results.divs;
+					//~ var chk_similar = false;
+					//~ for (var i in divs) {
+						//~ var results = divs[i].results; // Array of {p:, url:, body:, textarea:, ...}
+						//~ if (!results.length) return; // End here.
+						//~ if (chk_similar == false) {
+							//~ chk_similar = results[0].url; // Set chk_similar
+							//~ continue;
+						//~ }
+						//~ // chk_similar has been set!
+						//~ if (results[0].url != chk_similar) {
+							//~ return;
+						//~ }
+					//~ }
+					//~ // If still here then all three results match!
+					//~ // So click one!
+					//~ divs[0].results[0].textarea.click();
 				},
 				out_element: o.q[0],
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
@@ -115810,10 +115824,10 @@ qatar,80
 						//~ var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
 						
 						// New
-						// Make max height only 100px!
+						// Make max height only 60px!
 						//
 						//
-						var dvc = ''.div({style:'width:100%;max-height:100px;background-color:#eee;overflow:auto;'}); 
+						var dvc = ''.div({style:'width:100%;max-height:60px;background-color:#eee;overflow:auto;'}); 
 						d.appendChild(dvc);
 						
 						// Left & Right divs.
