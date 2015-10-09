@@ -7310,10 +7310,16 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			}
 			
 			// Clean body of...
-			// clean_body_regex
+			// clean_body_regex [{a:,b:},{a:,b:},...{}]
 			// clean_body_strings
 			//
-			if (options_object.search_results.
+			//~ if (options_object.search_results.clean_body_regex.length) {
+				//
+			//~ }
+			for (var rgx in options_object.search_results.clean_body_regex) {
+				var rgx_ = options_object.search_results.clean_body_regex[ rgx ];
+				full = full.replace(rgx_.a, rgx_.b);
+			}
 			
 			// callback_link_and_body
 			//

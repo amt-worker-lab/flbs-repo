@@ -115660,7 +115660,9 @@ qatar,80
 						return true; // Ignore
 					},
 					clean_body_regex: [
-					
+						// e.g. Edward Lazarus | LinkedIn   View Edward Lazarus's professional profile on LinkedIn. LinkedIn is the world's largest business network, helping professionals like Edward Lazarus discover  ...
+						{a: /View ((.|\s)*?(?=on LinkedIn\.|$)|$)/, b:''}, // replace a/b
+						{a: /LinkedIn is the world's largest ((.|\s)*?(?=\.\.\.|$)|$)/, b:''},
 					],
 					//~ auto_click_callback: function() { // Function to auto click. This has the scope of the current iterator. Or div argument?
 						//~ 
