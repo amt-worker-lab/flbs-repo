@@ -115796,17 +115796,20 @@ qatar,80
 						sk_div.addEventListener('mouseout', function() {
 							this.inner.style.display = 'none';
 						}, false);
-						
-						//+'<br>Click to submit!'
+						// Set dv
+						//
+						//
+						//
 						var dv =
 							str.div(
-								{style:'border-bottom:2px solid teal;cursor:pointer;background-color:#eee;', innerHTML:true}
+								{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
 							);
 						// Add sk_div....
 						//
 						//
 						dv.appendChild(sk_div);
-						dv.className = 'exe-prof';
+						dv.className = 'exe-zi';
+						//~ dv.className = 'exe-prof';
 						d.appendChild(dv);
 						// onclick
 						dv.purl = options.url;
@@ -115818,51 +115821,44 @@ qatar,80
 							}
 						}
 						
-						// Container for L/R divs.
-						// `overflow:hidden;` This will force the container to respect the height of all elements within it, regardless of floating elements.
-						// http://stackoverflow.com/questions/7817269/css-container-div-not-getting-height
-						//~ var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
-						
 						// New
 						// Make max height only 60px!
 						//
 						//
-						var dvc = ''.div({style:'width:100%;max-height:60px;background-color:#eee;overflow:auto;'}); 
-						d.appendChild(dvc);
+						var dvc = ''.div({style:'width:100%;max-height:60px;overflow:auto;'}); //background-color:#eee;
+						dv.appendChild(dvc);
+						//~ d.appendChild(dvc);
 						
 						// Left & Right divs.
 						// Left=Experience
 						// Right=PAV (people alsov viewed)
 						//
 						//
-						var dvl = ''.div({style:'float:left;width:50%;'});
-						var dvr = ''.div({style:'float:left;width:50%;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
+						var dvl = ''.div({style:'float:left;width:50%;border-top:1px solid #a2a2a2;'});
+						var dvr = ''.div({style:'float:left;width:50%;border-top:1px solid #a2a2a2;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
 						dvc.appendChild(dvl);
 						dvc.appendChild(dvr);
 						
 						if (!exp.length) {
 							dvl.appendChild('0 experience'.div({style:'background-color:#eee;'}));
-							//~ d.appendChild('0 experience'.div({style:'background-color:#eee;'}));
-							//~ return;
 						} else {
 							
 						}
 						// Experience
 						for (var i in exp) {
-							var dv = ''.div({style:'border-right:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
-							//~ dv.className = 'div-zi'; // cursor:pointer
-							dvl.appendChild(dv);
-							dv.current = (exp[i].current_or_past == 'current-position') ? true : false;
-							dv.innerHTML = 
-								(dv.current ? 'C:' : 'P:') + MT__bold(exp[i].headline, o.bold);
+							var dx = ''.div({style:'border:1px solid #a2a2a2;border-collapse:collapse;'}); //background-color:#eee;
+							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
+							dx.innerHTML = 
+								(dx.current ? 'C:' : 'P:') + MT__bold(exp[i].headline, o.bold);
+							dvl.appendChild(dx);
 						}
 						// PAV
 						for (var i in pav) {
-							var dv = ''.div({style:'border-left:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;background-color:#eee;'});
-							dvr.appendChild(dv);
-							dv.innerHTML = 
+							var dx = ''.div({style:'border:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;'}); //background-color:#eee;
+							dx.innerHTML = 
 								MT__bold(pav[i].name, o.bold_locn) + '<br>' +
 								MT__bold(pav[i].title, o.bold_locn);
+							dvr.appendChild(dx);
 						}
 					}
 				});
