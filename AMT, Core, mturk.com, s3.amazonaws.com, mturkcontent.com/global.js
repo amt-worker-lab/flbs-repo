@@ -7244,7 +7244,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			{
 				console.log('linkedInIgnoreNoBold');
 				console.log(options_object.linkedInIgnoreNoBold);
-				var name = /^([\d\D]+)\|/i.exec(full);
+				var name = /^([^\|]+)\|/i.exec(full);
 				console.log('name');
 				console.log(name);
 				if(!name || (name && !name[1].trim())) {
@@ -7258,9 +7258,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 							continue;
 						} else {
 							if(name.toLowerCase().indexOf(n[i].trim().toLowerCase()) != -1) {
-							
-							}
-							else {
 								found = true;
 							}
 						}
