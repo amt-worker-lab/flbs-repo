@@ -115759,7 +115759,7 @@ qatar,80
 						dm_bld = MT__bold(dm_bld, o.bold);
 						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						hd_bld = MT__bold(hd_bld, o.bold);
-						var str = 'N: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<br>S: ' + MT__bold(sk, o.bold);
+						var str = 'N: ' + MT__bold(name, o.bold_nm)+'<br>H: ' + hd_bld +'<br>D: ' + dm_bld+'<hr style="">S: ' + MT__bold(sk, o.bold);
 						//+'<br>Click to submit!'
 						var dv =
 							str.div(
@@ -115781,6 +115781,11 @@ qatar,80
 						// `overflow:hidden;` This will force the container to respect the height of all elements within it, regardless of floating elements.
 						// http://stackoverflow.com/questions/7817269/css-container-div-not-getting-height
 						//~ var dvc = ''.div({style:'width:100%;background-color:#eee;overflow:hidden;'}); 
+						
+						// New
+						// Make max height only 100px!
+						//
+						//
 						var dvc = ''.div({style:'width:100%;height:100px;background-color:#eee;overflow:auto;'}); 
 						d.appendChild(dvc);
 						
