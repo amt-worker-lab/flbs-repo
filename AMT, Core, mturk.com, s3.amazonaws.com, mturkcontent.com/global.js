@@ -51,6 +51,7 @@ var AMT__Global_Vars = //function()
 		{name: 'Record Job Timings',		value: '0', isPersistant:true},
 		{name: 'Return Button Hotkey',		value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
+		{name: 'Right-Click-R&A',	value: '0', isPersistant:true},
 		{name: 'NumPassby',	value: '3', isPersistant:true},
 		{name: 'PassbyDelay',	value: '100', isPersistant:true},
 		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
@@ -412,6 +413,14 @@ AMT__Global_Vars.initializeTabId = function() {
 				}
 			}
 		);
+}
+
+AMT__Global_Vars.initializeRightClickRA = function() {
+	if(AMT__Global_Vars.isTopWindow) {
+	
+	} else {
+	
+	}
 }
 
 //LISTENER FOR MESSAGES FROM BACKGROUND SCRIPT
