@@ -5425,6 +5425,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			xhr_get();
 			break;
 		case 'LINKEDIN_DIR':
+			opts.ignoreStatusNot200 = true;
 			opts.tmp_callback = linkedin_dir_url; // profile-card
 			xhr_get();
 			break;
@@ -5435,7 +5436,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 */
 	function xhr_get() {
 		
-		new AMT___requests_factory().xhr_with_disk_cache({
+		var xwdc = {
 			URL: opts.url,
 			host: 'http://' + AMT__Global_Vars.scriptVars['Server Location'], // Adds http:// !
 			success_callback: function(options) { // options.response[responseText, status, ...]
@@ -5444,6 +5445,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				
 				// not 200 response.status
 				if (options.response.status > 200) {
+					console.log('RESPONSE!:'+options.response.status);
 				}
 				
 				opts.response = options.response;
@@ -5455,8 +5457,20 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				
 				// Callback final
 				opts.callback_function(opts);
+			},
+		}
+		//check_pre_write_to_disk
+		if (opts.ignoreStatusNot200) {
+			xwdc.check_pre_write_to_disk = function(object) {
+				return true; // Always return true.
 			}
-		});
+		}
+		
+		// Perform request
+		//
+		//
+		//
+		new AMT___requests_factory().xhr_with_disk_cache(xwdc);
 	}
 	// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	// XXXXXX OLD, this does not use disk cache.
@@ -6017,7 +6031,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			]
 		}
 		var rs = opts.response.responseText;
-		
+		console.log(rs);
 		// E.g. <h1> 0 Results for Belford Lester </h1>
 		if (rs.indexOf('<h1> 0 Results for ') != -1) {
 			opts.response.vars.li_has_zero_results = true; // Set li_has_zero_results
