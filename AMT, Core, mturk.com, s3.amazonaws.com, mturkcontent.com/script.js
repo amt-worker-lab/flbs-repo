@@ -115631,6 +115631,19 @@ qatar,80
 			}
 			
 			// Scrape of linkedin.com/pub/dir/
+			AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
+				parent: d2,
+				offsetTop: 0,
+				bold_array: o.bold,
+				searches:[
+					{first:o.nm_obj.f, last:o.nm_obj.l}
+				],
+				search: {
+					str_add_to_searches_hidden: ' site:linkedin.com '+terms
+				},
+				search_results: {
+				}
+			});
 			
 			// create_dashboard_find_url
 			var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';

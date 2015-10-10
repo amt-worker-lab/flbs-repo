@@ -6846,7 +6846,130 @@ function AMT___items_factory(obj_vars) {
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
 	
 	var options_object = options_object;
+	var o = {
+		bold_array: options_object.bold_array,
+		panels_loaded: 0,
+		num_panels: 3,
+		domain_counts: {}, // obj
+		first_domains: [],
+		first_full_urls: [],
+		first_in_each_column: [],
+		txas:[[],[],[]], //And array of arrays, where 1st array is column, 2nd array is row. E.g. o.txas[0][1] will give you the txa at first column, 2nd row
+		q: [
+			options_object.out_element
+		],
+		//~ onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
+		//~ clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
+	}
+	options_object.o = o; // ...
 	
+	/* BEGINS ITEMS */
+	// textareas
+	var d3 = document.createElement('textarea');
+	d3.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3);
+	//
+	var d3b = document.createElement('textarea');
+	d3b.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b);
+	//
+	var d3c = document.createElement('textarea');
+	d3c.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 2
+	var d3_ = document.createElement('textarea');
+	d3_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3_);
+	//
+	var d3b_ = document.createElement('textarea');
+	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b_);
+	//
+	var d3c_ = document.createElement('textarea');
+	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c_);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// divs
+	var d1 = document.createElement('div');
+	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1);
+	//~ d1.id = 'd1a';
+	d1.txa = d3;
+	d1.results = []; // Fill in later
+	options_object.results.divs.push(d1);
+	//
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1b);
+	//~ d1b.id = 'd1b';
+	d1b.txa = d3b;
+	d1b.results = [];
+	options_object.results.divs.push(d1b);
+	//
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1c);
+	//~ d1c.id = 'd1c';
+	d1c.txa = d3c;
+	d1c.results = [];
+	options_object.results.divs.push(d1c);
+	/*END ITEMS*/
+	//
+	d3.onblur = function() {
+		li_init(d1,  this);
+	}
+	d3b.onblur = function() {
+		li_init(d1b, this);
+	}
+	d3c.onblur = function() {
+		li_init(d1c, this);
+	}
+	// ...
+	var ef = new AMT___events_factory();
+	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+	// Hide empty columns !!
+	//
+	//
+	if (options_object.searches.length == 1) {
+		d1b.style.display =
+		d1c.style.display = 'none';
+		d1.style.width = '100%';
+		o.num_panels = 1; // Overwrite!
+	} else if (options_object.searches.length == 2) {
+		d1c.style.display = 'none';
+		d1.style.width =
+		d1b.style.width = '48%';
+		o.num_panels = 2; // Overwrite!
+	}
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		elements: [
+			d1, d1b, d1c
+		],
+		offset: options_object.offsetTop*1 + 70 // Offset top. Add to this 70px.
+	});
+	new AMT___core_factory().el_innerHeight({
+		elements: [
+			options_object.parent
+		],
+		offset: options_object.offsetTop*1 -4 // Offset top + a bit
+	});
+	// ...
+	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0] : '';
+	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1] : '';
+	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2] : '';
 }
 /**
  * search_container
@@ -7099,7 +7222,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
 	/*END ITEMS*/
-	//
+	// Onblur
 	d3.onblur = function() {
 		company_URL__SP_init(d1,  this);
 	}
@@ -7109,6 +7232,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	d3c.onblur = function() {
 		company_URL__SP_init(d1c, this);
 	}
+	// ...
+	var ef = new AMT___events_factory();
+	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
 	
 	// Na Button
 	//
@@ -7146,12 +7274,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		o.num_panels = 2; // Overwrite!
 	}
 	
-	// ...
-	var ef = new AMT___events_factory();
-	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
-	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
-	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
-	
 	// innerHeight
 	new AMT___core_factory().el_innerHeight({
 		// This set the elements d1,d1b, and d1c
@@ -7163,9 +7285,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		offset: options_object.offsetTop*1 + 70 // Offset top. Add to this 70px.
 	});
 	new AMT___core_factory().el_innerHeight({
-		// This set the elements d1,d1b, and d1c
-		// to fill up the whole window, minus their
-		// distance from page top (top:XX pixels;).
 		elements: [
 			options_object.parent
 		],
@@ -7203,28 +7322,31 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	function company_URL__load_skips_success(response) {
 		var rs = response.responseText;
-		
 		var x = rs.split("\n");
-		
 		SKIP_SITES = {}; // ASSOC.
-		
 		// FULL
+		//
 		for (var i in x) {
 			SKIP_SITES[x[i]] = true;
 		}
-		
-		// SUBDOMAINS!
+		// SUBDOMAINS
+		//
 		for (var i in x) {
 			var y;
 			if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
 				SKIP_SITES[y[1]] = true;
 			}
 		}
-		
+		// Init
+		//
 		company_URL__SP_init();
 	}
+	// Init
+	//
 	company_URL__load_skips();
-	
+	/**
+	 * company_URL__SP_init
+	 */
 	function company_URL__SP_init(el_div, el_inp) {
 		var req_proxy;
 		var add = options_object.search.str_add_to_searches_hidden;
