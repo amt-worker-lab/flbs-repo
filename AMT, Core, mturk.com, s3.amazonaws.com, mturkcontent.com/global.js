@@ -6034,6 +6034,9 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		opts.response.vars.li_is_directory_listing = true; // Set li_is_directory_listing
 		var p = dom.getElementsByClassName('vcard');
 		linkedin_dir_url__profs(p);
+		
+		// Return true!
+		return true;
 	}
 	function linkedin_dir_url__profs(vcards) {
 		for (var i=0;i<vcards.length;i++) {
@@ -7043,7 +7046,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		elements: [
 			d1, d1b, d1c
 		],
-		offset: options_object.offsetTop*1 + 70 // Offset top. Add to this 70px.
+		offset: options_object.offsetTop*1 + 50 // Offset top. Add to this 70px.
 	});
 	new AMT___core_factory().el_innerHeight({
 		elements: [
@@ -7060,14 +7063,42 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2].first : '';
 	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
 	//
-	init()
+	init();
 	// 
 	//
 	// ... .scrape()
 	//LINKEDIN_DIR
 	// XHR
 	// e.g. https://www.linkedin.com/pub/dir/stephen
-	function result__(options) {console.log('ddddddddddddddddddddddddddd');
+	function init(input) {
+		if (input) { // Updates only one column!
+			
+			return;
+		}
+		if (options_object.searches.length == 1) {
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				___seed___: d1,
+			});
+		}
+		else if (options_object.searches.length == 2)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
+				callback_function: result,
+				___seed___: d1b,
+			});
+		else if (options_object.searches.length == 3)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
+				callback_function: result,
+				___seed___: d1c,
+			});
+	}
+	function result(options) {
 		// Is this a directory listing...
 		// Or has LI forwarded us to the one person's profile?
 		//~ var item = {
@@ -7080,56 +7111,27 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		//~ }
 		//~ opts.response.vars.results
 		console.log(options);
-		var out = options.___seed___;console.log(out);
-		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {console.log('x');
-			for (var i in options.response.vars.results) {console.log(i);
+		var out = options.___seed___;
+		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
+			for (var i in options.response.vars.results) {
 				profile(options.response.vars.results[i], out);
 			}
 		} else {
 			
 		}
 	}
-	function init(input) {
-		if (input) { // Updates only one column!
-			
-			return;
-		}
-		if (options_object.searches.length > 0) {
-			new AMT___site_scrapes().scrape({
-				site: 'LINKEDIN_DIR',
-				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
-				callback_function: result__,//function(options) {}
-				___seed___: d1,
-			});
-		}
-		if (options_object.searches.length > 1)
-			new AMT___site_scrapes().scrape({
-				site: 'LINKEDIN_DIR',
-				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
-				callback_function: result,
-				___seed___: d1b,
-			});
-		
-		if (options_object.searches.length > 2)
-			new AMT___site_scrapes().scrape({
-				site: 'LINKEDIN_DIR',
-				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
-				callback_function: result,
-				___seed___: d1c,
-			});
-	}
 	function profile(pobj, out) { // Takes profile obj, Out div
 		console.log(pobj);
 		console.log(out);
 		// str
 		var title;
-		title = MT__bold(pobj.title, o.bold_location, {color: 'blue'}).bold_string;
+		title = MT__bold(pobj.title, o.bold_location_array, {color: 'blue'}).bold_string;
 		title = MT__bold(title, o.bold_array);
 		var location;
-		location = MT__bold(pobj.location, o.bold_location, {color: 'blue'}).bold_string;
+		location = MT__bold(pobj.location, o.bold_location_array, {color: 'blue'}).bold_string;
 		location = MT__bold(location, o.bold_array);
-		var industry;
-		industry = MT__bold(pobj.industry, o.bold_location, {color: 'blue'}).bold_string;
+		var industry = (pobj.industry) ? pobj.industry : '';
+		industry = MT__bold(pobj.industry, o.bold_location_array, {color: 'blue'}).bold_string;
 		industry = MT__bold(industry, o.bold_array);
 		var vceit;
 		//~ vceit = (pobj.vceit == null)
