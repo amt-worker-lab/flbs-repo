@@ -6184,6 +6184,13 @@ www.linkedin.com/pub/tara-holthus-crpc®/31/856/85a
 				}
 			} else {
 				
+				r = /<link rel="canonical" href="(https:\/\/[^\.]*\.*linkedin\.com\/[^"]{2,})"\/>/i
+				if (r.exec(rs)) {
+					opts.response.vars.result.public_url = __js_clean_html_str(r.exec(rs)[1]);
+					opts.response.vars.result.profile_has_public_url = true;
+				} else {
+					
+				}
 			}
 		}
 		/**
@@ -7194,7 +7201,21 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				profile(options.response.vars.results[i], out);
 			}
 		} else { // This is a redirected profile!
-			//~ profile
+			// profile
+			// options.response.vars
+			// Make an object...
+			// And send to profile
+			profile(
+				{
+					name: options.response.vars.result.name,
+					title: options.response.vars.result.headline,
+					location: options.response.vars.result.demographics,
+					industry: '',
+					profile_url: options.response.vars.result.public_url,
+					vceit: '',
+				},
+				out
+			)
 		}
 	}
 	function profile(pobj, out) { // Takes profile obj, Out div
