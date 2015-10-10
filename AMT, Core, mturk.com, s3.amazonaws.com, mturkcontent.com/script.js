@@ -115639,7 +115639,7 @@ qatar,80
 				bold_array: o.bold,
 				bold_location_array: o.bold_locn,
 				searches:[
-					{first:o.nm_obj.f, last:o.nm_obj.l}
+					{first:o.nm_obj.f, last:o.nm_obj.l, location:o.city+','+o.state}
 				],
 				search: {
 				},

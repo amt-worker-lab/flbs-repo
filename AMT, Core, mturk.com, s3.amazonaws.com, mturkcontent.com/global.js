@@ -6889,6 +6889,12 @@ function AMT___items_factory(obj_vars) {
 /**
  * create_dashboard_linkedin_pub_dir
  * 
+ * @params
+ * 
+ * searches		Array of objects
+ *  [.first		String
+ *  [.last		String
+ *  [.location	String, Optional, Is for DISPLAY ONLY.
  */
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
 	GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
@@ -7056,7 +7062,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		offset: options_object.offsetTop*1 -4 // Offset top + a bit
 	});
 	// ...
-	// {first:o.nm_obj.f, last:o.nm_obj.l}
+	// {first:o.nm_obj.f, last:o.nm_obj.l, location:...} // Location is optional!
 	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0].first : '';
 	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
 	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1].first : '';
