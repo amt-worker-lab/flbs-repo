@@ -6966,21 +6966,22 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	options_object.o = o; // ...
 	
 	/* BEGINS ITEMS */
+	// TODO
+	//  Make a column() function!
+	//
+	//
 	// ROW 1 (textareas)
 	var d3 = document.createElement('textarea');
 	d3.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3);
-	d3.connecter = d4;
 	//
 	var d3b = document.createElement('textarea');
 	d3b.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3b);
-	d3b.connecter = d4b;
 	//
 	var d3c = document.createElement('textarea');
 	d3c.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3c);
-	d3c.connecter = d4c;
 	// br
 	var br = document.createElement('br');
 	br.style.clear = 'both';
@@ -6989,17 +6990,14 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d3_ = document.createElement('textarea');
 	d3_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3_);
-	d3_.connecter = d4;
 	//
 	var d3b_ = document.createElement('textarea');
 	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3b_);
-	d3b_.connecter = d4b;
 	//
 	var d3c_ = document.createElement('textarea');
 	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3c_);
-	d3c_.connecter = d4c;
 	// br
 	var br = document.createElement('br');
 	br.style.clear = 'both';
@@ -7050,8 +7048,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
 	/*END ITEMS*/
+	// Connecters...
+	d3.connecter = d1;
+	d3b.connecter = d1b;
+	d3c.connecter = d1c;
+	d3_.connecter = d1;
+	d3b_.connecter = d1b;
+	d3c_.connecter = d1c;
 	//
-	d3.onblur = function() {
+	d3.onblur = d3_.onblur = function() {
 		init(this);//,  this);
 	}
 	d3b.onblur = d3b_.onblur = function() {
@@ -7065,6 +7070,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d3.  addEventListener('keydown', ef.keydown__blur_field, true);
 	d3b. addEventListener('keydown', ef.keydown__blur_field, true);
 	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3_.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c_. addEventListener('keydown', ef.keydown__blur_field, true);
 	// Hide empty columns !!
 	//
 	//
@@ -7160,6 +7168,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		if (input) { // Updates only one column!
 			var i = input.connecter;
 			//~ var i = input.parentNode;
+			//~ console.log(input);
+			//~ console.log(i);
+			i.innerText = '';
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(i.txa.value)+'/'+encodeURIComponent(i.txa_.value)+'/',
