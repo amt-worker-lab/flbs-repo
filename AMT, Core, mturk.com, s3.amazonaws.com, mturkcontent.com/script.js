@@ -115630,6 +115630,8 @@ qatar,80
 				return false;
 			}
 			
+			// Scrape of linkedin.com/pub/dir/
+			
 			// create_dashboard_find_url
 			var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
 			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';

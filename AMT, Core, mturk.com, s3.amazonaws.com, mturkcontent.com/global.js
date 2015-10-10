@@ -6958,25 +6958,28 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
-
+	// Styles
+	//
+	//
+	//
 	GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr,table,thead,tbody,tr,td {margin:0;padding:0;font-size:12px;}');
 	GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
-	
+	GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
+	GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+	GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 	//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
-	
 	// REMOVED THESE THREE!
 	// JULY 25, 2015
 	//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
 	//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
 	//~ GM_addStyle('form {position:absolute;top:1000px;}');
 	
-	GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
-	GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-	GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
-	
-	
 	var options_object = options_object;
+	
 	// Defaults
+	//
+	//
+	//
 	if (!options_object.hasOwnProperty('search')) {// search_results
 		options_object.search = {}
 	}
@@ -7551,6 +7554,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d._df_mout_ = df_mout_;
 			
 			// ADD THIS TO out_div RESULTS!
+			//
+			//
+			//
 			out_div.results.push(div_result); // Add this element to DIV.results
 		}
 		count_domains();
@@ -7562,7 +7568,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			out_div.appendChild(d);
 		}
 	}
-	
+	// createUtilityTabsAndRewriteExeBehavior
+	//
+	//
+	//
 	function createUtilityTabsAndRewriteExeBehavior() {
 		var urls =[];
 		for(var i = 0; i < o.first_full_urls.length; i++){
@@ -7573,8 +7582,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				urls[i].options = clickIntoUtilityTabs[i];
 			}
 		}
-		
-
 		AMT__setUtilityTabs(
 			urls,
 			null,
@@ -7586,16 +7593,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 			}
 		)
-		
 		//Associate each of the top utilities with its corresponding utility tab button
 		for(var i = 0; i < o.txas.length; i++) {
 			o.txas[i][0].utilityTabBtn = getUtilityTabButton(i);
 		}
-		
-		
-		
 	}
-	
 	/**
 	 * count_domains
 	 * 
