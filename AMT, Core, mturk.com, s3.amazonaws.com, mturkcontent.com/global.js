@@ -6018,6 +6018,11 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		}
 		var rs = opts.response.responseText;
 		
+		// E.g. <h1> 0 Results for Belford Lester </h1>
+		if (rs.indexOf('<h1> 0 Results for ') != -1) {
+			opts.response.vars.li_has_zero_results = true; // Set li_has_zero_results
+			return true;
+		}
 		// DOM
 		var dom = new DOMParser().parseFromString(rs,'text/html');
 		
@@ -6976,13 +6981,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	// ROW 3 (location, display only!)
 	//
 	var d4 = document.createElement('div');
-	d4.setAttribute('style','float:left;width:33%;');
+	d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4);
 	var d4b = document.createElement('div');
-	d4b.setAttribute('style','float:left;width:33%;');
+	d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4b);
 	var d4c = document.createElement('div');
-	d4c.setAttribute('style','float:left;width:33%;');
+	d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4c);
 	// br
 	var br = document.createElement('br');
@@ -7095,7 +7100,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		elements: [
 			d1, d1b, d1c
 		],
-		offset: options_object.offsetTop*1 + 50 // Offset top. Add to this 70px.
+		offset: options_object.offsetTop*1 + 50 + 30 // Offset top. Add to this 80px.
 	});
 	new AMT___core_factory().el_innerHeight({
 		elements: [
@@ -7167,7 +7172,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		//~ opts.response.vars.results
 		console.log(options);
 		var out = options.___seed___;
-		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
+		if (options.response.vars.hasOwnProperty('li_has_zero_results') && options.response.vars.li_has_zero_results) {
+			out.innerText = '0 results.';
+		}
+		else if
+		   (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
 			for (var i in options.response.vars.results) {
 				profile(options.response.vars.results[i], out);
 			}
