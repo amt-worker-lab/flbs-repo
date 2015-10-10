@@ -6038,12 +6038,13 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		for (var i=0;i<vcards.length;i++) {
 			var vcb = vcards[i].getElementsByClassName('vcard-basic')[0];
 			var vce = vcards[i].getElementsByClassName('vcard-expanded')[0];
-			
+			var a = vcards[i].getElementsByTagName('a')[0];
 			var item = {
 				name: vcards[i].getElementsByTagName('h2')[0].innerText,
 				title: vcb.getElementsByClassName('title')[0].innerText,
 				location: vcb.getElementsByClassName('location')[0].innerText,
-				industry: vcb.getElementsByClassName('industry')[0].innerText,
+				industry: (vcb.getElementsByClassName('industry').length) ? vcb.getElementsByClassName('industry')[0].innerText : null,
+				profile_url: a,
 				vceit: vce.innerText,
 			}
 			opts.response.vars.results.push(item);
@@ -7064,6 +7065,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
 				callback_function: result,//function(options) {}
+				___seed___: d1,
 			});
 		}
 		if (options_object.searches.length > 1)
@@ -7071,6 +7073,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
 				callback_function: result,
+				___seed___: d1b,
 			});
 		
 		if (options_object.searches.length > 2)
@@ -7078,17 +7081,31 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
 				callback_function: result,
+				___seed___: d1c,
 			});
 	}
 	function result(options) {
-		
-	}
-	//~ new AMT___requests_factory().xhr_with_disk_cache({
-		//~ URL: u,
-		//~ host: AMT__Global_Vars.scriptVars['Server Location'],
-		//~ success_callback: function(options) { // options.response[responseText, status, ...]
+		// Is this a directory listing...
+		// Or has LI forwarded us to the one person's profile?
+		//~ var item = {
+			//~ name: vcards[i].getElementsByTagName('h2')[0].innerText,
+			//~ title: vcb.getElementsByClassName('title')[0].innerText,
+			//~ location: vcb.getElementsByClassName('location')[0].innerText,
+			//~ industry: vcb.getElementsByClassName('industry')[0].innerText,
+			//~ profile_url: a,
+			//~ vceit: vce.innerText,
 		//~ }
-	//~ });
+		//~ opts.response.vars.results
+		console.log(options);
+		var out = options.___seed___;
+		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
+			for (var i in options.response.vars.results) {
+				
+			}
+		} else {
+			
+		}
+	}
 }
 /**
  * search_container
