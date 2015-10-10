@@ -7272,11 +7272,12 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		//
 		//
 		//
+		var tmp_class = 'class_' + pobj.profile_url.replace(/^(https?:\/\/|)(www\.|)/, '');
 		var dv =
 			str.div(
 				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
 			);
-		dv.className = 'exe-result-create-dashboard-lipd';
+		dv.className = 'exe-result-create-dashboard-lipd '+tmp_class; // create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
 		dv.profile_url = pobj.profile_url;
 		dv.onclick = function() {
 			options_object.out_element.value = this.profile_url;
@@ -7984,6 +7985,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			function df_movr_(e) {
 				inp_top.value = this.full_url;
+				//~ var x = document.getElementsByClassName(this.className);
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ x[i].style.backgroundColor = 'LightGreen';
+				//~ }
 				var x = document.getElementsByTagName('p');
 				for (var i in x) {
 					if (i == 'length') break;
