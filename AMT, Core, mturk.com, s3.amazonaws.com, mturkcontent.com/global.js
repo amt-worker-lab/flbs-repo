@@ -6013,7 +6013,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 */
 	function linkedin_dir_url() {
 		opts.response.vars = {
-			result: [ // array of profiles
+			results: [ // array of profiles
 			]
 		}
 		var rs = opts.response.responseText;
@@ -6031,7 +6031,23 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		// This is directory
 		//
 		//
-		var p = document.getElementsByClassName('vcard');
+		var p = dom.getElementsByClassName('vcard');
+		linkedin_dir_url__profs(p);
+	}
+	function linkedin_dir_url__profs(vcards) {
+		for (var i=0;i<vcards.length;i++) {
+			var vcb = vcards[i].getElementsByClassName('vcard-basic')[0];
+			var vce = vcards[i].getElementsByClassName('vcard-expanded')[0];
+			
+			var item = {
+				name: vcards[i].getElementsByTagName('h2')[0].innerText,
+				title: vcb.getElementsByClassName('title')[0].innerText,
+				location: vcb.getElementsByClassName('location')[0].innerText,
+				industry: vcb.getElementsByClassName('industry')[0].innerText,
+				vceit: vce.innerText,
+			}
+			opts.response.vars.results.push(item);
+		}
 	}
 	/**
 	 * linkedin_person_profile
