@@ -6994,13 +6994,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	/*END ITEMS*/
 	//
 	d3.onblur = function() {
-		init(d1);//,  this);
+		init(this);//,  this);
 	}
 	d3b.onblur = d3b_.onblur = function() {
-		init(d1b);
+		init(this);
 	}
 	d3c.onblur = d3c_.onblur = function() {
-		init(d1c);
+		init(this);
 	}
 	// ...
 	var ef = new AMT___events_factory();
@@ -7073,11 +7073,12 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	// e.g. https://www.linkedin.com/pub/dir/stephen
 	function init(input) {
 		if (input) { // Updates only one column!
+			var i = input.parentNode;
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
-				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(i.txa.value)+'/'+encodeURIComponent(i.txa_.value)+'/',
 				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
-				___seed___: d1,
+				___seed___: i,
 			});
 			return;
 		}
