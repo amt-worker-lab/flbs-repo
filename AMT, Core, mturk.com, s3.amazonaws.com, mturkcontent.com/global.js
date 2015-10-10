@@ -6038,14 +6038,14 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		for (var i=0;i<vcards.length;i++) {
 			var vcb = vcards[i].getElementsByClassName('vcard-basic')[0];
 			var vce = vcards[i].getElementsByClassName('vcard-expanded')[0];
-			var a = vcards[i].getElementsByTagName('a')[0];
+			var a = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
 			var item = {
-				name: vcards[i].getElementsByTagName('h2')[0].innerText,
-				title: vcb.getElementsByClassName('title')[0].innerText,
-				location: vcb.getElementsByClassName('location')[0].innerText,
-				industry: (vcb.getElementsByClassName('industry').length) ? vcb.getElementsByClassName('industry')[0].innerText : null,
+				name: vcards[i].getElementsByTagName('h2')[0].innerText.trim(),
+				title: vcb.getElementsByClassName('title')[0].innerText.trim(),
+				location: vcb.getElementsByClassName('location')[0].innerText.trim(),
+				industry: (vcb.getElementsByClassName('industry').length) ? vcb.getElementsByClassName('industry')[0].innerText.trim() : null,
 				profile_url: a,
-				vceit: vce.innerText,
+				vceit: vce.innerText.trim(),
 			}
 			opts.response.vars.results.push(item);
 		}
@@ -7111,14 +7111,61 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		var out = options.___seed___;
 		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
 			for (var i in options.response.vars.results) {
-				profile(pobj, out)
+				profile(options.response.vars.results[i], out);
 			}
 		} else {
 			
 		}
 	}
 	function profile(pobj, out) { // Takes profile obj, Out div
+		// str
+		var title;
+		title = MT__bold(pobj.title, o.bold_location, {color: 'blue'}).bold_string;
+		title = MT__bold(title, o.bold_array);
+		var location;
+		location = MT__bold(pobj.location, o.bold_location, {color: 'blue'}).bold_string;
+		location = MT__bold(location, o.bold_array);
+		var industry;
+		industry = MT__bold(pobj.industry, o.bold_location, {color: 'blue'}).bold_string;
+		industry = MT__bold(industry, o.bold_array);
+		var vceit;
+		//~ vceit = (pobj.vceit == null)
+		vceit = MT__bold(pobj.vceit, o.bold_location, {color: 'blue'}).bold_string;
+		vceit = MT__bold(vceit, o.bold_array);
 		
+		var str = 'N:' + MT__bold(pobj.name, o.bold_array)+'<br>L:'+location+'<br>T:' + title +'<br>I:' + industry +'<hr>';
+		
+		var sk_fmt = MT__bold(sk, o.bold_array);
+		var sk_div = ('S:'+(vceit=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
+		var sk_inn = document.createElement('span');
+		sk_inn.innerHTML = sk_fmt;
+		sk_inn.style.display = 'none';
+		sk_div.appendChild(sk_inn);
+		sk_div.inner = sk_inn;
+		sk_div.addEventListener('mouseover', function() {
+			this.inner.style.display = 'block';
+		}, false);
+		sk_div.addEventListener('mouseout', function() {
+			this.inner.style.display = 'none';
+		}, false);
+		//~ // Let's set the person's name & location close-by so it's possible to see it clearly.
+		//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
+		// Set dv
+		//
+		//
+		//
+		var dv =
+			str.div(
+				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
+			);
+		// Add sk_div....
+		//
+		//
+		dv.appendChild(sk_div);
+		// Append
+		//
+		//
+		out.append(dv);
 	}
 }
 /**
