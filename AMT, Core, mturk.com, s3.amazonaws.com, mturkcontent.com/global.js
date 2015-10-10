@@ -6853,6 +6853,15 @@ function AMT___items_factory(obj_vars) {
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
 	
 	var options_object = options_object;
+	// Fills in
+	options_object.results = {
+		divs: [],
+		textareas: [] //TODO
+		// ...
+	}
+	// o
+	//
+	//
 	var o = {
 		bold_array: options_object.bold_array,
 		panels_loaded: 0,
@@ -6933,13 +6942,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	/*END ITEMS*/
 	//
 	d3.onblur = function() {
-		li_init(d1,  this);
+		init(d1);//,  this);
 	}
-	d3b.onblur = function() {
-		li_init(d1b, this);
+	d3b.onblur = d3b_.onblur = function() {
+		init(d1b);
 	}
-	d3c.onblur = function() {
-		li_init(d1c, this);
+	d3c.onblur = d3c_.onblur = function() {
+		init(d1c);
 	}
 	// ...
 	var ef = new AMT___events_factory();
@@ -6957,15 +6966,25 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		
 		d1b.style.display =
 		d1c.style.display = 'none';
-		d1.style.width = '100%';
+		
+		d1.style.width =
+		d3.style.width =
+		d3_.style.width = '99%';
+		
 		o.num_panels = 1; // Overwrite!
 	} else if (options_object.searches.length == 2) {
 		d3c.style.display =
 		d3c_.style.display =
 		
 		d1c.style.display = 'none';
+		
+		d3.style.width =
+		d3_.style.width =
+		d3b.style.width =
+		d3b_.style.width =
 		d1.style.width =
 		d1b.style.width = '48%';
+		
 		o.num_panels = 2; // Overwrite!
 	}
 	// innerHeight
@@ -6998,7 +7017,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	//LINKEDIN_DIR
 	// XHR
 	// e.g. https://www.linkedin.com/pub/dir/stephen
-	function init() {
+	function init(input) {
+		if (input) { // Updates only one column!
+			
+			return;
+		}
 		if (options_object.searches.length > 0) {
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',

@@ -115597,7 +115597,7 @@ qatar,80
 			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:80%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d2.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
@@ -115634,18 +115634,18 @@ qatar,80
 			}
 			
 			// Scrape of linkedin.com/pub/dir/
-			//~ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
-				//~ parent: d2,
-				//~ offsetTop: 0,
-				//~ bold_array: o.bold,
-				//~ searches:[
-					//~ {first:o.nm_obj.f, last:o.nm_obj.l}
-				//~ ],
-				//~ search: {
-				//~ },
-				//~ search_results: {
-				//~ }
-			//~ });
+			AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
+				parent: d2,
+				offsetTop: 0,
+				bold_array: o.bold,
+				searches:[
+					{first:o.nm_obj.f, last:o.nm_obj.l}
+				],
+				search: {
+				},
+				search_results: {
+				}
+			});
 			
 			// create_dashboard_find_url
 			var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
