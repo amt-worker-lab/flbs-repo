@@ -6011,8 +6011,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	/**
 	 * linkedin_dir_url
 	 */
-	function linkedin_person_profile() {
-		
+	function linkedin_dir_url() {
+		opts.response.vars = {
+			result: [ // array of profiles
+			]
+		}
+		var rs = opts.response.responseText;
 	}
 	/**
 	 * linkedin_person_profile
@@ -7011,6 +7015,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1].last : '';
 	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2].first : '';
 	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
+	//
+	init()
 	// 
 	//
 	// ... .scrape()
