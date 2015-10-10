@@ -6902,6 +6902,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	options_object.parent.appendChild(d1);
 	//~ d1.id = 'd1a';
 	d1.txa = d3;
+	d1.txa_ = d3_;
 	d1.results = []; // Fill in later
 	options_object.results.divs.push(d1);
 	//
@@ -6910,6 +6911,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	options_object.parent.appendChild(d1b);
 	//~ d1b.id = 'd1b';
 	d1b.txa = d3b;
+	d1b.txa_ = d3b_;
 	d1b.results = [];
 	options_object.results.divs.push(d1b);
 	//
@@ -6918,6 +6920,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	options_object.parent.appendChild(d1c);
 	//~ d1c.id = 'd1c';
 	d1c.txa = d3c;
+	d1c.txa_ = d3c_;
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
 	/*END ITEMS*/
@@ -6940,11 +6943,19 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	//
 	//
 	if (options_object.searches.length == 1) {
+		d3b.style.display =
+		d3b_.style.display =
+		d3c.style.display =
+		d3c_.style.display =
+		
 		d1b.style.display =
 		d1c.style.display = 'none';
 		d1.style.width = '100%';
 		o.num_panels = 1; // Overwrite!
 	} else if (options_object.searches.length == 2) {
+		d3c.style.display =
+		d3c_.style.display =
+		
 		d1c.style.display = 'none';
 		d1.style.width =
 		d1b.style.width = '48%';
@@ -6967,9 +6978,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		offset: options_object.offsetTop*1 -4 // Offset top + a bit
 	});
 	// ...
-	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0] : '';
-	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1] : '';
-	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2] : '';
+	// {first:o.nm_obj.f, last:o.nm_obj.l}
+	d3.value  = (options_object.searches.length > 0) ? options_object.searches[0].first : '';
+	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
+	d3b.value = (options_object.searches.length > 1) ? options_object.searches[1].first : '';
+	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1].last : '';
+	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2].first : '';
+	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
+	// 
+	// xhr with disk cache
 }
 /**
  * search_container

@@ -115594,8 +115594,11 @@ qatar,80
 			 
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:80%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
 			//~ document.body.appendChild(d1b);
@@ -115639,7 +115642,6 @@ qatar,80
 					{first:o.nm_obj.f, last:o.nm_obj.l}
 				],
 				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com '+terms
 				},
 				search_results: {
 				}
