@@ -5423,9 +5423,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		case 'LINKEDIN_PROFILE':
 			opts.tmp_callback = linkedin_person_profile;
 			xhr_get();
-		//~ case 'https://www.linkedin.com/profile/view?id=':
-		//~ case 'https://www.linkedin.com/pub/':
-		//~ case 'https://www.linkedin.com/in/':
+			break;
+		case 'LINKEDIN_DIR':
+			opts.tmp_callback = linkedin_dir_url; // profile-card
+			xhr_get();
 			break;
 	}
 	
@@ -6007,6 +6008,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//~ opts.callback_function(opts);
 	}
 	
+	/**
+	 * linkedin_dir_url
+	 */
+	function linkedin_person_profile() {
+		
+	}
 	/**
 	 * linkedin_person_profile
 	 * 
@@ -6986,13 +6993,43 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d3c.value = (options_object.searches.length > 2) ? options_object.searches[2].first : '';
 	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
 	// 
-	// xhr with disk cache
-	new AMT___requests_factory().xhr_with_disk_cache({
-		URL: u,
-		host: AMT__Global_Vars.scriptVars['Server Location'],
-		success_callback: function(options) { // options.response[responseText, status, ...]
+	//
+	// ... .scrape()
+	//LINKEDIN_DIR
+	// XHR
+	// e.g. https://www.linkedin.com/pub/dir/stephen
+	function init() {
+		if (options_object.searches.length > 0) {
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: function(options) {
+				}
+			});
 		}
-	});
+		if (options_object.searches.length > 1)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
+				callback_function: function(options) {
+				}
+			});
+		
+		if (options_object.searches.length > 2)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
+				callback_function: function(options) {
+				}
+			});
+		
+	}
+	//~ new AMT___requests_factory().xhr_with_disk_cache({
+		//~ URL: u,
+		//~ host: AMT__Global_Vars.scriptVars['Server Location'],
+		//~ success_callback: function(options) { // options.response[responseText, status, ...]
+		//~ }
+	//~ });
 }
 /**
  * search_container
