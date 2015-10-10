@@ -115554,17 +115554,18 @@ qatar,80
 				nm_cln:		null,
 				nm_array:	null,
 				comp_cln:	null,
-				//~ nm_obj: {
-					//~ f: null,
-					//~ l: null
-				//~ },
+				nm_obj: {
+					f: null,
+					l: null
+				},
 				bold: [],
 				bold_locn: [],
 				bold_nm: [],
 				
 				name_search: '',
 				q: [
-					document.getElementById('Q1Url')
+					document.getElementById('Q1Url'),
+					document.getElementById('Q2Url'),
 				]
 			};
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
@@ -115577,12 +115578,17 @@ qatar,80
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
 				o.name_search = o.nm;
+				o.nm_obj.f = o.nm;
 			} else if (x.length == 2) {
 				o.name_search = o.nm;
+				o.nm_obj.f = x[0];
+				o.nm_obj.l = x[1];
 			} else { // >=3
 				var fl = x[0] + ' ' + x[x.length - 1];
 				var fm = x[0] + ' ' + x[1][0] + '. ' + x[x.length - 1];
 				o.name_search = '("'+o.nm+'" OR "'+fm+'" OR "'+fl+'")';
+				o.nm_obj.f = x[0];
+				o.nm_obj.l = x[x.length - 1];
 			}
 			 // name as search, that is, ("first middle last", "first m. last", "first last")
 			 
@@ -115722,11 +115728,12 @@ qatar,80
 					// Hide this P!
 					var d = this.parentNode;
 					d.result.body.style.display = 'none';
-					//~ d.result.p.style.display = none;
-					// Class name...
-					//~ console.log(this);
-					//~ console.log(this.parentNode); // !!
-					//~ console.log(this.parentNode.result); // !!
+				},
+				na_callback: function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					o.q[0].value = 'N/A';
+					o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
+					doSubmit();
 				},
 			});
 			// function liprof
