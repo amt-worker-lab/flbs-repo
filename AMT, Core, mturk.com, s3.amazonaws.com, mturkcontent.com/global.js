@@ -7032,25 +7032,24 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
-				callback_function: function(options) {
-				}
+				callback_function: result,//function(options) {}
 			});
 		}
 		if (options_object.searches.length > 1)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3b.value)+'/'+encodeURIComponent(d3b_.value)+'/',
-				callback_function: function(options) {
-				}
+				callback_function: result,
 			});
 		
 		if (options_object.searches.length > 2)
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3c.value)+'/'+encodeURIComponent(d3c_.value)+'/',
-				callback_function: function(options) {
-				}
+				callback_function: result,
 			});
+	}
+	function result(options) {
 		
 	}
 	//~ new AMT___requests_factory().xhr_with_disk_cache({
