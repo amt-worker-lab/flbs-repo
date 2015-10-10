@@ -5441,7 +5441,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			host: 'http://' + AMT__Global_Vars.scriptVars['Server Location'], // Adds http:// !
 			success_callback: function(options) { // options.response[responseText, status, ...]
 				
-				var rs = options.response.responseText;//console.log(rs);
+				var rs = options.response.responseText;
 				
 				// not 200 response.status
 				if (options.response.status > 200) {
@@ -6031,7 +6031,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			]
 		}
 		var rs = opts.response.responseText;
-		console.log(rs);
 		// E.g. <h1> 0 Results for Belford Lester </h1>
 		if (rs.indexOf('<h1> 0 Results for ') != -1) {
 			opts.response.vars.li_has_zero_results = true; // Set li_has_zero_results
@@ -7199,8 +7198,6 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		}
 	}
 	function profile(pobj, out) { // Takes profile obj, Out div
-		//~ console.log(pobj);
-		//~ console.log(out);
 		// str
 		pobj.title = (pobj.title) ? pobj.title : '--';
 		var title = bold_blue_black(pobj.title);
