@@ -115784,7 +115784,7 @@ qatar,80
 						hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
 						var sk_fmt = MT__bold(sk, o.bold);
-						var sk_div = ('S:'+(sk=='' ? '--' : '')).div();
+						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
 						var sk_inn = document.createElement('span');
 						sk_inn.innerHTML = sk_fmt;
 						sk_inn.style.display = 'none';
