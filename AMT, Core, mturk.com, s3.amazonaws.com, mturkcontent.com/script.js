@@ -115636,7 +115636,7 @@ qatar,80
 					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
 				],
 				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law" OR "")'
+					str_add_to_searches_hidden: ' site:linkedin.com ("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")'
 				},
 				search_results: {
 					replace_urls_in_result_body: true,
