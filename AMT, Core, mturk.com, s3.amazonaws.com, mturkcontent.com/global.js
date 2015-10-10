@@ -7099,12 +7099,19 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		company_URL__SP_init(d1c, this);
 	}
 	
+	// Na Button
+	//
+	//
+	//
 	if (options_object.naText) {
 		na.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
 			o.q[0].value = this.value;
 			doSubmit();
 		}
+	}
+	else if (options_object.na_callback) {
+		na.onclick = options_object.na_callback;
 	}
 	
 	// Hide search fields?
