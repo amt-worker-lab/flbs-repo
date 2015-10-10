@@ -6891,6 +6891,7 @@ function AMT___items_factory(obj_vars) {
  * 
  */
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
+	GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
 	
 	var options_object = options_object;
 	// Fills in
@@ -6931,7 +6932,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	options_object.o = o; // ...
 	
 	/* BEGINS ITEMS */
-	// textareas
+	// ROW 1 (textareas)
 	var d3 = document.createElement('textarea');
 	d3.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3);
@@ -6947,7 +6948,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
-	// ROW 2
+	// ROW 2 (textareas)
 	var d3_ = document.createElement('textarea');
 	d3_.setAttribute('style','float:left;width:33%;height:25px;');
 	options_object.parent.appendChild(d3_);
@@ -6963,7 +6964,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
-	// divs
+	// ROW 3 (divs)
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
@@ -7072,7 +7073,12 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	// e.g. https://www.linkedin.com/pub/dir/stephen
 	function init(input) {
 		if (input) { // Updates only one column!
-			
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_DIR',
+				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
+				callback_function: result,//function(options) { result__(options); },//result__,//function(options) {}
+				___seed___: d1,
+			});
 			return;
 		}
 		if (options_object.searches.length == 1) {
@@ -7116,7 +7122,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			for (var i in options.response.vars.results) {
 				profile(options.response.vars.results[i], out);
 			}
-		} else {
+		} else { // This is a redirected profile!
 			
 		}
 	}
@@ -7124,23 +7130,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		console.log(pobj);
 		console.log(out);
 		// str
-		var title;
-		title = MT__bold(pobj.title, o.bold_location_array, {color: 'blue'}).bold_string;
-		title = MT__bold(title, o.bold_array);
-		var location;
-		location = MT__bold(pobj.location, o.bold_location_array, {color: 'blue'}).bold_string;
-		location = MT__bold(location, o.bold_array);
-		var industry = (pobj.industry) ? pobj.industry : '';
-		industry = MT__bold(pobj.industry, o.bold_location_array, {color: 'blue'}).bold_string;
-		industry = MT__bold(industry, o.bold_array);
-		var vceit;
-		//~ vceit = (pobj.vceit == null)
-		vceit = MT__bold(pobj.vceit, o.bold_location, {color: 'blue'}).bold_string;
-		vceit = MT__bold(vceit, o.bold_array);
+		var title = bold_blue_black(pobj.title);
+		var location = bold_blue_black(pobj.location);
+		var industry = (pobj.industry) ? bold_blue_black(pobj.industry) : '';
+		var vceit = bold_blue_black(pobj.vceit);
+		//vceit = (pobj.vceit == null)
 		
 		var str = 'N:' + MT__bold(pobj.name, o.bold_array)+'<br>L:'+location+'<br>T:' + title +'<br>I:' + industry +'<hr>';
 		
-		var sk_fmt = MT__bold(sk, o.bold_array);
+		var sk_fmt = vceit;
 		var sk_div = ('S:'+(vceit=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
 		var sk_inn = document.createElement('span');
 		sk_inn.innerHTML = sk_fmt;
@@ -7163,6 +7161,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			str.div(
 				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
 			);
+		dv.className = 'exe-result-create-dashboard-lipd';
 		// Add sk_div....
 		//
 		//
@@ -7170,7 +7169,12 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		// Append
 		//
 		//
-		out.append(dv);
+		out.appendChild(dv);
+	}
+	function bold_blue_black(str) {
+		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
+		str = MT__bold(str, o.bold_array);
+		return str;
 	}
 }
 /**
