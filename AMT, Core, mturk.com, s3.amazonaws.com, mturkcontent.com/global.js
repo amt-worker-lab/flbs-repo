@@ -7003,12 +7003,18 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d4 = document.createElement('div');
 	d4.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4);
+	d4.txa = d3;
+	d4.txa_ = d3_;
 	var d4b = document.createElement('div');
 	d4b.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4b);
+	d4b.txa = d3b;
+	d4b.txa_ = d3b_;
 	var d4c = document.createElement('div');
 	d4c.setAttribute('style','float:left;width:33%;max-height:30px;overflow:hidden;');
 	options_object.parent.appendChild(d4c);
+	d4c.txa = d3c;
+	d4c.txa_ = d3c_;
 	// br
 	var br = document.createElement('br');
 	br.style.clear = 'both';
