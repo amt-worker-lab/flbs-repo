@@ -6895,6 +6895,9 @@ function AMT___items_factory(obj_vars) {
  *  [.first		String
  *  [.last		String
  *  [.location	String, Optional, Is for DISPLAY ONLY.
+ * 
+ * @returns
+ * Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
 	GM_addStyle('.exe-result-create-dashboard-lipd:hover {background-color:LightGreen;cursor:pointer;}');
@@ -6970,11 +6973,25 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var br = document.createElement('br');
 	br.style.clear = 'both';
 	options_object.parent.appendChild(br);
-	// ROW 3 (divs)
+	// ROW 3 (location, display only!)
+	//
+	var d4 = document.createElement('div');
+	d4.setAttribute('style','float:left;width:33%;');
+	options_object.parent.appendChild(d4);
+	var d4b = document.createElement('div');
+	d4b.setAttribute('style','float:left;width:33%;');
+	options_object.parent.appendChild(d4b);
+	var d4c = document.createElement('div');
+	d4c.setAttribute('style','float:left;width:33%;');
+	options_object.parent.appendChild(d4c);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 4 (divs)
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
-	//~ d1.id = 'd1a';
 	d1.txa = d3;
 	d1.txa_ = d3_;
 	d1.results = []; // Fill in later
@@ -6983,7 +7000,6 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d1b = document.createElement('div');
 	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
-	//~ d1b.id = 'd1b';
 	d1b.txa = d3b;
 	d1b.txa_ = d3b_;
 	d1b.results = [];
@@ -6992,7 +7008,6 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	var d1c = document.createElement('div');
 	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
-	//~ d1c.id = 'd1c';
 	d1c.txa = d3c;
 	d1c.txa_ = d3c_;
 	d1c.results = [];
@@ -7027,9 +7042,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		
 		d1.style.width =
 		d3.style.width =
-		d3_.style.width = '99%';
+		d3_.style.width =
+		d4.style.width = '99%';
 		
 		o.num_panels = 1; // Overwrite!
+		
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
 	} else if (options_object.searches.length == 2) {
 		d3c.style.display =
 		d3c_.style.display =
@@ -7041,9 +7062,30 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		d3b.style.width =
 		d3b_.style.width =
 		d1.style.width =
-		d1b.style.width = '48%';
+		d1b.style.width = 
+		d4.style.width =
+		d4b.style.width = '48%';
 		
 		o.num_panels = 2; // Overwrite!
+		
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
+		if (options_object.searches[1].location) {
+			d4b.innerText = options_object.searches[1].location;
+		}
+	} else {
+		// Location
+		if (options_object.searches[0].location) {
+			d4.innerText = options_object.searches[0].location;
+		}
+		if (options_object.searches[1].location) {
+			d4b.innerText = options_object.searches[1].location;
+		}
+		if (options_object.searches[2].location) {
+			d4c.innerText = options_object.searches[2].location;
+		}
 	}
 	// innerHeight
 	new AMT___core_factory().el_innerHeight({
@@ -7134,8 +7176,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		}
 	}
 	function profile(pobj, out) { // Takes profile obj, Out div
-		console.log(pobj);
-		console.log(out);
+		//~ console.log(pobj);
+		//~ console.log(out);
 		// str
 		var title = bold_blue_black(pobj.title);
 		var location = bold_blue_black(pobj.location);
@@ -7169,6 +7211,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
 			);
 		dv.className = 'exe-result-create-dashboard-lipd';
+		dv.profile_url = pobj.profile_url;
+		dv.onclick = function() {
+			options_object.out_element.value = this.profile_url;
+		}
 		// Add sk_div....
 		//
 		//

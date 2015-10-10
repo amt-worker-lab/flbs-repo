@@ -115641,10 +115641,11 @@ qatar,80
 				searches:[
 					{first:o.nm_obj.f, last:o.nm_obj.l, location:o.city+','+o.state}
 				],
-				search: {
-				},
-				search_results: {
-				}
+				out_element: o.q[0], // Default is Profile URL to out_element
+				//~ search: {
+				//~ },
+				//~ search_results: {
+				//~ },
 			});
 			
 			// create_dashboard_find_url
