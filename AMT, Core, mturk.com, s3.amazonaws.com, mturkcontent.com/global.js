@@ -6840,6 +6840,15 @@ function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
+ * create_dashboard_linkedin_pub_dir
+ * 
+ */
+AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(options_object) {
+	
+	var options_object = options_object;
+	
+}
+/**
  * search_container
  * 
  * @param	`options_object`
@@ -7035,7 +7044,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
 		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
 	}
-	//~ console.log(o);
 	options_object.o = o; // ...
 	
 	/* BEGINS ITEMS */
