@@ -46171,7 +46171,6 @@ function MT__RUN() {
 	var s12 = 'If the target shares a parking lot with other stores, only include the area of the parking lot that is most';
 	var s13 = "Draw a complete polygon around the target gas station (by clicking on the map). If you don't like the first polygon you drew";
 	var s14 = "Draw a complete polygon around the target&nbsp;hotel";
-	console.log('x');
 	if  (
 		ih.indexOf(s)  != -1 ||
 		ih.indexOf(s2) != -1 ||
@@ -115671,7 +115670,7 @@ qatar,80
 						return url.replace(/\?[\d\D]*$/, '');
 					},
 					url_ignore_test: function(obj_reslt) { // If true then ignore the URL.
-						console.log(obj_reslt.url);
+						//~ console.log(obj_reslt.url);
 						if 	(
 								(
 								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||

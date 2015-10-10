@@ -6031,6 +6031,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		// This is directory
 		//
 		//
+		opts.response.vars.li_is_directory_listing = true; // Set li_is_directory_listing
 		var p = dom.getElementsByClassName('vcard');
 		linkedin_dir_url__profs(p);
 	}
@@ -7066,6 +7067,28 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	//LINKEDIN_DIR
 	// XHR
 	// e.g. https://www.linkedin.com/pub/dir/stephen
+	function result__(options) {console.log('ddddddddddddddddddddddddddd');
+		// Is this a directory listing...
+		// Or has LI forwarded us to the one person's profile?
+		//~ var item = {
+			//~ name: vcards[i].getElementsByTagName('h2')[0].innerText,
+			//~ title: vcb.getElementsByClassName('title')[0].innerText,
+			//~ location: vcb.getElementsByClassName('location')[0].innerText,
+			//~ industry: vcb.getElementsByClassName('industry')[0].innerText,
+			//~ profile_url: a,
+			//~ vceit: vce.innerText,
+		//~ }
+		//~ opts.response.vars.results
+		console.log(options);
+		var out = options.___seed___;console.log(out);
+		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {console.log('x');
+			for (var i in options.response.vars.results) {console.log(i);
+				profile(options.response.vars.results[i], out);
+			}
+		} else {
+			
+		}
+	}
 	function init(input) {
 		if (input) { // Updates only one column!
 			
@@ -7075,7 +7098,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			new AMT___site_scrapes().scrape({
 				site: 'LINKEDIN_DIR',
 				url: 'https://www.linkedin.com/pub/dir/'+encodeURIComponent(d3.value)+'/'+encodeURIComponent(d3_.value)+'/',
-				callback_function: result,//function(options) {}
+				callback_function: result__,//function(options) {}
 				___seed___: d1,
 			});
 		}
@@ -7095,29 +7118,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				___seed___: d1c,
 			});
 	}
-	function result(options) {
-		// Is this a directory listing...
-		// Or has LI forwarded us to the one person's profile?
-		//~ var item = {
-			//~ name: vcards[i].getElementsByTagName('h2')[0].innerText,
-			//~ title: vcb.getElementsByClassName('title')[0].innerText,
-			//~ location: vcb.getElementsByClassName('location')[0].innerText,
-			//~ industry: vcb.getElementsByClassName('industry')[0].innerText,
-			//~ profile_url: a,
-			//~ vceit: vce.innerText,
-		//~ }
-		//~ opts.response.vars.results
-		console.log(options);
-		var out = options.___seed___;
-		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
-			for (var i in options.response.vars.results) {
-				profile(options.response.vars.results[i], out);
-			}
-		} else {
-			
-		}
-	}
 	function profile(pobj, out) { // Takes profile obj, Out div
+		console.log(pobj);
+		console.log(out);
 		// str
 		var title;
 		title = MT__bold(pobj.title, o.bold_location, {color: 'blue'}).bold_string;
@@ -7650,11 +7653,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				options_object.linkedInIgnoreNoBold
 				)
 			{
-				console.log('linkedInIgnoreNoBold');
-				console.log(options_object.linkedInIgnoreNoBold);
+				//~ console.log('linkedInIgnoreNoBold');
+				//~ console.log(options_object.linkedInIgnoreNoBold);
 				var name = /^([^\|]+)\|/i.exec(full);
-				console.log('name');
-				console.log(name);
+				//~ console.log('name');
+				//~ console.log(name);
 				if(!name || (name && !name[1].trim())) {
 					console.log('improper formatting?');
 				} else {
@@ -7671,7 +7674,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						}
 					}
 					if(!found) {
-						console.log('not found');
+						//~ console.log('not found');
 						continue;
 					}
 				}
