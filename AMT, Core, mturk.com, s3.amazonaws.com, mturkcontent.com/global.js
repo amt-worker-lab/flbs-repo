@@ -6017,6 +6017,21 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			]
 		}
 		var rs = opts.response.responseText;
+		
+		// DOM
+		var dom = new DOMParser().parseFromString(rs,'text/html');
+		
+		// Be sure to check whether this has 302'd to a person's profile!
+		// Note document.title
+		if (!/ profiles \| LinkedIn$/.exec(dom.title)) {
+			return linkedin_person_profile(); // Return this!
+		}
+		
+		// Still here...
+		// This is directory
+		//
+		//
+		var p = document.getElementsByClassName('vcard');
 	}
 	/**
 	 * linkedin_person_profile
