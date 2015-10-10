@@ -115572,7 +115572,7 @@ qatar,80
 			o.bold_locn = o.city.clean_string_to_array().concat(o.state.clean_string_to_array()).concat(o.state_full.clean_string_to_array());
 			//~ o.bold_locn = o.bold_locn.concat(['san']);
 			o.bold_nm = o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration']);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration','counsel']);
 			console.log(o);
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
