@@ -6045,7 +6045,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			var a = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
 			var item = {
 				name: vcards[i].getElementsByTagName('h2')[0].innerText.trim(),
-				title: vcb.getElementsByClassName('title')[0].innerText.trim(),
+				title: (vcb.getElementsByClassName('title').length) ? vcb.getElementsByClassName('title')[0].innerText.trim() : null,
 				location: vcb.getElementsByClassName('location')[0].innerText.trim(),
 				industry: (vcb.getElementsByClassName('industry').length) ? vcb.getElementsByClassName('industry')[0].innerText.trim() : null,
 				profile_url: a,
@@ -7172,13 +7172,14 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				profile(options.response.vars.results[i], out);
 			}
 		} else { // This is a redirected profile!
-			
+			//~ profile
 		}
 	}
 	function profile(pobj, out) { // Takes profile obj, Out div
 		//~ console.log(pobj);
 		//~ console.log(out);
 		// str
+		pobj.title = (pobj.title) ? pobj.title : '--';
 		var title = bold_blue_black(pobj.title);
 		var location = bold_blue_black(pobj.location);
 		var industry = (pobj.industry) ? bold_blue_black(pobj.industry) : '';
@@ -7214,6 +7215,14 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		dv.profile_url = pobj.profile_url;
 		dv.onclick = function() {
 			options_object.out_element.value = this.profile_url;
+			this.style.backgroundColor = 'LightGreen';
+			if  (
+				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(options_object.out_element.value) &&
+				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(this.profile_url) &&
+				this.profile_url.indexOf('?') == -1
+				) { // If valid...
+				doSubmit();
+			}
 		}
 		// Add sk_div....
 		//
