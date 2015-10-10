@@ -6895,11 +6895,22 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		textareas: [] //TODO
 		// ...
 	}
+	// Defaults
+	//
+	//
+	//
+	if (!options_object.hasOwnProperty('bold_array')) {//
+		options_object.bold_array = []
+	}
+	if (!options_object.hasOwnProperty('bold_location_array')) {//
+		options_object.bold_location_array = []
+	}
 	// o
 	//
 	//
 	var o = {
 		bold_array: options_object.bold_array,
+		bold_location_array: options_object.bold_location_array,
 		panels_loaded: 0,
 		num_panels: 3,
 		domain_counts: {}, // obj
@@ -7100,11 +7111,14 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		var out = options.___seed___;
 		if (options.response.vars.hasOwnProperty('li_is_directory_listing')) {
 			for (var i in options.response.vars.results) {
-				
+				profile(pobj, out)
 			}
 		} else {
 			
 		}
+	}
+	function profile(pobj, out) { // Takes profile obj, Out div
+		
 	}
 }
 /**

@@ -115638,6 +115638,7 @@ qatar,80
 				parent: d2,
 				offsetTop: 0,
 				bold_array: o.bold,
+				bold_location_array: o.bold_locn,
 				searches:[
 					{first:o.nm_obj.f, last:o.nm_obj.l}
 				],
