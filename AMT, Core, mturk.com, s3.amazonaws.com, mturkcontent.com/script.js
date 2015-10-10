@@ -115782,7 +115782,7 @@ qatar,80
 						dm_bld = MT__bold(dm_bld, o.bold);
 						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						hd_bld = MT__bold(hd_bld, o.bold);
-						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>H:' + hd_bld +'<br>D:' + dm_bld+'<hr>';
+						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
 						var sk_fmt = MT__bold(sk, o.bold);
 						var sk_div = ('S:'+(sk=='' ? '--' : '')).div();
 						var sk_inn = document.createElement('span');
