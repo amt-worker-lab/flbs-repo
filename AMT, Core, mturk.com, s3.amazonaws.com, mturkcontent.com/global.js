@@ -6987,6 +6987,12 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
 	// 
 	// xhr with disk cache
+	new AMT___requests_factory().xhr_with_disk_cache({
+		URL: u,
+		host: AMT__Global_Vars.scriptVars['Server Location'],
+		success_callback: function(options) { // options.response[responseText, status, ...]
+		}
+	});
 }
 /**
  * search_container
