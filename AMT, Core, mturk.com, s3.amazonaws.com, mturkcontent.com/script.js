@@ -43,6 +43,55 @@ function MT__RUN() {
 			//~ GM_addStyle('fieldset {margin-top:-100px !important; }'); //zoom:0.4
 			
 			document.getElementById('option-one').checked = true;
+								
+			var l = document.getElementsByClassName('pure-radio');
+			for(var i = 0; i < 9; i++) {
+				switch(i) {
+					case 0:	l[i].childNodes[2].nodeValue = '(1) Normal'
+					break;
+					case 1:	l[i].childNodes[2].nodeValue = '(2) Going-Up'
+					break;
+					case 2:	l[i].childNodes[2].nodeValue = '(3) Going-Down'
+					break;
+					case 3:	l[i].childNodes[2].nodeValue = '(4) Upside-down'
+					break;
+					case 4:	l[i].childNodes[1].nodeValue = '(5)No Text'
+					break;
+					case 5:	l[i].childNodes[1].nodeValue = '(a) D'
+					break;
+					case 6:	l[i].childNodes[1].nodeValue = '(s) E'; console.log('testing');
+					break;
+					case 7:	l[i].childNodes[1].nodeValue = '(d) Economic Interest'
+					break;
+					case 8:	l[i].childNodes[1].nodeValue = '(f) N/A'
+					break;
+				}
+			}
+
+			window.addEventListener('keydown', function(e) {
+				console.log(e.keyCode);
+				var l = document.getElementsByClassName('pure-radio');
+				switch(e.keyCode) {
+					case 49: l[0].childNodes[1].click();
+					break;
+					case 50: l[1].childNodes[1].click();
+					break;	
+					case 51: l[2].childNodes[1].click();
+					break;	
+					case 52: l[3].childNodes[1].click();
+					break;	
+					case 53: l[4].childNodes[0].click();
+					break;	
+					case 65: l[5].childNodes[0].click();
+					break;	
+					case 83: l[6].childNodes[0].click();
+					break;	
+					case 68: l[7].childNodes[0].click();
+					break;	
+					case 70: l[8].childNodes[0].click();
+					break;	
+				}
+			});
 			
 			document.getElementById('submitButton').onclick = function(e) {
 				//~ e.stopPropagation();
