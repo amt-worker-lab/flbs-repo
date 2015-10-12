@@ -43,56 +43,64 @@ function MT__RUN() {
 			//~ GM_addStyle('fieldset {margin-top:-100px !important; }'); //zoom:0.4
 			
 			document.getElementById('option-one').checked = true;
-								
+			var o = {
+				FirstChosen: false
+			}					
 			
 			var l = document.getElementsByClassName('pure-radio');
-for(var i = 0; i < 9; i++) {
-	switch(i) {
-		case 0:	l[i].childNodes[2].nodeValue = '(1) Normal'
-		break;
-		case 1:	l[i].childNodes[2].nodeValue = '(2) Going-Up'
-		break;
-		case 2:	l[i].childNodes[2].nodeValue = '(3) Going-Down'
-		break;
-		case 3:	l[i].childNodes[2].nodeValue = '(4) Upside-down'
-		break;
-		case 4:	l[i].childNodes[1].nodeValue = '(5)No Text'
-		break;
-		case 5:	l[i].childNodes[1].nodeValue = '(q) D'
-		break;
-		case 6:	l[i].childNodes[2].nodeValue = '(w) E'; console.log('testing');
-		break;
-		case 7:	l[i].childNodes[2].nodeValue = '(e) Economic Interest'
-		break;
-		case 8:	l[i].childNodes[2].nodeValue = '(r) N/A'
-		break;
-	}
-}
+		for(var i = 0; i < 9; i++) {
+			switch(i) {
+				case 0:	l[i].childNodes[2].nodeValue = '(1) Normal'
+				break;
+				case 1:	l[i].childNodes[2].nodeValue = '(2) Going-Up'
+				break;
+				case 2:	l[i].childNodes[2].nodeValue = '(3) Going-Down'
+				break;
+				case 3:	l[i].childNodes[2].nodeValue = '(4) Upside-down'
+				break;
+				case 4:	l[i].childNodes[1].nodeValue = '(5)No Text'
+				break;
+				case 5:	l[i].childNodes[1].nodeValue = '(q) D'
+				break;
+				case 6:	l[i].childNodes[2].nodeValue = '(w) E'; console.log('testing');
+				break;
+				case 7:	l[i].childNodes[2].nodeValue = '(e) Economic Interest'
+				break;
+				case 8:	l[i].childNodes[2].nodeValue = '(r) N/A'
+				break;
+			}
+		}
 
-window.addEventListener('keydown', function(e) {
-	console.log(e.keyCode);
-	var l = document.getElementsByClassName('pure-radio');
-	switch(e.keyCode) {
-		case 49: l[0].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;
-		case 50: l[1].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 51: l[2].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 52: l[3].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 53: l[4].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 81: l[5].childNodes[0].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 87: l[6].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 69: l[7].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-		case 82: l[8].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
-		break;	
-	}
-});
+		window.addEventListener('keydown', function(e) {
+		console.log(e.keyCode);
+		var l = document.getElementsByClassName('pure-radio');
+		
+		if(o.FirstChosen) {
+			switch(e.keyCode) {
+				case 49: l[0].childNodes[1].click();  e.stopPropagation();e.preventDefault();return false;
+				break;
+				case 50: l[1].childNodes[1].click();  e.stopPropagation();e.preventDefault();return false;
+				break;	
+				case 51: l[2].childNodes[1].click();  e.stopPropagation();e.preventDefault();return false;
+				break;	
+				case 52: l[3].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
+				break;	
+				case 53: l[4].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
+				break;	
+			}
+		}
+		
+		switch(e.keyCode) {
+			case 81: l[0].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			break;
+			case 87: l[1].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			break;	
+			case 69: l[2].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			break;	
+			case 82: l[3].childNodes[1].click(); o.FirstChosen = true; e.stopPropagation();e.preventDefault();return false;
+			break;
+		}
+	});
 			
 			document.getElementById('submitButton').onclick = function(e) {
 				//~ e.stopPropagation();
