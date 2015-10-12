@@ -34,6 +34,21 @@ function MT__RUN() {
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
+			GM_addStyle('#instructions {position:absolute;top:1000px;}');
+			GM_addStyle('img {width:40% !important; }'); //zoom:0.4
+			
+			document.getElementById('option-one').checked = true;
+		}
+		new run().f();
+	}
+	//
+	//
+	// PDS_PN1
+	// 
+	s = "We've displayed item title. Decide whether it is a good product title, needs proofing, is missing a component, or a bad product title.";
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('p {margin:0;padding:0;font-size:20px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
