@@ -99,6 +99,7 @@ function MT__RUN() {
 			break;	
 			case 82: l[8].childNodes[1].click(); o.FirstChosen = true; e.stopPropagation();e.preventDefault();return false;
 			break;
+			case 32: l[8].childNode[1].click(); l[4].childNodes[0].click(); doSubmit();
 		}
 		console.log('got here');
 	});
@@ -110,6 +111,7 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				//~ return false;
 			}
+			document.getElementById('submitButton').
 		}
 		new run().f();
 	}
