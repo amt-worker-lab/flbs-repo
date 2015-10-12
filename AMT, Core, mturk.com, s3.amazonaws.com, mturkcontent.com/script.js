@@ -27,7 +27,7 @@ function MT__RUN() {
 	var s, s2, s3;
 	
 	//
-	//
+	// IATPP
 	// 
 	// 
 	s = 'Answer the questions about the image to the right. You can pan around the image by clicking and dragging with your mouse, and can zoom in using your scroll wheel or the onscreen buttons.';
@@ -74,8 +74,8 @@ function MT__RUN() {
 		window.addEventListener('keydown', function(e) {
 		console.log(e.keyCode);
 		var l = document.getElementsByClassName('pure-radio');
-		
-		if(o.FirstChosen) {
+		console.log(o);
+		if(!o.FirstChosen) {
 			switch(e.keyCode) {
 				case 49: l[0].childNodes[1].click();  e.stopPropagation();e.preventDefault();return false;
 				break;
@@ -85,21 +85,22 @@ function MT__RUN() {
 				break;	
 				case 52: l[3].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
 				break;	
-				case 53: l[4].childNodes[1].click(); e.stopPropagation();e.preventDefault();return false;
+				case 53: l[4].childNodes[0].click(); e.stopPropagation();e.preventDefault();return false;
 				break;	
 			}
 		}
 		
 		switch(e.keyCode) {
-			case 81: l[0].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			case 81: l[5].childNodes[0].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
 			break;
-			case 87: l[1].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			case 87: l[6].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
 			break;	
-			case 69: l[2].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
+			case 69: l[7].childNodes[1].click(); o.FirstChosen = true;e.stopPropagation();e.preventDefault();return false;
 			break;	
-			case 82: l[3].childNodes[1].click(); o.FirstChosen = true; e.stopPropagation();e.preventDefault();return false;
+			case 82: l[8].childNodes[1].click(); o.FirstChosen = true; e.stopPropagation();e.preventDefault();return false;
 			break;
 		}
+		console.log('got here');
 	});
 			
 			document.getElementById('submitButton').onclick = function(e) {
