@@ -28,16 +28,29 @@ function MT__RUN() {
 	
 	//
 	//
-	// PDS_PN1
 	// 
-	s = "We've displayed item title. Decide whether it is a good product title, needs proofing, is missing a component, or a bad product title.";
+	// 
+	s = 'Answer the questions about the image to the right. You can pan around the image by clicking and dragging with your mouse, and can zoom in using your scroll wheel or the onscreen buttons.';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {}
-		run.prototype.f = function() {
+		run.prototype.f = function() {//return;
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('#instructions {position:absolute;top:1000px;}');
-			GM_addStyle('img {width:40% !important; }'); //zoom:0.4
+			GM_addStyle('#which-way {width:40% !important; }'); //zoom:0.4
+			GM_addStyle('input[type="radio"] {zoom:1.6; cursor:pointer;}'); //zoom:0.4
+			GM_addStyle('label {cursor:pointer;}'); //zoom:0.4
+			GM_addStyle('fieldset {margin-top:-80px !important; }'); //zoom:0.4
+			//~ GM_addStyle('fieldset {margin-top:-100px !important; }'); //zoom:0.4
 			
 			document.getElementById('option-one').checked = true;
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ doSubmit();
+				new AMT___core_factory().nextTab();
+				//~ return false;
+			}
 		}
 		new run().f();
 	}
