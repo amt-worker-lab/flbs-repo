@@ -114551,6 +114551,11 @@ qatar,80
 				search_results: {
 					use_full_urls: true,
 					replace_urls_in_result_body: true,
+					url_modifier_callback: function(url) {
+						url = url.replace(/\?[\d\D]*/, ''); // Remove question mark then any...
+						url = url.replace(/#[\d\D]*/, ''); // Remove hash mark then any...
+						return url;
+					},
 				},
 				search: {
 					str_add_to_searches_hidden: ' site:choicehotels.com ',
@@ -114558,6 +114563,7 @@ qatar,80
 				out_element: o.q[0],
 				offsetTop: 0, //site:www.choicehotels.com
 				//~ naText:'not found',
+				// x = options_object.search_results.url_modifier_callback( x );
 			});
 		}
 		new run().f();
