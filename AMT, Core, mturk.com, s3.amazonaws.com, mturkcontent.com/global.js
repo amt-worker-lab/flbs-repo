@@ -5534,6 +5534,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		}
 		var rs = opts.response.responseText;
 		opts.response.vars.parsed = JSON.parse(rs);
+		return true;
 	}
 	/**
 	 * amazon_product_page

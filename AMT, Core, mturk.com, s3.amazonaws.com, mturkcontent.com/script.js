@@ -114667,22 +114667,32 @@ qatar,80
 					MT__bold(address, o.boldArray) + '<br>' +
 					MT__bold(p.phone, o.boldArray) + '<br>'
 					;
-				var div = str.div({style:'border-top:1px solid teal;'});
+				var div = str.div({style:'border-top:1px solid teal; cursor:pointer;', innerHTML: true});
 				div.onclick = function() {
 					this.style.backgroundColor = 'aqua';
+					o.q[0].value = obj.__seed__.value;
+					if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(o.q[0].value))
+						doSubmit();
 				}
 				obj.__seed__.parentNode.appendChild(div);
 				
+				//~ console.log( p.name.clean_str_to_auto());
+				//~ console.log(address.clean_str_to_auto());
+				//~ console.log(p.phone.clean_str_to_auto());
 				// Auto
 				//
 				//
 				//
 				if  (
-					o.auto.c == o.name.clean_str_to_auto() &&
+						( // This is an exact name match or only a PARTIAL match...
+						o.auto.c == p.name.clean_str_to_auto() ||			// Exact
+						o.auto.c.indexOf(p.name.clean_str_to_auto()) == 0	// Starts with...
+						)
+					&&
 					o.auto.c.length > 4 &&
 					o.auto.l == address.clean_str_to_auto() &&
 					o.auto.l.length > 4 &&
-					o.auto.p == o.phone.clean_str_to_auto() &&
+					o.auto.p == p.phone.clean_str_to_auto() &&
 					o.auto.p.length > 4
 					)
 				{
