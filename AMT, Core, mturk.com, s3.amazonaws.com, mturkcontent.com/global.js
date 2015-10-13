@@ -6062,6 +6062,33 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	}
 	function linkedin_dir_url__profs_no_vcard(vcards) {
 		for (var i=0;i<vcards.length;i++) {
+			var bsc = vcards[i].getElementsByClassName('basic');
+			var hdl = vcards[i].getElementsByClassName('headline');
+			var exp = vcards[i].getElementsByClassName('expanded');
+			var a = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
+			var loc = null, ind = null;
+			if (bsc && bsc.length) {console.log(bsc);
+				var dt = bsc[0].getElementsByTagName('dt');
+				var dd = bsc[0].getElementsByTagName('dd');
+				if (dt.length && dt.length == dd.length) {console.log(dd); // Both greater than 0 and equal.
+					for (var j=0;j<dt.length;j++) {console.log(dt[j]);
+						if (dt[j] == 'Location') {
+							loc = dd[j].innerText.trim();
+						}
+						else if (dt[j] == 'Industry') {
+							ind = dd[j].innerText.trim();
+						}
+					}
+				}
+			}
+			var item = {
+				name: vcards[i].getElementsByTagName('h3')[0].innerText.trim(),
+				title: (hdl.length) ? hdl[0].innerText.trim() : null,
+				location: loc,
+				industry: ind,
+				profile_url: a,
+				vceit: (exp && exp.length) ? exp[0].innerText.trim() : null,
+			}
 			opts.response.vars.results.push(item);
 		}
 	}
