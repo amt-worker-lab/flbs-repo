@@ -114514,10 +114514,18 @@ qatar,80
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
-				]
+				],
+				auto: {
+					c: null,
+					l: null,
+					p: null,
+				}
 			}
 			console.log(o);
 			o.boldArray = o.comp.clean_string_to_array().concat(o.location.clean_string_to_array()).concat(o.phone.clean_string_to_array());
+			o.auto.c = o.comp.clean_str_to_auto();
+			o.auto.l = o.location.clean_str_to_auto();
+			o.auto.p = o.phone.clean_str_to_auto();
 			console.log(o);
 			/* BEGIN ITEMS */
 			//
@@ -114643,12 +114651,43 @@ qatar,80
 					site: 'choice_hotels_hotel_profile',
 					url: 'https://www.choicehotels.com/webapi/hotel/'+id+
 						'?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN',
-					callback_function: prof_success
+					callback_function: prof_success,
+					__seed__: txa
 				});
 			}
 			function prof_success(obj) {
 				console.log(obj);
 				console.log(obj.response.vars.parsed);
+				var p = obj.response.vars.parsed.hotel;
+				var address = p.address.line1 + ', ' + p.address.city + ', ' + p.address.subdivision;
+				//~ var address_auto = address.clean_str_to_auto();
+				
+				var str =
+					MT__bold(p.name, o.boldArray) + '<br>' +
+					MT__bold(address, o.boldArray) + '<br>' +
+					MT__bold(p.phone, o.boldArray) + '<br>'
+					;
+				var div = str.div({style:'border-top:1px solid teal;'});
+				div.onclick = function() {
+					this.style.backgroundColor = 'aqua';
+				}
+				obj.__seed__.parentNode.appendChild(div);
+				
+				// Auto
+				//
+				//
+				//
+				if  (
+					o.auto.c == o.name.clean_str_to_auto() &&
+					o.auto.c.length > 4 &&
+					o.auto.l == address.clean_str_to_auto() &&
+					o.auto.l.length > 4 &&
+					o.auto.p == o.phone.clean_str_to_auto() &&
+					o.auto.p.length > 4
+					)
+				{
+					div.click();
+				}
 			}
 		}
 		new run().f();
