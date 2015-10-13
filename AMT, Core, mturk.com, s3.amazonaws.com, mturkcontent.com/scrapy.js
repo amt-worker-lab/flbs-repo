@@ -1021,7 +1021,7 @@ function init__scrapy() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				sd_start_urls: [td[11].innerText.trim()],
+				sd_start_urls: [], //[td[11].innerText.trim()],
 				sd_allowed_domains: null,
 				name: td[1].innerText.trim(),
 				city: td[5].innerText.trim(),
@@ -1043,7 +1043,7 @@ function init__scrapy() {
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
-			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
+			//~ o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			console.log(o);
 			
 			// Remove first tds
@@ -1086,10 +1086,10 @@ function init__scrapy() {
 			
 			// ...
 			document.getElementById('submitButton').onclick = function() {
-				//~ o.q[0].value = o.q[0].value.trim();
-				//~ if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
-					//~ return false;
-				//~ }
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					return false;
+				}
 				//~ new AMT___core_factory().shiftFarLeft();
 				//~ alert('here?');
 				
@@ -1126,7 +1126,8 @@ function init__scrapy() {
 				if (!rs.length) {
 					// No URLs
 					// Init
-					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					//~ scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					AMT___Floater.skip();
 					return;
 				} else {
 					/*([{
