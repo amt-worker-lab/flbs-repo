@@ -5525,14 +5525,15 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 */
 	function choice_hotels_hotel_profile() {
 		opts.response.vars = {
-			result: {
-				name: null,
-				full_address: null,
-				phone: null,
-			},
+			parsed: null
+			//~ result: {
+				//~ name: null,
+				//~ full_address: null,
+				//~ phone: null,
+			//~ },
 		}
 		var rs = opts.response.responseText;
-		
+		opts.response.vars.parsed = JSON.parse(rs);
 	}
 	/**
 	 * amazon_product_page

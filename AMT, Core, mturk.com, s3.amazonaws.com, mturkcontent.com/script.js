@@ -114565,6 +114565,12 @@ qatar,80
 				//~ naText:'not found',
 				// x = options_object.search_results.url_modifier_callback( x );
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					
+					//~ // NOTE: 
+					//~ // https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
+					//~ var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(this.value);
+					//~ if (!id || !id.length) return;
+					
 					//this.style.backgroundColor = 'Orange';
 					prof(this);
 					// Hide this P!
@@ -114577,20 +114583,23 @@ qatar,80
 				//
 				load_success_callback: function( options_object ) {
 					
+					// NOTE: 
+					// https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
+					
 					//
 					var divs = options_object.results.divs;
 					if (divs[0].results.length) { // 1st
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[0].results[0].textarea.value)
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[0].results[0].textarea.value))
 							divs[0].results[0].textarea.click();
 					}
 					if (divs[1].results.length) {
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[1].results[0].textarea.value)
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[1].results[0].textarea.value))
 							setTimeout(function() { // 2nd column
 								divs[1].results[0].textarea.click();
 							}, 1000);
 					}
 					if (divs[2].results.length) {
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[2].results[0].textarea.value)
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[2].results[0].textarea.value))
 							setTimeout(function() { // 3nd column
 								divs[2].results[0].textarea.click();
 							}, 2000);
@@ -114623,15 +114632,23 @@ qatar,80
 				},
 			});
 			function prof(txa) {
+				// NOTE: 
+				// https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
+				var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(txa.value);console.log(id);
+				if (!id || !id.length) return;console.log(id);
+				id = encodeURIComponent(id[1]);console.log(id);
+				
 				//txa.value, txa.full_url, txa.parent_p
 				new AMT___site_scrapes().scrape({
 					site: 'choice_hotels_hotel_profile',
-					url: txa.value,
+					url: 'https://www.choicehotels.com/webapi/hotel/'+id+
+						'?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN',
 					callback_function: prof_success
 				});
 			}
 			function prof_success(obj) {
 				console.log(obj);
+				console.log(obj.response.vars.parsed);
 			}
 		}
 		new run().f();
