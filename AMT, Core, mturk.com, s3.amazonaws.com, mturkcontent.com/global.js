@@ -6051,10 +6051,19 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//
 		opts.response.vars.li_is_directory_listing = true; // Set li_is_directory_listing
 		var p = dom.getElementsByClassName('vcard');
-		linkedin_dir_url__profs(p);
+		if (!p.length) {
+			p = dom.getElementsByClassName('profile-card');
+			linkedin_dir_url__profs_no_vcard(p); // Not vcard!
+		} else
+			linkedin_dir_url__profs(p);  // Is vcard!
 		
 		// Return true!
 		return true;
+	}
+	function linkedin_dir_url__profs_no_vcard(vcards) {
+		for (var i=0;i<vcards.length;i++) {
+			opts.response.vars.results.push(item);
+		}
 	}
 	function linkedin_dir_url__profs(vcards) {
 		for (var i=0;i<vcards.length;i++) {
