@@ -114564,7 +114564,75 @@ qatar,80
 				offsetTop: 0, //site:www.choicehotels.com
 				//~ naText:'not found',
 				// x = options_object.search_results.url_modifier_callback( x );
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					//this.style.backgroundColor = 'Orange';
+					prof(this);
+					// Hide this P!
+					var d = this.parentNode;
+					d.result.body.style.display = 'none';
+				},
+				
+				// For the first in each column...
+				// Settimeout for each column @ ~1 second and utilize xhr_with_disk_cache.
+				//
+				load_success_callback: function( options_object ) {
+					
+					//
+					var divs = options_object.results.divs;
+					if (divs[0].results.length) { // 1st
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[0].results[0].textarea.value)
+							divs[0].results[0].textarea.click();
+					}
+					if (divs[1].results.length) {
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[1].results[0].textarea.value)
+							setTimeout(function() { // 2nd column
+								divs[1].results[0].textarea.click();
+							}, 1000);
+					}
+					if (divs[2].results.length) {
+						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[2].results[0].textarea.value)
+							setTimeout(function() { // 3nd column
+								divs[2].results[0].textarea.click();
+							}, 2000);
+					}
+					
+					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+					// This is to check first in each column!......
+					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+					//~ //
+					//~ //
+					//~ // CHECK First URL in each div
+					//~ // To decide whether to click on the top / first URL.
+					//~ var divs = options_object.results.divs;
+					//~ var chk_similar = false;
+					//~ for (var i in divs) {
+						//~ var results = divs[i].results; // Array of {p:, url:, body:, textarea:, ...}
+						//~ if (!results.length) return; // End here.
+						//~ if (chk_similar == false) {
+							//~ chk_similar = results[0].url; // Set chk_similar
+							//~ continue;
+						//~ }
+						//~ // chk_similar has been set!
+						//~ if (results[0].url != chk_similar) {
+							//~ return;
+						//~ }
+					//~ }
+					//~ // If still here then all three results match!
+					//~ // So click one!
+					//~ divs[0].results[0].textarea.click();
+				},
 			});
+			function prof(txa) {
+				//txa.value, txa.full_url, txa.parent_p
+				new AMT___site_scrapes().scrape({
+					site: 'choice_hotels_hotel_profile',
+					url: txa.value,
+					callback_function: prof_success
+				});
+			}
+			function prof_success(obj) {
+				console.log(obj);
+			}
 		}
 		new run().f();
 		return;
@@ -115298,13 +115366,12 @@ qatar,80
 							
 						}
 						});
-						} catch(e) {
+						}
+				catch(e) {
 					console.log('caught');
 					console.log(e);
 				}
 			}
-		
-			
 		}
 		new run().f();
 		return;

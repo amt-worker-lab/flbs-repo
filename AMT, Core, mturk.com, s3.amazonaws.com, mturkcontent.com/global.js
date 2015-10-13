@@ -5429,6 +5429,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			opts.tmp_callback = linkedin_dir_url; // profile-card
 			xhr_get();
 			break;
+		case 'choice_hotels_hotel_profile':
+			opts.tmp_callback = choice_hotels_hotel_profile;
+			xhr_get();
+			break;
 	}
 	
 	/**
@@ -5511,6 +5515,25 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//~ });
 	//~ }
 	
+	/**
+	 * choice_hotels_hotel_profile
+	 * 
+	 * e.g. 
+	 * 
+	 * @results [{}]
+	 * 
+	 */
+	function choice_hotels_hotel_profile() {
+		opts.response.vars = {
+			result: {
+				name: null,
+				full_address: null,
+				phone: null,
+			},
+		}
+		var rs = opts.response.responseText;
+		
+	}
 	/**
 	 * amazon_product_page
 	 * 
