@@ -6053,7 +6053,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		var p = dom.getElementsByClassName('vcard');
 		if (!p.length) {
 			p = dom.getElementsByClassName('profile-card');
-			linkedin_dir_url__profs_no_vcard(p); // Not vcard!
+			if (p.length)
+				linkedin_dir_url__profs_no_vcard(p); // Not vcard!
+			else {
+				opts.response.vars.li_has_zero_results = true;
+				return true; // NO RESULTS
+			}
 		} else
 			linkedin_dir_url__profs(p);  // Is vcard!
 		
@@ -6067,15 +6072,15 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			var exp = vcards[i].getElementsByClassName('expanded');
 			var a = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
 			var loc = null, ind = null;
-			if (bsc && bsc.length) {console.log(bsc);
+			if (bsc && bsc.length) {
 				var dt = bsc[0].getElementsByTagName('dt');
 				var dd = bsc[0].getElementsByTagName('dd');
-				if (dt.length && dt.length == dd.length) {console.log(dd); // Both greater than 0 and equal.
-					for (var j=0;j<dt.length;j++) {console.log(dt[j]);
-						if (dt[j] == 'Location') {
+				if (dt.length && dt.length == dd.length) { // Both greater than 0 and equal.
+					for (var j=0;j<dt.length;j++) {//console.log(dt[j]);
+						if (dt[j].innerText == 'Location') {
 							loc = dd[j].innerText.trim();
 						}
-						else if (dt[j] == 'Industry') {
+						else if (dt[j].innerText == 'Industry') {
 							ind = dd[j].innerText.trim();
 						}
 					}
