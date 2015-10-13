@@ -111,7 +111,7 @@ function MT__RUN() {
 				new AMT___core_factory().nextTab();
 				//~ return false;
 			}
-			document.getElementById('submitButton').
+			
 		}
 		new run().f();
 	}
@@ -47191,7 +47191,7 @@ function MT__RUN() {
 					
 					//...
 					// Go to map view
-					else if (char == 'c' || char == 'C') {
+					else if (char == 'b' || char == 'B') {
 						//~ var x=document.getElementsByTagName('div');
 						//~ for (var i in x) {
 							//~ if (i == 'length') break;
@@ -47241,12 +47241,17 @@ function MT__RUN() {
 						});
 					}
 					
-					else if (char == 'v' || char == 'V') {
+					else if (char == 'c' || char == 'C') {
 						AMT___RunPageScript(function() {
-							map.setHeading(map.getHeading() + 90 || 0);
+							if(!map.getHeading() && map.getHeading() != 0) {
+								map.setHeading(90);
+							}
+							else { 
+								map.setHeading(map.getHeading() + 90);
+							}
 						});
 					}
-					else if (char == 'b' || char == 'B') {
+					else if (char == 'v' || char == 'V') {
 						AMT___RunPageScript(function() {
 							map.setHeading(map.getHeading() - 90 || 0);
 						});
