@@ -114491,8 +114491,8 @@ qatar,80
 	 */
 	
 	//
-	// 
-	// 
+	// Melissa Kendall
+	// Find the Website Address for Hotels
 	// 
 	var s = '<strong>Do not </strong>include URLs to city results, e.g.&nbsp;https://www.choicehotels.com/tennessee/chattanooga/hotels.';
 	if (ih.indexOf(s) != -1)
@@ -114509,14 +114509,15 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim(),
-				city_state: td[3].innerText.trim() +' '+ td[5].innerText.trim(),
+				location: td[3].innerText.trim(),
+				phone: td[5].innerText.trim(),
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
 				]
 			}
 			console.log(o);
-			o.boldArray = o.comp.clean_string_to_array().concat(o.city_state.clean_string_to_array());
+			o.boldArray = o.comp.clean_string_to_array().concat(o.location.clean_string_to_array()).concat(o.phone.clean_string_to_array());
 			console.log(o);
 			/* BEGIN ITEMS */
 			//
@@ -114540,15 +114541,22 @@ qatar,80
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
+				parent: d1,
 				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.comp.split(' ').join('" "')+'"', // quotes
-					o.comp + ' ' + o.city_state
+					o.comp + ' ' + o.location, // quotes
+					o.comp + ' ' + o.phone
 				],
+				search_results: {
+					use_full_urls: true,
+					replace_urls_in_result_body: true,
+				},
+				search: {
+					str_add_to_searches_hidden: ' site:choicehotels.com ',
+				},
 				out_element: o.q[0],
-				parent: d1,
-				offsetTop: 0,
+				offsetTop: 0, //site:www.choicehotels.com
 				//~ naText:'not found',
 			});
 		}
