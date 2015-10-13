@@ -1022,7 +1022,7 @@ function init__scrapy() {
 			var td = document.getElementsByTagName('td');
 			var o = {
 				sd_start_urls: [], //[td[11].innerText.trim()],
-				sd_allowed_domains: null,
+				sd_allowed_domains: [],
 				name: td[1].innerText.trim(),
 				city: td[5].innerText.trim(),
 				country: td[9].innerText.trim(),
