@@ -116133,6 +116133,7 @@ qatar,80
 						var dm_bld, hd_bld;
 						dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
 						dm_bld = MT__bold(dm_bld, o.bold);
+						dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
 						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
