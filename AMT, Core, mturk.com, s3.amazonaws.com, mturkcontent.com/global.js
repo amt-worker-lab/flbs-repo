@@ -6095,12 +6095,18 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		// How many profiles total? (E.g. 25 of 1000 or 16 of 16.)
 		// total_li_results
-		var p = dom.getElementsByClassName('pagination');console.log(p);console.log(rs);
-		if (p && p.length) {console.log(p);
+		var p = dom.getElementsByClassName('pagination');
+		if (p && p.length) {
 			p = /^Showing [\d,]+ of ([\d,]+) profiles?/.exec(p[0].innerText.trim());
 			if (p) {console.log(p);
 				opts.response.total_li_results = p[1];
 				//~ opts.response.total_li_results = parseInt(p[1]);
+			}
+		} else {
+			// Join LinkedIn to see all 158 profiles.
+			var n = /Join LinkedIn to see all ([\d,]+) profiles\./.exec(rs);
+			if (n) {
+				opts.response.total_li_results = n[1];
 			}
 		}
 		
@@ -7319,11 +7325,25 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		console.log(options);
 		var out = options.___seed___;
 		var divs = []; // An array of divs (for display and optional sorting later)
+		
+		// Append the number of results!
+		//
+		//
+		var n = options.response.total_li_results+' result';
+		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
+		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
+		out.appendChild(ndiv);
+		
+		// No results....
+		//
+		//
 		if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
-			out.innerText = '0 results';
 			return;
 		}
 		
+		// Sort...
+		//
+		//
 		if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
 			for (var i in options.response.vars.results) {
 				var div = profile(options.response.vars.results[i]);
@@ -7350,14 +7370,6 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			return b.num_bolds - a.num_bolds; // desc
 			//return a.num_bolds - b.num_bolds; // asc
 		});
-		
-		// Append the number of results!
-		//
-		//
-		var n = options.response.total_li_results+' result';
-		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
-		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
-		out.appendChild(ndiv);
 		
 		// Append the profile divs...
 		// 
