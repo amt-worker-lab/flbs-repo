@@ -6055,9 +6055,10 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	function linkedin_dir_url() {
 		opts.response.vars = {
 			results: [ // array of profiles
-			],
-			total_li_results: 0,
+			]
 		}
+		opts.response.total_li_results = 0; // total_li_results
+		
 		var rs = opts.response.responseText;
 		// E.g. <h1> 0 Results for Belford Lester </h1>
 		if (rs.indexOf('<h1> 0 Results for ') != -1) {
@@ -6070,6 +6071,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		// Be sure to check whether this has 302'd to a person's profile!
 		// Note document.title
 		if (!/ profiles \| LinkedIn$/.exec(dom.title)) {
+			opts.response.total_li_results = 1; // Update # results
 			return linkedin_person_profile(); // Return this!
 		}
 		
@@ -6096,7 +6098,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		if (p && p.length) {
 			p = /^Showing [\d,]+ of ([\d,]+) profiles?/.exec(p[0].innerText.trim());
 			if (p) {console.log(p);
-				opts.response.vars.total_li_results = parseInt(p[1]);
+				opts.response.total_li_results = p[1];
+				//~ opts.response.total_li_results = parseInt(p[1]);
 			}
 		}
 		
@@ -7316,7 +7319,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		var out = options.___seed___;
 		var divs = []; // An array of divs (for display and optional sorting later)
 		if (options.response.vars.hasOwnProperty('li_has_zero_results') && options.response.vars.li_has_zero_results) {
-			out.innerText = '0 results.';
+			out.innerText = '0 results';
 			return;
 		}
 		
@@ -7350,7 +7353,9 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		// Append the number of results!
 		//
 		//
-		var ndiv = (options.response.vars.total_li_results+' results.').div({style:'border-bottom:1px solid teal;'});
+		var n = options.response.total_li_results+' result';
+		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
+		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
 		out.appendChild(ndiv);
 		
 		// Append the profile divs...
