@@ -7335,13 +7335,17 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			return b.num_bolds - a.num_bolds; // desc
 			//return a.num_bolds - b.num_bolds; // asc
 		});
+		
+		// Append the number of results!
+		//
+		//
+		
+		// Append the profile divs...
+		// 
+		//
 		for (var i in divs) {
 			out.appendChild(divs[i]);
 		}
-		//~ // Append
-		//~ //
-		//~ //
-		//~ out.appendChild(dv);
 	}
 	/**
 	 * profile
