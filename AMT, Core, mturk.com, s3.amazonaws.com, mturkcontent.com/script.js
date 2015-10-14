@@ -114594,20 +114594,23 @@ qatar,80
 					// NOTE: 
 					// https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
 					
+					// NOTE:
+					// https://www.choicehotels.com/hotel-troutville-virginia-VA554
+					
 					//
 					var divs = options_object.results.divs;
 					if (divs[0].results.length) { // 1st
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[0].results[0].textarea.value))
+						if (good_url(divs[0].results[0].textarea.value))
 							divs[0].results[0].textarea.click();
 					}
 					if (divs[1].results.length) {
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[1].results[0].textarea.value))
+						if (good_url(divs[1].results[0].textarea.value))
 							setTimeout(function() { // 2nd column
 								divs[1].results[0].textarea.click();
 							}, 1000);
 					}
 					if (divs[2].results.length) {
-						if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(divs[2].results[0].textarea.value))
+						if (good_url(divs[2].results[0].textarea.value))
 							setTimeout(function() { // 3nd column
 								divs[2].results[0].textarea.click();
 							}, 2000);
@@ -114639,12 +114642,29 @@ qatar,80
 					//~ divs[0].results[0].textarea.click();
 				},
 			});
+			function good_url(u) { // T/F
+				// https://www.choicehotels.com/hotel-troutville-virginia-VA554
+				// https://www.choicehotels.com/washington/walla-walla/comfort-inn-hotels/wa184
+				if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(u)) {
+					return true;
+				}
+				if (/^https?:\/\/www\.choicehotels\.com\/[^\/A-Z]+([A-Z]{2}\d{3})(\/|$)/.exec(u)) {
+					return true;
+				}
+				
+				return false;
+			}
 			function prof(txa) {
 				// NOTE: 
 				// https://www.choicehotels.com/webapi/hotel/ne118?include=amenities,+amenity_groups,+relative_media,+rating,+cms,+contact,+time,+alerts&preferredLanguageCode=EN
-				var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(txa.value);console.log(id);
-				if (!id || !id.length) return;console.log(id);
-				id = encodeURIComponent(id[1]);console.log(id);
+				var id = /^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/(\w+\d{1,4})(\/|$)/.exec(txa.value);
+				if (!id || !id.length) {
+					id = /^https?:\/\/www\.choicehotels\.com\/[^\/A-Z]+([A-Z]{2}\d{3})(\/|$)/.exec(txa.value)
+					if (!id || !id.length) {
+						return;
+					}
+				}
+				id = encodeURIComponent(id[1]);
 				
 				//txa.value, txa.full_url, txa.parent_p
 				new AMT___site_scrapes().scrape({
@@ -114671,7 +114691,7 @@ qatar,80
 				div.onclick = function() {
 					this.style.backgroundColor = 'aqua';
 					o.q[0].value = obj.__seed__.value;
-					if (/^https?:\/\/www\.choicehotels\.com\/[^\/]+\/[^\/]+\/[^\/]+\/\w+\d{1,4}/.exec(o.q[0].value))
+					if (good_url(o.q[0].value))
 						doSubmit();
 				}
 				obj.__seed__.parentNode.appendChild(div);
