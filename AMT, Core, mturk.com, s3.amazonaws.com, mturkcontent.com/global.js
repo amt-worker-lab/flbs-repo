@@ -7306,11 +7306,13 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		var divs = []; // An array of divs (for display and optional sorting later)
 		if (options.response.vars.hasOwnProperty('li_has_zero_results') && options.response.vars.li_has_zero_results) {
 			out.innerText = '0 results.';
+			return;
 		}
-		else if
-		   (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
+		
+		if (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
 			for (var i in options.response.vars.results) {
 				var div = profile(options.response.vars.results[i]);
+				divs.push(div);
 			}
 		} else { // This is a redirected profile!
 			// profile
@@ -7327,12 +7329,27 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 					vceit: '',
 				}
 			)
+			divs.push(div);
+		}
+		divs.sort(function(a, b) {
+			return b.num_bolds - a.num_bolds; // desc
+			//return a.num_bolds - b.num_bolds; // asc
+		});
+		for (var i in divs) {
+			out.appendChild(divs[i]);
 		}
 		//~ // Append
 		//~ //
 		//~ //
 		//~ out.appendChild(dv);
 	}
+	/**
+	 * profile
+	 * 
+	 * @returns
+	 * 	div
+	 * 		{div.num_bolds}		integer
+	 */
 	function profile(pobj) { // Takes profile obj
 		// str
 		pobj.title = (pobj.title) ? pobj.title : '--';
