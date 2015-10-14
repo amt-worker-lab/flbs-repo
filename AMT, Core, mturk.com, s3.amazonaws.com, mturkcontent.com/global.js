@@ -7303,20 +7303,21 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		//~ opts.response.vars.results
 		console.log(options);
 		var out = options.___seed___;
+		var divs = []; // An array of divs (for display and optional sorting later)
 		if (options.response.vars.hasOwnProperty('li_has_zero_results') && options.response.vars.li_has_zero_results) {
 			out.innerText = '0 results.';
 		}
 		else if
 		   (options.response.vars.hasOwnProperty('li_is_directory_listing') && options.response.vars.li_is_directory_listing) {
 			for (var i in options.response.vars.results) {
-				profile(options.response.vars.results[i], out);
+				var div = profile(options.response.vars.results[i]);
 			}
 		} else { // This is a redirected profile!
 			// profile
 			// options.response.vars
 			// Make an object...
 			// And send to profile
-			profile(
+			var div = profile(
 				{
 					name: options.response.vars.result.name,
 					title: options.response.vars.result.headline,
@@ -7324,12 +7325,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 					industry: '',
 					profile_url: options.response.vars.result.public_url,
 					vceit: '',
-				},
-				out
+				}
 			)
 		}
+		//~ // Append
+		//~ //
+		//~ //
+		//~ out.appendChild(dv);
 	}
-	function profile(pobj, out) { // Takes profile obj, Out div
+	function profile(pobj) { // Takes profile obj
 		// str
 		pobj.title = (pobj.title) ? pobj.title : '--';
 		var title = bold_blue_black(pobj.title);
@@ -7377,14 +7381,15 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				doSubmit();
 			}
 		}
+		// Set this div's percent matched bolds!
+		// Actually, easier to implement is to just count the number of bold elemeents in this...
+		dv.num_bolds = dv.getElementsByTagName('b').length;
+		
 		// Add sk_div....
 		//
 		//
 		dv.appendChild(sk_div);
-		// Append
-		//
-		//
-		out.appendChild(dv);
+		return dv;
 	}
 	function bold_blue_black(str) {
 		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
