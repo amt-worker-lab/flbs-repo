@@ -172800,7 +172800,7 @@ function top_window(okay_to_run) {
 					//
 				}
 			} else {
-				d3c.value += ' '+country_str;
+				//~ d3c.value += ' '+country_str;
 			}
 				
 			var load_first = true;
