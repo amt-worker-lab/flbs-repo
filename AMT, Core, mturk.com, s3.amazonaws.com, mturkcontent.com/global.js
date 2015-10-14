@@ -6099,7 +6099,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			var loc = null, ind = null;
 			// A
 			for (var j=0;j<a.length;j++) {
-				var x = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
+				var x = a[j].getAttribute('href').trim();
 				console.log(x);
 				if (/(\.com\/pub\/|\.com\/in\/)/.exec(x)) {
 					a = x;
@@ -6138,7 +6138,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			var a = vcards[i].getElementsByTagName('a');
 			// A
 			for (var j=0;j<a.length;j++) {
-				var x = vcards[i].getElementsByTagName('a')[0].getAttribute('href').trim();
+				var x = a[j].getAttribute('href').trim();
 				if (/(\.com\/pub\/|\.com\/in\/)/.exec(x)) {
 					a = x;
 					break;
