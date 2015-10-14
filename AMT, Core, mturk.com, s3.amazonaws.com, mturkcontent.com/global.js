@@ -6057,12 +6057,13 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			results: [ // array of profiles
 			]
 		}
+		//~ opts.response.vars.li_has_zero_results
 		opts.response.total_li_results = 0; // total_li_results
 		
 		var rs = opts.response.responseText;
 		// E.g. <h1> 0 Results for Belford Lester </h1>
 		if (rs.indexOf('<h1> 0 Results for ') != -1) {
-			opts.response.vars.li_has_zero_results = true; // Set li_has_zero_results
+			//~ opts.response.vars.li_has_zero_results = true; // Set li_has_zero_results
 			return true;
 		}
 		// DOM
@@ -6073,7 +6074,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		if (!/ profiles \| LinkedIn$/.exec(dom.title)) {
 			opts.response.total_li_results = 1; // Update # results
 			return linkedin_person_profile(); // Return this!
-		}
+		}console.log('x');
 		
 		// Still here...
 		// This is directory
@@ -6081,12 +6082,12 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//
 		opts.response.vars.li_is_directory_listing = true; // Set li_is_directory_listing
 		var p = dom.getElementsByClassName('vcard');
-		if (!p.length) {
+		if (!p.length) {console.log('x');
 			p = dom.getElementsByClassName('profile-card');
 			if (p.length)
 				linkedin_dir_url__profs_no_vcard(p); // Not vcard!
 			else {
-				opts.response.vars.li_has_zero_results = true;
+				//~ opts.response.vars.li_has_zero_results = true;
 				return true; // NO RESULTS
 			}
 		} else
@@ -6094,8 +6095,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		// How many profiles total? (E.g. 25 of 1000 or 16 of 16.)
 		// total_li_results
-		var p = dom.getElementsByClassName('pagination');
-		if (p && p.length) {
+		var p = dom.getElementsByClassName('pagination');console.log(p);console.log(rs);
+		if (p && p.length) {console.log(p);
 			p = /^Showing [\d,]+ of ([\d,]+) profiles?/.exec(p[0].innerText.trim());
 			if (p) {console.log(p);
 				opts.response.total_li_results = p[1];
@@ -7318,7 +7319,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		console.log(options);
 		var out = options.___seed___;
 		var divs = []; // An array of divs (for display and optional sorting later)
-		if (options.response.vars.hasOwnProperty('li_has_zero_results') && options.response.vars.li_has_zero_results) {
+		if (options.response.hasOwnProperty('total_li_results') && options.response.total_li_results == '0') {
 			out.innerText = '0 results';
 			return;
 		}
