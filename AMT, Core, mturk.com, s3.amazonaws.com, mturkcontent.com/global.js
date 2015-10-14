@@ -6049,6 +6049,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	
 	/**
 	 * linkedin_dir_url
+	 * 
+	 * e.g. Gerry Gorman
 	 */
 	function linkedin_dir_url() {
 		opts.response.vars = {
@@ -6997,6 +6999,8 @@ function AMT___items_factory(obj_vars) {
 /**
  * create_dashboard_linkedin_pub_dir
  * 
+ * e.g. Gerry Gorman
+ * 
  * @params
  * 
  * searches		Array of objects
@@ -7329,7 +7333,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		// str
 		pobj.title = (pobj.title) ? pobj.title : '--';
 		var title = bold_blue_black(pobj.title);
-		var location = bold_blue_black(pobj.location);
+		var location = bold_blue_black(pobj.location).replace('|', '<br>I:'); // Replace Industry here with <br>
 		var industry = (pobj.industry) ? bold_blue_black(pobj.industry) : '';
 		var vceit = bold_blue_black(pobj.vceit);
 		//vceit = (pobj.vceit == null)
