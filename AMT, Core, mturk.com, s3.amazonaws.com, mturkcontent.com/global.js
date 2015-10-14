@@ -6055,7 +6055,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	function linkedin_dir_url() {
 		opts.response.vars = {
 			results: [ // array of profiles
-			]
+			],
+			total_li_results: 0,
 		}
 		var rs = opts.response.responseText;
 		// E.g. <h1> 0 Results for Belford Lester </h1>
@@ -6088,6 +6089,16 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			}
 		} else
 			linkedin_dir_url__profs(p);  // Is vcard!
+		
+		// How many profiles total? (E.g. 25 of 1000 or 16 of 16.)
+		// total_li_results
+		var p = dom.getElementsByClassName('pagination');
+		if (p && p.length) {
+			p = /^Showing [\d,]+ of ([\d,]+) profiles?/.exec(p[0].innerText.trim());
+			if (p) {console.log(p);
+				opts.response.vars.total_li_results = parseInt(p[1]);
+			}
+		}
 		
 		// Return true!
 		return true;
@@ -7339,6 +7350,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		// Append the number of results!
 		//
 		//
+		var ndiv = (options.response.vars.total_li_results+' results.').div({style:'border-bottom:1px solid teal;'});
+		out.appendChild(ndiv);
 		
 		// Append the profile divs...
 		// 
