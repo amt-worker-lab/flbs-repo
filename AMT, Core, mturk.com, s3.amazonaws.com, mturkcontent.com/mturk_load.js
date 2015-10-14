@@ -148,7 +148,7 @@ function mturk_load()
 			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
 			)
 		{
-			if(l.indexOf('There are no more available HITs in this group. See more HITs available to you below.') != -1) {
+			if(l.toLowerCase().indexOf('there are no more available hits in this group.') != -1) {
 				AMT__Global_Vars.initializeNextTabPassBy();
 				new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
 				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {
