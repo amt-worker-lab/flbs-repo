@@ -7344,6 +7344,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		n += (options.response.total_li_results != 1) ? 's' : ''; // Add "s"
 		var ndiv = n.div({style:'border-bottom:1px solid teal;'});
 		out.appendChild(ndiv);
+		// Make aqua when there are less than 25!
+		if (options.response.total_li_results*1 < 25) {
+			ndiv.style.backgroundColor = 'aqua';
+		}
 		
 		// No results....
 		//
@@ -7420,8 +7424,17 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		sk_div.addEventListener('mouseout', function() {
 			this.inner.style.display = 'none';
 		}, false);
+		
+		// Change "S:" background color when there are "blue" bolds inside sk_div.
+		//
+		//
+		if (sk_div.innerHTML.indexOf('color:blue;')!= -1) {
+			sk_div.style.backgroundColor = 'aqua';
+		}
+		
 		//~ // Let's set the person's name & location close-by so it's possible to see it clearly.
 		//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
+		
 		// Set dv
 		//
 		//
