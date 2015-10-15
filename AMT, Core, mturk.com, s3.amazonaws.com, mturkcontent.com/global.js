@@ -7655,6 +7655,13 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	options_object.parent.appendChild(na);
 	na.value = (options_object.naText) ? options_object.naText : "N/A";
 	na.id = 'naButtonForDashboardFindUrl';
+	new AMT___core_factory().createScriptVar('N/A button', "z");
+	window.addEventListener('keypress', function(e) {
+		switch(e.keyCode) {
+			case (AMT__Global_Vars.scriptVars['N/A button'].toLowerCase().charCodeAt()): 
+				document.getElementById('naButtonForDashboardFindUrl').click();
+		}
+	});
 
 	//
 	var inp_top = document.createElement('input');
