@@ -2143,6 +2143,14 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	console.log('attempting el_innerheight');
 	
 	//document.getElementsByTagName('iframe')[0].style.height;
+	//~ var observer = new MutationObserver(function(mutations) {
+		//~ mutations.forEach(function(mutationRecord) {
+			//~ console.log('style changed!');
+		//~ });    
+	//~ });
+	//~ var target = document.getElementById('myId');
+	//~ observer.observe(target, { attributes : true, attributeFilter : ['style'] });
+	
 	
 	// 
 	if (window.top == window.self) {
