@@ -116195,17 +116195,10 @@ qatar,80
 						dv.appendChild(dvc);
 						//~ d.appendChild(dvc);
 						
-						// Left & Right divs.
-						// Left=Experience
-						// Right=PAV (people alsov viewed)
-						//
+						// xxxxx old xxxxx Left & Right divs.
 						//
 						var dvl = ''.div({style:'border-top:1px solid #a2a2a2;'});
-						//~ var dvr = ''.div({style:'float:left;width:50%;border-top:1px solid #a2a2a2;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
-						//~ var dvl = ''.div({style:'float:left;width:50%;border-top:1px solid #a2a2a2;'});
-						//~ var dvr = ''.div({style:'float:left;width:50%;border-top:1px solid #a2a2a2;overflow:hidden;margin-left:-1px;'}); // BORDER-COLLAPSE=-1px
 						dvc.appendChild(dvl);
-						dvc.appendChild(dvr);
 						
 						if (!exp.length) {
 							dvl.appendChild('0 experience'.div({style:''}));
@@ -116224,14 +116217,6 @@ qatar,80
 						
 						// Spacer...
 						dvc.appendChild(''.div({style:'height:2000px;'}));
-						//~ // PAV
-						//~ for (var i in pav) {
-							//~ var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-left:1px solid #a2a2a2;padding-left:1px;'}); //background-color:#eee;
-							//~ dx.innerHTML = 
-								//~ MT__bold(pav[i].name, o.bold_locn) + '<br>' +
-								//~ MT__bold(pav[i].title, o.bold_locn);
-							//~ dvr.appendChild(dx);
-						//~ }
 					}
 				});
 			}
