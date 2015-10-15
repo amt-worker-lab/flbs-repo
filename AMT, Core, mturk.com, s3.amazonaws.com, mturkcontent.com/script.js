@@ -177446,6 +177446,14 @@ function top_window(okay_to_run) {
 				d3.value = 'LastTime:' + o.time_since_last_init + 's';
 			}
 			
+			function alert() {
+				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+				if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
+					setInterval(function() {
+						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+					}, 30000);
+				}
+			}
 			/**
 			 * function
 			 */
@@ -177458,9 +177466,11 @@ function top_window(okay_to_run) {
 					url: url_current,
 					ontimeout: function() {
 						document.body.style.backgroundColor = 'aqua';
+						alert();
 					},
 					onerror: function() {
 						document.body.style.backgroundColor = 'aqua';
+						alert();
 					},
 					timeout: 20000,
 					onload: function (response) {
@@ -177468,14 +177478,7 @@ function top_window(okay_to_run) {
 						
 						if (response.status > 200) {
 							document.body.style.backgroundColor = 'pink';
-							
-							chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-							if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
-								setInterval(function() {
-									chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-								}, 30000);
-							}
-							
+							alert();
 							return;
 						}
 						
@@ -177531,19 +177534,6 @@ function top_window(okay_to_run) {
 							rs = rs.join('>Pages that include matching images<');
 							//~ console.log(rs);
 						}
-						//~ // replace "Best Match" !!
-						//~ if (rs.indexOf('Best guess for this image:') != -1) {
-							//~ rs = rs.split('>Visually similar images</a></h3>');
-							//~ rs = rs.slice(1).join('>Visually similar images</a></h3>');
-							//~ 
-							//~ rs = rs.replace(/Best guess for this image:[^<]{0,}<a[^>]+>[^<]+<\/a><\/div><\/div><div id="search"><!--a--><h2 class="hd">Search Results<\/h2><div id="ires"><ol[^>]+><li class="g"><!--m-->((.|\s)*?(?=<!--n-->|$)|$)/gi, '');
-							//~ 
-							//~ if (rs.indexOf('Best guess for this image') != -1) {
-								//~ alert('Best guess for this image');
-								//~ return;
-							//~ }
-						//~ }
-						
 						
 						var r, m;
 						
