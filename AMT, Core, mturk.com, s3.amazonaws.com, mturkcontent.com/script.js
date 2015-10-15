@@ -116081,10 +116081,10 @@ qatar,80
 				},
 			});
 			
-			document.body.addEventListener(onclick, function(e) {
+			document.body.addEventListener('click', function(e) {
 				console.log(e);
 				switch(e.which) {
-					case 3:
+					case 2:
 						document.getElementById('naButtonForDashboardFindUrl').click();
 					break;
 				}

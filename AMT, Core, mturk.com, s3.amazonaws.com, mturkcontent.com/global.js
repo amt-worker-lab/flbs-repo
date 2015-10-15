@@ -7654,6 +7654,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	na.setAttribute('style','width:19%;height:20px;cursor:pointer;');
 	options_object.parent.appendChild(na);
 	na.value = (options_object.naText) ? options_object.naText : "N/A";
+	na.id = 'naButtonForDashboardFindUrl';
+
 	//
 	var inp_top = document.createElement('input');
 	inp_top.setAttribute('type','input');
