@@ -2142,6 +2142,8 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	
 	console.log('attempting el_innerheight');
 	
+	//document.getElementsByTagName('iframe')[0].style.height;
+	
 	// 
 	if (window.top == window.self) {
 		success(options, {
