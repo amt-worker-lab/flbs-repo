@@ -116080,6 +116080,16 @@ qatar,80
 					doSubmit();
 				},
 			});
+			
+			document.body.addEventListener(onclick, function(e) {
+				console.log(e);
+				switch(e.which) {
+					case 3:
+						document.getElementById('naButtonForDashboardFindUrl').click();
+					break;
+				}
+			});
+			
 			// function liprof
 			// Textarea.parent_div, Textarea.full_url
 			function liprof(txt_area) {
