@@ -7018,6 +7018,7 @@ http%3A%2F%2Fdeancdawson%2Ecom
  * create_dashboard_find_phone
  * create_dashboard_find_address
  * create_dashboard_find_url
+ * create_dashboard_linkedin_pub_dir
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
@@ -7439,7 +7440,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(options_object.out_element.value) &&
 				/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(this.profile_url) &&
 				this.profile_url.indexOf('?') == -1
-				) { // If valid...
+				) // If valid...
+			{
 				doSubmit();
 			}
 		}
@@ -8143,7 +8145,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 			};
 			// Mouse event functions
-			//
+			// Note: Could do this also! .getElementsByClassName('class_');
 			//
 			//
 			function df_movr_(e) {
@@ -8162,7 +8164,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						x[i].style.backgroundColor = x[i].original_bg_color;
 					}
 				}
-				// Could do this also! .getElementsByClassName('class_');
 			}
 			function df_mout_(e) {
 				inp_top.value = '';
