@@ -8057,7 +8057,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// ...
 			var d = document.createElement('p');
 			d.setAttribute('style','margin:4px 0 4px 0;');
-			d.className = 'class_'+cls;
+			d.className = 'class_' + cls + ' result_highlight'; // Add class name here...
+			d.tmp_className = 'class_' + cls;
 			d.full_url = link;
 			d.original_bg_color = '';
 			d.result = div_result; // Linkifier
@@ -8157,36 +8158,69 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					}
 				}
 			};
+			function update_bgc_results_onclick(div) {
+				var x = document.getElementsByClassName('result_highlight');
+				for (var i in x) {
+					if (i == 'length') break;
+					if (x[i].className == div.className) {
+						x[i].style.backgroundColor = 'LightGreen';
+					}
+				}
+			}
 			// Mouse event functions
 			// Note: Could do this also! .getElementsByClassName('class_');
 			//
 			//
 			function df_movr_(e) {
 				inp_top.value = this.full_url;
+				var x = document.getElementsByClassName(this.className);
+				for (var i in x) {
+					if (i == 'length') break;
+					x[i].style.backgroundColor = 'LightGreen';
+				}
+				
+				// ..................xxx
 				//~ var x = document.getElementsByClassName(this.className);
 				//~ for (var i in x) {
 					//~ if (i == 'length') break;
 					//~ x[i].style.backgroundColor = 'LightGreen';
 				//~ }
-				var x = document.getElementsByTagName('p');
-				for (var i in x) {
-					if (i == 'length') break;
-					if (x[i].className == this.className) {
-						x[i].style.backgroundColor = 'LightGreen';
-					} else {
-						x[i].style.backgroundColor = x[i].original_bg_color;
-					}
-				}
+				
+				
+				// OLD
+				//
+				//
+				//~ var x = document.getElementsByTagName('p');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (x[i].className == this.className) {
+						//~ x[i].style.backgroundColor = 'LightGreen';
+					//~ } else {
+						//~ x[i].style.backgroundColor = x[i].original_bg_color;
+					//~ }
+				//~ }
 			}
 			function df_mout_(e) {
 				inp_top.value = '';
-				var x = document.getElementsByTagName('p');
+				
+				var x = document.getElementsByClassName('result_highlight');
 				for (var i in x) {
 					if (i == 'length') break;
 					if (x[i].className == this.className) {
-						x[i].style.backgroundColor = x[i].original_bg_color;
+						x[i].style.backgroundColor = '';
+						//~ x[i].style.backgroundColor = x[i].original_bg_color; // DEPRECATE THIS.............
 					}
 				}
+				// OLD
+				//
+				//
+				//~ var x = document.getElementsByTagName('p');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (x[i].className == this.className) {
+						//~ x[i].style.backgroundColor = x[i].original_bg_color;
+					//~ }
+				//~ }
 			}
 			// Add Mouse event functions
 			//
