@@ -115875,7 +115875,6 @@ qatar,80
 				city:		b[1].innerText.trim(),
 				state:		b[2].innerText.trim(),
 				state_full:	b[2].innerText.trim().stateAbbrToFull(),				
-				nm_cln:		null,
 				nm_array:	null,
 				comp_cln:	null,
 				nm_obj: {
@@ -115893,12 +115892,12 @@ qatar,80
 				]
 			};
 			var opt_min_three = {least_characters_per_word:2};
-			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
-			o.nm_array = o.nm.split(' ');
-			o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
+			var n = o.nm.split(' ');			// Synonyms array...
+			var ns = n[0].getNameSynonyms();	//
+			//~ o.nm_array = o.nm.split(' ');
+			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
-			//~ o.bold_locn = o.bold_locn.concat(['san']);
-			o.bold_nm = o.nm_array;//o.nm.clean_string_to_array();
+			o.bold_nm = o.nm.clean_string_to_array().concat(ns); //o.nm_array;//o.nm.clean_string_to_array();
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration','counsel','jury','jurist','judge','justice']);
 			console.log(o);
 			var x = o.nm.split(' ');
