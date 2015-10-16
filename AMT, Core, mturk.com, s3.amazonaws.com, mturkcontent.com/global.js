@@ -7466,6 +7466,28 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		//
 		//
 		dv.appendChild(sk_div);
+		
+		// Add mouseover, mouseout.
+		// Note: This IS compatible with create_dashboard_find_url!
+		//
+		//
+		dv.addEventListener('mouseover', function() {// mouseover...
+			var x = document.getElementsByClassName(this.className.replace('exe-result-create-dashboard-lipd ',''));
+			for (var i in x) {
+				if (i == 'length') break;
+				x[i].style.backgroundColor = 'LightGreen';
+			}
+		}, false);
+		dv.addEventListener('mouseout', function() {// mouseout...
+			var tmpcl = this.className.replace('exe-result-create-dashboard-lipd ','');
+			var x = document.getElementsByClassName(tmpcl);
+			for (var i in x) {
+				if (i == 'length') break;
+				if (x[i].className == tmpcl || x[i].className == this.className)
+					x[i].style.backgroundColor = '';
+			}
+		}, false);
+		
 		return dv;
 	}
 	function bold_blue_black(str) {
