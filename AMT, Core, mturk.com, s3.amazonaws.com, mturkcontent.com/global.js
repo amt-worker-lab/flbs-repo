@@ -1803,6 +1803,8 @@ String.prototype.getNameSynonyms = function() {
 			nameArray.push(i);
 		}
 	}
+	console.log('Name Synonyms');
+	console.log(nameArray);
 	return nameArray;
 }
 
