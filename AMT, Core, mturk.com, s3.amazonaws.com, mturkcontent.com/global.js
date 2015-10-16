@@ -1769,13 +1769,13 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
 /**
  * String Prototypes
  * 
+ * .getNameSynonyms
  * .parseURL
  * .stateAbbrToFull
  * .clean_string_to_array
  * .string_to_mixed_case
  * .format_number_with_commas
  * .div
- * 
  */
 /**
  * .clean_str_to_auto
@@ -1790,6 +1790,21 @@ String.prototype.clean_str_to_auto = function(opts) {
 	var s = this.toString();
 	return s.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, ''); // Replace "&" with "and". Remove all but /[0-9a-z]/i
 }
+
+//Returns an array that contains all name synonyms
+//Note: a Name's Synonyms includes itself
+//Note: all lower case
+String.prototype.getNameSynonyms = function(firstName) {
+	firstName = firstName.toLowerCase();
+	var nameArray = [firstName];
+	if(nameSynonyms[firstName]) {
+		for(var i in nameSynonyms) {
+			nameArray.push(nameSynonyms[i]);
+		}
+	}
+	return nameArray;
+}
+
 /**
  * .div
  * 
