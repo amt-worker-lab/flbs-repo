@@ -116064,6 +116064,10 @@ qatar,80
 				},
 				out_element: o.q[0],
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					if(e.which == 2) {
+						console.log('e.which == 2');
+						return;
+					}
 					// Replace "full_url" ?(trk|...) with ""
 					this.style.backgroundColor = 'Orange';
 					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
@@ -116179,7 +116183,11 @@ qatar,80
 						d.appendChild(dv);
 						// onclick
 						dv.purl = options.url;
-						dv.onclick = function() {
+						dv.onclick = function(e) {
+							if(e.which == 2) {
+								console.log('e.which == 2');
+								return;
+							}
 							this.style.backgroundColor = 'LightGreen';
 							o.q[0].value = this.purl;
 							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
