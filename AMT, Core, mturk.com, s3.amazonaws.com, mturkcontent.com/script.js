@@ -115898,7 +115898,7 @@ qatar,80
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
 			o.bold_nm = o.nm.clean_string_to_array().concat(ns); //o.nm_array;//o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration','counsel','jury','jurist','judge','justice']);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration','counsel','jury','jurist','judge','justice','dispute','resolution']);
 			console.log(o);
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
