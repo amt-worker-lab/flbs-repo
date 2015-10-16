@@ -7365,6 +7365,10 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		// Make aqua when there are less than 25!
 		if (options.response.total_li_results*1 < 25) {
 			ndiv.style.backgroundColor = 'aqua';
+		} else if (options.response.total_li_results*1 < 100) { // Show orange < 100
+			ndiv.style.backgroundColor = 'yellow';
+		} else { // Show red >= 100
+			ndiv.style.backgroundColor = 'red';
 		}
 		
 		// No results....
