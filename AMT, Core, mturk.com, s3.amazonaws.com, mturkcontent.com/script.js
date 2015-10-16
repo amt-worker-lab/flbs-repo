@@ -115895,6 +115895,7 @@ qatar,80
 			var opt_min_three = {least_characters_per_word:2};
 			o.nm_cln   = o.nm.replace(/[^\w]/g, '').toLowerCase();
 			o.nm_array = o.nm.split(' ');
+			o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
 			//~ o.bold_locn = o.bold_locn.concat(['san']);
 			o.bold_nm = o.nm.clean_string_to_array();

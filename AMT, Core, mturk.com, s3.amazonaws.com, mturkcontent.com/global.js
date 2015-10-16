@@ -1794,12 +1794,14 @@ String.prototype.clean_str_to_auto = function(opts) {
 //Returns an array that contains all name synonyms
 //Note: a Name's Synonyms includes itself
 //Note: all lower case
-String.prototype.getNameSynonyms = function(firstName) {
-	firstName = firstName.toLowerCase();
+String.prototype.getNameSynonyms = function() {
+	var s = this.toString();
+	firstName = s.toLowerCase();
 	var nameArray = [firstName];
 	if(nameSynonyms[firstName]) {
-		for(var i in nameSynonyms) {
-			nameArray.push(nameSynonyms[i]);
+		for(var i in nameSynonyms[firstName]) {
+			for(var j in nameSynonyms[i][j])
+				nameArray.push(j);
 		}
 	}
 	return nameArray;
