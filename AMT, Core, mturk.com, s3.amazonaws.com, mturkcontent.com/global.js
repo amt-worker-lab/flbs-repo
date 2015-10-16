@@ -7410,6 +7410,11 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		for (var i in divs) {
 			out.appendChild(divs[i]);
 		}
+		
+		// Add a spacer
+		//
+		//
+		out.appendChild(''.div({style:'height:2000px;'}));
 	}
 	/**
 	 * profile
