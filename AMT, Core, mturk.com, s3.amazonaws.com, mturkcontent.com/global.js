@@ -7444,7 +7444,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			str.div(
 				{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
 			);
-		dv.className = 'exe-result-create-dashboard-lipd '+tmp_class; // create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
+		dv.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
 		dv.profile_url = pobj.profile_url;
 		dv.onclick = function() {
 			options_object.out_element.value = this.profile_url;
@@ -8064,8 +8064,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.result = div_result; // Linkifier
 			out_div.appendChild(d);
 			div_result.p = d;
-			//~ console.log(div_result);
-			//~ console.log(d);
 			
 			// IS SKIP?
 			if (el_inp_skip2__obj.isSkip) {
@@ -8101,7 +8099,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			txa.col = col;
 			div_result.textarea = txa;
 			d.appendChild(txa);
-			// ...
+			// Append link button
+			//
 			var a = document.createElement('a');
 			a.setAttribute('style','margin-right:6px;');
 			a.target = '_blank';
@@ -8109,7 +8108,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			a.href = link;
 			o.txas[col].push(txa);
 			d.appendChild(a);
-			// ...
+			// Append Skip button
+			//
 			d.appendChild(el_inp_skip2__obj.el_btn);
 			
 			// Body of the result.
@@ -8144,6 +8144,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 				else { //Standard behavior, put url in out_element
 					this.style.backgroundColor = 'LightGreen';
+					//~ update_bgc_results_onclick(this.parentNode);
 					// Has CTRL key?
 					if (!e.ctrlKey)
 						options_object.out_element.value = this.value;
@@ -8158,18 +8159,19 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					}
 				}
 			};
-			function update_bgc_results_onclick(div) {
-				var x = document.getElementsByClassName('result_highlight');
-				for (var i in x) {
-					if (i == 'length') break;
-					if (x[i].className == div.className) {
-						x[i].style.backgroundColor = 'LightGreen';
-					}
-				}
-			}
+			//~ function update_bgc_results_onclick(div) {
+				//~ var x = document.getElementsByClassName('result_highlight');
+				//~ for (var i in x) {
+					//~ if (i == 'length') break;
+					//~ if (x[i].className == div.className) {
+						//~ x[i].style.backgroundColor = 'LightGreen';
+						//~ x[i].is_selected = true; // Set .is_selected
+					//~ }
+				//~ }
+			//~ }
 			// Mouse event functions
-			// Note: Could do this also! .getElementsByClassName('class_');
-			//
+			// Note: New functionality! ... Each "<p>" has a .className ("cls_[HREF] result_highlight") and .tmp_className ("cls_[HREF]").
+			// 
 			//
 			function df_movr_(e) {
 				inp_top.value = this.full_url;
@@ -8178,15 +8180,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					if (i == 'length') break;
 					x[i].style.backgroundColor = 'LightGreen';
 				}
-				
-				// ..................xxx
-				//~ var x = document.getElementsByClassName(this.className);
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ x[i].style.backgroundColor = 'LightGreen';
-				//~ }
-				
-				
 				// OLD
 				//
 				//
@@ -8202,11 +8195,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			}
 			function df_mout_(e) {
 				inp_top.value = '';
-				
 				var x = document.getElementsByClassName('result_highlight');
 				for (var i in x) {
 					if (i == 'length') break;
-					if (x[i].className == this.className) {
+					if (x[i].className.indexOf(this.tmp_className) != -1) {
 						x[i].style.backgroundColor = '';
 						//~ x[i].style.backgroundColor = x[i].original_bg_color; // DEPRECATE THIS.............
 					}
