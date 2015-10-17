@@ -115981,7 +115981,7 @@ qatar,80
 				parent: d1,
 				offsetTop: 0,
 				bold_array: o.bold,
-				linkedInIgnoreNoBold: o.nm_array,
+				linkedInIgnoreNoBold: o.bold_nm,
 				searches:[
 					o.name_search + ' ',
 					o.name_search + ', ' + o.city + ' ',
