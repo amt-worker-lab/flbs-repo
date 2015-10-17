@@ -115884,6 +115884,7 @@ qatar,80
 				bold: [],
 				bold_locn: [],
 				bold_nm: [],
+				bold_types: [], // Set below
 				
 				name_search: '',
 				q: [
@@ -115891,6 +115892,10 @@ qatar,80
 					document.getElementById('Q2Url'),
 				]
 			};
+			o.bold_types = [
+				'lawyer','parallegal','attorney','law','legal','litigation','arbitration',
+				'counsel','counselor','jury','jurist','judge','justice','dispute','resolution','judiciary'
+			];
 			var opt_min_three = {least_characters_per_word:2};
 			var n = o.nm.split(' ');			// Synonyms array...
 			var ns = n[0].getNameSynonyms();	//
@@ -115898,7 +115903,7 @@ qatar,80
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
 			o.bold_nm = o.nm.clean_string_to_array().concat(ns); //o.nm_array;//o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn).concat(['lawyer','parallegal','attorney','law','legal','litigation','arbitration','counsel','jury','jurist','judge','justice','dispute','resolution','judiciary']);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
 			console.log(o);
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
@@ -116036,31 +116041,6 @@ qatar,80
 							divs[2].results[0].textarea.click();
 						}, 2000);
 					}
-					
-					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-					// This is to check first in each column!......
-					// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-					//~ //
-					//~ //
-					//~ // CHECK First URL in each div
-					//~ // To decide whether to click on the top / first URL.
-					//~ var divs = options_object.results.divs;
-					//~ var chk_similar = false;
-					//~ for (var i in divs) {
-						//~ var results = divs[i].results; // Array of {p:, url:, body:, textarea:, ...}
-						//~ if (!results.length) return; // End here.
-						//~ if (chk_similar == false) {
-							//~ chk_similar = results[0].url; // Set chk_similar
-							//~ continue;
-						//~ }
-						//~ // chk_similar has been set!
-						//~ if (results[0].url != chk_similar) {
-							//~ return;
-						//~ }
-					//~ }
-					//~ // If still here then all three results match!
-					//~ // So click one!
-					//~ divs[0].results[0].textarea.click();
 				},
 				out_element: o.q[0],
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
@@ -116094,6 +116074,11 @@ qatar,80
 				}
 			});
 			
+			function bold_blue_black(str) {
+				str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
+				str = MT__bold(str, o.bold_array);
+				return str;
+			}
 			// function liprof
 			// Textarea.parent_div, Textarea.full_url
 			function liprof(txt_area) {
@@ -116145,11 +116130,15 @@ qatar,80
 						
 						// str
 						var dm_bld, hd_bld;
-						dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
-						dm_bld = MT__bold(dm_bld, o.bold);
+						dm_bld = bold_blue_black(dm);
 						dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
-						hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
-						hd_bld = MT__bold(hd_bld, o.bold);
+						hd_bld = bold_blue_black(hd);
+						
+						//~ dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
+						//~ dm_bld = MT__bold(dm_bld, o.bold);
+						//~ dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
+						//~ hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
+						//~ hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
 						var sk_fmt = MT__bold(sk, o.bold);
 						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
