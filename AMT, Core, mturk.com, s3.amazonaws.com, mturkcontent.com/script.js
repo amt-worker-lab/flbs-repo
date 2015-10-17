@@ -115969,6 +115969,7 @@ qatar,80
 				offsetTop: 0,
 				bold_array: o.bold,
 				bold_location_array: o.bold_locn,
+				bold_types_array: o.bold_types,
 				searches:[
 					{first:o.nm_obj.f, last:o.nm_obj.l, location:o.city+','+o.state}
 				],
@@ -116075,8 +116076,9 @@ qatar,80
 			});
 			
 			function bold_blue_black(str) {
-				str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
-				str = MT__bold(str, o.bold_array);
+				str = MT__bold(str, o.bold_types, {color: 'brown'}).bold_string;
+				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
+				str = MT__bold(str, o.bold);
 				return str;
 			}
 			// function liprof
@@ -116140,7 +116142,7 @@ qatar,80
 						//~ hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						//~ hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
-						var sk_fmt = MT__bold(sk, o.bold);
+						var sk_fmt = MT__bold(sk, o.bold_types); // Types rather than .bold
 						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
 						var sk_inn = document.createElement('span');
 						sk_inn.innerHTML = sk_fmt;
@@ -116155,6 +116157,7 @@ qatar,80
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
 						str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
+						str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
 						//
