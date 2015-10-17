@@ -116142,7 +116142,7 @@ qatar,80
 						//~ hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
 						//~ hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
-						var sk_fmt = MT__bold(sk, o.bold_types); // Types rather than .bold
+						var sk_fmt = bold_blue_black(sk); //MT__bold(sk, o.bold_types); // Types rather than .bold
 						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
 						var sk_inn = document.createElement('span');
 						sk_inn.innerHTML = sk_fmt;
@@ -116156,7 +116156,7 @@ qatar,80
 							this.inner.style.display = 'none';
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
+						//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
 						str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
@@ -116211,7 +116211,7 @@ qatar,80
 							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
 							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dx.innerHTML = 
-								(dx.current ? 'C:' : 'P:') + MT__bold(exp[i].headline, o.bold);
+								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
 							dvl.appendChild(dx);
 						}
 						
