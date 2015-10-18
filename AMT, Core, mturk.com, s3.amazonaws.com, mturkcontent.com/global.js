@@ -16745,13 +16745,6 @@ function MT__bold(o, arr, options_object) {
 				xlen1: xlen1,
 				xlen2: xlen2
 			}
-			//~ return {
-				//~ bold_string: x,
-				//~ percent_matched: pm,
-				//~ xlen1: xlen1,
-				//~ xlen2: xlen2
-			//~ }
-			//~ return;
 		}
 		if (options_object.return_div_element) {
 			var d = document.createElement('div');
@@ -16760,14 +16753,8 @@ function MT__bold(o, arr, options_object) {
 		}
 		
 		return_object.options_object = options_object; // RETURN INIT !!
-		
-		//~ if (options_object.initial) {
-			//~ 
-		//~ }
-		
 		return return_object;
 	}
-	
 	// old
 	//
 	//
