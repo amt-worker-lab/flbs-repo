@@ -7520,7 +7520,7 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 		return dv;
 	}
 	function bold_blue_black(str) {
-		str = MT__bold(str, o.bold_types_array, {color: 'brown'}).bold_string;
+		str = MT__bold(str, o.bold_types_array, {style: 'color:brown;text-decoration:underline;'}).bold_string;
 		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
 		str = MT__bold(str, o.bold_array);
 		return str;
