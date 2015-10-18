@@ -38696,7 +38696,7 @@ function MT__RUN() {
 			
 			var second;
 			var n = o.comp.split(' ');
-			second = (n.length > 1) ? n.slice(0, n.length-2).join(' ') : '"'+o.comp+'"';
+			second = (n.length > 1) ? n.slice(0, n.length-1).join(' ') : '"'+o.comp+'"';
 			
 			d2.value  = o.comp;
 			d2b.value = second; 
@@ -38736,7 +38736,7 @@ function MT__RUN() {
 				// just type=page is used here (user ignored)
 				var u = 
 					'https://graph.facebook.com/search'+
-					'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+					'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
 					'&fields=category,id,name,likes,talking_about_count,location,link'+
 					'&limit=10'+
 					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
@@ -38767,6 +38767,13 @@ function MT__RUN() {
 							
 							if (r[i].type) {
 								if (r[i].type == 'event') continue;
+							}
+							if  (
+								!r[i].link || 
+								/^https?:\/\/www\.facebook\.com\/pages\/"/.exec(r[i].link) // This is a generic / unclaimed profile!
+								)
+							{
+								continue;
 							}
 							
 							if (r[i].talking_about_count != null) {
