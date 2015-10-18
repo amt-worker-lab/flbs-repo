@@ -38637,6 +38637,342 @@ function MT__RUN() {
 		new run().f();
 	}
 	//
+	// Ivan, Find Facebook Page URLs for companies
+	// -SimpleSearch, Find the correct Facebook page for this business (new Oct. 18 2015)
+	// 
+	s = '<li><strong>Do not </strong>include URLs to Facebook pages that look like this: https://www.<strong>facebook.com/pages/Koch-Industries</strong>/283280111834709. The&nbsp;URLs <strong>must not include the /pages/</strong> subdirectory in the URL.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			//~ GM_addStyle('body {margin-top:1000px;}');
+			GM_addStyle('.container {position:absolute;top:0px;margin-left:0px;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				comp_array: [],
+			}
+			o.comp_array		= o.comp.clean_string_to_array();
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1);
+			}
+			document.body.appendChild(d2);
+			//
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
+			d2b.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1b);
+			}
+			document.body.appendChild(d2b);
+			//
+			var d2c = document.createElement('input');
+			d2c.setAttribute('type','button');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
+			d2c.value = 'N/A';
+			d2c.onclick = function() {
+			}
+			document.body.appendChild(d2c);
+			/* END ITEMS */
+			
+			var second;
+			var n = o.comp.split(' ');
+			second = (n.length > 1) ? n.slice(0, n.length-2).join(' ') : '"'+o.comp+'"';
+			
+			d2.value  = o.comp;
+			d2b.value = second; 
+			
+			// ...
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ ef.mouseup__delete_range({
+				//~ element: d2,
+				//~ callback: function(input_object) {
+					//~ input_object.element.blur();
+				//~ }
+			//~ });
+			//~ ef.mouseup__delete_range({
+				//~ element: d2b,
+				//~ callback: function(input_object) {
+					//~ input_object.element.blur();
+				//~ }
+			//~ });
+			
+			// ...
+			facebook_company_reviews(d1);
+			facebook_company_reviews(d1b);
+			
+			function facebook_company_reviews(div) {
+				
+				var out = div;
+				out.innerHTML = '';
+				
+				var v;
+				if (out == d1)
+					v = d2.value;
+				else
+					v = d2b.value;
+					
+				// just type=page is used here (user ignored)
+				var u = 
+					'https://graph.facebook.com/search'+
+					'?q='+encodeURIComponent(v)+'&type=user&type=page'+
+					'&fields=category,id,name,likes,talking_about_count,location,link'+
+					'&limit=10'+
+					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+				
+				// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						
+						var r = JSON.parse(rs);
+						
+						if (!r.data) {
+							out.innerHTML = '!r.data';
+							return;
+						}
+						
+						r = r.data;
+						
+						console.log(r);
+						
+						var c = 0;
+						for (var i in r) {
+							
+							if (r[i].type) {
+								if (r[i].type == 'event') continue;
+							}
+							
+							if (r[i].talking_about_count != null) {
+							} else
+								r[i].talking_about_count = '';
+							if (r[i].likes != null) {
+							} else
+								r[i].likes = '';
+							
+							if (r[i].location) {
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
+							}
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+							out.appendChild(div);
+							
+							div.className	= r[i].link;
+							div.fblikes		= r[i].likes * 1;
+							div.bgc			= false;
+							div.pageErr_numRedirects = 0;
+							
+							// tmp
+							var tmp = '';
+							tmp += MT__bold(r[i].name, o.comp_array);
+							tmp += '<br>likes:<b>'+r[i].likes+'</b>';
+							tmp += '<br>talking_about_count:'+r[i].talking_about_count;
+							// loc
+							if (r[i].location) {
+								for (var j in r[i].location) {
+									if (r[i].location[j].length > 0)
+										tmp += '<br>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
+								}
+							}
+							// cat
+							if (r[i].category) {
+								var x = r[i].category;
+								tmp += '<br>'+x;
+							}
+							tmp += '<br>' + r[i].link;
+							// innerHTML
+							div.innerHTML = tmp;
+							// onclick
+							div.onclick = function() {
+								
+								// Turn off
+								this.onclick = function() {};
+								
+								// Get
+								facebook_company_reviews__profile(this);
+							}
+							// onmouseover
+							div.onmouseover = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									x[i].style.backgroundColor = 'LightGreen';
+								}
+							}
+							// onmouseout
+							div.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i in x) {
+									if (i == 'length') break;
+									x[i].style.backgroundColor = '';
+								}
+							}
+							
+							// Init this div if first!
+							//
+							//
+							if (c == 0) 
+								div.click();
+							
+							c++;
+						}
+						
+						if (c == 0) {
+							out.innerHTML = '0';
+							return;
+						}
+						else
+						{
+							var div = document.createElement('div');
+							div.setAttribute('style', 'height:2000px;');
+							out.appendChild(div);
+						}
+					}
+				});
+			}
+			//<a class="_3wqb" href="https://www.facebook.com/CHAHVets?sk=reviews" id="u_0_1y" data-hovercard="u_0_1y" data-hovercard-instant="1" data-hovercard-offset-x="20">
+			//<a class="_g3j" href="https://www.facebook.com/CHAHVets?sk=reviews"></a><i class="_1uhg _3-9a img sp_m5zUGIMREvf sx_d83f9c"></i><div class="_1uhd"><span class="_g3i _50f7">Reviews</span>
+			function facebook_company_reviews__profile(div) {
+				
+				var div = div;
+				
+				if (div.pageErr_numRedirects > 1) return;
+				
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: div.className,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) return;
+						
+						var r = /<script>window\.location\.replace\("(https:\\\/\\\/www\.facebook\.com\\\/[^"]+)"\);<\/script>/.exec(rs);
+						if (r) {
+							div.pageErr_numRedirects++;
+							div.className = r[1].replace(/\\/g, '');
+							
+							facebook_company_reviews__profile(div);
+							return;
+						}
+						
+						var r = /<meta property="og:image" content="([^"]+)/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							
+							var maxW = '50%';
+							if  (
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y-/r/qXbA9JmRIZi.png' ||
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/y6/r/TZM02FnUo5g.png' ||
+								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
+								)
+							{
+								div.style.border = '4px solid teal';
+								div.style.margin = '-4px -4px -4px -4px';
+								maxW = '20%';
+							}
+							
+							var img = document.createElement('img');
+							img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
+							img.fblink = div.className;
+							
+							
+							//CHAHVets?sk=reviews
+							//{"href":"https:\/\/www.facebook.com\/THESteakhouseCCLV\/reviews","key":"reviews","label":"Reviews"},
+							//
+							var reviews = /\{"href":"https:\\\/\\\/www\.facebook\.com\\\/[^\\]+\\\/reviews","key":"reviews","label":"Reviews"\}/;
+							//~ var reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+							
+							reviews = reviews.exec(rs);
+							if (!reviews) {
+								reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
+								reviews = reviews.exec(rs);
+								if (reviews) {
+									reviews = __js_clean_html_str(reviews[1]);
+								}
+							} else {
+								console.log(reviews);
+								reviews = JSON.parse(reviews[0]).href;
+								console.log(reviews);
+							}
+							if (reviews) {
+								if (/^https:\/\/www\.facebook\.com\/[^\/]+$/.exec(reviews)) {
+									reviews = reviews.replace(/\?sk=reviews/i, '/reviews');
+								}
+								
+								div.appendChild(document.createElement('br'));
+								div.appendChild(document.createTextNode(reviews));
+								
+								img.reviewsURL = reviews;
+								img.style.border = '4px solid blue';
+								img.onclick = function(e) {
+									this.style.border = '4px dashed blue';
+									var i = this.reviewsURL;
+									
+									document.getElementById('web_url').value = i;
+									
+									doSubmit();
+									
+									e.stopPropagation();
+									e.preventDefault();
+									return false;
+								}
+							}
+							else
+							{
+								img.onclick = function(e) {
+									this.style.border = '4px dashed blue';
+									var i = this.fblink;
+									
+									document.getElementById('web_url').value = i;
+									
+									doSubmit();
+									
+									e.stopPropagation();
+									e.preventDefault();
+									return false;
+								}
+							}
+							img.src = r;
+							div.appendChild(img);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	//
 	// Nicholas Oliver
 	// -SimpleSearch, Find the correct Facebook page for this business
 	// 
@@ -38646,14 +38982,11 @@ function MT__RUN() {
 		var run = function() {}
 		run.prototype.f = function() {
 			
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0 !important;font-size:12px;}');
-			
-			GM_addStyle('body {margin-top:1000px;}');
-			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			//~ GM_addStyle('body {margin-top:1000px;}');
 			GM_addStyle('.container {position:absolute;top:0px;margin-left:0px;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-			
 			
 			var b = document.getElementsByTagName('b');
 			var em = document.getElementsByTagName('em');
@@ -38665,7 +38998,7 @@ function MT__RUN() {
 				tmp_location: null,
 				state: null
 			}
-			o.comp_array		= o.comp	.replace(/[^\w\d]/g, ' ').split(' ');
+			o.comp_array		= o.comp.clean_string_to_array();
 			o.location_array	= o.location.replace(/[^\w\d]/g, ' ').split(' ');
 			//~ var x = / ([a-z]+), \d+$/i.exec(o.location); // a-z case insensitive
 			//~ if (x)
@@ -38681,7 +39014,6 @@ function MT__RUN() {
 			//~ else {
 				//~ o.tmp_location = o.location;
 			//~ }
-			
 			//~ var x = /[\r\n]+([^,]*, *\w+)/.exec(o.location);
 			//~ if (x) {
 				//~ o.city = x[1];
@@ -38701,7 +39033,7 @@ function MT__RUN() {
 			d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
-				Nicholas_Oliver_facebook_company_reviews(d1);
+				facebook_company_reviews(d1);
 			}
 			document.body.appendChild(d2);
 			//
@@ -38709,7 +39041,7 @@ function MT__RUN() {
 			d2b.setAttribute('style','position:absolute;top:0px;left:30%;width:30%;height:60px;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
-				Nicholas_Oliver_facebook_company_reviews(d1b);
+				facebook_company_reviews(d1b);
 			}
 			document.body.appendChild(d2b);
 			//
@@ -38731,30 +39063,30 @@ function MT__RUN() {
 			/* END ITEMS */
 			
 			d2.value  = o.comp;
-			d2b.value = o.comp + ' ' + o.location; 
+			d2b.value = '"'+o.comp+'"'; 
 			
 			// ...
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			ef.mouseup__delete_range({
-				element: d2,
-				callback: function(input_object) {
-					input_object.element.blur();
-				}
-			});
-			ef.mouseup__delete_range({
-				element: d2b,
-				callback: function(input_object) {
-					input_object.element.blur();
-				}
-			});
+			//~ ef.mouseup__delete_range({
+				//~ element: d2,
+				//~ callback: function(input_object) {
+					//~ input_object.element.blur();
+				//~ }
+			//~ });
+			//~ ef.mouseup__delete_range({
+				//~ element: d2b,
+				//~ callback: function(input_object) {
+					//~ input_object.element.blur();
+				//~ }
+			//~ });
 			
 			// ...
-			Nicholas_Oliver_facebook_company_reviews(d1);
-			Nicholas_Oliver_facebook_company_reviews(d1b);
+			facebook_company_reviews(d1);
+			facebook_company_reviews(d1b);
 			
-			function Nicholas_Oliver_facebook_company_reviews(div) {
+			function facebook_company_reviews(div) {
 				
 				var out = div;
 				out.innerHTML = '';
@@ -38820,8 +39152,6 @@ function MT__RUN() {
 								}
 							}
 							
-							//~ var y = JSON.stringify(r[i]);//.replace(/"/g, '&pos;');
-							
 							var div = document.createElement('div');
 							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
 							out.appendChild(div);
@@ -38864,7 +39194,7 @@ function MT__RUN() {
 								this.onclick = function() {};
 								
 								// Get
-								Nicholas_Oliver_facebook_company_reviews__profile(this);
+								facebook_company_reviews__profile(this);
 							}
 							// onmouseover
 							div.onmouseover = function() {
@@ -38911,7 +39241,7 @@ function MT__RUN() {
 			}
 			//<a class="_3wqb" href="https://www.facebook.com/CHAHVets?sk=reviews" id="u_0_1y" data-hovercard="u_0_1y" data-hovercard-instant="1" data-hovercard-offset-x="20">
 			//<a class="_g3j" href="https://www.facebook.com/CHAHVets?sk=reviews"></a><i class="_1uhg _3-9a img sp_m5zUGIMREvf sx_d83f9c"></i><div class="_1uhd"><span class="_g3i _50f7">Reviews</span>
-			function Nicholas_Oliver_facebook_company_reviews__profile(div) {
+			function facebook_company_reviews__profile(div) {
 				
 				var div = div;
 				
@@ -38924,16 +39254,12 @@ function MT__RUN() {
 						var rs = response.responseText;
 						if (response.status != 200) return;
 						
-						//~ console.log(rs);
 						var r = /<script>window\.location\.replace\("(https:\\\/\\\/www\.facebook\.com\\\/[^"]+)"\);<\/script>/.exec(rs);
 						if (r) {
 							div.pageErr_numRedirects++;
 							div.className = r[1].replace(/\\/g, '');
 							
-							//~ console.log(div.className);
-							//~ return;
-							
-							Nicholas_Oliver_facebook_company_reviews__profile(div);
+							facebook_company_reviews__profile(div);
 							return;
 						}
 						
@@ -38948,12 +39274,8 @@ function MT__RUN() {
 								r == 'https://fbcdn-profile-a.akamaihd.net/static-ak/rsrc.php/v2/yr/r/QYxamDo8S22.png'
 								)
 							{
-								//~ div.appendChild(document.createElement('br'));
-								//~ div.appendChild(document.createTextNode(' X X '));
 								div.style.border = '4px solid teal';
 								div.style.margin = '-4px -4px -4px -4px';
-								//return;
-								
 								maxW = '20%';
 							}
 							
@@ -38961,21 +39283,11 @@ function MT__RUN() {
 							img.setAttribute('style','max-width:'+maxW+';cursor:pointer;display:block;');
 							img.fblink = div.className;
 							
-							//~ var rev = /<script>bigPipe\.onPageletArrive\(\{((.|\s)*?(?=\}\)<\/script>|$)|$)/.exec(rs);
-							//~ if (rev) {
-								//~ rev = '{' + rev[1] + '}';
-								//~ rev = JSON.parse(rev);
-								//~ console.log(rev);
-								//~ return;
-							//~ }
-							
 							
 							//CHAHVets?sk=reviews
 							//{"href":"https:\/\/www.facebook.com\/THESteakhouseCCLV\/reviews","key":"reviews","label":"Reviews"},
 							//
-							
 							var reviews = /\{"href":"https:\\\/\\\/www\.facebook\.com\\\/[^\\]+\\\/reviews","key":"reviews","label":"Reviews"\}/;
-							
 							//~ var reviews = /<a class="[^"]*" href="(https:\/\/www\.facebook\.com\/[^"]+)"><\/a><i class="[^"]*"><\/i><div class="[^"]*"><span class="[^"]*">Reviews<\/span>/;
 							
 							reviews = reviews.exec(rs);
@@ -38991,8 +39303,6 @@ function MT__RUN() {
 								console.log(reviews);
 							}
 							if (reviews) {
-								
-								//~ var x = __js_clean_html_str(reviews[1]);
 								if (/^https:\/\/www\.facebook\.com\/[^\/]+$/.exec(reviews)) {
 									reviews = reviews.replace(/\?sk=reviews/i, '/reviews');
 								}
@@ -39032,7 +39342,6 @@ function MT__RUN() {
 									return false;
 								}
 							}
-							
 							img.src = r;
 							div.appendChild(img);
 						}
