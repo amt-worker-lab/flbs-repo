@@ -116076,7 +116076,7 @@ qatar,80
 			});
 			
 			function bold_blue_black(str) {
-				str = MT__bold(str, o.bold_types, {color: 'brown', text_decoration: 'underline'}).bold_string;
+				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
 				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
 				str = MT__bold(str, o.bold);
 				return str;

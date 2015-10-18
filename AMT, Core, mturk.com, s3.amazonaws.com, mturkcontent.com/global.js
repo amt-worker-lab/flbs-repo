@@ -16661,7 +16661,10 @@ function __js_clean_html_str(s) {
  * params:
  * o
  * arr
- * options_object {return_div_element:, color:, percent_matched:}
+ * options_object {
+ * 		return_div_element:
+ * 		color:
+ * 		percent_matched:
  * 
  * 
  * Ex:
@@ -16687,8 +16690,6 @@ function MT__bold(o, arr, options_object) {
 		//
 		word = arr[i].trim();
 		
-		//console.log(word);
-		
 		if (word == '') {
 			continue;
 		}
@@ -16712,14 +16713,17 @@ function MT__bold(o, arr, options_object) {
 		//~ console.log(reg);
 		//~ console.log(options_object);
 		
-		if (options_object && options_object.hasOwnProperty('color'))
+		// Style
+		// E.g. "color:brown;text-decoration:underline;"
+		//
+		if (options_object && options_object.hasOwnProperty('style')) { // Style
+			x = x.replace(reg, '<b style="'+options_object.style+'">$1</b>');
+		}
+		else if (options_object && options_object.hasOwnProperty('color')) { // Has "color"
 			x = x.replace(reg, '<b style="color:'+options_object.color+';">$1</b>');
-		else {
-			//~ console.log(x);
-			//~ console.log('x');
+		} else { // Default
 			x = x.replace(reg, '<b>$1</b>');
 		}
-		
 	}
 	
 	if (!options_object)
@@ -16727,8 +16731,6 @@ function MT__bold(o, arr, options_object) {
 	else {
 		var return_object = {};
 		return_object.bold_string = x;
-		
-		//~ if (x == undefined) x = '';
 		
 		if (options_object.percent_matched) {
 			var pm;
