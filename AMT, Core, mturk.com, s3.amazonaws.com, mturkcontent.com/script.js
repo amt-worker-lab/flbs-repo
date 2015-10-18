@@ -38667,16 +38667,16 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:62px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1 .setAttribute('style','position:absolute;top:70px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:62px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:70px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:20px;width:50%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -38684,20 +38684,22 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			//
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:60px;');
+			d2b.setAttribute('style','position:absolute;top:20px;left:50%;width:49%;height:60px;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1b);
 			}
 			document.body.appendChild(d2b);
 			//
-			//~ var d2c = document.createElement('input');
-			//~ d2c.setAttribute('type','button');
-			//~ d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:60px;');
-			//~ d2c.value = 'N/A';
-			//~ d2c.onclick = function() {
-			//~ }
-			//~ document.body.appendChild(d2c);
+			var d2c = document.createElement('input');
+			d2c.setAttribute('type','button');
+			d2c.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:20px;');
+			d2c.value = 'N/A';
+			d2c.onclick = function() {
+				o.q[0].value = 'N/A';
+				doSubmit();
+			}
+			document.body.appendChild(d2c);
 			/* END ITEMS */
 			
 			var second;
@@ -38731,7 +38733,7 @@ function MT__RUN() {
 				elements: [
 					d1,d1b
 				],
-				offset: 50 // offset top
+				offset: 70 // offset top
 			});
 			
 			// ...
