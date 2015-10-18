@@ -38651,6 +38651,7 @@ function MT__RUN() {
 			GM_addStyle('.container {position:absolute;top:0px;margin-left:0px;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -38673,7 +38674,7 @@ function MT__RUN() {
 			//
 			var d2 = document.createElement('textarea');
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;width:30%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:0px;width:50%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -38699,7 +38700,7 @@ function MT__RUN() {
 			
 			var second;
 			var n = o.comp.split(' ');
-			second = (n.length > 1) ? n.slice(0, n.length-1).join(' ') : '"'+o.comp+'"';
+			second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
 			
 			d2.value  = o.comp;
 			d2b.value = second; 
@@ -38708,18 +38709,18 @@ function MT__RUN() {
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			//~ ef.mouseup__delete_range({
-				//~ element: d2,
-				//~ callback: function(input_object) {
-					//~ input_object.element.blur();
-				//~ }
-			//~ });
-			//~ ef.mouseup__delete_range({
-				//~ element: d2b,
-				//~ callback: function(input_object) {
-					//~ input_object.element.blur();
-				//~ }
-			//~ });
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			ef.mouseup__delete_range({
+				element: d2b,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -38735,6 +38736,13 @@ function MT__RUN() {
 			facebook_company_reviews(d1);
 			facebook_company_reviews(d1b);
 			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			
+			// facebook_company_reviews
 			function facebook_company_reviews(div) {
 				
 				var out = div;
@@ -38786,6 +38794,11 @@ function MT__RUN() {
 								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link) // This is a generic / unclaimed profile!
 								)
 							{
+								// Append a "blank"
+								out.appendChild(
+									(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
+								);
+								c++;// // //
 								continue;
 							}
 							
@@ -38816,7 +38829,7 @@ function MT__RUN() {
 							//
 							//
 							var div = document.createElement('div');
-							div.setAttribute('style', 'width:100%;border-bottom:1px solid teal;cursor:pointer;');
+							div.setAttribute('style', 'width:100%;border-bottom:2px solid teal;cursor:pointer;');
 							div.className	= r[i].link;
 							div.link		= r[i].link;
 							out.appendChild(div);
@@ -38826,7 +38839,7 @@ function MT__RUN() {
 							tmp += MT__bold(r[i].name, o.comp_array);
 							tmp += '<br>L:<b>'+r[i].likes+'</b>';
 							tmp += '<br>T:'+r[i].talking_about_count;
-							tmp += '<br>O:'+MT__bold(r[i].company_overview, o.comp_array);
+							tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// loc
 							if (r[i].location) {
 								for (var j in r[i].location) {
