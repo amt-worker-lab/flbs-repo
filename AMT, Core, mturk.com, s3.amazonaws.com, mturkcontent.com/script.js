@@ -38661,6 +38661,8 @@ function MT__RUN() {
 					document.getElementById('web_url')
 				],
 			}
+			// Replace "The "...
+			o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
 			
 			/* BEGIN ITEMS */
@@ -38753,7 +38755,7 @@ function MT__RUN() {
 					v = d2.value;
 				else
 					v = d2b.value;
-					
+				
 				// just type=page is used here (user ignored)
 				var u = 
 					'https://graph.facebook.com/search'+
@@ -38778,11 +38780,15 @@ function MT__RUN() {
 							out.innerHTML = '!r.data';
 							return;
 						}
-						
 						r = r.data;
-						
 						console.log(r);
+
+						// Show full search term...
+						out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
 						
+						// Loop...
+						//
+						//
 						var c = 0;
 						for (var i in r) {
 							
@@ -38894,7 +38900,7 @@ function MT__RUN() {
 						}
 						
 						if (c == 0) {
-							out.innerHTML = '0';
+							out.appendChild('0'.div());
 							return;
 						}
 						else
