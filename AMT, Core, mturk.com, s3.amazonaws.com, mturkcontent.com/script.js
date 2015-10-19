@@ -4569,36 +4569,44 @@ function MT__RUN() {
 	
 	//
 	// John Taylor
-	// Determine whether a company is a digital marketing agency or not
+	// Find company name, contact names and titles for contacts at companies (Oct.18,2015)
 	//
-	s= '<p style="font-family: Verdana, Geneva, sans-serif; font-size: 12px; line-height: 20.7999992370605px;">Determine whether the company is a <strong>digital marketing agency</strong>, by comparing their website to the following criteria.</p>';
+	s= '<li>Enter 5 contacts per company (submissions with fewer than 5 contacts may be accepted)</li>';
 	if(ih.indexOf(s) != -1) {
-		console.log('s matched');
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:100px !important;}'); // width:1100px=default
-			GM_addStyle('input {width:auto !important}');
+			//~ GM_addStyle('input {width:auto !important}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
-			GM_addStyle('input[type="radio"] {zoom:4;}');
+			//~ GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
+			GM_addStyle('input[type="text"] {width:80px;}');
 			//~ GM_addStyle('.exe:hover {background-color:yellow;}');
 
 			var a = document.getElementsByTagName('a');
-			var fc = document.getElementsByClassName('form-control');
 			var o = {
-				website: a[0].innerText,
+				website: a[0].innerText.trim(),
 				domain: null,
 				q: [
-					document.getElementsByName('Agency?')[0],
-					document.getElementsByName('Agency?')[1]
+					document.getElementById('companyName'),
+					[] // This is an array of groups
 				],
 				bold: []
 			}
 			o.website = (!/^http/i.exec(o.website)) ? 'http://' + o.website : o.website;
 			o.domain = o.website.replace(/^https?:\/\/(www\d*\.|)/i, '');
 			o.domain = o.domain.replace(/\/[\d\D]*/, '');
+			// Add inputs...
+			for (var i=1;i<=5;i++) {
+				var n = {
+					f:document.getElementById('firstName'+i),
+					l:document.getElementById('lastName'+i),
+					t:document.getElementById('title'+i),
+				}
+				o.q.push(n);
+			}
 			console.log(o);
+			
 			
 			/**BEGIN ITEMS**/
 			/**END OF ITEMS**/
@@ -4616,8 +4624,6 @@ function MT__RUN() {
 					continue;
 				}
 			}
-			
-			
 			
 			// Onclick
 			o.q[0].onclick = o.q[1].onclick = function(e) { // Did not load
@@ -4724,6 +4730,193 @@ function MT__RUN() {
 				);
 			}
 			
+			// Init
+			SP_init();
+			// SP_init
+			function SP_init() {
+				var u; // ZIP is required.
+				u = 'site:' + o.domain + ' ("services" OR "about us" OR "about")';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					callback_function: SP_process
+				});
+			}
+			// SP_process
+			function SP_process(object) {
+			
+				console.log(object);
+				
+				var rs = object;
+				var out = d1;
+				
+				if (rs.length == 0) {
+					uw(o.website);
+				} else {
+					// Does first contain "services" or "about"
+					if (/(services|about)/i.exec(rs[0][0])) {
+						uw(rs[0][0]);
+					} else {
+						uw(o.website);
+					}
+				}
+			}
+		}
+		new run().f();
+	}
+	//
+	// John Taylor
+	// Determine whether a company is a digital marketing agency or not
+	//
+	s= '<p style="font-family: Verdana, Geneva, sans-serif; font-size: 12px; line-height: 20.7999992370605px;">Determine whether the company is a <strong>digital marketing agency</strong>, by comparing their website to the following criteria.</p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:100px !important;}'); // width:1100px=default
+			GM_addStyle('input {width:auto !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
+			GM_addStyle('input[type="radio"] {zoom:4;}');
+			//~ GM_addStyle('.exe:hover {background-color:yellow;}');
+
+			var a = document.getElementsByTagName('a');
+			var fc = document.getElementsByClassName('form-control');
+			var o = {
+				website: a[0].innerText,
+				domain: null,
+				q: [
+					document.getElementsByName('Agency?')[0],
+					document.getElementsByName('Agency?')[1]
+				],
+				bold: []
+			}
+			o.website = (!/^http/i.exec(o.website)) ? 'http://' + o.website : o.website;
+			o.domain = o.website.replace(/^https?:\/\/(www\d*\.|)/i, '');
+			o.domain = o.domain.replace(/\/[\d\D]*/, '');
+			console.log(o);
+			
+			/**BEGIN ITEMS**/
+			/**END OF ITEMS**/
+			
+			// Delete empty divs
+			var d = document.getElementsByTagName('div');
+			for (var i=d.length - 1; i>=0; i--) {
+				//~ console.log('"'+d[i].innerHTML+'"');
+				if (d[i].innerHTML == '<strong>&nbsp;</strong>') {
+					d[i].parentNode.removeChild(d[i]);
+					continue;
+				}
+				if (d[i].innerHTML == '&nbsp;') {
+					d[i].parentNode.removeChild(d[i]);
+					continue;
+				}
+			}
+			
+			// Onclick
+			o.q[0].onclick = o.q[1].onclick = function(e) { // Did not load
+				this.checked = true;
+				doSubmit();
+			}
+			
+			document.getElementsByName('explanation')[0].ondblclick = function(e) {
+				this.value = 'Website did not load';
+				o.q[0].checked = o.q[1].checked = false;
+				doSubmit();
+			}
+			// SubmitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if  (
+					!o.q[0].checked &&
+					!o.q[1].checked
+					)
+				return false;
+				// Here
+				doSubmit();
+			}
+			
+			window.addEventListener('keypress',function(e) {
+				if(e.keyCode == '49') {
+					o.q[0].click();
+				}
+				else if(e.keyCode == '50') {
+					o.q[1].click();
+				}
+			});
+			
+			//var urlToUse = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.linkedInUrl);
+			// Init
+			//~ uw(o.website);
+			function uw(url) {
+				AMT__setUtilityTabs(
+					[
+						{
+							url: url,
+							options: {
+								task: 'AMT__all_pages_util',
+								highlight_strings_in_page: {
+									strings: [
+										{string:'marketing',color:'orange'},
+										'digital',
+										{string:'brand',color:'orange'},
+										'ppc',
+										'content',
+										'creation',
+										'seo',
+										{string:'campaign',color:'orange'},
+										{string:'lead',color:'orange'},
+										{string:'inbound',color:'orange'},
+										{string:'outbound',color:'orange'},
+										'search',
+										{string:'advertising',color:'orange'},
+										{string:'advert',color:'orange'},
+										'social',
+										'social media',
+										'online',
+										'internet',
+										'email',
+										'e-mail',
+										'web',
+										{string:'design',color:'orange'},
+										'data',
+										'user',
+										'mobile'
+										
+										//~ 'blogging',
+										//~ 'web development',
+										//~ 'website design',
+									]
+								},
+								listenForKeyPress: true
+							}								
+						}
+					],
+					null,
+					{backgroundColor:'pink'},
+					false,
+					function(response){
+						console.log(response);
+						//Call the key event
+						if(response.keyCode) {
+							
+							var eventObj = document.createEventObject ?
+							document.createEventObject() : document.createEvent("Events");
+						  
+							if(eventObj.initEvent){
+							  eventObj.initEvent("keypress", true, true);
+							}
+						  
+							eventObj.keyCode = response.keyCode;
+							eventObj.which = response.keyCode;
+							
+							document.body.dispatchEvent ? document.body.dispatchEvent(eventObj) : document.body.fireEvent("keypress", eventObj);
+							
+						}
+					}
+				);
+			}
 			
 			// Init
 			SP_init();
