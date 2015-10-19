@@ -4698,6 +4698,7 @@ function MT__RUN() {
 							url: url,
 							options: {
 								task: 'AMT__all_pages_util',
+								highlight_range_to_parent: true,
 								highlight_strings_in_page: {
 									strings: o.job_types
 									//~ [
@@ -4737,6 +4738,19 @@ function MT__RUN() {
 					false,
 					function(response){
 						console.log(response);
+						
+						var text = response.data.text_range.trim().replace(/ *, *$/, '');
+						
+						
+						
+						if (fc[1].value.trim() == '') {
+							fc[1].value = text;
+							fc[1].focus();
+						}
+						else { // Always overwrite 4 as there is no other option.
+							fc[2].value = text;
+							fc[2].focus();
+						}
 						//~ //Call the key event
 						//~ if(response.keyCode) {
 							//~ var eventObj = document.createEventObject ?
@@ -4764,8 +4778,8 @@ function MT__RUN() {
 				],
 				search_results: {
 					use_full_urls: true,
+					create_annotation_from_title: true, // NEW OCT.18,2015, Adds a create_annotation field of scraped website first result title field.
 				},
-				//~ out_element:,
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
 					uw(this.full_url);
 					//this.style.backgroundColor = 'LightGreen';
