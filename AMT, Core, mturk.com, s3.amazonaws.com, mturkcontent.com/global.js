@@ -8169,12 +8169,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// Append create_annotation_from_title if available
 			// First result in column, annotation.
 			// create_annotation_from_title
-			if (options_object.search_results.create_annotation_from_title) {
+			// Note: 0 depth is first result.
+			//
+			if (options_object.search_results.create_annotation_from_title && i <= options_object.search_results.create_annotation_from_title.depth) {
+				var n = create_annotation_from_title(link);console.log(n);
 				d.appendChild(
-					create_annotation_from_title(link)
+					n
 				);
 			}
-			
 			// Body of the result.
 			//
 			//
@@ -8186,11 +8188,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.appendChild(pbody);
 			
 			// Actions
-			// 
-			//
 			//
 			
-			// onclick
+			// Onclick
+			//
 			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success : function(e) {
 				if(options_object.clickIntoUtilityTabs) { //Utility behavior: jump into utility tab
 					if(!this.utilityTabBtn) {
@@ -8293,6 +8294,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//
 			//
 			out_div.results.push(div_result); // Add this element to DIV.results
+			
+			//~ // counter
+			//~ //
+			//~ //
+			//~ counter++;
 		}
 		count_domains();
 		if (out_div.innerHTML == '')
@@ -8307,11 +8313,13 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	 * function create_annotation_from_title
 	 * 
 	 * @params
-	 * options_object.search_results.create_annotation_from_title:			Object
-	 * options_object.search_results.create_annotation_from_title.output:	HTML Object
+	 * options_object.search_results.create_annotation_from_title:							Object
+	 * options_object.search_results.create_annotation_from_title.output:					HTML Object
+	 * options_object.search_results.create_annotation_from_title.depth:					Integer, How deep in each column to go...
+	 * options_object.search_results.create_annotation_from_title.display_empty_message:	Boolean
 	 * 
 	 * @returns
-	 * div:		An empty div that will be later filled with buttons.
+	 * div:		An empty div that will be later filled with buttons or an optional "Empty Message".
 	 */
 	function create_annotation_from_title(url) {
 		var obj = options_object.search_results.create_annotation_from_title;
@@ -8336,6 +8344,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				
 				// Get title
 				if (!dom.title) {
+					// Display empty message?
+					// .display_empty_message
+					if (options_object.search_results.create_annotation_from_title.display_empty_message) {
+						div.innerText = ' [NO TITLE FOUND!] ';
+						div.style.fontWeight = 'bold';
+					}
 					return; // Do nothing
 				}
 				
@@ -8354,6 +8368,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					//~ delimeter: '',
 					//~ focusToField: false
 				});
+				
+				// Append buttons
+				div.appendChild(buttons);
 			},
 		}
 		//~ //check_pre_write_to_disk

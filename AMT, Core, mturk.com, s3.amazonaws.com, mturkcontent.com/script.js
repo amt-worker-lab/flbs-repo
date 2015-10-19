@@ -4581,6 +4581,7 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
 			GM_addStyle('input[type="text"] {width:80px;}');
+			GM_addStyle('#companyName {width:100%;}');
 			//~ GM_addStyle('.exe:hover {background-color:yellow;}');
 
 			var a = document.getElementsByTagName('a');
@@ -4780,7 +4781,8 @@ function MT__RUN() {
 					use_full_urls: true,
 					create_annotation_from_title: { // NEW OCT.18,2015, Adds a create_annotation field of scraped website first result title field.
 						output: o.q[0],
-						depth: 1 // Only do first URL in each column...
+						depth: 1, // 0=Only do first URL in each column. 1=Do first and second in each column.
+						display_empty_message: true,
 					},
 				},
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
