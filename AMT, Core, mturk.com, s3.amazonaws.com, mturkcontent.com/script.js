@@ -38648,7 +38648,7 @@ function MT__RUN() {
 			
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
 			//~ GM_addStyle('body {margin-top:1000px;}');
-			GM_addStyle('.container {position:absolute;top:0px;margin-left:0px;}');
+			GM_addStyle('.container {position:absolute;top:1000px;margin-left:0px;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
@@ -38667,16 +38667,16 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:80px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:80px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:100px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
-			var d2 = document.createElement('textarea');
+			var d2 = document.createElement('textarea'); // Offset these from N/A.....
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:20px;width:50%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:40px;width:50%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -38684,7 +38684,7 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			//
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:20px;left:50%;width:49%;height:60px;');
+			d2b.setAttribute('style','position:absolute;top:40px;left:50%;width:49%;height:60px;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1b);
@@ -38733,7 +38733,7 @@ function MT__RUN() {
 				elements: [
 					d1,d1b
 				],
-				offset: 80 // offset top
+				offset: 100 // offset top
 			});
 			
 			// ...
