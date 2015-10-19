@@ -4576,7 +4576,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
-			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:100px !important;}'); // width:1100px=default
+			GM_addStyle('.container {margin:0 !important;width:30% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			//~ GM_addStyle('input {width:auto !important}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//~ GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
@@ -4591,7 +4591,24 @@ function MT__RUN() {
 					document.getElementById('companyName'),
 					[] // This is an array of groups
 				],
-				bold: []
+				bold: [],
+				
+				jobs_types: [
+					'ceo',
+					'president',
+					'vice',
+					'manager',
+					'director',
+					'secretary',
+					'treasurer',
+					'consultant',
+					'liason',
+					'associate',
+					'cto',
+					'officer',
+					'chief',
+					'executive',
+				]
 			}
 			o.website = (!/^http/i.exec(o.website)) ? 'http://' + o.website : o.website;
 			o.domain = o.website.replace(/^https?:\/\/(www\d*\.|)/i, '');
@@ -4607,11 +4624,16 @@ function MT__RUN() {
 			}
 			console.log(o);
 			
-			
 			/**BEGIN ITEMS**/
+			var d1 = ''.div({
+				style:'position:absolute;left:30%;width:69%;height:600px;top:0px;background-color:#eee;border:1px solid blue;'
+			});
+			document.body.appendChild(d1);
 			/**END OF ITEMS**/
 			
 			// Delete empty divs
+			//
+			//
 			var d = document.getElementsByTagName('div');
 			for (var i=d.length - 1; i>=0; i--) {
 				//~ console.log('"'+d[i].innerHTML+'"');
@@ -4625,38 +4647,23 @@ function MT__RUN() {
 				}
 			}
 			
-			// Onclick
-			o.q[0].onclick = o.q[1].onclick = function(e) { // Did not load
-				this.checked = true;
-				doSubmit();
-			}
-			
-			document.getElementsByName('explanation')[0].ondblclick = function(e) {
-				this.value = 'Website did not load';
-				o.q[0].checked = o.q[1].checked = false;
-				doSubmit();
-			}
 			// SubmitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				if  (
-					!o.q[0].checked &&
-					!o.q[1].checked
-					)
 				return false;
 				// Here
 				doSubmit();
 			}
-			
-			window.addEventListener('keypress',function(e) {
-				if(e.keyCode == '49') {
-					o.q[0].click();
-				}
-				else if(e.keyCode == '50') {
-					o.q[1].click();
-				}
-			});
+			//
+			//~ window.addEventListener('keypress',function(e) {
+				//~ if(e.keyCode == '49') {
+					//~ o.q[0].click();
+				//~ }
+				//~ else if(e.keyCode == '50') {
+					//~ o.q[1].click();
+				//~ }
+			//~ });
 			
 			//var urlToUse = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(o.linkedInUrl);
 			// Init
@@ -4669,39 +4676,36 @@ function MT__RUN() {
 							options: {
 								task: 'AMT__all_pages_util',
 								highlight_strings_in_page: {
-									strings: [
-										{string:'marketing',color:'orange'},
-										'digital',
-										{string:'brand',color:'orange'},
-										'ppc',
-										'content',
-										'creation',
-										'seo',
-										{string:'campaign',color:'orange'},
-										{string:'lead',color:'orange'},
-										{string:'inbound',color:'orange'},
-										{string:'outbound',color:'orange'},
-										'search',
-										{string:'advertising',color:'orange'},
-										{string:'advert',color:'orange'},
-										'social',
-										'social media',
-										'online',
-										'internet',
-										'email',
-										'e-mail',
-										'web',
-										{string:'design',color:'orange'},
-										'data',
-										'user',
-										'mobile'
-										
-										//~ 'blogging',
-										//~ 'web development',
-										//~ 'website design',
-									]
+									strings: o.jobs_types
+									//~ [
+										//~ {string:'marketing',color:'orange'},
+										//~ 'digital',
+										//~ {string:'brand',color:'orange'},
+										//~ 'ppc',
+										//~ 'content',
+										//~ 'creation',
+										//~ 'seo',
+										//~ {string:'campaign',color:'orange'},
+										//~ {string:'lead',color:'orange'},
+										//~ {string:'inbound',color:'orange'},
+										//~ {string:'outbound',color:'orange'},
+										//~ 'search',
+										//~ {string:'advertising',color:'orange'},
+										//~ {string:'advert',color:'orange'},
+										//~ 'social',
+										//~ 'social media',
+										//~ 'online',
+										//~ 'internet',
+										//~ 'email',
+										//~ 'e-mail',
+										//~ 'web',
+										//~ {string:'design',color:'orange'},
+										//~ 'data',
+										//~ 'user',
+										//~ 'mobile'
+									//~ ]
 								},
-								listenForKeyPress: true
+								//listenForKeyPress: true
 							}								
 						}
 					],
@@ -4710,57 +4714,70 @@ function MT__RUN() {
 					false,
 					function(response){
 						console.log(response);
-						//Call the key event
-						if(response.keyCode) {
-							
-							var eventObj = document.createEventObject ?
-							document.createEventObject() : document.createEvent("Events");
-						  
-							if(eventObj.initEvent){
-							  eventObj.initEvent("keypress", true, true);
-							}
-						  
-							eventObj.keyCode = response.keyCode;
-							eventObj.which = response.keyCode;
-							
-							document.body.dispatchEvent ? document.body.dispatchEvent(eventObj) : document.body.fireEvent("keypress", eventObj);
-							
-						}
+						//~ //Call the key event
+						//~ if(response.keyCode) {
+							//~ var eventObj = document.createEventObject ?
+							//~ document.createEventObject() : document.createEvent("Events");
+							//~ if(eventObj.initEvent){
+							  //~ eventObj.initEvent("keypress", true, true);
+							//~ }
+							//~ eventObj.keyCode = response.keyCode;
+							//~ eventObj.which = response.keyCode;
+							//~ document.body.dispatchEvent ? document.body.dispatchEvent(eventObj) : document.body.fireEvent("keypress", eventObj);
+						//~ }
 					}
 				);
 			}
 			
-			// Init
-			SP_init();
-			// SP_init
-			function SP_init() {
-				var u; // ZIP is required.
-				u = 'site:' + o.domain + ' ("services" OR "about us" OR "about")';
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
-					callback_function: SP_process
-				});
-			}
-			// SP_process
-			function SP_process(object) {
 			
-				console.log(object);
+			//
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.comp.clean_string_to_array(),
+				searches:[
+					o.comp,
+					'"'+o.comp+'"',
+					'"'+o.comp+'" website domain url site'
+				],
+				//~ out_element:,
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
+					d2.value = this.value; // domain
+					alexa2();
+				},
+				parent: d1,
+				offsetTop: 60,
+			});
+			
+			//~ // Init
+			//~ SP_init();
+			//~ // SP_init
+			//~ function SP_init() {
+				//~ var u; // ZIP is required.
+				//~ u = 'site:' + o.domain + ' ("services" OR "about us" OR "about")';
+				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					//~ startPage: true,
+					//~ url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					//~ callback_function: SP_process
+				//~ });
+			//~ }
+			//~ // SP_process
+			//~ function SP_process(object) {
+			
+				//~ console.log(object);
 				
-				var rs = object;
-				var out = d1;
+				//~ var rs = object;
+				//~ var out = d1;
 				
-				if (rs.length == 0) {
-					uw(o.website);
-				} else {
-					// Does first contain "services" or "about"
-					if (/(services|about)/i.exec(rs[0][0])) {
-						uw(rs[0][0]);
-					} else {
-						uw(o.website);
-					}
-				}
-			}
+				//~ if (rs.length == 0) {
+					//~ uw(o.website);
+				//~ } else {
+					//~ // Does first contain "services" or "about"
+					//~ if (/(services|about)/i.exec(rs[0][0])) {
+						//~ uw(rs[0][0]);
+					//~ } else {
+						//~ uw(o.website);
+					//~ }
+				//~ }
+			//~ }
 		}
 		new run().f();
 	}
