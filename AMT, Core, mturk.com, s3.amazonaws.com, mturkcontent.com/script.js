@@ -38850,10 +38850,13 @@ function MT__RUN() {
 							tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// loc
 							if (r[i].location) {
+								var l = [];
 								for (var j in r[i].location) {
 									if (r[i].location[j].length > 0)
-										tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
+										l.push(r[i].location[j]);
+										//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
 								}
+								tmp += '<hr>'+l.join(',');
 							}
 							// cat
 							if (r[i].category) {
