@@ -4742,16 +4742,30 @@ function MT__RUN() {
 						
 						var text = response.data.text_range.trim().replace(/ *, *$/, '');
 						
+						var next = get_next_empty(); // {f, l, t}
+						console.log(next);
+						if (!next) return;
 						
+						// Has Comma
+						var t;
+						if (text.indexOf(',') != -1) {
+							var t = text.split(',');
+							next.t.value = t.slice(1).join(',');
+							fill_name(t[0], next);
+						} else {
+							fill_name(text, next);
+						}
 						
-						if (fc[1].value.trim() == '') {
-							fc[1].value = text;
-							fc[1].focus();
-						}
-						else { // Always overwrite 4 as there is no other option.
-							fc[2].value = text;
-							fc[2].focus();
-						}
+						//
+						
+						//~ if (fc[1].value.trim() == '') {
+							//~ fc[1].value = text;
+							//~ fc[1].focus();
+						//~ }
+						//~ else { // Always overwrite 4 as there is no other option.
+							//~ fc[2].value = text;
+							//~ fc[2].focus();
+						//~ }
 						//~ //Call the key event
 						//~ if(response.keyCode) {
 							//~ var eventObj = document.createEventObject ?
@@ -4765,6 +4779,35 @@ function MT__RUN() {
 						//~ }
 					}
 				);
+			}
+			
+			/**
+			 * fill_name
+			 */
+			function fill_name(name, group) {
+				var n = name.split(' ');
+				if (n.length == 1) {
+					group.f = 'N/A';
+					group.l = n[0];
+				} else if (n.length == 2) {
+					group.f = n[0];
+					group.l = n[1];
+				} else { // 3>
+					group.f = n[0];
+					group.l = n.slice(1).join(' ');
+				}
+			}
+			/**
+			 * get_next_empty
+			 */
+			function get_next_empty() {
+				for (var i in o.q[1]) { // {f, l, t}
+					var x = o.q[1][i];
+					if (x.f.trim() == '' || x.l.trim() == '' || x.t.trim() == '') {
+						return x;
+					}
+				}
+				return false; // False if none.
 			}
 			
 			// create_dashboard_find_url
