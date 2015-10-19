@@ -4600,6 +4600,8 @@ function MT__RUN() {
 				job_types: [
 					'ceo',
 					'president',
+					'owner',
+					'founder',
 					'vice',
 					'manager',
 					'director',
@@ -4617,6 +4619,9 @@ function MT__RUN() {
 				good_pages: [
 					'biography',
 					'meet us',
+					'meet the team',
+					'the team',
+					'our team',
 					'bio',
 					'bios',
 					'staff',

@@ -7824,7 +7824,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		d3c.style.display = 'none';
 	}
 	
-	// Hide empty columns !!
+	// Hide empty columns!
 	//
 	if (options_object.searches.length == 1) {
 		d1b.style.display =
@@ -7832,9 +7832,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		d1.style.width = '100%';
 		o.num_panels = 1; // Overwrite!
 	} else if (options_object.searches.length == 2) {
-		d1c.style.display = 'none';
+		d1c.style.display = 
+		d3c.style.display = 
+		'none';
+		
+		d3.style.width =
+		d3b.style.width =
 		d1.style.width =
-		d1b.style.width = '48%';
+		d1b.style.width = '49%';
 		o.num_panels = 2; // Overwrite!
 	}
 	
