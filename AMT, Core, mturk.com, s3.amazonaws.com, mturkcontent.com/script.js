@@ -4693,7 +4693,19 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				return false;
+				if (o.q[0].value.trim() == '') return false;
+				var ready_to_submit = false;
+				for (var i in o.q[1]) { // {f, l, t}
+					var x = o.q[1][i];
+					if (x.f.value.trim() != '' || x.l.value.trim() != '' || x.t.value.trim() != '') {
+						ready_to_submit = true;
+						// Has at least one filled in but at least one field is not filled in...
+						if (x.f.value.trim() == '' || x.l.value.trim() == '' || x.t.value.trim() == '') {
+							return false; // !
+						}
+					}
+				}
+				if (!ready_to_submit) return false;
 				// Here
 				doSubmit();
 			}
