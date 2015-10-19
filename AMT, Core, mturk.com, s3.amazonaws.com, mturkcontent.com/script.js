@@ -4768,14 +4768,28 @@ function MT__RUN() {
 						}
 						
 						// Has Comma
-						var t;
 						if (text.indexOf(',') != -1) {
 							var t = text.split(',');
 							next.t.value = t.slice(1).join(',');
 							fill_name(t[0], next);
-						} else {
-							fill_name(text, next);
+							return;
 						}
+						// Try [Name1 Name2 - Title]
+						if (text.indexOf(' - ') != -1) {
+							var t = text.split(' - ');
+							next.t.value = t.slice(1).join(' - ');
+							fill_name(t[0], next);
+							return;
+						}
+						// Here
+						// Fill Name
+						if (next.f.value == '') {
+							fill_name(text, next);
+							return;
+						}
+						// Here
+						// Title
+						next.t.value = text;
 						
 						//
 						
