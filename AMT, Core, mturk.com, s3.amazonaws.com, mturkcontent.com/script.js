@@ -4778,7 +4778,10 @@ function MT__RUN() {
 				],
 				search_results: {
 					use_full_urls: true,
-					create_annotation_from_title: true, // NEW OCT.18,2015, Adds a create_annotation field of scraped website first result title field.
+					create_annotation_from_title: { // NEW OCT.18,2015, Adds a create_annotation field of scraped website first result title field.
+						output: o.q[0],
+						depth: 1 // Only do first URL in each column...
+					},
 				},
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
 					uw(this.full_url);

@@ -8073,10 +8073,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			if (options_object.search_results.url_modifier_callback) {
 				x = options_object.search_results.url_modifier_callback( x );
 			}
-
 			div_result.url = x;
 			
-			//~ // DOMAIN
+			// DOMAIN
 			var domain = x.replace(/^https?:\/\//, ''); // beginning
 			
 			// SKIP BUTTON CREATE
@@ -8117,13 +8116,17 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			out_div.appendChild(d);
 			div_result.p = d;
 			
-			// IS SKIP?
+			// Is this a SKIP domain?
+			//
+			//
 			if (el_inp_skip2__obj.isSkip) {
 				d.appendChild(el_inp_skip2__obj.el_btn);
 				continue; // END
-			} else {
-				FOUND_ONE_NONSKIP = true; // FOUND_ONE_NONSKIP
 			}
+			FOUND_ONE_NONSKIP = true; // Set FOUND_ONE_NONSKIP
+			// ==== //
+			// Here and below is non-skip domain
+			// ==== //
 			
 			// domain_counts
 			if (o.domain_counts.hasOwnProperty(  'class_' + cls )) {
@@ -8163,6 +8166,14 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// Append Skip button
 			//
 			d.appendChild(el_inp_skip2__obj.el_btn);
+			// Append create_annotation_from_title if available
+			// First result in column, annotation.
+			// create_annotation_from_title
+			if (options_object.search_results.create_annotation_from_title) {
+				d.appendChild(
+					create_annotation_from_title(link)
+				);
+			}
 			
 			// Body of the result.
 			//
@@ -8292,6 +8303,72 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			out_div.appendChild(d);
 		}
 	}
+	/**
+	 * function create_annotation_from_title
+	 * 
+	 * @params
+	 * options_object.search_results.create_annotation_from_title:			Object
+	 * options_object.search_results.create_annotation_from_title.output:	HTML Object
+	 * 
+	 * @returns
+	 * div:		An empty div that will be later filled with buttons.
+	 */
+	function create_annotation_from_title(url) {
+		var obj = options_object.search_results.create_annotation_from_title;
+		var div = ''.div({style:'display:inline;'});
+		
+		// xhr_with_disk_cache object
+		//
+		//
+		//
+		var xwdc = {
+			URL: url,
+			host: 'http://' + AMT__Global_Vars.scriptVars['Server Location'], // Adds http:// !
+			success_callback: function(options) { // options.response[responseText, status, ...]
+				var rs = options.response.responseText;
+				// not 200 response.status
+				if (options.response.status > 200) {
+					console.log('RESPONSE!:'+options.response.status);
+				}
+				
+				// parse dom
+				var dom =  new DOMParser().parseFromString(rs, 'text/html');
+				
+				// Get title
+				if (!dom.title) {
+					return; // Do nothing
+				}
+				
+				// Create buttons
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: dom.title,
+					output_fields: [ options_object.search_results.create_annotation_from_title.output ],
+					callback_mouseup: function(addField) {
+						
+						// Remove trailing commas
+						addField.value = addField.value.replace(/ *,*$/, '');
+						
+					}
+					//~ appendToField: true,
+					//~ appendToField_glue: '\n',
+					//~ delimeter: '',
+					//~ focusToField: false
+				});
+			},
+		}
+		//~ //check_pre_write_to_disk
+		//~ xwdc.check_pre_write_to_disk = function(object) {
+			//~ return true; // Always return true.
+		//~ }
+		// Perform request
+		//
+		//
+		//
+		new AMT___requests_factory().xhr_with_disk_cache(xwdc);
+		
+		return div;
+	}
+	
 	// createUtilityTabsAndRewriteExeBehavior
 	//
 	//
