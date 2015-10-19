@@ -38831,7 +38831,7 @@ function MT__RUN() {
 							// Overview?
 							//
 							//
-							r[i].company_overview = (r[i].company_overview) ? r[i].company_overview : '';
+							//~ r[i].company_overview = (r[i].company_overview) ? r[i].company_overview : '';
 							
 							// Out div
 							//
@@ -38847,7 +38847,8 @@ function MT__RUN() {
 							tmp += MT__bold(r[i].name, o.comp_array);
 							tmp += '<br>L:<b>'+r[i].likes+'</b>';
 							tmp += '<br>T:'+r[i].talking_about_count;
-							tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
+							if (r[i].company_overview)
+								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// loc
 							if (r[i].location) {
 								var l = [];
@@ -38856,12 +38857,12 @@ function MT__RUN() {
 										l.push(r[i].location[j]);
 										//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
 								}
-								tmp += '<hr>'+l.join(',');
+								tmp += '<hr>A:'+l.join(',');
 							}
 							// cat
 							if (r[i].category) {
 								var x = r[i].category;
-								tmp += '<hr>'+x;
+								tmp += '<hr>C:'+x;
 							}
 							tmp += '<hr>' + r[i].link;
 							// innerHTML
