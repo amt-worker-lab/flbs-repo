@@ -4620,6 +4620,8 @@ function MT__RUN() {
 				],
 				
 				good_pages: [
+					'management',
+					'who we are',
 					'biography',
 					'meet us',
 					'meet the team',
@@ -4799,6 +4801,13 @@ function MT__RUN() {
 						
 						// If next.f is emtpy...
 						if (next.f.value == '') {
+							// Has newline
+							if (text.indexOf('\n') != -1) {
+								var t = text.split('\n');
+								next.t.value = t.slice(1).join('\n');
+								fill_name(t[0], next);
+								return;
+							}
 							// Has Comma
 							if (text.indexOf(',') != -1) {
 								var t = text.split(',');
@@ -4807,6 +4816,8 @@ function MT__RUN() {
 								return;
 							}
 							// Try [Name1 Name2 - Title]
+							// (Try replace "–" "-")
+							text = text.replace(/–/g, '-');
 							if (text.indexOf(' - ') != -1) {
 								var t = text.split(' - ');
 								next.t.value = t.slice(1).join(' - ');
@@ -4859,8 +4870,8 @@ function MT__RUN() {
 					group.f.value = n[0];
 					group.l.value = n[1];
 				} else { // 3>
-					group.f.value = n[0];
-					group.l.value = n.slice(1).join(' ');
+					group.f.value = n.slice(0, n.length-1).join(' ');	// F/M
+					group.l.value = n[n.length-1];						// L
 				}
 			}
 			/**
