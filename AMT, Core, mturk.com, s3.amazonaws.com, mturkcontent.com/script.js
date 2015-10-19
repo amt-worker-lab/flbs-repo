@@ -4586,8 +4586,8 @@ function MT__RUN() {
 			GM_addStyle('input[type="text"] {width:120px;}');
 			GM_addStyle('#companyName {width:100%;}');
 			GM_addStyle('h4 {user-select: none;-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;}'); // .......
-			GM_addStyle('h4:hover {cursor:pointer;background-color:LightGreen;border:2px solid #a2a2a2;margin-top:-2px;}');
-			GM_addStyle('h4:active {cursor:pointer;background-color:LightGreen;border:2px dashed #a2a2a2;padding-bottom:1px;}');
+			GM_addStyle('h4:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('h4:active {cursor:pointer;background-color:green;}');
 			//~ GM_addStyle('.exe:hover {background-color:yellow;}');
 
 			var a = document.getElementsByTagName('a');
@@ -4797,23 +4797,24 @@ function MT__RUN() {
 							return;
 						}
 						
-						// Has Comma
-						if (text.indexOf(',') != -1) {
-							var t = text.split(',');
-							next.t.value = t.slice(1).join(',');
-							fill_name(t[0], next);
-							return;
-						}
-						// Try [Name1 Name2 - Title]
-						if (text.indexOf(' - ') != -1) {
-							var t = text.split(' - ');
-							next.t.value = t.slice(1).join(' - ');
-							fill_name(t[0], next);
-							return;
-						}
-						// Here
-						// Fill Name
+						// If next.f is emtpy...
 						if (next.f.value == '') {
+							// Has Comma
+							if (text.indexOf(',') != -1) {
+								var t = text.split(',');
+								next.t.value = t.slice(1).join(',');
+								fill_name(t[0], next);
+								return;
+							}
+							// Try [Name1 Name2 - Title]
+							if (text.indexOf(' - ') != -1) {
+								var t = text.split(' - ');
+								next.t.value = t.slice(1).join(' - ');
+								fill_name(t[0], next);
+								return;
+							}
+							// Here
+							// Fill Name
 							fill_name(text, next);
 							return;
 						}
