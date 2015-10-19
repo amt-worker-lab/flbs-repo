@@ -4585,6 +4585,9 @@ function MT__RUN() {
 			//~ GM_addStyle('#submitButton {width:10%;height:100px;left:80%;position:absolute;top:0px}');
 			GM_addStyle('input[type="text"] {width:120px;}');
 			GM_addStyle('#companyName {width:100%;}');
+			GM_addStyle('h4 {user-select: none;-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;}'); // .......
+			GM_addStyle('h4:hover {cursor:pointer;background-color:LightGreen;border:2px solid #a2a2a2;margin-top:-2px;}');
+			GM_addStyle('h4:active {cursor:pointer;background-color:LightGreen;border:2px dashed #a2a2a2;padding-bottom:1px;}');
 			//~ GM_addStyle('.exe:hover {background-color:yellow;}');
 
 			var a = document.getElementsByTagName('a');
@@ -4686,6 +4689,21 @@ function MT__RUN() {
 				if (d[i].innerHTML == 'First Name' || d[i].innerHTML == 'Last Name' || d[i].innerHTML == 'Title') {
 					d[i].parentNode.removeChild(d[i]);
 					//~ continue;
+				}
+			}
+			// Make H4s switch input field text for F/L.
+			//
+			//
+			var h4 = document.getElementsByTagName('h4');
+			for (var i=0;i<h4.length;i++) {
+				h4[i].onclick = function() {
+					console.log(this.innerText);
+					var num = /Contact (\d)/.exec(this.innerText.trim());console.log(num);
+					if (!num) return;
+					num = Math.round(num[1]*1)-1;
+					var x = o.q[1][num].f.value;
+					o.q[1][num].f.value = o.q[1][num].l.value;
+					o.q[1][num].l.value = x;
 				}
 			}
 			
