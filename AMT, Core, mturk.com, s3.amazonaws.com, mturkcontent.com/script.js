@@ -4593,7 +4593,7 @@ function MT__RUN() {
 				],
 				bold: [],
 				
-				jobs_types: [
+				job_types: [
 					'ceo',
 					'president',
 					'vice',
@@ -4608,7 +4608,19 @@ function MT__RUN() {
 					'officer',
 					'chief',
 					'executive',
-				]
+				],
+				
+				good_pages: [
+					'biography',
+					'meet us',
+					'bio',
+					'bios',
+					'staff',
+					'leadership',
+					'about',
+					'about us',
+					'contact',
+				],
 			}
 			o.website = (!/^http/i.exec(o.website)) ? 'http://' + o.website : o.website;
 			o.domain = o.website.replace(/^https?:\/\/(www\d*\.|)/i, '');
@@ -4630,6 +4642,17 @@ function MT__RUN() {
 			});
 			document.body.appendChild(d1);
 			/**END OF ITEMS**/
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
 			
 			// Delete empty divs
 			//
@@ -4676,7 +4699,7 @@ function MT__RUN() {
 							options: {
 								task: 'AMT__all_pages_util',
 								highlight_strings_in_page: {
-									strings: o.jobs_types
+									strings: o.job_types
 									//~ [
 										//~ {string:'marketing',color:'orange'},
 										//~ 'digital',
@@ -4729,22 +4752,26 @@ function MT__RUN() {
 				);
 			}
 			
-			
-			//
+			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.comp.clean_string_to_array(),
-				searches:[
-					o.comp,
-					'"'+o.comp+'"',
-					'"'+o.comp+'" website domain url site'
+				bold_array: o.job_types,
+				search: {
+					str_add_to_searches_hidden: ' site:'+o.domain
+				},
+				searches: [
+					'("' + o.job_types.join('" OR "') + '")', // e.g. ("ceo" OR "president" OR ...)
+					'("' + o.good_pages.join('" OR "') + '")', // e.g. ("ceo" OR "president" OR ...)
 				],
+				search_results: {
+					use_full_urls: true,
+				},
 				//~ out_element:,
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
-					d2.value = this.value; // domain
-					alexa2();
+					uw(this.full_url);
+					//this.style.backgroundColor = 'LightGreen';
 				},
 				parent: d1,
-				offsetTop: 60,
+				offsetTop: 0,
 			});
 			
 			//~ // Init
