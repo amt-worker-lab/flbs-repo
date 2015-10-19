@@ -115536,7 +115536,8 @@ qatar,80
 	}
 	//
 	// Tim Finkel
-	// 
+	// Maker's Row Data (Aka ?)
+	//
 	// 
 	var s = '	<li>Include the full address, e.g. http://www.walmart.com.</li>';
 	if (ih.indexOf(s) != -1)
@@ -115586,14 +115587,14 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.boldArray,
 				searches:[
-					o.comp,
-					'"'+o.comp+'"',
-					o.comp + ' ' + o.city_state
+					o.comp.string_to_mixed_case(),
+					'"'+o.comp.string_to_mixed_case()+'"',
+					o.comp.string_to_mixed_case() + ', ' + o.city_state.string_to_mixed_case()
 				],
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
-				naText:'not found',
+				naText:'not-found',
 			});
 		}
 		new run().f();
