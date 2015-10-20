@@ -7619,22 +7619,23 @@ AMT___items_factory.prototype.search_container = function(options_object) {
 /**
  * create_dashboard_find_url
  * 
- * .bold_array		Array
- * .searches		Array, Array of strings to search (3=default)
- * .out_element		HTML input element, Where to put URL
- * .onclick_success	Function, Callback function for successful find URL
- * .parent			HTML div element, Container
- * .offsetTop		Int, Parent div offset top
- * .innerHeight_callback	Function
- * .load_success_callback	Function, Callback after all panels have loaded
- * .search_results	Object
+ * .bold_array										Array
+ * .searches										Array, Array of strings to search (3=default)
+ * .out_element										HTML input element, Where to put URL
+ * .onclick_success									Function, Callback function for successful find URL
+ * .parent											HTML div element, Container
+ * .offsetTop										Int, Parent div offset top
+ * .innerHeight_callback							Function
+ * .load_success_callback							Function, Callback after all panels have loaded
+ * .search_results									Object
  * .search_results.use_full_urls					Boolean
  * .search_results.replace_urls_in_result_body		Boolean, Default=False
  * .search_results.url_ignore_test					Function(url), True=Skip, False=Keep
  * .search_results.url_modifier_callback			Function(url)
  * .search_results.clean_body_regex					Array(regexes)
  * .search_results.clean_body_string				Array(strings)
- * .search			Object
+ * .search_results.use_domain_only					Boolean, Default=NULL or False
+ * .search											Object
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
  * .hide_search_fields BOOLEAN
  * 
