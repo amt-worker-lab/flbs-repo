@@ -162,8 +162,8 @@ function load()
 		}, 2400);
 		return;
 	}
-	//
 	// document.getElementById('recaptcha_response_field');
+	// 
 	//
 	if  (
 		loc.indexOf('http://www.upcindex.com/') == 0 || 
@@ -231,8 +231,8 @@ function load()
 		
 		return;
 	}
-	// 
 	// Jon Brelig
+	// 
 	if  (
 		window.top != window.self &&
 		/^https?:\/\/mturk.infoscoutinc.com/.exec(loc)
@@ -254,28 +254,26 @@ function load()
 		
 		return;
 	}
-	// testing chrome://gpuclean
-	//~ console.log('xxxxx2');
-	//~ console.log('xxxxx');
-	//~ console.log('HREF:');
-	//~ console.log(document.location.href);
-	if (document.location.href == 'http://192.168.1.2/?gpuclean' || document.location.href == 'http://localhost/?gpuclean') {
-		var run = function() {};
-		run.prototype.f = function() {
-			console.log('try gpuclean.....');
+	// Testing chrome://gpuclean
+	//
+	//
+	//~ if (document.location.href == 'http://192.168.1.2/?gpuclean' || document.location.href == 'http://localhost/?gpuclean') {
+		//~ var run = function() {};
+		//~ run.prototype.f = function() {
+			//~ console.log('try gpuclean.....');
 			
-			// Does not....
-			document.body.innerHTML = '<iframe src="chrome://gpuclean/"></iframe>';
+			//~ // Does not....
+			//~ document.body.innerHTML = '<iframe src="chrome://gpuclean/"></iframe>';
 			
-			//
-			window.open('chrome://gpuclean/', 'window_name');
+			//~ //
+			//~ window.open('chrome://gpuclean/', 'window_name');
 			
-			// Does not....
-			//~ new AMT___requests_factory().xhr({URL: 'chrome://gpuclean'});
-		}
-		new run().f();
-		return;
-	}
+			//~ // Does not....
+			//new AMT___requests_factory().xhr({URL: 'chrome://gpuclean'});
+		//~ }
+		//~ new run().f();
+		//~ return;
+	//~ }
 	/*
 	 {
 		zoom: int, //Default 3
@@ -321,9 +319,9 @@ function load()
 	}
 	
 	// ...
-	console.log('GOT HERE');
-	
-	// ...
+	// ChiosSpecial
+	//
+	//
 	if(loc.indexOf('ChiosSpecial') != -1) {
 		window.setTimeout(function() {
 			var innerH = document.body.innerHTML;
@@ -359,15 +357,10 @@ function load()
 			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
 	};
-	//~ MT___google_api_geocode('67 Comfort Road Apt 6, Ithaca, NY, 14850', function(lat, lng) {
-		//~ console.log('drawing');
-		//~ console.log(drawBingMap({style:'width:650px;height:450px;', lat:lat, lng: lng, zoom: '19'}));		
-		//~ console.log('drawn');
-	//~ }, false, true)
 	
-	//
 	// UK address task.
 	// Which requester?
+	//
 	//
 	s="We ask you to split the postal addresses of business listings from United Kingdom into several address lines";
 	if(
@@ -537,7 +530,7 @@ function load()
 	window.addEventListener("message", AMT__iframeReceiveMessage, false);
 	function AMT__iframeReceiveMessage(event)
 	{
-		if (typeof event.data != 'object') {
+		if (typeof event.data != 'object') { // Non-objects
 			if (event.data == 'AMT__Ed_Hallen_CEO_or_Marketing' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
 				AMT__Ed_Hallen_URL__receiveMessage();
@@ -597,7 +590,7 @@ function load()
 			}
 		}
 		//
-		else if (typeof event.data == 'object') {
+		else if (typeof event.data == 'object') { // event.data is object
 			if (event.data.task == 'AMT__all_pages_util' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
 				AMT__all_pages_util(event.data);
@@ -657,6 +650,11 @@ function load()
 				// NEW
 				new AMT__rq().AMT__chios_system_draw_polygon__utility_window(event.data);
 			}
+			if (event.data.task == 'AMT__Consumer_Survey_Research_Polygons__utility_window' && !AMT__iframeReceiveMessage_done) {
+				AMT__iframeReceiveMessage_done = true;
+				// NEW
+				new AMT__rq().AMT__Consumer_Survey_Research_Polygons__utility_window(event.data);
+			}
 			if (event.data.task == 'AMT__Kristin_Howe_agent_photos2__utility_window' && !AMT__iframeReceiveMessage_done) {
 				AMT__iframeReceiveMessage_done = true;
 				// NEW
@@ -669,7 +667,6 @@ function load()
 			//~ }
 		}
 	}
-	//~ this.blaaaaaah = 'xxxxxxxsdfsdfsdavdfs';
 	// Ask Core-mturk whether we are a utility window and, if so, run the options
 	// For example Michael Lai
 	this.AMT__init_utility_window = function() {
@@ -701,9 +698,6 @@ function load()
 	function AMT__Leonid_check_site_advertisement(r) {
 		//extend
 		MT___all_pages_extend();
-		
-		// r.name,subject,email,body
-		//~ console.log(r);
 		
 		var type = 0;
 		if (/(advertise|advertize|advertizing)/i.exec(document.body.innerText))
@@ -2023,145 +2017,30 @@ function load()
 			}
 		}, 4000);
 		
-		// add_image
-		//~ function add_image(page_img, pos_left) {
-			//create an image
-			//getBounding
-			//~ var b = page_img.getBoundingClientRect();
-			//~ var left = b.left *1;
-			//left -= 60;
-			//~ left += pos_left;
-			//~ var top = b.top *1;
-			//~ top += document.body.scrollTop*1;
-			//~ 
-			//~ var d = document.createElement('div');
-			//~ d.setAttribute(
-				//~ 'style',
-				//~ 'position:absolute;top:'+top+'px;left:'+left+'px;z-index:1000000000000000000;opacity:0.7;background-color:white;'
-			//~ );
-			//~ d.setAttribute('class', 'manual__exe_div_162435168649');
-			//~ var d_= document.createElement('img');
-			//~ d_.setAttribute('class', 'manual__exe_image_162435168649');
-			//~ d_.setAttribute(
-				//~ 'style',
-				//~ 'max-width:60px;max-height:60px;z-index:1000000000000000000;border:8px dashed green;' //bgc
-			//~ );
-			//~ d_.src = page_img.src;
-			//~ d.appendChild(d_);
-			//~ document.body.appendChild(d);
-			
-			//~ console.log('pos_left:'+pos_left+' left:'+left);
-			//~ console.log(d_);
-		//~ }
-		
-		// activate_images
-		// activate images function
-		//~ function activate_images() {
-			// Iterate through all images and add an image "button."
-			// Background color is set from domain.
-			// (getBoundingClientRect())
-			// Remove all images from any previous runs.
-			
-			// remove old
-			//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
-			//~ var i;
-			//~ for (i=a.length - 1; i >= 0; i--) {
-				//~ if (!a[i]) continue;
-				//~ if (!a[i].href) continue;
-				//~ a[i].parentNode.removeChild(a[i]);
-			//~ }
-			//~ var a = document.getElementsByClassName('manual__exe_div_162435168649');
-			//~ for (i=a.length - 1; i >= 0; i--) {
-				//~ if (!a[i]) continue;
-				//~ if (!a[i].href) continue;
-				//~ a[i].parentNode.removeChild(a[i]);
-			//~ }
-			
-			
-			// new
-			//var bgc = (IMAGES_ARE_FZ == 1) ? 'Green' : '#aeaeae';
-			//~ var a = document.getElementsByTagName('img');
-			//~ for (var i in a) {
-				//~ if (i == 'length') break;
-				//~ if (!a[i].src || a[i].src == '') continue;
-				//~ add_image(a[i], 200);
-				//~ //KristinHowe_agent_photo_images__add_image(a[i], 20);
-				//~ add_image(a[i], -200);
-			//~ }
-			
-			// Send to parent/job window
-			// Write value to db
-			//~ var a = document.getElementsByClassName('manual__exe_image_162435168649');
-			//~ for (var i in a) {
-				//~ a[i].onclick = function() {
-					//~ this.style.border = '4px solid LightGreen';
-					//~ 
-					//~ var theDomain = window.location.href.replace(/^https?:\/\/(www\.|)([^\/]+)[\w\W]*/i, '$2');
-					//~ 
-					//~ chrome.runtime.sendMessage(
-						//~ 'gcfnekbbpmbgadddbojhlojhddnkcpje',
-						//~ {
-							//~ util_window_message_passing: true,
-							//~ data: {
-								//~ src: this.src,
-								//~ theDomain: theDomain
-							//~ },
-							//~ focus:true
-						//~ },
-						//~ function(response) {
-							//~ // response=object
-						//~ }
-					//~ );
-					//~ 
-					parent.postMessage(
-						{
-							key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
-							data: this.src
-						},
-					"*");
-				//~ }
-			//~ }
-		//~ }
-		
-		//Attempt to pre-fetch the 1st 50 a's
-		//~ var a = document.getElementsByTagName('a');
-		//Convert a from an htmlcollectrion to an array (stack overflow)
-		//~ a = [].slice.call(a);
-		//~ console.log(a);
-		//Remove all of the a's that have an @ symbol
-		//~ for(var i = 0; i < a.length; i++) {
-			//~ if(!a[i].href || a[i].href.indexOf('@') != -1) {
-				//~ a.splice(i, 1);
-				//~ i--;
-			//~ }
-		//~ }
-		//~ console.log(a);
-		//~ 
-		//~ for(var i = 0; i < a.length && i < 50; i++) {
-			//~ var link = document.createElement('link');
-			//~ link.setAttribute('rel', 'prefetch');
-			//~ link.setAttribute('href', a[i].href);
-			//~ document.body.appendChild(link);
-		//~ }
-		
-		//~ function prefetch(url) {
-		  //~ var f=document.createElement('iframe'); f.src=url;
-		  //~ f.style.display='none';
-		  //~ document.body.appendChild(f);
-		  //~ //alert(url);
-		//~ }
-//~ 
-		//~ function startFetching() {
-			//~ var links = document.getElementsByTagName('link'), i=links.length, re=RegExp(/\bprefetch\b/);
-			//~ while (i--) {
-			  //~ if (links[i].getAttribute('rel').match(re)) prefetch(links[i].getAttribute('href'));
-			//~ }
-		//~ }
-		//~ //Only create iframes on the page where there isn't an iframe (avoids an infinite loop
-		//~ if(window.self == window.top)
-			//~ startFetching();
-		
+		parent.postMessage(
+			{
+				key: 'AMT__Kristin_Howe_agent_photos__yahoo_bot__complete',
+				data: this.src
+			},
+		"*");
 	}
+	//~ /**
+	 //~ * new AMT__rq().AMT__Consumer_Survey_Research_Polygons__utility_window( event.data )
+	 //~ * 
+	 //~ * This is inside of a utility window. The passed in object is:
+		//~ {
+			//~ task:'AMT__Consumer_Survey_Research_Polygons__utility_window',
+			//~ task__ll: {lat:lat, lng: lng},
+			//~ task__name: o.name
+		//~ }
+	 //~ * 
+	 //~ * @param	
+	 //~ * @returns	
+	 //~ */
+	//~ AMT__rq.prototype.AMT__Consumer_Survey_Research_Polygons__utility_window = function(data) {
+		//~ document.body.innerHTML = '';
+		//~ console.log(data);
+	//~ }
 	/**
 	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
 	 * 
@@ -2178,7 +2057,6 @@ function load()
 	 * @returns	
 	 */
 	AMT__rq.prototype.AMT__chios_system_draw_polygon__utility_window = function(data) {
-		
 		document.body.innerHTML = '';
 		console.log(data);
 		// Iframes
@@ -2207,14 +2085,11 @@ function load()
 		var img_el_array = [];
 		
 		for (i in data.images) {
-			
 			var img = document.createElement('img');
 			img.setAttribute('style','cursor:pointer;display:block;zoom:0.2;float:left;');
 			img.src = data.images[i];
 			document.body.appendChild(img);
-			
 			img_el_array.push(img);
-			
 		}
 		// Add mouse zoom
 		new AMT___events_factory().mousewheel_zoom_image({
