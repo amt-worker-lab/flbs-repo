@@ -46998,8 +46998,10 @@ function MT__RUN() {
 			//GM_addStyle('.panel-primary {margin-top:1000px;}');
 			//GM_addStyle('.form-control {width:49.9% !important;height:50px !important;position:absolute;top:0;left:50%;font-size:0.8em;border:1px solid blue !important;z-index:10000000000000000000000000;}'); 
 			
+			var ll = /latt = ([\d\.\-]+)\nlong = ([\d\.\-]+)/.exec(ih);
 			var o = {
-				
+				lat: ll[1],
+				lng: ll[2]
 			}
 			
 			var opts = {
@@ -47007,44 +47009,41 @@ function MT__RUN() {
 				//~ highlight_strings_in_page: {
 					//~ strings: o.hl_strings
 				//~ },
-				//~ highlight_range_to_parent: true
+				highlight_range_to_parent: true
 			}
 			
 			AMT__setUtilityTabs(
 				[
 					{
-						url: 'http://www.openstreetmap.org/#map=18/40.8079/-73.9879',
+						url: 'http://www.openstreetmap.org/#map=18/'+o.lat+'/'+o.lng+'&layers=D',
 						options: opts
 					}
 				],
 				{
-					options: {
-						//~ task: 'AMT__all_pages_util',
-						//~ highlight_range_to_parent: true,
-						//~ up_button_to_all_links: true
-					},
-					style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
 				},
-				{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+				{
+					//style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'
+				},
 				false,
 				function(response){
 					console.log(response);
-					var text = response.data.text_range.trim();
-					if(text.indexOf('@') != -1) {
-						o.q[4].value = text;
-					}
-					else if(text.replace(/[\D]/g,'').length > 6) {
-						o.q[5].value = text;
-					}
-					else {
-						o.q[3].value = text;
-					}
+					console.log('-----response-----');
+					//~ var text = response.data.text_range.trim();
+					//~ if(text.indexOf('@') != -1) {
+						//~ o.q[4].value = text;
+					//~ }
+					//~ else if(text.replace(/[\D]/g,'').length > 6) {
+						//~ o.q[5].value = text;
+					//~ }
+					//~ else {
+						//~ o.q[3].value = text;
+					//~ }
 					
-					document.getElementById('submitButton').focus();
+					//~ document.getElementById('submitButton').focus();
 					
-					o.q[1].checked = true;
-					o.q[0].checked = false;
-					o.q[2].checked = false;
+					//~ o.q[1].checked = true;
+					//~ o.q[0].checked = false;
+					//~ o.q[2].checked = false;
 				}
 			);
 			

@@ -680,7 +680,7 @@ function load()
 							//the response is an options obj
 							console.log('Got options from Core-Mturk:');
 							console.log(response);
-							response.isUtilityTab = true;
+							response.isUtilityTab = true;console.log(response);
 							AMT__iframeReceiveMessage({
 								data: response // Pass this in as ".data"
 							});
