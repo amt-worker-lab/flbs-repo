@@ -2041,7 +2041,9 @@ function load()
 		//~ console.log('-------here-------');
 		
 		var o = {
-			nodes: null
+			nodes: null,
+			arr_xhr_nodes: [],
+			ll: [] // To be filled in
 		}
 		
 		// Set a watch for "Nodes"
@@ -2053,7 +2055,8 @@ function load()
 		//
 		//
 		function delay_tn() {
-			setTimeout(try_nodes, 1000);
+			setTimeout(try_nodes, 400);
+			setTimeout(try_nodes, 800);
 			setTimeout(try_nodes, 2000);
 			setTimeout(try_nodes, 4000);
 		}
@@ -2065,9 +2068,34 @@ function load()
 			var n = document.getElementsByClassName('node');
 			if (!n) return; // No nodes
 			// There are nodes...
-			if (n !=
+			if (n == o.nodes) return; // Same as old (o.nodes)
+			o.nodes = n; // Set o.nodes
+			o.arr_xhr_nodes = [];	// Reset this
+			o.ll = [];				// Reset this
+			for (var i=0;i<n.length;i++) {
+				var u = n[i].href.replace('http://www.openstreetmap.org', ''); // http://www.openstreetmap.org/node/3480342161
+				o.arr_xhr_nodes.push( // Add e.g. http://www.openstreetmap.org/api/0.6/node/3480342161
+					'http://www.openstreetmap.org/api/0.6' + u
+				);
+			}
+			// Download nodes
+			dl_node
 		}
-		
+		// function dl_node()
+		// Scrape e.g. `lat="40.8085223" lon="-73.9886852"`
+		//
+		function dl_node() {
+			if (!o.arr_xhr_nodes.length) {
+				pass_complete()
+				return; // Done
+			}
+		}
+		// function send_reply()
+		//
+		//
+		function send_reply() {
+			
+		}
 	}
 	/**
 	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
