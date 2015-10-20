@@ -47026,8 +47026,12 @@ function MT__RUN() {
 				},
 				false,
 				function(response){
-					console.log(response);
-					console.log('-----response-----');
+					//~ console.log('-----response-----');
+					//~ console.log(response);
+					
+					var pairs = response.data.pairs;
+					if (!pairs || !pairs.length) return;
+					
 					//~ var text = response.data.text_range.trim();
 					//~ if(text.indexOf('@') != -1) {
 						//~ o.q[4].value = text;
