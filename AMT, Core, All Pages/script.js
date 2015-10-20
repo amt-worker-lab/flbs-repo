@@ -2024,23 +2024,24 @@ function load()
 			},
 		"*");
 	}
-	//~ /**
-	 //~ * new AMT__rq().AMT__Consumer_Survey_Research_Polygons__utility_window( event.data )
-	 //~ * 
-	 //~ * This is inside of a utility window. The passed in object is:
-		//~ {
-			//~ task:'AMT__Consumer_Survey_Research_Polygons__utility_window',
-			//~ task__ll: {lat:lat, lng: lng},
-			//~ task__name: o.name
-		//~ }
-	 //~ * 
-	 //~ * @param	
-	 //~ * @returns	
-	 //~ */
-	//~ AMT__rq.prototype.AMT__Consumer_Survey_Research_Polygons__utility_window = function(data) {
-		//~ document.body.innerHTML = '';
-		//~ console.log(data);
-	//~ }
+	/**
+	 * new AMT__rq().AMT__Consumer_Survey_Research_Polygons__utility_window( event.data )
+	 * 
+	 * This is inside of a utility window. The passed in object is:
+		{
+			task:'AMT__Consumer_Survey_Research_Polygons__utility_window',
+			task__ll: {lat:lat, lng: lng},
+			task__name: o.name
+		}
+	 * 
+	 * @param	
+	 * @returns	
+	 */
+	AMT__rq.prototype.AMT__Consumer_Survey_Research_Polygons__utility_window = function(data) {
+		document.body.innerHTML = '';
+		console.log(data);
+		console.log('-------here-------');
+	}
 	/**
 	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
 	 * 

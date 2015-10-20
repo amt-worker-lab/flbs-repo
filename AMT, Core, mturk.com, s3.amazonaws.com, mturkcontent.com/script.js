@@ -46983,7 +46983,75 @@ function MT__RUN() {
 		}
 		
 	}
-
+	// Consumer Survey Research
+	// Draw outlines around businesses on Google Maps (2-3 min/HIT, multiple available)
+	//
+	//
+	var s = 'In theory, the theater should be at or near the starting center location. Zoom in or out and move around the map within a reasonable distance as needed to locate the theater.'
+	if  (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,fieldset,table,tr,th,td,tbody,section {margin:0 !important;padding:0 !important;font-size:10px;}');
+			//GM_addStyle('.container {width:100% !important;}');
+			//GM_addStyle('.panel-primary {margin-top:1000px;}');
+			//GM_addStyle('.form-control {width:49.9% !important;height:50px !important;position:absolute;top:0;left:50%;font-size:0.8em;border:1px solid blue !important;z-index:10000000000000000000000000;}'); 
+			
+			var o = {
+				
+			}
+			
+			var opts = {
+				task: 'AMT__Consumer_Survey_Research_Polygons__utility_window',
+				//~ highlight_strings_in_page: {
+					//~ strings: o.hl_strings
+				//~ },
+				//~ highlight_range_to_parent: true
+			}
+			
+			AMT__setUtilityTabs(
+				[
+					{
+						url: 'http://www.openstreetmap.org/#map=18/40.8079/-73.9879',
+						options: opts
+					}
+				],
+				{
+					options: {
+						//~ task: 'AMT__all_pages_util',
+						//~ highlight_range_to_parent: true,
+						//~ up_button_to_all_links: true
+					},
+					style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
+				},
+				{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+				false,
+				function(response){
+					console.log(response);
+					var text = response.data.text_range.trim();
+					if(text.indexOf('@') != -1) {
+						o.q[4].value = text;
+					}
+					else if(text.replace(/[\D]/g,'').length > 6) {
+						o.q[5].value = text;
+					}
+					else {
+						o.q[3].value = text;
+					}
+					
+					document.getElementById('submitButton').focus();
+					
+					o.q[1].checked = true;
+					o.q[0].checked = false;
+					o.q[2].checked = false;
+				}
+			);
+			
+		}
+		new run().f();
+		return;
+	}
 	//
 	// Chios System
 	// Lowe's store search, Home Depot
@@ -48133,12 +48201,6 @@ function MT__RUN() {
 			);
 			document.body.appendChild(d5);
 			d5.id = 'd5';
-			//d5.value = 'N/A';
-			//d5.type = 'button'
-			
-			
-			
-			
 			// __hidden_target_id__
 			var d3 = document.createElement('textarea');
 			d3.setAttribute('style',
@@ -48235,7 +48297,6 @@ function MT__RUN() {
 				}
 			}
 			
-			
 			//~ // Coordinates 
 			//~ //
 			//~ //
@@ -48250,6 +48311,9 @@ function MT__RUN() {
 				//~ //
 			//~ }
 			
+			// Script var
+			//
+			//
 			new AMT___core_factory().createScriptVar('WeFi Type', 'store', false); // "hotel" or "store"
 			var type_wefi = AMT__Global_Vars.scriptVars['WeFi Type'];
 			
@@ -48292,7 +48356,9 @@ function MT__RUN() {
 					document.getElementsByName('Q6MultiLineTextInput')[0]
 				]
 			}
-			
+			// d5.onclick
+			//
+			//
 			d5.onclick = function() {
 				if(this.value != "N/A Choices") {
 					var val = document.getElementsByName('Q6MultiLineTextInput')[0].value;
@@ -48305,14 +48371,8 @@ function MT__RUN() {
 					}
 					// "Can't be located accurately: The store does not seem to be anywhere near the desired address.";
 					xo.cannotFindIt = true;
-					
-					//try_sbm();
 				}
 			}
-			
-			
-
-			
 			
 			// Zip, State, City
 			var x = /([^ ,]+), ([A-Z]{2}) [\d\-]+$/.exec(r);
@@ -48340,8 +48400,6 @@ function MT__RUN() {
 			   // then append it to the select element
 			   d5.appendChild(opt);
 			}
-			
-			
 			
 			function js_append(func, values) {
 				// ...
@@ -48380,10 +48438,6 @@ function MT__RUN() {
 				}, 2000);
 			}, false);
 			
-			
-			
-			
-			
 			/**
 			 * function loader_func
 			 */
@@ -48418,8 +48472,6 @@ function MT__RUN() {
 					//~ sc.src = 'https://maps.gstatic.com/maps-api-v3/api/js/21/5a/drawing.js';
 					//~ document.head.appendChild(sc);
 				//~ })();
-				
-				
 				/*************** END MAPS.GOOGLEAPIS.COM **************/
 			}
 			/**
@@ -48459,10 +48511,6 @@ function MT__RUN() {
 					mapOptions
 				);
 				
-				
-				
-				
-				
 				// Add lisenter to polygon complete
 				drawingManager.setMap(map);
 				google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
@@ -48471,12 +48519,8 @@ function MT__RUN() {
 						displayNewCoors(coors);
 					}
 				})
-				
-				
-				
 
 				/////////////////////////////////////////////////////////////////////
-
 				function displayNewCoors(coors) {
 					
 					var str = '';
@@ -48488,7 +48532,6 @@ function MT__RUN() {
 						if(i == coors.getLength()-1) {p2 = coors.getAt(i)};
 						var latlng = coors.getAt(i);
 						str += latlng.lng() + ',' + latlng.lat() + ',0 ';
-						//~ str += latlng.lat() + ',' + latlng.lng() + ',0 ';
 					};
 					 
 					var latlng1 = coors.getAt(0);
@@ -48496,7 +48539,6 @@ function MT__RUN() {
 					if(latlng1.lat() != latlng2.lat() ||
 						latlng1.lng() != latlng2.lng()) {
 						str += coors.getAt(0).lng() + ',' + coors.getAt(0).lat() + ',0 ';
-						//~ str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ',0 ';
 					};
 					
 					var polyline = new google.maps.Polyline({
@@ -48510,9 +48552,6 @@ function MT__RUN() {
 					polyline.setMap(map);
 					var x = document.getElementsByName('Q6MultiLineTextInput')[0];
 					x.value = str.trim();
-					
-					//~ var tgid = document.getElementById('__hidden_target_id__');
-					//~ x.value+= '\n' + tgid.value.trim(); // ADD "ID"
 				}
 				
 				map.setCenter(latLngOnPage);
@@ -48684,8 +48723,6 @@ function MT__RUN() {
 					}
 				}, false);
 				
-				
-				
 				new AMT___core_factory().createScriptVar('Start in top-down view', 0, false);
 				var inp = document.createElement('input')
 				inp.setAttribute('style', 'width:20%;top:2000px;position:absolute;left:40%;');
@@ -48696,7 +48733,6 @@ function MT__RUN() {
 				
 				//Draw a marker onto the map for center of map
 				AMT___RunPageScript("function() {"+
-					
 				"}"
 				);
 				
@@ -48994,10 +49030,6 @@ function MT__RUN() {
 				//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
 				document.body.appendChild(d);*/
 				
-				//~ // BING
-				//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-				//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
-				
 				/*BEGIN ITEMS*/
 				// Middle line
 				var middleLine = document.createElement('div');
@@ -49096,19 +49128,6 @@ function MT__RUN() {
 					
 					// Send street view URLs to Utility Window
 					var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
-					//~ 
-					//~ var hds = [0, 45, 90, 135, 180, 225, 270, 315];
-					//~ var img_urls = [];
-					//~ for (var i in hds) {
-						//~ img_urls.push(
-							//~ 'https://maps.googleapis.com/maps/api/streetview' +
-								//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-								//~ '&location='+encodeURIComponent(o.addr)+
-								//~ //'&location='+lat+','+lng+
-								//~ '&heading='+hds[i]+
-								//~ '&key=_GOOGLE_API_KEY_REDACTED_'
-						//~ );
-					//~ }
 					
 					// AMT__setUtilityTabs
 					AMT__setUtilityTabs([
@@ -49274,7 +49293,6 @@ function MT__RUN() {
 						try_sbm();
 					}
 				}, false);
-				
 				
 				// Zoom map exit button
 				var xintv = setInterval(function() {
