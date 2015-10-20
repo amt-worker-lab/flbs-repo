@@ -56,28 +56,12 @@ chrome.runtime.onMessage.addListener(
 		// ...
 		//~ //JANET LEE
 		//~ if(request.itsOkayToRun) {
-			//~ if(document.location.href.indexOf('http://researchcu.ncua.gov') != -1) {
-				//~ //new AMT___core_factory().nextWindow();
-				//~ window.setTimeout(function() {
-					//~ var theForm = document.forms['aspnetForm'];
-					//~ if (theForm) {
-						//~ var rg = /http:\/\/researchcu\.ncua\.gov\/Views\/FindCreditUnions\.aspx\?n=([\d]+)/.exec(document.location.href);
-						//~ if (rg) {
-							//~ document.getElementById('ctl00_MainContent_txtCharterNumber').value = rg[1];
-							//~ theForm.__EVENTTARGET.value = 'ctl00$MainContent$ButtonFindQuick';
-							//~ theForm.__EVENTARGUMENT.value = '';
-							//~ theForm.submit();
-						//~ }
-					//~ }
-				//~ },1000);
-			//~ }
 		//~ }
 	}
 );
 	
 function load()
 {
-	
 	// Global
 	var LOC__ = document.location.href;
 	var loc = document.location.href;
@@ -89,6 +73,8 @@ function load()
 	
 	
 	// Exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
+	//
+	//
 	if  (
 		window.top != window.self &&
 		/assignmentId=ASSIGNMENT_ID_NOT_AVAILABLE/.exec(loc)
@@ -106,8 +92,10 @@ function load()
 		return;
 	}
 	
-	
-	
+	// If...
+	//   window.top == window.self &&
+	//   location.href.indexOf("mturk.com/mturk") != -1
+	//
 	if  (
 		window.top == window.self &&
 		location.href.indexOf("mturk.com/mturk") != -1
@@ -119,16 +107,17 @@ function load()
 		return;
 	}
 	
-	
-	
 	// Exit if AMT
+	//
+	//
+	//
 	if  (
 			loc.indexOf('https://www.mturk.com') != -1 ||
 			loc.indexOf('https://www.mturkcontent.com') != -1 ||
 			loc.indexOf('https://s3.amazonaws.com') != -1 ||
 			loc.indexOf('https://workersandbox.mturk.com') != -1
 		)
-	{ // Run any dual mode content here!
+	{	// Run any dual mode content here!
 		load__allPages_AMT_combo();
 		
 		this.global_vars.is_running_on_amt = false;
@@ -154,8 +143,8 @@ function load()
 		return;
 	}
 	
-	//
 	// CAPTCHA FOCUS...
+	// 
 	//
 	// http://www.hotelscombined.com/TrafficInspection.aspx?requestId=...&requestUrl=...
 	if (loc.indexOf('http://www.hotelscombined.com/TrafficInspection.aspx') == 0) {
