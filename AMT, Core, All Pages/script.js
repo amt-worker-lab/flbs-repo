@@ -2054,7 +2054,8 @@ function load()
 		// SetTimeout
 		//
 		//
-		function delay_tn() {
+		function delay_tn(e) {
+			console.log('c');
 			setTimeout(try_nodes, 400);
 			setTimeout(try_nodes, 800);
 			setTimeout(try_nodes, 2000);
@@ -2066,10 +2067,18 @@ function load()
 		//
 		function try_nodes() {
 			var n = document.getElementsByClassName('node');
-			if (!n) return; // No nodes
+			if (!n) {// No nodes
+				//~ console.log('No nodes....');
+				return;
+			}
 			// There are nodes...
-			if (n == o.nodes) return; // Same as old (o.nodes)
-			o.nodes = n; // Set o.nodes
+			if (n == o.nodes) { // Same as old (o.nodes)
+				//~ console.log('Same nodes.....');
+				console.log(n);
+				console.log(o.nodes);
+				return;
+			}
+			o.nodes = document.getElementsByClassName('node'); // Set o.nodes. And not to a reference of "n"!
 			o.arr_xhr_nodes = [];	// Reset this
 			o.ll = [];				// Reset this
 			for (var i=0;i<n.length;i++) {
@@ -2079,22 +2088,50 @@ function load()
 				);
 			}
 			// Download nodes
-			dl_node
+			dl_node();
 		}
 		// function dl_node()
 		// Scrape e.g. `lat="40.8085223" lon="-73.9886852"`
 		//
 		function dl_node() {
 			if (!o.arr_xhr_nodes.length) {
-				pass_complete()
+				send_reply()
 				return; // Done
 			}
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: o.arr_xhr_nodes.shift(), // Gets lowest
+				onload: function(response) {
+					var rs = response.responseText;
+					var l = /lat="([\d\-\.]+)" lon="([\d\-\.]+)"/.exec(rs);
+					if (!l) {
+						alert('Bad ll:'+rs);
+						return; // End!
+					}
+					o.ll.push( [l[1], l[2]] ); // Push array(lat, lng)
+					// Get next Node
+					dl_node();
+				}
+			});
 		}
 		// function send_reply()
-		//
+		// chrome.runtime.sendMessage
 		//
 		function send_reply() {
-			
+			chrome.runtime.sendMessage(
+				'gcfnekbbpmbgadddbojhlojhddnkcpje',
+				{
+					util_window_message_passing: true,
+					data: {
+						pairs: o.ll
+					},
+					//~ init_object: options,
+					//~ focus: true
+				},
+				function(response) {
+					// response=object
+				}
+			);
 		}
 	}
 	/**
