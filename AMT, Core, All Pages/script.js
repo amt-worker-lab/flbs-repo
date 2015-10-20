@@ -2056,10 +2056,10 @@ function load()
 		//
 		function delay_tn(e) {
 			console.log('c');
-			setTimeout(try_nodes, 400);
-			setTimeout(try_nodes, 800);
-			setTimeout(try_nodes, 2000);
-			setTimeout(try_nodes, 4000);
+			//~ setTimeout(try_nodes, 400);
+			//~ setTimeout(try_nodes, 800);
+			//~ setTimeout(try_nodes, 2000);
+			//~ setTimeout(try_nodes, 4000);
 		}
 		
 		// function try_nodes
@@ -2067,26 +2067,33 @@ function load()
 		//
 		function try_nodes() {
 			var n = document.getElementsByClassName('node');
-			if (!n) {// No nodes
-				//~ console.log('No nodes....');
+			if (!n || !n.length) {// No nodes
+				console.log('No nodes....');
 				return;
 			}
-			// There are nodes...
-			if (n == o.nodes) { // Same as old (o.nodes)
+			//~ // There are nodes...
+			//~ if (n == o.nodes) { // Same as old (o.nodes)
 				//~ console.log('Same nodes.....');
-				console.log(n);
-				console.log(o.nodes);
-				return;
-			}
-			o.nodes = document.getElementsByClassName('node'); // Set o.nodes. And not to a reference of "n"!
-			o.arr_xhr_nodes = [];	// Reset this
-			o.ll = [];				// Reset this
+				//~ return;
+			//~ }
+			//~ console.log('Diff nodes.....');
+			//~ o.nodes = document.getElementsByClassName('node'); // Set o.nodes. And not to a reference of "n"!
+			
+			var t = [];
+			o.ll = []; // Reset this
 			for (var i=0;i<n.length;i++) {
 				var u = n[i].href.replace('http://www.openstreetmap.org', ''); // http://www.openstreetmap.org/node/3480342161
-				o.arr_xhr_nodes.push( // Add e.g. http://www.openstreetmap.org/api/0.6/node/3480342161
+				t.push( // Add e.g. http://www.openstreetmap.org/api/0.6/node/3480342161
 					'http://www.openstreetmap.org/api/0.6' + u
 				);
 			}
+			
+			// Different nodes?
+			if (o.arr_xhr_nodes.toString() == t.toString()) {
+				return;
+			}
+			o.arr_xhr_nodes = t;
+			
 			// Download nodes
 			dl_node();
 		}
@@ -2094,7 +2101,9 @@ function load()
 		// Scrape e.g. `lat="40.8085223" lon="-73.9886852"`
 		//
 		function dl_node() {
+			console.log('o.arr_xhr_nodes.length:'+o.arr_xhr_nodes.length);
 			if (!o.arr_xhr_nodes.length) {
+				console.log('Send reply.....');
 				send_reply()
 				return; // Done
 			}
