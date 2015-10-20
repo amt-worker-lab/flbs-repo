@@ -680,7 +680,7 @@ function load()
 							//the response is an options obj
 							console.log('Got options from Core-Mturk:');
 							console.log(response);
-							response.isUtilityTab = true;console.log(response);
+							response.isUtilityTab = true;
 							AMT__iframeReceiveMessage({
 								data: response // Pass this in as ".data"
 							});
@@ -2030,17 +2030,44 @@ function load()
 	 * This is inside of a utility window. The passed in object is:
 		{
 			task:'AMT__Consumer_Survey_Research_Polygons__utility_window',
-			task__ll: {lat:lat, lng: lng},
-			task__name: o.name
 		}
 	 * 
 	 * @param	
 	 * @returns	
 	 */
 	AMT__rq.prototype.AMT__Consumer_Survey_Research_Polygons__utility_window = function(data) {
-		document.body.innerHTML = '';
-		console.log(data);
-		console.log('-------here-------');
+		//~ document.body.innerHTML = '';
+		//~ console.log(data);
+		//~ console.log('-------here-------');
+		
+		var o = {
+			nodes: null
+		}
+		
+		// Set a watch for "Nodes"
+		// 
+		// 
+		document.body.addEventListener('click', delay_tn, false);
+		
+		// SetTimeout
+		//
+		//
+		function delay_tn() {
+			setTimeout(try_nodes, 1000);
+			setTimeout(try_nodes, 2000);
+			setTimeout(try_nodes, 4000);
+		}
+		
+		// function try_nodes
+		//
+		//
+		function try_nodes() {
+			var n = document.getElementsByClassName('node');
+			if (!n) return; // No nodes
+			// There are nodes...
+			if (n !=
+		}
+		
 	}
 	/**
 	 * new AMT__rq().AMT__chios_system_draw_polygon__utility_window
