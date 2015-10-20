@@ -2043,24 +2043,26 @@ function load()
 		var o = {
 			nodes: null,
 			arr_xhr_nodes: [],
+			tmp_nodes: [],
 			ll: [] // To be filled in
 		}
 		
-		// Set a watch for "Nodes"
-		// 
-		// 
-		document.body.addEventListener('click', delay_tn, false);
+		//~ // Set a watch for "Nodes"
+		//~ // 
+		//~ // 
+		//~ document.body.addEventListener('click', delay_tn, false);
 		
-		// SetTimeout
-		//
-		//
-		function delay_tn(e) {
-			console.log('c');
+		//~ // SetTimeout
+		//~ //
+		//~ //
+		//~ function delay_tn(e) {
+			//~ console.log('c');
 			//~ setTimeout(try_nodes, 400);
 			//~ setTimeout(try_nodes, 800);
 			//~ setTimeout(try_nodes, 2000);
 			//~ setTimeout(try_nodes, 4000);
-		}
+		//~ }
+		setInterval(try_nodes, 1000);
 		
 		// function try_nodes
 		//
@@ -2081,6 +2083,7 @@ function load()
 			
 			var t = [];
 			o.ll = []; // Reset this
+			o.ll = []; // Reset this
 			for (var i=0;i<n.length;i++) {
 				var u = n[i].href.replace('http://www.openstreetmap.org', ''); // http://www.openstreetmap.org/node/3480342161
 				t.push( // Add e.g. http://www.openstreetmap.org/api/0.6/node/3480342161
@@ -2089,11 +2092,19 @@ function load()
 			}
 			
 			// Different nodes?
-			if (o.arr_xhr_nodes.toString() == t.toString()) {
+			if (o.tmp_nodes.toString() == t.toString()) {
+				console.log('Same nodes....');
 				return;
 			}
-			o.arr_xhr_nodes = t;
-			
+			o.tmp_nodes = t;
+			console.log('Download....');
+			// Deep copy....
+			for (var i in t) {
+				o.arr_xhr_nodes.push(t[i]);
+			}
+			//~ console.log(o.arr_xhr_nodes.toString());
+			//~ console.log(t.toString());
+			//~ return;
 			// Download nodes
 			dl_node();
 		}
