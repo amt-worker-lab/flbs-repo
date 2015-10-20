@@ -8053,9 +8053,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			// clean_body_regex [{a:,b:},{a:,b:},...{}]
 			// clean_body_strings
 			//
-			//~ if (options_object.search_results.clean_body_regex.length) {
-				//
-			//~ }
 			for (var rgx in options_object.search_results.clean_body_regex) {
 				var rgx_ = options_object.search_results.clean_body_regex[ rgx ];
 				full = full.replace(rgx_.a, rgx_.b);
@@ -8071,6 +8068,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 
 			
+			// Return domain only (no WWW, no HTTP)
+			if (options_object.search_results.use_domain_only)
+				x = x.replace(/^https?:\/\/(www[\d]*\.|)/i, ''); // Remove https, www., www[0,1,...,n].,
+			
 			// TRAILING
 			if (!options_object.search_results.use_full_urls)
 				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
@@ -8078,6 +8079,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			if (options_object.search_results.url_modifier_callback) {
 				x = options_object.search_results.url_modifier_callback( x );
 			}
+			
+			// Set div_result.url
+			//
+			//
 			div_result.url = x;
 			
 			// DOMAIN

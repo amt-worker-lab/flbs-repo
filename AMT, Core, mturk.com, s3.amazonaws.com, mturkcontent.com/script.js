@@ -115237,10 +115237,10 @@ qatar,80
 	 * 
 	 */
 	//
-	// Sarah Kennedy Ellis
-	// Find Website URL for a Hotel
-	// 
-	var s = '	<li>Include the full address, e.g. http://www.hotelzaza.com.</li>';
+	// Sanjay Shah
+	// Find company website
+	// Note: Domain only.
+	var s = '	<li>Please leave out the www. So if the website was www.pfizer.com, please just write pfizer.com in the box</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -115254,13 +115254,16 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[0].innerText.trim().replace(),
+				comp: td[0].innerText.trim().replace('Please find the website of the following company:','').trim(),
+				cshort: null,
 				boldArray: [],
 				q: [
 					document.getElementById('website')
 				]
 			}
 			o.boldArray = o.comp.clean_string_to_array();
+			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
+			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -115287,8 +115290,11 @@ qatar,80
 				searches:[
 					o.comp,
 					'"'+o.comp.split(' ').join('" "')+'"', // quotes
-					o.comp + ' ' + o.city_state
+					o.cshort
 				],
+				search_results: {
+					use_domain_only: true
+				},
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
