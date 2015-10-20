@@ -47022,7 +47022,7 @@ function MT__RUN() {
 		ih.indexOf(s13) != -1 ||
 		ih.indexOf(s14) != -1
 		)
-	{console.log('x');
+	{
 		var run = function() {};
 		run.prototype.f = function() {
 			function getCenterBeforeChiosRuns() {
