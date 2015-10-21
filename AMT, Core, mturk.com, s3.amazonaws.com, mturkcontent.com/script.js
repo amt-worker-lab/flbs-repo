@@ -44757,7 +44757,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;	
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top:40px !important;}');//width:40% !important;	
 			
 			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
 			GM_addStyle('input {width:90%;}');
@@ -44779,19 +44779,20 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d2 = document.createElement('input');
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+			d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
-				Morgan_Intrator_school_codes();
+				stores();
+				//~ Morgan_Intrator_school_codes();
 			}
 			document.body.appendChild(d2);
 			/* END ITEMS */
@@ -44837,12 +44838,15 @@ function MT__RUN() {
 					d1.innerText = d2.value + "\n" + '0';
 					return;
 				}
+				// Show...
+				d1.innerText = '';
+				d1.appendChild((o.store + '\n' + o.mall).div({style:'border-bottom:2px solid teal;'}));
 				console.log(database_object);
 				
 				// AUTO
 				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
 				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
-				
+				var matched = false;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
@@ -44859,20 +44863,21 @@ function MT__RUN() {
 					eldiv.code = x[2];
 					eldiv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						
-						q.value = this.code;
+						o.q[0].value = this.code;
 						if (this.code.trim().length > 4) {
 							doSubmit();
 						}
 					}
 					d1 .appendChild(eldiv);
 					
-					if (i == 0 &&
+					if ( //i == 0 &&
 						o.store.toLowerCase() == x[0].toLowerCase() &&
 						o.mall.toLowerCase() == x[1].toLowerCase() &&
 						o.store.length >= 4 &&
-						o.mall.length >= 4
+						o.mall.length >= 4 &&
+						!matched
 						) {
+						matched = true;
 						eldiv.click();
 					}
 				}
