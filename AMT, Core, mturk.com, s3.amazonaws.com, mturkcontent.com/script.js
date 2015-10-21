@@ -47031,26 +47031,80 @@ function MT__RUN() {
 					
 					var pairs = response.data.pairs;
 					if (!pairs || !pairs.length) return;
+					console.log(pairs);
+					js_append(toPage, JSON.stringify(pairs));
+					//~ console.log(x);
 					
-					//~ var text = response.data.text_range.trim();
-					//~ if(text.indexOf('@') != -1) {
-						//~ o.q[4].value = text;
-					//~ }
-					//~ else if(text.replace(/[\D]/g,'').length > 6) {
-						//~ o.q[5].value = text;
-					//~ }
-					//~ else {
-						//~ o.q[3].value = text;
-					//~ }
+					// Fill in text field....
 					
-					//~ document.getElementById('submitButton').focus();
-					
-					//~ o.q[1].checked = true;
-					//~ o.q[0].checked = false;
-					//~ o.q[2].checked = false;
 				}
 			);
-			
+			function toPage(ll_pairs_stringified) {
+				// NOTE: Stringified coming in here will be parsed!
+				//~ console.log('here');
+				//~ console.log(ll_pairs_stringified);
+				//~ var ll = JSON.parse(ll_pairs_stringified);
+				
+				var ll = ll_pairs_stringified;
+				var map = new google.maps.Map(document.getElementById('map'), {
+					center: {lat: ll[0][0], lng: ll[0][1]},
+					zoom: 19,
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+				});
+				var drawingManager = new google.maps.drawing.DrawingManager({
+					drawingControl: true,
+					drawingControlOptions: {
+						position: google.maps.ControlPosition.TOP_CENTER,
+						drawingModes: [
+						]
+					},
+					markerOptions: {icon: 'images/beachflag.png'},
+					circleOptions: {
+						fillColor: '#ffff00',
+						fillOpacity: 1,
+						strokeWeight: 5,
+						clickable: false,
+						editable: true,
+						zIndex: 1
+					}
+				});
+				drawingManager.setMap(map);
+
+				var triangleCoords = [
+				//~ new google.maps.LatLng(latt-.0002, long-.0002),
+				//~ new google.maps.LatLng(latt-.0002, long+.0002),
+				//~ new google.maps.LatLng(latt+.0002, long+.0002),
+				//~ new google.maps.LatLng(latt+.0002, long-.0002),
+				//~ new google.maps.LatLng(latt, long)
+				];
+				for (var i in ll) {
+					triangleCoords.push(
+						new google.maps.LatLng(ll[i][0]*1, ll[i][1]*1)
+					);
+				}
+
+				// Styling & Controls
+				myPolygon = new google.maps.Polygon({
+					paths: triangleCoords,
+					draggable: true,
+					editable: true,
+					strokeColor: '#FF0000',
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+					fillColor: '#FF0000',
+					fillOpacity: 0.35
+				});
+
+				myPolygon.setMap(map);
+			}
+			function js_append(func, values) {
+				// ...
+				var code = '(' + func + ')('+values+');';
+				var script = document.createElement('script');
+				script.textContent = code;
+				(document.head||document.documentElement).appendChild(script);
+				script.parentNode.removeChild(script);
+			}
 		}
 		new run().f();
 		return;
@@ -47589,14 +47643,13 @@ function MT__RUN() {
 					}
 				});
 				
-				
+				// window.onContextMenu
 				window.onContextMenu = function(e) {
 					console.log('context menu fired for body');
 					e.preventDefault();
 					e.stopPropogation();
 					return false;
 				}
-
 				
 				// ...
 				document.getElementById('submitButton').onclick = function(e) {
@@ -47835,11 +47888,6 @@ function MT__RUN() {
 									"window.addEventListener('keypress', function(e) {if(e.keyCode == 115) {orientToFirstPoint()} if(e.keyCode == 100) {orientToSecondPoint()};"+
 									"if(e.keyCode == 99) {"+
 									"}});"+
-
-									
-
-									
-									
 							"}");
 						});
 				}
@@ -48096,53 +48144,6 @@ function MT__RUN() {
 				var sc = document.createElement('script');
 				sc.innerText = 'google.maps.event.trigger(map, "resize");';
 				document.body.appendChild(sc);
-				
-				/* OLD, Get street view images*/
-				//~ // Get street view images
-					//~ var hds = [0, 90, 180, 270];
-					//~ for (var i in hds) {
-						//~ 
-						//~ var img = document.createElement('img');
-						//~ img.setAttribute('style','cursor:pointer;display:block;zoom:0.25;');
-						//~ img.src = 'https://maps.googleapis.com/maps/api/streetview' +
-								//~ '?size='+o.max_streetview_height+'x'+o.max_streetview_height+ //e.g. 600x600
-								//~ '&location='+encodeURIComponent(o.addr)+
-								//~ //'&location='+lat+','+lng+
-								//~ '&heading='+hds[i]+'&key=_GOOGLE_API_KEY_REDACTED_';//1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095
-						//~ d4.appendChild(img);
-						//~ 
-						//~ // Actions
-						//~ img.onclick = function() {
-							//~ if (this.style.zoom != '0.5') {
-								//~ this.style.zoom = '0.5';
-							//~ } else {
-								//~ this.style.zoom = '0.25';
-							//~ }
-						//~ }
-					//~ }
-					//~ // Append an extend div
-					//~ var dv = document.createElement('div');
-					//~ dv.setAttribute('style','height:1400px;');
-					//~ d4.appendChild(dv);
-					
-					//~ document.getElementById('lat').value = lat;
-					//~ document.getElementById('lon').value = lng;
-					//~ 
-					//~ doSubmit();
-				/* OLD ........ BODY.ONDBLCLICK ........
-				// ...
-				document.body.ondblclick = function() {
-					if (d2.src == withNameSearch) {
-						d2.src = woutNameSearch
-					} else if (d2.src == woutNameSearch) {
-						d2.src = withNameSearch
-					}
-					
-					
-					// home+depot?
-					//~ d2.src = 'https://maps.google.com/maps?q='+encodeURIComponent(addr)+'+'+l+'&hl=en&t=h&gl=us&hq=home+depot&hnear='+l+'&z=15&iwloc=A&output=embed';
-					//chios_system_geocoding__hide_show();//https://maps.google.com/maps?q=12800+Pines+Blvd,Pembroke+Pines+FL,33027+home+dept&hl=en&t=h&gl=us&hq=home+depot&hnear=12800+Pines+Blvd,+Pembroke+Pines,+Florida+33027&fll=26.036116,-80.243797&fspn=0.281952,0.191231&z=13&iwloc=A
-				}*/
 			}
 		}
 		new run().f();
