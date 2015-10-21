@@ -44773,6 +44773,7 @@ function MT__RUN() {
 				],
 				sbold: null,
 				mbold: null,
+				auto: false,
 			}
 			o.sbold = o.store.clean_string_to_array();
 			o.mbold = o.mall.clean_string_to_array();
@@ -44783,7 +44784,7 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d2 = document.createElement('input');
@@ -44797,35 +44798,62 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			/* END ITEMS */
 			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 0
+			});
+			
 			// actions
 			d2.value  = o.store;
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			// ...
-			//~ document.getElementById('submitButton').onclick = function() {
-				//~ for (var i in q) {
-					//~ q[i].value = q[i].value.trim();
-					//~ if (q[i].value == '') {
-						//~ return false;
-					//~ }
-				//~ }
-			//~ }
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value == '') {
+						return false;
+					}
+				}
+			}
 			
 			// init
 			stores();
+			//~ stores(d1);
+			//~ stores(d1b);
 			
 			// ...
-			function stores() {
+			function stores(div) {
 				
 				d1 .innerHTML = '';
 				d1b.innerHTML = '';
 				//this.style.backgroundColor = 'LightGreen';
 				
+				//~ var m = (div == d1) ? : 
+				
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
 						query: 'AMT__John_Curtis_Mall_Search',
-						encodeStrings: [ { store: d2.value, mall:o.mall } ]
+						encodeStrings: [ { store: d2.value, mall:o.mall } ],
+						__seed__: d1,
+					},
+					process
+				);
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__John_Curtis_Mall_Search',
+						encodeStrings: [ { store: d2.value} ],
+						__seed__: d1b,
 					},
 					process
 				);
@@ -44834,19 +44862,19 @@ function MT__RUN() {
 			function process(database_object) {
 				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
 				//database_object.responseObject = JSON.parse(rs);
+				var out = database_object.__seed__;
 				if (database_object.responseObject.length == 0) {
-					d1.innerText = d2.value + "\n" + '0';
+					out.innerText = d2.value + "\n" + '0';
 					return;
 				}
 				// Show...
-				d1.innerText = '';
-				d1.appendChild((o.store + '\n' + o.mall).div({style:'border-bottom:2px solid teal;'}));
+				out.innerText = '';
+				out.appendChild((o.store + '\n' + o.mall).div({style:'border-bottom:2px solid teal;'}));
 				console.log(database_object);
 				
 				// AUTO
 				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
 				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
-				var matched = false;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
@@ -44868,25 +44896,25 @@ function MT__RUN() {
 							doSubmit();
 						}
 					}
-					d1 .appendChild(eldiv);
+					out .appendChild(eldiv);
 					
 					if ( //i == 0 &&
 						o.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
 						o.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
 						o.store.clean_str_to_auto().length >= 4 &&
 						o.mall.clean_str_to_auto().length >= 4 &&
-						!matched
+						!o.auto
 						) {
-						matched = true;
+						o.auto = true;
 						eldiv.click();
 					}
 				}
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
-				d1 .appendChild(eldiv);
+				out .appendChild(eldiv);
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
-				d1b.appendChild(eldiv);
+				out.appendChild(eldiv);
 			}
 		}
 		new run().f();return;
