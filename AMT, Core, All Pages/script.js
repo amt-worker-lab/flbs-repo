@@ -2082,8 +2082,6 @@ function load()
 			//~ o.nodes = document.getElementsByClassName('node'); // Set o.nodes. And not to a reference of "n"!
 			
 			var t = [];
-			o.ll = []; // Reset this
-			o.ll = []; // Reset this
 			for (var i=0;i<n.length;i++) {
 				var u = n[i].href.replace('http://www.openstreetmap.org', ''); // http://www.openstreetmap.org/node/3480342161
 				t.push( // Add e.g. http://www.openstreetmap.org/api/0.6/node/3480342161
@@ -2098,6 +2096,7 @@ function load()
 			}
 			o.tmp_nodes = t;
 			console.log('Download....');
+			o.ll = []; // Reset this
 			// Deep copy....
 			for (var i in t) {
 				o.arr_xhr_nodes.push(t[i]);
@@ -2138,6 +2137,8 @@ function load()
 		// chrome.runtime.sendMessage
 		//
 		function send_reply() {
+			console.log('send');
+			console.log(o.ll);
 			chrome.runtime.sendMessage(
 				'gcfnekbbpmbgadddbojhlojhddnkcpje',
 				{

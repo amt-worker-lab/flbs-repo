@@ -47047,7 +47047,7 @@ function MT__RUN() {
 				
 				var ll = ll_pairs_stringified;
 				var map = new google.maps.Map(document.getElementById('map'), {
-					center: {lat: ll[0][0], lng: ll[0][1]},
+					center: {lat: ll[0][0]*1, lng: ll[0][1]*1},
 					zoom: 19,
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 				});
@@ -47078,6 +47078,8 @@ function MT__RUN() {
 				//~ new google.maps.LatLng(latt, long)
 				];
 				for (var i in ll) {
+					//~ console.log(ll[i][0]*1);
+					//~ console.log(ll[i][1]*1);
 					triangleCoords.push(
 						new google.maps.LatLng(ll[i][0]*1, ll[i][1]*1)
 					);
@@ -47089,13 +47091,23 @@ function MT__RUN() {
 					draggable: true,
 					editable: true,
 					strokeColor: '#FF0000',
-					strokeOpacity: 0.8,
+					strokeOpacity: 0.6, // Default=0.8 (from requester)
+					//~ strokeOpacity: 0.8,
 					strokeWeight: 2,
 					fillColor: '#FF0000',
-					fillOpacity: 0.35
+					fillOpacity: 0.25, // Default=0.35 (from requester)
+					//~ fillOpacity: 0.35,
 				});
 
 				myPolygon.setMap(map);
+				
+				//google.maps.event.addListener(myPolygon, "dragend", getPolygonCoords);
+				google.maps.event.addListener(myPolygon.getPath(), "insert_at", getPolygonCoords);
+				//google.maps.event.addListener(myPolygon.getPath(), "remove_at", getPolygonCoords);
+				google.maps.event.addListener(myPolygon.getPath(), "set_at", getPolygonCoords);
+				
+				// Call coords......
+				getPolygonCoords();
 			}
 			function js_append(func, values) {
 				// ...
