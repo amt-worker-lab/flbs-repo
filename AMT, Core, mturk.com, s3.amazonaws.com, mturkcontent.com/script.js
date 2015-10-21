@@ -46996,13 +46996,24 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,fieldset,table,tr,th,td,tbody,section {margin:0 !important;padding:0 !important;font-size:10px;}');
 			//GM_addStyle('.container {width:100% !important;}');
 			//GM_addStyle('.panel-primary {margin-top:1000px;}');
-			GM_addStyle('#map {width:99% !important;}'); 
+			GM_addStyle('#map {width:99% !important;margin-top:40px !important;}'); 
+			//~ GM_addStyle('#map {width:99% !important;height:400px;position:absolute;top:0;left:0;}'); 
+			GM_addStyle('#submitButton {width:99% !important;height:24px;position:absolute;top:0;left:0;}'); 
 			
 			var ll = /latt = ([\d\.\-]+)\nlong = ([\d\.\-]+)/.exec(ih);
 			var o = {
 				lat: ll[1],
-				lng: ll[2]
+				lng: ll[2],
+				q: [
+					document.getElementsByName('cantfind')[0], // Cannot find
+					document.getElementsByName('parkown')[0], // Own
+					document.getElementsByName('parkshare')[0], // Shared
+					document.getElementsByName('bldgsep')[0], // Separate
+					document.getElementsByName('bldgcon')[0], // Connected
+				]
 			}
+			o.q[2].checked = true; // Shared
+			o.q[4].checked = true; // Connected
 			
 			var opts = {
 				task: 'AMT__Consumer_Survey_Research_Polygons__utility_window',
@@ -47016,6 +47027,13 @@ function MT__RUN() {
 			var t = document.getElementsByTagName('table')[0];
 			t.parentNode.insertBefore(document.getElementById('map'), t);
 			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (document.getElementById('info').value.trim() == '') return false;
+				doSubmit();
+			}
+			
 			// innerHeight (map)
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -47024,7 +47042,7 @@ function MT__RUN() {
 				elements: [
 					document.getElementById('map')
 				],
-				offset: 60 // offset top (20 = go to max-20px)
+				offset: 80 // offset top (20 = go to max-20px)
 			});
 			
 			AMT__setUtilityTabs(
