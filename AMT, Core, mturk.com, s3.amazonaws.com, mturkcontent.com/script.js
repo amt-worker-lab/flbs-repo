@@ -46996,7 +46996,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,fieldset,table,tr,th,td,tbody,section {margin:0 !important;padding:0 !important;font-size:10px;}');
 			//GM_addStyle('.container {width:100% !important;}');
 			//GM_addStyle('.panel-primary {margin-top:1000px;}');
-			//GM_addStyle('.form-control {width:49.9% !important;height:50px !important;position:absolute;top:0;left:50%;font-size:0.8em;border:1px solid blue !important;z-index:10000000000000000000000000;}'); 
+			GM_addStyle('#map {width:99% !important;}'); 
 			
 			var ll = /latt = ([\d\.\-]+)\nlong = ([\d\.\-]+)/.exec(ih);
 			var o = {
@@ -47011,6 +47011,21 @@ function MT__RUN() {
 				//~ },
 				highlight_range_to_parent: true
 			}
+			
+			// Move map
+			var t = document.getElementsByTagName('table')[0];
+			t.parentNode.insertBefore(document.getElementById('map'), t);
+			
+			// innerHeight (map)
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					document.getElementById('map')
+				],
+				offset: 60 // offset top (20 = go to max-20px)
+			});
 			
 			AMT__setUtilityTabs(
 				[
