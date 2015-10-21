@@ -147,7 +147,11 @@ function load()
 	// 
 	//
 	// http://www.hotelscombined.com/TrafficInspection.aspx?requestId=...&requestUrl=...
-	if (loc.indexOf('http://www.hotelscombined.com/TrafficInspection.aspx') == 0) {
+	if  (
+		loc.indexOf('http://www.hotelscombined.com/TrafficInspection.aspx') == 0 ||
+		loc.indexOf('http://www.hotelscombined.com/TrafficInspection') == 0
+		)
+	{
 		setTimeout(function() {
 			document.getElementById('recaptcha_response_field').focus();
 		}, 200);
