@@ -44705,6 +44705,7 @@ function MT__RUN() {
 	 * Hartti Suomela
 	 * Sol Rosenberg
 	 * Morgan Intrator
+	 * John Curtis
 	 * 
 	 */
 	
@@ -44745,6 +44746,146 @@ function MT__RUN() {
 			//~ }
 		//~ });
 	//~ }
+	//
+	// John Curtis
+	// Lookup store name in our data list and get ID
+	// 
+	s = '<p style="font-size: 0.9em;">Find the company in a google document and get the ID and put it in the input box below</p>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important;}');//width:40% !important;	
+			
+			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var o = {
+				store: st[1].innerText.trim(),
+				mall: st[2].innerText.trim(),
+				q: [
+					document.getElementById('web_url')
+				],
+				sbold: null,
+				mbold: null,
+			}
+			o.sbold = o.store.clean_string_to_array();
+			o.mbold = o.mall.clean_string_to_array();
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('input');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				Morgan_Intrator_school_codes();
+			}
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			
+			// actions
+			d2.value  = o.store;
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// ...
+			//~ document.getElementById('submitButton').onclick = function() {
+				//~ for (var i in q) {
+					//~ q[i].value = q[i].value.trim();
+					//~ if (q[i].value == '') {
+						//~ return false;
+					//~ }
+				//~ }
+			//~ }
+			
+			// init
+			stores();
+			
+			// ...
+			function stores() {
+				
+				d1 .innerHTML = '';
+				d1b.innerHTML = '';
+				//this.style.backgroundColor = 'LightGreen';
+				
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__John_Curtis_Mall_Search',
+						encodeStrings: [ { store: d2.value, mall:o.mall } ]
+					},
+					process
+				);
+			}
+			// ...
+			function process(database_object) {
+				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
+				//database_object.responseObject = JSON.parse(rs);
+				if (database_object.responseObject.length == 0) {
+					d1.innerText = d2.value + "\n" + '0';
+					return;
+				}
+				console.log(database_object);
+				
+				// AUTO
+				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				
+				for (var i in database_object.responseObject) {
+					//
+					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
+					
+					//
+					var n = MT__bold(x[0], o.sbold);
+					var m = MT__bold(x[1], o.mbold, {color:'blue'}).bold_string;
+					
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = n + ':' + m;
+					eldiv.code = x[2];
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						q.value = this.code;
+						if (this.code.trim().length > 4) {
+							doSubmit();
+						}
+					}
+					d1 .appendChild(eldiv);
+					
+					if (i == 0 &&
+						o.store.toLowerCase() == x[0].toLowerCase() &&
+						o.mall.toLowerCase() == x[1].toLowerCase() &&
+						o.store.length >= 4 &&
+						o.mall.length >= 4
+						) {
+						eldiv.click();
+					}
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				d1 .appendChild(eldiv);
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				d1b.appendChild(eldiv);
+			}
+		}
+		new run().f();return;
+	}
 	//
 	// Morgan Intrator
 	// Find this school in a list
