@@ -47300,7 +47300,8 @@ function MT__RUN() {
 	// Draw outlines around businesses on Google Maps (2-3 min/HIT, multiple available)
 	//
 	//
-	var s = 'In theory, the theater should be at or near the starting center location. Zoom in or out and move around the map within a reasonable distance as needed to locate the theater.'
+	//var s = 'In theory, the theater should be at or near the starting center location. Zoom in or out and move around the map within a reasonable distance as needed to locate the theater.';
+	var s = 'In theory, the theater should be near the starting center location. Zoom in or out and move around the map within a reasonable distance as needed to locate the theater.';
 	if  (ih.indexOf(s) != -1)
 	{
 		var run = function() {};
@@ -47318,15 +47319,18 @@ function MT__RUN() {
 				lat: ll[1],
 				lng: ll[2],
 				q: [
-					document.getElementsByName('cantfind')[0], // Cannot find
+					document.getElementsByName('cantfind')[0], // Cannot Find
+					document.getElementsByName('newname')[0], // New Name
 					document.getElementsByName('parkown')[0], // Own
 					document.getElementsByName('parkshare')[0], // Shared
+					document.getElementsByName('parknone')[0], // Cannot Tell Parking
 					document.getElementsByName('bldgsep')[0], // Separate
 					document.getElementsByName('bldgcon')[0], // Connected
+					document.getElementsByName('bldgidk')[0], // Cannot Determine Boundaries
 				]
 			}
-			o.q[2].checked = true; // Shared
-			o.q[4].checked = true; // Connected
+			o.q[3].checked = true; // Shared Parking
+			o.q[6].checked = true; // Connected to other buildings
 			
 			var opts = {
 				task: 'AMT__Consumer_Survey_Research_Polygons__utility_window',
@@ -47343,7 +47347,7 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				if (document.getElementById('info').value.trim() == '') return false;
+				//~ if (document.getElementById('info').value.trim() == '') return false;
 				doSubmit();
 			}
 			
