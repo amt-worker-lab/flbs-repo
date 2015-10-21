@@ -10738,11 +10738,18 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'LightGreen';
 							// Here is one where trying again sometimes fixes the problem:
 							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
+							// // API callback x({ "error": { "errors": [ { "domain": "pagespeedInsights", "reason": "noDocumentLoaded", "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } ], "code": 400, "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } } );
+							// For http://www.frederickcountyhomefinder.com:
+							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "The requested URL redirected to http://www.frederickcountyhomefinder.com/mobile/ which is disallowed by robots.txt." } ], "code": 500, "message": "The requested URL redirected to http://www.frederickcountyhomefinder.com/mobile/ which is disallowed by robots.txt." } } );
+							
 						}
 						return;
 					}
 					// ... no id, no indexOf(domain)
-					if (!rs.hasOwnProperty('id') || !rs.id || rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1) {
+					// Usually this is because the URL was forwarded
+					// to another domain!
+					// E.g. "http://www.dougashleyrealtors.com/" going to "http://dougashley.mccid.com/", 
+					if (!rs.hasOwnProperty('id') || !rs.id) { //  Oct. 2015, removed this:  ||rs.id.toLowerCase().indexOf(o.domain.toLowerCase()) == -1
 						document.body.style.backgroundColor = 'LightGreen';
 						return;
 					}
