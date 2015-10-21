@@ -44704,6 +44704,8 @@ function MT__RUN() {
 	 * 
 	 * Hartti Suomela
 	 * Sol Rosenberg
+	 * Morgan Intrator
+	 * 
 	 */
 	
 	
@@ -44749,142 +44751,146 @@ function MT__RUN() {
 	// 
 	s = 'For each school, find it&nbsp;in the google spreadsheet here (<a href="https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914" target="_blank">https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914</a>)';
 	if(ih.indexOf(s) != -1)
-	{		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-		
-		GM_addStyle('body {width:40%;margin-top:50px;}');
-		GM_addStyle('input {width:90%;}');
-		GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
-		GM_addStyle('.exe:hover {background-color:aqua;}');
-		
-		var td = document.getElementsByTagName('td');
-		var q = document.getElementById('unitid');
-		
-		// 
-		var o = {
-			name: td[1].innerText.trim(),
-			name_to_lower: td[1].innerText.trim().toLowerCase(),
-		}
-		
-		/* BEGIN ITEMS */
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1);
-		//
-		var d1b = document.createElement('div');
-		d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		document.body.appendChild(d1b);
-		//
-		var d2 = document.createElement('input');
-		d2.setAttribute('type','text');
-		d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
-		d2.onblur = function() {
-			this.value = this.value.replace(/\s+/g, ' ').trim();
-			Morgan_Intrator_school_codes();
-		}
-		document.body.appendChild(d2);
-		/* END ITEMS */
-		
-		// actions
-		d2.value  = o.name;
-		//~ var q = [
-			//~ document.getElementById('CISBN'),
-			//~ document.getElementById('CID')
-		//~ ];
-		
-		//
-		var ef = new AMT___events_factory();
-		d2.addEventListener('keydown', ef.keydown__blur_field, true);
-		
-		// r&a nextTab
-		new AMT___core_factory().
-			iframe2parent__postMessage( // options  , XXXXX >callback_function
-				{
-					action: 'return_and_accept_button__nextTab'
-				}
-			);
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 			
-		// ...
-		//~ document.getElementById('submitButton').onclick = function() {
-			//~ for (var i in q) {
-				//~ q[i].value = q[i].value.trim();
-				//~ if (q[i].value == '') {
-					//~ return false;
+			GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;}');
+			
+			var td = document.getElementsByTagName('td');
+			var q = document.getElementById('unitid');
+			
+			// 
+			var o = {
+				name: td[1].innerText.trim(),
+				name_to_lower: td[1].innerText.trim().toLowerCase(),
+			}
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:40%;width:30%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:70%;width:29%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('input');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:38%;height:28px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				Morgan_Intrator_school_codes();
+			}
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			
+			// actions
+			d2.value  = o.name;
+			//~ var q = [
+				//~ document.getElementById('CISBN'),
+				//~ document.getElementById('CID')
+			//~ ];
+			
+			//
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			
+			// r&a nextTab
+			new AMT___core_factory().
+				iframe2parent__postMessage( // options  , XXXXX >callback_function
+					{
+						action: 'return_and_accept_button__nextTab'
+					}
+				);
+				
+			// ...
+			//~ document.getElementById('submitButton').onclick = function() {
+				//~ for (var i in q) {
+					//~ q[i].value = q[i].value.trim();
+					//~ if (q[i].value == '') {
+						//~ return false;
+					//~ }
 				//~ }
 			//~ }
-		//~ }
-		
-		// init
-		Morgan_Intrator_school_codes();
-		
-		// ...
-		function Morgan_Intrator_school_codes() {
 			
-			d1 .innerHTML = '';
-			d1b.innerHTML = '';
-			//this.style.backgroundColor = 'LightGreen';
+			// init
+			Morgan_Intrator_school_codes();
 			
-			var rf = new AMT___requests_factory();
-			rf.database__select(
-				{
-					query: 'AMT__Morgan_Intrator_school_codes',
-					encodeStrings: [d2.value]
-				},
-				Morgan_Intrator_school_codes__process
-			);
-		}
-		// ...
-		function Morgan_Intrator_school_codes__process(database_object) {
-			//array_push($out_arr, [ $row['title'], $row['authors'], $row['cisbn'], $row['cid'], $row['company'] ]);
-			//database_object.responseObject = JSON.parse(rs);
-			
-			if (database_object.responseObject.length == 0) {
-				d1.innerText = d2.value + "\n" + '0';
-				return;
-			}
-			
-			console.log(database_object);
-			
-			// AUTO
-			//~ var auto = (database_object.responseObject.length == 1) ? true : false;
-			
-			//~ var first_word = d2.value.split(' ')[0].toUpperCase();
-			
-			for (var i in database_object.responseObject) {
-				//
-				var x = database_object.responseObject[i]; // 0=code, 1=name
+			// ...
+			function Morgan_Intrator_school_codes() {
 				
-				// ...
-				var eldiv = document.createElement('div');
-				eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
-				eldiv.className = 'exe';
-				eldiv.innerText = x[0] + ':' + x[1];
-				eldiv.code = x[0];
-				eldiv.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
+				d1 .innerHTML = '';
+				d1b.innerHTML = '';
+				//this.style.backgroundColor = 'LightGreen';
+				
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__Morgan_Intrator_school_codes',
+						encodeStrings: [d2.value]
+					},
+					Morgan_Intrator_school_codes__process
+				);
+			}
+			// ...
+			function Morgan_Intrator_school_codes__process(database_object) {
+				//array_push($out_arr, [ $row['title'], $row['authors'], $row['cisbn'], $row['cid'], $row['company'] ]);
+				//database_object.responseObject = JSON.parse(rs);
+				
+				if (database_object.responseObject.length == 0) {
+					d1.innerText = d2.value + "\n" + '0';
+					return;
+				}
+				
+				console.log(database_object);
+				
+				// AUTO
+				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				
+				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				
+				for (var i in database_object.responseObject) {
+					//
+					var x = database_object.responseObject[i]; // 0=code, 1=name
 					
-					q.value = this.code;
-					if (this.code.trim().length > 4) {
-						doSubmit();
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerText = x[0] + ':' + x[1];
+					eldiv.code = x[0];
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						
+						q.value = this.code;
+						if (this.code.trim().length > 4) {
+							doSubmit();
+						}
+						
+						//tabs
+						new AMT___core_factory().nextTab();
 					}
 					
-					//tabs
-					new AMT___core_factory().nextTab();
+					d1 .appendChild(eldiv);
+					
+					if (i == 0 && o.name_to_lower == x[1].toLowerCase() && o.name_to_lower.length >= 4) {
+						eldiv.click();
+					}
 				}
-				
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
 				d1 .appendChild(eldiv);
-				
-				if (i == 0 && o.name_to_lower == x[1].toLowerCase() && o.name_to_lower.length >= 4) {
-					eldiv.click();
-				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				d1b.appendChild(eldiv);
 			}
-			var eldiv = document.createElement('div');
-			eldiv.setAttribute('style','height:2000px;');
-			d1 .appendChild(eldiv);
-			var eldiv = document.createElement('div');
-			eldiv.setAttribute('style','height:2000px;');
-			d1b.appendChild(eldiv);
 		}
+		new run().f();return;
 	}
 	//
 	// Hartti Suomela
