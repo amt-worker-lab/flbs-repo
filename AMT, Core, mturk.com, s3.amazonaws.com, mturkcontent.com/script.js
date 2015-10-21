@@ -20248,7 +20248,7 @@ function MT__RUN() {
 			function ta_complete(obj) {
 				
 				var out = obj.seed.out;
-				out.innerText = o.location;
+				out.innerText = o.name+'\n'+o.location;
 				
 				// Response is Array of objects
 				var num = 0;
