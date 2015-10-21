@@ -10730,18 +10730,21 @@ function MT__RUN() {
 					console.log(rs);
 					// Error
 					if (rs.hasOwnProperty('error')) {
-						//~ document.body.innerText = 'error';
-						if (rs.error.errors[0].message == 'Failed to fetch the requested URL.') {
+						var err1 = // Blocked by robots.txt. Both of these true... 
+							rs.error.errors[0].message.indexOf('The requested URL redirected to ') != -1 &&
+							rs.error.errors[0].message.indexOf('which is disallowed by robots.txt.') != -1;
+						if  (
+							rs.error.errors[0].message == 'Failed to fetch the requested URL.' ||
+							err1
+							)
+						{
 							o.q[0].value = 'E';
 							doSubmit();
 						} else {
 							document.body.style.backgroundColor = 'LightGreen';
-							// Here is one where trying again sometimes fixes the problem:
+							// Here are two where trying again sometimes fixes the problem:
 							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "An error occurred while fetching or analyzing the page." } ], "code": 500, "message": "An error occurred while fetching or analyzing the page." } } );
 							// // API callback x({ "error": { "errors": [ { "domain": "pagespeedInsights", "reason": "noDocumentLoaded", "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } ], "code": 400, "message": "The URL was fetched, but nothing was rendered. Ensure that the URL points to an HTML page that loads successfully in a web browser." } } );
-							// For http://www.frederickcountyhomefinder.com:
-							// // API callback x({ "error": { "errors": [ { "domain": "global", "reason": "internalError", "message": "The requested URL redirected to http://www.frederickcountyhomefinder.com/mobile/ which is disallowed by robots.txt." } ], "code": 500, "message": "The requested URL redirected to http://www.frederickcountyhomefinder.com/mobile/ which is disallowed by robots.txt." } } );
-							
 						}
 						return;
 					}
