@@ -44774,9 +44774,13 @@ function MT__RUN() {
 				sbold: null,
 				mbold: null,
 				auto: false,
+				store_no_the:null,
+				mall_no_the:null,
 			}
 			o.sbold = o.store.clean_string_to_array();
 			o.mbold = o.mall.clean_string_to_array();
+			o.store_no_the = o.store.replace(/^The +/, '');
+			o.mall_no_the = o.mall.replace(/^The +/, '');
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -44898,11 +44902,23 @@ function MT__RUN() {
 					}
 					out .appendChild(eldiv);
 					
+					
 					if ( //i == 0 &&
 						o.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
 						o.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
 						o.store.clean_str_to_auto().length >= 4 &&
 						o.mall.clean_str_to_auto().length >= 4 &&
+						!o.auto
+						) {
+						o.auto = true;
+						eldiv.click();
+					}
+					
+					else if ( // try auto 2 (no "The"
+						o.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						o.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						o.store_no_the.clean_str_to_auto().length >= 4 &&
+						o.mall_no_the.clean_str_to_auto().length >= 4 &&
 						!o.auto
 						) {
 						o.auto = true;
