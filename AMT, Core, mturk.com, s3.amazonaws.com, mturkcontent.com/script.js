@@ -44762,7 +44762,7 @@ function MT__RUN() {
 			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
 			GM_addStyle('input {width:90%;}');
 			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
-			GM_addStyle('.exe:hover {background-color:aqua;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			
 			var st = document.getElementsByTagName('strong');
 			var o = {
@@ -44859,22 +44859,22 @@ function MT__RUN() {
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n + ':' + m;
+					eldiv.innerHTML = n + ': ' + m;
 					eldiv.code = x[2];
 					eldiv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						o.q[0].value = this.code;
-						if (this.code.trim().length > 4) {
+						if (this.code.trim().length > 4 && /^\d{3,}$/.exec(this.code)) {
 							doSubmit();
 						}
 					}
 					d1 .appendChild(eldiv);
 					
 					if ( //i == 0 &&
-						o.store.toLowerCase() == x[0].toLowerCase() &&
-						o.mall.toLowerCase() == x[1].toLowerCase() &&
-						o.store.length >= 4 &&
-						o.mall.length >= 4 &&
+						o.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						o.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						o.store.clean_str_to_auto().length >= 4 &&
+						o.mall.clean_str_to_auto().length >= 4 &&
 						!matched
 						) {
 						matched = true;
