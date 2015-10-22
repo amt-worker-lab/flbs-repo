@@ -71077,10 +71077,10 @@ function MT__RUN() {
 			var o = {
 				u: td[1].innerText.trim(),
 				q: [
-					document.getElementsByName('text')[0]
-					document.getElementsByName('text')[1]
-					document.getElementsByName('text')[2]
-				]
+					document.getElementsByName('text')[0],
+					document.getElementsByName('text')[1],
+					document.getElementsByName('text')[2],
+				],
 			}
 			
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -71113,18 +71113,19 @@ function MT__RUN() {
 					r = r[1];
 					switch(r) {
 						case 'Yes':
-							qall[1].value = 'Yes';
+							o.q[0].value = 'Yes';
 							break;
 						case 'No':
-							qall[1].value = 'No';
+							o.q[0].value = 'No';
 							break;
 						default:
 							sbm = false;
 					}
 				} else {
-					qall[1].value = 'No';
-					sbm = false;
-					d1.style.backgroundColor = 'blue';
+					o.q[0].value = 'No';
+					//~ sbm = false;
+					//~ if (rs.indexOf('Delivery') != -1) sbm = false;
+					//~ d1.style.backgroundColor = 'blue';
 				}
 				// Take out
 				r = /<dt class="attribute-key">[\r\n\t\s]+Take-out[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
@@ -71134,18 +71135,19 @@ function MT__RUN() {
 					r = r[1];
 					switch(r) {
 						case 'Yes':
-							qall[1].value = 'Yes';
+							o.q[1].value = 'Yes';
 							break;
 						case 'No':
-							qall[1].value = 'No';
+							o.q[1].value = 'No';
 							break;
 						default:
 							sbm = false;
 					}
 				} else {
-					qall[1].value = 'No';
-					sbm = false;
-					d1.style.backgroundColor = 'blue';
+					o.q[1].value = 'No';
+					//~ sbm = false;
+					//~ if (rs.indexOf('') != -1) sbm = false;
+					//~ d1.style.backgroundColor = 'blue';
 				}
 				// Credit card
 				r = /<dt class="attribute-key">[\r\n\t\s]+Accepts Credit Cards[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
@@ -71155,18 +71157,19 @@ function MT__RUN() {
 					r = r[1];
 					switch(r) {
 						case 'Yes':
-							qall[1].value = 'Yes';
+							o.q[2].value = 'Yes';
 							break;
 						case 'No':
-							qall[1].value = 'No';
+							o.q[2].value = 'No';
 							break;
 						default:
 							sbm = false;
 					}
 				} else {
-					qall[1].value = 'No';
-					sbm = false;
-					d1.style.backgroundColor = 'blue';
+					o.q[2].value = 'No';
+					//~ sbm = false;
+					//~ if (rs.indexOf('') != -1) sbm = false;
+					//~ d1.style.backgroundColor = 'blue';
 				}
 				if (sbm)
 					doSubmit();
