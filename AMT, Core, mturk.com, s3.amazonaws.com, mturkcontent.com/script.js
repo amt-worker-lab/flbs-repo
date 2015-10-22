@@ -71054,8 +71054,126 @@ function MT__RUN() {
 	 * Larry Baker Yelp + Facebook
 	 * Chios System (Yelp URL & latest rating)
 	 * Womply
+	 * Kyle Andrew Martin
+	 * 
 	 * 
 	 */
+	//
+	// Kyle Andrew Martin
+	// Collect information about a restaurant via their Yelp website
+	// 
+	s = '3. Record \'Yes\' or \'No\' for the following categories: "Delivery", "Take-out" and "Accepts credit cards"</p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			//~ GM_addStyle('#submitButton {width:80%;}');
+			//~ GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			//~ GM_addStyle('#mturk_form {margin-top:600px !important;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('text')[0]
+					document.getElementsByName('text')[1]
+					document.getElementsByName('text')[2]
+				]
+			}
+			
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if  (
+						rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+						rs.indexOf('"text": "Signature was invalid"') != -1
+						)
+					{
+						d1.style.backgroundColor = 'yellow';
+						return false;
+					}
+					else
+						return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					console.log(rs);
+					success(rs);
+				}
+			});
+			function success(rs) {
+				// Delivery
+				r = /<dt class="attribute-key">[\r\n\t\s]+Delivery[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+				var r;
+				var sbm = true;
+				if (r) {
+					r = r[1];
+					switch(r) {
+						case 'Yes':
+							qall[1].value = 'Yes';
+							break;
+						case 'No':
+							qall[1].value = 'No';
+							break;
+						default:
+							sbm = false;
+					}
+				} else {
+					qall[1].value = 'No';
+					sbm = false;
+					d1.style.backgroundColor = 'blue';
+				}
+				// Take out
+				r = /<dt class="attribute-key">[\r\n\t\s]+Take-out[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+				var r;
+				var sbm = true;
+				if (r) {
+					r = r[1];
+					switch(r) {
+						case 'Yes':
+							qall[1].value = 'Yes';
+							break;
+						case 'No':
+							qall[1].value = 'No';
+							break;
+						default:
+							sbm = false;
+					}
+				} else {
+					qall[1].value = 'No';
+					sbm = false;
+					d1.style.backgroundColor = 'blue';
+				}
+				// Credit card
+				r = /<dt class="attribute-key">[\r\n\t\s]+Accepts Credit Cards[\r\n\t\s]+<\/dt>[\r\n\t\s]+<dd>[\r\n\t\s]+(Yes|No)/.exec(rs);
+				var r;
+				var sbm = true;
+				if (r) {
+					r = r[1];
+					switch(r) {
+						case 'Yes':
+							qall[1].value = 'Yes';
+							break;
+						case 'No':
+							qall[1].value = 'No';
+							break;
+						default:
+							sbm = false;
+					}
+				} else {
+					qall[1].value = 'No';
+					sbm = false;
+					d1.style.backgroundColor = 'blue';
+				}
+				if (sbm)
+					doSubmit();
+			}
+		}
+		new run().f();return;
+	}
 	//
 	// Womply
 	// 
