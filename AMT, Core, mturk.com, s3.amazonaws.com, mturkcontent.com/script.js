@@ -186,7 +186,97 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	
+	// Chris
+	// ADL7VIQYR3QG1&requesterName=Chris
+	// 
+	// 
+	s = 'If there is a section called "Lead Investor", write the full name of the Investor(s) below. If more than one, please seperate them with a comma.';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			
+			var o = {
+				q: [
+					document.getElementById('web_url')
+				]
+			}
+			
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: document.getElementsByTagName('a')[0].href,
+				host: 'http://'+AMT__Global_Vars.scriptVars['Server Location'],
+				success_callback: function(options) {
+					
+					var rs = options.response.responseText;
+					//~ var rs = JSON.parse(options.response.responseText);
+					
+					var dom =  new DOMParser().parseFromString(rs, 'text/html');
+					
+					// Get rid of Partner(s)..............
+					//
+					//
+					//investment_partner
+					var x = dom.getElementsByClassName('investment_partner'); // Div
+					for (var i=x.length-1;i>=0;i--) {
+						x[i].parentNode.parentNode.removeChild(x[i].parentNode); // TR remove TD
+					}
+					// Remove partnern
+					var x = dom.getElementsByClassName('section-list partners'); // UL
+					for (var i=x.length-1;i>=0;i--) {
+						x[i].parentNode.removeChild(x[i]); // DIV remove UL
+					}
+					
+					var x = dom.getElementsByClassName('base info-tab investors');
+					if (!x) {
+						return; //...
+					}
+					var f = x[0];
+					//~ var x = dom.getElementsByClassName('card-content box container card-slim');
+					//~ console.log(x);
+					//~ if (x) {
+						//~ var f = false;
+						//~ for (var i=0;i<x.length;i++) {
+							//~ console.log(x[i].innerText);
+							//~ console.log(x[i].innerText.indexOf('Lead Investor'));
+							//~ if (x[i].innerText.indexOf('Lead Investor') != -1) {
+								//~ f = x[i];
+								//~ break;
+							//~ }
+						//~ }
+						//~ console.log(f);
+						//~ if (!f) return; // Ends...
+					//~ } else {
+						//~ x = dom.getElementsByClassName('base info-tab investors');
+						//~ if (!x) {
+							//~ return; //...
+						//~ }
+						//~ var f = x[0];
+					//~ }
+					
+					//~ return;
+					
+					// Investors
+					//~ var a = f.getElementsByClassName('follow_card_wrapper');
+					var a = f.getElementsByClassName('follow_card');
+					console.log(a);
+					if(!a||!a.length) return;
+					var arr = [];
+					for (var i=0;i<a.length;i++) {
+						// parent, parent, parent...
+						//~ if (a[i].parentNode.investment_partner
+						arr.push(a[i].innerText.trim());
+					}
+					o.q[0].value = arr.join(', ');
+					o.q[0].value = o.q[0].value.trim()
+					if (o.q[0].value != '') {
+						//doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
 	//
 	// Smule AWS
 	// Separate artist name from song title
