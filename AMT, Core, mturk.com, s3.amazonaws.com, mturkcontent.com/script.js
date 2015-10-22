@@ -71073,6 +71073,18 @@ function MT__RUN() {
 			//~ GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			//~ GM_addStyle('#mturk_form {margin-top:600px !important;}');
 			
+			AMT___addUserDecision(
+				'KyleAndrewMartin,Yelp,Oct.22,2015',
+				function() {
+					return o.u;
+				},
+				[
+					"Name(text)[0]",
+					"Name(text)[1]",
+					"Name(text)[2]",
+				]
+			);
+			
 			var td = document.getElementsByTagName('td');
 			var o = {
 				u: td[1].innerText.trim(),
@@ -71172,7 +71184,8 @@ function MT__RUN() {
 					//~ d1.style.backgroundColor = 'blue';
 				}
 				if (sbm)
-					doSubmit();
+					AMT___recordAndSubmit();
+					//~ doSubmit();
 			}
 		}
 		new run().f();return;
