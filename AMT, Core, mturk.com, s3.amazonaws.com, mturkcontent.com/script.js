@@ -80082,12 +80082,57 @@ qatar,80
 			if (!AMT__Global_Vars.isPreview) addToTabsQ();
 			
 			// INIT
-			em0();
+			// Check for email then....
+			ema();
+			
+			/**
+			 * 
+			 */
+			function ema() {
+				d2.innerText = 'Loading page...';
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						return true;
+						//~ //
+						//~ if (rs.indexOf('Hey there! Before you continue, we just need to check that you\'re not a robot') != -1) {
+							//~ d1c.style.backgroundColor = 'yellow';
+							//~ window.open(options.response.finalUrl.replace('/snippet', ''));
+							//~ return false;
+						//~ } else if (rs.indexOf('Sorry, you\'re not allowed to access this page.')) {
+							//~ d1c.style.backgroundColor = 'yellow';
+							//~ return false;
+						//~ }
+						//~ else
+							//~ return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						// Skip?
+						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
+							AMT___Floater.skip();
+							// E-mail is going to be only in the "Links" if at all.
+							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
+							//...
+							return;
+						}
+						// Accept
+						if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.accept();
+							return;
+						}
+						// Next...
+						em0();
+					}
+					
+				});
+			}
 			/**
 			 * function em0
 			 * Check page for email. Fill in session_token (necessary?). Else check for other links.
-			 * 
-			 * CACHE THIS PAGE!
+			 * Do not cache here...
 			 */
 			function em0() {
 				d2.innerText = 'Loading page...';
@@ -80108,26 +80153,6 @@ qatar,80
 							// Display output
 							d2.innerText = 'START ERROR='+rs;
 							// ...
-							return;
-						}//console.log(rs);
-						// 
-						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
-							// Skip
-							AMT___Floater.skip();
-							
-							// E-mail is going to be only in the "Links" if at all.
-							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
-							//...
-							
-							return;
-						}
-						//~ // If preview...
-						//~ console.log(AMT__Global_Vars);
-						//~ console.log(AMT__Global_Vars.isPreview);
-						//~ console.log(AMT___Floater);
-						//~ console.log(AMT___Floater.accept());
-						if (AMT__Global_Vars.isPreview) {
-							AMT___Floater.accept();
 							return;
 						}
 						// Here...
@@ -87368,7 +87393,6 @@ qatar,80
 					}
 					
 				});
-				
 				return;
 			}
 			/**
