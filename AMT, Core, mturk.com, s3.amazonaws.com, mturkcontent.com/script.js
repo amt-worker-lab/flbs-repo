@@ -80253,58 +80253,13 @@ qatar,80
 					post_object_as_str: strp,
 					headers_array: [
 						'origin: https://www.youtube.com',
-						//~ 'accept-encoding: gzip, deflate',
-						//~ 'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						//~ 'pragma: no-cache',
 						'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
 						'content-type: application/x-www-form-urlencoded',
-						//~ 'accept: */*',
-						//~ 'cache-control: no-cache',
-						//~ 'authority: www.youtube.com',
 						'referer: ' + o.url,
-						
-						//~ 'X-YouTube-Client-Version:1.20151022',
-						//~ 'X-YouTube-Page-CL:106104429',
-						//~ 'X-YouTube-Page-Label:youtube_20151022_RC1',
-						//~ 'X-YouTube-Variants-Checksum:37ef61c4a66c91e3d79b0fd32822bb13',
-						
-						
 						'X-YouTube-Client-Version:1.20151022',
 						'X-YouTube-Page-CL:106104429',
 						'X-YouTube-Page-Label:youtube_20151022_RC1',
 						'X-YouTube-Variants-Checksum:',
-						
-						//~ 'method:POST',
-						//~ 'path:/c4_profile_ajax?action_verify_business_email_captcha=1',
-						//~ 'scheme:https',
-						//~ 'accept-language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						//~ 'content-length:470',
-						
-						//~ 'cookie:',
-						//~ 'x-client-data:CKK2yQEIqbbJAQiKksoBCP2VygEIlJfKAQi8mMoB',
-						//~ 'x-youtube-client-version:1.20151022',
-						//~ 'x-youtube-page-cl:106104429',
-						//~ 'x-youtube-page-label:youtube_20151022_RC1',
-						//~ 'x-youtube-variants-checksum:ec6a75297372d85afdee5eea4bc8e8fc',
-						//~ 'x-client-data:',
-						//~ 'x-youtube-client-version:',
-						//~ 'x-youtube-page-cl:',
-						//~ 'x-youtube-page-label:',
-						//~ 'x-youtube-variants-checksum:',
-						
-						
-						
-						
-						//~ 'origin: https://www.youtube.com',
-						//~ 'accept-encoding: gzip, deflate',
-						//~ 'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						//~ 'pragma: no-cache',
-						//~ 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
-						//~ 'content-type: application/x-www-form-urlencoded',
-						//~ 'accept: */*',
-						//~ 'cache-control: no-cache',
-						//~ 'authority: www.youtube.com',
-						//~ 'referer: ' + o.url
 					]
 					
 				}
