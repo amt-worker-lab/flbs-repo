@@ -80028,7 +80028,7 @@ qatar,80
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('#mturk_form {margin-top:200px !important;}');
 			GM_addStyle('#submitButton {width:40%;height:40px;margin-top:-20px;}');
-			GM_addStyle('#exe:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
 			
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -80060,11 +80060,11 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:0;left:40%;height:100px;width:58%;background-color:#eee;border:1px solid blue;'); //
+			d2.setAttribute('style', 'position:absolute;top:0;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
-			d3.setAttribute('style', 'position:absolute;left:0;top:115px;height:100px;width:99%;font-size:40px;'); //
+			d3.setAttribute('style', 'position:absolute;left:0;top:70px;height:100px;width:50%;font-size:36px;'); //
 			document.body.appendChild(d3);
 			/*END ITEMS*/
 			
@@ -80078,6 +80078,16 @@ qatar,80
 					em2(); // Email2
 				}
 			}
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d2
+				],
+				offset: 0 // offset top
+			});
 			
 			// Add to tabs q
 			if (!AMT__Global_Vars.isPreview) addToTabsQ();
@@ -80130,6 +80140,7 @@ qatar,80
 								return;
 							}
 							// Here...
+							d2.innerText = '';
 							emailReg.lastIndex = 0; // Reset lastIndex
 							var eobj = {};
 							var earr = [];
@@ -80154,10 +80165,12 @@ qatar,80
 								}
 								d2.appendChild(btn);
 							}
-							d2.appendChild = adiv;
+							d2.appendChild(adiv);
+							d2.appendChild(''.div({style:'height:2000px;'}));
 							// E-mail is going to be only in the "Links" if at all.
 							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
 							//...
+							console.log('abc');
 							return;
 						} else {
 							
@@ -80167,6 +80180,7 @@ qatar,80
 							AMT___Floater.accept();
 							return;
 						}
+						console.log('abc');
 						// Next...
 						em0();
 					}
