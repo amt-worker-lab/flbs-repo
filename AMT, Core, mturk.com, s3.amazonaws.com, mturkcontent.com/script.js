@@ -80236,8 +80236,23 @@ qatar,80
 						'content-type: application/x-www-form-urlencoded',
 						'accept: */*',
 						'cache-control: no-cache',
-						'authority: www.youtube.com',
-						'referer: ' + o.url
+						//~ 'authority: www.youtube.com',
+						'referer: ' + o.url,
+						
+						':authority:www.youtube.com',
+						':method:POST',
+						':path:/c4_profile_ajax?action_verify_business_email_captcha=1',
+						':scheme:https',
+						'accept:*/*',
+						'accept-encoding:gzip, deflate',
+						'accept-language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'content-length:470',
+						'content-type:application/x-www-form-urlencoded',
+						'cookie:',
+						
+						
+						
+						
 						
 						//~ 'origin: https://www.youtube.com',
 						//~ 'accept-encoding: gzip, deflate',
