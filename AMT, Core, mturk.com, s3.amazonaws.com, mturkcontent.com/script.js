@@ -80122,25 +80122,26 @@ qatar,80
 							// Skip?
 							if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length || !emailReg.exec(about[0].innerText)) {
 								AMT___Floater.skip();
-							}console.log('y');
+								return;
+							}
 							// Accept
 							if (AMT__Global_Vars.isPreview) {
 								AMT___Floater.accept();
 								return;
-							}console.log('x');
+							}
 							// Here...
 							emailReg.lastIndex = 0; // Reset lastIndex
 							var eobj = {};
 							var earr = [];
 							var em;
-							about = about[0].innerText.trim();
+							about = about[0].innerText.trim();console.log(about);
 							while (em = emailReg.exec(about)) {
 								eobj[ em[1] ] = true;
 								earr.push( em[1] );
 							}
 							// Bold
 							about = about.replace(/[<>]/g, ''); // Remove arrows, <>
-							about = MT__bold(about, earr);
+							about = MT__bold(about, earr);console.log(about);
 							var adiv = about.div({innerHTML: true});
 							for (var i in eobj) {
 								var btn = i.div({style:'border-bottom:1px solid #a2a2a2;'});
@@ -80154,9 +80155,6 @@ qatar,80
 								d2.appendChild(btn);
 							}
 							d2.appendChild = adiv;
-							
-							
-							
 							// E-mail is going to be only in the "Links" if at all.
 							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
 							//...
