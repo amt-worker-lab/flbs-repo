@@ -80134,15 +80134,15 @@ qatar,80
 						// Session token
 						// e.g. QFFLUhqbWYzQWZzX0k5VUVrbTI5NGt2SkJsYkpwRU9yUXxBQ3Jtc0tuTXlYcEhBQU54SjB1ZThkMzFURWhnSXV1d1RiSk02bzhPMXU0QlNHMmI5MlZaNHFZcU9ucDVjUXlKeGFqei1RSmxNdlp2S0s2Z0tUWnlpYVhBSllRSHJrTXVLb0ZnREtHZTZUczctM3h6c3lqalpTRThlZkNDbXdkTFE0Q0hIektfbnl0YWUyNUV2a0gyYl9CSTZkV2JkWUJTYm5RM21yOXVLbFF1cWxRSExPLW45Slk=
 						//~ var reg = /name="session_token" value="([^"]+)"/.exec(rs);
-						//~ var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
-						//~ if (!reg) {
-							//~ d2.innerText = 'session!';
-							//~ o.session_token = '';
-							//~ return;
-						//~ }
-						//~ o.session_token = __js_clean_html_str(reg[1]);
+						var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
+						if (!reg) {
+							d2.innerText = 'session!';
+							o.session_token = '';
+							return;
+						}
+						o.session_token = __js_clean_html_str(reg[1]);
 						
-						o.session_token = ''; // Unnecessary?
+						//~ o.session_token = ''; // Unnecessary?
 						em1();
 					}
 				});
@@ -80210,8 +80210,6 @@ qatar,80
 			}
 			/**
 			 * function em2
-			 * Get image:
-			 * http://www.apta.org/apta/findapt/HandlerDistort.ashx
 			 * 
 			 * 
 			 */
@@ -80244,6 +80242,8 @@ qatar,80
 						//~ 'X-YouTube-Page-CL:106104429',
 						//~ 'X-YouTube-Page-Label:youtube_20151022_RC1',
 						//~ 'X-YouTube-Variants-Checksum:37ef61c4a66c91e3d79b0fd32822bb13',
+						
+						
 						'X-YouTube-Client-Version:1.20151022',
 						'X-YouTube-Page-CL:106104429',
 						'X-YouTube-Page-Label:youtube_20151022_RC1',
