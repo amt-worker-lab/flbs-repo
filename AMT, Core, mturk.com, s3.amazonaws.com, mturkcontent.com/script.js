@@ -80046,7 +80046,8 @@ qatar,80
 				q: document.getElementById('web_url')
 				
 			}
-			o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + '.cookie');
+			//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + '.cookie');
+			o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.cookie');
 			o.channel_id = /channel\/([^\/]+)\//.exec(o.url)[1]; // e.g. UCFN3lenUT-LVL3SMvn-z7Vg
 			
 			/*BEGIN ITEMS*/
@@ -80093,8 +80094,8 @@ qatar,80
 				// ...
 				var opts = {
 					url: o.url,
-					//~ do_not_save_to_file: true,
-					//~ cookie_filename: o.cookie_filename
+					do_not_save_to_file: true,			// Set this....
+					cookie_filename: o.cookie_filename	// Set this....
 				}
 				opts = JSON.stringify(opts);
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
@@ -80133,15 +80134,15 @@ qatar,80
 						// Session token
 						// e.g. QFFLUhqbWYzQWZzX0k5VUVrbTI5NGt2SkJsYkpwRU9yUXxBQ3Jtc0tuTXlYcEhBQU54SjB1ZThkMzFURWhnSXV1d1RiSk02bzhPMXU0QlNHMmI5MlZaNHFZcU9ucDVjUXlKeGFqei1RSmxNdlp2S0s2Z0tUWnlpYVhBSllRSHJrTXVLb0ZnREtHZTZUczctM3h6c3lqalpTRThlZkNDbXdkTFE0Q0hIektfbnl0YWUyNUV2a0gyYl9CSTZkV2JkWUJTYm5RM21yOXVLbFF1cWxRSExPLW45Slk=
 						//~ var reg = /name="session_token" value="([^"]+)"/.exec(rs);
-						var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
-						if (!reg) {
-							d2.innerText = 'session!';
-							o.session_token = '';
-							return;
-						}
-						o.session_token = __js_clean_html_str(reg[1]);
+						//~ var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
+						//~ if (!reg) {
+							//~ d2.innerText = 'session!';
+							//~ o.session_token = '';
+							//~ return;
+						//~ }
+						//~ o.session_token = __js_clean_html_str(reg[1]);
 						
-						//~ o.session_token = ''; // Unnecessary?
+						o.session_token = ''; // Unnecessary?
 						em1();
 					}
 				});
@@ -80229,28 +80230,37 @@ qatar,80
 					post_object_as_str: strp,
 					headers_array: [
 						'origin: https://www.youtube.com',
-						'accept-encoding: gzip, deflate',
-						'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						'pragma: no-cache',
+						//~ 'accept-encoding: gzip, deflate',
+						//~ 'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						//~ 'pragma: no-cache',
 						'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
 						'content-type: application/x-www-form-urlencoded',
-						'accept: */*',
-						'cache-control: no-cache',
-						'authority: www.youtube.com',
+						//~ 'accept: */*',
+						//~ 'cache-control: no-cache',
+						//~ 'authority: www.youtube.com',
 						'referer: ' + o.url,
 						
-						'method:POST',
-						'path:/c4_profile_ajax?action_verify_business_email_captcha=1',
-						'scheme:https',
-						'accept-language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
-						'content-length:470',
+						//~ 'X-YouTube-Client-Version:1.20151022',
+						//~ 'X-YouTube-Page-CL:106104429',
+						//~ 'X-YouTube-Page-Label:youtube_20151022_RC1',
+						//~ 'X-YouTube-Variants-Checksum:37ef61c4a66c91e3d79b0fd32822bb13',
+						'X-YouTube-Client-Version:1.20151022',
+						'X-YouTube-Page-CL:106104429',
+						'X-YouTube-Page-Label:youtube_20151022_RC1',
+						'X-YouTube-Variants-Checksum:',
 						
-						'cookie:',
-						'x-client-data:CKK2yQEIqbbJAQiKksoBCP2VygEIlJfKAQi8mMoB',
-						'x-youtube-client-version:1.20151022',
-						'x-youtube-page-cl:106104429',
-						'x-youtube-page-label:youtube_20151022_RC1',
-						'x-youtube-variants-checksum:ec6a75297372d85afdee5eea4bc8e8fc',
+						//~ 'method:POST',
+						//~ 'path:/c4_profile_ajax?action_verify_business_email_captcha=1',
+						//~ 'scheme:https',
+						//~ 'accept-language:en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						//~ 'content-length:470',
+						
+						//~ 'cookie:',
+						//~ 'x-client-data:CKK2yQEIqbbJAQiKksoBCP2VygEIlJfKAQi8mMoB',
+						//~ 'x-youtube-client-version:1.20151022',
+						//~ 'x-youtube-page-cl:106104429',
+						//~ 'x-youtube-page-label:youtube_20151022_RC1',
+						//~ 'x-youtube-variants-checksum:ec6a75297372d85afdee5eea4bc8e8fc',
 						//~ 'x-client-data:',
 						//~ 'x-youtube-client-version:',
 						//~ 'x-youtube-page-cl:',
