@@ -80133,14 +80133,15 @@ qatar,80
 						// Session token
 						// e.g. QFFLUhqbWYzQWZzX0k5VUVrbTI5NGt2SkJsYkpwRU9yUXxBQ3Jtc0tuTXlYcEhBQU54SjB1ZThkMzFURWhnSXV1d1RiSk02bzhPMXU0QlNHMmI5MlZaNHFZcU9ucDVjUXlKeGFqei1RSmxNdlp2S0s2Z0tUWnlpYVhBSllRSHJrTXVLb0ZnREtHZTZUczctM3h6c3lqalpTRThlZkNDbXdkTFE0Q0hIektfbnl0YWUyNUV2a0gyYl9CSTZkV2JkWUJTYm5RM21yOXVLbFF1cWxRSExPLW45Slk=
 						//~ var reg = /name="session_token" value="([^"]+)"/.exec(rs);
-						//~ var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
-						//~ if (!reg) {
-							//~ d2.innerText = 'session!';
-							//~ o.session_token = '';
-							//~ return;
-						//~ }
-						//~ o.session_token = __js_clean_html_str(reg[1]);
-						o.session_token = ''; // Unnecessary?
+						var reg = /'XSRF_TOKEN': "([^"]+)"/.exec(rs);
+						if (!reg) {
+							d2.innerText = 'session!';
+							o.session_token = '';
+							return;
+						}
+						o.session_token = __js_clean_html_str(reg[1]);
+						
+						//~ o.session_token = ''; // Unnecessary?
 						em1();
 					}
 				});
@@ -80237,6 +80238,17 @@ qatar,80
 						'cache-control: no-cache',
 						'authority: www.youtube.com',
 						'referer: ' + o.url
+						
+						//~ 'origin: https://www.youtube.com',
+						//~ 'accept-encoding: gzip, deflate',
+						//~ 'accept-language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						//~ 'pragma: no-cache',
+						//~ 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.125 Safari/537.36',
+						//~ 'content-type: application/x-www-form-urlencoded',
+						//~ 'accept: */*',
+						//~ 'cache-control: no-cache',
+						//~ 'authority: www.youtube.com',
+						//~ 'referer: ' + o.url
 					]
 					
 				}
