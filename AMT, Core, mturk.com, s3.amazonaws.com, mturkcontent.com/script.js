@@ -80085,7 +80085,7 @@ qatar,80
 			em0();
 			/**
 			 * function em0
-			 * Check page for email. Fill in session_token (UNNECESSARY!). Else check for other links.
+			 * Check page for email. Fill in session_token (necessary?). Else check for other links.
 			 * 
 			 * CACHE THIS PAGE!
 			 */
@@ -80094,8 +80094,8 @@ qatar,80
 				// ...
 				var opts = {
 					url: o.url,
-					do_not_save_to_file: true,			// Set this....
-					cookie_filename: o.cookie_filename	// Set this....
+					do_not_save_to_file: true,		// Need to save to file here if skipping.....!
+					cookie_filename: o.cookie_filename	// Set this because the cookie needs to be set NOW for CAPTCHA to work later on....
 				}
 				opts = JSON.stringify(opts);
 				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
