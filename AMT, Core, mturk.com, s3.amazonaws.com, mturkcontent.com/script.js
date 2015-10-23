@@ -80028,6 +80028,7 @@ qatar,80
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('#mturk_form {margin-top:200px !important;}');
 			GM_addStyle('#submitButton {width:40%;height:40px;margin-top:-20px;}');
+			GM_addStyle('#exe:hover {cursor:pointer;background-color:LightGreen;}');
 			
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -80112,11 +80113,56 @@ qatar,80
 						var rs = options.response.responseText;
 						// Skip?
 						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
-							AMT___Floater.skip();
+							// Check for e-mail ...
+							// about-description
+							var dom =  new DOMParser().parseFromString(rs,'text/html');
+							var about = dom.getElementsByClassName('about-description');
+							// emailReg 
+							var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
+							// Skip?
+							if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length || !emailReg.exec(about[0].innerText)) {
+								AMT___Floater.skip();
+							}console.log('y');
+							// Accept
+							if (AMT__Global_Vars.isPreview) {
+								AMT___Floater.accept();
+								return;
+							}console.log('x');
+							// Here...
+							emailReg.lastIndex = 0; // Reset lastIndex
+							var eobj = {};
+							var earr = [];
+							var em;
+							about = about[0].innerText.trim();
+							while (em = emailReg.exec(about)) {
+								eobj[ em[1] ] = true;
+								earr.push( em[1] );
+							}
+							// Bold
+							about = about.replace(/[<>]/g, ''); // Remove arrows, <>
+							about = MT__bold(about, earr);
+							var adiv = about.div({innerHTML: true});
+							for (var i in eobj) {
+								var btn = i.div({style:'border-bottom:1px solid #a2a2a2;'});
+								btn.className = 'exe';
+								btn.onclick = function() {
+									this.style.backgroundColor = 'teal';
+									o.q.value = this.innerText;
+									if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6)
+										doSubmit();
+								}
+								d2.appendChild(btn);
+							}
+							d2.appendChild = adiv;
+							
+							
+							
 							// E-mail is going to be only in the "Links" if at all.
 							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
 							//...
 							return;
+						} else {
+							
 						}
 						// Accept
 						if (AMT__Global_Vars.isPreview) {
