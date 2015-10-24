@@ -80074,14 +80074,23 @@ qatar,80
 			/*END ITEMS*/
 			
 			// Onkeyup
+			new AMT___core_factory().createScriptVar('MC-Submit', '13');
+			if ( == '1'
 			d3.onkeyup = function(e) {
 				console.log(e.keyCode);
 				// Remove any unnecessary characters. I.e., typos.
-				this.value = this.value.replace(/[^a-z0-9]/gi, '');
-				if (e.keyCode == 13) {
+				if (/[^a-z0-9]/gi.exec(this.value)) {
+					this.value = this.value.replace(/[^a-z0-9]/gi, '');
+				}
+				// Key to submit CAPTCHA.
+				// Use parseInt.
+				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Submit']) ) {
 					this.blur(); // No more focus.
 					em2(); // Email2
 				}
+				// XXXXX OLD XXXXX
+				//~ if (e.keyCode == 13) {
+				//~ }
 			}
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
