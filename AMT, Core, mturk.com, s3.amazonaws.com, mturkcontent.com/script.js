@@ -80073,20 +80073,28 @@ qatar,80
 			document.body.appendChild(d3);
 			/*END ITEMS*/
 			
+			// createScriptVar
+			new AMT___core_factory().createScriptVar('MC-Submit', '13');		// Enter-key
+			setTimeout(function() {
+				new AMT___core_factory().createScriptVar('MC-Reload', '49');	// 1-key
+			}, 1000);
 			// Onkeyup
-			new AMT___core_factory().createScriptVar('MC-Submit', '13');
-			if ( == '1'
 			d3.onkeyup = function(e) {
 				console.log(e.keyCode);
-				// Remove any unnecessary characters. I.e., typos.
+				// Remove any unnecessary characters, i.e. typos.
 				if (/[^a-z0-9]/gi.exec(this.value)) {
 					this.value = this.value.replace(/[^a-z0-9]/gi, '');
 				}
-				// Key to submit CAPTCHA.
+				// Key to submit CAPTCHA
 				// Use parseInt.
 				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Submit']) ) {
 					this.blur(); // No more focus.
 					em2(); // Email2
+				}
+				// Reload CAPTCHA
+				// Use parseInt.
+				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Reload']) ) {
+					d1.click();
 				}
 				// XXXXX OLD XXXXX
 				//~ if (e.keyCode == 13) {
@@ -80111,7 +80119,31 @@ qatar,80
 			}
 			
 			// Add to tabs q
-			if (!AMT__Global_Vars.isPreview) addToTabsQ();
+			if (!AMT__Global_Vars.isPreview) {
+				
+				addToTabsQ();
+				
+				//~ AMT___doPastBehavior(
+					//~ 'Relevance Groupon 8 Sep 2014',
+					//~ 1
+				//~ );
+				AMT___doPastBehavior(
+					'MarkCarey,Oct.23,2015',
+					1,
+					'Do Not Submit',
+					function(match) { // callback(match)
+						console.log(match);
+						document.body.style.backgroundColor = 'lightgreen';
+					}
+				);
+				AMT___addUserDecision(
+					'MarkCarey,Oct.23,2015',
+					function() {
+						return o.url
+					},
+					['Id(web_url)']
+				);
+			}
 			
 			// INIT
 			// Check for email then....
