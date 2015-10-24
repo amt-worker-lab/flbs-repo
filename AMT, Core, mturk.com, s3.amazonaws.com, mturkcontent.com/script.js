@@ -80096,6 +80096,8 @@ qatar,80
 			// d1
 			d1.onclick = function() {
 				this.src = 'http://localhost/';
+				d3.value = '';
+				d3.focus();
 				em0();
 			}
 			
