@@ -80047,15 +80047,20 @@ qatar,80
 				q: document.getElementById('web_url')
 				
 			}
-			//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + '.cookie');
-			o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.cookie');
+			
+			function cookie() {
+				o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.cookie');
+				//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + '.cookie');
+			}
 			o.channel_id = /channel\/([^\/]+)\//.exec(o.url)[1]; // e.g. UCFN3lenUT-LVL3SMvn-z7Vg
+			//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.csookie');
+			
 			
 			/*BEGIN ITEMS*/
 			// d1
 			var d1 = document.createElement('img');
 			d1.setAttribute('style',
-				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;' // 115x35
+				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;' // 115x35
 			);
 			document.body.appendChild(d1);
 			// d2
@@ -80088,6 +80093,11 @@ qatar,80
 				],
 				offset: 0 // offset top
 			});
+			// d1
+			d1.onclick = function() {
+				this.src = 'http://localhost/';
+				em0();
+			}
 			
 			// Add to tabs q
 			if (!AMT__Global_Vars.isPreview) addToTabsQ();
@@ -80100,7 +80110,7 @@ qatar,80
 			 * 
 			 */
 			function ema() {
-				d2.innerText = 'Loading page...';
+				d2.innerText = 'Loading initial check...';
 				// xhr_with_disk_cache
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: o.url,
@@ -80170,17 +80180,13 @@ qatar,80
 							// E-mail is going to be only in the "Links" if at all.
 							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
 							//...
-							console.log('abc');
 							return;
-						} else {
-							
 						}
 						// Accept
 						if (AMT__Global_Vars.isPreview) {
 							AMT___Floater.accept();
 							return;
 						}
-						console.log('abc');
 						// Next...
 						em0();
 					}
@@ -80194,6 +80200,7 @@ qatar,80
 			 */
 			function em0() {
 				d2.innerText = 'Loading page...';
+				cookie(); // Set cookie for this "run".
 				// ...
 				var opts = {
 					url: o.url,
