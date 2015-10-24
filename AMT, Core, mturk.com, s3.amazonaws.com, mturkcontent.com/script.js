@@ -80185,6 +80185,7 @@ qatar,80
 							// Skip?
 							if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length || !emailReg.exec(about[0].innerText)) {
 								AMT___Floater.skip();
+								d2.innerText = 'Skip';
 								return;
 							}
 							// Accept
