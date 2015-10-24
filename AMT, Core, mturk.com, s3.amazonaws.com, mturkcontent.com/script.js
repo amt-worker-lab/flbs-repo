@@ -80123,18 +80123,9 @@ qatar,80
 				
 				addToTabsQ();
 				
-				//~ AMT___doPastBehavior(
-					//~ 'Relevance Groupon 8 Sep 2014',
-					//~ 1
-				//~ );
 				AMT___doPastBehavior(
 					'MarkCarey,Oct.23,2015',
-					1,
-					'Do Not Submit',
-					function(match) { // callback(match)
-						console.log(match);
-						document.body.style.backgroundColor = 'lightgreen';
-					}
+					1
 				);
 				AMT___addUserDecision(
 					'MarkCarey,Oct.23,2015',
@@ -80143,6 +80134,15 @@ qatar,80
 					},
 					['Id(web_url)']
 				);
+				//~ AMT___doPastBehavior(
+					//~ 'MarkCarey,Oct.23,2015',
+					//~ 1,
+					//~ 'Do Not Submit',
+					//~ function(match) { // callback(match)
+						//~ console.log(match);
+						//~ document.body.style.backgroundColor = 'lightgreen';
+					//~ }
+				//~ );
 			}
 			
 			// INIT
@@ -80214,8 +80214,10 @@ qatar,80
 								btn.onclick = function() {
 									this.style.backgroundColor = 'teal';
 									o.q.value = this.innerText;
-									if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6)
-										doSubmit();
+									if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6) {
+										AMT___recordAndSubmit();
+										//~ doSubmit();
+									}
 								}
 								d2.appendChild(btn);
 							}
@@ -80406,7 +80408,8 @@ qatar,80
 						var m = __js_clean_html_str(reg[1]).trim();
 						o.q.value = m;
 						if (m.length > 6) {
-							doSubmit();
+							AMT___recordAndSubmit();
+							//~ doSubmit();
 						}
 					}
 				});
