@@ -6484,6 +6484,69 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	// Society6
+	// Recognize pop culture.....
+	// 
+	//
+	s = '<span class="s1">Do you recognize any people, characters, logos, or slogans from movies, TV, music, pop culture, or brands in these images?</span>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tr,td,th,tbody {margin:0;padding:0 !important;font-size:12px !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:99% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
+			//~ GM_addStyle('#submitButton {position:absolute;top:200px;left:0px;}');
+			//~ window.setTimeout(function() {
+				//~ document.getElementById('submitButton').focus();
+				//~ document.getElementById('submitButton').blur();
+			//~ }, 1000);
+			//~ window.setTimeout(function() {
+				//~ document.getElementById('submitButton').focus();
+				//~ document.getElementById('submitButton').blur();
+			//~ }, 1500);
+			//~ window.setTimeout(function() {
+				//~ document.getElementById('submitButton').focus();
+				//~ document.getElementById('submitButton').blur();
+			//~ }, 2000);
+			
+			/*ITEMS*/
+			var dv = ''.div({style:'width:20%;top:0;left:80%;position:absolute;'});
+			document.body.appendChild(dv);
+			/*END ITEMS*/
+			
+			new AMT___core_factory().createScriptVar('Society6', '6'); // 
+			var src = [];
+			var imgs = document.getElementsByTagName('img');
+			for(var i = 0; i < imgs.length; i++) {
+				imgs[i].onclick = function() {
+					this.style.border = '8px solid blue';
+				}
+			}
+			//
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+			// 
+			window.addEventListener('keydown', function(e) {
+				var k = e.keyCode;
+				if (k == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					doSubmit();
+					return false;
+				}
+			}, true);
+		}
+		new run().f();
+	}
 	
 	
 	//
