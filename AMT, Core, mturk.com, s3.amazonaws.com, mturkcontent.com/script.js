@@ -80327,8 +80327,6 @@ qatar,80
 				if (!start_urls.length && !allowed_domains.length) {
 					skip();return;
 				}
-				// Fill in dom.title
-				d3.value = dom.title.replace('- YouTube', '').trim();
 				console.log(start_urls);
 				console.log(allowed_domains);
 				//
@@ -80407,6 +80405,59 @@ qatar,80
 				);
 			}
 			/**
+			 * function about_text
+			 */
+			function about_text(dom, do_scrapy) {
+				// Fill in dom.title
+				d4c.appendChild((dom.title.replace('- YouTube', '').trim()).div({style:'border-bottom:1px solid teal;'}));
+				// about-description
+				var about = dom.getElementsByClassName('about-description');
+				// emailReg 
+				var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
+				// Skip?
+				if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length) {// || !emailReg.exec(about[0].innerText)) {
+					if (do_scrapy)
+						scrapy(dom);
+					else
+						d4c.appendChild('--'.div());
+					return;
+				}
+				// Accept
+				if (AMT__Global_Vars.isPreview) {
+					AMT___Floater.accept();
+					return;
+				}
+				// Here...
+				d4c.innerText = '';
+				emailReg.lastIndex = 0; // Reset lastIndex
+				var eobj = {};
+				var earr = [];
+				var em;
+				about = about[0].innerText.trim();
+				while (em = emailReg.exec(about)) {
+					eobj[ em[1] ] = true;
+					earr.push( em[1] );
+				}
+				// Bold
+				about = about.replace(/[<>]/g, ''); // Remove arrows, <>
+				about = MT__bold(about, earr);
+				var adiv = about.div({innerHTML: true});
+				for (var i in eobj) {
+					var btn = i.div({style:'border-bottom:1px solid #a2a2a2;'});
+					btn.className = 'exe';
+					btn.onclick = function() {
+						this.style.backgroundColor = 'teal';
+						o.q.value = this.innerText;
+						if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6) {
+							AMT___recordAndSubmit();
+						}
+					}
+					d4c.appendChild(btn);
+				}
+				d4c.appendChild(adiv);
+				d4c.appendChild(''.div({style:'height:2000px;'}));
+			}
+			/**
 			 * 
 			 */
 			function ema() {
@@ -80423,55 +80474,8 @@ qatar,80
 						// Skip?
 						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
 							// Check for e-mail ...
-							// about-description
 							var dom =  new DOMParser().parseFromString(rs,'text/html');
-							var about = dom.getElementsByClassName('about-description');
-							// emailReg 
-							var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
-							// Skip?
-							if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length || !emailReg.exec(about[0].innerText)) {
-								scrapy(dom);
-								//~ AMT___Floater.skip();
-								//~ d2.innerText = 'Skip';
-								return;
-							}
-							// Accept
-							if (AMT__Global_Vars.isPreview) {
-								AMT___Floater.accept();
-								return;
-							}
-							// Here...
-							d2.innerText = '';
-							emailReg.lastIndex = 0; // Reset lastIndex
-							var eobj = {};
-							var earr = [];
-							var em;
-							about = about[0].innerText.trim();console.log(about);
-							while (em = emailReg.exec(about)) {
-								eobj[ em[1] ] = true;
-								earr.push( em[1] );
-							}
-							// Bold
-							about = about.replace(/[<>]/g, ''); // Remove arrows, <>
-							about = MT__bold(about, earr);console.log(about);
-							var adiv = about.div({innerHTML: true});
-							for (var i in eobj) {
-								var btn = i.div({style:'border-bottom:1px solid #a2a2a2;'});
-								btn.className = 'exe';
-								btn.onclick = function() {
-									this.style.backgroundColor = 'teal';
-									o.q.value = this.innerText;
-									if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6) {
-										AMT___recordAndSubmit();
-										//~ doSubmit();
-									}
-								}
-								d2.appendChild(btn);
-							}
-							d2.appendChild(adiv);
-							d2.appendChild(''.div({style:'height:2000px;'}));
-							// E-mail is going to be only in the "Links" if at all.
-							//~ var dom =  new DOMParser().parseFromString(rs,'text/html');
+							about_text(dom, true); // True = Scrapy if no emails found...
 							//...
 							return;
 						}
