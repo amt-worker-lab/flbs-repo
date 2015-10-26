@@ -80253,12 +80253,11 @@ qatar,80
 				var allowed_domains = [];
 				for (var i=0;i<l.length;i++) {
 					var hr = l[i].getAttribute('href').trim();
-					console.log(hr);
 					if  (
 						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
 					{
-						d4.appendChild('yt'.div());
+						d4.appendChild('yt'.div({style:'border-bottom:1px solid teal;'}));
 						continue; // Skip
 					}
 					if  (
@@ -80267,7 +80266,11 @@ qatar,80
 						)
 					{
 						start_urls.push(hr);
-						d4.appendChild('fb/g+'.div());
+						d4.appendChild('(fb/g+ good)'.div({style:'border-bottom:1px solid teal;'}));
+						continue;
+					}
+					if (/^https?:\/\/plus\.google\.com\//i.exec(hr)) { //https://plus.google.com/............
+						d4.appendChild('(g+ bad)'.div({style:'border-bottom:1px solid teal;'}));
 						continue;
 					}
 					//
@@ -80288,7 +80291,10 @@ qatar,80
 						continue; // END
 					}
 					// Here...
-					d4.appendChild(el_inp_skip2__obj.el_btn);
+					var out = ''.div({style:'border-bottom:1px solid teal;'});
+					d4.appendChild(out);
+					out.appendChild((x+'\n'+hr).div());
+					out.appendChild(el_inp_skip2__obj.el_btn);
 					// Add to queue...
 					start_urls.push(hr);
 					allowed_domains.push(x);
@@ -80351,10 +80357,12 @@ qatar,80
 										return false;
 									}
 									if (AMT__Global_Vars.isPreview) {
-										AMT___Floater.accept();
+										AMT___Floater.accept();console.log('accept......');
 										return false;
 									}
 									// Here...
+									console.log('x');
+									//~ return false;
 									return true;
 								}
 							}
