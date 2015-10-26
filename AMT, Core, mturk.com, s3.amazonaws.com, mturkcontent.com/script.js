@@ -80129,19 +80129,19 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:100px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d2.setAttribute('style', 'position:absolute;top:100px;left:40%;height:100px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
-			d3.setAttribute('style', 'position:absolute;left:0;top:140px;height:100px;width:50%;font-size:36px;'); //
+			d3.setAttribute('style', 'position:absolute;left:0;top:140px;height:100px;width:40%;font-size:36px;'); //
 			document.body.appendChild(d3);
 			// d4
 			var d4 = document.createElement('div');
-			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:100px;width:25%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:100px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4);
 			// d4
 			var d4b = document.createElement('div');
-			d4b.setAttribute('style', 'position:absolute;top:0px;left:75%;height:100px;width:24%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:100px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4b);
 			/*END ITEMS*/
 			
@@ -80303,8 +80303,10 @@ qatar,80
 					// Here...
 					var out = ''.div({style:'border-bottom:1px solid teal;'});
 					d4.appendChild(out);
-					out.appendChild((x+'\n'+hr).div());
+					//~ out.appendChild((x+'\n'+hr).div());
 					out.appendChild(el_inp_skip2__obj.el_btn);
+					out.appendChild(document.createTextNode(x));
+					out.appendChild(hr.div());
 					// Add to queue...
 					start_urls.push(hr);
 					allowed_domains.push(x);
@@ -80342,13 +80344,12 @@ qatar,80
 						//'AJAXCRAWL_ENABLED=1', //true
 					]
 				}
-				
 				var req = new AMT___requests_factory();
 				AMT___POPUP__initializeGlobals(
 					function() {
 						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
 							s_obj,
-							(new AMT___items_factory()).create_dashboard__powers_v1,
+							new AMT___items_factory().create_dashboard__powers_v1,
 							{
 								div: d2,
 								input_send_success: o.q,
@@ -80371,7 +80372,7 @@ qatar,80
 										return false;
 									}
 									// Here...
-									return true;
+									//~ return true;
 								}
 							}
 						);
