@@ -80143,6 +80143,10 @@ qatar,80
 			var d4b = document.createElement('div');
 			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:100px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4b);
+			// d4
+			var d4c = document.createElement('div');
+			d4c.setAttribute('style', 'position:absolute;top:240px;left:0%;height:100px;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			document.body.appendChild(d4c);
 			/*END ITEMS*/
 			
 			// createScriptVar
@@ -80178,6 +80182,15 @@ qatar,80
 					d2
 				],
 				offset: 100 // offset top
+			});
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d4c
+				],
+				offset: 240 // offset top
 			});
 			// d1
 			d1.onclick = function() {
@@ -80314,6 +80327,8 @@ qatar,80
 				if (!start_urls.length && !allowed_domains.length) {
 					skip();return;
 				}
+				// Fill in dom.title
+				d3.value = dom.title.replace('- YouTube', '').trim();
 				console.log(start_urls);
 				console.log(allowed_domains);
 				//
@@ -80373,7 +80388,19 @@ qatar,80
 									}
 									// Here...
 									//~ return true;
-								}
+								},
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										)
+									{
+										o.q.value = this.email;
+										doSubmit();
+									}
+								},
 							}
 						);
 					}
