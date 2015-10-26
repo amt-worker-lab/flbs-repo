@@ -80272,7 +80272,8 @@ qatar,80
 					}
 					//
 					var x = hr.replace(/^https?:\/\/(\w+\d*\.|)/g, '');	// Initial...
-					x = x.replace(/[^\/]+[\d\D]*/, '');					// Trailing...
+					x = x.replace(/([^\/]+)[\d\D]*/, '$1');				// Trailing...
+					console.log('domain:'+x);
 					var el_inp_skip2__obj = new AMT___items_factory().
 						create__input_skip_button2(
 							{
