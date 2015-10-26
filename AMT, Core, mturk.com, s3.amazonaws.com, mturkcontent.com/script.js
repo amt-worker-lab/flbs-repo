@@ -80127,12 +80127,16 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:0;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d2.setAttribute('style', 'position:absolute;top:40px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
 			d3.setAttribute('style', 'position:absolute;left:0;top:140px;height:100px;width:50%;font-size:36px;'); //
 			document.body.appendChild(d3);
+			// d4
+			var d4 = document.createElement('div');
+			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:40px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			document.body.appendChild(d4);
 			/*END ITEMS*/
 			
 			// createScriptVar
@@ -80167,7 +80171,7 @@ qatar,80
 				elements: [
 					d2
 				],
-				offset: 0 // offset top
+				offset: 40 // offset top
 			});
 			// d1
 			d1.onclick = function() {
@@ -80208,11 +80212,105 @@ qatar,80
 			// Check for email then....
 			ema();
 			
+			function skip() {
+				AMT___Floater.skip();
+				d2.innerText = 'Skip';
+				d2.style.backgroundColor = 'pink';
+			}
 			/**
-			 * 
+			 * scrapy
 			 */
-			function scrapy() {
+			function scrapy(dom) {//start_urls, allowed_domains) {
 				
+				// any in dom?
+				var c = dom.getElementsByClassName('about-metadata branded-page-box-padding clearfix'); // Container
+				if (!c || c.length != 1) {
+					skip();return;
+				}
+				c = c[0];
+				var l = c.getElementsByClassName('about-channel-link')
+				if (!l || !l.length) {
+					skip();return;
+				}
+				// Here...
+				var start_urls = allowed_domains = [];
+				for (var i=0;i<l.length;i++) {
+					if  (
+						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(l[i])
+						)
+					{
+						continue; // Skip
+					}
+					if  (
+						l[i].indexOf('facebook.com') != -1 ||
+						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(l[i])
+						)
+					{
+						start_urls.push(l[i]);
+					}
+					
+				}
+				if (!start_urls.length && !allowed_domains.length) {
+					skip();return;
+				}
+				//~ 
+				
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 60,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=40', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=12', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=1'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								div: d1,
+								input_send_success: o.q[1],
+								do_submit_callback: function() {
+									
+									// do nothing
+									
+									// ...
+									//~ showNextTab();
+									//~ doSubmit();
+								}//,
+								// RUNS BEFORE DASHBOARD IS FILLED IN !
+								//~ callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									//~ console.log(callback_obj);
+									//~ return;
+									//~ return true;
+								//~ }
+							}
+						);
+					}
+				);
 			}
 			/**
 			 * 
@@ -80238,8 +80336,9 @@ qatar,80
 							var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
 							// Skip?
 							if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length || !emailReg.exec(about[0].innerText)) {
-								AMT___Floater.skip();
-								d2.innerText = 'Skip';
+								scrapy(dom);
+								//~ AMT___Floater.skip();
+								//~ d2.innerText = 'Skip';
 								return;
 							}
 							// Accept
