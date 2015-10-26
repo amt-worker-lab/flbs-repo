@@ -13728,7 +13728,6 @@ function MT__RUN() {
 									div.asin = x[1];
 								}
 							} else {
-								//~ console.log('!reg title');
 							}
 							
 							// offers
@@ -13776,7 +13775,7 @@ function MT__RUN() {
 								o.product.replace(/[\r\n\t\s]+/g, '').toLowerCase()
 								)
 							{
-								tmptitle = '<span style="font-size:3.4em;font-weight:bold;">✔</span>';
+								tmptitle = '<span style="zoom:3;font-weight:bold;">✔</span>';
 								tmptitle += MT__bold(title, o.bold_array);
 							} else {
 								tmptitle = MT__bold(title, o.bold_array);
