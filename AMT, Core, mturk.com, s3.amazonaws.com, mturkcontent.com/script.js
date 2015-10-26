@@ -80203,7 +80203,7 @@ qatar,80
 			// Add to tabs q
 			if (!AMT__Global_Vars.isPreview) {
 				
-				addToTabsQ();
+				//~ addToTabsQ();
 				
 				AMT___doPastBehavior(
 					'MarkCarey,Oct.23,2015',
@@ -80385,6 +80385,7 @@ qatar,80
 										return false;
 									}
 									// Here...
+									addToTabsQ();
 									//~ return true;
 								},
 								input_onclick_callback: function() {
@@ -80422,9 +80423,12 @@ qatar,80
 				// emailReg 
 				var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
 				// Accept if emails are here.......
-				if (AMT__Global_Vars.isPreview && emailReg.exec(about[0])) {
+				var has_em = emailReg.exec(about[0]);
+				if (AMT__Global_Vars.isPreview && has_em) {
 					AMT___Floater.accept();
 					return;
+				} else if (has_em) {
+					addToTabsQ();
 				}
 				// Here...
 				//~ d4c.innerText = '';
@@ -80484,6 +80488,8 @@ qatar,80
 						if (AMT__Global_Vars.isPreview) {
 							AMT___Floater.accept();
 							return;
+						} else { // Accepted...
+							addToTabsQ();
 						}
 						// Next...
 						em0();
@@ -80568,7 +80574,6 @@ qatar,80
 						if (/^\d{3}$/.exec(rs)) { // If status code is returned
 							// Display output
 							d2.innerText = 'START ERROR='+rs;
-							//~ addToTabsQ()
 							// ...
 							return;
 						}
