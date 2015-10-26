@@ -80376,6 +80376,7 @@ qatar,80
 								},
 								// RUNS BEFORE DASHBOARD IS FILLED IN !
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									addToTabsQ();
 									if (!callback_obj.matches || !callback_obj.matches.length) {
 										skip();
 										return false;
@@ -80384,8 +80385,7 @@ qatar,80
 										AMT___Floater.accept();console.log('accept......');
 										return false;
 									}
-									// Here...
-									addToTabsQ();
+
 									//~ return true;
 								},
 								input_onclick_callback: function() {
