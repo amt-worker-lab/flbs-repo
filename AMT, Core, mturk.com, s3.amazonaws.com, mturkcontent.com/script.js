@@ -80122,7 +80122,7 @@ qatar,80
 			// d1
 			var d1 = document.createElement('img');
 			d1.setAttribute('style',
-				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;' // 115x35
+				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;zoom:2;' // 115x35
 			);
 			document.body.appendChild(d1);
 			// d2
@@ -80131,7 +80131,7 @@ qatar,80
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
-			d3.setAttribute('style', 'position:absolute;left:0;top:70px;height:100px;width:50%;font-size:36px;'); //
+			d3.setAttribute('style', 'position:absolute;left:0;top:140px;height:100px;width:50%;font-size:36px;'); //
 			document.body.appendChild(d3);
 			/*END ITEMS*/
 			
@@ -80158,9 +80158,6 @@ qatar,80
 				if (e.keyCode == parseInt( AMT__Global_Vars.scriptVars['MC-Reload']) ) {
 					d1.click();
 				}
-				// XXXXX OLD XXXXX
-				//~ if (e.keyCode == 13) {
-				//~ }
 			}
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
