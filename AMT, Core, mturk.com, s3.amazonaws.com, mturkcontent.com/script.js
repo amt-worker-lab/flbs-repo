@@ -80407,28 +80407,27 @@ qatar,80
 			/**
 			 * function about_text
 			 */
-			function about_text(dom, do_scrapy) {
+			function about_text(dom) {
 				// Fill in dom.title
+				d4c.innerText = '';
 				d4c.appendChild((dom.title.replace('- YouTube', '').trim()).div({style:'border-bottom:1px solid teal;'}));
 				// about-description
 				var about = dom.getElementsByClassName('about-description');
-				// emailReg 
-				var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
 				// Skip?
 				if (!about || !about.length || !about[0].innerText || !about[0].innerText.trim().length) {// || !emailReg.exec(about[0].innerText)) {
-					if (do_scrapy)
-						scrapy(dom);
-					else
-						d4c.appendChild('--'.div());
+					scrapy(dom);
+					d4c.appendChild('--'.div());
 					return;
 				}
-				// Accept
-				if (AMT__Global_Vars.isPreview) {
+				// emailReg 
+				var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;|%40)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
+				// Accept if emails are here.......
+				if (AMT__Global_Vars.isPreview && emailReg.exec(about[0])) {
 					AMT___Floater.accept();
 					return;
 				}
 				// Here...
-				d4c.innerText = '';
+				//~ d4c.innerText = '';
 				emailReg.lastIndex = 0; // Reset lastIndex
 				var eobj = {};
 				var earr = [];
@@ -80456,6 +80455,8 @@ qatar,80
 				}
 				d4c.appendChild(adiv);
 				d4c.appendChild(''.div({style:'height:2000px;'}));
+				// And now do scrapy.......
+				scrapy(dom);
 			}
 			/**
 			 * 
