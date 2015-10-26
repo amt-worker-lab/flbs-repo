@@ -80249,9 +80249,11 @@ qatar,80
 					skip();return;
 				}
 				// Here...
-				var start_urls = allowed_domains = [];
+				var start_urls = [];
+				var allowed_domains = [];
 				for (var i=0;i<l.length;i++) {
-					var hr = l[i].getAttribute('href');
+					var hr = l[i].getAttribute('href').trim();
+					console.log(hr);
 					if  (
 						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
@@ -80260,7 +80262,7 @@ qatar,80
 					}
 					if  (
 						hr.indexOf('facebook.com') != -1 ||
-						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(hr)
+						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(hr) //https://plus.google.com/116596412095727572255
 						)
 					{
 						start_urls.push(hr);
@@ -80330,7 +80332,7 @@ qatar,80
 							(new AMT___items_factory()).create_dashboard__powers_v1,
 							{
 								div: d1,
-								input_send_success: o.q[1],
+								input_send_success: o.q,
 								do_submit_callback: function() {
 									
 									// do nothing
@@ -80340,11 +80342,18 @@ qatar,80
 									//~ doSubmit();
 								}//,
 								// RUNS BEFORE DASHBOARD IS FILLED IN !
-								//~ callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
-									//~ console.log(callback_obj);
-									//~ return;
-									//~ return true;
-								//~ }
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									if (!callback_obj.matches || !callback_obj.matches.length) {
+										skip();
+										return false;
+									}
+									if (AMT__Global_Vars.isPreview) {
+										AMT___Floater.accept();
+										return false;
+									}
+									// Here...
+									return true;
+								}
 							}
 						);
 					}
