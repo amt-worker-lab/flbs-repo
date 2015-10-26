@@ -80106,7 +80106,9 @@ qatar,80
 				
 				final_rs: null,
 				
-				q: document.getElementById('web_url')
+				q: document.getElementById('web_url'),
+				
+				SKIP_SITES: null,
 				
 			}
 			
@@ -80210,8 +80212,22 @@ qatar,80
 			
 			// INIT
 			// Check for email then....
-			ema();
+			//~ ema();
 			
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips({
+				skips_key: 'austin_load_skips',
+				callback: init,
+				callback_err: function() {}
+			});
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				ema(); // INIT
+			}
+			/**
+			 * skip
+			 */
 			function skip() {
 				AMT___Floater.skip();
 				d2.innerText = 'Skip';
@@ -80235,26 +80251,48 @@ qatar,80
 				// Here...
 				var start_urls = allowed_domains = [];
 				for (var i=0;i<l.length;i++) {
+					var hr = l[i].getAttribute('href');
 					if  (
-						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(l[i])
+						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
 					{
 						continue; // Skip
 					}
 					if  (
-						l[i].indexOf('facebook.com') != -1 ||
-						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(l[i])
+						hr.indexOf('facebook.com') != -1 ||
+						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(hr)
 						)
 					{
-						start_urls.push(l[i]);
+						start_urls.push(hr);
+						continue;
 					}
-					
+					//
+					var x = hr.replace(/^https?:\/\/(\w+\d*\.|)/g, '');	// Initial...
+					x = x.replace(/[^\/]+[\d\D]*/, '');					// Trailing...
+					var el_inp_skip2__obj = new AMT___items_factory().
+						create__input_skip_button2(
+							{
+								domain: x,
+								load_file: 'austin_load_skips', 
+								var_skip_sites: o.SKIP_SITES, 
+								callback_function: false
+							}
+						);
+					if (el_inp_skip2__obj.isSkip) {
+						d4.appendChild(el_inp_skip2__obj.el_btn);
+						continue; // END
+					}
+					// Here...
+					d4.appendChild(el_inp_skip2__obj.el_btn);
+					// Add to queue...
+					start_urls.push(hr);
+					allowed_domains.push(x);
 				}
 				if (!start_urls.length && !allowed_domains.length) {
 					skip();return;
 				}
-				//~ 
-				
+				console.log(start_urls);
+				console.log(allowed_domains);
 				//
 				var s_obj = 
 				{
