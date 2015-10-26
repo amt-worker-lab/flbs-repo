@@ -80211,6 +80211,12 @@ qatar,80
 			/**
 			 * 
 			 */
+			function scrapy() {
+				
+			}
+			/**
+			 * 
+			 */
 			function ema() {
 				d2.innerText = 'Loading initial check...';
 				// xhr_with_disk_cache
@@ -80219,17 +80225,6 @@ qatar,80
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						return true;
-						//~ //
-						//~ if (rs.indexOf('Hey there! Before you continue, we just need to check that you\'re not a robot') != -1) {
-							//~ d1c.style.backgroundColor = 'yellow';
-							//~ window.open(options.response.finalUrl.replace('/snippet', ''));
-							//~ return false;
-						//~ } else if (rs.indexOf('Sorry, you\'re not allowed to access this page.')) {
-							//~ d1c.style.backgroundColor = 'yellow';
-							//~ return false;
-						//~ }
-						//~ else
-							//~ return true;
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
