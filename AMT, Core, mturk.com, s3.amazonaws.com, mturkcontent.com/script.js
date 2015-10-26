@@ -80137,8 +80137,12 @@ qatar,80
 			document.body.appendChild(d3);
 			// d4
 			var d4 = document.createElement('div');
-			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:100px;width:25%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4);
+			// d4
+			var d4b = document.createElement('div');
+			d4b.setAttribute('style', 'position:absolute;top:0px;left:75%;height:100px;width:24%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			document.body.appendChild(d4b);
 			/*END ITEMS*/
 			
 			// createScriptVar
@@ -80253,11 +80257,14 @@ qatar,80
 				var allowed_domains = [];
 				for (var i=0;i<l.length;i++) {
 					var hr = l[i].getAttribute('href').trim();
+					if (!/^https?:\/\//.exec(hr)) {
+						hr = 'http://'+hr;
+					}
 					if  (
 						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
 					{
-						d4.appendChild('yt'.div({style:'border-bottom:1px solid teal;'}));
+						//~ d4b.appendChild('yt'.div({style:'border-bottom:1px solid teal;'}));
 						continue; // Skip
 					}
 					if  (
@@ -80266,17 +80273,18 @@ qatar,80
 						)
 					{
 						start_urls.push(hr);
-						d4.appendChild('(fb/g+ good)'.div({style:'border-bottom:1px solid teal;'}));
+						//~ d4b.appendChild('(fb/g+ good)'.div({style:'border-bottom:1px solid teal;'}));
 						continue;
 					}
 					if (/^https?:\/\/plus\.google\.com\//i.exec(hr)) { //https://plus.google.com/............
-						d4.appendChild('(g+ bad)'.div({style:'border-bottom:1px solid teal;'}));
+						//~ d4b.appendChild('(g+ bad)'.div({style:'border-bottom:1px solid teal;'}));
 						continue;
 					}
 					//
-					var x = hr.replace(/^https?:\/\/(\w+\d*\.|)/g, '');	// Initial...
+					var x = hr.replace(/^https?:\/\/(w+\d*\.|)/g, '');	// Initial...
 					x = x.replace(/([^\/]+)[\d\D]*/, '$1');				// Trailing...
 					console.log('domain:'+x);
+					console.log('full:'+hr);
 					var el_inp_skip2__obj = new AMT___items_factory().
 						create__input_skip_button2(
 							{
@@ -80287,7 +80295,9 @@ qatar,80
 							}
 						);
 					if (el_inp_skip2__obj.isSkip) {
-						d4.appendChild(el_inp_skip2__obj.el_btn);
+						var x = ''.div({style:'border-bottom:1px solid teal;'});
+						x.appendChild(el_inp_skip2__obj.el_btn);
+						d4b.appendChild(x);
 						continue; // END
 					}
 					// Here...
@@ -80340,7 +80350,7 @@ qatar,80
 							s_obj,
 							(new AMT___items_factory()).create_dashboard__powers_v1,
 							{
-								div: d1,
+								div: d2,
 								input_send_success: o.q,
 								do_submit_callback: function() {
 									
@@ -80361,8 +80371,6 @@ qatar,80
 										return false;
 									}
 									// Here...
-									console.log('x');
-									//~ return false;
 									return true;
 								}
 							}
