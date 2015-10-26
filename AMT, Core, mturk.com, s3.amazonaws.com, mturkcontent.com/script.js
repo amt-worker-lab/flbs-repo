@@ -80129,7 +80129,7 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:40px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d2.setAttribute('style', 'position:absolute;top:100px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
@@ -80137,7 +80137,7 @@ qatar,80
 			document.body.appendChild(d3);
 			// d4
 			var d4 = document.createElement('div');
-			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:40px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4.setAttribute('style', 'position:absolute;top:0px;left:50%;height:100px;width:49%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4);
 			/*END ITEMS*/
 			
@@ -80173,7 +80173,7 @@ qatar,80
 				elements: [
 					d2
 				],
-				offset: 40 // offset top
+				offset: 100 // offset top
 			});
 			// d1
 			d1.onclick = function() {
@@ -80258,6 +80258,7 @@ qatar,80
 						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
 					{
+						d4.appendChild('yt'.div());
 						continue; // Skip
 					}
 					if  (
@@ -80266,6 +80267,7 @@ qatar,80
 						)
 					{
 						start_urls.push(hr);
+						d4.appendChild('fb/g+'.div());
 						continue;
 					}
 					//
@@ -80340,7 +80342,7 @@ qatar,80
 									// ...
 									//~ showNextTab();
 									//~ doSubmit();
-								}//,
+								},
 								// RUNS BEFORE DASHBOARD IS FILLED IN !
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									if (!callback_obj.matches || !callback_obj.matches.length) {
