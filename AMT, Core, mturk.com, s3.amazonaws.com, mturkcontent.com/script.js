@@ -38,20 +38,53 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
 			
+			var td = document.getElementsByTagName('td');
 			var o = {
+				u: td[1].innerText.trim(),
 				q: [
-					document.getElementById('web_url')
+					document.getElementById('web_url1'),
+					document.getElementById('web_url2'),
+					document.getElementById('web_url2a'),
+					document.getElementById('web_url3'),
+					document.getElementById('web_url4'),
+					document.getElementById('web_url5'),
+					document.getElementById('web_url6'),
+					document.getElementById('web_url7'),
 				]
 			}
 			
+			// submitButton. Record these.
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						o.q[i].value = 'N/A';
+					}
+				}
+				AMT___recordAndSubmit();
+			}
+			// AMT___addUserDecision
+			AMT___addUserDecision('RussBehrens,Oct.28,2015', function() {
+					return o.u;
+				},
+				['Id(web_url1)','Id(web_url2)','Id(web_url2a)','Id(web_url3)','Id(web_url4)','Id(web_url5)','Id(web_url6)','Id(web_url7)']
+			)
+			
+			// xhr_with_disk_cache
 			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: document.getElementsByTagName('a')[0].href,
-				host: 'http://'+AMT__Global_Vars.scriptVars['Server Location'],
+				URL: o.u,
+				//~ host: 'http://'+AMT__Global_Vars.scriptVars['Server Location'],
 				success_callback: function(options) {
 					
 					var rs = options.response.responseText;
 					
 					var dom =  new DOMParser().parseFromString(rs, 'text/html');
+					
+					// Innertext is, e.g., Comp\nContact & Contact Title\nAddress1\nAddress2(opt)\nCity, State ZIP\nP: PHONE\nE:(bleh)\nW: <a>
+					var d = dom.getElementsByClassName('directory-table');
+					while ()
 				}
 			});
 		}
