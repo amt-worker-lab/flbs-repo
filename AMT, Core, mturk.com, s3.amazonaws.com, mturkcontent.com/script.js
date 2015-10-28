@@ -86,10 +86,15 @@ function MT__RUN() {
 					this.value = '';
 				}
 			}
-			//
-			//~ setTimeout(function() {
-				//~ document.getElementById('submitButton').focus();
-			//~ }, 2000);
+			// This is for Next Tab scenario....
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+				document.getElementById('submitButton').blur();
+			}, 1000);
+			setTimeout(function() {
+				document.getElementById('submitButton').focus();
+				document.getElementById('submitButton').blur();
+			}, 2000);
 			new AMT___core_factory().createScriptVar('SubmitKey', 13);
 			window.addEventListener('keypress', function(e) {
 				console.log(e);
