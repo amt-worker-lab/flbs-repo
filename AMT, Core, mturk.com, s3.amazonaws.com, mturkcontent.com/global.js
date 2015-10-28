@@ -15628,14 +15628,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
 		if (document.getElementById('MT___page1_show_jobs_play_audio'))
 			document.body.removeChild(document.getElementById('MT___page1_show_jobs_play_audio'));
-		
-		//MT___AUDIO_SNIPPET
-		//b64_audio =
 								
 		// Play alert
 		// i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
 		var c = document.createElement('audio');
-		c.setAttribute('style','position:fixed;top:30px;left:0px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;'); //width:80px;
+		c.setAttribute('style','position:fixed;top:0px;left:50%;text-align:center;z-index:0;border:2px solid LightCoral;');
+		//~ c.setAttribute('style','position:fixed;top:30px;width:80px;left:0px;text-align:center;z-index:0;background-color:MistyRose;border:2px solid LightCoral;'); //OLD VERSION
 		c.setAttribute('id','MT___page1_show_jobs_play_audio');
 		c.setAttribute('controls','');
 		c.setAttribute('src', MT___AUDIO_SNIPPET);
