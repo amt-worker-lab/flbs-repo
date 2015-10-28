@@ -37,6 +37,8 @@ function MT__RUN() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important}');//width:40% !important;
+			GM_addStyle('input {cursor:pointer;}');//width:40% !important;
+			GM_addStyle('#submitButton {width:50%;height:120px;}');//width:40% !important;
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -64,14 +66,39 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
+				form_sbm();
+				AMT___recordAndSubmit();
+			}
+			function form_sbm() {
 				for (var i in o.q) {
 					o.q[i].value = o.q[i].value.trim();
 					if (o.q[i].value == '') {
 						o.q[i].value = 'N/A';
 					}
 				}
-				AMT___recordAndSubmit();
 			}
+			// 
+			for (var i in o.q) {
+				o.q[i].ondblclick = function() {
+					this.value = 'N/A';
+				}
+				o.q[i].onclick = function() {
+					this.value = '';
+				}
+			}
+			//
+			//~ setTimeout(function() {
+				//~ document.getElementById('submitButton').focus();
+			//~ }, 2000);
+			new AMT___core_factory().createScriptVar('SubmitKey', 13);
+			window.addEventListener('keypress', function(e) {
+				console.log(e);
+				if (e.keyCode == AMT__Global_Vars.scriptVars.SubmitKey*1) {
+					form_sbm();
+					AMT___recordAndSubmit();
+				}
+			}, false);
+			
 			// AMT___addUserDecision
 			AMT___addUserDecision('RussBehrens,Oct.28,2015', function() {
 					return o.u;
@@ -96,7 +123,32 @@ function MT__RUN() {
 						return;
 					}
 					d = d[0];
-					d1.innerText = d.innerText;
+					// Make into annotations...
+					//d1.innerText = d.innerText;
+					// Split by newline.
+					var x = d.innerText.split('\n');
+					for (var i in x) {
+						var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+							textToAnnotate: x[i],
+							output_fields: o.q,
+							callback_mouseup: function(addField) {
+								
+								// Remove trailing commas
+								addField.value = addField.value.replace(/ *,*$/, '');
+								addField.value = addField.value.replace(/ *-*$/, ''); // etc.
+								addField.value = addField.value.replace(/^ *,*/, '');
+								addField.value = addField.value.replace(/^ *-*/, ''); // etc.
+								
+							},
+							//~ appendToField: true,
+							//~ appendToField_glue: '\n',
+							//~ delimeter: '',
+							focusToField: true,
+						});
+						d1.appendChild(buttons);
+					}
+					
+					
 					// Lava Event Lighting Inc.
 					// Dean Faciana, President
 					// 25009 S. Blackthorne Rd.
