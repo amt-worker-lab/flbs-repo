@@ -36,7 +36,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important}');//width:40% !important;
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -52,6 +52,13 @@ function MT__RUN() {
 					document.getElementById('web_url7'),
 				]
 			}
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:40%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
 			
 			// submitButton. Record these.
 			document.getElementById('submitButton').onclick = function(e) {
@@ -89,6 +96,7 @@ function MT__RUN() {
 						return;
 					}
 					d = d[0];
+					d1.innerText = d.innerText;
 					// Lava Event Lighting Inc.
 					// Dean Faciana, President
 					// 25009 S. Blackthorne Rd.
@@ -112,6 +120,7 @@ function MT__RUN() {
 						o.q[7].value = 'N/A'; // Country (Not USA)
 						return;
 					}
+					// Has Suite?
 					var r1 = /<b>([^<]+)<\/b><br>([^<]+)<br>([^<]+)<br>([^<]+)<br>([^,<]+), ([A-Z]{2}) ([\d\-]{4,10})<br><span class="info"><b>P:<\/b> ([\d\(\) \-]+)<\/span>/.exec(d.innerHTML);
 					if (r1) {
 						// Is USA?
@@ -127,6 +136,25 @@ function MT__RUN() {
 						o.q[4].value = __js_clean_html_str(r1[4]).trim(); // Address 2
 						o.q[5].value = __js_clean_html_str(r1[5]).trim(); // City
 						o.q[6].value = __js_clean_html_str(r1[6]).trim(); // State
+						o.q[7].value = 'N/A'; // Country (Not USA)
+						return;
+					}
+					// No contact?
+					var r1 = /<b>([^<]+)<\/b><br>([^<]+)<br>([^,<]+), ([A-Z]{2}) ([\d\-]{4,10})<br><span class="info"><b>P:<\/b> ([\d\(\) \-]+)<\/span>/.exec(d.innerHTML);
+					if (r1) {
+						// Is USA?
+						if (!r1[4].state_abbr_is_valid()) {
+							o.q[6].style.border = '4px solid blue';
+							o.q[7].style.border = '4px solid blue';
+						}
+						
+						o.q[0].value = __js_clean_html_str(r1[1]).trim(); // Biz
+						o.q[1].value = 'N/A';; // Contact
+						o.q[2].value = __js_clean_html_str(r1[6]).trim(); // Phone
+						o.q[3].value = __js_clean_html_str(r1[2]).trim(); // Address 1
+						o.q[4].value = 'N/A'; // Address 2
+						o.q[5].value = __js_clean_html_str(r1[3]).trim(); // City
+						o.q[6].value = __js_clean_html_str(r1[4]).trim(); // State
 						o.q[7].value = 'N/A'; // Country (Not USA)
 						return;
 					}
