@@ -148,6 +148,13 @@ function MT__RUN() {
 						d1.appendChild(buttons);
 					}
 					
+					// Auto-blank?
+					//~ var r1 = /<b><\/b><br><br>,  <br><span class="info"><b>P:<\/b> <\/span><br><span class="info"><b>E:<\/b> <\/span><a href="contact_company\.php\?company=">Contact <\/a><br>/
+					if (d.innerHTML.trim() == '<b></b><br><br>,  <br><span class="info"><b>P:</b> </span><br><span class="info"><b>E:</b> </span><a href="contact_company.php?company=">Contact </a><br>') {
+						form_sbm(); // Makes all blanks "N/A"
+						AMT___recordAndSubmit();
+						return;
+					}
 					
 					// Lava Event Lighting Inc.
 					// Dean Faciana, President
