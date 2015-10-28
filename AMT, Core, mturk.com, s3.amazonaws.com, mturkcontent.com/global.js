@@ -3208,13 +3208,7 @@ AMT___requests_factory.prototype.general_functions__color__io__dominantColor_col
 	});
 }
 /**
- * Converts a color from RGB color space to HSL color space.
- * Modified from {@link http://en.wikipedia.org/wiki/HLS_color_space}.
- * @param {number} r Value of red, in [0, 255].
- * @param {number} g Value of green, in [0, 255].
- * @param {number} b Value of blue, in [0, 255].
- * @return {!Array.<number>} [h, s, l] values for the color, with h an int in
- *    [0, 360] and s and l in [0, 1].
+ * ...
  */
 AMT___requests_factory.prototype.general_functions__countryToAbbreviatedCountry = function(country) {
 	// MT___countries
@@ -3228,6 +3222,15 @@ AMT___requests_factory.prototype.general_functions__countryToAbbreviatedCountry 
 	// >return false
 	return false;
 }
+/**
+ * Converts a color from RGB color space to HSL color space.
+ * Modified from {@link http://en.wikipedia.org/wiki/HLS_color_space}.
+ * @param {number} r Value of red, in [0, 255].
+ * @param {number} g Value of green, in [0, 255].
+ * @param {number} b Value of blue, in [0, 255].
+ * @return {!Array.<number>} [h, s, l] values for the color, with h an int in
+ *    [0, 360] and s and l in [0, 1].
+ */
 AMT___requests_factory.prototype.general_functions__color__rgbToHsl = function(r, g, b) {
 	// First must normalize r, g, b to be between 0 and 1.
 	var normR = r / 255;

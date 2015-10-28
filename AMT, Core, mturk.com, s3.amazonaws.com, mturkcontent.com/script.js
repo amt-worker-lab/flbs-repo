@@ -84,7 +84,52 @@ function MT__RUN() {
 					
 					// Innertext is, e.g., Comp\nContact & Contact Title\nAddress1\nAddress2(opt)\nCity, State ZIP\nP: PHONE\nE:(bleh)\nW: <a>
 					var d = dom.getElementsByClassName('directory-table');
-					while ()
+					if (!d || !d.length) {
+						d1.style.backgroundColor = 'pink';
+						return;
+					}
+					d = d[0];
+					// Lava Event Lighting Inc.
+					// Dean Faciana, President
+					// 25009 S. Blackthorne Rd.
+					// Manhattan, IL 60442
+					// (630) 207-2110
+					var r1 = /<b>([^<]+)<\/b><br>([^<]+)<br>([^<]+)<br>([^,<]+), ([A-Z]{2}) ([\d\-]{4,10})<br><span class="info"><b>P:<\/b> ([\d\(\) \-]+)<\/span>/.exec(d.innerHTML);
+					if (r1) {
+						// Is USA?
+						if (!r1[5].state_abbr_is_valid()) {
+							o.q[6].style.border = '4px solid blue';
+							o.q[7].style.border = '4px solid blue';
+						}
+						
+						o.q[0].value = __js_clean_html_str(r1[1]).trim(); // Biz
+						o.q[1].value = __js_clean_html_str(r1[2]).trim(); // Contact
+						o.q[2].value = __js_clean_html_str(r1[7]).trim(); // Phone
+						o.q[3].value = __js_clean_html_str(r1[3]).trim(); // Address 1
+						o.q[4].value = 'N/A'; // Address 2
+						o.q[5].value = __js_clean_html_str(r1[4]).trim(); // City
+						o.q[6].value = __js_clean_html_str(r1[5]).trim(); // State
+						o.q[7].value = 'N/A'; // Country (Not USA)
+						return;
+					}
+					var r1 = /<b>([^<]+)<\/b><br>([^<]+)<br>([^<]+)<br>([^<]+)<br>([^,<]+), ([A-Z]{2}) ([\d\-]{4,10})<br><span class="info"><b>P:<\/b> ([\d\(\) \-]+)<\/span>/.exec(d.innerHTML);
+					if (r1) {
+						// Is USA?
+						if (!r1[6].state_abbr_is_valid()) {
+							o.q[6].style.border = '4px solid blue';
+							o.q[7].style.border = '4px solid blue';
+						}
+						
+						o.q[0].value = __js_clean_html_str(r1[1]).trim(); // Biz
+						o.q[1].value = __js_clean_html_str(r1[2]).trim(); // Contact
+						o.q[2].value = __js_clean_html_str(r1[8]).trim(); // Phone
+						o.q[3].value = __js_clean_html_str(r1[3]).trim(); // Address 1
+						o.q[4].value = __js_clean_html_str(r1[4]).trim(); // Address 2
+						o.q[5].value = __js_clean_html_str(r1[5]).trim(); // City
+						o.q[6].value = __js_clean_html_str(r1[6]).trim(); // State
+						o.q[7].value = 'N/A'; // Country (Not USA)
+						return;
+					}
 				}
 			});
 		}
