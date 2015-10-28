@@ -14404,7 +14404,21 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Xhr
 		GM_xmlhttpRequest({
 			method: 'GET',
-			url: MT___page1_host + '?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+'&' + Math.random()*10000,
+			url: MT___page1_host +
+				'?last_update=&last_comment_retrieved='+tasks_obj.comments_timestamp+
+				'&' + Math.random()*10000,
+			timeout: 4000,
+			ontimeout: function() {
+				console.log('MT___page1_async_last_update:ontimeout');
+				last_update_check_host({status: 0});
+			},
+			onerror: function() {
+				console.log('MT___page1_async_last_update:onerror');
+				last_update_check_host({status: 0});
+			},
+			onload: function (response) {
+				console.log('MT___page1_async_last_update:onload');
+			},
 			onload: function (response) {
 				var rs = response.responseText;
 				// last_update_check_host
