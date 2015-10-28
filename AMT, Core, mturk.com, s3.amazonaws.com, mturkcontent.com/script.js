@@ -22,10 +22,41 @@ function MT__RUN() {
 	if (!init__scrapy()) return;
 	
 	// ...
-	// Begin one-off tasks...
+	// Begin tasks...
 	//
 	var s, s2, s3;
 	
+	// Russ Behrens
+	// Collect Information from this URL
+	// 
+	// 
+	s = '	<li>Parse the business information that loads into the form below.</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			
+			var o = {
+				q: [
+					document.getElementById('web_url')
+				]
+			}
+			
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: document.getElementsByTagName('a')[0].href,
+				host: 'http://'+AMT__Global_Vars.scriptVars['Server Location'],
+				success_callback: function(options) {
+					
+					var rs = options.response.responseText;
+					
+					var dom =  new DOMParser().parseFromString(rs, 'text/html');
+				}
+			});
+		}
+		new run().f();
+	}
 	//
 	// IATPP
 	// 
