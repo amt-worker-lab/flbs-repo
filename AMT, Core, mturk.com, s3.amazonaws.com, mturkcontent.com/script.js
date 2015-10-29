@@ -116635,17 +116635,17 @@ qatar,80
 	 * Melissa Kendall
 	 * Sanjay Shah
 	 * Emergo Group (updated)
+	 * Adriaan Coppens
 	 * 
 	 * 
 	 * 
 	 */
 	//
-	// Emergo Group
-	// Find the Website Address for Companies
+	// Adriaan Coppens
+	// Find the official site of the following hotels
 	// 
-	var s = 'The company below is exhibiting at a tradeshow, and we would like the website address for the <strong>official website of the company</strong>';
-	var s2= 'Search Google (or any other source) for the company name';
-	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
+	var s = '	<li><strong>Do not include URLs to other bookings websites such as Booking.com, Expedia...&nbsp;</strong></li>';
+	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
@@ -116653,13 +116653,14 @@ qatar,80
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
 			
-			var b = document.getElementsByTagName('b');
+			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: b[0].innerText.trim(),
+				comp: td[1].innerText.trim(),
+				city: td[3].innerText.trim(),
 				cshort: null,
 				boldArray: [],
 				q: [
-					document.getElementById('URL')
+					document.getElementById('web_url')
 				]
 			}
 			o.boldArray = o.comp.clean_string_to_array();
@@ -116690,8 +116691,8 @@ qatar,80
 				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.comp.split(' ').join('" "')+'"', // quotes
-					o.cshort
+					'"'+o.comp.split(' ').join('" "')+'" ' + o.city, // quotes
+					o.cshort + ' ' + o.city,
 				],
 				//~ search_results: {
 					//~ use_domain_only: true
