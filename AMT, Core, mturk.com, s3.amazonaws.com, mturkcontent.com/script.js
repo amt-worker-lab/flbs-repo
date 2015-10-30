@@ -59465,6 +59465,20 @@ function MT__RUN() {
 			GM_addStyle('fieldset {float:left;width:33%;}'); // HIDE
 			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}'); // HIDE
 			GM_addStyle('.span5.ng-scope {position:absolute;left:70%;width:30% !important;}'); // HIDE
+			
+			var sc = document.getElementsByTagName('script')[2].innerText;
+			sc = sc.replace(/[\r\n\t\s]*\/\/\]\]>[\r\n\t\s]*$/, '');
+			sc = sc.replace(/^[\r\n\t\s]*\/\/<!\[CDATA\[[\r\n\t\s]*window\.categories =/i, '');
+			console.log(sc);
+			console.log(JSON.parse(sc));
+			var o = {
+				
+			}
+			/*BEGIN ELEMENTS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;left:0%;width:70%;height:200px;top:100px;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			/*END ELEMENTS*/
 		}
 		new run().f();return;
 	};
