@@ -80885,12 +80885,19 @@ qatar,80
 										return false;
 									}
 									if (AMT__Global_Vars.isPreview) {
-										AMT___Floater.accept();console.log('accept......');
+										AMT___Floater.accept();
 										return false;
 									}
 									// Here...
 									addToTabsQ();
 									//~ return true;
+									// Move divs
+									d1.parentNode.removeChild(d1);
+									d3.parentNode.removeChild(d3);
+									d2.style.left = '0';
+									d2.style.width = '99%';
+									d4c.style.height = '100px';
+									d4c.style.top = '0px';
 								},
 								input_onclick_callback: function() {
 									this.style.backgroundColor = 'LightGreen';
