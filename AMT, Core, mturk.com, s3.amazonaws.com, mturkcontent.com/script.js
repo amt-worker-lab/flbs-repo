@@ -80706,9 +80706,6 @@ qatar,80
 			
 			// Add to tabs q
 			if (!AMT__Global_Vars.isPreview) {
-				
-				//~ addToTabsQ();
-				
 				AMT___doPastBehavior(
 					'MarkCarey,Oct.23,2015',
 					1
@@ -80989,7 +80986,17 @@ qatar,80
 						var rs = options.response.responseText;
 						// Skip?
 						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
+							// If only in CAPTCHA mode then skip here!
+							//
+							//
+							new AMT___core_factory().createScriptVar('MC-CAPTCHA-Only', '0');
+							if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1' && AMT__Global_Vars.isPreview) {
+								skip();
+								return;
+							}
 							// Check for e-mail ...
+							//
+							//
 							var dom =  new DOMParser().parseFromString(rs,'text/html');
 							about_text(dom, true); // True = Scrapy if no emails found...
 							//...
