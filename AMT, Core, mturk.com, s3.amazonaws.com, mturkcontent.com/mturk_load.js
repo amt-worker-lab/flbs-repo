@@ -236,6 +236,7 @@ function mturk_load()
 				case '3LJE53CC7VQK4K414ORRPMMLPBSESY': // John White
 				case '3ULSZRQKBH95PMXAWH4B8MZG87GFUV': // 
 				case '3PR0UJAG0QXI5TD6B2FWBCJ8QM8JH9': // Emily Mchale
+				case '3MBO7VNJYZLP1BOEUWO51V7E4UG86J': // Michael S. Bell
 					AMT___Floater({runMT_Run: true});
 					break;
 				case '32SRECFMFBIEQWWELJ4BDO8IAIEUTZ': //Bart Jansen, track packages #2

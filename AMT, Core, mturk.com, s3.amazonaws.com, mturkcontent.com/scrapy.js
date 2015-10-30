@@ -45,26 +45,27 @@ function init__scrapy() {
 	// 
 	// 
 	// 
-	s = '<li>If neither a contact email or contact form page can be found, simply write "<strong>None</strong>" below.</li>';
+	s = '<li>Many law firm sites have listings of attorneys.&nbsp;Where posible, please locate that section of the website and browse or search for the indicated individual.</li>';
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			//~ GM_addStyle('table {margin-bottom:-10px !important; table-layout:fixed;word-wrap:break-word;width:100%;}'); // Fixed. Break-word.
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
-			GM_addStyle('#Q2Url {width:80% !important;height:40px;}');// Set width
-			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
+			GM_addStyle('input[type="text"],select {width:80% !important;}');
 			
-			document.body.style.backgroundColor = 'orange'; // This is default for "loading".
+			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
+			document.body.style.zoom = '0.5'; // This is default for "loading".
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				sd_start_urls: [td[1].innerText.trim()],
+				sd_start_urls: [td[5].innerText.trim()],
 				sd_allowed_domains: null,
+				comp: td[1].innerText.trim(),
+				name: td[3].innerText.trim(),
 				q: [
-					document.getElementById('contact_info'),
+					document.getElementById('web_url'),
 				],
 				SKIP_SITES: {},
 				util_url: null
@@ -106,12 +107,10 @@ function init__scrapy() {
 					return false;
 				}
 				if  (
-						o.q[0].value.indexOf('@') == -1 && // not contains @
-						o.q[0].value.indexOf('http') != 0  // not start http 
+						o.q[0].value.indexOf('@') == -1
 					) {
 					return false;
 				}
-				//~ return false;
 				// Here?
 				doSubmit();
 			}
@@ -139,7 +138,7 @@ function init__scrapy() {
 				// SP search.
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ("contact" OR "about")'),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ' + o.name),
 					callback_function: sp
 				});
 			}
@@ -160,10 +159,6 @@ function init__scrapy() {
 				var first = true;
 				for (var i in rs) {
 					o.sd_start_urls.push(rs[i][0]);
-					if (first) {
-						o.util_url = rs[i][0];
-						first = false;
-					}
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
@@ -216,50 +211,14 @@ function init__scrapy() {
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
-										//~ // If no email match results
-										//~ if (!callback_obj.matches || !callback_obj.matches.length) {
-											//~ AMT___Floater.skip();
-										//~ }
-										//~ else
-										//~ {
-											//~ AMT___Floater.accept();
-										//~ }
-										//~ // ENDS SCRIPT PROCESSING
-										//~ return true;
 									} else { // Add to tabs queue if not in preview
-										console.log('addint to tabs q');
-										new AMT___core_factory().createScriptVar('olga-s-tabs-queue', '0');
-										new AMT___core_factory().createScriptVar('olga-s-view utility site', '1');
-										alert('testing');
-										if (AMT__Global_Vars.scriptVars['olga-s-tabs-queue'] == '1') {
+										new AMT___core_factory().createScriptVar('MSBell-TabsQueue', '0');
+										if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
 											addToTabsQ();
 										}
-										document.body.style.backgroundColor = 'white';
-										
-										if(AMT__Global_Vars.scriptVars['olga-s-view utility site'] != '0') {
-											// Open Utility
-											AMT__setUtilityTabs([
-											{
-												url: o.util_url, //o.sd_start_urls[0],
-												options: {
-													task: 'AMT__all_pages_util',
-													highlight_range_to_parent: true,
-													email_links_remove_mailto: true,
-													email_links_click_to_parent: true,
-													highlight_strings_in_page: {
-														strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
-													},
-												}								
-											}], {}, {}, false,
-											function(response){
-												console.log(response);
-												var text = response.data.text_range.trim();
-												if(text.indexOf('@') != -1) {
-													o.q[0].value = text;
-													o.q[0].focus();
-												}
-											});
-										}
+										//~ document.body.style.backgroundColor = 'white';
+										document.body.style.zoom = '1';
+										//~ addToTabsQ();
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
@@ -276,14 +235,6 @@ function init__scrapy() {
 									{
 										o.q[0].value = this.email;
 										doSubmit();
-										//~ var found = false;
-										//~ for (var i=1; i<=3; i++) {
-											//~ if (o.q[i].checked) {
-												//~ found = true;
-											//~ }
-										//~ }
-										//~ if (found)
-											//~ doSubmit();
 									}
 								},
 							}
