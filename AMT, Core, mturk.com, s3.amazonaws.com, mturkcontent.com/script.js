@@ -26,6 +26,49 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Hadewych
+	// Find the average price of a car
+	// 
+	// 
+	s = '	<li>Go to http://statisch.marktplaats.nl/html/auto/verkopen2015/?#/</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important}');//width:40% !important;
+			
+			//http://www.marktplaats.nl/auto-s/vraagprijsadvies.jsonp?licensePlate=19TDN4&mileage=100730&callback=angular.callbacks._1
+			//http://www.marktplaats.nl/auto-s/vraagprijsadvies.jsonp?licensePlate=19TDN4&mileage=100730&callback=
+			var td = document.getElementsByTagName('td');
+			var o = {
+				license: td[1].innerText.trim(),
+				kilometers:td[3].innerText.trim(),
+				q: [document.getElementById('web_url')],
+			};
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'http://www.marktplaats.nl/auto-s/vraagprijsadvies.jsonp?licensePlate='+
+					encodeURIComponent(o.license)+
+					'&mileage='+o.kilometers+
+					'&callback=',
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					rs = JSON.parse(rs);
+					// e.g. € 54.970,00*
+					// or e.g. -2, -1
+					if (!rs || !rs.value || rs.value < 0) {
+						return;
+					}
+					var ceil = Math.ceil(rs.value / 100); // Does ceiling.
+					var num = MT___numberWithCommas(ceil).replace(/,/g, '\.') + ',00'; // To Euro...
+					o.q[0].value = '€' + num;
+				}
+			});
+		}
+		new run().f();
+	}
 	// Russ Behrens
 	// Collect Information from this URL
 	// 
