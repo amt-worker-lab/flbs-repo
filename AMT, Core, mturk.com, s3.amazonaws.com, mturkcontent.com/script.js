@@ -80633,7 +80633,7 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:100px;left:40%;height:100px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d2.setAttribute('style', 'position:absolute;top:100px;left:40%;height:400px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
