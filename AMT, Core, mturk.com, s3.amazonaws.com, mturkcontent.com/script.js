@@ -80781,20 +80781,20 @@ qatar,80
 						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
 						)
 					{
-						//~ d4b.appendChild('yt'.div({style:'border-bottom:1px solid teal;'}));
 						continue; // Skip
 					}
 					if  (
 						hr.indexOf('facebook.com') != -1 ||
-						/^https?:\/\/plus\.google\.com\/\d+$/i.exec(hr) //https://plus.google.com/116596412095727572255
+						/^https?:\/\/plus\.google\.com\/\d+\/?$/i.exec(hr) //https://plus.google.com/116596412095727572255
 						)
-					{
-						start_urls.push(hr);
-						//~ d4b.appendChild('(fb/g+ good)'.div({style:'border-bottom:1px solid teal;'}));
+					{	 // Add about page!
+						if (hr[hr.length - 1] != '/')
+							start_urls.push(hr + '/about');	// Not trailing slash
+						else
+							start_urls.push(hr + 'about');	// Trailing slash
 						continue;
 					}
 					if (/^https?:\/\/plus\.google\.com\//i.exec(hr)) { //https://plus.google.com/............
-						//~ d4b.appendChild('(g+ bad)'.div({style:'border-bottom:1px solid teal;'}));
 						continue;
 					}
 					//
