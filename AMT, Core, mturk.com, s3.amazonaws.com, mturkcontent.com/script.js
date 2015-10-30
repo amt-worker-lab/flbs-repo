@@ -59439,13 +59439,37 @@ function MT__RUN() {
 	 * Stanford Political Science
 	 * Neal H. Patel (not standard categorization)
 	 * Kendall
+	 * UrbanTurk
 	 * 
 	 * ...
 	 * 
 	 * NEW: e.g. <input type="hidden" name="Category" value="Category 1::Auto Maintenance">
 	 */
+	// UrbanTurk
 	// 
+	//
+	//
+	s = '  <p>\nPlease categorize the items using the existing title, description and image\n</p>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td,th,tbody {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			GM_addStyle('#guideline {height:4px;overflow:hidden;display:none !important;}'); // HIDE
+			GM_addStyle('label {cursor:pointer;zoom:1.4;}'); // HIDE
+			GM_addStyle('input[type="radio"] {cursor:pointer;}'); // HIDE
+			GM_addStyle('fieldset {float:left;width:33%;}'); // HIDE
+			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}'); // HIDE
+			GM_addStyle('.span5.ng-scope {position:absolute;left:70%;width:30% !important;}'); // HIDE
+		}
+		new run().f();return;
+	};
 	// Kendall
+	// 
 	//
 	//
 	s = '<p>\nFor each line on the spreadsheet, please identify which type of organization applies:\n</p>';
@@ -59499,23 +59523,11 @@ function MT__RUN() {
 				],
 				parent: d1,
 				offsetTop: 100,
-				//~ hide_search_fields: true,
 				search_results: {
-					//use_full_urls: true,
-					//~ callback_link_and_body: function(link, body) {
-						//~ if (o.check_accept_found) return;
-						//~ if (body.indexOf(d2.value) != -1) {
-							//~ o.check_accept_found = true;
-							//~ AMT___Floater.accept();
-						//~ }
-					//~ }
 				},
 				load_success_callback: function() {
-					//~ o.stats.sp_yelp_search_complete = true; // UNNECESSARY!
-					//~ check_if_yp_init();
 				},
 				onclick_success: function(e) { // Textarea.onclick
-					//~ sp_yelp_success(/\/biz\/([^\/\?]+)$/.exec(this.value)[1]); // /biz/[not slash or ? to $]
 				},
 			});
 			
