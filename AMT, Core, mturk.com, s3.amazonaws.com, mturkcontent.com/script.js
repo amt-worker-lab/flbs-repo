@@ -59466,6 +59466,7 @@ function MT__RUN() {
 			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}');
 			GM_addStyle('.span5.ng-scope {position:absolute;left:70%;width:30% !important;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe-ul {display:inline-table;}'); // Note: Inline-block does the same but vertical-aligns elements at bottom.
 			
 			var sc = document.getElementsByTagName('script')[2].innerText;
 			sc = sc.replace(/[\r\n\t\s]*\/\/\]\]>[\r\n\t\s]*$/, '');
@@ -59493,20 +59494,23 @@ function MT__RUN() {
 			// Loop
 			for (var i in o.ctg) {
 				var c = o.ctg[i];//console.log(c);console.log(o.ctg);
-				var ul = ''.div({style:'display:inline;'}); //border-bottom:2px solid teal;
+				var ul = ''.div({}); //border-bottom:2px solid teal;
+				ul.className = 'exe-ul';
 				d1.appendChild(ul);
 				var li = ''.div({style:'border:2px dashed teal;'}); // Header
 				li.innerText = c.name;
 				ul.appendChild(li);
 				if (!c.subcategories.length) {
-					li.sbm_value = c.name;
+					li.sbm_value = c.name; // Note NO colon!
 					li.onclick = click; // Make clickable
 					li.className = 'exe'; // Make hoverable
 					continue;
+				} else {
+					li.style.backgroundColor = 'orange'; // Show as "disabled"
 				}
 				for (var j in c.subcategories) {
 					var li = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
-					li.sbm_value = c.name + ':' + c.subcategories[j].name;
+					li.sbm_value = c.name + '::' + c.subcategories[j].name; // Note the double colons!
 					li.innerText = c.subcategories[j].name;
 					li.className = 'exe';
 					li.onclick = click;
@@ -59516,7 +59520,9 @@ function MT__RUN() {
 			// Click
 			function click(e) {
 				this.style.backgroundColor = 'aqua';
-				document.getElementsByName('Category')[0].value = this.sbm_value;
+				document.getElementsByName('Category')[0].value = this.sbm_value.trim();
+				if (this.sbm_value.trim().length >= 4)
+					doSubmit();
 			}
 		}
 		new run().f();return;
