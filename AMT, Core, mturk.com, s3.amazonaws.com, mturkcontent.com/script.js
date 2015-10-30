@@ -80820,7 +80820,6 @@ qatar,80
 					// Here...
 					var out = ''.div({style:'border-bottom:1px solid teal;'});
 					d4.appendChild(out);
-					//~ out.appendChild((x+'\n'+hr).div());
 					out.appendChild(el_inp_skip2__obj.el_btn);
 					out.appendChild(document.createTextNode(x));
 					out.appendChild(hr.div());
@@ -80831,6 +80830,7 @@ qatar,80
 				if (!start_urls.length && !allowed_domains.length) {
 					skip();return;
 				}
+				d4.appendChild(''.div({style:'height:2000px;'})); // If results then append to d4
 				console.log(start_urls);
 				console.log(allowed_domains);
 				//
