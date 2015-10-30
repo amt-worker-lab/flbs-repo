@@ -59465,6 +59465,7 @@ function MT__RUN() {
 			GM_addStyle('fieldset {float:left;width:33%;}'); // 
 			GM_addStyle('#wrapper {width:100%;max-width:100% !important;}');
 			GM_addStyle('.span5.ng-scope {position:absolute;left:70%;width:30% !important;}');
+			GM_addStyle('.span7.ng-scope {position:absolute;left:0%;width:30% !important;top:20px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('.exe-ul {display:inline-table;}'); // Note: Inline-block does the same but vertical-aligns elements at bottom.
 			
@@ -59478,7 +59479,7 @@ function MT__RUN() {
 			}
 			/*BEGIN ELEMENTS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;left:40%;width:60%;height:400px;top:0px;background-color:#eee;overflow:auto;');
+			d1.setAttribute('style','position:absolute;left:30%;width:60%;height:400px;top:0px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			/*END ELEMENTS*/
 			// innerHeight
