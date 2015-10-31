@@ -3648,7 +3648,7 @@ function load()
 			if (!tr || !tr.length) {
 				return;
 			}
-			for (var i in tr) {
+			for (var i=0;i<tr.length;i++) {
 				//0-19, 19th TD.
 				var td = tr[i].getElementsByTagName('td');
 				if (!td || !td.length || !td[20]) {
@@ -3669,7 +3669,7 @@ function load()
 				if (name_short != name) {
 					var name_cln2 = name_short.clean_str_to_auto();
 					if (ro.hasOwnProperty(name_cln2)) {
-						set_rating( ro[ name_cln2 ], td );
+						set_rating( ro[ name_cln2 ], td, true );
 						continue; // Done here...
 					}
 				}
@@ -3703,7 +3703,7 @@ function load()
 				// Rating...
 				// Occasionally there will be no rating when "total_number_of_ratings_i"=0.
 				var score = f.averageratingscore_rf;
-				if (!score < 2.5) {
+				if (!score) {
 					f.total_number_of_ratings_i = 0; // Set to 0
 				} else if (score < 2.5) {
 					td.style.backgroundColor = 'pink';
@@ -3714,6 +3714,7 @@ function load()
 				}
 				if (is_dirty) {
 					td.style.border = '4px dashed blue';
+					td.title = f.teacherfirstname_t + ' ' + f.teacherlastname_t;
 				}
 				// Add score to innerText...
 				var num = (f.total_number_of_ratings_i < 10) ? '<b>'+f.total_number_of_ratings_i+'</b>' : f.total_number_of_ratings_i;
