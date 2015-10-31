@@ -3669,7 +3669,7 @@ function load()
 				if (name_short != name) {
 					var name_cln2 = name_short.clean_str_to_auto();
 					if (ro.hasOwnProperty(name_cln2)) {
-						set_rating( ro[ name_cln2 ], td, true );
+						set_rating( ro[ name_cln2 ], td ); // Do not set is_dirty here.... It is possible though....
 						continue; // Done here...
 					}
 				}
@@ -3713,9 +3713,9 @@ function load()
 				} else if (score >= 3.5) {
 					td.style.backgroundColor = 'LightGreen';
 				}
+				td.title = f.teacherfirstname_t + ' ' + f.teacherlastname_t; // Set .title
 				if (is_dirty) {
 					td.style.border = '4px dashed blue';
-					td.title = f.teacherfirstname_t + ' ' + f.teacherlastname_t;
 					if (levenshtein)
 						td.title = td.title + ' - d=' + levenshtein;
 				}
