@@ -3631,7 +3631,8 @@ function load()
 	// Note: For professor matching... Try exact name match, then middle initial missing exact match, then closest Levenshtein match.
 	// Note: In rare cases there are multiple professors! E.g. "J. W. Wiley (P), Lauren Therese Gonyea"
 	// Note: Skip Professor=="TBA" 
-	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
+	//~ if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
+	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/pls/prod/bwskfcls.P_GetCrse_Advanced') != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log(AP___huge_vars_factory);
 			var r = new AP___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
@@ -3654,8 +3655,10 @@ function load()
 					continue; // Skips here...
 				}
 				td = td[19];
-				var name = td.innerText.replace(/\([\d\D]*/, '').trim(); // Remove 
-				var name_cln = name.clean_str_to_auto();
+				var name = td.innerText.trim();
+				if (name == 'TBA') continue; // Skips...
+				name = name.replace(/\([\d\D]*/, '').trim(); // Remove "(P)" 
+				var name_cln = name.clean_str_to_auto(); // Name clean
 				//~ var name_lw = name.toLowerCase();
 				if (ro.hasOwnProperty(name_cln)) {
 					set_rating( ro[ name_cln ], td );
@@ -3697,9 +3700,12 @@ function load()
 			// is_dirty: Default=False
 			//
 			function set_rating(f, td, is_dirty) {
-				// Rating?
+				// Rating...
+				// Occasionally there will be no rating when "total_number_of_ratings_i"=0.
 				var score = f.averageratingscore_rf;
-				if (score < 2.5) {
+				if (!score < 2.5) {
+					f.total_number_of_ratings_i = 0; // Set to 0
+				} else if (score < 2.5) {
 					td.style.backgroundColor = 'pink';
 				} else if (score >= 2.5 && score < 3.5) {
 					td.style.backgroundColor = 'yellow';
@@ -3709,6 +3715,10 @@ function load()
 				if (is_dirty) {
 					td.style.border = '4px dashed blue';
 				}
+				// Add score to innerText...
+				var num = (f.total_number_of_ratings_i < 10) ? '<b>'+f.total_number_of_ratings_i+'</b>' : f.total_number_of_ratings_i;
+				var rtg = (f.averageratingscore_rf == 0) ? '<b>0</b>' : f.averageratingscore_rf;
+				td.innerHTML += '<span style="font-size:0.6em;">'+rtg+'/'+num+'</span>';
 			}
 			// Turn array into an object for exact string matching.
 			// Also, error checks to ensure that no two names are identical.
