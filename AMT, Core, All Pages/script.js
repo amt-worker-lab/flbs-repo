@@ -3609,6 +3609,28 @@ function load()
 		}, false);
 	}
 	
+	/**
+	 * Generally a list of RUN__ ... ...
+	 * 
+	 * RUN__JR_Amazon_Login_Alert
+	 * RUN_NPDLabs_Schools
+	 * RUN__ALL_PAGES__Matt_Tarjeft
+	 * RUN__ALL_PAGES_TEXTAREA__Jordan_Mills
+	 * RUN_Tony_Pavia_Schools
+	 * RUN_Sahar_ReferIt_Game
+	 * RUN_James_M_Ratcliffe_Verizon_com
+	 * RUN_HOWE_CODE
+	 * 
+	 */
+	 
+	// RUN__SUNY_PB_Ratemyprofessor
+	// 30 second alert to login to AMT.
+	//
+	//
+	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
+		var r = new AMT___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
+		
+	}
 	//
 	// RUN__JR_Amazon_Login_Alert
 	// 30 second alert to login to AMT.
