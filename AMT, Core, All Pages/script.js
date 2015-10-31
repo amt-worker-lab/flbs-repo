@@ -3693,13 +3693,14 @@ function load()
 					}
 				}
 				if (least.obj) {
-					set_rating( least.obj, td, true );
+					//~ console.log(name_cln + ':' + least.num);
+					set_rating( least.obj, td, true, least.num );
 				}
 			}
 			// Set rating
 			// is_dirty: Default=False
-			//
-			function set_rating(f, td, is_dirty) {
+			// levenshtein: optional, only when closest...
+			function set_rating(f, td, is_dirty, levenshtein) {
 				// Rating...
 				// Occasionally there will be no rating when "total_number_of_ratings_i"=0.
 				var score = f.averageratingscore_rf;
@@ -3715,6 +3716,8 @@ function load()
 				if (is_dirty) {
 					td.style.border = '4px dashed blue';
 					td.title = f.teacherfirstname_t + ' ' + f.teacherlastname_t;
+					if (levenshtein)
+						td.title = td.title + ' - d=' + levenshtein;
 				}
 				// Add score to innerText...
 				var num = (f.total_number_of_ratings_i < 10) ? '<b>'+f.total_number_of_ratings_i+'</b>' : f.total_number_of_ratings_i;
