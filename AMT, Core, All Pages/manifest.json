@@ -3,7 +3,7 @@
       "exclude_globs": [  ],
       "exclude_matches": [  ],
       "include_globs": [ "*" ],
-      "js": [ "huge_vars_local.js", "global.js","global_all_pages_local.js","script.js","mturk_load.js" ],
+      "js": [ "huge_vars_local.js","global.js","global_all_pages_local.js","script.js","mturk_load.js" ],
       "matches": ["http://*/*","https://*/*","http://192.168.1.2/?*","http://localhost/?*"],
       "run_at": "document_idle",
       "all_frames": true

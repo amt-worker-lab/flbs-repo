@@ -26,6 +26,8 @@ var RUN__ALL_PAGES__Matt_Tarjeft = false;
 var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 // JR
 var RUN__JR_Amazon_Login_Alert = true;
+// SUNY Plattsburgh Ratemyprofessor.com script.
+var RUN__SUNY_PB_Ratemyprofessor = true;
 
 var SCRIPT_IDS_FOR_UTILITY_CHECKING = ['gcfnekbbpmbgadddbojhlojhddnkcpje',//core mturk
 										'bpbbmbgkdconjgghffedjkojaoebdnii', //work localhost
@@ -3631,8 +3633,8 @@ function load()
 	// Note: Skip Professor=="TBA" 
 	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
 		var run = function() {};
-		run.prototype.f = function() {
-			var r = new AMT___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
+		run.prototype.f = function() {console.log(AP___huge_vars_factory);
+			var r = new AP___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
 			var ro = obj(r); // r object
 			
 			// datadisplaytable
@@ -3646,12 +3648,12 @@ function load()
 				return;
 			}
 			for (var i in tr) {
-				//0-20, 20th TD.
+				//0-19, 19th TD.
 				var td = tr[i].getElementsByTagName('td');
 				if (!td || !td.length || !td[20]) {
 					continue; // Skips here...
 				}
-				td = td[20];
+				td = td[19];
 				var name = td.innerText.replace(/\([\d\D]*/, '').trim(); // Remove 
 				var name_cln = name.clean_str_to_auto();
 				//~ var name_lw = name.toLowerCase();
