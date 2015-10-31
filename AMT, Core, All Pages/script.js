@@ -3626,11 +3626,14 @@ function load()
 	// RUN__SUNY_PB_Ratemyprofessor
 	// 30 second alert to login to AMT.
 	// Note: >=2.5 = yellow, <2.5 = red, >=3.5 = LightGreen
-	//
+	// Note: For professor matching... Try exact name match, then middle initial missing exact match, then closest Levenshtein match.
+	// Note: In rare cases there are multiple professors! E.g. "J. W. Wiley (P), Lauren Therese Gonyea"
+	// Note: Skip Professor=="TBA" 
 	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
 			var r = new AMT___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
+			var ro = obj(r); // r object
 			
 			// datadisplaytable
 			var ddtable = document.getElementsByClassName('datadisplaytable');
@@ -3639,6 +3642,28 @@ function load()
 			}
 			ddtable = ddtable[0];
 			var tr = ddtable.getElementsByTagName('tr');
+			if (!tr || !tr.length) {
+				return;
+			}
+			for (var i in tr) {
+				//0-20, 20th TD.
+				var td = tr[i].getElementsByTagName('td');
+				if (!td || !td.length || !td[20]) {
+					continue; // Skips here...
+				}
+				var name = td.innerText.replace(/\([\d\D]*/, '').trim(); // Remove 
+				
+			}
+			// Turn array into an object for exact string matching.
+			//
+			//
+			function obj(r) {
+				var x = {};
+				for (var i in r) {
+					x[ r[i]. ] = r[i]
+				}
+				return x;
+			}
 		}
 		new run().f();
 	}
