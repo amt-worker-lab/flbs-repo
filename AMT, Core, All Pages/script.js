@@ -3656,34 +3656,60 @@ function load()
 				var name_cln = name.clean_str_to_auto();
 				//~ var name_lw = name.toLowerCase();
 				if (ro.hasOwnProperty(name_cln)) {
-					set_rating( ro[ name_cln ] );
+					set_rating( ro[ name_cln ], td );
 					continue; // Done here...
 				}
 				// Still here...
 				var name_short = name.replace(/ [^ ]+ /, ' '); // e.g. removes "J." from "Joe J. Jones".
 				if (name_short != name) {
-					var name_cln = name_short.clean_str_to_auto();
-					if (ro.hasOwnProperty(name_cln)) {
-						
+					var name_cln2 = name_short.clean_str_to_auto();
+					if (ro.hasOwnProperty(name_cln2)) {
+						set_rating( ro[ name_cln2 ], td );
+						continue; // Done here...
 					}
 				}
-				
+				// Still here...
+				// Find closest match to full name (using "cleaned" string for matching because it is shorter.......)
+				closest(ro, name_cln, td);
+			}
+			// Closest
+			//
+			//
+			function closest(ro, name_cln, td) {
+				var least = {
+					num: 99999999,
+					obj: null,
+				}
+				for (var i in ro) { // Find lowest
+					var ld = new AMT___gen_functions().levensht(i, name_cln); // Returns INT `required changes`
+					if (ld < least.num) { // Found a lower....
+						least.num = ld;
+						least.obj = ro[i];
+					}
+				}
+				if (least.obj) {
+					set_rating( least.obj, td, true );
+				}
 			}
 			// Set rating
+			// is_dirty: Default=False
 			//
-			//
-			function set_rating(f) {
+			function set_rating(f, td, is_dirty) {
 				// Rating?
-				if (f.averageratingscore_rf < 2.5) {
+				var score = f.averageratingscore_rf;
+				if (score < 2.5) {
 					td.style.backgroundColor = 'pink';
-				} else if (f.averageratingscore_rf >= 2.5 && < 3.5) {
+				} else if (score >= 2.5 && score < 3.5) {
 					td.style.backgroundColor = 'yellow';
-				} else if (f.averageratingscore_rf >= 3.5) {
+				} else if (score >= 3.5) {
 					td.style.backgroundColor = 'LightGreen';
+				}
+				if (is_dirty) {
+					td.style.border = '4px dashed blue';
 				}
 			}
 			// Turn array into an object for exact string matching.
-			//
+			// Also, error checks to ensure that no two names are identical.
 			//
 			function obj(r) {
 				var x = {};
@@ -3691,6 +3717,9 @@ function load()
 					//~ var nm_to_lower = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).toLowerCase();
 					//~ x[ nm_to_lower ] = r[i];
 					var nm_clean = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).clean_str_to_auto();
+					if (x.hasOwnProperty( nm_clean )) {
+						alert('Duplicate found! It is: ' + nm_clean);
+					}
 					x[ nm_clean ] = r[i];
 				}
 				return x;
