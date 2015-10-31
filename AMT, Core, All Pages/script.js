@@ -3625,11 +3625,22 @@ function load()
 	 
 	// RUN__SUNY_PB_Ratemyprofessor
 	// 30 second alert to login to AMT.
-	//
+	// Note: >=2.5 = yellow, <2.5 = red, >=3.5 = LightGreen
 	//
 	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
-		var r = new AMT___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
-		
+		var run = function() {};
+		run.prototype.f = function() {
+			var r = new AMT___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
+			
+			// datadisplaytable
+			var ddtable = document.getElementsByClassName('datadisplaytable');
+			if (!ddtable || !ddtable.length) {
+				return;
+			}
+			ddtable = ddtable[0];
+			var tr = ddtable.getElementsByTagName('tr');
+		}
+		new run().f();
 	}
 	//
 	// RUN__JR_Amazon_Login_Alert
