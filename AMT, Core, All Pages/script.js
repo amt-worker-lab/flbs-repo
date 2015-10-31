@@ -3651,8 +3651,36 @@ function load()
 				if (!td || !td.length || !td[20]) {
 					continue; // Skips here...
 				}
+				td = td[20];
 				var name = td.innerText.replace(/\([\d\D]*/, '').trim(); // Remove 
+				var name_cln = name.clean_str_to_auto();
+				//~ var name_lw = name.toLowerCase();
+				if (ro.hasOwnProperty(name_cln)) {
+					set_rating( ro[ name_cln ] );
+					continue; // Done here...
+				}
+				// Still here...
+				var name_short = name.replace(/ [^ ]+ /, ' '); // e.g. removes "J." from "Joe J. Jones".
+				if (name_short != name) {
+					var name_cln = name_short.clean_str_to_auto();
+					if (ro.hasOwnProperty(name_cln)) {
+						
+					}
+				}
 				
+			}
+			// Set rating
+			//
+			//
+			function set_rating(f) {
+				// Rating?
+				if (f.averageratingscore_rf < 2.5) {
+					td.style.backgroundColor = 'pink';
+				} else if (f.averageratingscore_rf >= 2.5 && < 3.5) {
+					td.style.backgroundColor = 'yellow';
+				} else if (f.averageratingscore_rf >= 3.5) {
+					td.style.backgroundColor = 'LightGreen';
+				}
 			}
 			// Turn array into an object for exact string matching.
 			//
@@ -3660,7 +3688,10 @@ function load()
 			function obj(r) {
 				var x = {};
 				for (var i in r) {
-					x[ r[i]. ] = r[i]
+					//~ var nm_to_lower = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).toLowerCase();
+					//~ x[ nm_to_lower ] = r[i];
+					var nm_clean = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).clean_str_to_auto();
+					x[ nm_clean ] = r[i];
 				}
 				return x;
 			}
