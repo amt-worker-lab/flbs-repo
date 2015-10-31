@@ -3705,7 +3705,7 @@ function load()
 				// Occasionally there will be no rating when "total_number_of_ratings_i"=0.
 				var score = f.averageratingscore_rf;
 				if (!score) {
-					f.total_number_of_ratings_i = 0; // Set to 0
+					f.averageratingscore_rf = 0; // Set to 0
 				} else if (score < 2.5) {
 					td.style.backgroundColor = 'pink';
 				} else if (score >= 2.5 && score < 3.5) {
@@ -3729,14 +3729,20 @@ function load()
 			//
 			function obj(r) {
 				var x = {};
+				var dups = [];
 				for (var i in r) {
 					//~ var nm_to_lower = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).toLowerCase();
 					//~ x[ nm_to_lower ] = r[i];
 					var nm_clean = (r[i].teacherfirstname_t + ' ' + r[i].teacherlastname_t).clean_str_to_auto();
 					if (x.hasOwnProperty( nm_clean )) {
-						alert('Duplicate found! It is: ' + nm_clean);
+						//~ alert('Duplicate found! It is: ' + nm_clean);
+						dups.push(r[i]);
+						dups.push(x[ nm_clean ]);
 					}
 					x[ nm_clean ] = r[i];
+				}
+				if (dups.length) {
+					alert(JSON.stringify(dups));
 				}
 				return x;
 			}
