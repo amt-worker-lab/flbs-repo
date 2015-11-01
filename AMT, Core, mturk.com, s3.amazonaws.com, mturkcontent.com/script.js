@@ -344,8 +344,10 @@ function MT__RUN() {
 					'neobits.com': true,
 					'sustainablesupply.com': true,
 					'bulbstock.com': true,
+					'bhphotovideo.com': true,
 				}
-				// try to resolve
+				// Try to resolve
+				// Also, it is unnecessary to resolve when "Company"=="domain"
 				if 	(
 					!good.hasOwnProperty(div.domain)
 					) {
