@@ -102,7 +102,7 @@ function MT__RUN() {
 				offset: 40 // offset top
 			});
 			// Get skips file
-			new AMT___requests_factory().fs__load_skips({
+			new AMT___requests_factory().fs__load_skips2({
 				skips_key: 'Russ_Behrens_Google_Shopping',
 				callback: init,
 				callback_err: function() {}
@@ -298,16 +298,16 @@ function MT__RUN() {
 										}
 									}
 									// Append Skip button......
-									// SKIP BUTTON CREATE
-									// returns obj.el_button, obj.isSkip
-									var el_inp_skip2__obj = new AMT___items_factory().create__input_skip_button2({
+									// @create__input_skip_button3
+									// @returns obj.el_button, obj.isSkip
+									var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
 										domain: dv.domain,
 										load_file: 'Russ_Behrens_Google_Shopping', 
 										var_skip_sites: o.SKIP_SITES, 
 										callback_function: false
-									});
-									dv.append( el_inp_skip2__obj.el_button );
-									if ( el_inp_skip2__obj.isSkip ) {
+									});console.log(el_inp_skip3__obj);
+									dv.appendChild( el_inp_skip3__obj.el_button );
+									if ( el_inp_skip3__obj.isSkip ) {
 										o.good[ o.domain ] = true; // Add to good domains.
 									}
 								}

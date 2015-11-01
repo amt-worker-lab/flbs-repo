@@ -5164,9 +5164,7 @@ AMT___requests_factory.prototype.fs__load_skips_file = function(skips_key_php_ge
 		url: url,
 		onload: function (response) {
 			var rs = response.responseText;
-			
 			var tmp_skip_sites = rs.split("\n");
-			
 			callback_function(tmp_skip_sites);
 		}
 	});
@@ -5187,27 +5185,22 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 	if (!opts_obj.hasOwnProperty('callback_err')) {
 		opts_obj.callback_err = function() {};
 	}
-	// Xhr.
+	// Xhr
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: MT___host+'/mturk/util.php?'+encodeURIComponent(opts_obj.skips_key)+'=',
 		onload: function (response) {
 			var rs=response.responseText;
-			
 			if (response.status != 200) {
 				opts_obj.callback_err();
 				return;
 			}
-			
 			var x = rs.split("\n");
-			
 			var SKIP_SITES = {}; // ASSOC.
-			
 			// FULL
 			for (var i in x) {
 				SKIP_SITES[x[i]] = true;
 			}
-			
 			// SUBDOMAINS!
 			for (var i in x) {
 				var y;
@@ -5215,11 +5208,60 @@ AMT___requests_factory.prototype.fs__load_skips = function(opts_obj) //
 					SKIP_SITES[y[1]] = true;
 				}
 			}
-			
 			// init
 			opts_obj.callback(SKIP_SITES);
 		}
-	});}
+	});
+}
+// TRY #3
+// fs__load_skips2
+//
+AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
+{
+	var opts_obj = opts_obj;
+	// required = skips_key, callback, callback_err (optional)
+	if  (
+		!opts_obj.hasOwnProperty('skips_key') ||
+		!opts_obj.hasOwnProperty('callback')
+		)
+	{
+		console.log('failed fs__load_skips2');
+		return;
+	}
+	if (!opts_obj.hasOwnProperty('callback_err')) {
+		opts_obj.callback_err = function() {};
+	}
+	var o = {
+		key: opts_obj.skips_key
+	}
+	// Xhr
+	GM_xmlhttpRequest({
+		method: 'GET',
+		url: MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(opts_obj.skips_key)),
+		onload: function (response) {
+			var rs=response.responseText;
+			if (response.status != 200) {
+				opts_obj.callback_err();
+				return;
+			}
+			var x = rs.split("\n");
+			var SKIP_SITES = {}; // ASSOC.
+			// FULL
+			for (var i in x) {
+				SKIP_SITES[x[i]] = true;
+			}
+			// SUBDOMAINS!
+			for (var i in x) {
+				var y;
+				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
+					SKIP_SITES[y[1]] = true;
+				}
+			}
+			// init
+			opts_obj.callback(SKIP_SITES);
+		}
+	});
+}
 /**
  * AMT___gen_functions
  * 
@@ -12267,6 +12309,12 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
 	return el_inp;
 }
 /**
+ * create__input_skip_button3
+ * 
+ * Third try at it........
+ * This is a fork of create__input_skip_button2.
+ * Everything is the same but on read / write it utilizes new end-point ['fs_load_skips_file'].
+ * 
  * domain: x,
  * load_file: 'austin_load_skips', 
  * var_skip_sites: SKIP_SITES, 
@@ -12276,12 +12324,9 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
  * 	{}.el_btn,
  * 	{}.isSkip
 **/
-AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_object) // X: pass reference
-{	
-	
+AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_object) // X: pass reference
+{
 	var input_skips_object = input_skips_object;
-	
-	//~ input_skips_object.short_domain = '';
 	
 	// ...
 	// regular = ^http://www.site.com$
@@ -12290,9 +12335,6 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 	// Submdomains, update Jul9.
 	// subdomains = period, comp name, period, any numer of 2-3 length extensions
 	var x;
-	//~ if (x = /\.([^\.]+\.[^\.]+)$/.exec(input_skips_object.domain)) {
-	//
-	//
 	
 	//http://stackoverflow.com/questions/10306690/domain-name-validation-with-regex
 	var reg_domain =
@@ -12329,65 +12371,59 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		
 	} else
 		input_skips_object.short_domain = input_skips_object.domain.trim();
-	
 	// Debug
+	//
+	//
 	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
-	// ...
+	// remove_skips
+	// 
+	// 
 	function remove_skips(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
 		this.style.backgroundColor = 'LightGreen';
 		this.onclick = function(){};
 		var btn = this;
-		
-		var url = MT___host+
-			'/mturk/util.php?'+
-			encodeURIComponent(input_skips_object.load_file)+'='+
-			'&load_skips_domain_full='+
-			encodeURIComponent(input_skips_object.domain) +
-			'&load_skips_domain_short='+
-			encodeURIComponent(input_skips_object.short_domain) +
-			'&load_skips_removeMe=';
-			
+		var obj = {
+			key: input_skips_object.load_file,
+			remove: {
+				domain_full:	input_skips_object.domain,
+				domain_short:	 input_skips_object.short_domain,
+			}
+		}
+		var url = MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(obj));
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: url,
 			onload: function (response) {
 				var rs = response.responseText;
-				btn.value = '---X---';
-				
+				btn.value = '---0---';
 				//skip_sites_callback(btn.id);
 			}
 		});
-		
 		return false;
 	}
 	function write_skips(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
 		this.style.backgroundColor = 'LightGreen';
 		this.onclick = function(){};
 		var btn = this;
-		
-		var url = MT___host+
-			'/mturk/util.php?'+
-			encodeURIComponent(input_skips_object.load_file)+'='+
-			encodeURIComponent(input_skips_object.short_domain);
-			
+		var obj = {
+			key: input_skips_object.load_file,
+			add: input_skips_object.short_domain,
+		}
+		var url = MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(obj));
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: url,
 			onload: function (response) {
 				var rs = response.responseText;
 				btn.value = '---X---';
-				
 				//skip_sites_callback(btn.id);
 			}
 		});
-		
 		return false;
 	}
 	function add_button(url) {
@@ -12415,7 +12451,6 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 	}
 	
 	// ERR: SHORT_DOMAIN IS "com" !!!
-	//~ console.log(input_skips_object);
 	
 	// Is this a skip?	
 	if  (
@@ -12434,8 +12469,163 @@ AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_
 		el_btn: add_button(),
 		isSkip: false
 	};
+}
+/**
+ * create__input_skip_button2
+ * 
+ * domain: x,
+ * load_file: 'austin_load_skips', 
+ * var_skip_sites: SKIP_SITES, 
+ * callback_function: false
+ * 		
+ * Returns an input element and bool()
+ * 	{}.el_btn,
+ * 	{}.isSkip
+**/
+AMT___items_factory.prototype.create__input_skip_button2 = function(input_skips_object) // X: pass reference
+{
+	var input_skips_object = input_skips_object;
 	
-	//~ return el_inp; // return >to append
+	// ...
+	// regular = ^http://www.site.com$
+	// subdomains = [\.\/]site.com$
+	//
+	// Submdomains, update Jul9.
+	// subdomains = period, comp name, period, any numer of 2-3 length extensions
+	var x;
+	
+	//http://stackoverflow.com/questions/10306690/domain-name-validation-with-regex
+	var reg_domain =
+		//~ '^' +
+		'(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))' +
+		'\\.' + 
+		'([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\\.[a-zA-Z]{2,3})' +
+		'$';
+	
+	// THIS WILL RETURN:
+	// ["www.linkedin.com", "www", undefined, undefined, undefined, undefined, "www", "linkedin.com", index: 7, input: "http://www.linkedin.com"]
+	// ["cylex-uk.co.uk", "cylex-uk", undefined, undefined, undefined, undefined, "cylex-uk", "co.uk", index: 20, input: "http://west-malling.cylex-uk.co.uk"]
+	// ["bongareevillage.com", "bongareevillage", undefined, undefined, undefined, undefined, "bongareevillage", "com", index: 7, input: "http://bongareevillage.com"]
+	if (x = new RegExp(reg_domain, '').exec(input_skips_object.domain)) {
+		
+		// 6 and 7
+		
+		// Debug
+		//~ console.log(x);
+		
+		if (x[6] == 'www')
+			x[6] = '';
+		
+		var tmp_domain;
+		tmp_domain = (x[6] != '') ? x[6] + '.' + x[7] : x[7];
+		
+		
+		// Contains .
+		if (tmp_domain.indexOf('.') != -1)
+			input_skips_object.short_domain = tmp_domain;
+		else
+			input_skips_object.short_domain = input_skips_object.domain.trim();
+		
+		
+	} else
+		input_skips_object.short_domain = input_skips_object.domain.trim();
+	// Debug
+	//
+	//
+	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
+	
+	// remove_skips
+	// 
+	// 
+	function remove_skips(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.style.backgroundColor = 'LightGreen';
+		this.onclick = function(){};
+		var btn = this;
+		var url = MT___host+
+			'/mturk/util.php?'+
+			encodeURIComponent(input_skips_object.load_file)+'='+
+			'&load_skips_domain_full='+
+			encodeURIComponent(input_skips_object.domain) +
+			'&load_skips_domain_short='+
+			encodeURIComponent(input_skips_object.short_domain) +
+			'&load_skips_removeMe=';
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: url,
+			onload: function (response) {
+				var rs = response.responseText;
+				btn.value = '---X---';
+				//skip_sites_callback(btn.id);
+			}
+		});
+		return false;
+	}
+	function write_skips(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.style.backgroundColor = 'LightGreen';
+		this.onclick = function(){};
+		var btn = this;
+		var url = MT___host+
+			'/mturk/util.php?'+
+			encodeURIComponent(input_skips_object.load_file)+'='+
+			encodeURIComponent(input_skips_object.short_domain);
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: url,
+			onload: function (response) {
+				var rs = response.responseText;
+				btn.value = '---X---';
+				//skip_sites_callback(btn.id);
+			}
+		});
+		return false;
+	}
+	function add_button(url) {
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = ' S ';
+		//~ el_inp.className = 
+		//~ el_inp.id = url; //argv
+		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
+		el_inp.onclick = write_skips;
+		
+		return el_inp;
+	}
+	function remove_button() { //url
+		//~ 
+		var el_inp = document.createElement('input');
+		el_inp.setAttribute('style','width:auto;background-color:#eee;border:0;cursor:pointer;');
+		el_inp.setAttribute('type','button');
+		el_inp.value = '>' + input_skips_object.domain;
+		el_inp.className = 'input_skip_button2_rm_';
+		el_inp.onclick = remove_skips;
+		
+		return el_inp;
+	}
+	
+	// ERR: SHORT_DOMAIN IS "com" !!!
+	
+	// Is this a skip?	
+	if  (
+		input_skips_object.var_skip_sites.hasOwnProperty( input_skips_object.short_domain ) ||
+		input_skips_object.var_skip_sites.hasOwnProperty( input_skips_object.domain )
+		)
+	{
+		return {
+			el_btn: remove_button(),
+			isSkip: true
+		};
+	}
+	
+	// This is not a skip.
+	return {
+		el_btn: add_button(),
+		isSkip: false
+	};
 }
 // DONE XXTODO: REMOVE FROM FILE
 AMT___items_factory.prototype.create__input_skip_button = function(url, skips_key_php_get, skip_sites_callback) // X: pass reference
