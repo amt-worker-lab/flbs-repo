@@ -55,21 +55,21 @@ function MT__RUN() {
 				SKIPS: null,
 				
 				good: {
-					'1000bulbs.com': true,
-					'pilotshq.com': true,
-					'stagelightingstore.com': true,
-					'neobits.com': true,
-					'sustainablesupply.com': true,
-					'bulbstock.com': true,
-					'bhphotovideo.com': true,
-					'garrett-smarthome.com': true,
-					'fullcompass.com': true,
-					'bulbamerica.com': true,
-					'newegg.com': true,
-					'jet.com': true,
-					'spectrumaudio.com': true,
-					'theavspot.com': true,
-					'markertek.com': true,
+					//~ '1000bulbs.com': true,
+					//~ 'pilotshq.com': true,
+					//~ 'stagelightingstore.com': true,
+					//~ 'neobits.com': true,
+					//~ 'sustainablesupply.com': true,
+					//~ 'bulbstock.com': true,
+					//~ 'bhphotovideo.com': true,
+					//~ 'garrett-smarthome.com': true,
+					//~ 'fullcompass.com': true,
+					//~ 'bulbamerica.com': true,
+					//~ 'newegg.com': true,
+					//~ 'jet.com': true,
+					//~ 'spectrumaudio.com': true,
+					//~ 'theavspot.com': true,
+					//~ 'markertek.com': true,
 				},
 			};
 			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
@@ -305,7 +305,7 @@ function MT__RUN() {
 										load_file: 'Russ_Behrens_Google_Shopping', 
 										var_skip_sites: o.SKIP_SITES, 
 										callback_function: false
-									});console.log(el_inp_skip3__obj);
+									});//console.log(el_inp_skip3__obj);
 									dv.appendChild( el_inp_skip3__obj.el_button );
 									if ( el_inp_skip3__obj.isSkip ) {
 										o.good[ o.domain ] = true; // Add to good domains.

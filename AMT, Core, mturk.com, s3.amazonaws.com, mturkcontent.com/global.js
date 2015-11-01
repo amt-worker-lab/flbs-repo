@@ -5237,7 +5237,7 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 	// Xhr
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(opts_obj.skips_key)),
+		url: MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(opts_obj)),
 		onload: function (response) {
 			var rs=response.responseText;
 			if (response.status != 200) {
@@ -12321,12 +12321,12 @@ AMT___items_factory.prototype.create__input_scrapy_button = function(short_domai
  * callback_function: false
  * 		
  * Returns an input element and bool()
- * 	{}.el_btn,
+ * 	{}.el_button,
  * 	{}.isSkip
 **/
 AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_object) // X: pass reference
 {
-	var input_skips_object = input_skips_object;
+	var input_skips_object = input_skips_object;//console.log(input_skips_object);
 	
 	// ...
 	// regular = ^http://www.site.com$
@@ -12389,7 +12389,7 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 			key: input_skips_object.load_file,
 			remove: {
 				domain_full:	input_skips_object.domain,
-				domain_short:	 input_skips_object.short_domain,
+				domain_short:	input_skips_object.short_domain,
 			}
 		}
 		var url = MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(obj));
@@ -12466,7 +12466,7 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 	
 	// This is not a skip.
 	return {
-		el_btn: add_button(),
+		el_button: add_button(),
 		isSkip: false
 	};
 }
