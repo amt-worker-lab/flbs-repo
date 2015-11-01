@@ -146,9 +146,10 @@ function MT__RUN() {
 				// 					https://www.google.com/shopping/product/6861338441390837688/online?num=30&q=blender&oq=blender&sa=X&ved=0CDUQ6SRqFQoTCNOhzq-z7sgCFUvuJgodEhsH9w
 			function profile(div) {
 				// div.href is e.g. "/shopping/product{...}".
-				var u = div.href.replace(/\?q=/, '/update/online?q=');
+				//~ var u = div.href.replace(/\?q=/, '/update/online?q=');
+				var u = div.href.replace(/\?q=/, '/online?q=');
 				u += '&prds=scoring%3Ap';
-				u += '&num=10000000000';
+				u += '&num=10000000000'; // Shows only the first 25 by the way.....
 				u = 'https://www.google.com' + u;
 				var out = div.parentNode;
 				out.innerText = 'Loading...';
@@ -173,10 +174,12 @@ function MT__RUN() {
 							out.appendChild('0 results!'.div());
 							return;
 						}
-						//~ console.log(c);
-						out.appendChild(c.length + ' results!'.div({style:'border-bottom:2px solid teal;'}));
 						// Here...
+						out.appendChild((c.length + ' results!').div({style:'border-bottom:2px solid teal;'}));
+						// Count the number of "used" / "refurbished"(?) / ebay to ensure that it is not more than 25 (page limit).
+						var ue_count = 0;
 						for (var i=0;i<c.length;i++) {
+							var this_is_ue = false;
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
 							dv.className = 'exe';
 							dv.domain = null;
@@ -190,8 +193,8 @@ function MT__RUN() {
 							// 
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
-								if (/ebay/i.exec(n[0].innerText)) { // Skip eBay
-									dv.onclick = null;
+								if (!this_is_ue && /ebay/i.exec(n[0].innerText)) { // Skip eBay
+									this_is_ue = true;
 								}
 								dv.appendChild((n[0].innerText.trim()).div({}));
 								var a = n[0].getElementsByTagName('a');
@@ -200,13 +203,22 @@ function MT__RUN() {
 									if (x) {
 										dv.domain = /^http:\/\/(www\.|)([^\/]+)/i.exec(decodeURIComponent(x[1]))[2];
 										dv.appendChild((dv.domain).div({}));
+										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay.com"
+											this_is_ue = true;
+										}
 									}
 								}
 							}
 							// 
 							var n = c[i].getElementsByClassName('os-details-col');
 							if (n && n[0]) {
-								dv.appendChild((n[0].innerText.trim()).div({}));
+								var u = n[0].innerText.trim();
+								dv.appendChild(u.div({}));
+								if (!this_is_ue && /Used/i.exec(u)) { // Skip "Used"
+									this_is_ue = true;
+								}
+								// Not this......
+								//if (!this_is_ue && /(Used|Refurbished)/i.exec(u)) { // Skip "ebay." and ".ebay.com"
 							}
 							// 
 							var n = c[i].getElementsByClassName('os-base_price');
@@ -218,6 +230,12 @@ function MT__RUN() {
 							var n = c[i].getElementsByClassName('os-total-col');
 							if (n && n[1]) {
 								dv.appendChild((n[0].innerText.trim()).div({}));
+							}
+							//
+							if (this_is_ue) {
+								ue_count++;
+								dv.onclick = null;
+								dv.style.backgroundColor = 'aqua';
 							}
 						}
 						// Spacer
