@@ -404,6 +404,7 @@ function MT__RUN() {
 					!o.good.hasOwnProperty(div.domain)
 					)
 				{
+					console.log('Going to proxy this...... '+div.url);
 					div.is_dirty = true; // Set is_dirty
 					fill(div);
 					resolve(div);

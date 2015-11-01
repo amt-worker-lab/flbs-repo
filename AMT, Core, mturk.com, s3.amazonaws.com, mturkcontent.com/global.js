@@ -2688,7 +2688,7 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function tor_resolve_URL
+ * function proxy_resolve_URL
  * 
  * options						Object.
  * options.URL					Required. String.
@@ -2699,7 +2699,14 @@ function AMT___requests_factory(obj_vars) {
 AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 	// Sent callback.....
 	var sent_callback_boolean = false;
-	//
+	// Start with a call to command line curl to get the DNS information.
+	// e.g. curl -v --socks5-hostname 127.0.0.1:9050 curl -v --socks5-hostname 127.0.0.1:9050 "https://mapi.nextag.com/goto.jsp?search=&p=356732&t=ag%3D14476436321%26origin%3DPLA%26pla_t%3D-1%26node%3D500468%26product_partition_id%3D77365446041%26merchant_id%3D100491214%26product_country%3DUS%26product_language%3Den%26product_id%3D709954737%26product_channel%3Donline%26store_code%3D%26adtype%3Dpla&url=%2Fnorob%2FClickTracker.jsp%3Fchnl%3Dmain%26tag%3D709954737"
+	// This will produce something like.... "https://mapi.nextag.com/norob/ClickTracker.jsp;jsessionid=8ACFC18078F70C54687456BA5B87D91E?nxtg=2460a500585-7EA05009545EAB89&chnl=main&tag=709954737&search="
+
+
+
+	
+	// 
 	GM_xmlhttpRequest({
 		method: "POST",
 		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
