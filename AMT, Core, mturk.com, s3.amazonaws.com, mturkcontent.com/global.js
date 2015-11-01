@@ -2059,8 +2059,6 @@ String.prototype.state_abbr_is_valid = function() {
  * 
  * 
  * 
- * 
- * 
 **/
 
 /**
@@ -2080,7 +2078,7 @@ run.prototype.f = function() {
 /**
  * AMT requester functions
  * AMT__rq
- * 
+ * ..........
  */
 var AMT__rq = function() {
 }

@@ -123,7 +123,7 @@ function MT__RUN() {
 						console.log(images);
 						// Loop
 						for (var i=0;i<c.length;i++) {
-							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;width:49%;float:left;'}); // Set clear for image floats.
+							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;width:49%;float:left;height:120px;overflow:hidden;'}); //
 							dv.className = 'exe';
 							dv.href = null;
 							out.appendChild(dv);
@@ -136,7 +136,7 @@ function MT__RUN() {
 								if (images.hasOwnProperty( n.id )) { // e.g. srpresultimg_4478312870737106424
 									var x = document.createElement('img');
 									x.src = images[ n.id ];
-									x.setAttribute('style', 'width:120px;height:120px;float:left;');
+									x.setAttribute('style', 'max-width:120px;max-height:120px;float:left;');
 									dv.appendChild(x);
 								}
 							}
@@ -231,8 +231,11 @@ function MT__RUN() {
 								complete(this);
 							}
 							// ...
-							// Note, different link style....: <a href="/url?q=http://www.elightbulbs.com/GE-19517-150PAR46-Miniature-Automotive-Light-Bulb%26source%3DGooglePPC-ProductAds&amp;sa=U&amp;ved=0CAsQ2ylqFQoTCM-Cx9LX7sgCFQlFJgodw4gALw&amp;sig2=psiQLlXnjsqb8TmHXABVsQ&amp;usg=AFQjCNGNi8BsgWiR631piJN_mN2L3JBLgA">eLightBulbs</a>
-							// Note, **Interstitiary*** for sites such as newegg.com: http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
+							// Note: Different link style....: <a href="/url?q=http://www.elightbulbs.com/GE-19517-150PAR46-Miniature-Automotive-Light-Bulb%26source%3DGooglePPC-ProductAds&amp;sa=U&amp;ved=0CAsQ2ylqFQoTCM-Cx9LX7sgCFQlFJgodw4gALw&amp;sig2=psiQLlXnjsqb8TmHXABVsQ&amp;usg=AFQjCNGNi8BsgWiR631piJN_mN2L3JBLgA">eLightBulbs</a>
+							// Note:
+							// ... **Interstitiary*** for sites such as newegg.com. For these sites a _PROXY_REDACTED_ could resolve the final address.
+							// ... Is blocked in /etc/hosts. So e.g. create and use ```new AMT___requests_factory().tor_resolve_URL({[options]})```
+							// ... http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
 							//
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
