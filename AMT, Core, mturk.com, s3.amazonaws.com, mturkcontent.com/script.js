@@ -98,7 +98,8 @@ function MT__RUN() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var c = dom.getElementsByClassName('pslmain');
+						//~ var c = dom.getElementsByClassName('pslmain');
+						var c = dom.getElementsByClassName('psli');
 						if (!c || !c.length) {
 							out.appendChild('0 results!'.div());
 							return;
@@ -110,6 +111,13 @@ function MT__RUN() {
 							dv.className = 'exe';
 							dv.href = null;
 							out.appendChild(dv);
+							// image
+							var n = c[i].getElementsByTagName('img');
+							if (n && n[0]) {
+								console.log(n[0]);
+								console.log(n[0].src);
+								console.log(n[0].getAttribute('src'));
+							}
 							// Title
 							// Is a link with necessary href.
 							var n = c[i].getElementsByClassName('pstl');
