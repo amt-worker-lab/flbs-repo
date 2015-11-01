@@ -135,13 +135,63 @@ function MT__RUN() {
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
 			// 
 			function profile() {
+				var u = div.href.replace(/\?q=/, '/update/online?q=');
+				u += '&prds=scoring';
 				// xhr_with_disk_cache
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: div.href,
+					URL: u,
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						console.log(dom);
+						// <tr class="os-row" jsaction="mouseover:pdui.misg;mouseout:pdui.mosg"> 
+						// <span class="os-seller-name-primary"> <a href="/aclk ... &amp;adurl=http://www.garrett-smarthome.com/proddetail...">Garretts Smart Electronics</a> </span>
+						// <td class="os-rating-col">
+						// <td class="os-details-col"> No tax   </td>
+						// <span class="os-base_price">$799.57</span>
+						// <td class="os-total-col"> $821.41 </td>
+						var c = dom.getElementsByClassName('os-row');
+						if (!c || !c.length) {
+							out.appendChild('0 results!'.div());
+							return;
+						}
+						console.log(c);
+						// Here...
+						for (var i=0;i<c.length;i++) {
+							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
+							dv.className = 'exe';
+							//~ dv.href = null;
+							out.appendChild(dv);
+							// 
+							var n = c[i].getElementsByClassName('os-seller-name-primary');
+							if (n && n[0]) {
+								dv.appendChild((n[0].innerText.trim()).div({}));
+								dv.href = n[0].getAttribute('href');
+							}
+							// 
+							var n = c[i].getElementsByClassName('pslline');
+							if (n && n[0]) {
+								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// 
+							var n = c[i].getElementsByClassName('_Lqc');
+							if (n && n[0]) {
+								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// 
+							//~ var n = c[i].getElementsByClassName('_Lqc'); // Second.....
+							if (n && n[1]) {
+								dv.appendChild((MT__bold(n[1].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// onclick
+							dv.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								profile(this);
+							}
+						}
+						// Spacer
+						out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
 			}
