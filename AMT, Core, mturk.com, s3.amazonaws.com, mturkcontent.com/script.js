@@ -348,11 +348,30 @@ function MT__RUN() {
 					'garrett-smarthome.com': true,
 					'fullcompass.com': true,
 					'bulbamerica.com': true,
+					'newegg.com': true,
+					'jet.com': true,
+					'spectrumaudio.com': true,
+					'theavspot.com': true,
 				}
 				//~ // Mark output fields for this div....
 				//~ fill(div);
 				div.is_dirty = false;
 				div.is_taken = false;
+				// Auto convert these....
+				//http://clickserve.dartsearch.net/link/click?lid=92700005554859909&ds_s_kwgid=58700000368691903&ds_e_adid=42222171703&ds_e_product_group_id=82794062743&ds_e_product_id=9SIA0X80848322&ds_e_product_merchant_id=102658729&ds_e_product_country=US&ds_e_product_language=en&ds_e_product_channel=online&ds_e_product_store_id=&ds_e_ad_type=pla&ds_s_inventory_feed_id=97700000001004293&ds_url_v=2&ds_dest_url=http://www.newegg.com/Product/Product.aspx?Item=9SIA0X80848322&nm_mc=KNC-GoogleMKP-PC&cm_mmc=KNC-GoogleMKP-PC-_-pla-_-Standard+Bulbs-_-9SIA0X80848322
+				if (/&ds_dest_url=([^&]+)/.exec(div.url)) {
+					console.log('old:'+div.url);
+					div.url = decodeURIComponent( /&ds_dest_url=([^&]+)/.exec(div.url)[1] );
+					div.domain = url2domain(div.url);
+				}
+				//http://501.xg4ken.com/trk/v1?prof=260&camp=42644&affcode=pg1379486&kct=google&kchid=8166717015&cid=38666420633&networkType=search&kdv=c&kpid=SPM11321961330&kmc=9150324&criteriaid=kwd-70246053473&adgroupid=7650731633&campaignid=164107913&locphy=9005000&adpos=1o3&url=http://www.sears.com/ge-19879-50par36-h-sp8-par36-halogen-light-bulb/p-SPM10643088013?hlSellerId=19885&sid=IDx20110310x00001i&kpid=SPM11321961330&kispla=SPM11321961330
+				if (div.url.indexOf('xg4ken.com') != -1 && /&url=([^&]+)/.exec(div.url)) {
+					console.log('old:'+div.url);
+					div.url = decodeURIComponent( /&url=([^&]+)/.exec(div.url)[1] );
+					div.domain = url2domain(div.url);
+				}
+				
+				// This does not really work. E.g. cannot resolve DNS if in /etc/hosts.....
 				// Try to resolve
 				// Also, it is unnecessary to resolve when "Company"=="domain"
 				if 	(
@@ -381,6 +400,8 @@ function MT__RUN() {
 					out = [ o.q[0], o.q[1] ];
 				} else if (o.q[2].is_taken == div) {
 					out = [ o.q[2], o.q[3] ];
+				} else {
+					return; // ends
 				}
 				
 				// Fill?
