@@ -345,6 +345,9 @@ function MT__RUN() {
 					'sustainablesupply.com': true,
 					'bulbstock.com': true,
 					'bhphotovideo.com': true,
+					'garrett-smarthome.com': true,
+					'fullcompass.com': true,
+					'bulbamerica.com': true,
 				}
 				//~ // Mark output fields for this div....
 				//~ fill(div);
