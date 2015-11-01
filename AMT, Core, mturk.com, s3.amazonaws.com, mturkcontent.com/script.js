@@ -37,6 +37,7 @@ function MT__RUN() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important}');//width:40% !important;
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			//
 			var td = document.getElementsByTagName('td');
@@ -91,11 +92,15 @@ function MT__RUN() {
 						// Here...
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
+							dv.className = 'exe';
+							dv.href = null;
 							out.appendChild(dv);
 							// Title
+							// Is a link with necessary href.
 							var n = c[i].getElementsByClassName('pstl');
 							if (n && n[0]) {
 								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+								dv.href = n[0].getAttribute('href');
 							}
 							// 
 							var n = c[i].getElementsByClassName('pslline');
@@ -112,9 +117,31 @@ function MT__RUN() {
 							if (n && n[1]) {
 								dv.appendChild((MT__bold(n[1].innerText.trim(), o.bold)).div({innerHTML: true}));
 							}
+							// onclick
+							dv.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								profile(this);
+							}
 						}
 						// Spacer
 						out.appendChild(''.div({style:'height:2000px;'}));
+					}
+				});
+			}
+			// profile
+			// e.g. URL #1 (unsorted):
+				// https://www.google.com/shopping/product/9455459859435950642?q=Telex+RTS+SPK300L+A5F+Telex+RTS+SPK300L+A5F+Portable+Desktop+Speaker+User+Station&sa=X&ved=0CIcEEM1KMABqFQoTCLr_36Gh7sgCFcZiJgod6AQAIA
+			// e.g. URL #2 (sorted):
+				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
+			// 
+			function profile() {
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: div.href,
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
 					}
 				});
 			}
