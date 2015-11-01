@@ -213,7 +213,7 @@ function MT__RUN() {
 										//~ console.log(x);
 										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
 										dv.appendChild((dv.domain).div({}));
-										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay.com"
+										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 											this_is_ue = true;
 										}
 									}
@@ -259,6 +259,8 @@ function MT__RUN() {
 					}
 				});
 			}
+			// complete
+			// Do some error checks....
 			function complete(div) {
 				o.q[0].value = o.q[0].value.trim();
 				o.q[1].value = o.q[1].value.trim();
@@ -267,9 +269,18 @@ function MT__RUN() {
 				console.log(div);
 				console.log(div.price);
 				console.log(div.domain);
-				if (!div.price || !div.domain) return; // Error check
-				if (!/^\$[\d\.]+$/.exec(div.price)) return;
-				if (!/^[\w\d\-]+\.[^\/]+/.exec(div.domain)) return; // "[word/digit/hyphen][period][non-slash characters]"
+				if (!div.price || !div.domain) {
+					console.log('a');
+					return; 
+				}
+				if (!/^\$[\d\.,]+$/.exec(div.price)) {
+					console.log('b');
+					return;
+				}
+				if (!/^[\w\d\-]+\.[^\/]+/.exec(div.domain)) {
+					console.log('c');
+					return; // "[word/digit/hyphen][period][non-slash characters]"
+				}
 				if (o.q[0].value == '' && o.q[1].value == '') {
 					o.q[0].value = div.price;
 					o.q[1].value = div.domain;
