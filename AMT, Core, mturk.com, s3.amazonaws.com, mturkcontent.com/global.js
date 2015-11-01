@@ -2697,6 +2697,8 @@ function AMT___requests_factory(obj_vars) {
  * @return				.
  */
 AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
+	// Sent callback.....
+	var sent_callback_boolean = false;
 	//
 	GM_xmlhttpRequest({
 		method: "POST",
@@ -2730,6 +2732,8 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 				}
 				// Here....
 				clearInterval(xint);
+				if (sent_callback_boolean) return; // Already completed once!
+				sent_callback_boolean = true;
 				// Callback
 				options.response = response; // Set options.response.
 				options.success_callback(options);

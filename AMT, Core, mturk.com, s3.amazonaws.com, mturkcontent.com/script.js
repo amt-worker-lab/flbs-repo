@@ -104,7 +104,7 @@ function MT__RUN() {
 							out.appendChild('0 results!'.div());
 							return;
 						}
-						console.log(c);
+						//~ console.log(c);
 						// Here...
 						// Get all encoded images
 						// var _image_src='
@@ -120,7 +120,7 @@ function MT__RUN() {
 								images[ ids[i].replace(/'/g, '') ] = p; //__js_clean_html_str(m[1]); // encoded image source
 							}
 						}
-						console.log(images);
+						//~ console.log(images);
 						// Loop
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;width:49%;float:left;height:120px;overflow:hidden;'}); //
@@ -130,8 +130,8 @@ function MT__RUN() {
 							// image
 							var n = c[i].getElementsByTagName('img');
 							if (n && n[0]) {
-								console.log(n[0]);
-								console.log(n[0].id);
+								//~ console.log(n[0]);
+								//~ console.log(n[0].id);
 								n = n[0];
 								if (images.hasOwnProperty( n.id )) { // e.g. srpresultimg_4478312870737106424
 									var x = document.createElement('img');
@@ -321,9 +321,9 @@ function MT__RUN() {
 				o.q[1].value = o.q[1].value.trim();
 				o.q[2].value = o.q[2].value.trim();
 				o.q[3].value = o.q[3].value.trim();
-				console.log(div);
-				console.log(div.price);
-				console.log(div.domain);
+				//~ console.log(div);
+				//~ console.log(div.price);
+				//~ console.log(div.domain);
 				if (!div.price || !div.domain) {
 					console.log('a');
 					return; 
@@ -343,6 +343,7 @@ function MT__RUN() {
 					'stagelightingstore.com': true,
 					'neobits.com': true,
 					'sustainablesupply.com': true,
+					'bulbstock.com': true,
 				}
 				// try to resolve
 				if 	(
@@ -362,7 +363,6 @@ function MT__RUN() {
 					o.q[2].value = div.price;
 					o.q[3].value = div.domain;
 					// Submit here.....
-					
 				}
 			}
 			function resolve(div) {
@@ -371,8 +371,9 @@ function MT__RUN() {
 			// resolve_complete
 			// Note: options, options.response.responseText, options.__seed__
 			// 
-			function resolve_complete(options) {
+			function resolve_complete(options) {console.log(options);
 				var u = options.response.responseText;
+				var div = options.__seed__;
 				div.domain = url2domain(u);
 				fill(div);
 			}
