@@ -116,7 +116,12 @@ function MT__RUN() {
 							var ids = m[2].split(','); // e.g. ```'srpresultimg_4478312870737106424','srpresultimg_16820841038981501643'```
 							for (var i in ids) {
 								console.log(m[1]);
-								var p = JSON.parse('"'+m[1]+'"'); // Parse this
+								var p = m[1].replace(/(\\75|\\075)/g, '=');
+								//~ var p = m[1].replace(/\\75\\075/g, '==');
+								//~ var p = m[1].replace(/\\/g, '\\\\');
+								console.log(p);
+								var p = JSON.parse('"'+p+'"'); // Parse this
+								//~ var p = decodeURIComponent(m[1]);
 								//~ var p = JSON.parse('"'+__js_clean_html_str(m[1])+'"'); // Parse this
 								images[ ids[i].replace(/'/g, '"') ] = p; //__js_clean_html_str(m[1]); // encoded image source
 							}
