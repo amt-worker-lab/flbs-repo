@@ -343,7 +343,7 @@ function MT__RUN() {
 				}
 				// try to resolve
 				if 	(
-				
+					!good.hasOwnProperty(div.domain)
 					) {
 					resolve(div);
 					return;
@@ -363,7 +363,7 @@ function MT__RUN() {
 				}
 			}
 			function resolve(div) {
-				
+				new AMT___requests_factory().tor_resolve_URL({[options]}) 
 			}
 		}
 		new run().f();
