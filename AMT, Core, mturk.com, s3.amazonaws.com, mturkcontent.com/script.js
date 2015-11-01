@@ -36,8 +36,51 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important}');//width:40% !important;
 			
+			//
+			var td = document.getElementsByTagName('td');
+			var o = {
+				item: td[1].innerText.trim(),
+				description:td[3].innerText.trim(),
+				bold: [],
+				q: [document.getElementById('web_url')],
+			};
+			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:40px;left:40%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;left:40%;width:69%;height:40px;'
+			);
+			document.body.appendChild(d2);
+			d2.value = o.q.bold;
+			d2.onblur = gs;
+			/* END ITEMS */
+			// ef
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// Init
+			gs();
+			// gs
+			function gs() {
+				d2.value = d2.value.trim();
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://www.google.com/search?q='+
+						encodeURIComponent(d2.value) +
+						'&tbs=vw:l,p_ord:p&tbm=shop&ei=&ved=',
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+					}
+				});
+			}
 		}
 		new run().f();
 	}
@@ -177,7 +220,7 @@ function MT__RUN() {
 					
 					var rs = options.response.responseText;
 					
-					var dom =  new DOMParser().parseFromString(rs, 'text/html');
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					
 					// Innertext is, e.g., Comp\nContact & Contact Title\nAddress1\nAddress2(opt)\nCity, State ZIP\nP: PHONE\nE:(bleh)\nW: <a>
 					var d = dom.getElementsByClassName('directory-table');
