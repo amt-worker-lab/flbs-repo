@@ -222,6 +222,7 @@ function MT__RUN() {
 							var this_is_ue = false;
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
 							dv.className = 'exe';
+							dv.url = null; // Full URL for later resolving
 							dv.domain = null;
 							dv.price = null;
 							out.appendChild(dv);
@@ -235,6 +236,8 @@ function MT__RUN() {
 							// Note:
 							// ... **Interstitiary*** for sites such as newegg.com. For these sites a _PROXY_REDACTED_ could resolve the final address.
 							// ... Is blocked in /etc/hosts. So e.g. create and use ```new AMT___requests_factory().tor_resolve_URL({[options]})```
+							// ... In this case tor_resolve_URL() could cache domains..... but it is very complicated.
+							// ... It is probably best to try to resolve every URL.
 							// ... http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
 							//
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
@@ -247,8 +250,9 @@ function MT__RUN() {
 								if (a && a[0]) {
 									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
 									if (x) {
-										x = decodeURIComponent(x[1]);
-										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
+										//~ x = decodeURIComponent(x[1]);
+										dv.url = decodeURIComponent(x[1]);
+										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(dv.url)[2];
 										dv.appendChild((dv.domain).div({}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 											this_is_ue = true;
@@ -256,8 +260,9 @@ function MT__RUN() {
 									} else {
 										var x = /\/url\?q=([^&]+)/.exec(a[0].getAttribute('href'));
 										if (x) {
-											x = decodeURIComponent(x[1]);
-											dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
+											//~ x = decodeURIComponent(x[1]);
+											dv.url = decodeURIComponent(x[1]);
+											dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(dv.url)[2];
 											dv.appendChild((dv.domain).div({}));
 											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 												this_is_ue = true;
@@ -328,6 +333,25 @@ function MT__RUN() {
 					console.log('c');
 					return; // "[word/digit/hyphen][period][non-slash characters]"
 				}
+				// good
+				var good = {
+					'1000bulbs.com': true,
+					'pilotshq.com': true,
+					'stagelightingstore.com': true,
+					'neobits.com': true,
+					'sustainablesupply.com': true,
+				}
+				// try to resolve
+				if 	(
+				
+					) {
+					resolve(div);
+					return;
+				}
+				// Here...
+				fill(div);
+			}
+			function fill(div) {
 				if (o.q[0].value == '' && o.q[1].value == '') {
 					o.q[0].value = div.price;
 					o.q[1].value = div.domain;
@@ -337,6 +361,9 @@ function MT__RUN() {
 					// Submit here.....
 					
 				}
+			}
+			function resolve(div) {
+				
 			}
 		}
 		new run().f();
