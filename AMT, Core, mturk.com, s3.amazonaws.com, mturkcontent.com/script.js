@@ -88,7 +88,7 @@ function MT__RUN() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'https://www.google.com/search?q='+
 						encodeURIComponent(input.value) +
-						'&tbs=vw:l,p_ord:p&tbm=shop&ei=&ved=',
+						'&tbs=vw:l&tbm=shop&ei=&ved=', // "tbs=vw:l" rather than "tbs=vw:l,p_ord:p" (Default vs. order by price)
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
@@ -142,11 +142,13 @@ function MT__RUN() {
 				// https://www.google.com/shopping/product/9455459859435950642?q=Telex+RTS+SPK300L+A5F+Telex+RTS+SPK300L+A5F+Portable+Desktop+Speaker+User+Station&sa=X&ved=0CIcEEM1KMABqFQoTCLr_36Gh7sgCFcZiJgod6AQAIA
 			// e.g. URL #2 (sorted):
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
-			// 
+			// e.g. URL #3 ():
+				// 					https://www.google.com/shopping/product/6861338441390837688/online?num=30&q=blender&oq=blender&sa=X&ved=0CDUQ6SRqFQoTCNOhzq-z7sgCFUvuJgodEhsH9w
 			function profile(div) {
 				// div.href is e.g. "/shopping/product{...}".
 				var u = div.href.replace(/\?q=/, '/update/online?q=');
 				u += '&prds=scoring%3Ap';
+				u += '&num=10000000000';
 				u = 'https://www.google.com' + u;
 				var out = div.parentNode;
 				out.innerText = 'Loading...';
@@ -171,7 +173,8 @@ function MT__RUN() {
 							out.appendChild('0 results!'.div());
 							return;
 						}
-						console.log(c);
+						//~ console.log(c);
+						out.appendChild(c.length + ' results!'.div({style:'border-bottom:2px solid teal;'}));
 						// Here...
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
@@ -179,9 +182,17 @@ function MT__RUN() {
 							dv.domain = null;
 							dv.price = null;
 							out.appendChild(dv);
+							// onclick
+							dv.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								complete(this);
+							}
 							// 
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
+								if (/ebay/i.exec(n[0].innerText)) { // Skip eBay
+									dv.onclick = null;
+								}
 								dv.appendChild((n[0].innerText.trim()).div({}));
 								var a = n[0].getElementsByTagName('a');
 								if (a && a[0]) {
@@ -207,11 +218,6 @@ function MT__RUN() {
 							var n = c[i].getElementsByClassName('os-total-col');
 							if (n && n[1]) {
 								dv.appendChild((n[0].innerText.trim()).div({}));
-							}
-							// onclick
-							dv.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								complete(this);
 							}
 						}
 						// Spacer
