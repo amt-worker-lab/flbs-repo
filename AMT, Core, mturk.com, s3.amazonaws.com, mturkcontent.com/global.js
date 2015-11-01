@@ -2688,7 +2688,34 @@ function AMT___requests_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
 /**
- * function server_load_asynchronously
+ * function tor_resolve_URL
+ * 
+ * options						Object.
+ * options.URL					Required. String.
+ * options.success_callback		Function. Callback for completed.
+ * 
+ * @return				.
+ */
+AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
+	//
+	GM_xmlhttpRequest({
+		method: "POST",
+		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
+		data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify(options)),
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+			}
+		}
+	});
+	// Set interval watch.....
+	
+}
+/**
+ * function xhr
  * 
  * URL					Required. String.
  * success_callback		Function. Callback for completed.
