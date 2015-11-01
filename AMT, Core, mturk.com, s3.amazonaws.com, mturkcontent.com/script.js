@@ -120,7 +120,7 @@ function MT__RUN() {
 							// onclick
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
-								profile(this);
+								profile(this); // e.g. send d1
 							}
 						}
 						// Spacer
@@ -134,9 +134,14 @@ function MT__RUN() {
 			// e.g. URL #2 (sorted):
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
 			// 
-			function profile() {
+			function profile(div) {
+				// div.href is e.g. "/shopping/product{...}".
 				var u = div.href.replace(/\?q=/, '/update/online?q=');
-				u += '&prds=scoring';
+				u += '&prds=scoring%3Ap';
+				u = 'https://www.google.com' + u;
+				var out = div.parentNode;
+				out.innerText = 'Loading...';
+				console.log(u);
 				// xhr_with_disk_cache
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
@@ -144,7 +149,8 @@ function MT__RUN() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						console.log(dom);
+						//~ console.log(dom);
+						out.innerText = '';
 						// <tr class="os-row" jsaction="mouseover:pdui.misg;mouseout:pdui.mosg"> 
 						// <span class="os-seller-name-primary"> <a href="/aclk ... &amp;adurl=http://www.garrett-smarthome.com/proddetail...">Garretts Smart Electronics</a> </span>
 						// <td class="os-rating-col">
@@ -161,33 +167,42 @@ function MT__RUN() {
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
 							dv.className = 'exe';
-							//~ dv.href = null;
+							dv.domain = null;
+							dv.price = null;
 							out.appendChild(dv);
 							// 
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
 								dv.appendChild((n[0].innerText.trim()).div({}));
-								dv.href = n[0].getAttribute('href');
+								var a = n[0].getElementsByTagName('a');
+								if (a && a[0]) {
+									var x = /&amp;adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
+									if (x) {
+										dv.domain = /^http:\/\/(www\.|)([^\/]+)/i.exec(decodeURIComponent(x[1]))[2];
+										dv.appendChild((dv.domain).div({}));
+									}
+								}
 							}
 							// 
-							var n = c[i].getElementsByClassName('pslline');
+							var n = c[i].getElementsByClassName('os-details-col');
 							if (n && n[0]) {
-								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+								dv.appendChild((n[0].innerText.trim()).div({}));
 							}
 							// 
-							var n = c[i].getElementsByClassName('_Lqc');
+							var n = c[i].getElementsByClassName('os-base_price');
 							if (n && n[0]) {
-								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+								dv.appendChild((n[0].innerText.trim()).div({}));
+								dv.price = n[0].innerText.trim();
 							}
 							// 
-							//~ var n = c[i].getElementsByClassName('_Lqc'); // Second.....
+							var n = c[i].getElementsByClassName('os-total-col');
 							if (n && n[1]) {
-								dv.appendChild((MT__bold(n[1].innerText.trim(), o.bold)).div({innerHTML: true}));
+								dv.appendChild((n[0].innerText.trim()).div({}));
 							}
 							// onclick
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
-								profile(this);
+								complete(this);
 							}
 						}
 						// Spacer
