@@ -210,8 +210,8 @@ function MT__RUN() {
 									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
 									if (x) {
 										x = decodeURIComponent(x[1]);
-										console.log(x);
-										dv.domain = /^http:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
+										//~ console.log(x);
+										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
 										dv.appendChild((dv.domain).div({}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay.com"
 											this_is_ue = true;
