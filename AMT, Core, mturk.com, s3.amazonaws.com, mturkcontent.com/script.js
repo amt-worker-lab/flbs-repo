@@ -26,6 +26,21 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Russ Behrens
+	// Google Shopping
+	// Find the lowest price for an item on Google Shopping
+	// 
+	s = '	<li>Find the corresponding item on Google Shopping, double check the item against the description</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important}');//width:40% !important;
+			
+		}
+		new run().f();
+	}
 	// Hadewych
 	// Find the average price of a car
 	// 
