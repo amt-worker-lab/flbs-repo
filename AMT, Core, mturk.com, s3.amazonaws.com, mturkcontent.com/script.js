@@ -115,36 +115,30 @@ function MT__RUN() {
 							if (!m[2].trim().length) continue; // Blank?
 							var ids = m[2].split(','); // e.g. ```'srpresultimg_4478312870737106424','srpresultimg_16820841038981501643'```
 							for (var i in ids) {
-								console.log(m[1]);
-								var p = m[1].replace(/(\\75|\\075)/g, '=');
-								//~ var p = m[1].replace(/\\75\\075/g, '==');
-								//~ var p = m[1].replace(/\\/g, '\\\\');
-								console.log(p);
-								var p = JSON.parse('"'+p+'"'); // Parse this
-								//~ var p = decodeURIComponent(m[1]);
-								//~ var p = JSON.parse('"'+__js_clean_html_str(m[1])+'"'); // Parse this
-								images[ ids[i].replace(/'/g, '"') ] = p; //__js_clean_html_str(m[1]); // encoded image source
+								var p = m[1].replace(/(\\75|\\075)/g, '='); // Convert these to "="
+								//~ var p = JSON.parse('"'+p+'"'); // Parse this
+								images[ ids[i].replace(/'/g, '') ] = p; //__js_clean_html_str(m[1]); // encoded image source
 							}
 						}
 						console.log(images);
 						// Loop
 						for (var i=0;i<c.length;i++) {
-							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
+							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;width:49%;float:left;'}); // Set clear for image floats.
 							dv.className = 'exe';
 							dv.href = null;
 							out.appendChild(dv);
 							// image
 							var n = c[i].getElementsByTagName('img');
 							if (n && n[0]) {
-								//~ console.log(n[0]);
-								//~ console.log(n[0].src);
-								//~ console.log(n[0].getAttribute('src'));
+								console.log(n[0]);
+								console.log(n[0].id);
 								n = n[0];
 								if (images.hasOwnProperty( n.id )) { // e.g. srpresultimg_4478312870737106424
-									n.src = images[ n.id ];
+									var x = document.createElement('img');
+									x.src = images[ n.id ];
+									x.setAttribute('style', 'width:120px;height:120px;float:left;');
+									dv.appendChild(x);
 								}
-								n.onload = null; // Unset this....
-								dv.appendChild(n);
 							}
 							// Title
 							// Is a link with necessary href.
@@ -172,6 +166,8 @@ function MT__RUN() {
 								this.style.backgroundColor = 'LightGreen';
 								profile(this); // e.g. send d1
 							}
+							// Clear image float
+							dv.appendChild(''.div({style:'clear:both;'}));
 						}
 						// Spacer
 						out.appendChild(''.div({style:'height:2000px;'}));
