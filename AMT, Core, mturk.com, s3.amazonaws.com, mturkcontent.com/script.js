@@ -346,11 +346,17 @@ function MT__RUN() {
 					'bulbstock.com': true,
 					'bhphotovideo.com': true,
 				}
+				//~ // Mark output fields for this div....
+				//~ fill(div);
+				div.is_dirty = false;
+				div.is_taken = false;
 				// Try to resolve
 				// Also, it is unnecessary to resolve when "Company"=="domain"
 				if 	(
 					!good.hasOwnProperty(div.domain)
 					) {
+					div.is_dirty = true; // Set is_dirty
+					fill(div);
 					resolve(div);
 					return;
 				}
@@ -358,16 +364,39 @@ function MT__RUN() {
 				fill(div);
 			}
 			function fill(div) {
-				if (o.q[0].value == '' && o.q[1].value == '') {
-					o.q[0].value = div.price;
-					o.q[1].value = div.domain;
-				} else if (o.q[2].value == '' && o.q[3].value == '') {
-					o.q[2].value = div.price;
-					o.q[3].value = div.domain;
-					// Submit here.....
+				var out;
+				if (!o.q[0].is_taken) {
+					o.q[0].is_taken = div;
+					//~ o.q[0].value = div.price;
+					//~ o.q[1].value = div.domain;
+					//~ return;
 				}
+				else if (!o.q[2].is_taken) {
+					o.q[2].is_taken = div;
+				}
+				if (o.q[0].is_taken == div) {
+					out = [ o.q[0], o.q[1] ];
+				} else if (o.q[2].is_taken == div) {
+					out = [ o.q[2], o.q[3] ];
+				}
+				
+				// Fill?
+				if (!div.is_dirty) {
+					out[0].value = div.price;
+					out[1].value = div.domain;
+				}
+				//~ if (o.q[0].value == '' && o.q[1].value == '') {
+					//~ o.q[0].value = div.price;
+					//~ o.q[1].value = div.domain;
+				//~ } else if (o.q[2].value == '' && o.q[3].value == '') {
+					//~ o.q[2].value = div.price;
+					//~ o.q[3].value = div.domain;
+					//~ // Submit here.....
+				//~ }
 			}
 			function resolve(div) {
+				// Because this is asynchronous, it is necessary to connect this request with the given output fields!
+				// This way if a higher price completes first it will not go into the first empty output fields.....
 				new AMT___requests_factory().proxy_resolve_URL({URL: div.url, success_callback: resolve_complete, __seed__: div}) 
 			}
 			// resolve_complete
@@ -377,6 +406,8 @@ function MT__RUN() {
 				var u = options.response.responseText;
 				var div = options.__seed__;
 				div.domain = url2domain(u);
+				// Clear is_dirty!
+				div.is_dirty = false;
 				fill(div);
 			}
 		}
