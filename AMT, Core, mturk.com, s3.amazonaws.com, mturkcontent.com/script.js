@@ -50,25 +50,27 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:40px;left:40%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:40px;left:30%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
 			d2.setAttribute('style',
-				'position:absolute;top:0px;left:40%;width:69%;height:40px;'
+				'position:absolute;top:0px;left:30%;width:69%;height:40px;'
 			);
 			document.body.appendChild(d2);
 			d2.value = o.item + ' ' + o.description;
-			d2.onblur = gs;
+			d2.onblur = function() {gs(this);};
+			d2.div = d1;
 			/* END ITEMS */
 			// ef
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			// Init
-			gs(d1,d2);
+			gs(d2);
 			// gs
-			function gs(out,input) {
+			function gs(input) {
 				input.value = input.value.trim();
+				var out = input.div;
 				out.innerText = '';
 				out.appendChild((input.value).div({style:'border-bottom:2px solid teal;'}));
 				// xhr_with_disk_cache
@@ -85,12 +87,34 @@ function MT__RUN() {
 							out.appendChild('0 results!'.div());
 							return;
 						}
+						console.log(c);
 						// Here...
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
 							out.appendChild(dv);
-							dv.appendChild(c[i]);
+							// Title
+							var n = c[i].getElementsByClassName('pstl');
+							if (n && n[0]) {
+								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// 
+							var n = c[i].getElementsByClassName('pslline');
+							if (n && n[0]) {
+								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// 
+							var n = c[i].getElementsByClassName('_Lqc');
+							if (n && n[0]) {
+								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
+							// 
+							//~ var n = c[i].getElementsByClassName('_Lqc'); // Second.....
+							if (n && n[1]) {
+								dv.appendChild((MT__bold(n[1].innerText.trim(), o.bold)).div({innerHTML: true}));
+							}
 						}
+						// Spacer
+						out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
 			}
