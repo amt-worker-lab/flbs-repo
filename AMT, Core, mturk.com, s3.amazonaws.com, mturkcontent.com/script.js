@@ -179,7 +179,7 @@ function MT__RUN() {
 				// https://www.google.com/shopping/product/9455459859435950642?q=Telex+RTS+SPK300L+A5F+Telex+RTS+SPK300L+A5F+Portable+Desktop+Speaker+User+Station&sa=X&ved=0CIcEEM1KMABqFQoTCLr_36Gh7sgCFcZiJgod6AQAIA
 			// e.g. URL #2 (sorted):
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
-			// e.g. URL #3 ():
+			// e.g. URL #3 (includes num=...):
 				// 					https://www.google.com/shopping/product/6861338441390837688/online?num=30&q=blender&oq=blender&sa=X&ved=0CDUQ6SRqFQoTCNOhzq-z7sgCFUvuJgodEhsH9w
 			function profile(div) {
 				// div.href is e.g. "/shopping/product{...}".
@@ -230,7 +230,10 @@ function MT__RUN() {
 								this.style.backgroundColor = 'LightGreen';
 								complete(this);
 							}
-							// 
+							// ...
+							// Note, different link style....: <a href="/url?q=http://www.elightbulbs.com/GE-19517-150PAR46-Miniature-Automotive-Light-Bulb%26source%3DGooglePPC-ProductAds&amp;sa=U&amp;ved=0CAsQ2ylqFQoTCM-Cx9LX7sgCFQlFJgodw4gALw&amp;sig2=psiQLlXnjsqb8TmHXABVsQ&amp;usg=AFQjCNGNi8BsgWiR631piJN_mN2L3JBLgA">eLightBulbs</a>
+							// Note, **Interstitiary*** for sites such as newegg.com: http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
+							//
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
 								if (!this_is_ue && /ebay/i.exec(n[0].innerText)) { // Skip eBay
@@ -242,11 +245,20 @@ function MT__RUN() {
 									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
 									if (x) {
 										x = decodeURIComponent(x[1]);
-										//~ console.log(x);
 										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
 										dv.appendChild((dv.domain).div({}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 											this_is_ue = true;
+										}
+									} else {
+										var x = /\/url\?q=([^&]+)/.exec(a[0].getAttribute('href'));
+										if (x) {
+											x = decodeURIComponent(x[1]);
+											dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
+											dv.appendChild((dv.domain).div({}));
+											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
+												this_is_ue = true;
+											}
 										}
 									}
 								}
