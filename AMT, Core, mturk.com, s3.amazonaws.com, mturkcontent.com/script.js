@@ -252,7 +252,7 @@ function MT__RUN() {
 									if (x) {
 										//~ x = decodeURIComponent(x[1]);
 										dv.url = decodeURIComponent(x[1]);
-										dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(dv.url)[2];
+										dv.domain = url2domain(dv.url);
 										dv.appendChild((dv.domain).div({}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 											this_is_ue = true;
@@ -262,7 +262,7 @@ function MT__RUN() {
 										if (x) {
 											//~ x = decodeURIComponent(x[1]);
 											dv.url = decodeURIComponent(x[1]);
-											dv.domain = /^https?:\/\/(www\.|)([^\/]+)/i.exec(dv.url)[2];
+											dv.domain = url2domain(dv.url);
 											dv.appendChild((dv.domain).div({}));
 											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 												this_is_ue = true;
@@ -310,6 +310,9 @@ function MT__RUN() {
 						out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
+			}
+			function url2domain(u) {
+				return /^https?:\/\/(www\.|)([^\/]+)/i.exec(u)[2];
 			}
 			// complete
 			// Do some error checks....
@@ -363,7 +366,15 @@ function MT__RUN() {
 				}
 			}
 			function resolve(div) {
-				new AMT___requests_factory().tor_resolve_URL({[options]}) 
+				new AMT___requests_factory().proxy_resolve_URL({URL: div.url, success_callback: resolve_complete, __seed__: div}) 
+			}
+			// resolve_complete
+			// Note: options, options.response.responseText, options.__seed__
+			// 
+			function resolve_complete(options) {
+				var u = options.response.responseText;
+				div.domain = url2domain(u);
+				fill(div);
 			}
 		}
 		new run().f();

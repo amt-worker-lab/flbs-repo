@@ -2731,7 +2731,8 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 				// Here....
 				clearInterval(xint);
 				// Callback
-				
+				options.response = response; // Set options.response.
+				options.success_callback(options);
 			}
 		});
 	}
