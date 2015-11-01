@@ -45,7 +45,12 @@ function MT__RUN() {
 				item: td[1].innerText.trim(),
 				description:td[3].innerText.trim(),
 				bold: [],
-				q: [document.getElementById('web_url')],
+				q: [
+					document.getElementById('lowprice1'),
+					document.getElementById('lowseller1'),
+					document.getElementById('lowprice2'),
+					document.getElementById('lowseller2'),
+				],
 			};
 			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
 			/* BEGIN ITEMS */
@@ -178,6 +183,9 @@ function MT__RUN() {
 						out.appendChild((c.length + ' results!').div({style:'border-bottom:2px solid teal;'}));
 						// Count the number of "used" / "refurbished"(?) / ebay to ensure that it is not more than 25 (page limit).
 						var ue_count = 0;
+						// Count num clicked
+						var num_clicked = 0;
+						// Loop
 						for (var i=0;i<c.length;i++) {
 							var this_is_ue = false;
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
@@ -199,9 +207,11 @@ function MT__RUN() {
 								dv.appendChild((n[0].innerText.trim()).div({}));
 								var a = n[0].getElementsByTagName('a');
 								if (a && a[0]) {
-									var x = /&amp;adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
+									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
 									if (x) {
-										dv.domain = /^http:\/\/(www\.|)([^\/]+)/i.exec(decodeURIComponent(x[1]))[2];
+										x = decodeURIComponent(x[1]);
+										console.log(x);
+										dv.domain = /^http:\/\/(www\.|)([^\/]+)/i.exec(x)[2];
 										dv.appendChild((dv.domain).div({}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay.com"
 											this_is_ue = true;
@@ -236,12 +246,39 @@ function MT__RUN() {
 								ue_count++;
 								dv.onclick = null;
 								dv.style.backgroundColor = 'aqua';
+								continue;
+							}
+							// Here....
+							if (num_clicked <= 1) { // 0 and 1
+								num_clicked++;
+								dv.click();
 							}
 						}
 						// Spacer
 						out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
+			}
+			function complete(div) {
+				o.q[0].value = o.q[0].value.trim();
+				o.q[1].value = o.q[1].value.trim();
+				o.q[2].value = o.q[2].value.trim();
+				o.q[3].value = o.q[3].value.trim();
+				console.log(div);
+				console.log(div.price);
+				console.log(div.domain);
+				if (!div.price || !div.domain) return; // Error check
+				if (!/^\$[\d\.]+$/.exec(div.price)) return;
+				if (!/^[\w\d\-]+\.[^\/]+/.exec(div.domain)) return; // "[word/digit/hyphen][period][non-slash characters]"
+				if (o.q[0].value == '' && o.q[1].value == '') {
+					o.q[0].value = div.price;
+					o.q[1].value = div.domain;
+				} else if (o.q[2].value == '' && o.q[3].value == '') {
+					o.q[2].value = div.price;
+					o.q[3].value = div.domain;
+					// Submit here.....
+					
+				}
 			}
 		}
 		new run().f();
