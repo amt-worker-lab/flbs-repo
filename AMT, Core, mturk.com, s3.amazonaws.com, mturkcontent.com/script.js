@@ -66,6 +66,16 @@ function MT__RUN() {
 			// ef
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 40 // offset top
+			});
 			// Init
 			gs(d2);
 			// gs
@@ -113,7 +123,6 @@ function MT__RUN() {
 								dv.appendChild((MT__bold(n[0].innerText.trim(), o.bold)).div({innerHTML: true}));
 							}
 							// 
-							//~ var n = c[i].getElementsByClassName('_Lqc'); // Second.....
 							if (n && n[1]) {
 								dv.appendChild((MT__bold(n[1].innerText.trim(), o.bold)).div({innerHTML: true}));
 							}
