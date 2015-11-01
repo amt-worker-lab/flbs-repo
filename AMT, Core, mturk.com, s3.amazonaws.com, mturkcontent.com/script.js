@@ -389,12 +389,20 @@ function MT__RUN() {
 					console.log('old:'+div.url);
 					div.url = decodeURIComponent( /&ds_dest_url=([^&]+)/.exec(div.url)[1] );
 					div.domain = url2domain(div.url);
+					
+					div.is_good = true; // Set is_good
+					fill(div);
+					return;
 				}
 				//http://501.xg4ken.com/trk/v1?prof=260&camp=42644&affcode=pg1379486&kct=google&kchid=8166717015&cid=38666420633&networkType=search&kdv=c&kpid=SPM11321961330&kmc=9150324&criteriaid=kwd-70246053473&adgroupid=7650731633&campaignid=164107913&locphy=9005000&adpos=1o3&url=http://www.sears.com/ge-19879-50par36-h-sp8-par36-halogen-light-bulb/p-SPM10643088013?hlSellerId=19885&sid=IDx20110310x00001i&kpid=SPM11321961330&kispla=SPM11321961330
 				if (div.url.indexOf('xg4ken.com') != -1 && /&url=([^&]+)/.exec(div.url)) {
 					console.log('old:'+div.url);
 					div.url = decodeURIComponent( /&url=([^&]+)/.exec(div.url)[1] );
 					div.domain = url2domain(div.url);
+					
+					div.is_good = true; // Set is_good
+					fill(div);
+					return;
 				}
 				
 				// This does not really work. E.g. cannot resolve DNS if in /etc/hosts.....
