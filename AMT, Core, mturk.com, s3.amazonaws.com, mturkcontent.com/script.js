@@ -51,6 +51,8 @@ function MT__RUN() {
 					document.getElementById('lowprice2'),
 					document.getElementById('lowseller2'),
 				],
+				
+				SKIPS: null,
 			};
 			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
 			/* BEGIN ITEMS */
@@ -81,8 +83,29 @@ function MT__RUN() {
 				],
 				offset: 40 // offset top
 			});
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips({
+				skips_key: 'Russ_Behrens_Google_Shopping',
+				callback: init,
+				callback_err: function() {}
+			});
 			// Init
-			gs(d2);
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				// Init
+				gs(d2);
+			}
+			// SKIP BUTTON CREATE
+			// returns obj.el_button, obj.isSkip
+			var el_inp_skip2__obj = new AMT___items_factory().
+				create__input_skip_button2(
+					{
+						domain: x,
+						load_file: 'austin_load_skips', 
+						var_skip_sites: SKIP_SITES, 
+						callback_function: false
+					}
+				);
 			// gs
 			function gs(input) {
 				input.value = input.value.trim();
@@ -7402,18 +7425,12 @@ function MT__RUN() {
 						url: MT___host+'/mturk/util.php?austin_load_skips=',
 						onload: function (response) {
 							var rs=response.responseText;
-							
-							//~ SKIP_SITES = rs.split("\n");
-							
 							var x = rs.split("\n");
-							
 							SKIP_SITES = {}; // ASSOC.
-							
 							// FULL
 							for (var i in x) {
 								SKIP_SITES[x[i]] = true;
 							}
-							
 							// SUBDOMAINS!
 							for (var i in x) {
 								var y;
@@ -7421,7 +7438,6 @@ function MT__RUN() {
 									SKIP_SITES[y[1]] = true;
 								}
 							}
-							
 							Travel_Data_company_URL__SP_init();
 						}
 					});
