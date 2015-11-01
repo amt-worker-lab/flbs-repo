@@ -115,9 +115,10 @@ function MT__RUN() {
 							if (!m[2].trim().length) continue; // Blank?
 							var ids = m[2].split(','); // e.g. ```'srpresultimg_4478312870737106424','srpresultimg_16820841038981501643'```
 							for (var i in ids) {
-								images[ ids[i] ] = m[1]; // encoded image source
+								images[ ids[i].replace(/'/g, '') ] = __js_clean_html_str(m[1]); // encoded image source
 							}
 						}
+						console.log(images);
 						// Loop
 						for (var i=0;i<c.length;i++) {
 							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
@@ -134,6 +135,8 @@ function MT__RUN() {
 								if (images.hasOwnProperty( n.id )) { // e.g. srpresultimg_4478312870737106424
 									n.src = images[ n.id ];
 								}
+								n.onload = null; // Unset this....
+								dv.appendChild(n);
 							}
 							// Title
 							// Is a link with necessary href.
