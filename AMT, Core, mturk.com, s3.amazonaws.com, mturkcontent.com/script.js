@@ -115,7 +115,10 @@ function MT__RUN() {
 							if (!m[2].trim().length) continue; // Blank?
 							var ids = m[2].split(','); // e.g. ```'srpresultimg_4478312870737106424','srpresultimg_16820841038981501643'```
 							for (var i in ids) {
-								images[ ids[i].replace(/'/g, '') ] = __js_clean_html_str(m[1]); // encoded image source
+								console.log(m[1]);
+								var p = JSON.parse('"'+m[1]+'"'); // Parse this
+								//~ var p = JSON.parse('"'+__js_clean_html_str(m[1])+'"'); // Parse this
+								images[ ids[i].replace(/'/g, '"') ] = p; //__js_clean_html_str(m[1]); // encoded image source
 							}
 						}
 						console.log(images);
