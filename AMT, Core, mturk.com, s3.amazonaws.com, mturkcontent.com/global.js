@@ -2701,7 +2701,7 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 	GM_xmlhttpRequest({
 		method: "POST",
 		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
-		data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify(options)),
+		data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify({URL: options.URL})),
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
@@ -2712,7 +2712,29 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 		}
 	});
 	// Set interval watch.....
-	
+	var xint = setInterval(watch, 1000);
+	// watch
+	function watch() {
+		// Note: ```check_complete```
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
+			data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify({URL: options.URL, check_complete: true})),
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText.trim();
+				if (response.status != 200 || rs == '') {
+					return;
+				}
+				// Here....
+				clearInterval(xint);
+				// Callback
+				
+			}
+		});
+	}
 }
 /**
  * function xhr
