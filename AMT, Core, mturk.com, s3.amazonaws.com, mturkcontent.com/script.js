@@ -53,6 +53,24 @@ function MT__RUN() {
 				],
 				
 				SKIPS: null,
+				
+				good: {
+					'1000bulbs.com': true,
+					'pilotshq.com': true,
+					'stagelightingstore.com': true,
+					'neobits.com': true,
+					'sustainablesupply.com': true,
+					'bulbstock.com': true,
+					'bhphotovideo.com': true,
+					'garrett-smarthome.com': true,
+					'fullcompass.com': true,
+					'bulbamerica.com': true,
+					'newegg.com': true,
+					'jet.com': true,
+					'spectrumaudio.com': true,
+					'theavspot.com': true,
+					'markertek.com': true,
+				},
 			};
 			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
 			/* BEGIN ITEMS */
@@ -95,17 +113,6 @@ function MT__RUN() {
 				// Init
 				gs(d2);
 			}
-			// SKIP BUTTON CREATE
-			// returns obj.el_button, obj.isSkip
-			var el_inp_skip2__obj = new AMT___items_factory().
-				create__input_skip_button2(
-					{
-						domain: x,
-						load_file: 'austin_load_skips', 
-						var_skip_sites: SKIP_SITES, 
-						callback_function: false
-					}
-				);
 			// gs
 			function gs(input) {
 				input.value = input.value.trim();
@@ -273,7 +280,6 @@ function MT__RUN() {
 								if (a && a[0]) {
 									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
 									if (x) {
-										//~ x = decodeURIComponent(x[1]);
 										dv.url = decodeURIComponent(x[1]);
 										dv.domain = url2domain(dv.url);
 										dv.appendChild((dv.domain).div({}));
@@ -283,7 +289,6 @@ function MT__RUN() {
 									} else {
 										var x = /\/url\?q=([^&]+)/.exec(a[0].getAttribute('href'));
 										if (x) {
-											//~ x = decodeURIComponent(x[1]);
 											dv.url = decodeURIComponent(x[1]);
 											dv.domain = url2domain(dv.url);
 											dv.appendChild((dv.domain).div({}));
@@ -291,6 +296,19 @@ function MT__RUN() {
 												this_is_ue = true;
 											}
 										}
+									}
+									// Append Skip button......
+									// SKIP BUTTON CREATE
+									// returns obj.el_button, obj.isSkip
+									var el_inp_skip2__obj = new AMT___items_factory().create__input_skip_button2({
+										domain: dv.domain,
+										load_file: 'Russ_Behrens_Google_Shopping', 
+										var_skip_sites: o.SKIP_SITES, 
+										callback_function: false
+									});
+									dv.append( el_inp_skip2__obj.el_button );
+									if ( el_inp_skip2__obj.isSkip ) {
+										o.good[ o.domain ] = true; // Add to good domains.
 									}
 								}
 							}
@@ -359,24 +377,6 @@ function MT__RUN() {
 					console.log('c');
 					return; // "[word/digit/hyphen][period][non-slash characters]"
 				}
-				// good
-				var good = {
-					'1000bulbs.com': true,
-					'pilotshq.com': true,
-					'stagelightingstore.com': true,
-					'neobits.com': true,
-					'sustainablesupply.com': true,
-					'bulbstock.com': true,
-					'bhphotovideo.com': true,
-					'garrett-smarthome.com': true,
-					'fullcompass.com': true,
-					'bulbamerica.com': true,
-					'newegg.com': true,
-					'jet.com': true,
-					'spectrumaudio.com': true,
-					'theavspot.com': true,
-					'markertek.com': true,
-				}
 				//~ // Mark output fields for this div....
 				//~ fill(div);
 				div.is_dirty = false;
@@ -400,7 +400,7 @@ function MT__RUN() {
 				// Try to resolve
 				// Also, it is unnecessary to resolve when "Company"=="domain"
 				if 	(
-					!good.hasOwnProperty(div.domain)
+					!o.good.hasOwnProperty(div.domain)
 					) {
 					div.is_dirty = true; // Set is_dirty
 					fill(div);
