@@ -5237,24 +5237,24 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 	// Xhr
 	GM_xmlhttpRequest({
 		method: 'GET',
-		url: MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(opts_obj)),
+		url: MT___host+'/mturk/util.php?fs_load_skips_file='+encodeURIComponent(JSON.stringify(o)),
 		onload: function (response) {
-			var rs=response.responseText;
+			var rs=response.responseText.trim();
 			if (response.status != 200) {
 				opts_obj.callback_err();
 				return;
 			}
-			var x = rs.split("\n");
+			var x = rs.split("\n");//console.log(rs);
 			var SKIP_SITES = {}; // ASSOC.
 			// FULL
 			for (var i in x) {
-				SKIP_SITES[x[i]] = true;
+				SKIP_SITES[ x[i] ] = true;
 			}
 			// SUBDOMAINS!
 			for (var i in x) {
 				var y;
 				if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
-					SKIP_SITES[y[1]] = true;
+					SKIP_SITES[ y[1] ] = true;
 				}
 			}
 			// init
@@ -12439,7 +12439,6 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		return el_inp;
 	}
 	function remove_button() { //url
-		//~ 
 		var el_inp = document.createElement('input');
 		el_inp.setAttribute('style','width:auto;background-color:#eee;border:0;cursor:pointer;');
 		el_inp.setAttribute('type','button');
@@ -12459,11 +12458,10 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		)
 	{
 		return {
-			el_btn: remove_button(),
+			el_button: remove_button(),
 			isSkip: true
 		};
 	}
-	
 	// This is not a skip.
 	return {
 		el_button: add_button(),

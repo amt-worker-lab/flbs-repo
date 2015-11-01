@@ -109,6 +109,7 @@ function MT__RUN() {
 			});
 			// Init
 			function init(SKIP_SITES) {
+				console.log(SKIP_SITES);
 				o.SKIP_SITES = SKIP_SITES; // Populate.
 				// Init
 				gs(d2);
@@ -282,7 +283,7 @@ function MT__RUN() {
 									if (x) {
 										dv.url = decodeURIComponent(x[1]);
 										dv.domain = url2domain(dv.url);
-										dv.appendChild((dv.domain).div({}));
+										dv.appendChild((dv.domain).div({style:'display:inline;'}));
 										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 											this_is_ue = true;
 										}
@@ -291,7 +292,7 @@ function MT__RUN() {
 										if (x) {
 											dv.url = decodeURIComponent(x[1]);
 											dv.domain = url2domain(dv.url);
-											dv.appendChild((dv.domain).div({}));
+											dv.appendChild((dv.domain).div({style:'display:inline;'}));
 											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 												this_is_ue = true;
 											}
@@ -308,7 +309,7 @@ function MT__RUN() {
 									});//console.log(el_inp_skip3__obj);
 									dv.appendChild( el_inp_skip3__obj.el_button );
 									if ( el_inp_skip3__obj.isSkip ) {
-										o.good[ o.domain ] = true; // Add to good domains.
+										o.good[ dv.domain ] = true; // Add to good domains.
 									}
 								}
 							}
@@ -401,7 +402,8 @@ function MT__RUN() {
 				// Also, it is unnecessary to resolve when "Company"=="domain"
 				if 	(
 					!o.good.hasOwnProperty(div.domain)
-					) {
+					)
+				{
 					div.is_dirty = true; // Set is_dirty
 					fill(div);
 					resolve(div);
