@@ -357,6 +357,7 @@ function MT__RUN() {
 				//~ fill(div);
 				div.is_dirty = false;
 				div.is_taken = false;
+				div.is_good = false;
 				// Auto convert these....
 				//http://clickserve.dartsearch.net/link/click?lid=92700005554859909&ds_s_kwgid=58700000368691903&ds_e_adid=42222171703&ds_e_product_group_id=82794062743&ds_e_product_id=9SIA0X80848322&ds_e_product_merchant_id=102658729&ds_e_product_country=US&ds_e_product_language=en&ds_e_product_channel=online&ds_e_product_store_id=&ds_e_ad_type=pla&ds_s_inventory_feed_id=97700000001004293&ds_url_v=2&ds_dest_url=http://www.newegg.com/Product/Product.aspx?Item=9SIA0X80848322&nm_mc=KNC-GoogleMKP-PC&cm_mmc=KNC-GoogleMKP-PC-_-pla-_-Standard+Bulbs-_-9SIA0X80848322
 				if (/&ds_dest_url=([^&]+)/.exec(div.url)) {
@@ -383,18 +384,18 @@ function MT__RUN() {
 					return;
 				}
 				// Here...
+				div.is_good = true; // Set is_good
 				fill(div);
 			}
 			function fill(div) {
 				var out;
 				if (!o.q[0].is_taken) {
 					o.q[0].is_taken = div;
-					//~ o.q[0].value = div.price;
-					//~ o.q[1].value = div.domain;
-					//~ return;
+					o.q[0].is_good = div.is_good;
 				}
 				else if (!o.q[2].is_taken) {
 					o.q[2].is_taken = div;
+					o.q[2].is_good = div.is_good;
 				}
 				if (o.q[0].is_taken == div) {
 					out = [ o.q[0], o.q[1] ];
@@ -409,14 +410,14 @@ function MT__RUN() {
 					out[0].value = div.price;
 					out[1].value = div.domain;
 				}
-				//~ if (o.q[0].value == '' && o.q[1].value == '') {
-					//~ o.q[0].value = div.price;
-					//~ o.q[1].value = div.domain;
-				//~ } else if (o.q[2].value == '' && o.q[3].value == '') {
-					//~ o.q[2].value = div.price;
-					//~ o.q[3].value = div.domain;
-					//~ // Submit here.....
-				//~ }
+				if  (
+					o.q[0].value != '' && o.q[1].value != '' && o.q[2].value != '' && o.q[3].value != '' &&
+					o.q[0].is_good && o.q[2].is_good
+					) {
+					// submit...
+					document.body.style.backgroundColor = 'orange';
+					//doSubmit();
+				}
 			}
 			function resolve(div) {
 				// Because this is asynchronous, it is necessary to connect this request with the given output fields!
