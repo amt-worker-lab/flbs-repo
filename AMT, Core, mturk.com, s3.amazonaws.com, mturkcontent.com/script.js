@@ -36889,16 +36889,16 @@ function MT__RUN() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						//~ if  (
-							//~ rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
-							//~ rs.indexOf('"text": "Signature was invalid"') != -1
-							//~ )
-						//~ {
-							//~ d1.style.backgroundColor = 'yellow';
-							//~ return false;
-						//~ }
-						//~ else
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.') != -1 ||
+							options.response.status != 200
+							)
+						{
+							document.body.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
 							return true;
 					},
 					success_callback: function(options) {
@@ -36906,6 +36906,13 @@ function MT__RUN() {
 						if (options.response.status != 200) {
 							console.log(options.response.status);
 							console.log(options);
+							return;
+						}
+						if (
+							rs.indexOf('Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.') != -1
+						)
+						{
+							document.body.style.backgroundColor = 'blue';
 							return;
 						}
 						// ...
