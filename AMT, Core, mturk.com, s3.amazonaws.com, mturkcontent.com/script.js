@@ -46159,7 +46159,8 @@ function MT__RUN() {
 					document.getElementById('MAGICID5'),
 					document.getElementById('MAGICID6'),
 				],
-				divs: {}
+				divs: {},
+				inputs: {},
 				//~ sbold: null,
 				//~ mbold: null,
 				//~ auto: false,
@@ -46175,6 +46176,7 @@ function MT__RUN() {
 					mbold: null,
 					store_no_the:null,
 					mall_no_the:null,
+					auto: false, // Whether this store autoed
 				}
 				x.sbold = x.store.clean_string_to_array();
 				x.mbold = x.mall.clean_string_to_array();
@@ -46190,28 +46192,41 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			for (var i=0; i<=5; i++) {
 				var id = 'div'+i;
-				var d = ''.div();
-				d.id = i;
+				var l = {
+					l: i*(99/6)+'%',
+					w: (99/6)+'%'
+				}
+				var d = ''.div({
+					style:
+					'position:absolute;top:20px;'+
+					'left:'+l.l+';width:'+l.w+';height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				});
+				d.rid = i; // Row id
 				o.divs[id] = d;
+				document.body.appendChild(d);
 			}
-			
-			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1);
-			//
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1b);
-			//
-			var d2 = document.createElement('input');
-			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
-			d2.onblur = function() {
-				this.value = this.value.replace(/\s+/g, ' ').trim();
-				stores();
-				//~ Morgan_Intrator_school_codes();
+			var ef = new AMT___events_factory();
+			for (var i=0; i<=5; i++) {
+				var id = 'input'+i;
+				var l = {
+					l: i*(99/6)+'%',
+					w: (99/6)+'%'
+				}
+				var d = document.createElement('input');
+				d.setAttribute('type','text');
+				d.setAttribute('style','position:absolute;top:0px;left:'+l.l+';width:'+l.w+';height:20px;background-color:#eee;border:1px solid blue;overflow:auto;');
+				d.rid = i; // Row id
+				d.__parent = o.divs[i]; // Row id
+				d.__store = o.stores[i]; // Row id
+				d.value = o.stores[i].store;
+				d.onblur = function() {
+					this.value = this.value.replace(/\s+/g, ' ').trim();
+					stores(this);
+				}
+				d.addEventListener('keydown', ef.keydown__blur_field, true);
+				o.inputs[id] = d;
+				document.body.appendChild(d);
 			}
-			document.body.appendChild(d2);
 			/* END ITEMS */
 			
 			// innerHeight
@@ -46220,71 +46235,69 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b
+					d1
 				],
-				offset: 0
+				offset: 20
 			});
-			
-			// actions
-			d2.value  = o.store;
-			var ef = new AMT___events_factory();
-			d2.addEventListener('keydown', ef.keydown__blur_field, true);
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				for (var i in q) {
-					q[i].value = q[i].value.trim();
-					if (q[i].value == '') {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
 						return false;
 					}
 				}
 			}
-			
 			// init
-			stores();
+			stores(o.inputs[0]);
+			stores(o.inputs[1]);
+			stores(o.inputs[2]);
+			stores(o.inputs[3]);
+			stores(o.inputs[4]);
+			stores(o.inputs[5]);
 			
 			// ...
-			function stores(div) {
-				
-				d1 .innerHTML = '';
-				d1b.innerHTML = '';
-				//this.style.backgroundColor = 'LightGreen';
-				
-				//~ var m = (div == d1) ? : 
+			function stores(input) {
+				var s = input.__store;
+				var out = input.__parent;
+				out.innerHTML = '';
 				
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
-						query: 'AMT__John_Curtis_Mall_Search',
-						encodeStrings: [ { store: d2.value, mall:o.mall } ],
-						__seed__: d1,
+						query: 'AMT__John_Curtis_Mall_Search2',
+						encodeStrings: [ { store: input.value, mall: s.mall } ],
+						__seed__: input,
 					},
 					process
 				);
-				var rf = new AMT___requests_factory();
-				rf.database__select(
-					{
-						query: 'AMT__John_Curtis_Mall_Search',
-						encodeStrings: [ { store: d2.value} ],
-						__seed__: d1b,
-					},
-					process
-				);
+				//~ var rf = new AMT___requests_factory();
+				//~ rf.database__select(
+					//~ {
+						//~ query: 'AMT__John_Curtis_Mall_Search2',
+						//~ encodeStrings: [ { store: d2.value} ],
+						//~ __seed__: d1b,
+					//~ },
+					//~ process
+				//~ );
 			}
 			// ...
 			function process(database_object) {
 				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
 				//database_object.responseObject = JSON.parse(rs);
-				var out = database_object.__seed__;
+				var input = database_object.__seed__;
+				var s = input.__store;
+				var out = input.__parent;
 				if (database_object.responseObject.length == 0) {
-					out.innerText = d2.value + "\n" + '0';
+					out.innerText = input.value + "\n" + '0';
 					return;
 				}
 				// Show...
 				out.innerText = '';
-				out.appendChild((o.store + '\n' + o.mall).div({style:'border-bottom:2px solid teal;'}));
-				console.log(database_object);
+				out.appendChild((s.store + '\n' + s.mall).div({style:'border-bottom:2px solid teal;'}));
+				//~ console.log(database_object);
 				
 				// AUTO
 				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
@@ -46294,8 +46307,8 @@ function MT__RUN() {
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
 					
 					//
-					var n = MT__bold(x[0], o.sbold);
-					var m = MT__bold(x[1], o.mbold, {color:'blue'}).bold_string;
+					var n = MT__bold(x[0], s.sbold);
+					var m = MT__bold(x[1], s.mbold, {color:'blue'}).bold_string;
 					
 					// ...
 					var eldiv = document.createElement('div');
@@ -46303,35 +46316,36 @@ function MT__RUN() {
 					eldiv.className = 'exe';
 					eldiv.innerHTML = n + ': ' + m;
 					eldiv.code = x[2];
+					eldiv.output_field = input; // Input field.....
 					eldiv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						o.q[0].value = this.code;
-						if (this.code.trim().length > 4 && /^\d{3,}$/.exec(this.code)) {
-							doSubmit();
+						this.output_field.value = this.code;
+						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
+							try_sbm();
+							//~ doSubmit();
 						}
 					}
-					out .appendChild(eldiv);
-					
+					out.appendChild(eldiv);
 					
 					if ( //i == 0 &&
-						o.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
-						o.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
-						o.store.clean_str_to_auto().length >= 4 &&
-						o.mall.clean_str_to_auto().length >= 4 &&
-						!o.auto
+						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						s.store.clean_str_to_auto().length >= 4 &&
+						s.mall.clean_str_to_auto().length >= 4 &&
+						!s.auto
 						) {
-						o.auto = true;
+						s.auto = true;
 						eldiv.click();
 					}
 					
 					else if ( // try auto 2 (no "The"
-						o.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
-						o.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
-						o.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
-						o.mall_no_the.clean_str_to_auto().length >= 3 &&
-						!o.auto
+						s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						!s.auto
 						) {
-						o.auto = true;
+						s.auto = true;
 						eldiv.click();
 					}
 				}
@@ -46341,6 +46355,14 @@ function MT__RUN() {
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
 				out.appendChild(eldiv);
+			}
+			function try_sbm() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') return;
+				}
+				// Still here...
+				doSubmit();
 			}
 		}
 		new run().f();return;
