@@ -36825,6 +36825,9 @@ function MT__RUN() {
 				// INIT _PROXY_REDACTED_
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					url: url,
+					headers_array: [
+					
+					],
 					callback_function: function(rs) { // responseText
 						// ...
 						/*<li class="founded">
@@ -167339,15 +167342,11 @@ qatar,80
 		
 		f = f + ' ' + l;
 		
-		
-		
-		
 		//var f = /<p>site: linkedin.com ([^<]+)/.exec(ih)[1];
 		
 		var f_ = __js_escape_regEx(f);
 		
 		var school = /<p><span style="font-family: [^;]+;">School: ([^<]+)/.exec(ih)[1].trim();
-		
 		
 		d2.value = f;
 		
@@ -167465,11 +167464,8 @@ qatar,80
 								}
 								
 							} else {
-								
 								d1.innerHTML += '<div style="background-color:lavenderblush;border-bottom:1px solid #ddd;">'+m[1]+'</div>';
-								
 							}
-							
 							count++;
 						}
 						
@@ -167521,20 +167517,10 @@ qatar,80
 										if (r.exec(rs)) {
 											r.lastIndex = 0;
 											while (m = r.exec(rs)) {
-												
-								console.log(m[0]);
-								//m[0] = m[0].replace(/<[^>]+>/g, '');
-								m[0] = m[0].replace(/[<>]/g, '/');
-								
-								//m[0] = m[0].replace(/^[^>]+>/g, ''); //at start?
-								//m[0] = m[0].replace(/[<>]/g, '');
-								
-								m[0] = m[0].replace(/(M\.?I\.?T\.?|massachusetts institute of technology)/gi, '<span style="color:lime;">$1</span>'); //at start?
-								
-								console.log(m[0]);
-								
-								d1b.innerHTML += m[0]+'<hr>';
-												
+												m[0] = m[0].replace(/[<>]/g, '/');
+												m[0] = m[0].replace(/(M\.?I\.?T\.?|massachusetts institute of technology)/gi, '<span style="color:lime;">$1</span>'); //at start?
+												console.log(m[0]);
+												d1b.innerHTML += m[0]+'<hr>';
 											}
 										} else
 											d1b.innerHTML += ' - 0 - ';
@@ -167546,64 +167532,6 @@ qatar,80
 				}
 			});
 		}
-		
-		
-						
-		/*url = '"'+f+' '+l+'" site:linkedin.com "MIT"|"Massachusetts Institute of Technology"';
-		
-		url = encodeURIComponent(url);
-		
-		short_filename = encodeURIComponent('q=' + url);
-		
-		url = 'https://www.google.com/search?q='+url+'&oq='+url+'&gs_l=&hl=en';
-		
-		url = encodeURIComponent(url);
-		
-		console.log(url);
-		
-		//start
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: 'http://localhost/mturk/.scripts/google/get-page.php?u='+url+'&short_filename='+short_filename,
-			onload: function(response) {
-				var rs=response.responseText;
-				if (rs.trim() != '') {
-					//clearInterval(xint);
-				}
-			}
-		});
-		
-		//done
-		var xint = setInterval(function() {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: 'http://localhost/mturk/.scripts/google/get-page.php?v='+short_filename,
-				onload: function(response) {
-					var rs=response.responseText;
-					if (rs.trim() != '') {
-						clearInterval(xint);
-						
-						var r;
-						r = /<!--m-->((.|\s)*?(?=<!--m-->|$)|$)/g;
-						
-						if (r.exec(rs)) {
-							r.lastIndex = 0;
-							var m;
-							var r2;
-							while (m = r.exec(rs)) {
-								r2 = /<a href="(http:\/\/webcache\.googleusercontent\.com\/search\?q=cache:[^"]+/.exec(m[1]);
-								if (r2) {
-									r2 = r2[1];
-									d1.innerHTML += '<input type="button" value="'+r2+'" class="exe" ><br >';
-								}
-								m[1] = m[1].replace(/<[^>]+>/g, ' ');
-								d1.innerHTML += m[1] + '<br ><br >';
-							}
-						}
-					}
-				}
-			});
-		},1000);*/
 	}
 	
 	//
@@ -172559,73 +172487,6 @@ qatar,80
 							}
 						}
 						else
-						{
-							console.log(rs);
-						}
-					}
-				});
-			}
-			//~ // OLD AJAX
-			function kronopin_linkedin_company_employees(companyId, count) {
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: 'http://www.linkedin.com/vsearch/pj?f_CC='+companyId+'&trk=rr_connectedness',
-					onload: function(response) {
-						var rs = response.responseText;
-						
-						runs++;
-						if (response.status != 200) {
-							console.log('x'+runs);
-							// try again?
-							//~ if (runs < 10)
-								//~ kronopin_linkedin_company_employees(companyId, count);
-							return;
-						}
-						
-						rs = JSON.parse(rs);
-						console.log(rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted);
-						console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset');
-						console.log(rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove');
-						console.log(rs.content.global_requestParams.f_N == 'F');
-						// CHECK FOR MAX PAGE REQUESTS ERROR HERE.
-						if  (
-							rs.content.page.voltron_unified_search_json.search.baseData.isFuseRestricted &&
-							rs.content.page.voltron_unified_search_json.search.baseData.i18n_reset == 'Reset' &&
-							rs.content.page.voltron_unified_search_json.search.baseData.i18n_remove == 'Remove'// &&
-							)
-						{
-							document.body.style.backgroundColor = 'pink';
-							return;
-						}
-						
-						if (/^\d+$/.exec(rs.content.page.voltron_unified_search_json.search.baseData.resultCount)) {
-							
-							var i = MT___numberWithCommas(rs.content.page.voltron_unified_search_json.search.baseData.resultCount);
-							
-							if (/^[\d,]+$/.exec(i)) {
-								document.getElementById('Q'+count+'Url').value = i;
-								if(i == 0) {
-									company_employees_submit();
-								}
-								else {
-									// write
-									if (AMT___POPUP___PROXY_REDACTED_ != '') {
-										GM_xmlhttpRequest({
-											method: "GET",
-											url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+i,
-											onload: function(response) {
-												var rs = response.responseText;
-												if (response.status != 200) {
-													console.log('x');
-													return;
-												}
-												company_employees_submit();
-											}
-										});
-									}
-								}
-							}
-						} else
 						{
 							console.log(rs);
 						}
