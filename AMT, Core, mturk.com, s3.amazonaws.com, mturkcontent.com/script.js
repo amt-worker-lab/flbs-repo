@@ -46199,7 +46199,7 @@ function MT__RUN() {
 				}
 				var d = ''.div({
 					style:
-					'position:absolute;top:80px;'+
+					'position:absolute;top:100px;'+
 					'left:'+l.l+';width:'+l.w+';height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 				});
 				//~ d.rid = i; // Row id
@@ -46216,7 +46216,7 @@ function MT__RUN() {
 				var d = document.createElement('input');
 				d.setAttribute('type','button');
 				d.setAttribute('style',
-					'position:absolute;top:0px;left:'+l.l+';width:'+l.w+';height:20px;'
+					'position:absolute;top:0px;left:'+l.l+';width:'+l.w+';height:40px;'
 				);
 				d.value = 'n/a';
 				d.rid = i; // Row id
@@ -46241,7 +46241,7 @@ function MT__RUN() {
 				var d = document.createElement('input');
 				d.setAttribute('type','text');
 				d.setAttribute('style',
-					'position:absolute;top:20px;left:'+l.l+';width:'+l.w+';height:60px;'
+					'position:absolute;top:40px;left:'+l.l+';width:'+l.w+';height:60px;'
 				);
 				d.rid = i; // Row id
 				d.__parent = o.divs[i]; // Row id
@@ -46278,7 +46278,7 @@ function MT__RUN() {
 					o.divs[4],
 					o.divs[5],
 				],
-				offset: 80
+				offset: 100
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
