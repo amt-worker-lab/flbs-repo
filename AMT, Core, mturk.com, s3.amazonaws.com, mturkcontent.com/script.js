@@ -46199,7 +46199,7 @@ function MT__RUN() {
 				}
 				var d = ''.div({
 					style:
-					'position:absolute;top:40px;'+
+					'position:absolute;top:80px;'+
 					'left:'+l.l+';width:'+l.w+';height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 				});
 				//~ d.rid = i; // Row id
@@ -46222,7 +46222,8 @@ function MT__RUN() {
 				d.rid = i; // Row id
 				d.onclick = function() {
 					var idx = this.rid;
-					o.inputs[idx].value = 'n/a';
+					o.q[idx].value = 'n/a';
+					o.q[idx].squished = true; squish(); // This will squish the display......
 					this.style.backgroundColor = 'LightGreen';
 					try_sbm();
 				}
@@ -46240,7 +46241,7 @@ function MT__RUN() {
 				var d = document.createElement('input');
 				d.setAttribute('type','text');
 				d.setAttribute('style',
-					'position:absolute;top:20px;left:'+l.l+';width:'+l.w+';height:20px;'
+					'position:absolute;top:20px;left:'+l.l+';width:'+l.w+';height:60px;'
 				);
 				d.rid = i; // Row id
 				d.__parent = o.divs[i]; // Row id
@@ -46252,6 +46253,12 @@ function MT__RUN() {
 					this.value = this.value.replace(/\s+/g, ' ').trim();
 					stores(this);
 				}
+				ef.mouseup__delete_range({
+					element: d,
+					callback: function(input_object) {
+						input_object.element.blur();
+					}
+				});
 				d.addEventListener('keydown', ef.keydown__blur_field, true);
 				document.body.appendChild(d);
 				o.inputs.push(d);
@@ -46271,7 +46278,7 @@ function MT__RUN() {
 					o.divs[4],
 					o.divs[5],
 				],
-				offset: 40
+				offset: 80
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
@@ -46325,15 +46332,17 @@ function MT__RUN() {
 				var s = input.__store;
 				var output_field = input.__output_field;
 				var out = input.__parent;
-				if (database_object.responseObject.length == 0) {
-					out.innerText = input.value + "\n" + '0';
-					return;
-				}
+				var show = (s.store + '\n' + s.mall).div({style:'border-bottom:2px solid teal;'});
 				// Show...
 				out.innerText = '';
-				out.appendChild((s.store + '\n' + s.mall).div({style:'border-bottom:2px solid teal;'}));
-				//~ console.log(database_object);
+				out.appendChild(show);
+				// 0...
+				if (database_object.responseObject.length == 0) {
+					out.appendChild((input.value + "\n" + '0 results!').div());
+					return;
+				}
 				
+				// Loop
 				// AUTO
 				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
 				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
@@ -46401,16 +46410,21 @@ function MT__RUN() {
 						num++;
 					}
 				}
-				var tot = (99/num) + '%'; // e.g. 99/2=49.5 99/4=24.75
+				var tot = (99/num); // e.g. 99/2=49.5 99/4=24.75
+				var left = 0;
 				for (var i in o.q) {
 					if (o.q[i].squished) {
 						o.inputs[i].style.display = 'none';
 						o.divs[i].style.display = 'none';
 						o.nas[i].style.display = 'none';
 					} else {
-						o.inputs[i].style.width = tot;
-						o.divs[i].style.width = tot;
-						o.nas[i].style.width = tot;
+						o.inputs[i].style.width = tot+'%';
+						o.divs[i].style.width = tot+'%';
+						o.nas[i].style.width = tot+'%';
+						o.inputs[i].style.left = left+'%';
+						o.divs[i].style.left = left+'%';
+						o.nas[i].style.left = left+'%';
+						left += tot; // Increment left
 					}
 				}
 			}
