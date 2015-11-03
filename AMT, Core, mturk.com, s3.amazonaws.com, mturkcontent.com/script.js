@@ -39774,7 +39774,7 @@ function MT__RUN() {
 	
 	// Gil Adam
 	// 
-	// 
+	// Artist, Band, or Public Figure
 	// 
 	s = '<li>The official page <strong>must&nbsp;</strong>be one of the following&nbsp;Facebook&nbsp;page types: "Artist, Band, or Public Figure.",&nbsp;"Company, Organization or Institution" , "Entertainment"</li>';
 	if (ih.indexOf(s) != -1)
