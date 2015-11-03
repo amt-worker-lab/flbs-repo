@@ -46129,9 +46129,196 @@ function MT__RUN() {
 			//~ }
 		//~ });
 	//~ }
-	//
+	// John Curtis #2
+	// Lookup store name in our data list and get ID
+	// AMT__John_Curtis_Mall_Search2
+	// 
+	s = '<p style="font-size: 0.9em;">Find the company in a google document and get the ID and put it in the input box below</p>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top:40px !important;}');//width:40% !important;	
+			
+			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var st = document.getElementsByTagName('strong');
+			var o = {
+				store: st[1].innerText.trim(),
+				mall: st[2].innerText.trim(),
+				q: [
+					document.getElementById('web_url')
+				],
+				sbold: null,
+				mbold: null,
+				auto: false,
+				store_no_the:null,
+				mall_no_the:null,
+			}
+			o.sbold = o.store.clean_string_to_array();
+			o.mbold = o.mall.clean_string_to_array();
+			o.store_no_the = o.store.replace(/^The +/, '');
+			o.mall_no_the = o.mall.replace(/^The +/, '');
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			//
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			//
+			var d2 = document.createElement('input');
+			d2.setAttribute('type','text');
+			d2.setAttribute('style','position:absolute;top:0px;width:28%;height:28px;');
+			d2.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				stores();
+				//~ Morgan_Intrator_school_codes();
+			}
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 0
+			});
+			
+			// actions
+			d2.value  = o.store;
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in q) {
+					q[i].value = q[i].value.trim();
+					if (q[i].value == '') {
+						return false;
+					}
+				}
+			}
+			
+			// init
+			stores();
+			
+			// ...
+			function stores(div) {
+				
+				d1 .innerHTML = '';
+				d1b.innerHTML = '';
+				//this.style.backgroundColor = 'LightGreen';
+				
+				//~ var m = (div == d1) ? : 
+				
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__John_Curtis_Mall_Search',
+						encodeStrings: [ { store: d2.value, mall:o.mall } ],
+						__seed__: d1,
+					},
+					process
+				);
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__John_Curtis_Mall_Search',
+						encodeStrings: [ { store: d2.value} ],
+						__seed__: d1b,
+					},
+					process
+				);
+			}
+			// ...
+			function process(database_object) {
+				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
+				//database_object.responseObject = JSON.parse(rs);
+				var out = database_object.__seed__;
+				if (database_object.responseObject.length == 0) {
+					out.innerText = d2.value + "\n" + '0';
+					return;
+				}
+				// Show...
+				out.innerText = '';
+				out.appendChild((o.store + '\n' + o.mall).div({style:'border-bottom:2px solid teal;'}));
+				console.log(database_object);
+				
+				// AUTO
+				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				for (var i in database_object.responseObject) {
+					//
+					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
+					
+					//
+					var n = MT__bold(x[0], o.sbold);
+					var m = MT__bold(x[1], o.mbold, {color:'blue'}).bold_string;
+					
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = n + ': ' + m;
+					eldiv.code = x[2];
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						o.q[0].value = this.code;
+						if (this.code.trim().length > 4 && /^\d{3,}$/.exec(this.code)) {
+							doSubmit();
+						}
+					}
+					out .appendChild(eldiv);
+					
+					
+					if ( //i == 0 &&
+						o.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						o.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						o.store.clean_str_to_auto().length >= 4 &&
+						o.mall.clean_str_to_auto().length >= 4 &&
+						!o.auto
+						) {
+						o.auto = true;
+						eldiv.click();
+					}
+					
+					else if ( // try auto 2 (no "The"
+						o.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						o.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						o.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						o.mall_no_the.clean_str_to_auto().length >= 3 &&
+						!o.auto
+						) {
+						o.auto = true;
+						eldiv.click();
+					}
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out .appendChild(eldiv);
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out.appendChild(eldiv);
+			}
+		}
+		new run().f();return;
+	}
 	// John Curtis
 	// Lookup store name in our data list and get ID
+	// 
 	// 
 	s = '<p style="font-size: 0.9em;">Find the company in a google document and get the ID and put it in the input box below</p>';
 	if(ih.indexOf(s) != -1)
