@@ -46133,14 +46133,14 @@ function MT__RUN() {
 	// Lookup store name in our data list and get ID
 	// AMT__John_Curtis_Mall_Search2
 	// 
-	s = '<p style="font-size: 0.9em;">Find the company in a google document and get the ID and put it in the input box below</p>';
+	s = '<a href="https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing" target="_blank">https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing</a></li>';
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function(){}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top:40px !important;}');//width:40% !important;	
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50%;}'); // Left:50%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top:400px !important;}');//width:40% !important;	
 			
 			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
 			GM_addStyle('input {width:90%;}');
@@ -46159,8 +46159,9 @@ function MT__RUN() {
 					document.getElementById('MAGICID5'),
 					document.getElementById('MAGICID6'),
 				],
-				divs: {},
-				inputs: {},
+				nas: [],
+				divs: [],
+				inputs: [],
 				//~ sbold: null,
 				//~ mbold: null,
 				//~ auto: false,
@@ -46191,20 +46192,44 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			for (var i=0; i<=5; i++) {
-				var id = 'div'+i;
+				//~ var id = 'div'+i;
 				var l = {
 					l: i*(99/6)+'%',
 					w: (99/6)+'%'
 				}
 				var d = ''.div({
 					style:
-					'position:absolute;top:20px;'+
+					'position:absolute;top:40px;'+
 					'left:'+l.l+';width:'+l.w+';height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 				});
-				d.rid = i; // Row id
-				o.divs[id] = d;
+				//~ d.rid = i; // Row id
+				//~ o.divs[id] = d;
+				o.divs.push(d);
 				document.body.appendChild(d);
 			}
+			// n/a buttons
+			for (var i=0; i<=5; i++) {
+				var l = {
+					l: i*(99/6)+'%',
+					w: (99/6)+'%'
+				}
+				var d = document.createElement('input');
+				d.setAttribute('type','button');
+				d.setAttribute('style',
+					'position:absolute;top:0px;left:'+l.l+';width:'+l.w+';height:20px;'
+				);
+				d.value = 'n/a';
+				d.rid = i; // Row id
+				d.onclick = function() {
+					var idx = this.rid;
+					o.inputs[idx].value = 'n/a';
+					this.style.backgroundColor = 'LightGreen';
+					try_sbm();
+				}
+				document.body.appendChild(d);
+				o.nas.push(d);
+			}
+			// Inputs....
 			var ef = new AMT___events_factory();
 			for (var i=0; i<=5; i++) {
 				var id = 'input'+i;
@@ -46214,18 +46239,21 @@ function MT__RUN() {
 				}
 				var d = document.createElement('input');
 				d.setAttribute('type','text');
-				d.setAttribute('style','position:absolute;top:0px;left:'+l.l+';width:'+l.w+';height:20px;background-color:#eee;border:1px solid blue;overflow:auto;');
+				d.setAttribute('style',
+					'position:absolute;top:20px;left:'+l.l+';width:'+l.w+';height:20px;'
+				);
 				d.rid = i; // Row id
 				d.__parent = o.divs[i]; // Row id
 				d.__store = o.stores[i]; // Row id
+				d.__na = o.nas[i]; // Row id
 				d.value = o.stores[i].store;
 				d.onblur = function() {
 					this.value = this.value.replace(/\s+/g, ' ').trim();
 					stores(this);
 				}
 				d.addEventListener('keydown', ef.keydown__blur_field, true);
-				o.inputs[id] = d;
 				document.body.appendChild(d);
+				o.inputs.push(d);
 			}
 			/* END ITEMS */
 			
@@ -46235,9 +46263,14 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1
+					o.divs[0],
+					o.divs[1],
+					o.divs[2],
+					o.divs[3],
+					o.divs[4],
+					o.divs[5],
 				],
-				offset: 20
+				offset: 40
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
@@ -46318,6 +46351,8 @@ function MT__RUN() {
 					eldiv.code = x[2];
 					eldiv.output_field = input; // Input field.....
 					eldiv.onclick = function() {
+						this.output_field.squished = true;
+						squish();
 						this.style.backgroundColor = 'LightGreen';
 						this.output_field.value = this.code;
 						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
@@ -46326,7 +46361,8 @@ function MT__RUN() {
 						}
 					}
 					out.appendChild(eldiv);
-					
+					console.log(s);
+					console.log(x);
 					if ( //i == 0 &&
 						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
 						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
@@ -46355,6 +46391,23 @@ function MT__RUN() {
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
 				out.appendChild(eldiv);
+			}
+			function squish() { // Minimize....
+				var num = 0;
+				for (var i in o.q) {
+					if (o.q[i].squished) {
+						num++;
+					}
+				}
+				var tot = (99/num) + '%'; // e.g. 99/2=49.5 99/4=24.75
+				for (var i in o.q) {
+					if (o.q[i].squished) {
+						o.q[i].style.display = 'none';
+					} else {
+						o.q[i].style.width = tot;
+						o.q[i].__parent.style.width = tot;
+					}
+				}
 			}
 			function try_sbm() {
 				for (var i in o.q) {
