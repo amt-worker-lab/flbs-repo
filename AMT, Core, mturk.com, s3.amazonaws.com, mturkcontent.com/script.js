@@ -36814,21 +36814,42 @@ function MT__RUN() {
 					document.getElementById('founding_year3'),
 				]
 			}
-			lk(a[1].href, o.q[0]);
-			lk(a[2].href, o.q[1]);
-			lk(a[3].href, o.q[2]);
+			lk1(a[1].href, o.q[0]);
+			lk1(a[2].href, o.q[1]);
+			lk1(a[3].href, o.q[2]);
 			//
 			//
 			//
-			function lk(url, out_field) {
-				
-				// INIT _PROXY_REDACTED_
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					url: url,
-					headers_array: [
-					
-					],
-					callback_function: function(rs) { // responseText
+			function lk2(url, out_field) {
+				// PERFORM A GOOGLE SCRAPE HERE.
+				// GOOGLE does not need a catch include as it is already in get-page.php.
+				// https://webcache.googleusercontent.com/search?q=cache:www.manta.com/c/mm7kr8m/ic-tronics-inc+&cd=10&hl=en&ct=clnk&gl=us
+				//var url = 'https://webcache.googleusercontent.com/' + 
+				//		'search?q=cache:'+encodeURIComponent(input.manta_url)+'&hl=en&gl=us';
+				var u = 'https://webcache.googleusercontent.com/' + 
+						'search?q=cache:'+encodeURIComponent(url)+'&hl=en&gl=us';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ if  (
+							//~ rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							//~ rs.indexOf('"text": "Signature was invalid"') != -1
+							//~ )
+						//~ {
+							//~ d1.style.backgroundColor = 'yellow';
+							//~ return false;
+						//~ }
+						//~ else
+							//~ return true;
+					//~ },
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							console.log(options.response.status);
+							console.log(options);
+							return;
+						}
 						// ...
 						/*<li class="founded">
 						<h4>Founded</h4>
@@ -36858,22 +36879,13 @@ function MT__RUN() {
 							// ??
 							return;
 						}
-					},
-					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
-					catch_include_array: [
-						'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
-						'<title>503 Service Temporarily Unavailable</title>',
-						'<title>999: request failed</title>', // New title, Nov. 2, 2015.
-						'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
-					],
-					//~ seed: {
-						//~ companyId: companyId,
-						//~ count: count
-					//~ },
-					//~ return_init_object: true
+					}
 				});
-				
-				return;
+			}
+			//
+			//
+			//
+			function lk1(url, out_field) {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -36927,6 +36939,64 @@ function MT__RUN() {
 						}
 					}
 				});
+			}
+			//
+			//
+			//
+			function lk3(url, out_field) {
+				
+				// INIT _PROXY_REDACTED_
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: url,
+					headers_array: [
+					
+					],
+					callback_function: function(rs) { // responseText
+						// ...
+						/*<li class="founded">
+						<h4>Founded</h4>
+						<p>2009</p>
+						</li>*/
+						// Parse
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var f = dom.getElementsByClassName('founded');
+						if (!f || !f[0] || !f[0].innerText) {
+							if (rs.indexOf('Founded') == -1) {
+								out_field.value = 'N/A';
+								try_sbm();
+							}
+							return;
+						}
+						var p = f[0].getElementsByTagName('p');
+						if (!p || !p[0] || !p[0].innerText) {
+							// This must be some unknown issue. Raise an alert.
+							alert('p is missing......');
+							return;
+						}
+						p = p[0].innerText.trim();
+						if (/^\d+$/.exec(p)) {
+							out_field.value = p;
+							try_sbm();
+						} else {
+							// ??
+							return;
+						}
+					},
+					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					catch_include_array: [
+						'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+						'<title>503 Service Temporarily Unavailable</title>',
+						'<title>999: request failed</title>', // New title, Nov. 2, 2015.
+						'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
+					],
+					//~ seed: {
+						//~ companyId: companyId,
+						//~ count: count
+					//~ },
+					//~ return_init_object: true
+				});
+				
+				return;
 			}
 			function try_sbm() {
 				for (var i in o.q) {
@@ -167668,12 +167738,6 @@ qatar,80
 		d2d.value = ind;
 		
 		exl022_linkedin_company(false);
-		
-		
-		
-		
-		
-		
 		
 		function exl022_linkedin_company(run) {
 			
