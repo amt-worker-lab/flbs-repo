@@ -36794,7 +36794,103 @@ function MT__RUN() {
 	
 	//
 	// Sarah Catanzaro
-	// -SimpleSearch
+	// -SimpleSearch (new)
+	// 
+	var s = 'Here is a screen shot that shows you where to find the founding year: <a href="http://imgur.com/6dwmO2O">http://imgur.com/6dwmO2O</a>.';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {	
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			GM_addStyle('.container {position:absolute;top:0px;margin-left:-40px;zoom:0.8;}'); //;width:100%
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				//~ urls: a,
+				q: [
+					document.getElementById('founding_year1'),
+					document.getElementById('founding_year2'),
+					document.getElementById('founding_year3'),
+				]
+			}
+			lk(a[1].href, o.q[0]);
+			lk(a[2].href, o.q[0]);
+			lk(a[3].href, o.q[0]);
+			//
+			//
+			//
+			function lk(url, out_field) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ if  (
+							//~ rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							//~ rs.indexOf('"text": "Signature was invalid"') != -1
+							//~ )
+						//~ {
+							//~ d1.style.backgroundColor = 'yellow';
+							//~ return false;
+						//~ }
+						//~ else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							console.log(options.response.status);
+							console.log(options);
+							return;
+						}
+						// ...
+						/*<li class="founded">
+						<h4>Founded</h4>
+						<p>2009</p>
+						</li>*/
+						// Parse
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var f = dom.getElementsByClassName('founded');
+						if (!f || !f[0] || !f[0].innerText) {
+							if (rs.indexOf('Founded') == -1) {
+								out_field.value = 'N/A';
+								try_sbm();
+							}
+							return;
+						}
+						var p = f[0].getElementsByTagName('p');
+						if (!p || !p[0] || !p[0].innerText) {
+							// This must be some unknown issue. Raise an alert.
+							alert('p is missing......');
+							return;
+						}
+						p = p[0].innerText.trim();
+						if (/^\d+$/.exec(p)) {
+							out_field.value = p;
+							try_sbm();
+						} else {
+							// ??
+							return;
+						}
+					}
+				});
+			}
+			function try_sbm() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return; // No sbm
+					}
+				}
+				// Still here...
+				doSubmit();
+			}
+		}
+		new run().f(); return;
+	}
+	//
+	// Sarah Catanzaro
+	// -SimpleSearch (OLD)
 	// 
 	var s = '	<li>Here is a screen shot that shows you the number we want to collect:&nbsp;http://imgur.com/O13H4ZB</li>';
 	if (ih.indexOf(s) != -1 && 0 == 1)
