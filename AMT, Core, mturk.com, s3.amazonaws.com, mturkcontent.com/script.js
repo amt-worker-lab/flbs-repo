@@ -39796,10 +39796,16 @@ function MT__RUN() {
 				q:[
 					document.getElementById('web_url')
 				],
+				comp_auto: null,
+				autos: {
+					'Musician/Band':true,
+					'Artist':true,
+				},
 			}
 			// Replace "The "...
 			o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
+			o.comp_auto = o.comp.clean_str_to_auto();
 			
 			AMT___addUserDecision(
 				'GilAdams,FB,Oct.,2015',
@@ -40048,6 +40054,20 @@ function MT__RUN() {
 							//~ if (c == 0) 
 								//~ div.click();
 							//
+							console.log(out);
+							console.log(c);
+							console.log(r[i]);
+							//~ console.log();
+							// auto first, and in d1 only
+							if  (
+								out == d1 && c == 0 &&
+								r[i].category && o.autos.hasOwnProperty(r[i].category) &&
+								r[i].name.clean_str_to_auto() == o.comp_clean &&
+								o.comp_clean.length > 4
+								)
+							{
+								div.click();
+							}
 							c++;
 						}
 						
