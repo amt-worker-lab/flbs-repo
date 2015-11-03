@@ -36815,12 +36815,34 @@ function MT__RUN() {
 				]
 			}
 			lk(a[1].href, o.q[0]);
-			lk(a[2].href, o.q[0]);
-			lk(a[3].href, o.q[0]);
+			lk(a[2].href, o.q[1]);
+			lk(a[3].href, o.q[2]);
 			//
 			//
 			//
 			function lk(url, out_field) {
+				
+				// INIT _PROXY_REDACTED_
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: url,
+					callback_function: function() {
+						
+					},
+					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+					catch_include_array: [
+						'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
+						'<title>503 Service Temporarily Unavailable</title>',
+						'<title>999: request failed</title>', // New title, Nov. 2, 2015.
+						'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
+					],
+					seed: {
+						companyId: companyId,
+						count: count
+					},
+					return_init_object: true
+				});
+				
+				return;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
