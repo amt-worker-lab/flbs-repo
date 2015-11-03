@@ -36924,7 +36924,7 @@ function MT__RUN() {
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var f = dom.getElementsByClassName('founded');
 						if (!f || !f[0] || !f[0].innerText) {
-							if (rs.indexOf('Founded') == -1) {
+							if (rs.indexOf('>Founded<') == -1) {
 								out_field.value = 'N/A';
 								try_sbm();
 							}
