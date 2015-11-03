@@ -36797,8 +36797,8 @@ function MT__RUN() {
 	// -SimpleSearch
 	// 
 	var s = '	<li>Here is a screen shot that shows you the number we want to collect:&nbsp;http://imgur.com/O13H4ZB</li>';
-	if (ih.indexOf(s) != -1)
-	{		
+	if (ih.indexOf(s) != -1 && 0 == 1)
+	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
 		
 		var a = document.getElementsByTagName('td')[1].innerText.trim().replace(/vsearch\/p/, 'vsearch/pj');
