@@ -36825,8 +36825,36 @@ function MT__RUN() {
 				// INIT _PROXY_REDACTED_
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					url: url,
-					callback_function: function() {
-						
+					callback_function: function(rs) { // responseText
+						// ...
+						/*<li class="founded">
+						<h4>Founded</h4>
+						<p>2009</p>
+						</li>*/
+						// Parse
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var f = dom.getElementsByClassName('founded');
+						if (!f || !f[0] || !f[0].innerText) {
+							if (rs.indexOf('Founded') == -1) {
+								out_field.value = 'N/A';
+								try_sbm();
+							}
+							return;
+						}
+						var p = f[0].getElementsByTagName('p');
+						if (!p || !p[0] || !p[0].innerText) {
+							// This must be some unknown issue. Raise an alert.
+							alert('p is missing......');
+							return;
+						}
+						p = p[0].innerText.trim();
+						if (/^\d+$/.exec(p)) {
+							out_field.value = p;
+							try_sbm();
+						} else {
+							// ??
+							return;
+						}
 					},
 					//~ //catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
 					catch_include_array: [
@@ -36835,11 +36863,11 @@ function MT__RUN() {
 						'<title>999: request failed</title>', // New title, Nov. 2, 2015.
 						'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
 					],
-					seed: {
-						companyId: companyId,
-						count: count
-					},
-					return_init_object: true
+					//~ seed: {
+						//~ companyId: companyId,
+						//~ count: count
+					//~ },
+					//~ return_init_object: true
 				});
 				
 				return;
