@@ -40000,7 +40000,7 @@ function MT__RUN() {
 							// tmp
 							var tmp = '';
 							tmp += MT__bold(r[i].name, o.comp_array);
-							tmp += '<br>L:<b>'+r[i].likes+'</b>';
+							tmp += '<br>L:<b>'+MT___numberWithCommas(r[i].likes)+'</b>';
 							tmp += '<br>T:'+r[i].talking_about_count;
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
