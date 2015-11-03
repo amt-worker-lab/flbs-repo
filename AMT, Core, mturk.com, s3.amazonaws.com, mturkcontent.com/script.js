@@ -46139,8 +46139,8 @@ function MT__RUN() {
 		var run = function(){}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
-			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50%;}'); // Left:50%
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;margin-top:400px !important;}');//width:40% !important;	
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50% !important;}'); // Left:50%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');//width:40% !important;	
 			
 			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
 			GM_addStyle('input {width:90%;}');
@@ -46246,6 +46246,7 @@ function MT__RUN() {
 				d.__parent = o.divs[i]; // Row id
 				d.__store = o.stores[i]; // Row id
 				d.__na = o.nas[i]; // Row id
+				d.__output_field = o.q[i]; // Row id
 				d.value = o.stores[i].store;
 				d.onblur = function() {
 					this.value = this.value.replace(/\s+/g, ' ').trim();
@@ -46322,6 +46323,7 @@ function MT__RUN() {
 				//database_object.responseObject = JSON.parse(rs);
 				var input = database_object.__seed__;
 				var s = input.__store;
+				var output_field = input.__output_field;
 				var out = input.__parent;
 				if (database_object.responseObject.length == 0) {
 					out.innerText = input.value + "\n" + '0';
@@ -46349,7 +46351,7 @@ function MT__RUN() {
 					eldiv.className = 'exe';
 					eldiv.innerHTML = n + ': ' + m;
 					eldiv.code = x[2];
-					eldiv.output_field = input; // Input field.....
+					eldiv.output_field = output_field; // Input field.....
 					eldiv.onclick = function() {
 						this.output_field.squished = true;
 						squish();
@@ -46395,17 +46397,20 @@ function MT__RUN() {
 			function squish() { // Minimize....
 				var num = 0;
 				for (var i in o.q) {
-					if (o.q[i].squished) {
+					if (!o.q[i].squished) {
 						num++;
 					}
 				}
 				var tot = (99/num) + '%'; // e.g. 99/2=49.5 99/4=24.75
 				for (var i in o.q) {
 					if (o.q[i].squished) {
-						o.q[i].style.display = 'none';
+						o.inputs[i].style.display = 'none';
+						o.divs[i].style.display = 'none';
+						o.nas[i].style.display = 'none';
 					} else {
-						o.q[i].style.width = tot;
-						o.q[i].__parent.style.width = tot;
+						o.inputs[i].style.width = tot;
+						o.divs[i].style.width = tot;
+						o.nas[i].style.width = tot;
 					}
 				}
 			}
