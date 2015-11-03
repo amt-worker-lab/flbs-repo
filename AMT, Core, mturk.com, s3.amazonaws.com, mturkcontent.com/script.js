@@ -39800,12 +39800,15 @@ function MT__RUN() {
 				autos: {
 					'Musician/Band':true,
 					'Artist':true,
+					'Sports Team':true,
+					'Entertainer':true,
 				},
 			}
 			// Replace "The "...
 			o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
 			o.comp_auto = o.comp.clean_str_to_auto();
+			console.log(o);
 			
 			AMT___addUserDecision(
 				'GilAdams,FB,Oct.,2015',
@@ -39826,7 +39829,7 @@ function MT__RUN() {
 			//
 			var d2 = document.createElement('textarea'); // Offset these from N/A.....
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:40px;width:50%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:40px;width:50%;height:60px;padding-left:14px !important;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -39834,7 +39837,7 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			//
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:40px;left:50%;width:49%;height:60px;');
+			d2b.setAttribute('style','position:absolute;top:40px;left:50%;width:49%;height:60px;padding-left:14px !important;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1b);
@@ -39955,7 +39958,8 @@ function MT__RUN() {
 							{
 								// Append a "blank"
 								out.appendChild(
-									(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
+									(r[i].name).div({style:'border-bottom:2px solid teal;'})
+									//(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
 								);
 								c++;// // //
 								continue;
@@ -40054,16 +40058,16 @@ function MT__RUN() {
 							//~ if (c == 0) 
 								//~ div.click();
 							//
-							console.log(out);
-							console.log(c);
-							console.log(r[i]);
+							//~ console.log(out);
+							//~ console.log(c);
+							//~ console.log(r[i]);
 							//~ console.log();
 							// auto first, and in d1 only
 							if  (
 								out == d1 && c == 0 &&
 								r[i].category && o.autos.hasOwnProperty(r[i].category) &&
-								r[i].name.clean_str_to_auto() == o.comp_clean &&
-								o.comp_clean.length > 4
+								r[i].name.clean_str_to_auto() == o.comp_auto &&
+								o.comp_auto.length > 4
 								)
 							{
 								div.click();
