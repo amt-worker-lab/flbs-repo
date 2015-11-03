@@ -46147,25 +46147,54 @@ function MT__RUN() {
 			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			
-			var st = document.getElementsByTagName('strong');
+			
+			var tb = document.getElementsByTagName('table');
 			var o = {
-				store: st[1].innerText.trim(),
-				mall: st[2].innerText.trim(),
+				stores: [],
 				q: [
-					document.getElementById('web_url')
+					document.getElementById('MAGICID1'),
+					document.getElementById('MAGICID2'),
+					document.getElementById('MAGICID3'),
+					document.getElementById('MAGICID4'),
+					document.getElementById('MAGICID5'),
+					document.getElementById('MAGICID6'),
 				],
-				sbold: null,
-				mbold: null,
-				auto: false,
-				store_no_the:null,
-				mall_no_the:null,
+				divs: {}
+				//~ sbold: null,
+				//~ mbold: null,
+				//~ auto: false,
+				//~ store_no_the:null,
+				//~ mall_no_the:null,
 			}
-			o.sbold = o.store.clean_string_to_array();
-			o.mbold = o.mall.clean_string_to_array();
-			o.store_no_the = o.store.replace(/^The +/, '');
-			o.mall_no_the = o.mall.replace(/^The +/, '');
+			for (var i=0;i<tb.length;i++) { // 6 tables
+				var st = tb[i].getElementsByTagName('strong');
+				var x = {
+					store: st[0].innerText.trim(),
+					mall: st[1].innerText.trim(),
+					sbold: null,
+					mbold: null,
+					store_no_the:null,
+					mall_no_the:null,
+				}
+				x.sbold = x.store.clean_string_to_array();
+				x.mbold = x.mall.clean_string_to_array();
+				x.store_no_the = x.store.replace(/^The +/, '');
+				x.mall_no_the = x.mall.replace(/^The +/, '');
+				o.stores.push(x);
+			}
+			//~ o.sbold = o.store.clean_string_to_array();
+			//~ o.mbold = o.mall.clean_string_to_array();
+			//~ o.store_no_the = o.store.replace(/^The +/, '');
+			//~ o.mall_no_the = o.mall.replace(/^The +/, '');
 			
 			/* BEGIN ITEMS */
+			for (var i=0; i<=5; i++) {
+				var id = 'div'+i;
+				var d = ''.div();
+				d.id = i;
+				o.divs[id] = d;
+			}
+			
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','position:absolute;top:0px;left:30%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
