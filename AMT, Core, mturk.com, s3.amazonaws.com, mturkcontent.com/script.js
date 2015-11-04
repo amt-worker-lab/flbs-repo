@@ -81994,6 +81994,8 @@ qatar,80
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									if (!callback_obj.matches || !callback_obj.matches.length) {
 										skip();
+										// If in preview mode then add to queue!
+										addToTabsQ(); // Add to queue.....
 										return false;
 									}
 									if (AMT__Global_Vars.isPreview) {
@@ -82241,6 +82243,9 @@ qatar,80
 			 */
 			function em2() {
 				d2.innerText = 'Submitting CAPTCHA...';
+				// Go showNextTab! The wait here is around 0.4s to 2.0s!
+				showNextTab();
+				// ...
 				var strp =
 					'response='+d3.value+
 					'&challenge='+encodeURIComponent(o.challenge_id)+
@@ -82277,6 +82282,7 @@ qatar,80
 							// FOCUS AND DO AGAIN!!!
 							// Use same CAPTCHA as first time!
 							d3.focus();
+							addToTabsQ(); // Add to queue.....
 							// ...
 							return;
 						}
@@ -82285,12 +82291,14 @@ qatar,80
 						console.log(rs);
 						if (!rs.str_code || rs.str_code != 'EMAIL_ADDR') {
 							d2.innerText = '!=email_addr';
+							addToTabsQ(); // Add to queue.....
 							return;
 						}
 						rs = rs.html_content;
 						var reg = /<a href="mailto:([^@]+@[^"]+)"/.exec(rs);
 						if (!reg) {
 							d2.innerText = 'BAD EMAIL / ' + rs;
+							addToTabsQ(); // Add to queue.....
 							return;
 						}
 						d2.innerText = 'Success!';
@@ -82299,7 +82307,6 @@ qatar,80
 						o.q.value = m;
 						if (m.length > 6) {
 							AMT___recordAndSubmit();
-							//~ doSubmit();
 						}
 					}
 				});
