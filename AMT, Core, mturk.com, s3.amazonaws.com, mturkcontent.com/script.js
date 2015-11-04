@@ -81995,7 +81995,9 @@ qatar,80
 									if (!callback_obj.matches || !callback_obj.matches.length) {
 										skip();
 										// If in preview mode then add to queue!
-										addToTabsQ(); // Add to queue.....
+										if (!AMT__Global_Vars.isPreview) {
+											addToTabsQ(); // Add to queue.....
+										}
 										return false;
 									}
 									if (AMT__Global_Vars.isPreview) {
@@ -82244,7 +82246,10 @@ qatar,80
 			function em2() {
 				d2.innerText = 'Submitting CAPTCHA...';
 				// Go showNextTab! The wait here is around 0.4s to 2.0s!
-				showNextTab();
+				new AMT___core_factory().createScriptVar("SNT on Captcha Attempt", '0');
+				if(AMT__Global_Vars.scriptVars['SNT on Captcha Attempt'] != '0')
+					showNextTab();
+				
 				// ...
 				var strp =
 					'response='+d3.value+
