@@ -81743,7 +81743,7 @@ qatar,80
 			// d1
 			var d1 = document.createElement('img');
 			d1.setAttribute('style',
-				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;zoom:2;' // 115x35
+				'position:absolute;top:0;left:0;height:70px;width:200px;border:1px solid #a2a2a2;cursor:pointer;zoom:2;z-index:10;' // 115x35
 			);
 			document.body.appendChild(d1);
 			// d2
