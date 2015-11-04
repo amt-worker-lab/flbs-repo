@@ -81748,7 +81748,7 @@ qatar,80
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
-			d2.setAttribute('style', 'position:absolute;top:100px;left:40%;height:400px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d2.setAttribute('style', 'position:absolute;top:140px;left:40%;height:400px;width:59%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d2);
 			// d3
 			var d3 = document.createElement('input');
@@ -81756,15 +81756,15 @@ qatar,80
 			document.body.appendChild(d3);
 			// d4
 			var d4 = document.createElement('div');
-			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:100px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:140px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4);
 			// d4
 			var d4b = document.createElement('div');
-			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:100px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:140px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4b);
 			// d4
 			var d4c = document.createElement('div');
-			d4c.setAttribute('style', 'position:absolute;top:240px;left:0%;height:100px;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4c.setAttribute('style', 'position:absolute;top:240px;left:0%;height:140px;width:40%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
 			document.body.appendChild(d4c);
 			/*END ITEMS*/
 			
@@ -81800,7 +81800,7 @@ qatar,80
 				elements: [
 					d2
 				],
-				offset: 100 // offset top
+				offset: 140 // offset top
 			});
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -82008,7 +82008,7 @@ qatar,80
 									d3.parentNode.removeChild(d3);
 									d2.style.left = '0';
 									d2.style.width = '99%';
-									d4c.style.height = '100px';
+									d4c.style.height = '140px';
 									d4c.style.top = '0px';
 								},
 								input_onclick_callback: function() {
