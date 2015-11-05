@@ -119386,6 +119386,8 @@ qatar,80
 				]
 			};
 			o.bold_types = [
+				'computer','hp','tech','hewlett','packard','hewlett-packard','ibm',
+				'internet','online','software','hardware','telecommunications'
 				//~ 'lawyer','parallegal','attorney','law','legal','litigation','arbitration',
 				//~ 'counsel','counselor','jury','jurist','judge','justice','dispute','resolution','judiciary'
 			];
@@ -119442,8 +119444,8 @@ qatar,80
 				parent: d2,
 				offsetTop: 0,
 				bold_array: o.bold,
-				//~ bold_location_array: [], //o.bold_locn,
-				bold_types_array: o.bold_comp, //o.bold_types,
+				bold_location_array: o.bold_comp,//[], //o.bold_locn,
+				bold_types_array: o.bold_types, //o.bold_types,
 				searches:[
 					{first:o.nm_obj.f, last:o.nm_obj.l} //, location:o.city+','+o.state
 				],
@@ -119545,7 +119547,7 @@ qatar,80
 			});
 			
 			function bold_blue_black(str) {
-				//~ str = MT__bold(str, o.bold_comp, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
 				str = MT__bold(str, o.bold_comp, {color: 'blue'}).bold_string;
 				str = MT__bold(str, o.bold);
 				return str;
