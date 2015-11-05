@@ -6655,8 +6655,13 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		} else {
 			//~ var p = exp.getElementsByClassName('position');
 			var p = exp.getElementsByClassName('editable-item section-item');
-			// debug
-			//~ console.log(p);
+			if (!p || !p.length) {
+				var p = exp.getElementsByClassName('position');
+			}
+			if (!p || !p.length) {
+				
+			}
+			// Loop......
 			for (var i=0; i<p.length; i++) {
 				// Item
 				var itm = {
@@ -6696,12 +6701,12 @@ http%3A%2F%2Fdeancdawson%2Ecom
 				}
 				
 				// current or past?
-				if (p[i].className.indexOf('current-position') != -1) {
+				if (p[i].className.indexOf('current-position') != -1 || p[i].innerText.indexOf('– Present') != -1) {
 					itm.current_or_past = 'current-position';
 				} else if (p[i].className.indexOf('past-position') != -1) {
 					itm.current_or_past = 'past-position';
 				} else {
-					alert('Warn: LI: Postition present/past correct? ');
+					//~ alert('Warn: LI: Postition present/past correct? ');
 				}
 				//~ // Output: // current-position OR past-position
 				//~ var n = p[i].getElementsByClassName('date-range');
