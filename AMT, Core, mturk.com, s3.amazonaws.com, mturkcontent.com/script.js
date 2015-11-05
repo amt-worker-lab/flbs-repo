@@ -119345,14 +119345,14 @@ qatar,80
 	}
 	
 	// Emily Chan
-	// 
+	// (Fork of Gerry Gorman Linkedin)
 	// 
 	// 
 	s = '<li>Enter the website address for the Linkedin&nbsp;<strong>website </strong>of the person.</li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
@@ -119376,6 +119376,7 @@ qatar,80
 				//~ bold_locn: [],
 				bold_nm: [],
 				bold_types: [], // Set below
+				bold_comp: [], // Set below
 				
 				name_search: '',
 				q: [
@@ -119392,9 +119393,10 @@ qatar,80
 			//~ o.nm_array = o.nm.split(' ');
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			//~ o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
+			o.bold_comp = o.comp.clean_string_to_array(); //o.nm_array;//o.nm.clean_string_to_array();
 			o.bold_nm = o.nm.clean_string_to_array().concat(ns); //o.nm_array;//o.nm.clean_string_to_array();
-			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
-			console.log(o);
+			//~ o.bold = o.bold_nm.concat(o.bold_locn);
+			o.bold = o.bold_nm.concat(o.bold_comp);
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
 				o.name_search = o.nm;
@@ -119409,8 +119411,8 @@ qatar,80
 				o.name_search = '("'+o.nm+'" OR "'+fm+'" OR "'+fl+'")';
 				o.nm_obj.f = x[0];
 				o.nm_obj.l = x[x.length - 1];
-			}
-			// name as search, that is, ("first middle last", "first m. last", "first last")
+			} // name as search, that is, ("first middle last", "first m. last", "first last")
+			console.log(o);
 			 
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -119438,8 +119440,8 @@ qatar,80
 				parent: d2,
 				offsetTop: 0,
 				bold_array: o.bold,
-				bold_location_array: o.bold_locn,
-				bold_types_array: o.bold_types,
+				//~ bold_location_array: [], //o.bold_locn,
+				bold_types_array: o.bold_comp, //o.bold_types,
 				searches:[
 					{first:o.nm_obj.f, last:o.nm_obj.l} //, location:o.city+','+o.state
 				],
@@ -119541,8 +119543,8 @@ qatar,80
 			});
 			
 			function bold_blue_black(str) {
-				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
-				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
+				//~ str = MT__bold(str, o.bold_comp, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+				str = MT__bold(str, o.bold_comp, {color: 'blue'}).bold_string;
 				str = MT__bold(str, o.bold);
 				return str;
 			}
@@ -119622,7 +119624,8 @@ qatar,80
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
 						//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
-						str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
+						str = '' + o.nm + '<br>' + o.comp + '<hr>' + str; // No ~?
+						//~ str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
 						//
@@ -119696,7 +119699,7 @@ qatar,80
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
