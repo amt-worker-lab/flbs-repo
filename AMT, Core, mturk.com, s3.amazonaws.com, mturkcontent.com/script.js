@@ -119363,11 +119363,10 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				nm:			td[1].innerText.trim(),
-				comp:		td[3].innerText.trim(),
-				//~ city:		b[1].innerText.trim(),
-				//~ state:		b[2].innerText.trim(),
-				//~ state_full:	b[2].innerText.trim().stateAbbrToFull(),				
+				nm:			td[3].innerText.trim(),
+				comp:		td[1].innerText.trim().replace(/^[^@]+@/, '').replace(/\.\w+/g, ''),
+				//~ nm:			td[1].innerText.trim(),
+				//~ comp:		td[3].innerText.trim(),
 				nm_array:	null,
 				comp_cln:	null,
 				nm_obj: {
