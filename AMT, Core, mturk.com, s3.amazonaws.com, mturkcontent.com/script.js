@@ -119439,21 +119439,18 @@ qatar,80
 			}
 			
 			// Scrape of linkedin.com/pub/dir/
-			AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
-				parent: d2,
-				offsetTop: 0,
-				bold_array: o.bold,
-				bold_location_array: o.bold_comp,//[], //o.bold_locn,
-				bold_types_array: o.bold_types, //o.bold_types,
-				searches:[
-					{first:o.nm_obj.f, last:o.nm_obj.l} //, location:o.city+','+o.state
-				],
-				out_element: o.q[0], // Default is Profile URL to out_element
-				//~ search: {
-				//~ },
-				//~ search_results: {
-				//~ },
-			});
+			// ..... error 999......
+			//~ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
+				//~ parent: d2,
+				//~ offsetTop: 0,
+				//~ bold_array: o.bold,
+				//~ bold_location_array: o.bold_comp,//[], //o.bold_locn,
+				//~ bold_types_array: o.bold_types, //o.bold_types,
+				//~ searches:[
+					//~ {first:o.nm_obj.f, last:o.nm_obj.l} //, location:o.city+','+o.state
+				//~ ],
+				//~ out_element: o.q[0], // Default is Profile URL to out_element
+			//~ });
 			
 			// create_dashboard_find_url
 			//~ var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
