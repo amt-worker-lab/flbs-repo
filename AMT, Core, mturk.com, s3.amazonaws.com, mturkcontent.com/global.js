@@ -2444,7 +2444,18 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 		}
 	}
 	else if(!isPersistant) {
-		setScriptVar(stringName, 'expirationDate', expirationDate);		
+		var scriptVar = AMT__Global_Vars.scriptVars[stringName];
+		console.log('script var');
+		console.log(scriptVar);
+		scriptVar.expirationDate = expirationDate;
+		scriptVarWriteQueue.push(scriptVar);
+		if(!isWritingFromSCWQ)
+			setScriptVarFromWriteQueue(scriptVar); 
+		else {
+			//do nothing
+		}
+		//old
+		//setScriptVarFromWriteQueue(stringName, 'expirationDate', expirationDate);		
 	}
 }
 
