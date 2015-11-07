@@ -117888,7 +117888,7 @@ qatar,80
 			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.boldArray,
+				bold_array: o.bold,
 				searches:[
 					o.comp,
 					o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes

@@ -7170,106 +7170,202 @@ function AMT___items_factory(obj_vars) {
  * Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
-	/* BEGIN ITEMS */
+	var o = {
+		bold_array: options_object.bold_array,
+		bold_location_array: options_object.bold_location_array,
+		bold_types_array: options_object.bold_types_array,
+		panels_loaded: 0,
+		num_panels: 3,
+		domain_counts: {}, // obj
+		first_domains: [],
+		first_full_urls: [],
+		first_in_each_column: [],
+		txas:[[],[],[]], //And array of arrays, where 1st array is column, 2nd array is row. E.g. o.txas[0][1] will give you the txa at first column, 2nd row
+		q: [
+			options_object.out_element
+		],
+	}
+	options_object.o = o; // ...
+	
+	// ROW 1 (textareas)
+	var d3_ = document.createElement('textarea');
+	d3_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3_);
+	//
+	var d3b_ = document.createElement('textarea');
+	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3b_);
+	//
+	var d3c_ = document.createElement('textarea');
+	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
+	options_object.parent.appendChild(d3c_);
+	// br
+	var br = document.createElement('br');
+	br.style.clear = 'both';
+	options_object.parent.appendChild(br);
+	// ROW 2 (divs)
 	var d1 = document.createElement('div');
-	d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-	document.body.appendChild(d1);
+	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1);
+	d1.txa_ = d3_;
+	d1.results = []; // Fill in later
+	options_object.results.divs.push(d1);
 	//
 	var d1b = document.createElement('div');
-	d1b.setAttribute('style','position:absolute;top:100px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
-	document.body.appendChild(d1b);
+	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1b);
+	d1b.txa_ = d3b_;
+	d1b.results = [];
+	options_object.results.divs.push(d1b);
 	//
-	var d2 = document.createElement('textarea'); // Offset these from N/A.....
-	d2.setAttribute('type','text');
-	d2.setAttribute('style','position:absolute;top:40px;width:50%;height:60px;padding-left:14px !important;');
-	d2.onblur = function() {
-		this.value = this.value.replace(/\s+/g, ' ').trim();
-		facebook_company_reviews(d1);
-	}
-	document.body.appendChild(d2);
+	var d1c = document.createElement('div');
+	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	options_object.parent.appendChild(d1c);
+	d1c.txa_ = d3c_;
+	d1c.results = [];
+	options_object.results.divs.push(d1c);
+	/*END ITEMS*/
+	// Connecters...
+	d3_.connecter = d1;
+	d3b_.connecter = d1b;
+	d3c_.connecter = d1c;
 	//
-	var d2b = document.createElement('textarea');
-	d2b.setAttribute('style','position:absolute;top:40px;left:50%;width:49%;height:60px;padding-left:14px !important;');
-	d2b.onblur = function() {
-		this.value = this.value.replace(/\s+/g, ' ').trim();
-		facebook_company_reviews(d1b);
+	d3_.onblur = function() {
+		init(this);//,  this);
 	}
-	document.body.appendChild(d2b);
-	//
-	var d2c = document.createElement('input');
-	d2c.setAttribute('type','button');
-	d2c.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:20px;');
-	d2c.value = 'N/A';
-	d2c.onclick = function() {
-		o.q[0].value = 'N/A';
-		//~ doSubmit();
-		AMT___recordAndSubmit();
+	d3b_.onblur = function() {
+		init(this);
 	}
-	document.body.appendChild(d2c);
-	/* END ITEMS */
-	
-	var second;
-	var n = o.comp.split(' ');
-	second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
-	
-	d2.value  = o.comp;
-	d2b.value = second; 
-	
+	d3c_.onblur = function() {
+		init(this);
+	}
 	// ...
 	var ef = new AMT___events_factory();
-	d2. addEventListener('keydown', ef.keydown__blur_field, true);
-	d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-	ef.mouseup__delete_range({
-		element: d2,
-		callback: function(input_object) {
-			input_object.element.blur();
-		}
-	});
-	ef.mouseup__delete_range({
-		element: d2b,
-		callback: function(input_object) {
-			input_object.element.blur();
-		}
-	});
+	d3_.  addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c_. addEventListener('keydown', ef.keydown__blur_field, true);
+	// Hide empty columns !!
+	//
+	//
+	if (options_object.searches.length == 1) {
+		d3b_.style.display =
+		d3c_.style.display =
+		d1b.style.display =
+		d1c.style.display = 'none';
+		
+		d1.style.width =
+		d3_.style.width = '99%';
+		
+		o.num_panels = 1; // Overwrite!
+		
+		//~ // Location
+		//~ if (options_object.searches[0].location) {
+			//~ d4.innerText = options_object.searches[0].location;
+		//~ }
+	} else if (options_object.searches.length == 2) {
+		d3c_.style.display =
+		d1c.style.display = 'none';
+		
+		d3_.style.width =
+		d3b_.style.width =
+		d1.style.width =
+		d1b.style.width = '48%';
+		
+		o.num_panels = 2; // Overwrite!
+		
+		//~ // Location
+		//~ if (options_object.searches[0].location) {
+			//~ d4.innerText = options_object.searches[0].location;
+		//~ }
+		//~ if (options_object.searches[1].location) {
+			//~ d4b.innerText = options_object.searches[1].location;
+		//~ }
+	} else {
+		//~ // Location
+		//~ if (options_object.searches[0].location) {
+			//~ d4.innerText = options_object.searches[0].location;
+		//~ }
+		//~ if (options_object.searches[1].location) {
+			//~ d4b.innerText = options_object.searches[1].location;
+		//~ }
+		//~ if (options_object.searches[2].location) {
+			//~ d4c.innerText = options_object.searches[2].location;
+		//~ }
+	}
 	// innerHeight
 	new AMT___core_factory().el_innerHeight({
 		// This set the elements d1,d1b, and d1c
 		// to fill up the whole window, minus their
 		// distance from page top (top:XX pixels;).
 		elements: [
-			d1,d1b
+			d1, d1b, d1c
 		],
-		offset: 100 // offset top
+		offset: options_object.offsetTop*1 + 25 // Offset top. Add to this 25px.
 	});
-	
+	new AMT___core_factory().el_innerHeight({
+		elements: [
+			options_object.parent
+		],
+		offset: options_object.offsetTop*1 -4 // Offset top + a bit
+	});
 	// ...
-	facebook_company_reviews(d1);
-	facebook_company_reviews(d1b);
+	// {first:o.nm_obj.f, last:o.nm_obj.l, location:...} // Location is optional!
+	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
+	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1].last : '';
+	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
+	// ...
+	var ef = new AMT___events_factory();
+	d3_. addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_.addEventListener('keydown', ef.keydown__blur_field, true);
+	d3b_.addEventListener('keydown', ef.keydown__blur_field, true);
+	ef.mouseup__delete_range({
+		elements: [d3_,d3b_,d3c_],
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
+	//
+	if (options_object.searches.length == 1) {
+		init(d3_);
+	}
+	else if (options_object.searches.length == 2) {
+		init(d3_);
+		init(d3b_);
+	}
+	else if (options_object.searches.length == 3) {
+		init(d3_);
+		init(d3b_);
+		init(d3c_);
+	}	
 	
-	document.getElementById('submitButton').onclick = function(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		return false;
+	
+	//~ document.getElementById('submitButton').onclick = function(e) {
+		//~ e.stopPropagation();
+		//~ e.preventDefault();
+		//~ return false;
+	//~ }
+	
+	function bold_blue_black(str) {
+		str = MT__bold(str, o.bold_types_array, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
+		str = MT__bold(str, o.bold_array);
+		return str;
 	}
 	
 	// facebook_company_reviews
-	function facebook_company_reviews(div) {
+	function facebook_company_reviews(input) {
 		
-		var out = div;
+		var out = input.connecter;
 		out.innerHTML = '';
 		
-		var v;
-		if (out == d1)
-			v = d2.value;
-		else
-			v = d2b.value;
+		var v = input.value;
 		
 		// just type=page is used here (user ignored)
 		var u = 
 			'https://graph.facebook.com/search'+
 			'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
 			'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
-			'&limit=10'+
+			'&limit=12'+
 			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 		
