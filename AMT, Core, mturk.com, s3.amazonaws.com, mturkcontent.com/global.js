@@ -7146,6 +7146,7 @@ http%3A%2F%2Fdeancdawson%2Ecom
  * create_dashboard_find_address
  * create_dashboard_find_url
  * create_dashboard_linkedin_pub_dir
+ * create_dashboard_facebook_pages
  * 
  * create_annotation_to_output_fields
  * xhr_scrape_page
@@ -7154,6 +7155,286 @@ http%3A%2F%2Fdeancdawson%2Ecom
  */
 function AMT___items_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
+}
+/**
+ * create_dashboard_facebook_pages
+ * 
+ * e.g. JONATHAN G MONSARRAT
+ * 
+ * @params
+ * 
+ * searches		Array of objects
+ *  
+ * 
+ * @returns
+ * Default is Profile URL to .out_element
+ */
+AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
+	/* BEGIN ITEMS */
+	var d1 = document.createElement('div');
+	d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+	document.body.appendChild(d1);
+	//
+	var d1b = document.createElement('div');
+	d1b.setAttribute('style','position:absolute;top:100px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+	document.body.appendChild(d1b);
+	//
+	var d2 = document.createElement('textarea'); // Offset these from N/A.....
+	d2.setAttribute('type','text');
+	d2.setAttribute('style','position:absolute;top:40px;width:50%;height:60px;padding-left:14px !important;');
+	d2.onblur = function() {
+		this.value = this.value.replace(/\s+/g, ' ').trim();
+		facebook_company_reviews(d1);
+	}
+	document.body.appendChild(d2);
+	//
+	var d2b = document.createElement('textarea');
+	d2b.setAttribute('style','position:absolute;top:40px;left:50%;width:49%;height:60px;padding-left:14px !important;');
+	d2b.onblur = function() {
+		this.value = this.value.replace(/\s+/g, ' ').trim();
+		facebook_company_reviews(d1b);
+	}
+	document.body.appendChild(d2b);
+	//
+	var d2c = document.createElement('input');
+	d2c.setAttribute('type','button');
+	d2c.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:20px;');
+	d2c.value = 'N/A';
+	d2c.onclick = function() {
+		o.q[0].value = 'N/A';
+		//~ doSubmit();
+		AMT___recordAndSubmit();
+	}
+	document.body.appendChild(d2c);
+	/* END ITEMS */
+	
+	var second;
+	var n = o.comp.split(' ');
+	second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
+	
+	d2.value  = o.comp;
+	d2b.value = second; 
+	
+	// ...
+	var ef = new AMT___events_factory();
+	d2. addEventListener('keydown', ef.keydown__blur_field, true);
+	d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+	ef.mouseup__delete_range({
+		element: d2,
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
+	ef.mouseup__delete_range({
+		element: d2b,
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
+	// innerHeight
+	new AMT___core_factory().el_innerHeight({
+		// This set the elements d1,d1b, and d1c
+		// to fill up the whole window, minus their
+		// distance from page top (top:XX pixels;).
+		elements: [
+			d1,d1b
+		],
+		offset: 100 // offset top
+	});
+	
+	// ...
+	facebook_company_reviews(d1);
+	facebook_company_reviews(d1b);
+	
+	document.getElementById('submitButton').onclick = function(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}
+	
+	// facebook_company_reviews
+	function facebook_company_reviews(div) {
+		
+		var out = div;
+		out.innerHTML = '';
+		
+		var v;
+		if (out == d1)
+			v = d2.value;
+		else
+			v = d2b.value;
+		
+		// just type=page is used here (user ignored)
+		var u = 
+			'https://graph.facebook.com/search'+
+			'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
+			'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
+			'&limit=10'+
+			'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+			//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
+		
+		// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
+		
+		GM_xmlhttpRequest({ // init
+			method: "GET",
+			url: u,
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+				
+				var r = JSON.parse(rs);
+				
+				if (!r.data) {
+					out.innerHTML = '!r.data';
+					return;
+				}
+				r = r.data;
+				console.log(r);
+
+				// Show full search term...
+				out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
+				
+				// Loop...
+				//
+				//
+				var c = 0;
+				for (var i in r) {
+					
+					if (r[i].type) {
+						if (r[i].type == 'event') continue;
+					}
+					if  (
+						!r[i].link || 
+						/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link) // This is a generic / unclaimed profile!
+						)
+					{
+						// Append a "blank"
+						out.appendChild(
+							(r[i].name).div({style:'border-bottom:2px solid teal;'})
+							//(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
+						);
+						c++;// // //
+						continue;
+					}
+					
+					if (r[i].talking_about_count != null) {
+						//
+					} else
+						r[i].talking_about_count = '';
+					if (r[i].likes != null) {
+						//
+					} else
+						r[i].likes = '';
+					
+					if (r[i].location) {
+						if (r[i].location.latitude) {
+							delete r[i].location.latitude;
+						}
+						if (r[i].location.longitude) {
+							delete r[i].location.longitude;
+						}
+					}
+					
+					// Overview?
+					//
+					//
+					//~ r[i].company_overview = (r[i].company_overview) ? r[i].company_overview : '';
+					
+					// Out div
+					//
+					//
+					var div = document.createElement('div');
+					div.setAttribute('style', 'width:100%;border-bottom:2px solid teal;cursor:pointer;');
+					div.className	= r[i].link;
+					div.link		= r[i].link;
+					out.appendChild(div);
+					
+					// tmp
+					var tmp = '';
+					tmp += MT__bold(r[i].name, o.comp_array);
+					tmp += '<br>L:<b>'+MT___numberWithCommas(r[i].likes)+'</b>';
+					tmp += '<br>T:'+r[i].talking_about_count;
+					if (r[i].company_overview)
+						tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
+					// loc
+					if (r[i].location) {
+						var l = [];
+						for (var j in r[i].location) {
+							if (r[i].location[j].length > 0)
+								l.push(r[i].location[j]);
+								//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
+						}
+						tmp += '<hr>A:'+l.join(',');
+					}
+					// cat
+					if (r[i].category) {
+						var x = r[i].category;
+						tmp += '<hr>C:'+x;
+					}
+					tmp += '<hr>' + r[i].link;
+					// innerHTML
+					div.innerHTML = tmp;
+					// onclick
+					div.onclick = function() {
+						this.clicked = true;
+						this.style.backgroundColor = 'LightGreen';
+						o.q[0].value = this.link;
+						if (
+							!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+							/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
+							)
+							AMT___recordAndSubmit();
+							//~ doSubmit();
+					}
+					// onmouseover
+					div.onmouseover = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i in x) {
+							if (i == 'length') break;
+							x[i].style.backgroundColor = 'LightGreen';
+						}
+					}
+					// onmouseout
+					div.onmouseout = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i in x) {
+							if (i == 'length') break;
+							if (!x[i].clicked)
+								x[i].style.backgroundColor = '';
+						}
+					}
+					
+					// Init this div if first!
+					//
+					//
+					//~ if (c == 0) 
+						//~ div.click();
+					// auto first, and in d1 only
+					if  (
+						out == d1 && c == 0 &&
+						r[i].category && o.autos.hasOwnProperty(r[i].category) &&
+						r[i].name.clean_str_to_auto() == o.comp_auto &&
+						o.comp_auto.length > 4
+						)
+					{
+						div.click();
+					}
+					c++;
+				}
+				
+				if (c == 0) {
+					out.appendChild('0'.div());
+					return;
+				}
+				else
+				{
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:2000px;');
+					out.appendChild(div);
+				}
+			}
+		});
+	}
 }
 /**
  * create_dashboard_linkedin_pub_dir

@@ -40102,11 +40102,6 @@ function MT__RUN() {
 							//
 							//~ if (c == 0) 
 								//~ div.click();
-							//
-							//~ console.log(out);
-							//~ console.log(c);
-							//~ console.log(r[i]);
-							//~ console.log();
 							// auto first, and in d1 only
 							if  (
 								out == d1 && c == 0 &&
@@ -117828,8 +117823,8 @@ qatar,80
 	 * 
 	 */
 	// JONATHAN G MONSARRAT
-	// Top 1% Employer! Find Website Address for Baby Doctors (OBGYN)
-	// Note ("* Facebook company search")
+	// "Top 1% Employer! Find Website Address for Baby Doctors (OBGYN)"
+	// Note: ("* Facebook company search")
 	// 
 	var s = '<li>Include the full address, e.g. <a href="http://www.onefamilybirthcenter.com"><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">http://www.onefamilybirthcenter.com</span></a></li>';
 	if (ih.indexOf(s) != -1)
@@ -117875,7 +117870,7 @@ qatar,80
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:40%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:60%;width:40%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1b);
 			/* END ITEMS */
