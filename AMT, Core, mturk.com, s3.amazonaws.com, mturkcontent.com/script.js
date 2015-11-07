@@ -117894,9 +117894,12 @@ qatar,80
 					//~ brown:,
 				},
 				searches:[
+					//~ o.comp,
+					//~ o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
+					//~ o.comp + ' ' + o.phone,
 					o.comp,
-					o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
-					o.comp + ' ' + o.phone,
+					o.comp + ' ' + o.city + ' ' + o.state, // quotes
+					o.phone,
 				],
 				out_element: o.q[0],
 				parent: d1b,
@@ -117906,9 +117909,12 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.bold,
 				searches:[
+					//~ o.comp,
+					//~ o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
+					//~ o.comp + ' ' + o.phone,
 					o.comp,
-					o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
-					o.comp + ' ' + o.phone,
+					o.comp + ' ' + o.city + ' ' + o.state, // quotes
+					o.phone,
 				],
 				out_element: o.q[0],
 				parent: d1,
