@@ -117829,7 +117829,7 @@ qatar,80
 	 */
 	// JONATHAN G MONSARRAT
 	// Top 1% Employer! Find Website Address for Baby Doctors (OBGYN)
-	// 
+	// Note ("* Facebook company search")
 	// 
 	var s = '<li>Include the full address, e.g. <a href="http://www.onefamilybirthcenter.com"><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">http://www.onefamilybirthcenter.com</span></a></li>';
 	if (ih.indexOf(s) != -1)
@@ -117842,24 +117842,42 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
-				state: td[3].innerText.trim(),
-				cshort: null,
+				comp:	td[1].innerText.trim(),
+				comp2:	td[3].innerText.trim(),
+				street: td[5].innerText.trim(),
+				phone:	td[7].innerText.trim(),
+				city:	td[9].innerText.trim(),
+				state:	td[11].innerText.trim(),
+				zip:	td[13].innerText.trim(),
+				cshort:	null,
+				cquote:	null,
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
 				]
 			}
-			o.boldArray = o.comp.clean_string_to_array();
-			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
-			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
+			o.bold = o.comp.clean_string_to_array()
+						.concat(o.comp2.clean_string_to_array());
+			o.bold_extra = o.street.clean_string_to_array()
+						.concat(o.phone.clean_string_to_array())
+						.concat(o.city.clean_string_to_array())
+						.concat(o.state.clean_string_to_array())
+						.concat(o.zip.clean_string_to_array());
+			o.cquote = '"' + o.comp.split(' ').join(" ") + '"';
+			o.cshort = o.comp.replace(/,[^,]+$/, '').trim(); // Remove final comma to end
+			//~ o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:0%;width:60%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:40%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
 			/* END ITEMS */
 			
 			// innerHeight
@@ -117868,7 +117886,7 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1
+					d1,d1b
 				],
 				offset: 0 // offset top
 			});
@@ -117878,8 +117896,8 @@ qatar,80
 				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.comp.split(' ').join('" "')+'" ' + o.state, // quotes
-					o.cshort + ' ' + o.state.stateAbbrToFull(),
+					o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
+					o.comp + ' ' + o.phone,
 				],
 				out_element: o.q[0],
 				parent: d1,
