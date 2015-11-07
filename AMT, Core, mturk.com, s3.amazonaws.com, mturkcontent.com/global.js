@@ -2444,11 +2444,19 @@ AMT___core_factory.prototype.createScriptVar = function(stringName, defaultValue
 		}
 	}
 	else if(!isPersistant) {
-		var scriptVar = AMT__Global_Vars.scriptVars[stringName];
+		//Update the timeslot
+		var scriptVar = {
+			name: stringName,
+			value: AMT__Global_Vars.scriptVars[stringName],
+			isPersistant: false,
+			expirationDate: expirationDate,
+		}
+
 		console.log('script var');
 		console.log(scriptVar);
-		scriptVar.expirationDate = expirationDate;
+
 		scriptVarWriteQueue.push(scriptVar);
+
 		if(!isWritingFromSCWQ)
 			setScriptVarFromWriteQueue(scriptVar); 
 		else {
