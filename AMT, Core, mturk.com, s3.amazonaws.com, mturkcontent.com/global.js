@@ -7170,6 +7170,17 @@ function AMT___items_factory(obj_vars) {
  * Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
+	//http://stackoverflow.com/questions/17606563/control-the-two-colors-of-an-inset-border
+	GM_addStyle('\
+		hr {\
+		margin:0 !important;padding:0 !important;\
+		border-style: solid;\
+		border-width: 2px;\
+		border-top-color: black;\
+		border-left-color: black;\
+		border-right-color: white;\
+		border-bottom-color: white;}');
+	
 	if (!options_object.bold.hasOwnProperty('blue')) { // Default=[]
 		options_object.bold.blue = [];
 	}
@@ -7181,9 +7192,9 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	}
 	var o = {
 		bold: {
-			brown: options_object.brown,
-			blue: options_object.blue,
-			black: options_object.black,
+			brown: options_object.bold.brown,
+			blue: options_object.bold.blue,
+			black: options_object.bold.black,
 		},
 		//~ bold_array: options_object.bold_array,
 		//~ bold_location_array: options_object.bold_location_array,
@@ -7203,15 +7214,15 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	
 	// ROW 1 (textareas)
 	var d3_ = document.createElement('textarea');
-	d3_.setAttribute('style','float:left;width:33%;height:25px;');
+	d3_.setAttribute('style','float:left;width:33%;height:50px;');
 	options_object.parent.appendChild(d3_);
 	//
 	var d3b_ = document.createElement('textarea');
-	d3b_.setAttribute('style','float:left;width:33%;height:25px;');
+	d3b_.setAttribute('style','float:left;width:33%;height:50px;');
 	options_object.parent.appendChild(d3b_);
 	//
 	var d3c_ = document.createElement('textarea');
-	d3c_.setAttribute('style','float:left;width:33%;height:25px;');
+	d3c_.setAttribute('style','float:left;width:33%;height:50px;');
 	options_object.parent.appendChild(d3c_);
 	// br
 	var br = document.createElement('br');
@@ -7314,7 +7325,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 		elements: [
 			d1, d1b, d1c
 		],
-		offset: options_object.offsetTop*1 + 25 // Offset top. Add to this 25px.
+		offset: options_object.offsetTop*1 + 50 // Offset top. Add to this 25px.
 	});
 	new AMT___core_factory().el_innerHeight({
 		elements: [
@@ -7331,12 +7342,10 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	var ef = new AMT___events_factory();
 	d3_. addEventListener('keydown', ef.keydown__blur_field, true);
 	d3b_.addEventListener('keydown', ef.keydown__blur_field, true);
-	d3b_.addEventListener('keydown', ef.keydown__blur_field, true);
+	d3c_.addEventListener('keydown', ef.keydown__blur_field, true);
 	ef.mouseup__delete_range({
 		elements: [d3_,d3b_,d3c_],
-		callback: function(input_object) {
-			input_object.element.blur();
-		}
+		blur_element: true
 	});
 	//
 	if (options_object.searches.length == 1) {
@@ -7360,9 +7369,12 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	//~ }
 	
 	function bold_blue_black(str) {
-		str = MT__bold(str, o.bold.brown, {style: 'color:brown;text-decoration:underline;'}).bold_string;
-		str = MT__bold(str, o.bold.blue, {color: 'blue'}).bold_string;
-		str = MT__bold(str, o.bold.black);
+		if (o.bold.brown.length)
+			str = MT__bold(str, o.bold.brown, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+		if (o.bold.blue.length)
+			str = MT__bold(str, o.bold.blue, {color: 'blue'}).bold_string;
+		if (o.bold.black.length)
+			str = MT__bold(str, o.bold.black);
 		return str;
 	}
 	
@@ -7401,8 +7413,8 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 				r = r.data;
 				//~ console.log(r);
 
-				// Show full search term...
-				out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
+				//~ // Show full search term...
+				//~ out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
 				
 				// Loop...
 				//
