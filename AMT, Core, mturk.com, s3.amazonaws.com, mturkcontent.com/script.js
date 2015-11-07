@@ -26,6 +26,42 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// 
+	// 
+	// 
+	// 
+	s = '<p>Visit the URL, and copy the page HTML source into the hitbox.</p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('web_url')
+				]
+			}
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					if (dom.getElementById('profile_header_heading')) { // Person's name... To verify correctness, anything will do here...
+						o.q[0].value = rs.trim();
+						if (o.q[0].value.length > 1000) {
+							doSubmit();
+						}
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Russ Behrens
 	// Google Shopping
 	// Find the lowest price for an item on Google Shopping
