@@ -117887,6 +117887,22 @@ qatar,80
 			});
 			
 			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_facebook_pages({
+				bold: {
+					black: o.bold,
+					blue: o.bold_extra,
+					//~ brown:,
+				},
+				searches:[
+					o.comp,
+					o.comp + ' ' + o.street + ' ' + o.city + ' ' + o.state, // quotes
+					o.comp + ' ' + o.phone,
+				],
+				out_element: o.q[0],
+				parent: d1b,
+				offsetTop: 0,
+			});
+			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.bold,
 				searches:[

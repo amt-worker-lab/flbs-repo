@@ -7170,10 +7170,24 @@ function AMT___items_factory(obj_vars) {
  * Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
+	if (!options_object.bold.hasOwnProperty('blue')) { // Default=[]
+		options_object.bold.blue = [];
+	}
+	if (!options_object.bold.hasOwnProperty('black')) { // Default=[]
+		options_object.bold.black = [];
+	}
+	if (!options_object.bold.hasOwnProperty('brown')) { // Default=[]
+		options_object.bold.brown = [];
+	}
 	var o = {
-		bold_array: options_object.bold_array,
-		bold_location_array: options_object.bold_location_array,
-		bold_types_array: options_object.bold_types_array,
+		bold: {
+			brown: options_object.brown,
+			blue: options_object.blue,
+			black: options_object.black,
+		},
+		//~ bold_array: options_object.bold_array,
+		//~ bold_location_array: options_object.bold_location_array,
+		//~ bold_types_array: options_object.bold_types_array,
 		panels_loaded: 0,
 		num_panels: 3,
 		domain_counts: {}, // obj
@@ -7209,21 +7223,21 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	options_object.parent.appendChild(d1);
 	d1.txa_ = d3_;
 	d1.results = []; // Fill in later
-	options_object.results.divs.push(d1);
+	//~ options_object.results.divs.push(d1);
 	//
 	var d1b = document.createElement('div');
 	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
 	d1b.txa_ = d3b_;
 	d1b.results = [];
-	options_object.results.divs.push(d1b);
+	//~ options_object.results.divs.push(d1b);
 	//
 	var d1c = document.createElement('div');
 	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
 	d1c.txa_ = d3c_;
 	d1c.results = [];
-	options_object.results.divs.push(d1c);
+	//~ options_object.results.divs.push(d1c);
 	/*END ITEMS*/
 	// Connecters...
 	d3_.connecter = d1;
@@ -7310,9 +7324,9 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	});
 	// ...
 	// {first:o.nm_obj.f, last:o.nm_obj.l, location:...} // Location is optional!
-	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0].last : '';
-	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1].last : '';
-	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2].last : '';
+	d3_.value  = (options_object.searches.length > 0) ? options_object.searches[0] : '';
+	d3b_.value = (options_object.searches.length > 1) ? options_object.searches[1] : '';
+	d3c_.value = (options_object.searches.length > 2) ? options_object.searches[2] : '';
 	// ...
 	var ef = new AMT___events_factory();
 	d3_. addEventListener('keydown', ef.keydown__blur_field, true);
@@ -7346,14 +7360,14 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 	//~ }
 	
 	function bold_blue_black(str) {
-		str = MT__bold(str, o.bold_types_array, {style: 'color:brown;text-decoration:underline;'}).bold_string;
-		str = MT__bold(str, o.bold_location_array, {color: 'blue'}).bold_string;
-		str = MT__bold(str, o.bold_array);
+		str = MT__bold(str, o.bold.brown, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+		str = MT__bold(str, o.bold.blue, {color: 'blue'}).bold_string;
+		str = MT__bold(str, o.bold.black);
 		return str;
 	}
 	
 	// facebook_company_reviews
-	function facebook_company_reviews(input) {
+	function init(input) {
 		
 		var out = input.connecter;
 		out.innerHTML = '';
@@ -7385,7 +7399,7 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 					return;
 				}
 				r = r.data;
-				console.log(r);
+				//~ console.log(r);
 
 				// Show full search term...
 				out.appendChild((o.comp).div({style:'border-bottom:2px solid blue;'}));
@@ -7447,11 +7461,11 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 					
 					// tmp
 					var tmp = '';
-					tmp += MT__bold(r[i].name, o.comp_array);
+					tmp += bold_blue_black(r[i].name);
 					tmp += '<br>L:<b>'+MT___numberWithCommas(r[i].likes)+'</b>';
 					tmp += '<br>T:'+r[i].talking_about_count;
 					if (r[i].company_overview)
-						tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
+						tmp += '<hr>O:'+bold_blue_black(r[i].company_overview.substr(0,200)); // only 200 chars
 					// loc
 					if (r[i].location) {
 						var l = [];
@@ -7500,34 +7514,27 @@ AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options
 						}
 					}
 					
-					// Init this div if first!
-					//
-					//
-					//~ if (c == 0) 
+					// Auto first, and in d1 only
+					//~ if  (
+						//~ out == d1 && c == 0 &&
+						//~ r[i].category && o.autos.hasOwnProperty(r[i].category) &&
+						//~ r[i].name.clean_str_to_auto() == o.comp_auto &&
+						//~ o.comp_auto.length > 4
+						//~ )
+					//~ {
 						//~ div.click();
-					// auto first, and in d1 only
-					if  (
-						out == d1 && c == 0 &&
-						r[i].category && o.autos.hasOwnProperty(r[i].category) &&
-						r[i].name.clean_str_to_auto() == o.comp_auto &&
-						o.comp_auto.length > 4
-						)
-					{
-						div.click();
-					}
+					//~ }
 					c++;
 				}
-				
+				// None
 				if (c == 0) {
 					out.appendChild('0'.div());
 					return;
 				}
-				else
-				{
-					var div = document.createElement('div');
-					div.setAttribute('style', 'height:2000px;');
-					out.appendChild(div);
-				}
+				// Here... Add padding.
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:2000px;');
+				out.appendChild(div);
 			}
 		});
 	}
