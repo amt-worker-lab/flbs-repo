@@ -26,12 +26,12 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
-	// 
-	// 
+	// "Jay"
+	// crunchbase.com HTML scrape
 	// 
 	// 
 	s = '<p>Visit the URL, and copy the page HTML source into the hitbox.</p>';
-	if(ih.indexOf(s) != -1) {
+	if (ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
@@ -117827,6 +117827,69 @@ qatar,80
 	 * 
 	 * 
 	 */
+	// JONATHAN G MONSARRAT
+	// Top 1% Employer! Find Website Address for Baby Doctors (OBGYN)
+	// 
+	// 
+	var s = '<li>Include the full address, e.g. <a href="http://www.onefamilybirthcenter.com"><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">http://www.onefamilybirthcenter.com</span></a></li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				state: td[3].innerText.trim(),
+				cshort: null,
+				boldArray: [],
+				q: [
+					document.getElementById('web_url')
+				]
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
+			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					'"'+o.comp.split(' ').join('" "')+'" ' + o.state, // quotes
+					o.cshort + ' ' + o.state.stateAbbrToFull(),
+				],
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'N/A',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Eric Fiterman
 	// Find the Website Address for the Organization
 	// 
