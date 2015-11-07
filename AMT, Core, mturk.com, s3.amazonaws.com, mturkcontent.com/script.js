@@ -47,6 +47,15 @@ function MT__RUN() {
 			// xhr_with_disk_cache
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return false;
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					if (dom.getElementById('profile_header_heading')) { // Person's name... To verify correctness, anything will do here...
+						return true;
+					}
+					return false;
+				},
 				success_callback: function(options) {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return;
