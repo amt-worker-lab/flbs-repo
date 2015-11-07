@@ -7170,16 +7170,17 @@ function AMT___items_factory(obj_vars) {
  * Default is Profile URL to .out_element
  */
 AMT___items_factory.prototype.create_dashboard_facebook_pages = function(options_object) {
+	// Emulate an HR border because it's off....
 	//http://stackoverflow.com/questions/17606563/control-the-two-colors-of-an-inset-border
 	GM_addStyle('\
 		hr {\
 		margin:0 !important;padding:0 !important;\
-		border-style: solid;\
-		border-width: 2px;\
-		border-top-color: black;\
-		border-left-color: black;\
-		border-right-color: white;\
-		border-bottom-color: white;}');
+		border-style: solid !important;\
+		border-width: 1px !important;\
+		border-top-color: #666 !important;\
+		border-left-color: #666 !important;\
+		border-right-color: #ddd !important;\
+		border-bottom-color: #ddd !important;}');
 	
 	if (!options_object.bold.hasOwnProperty('blue')) { // Default=[]
 		options_object.bold.blue = [];
