@@ -8220,6 +8220,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	if (!options_object.search_results.hasOwnProperty('clean_body_strings')) {//
 		options_object.search_results.clean_body_strings = []; // Empty
 	}
+	if (!options_object.search_results.hasOwnProperty('bold')) {//
+		options_object.search_results.bold = false;
+	}
+	if (!options_object.hasOwnProperty('bold_array')) {//
+		options_object.bold_array = false;
+	}
 	// Fills in
 	options_object.results = {
 		divs: [],
@@ -8234,6 +8240,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	
 	var o = {
 		bold_array: options_object.bold_array,
+		bold: options_object.bold,
 		panels_loaded: 0,
 		num_panels: 3,
 		linkedInIgnoreNoBold: options_object.linkedInIgnoreNoBold,
@@ -8485,6 +8492,16 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			return_init_object: true
 		});
 	}
+	// Blue black bolding...... Originally from a create_dashboard linkedin.....
+	function bold_blue_black(str) {
+		if (o.bold.brown.length)
+			str = MT__bold(str, o.bold.brown, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+		if (o.bold.blue.length)
+			str = MT__bold(str, o.bold.blue, {color: 'blue'}).bold_string;
+		if (o.bold.black.length)
+			str = MT__bold(str, o.bold.black);
+		return str;
+	}
 	/**
 	 * function company_URL__processProxyResponse
 	 * 
@@ -8636,8 +8653,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			}
 			
 			// Add bold (bold_array)
-			full = MT__bold(full, o.bold_array);
-			
+			if (o.bold_array)
+				full = MT__bold(full, o.bold_array);
+			else if (o.bold)
+				full = bold_blue_black(full);
+				
 			// classname is http://(www. = '')x.com (no www)
 			var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');
 			

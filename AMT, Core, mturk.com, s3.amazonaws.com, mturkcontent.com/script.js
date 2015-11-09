@@ -117846,16 +117846,19 @@ qatar,80
 				addr: td[3].innerText.trim(),
 				phone: td[5].innerText.trim(),
 				cshort: null,
-				boldArray: [],
+				bold: {
+					c:[],
+					a:[],
+					p:[],
+				},
 				q: [
 					document.getElementById('web_url')
 				],
 				site: null,
 			}
-			o.boldArray = o.comp.clean_string_to_array()
-						.concat(o.addr.clean_string_to_array())
-						.concat(o.phone.clean_string_to_array());
-			//~ o.boldArray = o.comp.clean_string_to_array();
+			o.bold.c = o.comp.clean_string_to_array();
+			o.bold.a = o.addr.clean_string_to_array();
+			o.bold.p = o.phone.clean_string_to_array();
 			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
 			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
 			if (ih.indexOf('super8.com') != -1) {
@@ -117882,8 +117885,9 @@ qatar,80
 			});
 			
 			// create_dashboard_find_url
+			// options_object.search_results.url_ignore_test({url:link}) == true
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.boldArray,
+				//~ bold_array: o.boldArray,
 				searches:[
 					o.comp,
 					o.comp + ' ' + o.addr,
@@ -117896,6 +117900,11 @@ qatar,80
 				parent: d1,
 				offsetTop: 0,
 				search_results: {
+					bold: {
+						blue:o.bold.a, // Addr
+						black:o.bold.c, // Comp
+						brown:o.bold.p, // Phone
+					},
 					use_full_urls: true,
 					//~ replace_urls_in_result_body: true,
 					//~ url_modifier_callback: function(url) {
@@ -117903,6 +117912,13 @@ qatar,80
 						//~ url = url.replace(/#[\d\D]*/, ''); // Remove hash mark then any...
 						//~ return url;
 					//~ },
+					url_ignore_test: function(obj) {
+						console.log(obj);
+						if (!/\/hotel-overview\/?$/.exec(obj.url)) {
+							return true;
+						}
+						return false;
+					},
 				},
 				//~ naText:'N/A',
 			});
