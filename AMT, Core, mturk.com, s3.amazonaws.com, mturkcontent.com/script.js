@@ -117828,7 +117828,11 @@ qatar,80
 	// 
 	// 
 	var s = '	<li>Include the full address for the hotel\'s url, e.g. http://doubletree3.hilton.com/en/hotels/northern-territory/doubletree-by-hilton-hotel-alice-springs-ASPDADI/index.html.</li>';
-	if (ih.indexOf(s) != -1)
+	var s2 = '<li>Include the full address for the hotel\'s url, e.g. http://www.super8.com/hotels/south-carolina/piedmont/super-8-piedmont-greenville-area/hotel-overview.</li>';
+	if (
+		ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1 
+		)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
@@ -117845,7 +117849,8 @@ qatar,80
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
-				]
+				],
+				site: null,
 			}
 			o.boldArray = o.comp.clean_string_to_array()
 						.concat(o.addr.clean_string_to_array())
@@ -117853,6 +117858,9 @@ qatar,80
 			//~ o.boldArray = o.comp.clean_string_to_array();
 			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
 			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
+			if (ih.indexOf('super8.com') != -1) {
+				o.site = 'super8.com';
+			}
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -117881,6 +117889,9 @@ qatar,80
 					o.comp + ' ' + o.addr,
 					o.comp + ' ' + o.phone,
 				],
+				search: {
+					str_add_to_searches_hidden: ' site:'+o.site,
+				},
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
