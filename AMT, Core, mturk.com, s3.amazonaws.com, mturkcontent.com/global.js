@@ -8222,6 +8222,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	if (!options_object.search_results.hasOwnProperty('bold')) {//
 		options_object.search_results.bold = false;
+	} else {
+		if (!options_object.search_results.bold.brown) options_object.search_results.bold.brown = [];
+		if (!options_object.search_results.bold.blue) options_object.search_results.bold.blue = [];
+		if (!options_object.search_results.bold.black) options_object.search_results.bold.black = [];
 	}
 	if (!options_object.hasOwnProperty('bold_array')) {//
 		options_object.bold_array = false;
@@ -8240,7 +8244,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	
 	var o = {
 		bold_array: options_object.bold_array,
-		bold: options_object.bold,
+		bold: options_object.search_results.bold,
 		panels_loaded: 0,
 		num_panels: 3,
 		linkedInIgnoreNoBold: options_object.linkedInIgnoreNoBold,
