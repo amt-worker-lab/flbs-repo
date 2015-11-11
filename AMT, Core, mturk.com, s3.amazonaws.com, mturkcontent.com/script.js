@@ -117899,7 +117899,7 @@ qatar,80
 					bold: {
 						black:o.bold.c, // Comp
 					},
-					use_full_urls: false,
+					use_domain_only: true,
 					//~ replace_urls_in_result_body: true,
 					//~ url_modifier_callback: function(url) {
 						//~ url = url.replace(/\?[\d\D]*/, ''); // Remove question mark then any...
