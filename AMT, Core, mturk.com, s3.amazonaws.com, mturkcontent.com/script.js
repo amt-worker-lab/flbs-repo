@@ -72873,7 +72873,8 @@ function MT__RUN() {
 	// Kyle Andrew Martin
 	// Collect information about a restaurant via their Yelp website
 	// 
-	s = '3. Record \'Yes\' or \'No\' for the following categories: "Delivery", "Take-out" and "Accepts credit cards"</p>';
+	//s = '3. Record \'Yes\' or \'No\' for the following categories: "Delivery", "Take-out" and "Accepts credit cards"</p>';
+	s = '3. Record \'Yes\' or \'No\' for the following categories: "Delivery", "Take-out" and "Accepts credit cards"<br>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
