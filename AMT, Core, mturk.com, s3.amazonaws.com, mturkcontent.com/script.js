@@ -3134,7 +3134,46 @@ function MT__RUN() {
 					//~ d1.innerText += '\n' + ;
 				}
 			}
+			function check_page(url) {
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						
+						//~ JSON.parse(rs); // Test
+						
+						//~ if (rs.indexOf('Showing results ') == -1 || rs.indexOf('of 7923') == -1) { // No "Showing results "
+							//~ document.body.style.backgroundColor = 'yellow';
+							//~ return false;
+						//~ }
+						//~ else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var dom =  new DOMParser().parseFromString(rs, 'text/html');
+						var intx = dom.body.innerText;
+						console.log(intx);
+						var states = '';
+						for (var abbr in MT___states) { // (abbr, full)
+							states.push(abbr); // abbr
+							states.push(MT___states[abbr]); // full
+						}
+						if (/[\r\n\t\s]\d{5}([\r\n\t\s]|\-\d{4})/.exec(intx)) {
+							// [space][5 digits][[space] OR [-][4 digits]]
+							d1.style.backgroundColor = 'aqua';
+						} else if () { //Los Angeles, CA 90027
+							
+						}
+					}
+					
+				});
+			}
 			function uw(url) {
+				// Load XHR to see if .innerText contains RegEx of Zip.
+				check_page(url);
 				// opts
 				var opts = {
 					task: 'AMT__all_pages_util',
