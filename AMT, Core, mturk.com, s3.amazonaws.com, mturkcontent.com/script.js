@@ -3156,16 +3156,22 @@ function MT__RUN() {
 						var dom =  new DOMParser().parseFromString(rs, 'text/html');
 						var intx = dom.body.innerText;
 						console.log(intx);
-						var states = '';
+						var st = [];
 						for (var abbr in MT___states) { // (abbr, full)
-							states.push(abbr); // abbr
-							states.push(MT___states[abbr]); // full
+							st.push(__js_escape_regEx(abbr)); // abbr
+							st.push(__js_escape_regEx(MT___states[abbr])); // full
 						}
-						if (/[\r\n\t\s]\d{5}([\r\n\t\s]|\-\d{4})/.exec(intx)) {
+						st = st.join('|');
+						var rgst = new RegExp('('+st+')[\\r\\n\\t\\s]*(\\d{5})');
+						var r1 = /[\r\n\t\s](\d{5})([\r\n\t\s]|\-\d{4})/.exec(intx);
+						var r2 = rgst.exec(intx);
+						if (r1) {
 							// [space][5 digits][[space] OR [-][4 digits]]
-							d1.style.backgroundColor = 'aqua';
-						} else if () { //Los Angeles, CA 90027
-							
+							//~ d1.style.backgroundColor = 'aqua';
+							d1.appendChild((r1[0]).div({style:'font-weight:bold;'}));
+						} else if (r2) { //Los Angeles, CA 90027
+							//~ d1.style.backgroundColor = 'aqua';
+							d1.appendChild((r2[0]).div({style:'font-weight:bold;'}));
 						}
 					}
 					
