@@ -3127,9 +3127,11 @@ function MT__RUN() {
 					rs[0][0] == o.url ||
 					rs[0][0].replace(/www\./, '') == o.url.replace(/www\./, '')
 					) {
-					uw(o.url);
+					check_page(o.url);
+					//~ uw(o.url);
 				} else { // Different.....
-					uw(rs[0][0]);
+					check_page(rs[0][0]);
+					//~ uw(rs[0][0]);
 					d1.appendChild((rs[0][0]).div({style:'font-weight:bold;'}));
 					//~ d1.innerText += '\n' + ;
 				}
