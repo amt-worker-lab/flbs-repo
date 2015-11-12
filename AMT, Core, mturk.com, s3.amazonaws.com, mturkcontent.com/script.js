@@ -3049,10 +3049,9 @@ function MT__RUN() {
 				hl_strings: null,
 				q: [
 					document.getElementById('Field1')					
-				]
+				],
 			}
 			//AMT__Global_Vars.copyInp = o.lastName;
-			
 			o.hl_strings = [
 				//~ {string: o.firstName, color: 'yellow'},
 				{string: 'postal code', color: 'yellow', scrollIntoView: true},
@@ -3063,82 +3062,111 @@ function MT__RUN() {
 				{string: 'contact', color: 'pink'},
 				//~ {string: o.email, color: 'LightSalmon'},
 				//~ {string: o.phone, color: 'Plum'}
-			]
-			
-			for(var i in o.position) {
-				o.hl_strings.push({string: o.position[i], color: 'LightGreen'});
+			];
+			if (!/^http/.exec(o.url)) {
+				o.domain = o.url;
+				o.url = 'http://' + o.url;
+			} else {
+				o.domain = o.url.replace(/^https?:\/\/(www\d*\.|)/, '');
 			}
-			for(var i in o.field) {
-				o.hl_strings.push({string: o.field[i], color: 'aqua'});
-			}
-			
 			console.log(o);
-			o.q[2].checked =true;
-			o.q[0].style.zoom = '5';
-			o.q[1].style.zoom = '5';
-			o.q[2].style.zoom = '5';
-			
-			//~ o.q[0].innerHTML = 'Same Data';
-			//~ o.q[1].innerHTML = 'Data Changed';
-			//~ o.q[2].innerHTML = 'Not Found';
-			
-			o.q[0].onclick = o.q[1].onclick = function() {
-				document.getElementById('submitButton').click();
-			}
-			
+			// SB
 			document.getElementById('submitButton').onclick = function(e) {
 				e.preventDefault();
 				e.stopPropagation();
 				doSubmit();
 				return false;
 			}
-			// opts
-			var opts = {
-				task: 'AMT__all_pages_util',
-				highlight_strings_in_page: {
-					strings: o.hl_strings
-				},
-				highlight_range_to_parent: true
-			}
-			// AMT__setUtilityTabs
-			AMT__setUtilityTabs(
-				[
-					{
-						url: o.site,
-						options: opts
+			// Keypress
+			window.addEventListener('keypress',function(e) {
+				if(e.keyCode == '13') {
+					o.q[0].value = o.q[0].value.trim();
+					if (/^[\d\-]{4,10}$/.exec(o.q[0].value)) {
+						doSubmit();
 					}
-				],
-				{
-					options: {
-						//~ task: 'AMT__all_pages_util',
-						//~ highlight_range_to_parent: true,
-						//~ up_button_to_all_links: true
-					},
-					style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
-				},
-				{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
-				false,
-				function(response){
-					console.log(response);
-					var text = response.data.text_range.trim();
-					if(text.indexOf('@') != -1) {
-						o.q[4].value = text;
-					}
-					else if(text.replace(/[\D]/g,'').length > 6) {
-						o.q[5].value = text;
-					}
-					else {
-						o.q[3].value = text;
-					}
-					
-					document.getElementById('submitButton').focus();
-					
-					o.q[1].checked = true;
-					o.q[0].checked = false;
-					o.q[2].checked = false;
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
 				}
-			);
-			
+			});
+			// Init
+			SP_init();
+			// SP_init
+			function SP_init() {
+				var u = 'site:' + o.domain + ' ("contact" OR "postal" OR "zip" OR "address")';
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					callback_function: SP_process
+				});
+			}
+			// SP_process
+			function SP_process(object) {
+				console.log(object);
+				var rs = object;
+				if (rs.length == 0) {
+					uw(o.url);
+				} else {
+					uw(rs[0][0]);
+					//~ // Does first contain "services" or "about"
+					//~ if (/(services|about)/i.exec(rs[0][0])) {
+						//~ uw(rs[0][0]);
+					//~ } else {
+						//~ uw(o.url);
+					//~ }
+				}
+			}
+			function uw(url) {
+				//~ if (url) {
+					//~ // nothing....
+				//~ } else {
+					//~ var url = o.url;
+				//~ }
+				// opts
+				var opts = {
+					task: 'AMT__all_pages_util',
+					highlight_strings_in_page: {
+						strings: o.hl_strings
+					},
+					highlight_range_to_parent: true
+				}
+				// AMT__setUtilityTabs
+				AMT__setUtilityTabs(
+					[
+						{
+							url: url,
+							options: opts
+						}
+					],
+					{
+						options: {
+							//~ task: 'AMT__all_pages_util',
+							//~ highlight_range_to_parent: true,
+							//~ up_button_to_all_links: true
+						},
+						style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
+					},
+					{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+					false,
+					function(response){
+						console.log(response);
+						var text = response.data.text_range.trim();
+						o.q[0].value = text.trim().replace(/[^\d\-]/g, '');
+						o.q[0].focus();
+						o.q[0].blur();
+						//~ if(text.indexOf('@') != -1) {
+							//~ o.q[4].value = text;
+						//~ }
+						//~ else if(text.replace(/[\D]/g,'').length > 6) {
+							//~ o.q[5].value = text;
+						//~ }
+						//~ else {
+							//~ o.q[3].value = text;
+						//~ }
+						//~ document.getElementById('submitButton').focus();
+					}
+				);
+			}
 		}
 		new run().f();
 	}
