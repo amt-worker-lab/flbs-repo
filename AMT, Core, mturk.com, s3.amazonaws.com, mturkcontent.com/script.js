@@ -3081,7 +3081,7 @@ function MT__RUN() {
 				style:'position:absolute;left:30%;width:50%;height:400px;top:0px;background-color:#eee;border:1px solid blue;'
 			});
 			document.body.appendChild(d1);
-			d1.innerText = o.url +'\n'+ o.domain +'\n'+ o.comp;
+			d1.innerText = 'U:'+o.url +'\nC:'+o.comp;
 			/**END ITEMS**/
 			// SB
 			document.getElementById('submitButton').onclick = function(e) {
@@ -3234,6 +3234,7 @@ function MT__RUN() {
 							//~ highlight_range_to_parent: true,
 							//~ up_button_to_all_links: true
 						},
+						style: 'background-color:red;' // Show that it is here......
 						//~ style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
 					},
 					{style: 'position:absolute;top:0px;height:40px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:14px !important;'},
