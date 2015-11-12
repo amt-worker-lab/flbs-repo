@@ -5579,33 +5579,6 @@ function MT__RUN() {
 								highlight_range_to_parent: true,
 								highlight_strings_in_page: {
 									strings: o.job_types
-									//~ [
-										//~ {string:'marketing',color:'orange'},
-										//~ 'digital',
-										//~ {string:'brand',color:'orange'},
-										//~ 'ppc',
-										//~ 'content',
-										//~ 'creation',
-										//~ 'seo',
-										//~ {string:'campaign',color:'orange'},
-										//~ {string:'lead',color:'orange'},
-										//~ {string:'inbound',color:'orange'},
-										//~ {string:'outbound',color:'orange'},
-										//~ 'search',
-										//~ {string:'advertising',color:'orange'},
-										//~ {string:'advert',color:'orange'},
-										//~ 'social',
-										//~ 'social media',
-										//~ 'online',
-										//~ 'internet',
-										//~ 'email',
-										//~ 'e-mail',
-										//~ 'web',
-										//~ {string:'design',color:'orange'},
-										//~ 'data',
-										//~ 'user',
-										//~ 'mobile'
-									//~ ]
 								},
 								//listenForKeyPress: true
 							}								
@@ -6618,10 +6591,7 @@ function MT__RUN() {
 				document.getElementById('PA_Others')								
 			]
 		}
-		
 		console.log(o);
-		
-		
 		AMT__setUtilityTabs(
 			[
 				{
