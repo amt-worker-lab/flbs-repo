@@ -3075,6 +3075,13 @@ function MT__RUN() {
 				o.domain = o.url.replace(/^https?:\/\/(www\d*\.|)/, '');
 			}
 			console.log(o);
+			/**BEGIN ITEMS**/
+			var d1 = ''.div({
+				style:'position:absolute;left:30%;width:69%;height:400px;top:0px;background-color:#eee;border:1px solid blue;'
+			});
+			document.body.appendChild(d1);
+			d1.innerText = o.url +'\n'+ o.domain +'\n'+ o.comp;
+			/**END ITEMS**/
 			// SB
 			document.getElementById('submitButton').onclick = function(e) {
 				e.preventDefault();
@@ -3119,6 +3126,7 @@ function MT__RUN() {
 					uw(o.url);
 				} else {
 					uw(rs[0][0]);
+					d1.innerText += '\n' + rs[0][0];
 				}
 			}
 			function uw(url) {
