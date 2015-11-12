@@ -3078,7 +3078,7 @@ function MT__RUN() {
 			console.log(o);
 			/**BEGIN ITEMS**/
 			var d1 = ''.div({
-				style:'position:absolute;left:30%;width:69%;height:400px;top:0px;background-color:#eee;border:1px solid blue;'
+				style:'position:absolute;left:30%;width:50%;height:400px;top:0px;background-color:#eee;border:1px solid blue;'
 			});
 			document.body.appendChild(d1);
 			d1.innerText = o.url +'\n'+ o.domain +'\n'+ o.comp;
@@ -3234,9 +3234,9 @@ function MT__RUN() {
 							//~ highlight_range_to_parent: true,
 							//~ up_button_to_all_links: true
 						},
-						style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
+						//~ style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
 					},
-					{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+					{style: 'position:absolute;top:0px;height:40px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:14px !important;'},
 					false,
 					function(response){
 						console.log(response);
