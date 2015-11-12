@@ -3165,13 +3165,31 @@ function MT__RUN() {
 						var rgst = new RegExp('('+st+')[\\r\\n\\t\\s]*(\\d{5})');
 						var r1 = /[\r\n\t\s](\d{5})([\r\n\t\s]|\-\d{4})/.exec(intx);
 						var r2 = rgst.exec(intx);
-						if (r1) {
+						if (r2) {
+							var d = (r2[0].trim() + '\n' + r2[2]).div({style:'font-weight:bold;border-top:1px solid #a2a2a2;'});
+							d.className = 'exe';
+							d.zip = r2[2];
+							d.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								o.q[0].value = this.zip;
+								if (/^[\d\-]{4,10}$/.exec(o.q[0].value)) {
+									doSubmit();
+								}
+							}
+							d1.appendChild(d);
+						} else if (r1) { //Los Angeles, CA 90027
 							// [space][5 digits][[space] OR [-][4 digits]]
-							//~ d1.style.backgroundColor = 'aqua';
-							d1.appendChild((r1[0]).div({style:'font-weight:bold;'}));
-						} else if (r2) { //Los Angeles, CA 90027
-							//~ d1.style.backgroundColor = 'aqua';
-							d1.appendChild((r2[0]).div({style:'font-weight:bold;'}));
+							var d = (r1[0].trim()).div({style:'font-weight:bold;border-top:1px solid #a2a2a2;'});
+							d.className = 'exe';
+							d.zip = r1[1];
+							d.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								o.q[0].value = this.zip;
+								if (/^[\d\-]{4,10}$/.exec(o.q[0].value)) {
+									doSubmit();
+								}
+							}
+							d1.appendChild(d);
 						}
 					}
 					
