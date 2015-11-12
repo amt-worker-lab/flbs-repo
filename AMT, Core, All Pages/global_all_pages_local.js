@@ -296,15 +296,6 @@ function MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight)
 		// ...
 		el_innerText = el[i].innerText.trim();
 		
-		//~ if (r != /\.youtube\.com/i)
-		//~ {
-			//~ el_innerText = el[i].innerText.trim();
-		//~ }
-		//~ else
-		//~ {
-			//~ el_innerText = el[i].innerHTML;
-		//~ }
-		
 		// replace prev. matched
 		for (var j in arrMatchedStrings) {
 			el_innerText = el_innerText.replace( // replaces first occurrence
@@ -313,24 +304,12 @@ function MT___all_pages_highlightEmailAddresses(scrollIntoView, regex_highlight)
 			);
 		}
 		
-		//~ console.log(el[i].innerText);
-		//~ console.log(el_innerText);
-		
 		if (r.exec(el_innerText)) {
 			
 			if (!last_el)
 				last_el = el[i];
 			
 			arrMatchedStrings.push(el[i].innerText.trim());
-			//~ if (r != /\.youtube\.com/i)
-			//~ {
-				//~ arrMatchedStrings.push(el[i].innerText.trim());
-			//~ }
-			//~ else
-			//~ {
-				//~ arrMatchedStrings.push(el[i].innerHTML.trim());
-			//~ }
-			
 			
 			console.log(el[i]);
 			
@@ -1286,7 +1265,7 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 	}
 	removeHighlights(document.body);
 	
-	console.log(s);
+	//~ console.log(s);
 	// Highlight. Skip blank strings.
 	for (var i in s) {
 		if(typeof s[i] == 'object') {
@@ -1304,7 +1283,8 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 			for(var j = 0; j < allSpans.length; j++) {
 				console.log(allSpans[j].word);
 				if(allSpans[j].word && allSpans[j].word.trim() == s[i].string.toLowerCase().trim()) {
-					allSpans[j].scrollIntoView(true);
+					allSpans[j].scrollIntoView(false);
+					//~ allSpans[j].scrollIntoView(true);
 					break;
 				}
 			}

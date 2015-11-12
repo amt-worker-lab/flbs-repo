@@ -3057,10 +3057,11 @@ function MT__RUN() {
 			//AMT__Global_Vars.copyInp = o.lastName;
 			o.hl_strings = [
 				//~ {string: o.firstName, color: 'yellow'},
-				{string: 'postal code', color: 'yellow', scrollIntoView: true},
-				{string: 'zip code', color: 'yellow', scrollIntoView: true},
-				{string: 'postal', color: 'yellow', scrollIntoView: true},
-				{string: 'zip', color: 'yellow', scrollIntoView: true},
+				//~ {string: 'postal code', color: 'yellow', scrollIntoView: true},
+				{string: 'postal code', color: 'yellow'},
+				{string: 'zip code', color: 'yellow'},
+				{string: 'postal', color: 'yellow'},
+				{string: 'zip', color: 'yellow'},
 				{string: o.comp, color: 'pink'},
 				{string: 'contact', color: 'pink'},
 				//~ {string: o.email, color: 'LightSalmon'},
@@ -3154,7 +3155,11 @@ function MT__RUN() {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						if (options.response.status != 200) return;
+						if (options.response.status != 200) {
+							d1.style.backgroundColor = 'pink';
+							d1.innerText += '\n' + options.response.status + '(exiting!)';
+							return;
+						}
 						var dom =  new DOMParser().parseFromString(rs, 'text/html');
 						var intx = dom.body.innerText;
 						console.log(intx);
@@ -3179,6 +3184,7 @@ function MT__RUN() {
 								}
 							}
 							d1.appendChild(d);
+							uw(url, r2[2]);
 						} else if (r1) { //Los Angeles, CA 90027
 							// [space][5 digits][[space] OR [-][4 digits]]
 							var d = (r1[0].trim()).div({style:'font-weight:bold;border-top:1px solid #a2a2a2;'});
@@ -3192,14 +3198,20 @@ function MT__RUN() {
 								}
 							}
 							d1.appendChild(d);
+							uw(url, r1[1]);
+						} else {
+							uw(url); // Util w/o zip
 						}
 					}
-					
 				});
 			}
-			function uw(url) {
-				// Load XHR to see if .innerText contains RegEx of Zip.
-				check_page(url);
+			function uw(url, zip) {
+				//~ // Load XHR to see if .innerText contains RegEx of Zip.
+				//~ check_page(url);
+				if (zip) {
+					// Add to hl_strings...
+					o.hl_strings.push({string: zip, color: 'red', scrollIntoView: true});
+				}
 				// opts
 				var opts = {
 					task: 'AMT__all_pages_util',
