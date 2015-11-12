@@ -3025,7 +3025,7 @@ function MT__RUN() {
 	// Find the Zip Code based on Website and Company Name
 	// 
 	//
-	var s = '';
+	var s = '<p>Using the company name and the website, search Google or the website and enter the US Zip code.</p>';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -3040,11 +3040,14 @@ function MT__RUN() {
 			//GM_addStyle('table {width:100% !important;}');
 			
 			var p = document.getElementsByTagName('p')[1].innerText.trim();
-			p = /The Company Name is: ([^,]+), the website is ([^$]+)$/.exec(p);
-			// e.g. "Ikatu International", "http://www.ikatuinternational.org/:"
+			p = p.replace('The Company Name is:', '').trim();
+			p = p.replace(/:$/, ''); // Final ":"
+			p = p.split('the website is');
+			//~ p = /The Company Name is: ([^,]+), the website is ([^$]+)$/.exec(p);
+			// e.g. "Ikatu International", "http://www.ikatuinternational.org/"
 			var o = {
-				comp: p[1],
-				url: p[2].replace(/:$/, ''),
+				comp: p[0].trim().replace(/,$/, ''), // Trailing comma
+				url: p[1].trim(),
 				domain: null,
 				hl_strings: null,
 				q: [
@@ -3063,7 +3066,9 @@ function MT__RUN() {
 				//~ {string: o.email, color: 'LightSalmon'},
 				//~ {string: o.phone, color: 'Plum'}
 			];
-			if (!/^http/.exec(o.url)) {
+			if (o.url == '') {
+				o.domain = '';
+			} else if (!/^http/.exec(o.url)) {
 				o.domain = o.url;
 				o.url = 'http://' + o.url;
 			} else {
@@ -3079,7 +3084,7 @@ function MT__RUN() {
 			}
 			// Keypress
 			window.addEventListener('keypress',function(e) {
-				if(e.keyCode == '13') {
+				if (e.keyCode == '13') {
 					o.q[0].value = o.q[0].value.trim();
 					if (/^[\d\-]{4,10}$/.exec(o.q[0].value)) {
 						doSubmit();
@@ -3093,7 +3098,11 @@ function MT__RUN() {
 			SP_init();
 			// SP_init
 			function SP_init() {
-				var u = 'site:' + o.domain + ' ("contact" OR "postal" OR "zip" OR "address")';
+				var u;
+				if (o.domain != '')
+					u = 'site:' + o.domain + ' ("contact" OR "postal" OR "zip" OR "address")'; // Site search
+				else
+					u = o.comp + ' ("contact" OR "postal" OR "zip" OR "address")'; // Any search.........
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
@@ -3104,24 +3113,15 @@ function MT__RUN() {
 			function SP_process(object) {
 				console.log(object);
 				var rs = object;
-				if (rs.length == 0) {
+				if (rs.length == 0 && o.url == '') {
+					document.body.style.backgroundColor = 'pink';
+				} else if (rs.length == 0) {
 					uw(o.url);
 				} else {
 					uw(rs[0][0]);
-					//~ // Does first contain "services" or "about"
-					//~ if (/(services|about)/i.exec(rs[0][0])) {
-						//~ uw(rs[0][0]);
-					//~ } else {
-						//~ uw(o.url);
-					//~ }
 				}
 			}
 			function uw(url) {
-				//~ if (url) {
-					//~ // nothing....
-				//~ } else {
-					//~ var url = o.url;
-				//~ }
 				// opts
 				var opts = {
 					task: 'AMT__all_pages_util',
