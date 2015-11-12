@@ -3122,11 +3122,16 @@ function MT__RUN() {
 				var rs = object;
 				if (rs.length == 0 && o.url == '') {
 					document.body.style.backgroundColor = 'pink';
-				} else if (rs.length == 0) {
+				} else if (
+					rs.length == 0 ||
+					rs[0][0] == o.url ||
+					rs[0][0].replace(/www\./, '') == o.url.replace(/www\./, '')
+					) {
 					uw(o.url);
-				} else {
+				} else { // Different.....
 					uw(rs[0][0]);
-					d1.innerText += '\n' + rs[0][0];
+					d1.appendChild((rs[0][0]).div({style:'font-weight:bold;'}));
+					//~ d1.innerText += '\n' + ;
 				}
 			}
 			function uw(url) {
