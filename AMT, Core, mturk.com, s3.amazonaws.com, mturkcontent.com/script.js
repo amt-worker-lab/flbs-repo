@@ -3021,6 +3021,128 @@ function MT__RUN() {
 		new run().f();
 	}
 	
+	// Robert Lopez
+	// Find the Zip Code based on Website and Company Name
+	// 
+	//
+	var s = '';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			//~ GM_addStyle('input {width:100% !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:100px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('td {border:1px solid black;}');
+			//GM_addStyle('table {width:100% !important;}');
+			
+			var p = document.getElementsByTagName('p')[1].innerText.trim();
+			p = /The Company Name is: ([^,]+), the website is ([^$]+)$/.exec(p);
+			// e.g. "Ikatu International", "http://www.ikatuinternational.org/:"
+			var o = {
+				comp: p[1],
+				url: p[2].replace(/:$/, ''),
+				domain: null,
+				hl_strings: null,
+				q: [
+					document.getElementById('Field1')					
+				]
+			}
+			//AMT__Global_Vars.copyInp = o.lastName;
+			
+			o.hl_strings = [
+				//~ {string: o.firstName, color: 'yellow'},
+				{string: 'postal code', color: 'yellow', scrollIntoView: true},
+				{string: 'zip code', color: 'yellow', scrollIntoView: true},
+				{string: 'postal', color: 'yellow', scrollIntoView: true},
+				{string: 'zip', color: 'yellow', scrollIntoView: true},
+				{string: o.comp, color: 'pink'},
+				{string: 'contact', color: 'pink'},
+				//~ {string: o.email, color: 'LightSalmon'},
+				//~ {string: o.phone, color: 'Plum'}
+			]
+			
+			for(var i in o.position) {
+				o.hl_strings.push({string: o.position[i], color: 'LightGreen'});
+			}
+			for(var i in o.field) {
+				o.hl_strings.push({string: o.field[i], color: 'aqua'});
+			}
+			
+			console.log(o);
+			o.q[2].checked =true;
+			o.q[0].style.zoom = '5';
+			o.q[1].style.zoom = '5';
+			o.q[2].style.zoom = '5';
+			
+			//~ o.q[0].innerHTML = 'Same Data';
+			//~ o.q[1].innerHTML = 'Data Changed';
+			//~ o.q[2].innerHTML = 'Not Found';
+			
+			o.q[0].onclick = o.q[1].onclick = function() {
+				document.getElementById('submitButton').click();
+			}
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				doSubmit();
+				return false;
+			}
+			// opts
+			var opts = {
+				task: 'AMT__all_pages_util',
+				highlight_strings_in_page: {
+					strings: o.hl_strings
+				},
+				highlight_range_to_parent: true
+			}
+			// AMT__setUtilityTabs
+			AMT__setUtilityTabs(
+				[
+					{
+						url: o.site,
+						options: opts
+					}
+				],
+				{
+					options: {
+						//~ task: 'AMT__all_pages_util',
+						//~ highlight_range_to_parent: true,
+						//~ up_button_to_all_links: true
+					},
+					style: 'float:left;width:100px !important;height:100px;font-size:18px !important;'		
+				},
+				{style: 'position:absolute;top:2000px;height:100px;width:20%;left:80%;background-color:#EEE;border: 1px solid green;font-size:26px !important;'},
+				false,
+				function(response){
+					console.log(response);
+					var text = response.data.text_range.trim();
+					if(text.indexOf('@') != -1) {
+						o.q[4].value = text;
+					}
+					else if(text.replace(/[\D]/g,'').length > 6) {
+						o.q[5].value = text;
+					}
+					else {
+						o.q[3].value = text;
+					}
+					
+					document.getElementById('submitButton').focus();
+					
+					o.q[1].checked = true;
+					o.q[0].checked = false;
+					o.q[2].checked = false;
+				}
+			);
+			
+		}
+		new run().f();
+	}
+	
 	//
 	// Matthew Roe
 	// Confirm College Coach Data
@@ -3073,7 +3195,6 @@ function MT__RUN() {
 				td[i].style.zoom = '2';
 			}
 			
-			
 			o.position = o.position.split(' ');
 			o.field = o.field.split(' ');
 			
@@ -3113,7 +3234,7 @@ function MT__RUN() {
 				doSubmit();
 				return false;
 			}
-			
+			// opts
 			var opts = {
 				task: 'AMT__all_pages_util',
 				highlight_strings_in_page: {
@@ -3121,7 +3242,7 @@ function MT__RUN() {
 				},
 				highlight_range_to_parent: true
 			}
-			
+			// AMT__setUtilityTabs
 			AMT__setUtilityTabs(
 				[
 					{
@@ -6951,51 +7072,52 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('.panel-primary {position:absolute;top:1600px;}');
-		
-		var a = document.getElementsByTagName('a');
-		var url = 'http://' + a[0].innerText;
-		var o = {
-			url: url,
-			q: document.getElementsByName('WritingTexts')[0]
-		}
-		
-		document.getElementById('submitButton').onclick = function() {
-			o.q.value = o.q.value.trim();
-			if(!o.q.value || o.q.length < 5) {
+			
+			var a = document.getElementsByTagName('a');
+			var url = 'http://' + a[0].innerText;
+			var o = {
+				url: url,
+				q: document.getElementsByName('WritingTexts')[0]
+			}
+			
+			document.getElementById('submitButton').onclick = function() {
+				o.q.value = o.q.value.trim();
+				if(!o.q.value || o.q.length < 5) {
+					return false;
+				}
+				new AMT___core_factory().nextTab();
+				doSubmit();
 				return false;
 			}
-			new AMT___core_factory().nextTab();
-			doSubmit();
-			return false;
-		}
-		
-		
-		AMT__setUtilityTabs([
-							{
-								url: o.url,
-								options: {
-									task: 'AMT__all_pages_util',
-									highlight_range_to_parent: true
-									// highlight range to parent
-								}								
-							}
-						], null, {backgroundColor:'pink'}, false,
-						function(response){
-							console.log(response);
-							var text = response.data.text_range;
+			
+			
+			AMT__setUtilityTabs([
+					{
+						url: o.url,
+						options: {
+							task: 'AMT__all_pages_util',
+							highlight_range_to_parent: true
+							// highlight range to parent
+						}								
+					}
+				], null, {backgroundColor:'pink'}, false,
+				function(response){
+					console.log(response);
+					var text = response.data.text_range;
+			
+					console.log(text);
 					
-							console.log(text);
-							
-							if(o.q.value) {
-								o.q.value += '\n' + text;
-							}
-							else {
-								o.q.value = text;
-							}
-							o.q.value.trim();
-							
-							document.getElementById('submitButton').focus();
-						});
+					if(o.q.value) {
+						o.q.value += '\n' + text;
+					}
+					else {
+						o.q.value = text;
+					}
+					o.q.value.trim();
+					
+					document.getElementById('submitButton').focus();
+				}
+			);
 		}
 		new run().f();
 	}
@@ -7013,13 +7135,7 @@ function MT__RUN() {
 			GM_addStyle('input[type="radio"] {zoom:4;}');
 			
 			document.getElementsByName('is_good')[0].click();
-			
-			
-		
 			document.getElementById("submitButton").focus();
-			
-			
-			
 			var allInps = 
 			document.getElementById("submitButton").onclick = function() {
 				new AMT___core_factory().nextTab({playFirstElement: true});
