@@ -56,9 +56,13 @@ function MT__RUN() {
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return false;
+					rs = '<html><body>' + rs + '</body></html>';
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var x = document.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					console.log(dom);
+					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					console.log(x);
 					if (x && x.length == 2) { //
+						//~ console.log('succ');
 						return true;
 					}
 					return false;
@@ -67,7 +71,7 @@ function MT__RUN() {
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return;
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var x = document.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
 					if (x && x.length == 2) { //
 						var a = x[0].getElementsByTagName('a');
 						if (a && a.length == 1) {
