@@ -17243,16 +17243,20 @@ function MT___resolveURL(url, callback_function, seed) {
 		url: MT___host+'/mturk/.scripts/resolve_URL.php?u='+encodeURIComponent(url),
 		onload: function(response) {
 			var rs = response.responseText;
-			
 			callback_function(rs, seed);
 		}
 	});
 }
-/*
+/**
  * MT___google_api_geocode helper
  * 
+ * @params
+ * 		rs
+ * 		callback_function
+ * 		return_complete_response
+ * 		input_object
 **/
-function MT___google_api_geocode_parse(rs, callback_function, return_complete_response) {
+function MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object) {
 	rs = JSON.parse(rs);
 	var found = true;
 	if  (
@@ -17271,47 +17275,45 @@ function MT___google_api_geocode_parse(rs, callback_function, return_complete_re
 	if (!return_complete_response) // just lat/lng
 		callback_function(rs.results[0].geometry.location.lat, rs.results[0].geometry.location.lng);
 	else
-		callback_function(rs); // full
+		callback_function(rs, input_object); // Full response plus any seed. New Nov. 12, 2015: "Input object" is seed.
+		//~ callback_function(rs); // full
 }
 /*
  * MT___google_api_reverseGeocode
  * return reverse lat/lng
 **/
-function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) { //, return_complete_response) { // latlng->str
-	
+function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy, input_object) { //, return_complete_response) { // latlng->str
 	// Global
-	//
-	//
 	var latlng = latlng;
 	var callback_function = callback_function;
 	var use_a_proxy = use_a_proxy;
-	
 	var u = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+encodeURIComponent(latlng)+'&sensor=false';
 	
-	// IS THIS REQUEST CACHED?
+	// Xhr request.
+	// Is this reqeust cached?
 	GM_xmlhttpRequest({ // init
 		method: "GET",
 		url: AMT___POPUP___PROXY_REDACTED_+'/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(u),
 		onload: function(response) {
 			var rs = response.responseText;
-			
+			// Empty response?
 			if (rs.trim() != '') {
-				MT___google_api_geocode_parse(rs, callback_function, true); // return full response == true
+				MT___google_api_geocode_parse(rs, callback_function, true, input_object); // return full response == true
 				return;
 			}
-					
+			// !use_a_proxy
 			if (!use_a_proxy) {
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: u,
 					onload: function(response) {
 						var rs = response.responseText;
-						MT___google_api_geocode_parse(rs, callback_function, true); // return full response == true
+						MT___google_api_geocode_parse(rs, callback_function, true, input_object); // return full response == true
 					}
 				});
 				return;
 			}
-			
+			// use_a_proxy
 			if (use_a_proxy) {
 				GM_xmlhttpRequest({ // init
 					method: "GET",
@@ -17333,12 +17335,11 @@ function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) 
 							} else
 								return;
 								
-							MT___google_api_geocode_parse(rs, callback_function, true);
+							MT___google_api_geocode_parse(rs, callback_function, true, input_object);
 						}
 					});
 				}, 1000);
 			}
-			
 		}
 	});
 }
@@ -17351,7 +17352,7 @@ function MT___google_api_reverseGeocode(latlng, callback_function, use_a_proxy) 
  * 
  * http://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&sensor=false
 **/
-function MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy) {
+function MT___google_api_geocode(location, callback_function, return_complete_response, use_a_proxy, input_object) {
 	
 	// Global
 	//
@@ -17371,7 +17372,7 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 			var rs = response.responseText;
 			
 			if (rs.trim() != '') {
-				MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+				MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object);
 				return;
 			}
 			
@@ -17379,13 +17380,12 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 			//
 			//
 			if (!use_a_proxy) {
-				
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u),
 					onload: function(response) {
 						var rs = response.responseText;
-						MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+						MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object);
 					}
 				});
 				return;
@@ -17400,18 +17400,17 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 			];
 			if (use_a_proxy) {
 				AMT___POPUP__initializeGlobals(function() {
-					GM_xmlhttpRequest({ // init
+					// Initialize
+					GM_xmlhttpRequest({
 						method: "GET",
 						url: AMT___POPUP___PROXY_REDACTED_+
 							'/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u)+
 							'&catch_success='+encodeURIComponent('"results"')+
 							'&catch_include_array='+encodeURIComponent(JSON.stringify(ci_array)),
-							//~ '&catch_include='+encodeURIComponent('"error_message" : "You have exceeded your daily request quota for this API."'),
 						onload: function(response) {
-							//var rs = response.responseText;
 						}
 					});
-					
+					// Watch for complete...
 					var xint = setInterval(function() {
 						GM_xmlhttpRequest({ // init
 							method: "GET",
@@ -17424,7 +17423,7 @@ function MT___google_api_geocode(location, callback_function, return_complete_re
 								} else
 									return;
 									
-								MT___google_api_geocode_parse(rs, callback_function, return_complete_response);
+								MT___google_api_geocode_parse(rs, callback_function, return_complete_response, input_object);
 							}
 						});
 					}, 1000);
