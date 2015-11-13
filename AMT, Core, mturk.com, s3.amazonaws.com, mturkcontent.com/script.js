@@ -49884,7 +49884,6 @@ function MT__RUN() {
 					];
 				 */
 				function db_review_submitted(results) {
-					
 				}
 				
 				// Get the lat/long.
