@@ -22292,7 +22292,9 @@ function MT__RUN() {
 				for (var i in rs.results) {
 					var rslt = rs.results[i];
 					console.log(rslt);
-					var bgc = (rslt.result_type != 'srLODGING') ? 'background-color:aqua;' : '';
+					
+					// irrelevant.....
+					//var bgc = (rslt.result_type != 'srLODGING') ? 'background-color:aqua;' : '';
 					
 					if (rslt.profile_url == null) continue; // ?
 					var show_url = rslt.profile_url.replace(/^http:\/\/www\.tripadvisor\.com\//, '');
@@ -22302,6 +22304,41 @@ function MT__RUN() {
 					} else {
 						show_url = '';
 					}
+					
+					// Country bgc
+					var bgc = '';//, bgc2 = '';
+					// US
+					if (o.country == 'United States' || o.country == 'US') {
+						for (var abbr in MT___states) { // abbr, full
+							var ends_us_state = new RegExp(__js_escape_regEx(MT___states[abbr]) + '$', 'i').exec(rslt.address);
+							if (ends_us_state) {
+								break;
+							}
+						}
+						if (ends_us_state) {
+							// 
+							console.log(ends_us_state);
+						} else {
+							bgc = 'background-color:aqua;'; // Not US state (Not US)
+							console.log('x');
+							console.log(bgc);
+						}
+					} else {
+						
+					}
+					//~ var c1 = n.p[n.p.length - 1].toLowerCase(); // Country
+					//~ var c2 = o.country.toLowerCase();
+					//~ console.log(c);
+					//~ console.log(o.country);
+					//~ if  (
+						//~ c1 != c2 &&
+						//~ c1.indexOf(c2) == -1 &&
+						//~ c2.indexOf(c1) == -1
+						//~ )
+					//~ {
+						//~ bgc = 'background-color:aqua;';
+						//~ bgc2 = 'aqua';
+					//~ }
 					
 					// Div
 					var dv = document.createElement('div');
@@ -22330,7 +22367,7 @@ function MT__RUN() {
 					dv.profile_url = rslt.profile_url;
 					dv.className = 'exe '+rslt.profile_url;
 					dv.is_clicked = (o.match.found_match == rslt.profile_url) ? true : false;
-					dv.style.backgroundColor = (o.match.found_match == rslt.profile_url) ? 'LightGreen' : '';
+					dv.base_bgc = bgc ? 'aqua' : '';
 					dv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						o.q.value = this.profile_url;
@@ -22355,7 +22392,8 @@ function MT__RUN() {
 						for (var i in x) {
 							if (i == 'length') break;
 							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = '';
+								x[i].style.base_bgc;
+								//~ x[i].style.backgroundColor = '';
 							if (x[i].className == 'exe ' + this.profile_url) {
 								x[i].style.backgroundColor = 'LightGreen';
 							}
@@ -22365,11 +22403,15 @@ function MT__RUN() {
 						var x = document.getElementsByClassName('exe ' + this.profile_url);
 						for (var i in x) {
 							if (i == 'length') break;
-							console.log(x[i].is_clicked);
-							console.log(x[i]);
 							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = '';
+								x[i].style.base_bgc;
+								//~ x[i].style.backgroundColor = '';
 						}
+					}
+					// Match found display.....
+					if (o.match.found_match == rslt.profile_url) {
+						dv.style.backgroundColor = 'LightGreen';
+						dv.base_bgc = 'LightGreen';
 					}
 					
 					// Auto?
