@@ -5910,9 +5910,9 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//
 		// DOM
 		var dom = new DOMParser().parseFromString(rs,'text/html');
-		
+		// Result div
 		var r = dom.getElementsByClassName('result');
-		for (var i=0;i<r.length;r++) {
+		for (var i=0;i<r.length;i++) {
 			var rslt = {
 				name:			null,	// string
 				address:		null,	// string
@@ -5942,7 +5942,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			} else {
 				//
 			}
-			opts.response.vars.results.push(rslt);
 			// rating
 			var t = /"([\d\.]+) of 5 stars/.exec(r[i].innerHTML);
 			if (t) {
@@ -5950,7 +5949,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			} else {
 				//
 			}
-			opts.response.vars.results.push(rslt);
 			// profile_url
 			// First A is blank. Second is correct......
 			var t = r[i].getElementsByTagName('a');
