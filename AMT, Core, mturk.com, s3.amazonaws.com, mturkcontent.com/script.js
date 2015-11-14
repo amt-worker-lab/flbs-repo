@@ -22294,16 +22294,18 @@ function MT__RUN() {
 					console.log(rslt);
 					var bgc = (rslt.result_type != 'srLODGING') ? 'background-color:aqua;' : '';
 					
-					var dv = document.createElement('div');
-					out.appendChild(dv);
-					
 					if (rslt.profile_url == null) continue; // ?
 					var show_url = rslt.profile_url.replace(/^http:\/\/www\.tripadvisor\.com\//, '');
-					if (show_url.indexOf('Hotel_Review') != 0) {
-						show_url = 'U:' + show_url + '<b>'+show_url+'</b><br>';
+					if (show_url.indexOf('Hotel_Review') != 0) { // ONLY SHOW HOTEL REVIEWS........ Skips eg "/UserReview....
+						//show_url = 'U:' + show_url + '<b>'+show_url+'</b><br>';
+						continue;
 					} else {
 						show_url = '';
 					}
+					
+					// Div
+					var dv = document.createElement('div');
+					out.appendChild(dv);
 					
 					// NAME MATCH
 					var tmp_nm = MT__bold(rslt.name, o.bold) + '<br>'; // + (rslt.rating != null ? ' <i>('+rslt.rating+')</i>' : '') + '<br>'
