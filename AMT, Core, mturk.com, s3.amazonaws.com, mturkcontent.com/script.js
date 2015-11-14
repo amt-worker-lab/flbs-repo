@@ -22324,21 +22324,11 @@ function MT__RUN() {
 							console.log(bgc);
 						}
 					} else {
-						
+						var ends_country = new RegExp(__js_escape_regEx(o.country) + '$', 'i').exec(rslt.address);
+						if (!ends_country) {
+							bgc = 'background-color:aqua;'; // Not country....
+						}
 					}
-					//~ var c1 = n.p[n.p.length - 1].toLowerCase(); // Country
-					//~ var c2 = o.country.toLowerCase();
-					//~ console.log(c);
-					//~ console.log(o.country);
-					//~ if  (
-						//~ c1 != c2 &&
-						//~ c1.indexOf(c2) == -1 &&
-						//~ c2.indexOf(c1) == -1
-						//~ )
-					//~ {
-						//~ bgc = 'background-color:aqua;';
-						//~ bgc2 = 'aqua';
-					//~ }
 					
 					// Div
 					var dv = document.createElement('div');
@@ -22376,7 +22366,8 @@ function MT__RUN() {
 						for (var i in x) {
 							if (i == 'length') break;
 							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = '';
+								x[i].style.backgroundColor = x[i].base_bgc;
+								//~ x[i].style.backgroundColor = '';
 							if (x[i].className == 'exe ' + this.profile_url) {
 								x[i].is_clicked = true;
 								x[i].style.backgroundColor = 'LightGreen';
@@ -22392,7 +22383,7 @@ function MT__RUN() {
 						for (var i in x) {
 							if (i == 'length') break;
 							if (!x[i].is_clicked) 
-								x[i].style.base_bgc;
+								x[i].style.backgroundColor = x[i].base_bgc;
 								//~ x[i].style.backgroundColor = '';
 							if (x[i].className == 'exe ' + this.profile_url) {
 								x[i].style.backgroundColor = 'LightGreen';
@@ -22404,7 +22395,7 @@ function MT__RUN() {
 						for (var i in x) {
 							if (i == 'length') break;
 							if (!x[i].is_clicked) 
-								x[i].style.base_bgc;
+								x[i].style.backgroundColor = x[i].base_bgc;
 								//~ x[i].style.backgroundColor = '';
 						}
 					}
