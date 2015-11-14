@@ -5940,6 +5940,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			//
 			// e.g. <a target="_blank" href="/Restaurant_Review-g806325-d4594024-Reviews-New_Acropol_restaurant-Morogoro_Morogoro_Region.html" onclick="setOneTimeCookie('NORDINAL','B2'); ta.call('ta.servlet.SearchPage.recordSelection', event, this, 'B2', 'EATERY');">\n<b>New Acropol</b> restaurant</a>
 			//
+			var r2 = /<a class="review-count" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*([^\r\n]+)/.exec(m[2]);//<b>[^<]+<\/b>
 			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*([^\r\n]+)/.exec(m[2]);//<b>[^<]+<\/b>
 			if (r2) {
 				rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
@@ -5949,7 +5950,8 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			}
 			
 			// address
-			var r2 = /<div class="srAddress inline">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[2]);
+			var r2 = /<div class="address">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[2]);
+			//~ var r2 = /<div class="srAddress inline">((.|\s)*?(?=<\/div>|$)|$)/.exec(m[2]);
 			if (r2) {
 				rslt.address = __js_clean_html_str(r2[1]).trim();
 			}
