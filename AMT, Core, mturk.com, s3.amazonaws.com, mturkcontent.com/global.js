@@ -5892,20 +5892,91 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		
 		var rs = opts.response.responseText;
 		
-		var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
-		if (r) {
-			opts.response.vars.num_search_results = r[1];
-		} else {
-			var x = rs.match(/class="searchResult/g);
-			if (x) {
-				opts.response.vars.num_search_results = x.length;
-			}
-		}
+		// ...
+		opts.response.vars.num_search_results = 0;
+		// OLD COUNT....
+		//~ var r = /<div class="line1">All results<\/div>[\r\n\t\s]*<div class="line2">\(([\d,]+)\)<\/div>/.exec(rs);
+		//~ if (r) {
+			//~ opts.response.vars.num_search_results = r[1];
+		//~ } else {
+			//~ var x = rs.match(/class="searchResult/g);
+			//~ if (x) {
+				//~ opts.response.vars.num_search_results = x.length;
+			//~ }
+		//~ }
 		
 		// Listings
 		//
 		//
+		// DOM
+		var dom = new DOMParser().parseFromString(rs,'text/html');
 		
+		var r = dom.getElementsByClassName('result');
+		for (var i=0;i<r.length;r++) {
+			var rslt = {
+				name:			null,	// string
+				address:		null,	// string
+				rating:			null,	// string
+				profile_url:	null,	// string
+				result_type:	null	// string
+			};
+			opts.response.vars.num_search_results++; // Increment counter......
+			// typeof
+			var x = r[i].className.split(' ');
+			if (x.length == 2) {
+				rslt.result_type = x[1];
+			} else {
+				//
+			}
+			// name
+			var t = r[i].getElementsByClassName('title');
+			if (t) {
+				rslt.name = t[0].innerText.trim();
+			} else {
+				//
+			}
+			// address
+			var t = r[i].getElementsByClassName('address');
+			if (t) {
+				rslt.address = t[0].innerText.trim();
+			} else {
+				//
+			}
+			opts.response.vars.results.push(rslt);
+			// rating
+			var t = /"([\d\.]+) of 5 stars/.exec(r[i].innerHTML);
+			if (t) {
+				rslt.rating = t[1];
+			} else {
+				//
+			}
+			opts.response.vars.results.push(rslt);
+			// profile_url
+			// First A is blank. Second is correct......
+			var t = r[i].getElementsByTagName('a');
+			if (t && t.length == 2) {
+				//~ rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
+				//~ console.log(t);
+				rslt.profile_url = t[1].getAttribute('href').replace(/#REVIEWS$/, '');
+				if (rslt.profile_url.indexOf('http') != 0)
+					rslt.profile_url = 'http://www.tripadvisor.com/' + rslt.profile_url.replace(/^\/*/, ''); // Format...
+			} else {
+				//
+			}
+			opts.response.vars.results.push(rslt);
+		}
+		
+		return true;
+		
+		// ....old....
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		//
 		var r = /<div class="result ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="result|<div class="sectionPagingBOT">|$)|$)/g; // New Nov.14,2015 // sectionPagingBOT ?
 		//~ var r = /<div class="searchResult ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
 		//~ var r = /<div class="searchResult([^"]*)">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
@@ -5944,6 +6015,7 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 			var r2 = /<a target="_blank" href="(\/[^"]+)"[^>]*>[\r\n\t\s]*([^\r\n]+)/.exec(m[2]);//<b>[^<]+<\/b>
 			if (r2) {
 				rslt.profile_url = 'http://www.tripadvisor.com' + __js_clean_html_str(r2[1]);
+				rslt.profile_url = rslt.profile_url.replace(/#REVIEWS$/, '');
 				rslt.name = __js_clean_html_str(
 					r2[2].replace(/(<\/?b>|<\/a>)/g, '')
 				);
