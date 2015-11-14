@@ -5906,12 +5906,11 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 		//
 		//
 		
-		var r = /<div class="searchResult ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
+		var r = /<div class="result ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="result|<div class="sectionPagingBOT">|$)|$)/g; // New Nov.14,2015 // sectionPagingBOT ?
+		//~ var r = /<div class="searchResult ([^ ]*)[^"]*"[^>]*>((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
 		//~ var r = /<div class="searchResult([^"]*)">((.|\s)*?(?=<div class="searchResult|<div class="sectionPagingBOT">|$)|$)/g;
 		var m;
 		while (m = r.exec(rs)) {
-			
-			//console.log(m);
 			
 			// Type of... Skip "srREVIEWS" type, which are at bottom of page.
 			// Main types are: srLODGING, srEATERY
