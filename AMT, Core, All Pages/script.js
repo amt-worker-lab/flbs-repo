@@ -333,7 +333,8 @@ function load()
 			var ih = document.body.innerHTML;
 			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
-			var rslt = latLngReg.exec(ih);
+			var rslt = 
+			.exec(ih);
 			console.log(rslt);
 			var lat = rslt[1];
 			var lng = rslt[2];
@@ -358,7 +359,6 @@ function load()
 						// response=object
 					}
 				)
-			
 			
 			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
