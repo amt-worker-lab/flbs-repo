@@ -380,26 +380,26 @@ function load()
 			var lat = rslt[1];
 			var lng = rslt[2];
 			
-			chrome.runtime.sendMessage(
-					'gcfnekbbpmbgadddbojhlojhddnkcpje',
-					{
-						util_window_message_passing: true,
-						latLng: {lat: lat, lng: lng}
-					},
-					function(response) {
-						// response=object
-					}
-				)
-			chrome.runtime.sendMessage(
-					'bpbbmbgkdconjgghffedjkojaoebdnii',
-					{
-						util_window_message_passing: true,
-						latLng: {lat: lat, lng: lng}
-					},
-					function(response) {
-						// response=object
-					}
-				)
+			var placard_name = ''
+			var placard_addr = ''
+			
+			
+			
+			var obj = {
+				lat: lat,
+				lng: lng,
+				placard_name: placard_name,
+				placard_addr: placard_addr
+			}
+			
+			
+			
+			parent.postMessage(
+			{
+				data: obj
+			},
+			"*")
+		);
 			
 			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
