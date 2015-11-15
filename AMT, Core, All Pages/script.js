@@ -363,6 +363,47 @@ function load()
 			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 5000)
 	};
+
+
+	// ...
+	// WeFi Geocode Cache
+	//
+	//
+	if(loc.indexOf('GeocodeCache') != -1) {
+		window.setTimeout(function() {
+			var ih = document.body.innerHTML;
+			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
+			
+			var rslt = 
+			.exec(ih);
+			console.log(rslt);
+			var lat = rslt[1];
+			var lng = rslt[2];
+			
+			chrome.runtime.sendMessage(
+					'gcfnekbbpmbgadddbojhlojhddnkcpje',
+					{
+						util_window_message_passing: true,
+						latLng: {lat: lat, lng: lng}
+					},
+					function(response) {
+						// response=object
+					}
+				)
+			chrome.runtime.sendMessage(
+					'bpbbmbgkdconjgghffedjkojaoebdnii',
+					{
+						util_window_message_passing: true,
+						latLng: {lat: lat, lng: lng}
+					},
+					function(response) {
+						// response=object
+					}
+				)
+			
+			//alert('lat: ' + lat + ' lng: ' + lng);
+		}, 5000)
+	};
 	
 	// UK address task.
 	// Which requester?
