@@ -420,7 +420,7 @@ function load()
 			}
 			//console.log(parent);
 			parent.postMessage(
-				{data: obj},
+				obj,
 			"*")
 			
 			//alert('lat: ' + lat + ' lng: ' + lng);
