@@ -333,8 +333,7 @@ function load()
 			var ih = document.body.innerHTML;
 			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
-			var rslt = 
-			.exec(ih);
+			var rslt = latLngReg.exec(ih);
 			console.log(rslt);
 			var lat = rslt[1];
 			var lng = rslt[2];
@@ -370,23 +369,27 @@ function load()
 	//
 	//
 	if(loc.indexOf('GeocodeCache') != -1) {
+		console.log('begin geocode cache');
 		var isLoaded = false;
 		var intvl = window.setInterval(function() {
 			
 			var ih = document.body.innerHTML;
 			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
-			var rslt = 
-			.exec(ih);
+			var rslt = latLngReg.exec(ih);
 
 			
-			if(!document.getElementsByClassName('google-maps-link')) {
+			if(!document.getElementsByClassName('google-maps-link') &&
+				!document.getElementsByClassName('default-card')) {
 				return;
 			}
+			
+			//console.log('card on page');
 			
 			if(!rslt) {
 				return;
 			}
+			//console.log('got passed rslt');
 			if(isLoaded == true)
 				return;
 			
@@ -394,7 +397,7 @@ function load()
 			isLoaded = true;
 			
 			console.log(rslt);
-			console.log('Sraping....');
+			//console.log('Sraping....');
 			
 			var lat = rslt[1];
 			var lng = rslt[2];
@@ -415,12 +418,10 @@ function load()
 				placard_name: placard_name,
 				placard_addr: placard_addr
 			}
-			console.log(parent);
+			//console.log(parent);
 			parent.postMessage(
-				"hello?",
-				//data: obj,
+				{data: obj},
 			"*")
-		);
 			
 			//alert('lat: ' + lat + ' lng: ' + lng);
 		}, 100)
