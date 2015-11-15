@@ -330,10 +330,10 @@ function load()
 	//
 	if(loc.indexOf('ChiosSpecial') != -1) {
 		window.setTimeout(function() {
-			var innerH = document.body.innerHTML;
+			var ih = document.body.innerHTML;
 			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
-			var rslt = latLngReg.exec(innerH);
+			var rslt = latLngReg.exec(ih);
 			console.log(rslt);
 			var lat = rslt[1];
 			var lng = rslt[2];
