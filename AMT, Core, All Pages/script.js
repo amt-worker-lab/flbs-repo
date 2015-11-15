@@ -370,18 +370,38 @@ function load()
 	//
 	//
 	if(loc.indexOf('GeocodeCache') != -1) {
-		window.setTimeout(function() {
+		var isLoaded = false;
+		var intvl = window.setInterval(function() {
+			
 			var ih = document.body.innerHTML;
 			var latLngReg = /https?:\/\/maps.google.com\/maps\?ll=([^,]+),([^&]+)&/;
 			
 			var rslt = 
 			.exec(ih);
+
+			
+			if(!document.getElementsByClassName('google-maps-link')) {
+				return;
+			}
+			
+			if(!rslt) {
+				return;
+			}
+			if(isLoaded == true)
+				return;
+			
+			clearInterval(intvl);
+			isLoaded = true;
+			
 			console.log(rslt);
+			console.log('Sraping....');
+			
 			var lat = rslt[1];
 			var lng = rslt[2];
 
 			var placard_name = ''
 			var placard_addr = ''
+			
 			
 			var placard = document.getElementsByClassName('place-desc-large');
 			if(placard[0]) {
@@ -395,18 +415,15 @@ function load()
 				placard_name: placard_name,
 				placard_addr: placard_addr
 			}
-			
-			
-			
+			console.log(parent);
 			parent.postMessage(
-			{
-				data: obj
-			},
+				"hello?",
+				//data: obj,
 			"*")
 		);
 			
 			//alert('lat: ' + lat + ' lng: ' + lng);
-		}, 5000)
+		}, 100)
 	};
 	
 	// UK address task.
