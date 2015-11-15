@@ -50831,28 +50831,28 @@ function MT__RUN() {
 				
 				map.setCenter(latLngOnPage);
 			}
-			
+			/**
+			 * getCenterBeforeChiosRuns
+			 */
 			function getCenterBeforeChiosRuns() {
-				
 				/**
 				 * window.onkeypress
 				 */
 				window.addEventListener('keypress', function(e) {
-					
 					var char = String.fromCharCode(e.charCode);
 					
 					// Exit Steet View
 					if (char == 'z' || char == 'Z') {
 						var x = document.getElementsByTagName('div');
-						
+						// AMT___RunPageScript
+						//
 						AMT___RunPageScript(
 							function() {
-							
 								//console.log('haha! PageScript has run!');
 								var headingAngle = map.streetView.pov.heading;
 								headingAngle *= -1;
 								
-								 map.streetView.pov.heading
+								map.streetView.pov.heading
 
 								headingAngle = headingAngle * Math.PI / 180;
 								
@@ -50929,15 +50929,15 @@ function MT__RUN() {
 								return;
 							}
 						);
-						
+						// AMT___RunPageScript
+						//
 						AMT___RunPageScript(function() {
 							var panorama = map.getStreetView();
 							panorama.setVisible(false);
 						});
 					}
-					
-					//...
 					// Go to map view
+					//
 					else if (char == 'b' || char == 'B') {
 						AMT___RunPageScript(function() {
 							if(map.getMapTypeId().toLowerCase() == "hybrid")
@@ -50945,30 +50945,9 @@ function MT__RUN() {
 							else
 								map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 						});
-						
-						//~ var x=document.getElementsByTagName('div');
-						//~ for (var i in x) {
-							//~ if (i == 'length') break;
-							//~ 
-							//~ // Go to map view
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show street map' && o.curr_map_view == null) {
-								//~ x[i].click();
-								//~ o.curr_map_view = 'map';
-								//~ 
-								//~ break;
-									//~ 
-							//~ }
-							//~ 
-							//~ // Go to satellite
-							//~ if (x[i] && x[i].hasOwnProperty('title') && x[i].title == 'Show satellite imagery' && o.curr_map_view == 'map') {
-								//~ x[i].click();
-								//~ o.curr_map_view = null;
-								//~ break;
-							//~ }
-						//~ };
 					}
-					
 					// Go to satellite
+					//
 					else if (char == 'x' || char == 'X') {
 						AMT___RunPageScript(function() {
 							if(map.getTilt()*1 == 45)
@@ -50999,7 +50978,7 @@ function MT__RUN() {
 				}, false);
 				
 				new AMT___core_factory().createScriptVar('Start in top-down view', 0, false);
-				var inp = document.createElement('input')
+				var inp = document.createElement('input');
 				inp.setAttribute('style', 'width:20%;top:2000px;position:absolute;left:40%;');
 				document.body.appendChild(inp);
 				inp.id = 'latlng_starting_value';
@@ -51021,6 +51000,7 @@ function MT__RUN() {
 					  "};"+
 				"}");
 				
+				//AMT___RunPageScript
 				AMT___RunPageScript("function() {"+
 							"window.setTimeout(function() {"+
 							
@@ -51068,9 +51048,6 @@ function MT__RUN() {
 											"	  window.threeRectPoints[1].position]);"+
 											"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
 								"}});"+
-							
-							
-							
 							
 								"var lat = map.getCenter().lat();" +
 								"var lng = map.getCenter().lng();" +
@@ -51261,9 +51238,11 @@ function MT__RUN() {
 								// STREET VIEW LAYER
 								"var streetViewLayer = new google.maps.StreetViewCoverageLayer();"+
 								"streetViewLayer.setMap(map);"+
-							"},2000)}")
+							"},2000)}");
 			}
-			
+			/**
+			 * runAfterGettingCenter
+			 */
 			function runAfterGettingCenter() {
 				// vars
 				var o = {
@@ -51310,20 +51289,19 @@ function MT__RUN() {
 				var middleLine = document.createElement('div');
 				middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
 				document.body.appendChild(middleLine);
-
+				// showPastReturns
 				showPastReturns(o.name + o.addr, function() {
 					document.body.style.backgroundColor = 'aqua';
 					document.getElementById('d4').innerText += ' *** Was Returned ***';
 					document.getElementById('d4').style.backgroundColor = 'aqua';
 				});
-				
+				// window.onContextMenu
 				window.onContextMenu = function(e) {
 					e.preventDefault();
 					e.stopPropogation();
 					return false;
 				}
-				
-				// ...
+				// submitButton
 				document.getElementById('submitButton').onclick = try_sbm;
 				function try_sbm(e) {
 					if (e) {
@@ -51332,7 +51310,6 @@ function MT__RUN() {
 					}
 					// Run here if not running @ dev.
 					if (!AMT__Global_Vars.core.is_running_on_local_dev) {
-						//~ this.style.backgroundColor = 'LightGreen';
 						if (o.q.value.trim() == '' && o.q.value.length > 10)
 							return false;
 						if (!/^[\d\D]{80,}$/.exec(o.q.value) && !xo.cannotFindIt) // At least 80 chars.
@@ -51350,14 +51327,10 @@ function MT__RUN() {
 				// Set the necessary searches.
 				//
 				function chios_system_geocoding__lat_lng() {
-					
 					// ...
 					var l = o.name;
-					if (l == 'Walmart')
-						l = 'Wal';
-					if (l == 'Macy\'s')
-						l = 'Macy';
-					// ...
+					if (l == 'Walmart') l = 'Wal';
+					if (l == 'Macy\'s')	l = 'Macy';
 					// Removed "near"
 					o.search.withNameSearch =
 						'https://maps.google.com/maps?hl=en&geocode='+
@@ -51391,7 +51364,7 @@ function MT__RUN() {
 					{
 						return;
 					}
-					
+					// createScriptVar=InitialChiosZoom
 					new AMT___core_factory().createScriptVar('InitialChiosZoom', 18, false);
 					
 					// UPDATE
@@ -51407,11 +51380,9 @@ function MT__RUN() {
 					// AMT__setUtilityTabs
 					AMT__setUtilityTabs([
 						{
-							//~ url: '',
 							options:
 							{
 								task:'AMT__chios_system_draw_polygon__utility_window',
-								//~ images: img_urls, // []
 								task__address: o.addr,
 								task__ll: {lat:lat, lng: lng},
 								task__name: o.name
@@ -51419,7 +51390,6 @@ function MT__RUN() {
 						}
 					], null, null, false, function(obj) {
 						//Compute distance between two points;
-						
 						// coordinates
 						console.log(xo);
 						console.log('==========================================');
@@ -51532,7 +51502,6 @@ function MT__RUN() {
 								"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
 								"map.streetView.setPov({heading:heading, pitch:0});" +
 								"};"+
-								
 
 								"window.addEventListener('keypress', function(e) {if(e.keyCode == 115) {orientToFirstPoint()} if(e.keyCode == 100) {orientToSecondPoint()};"+
 								"if(e.keyCode == 99) {"+
