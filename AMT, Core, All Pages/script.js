@@ -379,11 +379,15 @@ function load()
 			console.log(rslt);
 			var lat = rslt[1];
 			var lng = rslt[2];
-			
+
 			var placard_name = ''
 			var placard_addr = ''
 			
-			
+			var placard = document.getElementsByClassName('place-desc-large');
+			if(placard[0]) {
+				placard_name = placard[0].getElementsByClassName('place-name')[0].innerText
+				placard_addr = placard[0].getElementsByClassName('address')[0].innerText
+			}
 			
 			var obj = {
 				lat: lat,
