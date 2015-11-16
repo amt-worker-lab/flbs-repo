@@ -10,20 +10,14 @@
  * 	Home page graph memory, tallied up almost 10gib after ~1-2 days
  * 
  **/
- 
 // KH
 var mt___kh_test_str = '38033	||2603	longandfoster.com||2011	kw.com||1802	crye-leike.com||1155	homesmartintl.com||1099	realtyonegroup.com||830	elliman.com||XXXX';
-
-
-
-
 /**
  * OTHER GLOBAL VARIABLES
  * 
  */
 //
 var MT___host = 'http://192.168.1.2';
-
 /**
  * 
  * 
@@ -31,7 +25,6 @@ var MT___host = 'http://192.168.1.2';
  * 
  * 
  * */
-
 //		AMT__Global_Vars.isTopWindow
 //		AMT__Global_Vars.isPreview
 //		AMT__Global_Vars.groupId
