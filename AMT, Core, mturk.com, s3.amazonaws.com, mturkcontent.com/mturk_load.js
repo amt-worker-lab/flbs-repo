@@ -558,8 +558,6 @@ function mturk_load()
 		// Inside of iframe that is not accepted
 		// Unaccepted
 		
-		//~ console.log('h-stop');
-		
 		// Have a run button
 		//
 		//
@@ -595,26 +593,25 @@ function mturk_load()
 		//
 		//
 		//
-		
-		//********
+		//************************
 		// Tony Pavia
 		var s = 'Repeat step 2 and 3 for each contact # that you\'re shown in the HIT details above on this Staff List URL. Note that if the beginning of the contact # is the same as your previous hit (i.e. SDUSD_baypark_12,&nbsp; SDUSD_baypark_13,&nbsp; SDUSD_baypark_14, etc.), then the "URL of Staff List" remains the same.';
 		if (ih.indexOf(s) != -1) {
 			setTimeout(function() {MT___RUN_MANUAL.click();}, 200);
 		}
-		//********
+		//************************
 		// Kristin Howe real estate agent photos
 		var s = '<h3>Find the largest possible image of the given real estate agent, then copy the IMAGE URL and paste it into the provided field.</h3>';
 		if (ih.indexOf(s) != -1) {
 			setTimeout(function() {MT___RUN_MANUAL.click();}, 200);
 		}
-		//********
+		//************************
 		// RH
 		var s = '	<li>If the business has a url that is a subpart of a larger organization, record that url,&nbsp; e.g. www.healthcarewisdom.org/pulmonaryassociates</li>';
 		if (ih.indexOf(s) != -1) {
 			setTimeout(function() {MT___RUN_MANUAL.click();}, 600);
 		}
-		//********
+		//************************
 		// David Weber
 		// check assignmentid
 		// write after four seconds
@@ -630,16 +627,13 @@ function mturk_load()
 					url: MT___host+'/mturk/util.php?thomas_murphy_hid='+x, // && write
 					onload: function (response) {
 						var rs = response.responseText;
-						
 						if (response.status != 200)
 							return;
-						
 						if (rs.trim() == '1') {
 							//end
 						}
 						else { // run once
 							MT___RUN_MANUAL.click();
-							
 							setTimeout(function() {
 								var x = /&hitId=([^&$]+)/.exec(document.location.href);
 								if (x) {
