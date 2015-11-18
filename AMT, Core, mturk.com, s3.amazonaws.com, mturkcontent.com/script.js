@@ -73,14 +73,17 @@ function MT__RUN() {
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
 					if (x && x.length == 2) { //
-						var a = x[0].getElementsByTagName('a');
-						if (a && a.length == 1) {
-							var h = a[0].innerText.trim();
-							o.q[0].value = h;
-							if (/(http|www|\.com|\.org)/.exec(h)) {
-								doSubmit();
-							}
-						}
+						
+						
+						// HREF.....
+						//~ var a = x[0].getElementsByTagName('a');
+						//~ if (a && a.length == 1) {
+							//~ var h = a[0].innerText.trim();
+							//~ o.q[0].value = h;
+							//~ if (/(http|www|\.com|\.org)/.exec(h)) {
+								//~ doSubmit();
+							//~ }
+						//~ }
 					}
 				}
 			});
