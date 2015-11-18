@@ -28,6 +28,91 @@ function MT__RUN() {
 	
 	// garrett grohman
 	// http://ces16.mapyourshow.com/6_0/exhibitor/exhibitor-details.cfm?ExhID=T0001561 scrape
+	// #2 - Address
+	// 
+	s = '<p>Go to the provided directory URL for the given company. From there, find the company\'s city, state, and country and enter this information.&nbsp;</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//
+			// http://ces16.mapyourshow.com/6_0/includes/includePage.cfm?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid=T0007898
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('City')[0],
+					document.getElementsByName('State')[0],
+					document.getElementsByName('Country')[0],
+					//~ document.getElementById('web_url')
+				]
+			}
+			o.u = 'http://ces16.mapyourshow.com/6_0/includes/includePage.cfm'+
+					'?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid='+
+					encodeURIComponent(/exhibitor-details\.cfm\?ExhID=(T\d+)$/.exec(o.u)[1]);
+			//~ o.u = x;
+			console.log(o.u);
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return false;
+					rs = '<html><body>' + rs + '</body></html>';
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					console.log(dom);
+					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					console.log(x);
+					if (x && x.length == 2) { //
+						//~ console.log('succ');
+						return true;
+					}
+					return false;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					if (x && x.length == 2) { //
+						
+						var txt = x[0].innerText.trim();
+						// E.g.: > Beaverton, OR 97008<br /> USA<br /> P:
+						var x = /> ([^,>]+), ([A-Z]{2}) [\d\-]+<br \/> USA/.exec(txt);
+						if (!x) {
+							document.body.style.backgroundColor = 'orange';
+							return;
+						}
+						// Here...
+						o.q[0].value = x[1].trim();
+						o.q[1].value = x[2].trim();
+						o.q[2].value = 'USA';
+						for (var i in o.q) {
+							if (o.q[i].value == '') return; // Ends...
+						}
+						doSubmit();
+						
+						// FIND HREF.....
+						//
+						//
+						//
+						//~ var a = x[0].getElementsByTagName('a');
+						//~ if (a && a.length == 1) {
+							//~ var h = a[0].innerText.trim();
+							//~ o.q[0].value = h;
+							//~ if (/(http|www|\.com|\.org)/.exec(h)) {
+								//~ doSubmit();
+							//~ }
+						//~ }
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
+	// garrett grohman
+	// http://ces16.mapyourshow.com/6_0/exhibitor/exhibitor-details.cfm?ExhID=T0001561 scrape
 	// Find Websites for Companies
 	// 
 	s = '	<li>Enter the company website URL in full.&nbsp;(ie, www.companywebsite.com)</li>';
@@ -73,8 +158,6 @@ function MT__RUN() {
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
 					if (x && x.length == 2) { //
-						
-						
 						// HREF.....
 						//~ var a = x[0].getElementsByTagName('a');
 						//~ if (a && a.length == 1) {
