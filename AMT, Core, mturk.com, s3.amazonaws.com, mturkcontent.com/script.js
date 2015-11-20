@@ -49941,8 +49941,6 @@ function MT__RUN() {
 				
 				// h3[0]
 				var x = document.getElementsByTagName('h3')[0];
-				//~ x.onmouseover	= chios_system_geocoding__hide_show; //xx onclick
-				//~ x.onclick		= chios_system_geocoding__hide_show; //xx onclick
 				x.setAttribute('style', 'overflow:auto;');
 				x.style.border = '2px solid LightGreen';
 				x.style.cursor = 'pointer';
@@ -49954,7 +49952,6 @@ function MT__RUN() {
 				var d = document.createElement('script');
 				//d.innerText = 'console.log(map);console.log(myLatLng);var marker = new google.maps.Marker({    position: myLatLng,    title:"Hello World!"}); marker.setMap(map);drawingManager.setMap(map);';//sandbox:allow-scripts allow-same-origin;
 				document.body.appendChild(d);*/
-				
 				//~ // BING
 				//~ var woutNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(o.addr)+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
 				//~ var withNameSearchBing = 'http://www.bing.com/maps/default.aspx?q='+encodeURIComponent(l + ' near ' + (o.addr))+'&mkt=en&FORM=HDRSC4&style=b&lvl=16';
@@ -50018,15 +50015,6 @@ function MT__RUN() {
 								db_review_submitted
 							);
 						}
-						// DO NOT USE THIS (IMAGES WINDOW)
-						//~ // d4 is 40px lower and so 40px shorter.
-						//~ var d4_height = innerHeight-280;
-						//~ d4.style.height = d4_height + 'px';
-						
-						// DO NOT USE THIS
-						// Max Streetview image height
-						// Double it then set zoom=0.5
-						//o.max_streetview_height = Math.floor((d4_height / 4) * 4);
 					}
 				});
 				
@@ -50100,7 +50088,68 @@ function MT__RUN() {
 					console.log(o);
 					geocode_result(o.centerMapLat, o.centerMapLng);
 				}
-				
+				/**
+				 * function check_near
+				 */
+				function check_near(lat, lng) {
+					// Store => xo.name
+					// ...
+					// xhr_with_disk_cache
+					new AMT___requests_factory().xhr_with_disk_cache({
+						URL:	'https://maps.googleapis.com/maps/api/place/radarsearch/json'+
+								'?location='+encodeURIComponent(lat)+','+encodeURIComponent(lng)+
+								'&radius=5000&keyword='+encodeURIComponent(o.name)+
+								'&key=_GOOGLE_API_KEY_REDACTED_',
+						check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+							//~ var rs = options.response.responseText;
+							//~ if (options.response.status != 200) {
+								//~ add_static_img(); // Add basic image....
+							//~ }
+							return true;
+						},
+						success_callback: function(options) {
+							var rs = options.response.responseText;
+							rs = JSON.parse(rs);
+							/**"results" : [{"geometry" : {"location" : {"lat" : 26.006312,"lng" : -80.30076799999999}}},...,{}]**/
+							if (!rs.results || !rs.results.length) {
+								//~ add_static_img(); // Add basic image....
+								return;
+							}
+							for (var i in rs.results) {
+								var n = rs.results[i];
+								// js_append (add marker)
+								js_append(function (object) {
+									var mi = new google.maps.MarkerImage(
+										object.__host__+"/media/images/Yellow_dot.svg",
+										new google.maps.Size(16, 16),
+										new google.maps.Point(0, 0),
+										new google.maps.Point(8, 8)
+									);
+									var m = new google.maps.Marker({
+										position: new google.maps.LatLng(object.lat,object.lng),
+										map: map,
+										icon: mi,
+									});
+									m.setMap(map);
+								}, JSON.stringify({lat:n.geometry.location.lat,lng:n.geometry.location.lng,__host__:MT___host}));
+							}
+							//~ if (xo.markers.nearby_searches.length) {
+								//~ add_static_img();
+							//~ }
+						}
+					});
+				}
+				/**
+				 * js_append
+				 */
+				function js_append(func, values) {
+					// ...
+					var code = '(' + func + ')('+values+');';
+					var script = document.createElement('script');
+					script.textContent = code;
+					(document.head||document.documentElement).appendChild(script);
+					script.parentNode.removeChild(script);
+				}
 				/**
 				 * function geocode_result
 				 * 
@@ -50125,6 +50174,7 @@ function MT__RUN() {
 					console.log('careful look at me');
 					console.log(AMT__Global_Vars);
 					
+					check_near(lat,lng);
 					
 					// UPDATE
 					o.search.withNameSearch =
@@ -50135,16 +50185,6 @@ function MT__RUN() {
 					
 					// Send street view URLs to Utility Window
 					var task = (ih.indexOf('hotels.com') != -1) ? 'AMT__traveldata_scrape_hotels_com' : 'AMT__traveldata_scrape_travelocity_com';
-					
-					//~ // postMessage
-					//~ var ifr_intv = setInterval(function() {
-						//~ 
-						//~ 
-						//~ d2.contentWindow.postMessage({
-							//~ task: task,
-							//~ code: o.code
-						//~ }, "*");
-					//~ }, 600);
 					
 					var hds = [0, 45, 90, 135, 180, 225, 270, 315];
 					var img_urls = [];
@@ -50158,15 +50198,6 @@ function MT__RUN() {
 								'&key=_GOOGLE_API_KEY_REDACTED_'
 						);
 					}
-					
-					// AMT___RunPageScript
-					//~ window.setTimeout(function() {				
-						//~ AMT___RunPageScript(
-						//~ "function() {" +
-							//~ 
-						//~ "}");
-					//~ }, 2000);
-					
 					
 					console.log("Calling: AMT__setUtilityTabs");
 					
