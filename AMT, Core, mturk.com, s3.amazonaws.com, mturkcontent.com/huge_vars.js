@@ -9,6 +9,14 @@
 function AMT___huge_vars_factory(obj_vars) {
 	// this.___SKIP_SITES = ''; // would this work?
 }
+
+/**
+ * 
+ * 
+ */
+AMT___huge_vars_factory.prototype.images_base64_rainbow16 = function() {
+	return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAASFBMVEWbEuiYEuX+swA9ILKYwx0tLcb+0gBXFK0dP9kcP9odPtrj2QgdPd0dPdxLFKEBmkodPd1JFKCZE+bRDhzVFBr94AD/WgD///+PRCQqAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQffCxkGDhGFw1yQAAAAKklEQVQ4y2MQIwAYxPjxApACITwAooABJxhVMKpgVAH5CghlPUKZlwAAAK/dGQ34JCfnAAAAAElFTkSuQmCC';
+}
 /**
  * 
  * 
