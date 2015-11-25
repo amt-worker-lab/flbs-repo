@@ -70,7 +70,7 @@ function loadGlobalsFromBird() {
 		addScriptVarsListener();
 
 		// RUN
-console.log('LOAD ALL PAGES');
+//console.log('LOAD ALL PAGES');
 		var loader = new load();
 		if (loader.global_vars.is_running_on_amt) {
 			if(loader.AMT__init_utility_window) {
