@@ -366,7 +366,7 @@ function load()
 
 	// ...
 	// WeFi Geocode Cache
-	//
+	// # Must be around 400x300!
 	//
 	if(loc.indexOf('GeocodeCache') != -1) {
 		console.log('begin geocode cache');
