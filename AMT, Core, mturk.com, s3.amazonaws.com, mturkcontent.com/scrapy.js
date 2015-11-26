@@ -1101,28 +1101,30 @@ function init__scrapy() {
 					// shownext
 					showNextTab();
 					o.util_url = this.value;
-					AMT__setUtilityTabs([
-											{
-												url: o.util_url, //o.sd_start_urls[0],
-												options: {
-													task: 'AMT__all_pages_util',
-													highlight_range_to_parent: true,
-													email_links_remove_mailto: true,
-													email_links_click_to_parent: true,
-													highlight_strings_in_page: {
-														strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
-													},
-												}								
-											}], {}, {}, false,
-											function(response){
-												console.log(response);
-												var text = response.data.text_range.trim();
-												if(text.indexOf('@') != -1) {
-													o.q[0].value = text;
-													o.q[0].focus();
-												}
-											})
-					
+					new AMT___core_factory().createScriptVar('Utility Window?',0);
+					if(AMT__Global_Vars.scriptVars['Utility Window?'] != '0') {
+						AMT__setUtilityTabs([
+						{
+							url: o.util_url, //o.sd_start_urls[0],
+							options: {
+								task: 'AMT__all_pages_util',
+								highlight_range_to_parent: true,
+								email_links_remove_mailto: true,
+								email_links_click_to_parent: true,
+								highlight_strings_in_page: {
+									strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
+								},
+							}								
+						}], {}, {}, false,
+						function(response){
+							console.log(response);
+							var text = response.data.text_range.trim();
+							if(text.indexOf('@') != -1) {
+								o.q[0].value = text;
+								o.q[0].focus();
+							}
+						})
+					}
 					
 					// ...
 					d1.style.zIndex = '8';
