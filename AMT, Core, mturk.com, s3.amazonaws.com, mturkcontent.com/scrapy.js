@@ -1265,6 +1265,7 @@ function init__scrapy() {
 									{
 										o.q[0].value = this.email;
 										o.q[0].value = o.q[0].value.replace(/^[^\@]+/,'').trim();
+										showNextTab();
 										doSubmit();
 									}
 								},
