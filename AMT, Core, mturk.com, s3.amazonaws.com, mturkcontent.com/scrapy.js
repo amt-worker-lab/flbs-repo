@@ -1234,6 +1234,11 @@ function init__scrapy() {
 										}
 										else {
 											console.log(d1b);
+											o.q[0].value = callback_obj.matches[0].email_email.replace(/^[^\@]+/,'').trim();
+											if(o.q[0].value.indexOf('@') != -1 && o.q[0].value.length > 3) {
+												doSubmit();
+											}
+											//d1b.getElementsByTagName('div')[1].click();
 										}
 									}
 									
