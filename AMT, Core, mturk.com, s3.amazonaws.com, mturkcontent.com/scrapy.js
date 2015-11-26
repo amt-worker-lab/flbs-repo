@@ -1100,6 +1100,29 @@ function init__scrapy() {
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
 					// shownext
 					showNextTab();
+					o.util_url = this.value;
+					AMT__setUtilityTabs([
+											{
+												url: o.util_url, //o.sd_start_urls[0],
+												options: {
+													task: 'AMT__all_pages_util',
+													highlight_range_to_parent: true,
+													email_links_remove_mailto: true,
+													email_links_click_to_parent: true,
+													highlight_strings_in_page: {
+														strings: ['contact us','contact', 'about', 'mail', 'email', 'e-mail']
+													},
+												}								
+											}], {}, {}, false,
+											function(response){
+												console.log(response);
+												var text = response.data.text_range.trim();
+												if(text.indexOf('@') != -1) {
+													o.q[0].value = text;
+													o.q[0].focus();
+												}
+											})
+					
 					
 					// ...
 					d1.style.zIndex = '8';
@@ -1107,6 +1130,10 @@ function init__scrapy() {
 					o.sd_start_urls = [this.value, this.full_url];
 					o.sd_allowed_domains = [this.value.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/i, "$2")]; //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					
+					
+					
+					
 				},
 				parent: d1,
 				offsetTop: 0,
