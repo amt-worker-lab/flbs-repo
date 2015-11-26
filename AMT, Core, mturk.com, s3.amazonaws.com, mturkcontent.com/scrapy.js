@@ -1225,8 +1225,11 @@ function init__scrapy() {
 											console.log(o.sd_allowed_domains[0]);
 											if(tmp != o.sd_allowed_domains[0].toLowerCase()) {
 												auto = false;
+												console.log(tmp + '!=' + o.sd_allowed_domains[0]);
 											}
 										}
+										if(callback_obj.matches.length == 0)
+											auto = false
 										console.log(callback_obj);
 										if(!auto) {
 											console.log('No Auto');
