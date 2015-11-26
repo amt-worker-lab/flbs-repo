@@ -1199,10 +1199,19 @@ function init__scrapy() {
 									//~ //document.getElementById('submitButton').click();
 								//~ },
 								//~ // What to do onclick
-								//~ input_onclick_callback: function() {
-									//~ document.getElementById('Q1Email').value = 
-									//~ document.getElementById('submitButton').click();
-								//~ },
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										)
+									{
+										o.q[0].value = this.email;
+										o.q[0].value = o.q[0].value.replace(/^[^\@]+/,'').trim();
+										doSubmit();
+									}
+								},
 								//~ do_submit_next_tab: true
 								//~ do_submit_add_to_tabs_queue: true
 							}
