@@ -985,10 +985,8 @@ function init__scrapy() {
 									return false;
 								},
 								//~ do_submit_callback: function() {
-									//~ 
-									//~ // NOTE: DEC1 2014
-									//~ // THIS NEEDS TO BE TESTED FIRST!!
-									//~ //document.getElementById('submitButton').click();
+									
+
 								//~ },
 								//~ // What to do onclick
 								input_onclick_callback: function() {
