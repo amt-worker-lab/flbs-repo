@@ -1041,14 +1041,21 @@ function init__scrapy() {
 			
 			var o = {
 				comp: td[1].innerText.trim(),
+				compShort: td[1].innerText.trim(),
+				country: td[3].innerText.trim(),
 				sd_start_urls: [],
 				sd_allowed_domains: [],
 				q: [
-					document.getElementById('email')
+					document.getElementById('web_url')
 				]
 			}
 			//~ o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			if(o.compShort.split(' ').length >= 2)
+				o.compShort = '"' + o.compShort.trim().split(' ').slice(0,2).join('" ').trim() + '"';
+			else
+				o.compShort = '"' + o.compShort.trim().split(' ').join('" ').trim();
 			console.log(o);
+			
 			
 			
 			/* BEGIN ITEMS */
@@ -1085,8 +1092,8 @@ function init__scrapy() {
 				bold_array: o.comp.clean_string_to_array(),
 				searches:[
 					o.comp,
-					'"'+o.comp+'"',
-					o.comp+' ("beauty" OR "fashion" OR "company")'
+					o.compShort,
+					o.comp+' '+ o.country
 				],
 				load_success_callback: function() {
 					addToTabsQ(); // Add to tabs queue.
