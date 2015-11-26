@@ -4541,7 +4541,7 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				outside	:[],
 				complete_high_to_low : [] // inclues all: high, low, none, outside
 			},
-			matches: []
+			matches: [],
 		}
 		if (obj.length) {
 			for (var i in obj) {

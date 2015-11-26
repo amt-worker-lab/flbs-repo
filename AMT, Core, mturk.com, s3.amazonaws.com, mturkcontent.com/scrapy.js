@@ -1232,6 +1232,9 @@ function init__scrapy() {
 											console.log('No Auto');
 											addToTabsQ();
 										}
+										else {
+											console.log(d1b);
+										}
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
