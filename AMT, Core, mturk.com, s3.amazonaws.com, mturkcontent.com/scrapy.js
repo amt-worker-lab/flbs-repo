@@ -1049,9 +1049,9 @@ function init__scrapy() {
 			}
 			//~ o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
 			if(o.compShort.split(' ').length >= 2)
-				o.compShort = '"' + o.compShort.trim().split(' ').slice(0,2).join('" ').trim() + '"';
+				o.compShort = '"' + o.compShort.trim().split(' ').slice(0,2).join('" "').trim() + '"';
 			else
-				o.compShort = '"' + o.compShort.trim().split(' ').join('" ').trim();
+				o.compShort = '"' + o.compShort.trim().split(' ').join('" ').trim() + '"';
 			console.log(o);
 			
 			
@@ -1091,7 +1091,7 @@ function init__scrapy() {
 				searches:[
 					o.comp,
 					o.compShort,
-					o.comp+' '+ o.country
+					o.comp+' "'+ o.country + '"'
 				],
 				load_success_callback: function() {
 					addToTabsQ(); // Add to tabs queue.
