@@ -1016,6 +1016,201 @@ function init__scrapy() {
 		new run().f();
 		return false;
 	}
+	
+	//
+	// McKenna Sweazey
+	// Find the email Address format for companies
+	// Startpage Find URL, then Scrapy
+	s = '<li>Only starting with the @ symbol so for Google, @google.com</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			document.body.style.backgroundColor = 'orange';
+			
+			var td = document.getElementsByTagName('td');
+			
+			var o = {
+				comp: td[1].innerText.trim(),
+				sd_start_urls: [],
+				sd_allowed_domains: [],
+				q: [
+					document.getElementById('email')
+				]
+			}
+			//~ o.sd_allowed_domains[0] = o.sd_allowed_domains[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2"); //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+			console.log(o);
+			
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:30px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;z-index:10;'
+			);
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:30px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;z-index:9;'
+			);
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style',
+				'position:absolute;top:0px;height:30px;width:100%;'
+			);
+			document.body.appendChild(d2);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1b
+				],
+				offset: 30 // offset top
+			});
+			
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.comp.clean_string_to_array(),
+				searches:[
+					o.comp,
+					'"'+o.comp+'"',
+					o.comp+' ("beauty" OR "fashion" OR "company")'
+				],
+				load_success_callback: function() {
+					addToTabsQ(); // Add to tabs queue.
+				},
+				//~ out_element:,
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
+					// shownext
+					showNextTab();
+					
+					// ...
+					d1.style.zIndex = '8';
+					d2.value = this.value;
+					o.sd_start_urls = [this.value, this.full_url];
+					o.sd_allowed_domains = [this.value.replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/i, "$2")]; //.replace(/https?\:\/\/[w]*\.?([^/]*)\/*/,"$1");
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+				},
+				parent: d1,
+				offsetTop: 0,
+			});
+			
+			// ...
+			document.getElementById('submitButton').onclick = function() {
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					return false;
+				}
+				//~ // Here?
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+			
+			//~ function init_url() {
+				//~ 
+			//~ }	
+			/**
+			 * function scrapy
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//~ console.log(start_urls);
+				//~ console.log(allowed_domains);
+				//
+				var s_obj = 
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1b,
+								input_send_success: o.q[0],
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									
+									if (AMT__Global_Vars.isPreview) {
+										// If no email match results
+										if (!callback_obj.matches || !callback_obj.matches.length) {
+											AMT___Floater.skip();
+										}
+										else
+										{
+											AMT___Floater.accept();
+										}
+										// ENDS SCRIPT PROCESSING
+										return true;
+									} else { // Add to tabs queue if not in preview
+										document.body.style.backgroundColor = 'white';
+										addToTabsQ();
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								},
+								//~ do_submit_callback: function() {
+									//~ 
+									//~ // NOTE: DEC1 2014
+									//~ // THIS NEEDS TO BE TESTED FIRST!!
+									//~ //document.getElementById('submitButton').click();
+								//~ },
+								//~ // What to do onclick
+								//~ input_onclick_callback: function() {
+									//~ document.getElementById('Q1Email').value = 
+									//~ document.getElementById('submitButton').click();
+								//~ },
+								//~ do_submit_next_tab: true
+								//~ do_submit_add_to_tabs_queue: true
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+		return false;
+	}
+
+
 	//
 	// Mark Carey
 	// Find the Email Address for the Fashion/Beauty Brand
