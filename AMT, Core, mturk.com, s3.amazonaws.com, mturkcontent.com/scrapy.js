@@ -1095,6 +1095,7 @@ function init__scrapy() {
 				],
 				load_success_callback: function() {
 					addToTabsQ(); // Add to tabs queue.
+					
 				},
 				//~ out_element:,
 				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
@@ -1215,6 +1216,8 @@ function init__scrapy() {
 										return true;
 									} else { // Add to tabs queue if not in preview
 										document.body.style.backgroundColor = 'white';
+									
+										console.log(callback_obj);
 										addToTabsQ();
 									}
 									
