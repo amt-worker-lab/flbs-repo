@@ -1216,9 +1216,22 @@ function init__scrapy() {
 										return true;
 									} else { // Add to tabs queue if not in preview
 										document.body.style.backgroundColor = 'white';
-									
+										var auto = true;
+										for(var i = 0; i < callback_obj.matches.length;i++) {
+											var tmp = callback_obj.matches[i].email_email.trim();
+											tmp = tmp.replace(/^[^\@]+@/,'');
+											tmp = tmp.toLowerCase();
+											console.log(tmp);
+											console.log(o.sd_allowed_domains[0]);
+											if(tmp != o.sd_allowed_domains[0].toLowerCase()) {
+												auto = false;
+											}
+										}
 										console.log(callback_obj);
-										addToTabsQ();
+										if(!auto) {
+											console.log('No Auto');
+											addToTabsQ();
+										}
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
