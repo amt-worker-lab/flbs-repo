@@ -177963,6 +177963,16 @@ function top_window(okay_to_run) {
 			doSubmit('hitForm');
 		}
 		
+		window.addEventListener('click', function(e) {
+			if(e.which == 2) {
+				new AMT___core_factory().createScriptVar('middle-click-na', '0');
+				if(AMT__Global_Vars.scriptVars['middle-click-na'] != '0') {
+					e.preventDefault();
+					document.getElementsByClassName('question selection')[0].click();
+				}
+			}
+		});
+		
 		// Zoom
 		// Tell child to zoom out & extend
 		var ifr_intv = setInterval(function() {
