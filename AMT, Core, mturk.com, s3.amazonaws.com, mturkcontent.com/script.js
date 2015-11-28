@@ -177963,9 +177963,9 @@ function top_window(okay_to_run) {
 			doSubmit('hitForm');
 		}
 		
+		new AMT___core_factory().createScriptVar('middle-click-na', '0');
 		window.addEventListener('click', function(e) {
 			if(e.which == 2) {
-				new AMT___core_factory().createScriptVar('middle-click-na', '0');
 				if(AMT__Global_Vars.scriptVars['middle-click-na'] != '0') {
 					e.preventDefault();
 					document.getElementsByClassName('question selection')[0].click();
