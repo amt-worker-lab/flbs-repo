@@ -27,17 +27,20 @@ function MT__RUN() {
 	var s, s2, s3;
 	
 	
-	// garrett grohman
-	// http://ces16.mapyourshow.com/6_0/exhibitor/exhibitor-details.cfm?ExhID=T0001561 scrape
-	// #2 - Address
+	// 
+	// 
+	// yukonalpha
 	//	
-	s = '<b>*All fields are required. </b>Twitter/Facebook pages, contact forms, etc. <b>cannot</b> be substituted for phone numbers.<br />';
+	s = '<h3><span style="font-family: Arial; ">Domain To Find Phone Number:<b>&nbsp;</b></span><b><a href="hunterglass.co.nz" target="_blank"><span style="font-family: Arial; ">hunterglass.co.nz</span></a></b></h3>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-	
+			
+			var o = {
+				website: 'http://' + document.getElementsByTagName('a')[0].innerText
+			}
 		}
 		new run().f();
 	}
