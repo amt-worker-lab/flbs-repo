@@ -1126,8 +1126,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     //~ if(request.amIUtilityTab) {
     
     
-    
-	if(request.removeThisUtilityTab) {
+    function removeSingleUtilityTab() {
 		//Foremostly, don't close any tabs if there's only 1 tab in the utility window
 		chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
 			if(allTabs.length && allTabs.length > 1) {
@@ -1315,6 +1314,17 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						
 						//
 						
+						if(request.removeThisUtilityTab) {
+							request.tabNumber = j;
+							removeSing
+							chrome.tabs.sendMessage((i*1), request, function(response) {
+								//squelch response
+							});
+							removeSingleUtilityTab();
+							break for_loop_break_dance_if_you_want_to;
+						}
+						}
+						else
 						chrome.tabs.sendMessage((i*1), request, function(response) {
 								//squelch response
 							});
