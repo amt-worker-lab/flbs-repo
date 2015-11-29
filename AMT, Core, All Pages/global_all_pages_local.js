@@ -160,6 +160,12 @@ function AMT__all_pages_util(r) {
 		);
 	}
 	
+	if ( r.highlight_phone_numbers_in_page ) {
+		new AMT___global_factory().highlight_phone_numbers_in_page(
+			r.highlight_phone_numbers_in_page
+		);
+	}
+	
 	if(r.listenForKeyPress) {
 		new AMT___global_factory().listenForKeyPress(
 				r.listenForKeyPress

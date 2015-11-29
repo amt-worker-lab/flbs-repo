@@ -70,7 +70,7 @@ function MT__RUN() {
 					show_remove_links_button: true,
 					highlight_range_to_parent: true,
 					MT___all_pages_zoom: '1.6', // Larger
-					highlight_phoneNumbers_in_page: {closeWindowOnNoHighlight: true},
+					highlight_phone_numbers_in_page: {closeWindowOnNoHighlight: true},
 				}
 				if(uw[1]) {
 					uw[1].options = uw[0].options
