@@ -1395,6 +1395,17 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 								}
 							);	
 		}
+	} else if(options_object.messageBackIfFound {
+		chrome.runtime.sendMessage(
+								'gcfnekbbpmbgadddbojhlojhddnkcpje',
+								{
+									util_window_message_passing: true,
+									found: true
+								},
+								function(response) {
+									
+								}
+							);	
 	}
 
 	//~ http://stackoverflow.com/questions/10729983/highlight-word-in-html-text-but-not-markup

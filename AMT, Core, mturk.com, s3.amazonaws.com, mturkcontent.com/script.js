@@ -41,7 +41,8 @@ function MT__RUN() {
 			var o = {
 				url: document.getElementsByTagName('a')[0].innerText.trim(),
 				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim(),
-				killTabCounter: 0
+				killTabCounter: 0,
+				finishedLoadingCounter: 0
 			}
 			
 			/*Begin Items*/
@@ -49,6 +50,7 @@ function MT__RUN() {
 			d1.setAttribute('style','top:0;width:300px;height:1000px;backgroundColor:#888');
 			document.body.appendChild(d1);
 			/*End Items*/
+			
 			
 			// Init
 			SP_init();
@@ -71,14 +73,14 @@ function MT__RUN() {
 					show_remove_links_button: true,
 					highlight_range_to_parent: true,
 					MT___all_pages_zoom: '1.6', // Larger
-					highlight_phone_numbers_in_page: {closeWindowOnNoHighlight: true},
+					highlight_phone_numbers_in_page: {closeWindowOnNoHighlight: true, messageBackIfFound:true},
 				}
 				if(uw[1]) {
 					uw[1].options = uw[0].options
 				}
 				
 				//
-				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, false,
+				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, true,
 					function(response) {
 						console.log(response);
 						if  (
@@ -90,10 +92,18 @@ function MT__RUN() {
 						}
 						else if(response.removeThisUtilityTab) {
 							o.killTabCounter++;
+							o.finishedLoadingCounter++;
 							if(o.killTabCounter == 2) {
 								document.body.style.backgroundColor = 'silver';
 								AMT___Floater.skip();
 							}
+						}
+						else if(response.found) {
+							o.finishedLoadingCounter++;
+						}
+						
+						if(o.finishedLoadingCounter == 2 && o.killTabCounter != 2) {
+							AMT___Floater.accept();
 						}
 					}
 				);
