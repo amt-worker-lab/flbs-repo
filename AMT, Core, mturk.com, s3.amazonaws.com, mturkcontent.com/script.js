@@ -177969,7 +177969,7 @@ function top_window(okay_to_run) {
 				if(AMT__Global_Vars.scriptVars['middle-click-na'] != '0') {
 					e.preventDefault();
 					document.getElementsByClassName('question selection')[0].click();
-				}
+				} 
 			}
 		});
 		
