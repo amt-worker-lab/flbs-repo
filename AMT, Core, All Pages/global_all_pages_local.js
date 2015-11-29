@@ -1331,6 +1331,96 @@ AMT___global_factory.prototype.highlight_strings_in_page = function(options_obje
 	}
 }
 
+/**
+ * .highlight_phone_numbers_in_page
+ * 
+ * @param options_object	object
+ * @param .closeWindowOnNoHighlight	closes the window if nothing is found
+ * @param
+ * 
+ * @return 
+ */
+AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(options_object) {
+	console.log('GOT TO highlight_phone_numbers_in_page');
+	// ADD A DOUBLE CLICK TO RESET PAGE
+	//
+	//~ var all_elements_zoomed = [];
+	//~ document.body.addEventListener('dblclick', function() {
+		//~ for (var i in all_elements_zoomed) {
+			//~ all_elements_zoomed[i].style.zoom = '';
+		//~ }
+	//~ }, false);
+	//~ console.log(options_object);
+	
+	// Already highlighted...
+	// TODO
+	//
+	//~ var already_highlighted = [];
+	
+	//if it's a string, highlight it yellow. 
+	//If it's an object, it has the attribute: string, color
+	var s = options_object.strings;
+	
+
+	// Remove old highlights 
+	function removeHighlights(root){     
+	  [].forEach.call(root.querySelectorAll('span._--_--_highlight_--_--_'),function(el){
+		el.parentNode.replaceChild(el.firstChild,el);
+	  });
+	}
+	removeHighlights(document.body);
+	
+	var allSpans = document.getElementsByTagName('span');
+	for(var i in s) {
+		if(s[i].scrollIntoView) {
+			for(var j = 0; j < allSpans.length; j++) {
+				console.log(allSpans[j].word);
+				if(allSpans[j].word && allSpans[j].word.trim() == s[i].string.toLowerCase().trim()) {
+					allSpans[j].scrollIntoView(false);
+					//~ allSpans[j].scrollIntoView(true);
+					break;
+				}
+			}
+			break;
+		}
+	}
+	//~ http://stackoverflow.com/questions/10729983/highlight-word-in-html-text-but-not-markup
+	//~ http://jsfiddle.net/crgTU/7/
+	function highlightWord(root, word,color){
+		if(!color) {
+			color = 'yellow';
+		}
+		textNodesUnder(root).forEach(highlightWords);
+
+		function textNodesUnder(root){
+			var walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),
+				text=[],
+				node;
+			while(node=walk.nextNode())
+				text.push(node);
+			console.log(text);
+			return text;
+		}
+
+		function highlightWords(n){
+			//~ var x = n.nodeValue.toLowerCase // already_highlighted[ highlighted ] = true;
+			for (var i; (i=n.nodeValue.toLowerCase().regexIndexOf(/([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/,i)) > -1; n=after){
+				var regPhone = /([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/
+				var x = regPhone.exec(nodeValue.toLowerCase()) 
+				x = x[1]
+				var after = n.splitText(i+x.length);
+				var highlighted = n.splitText(i);
+				var span = document.createElement('span');
+				span.setAttribute('style', 'background-color:'+color+';color:black;zoom:1.2;');
+				span.word = x;
+				span.className = '_--_--_highlight_--_--_';
+				span.appendChild(highlighted);
+				after.parentNode.insertBefore(span,after);
+			}
+		}
+	}
+}
+
 AMT___global_factory.prototype.listenForKeyPress = function(options) {
 	console.log('ran in listenForKeys');
 	window.addEventListener('keypress', function(e) {
