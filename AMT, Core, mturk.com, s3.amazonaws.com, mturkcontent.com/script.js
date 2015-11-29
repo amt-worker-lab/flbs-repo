@@ -40,12 +40,13 @@ function MT__RUN() {
 			
 			var o = {
 				url: document.getElementsByTagName('a')[0].innerText.trim(),
-				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim()
+				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim(),
+				killTabCounter: 0
 			}
 			
 			/*Begin Items*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0;width:300px;height:1000px;');
+			d1.setAttribute('style','top:0;width:300px;height:1000px;backgroundColor:#888');
 			document.body.appendChild(d1);
 			/*End Items*/
 			
@@ -86,6 +87,13 @@ function MT__RUN() {
 							)
 						{
 							console.log(response.data.text_range);
+						}
+						else if(response.removeThisUtilityTab) {
+							o.killTabCounter++;
+							if(o.killTabCounter == 2) {
+								document.body.style.backgroundColor = 'silver';
+								AMT___Floater.skip();
+							}
 						}
 					}
 				);
