@@ -31,7 +31,7 @@ function MT__RUN() {
 	// 
 	// yukonalpha
 	//	
-	s = '<h3><span style="font-family: Arial; ">Domain To Find Phone Number:<b>&nbsp;</b></span><b><a href="hunterglass.co.nz" target="_blank"><span style="font-family: Arial; ">hunterglass.co.nz</span></a></b></h3>';
+	s = '<h3><span style="font-family: Arial; ">Domain To Find Phone Number:<b>&nbsp;</b></span><b><a href=';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {

@@ -1152,6 +1152,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId == sender.tab.id) {
 							tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
 							UtilityAMTPairs[senderId].utilities.splice(i,1);
+							tabIdsToRempove = [sender.tab.id];
+							break;
 							//Send a message to my parent saying that this was removed
 							
 						}
@@ -1162,7 +1164,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 					console.log(tabIdsToRemove);
 					//try {
 						if(tabIdsToRemove.length) {
-							chrome.tabs.remove(tabIdsToRemove);
+							chrome.tabs.remove(tabIdsToRemove[0]);
 						}
 					//}
 					//catch(e) {

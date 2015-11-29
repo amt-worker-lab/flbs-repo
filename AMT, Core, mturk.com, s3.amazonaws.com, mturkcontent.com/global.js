@@ -626,7 +626,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		var containerDiv = document.getElementById('AMT__UtilityContainer');
 		if (containerDiv && containerDiv.hasOwnProperty('callbackFromUtility'))
 			containerDiv.callbackFromUtility(request);
-		
+		if(request.removeThisUtilityTab) {
+			var inps = containerDiv.getElementsByTagName('input');
+			for(var i = 0; i < inps.length; i++) {
+				if(inps[i].id.indexOf('utilityTabBtn' + request.tabNumber) != -1) {
+					containerDiv.removeChild(inps[i]);
+					break;
+				}
+			}
+		}
+
 		
 		//~ AMT__UtilityContainer
 		//~ 

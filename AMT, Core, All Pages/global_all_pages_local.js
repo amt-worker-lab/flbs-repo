@@ -1382,14 +1382,14 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 		}
 	}
 	
-	if(found) {
+	if(!found) {
 		if(options_object.closeWindowOnNoHighlight) {
 			chrome.runtime.sendMessage(
 								'gcfnekbbpmbgadddbojhlojhddnkcpje',
 								{
 									util_window_message_passing: true,
 									removeThisUtilityTab: true
-									},
+								},
 								function(response) {
 									
 								}
