@@ -1357,9 +1357,6 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 	//
 	//~ var already_highlighted = [];
 	
-	//if it's a string, highlight it yellow. 
-	//If it's an object, it has the attribute: string, color
-	var s = options_object.strings;
 	
 
 	// Remove old highlights 
@@ -1370,26 +1367,31 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 	}
 	removeHighlights(document.body);
 	
-	var allSpans = document.getElementsByTagName('span');
-	for(var i in s) {
-		if(s[i].scrollIntoView) {
-			for(var j = 0; j < allSpans.length; j++) {
-				console.log(allSpans[j].word);
-				if(allSpans[j].word && allSpans[j].word.trim() == s[i].string.toLowerCase().trim()) {
-					allSpans[j].scrollIntoView(false);
-					//~ allSpans[j].scrollIntoView(true);
-					break;
-				}
-			}
+
+	highlightWord(document.body)
+
+	var allSpans = document.getElementsByTagName('span');	
+	var found = false;
+	for(var j = 0; j < allSpans.length; j++) {
+		console.log(allSpans[j].word);
+		if(allSpans[j].word && allSpans[j].word.trim()) {
+			allSpans[j].scrollIntoView(false);
+			//~ allSpans[j].scrollIntoView(true);
+			found = true;
 			break;
 		}
 	}
+	
+	if(found) {
+		if(options_object.closeWindowOnNoHighlight) {
+			window.close();
+		}
+	}
+
 	//~ http://stackoverflow.com/questions/10729983/highlight-word-in-html-text-but-not-markup
 	//~ http://jsfiddle.net/crgTU/7/
-	function highlightWord(root, word,color){
-		if(!color) {
-			color = 'yellow';
-		}
+	function highlightWord(root){
+		var	color = 'yellow';
 		textNodesUnder(root).forEach(highlightWords);
 
 		function textNodesUnder(root){
@@ -1406,7 +1408,7 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 			//~ var x = n.nodeValue.toLowerCase // already_highlighted[ highlighted ] = true;
 			for (var i; (i=n.nodeValue.toLowerCase().regexIndexOf(/([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/,i)) > -1; n=after){
 				var regPhone = /([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/
-				var x = regPhone.exec(nodeValue.toLowerCase()) 
+				var x = regPhone.exec(n.nodeValue.toLowerCase()) 
 				x = x[1]
 				var after = n.splitText(i+x.length);
 				var highlighted = n.splitText(i);
