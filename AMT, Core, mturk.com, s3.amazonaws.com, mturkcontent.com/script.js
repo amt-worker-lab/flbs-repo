@@ -39,7 +39,102 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			
 			var o = {
-				website: 'http://' + document.getElementsByTagName('a')[0].innerText
+				url: document.getElementsByTagName('a')[0].innerText.trim(),
+				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim()
+			}
+			
+			/*Begin Items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0;width:300px;height:1000px;');
+			document.body.appendChild(d1);
+			/*End Items*/
+			
+			// Init
+			SP_init();
+			//
+			function SP_init() {
+				u = 'site:'+o.url+' "contact" OR "contact us" OR "phone" OR "Call"';
+				console.log('going into req_proxy');
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
+					callback_function: SP_process
+					//~ return_init_object: true
+				});
+			}
+			// @param uw, array
+			function set_util(uw) {
+				// Set opts
+				uw[0].options = {
+					task: 'AMT__all_pages_util',
+					show_remove_links_button: true,
+					highlight_range_to_parent: true,
+					MT___all_pages_zoom: '1.6', // Larger
+					highlight_phoneNumbers_in_page: {closeWindowOnNoHighlight: true},
+				}
+				if(uw[1]) {
+					uw[1].options = uw[0].options
+				}
+				
+				//
+				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, false,
+					function(response) {
+						console.log(response);
+						if  (
+							response.hasOwnProperty('data') &&
+							response.data.hasOwnProperty('text_range')
+							)
+						{
+							console.log(response.data.text_range);
+						}
+					}
+				);
+			}
+			//
+			function SP_process(object) {
+			
+				console.log(object);
+				
+				var rs = object;
+				//~ var rs = object.rs;
+				var out = d1;
+				var uw = [{url:o.website}];
+				
+				if (rs.length == 0) {
+					out.innerText = '0 results';
+				} else {
+					// Do first
+					uw.push({
+						url: rs[0][0]
+					});
+				}
+
+				set_util(uw);
+				
+				// Optionals
+				for (var i in rs) {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'); //height:40px;overflow:auto;
+					div.className = 'exe';
+					div.innerHTML = '<b>' + rs[i][0] + '</b><br>' + rs[i][1];
+					div.url = rs[i][0];
+					out.appendChild(div);
+					div.onclick = function() {
+						this.style.backgroundColor = 'aqua';
+						set_util([{
+							url: this.url
+						}]);
+					}
+					// If 0
+					if (i == 0) {
+						div.style.backgroundColor = 'aqua';
+					}
+				}
+				
+				// Length
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:2000px;');
+				out.appendChild(div);
 			}
 		}
 		new run().f();
