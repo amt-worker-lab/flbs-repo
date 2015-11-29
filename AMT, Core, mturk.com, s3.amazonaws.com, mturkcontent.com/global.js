@@ -1769,6 +1769,8 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .string_to_mixed_case
  * .format_number_with_commas
  * .div
+ * .regexIndexOf
+ * .rexexLasIndexOf
  */
 /**
  * .clean_str_to_auto
@@ -1783,6 +1785,9 @@ String.prototype.clean_str_to_auto = function(opts) {
 	var s = this.toString();
 	return s.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, ''); // Replace "&" with "and". Remove all but /[0-9a-z]/i
 }
+
+
+
 
 //Returns an array that contains all name synonyms
 //Note: a Name's Synonyms does NOT includes itself
@@ -2028,6 +2033,28 @@ String.prototype.state_abbr_is_valid = function() {
 	// Here?
 	// Return false.
 	return false;
+}
+
+String.prototype.regexIndexOf = function(regex, startpos) {
+    var indexOf = this.substring(startpos || 0).search(regex);
+    return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
+}
+
+String.prototype.regexLastIndexOf = function(regex, startpos) {
+    regex = (regex.global) ? regex : new RegExp(regex.source, "g" + (regex.ignoreCase ? "i" : "") + (regex.multiLine ? "m" : ""));
+    if(typeof (startpos) == "undefined") {
+        startpos = this.length;
+    } else if(startpos < 0) {
+        startpos = 0;
+    }
+    var stringToWorkWith = this.substring(0, startpos + 1);
+    var lastIndexOf = -1;
+    var nextStop = 0;
+    while((result = regex.exec(stringToWorkWith)) != null) {
+        lastIndexOf = result.index;
+        regex.lastIndex = ++nextStop;
+    }
+    return lastIndexOf;
 }
 
 /*********************************************************
