@@ -1384,7 +1384,9 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 	
 	if(found) {
 		if(options_object.closeWindowOnNoHighlight) {
-			window.close();
+			chrome.extension.sendRequest(
+				{removeThisUtilityTab:'true'}
+			)
 		}
 	}
 

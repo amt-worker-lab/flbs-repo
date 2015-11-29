@@ -118,6 +118,91 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	
 	console.log(request);
 	
+	
+	if(request.removeThisUitilityTab) {
+		//Foremostly, don't close any tabs if there's only 1 tab in the utility window
+		chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
+			if(allTabs.length && allTabs.length > 1) {
+				console.log('sender');
+				console.log(sender.tab);
+				if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
+					alert('no utility window set');
+					return false;
+				}
+				
+				var senderId = sender.tab.id;
+				if(UtilityAMTPairs[senderId] &&
+				   UtilityAMTPairs[senderId].utilities &&
+				   UtilityAMTPairs[senderId].utilities.length > 0) {
+					//Remove all of the old utility tabs
+					var tabIdsToRemove = []
+					for(var i = 0; i < UtilityAMTPairs[senderId].utilities.length; i++) {
+						console.log('TABID');
+						console.log(UtilityAMTPairs[senderId].utilities[i].tabId);
+						console.log("UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId : " +
+								(UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId)
+								);
+						if (UtilityAMTPairs[senderId].utilities[i].hasOwnProperty('tabId') && UtilityAMTPairs[senderId].utilities[i].tabId == sender.tab.id) {
+							tabIdsToRemove.push(UtilityAMTPairs[senderId].utilities[i].tabId);
+							UtilityAMTPairs[senderId].utilities.splice(i,1);
+							//Send a message to my parent saying that this was removed
+						}
+					}
+					//tabId is null
+					
+					console.log('REMOVE');
+					console.log(tabIdsToRemove);
+					//try {
+						if(tabIdsToRemove.length) {
+							chrome.tabs.remove(tabIdsToRemove);
+						}
+					//}
+					//catch(e) {
+						//console.log('err');
+					//}
+				}
+				
+				//Finally if this is being called from the tab that is currently active, close all instances of non-utility tabs
+				if(sender.tab.active) {
+					chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
+						//Make sure if there's only one tab in the window that we don't accidentally close it
+						var found;
+						if(allTabs.length && allTabs.length > 1) {
+							for(var i = 0; i < allTabs.length; i++) {
+								found = false;
+								//Now we're looping through the array of all tabs, lets loop through all utility tabs
+								//~ console.log('UtilityAMTPairs[j]:');
+								//~ console.log(UtilityAMTPairs[j]);
+								//~ alert('wuh');
+								for(var j in UtilityAMTPairs) {
+									if(UtilityAMTPairs[j] && UtilityAMTPairs[j].utilities && UtilityAMTPairs[j].utilities.length) {
+										//~ console.log('UtilityAMTPairs[j]:');
+										//~ console.log(UtilityAMTPairs[j]);
+										for(var k = 0; k < UtilityAMTPairs[j].utilities.length; k++) {
+											console.log(UtilityAMTPairs[j].utilities[k].tabId + ' == ' + allTabs[i].id);
+											if(UtilityAMTPairs[j].utilities[k].tabId == allTabs[i].id) {
+												found = true;
+												console.log('found = true');
+												break;
+											}
+										}
+									}
+									if(found)
+										break;
+								}
+								if(!found) {
+									chrome.tabs.remove(allTabs[i].id);
+								}
+							}
+						}
+					});
+				}
+			}
+			sendResponse({continueOn: true});
+		});
+    }
+	
+	
 	if(request.removeMyUitilityTabs) {
 		//Foremostly, don't close any tabs if there's only 1 tab in the utility window
 		chrome.tabs.getAllInWindow(localStorage['UTILITY_WINDOW']*1, function(allTabs) {
@@ -1626,7 +1711,7 @@ function playRandomNextSound() {
 
 /**
  * 
- * Does outrUtility Window exist? If not, let localStorage know this.
+ * Does ourUtility Window exist? If not, let localStorage know this.
  * Also, if a Utility Window exists, refresh it
  * 
  **/
