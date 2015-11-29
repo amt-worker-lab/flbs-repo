@@ -1315,26 +1315,26 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 						//
 						
 						if(request.removeThisUtilityTab) {
-							request.tabNumber = j;
-							removeSing
-							chrome.tabs.sendMessage((i*1), request, function(response) {
+							var msg = request;
+							msg.tabNumber = j;
+							removeSingleUtilityTab();
+							chrome.tabs.sendMessage((i*1), msg, function(response) {
 								//squelch response
 							});
 							removeSingleUtilityTab();
 							break for_loop_break_dance_if_you_want_to;
 						}
-						}
-						else
+						else {
 						chrome.tabs.sendMessage((i*1), request, function(response) {
 								//squelch response
 							});
 							break for_loop_break_dance_if_you_want_to;
 						}
 					}
-				}
 			}		
+		}
 	}
-	
+	}
 	if(request.addUtilityTab) {
 			var senderId = sender.tab.id;
 			if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined) {
