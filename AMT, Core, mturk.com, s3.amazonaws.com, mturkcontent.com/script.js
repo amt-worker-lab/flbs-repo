@@ -60,8 +60,8 @@ function MT__RUN() {
 			select.setAttribute('style','position:absolute;top:65px;height:27px;left:80%;');
 			document.body.appendChild(select);
 			var shortSelect = document.createElement('select');
-			select.setAttribute('style','position:absolute;top:65px;left:60%;');
-			document.body.appendChild(select);
+			shortSelect.setAttribute('style','position:absolute;top:65px;left:60%;');
+			document.body.appendChild(shortSelect);
 			shortSelect.multiple = true;
 			/*End Items*/
 			
@@ -79,20 +79,26 @@ function MT__RUN() {
 			
 			initShortSelect();
 			function initShortSelect() {
-				for(var i in localStorage['ShortcutCountryCodes']) {
+				console.log('here');
+				var tmp = JSON.parse(localStorage['ShortcutCountryCodes']);
+				for(var i in tmp) {
+
 					var opt = document.createElement('option');
-					opt.value = countryCodes[i];
-					opt.text = i;
-					select.appendChild(opt);
+					opt.value = i;
+					opt.text = tmp[i];
+					console.log(tmp);
+					shortSelect.appendChild(opt);
 				}
 				
-				window.setTimeout(function() {
+				window.setInterval(function() {
 					if(o.q[0].value == '') {
+						shortSelect.innerText = '';
 						for(var i in JSON.parse(localStorage['ShortcutCountryCodes'])) {
 							var opt = document.createElement('option');
-							opt.value = countryCodes[i];
-							opt.text = i;
-							select.appendChild(opt);
+							opt.value = i;
+							opt.text = tmp[i];
+							console.log(tmp);
+							shortSelect.appendChild(opt);
 						}
 					}
 				},1000);
@@ -105,10 +111,13 @@ function MT__RUN() {
 					var opt = this.getElementsByTagName('option')[this.selectedIndex];
 					o.q[0].value = opt.value
 					o.q[2].value = opt.innerText;
+					if(!localStorage['ShortcutCountryCodes']) {
+						localStorage['ShortcutCountryCodes'] = '{}'
+					}
 					var tmp = JSON.parse(localStorage['ShortcutCountryCodes']);
-					tmp[opt.value] = tmp[opt.innerText];
+					tmp[opt.innerText] = opt.value;
 					localStorage['ShortcutCountryCodes'] = JSON.stringify(tmp);
-					 
+				
 
 				}
 			}
