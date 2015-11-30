@@ -51,7 +51,7 @@ function MT__RUN() {
 			document.body.appendChild(d1);
 			/*End Items*/
 			
-			
+			document.body.style.backgroundColor = 'orange';
 			// Init
 			SP_init();
 			//
@@ -103,6 +103,7 @@ function MT__RUN() {
 						}
 						
 						if(o.finishedLoadingCounter == 2 && o.killTabCounter != 2) {
+							document.body.style.backgroundColor = 'white';
 							AMT___Floater.accept();
 						}
 					}

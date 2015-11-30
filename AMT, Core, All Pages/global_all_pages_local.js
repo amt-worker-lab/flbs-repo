@@ -1395,7 +1395,7 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 								}
 							);	
 		}
-	} else if(options_object.messageBackIfFound {
+	} else if(options_object.messageBackIfFound) {
 		chrome.runtime.sendMessage(
 								'gcfnekbbpmbgadddbojhlojhddnkcpje',
 								{
