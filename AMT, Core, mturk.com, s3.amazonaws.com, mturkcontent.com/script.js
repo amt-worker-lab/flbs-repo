@@ -50,9 +50,29 @@ function MT__RUN() {
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','top:0;width:300px;height:1000px;backgroundColor:#888');
 			document.body.appendChild(d1);
+			var select = document.createElement('select');
+			select.setAttribute('style','top:100px;width:200pxheight:20px;');
+			document.body.appendChild(select);
 			/*End Items*/
 			
 			document.body.style.backgroundColor = 'orange';
+			
+			initSelect();
+			function initSelect() {
+				for(var i in countryCodes) {
+					var opt = document.createElement('option');
+					opt.value = countryCodes[i];
+					opt.text = i;
+					select.appendChild(opt);
+				}
+			}
+			
+			select.onchange = function(e) {
+				if(e.selectedIndex) {
+					console.log(e.selectedIndex);
+				}
+			}
+			
 			// Init
 			SP_init();
 			//
