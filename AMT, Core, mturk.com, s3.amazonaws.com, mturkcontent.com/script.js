@@ -84,8 +84,8 @@ function MT__RUN() {
 				for(var i in tmp) {
 
 					var opt = document.createElement('option');
-					opt.value = i;
-					opt.text = tmp[i];
+					opt.value = tmp[i];
+					opt.text = i;
 					console.log(tmp);
 					shortSelect.appendChild(opt);
 				}
@@ -93,10 +93,13 @@ function MT__RUN() {
 				window.setInterval(function() {
 					if(o.q[0].value == '') {
 						shortSelect.innerText = '';
-						for(var i in JSON.parse(localStorage['ShortcutCountryCodes'])) {
+						var tmp = JSON.parse(localStorage['ShortcutCountryCodes']);
+						for(var i in tmp) {
+
 							var opt = document.createElement('option');
-							opt.value = i;
-							opt.text = tmp[i];
+							if(i && tmp[1] && i.trim() && tmp[i].trim())
+							opt.value = tmp[i];
+							opt.text = i;
 							console.log(tmp);
 							shortSelect.appendChild(opt);
 						}
@@ -105,8 +108,7 @@ function MT__RUN() {
 			}
 			
 			
-			select.onchange = function(e) {
-				if(this.selectedIndex) {
+			shortSelect.onchange = select.onchange = function(e) {
 					console.log(this.selectedIndex);
 					var opt = this.getElementsByTagName('option')[this.selectedIndex];
 					o.q[0].value = opt.value
@@ -117,9 +119,6 @@ function MT__RUN() {
 					var tmp = JSON.parse(localStorage['ShortcutCountryCodes']);
 					tmp[opt.innerText] = opt.value;
 					localStorage['ShortcutCountryCodes'] = JSON.stringify(tmp);
-				
-
-				}
 			}
 			
 			// Init
