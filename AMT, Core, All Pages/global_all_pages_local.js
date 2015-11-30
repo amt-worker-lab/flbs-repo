@@ -1495,7 +1495,8 @@ AMT___global_factory.prototype.highlight_range_to_parent = function(options_obje
 			
 			var return_object = {
 				text_range: str,
-				control_key_is_active: e.ctrlKey	// Is control key down?
+				control_key_is_active: e.ctrlKey,	// Is control key down?
+				url: window.location.href
 			};
 			if (typeof options_object.highlight_range_to_parent == 'object') { // Is object or boolean
 				return_object.key = options_object.highlight_range_to_parent.completion_key; // e.g. Dan_Shaffer_site_eval

@@ -97,11 +97,12 @@ function MT__RUN() {
 						for(var i in tmp) {
 
 							var opt = document.createElement('option');
-							if(i && tmp[1] && i.trim() && tmp[i].trim())
-							opt.value = tmp[i];
-							opt.text = i;
-							console.log(tmp);
-							shortSelect.appendChild(opt);
+							if(i && tmp[i] && i.trim() && tmp[i].trim()) {
+								opt.value = tmp[i];
+								opt.text = i;
+								//console.log(tmp);
+								shortSelect.appendChild(opt);
+							}
 						}
 					}
 				},1000);
@@ -160,6 +161,8 @@ function MT__RUN() {
 							)
 						{
 							console.log(response.data.text_range);
+							o.q[1].value = response.data.text_range;
+							o.q[3].value = response.data.url.replace(/###tabId[\d\D]+/,'');
 						}
 						else if(response.removeThisUtilityTab) {
 							o.killTabCounter++;
