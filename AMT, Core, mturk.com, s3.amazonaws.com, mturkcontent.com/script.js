@@ -37,6 +37,7 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:300px}');
 			
 			var o = {
 				url: document.getElementsByTagName('a')[0].innerText.trim(),
@@ -108,12 +109,21 @@ function MT__RUN() {
 				},1000);
 			}
 			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if(o.q[0].value && o.q[1].value && o.q[2].value && o.q[3].value && o.q[3].value != 'http://') {
+					doSubmit();
+				}
+				return false;
+				
+			}
 			
 			shortSelect.onchange = select.onchange = function(e) {
 					console.log(this.selectedIndex);
 					var opt = this.getElementsByTagName('option')[this.selectedIndex];
 					o.q[0].value = opt.value
-					o.q[2].value = opt.innerText;
+					o.q[2].value = opt.text;
 					if(!localStorage['ShortcutCountryCodes']) {
 						localStorage['ShortcutCountryCodes'] = '{}'
 					}
