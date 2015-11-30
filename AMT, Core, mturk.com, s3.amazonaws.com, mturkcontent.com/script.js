@@ -42,7 +42,8 @@ function MT__RUN() {
 				url: document.getElementsByTagName('a')[0].innerText.trim(),
 				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim(),
 				killTabCounter: 0,
-				finishedLoadingCounter: 0
+				finishedLoadingCounter: 0,
+				numToExpect: null
 			}
 			
 			/*Begin Items*/
@@ -67,6 +68,8 @@ function MT__RUN() {
 			}
 			// @param uw, array
 			function set_util(uw) {
+				numToExpect = uw.length;
+				console.log(uw);
 				// Set opts
 				uw[0].options = {
 					task: 'AMT__all_pages_util',
@@ -93,7 +96,7 @@ function MT__RUN() {
 						else if(response.removeThisUtilityTab) {
 							o.killTabCounter++;
 							o.finishedLoadingCounter++;
-							if(o.killTabCounter == 2) {
+							if(o.killTabCounter == numToExpect) {
 								document.body.style.backgroundColor = 'silver';
 								AMT___Floater.skip();
 							}
@@ -102,7 +105,7 @@ function MT__RUN() {
 							o.finishedLoadingCounter++;
 						}
 						
-						if(o.finishedLoadingCounter == 2 && o.killTabCounter != 2) {
+						if(o.finishedLoadingCounter == numToExpect && o.killTabCounter != numToExpect) {
 							document.body.style.backgroundColor = 'white';
 							AMT___Floater.accept();
 						}

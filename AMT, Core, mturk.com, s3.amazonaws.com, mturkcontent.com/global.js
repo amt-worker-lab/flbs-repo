@@ -681,7 +681,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //				util_options: utilOptionsObj (go to AMT__all_pages_util in global_all_pages_local.js for details)
 //			}
 function AMT__setUtilityTabs(utilityTabs, globalTabOptions, utilityPanelOptions,runInPreviewMode, callbackFromUtility) {
-	if(!AMT__Global_Vars.isPreview && !runInPreviewMode) {
+	if(!AMT__Global_Vars.isPreview || (!runInPreviewMode && AMT__Global_Vars.isPreview)) {
 		var utilityTabsAndOptions = {};
 		utilityTabsAndOptions.utilities = utilityTabs;
 		utilityTabsAndOptions.options = globalTabOptions;
