@@ -59,6 +59,10 @@ function MT__RUN() {
 			var select = document.createElement('select');
 			select.setAttribute('style','position:absolute;top:65px;height:27px;left:80%;');
 			document.body.appendChild(select);
+			var shortSelect = document.createElement('select');
+			select.setAttribute('style','position:absolute;top:65px;left:60%;');
+			document.body.appendChild(select);
+			shortSelect.multiple = true;
 			/*End Items*/
 			
 			document.body.style.backgroundColor = 'orange';
@@ -73,12 +77,39 @@ function MT__RUN() {
 				}
 			}
 			
+			initShortSelect();
+			function initShortSelect() {
+				for(var i in localStorage['ShortcutCountryCodes']) {
+					var opt = document.createElement('option');
+					opt.value = countryCodes[i];
+					opt.text = i;
+					select.appendChild(opt);
+				}
+				
+				window.setTimeout(function() {
+					if(o.q[0].value == '') {
+						for(var i in JSON.parse(localStorage['ShortcutCountryCodes'])) {
+							var opt = document.createElement('option');
+							opt.value = countryCodes[i];
+							opt.text = i;
+							select.appendChild(opt);
+						}
+					}
+				},1000);
+			}
+			
+			
 			select.onchange = function(e) {
 				if(this.selectedIndex) {
 					console.log(this.selectedIndex);
 					var opt = this.getElementsByTagName('option')[this.selectedIndex];
 					o.q[0].value = opt.value
 					o.q[2].value = opt.innerText;
+					var tmp = JSON.parse(localStorage['ShortcutCountryCodes']);
+					tmp[opt.value] = tmp[opt.innerText];
+					localStorage['ShortcutCountryCodes'] = JSON.stringify(tmp);
+					 
+
 				}
 			}
 			
