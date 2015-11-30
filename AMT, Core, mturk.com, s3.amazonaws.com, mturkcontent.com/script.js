@@ -43,7 +43,13 @@ function MT__RUN() {
 				website: 'http://' + document.getElementsByTagName('a')[0].innerText.trim(),
 				killTabCounter: 0,
 				finishedLoadingCounter: 0,
-				numToExpect: null
+				numToExpect: null,
+				q: [
+				document.getElementsByName('CountryCode')[0],
+				document.getElementsByName('Phone Number')[0],
+				document.getElementsByName('email')[0],
+				document.getElementsByName('contactInfoPage')[0],
+				]
 			}
 			
 			/*Begin Items*/
@@ -51,7 +57,7 @@ function MT__RUN() {
 			d1.setAttribute('style','top:0;width:300px;height:1000px;backgroundColor:#888');
 			document.body.appendChild(d1);
 			var select = document.createElement('select');
-			select.setAttribute('style','top:100px;width:200pxheight:20px;');
+			select.setAttribute('style','position:absolute;top:65px;height:27px;left:80%;');
 			document.body.appendChild(select);
 			/*End Items*/
 			
@@ -68,8 +74,11 @@ function MT__RUN() {
 			}
 			
 			select.onchange = function(e) {
-				if(e.selectedIndex) {
-					console.log(e.selectedIndex);
+				if(this.selectedIndex) {
+					console.log(this.selectedIndex);
+					var opt = this.getElementsByTagName('option')[this.selectedIndex];
+					o.q[0].value = opt.value
+					o.q[2].value = opt.innerText;
 				}
 			}
 			
