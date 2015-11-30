@@ -1426,8 +1426,8 @@ AMT___global_factory.prototype.highlight_phone_numbers_in_page = function(option
 
 		function highlightWords(n){
 			//~ var x = n.nodeValue.toLowerCase // already_highlighted[ highlighted ] = true;
-			for (var i; (i=n.nodeValue.toLowerCase().regexIndexOf(/([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/,i)) > -1; n=after){
-				var regPhone = /([\d\+\(\)]+[\s\-]+[\d\+\(\)]+)/
+			for (var i; (i=n.nodeValue.toLowerCase().regexIndexOf(/([\d\+\(\)]+[\s\-]+[\d\+\(\)]{3,})/,i)) > -1; n=after){
+				var regPhone = /([\d\+\(\)]+[\s\-]+[\d\+\(\)]{3,})/
 				var x = regPhone.exec(n.nodeValue.toLowerCase()) 
 				x = x[1]
 				var after = n.splitText(i+x.length);
