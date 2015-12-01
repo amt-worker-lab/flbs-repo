@@ -21667,8 +21667,8 @@ function MT__RUN() {
 				dates: td[1].innerText.trim(),
 				
 				q: {
-					name: null,
-					strikethrough: null,
+					name: document.getElementsByName('1st_name')[0],
+					strikethrough: document.getElementsByName('1st_strikethrough')[0],
 					results: [],
 				},
 				url: null,
@@ -21737,13 +21737,15 @@ function MT__RUN() {
 				//~ return false;
 			//~ }
 			
+			// Init
+			first_load();
 			
 			// First load
 			// http://www.hotelscombined.com/Hotels/SearchResults?destination=place:new_york_city&radius=0mi&checkin=2015-12-10&checkout=2015-12-11&Rooms=1&adults_1=2&pageSize=15&pageIndex=0&sort=Popularity-desc&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016822060000
 			function first_load() {
 				var u = ''
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: url,
+					URL: o.url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						
@@ -21765,10 +21767,12 @@ function MT__RUN() {
 						//~ else
 							//~ return true;
 						
+						second_load();
+						
 						return false;
 					},
 					success_callback: function(options) {
-						second_load();
+						//~ second_load();
 						//~ var rs = options.response.responseText;
 						
 						//~ if (options.response.status != 200) {
@@ -21782,7 +21786,7 @@ function MT__RUN() {
 			// Second load
 			function second_load() {
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: url,
+					URL: o.url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
 						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
@@ -21816,19 +21820,29 @@ function MT__RUN() {
 							d1.style.backgroundColor = 'pink';
 							return;
 						}
+						console.log(h);
 						for (var i=0; i<h.length; i++) {
 							if (i == 3) break; // Only go to 2.....
-							var v = h[i];
+							var v = h[i];console.log(v);
 							// Title
 							var t = v.querySelectorAll('h3>a');
-							if (t.length != 1) err('bad title a');
+							if (!t || t.length != 1) err('bad title a');
 							o.q.name.value = t[0].innerText.trim();
 							if (o.q.name.value.length < 4) err('name len');
 							// Reduced
 							var t = v.querySelectorAll('.hc_hotel_wasPrice');
 							if (t) {
 								if (t.length != 1) err('more than one reduction?');
+								t = t[0].innerText.trim();
+								t = /\$\d+$/.exec(t); // [$][price][end of str]
+								if (!t) err('bad reduction price?');
+								o.q.strikethrough.value = t[0]; // Includes "$"
 							}
+							// Providers...
+							var t = v.querySelectorAll('table');
+							if (!t || t.length != 1) err('bad table providers');
+							t = t[0];
+							
 						}
 					}
 				});
