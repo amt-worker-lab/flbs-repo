@@ -21808,7 +21808,7 @@ function MT__RUN() {
 							return false;
 						}
 						
-						setTimeout(second_load, 1000); // 1s?
+						setTimeout(second_load, 10000); // 1s?
 						
 						return false;
 					},
