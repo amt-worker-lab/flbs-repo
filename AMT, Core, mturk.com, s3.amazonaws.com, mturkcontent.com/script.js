@@ -21895,14 +21895,24 @@ function MT__RUN() {
 								if (!t) err('bad reduction price?');
 								o.q.strikethrough[i].value = t[0]; // Includes "$"
 							}
+							// Providers 0, "Promoted deal"
+							// hc_sri_result_promotedDeal
+							var ni = next_inputs(i); // Inputs...
+							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_price');
+							if (!t || t.length != 1) err('bad promoted price?');
+							ni[1].value = t[0].innerText.replace(/from/, '').trim(); // Fill 0
+							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_provider');
+							if (!t || t.length != 1) err('bad promoted provider?');
+							ni[0].value = t[0].innerText.trim(); // Fill 0
 							
-							// Providers...
+							// Providers... 
 							var t = v.querySelectorAll('table');
 							if (!t || t.length != 1) err('bad table providers');
 							t = t[0];
 							var tr = t.querySelectorAll('tr');
 							for (var j=0; j<tr.length; j++) {
 								var ni = next_inputs(i); // Inputs...
+								console.log(ni);
 								var p = tr[j].getElementsByClassName('hc_hotel_rates_provider');
 								console.log(j);
 								console.log(tr[j]);
