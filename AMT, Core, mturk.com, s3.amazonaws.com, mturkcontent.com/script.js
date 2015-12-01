@@ -21661,17 +21661,27 @@ function MT__RUN() {
 			GM_addStyle('#mturk_form {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:100%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			
 			var td = document.getElementsByTagName('td');
-			var x = td[3].innerText.trim().split('-'),
-			x[0] = x[0].split(' ');
-			x[1] = x[1].split(' ');
+			var x = td[3].innerText.trim().split('-'); //  Dates => 2016-2-4 is okay as well as 2016-02-04 and 2016-12-4. 2016-feb-1 is also okay!
+			x[0] = x[0].trim().split(' ');
+			x[1] = x[1].trim().split(' ');
+			console.log(x);
 			var o = {
 				city: td[1].innerText.trim(), // Note: HC Converts "new york city" to "new_york_city"
 				dates: {
 					sd: x[0][1],
-					sm: x[0][0],
+					sm: x[0][0].toLowerCase(),
 					ed: x[1][1],
-					em: x[1][0],
+					em: x[1][0].toLowerCase(),
+					sy: 2015,
+					ey: 2015,
+					full: td[3].innerText.trim(),
 				},
 				
 				q: {
@@ -21700,14 +21710,25 @@ function MT__RUN() {
 				
 				//~ setBlockIntv: false // Interval for CAPTCHA blocked
 			}
+			console.log(o);
 			// pageSize=15 is default. Set pageSize=4.
+			if (o.dates.sm != 'nov' && o.dates.sm != 'dec') {
+				o.dates.sy = '2016';
+			}
+			if (o.dates.em != 'nov' && o.dates.em != 'dec') {
+				o.dates.ey = '2016';
+			}
 			o.url = 'http://www.hotelscombined.com/Hotels/SearchResults?'+
 				'destination=place:' + o.city.replace(/\s+/g, '_') +// E.g. new_york_city
-				'&radius=0mi&checkin=2015-12-10&checkout=2015-12-11'+
+				'&radius=0mi&checkin='+o.dates.sy+'-'+o.dates.sm+'-'+o.dates.sd+'&checkout='+o.dates.ey+'-'+o.dates.em+'-'+o.dates.ed+
 				'&Rooms=1&adults_1=2&pageSize=4&pageIndex=0&sort=Popularity-desc'+
 				'&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016800000000';
 			if (o.dates.sm != o.dates.em) {
 				alert('dates!');
+				err('date');
+			}
+			if (!/^\w+ \d{1,2} - \w+ \d{1,2}$/.exec(o.dates.full)) {
+				alert('bad date fmt!');
 				err('date');
 			}
 			
@@ -21725,22 +21746,7 @@ function MT__RUN() {
 				}
 			}
 			
-			/*BEGIN ITEMS*/
-			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:100%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1);
-			//~ var d1b = document.createElement('div');
-			//~ d1b.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			//~ document.body.appendChild(d1b);
-			//~ var d2 = document.createElement('textarea');
-			//~ d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:58px;');
-			//~ document.body.appendChild(d2);
-			//~ d2.out = d1;
-			//~ var d2b = document.createElement('textarea');
-			//~ d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:58px;');
-			//~ document.body.appendChild(d2b);
-			//~ d2b.out = d1b;
-			/*END ITEMS*/
+			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -21751,6 +21757,14 @@ function MT__RUN() {
 				],
 				offset: 0 // offset top
 			});
+			d1.innerText = 
+				o.dates.full + '\n' +
+				'sd' + o.dates.sd + '\n' +
+				'sm' + o.dates.sm + '\n' +
+				'sy' + o.dates.sy + '\n' +
+				'ed' + o.dates.ed + '\n' +
+				'em' + o.dates.em + '\n' +
+				'ey' + o.dates.ey + '\n';
 			//~ //
 			//~ document.getElementById('submitButton').onclick = function(e) {
 				//~ e.stopPropagation();
@@ -21873,8 +21887,8 @@ function MT__RUN() {
 							return false;
 						}
 						// Here...
-						return false; // ................
-						//~ return true;
+						//~ return false; // ................
+						return true; // True on final run!
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
