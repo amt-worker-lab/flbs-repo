@@ -21961,12 +21961,32 @@ function MT__RUN() {
 							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_provider');
 							if (!t || t.length != 1) err('bad promoted provider?');
 							ni[0].value = t[0].innerText.trim(); // Fill 0
+							// Still here?
+							try_sbm();
+							
 						}
 					},
 					success_callback: function(options) {
 						// do nothing.........
 					}
 				});
+			}
+			/**
+			 * At least one set of results must be here in order
+			 * to submit.
+			 */
+			function try_sbm() {
+				//~ setTimout(function() {
+				//~ }, 
+				var inp1 = o.q.results[0][0];
+				var inp2 = o.q.results[0][0];
+				if (inp1.value == '' && inp2.value == '$') {
+					return false;
+				}
+				if (o.q.name[0].value == '' || o.q.strikethrough[0].value == '') {
+					return false;
+				}
+				doSubmit();
 			}
 			/**
 			 * next_inputs
