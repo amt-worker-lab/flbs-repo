@@ -21666,7 +21666,11 @@ function MT__RUN() {
 				city: td[1].innerText.trim(), // Note: HC Converts "new york city" to "new_york_city"
 				dates: td[1].innerText.trim(),
 				
-				q: document.getElementById('Q1Url'),
+				q: {
+					name: null,
+					strikethrough: null,
+					results: [],
+				},
 				url: null,
 				//~ match: {
 					//~ name: null,
@@ -21682,22 +21686,35 @@ function MT__RUN() {
 				'&radius=0mi&checkin=2015-12-10&checkout=2015-12-11'+
 				'&Rooms=1&adults_1=2&pageSize=4&pageIndex=0&sort=Popularity-desc'+
 				'&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016800000000';
+			// Inputs...
+			var numToLetter = ['st','nd','rd'];
+			for (var i=1; i<=3; i++) {
+				for (var j=1; j<=6; j++) {
+					var n = i + numToLetter[i - 1] + '_'; // E.g. "1st"
+					o.q.results.push(
+						document.getElementsByName(n + 'partner' + j)[0] // e.g. j=2
+					);
+					o.q.results.push(
+						document.getElementsByName(n + 'price' + j)[0]   // e.g. j=2
+					);
+				}
+			}
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:60px;left:0%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:100%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
-			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
-			document.body.appendChild(d1b);
-			var d2 = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:58px;');
-			document.body.appendChild(d2);
-			d2.out = d1;
-			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:58px;');
-			document.body.appendChild(d2b);
-			d2b.out = d1b;
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			//~ document.body.appendChild(d1b);
+			//~ var d2 = document.createElement('textarea');
+			//~ d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:58px;');
+			//~ document.body.appendChild(d2);
+			//~ d2.out = d1;
+			//~ var d2b = document.createElement('textarea');
+			//~ d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:58px;');
+			//~ document.body.appendChild(d2b);
+			//~ d2b.out = d1b;
 			/*END ITEMS*/
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -21768,6 +21785,22 @@ function MT__RUN() {
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
+						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('Bad Request') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						// Here...
 						return true;
 					},
 					success_callback: function(options) {
@@ -21778,8 +21811,31 @@ function MT__RUN() {
 						}
 						
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var h = dom.getElementsByClassName('hc_hotel hc_sri_result');
+						if (!h || !h.length) {
+							d1.style.backgroundColor = 'pink';
+							return;
+						}
+						for (var i=0; i<h.length; i++) {
+							if (i == 3) break; // Only go to 2.....
+							var v = h[i];
+							// Title
+							var t = v.querySelectorAll('h3>a');
+							if (t.length != 1) err('bad title a');
+							o.q.name.value = t[0].innerText.trim();
+							if (o.q.name.value.length < 4) err('name len');
+							// Reduced
+							var t = v.querySelectorAll('.hc_hotel_wasPrice');
+							if (t) {
+								if (t.length != 1) err('more than one reduction?');
+							}
+						}
 					}
 				});
+			}
+			function err(message) {
+				d1.style.backgroundColor = 'pink';
+				exit(message);
 			}
 			
 			//~ var ef = new AMT___events_factory();
@@ -21823,141 +21879,6 @@ function MT__RUN() {
 					//~ window.open(url);
 				//~ }
 			//~ }
-			// TRY NON AJAX
-			// ?
-			function get_addr2(dv) {
-				var url = 'http://www.hotelscombined.com/Hotel/'+encodeURIComponent(dv.file_name)+'.htm';
-				// Cache
-				// IGNORE= "<h1>Verify Your Request</h1>"
-				// xhr_with_disk_cache
-				new AMT___requests_factory().xhr_with_disk_cache({
-					
-					URL: url,
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						var rs = options.response.responseText;
-						
-						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
-							last_open(options.response.finalUrl)
-							return false;
-						}
-						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
-							last_open(options.response.finalUrl)
-							return false;
-						}
-						else if (rs.indexOf('Bad Request') != -1) {
-							last_open(options.response.finalUrl)
-							return false;
-						}
-						else
-							return true;
-					},
-					success_callback: function(options) {
-						// Send {data:[{fileName:,address:}]}
-						var rs = options.response.responseText;
-						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						// hc_htl_intro
-						var c = dom.getElementById('hc_htl_intro');
-						//~ var fn = c.getElementsByClassName('hc_htl_intro_name')[0].innerText;
-						var ad = c.getElementsByClassName('hc_htl_intro_addr')[0].innerText;
-						var fn = /'hotelFileName': '([^\r\n]+)/.exec(rs)[1].replace(/',$/, ''); // e.g. 'hotelFileName': 'Hyatt_Regency_Chicago',
-						var rsp = {
-							response: {
-								status: options.response.status,
-								responseText: JSON.stringify({data:[{fileName:fn,address:ad}]})
-							},
-							seed: dv
-						};
-						get_addr_success(rsp);
-					}
-					
-				});
-			}
-			
-			// Download
-			function get_addr(dv) {
-				var url = 'http://www.hotelscombined.com/Map/HotelsInBoundary?destination='+encodeURIComponent(dv.file_load)+'&pageSize=1&showSoldOut=true&r=';
-				// Cache
-				// IGNORE= "<h1>Verify Your Request</h1>"
-				// xhr_with_disk_cache
-				new AMT___requests_factory().xhr_with_disk_cache({
-					
-					URL: url + Math.random(), // Do not cache "random"
-					filename: new AMT___requests_factory().md5(url), // Write file name without "random"
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						var rs = options.response.responseText;
-						
-						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
-							last_open(options.response.finalUrl)
-							return false;
-						}
-						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
-							last_open(options.response.finalUrl)
-							return false;
-						}
-						else if (rs.indexOf('Bad Request') != -1) {
-							//~ last_open(options.response.finalUrl)
-							//~ return false;
-						}
-						else
-							return true;
-					},
-					success_callback: function(options) {
-						get_addr_success({response:options.response, seed: dv});
-					}
-					
-				});
-			}
-			function get_addr_success(obj) {
-				var rs = obj.response.responseText;
-				var response = obj.response;
-				var dv = obj.seed;
-				if (rs == 'Bad Request') { // SKIP HERE!
-					dv.innerHTML += 'BAD REQUEST';
-					return;
-				}
-				if (response.status != 200 || /^\d+$/.exec(rs)) {
-					exit(response.status);
-				}
-				rs = JSON.parse(rs); // Object
-				var f = rs.data[0];
-				if (f.fileName != dv.file_name) {
-					alert('fileName' + dv.file_name);
-					return;
-				}
-				var addr = (f.address) ? f.address + ', ' : '';
-				addr += dv.location; // Unnecessary when scraping the site (via non-AJAX)
-				
-				// Exact addr match?
-				var addr_match = (addr.clean_str_to_auto() == o.match.location && o.match.location.length > 4) ? true : false;
-				var show_addr = MT__bold(addr, o.bold_strings);
-				show_addr = MT__bold(show_addr, o.bold_numbers, {color: 'blue'}).bold_string;
-				if (addr_match) {
-					show_addr = '✔ ' + show_addr; // Default if match
-				}
-				// Append
-				dv.innerHTML += '<br>'+show_addr;// + '<br>' + dv.file_load;
-				if (/[^a-z0-9_]/i.exec(dv.file_name)) {
-					alert('file_load:'+dv.file_name);
-				}
-				
-				// Auto?
-				//o.match.name = o.name.clean_str_to_auto();
-				//o.match.location = o.location.clean_str_to_auto();
-				if 	(
-					!o.match.found_match &&
-					dv.hotel_name &&
-					addr &&
-					dv.hotel_name.clean_str_to_auto() == o.match.name &&
-					addr.clean_str_to_auto() == o.match.location &&
-					o.match.name.length > 4 &&
-					o.match.location.length > 4
-					)
-				{
-					o.match.found_match = dv.profile_url;
-					dv.click();
-					dv.scrollIntoView(false); // Scroll but only to bottom
-				}
-			}
 		}
 		new run().f();
 	}
