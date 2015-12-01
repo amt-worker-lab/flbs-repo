@@ -21888,10 +21888,12 @@ function MT__RUN() {
 						}
 						// Here...
 						//~ return false; // ................
-						return true; // True on final run!
-					},
-					success_callback: function(options) {
-						var rs = options.response.responseText;
+						//~ return true; // True on final run!
+						
+						
+						
+						// Run from here............
+						//~ var rs = options.response.responseText;
 						
 						if (options.response.status != 200) {
 							exit(options.response.status);
@@ -21952,6 +21954,9 @@ function MT__RUN() {
 							if (!t || t.length != 1) err('bad promoted provider?');
 							ni[0].value = t[0].innerText.trim(); // Fill 0
 						}
+					},
+					success_callback: function(options) {
+						// do nothing.........
 					}
 				});
 			}
@@ -21974,6 +21979,7 @@ function MT__RUN() {
 			function err(message) {
 				d1.style.backgroundColor = 'pink';
 				exit(message);
+				alert(message);
 			}
 			
 			//~ var ef = new AMT___events_factory();
