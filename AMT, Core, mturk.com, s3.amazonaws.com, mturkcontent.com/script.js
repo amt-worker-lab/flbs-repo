@@ -21685,16 +21685,474 @@ function MT__RUN() {
 				// Remove zips
 				o.location = o.location.replace(/, [a-zA-Z0-9]{3,4} [a-zA-Z0-9]{3,4}$/, ''); // Canada/Britain/Sweden/... Zip hanging
 				o.location = o.location.replace(/(, [\d-]+|)(, US|)$/, ''); // US
-				//~ // ADD MATCHING! (w/o country)
-				//~ if (o.country == 'United States')
-					//~ o.match.location = o.location.clean_str_to_auto();
 				// Add back
 				o.location += ', '+o.country;
 				// ADD MATCHING!
 				o.match.location = o.location.clean_str_to_auto();
-				//~ if (o.country != 'United States') {
-					//~ o.match.location = o.location.clean_str_to_auto();
-				//~ }
+			} else {
+				o.match.location = o.location.clean_str_to_auto();
+			}
+			o.bold = o.name.clean_string_to_array().concat(o.location.clean_string_to_array()).concat(o.country.clean_string_to_array()); // BOLD
+			var x = /^([^,]+)/.exec(o.location); // Street address
+			if (x) {
+				o.str_address = x[1].replace(/,* *$/, '');
+			}
+			o.match.name = o.name.clean_str_to_auto();
+			// Sort numbers vs. strings
+			for (var i in o.bold) {
+				if (/\d/.exec(o.bold[i])) { // Has digits?
+					o.bold_numbers.push(o.bold[i]);
+				} else {
+					o.bold_strings.push(o.bold[i]);
+				}
+			}
+			console.log(o);
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:60px;left:0%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:60px;left:50%;width:49%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:58px;');
+			document.body.appendChild(d2);
+			d2.out = d1;
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:0px;left:50%;width:49%;height:58px;');
+			document.body.appendChild(d2b);
+			d2b.out = d1b;
+			/*END ITEMS*/
+			
+			var tmp_nm = o.name.replace(/[^\w\d]/g, ' ');
+			d2.value = tmp_nm;//o.name;// + ', ' + o.location.replace(/^[^,]+, */, '').replace(/^[^,]+, */, ''); // Replace Twice!
+			d2b.value = tmp_nm + ', ' + o.location.replace(/^[^,]+, */, ''); // First part of address
+			d2.onblur = d2b.onblur = function() {
+				GM_setValue('d483a3ae_a', '0'); // Set blocked to OFF!
+				this.value = this.value.trim();
+				ta(this);
+			}
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2, d2b],
+				blur_element: true
+			});
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b
+				],
+				offset: 60 // offset top
+			});
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q.value = o.q.value.trim();
+				if (o.q.value == '') return false; // not blank
+				if (!/^https?:\/\/[^\/]+\/[\d\D]{4,}$/.exec(o.q.value)) return false;
+				doSubmit();
+				return false;
+			}
+			
+			// Init
+			ta(d2b);// Always right side
+			if (d2.value != d2b.value)
+				ta(d2);
+			else {
+				//...
+				d1.innerText = '-';
+			}
+			// function ta
+			function ta(input) {
+				d1.style.backgroundColor = '#eee'; // Reset bgcolor
+				input.out.innerText = 'Loading...';
+				var url = 'http://www.hotelscombined.com/AutoUniversal.ashx?search='+encodeURIComponent(input.value)+'&limit=20&languageCode=EN&countryCode=US';
+				
+				// Plus Cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						
+						if (options.response.status != 200) {
+							exit(options.response.status);
+						}
+						
+						ta_complete({rs:JSON.parse(rs), seed: input});
+					}
+				});
+				
+				//~ GM_xmlhttpRequest({
+					//~ method: 'GET',
+					//~ url: url,
+					//~ onload: function (response) {
+						//~ var rs = response.responseText;
+						//~ 
+						//~ if (response.status != 200) {
+							//~ exit(response.status);
+						//~ }
+						//~ 
+						//~ ta_complete({rs:JSON.parse(rs), seed: input});
+					//~ }
+				//~ });
+			}
+			function ta_complete(obj) {
+				
+				var out = obj.seed.out;
+				out.innerText = '='+o.name+'\n='+o.location;
+				
+				// Response is Array of objects
+				var num = 0;
+				for (var i in obj.rs) {
+					var n = obj.rs[i];
+					if (n.t != 'hotels') {
+						continue;
+					}
+					num++; // Increment
+					if (num > 6) break; // Not too many
+					
+					var dv = document.createElement('div');
+					out.appendChild(dv);
+					
+					var u = n.k.replace(/^hotel:/, '');
+					var file_load = n.k;
+					
+					// Exact name match?
+					var nm_match = (n.n.clean_str_to_auto() == o.match.name && o.match.name.length > 4) ? true : false;
+					var show_nm = MT__bold(n.n, o.bold);
+					if (nm_match) {
+						show_nm = '✔ ' + show_nm; // Default if match
+					}
+					
+					var bgc = '', bgc2 = '';
+					var c1 = n.p[n.p.length - 1].toLowerCase(); // Country
+					var c2 = o.country.toLowerCase();
+					console.log(c);
+					console.log(o.country);
+					if  (
+						c1 != c2 &&
+						c1.indexOf(c2) == -1 &&
+						c2.indexOf(c1) == -1
+						)
+					{
+						bgc = 'background-color:aqua;';
+						bgc2 = 'aqua';
+					}
+					
+					// Div
+					dv.setAttribute('style', 'border-top:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;margin-bottom:-1px;'+bgc);
+					dv.innerHTML = show_nm;
+					dv.profile_url = 'http://www.hotelscombined.com/Hotel/'+encodeURIComponent(u)+'.htm';
+					dv.className = 'exe '+dv.profile_url;
+					dv.file_name = u;
+					dv.file_load = file_load;
+					dv.hotel_name = n.n;
+					dv.nm_match = nm_match;
+					dv.location = n.p.join(', '); // Array
+					dv.is_clicked = (o.match.found_match == dv.profile_url) ? true : false;
+					dv.style.backgroundColor = (o.match.found_match == dv.profile_url) ? 'LightGreen' : dv.style.backgroundColor;
+					dv.original_bgc = bgc2;
+					dv.onclick = function() {
+						//~ this.style.backgroundColor = 'LightGreen';
+						this.style.setProperty('background-color','LightGreen','important'); // NOTE: element.style has a setProperty method
+						o.q.value = this.profile_url;
+						this.is_clicked = true;
+						
+						var x = document.getElementsByClassName('exe');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (!x[i].is_clicked) 
+								x[i].style.backgroundColor = x[i].original_bgc;
+							if (x[i].className == 'exe ' + this.profile_url) {
+								x[i].is_clicked = true;
+								var new_bgc = (x[i].original_bgc != '') ? x[i].original_bgc : 'LightGreen';
+								x[i].style.backgroundColor = new_bgc;
+								//~ x[i].style.backgroundColor = 'LightGreen';
+							}
+						}
+						doSubmit();
+						
+						d1.style.backgroundColor = 'Green';
+						d1b.style.backgroundColor = 'Green';
+					}
+					dv.onmouseover = function() {
+						var x = document.getElementsByClassName('exe');
+						for (var i in x) {
+							if (i == 'length') break;
+							if (!x[i].is_clicked) 
+								x[i].style.backgroundColor = x[i].original_bgc;
+							if (x[i].className == 'exe ' + this.profile_url) {
+								var new_bgc = (x[i].original_bgc != '') ? x[i].original_bgc : 'LightGreen';
+								x[i].style.backgroundColor = new_bgc;
+							}
+						}
+					}
+					dv.onmouseout = function() {
+						var x = document.getElementsByClassName('exe ' + this.profile_url);
+						for (var i in x) {
+							if (i == 'length') break;
+							if (!x[i].is_clicked) 
+								x[i].style.backgroundColor = x[i].original_bgc;
+						}
+					}
+					
+					// Download the address! (only if not blocked!)
+					var block = GM_getValue('d483a3ae_a');
+					if (block == '0' || block == undefined)
+						get_addr(dv);
+						//~ get_addr2(dv); // NON AJAX. DOES NOT WORK ANY BETTER, STILL CAPTCHA.
+					else {
+						poll_blocked();
+					}
+				}
+				
+				// If 0 return
+				if (num == 0) {
+					out.innerText = '0 results';
+					return;
+				} else {
+					//~ out.appendChild((num + ' results').div({style:'border-bottom:1px solid #a2a2a2;'}));
+				}
+				// 
+				if (num > 0) {
+					out.appendChild(''.div({style:'height:1600px;'}));
+				} else {
+					//
+				}
+			}
+			function poll_blocked() {
+				if (!o.setBlockIntv) {
+					o.setBlockIntv = setInterval(function() {
+						var block = GM_getValue('d483a3ae_a');
+						if (block == '0') {
+							console.log('CLEAR BLOCK');
+							setTimeout(function() {console.log('block - blur');
+								ta(d2); // Redo requests (cached when possible)
+								ta(d2b);
+							}, 200);
+							clearInterval(o.setBlockIntv);
+							o.setBlockIntv = false;
+						}
+					}, 2000);
+				}
+			}
+			function last_open(url) {
+				d1.style.backgroundColor = 'yellow';
+				GM_setValue('d483a3ae_a', '1'); // Set blocked!
+				poll_blocked();
+				var last = GM_getValue('d483a3ae'); // random localStorage name
+				if (last == undefined) {
+					last = new Date().getTime() / 1000;
+					GM_setValue('d483a3ae', last);
+				}
+				last *= 1;
+				var now = new Date().getTime() / 1000;
+				if (now - last >= 10) {
+					GM_setValue('d483a3ae', now);
+					window.open(url);
+				}
+			}
+			// TRY NON AJAX
+			// ?
+			function get_addr2(dv) {
+				var url = 'http://www.hotelscombined.com/Hotel/'+encodeURIComponent(dv.file_name)+'.htm';
+				// Cache
+				// IGNORE= "<h1>Verify Your Request</h1>"
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						
+						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
+							last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
+							last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('Bad Request') != -1) {
+							last_open(options.response.finalUrl)
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						// Send {data:[{fileName:,address:}]}
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// hc_htl_intro
+						var c = dom.getElementById('hc_htl_intro');
+						//~ var fn = c.getElementsByClassName('hc_htl_intro_name')[0].innerText;
+						var ad = c.getElementsByClassName('hc_htl_intro_addr')[0].innerText;
+						var fn = /'hotelFileName': '([^\r\n]+)/.exec(rs)[1].replace(/',$/, ''); // e.g. 'hotelFileName': 'Hyatt_Regency_Chicago',
+						var rsp = {
+							response: {
+								status: options.response.status,
+								responseText: JSON.stringify({data:[{fileName:fn,address:ad}]})
+							},
+							seed: dv
+						};
+						get_addr_success(rsp);
+					}
+					
+				});
+			}
+			
+			// Download
+			function get_addr(dv) {
+				var url = 'http://www.hotelscombined.com/Map/HotelsInBoundary?destination='+encodeURIComponent(dv.file_load)+'&pageSize=1&showSoldOut=true&r=';
+				// Cache
+				// IGNORE= "<h1>Verify Your Request</h1>"
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					
+					URL: url + Math.random(), // Do not cache "random"
+					filename: new AMT___requests_factory().md5(url), // Write file name without "random"
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						
+						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
+							last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
+							last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('Bad Request') != -1) {
+							//~ last_open(options.response.finalUrl)
+							//~ return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						get_addr_success({response:options.response, seed: dv});
+					}
+					
+				});
+			}
+			function get_addr_success(obj) {
+				var rs = obj.response.responseText;
+				var response = obj.response;
+				var dv = obj.seed;
+				if (rs == 'Bad Request') { // SKIP HERE!
+					dv.innerHTML += 'BAD REQUEST';
+					return;
+				}
+				if (response.status != 200 || /^\d+$/.exec(rs)) {
+					exit(response.status);
+				}
+				rs = JSON.parse(rs); // Object
+				var f = rs.data[0];
+				if (f.fileName != dv.file_name) {
+					alert('fileName' + dv.file_name);
+					return;
+				}
+				var addr = (f.address) ? f.address + ', ' : '';
+				addr += dv.location; // Unnecessary when scraping the site (via non-AJAX)
+				
+				// Exact addr match?
+				var addr_match = (addr.clean_str_to_auto() == o.match.location && o.match.location.length > 4) ? true : false;
+				var show_addr = MT__bold(addr, o.bold_strings);
+				show_addr = MT__bold(show_addr, o.bold_numbers, {color: 'blue'}).bold_string;
+				if (addr_match) {
+					show_addr = '✔ ' + show_addr; // Default if match
+				}
+				// Append
+				dv.innerHTML += '<br>'+show_addr;// + '<br>' + dv.file_load;
+				if (/[^a-z0-9_]/i.exec(dv.file_name)) {
+					alert('file_load:'+dv.file_name);
+				}
+				
+				// Auto?
+				//o.match.name = o.name.clean_str_to_auto();
+				//o.match.location = o.location.clean_str_to_auto();
+				if 	(
+					!o.match.found_match &&
+					dv.hotel_name &&
+					addr &&
+					dv.hotel_name.clean_str_to_auto() == o.match.name &&
+					addr.clean_str_to_auto() == o.match.location &&
+					o.match.name.length > 4 &&
+					o.match.location.length > 4
+					)
+				{
+					o.match.found_match = dv.profile_url;
+					dv.click();
+					dv.scrollIntoView(false); // Scroll but only to bottom
+				}
+			}
+		}
+		new run().f();
+	}
+	//
+	// Jonathan Holston
+	// HotelsCombined.com
+	//
+	s = '<li>Find the hotel-specific page on HotelsCombined (<u>make sure to check the Street Address</u> and/or&nbsp;Phone Number to ensure it\'s the correct hotel location, as they often have many locations)</li>';
+	if (
+		ih.indexOf(s) != -1
+		)
+	{
+		console.log('');
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:400px !important;}');
+			GM_addStyle('#mturk_form {position:absolute;top:1000px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var b = document.getElementsByTagName('b');
+			var o = {
+				name: b[0].innerText.trim(),
+				location: b[1].innerText.trim(),
+				phone: b[2].innerText.trim(),
+				str_address: '',
+				country_code: null,
+				country: null,
+				bold: null,
+				bold_strings: [],
+				bold_numbers: [],
+				q: document.getElementById('Q1Url'),
+				
+				match: {
+					name: null,
+					location: null,
+					found_match: false // True when found
+				},
+				
+				setBlockIntv: false // Interval for CAPTCHA blocked
+			}
+			//......// if (o.phone != '') alert('phone');
+			var x = / ([A-Z]{2})$/.exec(o.location);
+			if (x) {
+				o.country_code = x[1];
+				o.country = x[1].country_code_to_country_name();
+				o.location = o.location.replace(/,* ([A-Z]{2})$/, ''); // Country code
+				// Remove zips
+				o.location = o.location.replace(/, [a-zA-Z0-9]{3,4} [a-zA-Z0-9]{3,4}$/, ''); // Canada/Britain/Sweden/... Zip hanging
+				o.location = o.location.replace(/(, [\d-]+|)(, US|)$/, ''); // US
+				// Add back
+				o.location += ', '+o.country;
+				// ADD MATCHING!
+				o.match.location = o.location.clean_str_to_auto();
 			} else {
 				o.match.location = o.location.clean_str_to_auto();
 			}
