@@ -21936,8 +21936,14 @@ function MT__RUN() {
 								var p = tr[j].getElementsByClassName('hc_hotel_rates_provider');
 								console.log(j);
 								console.log(tr[j]);
-								if (!p || p.length != 1) err('bad provider?');
-								ni[0].value = p[0].innerText.trim(); // Fill 0
+								if (!p || p.length != 1) { 
+									if (tr[j].innerText.indexOf('Book with hotel') == -1) { // Does not have hotel provider name or "Book with hotel"?
+										err('bad provider?');
+									}
+									else 
+										ni[0].value = 'Book with hotel';
+								} else
+									ni[0].value = p[0].innerText.trim(); // Fill 0
 								// Price
 								// hc_hotel_rates_price
 								var p = tr[j].getElementsByClassName('hc_hotel_rates_price');
