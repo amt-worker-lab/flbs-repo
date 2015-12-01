@@ -21667,8 +21667,16 @@ function MT__RUN() {
 				dates: td[1].innerText.trim(),
 				
 				q: {
-					name: document.getElementsByName('1st_name')[0],
-					strikethrough: document.getElementsByName('1st_strikethrough')[0],
+					name: [
+						document.getElementsByName('1st_name')[0],
+						document.getElementsByName('2nd_name')[0],
+						document.getElementsByName('3rd_name')[0],
+					],
+					strikethrough: [
+						document.getElementsByName('1st_strikethrough')[0],
+						document.getElementsByName('2nd_strikethrough')[0],
+						document.getElementsByName('3rd_strikethrough')[0],
+					],
 					results: [],
 				},
 				url: null,
@@ -21738,6 +21746,10 @@ function MT__RUN() {
 			//~ }
 			
 			// Init
+			// Loads three times!
+			// First is "blank page".
+			// Second is loaded but not always showing "reduced" pricing...
+			// This is loaded w/ reduced pricing...
 			first_load();
 			
 			// First load
@@ -21772,7 +21784,48 @@ function MT__RUN() {
 						return false;
 					},
 					success_callback: function(options) {
-						//~ second_load();
+						second_load();
+						//~ var rs = options.response.responseText;
+						
+						//~ if (options.response.status != 200) {
+							//~ exit(options.response.status);
+						//~ }
+						
+						//~ ta_complete({rs:JSON.parse(rs), seed: input});
+					}
+				});
+			}
+			function second_load() {
+				var u = ''
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						
+						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('Bad Request') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						//~ else
+							//~ return true;
+						
+						third_load();
+						
+						return false;
+					},
+					success_callback: function(options) {
+						third_load();
 						//~ var rs = options.response.responseText;
 						
 						//~ if (options.response.status != 200) {
@@ -21784,7 +21837,7 @@ function MT__RUN() {
 				});
 			}
 			// Second load
-			function second_load() {
+			function third_load() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: o.url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -21827,22 +21880,22 @@ function MT__RUN() {
 							// Title
 							var t = v.querySelectorAll('h3>a');
 							if (!t || t.length != 1) err('bad title a');
-							o.q.name.value = t[0].innerText.trim();
-							if (o.q.name.value.length < 4) err('name len');
+							o.q.name[i].value = t[0].innerText.trim();
+							if (o.q.name[i].value.length < 4) err('name len');
 							// Reduced
 							var t = v.querySelectorAll('.hc_hotel_wasPrice');
-							if (t) {
-								if (t.length != 1) err('more than one reduction?');
+							if (t && t.length) {
+								if (t.length != 1) err('more than one reduction?' + t.length);
 								t = t[0].innerText.trim();
 								t = /\$\d+$/.exec(t); // [$][price][end of str]
 								if (!t) err('bad reduction price?');
-								o.q.strikethrough.value = t[0]; // Includes "$"
+								o.q.strikethrough[i].value = t[0]; // Includes "$"
 							}
 							// Providers...
 							var t = v.querySelectorAll('table');
 							if (!t || t.length != 1) err('bad table providers');
 							t = t[0];
-							
+							var tr = t.querySelectorAll('tr');
 						}
 					}
 				});
