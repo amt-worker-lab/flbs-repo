@@ -21862,7 +21862,8 @@ function MT__RUN() {
 							return false;
 						}
 						// Here...
-						return true;
+						return false; // ................
+						//~ return true;
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
@@ -21895,16 +21896,6 @@ function MT__RUN() {
 								if (!t) err('bad reduction price?');
 								o.q.strikethrough[i].value = t[0]; // Includes "$"
 							}
-							// Providers 0, "Promoted deal"
-							// hc_sri_result_promotedDeal
-							var ni = next_inputs(i); // Inputs...
-							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_price');
-							if (!t || t.length != 1) err('bad promoted price?');
-							ni[1].value = t[0].innerText.replace(/from/, '').trim(); // Fill 0
-							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_provider');
-							if (!t || t.length != 1) err('bad promoted provider?');
-							ni[0].value = t[0].innerText.trim(); // Fill 0
-							
 							// Providers... 
 							var t = v.querySelectorAll('table');
 							if (!t || t.length != 1) err('bad table providers');
@@ -21925,6 +21916,16 @@ function MT__RUN() {
 								ni[1].value = p[0].innerText.trim(); // Fill 1
 								if (!/^\$\d+$/.exec(ni[1].value)) err('bad price formatting?');
 							}
+							// Providers 0, "Promoted deal"
+							// hc_sri_result_promotedDeal
+							// Goes at bottom......
+							var ni = next_inputs(i); // Inputs...
+							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_price');
+							if (!t || t.length != 1) err('bad promoted price?');
+							ni[1].value = t[0].innerText.replace(/from/, '').trim(); // Fill 0
+							var t = v.querySelectorAll('.hc_sri_result_promotedDeal .hc_hotel_provider');
+							if (!t || t.length != 1) err('bad promoted provider?');
+							ni[0].value = t[0].innerText.trim(); // Fill 0
 						}
 					}
 				});
