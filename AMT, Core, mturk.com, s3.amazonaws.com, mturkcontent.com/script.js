@@ -21718,6 +21718,9 @@ function MT__RUN() {
 			if (o.dates.em != 'nov' && o.dates.em != 'dec') {
 				o.dates.ey = '2016';
 			}
+			// Fixes to o.city...
+			// As of Dec.1.2015
+			if (o.city == 'New York') o.city = 'New York City';
 			o.url = 'http://www.hotelscombined.com/Hotels/SearchResults?'+
 				'destination=place:' + o.city.replace(/\s+/g, '_') +// E.g. new_york_city
 				'&radius=0mi&checkin='+o.dates.sy+'-'+o.dates.sm+'-'+o.dates.sd+'&checkout='+o.dates.ey+'-'+o.dates.em+'-'+o.dates.ed+
@@ -21731,6 +21734,7 @@ function MT__RUN() {
 				alert('bad date fmt!');
 				err('date');
 			}
+			
 			
 			// Inputs...
 			var numToLetter = ['st','nd','rd'];
@@ -21904,7 +21908,12 @@ function MT__RUN() {
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var h = dom.getElementsByClassName('hc_hotel hc_sri_result');
 						if (!h || !h.length) {
+							// No hotels?
 							d1.style.backgroundColor = 'pink';
+							if (dom.innerText.indexOf('No hotels match your criteria!') != -1) {
+								o.q.name[0].value = 'No hotels match your criteria!';
+								doSubmit();
+							}
 							return;
 						}
 						console.log(h);
