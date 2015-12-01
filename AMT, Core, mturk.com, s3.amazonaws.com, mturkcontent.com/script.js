@@ -21895,16 +21895,25 @@ function MT__RUN() {
 								if (!t) err('bad reduction price?');
 								o.q.strikethrough[i].value = t[0]; // Includes "$"
 							}
+							
 							// Providers...
 							var t = v.querySelectorAll('table');
 							if (!t || t.length != 1) err('bad table providers');
 							t = t[0];
 							var tr = t.querySelectorAll('tr');
 							for (var j=0; j<tr.length; j++) {
+								var ni = next_inputs(i); // Inputs...
 								var p = tr[j].getElementsByClassName('hc_hotel_rates_provider');
-								if (!p || p.length != 1) err('no provider?');
-								var ni = next_input(i);
-								ni[0].value = p.innerText.trim();
+								console.log(j);
+								console.log(tr[j]);
+								if (!p || p.length != 1) err('bad provider?');
+								ni[0].value = p[0].innerText.trim(); // Fill 0
+								// Price
+								// hc_hotel_rates_price
+								var p = tr[j].getElementsByClassName('hc_hotel_rates_price');
+								if (!p || p.length != 1) err('bad price?');
+								ni[1].value = p[0].innerText.trim(); // Fill 1
+								if (!/^\$\d+$/.exec(ni[1].value)) err('bad price formatting?');
 							}
 						}
 					}
@@ -21914,13 +21923,15 @@ function MT__RUN() {
 			 * next_inputs
 			 * Next empty input.
 			 */
-			function next_inputs(i) { // 0, 1, or 2
+			function next_inputs(x) { // 0, 1, or 2
 				var inp1, inp2;
-				for (var i in o.q.results[i]) {
-					var inp = o.q.results[i]
-					inp.value = inp.value.trim() 
-					if (inp.value == '') {
-						return inp;
+				//~ console.log('i'+x);
+				for (var i=0; i<o.q.results[x].length; i++) {
+					var inp1 = o.q.results[x][i];
+					var inp2 = o.q.results[x][i + 1];
+					inp1.value = inp1.value.trim() 
+					if (inp1.value == '' && inp2.value == '$') {
+						return [inp1, inp2];
 					}
 				}
 			}
