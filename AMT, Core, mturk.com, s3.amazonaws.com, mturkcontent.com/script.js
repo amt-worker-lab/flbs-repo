@@ -21677,7 +21677,11 @@ function MT__RUN() {
 						document.getElementsByName('2nd_strikethrough')[0],
 						document.getElementsByName('3rd_strikethrough')[0],
 					],
-					results: [],
+					results: [
+					[],
+					[],
+					[],
+					],
 				},
 				url: null,
 				//~ match: {
@@ -21699,10 +21703,10 @@ function MT__RUN() {
 			for (var i=1; i<=3; i++) {
 				for (var j=1; j<=6; j++) {
 					var n = i + numToLetter[i - 1] + '_'; // E.g. "1st"
-					o.q.results.push(
+					o.q.results[i - 1].push(
 						document.getElementsByName(n + 'partner' + j)[0] // e.g. j=2
 					);
-					o.q.results.push(
+					o.q.results[i - 1].push(
 						document.getElementsByName(n + 'price' + j)[0]   // e.g. j=2
 					);
 				}
@@ -21896,9 +21900,29 @@ function MT__RUN() {
 							if (!t || t.length != 1) err('bad table providers');
 							t = t[0];
 							var tr = t.querySelectorAll('tr');
+							for (var j=0; j<tr.length; j++) {
+								var p = tr[j].getElementsByClassName('hc_hotel_rates_provider');
+								if (!p || p.length != 1) err('no provider?');
+								var ni = next_input(i);
+								ni[0].value = p.innerText.trim();
+							}
 						}
 					}
 				});
+			}
+			/**
+			 * next_inputs
+			 * Next empty input.
+			 */
+			function next_inputs(i) { // 0, 1, or 2
+				var inp1, inp2;
+				for (var i in o.q.results[i]) {
+					var inp = o.q.results[i]
+					inp.value = inp.value.trim() 
+					if (inp.value == '') {
+						return inp;
+					}
+				}
 			}
 			function err(message) {
 				d1.style.backgroundColor = 'pink';
