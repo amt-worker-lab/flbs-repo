@@ -21663,50 +21663,25 @@ function MT__RUN() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				city: td[1].innerText.trim(),
+				city: td[1].innerText.trim(), // Note: HC Converts "new york city" to "new_york_city"
 				dates: td[1].innerText.trim(),
 				
 				q: document.getElementById('Q1Url'),
+				url: null,
+				//~ match: {
+					//~ name: null,
+					//~ location: null,
+					//~ found_match: false // True when found
+				//~ },
 				
-				match: {
-					name: null,
-					location: null,
-					found_match: false // True when found
-				},
-				
-				setBlockIntv: false // Interval for CAPTCHA blocked
+				//~ setBlockIntv: false // Interval for CAPTCHA blocked
 			}
-			//......// if (o.phone != '') alert('phone');
-			var x = / ([A-Z]{2})$/.exec(o.location);
-			if (x) {
-				o.country_code = x[1];
-				o.country = x[1].country_code_to_country_name();
-				o.location = o.location.replace(/,* ([A-Z]{2})$/, ''); // Country code
-				// Remove zips
-				o.location = o.location.replace(/, [a-zA-Z0-9]{3,4} [a-zA-Z0-9]{3,4}$/, ''); // Canada/Britain/Sweden/... Zip hanging
-				o.location = o.location.replace(/(, [\d-]+|)(, US|)$/, ''); // US
-				// Add back
-				o.location += ', '+o.country;
-				// ADD MATCHING!
-				o.match.location = o.location.clean_str_to_auto();
-			} else {
-				o.match.location = o.location.clean_str_to_auto();
-			}
-			o.bold = o.name.clean_string_to_array().concat(o.location.clean_string_to_array()).concat(o.country.clean_string_to_array()); // BOLD
-			var x = /^([^,]+)/.exec(o.location); // Street address
-			if (x) {
-				o.str_address = x[1].replace(/,* *$/, '');
-			}
-			o.match.name = o.name.clean_str_to_auto();
-			// Sort numbers vs. strings
-			for (var i in o.bold) {
-				if (/\d/.exec(o.bold[i])) { // Has digits?
-					o.bold_numbers.push(o.bold[i]);
-				} else {
-					o.bold_strings.push(o.bold[i]);
-				}
-			}
-			console.log(o);
+			// pageSize=15 is default. Set pageSize=4.
+			o.url = 'http://www.hotelscombined.com/Hotels/SearchResults?'+
+				'destination=place:' + o.city.replace(/\s+/g, '_') +// E.g. new_york_city
+				'&radius=0mi&checkin=2015-12-10&checkout=2015-12-11'+
+				'&Rooms=1&adults_1=2&pageSize=4&pageIndex=0&sort=Popularity-desc'+
+				'&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016800000000';
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
@@ -21724,59 +21699,71 @@ function MT__RUN() {
 			document.body.appendChild(d2b);
 			d2b.out = d1b;
 			/*END ITEMS*/
-			
-			var tmp_nm = o.name.replace(/[^\w\d]/g, ' ');
-			d2.value = tmp_nm;//o.name;// + ', ' + o.location.replace(/^[^,]+, */, '').replace(/^[^,]+, */, ''); // Replace Twice!
-			d2b.value = tmp_nm + ', ' + o.location.replace(/^[^,]+, */, ''); // First part of address
-			d2.onblur = d2b.onblur = function() {
-				GM_setValue('d483a3ae_a', '0'); // Set blocked to OFF!
-				this.value = this.value.trim();
-				ta(this);
-			}
-			var ef = new AMT___events_factory();
-			d2. addEventListener('keydown', ef.keydown__blur_field, true);
-			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			ef.mouseup__delete_range({
-				elements: [d2, d2b],
-				blur_element: true
-			});
-			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b
+					d1
 				],
-				offset: 60 // offset top
+				offset: 0 // offset top
 			});
+			//~ //
+			//~ document.getElementById('submitButton').onclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ o.q.value = o.q.value.trim();
+				//~ if (o.q.value == '') return false; // not blank
+				//~ if (!/^https?:\/\/[^\/]+\/[\d\D]{4,}$/.exec(o.q.value)) return false;
+				//~ doSubmit();
+				//~ return false;
+			//~ }
 			
-			document.getElementById('submitButton').onclick = function(e) {
-				e.stopPropagation();
-				e.preventDefault();
-				o.q.value = o.q.value.trim();
-				if (o.q.value == '') return false; // not blank
-				if (!/^https?:\/\/[^\/]+\/[\d\D]{4,}$/.exec(o.q.value)) return false;
-				doSubmit();
-				return false;
-			}
 			
-			// Init
-			ta(d2b);// Always right side
-			if (d2.value != d2b.value)
-				ta(d2);
-			else {
-				//...
-				d1.innerText = '-';
+			// First load
+			// http://www.hotelscombined.com/Hotels/SearchResults?destination=place:new_york_city&radius=0mi&checkin=2015-12-10&checkout=2015-12-11&Rooms=1&adults_1=2&pageSize=15&pageIndex=0&sort=Popularity-desc&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016822060000
+			function first_load() {
+				var u = ''
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						
+						if (rs.indexOf('<h1>Verify Your Request</h1>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('<p>Please complete the challenge below to continue using the site.</p>') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						else if (rs.indexOf('Bad Request') != -1) {
+							//...
+							//~ last_open(options.response.finalUrl)
+							return false;
+						}
+						//~ else
+							//~ return true;
+						
+						return false;
+					},
+					success_callback: function(options) {
+						second_load();
+						//~ var rs = options.response.responseText;
+						
+						//~ if (options.response.status != 200) {
+							//~ exit(options.response.status);
+						//~ }
+						
+						//~ ta_complete({rs:JSON.parse(rs), seed: input});
+					}
+				});
 			}
-			// function ta
-			function ta(input) {
-				d1.style.backgroundColor = '#eee'; // Reset bgcolor
-				input.out.innerText = 'Loading...';
-				var url = 'http://www.hotelscombined.com/AutoUniversal.ashx?search='+encodeURIComponent(input.value)+'&limit=20&languageCode=EN&countryCode=US';
-				
-				// Plus Cache
+			// Second load
+			function second_load() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -21790,180 +21777,52 @@ function MT__RUN() {
 							exit(options.response.status);
 						}
 						
-						ta_complete({rs:JSON.parse(rs), seed: input});
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
 					}
 				});
-				
-				//~ GM_xmlhttpRequest({
-					//~ method: 'GET',
-					//~ url: url,
-					//~ onload: function (response) {
-						//~ var rs = response.responseText;
-						//~ 
-						//~ if (response.status != 200) {
-							//~ exit(response.status);
+			}
+			
+			//~ var ef = new AMT___events_factory();
+			//~ d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ ef.mouseup__delete_range({
+				//~ elements: [d2, d2b],
+				//~ blur_element: true
+			//~ });
+			
+			
+			//~ function poll_blocked() {
+				//~ if (!o.setBlockIntv) {
+					//~ o.setBlockIntv = setInterval(function() {
+						//~ var block = GM_getValue('d483a3ae_a');
+						//~ if (block == '0') {
+							//~ console.log('CLEAR BLOCK');
+							//~ setTimeout(function() {console.log('block - blur');
+								//~ ta(d2); // Redo requests (cached when possible)
+								//~ ta(d2b);
+							//~ }, 200);
+							//~ clearInterval(o.setBlockIntv);
+							//~ o.setBlockIntv = false;
 						//~ }
-						//~ 
-						//~ ta_complete({rs:JSON.parse(rs), seed: input});
-					//~ }
-				//~ });
-			}
-			function ta_complete(obj) {
-				
-				var out = obj.seed.out;
-				out.innerText = '='+o.name+'\n='+o.location;
-				
-				// Response is Array of objects
-				var num = 0;
-				for (var i in obj.rs) {
-					var n = obj.rs[i];
-					if (n.t != 'hotels') {
-						continue;
-					}
-					num++; // Increment
-					if (num > 6) break; // Not too many
-					
-					var dv = document.createElement('div');
-					out.appendChild(dv);
-					
-					var u = n.k.replace(/^hotel:/, '');
-					var file_load = n.k;
-					
-					// Exact name match?
-					var nm_match = (n.n.clean_str_to_auto() == o.match.name && o.match.name.length > 4) ? true : false;
-					var show_nm = MT__bold(n.n, o.bold);
-					if (nm_match) {
-						show_nm = '✔ ' + show_nm; // Default if match
-					}
-					
-					var bgc = '', bgc2 = '';
-					var c1 = n.p[n.p.length - 1].toLowerCase(); // Country
-					var c2 = o.country.toLowerCase();
-					console.log(c);
-					console.log(o.country);
-					if  (
-						c1 != c2 &&
-						c1.indexOf(c2) == -1 &&
-						c2.indexOf(c1) == -1
-						)
-					{
-						bgc = 'background-color:aqua;';
-						bgc2 = 'aqua';
-					}
-					
-					// Div
-					dv.setAttribute('style', 'border-top:1px solid #a2a2a2;border-bottom:1px solid #a2a2a2;margin-bottom:-1px;'+bgc);
-					dv.innerHTML = show_nm;
-					dv.profile_url = 'http://www.hotelscombined.com/Hotel/'+encodeURIComponent(u)+'.htm';
-					dv.className = 'exe '+dv.profile_url;
-					dv.file_name = u;
-					dv.file_load = file_load;
-					dv.hotel_name = n.n;
-					dv.nm_match = nm_match;
-					dv.location = n.p.join(', '); // Array
-					dv.is_clicked = (o.match.found_match == dv.profile_url) ? true : false;
-					dv.style.backgroundColor = (o.match.found_match == dv.profile_url) ? 'LightGreen' : dv.style.backgroundColor;
-					dv.original_bgc = bgc2;
-					dv.onclick = function() {
-						//~ this.style.backgroundColor = 'LightGreen';
-						this.style.setProperty('background-color','LightGreen','important'); // NOTE: element.style has a setProperty method
-						o.q.value = this.profile_url;
-						this.is_clicked = true;
-						
-						var x = document.getElementsByClassName('exe');
-						for (var i in x) {
-							if (i == 'length') break;
-							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = x[i].original_bgc;
-							if (x[i].className == 'exe ' + this.profile_url) {
-								x[i].is_clicked = true;
-								var new_bgc = (x[i].original_bgc != '') ? x[i].original_bgc : 'LightGreen';
-								x[i].style.backgroundColor = new_bgc;
-								//~ x[i].style.backgroundColor = 'LightGreen';
-							}
-						}
-						doSubmit();
-						
-						d1.style.backgroundColor = 'Green';
-						d1b.style.backgroundColor = 'Green';
-					}
-					dv.onmouseover = function() {
-						var x = document.getElementsByClassName('exe');
-						for (var i in x) {
-							if (i == 'length') break;
-							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = x[i].original_bgc;
-							if (x[i].className == 'exe ' + this.profile_url) {
-								var new_bgc = (x[i].original_bgc != '') ? x[i].original_bgc : 'LightGreen';
-								x[i].style.backgroundColor = new_bgc;
-							}
-						}
-					}
-					dv.onmouseout = function() {
-						var x = document.getElementsByClassName('exe ' + this.profile_url);
-						for (var i in x) {
-							if (i == 'length') break;
-							if (!x[i].is_clicked) 
-								x[i].style.backgroundColor = x[i].original_bgc;
-						}
-					}
-					
-					// Download the address! (only if not blocked!)
-					var block = GM_getValue('d483a3ae_a');
-					if (block == '0' || block == undefined)
-						get_addr(dv);
-						//~ get_addr2(dv); // NON AJAX. DOES NOT WORK ANY BETTER, STILL CAPTCHA.
-					else {
-						poll_blocked();
-					}
-				}
-				
-				// If 0 return
-				if (num == 0) {
-					out.innerText = '0 results';
-					return;
-				} else {
-					//~ out.appendChild((num + ' results').div({style:'border-bottom:1px solid #a2a2a2;'}));
-				}
-				// 
-				if (num > 0) {
-					out.appendChild(''.div({style:'height:1600px;'}));
-				} else {
-					//
-				}
-			}
-			function poll_blocked() {
-				if (!o.setBlockIntv) {
-					o.setBlockIntv = setInterval(function() {
-						var block = GM_getValue('d483a3ae_a');
-						if (block == '0') {
-							console.log('CLEAR BLOCK');
-							setTimeout(function() {console.log('block - blur');
-								ta(d2); // Redo requests (cached when possible)
-								ta(d2b);
-							}, 200);
-							clearInterval(o.setBlockIntv);
-							o.setBlockIntv = false;
-						}
-					}, 2000);
-				}
-			}
-			function last_open(url) {
-				d1.style.backgroundColor = 'yellow';
-				GM_setValue('d483a3ae_a', '1'); // Set blocked!
-				poll_blocked();
-				var last = GM_getValue('d483a3ae'); // random localStorage name
-				if (last == undefined) {
-					last = new Date().getTime() / 1000;
-					GM_setValue('d483a3ae', last);
-				}
-				last *= 1;
-				var now = new Date().getTime() / 1000;
-				if (now - last >= 10) {
-					GM_setValue('d483a3ae', now);
-					window.open(url);
-				}
-			}
+					//~ }, 2000);
+				//~ }
+			//~ }
+			//~ function last_open(url) {
+				//~ d1.style.backgroundColor = 'yellow';
+				//~ GM_setValue('d483a3ae_a', '1'); // Set blocked!
+				//~ poll_blocked();
+				//~ var last = GM_getValue('d483a3ae'); // random localStorage name
+				//~ if (last == undefined) {
+					//~ last = new Date().getTime() / 1000;
+					//~ GM_setValue('d483a3ae', last);
+				//~ }
+				//~ last *= 1;
+				//~ var now = new Date().getTime() / 1000;
+				//~ if (now - last >= 10) {
+					//~ GM_setValue('d483a3ae', now);
+					//~ window.open(url);
+				//~ }
+			//~ }
 			// TRY NON AJAX
 			// ?
 			function get_addr2(dv) {
