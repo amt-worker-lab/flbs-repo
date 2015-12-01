@@ -21638,16 +21638,22 @@ function MT__RUN() {
 		//~ }
 	}
 	
+	/**
+	 * Hotelscombined.com
+	 * Jonathan Holston
+	 * Adam Kowalski
+	 * 
+	 *
+	 */
+	// Adam Kowalski
+	// 
+	// 
 	//
-	// Jonathan Holston
-	// HotelsCombined.com
-	//
-	s = '<li>Find the hotel-specific page on HotelsCombined (<u>make sure to check the Street Address</u> and/or&nbsp;Phone Number to ensure it\'s the correct hotel location, as they often have many locations)</li>';
+	s = '<p>See the example below for more context. If some information is missing for a hotel (e.g. there are only 3 prices shown), leave the missing fields blank.</p>';
 	if (
 		ih.indexOf(s) != -1
 		)
 	{
-		console.log('');
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
@@ -21655,17 +21661,11 @@ function MT__RUN() {
 			GM_addStyle('#mturk_form {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
-			var b = document.getElementsByTagName('b');
+			var td = document.getElementsByTagName('td');
 			var o = {
-				name: b[0].innerText.trim(),
-				location: b[1].innerText.trim(),
-				phone: b[2].innerText.trim(),
-				str_address: '',
-				country_code: null,
-				country: null,
-				bold: null,
-				bold_strings: [],
-				bold_numbers: [],
+				city: td[1].innerText.trim(),
+				dates: td[1].innerText.trim(),
+				
 				q: document.getElementById('Q1Url'),
 				
 				match: {
