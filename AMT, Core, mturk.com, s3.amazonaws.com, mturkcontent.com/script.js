@@ -21746,6 +21746,8 @@ function MT__RUN() {
 				}
 			}
 			
+			// focus
+			setTimeout(function() { document.getElementById('submitButton').focus(); }, 600);
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -21919,7 +21921,7 @@ function MT__RUN() {
 							if (t && t.length) {
 								if (t.length != 1) err('more than one reduction?' + t.length);
 								t = t[0].innerText.trim();
-								t = /\$\d+$/.exec(t); // [$][price][end of str]
+								t = /\$[\d,]+$/.exec(t); // [$][price][end of str]
 								if (!t) err('bad reduction price?');
 								o.q.strikethrough[i].value = t[0]; // Includes "$"
 							}
@@ -21941,7 +21943,7 @@ function MT__RUN() {
 								var p = tr[j].getElementsByClassName('hc_hotel_rates_price');
 								if (!p || p.length != 1) err('bad price?');
 								ni[1].value = p[0].innerText.trim(); // Fill 1
-								if (!/^\$\d+$/.exec(ni[1].value)) err('bad price formatting?');
+								if (!/^\$[\d,]+$/.exec(ni[1].value)) err('bad price formatting?');
 							}
 							// Providers 0, "Promoted deal"
 							// hc_sri_result_promotedDeal
@@ -21977,9 +21979,9 @@ function MT__RUN() {
 				}
 			}
 			function err(message) {
-				d1.style.backgroundColor = 'pink';
-				exit(message);
+				document.body.style.backgroundColor = 'pink';
 				alert(message);
+				exit(message);
 			}
 			
 			//~ var ef = new AMT___events_factory();
