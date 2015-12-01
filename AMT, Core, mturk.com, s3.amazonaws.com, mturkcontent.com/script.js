@@ -21662,9 +21662,17 @@ function MT__RUN() {
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var td = document.getElementsByTagName('td');
+			var x = td[3].innerText.trim().split('-'),
+			x[0] = x[0].split(' ');
+			x[1] = x[1].split(' ');
 			var o = {
 				city: td[1].innerText.trim(), // Note: HC Converts "new york city" to "new_york_city"
-				dates: td[1].innerText.trim(),
+				dates: {
+					sd: x[0][1],
+					sm: x[0][0],
+					ed: x[1][1],
+					em: x[1][0],
+				},
 				
 				q: {
 					name: [
@@ -21678,9 +21686,9 @@ function MT__RUN() {
 						document.getElementsByName('3rd_strikethrough')[0],
 					],
 					results: [
-					[],
-					[],
-					[],
+						[],
+						[],
+						[],
 					],
 				},
 				url: null,
@@ -21698,6 +21706,11 @@ function MT__RUN() {
 				'&radius=0mi&checkin=2015-12-10&checkout=2015-12-11'+
 				'&Rooms=1&adults_1=2&pageSize=4&pageIndex=0&sort=Popularity-desc'+
 				'&showSoldOut=false&scroll=0&HotelID=&mapState=expanded%3D0&_=14490016800000000';
+			if (o.dates.sm != o.dates.em) {
+				alert('dates!');
+				err('date');
+			}
+			
 			// Inputs...
 			var numToLetter = ['st','nd','rd'];
 			for (var i=1; i<=3; i++) {
@@ -21780,10 +21793,8 @@ function MT__RUN() {
 							//~ last_open(options.response.finalUrl)
 							return false;
 						}
-						//~ else
-							//~ return true;
 						
-						second_load();
+						setTimeout(second_load, 1000); // 1s?
 						
 						return false;
 					},
@@ -21821,10 +21832,10 @@ function MT__RUN() {
 							//~ last_open(options.response.finalUrl)
 							return false;
 						}
-						//~ else
-							//~ return true;
 						
-						third_load();
+						setTimeout(third_load, 1000); // 1s?
+						
+						//~ third_load();
 						
 						return false;
 					},
