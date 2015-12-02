@@ -21911,8 +21911,12 @@ function MT__RUN() {
 							// No hotels?
 							d1.style.backgroundColor = 'pink';
 							if (dom.innerText.indexOf('No hotels match your criteria!') != -1) {
-								o.q.name[0].value = 'No hotels match your criteria!';
-								doSubmit();
+								// NOTE: In this case the following will appear on the "real site":
+								// "More properties around Arlington that match your search criteria:"
+								// And then it will load a few "nearby" results.
+								// So this needs to be scraped here, rather
+								// than just saying "none found"....
+								//do not do//~ o.q.name[0].value = 'No hotels match your criteria!';
 							}
 							return;
 						}
