@@ -26,6 +26,23 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	//
+	//
+	//
+	//
+	s = '<li>Look at the phone screen and copy the 3 to 4 large, central digits.</li>'
+	if (ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:300px}');
+			
+			document.getElementsByName('StopwatchTime')[0].focus();
+		}
+		new run().f();
+	}
+	
 	
 	// 
 	// 
