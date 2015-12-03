@@ -39,6 +39,17 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {width:100%;height:300px}');
 			
 			document.getElementsByName('StopwatchTime')[0].focus();
+			
+			document.getElementsByName('StopwatchTime')[0].style.position = 'absolute';
+			document.getElementsByName('StopwatchTime')[0].style.top = '0';
+			document.getElementsByName('StopwatchTime')[0].style.left = '0';
+			document.getElementsByName('StopwatchTime')[0].style.width = '200px';
+			
+			document.getElementsByName('FainterStopwatchTime')[0].style.position = 'absolute';
+			document.getElementsByName('FainterStopwatchTime')[0].style.top = '0';
+			document.getElementsByName('FainterStopwatchTime')[0].style.left = '200px';
+			document.getElementsByName('FainterStopwatchTime')[0].style.width = '200px';
+			
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
