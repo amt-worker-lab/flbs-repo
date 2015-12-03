@@ -39,6 +39,14 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {width:100%;height:300px}');
 			
 			document.getElementsByName('StopwatchTime')[0].focus();
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+					doSubmit();
+				return false;
+				
+			}
+	
 		}
 		new run().f();
 	}
