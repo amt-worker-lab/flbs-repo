@@ -123261,7 +123261,7 @@ qatar,80
 			var o = {
 				name: td[1].innerText.replace(/\s+/g, ' ').trim(),
 				nameShort: null,
-				country: td[3].innerText,
+				//~ country: td[3].innerText,
 				bold_array: [],
 				panels_loaded: 0,
 				num_panels: 3,
@@ -123272,7 +123272,7 @@ qatar,80
 				]
 			}
 			o.bold_array  = o.name.clean_string_to_array();
-			o.bold_array.push(o.country);
+			//~ o.bold_array.push(o.country);
 			o.nameShort = o.name.split(' ').slice(0,2).join(' ');
 			console.log(o);
 			
@@ -123355,7 +123355,8 @@ qatar,80
 			// ...
 			d3.value  = o.name;
 			d3b.value = '"' + o.name +  '"';
-			d3c.value = o.nameShort + ' ' + o.country;
+			d3c.value = '"' + o.name.split(' ').join('" "') +  '"'; // ...
+			//~ d3c.value = o.nameShort + ' ' + o.country;
 			
 			var load_first = true;
 			var FOUND_ONE_NONSKIP = false;
