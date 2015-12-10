@@ -90793,7 +90793,7 @@ qatar,80
 					el[i].style.backgroundColor = 'teal';
 				}
 				// document zoom
-				document.body.style.zoom = '0.75';
+				//~ document.body.style.zoom = '0.75';
 			}
 			/**
 			 * function mouseev
