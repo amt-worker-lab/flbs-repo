@@ -90792,6 +90792,8 @@ qatar,80
 					if (i == 'length') break;
 					el[i].style.backgroundColor = 'teal';
 				}
+				// document zoom
+				document.body.style.zoom = '0.75';
 			}
 			/**
 			 * function mouseev
