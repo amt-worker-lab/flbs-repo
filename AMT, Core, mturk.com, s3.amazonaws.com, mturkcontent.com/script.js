@@ -89005,7 +89005,7 @@ qatar,80
 								return;
 							}
 							
-							p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+							p = p.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10); // SUBSTR !
 							
 							q.value = p;
 							
@@ -89235,7 +89235,7 @@ qatar,80
 					
 					r = rs.result.formatted_phone_number;
 					if (r) {
-						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+						r = r.replace(/[^\d]/g, '').replace(/^1+/, '');
 						
 						// here?
 						div.innerText  += '\n' + r;
@@ -89744,7 +89744,7 @@ qatar,80
 							r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
 							
 							// SKIP BY BAD PHONE?
-							var test = r[i].phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10);
+							var test = r[i].phone.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10);
 							if (r[i].phone && by_phone && test.length==10 && o.bad_phones_obj.hasOwnProperty( test )) {
 								continue; //SKIP
 							}
@@ -89791,7 +89791,7 @@ qatar,80
 							var y = JSON.stringify(r[i]);
 							
 							// Clean phone
-							var cln_ph = r[i].phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10);
+							var cln_ph = r[i].phone.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10);
 							
 							// Div
 							var dv = document.createElement('div');
@@ -89813,7 +89813,7 @@ qatar,80
 								// Let's test this! (Must be 10 numbers not including a-z)
 								var test = p;
 								test = test.replace(/[^\da-z]/gi, ''); // Remove all non-alphanumeric
-								test = test.replace(/^1/, ''); // Remove "^1"
+								test = test.replace(/^1+/, ''); // Remove "^1"
 								test = test.substr(0,10); // Substring 0,10
 								test = test.replace(/[^\d]/g, ''); // Remove non-digit
 								if  (
@@ -89825,7 +89825,7 @@ qatar,80
 									return;
 								}
 								
-								p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+								p = p.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10); // SUBSTR !
 								// set divs clicked
 								set_divs_clicked(p);
 								// Set q.value
@@ -89997,7 +89997,7 @@ qatar,80
 					// Clean phone
 					if (dv.phone) {
 						var cln_ph;
-						cln_ph = dv.phone.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						cln_ph = dv.phone.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10); // SUBSTR !
 						dv.className += ' ' + cln_ph;
 					}
 					
@@ -90007,7 +90007,7 @@ qatar,80
 						if (p == null) return;
 						
 						// ...
-						p = p.replace(/[^\d]/g, '').replace(/^1/, '').substr(0,10); // SUBSTR !
+						p = p.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10); // SUBSTR !
 						// set_divs_clicked
 						set_divs_clicked(p);
 						// ...
@@ -90816,7 +90816,7 @@ qatar,80
 			 * function google_find_phone
 			 */
 			function google_find_phone() {
-				
+				//~ console.log('xxxxxxxxxxxxx');
 				d1.innerHTML = '';
 				var dv = document.createElement('div');
 				d1.appendChild(dv);
@@ -90998,8 +90998,8 @@ qatar,80
 						r = rs.result.formatted_phone_number;
 						if (!r) return; // do nothing
 						
-						// ...
-						r = r.replace(/[^\d]/g, '').replace(/^1/, '');
+						// Replace // ...
+						r = r.replace(/[^\d]/g, '').replace(/^1+/, '');
 						
 						div.innerText  += '\n' + r;
 						div.gphone		= r;
