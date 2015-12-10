@@ -89294,6 +89294,7 @@ qatar,80
 	var s6= 'or the business below, enter the official <strong><u>10 digit</u></strong> US phone number from preferably their <strong>official&nbsp;website';
 	var s7= '<h3><strong>For the U.S. Business below, enter the official U.S. 10 digit phone number and website <u><em>(official website, Facebook website, and Yelp website are preferred)</em></u></strong></h3>';
 	var s8 = '<b><i>We will not accept any homeadvisor.com websites or any phone numbers from the business Home Advisor.</i></b></span></h3>';
+	var s = '<span style="font-family:times new roman,times,serif;">For the business below, enter the official <strong><u>10 digit</u></strong> US phone number from the website given or if not found there, in an online search.</span>';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1 ||
@@ -89368,7 +89369,7 @@ qatar,80
 			// Actions
 			d2.onblur = function() {
 				o.stats = {// RESET THIS!!!
-					google_search_complete: true, // UPDATE JUN.25,2015 SET=false TO REVERT!
+					google_search_complete: false, // UPDATE JUN.25,2015 SET=false TO REVERT!
 					fb_search_complete: false,
 					yelp_search_complete: false,
 					num_google_results: 0,
@@ -89397,7 +89398,7 @@ qatar,80
 				//~ check_accept_count: 0,
 				
 				stats: { // stats
-					google_search_complete:	true, // UPDATE JUN.25,2015 SET=false TO REVERT!
+					google_search_complete:	false, // UPDATE JUN.25,2015 SET=false TO REVERT!
 					fb_search_complete:		false,
 					yelp_search_complete:	false,
 					num_google_results:		0,
@@ -89593,7 +89594,7 @@ qatar,80
 						
 						ll.lat = rs.geonames[0].lat;
 						ll.lng = rs.geonames[0].lng;
-						//~ google_find_phone(); // UPDATE JUN.25,2015 SET=false TO REVERT!
+						google_find_phone(); // UPDATE JUN.25,2015 SET=false TO REVERT!
 						find_phone__FB(); // Init FB
 						//~ yelp(); // Init Yelp
 						yelp_api(); // Init Yelp API
