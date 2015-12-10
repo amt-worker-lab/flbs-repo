@@ -88753,23 +88753,15 @@ qatar,80
 	if (ih.indexOf(s) != -1) {
 		console.log('');
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
-		
 		GM_addStyle('body {margin-top:460px;}');
-		
 		//GM_addStyle('input {width:96%;}');
 		//GM_addStyle('#submitButton {width:96%;height:80px;}');
-		
 		GM_addStyle('.exe:hover {cursor:pointer;background-color:aqua;}');
-		
 		GM_addStyle('ul {position:absolute;top:1000px;}');
 		
-		var q;
-		q = document.getElementById('Business Phone');
-		
+		var q = document.getElementById('Business Phone');
 		var b = document.getElementsByTagName('b');
-		
-		//~ document.getElementById('mturk_form').onsubmit = 
-		
+		// Sb
 		document.getElementById('submitButton').onclick = function() {
 			q.value = q.value.trim();
 			var x = q.value.replace(/[^\d]/g,'');
@@ -89310,7 +89302,7 @@ qatar,80
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
 			GM_addStyle('body {margin-top:1000px;}');
-			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen !important;}');
 			GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
 			//GM_addStyle('input {width:96%;}');
 			//GM_addStyle('#submitButton {width:96%;height:80px;}');
@@ -90887,7 +90879,6 @@ qatar,80
 								dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, x.geometry.location.lat*1, x.geometry.location.lng*1);
 								if (dist) {
 									dist = Math.round(dist*100) / 100;
-									//~ console.log(dist);
 									if (dist*1 >= 4)
 										dist_bgc = 'background-color:aqua;';
 								}
