@@ -89419,14 +89419,17 @@ qatar,80
 			var reg2= /<span[^>]*>Business Name \(U\.S\. City and State\):&nbsp;<\/span><b[^>]*>([^<]+)<\/b>/.exec(ih);
 			var reg3 = /Business Name with city and state: *<\/em> <b>([^<]+)<\/b>/i.exec(ih);
 			var reg4 = /Business Name with city and state: *<b>([^<]+)<\/b>/i.exec(ih);
+			var reg5 = /<span style="[^"]*">Business Name \(location\):<\/span><\/span><\/u><span style="[^"]*"><span style="[^"]*">&nbsp;&nbsp;<\/span><\/span><em><span style="[^"]*"><b style="[^"]*">([^<]+)<\/b><\/span>/i.exec(ih);
 			if (reg) {
 				name_locn(reg);
 			} else if (reg2) {
 				name_locn(reg2);
-			}else if(reg3) {
+			} else if(reg3) {
 				name_locn(reg3);
-			}else if(reg4) {
+			} else if(reg4) {
 				name_locn(reg4);
+			} else if(reg5) {
+				name_locn(reg5);
 			} else {
 				alert('Name/Location not found!');
 				return;
