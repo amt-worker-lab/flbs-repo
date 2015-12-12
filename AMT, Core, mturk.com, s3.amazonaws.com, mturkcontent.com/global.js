@@ -411,20 +411,34 @@ AMT__Global_Vars.initializeTabId = function() {
 AMT__Global_Vars.initializeRightClickRA = function() {
 	if(AMT__Global_Vars.isTopWindow) {
 			window.addEventListener('contextmenu', function(e) {
-				if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+				if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] == '1') {				
 					document.getElementById("MT__gm_returnaccept").click();
 					e.stopPropagation();
 					e.preventDefault();
 					return false;
 				}
+				else if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'].toLowerCase() == 'return') {
+					document.getElementById('AMT_return_button_top_window').click();
+				}
 			});
 	} else {
 		window.addEventListener('contextmenu', function(e) {
-			if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] != '0') {				
+			if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'] == '1') {				
 				new AMT___core_factory().
 					iframe2parent__postMessage( //
 						{
 							action: 'return_and_accept'
+						}
+					);
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			else if(!e.shiftKey && AMT__Global_Vars.scriptVars['Right-Click-R&A'].toLowerCase() == 'return') {
+				new AMT___core_factory().
+					iframe2parent__postMessage( //
+						{
+							action: 'click_return_button'
 						}
 					);
 				e.stopPropagation();
@@ -2349,7 +2363,7 @@ AMT___core_factory.prototype.top_window__addEventListener_iframe = function(opti
 					});
 				break;
 			case 'click_return_button': 
-				var b = getReturnButton();
+				var b = getReturnButton2();
 				b.click();
 				break;
 			case 'ShowPastReturns':
@@ -8340,7 +8354,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	var td = document.getElementsByTagName('td');
 	
 	new AMT___core_factory().createScriptVar('Skip For High Yield','0');
-	//new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
+	new AMT___core_factory().createScriptVar('NumAcceptedAlert','20');
 	
 	var o = {
 		bold_array: options_object.bold_array,
