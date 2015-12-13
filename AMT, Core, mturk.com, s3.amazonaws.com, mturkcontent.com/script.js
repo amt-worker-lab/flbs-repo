@@ -178469,636 +178469,541 @@ function top_window(okay_to_run) {
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
-		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
-		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-		GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
-		GM_addStyle('option {float:left;cursor:pointer;}'); // ...
-		GM_addStyle('option:hover {background-color:aqua;}'); // ...
-		GM_addStyle('.answer .text {vertical-align:top;}'); // ...
-		
-		
-		// MOVE "THETIME"
-		document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
-		//~ document.getElementsByTagName('img')[0].parentNode.parentNode.appendChild(document.getElementById('theTime'));
-		
-		// Item not found text
-		document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
-		
-		// ...
-		var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
-		// Remove the barcode from page
-		// so that when doing CTRL+F it
-		// won't be a false positive.
-		var h3 = document.getElementsByTagName('h3');
-		if (h3[0] && h3[0].innerText.indexOf('Product barcode value: ') != -1)
-			h3[0].parentNode.removeChild(h3[0]);
-		else if (h3[1] && h3[1].innerText.indexOf('Product barcode value: ') != -1)
-			h3[1].parentNode.removeChild(h3[1]);
-		else if (h3[2] && h3[2].innerText.indexOf('Product barcode value: ') != -1)
-			h3[2].parentNode.removeChild(h3[2]);
-		
-		// ...
-		AMT__Global_Vars.copyInp = upc;
-		
-		// ...
-		// and "q"
-		var x1, x2, x3, x4;
-		x1 = document.getElementById('Answer_1_FreeText');
-		x2 = document.getElementById('Answer_3_FreeText');
-		x3 = document.getElementsByName('Answer_2')[0];
-		x4 = document.getElementById('Answer_4');
-		x2.ondblclick = function() {
-			this.style.border = '4px solid blue';
-			this.value = d1.output_url; //.output_url
-			x1.focus();
-		}
-		var o = {
-			select_container: document.getElementsByClassName('question-wrapper')[1],
-			q: [
-				x1, x2, x3, x4
-			]
-		}
-		o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
-		o.q[2].multiple = true;
-		o.q[2].size=2;
-		o.q[2].setAttribute('style','width:80%;zoom:1.8;'); // Add blue bgc
-		//~ o.select_container.setAttribute('style','position:absolute;left:60%;top:-40px !important;background-color:blue;'); // Add blue bgc
-		// Clear bold
-		var b = document.getElementsByTagName('b');
-		for (var i in b) {
-			if (i == 'length') break;
-			if (b[i].innerHTML.trim() == 'Select product category, select \'Unknown\' if none of the category matches with the product') {
-				b[i].parentNode.removeChild(b[i]);
-				break;
-			}
-		}
-		var opt = o.q[2].getElementsByTagName('option');
-		for (var i in opt) {
-			if (i == 'length') break;
-			opt[i].innerHTML = opt[i].innerHTML +'|';
-		}
-		// SELECT FIELD for submit...
-		// Changed from dblclick to click.
-		//
-		//~ o.q[2].ondblclick = function() {
-		o.q[2].onclick = function() {
-			if  (
-					(
-					x1.value.trim() == '' || x2.value.trim() == ''
-					) &&
-					!o.q[3].checked
-				)
-				return false;	
-			document.getElementsByName('/submit')[0].click();
-		}
-		
-		// ...
-		
-		/* BEGIN ITEMS */
-		// Wrapper for top
-		var dqw = document.getElementsByClassName('question-wrapper')[0];
-		// Add UPC text
-		dqw.appendChild(document.createTextNode(' ' +upc));
-		// Reset button
-		var reset_dqw = document.createElement('input');
-		reset_dqw.setAttribute('style', 'cursor:pointer;');
-		reset_dqw.type = 'button';
-		reset_dqw.value = ' R ';
-		reset_dqw.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			document.getElementById('hit-wrapper').style.position = 'relative';
-		}
-		dqw.appendChild(reset_dqw);
-		// Button to change title to mixed case
-		var case_btn_dqw = document.createElement('input');
-		case_btn_dqw.setAttribute('style', 'cursor:pointer;');
-		case_btn_dqw.type = 'button';
-		case_btn_dqw.value = 'case';
-		case_btn_dqw.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
-			document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
-			document.getElementById('Answer_1_FreeText').focus();
-		}
-		dqw.appendChild(case_btn_dqw);
-		// Wrapper
-		// This is the element in the body that contains the HIT. 
-		var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
-		x.appendChild(document.createElement('br'));
-		// iframe
-		// add .output_url
-		var d1 = document.createElement('iframe');
-		d1.setAttribute('style','width:50%;float:left;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
-		// flicker...
-		d1.style.visibility = 'hidden';
-		d1.output_url = null;
-		d1.addEventListener('load', function() {
-			this.style.visibility = 'visible';
-		}, false);
-		x.appendChild(d1);
-		// THIS TEXTAREA MUST COME AFTER THE IFRAME.
-		// And before the following three divs.
-		// Debug textarea
-		var d3c = document.createElement('textarea');
-		d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
-		//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
-		x.appendChild(d3c);
-		d3c.onclick = function() {
-		}
-		//...
-		var d3_de = document.createElement('input');
-		d3_de.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		d3_de.type = 'button';
-		d3_de.value = 'digit-eyes';
-		x.appendChild(d3_de);
-		//
-		var d3 = document.createElement('input');
-		d3.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
-		d3.type = 'button';
-		d3.value = 'searchupc';
-		x.appendChild(d3);
-		//
-		var d3b = document.createElement('input');
-		d3b.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		d3b.type = 'button';
-		d3b.value = 'google';
-		x.appendChild(d3b);
-		d3b.onclick = function() {
-			this.style.backgroundColor = 'LightGreen';
-			A9_Snaptell_VSR__google();;
-		}
-		//
-		var d3d = document.createElement('input');
-		d3d.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
-		d3d.type = 'button';
-		d3d.value = 'shopsavvy';
-		x.appendChild(d3d);
-		//
-		var d3e = document.createElement('input');
-		d3e.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		d3e.type = 'button';
-		d3e.value = '...'; // old smoopa
-		x.appendChild(d3e);
-		//
-		var d3f = document.createElement('input');
-		d3f.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
-		d3f.type = 'button';
-		d3f.value = 'upcitemdb';
-		//~ d3f.value = 'upcindex';
-		x.appendChild(d3f);
-		//
-		//~ var d3f = document.createElement('input');
-		//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-		//~ d3f.type = 'button';
-		//~ d3f.value = '';
-		//~ x.appendChild(d3f);
-		// END BUTTONS
-		
-		//~ d3d.onclick = function() {
-			//~ //
-		//~ }
-		// The columns for the searches! Put these
-		// on after the buttons and the debug
-		// textarea
-		var d2 = document.createElement('div');
-		d2.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
-		x.appendChild(d2);
-		//...
-		var d2b = document.createElement('div');
-		d2b.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
-		x.appendChild(d2b);
-		//...
-		var d2c = document.createElement('div');
-		d2c.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
-		x.appendChild(d2c);
-		
-		// ...
-		x.appendChild(document.createElement('br'));
-		/* END ITEMS */
-		
-		// onkeypress
-		window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
-		function A9_Snaptell_VSR__keypress_submit(e) {
-			console.log(e.keyCode);
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+			GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
+			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
+			GM_addStyle('option:hover {background-color:aqua;}'); // ...
+			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
 			
-			//~ if (e.keyCode == 96 && String.fromCharCode(e.keyCode) == '`') {
-				//~ e.preventDefault();
-				//~ e.stopPropagation();
-				//~ document.getElementsByName('/submit')[0].click();
-				//~ return false;
-			//~ }
-		}
-		
-		// Onclick
-		document.getElementsByName('/submit')[0].onclick = function(e) {
-			e.stopPropagation();
-			e.preventDefault();
-			x1.value = x1.value.trim();
-			x2.value = x2.value.trim();
-			x1.value = x1.value.replace(/\s+/g, ' '); // spaces
-			if  (
-					(
-					x1.value == '' || x2.value == ''
-					) &&
-					!o.q[3].checked
-				)
-				return false;			
-			doSubmit('hitForm');
-			return false;
-		}
-		
-		// ...
-		AMT__Global_Vars.core.return_accept_run_nextTab = true;
-		// ...
-		var naBut = document.getElementsByClassName('question selection')[0];
-		naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
-		naBut.onclick = function() {
-			for(var i = 1; i <=3; i+=2) {
-				document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
+			
+			// MOVE "THETIME"
+			document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
+			//~ document.getElementsByTagName('img')[0].parentNode.parentNode.appendChild(document.getElementById('theTime'));
+			
+			// Item not found text
+			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
+			
+			// ...
+			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
+			// Remove the barcode from page
+			// so that when doing CTRL+F it
+			// won't be a false positive.
+			var h3 = document.getElementsByTagName('h3');
+			if (h3[0] && h3[0].innerText.indexOf('Product barcode value: ') != -1)
+				h3[0].parentNode.removeChild(h3[0]);
+			else if (h3[1] && h3[1].innerText.indexOf('Product barcode value: ') != -1)
+				h3[1].parentNode.removeChild(h3[1]);
+			else if (h3[2] && h3[2].innerText.indexOf('Product barcode value: ') != -1)
+				h3[2].parentNode.removeChild(h3[2]);
+			
+			// ...
+			AMT__Global_Vars.copyInp = upc;
+			
+			// ...
+			// and "q"
+			var x1, x2, x3, x4;
+			x1 = document.getElementById('Answer_1_FreeText');
+			x2 = document.getElementById('Answer_3_FreeText');
+			x3 = document.getElementsByName('Answer_2')[0];
+			x4 = document.getElementById('Answer_4');
+			x2.ondblclick = function() {
+				this.style.border = '4px solid blue';
+				this.value = d1.output_url; //.output_url
+				x1.focus();
+			}
+			var o = {
+				select_container: document.getElementsByClassName('question-wrapper')[1],
+				q: [
+					x1, x2, x3, x4
+				]
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
-			this.checked = true;
-			doSubmit('hitForm');
-		}
-		
-		new AMT___core_factory().createScriptVar('middle-click-na', '0');
-		window.addEventListener('click', function(e) {
-			if(e.which == 2) {
-				if(AMT__Global_Vars.scriptVars['middle-click-na'] != '0') {
-					e.preventDefault();
-					document.getElementsByClassName('question selection')[0].click();
-				} 
-			}
-		});
-		
-		// Zoom
-		// Tell child to zoom out & extend
-		var ifr_intv = setInterval(function() {
-			if (d1.style.visibility == 'visible')
-				d1.contentWindow.postMessage(
-					{
-						task: 'AMT__all_pages_util',
-						MT___all_pages_extend: true,
-						MT___all_pages_zoom: true,
-						MT___text_scrollIntoView: new RegExp(upc, 'i'),
-						highlight_range_to_parent: {
-							completion_key: 'A9_Snaptell_VSR__iframe_complete'
-							//~ control_key_append: true // enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
-						},
-					},
-					"*"
-				);
-		}, 1000);
-		// Watch for complete
-		window.addEventListener("message", A9_Snaptell_VSR__iframe_complete, false);
-		// Function A9_Snaptell_VSR__iframe_complete
-		function A9_Snaptell_VSR__iframe_complete(event) {
-			var v = event.data;
-			console.log(v);
-			// 
-			if (v.key == 'A9_Snaptell_VSR__iframe_complete' && v.text_range != '') {
-				// IS CONTROL KEY PRESSED?
-				v.text_range = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
-				if (v.control_key_is_active) {
-					o.q[0].value += ' ' + v.text_range;
-				} else {
-					o.q[0].value = v.text_range;
+			o.q[2].multiple = true;
+			o.q[2].size=2;
+			o.q[2].setAttribute('style','width:80%;zoom:1.8;'); // Add blue bgc
+			//~ o.select_container.setAttribute('style','position:absolute;left:60%;top:-40px !important;background-color:blue;'); // Add blue bgc
+			// Clear bold
+			var b = document.getElementsByTagName('b');
+			for (var i in b) {
+				if (i == 'length') break;
+				if (b[i].innerHTML.trim() == 'Select product category, select \'Unknown\' if none of the category matches with the product') {
+					b[i].parentNode.removeChild(b[i]);
+					break;
 				}
-				o.q[0].value = o.q[0].value.replace(/[\r\n\t\s]+/g, ' ');
-				o.q[1].value = d1.output_url; //d1.src; src and output_url almostsynonymous
-				o.q[0].focus();
 			}
-		}
-		
-		// global
-		var result = {
-			digital_eyes:	null,
-			startpage:		null,
-			//~ yahoo:			null, // NULL
-			shopsavvy:		null,
-			searchupc:		null, // Set to false for N/A, if skipping
-			//~ smoopa:			null,
-			upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
-			upcitemdb:		null, // upcindex.com, Set to false for N/A, if skipping
-			google:			null,
-			array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
-			array_all: ['de','su','sp','ss','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
-			//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+			var opt = o.q[2].getElementsByTagName('option');
+			for (var i in opt) {
+				if (i == 'length') break;
+				opt[i].innerHTML = opt[i].innerHTML +'|';
+			}
+			// SELECT FIELD for submit...
+			// Changed from dblclick to click.
+			//
+			//~ o.q[2].ondblclick = function() {
+			o.q[2].onclick = function() {
+				if  (
+						(
+						x1.value.trim() == '' || x2.value.trim() == ''
+						) &&
+						!o.q[3].checked
+					)
+					return false;	
+				document.getElementsByName('/submit')[0].click();
+			}
 			
-			// This is the first URL for iframe d1.src.
-			first_url: null
-		}
-		
-		// INIT
-		A9_Snaptell_VSR__next();
-		// LOADS SHOPSAVVY INITIALLY
-		A9_Snaptell_VSR__shopsavvy();
-		
-		//~ // Always do shopsavvy.com
-		//~ A9_Snaptell_VSR__shopsavvy();
-		
-		// ...
-		function A9_Snaptell_VSR__shopsavvy() {
+			// ...
 			
-			var ss = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-			var md5_filename = any_md5(ss, '0123456789ABCDEF');
-			//~ var u;
-			//~ u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
-				//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-					//~ {
-						//~ htmlspecialchars: false,
-						//~ short_filename: md5_filename,
-						//~ replace_scripts: false
-					//~ }
-				//~ ));
+			/* BEGIN ITEMS */
+			// Wrapper for top
+			var dqw = document.getElementsByClassName('question-wrapper')[0];
+			// Add UPC text
+			dqw.appendChild(document.createTextNode(' ' +upc));
+			// Reset button
+			var reset_dqw = document.createElement('input');
+			reset_dqw.setAttribute('style', 'cursor:pointer;');
+			reset_dqw.type = 'button';
+			reset_dqw.value = ' R ';
+			reset_dqw.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementById('hit-wrapper').style.position = 'relative';
+			}
+			dqw.appendChild(reset_dqw);
+			// Button to change title to mixed case
+			var case_btn_dqw = document.createElement('input');
+			case_btn_dqw.setAttribute('style', 'cursor:pointer;');
+			case_btn_dqw.type = 'button';
+			case_btn_dqw.value = 'case';
+			case_btn_dqw.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
+				document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
+				document.getElementById('Answer_1_FreeText').focus();
+			}
+			dqw.appendChild(case_btn_dqw);
+			// Wrapper
+			// This is the element in the body that contains the HIT. 
+			var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
+			x.appendChild(document.createElement('br'));
+			// iframe
+			// add .output_url
+			var d1 = document.createElement('iframe');
+			d1.setAttribute('style','width:50%;float:left;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+			// flicker...
+			d1.style.visibility = 'hidden';
+			d1.output_url = null;
+			d1.addEventListener('load', function() {
+				this.style.visibility = 'visible';
+			}, false);
+			x.appendChild(d1);
+			// THIS TEXTAREA MUST COME AFTER THE IFRAME.
+			// And before the following three divs.
+			// Debug textarea
+			var d3c = document.createElement('textarea');
+			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
+			//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d3c);
+			d3c.onclick = function() {
+			}
+			//...
+			var d3_de = document.createElement('input');
+			d3_de.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+			d3_de.type = 'button';
+			d3_de.value = 'digit-eyes';
+			x.appendChild(d3_de);
+			//
+			var d3 = document.createElement('input');
+			d3.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3.type = 'button';
+			d3.value = 'searchupc';
+			x.appendChild(d3);
+			//
+			var d3b = document.createElement('input');
+			d3b.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+			d3b.type = 'button';
+			d3b.value = 'google';
+			x.appendChild(d3b);
+			d3b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				A9_Snaptell_VSR__google();;
+			}
+			//
+			var d3d = document.createElement('input');
+			d3d.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3d.type = 'button';
+			d3d.value = 'shopsavvy';
+			x.appendChild(d3d);
+			//
+			var d3e = document.createElement('input');
+			d3e.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+			d3e.type = 'button';
+			d3e.value = 'upcdatabase'; // old smoopa
+			x.appendChild(d3e);
+			//
+			var d3f = document.createElement('input');
+			d3f.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3f.type = 'button';
+			d3f.value = 'upcitemdb';
+			//~ d3f.value = 'upcindex';
+			x.appendChild(d3f);
+			//
+			//~ var d3f = document.createElement('input');
+			//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+			//~ d3f.type = 'button';
+			//~ d3f.value = '';
+			//~ x.appendChild(d3f);
+			// END BUTTONS
 			
-			// 0 = 
-			// 1 = 
-			// 2 = 
-			var urls = [
-				MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
-					encodeURIComponent(ss) +
-					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-						{
-							htmlspecialchars: false,
-							short_filename: md5_filename,
-							replace_scripts: true,
-							replace_absolute_url: true
-						}
-					)),
-				MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
-					encodeURIComponent(ss) +
-					'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-						{
-							htmlspecialchars: true,
-							short_filename: md5_filename,
-							replace_scripts: false,
-							replace_absolute_url: true
-						}
-					)),
+			//~ d3d.onclick = function() {
+				//~ //
+			//~ }
+			// The columns for the searches! Put these
+			// on after the buttons and the debug
+			// textarea
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d2);
+			//...
+			var d2b = document.createElement('div');
+			d2b.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d2b);
+			//...
+			var d2c = document.createElement('div');
+			d2c.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d2c);
+			
+			// ...
+			x.appendChild(document.createElement('br'));
+			/* END ITEMS */
+			
+			// onkeypress
+			window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
+			function A9_Snaptell_VSR__keypress_submit(e) {
+				console.log(e.keyCode);
 				
-				// 2 same as 0
-				MT___host + '/mturk/.cached/' + encodeURIComponent(md5_filename)
-				// Synonym w/ .cached
-				//~ MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + // 2 SAME AS 0
-					//~ encodeURIComponent(ss) +
-					//~ '&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-						//~ {
-							//~ htmlspecialchars: false,
-							//~ short_filename: md5_filename,
-							//~ replace_scripts: false,
-							//~ replace_absolute_url: true
-						//~ }
-					//~ ))
-			];
+				//~ if (e.keyCode == 96 && String.fromCharCode(e.keyCode) == '`') {
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					//~ document.getElementsByName('/submit')[0].click();
+					//~ return false;
+				//~ }
+			}
 			
-			d3d.output_url = urls[0];
+			// Onclick
+			document.getElementsByName('/submit')[0].onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				x1.value = x1.value.trim();
+				x2.value = x2.value.trim();
+				x1.value = x1.value.replace(/\s+/g, ' '); // spaces
+				if  (
+						(
+						x1.value == '' || x2.value == ''
+						) &&
+						!o.q[3].checked
+					)
+					return false;			
+				doSubmit('hitForm');
+				return false;
+			}
 			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: urls[0],
-				timeout: 10000,
-				ontimeout: function() {
-					A9_Snaptell_VSR__shopsavvy()
-				},
-				onerror: function() {
-					alert('error shopsavvy');
-				},
-				onload: function(response) {
-					
-					d3d.value = '... shopsavvy ...';
-					
-					var rs = response.responseText;
-					if (response.status != 200 || rs*1 > 200) {
-						
-						// CALL NEXT
-						result.shopsavvy = false;
-						A9_Snaptell_VSR__next();
-						return;
+			// ...
+			AMT__Global_Vars.core.return_accept_run_nextTab = true;
+			// ...
+			var naBut = document.getElementsByClassName('question selection')[0];
+			naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
+			naBut.onclick = function() {
+				for(var i = 1; i <=3; i+=2) {
+					document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
+				}
+				o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
+				this.checked = true;
+				doSubmit('hitForm');
+			}
+			
+			new AMT___core_factory().createScriptVar('middle-click-na', '0');
+			window.addEventListener('click', function(e) {
+				if(e.which == 2) {
+					if(AMT__Global_Vars.scriptVars['middle-click-na'] != '0') {
+						e.preventDefault();
+						document.getElementsByClassName('question selection')[0].click();
+					} 
+				}
+			});
+			
+			// Zoom
+			// Tell child to zoom out & extend
+			var ifr_intv = setInterval(function() {
+				if (d1.style.visibility == 'visible')
+					d1.contentWindow.postMessage(
+						{
+							task: 'AMT__all_pages_util',
+							MT___all_pages_extend: true,
+							MT___all_pages_zoom: true,
+							MT___text_scrollIntoView: new RegExp(upc, 'i'),
+							highlight_range_to_parent: {
+								completion_key: 'A9_Snaptell_VSR__iframe_complete'
+								//~ control_key_append: true // enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
+							},
+						},
+						"*"
+					);
+			}, 1000);
+			// Watch for complete
+			window.addEventListener("message", A9_Snaptell_VSR__iframe_complete, false);
+			// Function A9_Snaptell_VSR__iframe_complete
+			function A9_Snaptell_VSR__iframe_complete(event) {
+				var v = event.data;
+				console.log(v);
+				// 
+				if (v.key == 'A9_Snaptell_VSR__iframe_complete' && v.text_range != '') {
+					// IS CONTROL KEY PRESSED?
+					v.text_range = v.text_range.replace(/[\r\n\t\s]+/g, ' ');
+					if (v.control_key_is_active) {
+						o.q[0].value += ' ' + v.text_range;
+					} else {
+						o.q[0].value = v.text_range;
 					}
-					
-					if  (
-						rs.indexOf('something went wrong') == -1 &&
-						rs.indexOf('<title>Advanced Search on ShopSavvy</title>') == -1
-						)
-					{
-						
-						// title
-						// ...
-						var r = /<h1 class="title text-caps text-condensed-bold">([^<]*)<\/h1>/.exec(rs); //5 Minute Fairytales- Big Bind Up
-						if (r && __js_clean_html_str(r[1]).trim() != '') {
-							result.shopsavvy = true;
-							r = __js_clean_html_str(r[1]).trim();
-							d3d.value = r;
-							d3d.style.border = '4px solid blue';
-							d3d.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								o.q[0].value = this.value;
-								o.q[1].value = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-								o.q[0].focus();
-								d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-								d1.src = this.output_url;
+					o.q[0].value = o.q[0].value.replace(/[\r\n\t\s]+/g, ' ');
+					o.q[1].value = d1.output_url; //d1.src; src and output_url almostsynonymous
+					o.q[0].focus();
+				}
+			}
+			
+			// global
+			var result = {
+				digital_eyes:	null,
+				startpage:		null,
+				//~ yahoo:			null, // NULL
+				shopsavvy:		null,
+				searchupc:		null, // Set to false for N/A, if skipping
+				//~ smoopa:			null,
+				upcdatabase:	null,  // ud
+				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
+				upcitemdb:		null, // 
+				google:			null,
+				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
+				array_all: ['de','su','sp','ss','db','ud','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				
+				// This is the first URL for iframe d1.src.
+				first_url: null
+			}
+			
+			// INIT
+			A9_Snaptell_VSR__next();
+			// LOADS SHOPSAVVY INITIALLY
+			A9_Snaptell_VSR__shopsavvy();
+			
+			// ...
+			function A9_Snaptell_VSR__shopsavvy() {
+				var ss = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+				var md5_filename = any_md5(ss, '0123456789ABCDEF');
+				// 0 = 
+				// 1 = 
+				// 2 = 
+				var urls = [
+					MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+						encodeURIComponent(ss) +
+						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+							{
+								htmlspecialchars: false,
+								short_filename: md5_filename,
+								replace_scripts: true,
+								replace_absolute_url: true
 							}
-						} else { // No title!
+						)),
+					MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+						encodeURIComponent(ss) +
+						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+							{
+								htmlspecialchars: true,
+								short_filename: md5_filename,
+								replace_scripts: false,
+								replace_absolute_url: true
+							}
+						)),
+					// 2 same as 0
+					MT___host + '/mturk/.cached/' + encodeURIComponent(md5_filename)
+				];
+				//
+				d3d.output_url = urls[0];
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: urls[0],
+					timeout: 10000,
+					ontimeout: function() {
+						A9_Snaptell_VSR__shopsavvy()
+					},
+					onerror: function() {
+						alert('error shopsavvy');
+					},
+					onload: function(response) {
+						
+						d3d.value = '... shopsavvy ...';
+						
+						var rs = response.responseText;
+						if (response.status != 200 || rs*1 > 200) {
+							
 							// CALL NEXT
 							result.shopsavvy = false;
 							A9_Snaptell_VSR__next();
 							return;
 						}
 						
-						// ADDITIONAL TERMS
-						r = /<h2 class="subtitle header-m-semibold text-italic">([^<]*)<\/h2>/.exec(rs);
-						if (r) {
-							var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
-							var div = document.createElement('div');
-							div.setAttribute('style', 'cursor:pointer');
-							div.innerText = 'sv ' + __js_clean_html_str(r[1]).trim();
-							div.sv_value = __js_clean_html_str(r[1]).trim();
-							div.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								x1.value += ' ' + this.sv_value;
-								x1.focus();
+						if  (
+							rs.indexOf('something went wrong') == -1 &&
+							rs.indexOf('<title>Advanced Search on ShopSavvy</title>') == -1
+							)
+						{
+							
+							// title
+							// ...
+							var r = /<h1 class="title text-caps text-condensed-bold">([^<]*)<\/h1>/.exec(rs); //5 Minute Fairytales- Big Bind Up
+							if (r && __js_clean_html_str(r[1]).trim() != '') {
+								result.shopsavvy = true;
+								r = __js_clean_html_str(r[1]).trim();
+								d3d.value = r;
+								d3d.style.border = '4px solid blue';
+								d3d.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									o.q[0].value = this.value;
+									o.q[1].value = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									o.q[0].focus();
+									d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									d1.src = this.output_url;
+								}
+							} else { // No title!
+								// CALL NEXT
+								result.shopsavvy = false;
+								A9_Snaptell_VSR__next();
+								return;
 							}
-							x3.appendChild(div);
+							
+							// ADDITIONAL TERMS
+							r = /<h2 class="subtitle header-m-semibold text-italic">([^<]*)<\/h2>/.exec(rs);
+							if (r) {
+								var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
+								var div = document.createElement('div');
+								div.setAttribute('style', 'cursor:pointer');
+								div.innerText = 'sv ' + __js_clean_html_str(r[1]).trim();
+								div.sv_value = __js_clean_html_str(r[1]).trim();
+								div.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									x1.value += ' ' + this.sv_value;
+									x1.focus();
+								}
+								x3.appendChild(div);
+							}
+						}
+						else
+						{
+							result.shopsavvy = false;
 						}
 						
-						//~ d3d.style.border = '4px solid blue';
-						//~ 
-						//~ d3d.innerHTML = '<option></option>';
-						// Give the select field options
-						//~ var opt = document.createElement('option');
-						//~ opt.innerText = 'IFR';
-						//~ opt.value = urls[0];
-						//~ d3d.appendChild(opt);
-						//~ var opt = document.createElement('option');
-						//~ opt.innerText = 'SRC';
-						//~ opt.value = urls[1];
-						//~ d3d.appendChild(opt);
-						//~ var opt = document.createElement('option');
-						//~ opt.innerText = 'LINK';
-						//~ opt.value = urls[2];
-						//~ d3d.appendChild(opt);
-						
-						// options innerText
-						// this.options[this.selectedIndex].innerText
-						//~ d3d.onblur = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ console.log(this);
-							//~ console.log(this.value);
-							//~ switch(this.options[this.selectedIndex].innerText) {
-								//~ case 'IFR':
-									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									//~ d1.src = this.value;
-									//~ break;
-								//~ case 'SRC':
-									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									//~ d1.src = this.value;
-									//~ break;
-								//~ case 'LINK':
-									//~ window.open(this.value, '__new__');
-									//~ break;
-							//~ }
-						//~ }
-						
-						//~ d3d.onmouseup = function() {
-							//~ switch(this.options[this.selectedIndex].innerText) {
-								//~ case 'IFR':
-									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									//~ d1.src = this.value;
-									//~ break;
-								//~ case 'SRC':
-									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									//~ d1.src = this.value;
-									//~ break;
-								//~ case 'LINK':
-									//~ window.open(this.value, '__new__');
-									//~ break;
-							//~ }
-						//~ }
-						
-						//~ d3d.onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-							//~ d1.src = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-						//~ }
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
 					}
-					else
-					{
-						result.shopsavvy = false;
-					}
-					
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-				}
-			});
-		}
-		
-		// ...
-		function A9_Snaptell_VSR__next() {
+				});
+			}
 			
-			// Done?
-			// If so, then is it auto?
-			if (!result.array_all.length) {
+			// ...
+			function A9_Snaptell_VSR__next() {
 				
-				return;
-			}
-			
-			// Next
-			console.log(result.array_all);
-			var next = result.array_all.shift();
-			switch(next) {
-				case 'de':
-					// ...
-					A9_Snaptell_VSR();
-					break;
-				case 'sp':
-					// ...
-					AMT___POPUP__initializeGlobals(
-						A9_Snaptell_VSR__startpage_init
-					);
-					break;
-				//~ case 'yh':
-					//~ // ...
-					//~ AMT___POPUP__initializeGlobals(
-						//~ A9_Snaptell_VSR__yahoo_init
-					//~ );
-					//~ break;
-				case 'su':
-					// searchupc
-					A9_Snaptell_VSR__searchUPC_com();
-					break;
-				case 'ss':
-					// shopsavvy
-					A9_Snaptell_VSR__shopsavvy();
-					break;
-				case 'sm':
-					// smoopa
-					A9_Snaptell_VSR__smoopa_com();
-					break;
-				case 'up':
-					// upcindex
-					A9_Snaptell_VSR__upcindex_com();
-					break;
-				case 'db':
-					// upcitemdb
-					A9_Snaptell_VSR__upcitemdb_com();
-					break;
-				case 'g':
-					console.log(result);
-					if (result.startpage == false && result.yahoo == false) {
-						A9_Snaptell_VSR__google(); // DO IT
-						//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
-					} else {
-						//
-					}
-					break;
-			}
-		}
-		
-		// ...
-		// d2c
-		// d3b
-		function A9_Snaptell_VSR__google() {
-			d2c.style.backgroundColor = '#eee';
-			new AMT___requests_factory().google_search(
-				{
-					query: upc,
-					callback_error: function() {
-						d2c.style.backgroundColor = 'pink';
-						window.open('https://www.google.com/search?q='+Math.random()+'&ie=UTF-8');
-					},
-					callback_success: function(result_object) {
-						var arr = result_object.results;
-						
-						// update button
-						d3b.value = '... google ...';
-						
+				// Done?
+				// If so, then is it auto?
+				if (!result.array_all.length) {
+					
+					return;
+				}
+				
+				// Next
+				console.log(result.array_all);
+				var next = result.array_all.shift();
+				switch(next) {
+					case 'de':
 						// ...
-						if (arr.length) {
-							A9_Snaptell_VSR__yahoo_complete(
-								arr,
-								d2c
-							);
+						A9_Snaptell_VSR();
+						break;
+					case 'sp':
+						// ...
+						AMT___POPUP__initializeGlobals(
+							A9_Snaptell_VSR__startpage_init
+						);
+						break;
+					//~ case 'yh':
+						//~ // ...
+						//~ AMT___POPUP__initializeGlobals(
+							//~ A9_Snaptell_VSR__yahoo_init
+						//~ );
+						//~ break;
+					case 'su':
+						// searchupc
+						A9_Snaptell_VSR__searchUPC_com();
+						break;
+					case 'ss':
+						// shopsavvy
+						A9_Snaptell_VSR__shopsavvy();
+						break;
+					case 'sm':
+						// smoopa
+						A9_Snaptell_VSR__smoopa_com();
+						break;
+					case 'up':
+						// upcindex
+						A9_Snaptell_VSR__upcindex_com();
+						break;
+					case 'db':
+						// upcitemdb
+						A9_Snaptell_VSR__upcitemdb_com();
+					case 'ud':
+						// upcitemdb
+						A9_Snaptell_VSR__upcdatabase_com();
+						break;
+					case 'g':
+						console.log(result);
+						if (result.startpage == false && result.yahoo == false) {
+							A9_Snaptell_VSR__google(); // DO IT
+							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
-							
+							//
+						}
+						break;
+				}
+			}
+			// ...
+			// d2c
+			// d3b
+			function A9_Snaptell_VSR__google() {
+				d2c.style.backgroundColor = '#eee';
+				new AMT___requests_factory().google_search(
+					{
+						query: upc,
+						callback_error: function() {
+							d2c.style.backgroundColor = 'pink';
+							window.open('https://www.google.com/search?q='+Math.random()+'&ie=UTF-8');
+						},
+						callback_success: function(result_object) {
+							var arr = result_object.results;
+							// update button
+							d3b.value = '... google ...';
+							// ...
+							if (arr.length) {
+								A9_Snaptell_VSR__yahoo_complete(
+									arr,
+									d2c
+								);
+								return;
+							}
 							d2c.innerText = '0';
-							
 							console.log(result);
 							// AUTO?
 							// XX Keep this off by default.
-							/*
-							 digital_eyes: false
-							 first_url: null
-							 google: null
-							 searchupc: false
-							 shopsavvy: false
-							 smoopa: false
-							 startpage: false
-							 yahoo: false
-							 
-							 */
 							if  (
 								result.digital_eyes == false &&
 								result.startpage == false &&
@@ -179106,178 +179011,335 @@ function top_window(okay_to_run) {
 								result.searchupc == false &&
 								result.shopsavvy == false &&
 								result.upcindex == false &&
-								result.upcitemdb == false
+								result.upcitemdb == false &&
+								result.upcdatabase == false
 								)
 							{
 								naBut.click();
 							}
 							else {
-								//~ console.log(result.digital_eyes == false);
-								//~ console.log(result.startpage == false);
-								//~ console.log(result.yahoo == false);
-								//~ console.log(result.searchupc == false);
-								//~ console.log(result.shopsavvy == false);
-								//~ console.log(result.upcindex == false);
 							}
 						}
 					}
-				}
-			);
-		}
-		// ...
-		// d3
-		function A9_Snaptell_VSR__searchUPC_com() {
-			console.log('Running through A9_Snaptell_VSR__searchUPC_com');
-			GM_xmlhttpRequest({
-				method: "GET",
-				asynchronous: false,
-				url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
-				onerror: function(response) {
-					d3.value = '... searchupc ...';
-					console.log('error');
-					console.log(response);
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-					result.searchupc = false;
-				},
-				onload: function(response) {
-					
-					d3.value = '... searchupc ...';
-					
-					var rs = response.responseText;
-					if (response.status != 200) {
-						console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+				);
+			}
+			// ...
+			// d3e
+			// API _API_KEY_REDACTED_
+			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
+			function A9_Snaptell_VSR__upcitemdb_com() {
+				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+					onerror: function(response) {
+						d3.value = '... searchupc ...';
+						console.log('error');
+						console.log(response);
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 						result.searchupc = false;
-						return;
-					}
-					var r;
-					//~ console.log(rs);
-					
-					r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
-					if (r) {
-						//Ashton & Ross HD-922 Professional Home Theatre System
-						r = __js_clean_html_str(r[1]).trim();
-						d3.value = r;
-						d3.style.border = '4px solid blue';
-						d3.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
+					},
+					onload: function(response) {
+						//
+						d3.value = '... searchupc ...';
+						//
+						var rs = response.responseText;
+						if (response.status != 200) {
+							console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+							// CALL NEXT
+							A9_Snaptell_VSR__next();
+							result.searchupc = false;
+							return;
 						}
+						var r;
+						r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
+						if (r) {
+							//Ashton & Ross HD-922 Professional Home Theatre System
+							r = __js_clean_html_str(r[1]).trim();
+							d3.value = r;
+							d3.style.border = '4px solid blue';
+							d3.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.value;
+								o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
+								o.q[0].focus();
+								o.q[0].blur();
+								o.q[0].focus();
+							}
+							
+							result.searchupc = true;
+						} else {
 						
-						result.searchupc = true;
-					} else {
-					
+							result.searchupc = false;
+							
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// ...
+			// d3
+			function A9_Snaptell_VSR__searchUPC_com() {
+				console.log('Running through A9_Snaptell_VSR__searchUPC_com');
+				GM_xmlhttpRequest({
+					method: "GET",
+					asynchronous: false,
+					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+					onerror: function(response) {
+						d3.value = '... searchupc ...';
+						console.log('error');
+						console.log(response);
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
 						result.searchupc = false;
-						
-					}
-					
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-				}
-			});
-		}
-		// ...
-		// d3f
-		// upcitemdb
-		function A9_Snaptell_VSR__upcitemdb_com() {
-			console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
-			GM_xmlhttpRequest({
-				method: "GET",
-				asynchronous: false,
-				url: 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc),
-				onerror: function(response) {
-					d3f.value = '... upcitemdb ...';
-					console.log('error');
-					console.log(response);
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-					result.upcitemdb = false;
-				},
-				onload: function(response) {
-					
-					d3f.value = '... upcitemdb ...';
-					
-					var rs = response.responseText;
-					if (response.status != 200) {
-						// CALL NEXT
-						A9_Snaptell_VSR__next();
-						result.upcitemdb = false;
-						return;
-					}
-					var r;
-					// e.g. UPC number 808031910059 is associated with <b>Atom Lowrider Drop-through Longboard</b></p>
-					r = /UPC number \d+ is associated with <b>([^<]+)<\/b><\/p>/.exec(rs);
-					if (r) {
-						//Ashton & Ross HD-922 Professional Home Theatre System
-						r = __js_clean_html_str(r[1]).trim();
-						d3f.value = r;
-						d3f.style.border = '4px solid blue';
-						d3f.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc);
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
+					},
+					onload: function(response) {
+						//
+						d3.value = '... searchupc ...';
+						//
+						var rs = response.responseText;
+						if (response.status != 200) {
+							console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+							// CALL NEXT
+							A9_Snaptell_VSR__next();
+							result.searchupc = false;
+							return;
 						}
-						result.upcitemdb = true;
-					} else {
-						result.upcitemdb = false;
+						var r;
+						r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
+						if (r) {
+							//Ashton & Ross HD-922 Professional Home Theatre System
+							r = __js_clean_html_str(r[1]).trim();
+							d3.value = r;
+							d3.style.border = '4px solid blue';
+							d3.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.value;
+								o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
+								o.q[0].focus();
+								o.q[0].blur();
+								o.q[0].focus();
+							}
+							
+							result.searchupc = true;
+						} else {
+						
+							result.searchupc = false;
+							
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
 					}
-					
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-				}
-			});
-		}
-		// ...
-		// d3e
-		// This is a new version. March 16, 2015. It uses an AJAX call. Smoopa looks to be hiding the data
-		// behind JavaScript.
-		// New URL is e.g. "http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc=665721072899"
-		function A9_Snaptell_VSR__smoopa_com() {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: 'http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc='+encodeURIComponent(upc),
-				//~ url: 'http://www.smoopa.com/u/' + encodeURIComponent(upc),
-				onload: function(response) {
-					
-					d3e.value = '... smoopa ...';
-					
-					var rs = response.responseText;
-					if (response.status != 200) {
+				});
+			}
+			// ...
+			// d3f
+			// upcitemdb
+			function A9_Snaptell_VSR__upcitemdb_com() {
+				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
+				GM_xmlhttpRequest({
+					method: "GET",
+					asynchronous: false,
+					url: 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc),
+					onerror: function(response) {
+						d3f.value = '... upcitemdb ...';
+						console.log('error');
+						console.log(response);
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+						result.upcitemdb = false;
+					},
+					onload: function(response) {
+						
+						d3f.value = '... upcitemdb ...';
+						
+						var rs = response.responseText;
+						if (response.status != 200) {
+							// CALL NEXT
+							A9_Snaptell_VSR__next();
+							result.upcitemdb = false;
+							return;
+						}
+						var r;
+						// e.g. UPC number 808031910059 is associated with <b>Atom Lowrider Drop-through Longboard</b></p>
+						r = /UPC number \d+ is associated with <b>([^<]+)<\/b><\/p>/.exec(rs);
+						if (r) {
+							//Ashton & Ross HD-922 Professional Home Theatre System
+							r = __js_clean_html_str(r[1]).trim();
+							d3f.value = r;
+							d3f.style.border = '4px solid blue';
+							d3f.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.value;
+								o.q[1].value = 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc);
+								o.q[0].focus();
+								o.q[0].blur();
+								o.q[0].focus();
+							}
+							result.upcitemdb = true;
+						} else {
+							result.upcitemdb = false;
+						}
 						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
-						result.smoopa = false;
-						return;
 					}
-					
-					// Try parsing
-					try {
-						rs = JSON.parse(rs);
-						if  (
-							rs &&
-							rs.hasOwnProperty('user_price') &&
-							rs.user_price.hasOwnProperty('item') &&
-							rs.user_price.item.hasOwnProperty('name') &&
-							rs.user_price.item.hasOwnProperty('slug') &&
-							rs.user_price.item.hasOwnProperty('upc') &&
-							rs.user_price.item.upc == upc
-							)
-						{
-							var itm = rs.user_price.item;
-							result.smoopa = true;
-							d3e.value = itm.name;
-							d3e.style.border = '4px solid blue';
-							d3e.sm_url = 'http://www.smoopa.com/u/'+itm.slug+'/'+upc; // e.g. http://www.smoopa.com/u/6-pack-washcloths/665721072899
-							d3e.onclick = function() {
+				});
+			}
+			// ...
+			// d3e
+			// This is a new version. March 16, 2015. It uses an AJAX call. Smoopa looks to be hiding the data
+			// behind JavaScript.
+			// New URL is e.g. "http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc=665721072899"
+			function A9_Snaptell_VSR__smoopa_com() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc='+encodeURIComponent(upc),
+					//~ url: 'http://www.smoopa.com/u/' + encodeURIComponent(upc),
+					onload: function(response) {
+						
+						d3e.value = '... smoopa ...';
+						
+						var rs = response.responseText;
+						if (response.status != 200) {
+							
+							// CALL NEXT
+							A9_Snaptell_VSR__next();
+							result.smoopa = false;
+							return;
+						}
+						
+						// Try parsing
+						try {
+							rs = JSON.parse(rs);
+							if  (
+								rs &&
+								rs.hasOwnProperty('user_price') &&
+								rs.user_price.hasOwnProperty('item') &&
+								rs.user_price.item.hasOwnProperty('name') &&
+								rs.user_price.item.hasOwnProperty('slug') &&
+								rs.user_price.item.hasOwnProperty('upc') &&
+								rs.user_price.item.upc == upc
+								)
+							{
+								var itm = rs.user_price.item;
+								result.smoopa = true;
+								d3e.value = itm.name;
+								d3e.style.border = '4px solid blue';
+								d3e.sm_url = 'http://www.smoopa.com/u/'+itm.slug+'/'+upc; // e.g. http://www.smoopa.com/u/6-pack-washcloths/665721072899
+								d3e.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									o.q[0].value = this.value;
+									o.q[1].value = this.sm_url;
+									o.q[0].focus();
+									o.q[0].blur();
+									o.q[0].focus();
+								}
+							}
+							else
+							{
+								result.smoopa = false;
+							}
+						} catch(err) {
+							result.smoopa = false;
+							console.log(err);
+							return;
+						}
+						
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+						
+						//~ var r = {
+							//~ title: '',
+							//~ url: null
+						//~ };
+						//~ 
+						//~ var x;
+						//~ 
+						//~ x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
+						//~ if (x) {
+							//~ r.title = __js_clean_html_str(x[1]).trim();
+							//~ r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
+						//~ }// else
+						//~ 
+						//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
+						//~ if (x) {
+							//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
+						//~ } else
+							//~ r.url = response.finalUrl;
+						//~ 
+						//~ if (r.title != '') {
+							//~ d3e.value = r.title;
+							//~ d3e.style.border = '4px solid blue';
+							//~ d3e.sm_url = r.url;
+							//~ d3e.onclick = function() {
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ q[0].value = this.value;
+								//~ q[1].value = this.sm_url;
+								//~ q[0].focus();
+								//~ q[0].blur();
+								//~ q[0].focus();
+							//~ }
+							//~ 
+							//~ result.smoopa = true;
+							//~ 
+						//~ } else {
+							//~ 
+							//~ result.smoopa = false;
+							//~ 
+						//~ }
+						//~ 
+						//~ // CALL NEXT
+						//~ A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// ...
+			// d3g
+			function A9_Snaptell_VSR__upcindex_com() {
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://www.upcindex.com/' + encodeURIComponent(upc),
+					onload: function(response) {
+						
+						d3f.value = '... upcindex ...';
+						
+						var rs = response.responseText;
+						if (response.status != 200) {
+							// CALL NEXT
+							A9_Snaptell_VSR__next();
+							result.upcindex = false;
+							return;
+						}
+						var r = {
+							title: '',
+							url: null
+						};
+						var x;
+						console.log(rs);
+						// e.g. My Friend Huggles 3+ Years 2 Ft 9 Inches (ELLA(I&#039;m patient))
+						//~ x = /<p class="lead">[\r\n\t\s]*UPC number \d+ is associated with <strong>([^<]+)<\/strong><\/p>/.exec(rs);
+						x = /is associated with <strong[^>]*>([^<]+)<\/strong>/.exec(rs);
+						if (x) {
+							r.title = __js_clean_html_str(x[1]).trim();
+							r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
+						}
+						
+						r.url = response.finalUrl;
+						
+						//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
+						//~ if (x) {
+							//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
+						//~ } else
+							//~ r.url = response.finalUrl;
+						
+						if (r.title != '') {
+							d3f.value = r.title;
+							d3f.style.border = '4px solid blue';
+							d3f.sm_url = r.url;
+							d3f.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								o.q[0].value = this.value;
 								o.q[1].value = this.sm_url;
@@ -179285,583 +179347,475 @@ function top_window(okay_to_run) {
 								o.q[0].blur();
 								o.q[0].focus();
 							}
+							
+							result.upcindex = true;
+							
+						} else {
+							
+							result.upcindex = false;
+							
 						}
-						else
-						{
-							result.smoopa = false;
-						}
-					} catch(err) {
-						result.smoopa = false;
-						console.log(err);
-						return;
-					}
-					
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-					
-					//~ var r = {
-						//~ title: '',
-						//~ url: null
-					//~ };
-					//~ 
-					//~ var x;
-					//~ 
-					//~ x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
-					//~ if (x) {
-						//~ r.title = __js_clean_html_str(x[1]).trim();
-						//~ r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
-					//~ }// else
-					//~ 
-					//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
-					//~ if (x) {
-						//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
-					//~ } else
-						//~ r.url = response.finalUrl;
-					//~ 
-					//~ if (r.title != '') {
-						//~ d3e.value = r.title;
-						//~ d3e.style.border = '4px solid blue';
-						//~ d3e.sm_url = r.url;
-						//~ d3e.onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ q[0].value = this.value;
-							//~ q[1].value = this.sm_url;
-							//~ q[0].focus();
-							//~ q[0].blur();
-							//~ q[0].focus();
-						//~ }
-						//~ 
-						//~ result.smoopa = true;
-						//~ 
-					//~ } else {
-						//~ 
-						//~ result.smoopa = false;
-						//~ 
-					//~ }
-					//~ 
-					//~ // CALL NEXT
-					//~ A9_Snaptell_VSR__next();
-				}
-			});
-		}
-		// ...
-		// d3g
-		function A9_Snaptell_VSR__upcindex_com() {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: 'http://www.upcindex.com/' + encodeURIComponent(upc),
-				onload: function(response) {
-					
-					d3f.value = '... upcindex ...';
-					
-					var rs = response.responseText;
-					if (response.status != 200) {
+						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
-						result.upcindex = false;
-						return;
 					}
-					var r = {
-						title: '',
-						url: null
-					};
-					var x;
-					console.log(rs);
-					// e.g. My Friend Huggles 3+ Years 2 Ft 9 Inches (ELLA(I&#039;m patient))
-					//~ x = /<p class="lead">[\r\n\t\s]*UPC number \d+ is associated with <strong>([^<]+)<\/strong><\/p>/.exec(rs);
-					x = /is associated with <strong[^>]*>([^<]+)<\/strong>/.exec(rs);
-					if (x) {
-						r.title = __js_clean_html_str(x[1]).trim();
-						r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
-					}
-					
-					r.url = response.finalUrl;
-					
-					//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
-					//~ if (x) {
-						//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
-					//~ } else
-						//~ r.url = response.finalUrl;
-					
-					if (r.title != '') {
-						d3f.value = r.title;
-						d3f.style.border = '4px solid blue';
-						d3f.sm_url = r.url;
-						d3f.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = this.sm_url;
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
-						
-						result.upcindex = true;
-						
-					} else {
-						
-						result.upcindex = false;
-						
-					}
-					
-					// CALL NEXT
-					A9_Snaptell_VSR__next();
-				}
-			});
-		}
-		
-		// ...
-		// Button params are:
-		// @.full_url => full url OR cached url
-		// @.output_url => full url
-		// @.host => domain
-		function A9_Snaptell_VSR__handle_clicks(e) {
-			
-			this.style.backgroundColor = 'LightGreen';
-			
-			o.q[1].value = this.output_url;
-			
-			o.q[0].focus();
-			
-			// ebay
-			// using debug textarea
-			if (/[\.^]ebay\.[\w\.]+$/i.exec(this.host)) {
-				new AMT___requests_factory().ebay__get_listings_page(
-					{
-						url: this.full_url,
-						callback_error: function() {},
-						callback_success: function(result_object) {
-							d3c.value = result_object.result.title + '\n\n';
-							o.q[0].value = result_object.result.title;
-							
-							if (result_object.result.itemAttributes.length) {
-								var x = result_object.result.itemAttributes.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ');
-								x = __js_clean_html_str(x);
-								var reg = new RegExp('[\\d\\D]{0,20}'+__js_escape_regEx(upc)+'[\\d\\D]{0,20}', 'i').exec(x);
-								if (reg) {
-									d3c.value += reg[0];
-								}
-							}
-							d3c.value += result_object.result.title;
-							
-						}
-					}
-				);
-			}
-		}
-		
-		// ...
-		// Scrape the first two results in each div.
-		// Do this using ...
-		// 0=url
-		// 1=full
-		function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
-			
-			//~ console.log(rs);
-			//~ if (rs.length) {
-				//d1.src = rs[0][0];
-			//~ } else {
-				//~ d1.style.border = '10px solid blue';
-				//document.body.style.backgroundColor = 'blue';
-			//~ }
-			
-			var out = seed_argument;
-			
-			// Bad sites...
-			// 
-			var bad_sites = {
-				'werruftan.info':true,
-				'werwares.de':true,
-				'numberconnection.com':true
+				});
 			}
 			
-			for (var i in rs) {
+			// ...
+			// Button params are:
+			// @.full_url => full url OR cached url
+			// @.output_url => full url
+			// @.host => domain
+			function A9_Snaptell_VSR__handle_clicks(e) {
 				
-				// domain, link iframe, link blank, body
-				// Max == 3
+				this.style.backgroundColor = 'LightGreen';
 				
-				// replace "m.target.com"
-				rs[i][0] = rs[i][0].replace(/\/\/m\.target\.com/, '//www.target.com');
+				o.q[1].value = this.output_url;
 				
-				// Domain
-				var domain = rs[i][0];
-				domain = domain.replace(/https?:\/\/(www\.|)/i, '');
-				domain = domain.replace(/\/[\d\D]*/, '');
+				o.q[0].focus();
 				
-				// Is a "bad" / "skip" URL?
-				// werruftan.info
-				if (bad_sites.hasOwnProperty(domain)) {
-					var div = document.createElement('div');
-					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
-					div.innerText = domain;
-					out.appendChild(div);
-					continue;
-				}
-				
-				var tmp_url = rs[i][0];
-				var tmp_url_replace_scripts = rs[i][0];
-				if (i < 3) {
-					var md5_filename = any_md5(rs[i][0], '0123456789ABCDEF');
-					tmp_url = 'http://192.168.1.2/mturk/.cached/' + md5_filename;
-					
-					tmp_url_replace_scripts = 
-						MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
-						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-							{
-								htmlspecialchars: false, // FALSE!
-								short_filename: md5_filename,
-								replace_scripts: true
-							}
-						));
-				}
-				
-				
-				var host = rs[i][0].parseURL().host;
-				
-				// pdf
-				var isPDF = /\.(pdf|xls|doc|docx|odt|odf)/i.exec(rs[i][0]);
-				var bg_isPDF = (isPDF) ? 'background-color:pink;' : '';
-				
-				// ...
-				var inp = document.createElement('input');
-				inp.setAttribute('style', 'text-align:left;' + bg_isPDF);
-				inp.type = 'button';
-				inp.value = host;
-				//~ inp.innerText = host;
-				inp.host = host;
-				inp.full_url = tmp_url;
-				inp.output_url = rs[i][0];
-				inp.onclick = A9_Snaptell_VSR__handle_clicks;
-				out.appendChild(inp);
-				// If first two then scrape.
-				if (i < 3 && !isPDF) {
-					
-					out.appendChild(document.createElement('br'));
-					
-					// First URL
-					if  (
-						d1.src == '' &&
-						result.first_url == null &&
-						!isPDF
-						)
-					{
-						result.first_url = tmp_url_replace_scripts;
-						//~ result.first_url = tmp_url;
-						d1.output_url = rs[i][0]; //.output_url
-						
-						// Error for 21 Aug 2014 is here!
-						// The error is:
-						//		d1.output_url = rs[i];
-						// instead of:
-						//		d1.output_url = rs[i][0];
-						// This results in something like:
-						// ...
-						//
-						// http://iss.ndl.go.jp/books/R100000002-I000007677823-00,漢學堂叢書 : 1000｜書誌詳細｜国立国会図書館 ...    iss.ndl.go.jp/books/R100000002- I<b>000007677823</b>-00  タイトル: 漢學堂叢書: 著者: 清黄〓輯: 出版地（国名コード） CN: 出版年: 1000: 大きさ、容量等: 13册 (合4册) ; 24cm: 注記 ...  
-						//
-						// ... Where value is rs[i][0] + ',' + rs[i][1]
-					}
-						
-					var scrape_el = document.createElement('div');
-					scrape_el.setAttribute('style', //inline+absolute
-						//~ 'position:relative;width:1%;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
-						'display:inline-block;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
-					);
-					out.appendChild(scrape_el);
-					new AMT___items_factory().xhr_scrape_page(
+				// ebay
+				// using debug textarea
+				if (/[\.^]ebay\.[\w\.]+$/i.exec(this.host)) {
+					new AMT___requests_factory().ebay__get_listings_page(
 						{
-							parent_el: scrape_el,
-							keyword_and_index_array: [upc],
-							url: rs[i][0],
-							short_filename: md5_filename,
-							replace_absolute_url: true,
-							callback_loaded: function(result_object) {
-								setTimeout(function() {
-									A9_Snaptell_VSR__load_first();
-								}, 3000);
+							url: this.full_url,
+							callback_error: function() {},
+							callback_success: function(result_object) {
+								d3c.value = result_object.result.title + '\n\n';
+								o.q[0].value = result_object.result.title;
+								
+								if (result_object.result.itemAttributes.length) {
+									var x = result_object.result.itemAttributes.replace(/<[^>]*>/g, '').replace(/[<>]/g, '').replace(/\s+/g, ' ');
+									x = __js_clean_html_str(x);
+									var reg = new RegExp('[\\d\\D]{0,20}'+__js_escape_regEx(upc)+'[\\d\\D]{0,20}', 'i').exec(x);
+									if (reg) {
+										d3c.value += reg[0];
+									}
+								}
+								d3c.value += result_object.result.title;
+								
 							}
 						}
 					);
+				}
+			}
+			
+			// ...
+			// Scrape the first two results in each div.
+			// Do this using ...
+			// 0=url
+			// 1=full
+			function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
+				
+				//~ console.log(rs);
+				//~ if (rs.length) {
+					//d1.src = rs[0][0];
+				//~ } else {
+					//~ d1.style.border = '10px solid blue';
+					//document.body.style.backgroundColor = 'blue';
+				//~ }
+				
+				var out = seed_argument;
+				
+				// Bad sites...
+				// 
+				var bad_sites = {
+					'werruftan.info':true,
+					'werwares.de':true,
+					'numberconnection.com':true
+				}
+				
+				for (var i in rs) {
 					
-					out.appendChild(document.createElement('br'));
-				}
-				// LINKS
-				// Set link to tmp_url (OR rs[i][0])
-				// If i < 3 then load the iframe 
-				// without htmlspecialchars, with short_filename,
-				// and WITH replace_scripts.
-				var u;
-				if (i < 3 && !isPDF)
-					u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
-						'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
-							{
-								htmlspecialchars: false, // FALSE!
-								short_filename: md5_filename,
-								replace_scripts: true
-							}
-						));
-				else
-					u = tmp_url;
-				var a = document.createElement('a');
-				a.href = u;
-				a.output_url = rs[i][0];
-				a.innerText = '*IFR*';
-				a.onclick = function() {
-					if (!/\.(pdf|doc|docx)[\?$]/i.exec(this.href)) {
-						d1.src = this.href;
-						d1.output_url = this.output_url; //.output_url
+					// domain, link iframe, link blank, body
+					// Max == 3
+					
+					// replace "m.target.com"
+					rs[i][0] = rs[i][0].replace(/\/\/m\.target\.com/, '//www.target.com');
+					
+					// Domain
+					var domain = rs[i][0];
+					domain = domain.replace(/https?:\/\/(www\.|)/i, '');
+					domain = domain.replace(/\/[\d\D]*/, '');
+					
+					// Is a "bad" / "skip" URL?
+					// werruftan.info
+					if (bad_sites.hasOwnProperty(domain)) {
+						var div = document.createElement('div');
+						div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						div.innerText = domain;
+						out.appendChild(div);
+						continue;
 					}
-					return false;
-				}
-				out.appendChild(a);
-				// ...
-				if (i < 3 && !isPDF) {
-					out.appendChild(document.createTextNode(' '));
-					// Link for source
-					var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					
+					var tmp_url = rs[i][0];
+					var tmp_url_replace_scripts = rs[i][0];
+					if (i < 3) {
+						var md5_filename = any_md5(rs[i][0], '0123456789ABCDEF');
+						tmp_url = 'http://192.168.1.2/mturk/.cached/' + md5_filename;
+						
+						tmp_url_replace_scripts = 
+							MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 								{
-									htmlspecialchars: true, // TRUE!
+									htmlspecialchars: false, // FALSE!
 									short_filename: md5_filename,
 									replace_scripts: true
 								}
 							));
+					}
+					
+					
+					var host = rs[i][0].parseURL().host;
+					
+					// pdf
+					var isPDF = /\.(pdf|xls|doc|docx|odt|odf)/i.exec(rs[i][0]);
+					var bg_isPDF = (isPDF) ? 'background-color:pink;' : '';
+					
+					// ...
+					var inp = document.createElement('input');
+					inp.setAttribute('style', 'text-align:left;' + bg_isPDF);
+					inp.type = 'button';
+					inp.value = host;
+					//~ inp.innerText = host;
+					inp.host = host;
+					inp.full_url = tmp_url;
+					inp.output_url = rs[i][0];
+					inp.onclick = A9_Snaptell_VSR__handle_clicks;
+					out.appendChild(inp);
+					// If first two then scrape.
+					if (i < 3 && !isPDF) {
+						
+						out.appendChild(document.createElement('br'));
+						
+						// First URL
+						if  (
+							d1.src == '' &&
+							result.first_url == null &&
+							!isPDF
+							)
+						{
+							result.first_url = tmp_url_replace_scripts;
+							//~ result.first_url = tmp_url;
+							d1.output_url = rs[i][0]; //.output_url
+							
+							// Error for 21 Aug 2014 is here!
+							// The error is:
+							//		d1.output_url = rs[i];
+							// instead of:
+							//		d1.output_url = rs[i][0];
+							// This results in something like:
+							// ...
+							//
+							// http://iss.ndl.go.jp/books/R100000002-I000007677823-00,漢學堂叢書 : 1000｜書誌詳細｜国立国会図書館 ...    iss.ndl.go.jp/books/R100000002- I<b>000007677823</b>-00  タイトル: 漢學堂叢書: 著者: 清黄〓輯: 出版地（国名コード） CN: 出版年: 1000: 大きさ、容量等: 13册 (合4册) ; 24cm: 注記 ...  
+							//
+							// ... Where value is rs[i][0] + ',' + rs[i][1]
+						}
+							
+						var scrape_el = document.createElement('div');
+						scrape_el.setAttribute('style', //inline+absolute
+							//~ 'position:relative;width:1%;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
+							'display:inline-block;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
+						);
+						out.appendChild(scrape_el);
+						new AMT___items_factory().xhr_scrape_page(
+							{
+								parent_el: scrape_el,
+								keyword_and_index_array: [upc],
+								url: rs[i][0],
+								short_filename: md5_filename,
+								replace_absolute_url: true,
+								callback_loaded: function(result_object) {
+									setTimeout(function() {
+										A9_Snaptell_VSR__load_first();
+									}, 3000);
+								}
+							}
+						);
+						
+						out.appendChild(document.createElement('br'));
+					}
+					// LINKS
+					// Set link to tmp_url (OR rs[i][0])
+					// If i < 3 then load the iframe 
+					// without htmlspecialchars, with short_filename,
+					// and WITH replace_scripts.
+					var u;
+					if (i < 3 && !isPDF)
+						u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+								{
+									htmlspecialchars: false, // FALSE!
+									short_filename: md5_filename,
+									replace_scripts: true
+								}
+							));
+					else
+						u = tmp_url;
 					var a = document.createElement('a');
 					a.href = u;
 					a.output_url = rs[i][0];
-					a.innerText = '*SRC*';
+					a.innerText = '*IFR*';
 					a.onclick = function() {
-						d1.src = this.href;
-						d1.output_url = this.output_url; //.output_url
+						if (!/\.(pdf|doc|docx)[\?$]/i.exec(this.href)) {
+							d1.src = this.href;
+							d1.output_url = this.output_url; //.output_url
+						}
 						return false;
 					}
 					out.appendChild(a);
+					// ...
+					if (i < 3 && !isPDF) {
+						out.appendChild(document.createTextNode(' '));
+						// Link for source
+						var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+								'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
+									{
+										htmlspecialchars: true, // TRUE!
+										short_filename: md5_filename,
+										replace_scripts: true
+									}
+								));
+						var a = document.createElement('a');
+						a.href = u;
+						a.output_url = rs[i][0];
+						a.innerText = '*SRC*';
+						a.onclick = function() {
+							d1.src = this.href;
+							d1.output_url = this.output_url; //.output_url
+							return false;
+						}
+						out.appendChild(a);
+					}
+					// Third link. This is ALWAYS going
+					// to be tmp_url. So it is either 
+					// the real link OR the cached link 
+					// but NOT htmlspecialchars OR replace_scripts
+					out.appendChild(document.createTextNode(' '));
+					var a = document.createElement('a');
+					a.href = tmp_url;
+					a.target = '_blank';
+					a.innerText = '*LINK*';
+					out.appendChild(a);
+					// External Link
+					out.appendChild(document.createTextNode(' '));
+					var a = document.createElement('a');
+					a.href = rs[i][0];
+					a.innerText = 'EX';
+					a.target = '_blank';
+					out.appendChild(a);
+					// body
+					var d = document.createElement('div');
+					d.innerHTML = rs[i][1];
+					out.appendChild(d);
+					//...
+					out.appendChild(document.createElement('hr'));
+					
 				}
-				// Third link. This is ALWAYS going
-				// to be tmp_url. So it is either 
-				// the real link OR the cached link 
-				// but NOT htmlspecialchars OR replace_scripts
-				out.appendChild(document.createTextNode(' '));
-				var a = document.createElement('a');
-				a.href = tmp_url;
-				a.target = '_blank';
-				a.innerText = '*LINK*';
-				out.appendChild(a);
-				// External Link
-				out.appendChild(document.createTextNode(' '));
-				var a = document.createElement('a');
-				a.href = rs[i][0];
-				a.innerText = 'EX';
-				a.target = '_blank';
-				out.appendChild(a);
-				// body
-				var d = document.createElement('div');
-				d.innerHTML = rs[i][1];
-				out.appendChild(d);
-				//...
-				out.appendChild(document.createElement('hr'));
 				
-			}
-			
-			// For result
-			var result_key = (out == d2) ? 'startpage' : 'yahoo';
-			
-			// Num
-			if (!rs.length) {
-				out.innerText = '0';
+				// For result
+				var result_key = (out == d2) ? 'startpage' : 'yahoo';
 				
-				result[result_key] = false;
-			} else {
-				var div = document.createElement('div');
-				div.setAttribute('style', 'height:2000px;');
-				out.appendChild(div);
+				// Num
+				if (!rs.length) {
+					out.innerText = '0';
+					
+					result[result_key] = false;
+				} else {
+					var div = document.createElement('div');
+					div.setAttribute('style', 'height:2000px;');
+					out.appendChild(div);
+					
+					result[result_key] = true;
+				}
 				
-				result[result_key] = true;
-			}
-			
-			// CALL NEXT
-			A9_Snaptell_VSR__next();
-		}
-		// ...
-		function A9_Snaptell_VSR__load_first() {
-			if (d1.src == '' && result.first_url != null) {
-				d1.src = result.first_url;
-				//~ d1.output_url = this.output_url; //.output_url
-			}
-		}
-		// ...
-		function A9_Snaptell_VSR__startpage_init() {
-			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				startPage: true,
-				url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(upc),
-				seed_arg1: d2
-			});
-			req_proxy.proxy_init();
-			req_proxy.proxy_waitComplete(
-				A9_Snaptell_VSR__yahoo_complete
-			);
-		}
-		// ...
-		function A9_Snaptell_VSR__yahoo_init() {
-			//
-			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(upc),
-				yahoo_array: true,
-				seed_arg1: d2b
-			});
-			req_proxy.proxy_init();
-			req_proxy.proxy_waitComplete(
-				A9_Snaptell_VSR__yahoo_complete
-			);
-		}
-		/**
-		 * function A9_Snaptell_VSR__process
-		 * 
-		 * @ d3_de
-		 */
-		function A9_Snaptell_VSR__process(write_object) {
-			//write_object
-			
-			//~ x1.focus();
-			
-			var r, r2;
-			var sbm = true;
-			var rs = write_object.rs;
-			var url = write_object.url;
-			
-			if (rs.indexOf('<tr><td colspan="2" align="center">Sorry, no item name was found for ') != -1) {
-				d3_de.value = '... digit-eyes ...';
 				// CALL NEXT
-				result.digital_eyes = false;
 				A9_Snaptell_VSR__next();
-				return;
 			}
-			
-			//This is a locally-assigned code that is used for items of random weight such as meat, fish or produce.This type of code is a way of price-marking an item. This item cost 11.88.
-			
-			//
-			r = /<H2 id="description">([^<]+)<\/H2>/.exec(rs);
-			if (r) {
-				r = __js_clean_html_str(r[1]).trim();
-				var bad = [
-					'This is a locally-assigned code.',
-					'Each store uses this number differently, so it does not have a defined value.'
-				];
-				if (r.indexOf(bad[0]) == -1 && r.indexOf(bad[1]) == -1) {
-					
-					d3_de.value = r;
-					d3_de.style.border = '4px solid blue';
-					d3_de.de_url = url;
-					
-					d3_de.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
-						o.q[0].value = this.value;
-						o.q[1].value = this.de_url;
-						o.q[0].focus();
-						o.q[0].blur();
-						o.q[0].focus();
+			// ...
+			function A9_Snaptell_VSR__load_first() {
+				if (d1.src == '' && result.first_url != null) {
+					d1.src = result.first_url;
+					//~ d1.output_url = this.output_url; //.output_url
+				}
+			}
+			// ...
+			function A9_Snaptell_VSR__startpage_init() {
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(upc),
+					seed_arg1: d2
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					A9_Snaptell_VSR__yahoo_complete
+				);
+			}
+			// ...
+			function A9_Snaptell_VSR__yahoo_init() {
+				//
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					url: 'http://search.yahoo.com/search?p=%2B'+encodeURIComponent(upc),
+					yahoo_array: true,
+					seed_arg1: d2b
+				});
+				req_proxy.proxy_init();
+				req_proxy.proxy_waitComplete(
+					A9_Snaptell_VSR__yahoo_complete
+				);
+			}
+			/**
+			 * function A9_Snaptell_VSR__process
+			 * 
+			 * @ d3_de
+			 */
+			function A9_Snaptell_VSR__process(write_object) {
+				//write_object
+				
+				//~ x1.focus();
+				
+				var r, r2;
+				var sbm = true;
+				var rs = write_object.rs;
+				var url = write_object.url;
+				
+				if (rs.indexOf('<tr><td colspan="2" align="center">Sorry, no item name was found for ') != -1) {
+					d3_de.value = '... digit-eyes ...';
+					// CALL NEXT
+					result.digital_eyes = false;
+					A9_Snaptell_VSR__next();
+					return;
+				}
+				
+				//This is a locally-assigned code that is used for items of random weight such as meat, fish or produce.This type of code is a way of price-marking an item. This item cost 11.88.
+				
+				//
+				r = /<H2 id="description">([^<]+)<\/H2>/.exec(rs);
+				if (r) {
+					r = __js_clean_html_str(r[1]).trim();
+					var bad = [
+						'This is a locally-assigned code.',
+						'Each store uses this number differently, so it does not have a defined value.'
+					];
+					if (r.indexOf(bad[0]) == -1 && r.indexOf(bad[1]) == -1) {
+						
+						d3_de.value = r;
+						d3_de.style.border = '4px solid blue';
+						d3_de.de_url = url;
+						
+						d3_de.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q[0].value = this.value;
+							o.q[1].value = this.de_url;
+							o.q[0].focus();
+							o.q[0].blur();
+							o.q[0].focus();
+						}
+					} else {
+						d3_de.value = r;
+						d3_de.style.border = '4px dashed red';
+						result.digital_eyes = false;
+						console.log(result);
 					}
 				} else {
-					d3_de.value = r;
-					d3_de.style.border = '4px dashed red';
-					result.digital_eyes = false;
-					console.log(result);
+					sbm = false;
 				}
-			} else {
-				sbm = false;
-			}
-			
-			// ADDITIONAL TERMS
-			r = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
-			if (r) {
-				// Add to button
-				d3_de.value += ' ' + __js_clean_html_str(r[1]).trim();
-			}
-			
-			// ...
-			if (sbm) {
-				//document.getElementById('Answer_2_FreeText').value = url;
 				
-				result.digital_eyes = true;
-			} else {
-				result.digital_eyes = false;
-			}
-			
-			// CALL NEXT
-			A9_Snaptell_VSR__next();
-		}
-		/**
-		 * function A9_Snaptell_VSR
-		 * 
-		 * @ d3_de
-		 */
-		// ...
-		function A9_Snaptell_VSR() {
-			
-			var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
-			var rf = new AMT___requests_factory();
-			var md5_url = any_md5(url, '0123456789ABCDEF');
-			var out_num = out_num;
-			
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: 'http://192.168.1.2/mturk/.cached/'+md5_url,
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status == 200) {
-						A9_Snaptell_VSR__process({
-							rs:			rs,
-							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
-							url:		url
-						});
-						return;
-					}
-					
-					
-					// still here?
-					console.log(url);
-					GM_xmlhttpRequest({
-						method: "GET",
-						url: url,
-						onload: function(response) {
-							var rs = response.responseText;
-							
-							//console.log(response.status);
-							if (response.status != 200) {
-								console.log(response.status);
-								return;
-							}
-							
-							// contains "An unusual pattern of access has been detected from this address." !! ??
-							// if no then do not save !
-							if (rs.indexOf('An unusual pattern of access has been detected from this address.') != -1) {
-								document.body.style.backgroundColor = 'red';
-								A9_Snaptell_VSR__process({
-									rs: rs,
-									url: url
-								});
-								return;
-							}
-							
-							// write to file !
-							rf.io__write_to_file(
-								{
-									data:		'AMT__serverSide_write__value='	+encodeURIComponent(response.responseText)+
-												'&AMT__serverSide_write__folder=.cached'+
-												'&AMT__serverSide_write__file='	+ md5_url,
-									rs:			response.responseText,
-									debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
-									url:		url
-								},
-								A9_Snaptell_VSR__process
-							);
-							
-						}
-					});
+				// ADDITIONAL TERMS
+				r = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
+				if (r) {
+					// Add to button
+					d3_de.value += ' ' + __js_clean_html_str(r[1]).trim();
 				}
-			});
+				
+				// ...
+				if (sbm) {
+					//document.getElementById('Answer_2_FreeText').value = url;
+					
+					result.digital_eyes = true;
+				} else {
+					result.digital_eyes = false;
+				}
+				
+				// CALL NEXT
+				A9_Snaptell_VSR__next();
+			}
+			/**
+			 * function A9_Snaptell_VSR
+			 * 
+			 * @ d3_de
+			 */
+			// ...
+			function A9_Snaptell_VSR() {
+				
+				var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
+				var rf = new AMT___requests_factory();
+				var md5_url = any_md5(url, '0123456789ABCDEF');
+				var out_num = out_num;
+				
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: 'http://192.168.1.2/mturk/.cached/'+md5_url,
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						if (response.status == 200) {
+							A9_Snaptell_VSR__process({
+								rs:			rs,
+								debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+								url:		url
+							});
+							return;
+						}
+						
+						
+						// still here?
+						console.log(url);
+						GM_xmlhttpRequest({
+							method: "GET",
+							url: url,
+							onload: function(response) {
+								var rs = response.responseText;
+								
+								//console.log(response.status);
+								if (response.status != 200) {
+									console.log(response.status);
+									return;
+								}
+								
+								// contains "An unusual pattern of access has been detected from this address." !! ??
+								// if no then do not save !
+								if (rs.indexOf('An unusual pattern of access has been detected from this address.') != -1) {
+									document.body.style.backgroundColor = 'red';
+									A9_Snaptell_VSR__process({
+										rs: rs,
+										url: url
+									});
+									return;
+								}
+								
+								// write to file !
+								rf.io__write_to_file(
+									{
+										data:		'AMT__serverSide_write__value='	+encodeURIComponent(response.responseText)+
+													'&AMT__serverSide_write__folder=.cached'+
+													'&AMT__serverSide_write__file='	+ md5_url,
+										rs:			response.responseText,
+										debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+										url:		url
+									},
+									A9_Snaptell_VSR__process
+								);
+								
+							}
+						});
+					}
+				});
+			}
 		}
+		new run().f();
 	}
 	
 	//
