@@ -178643,7 +178643,7 @@ function top_window(okay_to_run) {
 			x.appendChild(d3f);
 			//
 			var d3g = document.createElement('input');
-			d3g.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3g.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
 			d3g.type = 'button';
 			d3g.value = 'yoopsie';
 			x.appendChild(d3g);
@@ -179058,18 +179058,24 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						
-						//~ var r = JSON.parse(rs);
-						//~ if (!r || !r.valid || !r.description || !r.number) {
-							//~ result.yoopsie = false;
-							//~ A9_Snaptell_VSR__next();
-							//~ return false;
-						//~ }
-						//~ console.log(d3e);
-						d3e.value = r.description.replace(/\s+/g, ' '); // Replace many spaces...
-						d3e.style.border = '4px solid blue';
-						d3e.upc = r.number;
-						d3e.onclick = function() {
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var info = dom.getElementsByClassName('info');
+						if (!info || !info.length) {
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						info = info[0].getElementsByTagName('a');
+						if (!info || !info.length) {
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						info = info[0].innerText.trim();
+						info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
+						d3g.value = info;
+						d3g.style.border = '4px solid blue';
+						d3g.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
 							o.q[0].value = this.value;
 							o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
