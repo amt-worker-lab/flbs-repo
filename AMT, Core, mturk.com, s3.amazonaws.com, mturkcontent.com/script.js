@@ -178840,20 +178840,17 @@ function top_window(okay_to_run) {
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: urls[0],
-					timeout: 10000,
+					//~ timeout: 10000,
 					ontimeout: function() {
-						A9_Snaptell_VSR__shopsavvy()
+						A9_Snaptell_VSR__shopsavvy();
 					},
 					onerror: function() {
 						alert('error shopsavvy');
 					},
 					onload: function(response) {
-						
 						d3d.value = '... shopsavvy ...';
-						
 						var rs = response.responseText;
 						if (response.status != 200 || rs*1 > 200) {
-							
 							// CALL NEXT
 							result.shopsavvy = false;
 							A9_Snaptell_VSR__next();
@@ -178865,7 +178862,6 @@ function top_window(okay_to_run) {
 							rs.indexOf('<title>Advanced Search on ShopSavvy</title>') == -1
 							)
 						{
-							
 							// title
 							// ...
 							var r = /<h1 class="title text-caps text-condensed-bold">([^<]*)<\/h1>/.exec(rs); //5 Minute Fairytales- Big Bind Up
@@ -178918,11 +178914,9 @@ function top_window(okay_to_run) {
 			
 			// ...
 			function A9_Snaptell_VSR__next() {
-				
 				// Done?
-				// If so, then is it auto?
+				// If so, then it may be auto.
 				if (!result.array_all.length) {
-					
 					return;
 				}
 				
@@ -178965,15 +178959,17 @@ function top_window(okay_to_run) {
 					case 'db':
 						// upcitemdb
 						A9_Snaptell_VSR__upcitemdb_com();
+						break;
 					case 'ud':
 						// 
 						A9_Snaptell_VSR__upcdatabase_com();
+						break;
 					case 'yp':
 						//
 						A9_Snaptell_VSR__yoopsie_com();
 						break;
 					case 'g':
-						console.log(result);
+						//~ console.log(result);
 						if (result.startpage == false && result.yahoo == false) {
 							A9_Snaptell_VSR__google(); // DO IT
 							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
@@ -179031,26 +179027,31 @@ function top_window(okay_to_run) {
 					}
 				);
 			}
-			function sr() {
-				GM_xmlhttpRequest({
-					method: 'POST',
-					url: 'http://www.upcdatabase.com/xmlrpc',
-					headers: {
-						'User-agent': 'Mozilla/4.0 (compatible) Greasemonkey\
-						fixAttType\
-						XMLRPC',
-						'Accept': 'application/atom+xml,application/xml,text/xml',
-						'Content-type': 'text/xml',
-					},
-					data:	'rpc__API_KEY_REDACTED_+
-							'&upc='+encodeURIComponent(upc),
-					onload: function(){},
-				});
-			}
+			// https://www.upcdatabase.com/php_example.txt
+			// This is a garbly site........................
+			//~ function sr() { // DOES NOT WORK................
+				//~ var msg = new XMLRPCMessage("lookup");
+				//~ msg.addParameter({rpc__API_KEY_REDACTED_});
+				//~ msg.addParameter({upc: upc});
+				//~ GM_xmlhttpRequest({
+					//~ method: 'POST',
+					//~ url: 'http://www.upcdatabase.com/xmlrpc',
+					//~ headers: {
+						//~ 'User-agent': 'Mozilla/4.0 (compatible) Greasemonkey\
+						//~ fixAttType\
+						//~ XMLRPC',
+						//~ 'Accept': 'application/atom+xml,application/xml,text/xml',
+						//~ 'Content-type': 'text/xml',
+					//~ },
+					//~ data:	msg,//'rpc__API_KEY_REDACTED_+
+							//~ //'&upc='+encodeURIComponent(upc),
+					//~ onload: function(){},
+				//~ });
+			//~ }
 			// ...
 			// d3g
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
-			function A9_Snaptell_VSR__yoopsie_com() {sr();
+			function A9_Snaptell_VSR__yoopsie_com() {
 				console.log('Running through A9_Snaptell_VSR__yoopsie_com');
 				var u = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
 				new AMT___requests_factory().xhr_with_disk_cache({
@@ -179111,7 +179112,7 @@ function top_window(okay_to_run) {
 			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
 			// http://upcdatabase.org/api Max is 1,000 per day haha then paid.
 			function A9_Snaptell_VSR__upcdatabase_com() {
-				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
+				console.log('Running through A9_Snaptell_VSR__upcdatabase_com');
 				var u = 'http://api.upcdatabase.org/json/'+
 						'b2738129d173708ec15e401d73c05bbc/'+
 						encodeURIComponent(upc);
