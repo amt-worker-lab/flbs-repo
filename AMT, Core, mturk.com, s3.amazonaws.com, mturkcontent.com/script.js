@@ -178553,30 +178553,29 @@ function top_window(okay_to_run) {
 			/* BEGIN ITEMS */
 			// Wrapper for top
 			var dqw = document.getElementsByClassName('question-wrapper')[0];
-			// Add UPC text
-			dqw.appendChild(document.createTextNode(' ' +upc));
+				dqw.appendChild(document.createTextNode(' ' +upc)); // Add UPC text
 			// Reset button
 			var reset_dqw = document.createElement('input');
-			reset_dqw.setAttribute('style', 'cursor:pointer;');
-			reset_dqw.type = 'button';
-			reset_dqw.value = ' R ';
-			reset_dqw.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				document.getElementById('hit-wrapper').style.position = 'relative';
-			}
-			dqw.appendChild(reset_dqw);
+				reset_dqw.setAttribute('style', 'cursor:pointer;');
+				reset_dqw.type = 'button';
+				reset_dqw.value = ' R ';
+				reset_dqw.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					document.getElementById('hit-wrapper').style.position = 'relative';
+				}
+				dqw.appendChild(reset_dqw);
 			// Button to change title to mixed case
 			var case_btn_dqw = document.createElement('input');
-			case_btn_dqw.setAttribute('style', 'cursor:pointer;');
-			case_btn_dqw.type = 'button';
-			case_btn_dqw.value = 'case';
-			case_btn_dqw.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
-				document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
-				document.getElementById('Answer_1_FreeText').focus();
-			}
-			dqw.appendChild(case_btn_dqw);
+				case_btn_dqw.setAttribute('style', 'cursor:pointer;');
+				case_btn_dqw.type = 'button';
+				case_btn_dqw.value = 'case';
+				case_btn_dqw.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
+					document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
+					document.getElementById('Answer_1_FreeText').focus();
+				}
+				dqw.appendChild(case_btn_dqw);
 			// Wrapper
 			// This is the element in the body that contains the HIT. 
 			var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
@@ -178584,14 +178583,14 @@ function top_window(okay_to_run) {
 			// iframe
 			// add .output_url
 			var d1 = document.createElement('iframe');
-			d1.setAttribute('style','width:50%;float:left;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
-			// flicker...
-			d1.style.visibility = 'hidden';
-			d1.output_url = null;
-			d1.addEventListener('load', function() {
-				this.style.visibility = 'visible';
-			}, false);
-			x.appendChild(d1);
+				d1.setAttribute('style','width:50%;float:left;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+				// flicker...
+				d1.style.visibility = 'hidden';
+				d1.output_url = null;
+				d1.addEventListener('load', function() {
+					this.style.visibility = 'visible';
+				}, false);
+				x.appendChild(d1);
 			// THIS TEXTAREA MUST COME AFTER THE IFRAME.
 			// And before the following three divs.
 			// Debug textarea
@@ -178603,26 +178602,26 @@ function top_window(okay_to_run) {
 			}
 			//...
 			var d3_de = document.createElement('input');
-			d3_de.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-			d3_de.type = 'button';
-			d3_de.value = 'digit-eyes';
-			x.appendChild(d3_de);
+				d3_de.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+				d3_de.type = 'button';
+				d3_de.value = 'digit-eyes';
+				x.appendChild(d3_de);
 			//
 			var d3 = document.createElement('input');
-			d3.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
-			d3.type = 'button';
-			d3.value = 'searchupc';
-			x.appendChild(d3);
+				d3.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+				d3.type = 'button';
+				d3.value = 'searchupc';
+				x.appendChild(d3);
 			//
 			var d3b = document.createElement('input');
-			d3b.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-			d3b.type = 'button';
-			d3b.value = 'google';
-			x.appendChild(d3b);
-			d3b.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				A9_Snaptell_VSR__google();;
-			}
+				d3b.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+				d3b.type = 'button';
+				d3b.value = 'google';
+				x.appendChild(d3b);
+				d3b.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					A9_Snaptell_VSR__google();
+				}
 			//
 			var d3d = document.createElement('input');
 			d3d.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
@@ -178660,25 +178659,20 @@ function top_window(okay_to_run) {
 			//~ d3f.value = '';
 			//~ x.appendChild(d3f);
 			// END BUTTONS
-			
-			//~ d3d.onclick = function() {
-				//~ //
-			//~ }
 			// The columns for the searches! Put these
-			// on after the buttons and the debug
-			// textarea
+			// on after the buttons and the debug textarea.
+			// Div 1
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2);
-			//...
+			// Div 2
 			var d2b = document.createElement('div');
-			d2b.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2b.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2b);
-			//...
+			// Div 3
 			var d2c = document.createElement('div');
-			d2c.setAttribute('style','float:left;width:16%;height:440px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2c.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2c);
-			
 			// ...
 			x.appendChild(document.createElement('br'));
 			/* END ITEMS */
@@ -179076,14 +179070,14 @@ function top_window(okay_to_run) {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						d3g.value = '... outpan ...';
+						d3h.value = '... outpan ...';
 						if (options.response.status != 200) {
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
 						var r = JSON.parse(rs);
-						if (!r || !r.name || r.error) {
+						if (!r || !r.name || r.name == null || r.error) { // r.name can be null haha...
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
 							return false;
