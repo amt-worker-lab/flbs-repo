@@ -178550,9 +178550,6 @@ function top_window(okay_to_run) {
 					return false;	
 				document.getElementsByName('/submit')[0].click();
 			}
-			
-			// ...
-			
 			/* BEGIN ITEMS */
 			// Wrapper for top
 			var dqw = document.getElementsByClassName('question-wrapper')[0];
@@ -179042,7 +179039,7 @@ function top_window(okay_to_run) {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						d3.value = '... upcdatabase ...';
+						d3e.value = '... upcdatabase ...';
 						if (options.response.status != 200) {
 							result.upcdatabase = false;
 							A9_Snaptell_VSR__next();
@@ -179055,7 +179052,8 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						d3e.value = r.description;
+						//~ console.log(d3e);
+						d3e.value = r.description.replace(/\s+/g, ' '); // Replace many spaces...
 						d3e.style.border = '4px solid blue';
 						d3e.upc = r.number;
 						d3e.onclick = function() {
@@ -179241,49 +179239,6 @@ function top_window(okay_to_run) {
 						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
-						
-						//~ var r = {
-							//~ title: '',
-							//~ url: null
-						//~ };
-						//~ 
-						//~ var x;
-						//~ 
-						//~ x = /<h1 class="item_name" property="og:title" itemprop="name">([^<]*)<\/h1>/.exec(rs);
-						//~ if (x) {
-							//~ r.title = __js_clean_html_str(x[1]).trim();
-							//~ r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
-						//~ }// else
-						//~ 
-						//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
-						//~ if (x) {
-							//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
-						//~ } else
-							//~ r.url = response.finalUrl;
-						//~ 
-						//~ if (r.title != '') {
-							//~ d3e.value = r.title;
-							//~ d3e.style.border = '4px solid blue';
-							//~ d3e.sm_url = r.url;
-							//~ d3e.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ q[0].value = this.value;
-								//~ q[1].value = this.sm_url;
-								//~ q[0].focus();
-								//~ q[0].blur();
-								//~ q[0].focus();
-							//~ }
-							//~ 
-							//~ result.smoopa = true;
-							//~ 
-						//~ } else {
-							//~ 
-							//~ result.smoopa = false;
-							//~ 
-						//~ }
-						//~ 
-						//~ // CALL NEXT
-						//~ A9_Snaptell_VSR__next();
 					}
 				});
 			}
