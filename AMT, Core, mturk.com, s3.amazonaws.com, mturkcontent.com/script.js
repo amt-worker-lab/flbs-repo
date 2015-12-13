@@ -178651,7 +178651,7 @@ function top_window(okay_to_run) {
 			var d3h = document.createElement('input');
 			d3h.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
 			d3h.type = 'button';
-			d3h.value = '.';
+			d3h.value = 'outpan';
 			x.appendChild(d3h);
 			//
 			//~ var d3f = document.createElement('input');
@@ -178786,12 +178786,13 @@ function top_window(okay_to_run) {
 				searchupc:		null, // Set to false for N/A, if skipping
 				//~ smoopa:			null,
 				yoopsie:		null,  // yp
+				outpan:			null,  // op
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, // 
 				google:			null,
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
-				array_all: ['de','su','sp','ss','db','ud','yp','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','yp','op','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				
 				// This is the first URL for iframe d1.src.
@@ -178968,6 +178969,10 @@ function top_window(okay_to_run) {
 						//
 						A9_Snaptell_VSR__yoopsie_com();
 						break;
+					case 'op':
+						//
+						A9_Snaptell_VSR__outpan_com();
+						break;
 					case 'g':
 						//~ console.log(result);
 						if (result.startpage == false && result.yahoo == false) {
@@ -179048,6 +179053,68 @@ function top_window(okay_to_run) {
 					//~ onload: function(){},
 				//~ });
 			//~ }
+			// ...
+			// d3h
+			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
+			// a76ac8767bcfd248a0f030ad0f0f3738
+			function A9_Snaptell_VSR__outpan_com() {
+				console.log('Running through A9_Snaptell_VSR__outpan_com');
+				var u = 'https://api.outpan.com/v2/products/'+encodeURIComponent(upc)+
+						'?_API_KEY_REDACTED_;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d3h.value = '... outpan ...';
+							// CALL NEXT
+							result.outpan = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						d3g.value = '... outpan ...';
+						if (options.response.status != 200) {
+							result.outpan = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var r = JSON.parse(rs);
+						if (!r || !r.name || r.error) {
+							result.outpan = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var ex = [];
+						if (r.attributes) {
+							for (var i in r.attributes) {
+								ex.push(r.attributes[i]); // E.g. "Format": "CD", "Manufacturer": "Naxos of America"
+							}
+							if (ex.length) {
+								ex = '|' + ex.join('|');
+							}
+						}
+						d3h.value = r.name + ex;
+						d3h.final_value = r.name;
+						d3h.style.border = '4px solid blue';
+						d3h.url = r.outpan_url;
+						d3h.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q[0].value = this.final_value;
+							o.q[1].value = this.url;
+							o.q[0].focus();
+							o.q[0].blur();
+							o.q[0].focus();
+						}
+						// CALL NEXT
+						result.outpan = true;
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
 			// ...
 			// d3g
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
@@ -179341,9 +179408,7 @@ function top_window(okay_to_run) {
 					method: "GET",
 					url: 'http://www.upcindex.com/' + encodeURIComponent(upc),
 					onload: function(response) {
-						
 						d3f.value = '... upcindex ...';
-						
 						var rs = response.responseText;
 						if (response.status != 200) {
 							// CALL NEXT
@@ -179364,15 +179429,7 @@ function top_window(okay_to_run) {
 							r.title = __js_clean_html_str(x[1]).trim();
 							r.title = r.title.replace(/\(\d+\)$/, '').trim();// remove the UPC from the title!
 						}
-						
 						r.url = response.finalUrl;
-						
-						//~ x = /<a href="http:\/\/www\.pinterest\.com\/pin\/create\/button\/\?url=(www\.smoopa\.com\/u\/[^\/]+\/\d+\/)&amp;media/.exec(rs);
-						//~ if (x) {
-							//~ r.url = 'http://' + __js_clean_html_str(x[1]).trim()
-						//~ } else
-							//~ r.url = response.finalUrl;
-						
 						if (r.title != '') {
 							d3f.value = r.title;
 							d3f.style.border = '4px solid blue';
@@ -179385,15 +179442,10 @@ function top_window(okay_to_run) {
 								o.q[0].blur();
 								o.q[0].focus();
 							}
-							
 							result.upcindex = true;
-							
 						} else {
-							
 							result.upcindex = false;
-							
 						}
-						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 					}
@@ -179406,13 +179458,9 @@ function top_window(okay_to_run) {
 			// @.output_url => full url
 			// @.host => domain
 			function A9_Snaptell_VSR__handle_clicks(e) {
-				
 				this.style.backgroundColor = 'LightGreen';
-				
 				o.q[1].value = this.output_url;
-				
 				o.q[0].focus();
-				
 				// ebay
 				// using debug textarea
 				if (/[\.^]ebay\.[\w\.]+$/i.exec(this.host)) {
@@ -179433,30 +179481,18 @@ function top_window(okay_to_run) {
 									}
 								}
 								d3c.value += result_object.result.title;
-								
 							}
 						}
 					);
 				}
 			}
-			
 			// ...
 			// Scrape the first two results in each div.
 			// Do this using ...
 			// 0=url
 			// 1=full
 			function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
-				
-				//~ console.log(rs);
-				//~ if (rs.length) {
-					//d1.src = rs[0][0];
-				//~ } else {
-					//~ d1.style.border = '10px solid blue';
-					//document.body.style.backgroundColor = 'blue';
-				//~ }
-				
 				var out = seed_argument;
-				
 				// Bad sites...
 				// 
 				var bad_sites = {
@@ -179464,20 +179500,15 @@ function top_window(okay_to_run) {
 					'werwares.de':true,
 					'numberconnection.com':true
 				}
-				
 				for (var i in rs) {
-					
 					// domain, link iframe, link blank, body
 					// Max == 3
-					
 					// replace "m.target.com"
 					rs[i][0] = rs[i][0].replace(/\/\/m\.target\.com/, '//www.target.com');
-					
 					// Domain
 					var domain = rs[i][0];
 					domain = domain.replace(/https?:\/\/(www\.|)/i, '');
 					domain = domain.replace(/\/[\d\D]*/, '');
-					
 					// Is a "bad" / "skip" URL?
 					// werruftan.info
 					if (bad_sites.hasOwnProperty(domain)) {
@@ -179487,13 +179518,11 @@ function top_window(okay_to_run) {
 						out.appendChild(div);
 						continue;
 					}
-					
 					var tmp_url = rs[i][0];
 					var tmp_url_replace_scripts = rs[i][0];
 					if (i < 3) {
 						var md5_filename = any_md5(rs[i][0], '0123456789ABCDEF');
 						tmp_url = 'http://192.168.1.2/mturk/.cached/' + md5_filename;
-						
 						tmp_url_replace_scripts = 
 							MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
@@ -179504,14 +179533,10 @@ function top_window(okay_to_run) {
 								}
 							));
 					}
-					
-					
 					var host = rs[i][0].parseURL().host;
-					
 					// pdf
 					var isPDF = /\.(pdf|xls|doc|docx|odt|odf)/i.exec(rs[i][0]);
 					var bg_isPDF = (isPDF) ? 'background-color:pink;' : '';
-					
 					// ...
 					var inp = document.createElement('input');
 					inp.setAttribute('style', 'text-align:left;' + bg_isPDF);
@@ -179525,9 +179550,7 @@ function top_window(okay_to_run) {
 					out.appendChild(inp);
 					// If first two then scrape.
 					if (i < 3 && !isPDF) {
-						
 						out.appendChild(document.createElement('br'));
-						
 						// First URL
 						if  (
 							d1.src == '' &&
@@ -179536,22 +179559,8 @@ function top_window(okay_to_run) {
 							)
 						{
 							result.first_url = tmp_url_replace_scripts;
-							//~ result.first_url = tmp_url;
 							d1.output_url = rs[i][0]; //.output_url
-							
-							// Error for 21 Aug 2014 is here!
-							// The error is:
-							//		d1.output_url = rs[i];
-							// instead of:
-							//		d1.output_url = rs[i][0];
-							// This results in something like:
-							// ...
-							//
-							// http://iss.ndl.go.jp/books/R100000002-I000007677823-00,漢學堂叢書 : 1000｜書誌詳細｜国立国会図書館 ...    iss.ndl.go.jp/books/R100000002- I<b>000007677823</b>-00  タイトル: 漢學堂叢書: 著者: 清黄〓輯: 出版地（国名コード） CN: 出版年: 1000: 大きさ、容量等: 13册 (合4册) ; 24cm: 注記 ...  
-							//
-							// ... Where value is rs[i][0] + ',' + rs[i][1]
 						}
-							
 						var scrape_el = document.createElement('div');
 						scrape_el.setAttribute('style', //inline+absolute
 							//~ 'position:relative;width:1%;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
@@ -179572,7 +179581,6 @@ function top_window(okay_to_run) {
 								}
 							}
 						);
-						
 						out.appendChild(document.createElement('br'));
 					}
 					// LINKS
@@ -179652,23 +179660,18 @@ function top_window(okay_to_run) {
 					out.appendChild(document.createElement('hr'));
 					
 				}
-				
 				// For result
 				var result_key = (out == d2) ? 'startpage' : 'yahoo';
-				
 				// Num
 				if (!rs.length) {
 					out.innerText = '0';
-					
 					result[result_key] = false;
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:2000px;');
 					out.appendChild(div);
-					
 					result[result_key] = true;
 				}
-				
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
 			}
@@ -179771,7 +179774,6 @@ function top_window(okay_to_run) {
 				// ...
 				if (sbm) {
 					//document.getElementById('Answer_2_FreeText').value = url;
-					
 					result.digital_eyes = true;
 				} else {
 					result.digital_eyes = false;
@@ -179787,18 +179789,15 @@ function top_window(okay_to_run) {
 			 */
 			// ...
 			function A9_Snaptell_VSR() {
-				
 				var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
 				var rf = new AMT___requests_factory();
 				var md5_url = any_md5(url, '0123456789ABCDEF');
 				var out_num = out_num;
-				
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: 'http://192.168.1.2/mturk/.cached/'+md5_url,
 					onload: function(response) {
 						var rs = response.responseText;
-						
 						if (response.status == 200) {
 							A9_Snaptell_VSR__process({
 								rs:			rs,
