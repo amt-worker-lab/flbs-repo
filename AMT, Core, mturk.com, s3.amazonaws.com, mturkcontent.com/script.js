@@ -179031,10 +179031,26 @@ function top_window(okay_to_run) {
 					}
 				);
 			}
+			function sr() {
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: 'http://www.upcdatabase.com/xmlrpc',
+					headers: {
+						'User-agent': 'Mozilla/4.0 (compatible) Greasemonkey\
+						fixAttType\
+						XMLRPC',
+						'Accept': 'application/atom+xml,application/xml,text/xml',
+						'Content-type': 'text/xml',
+					},
+					data:	'rpc__API_KEY_REDACTED_+
+							'&upc='+encodeURIComponent(upc),
+					onload: function(){},
+				});
+			}
 			// ...
 			// d3g
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
-			function A9_Snaptell_VSR__yoopsie_com() {
+			function A9_Snaptell_VSR__yoopsie_com() {sr();
 				console.log('Running through A9_Snaptell_VSR__yoopsie_com');
 				var u = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
 				new AMT___requests_factory().xhr_with_disk_cache({
