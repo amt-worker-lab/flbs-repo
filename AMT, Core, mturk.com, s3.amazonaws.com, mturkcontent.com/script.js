@@ -178539,7 +178539,15 @@ function top_window(okay_to_run) {
 			if (i == 'length') break;
 			opt[i].innerHTML = opt[i].innerHTML +'|';
 		}
-		o.q[2].ondblclick = function() {
+		//~ o.q[2].ondblclick = function() {
+		o.q[2].onclick = function() {
+			if  (
+					(
+					x1.value.trim() == '' || x2.value.trim() == ''
+					) &&
+					!o.q[3].checked
+				)
+				return false;	
 			document.getElementsByName('/submit')[0].click();
 		}
 		
