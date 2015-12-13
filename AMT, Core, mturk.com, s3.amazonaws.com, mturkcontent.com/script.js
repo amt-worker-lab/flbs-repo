@@ -178643,6 +178643,18 @@ function top_window(okay_to_run) {
 			//~ d3f.value = 'upcindex';
 			x.appendChild(d3f);
 			//
+			var d3g = document.createElement('input');
+			d3g.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3g.type = 'button';
+			d3g.value = 'yoopsie';
+			x.appendChild(d3g);
+			//
+			var d3h = document.createElement('input');
+			d3h.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3h.type = 'button';
+			d3h.value = '.';
+			x.appendChild(d3h);
+			//
 			//~ var d3f = document.createElement('input');
 			//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
 			//~ d3f.type = 'button';
@@ -178774,12 +178786,13 @@ function top_window(okay_to_run) {
 				shopsavvy:		null,
 				searchupc:		null, // Set to false for N/A, if skipping
 				//~ smoopa:			null,
+				yoopsie:		null,  // yp
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, // 
 				google:			null,
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
-				array_all: ['de','su','sp','ss','db','ud','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','yp','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				
 				// This is the first URL for iframe d1.src.
@@ -179019,7 +179032,7 @@ function top_window(okay_to_run) {
 			// d3e
 			// API _API_KEY_REDACTED_
 			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
-			// http://upcdatabase.org/api Max is 1,000 per day haha.
+			// http://upcdatabase.org/api Max is 1,000 per day haha then paid.
 			function A9_Snaptell_VSR__upcdatabase_com() {
 				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
 				var u = 'http://api.upcdatabase.org/json/'+
