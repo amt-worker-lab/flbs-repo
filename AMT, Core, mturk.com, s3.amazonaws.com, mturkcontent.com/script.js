@@ -179072,7 +179072,7 @@ function top_window(okay_to_run) {
 							o.q[0].focus();
 						}
 						// CALL NEXT
-						result.searchupc = true;
+						result.upcdatabase = true;
 						A9_Snaptell_VSR__next();
 					}
 				});
