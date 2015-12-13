@@ -178479,16 +178479,11 @@ function top_window(okay_to_run) {
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
-			
-			
 			// MOVE "THETIME"
 			document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
-			//~ document.getElementsByTagName('img')[0].parentNode.parentNode.appendChild(document.getElementById('theTime'));
-			
 			// Item not found text
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
-			
-			// ...
+			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
@@ -179027,7 +179022,7 @@ function top_window(okay_to_run) {
 			// d3e
 			// API _API_KEY_REDACTED_
 			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
-			function A9_Snaptell_VSR__upcitemdb_com() {
+			function A9_Snaptell_VSR__upcdatabase_com() {
 				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
 				var u = 'http://api.upcdatabase.org/json/'+
 						'b2738129d173708ec15e401d73c05bbc/'+
