@@ -178539,6 +178539,9 @@ function top_window(okay_to_run) {
 			if (i == 'length') break;
 			opt[i].innerHTML = opt[i].innerHTML +'|';
 		}
+		// SELECT FIELD for submit...
+		// Changed from dblclick to click.
+		//
 		//~ o.q[2].ondblclick = function() {
 		o.q[2].onclick = function() {
 			if  (
