@@ -179019,6 +179019,7 @@ function top_window(okay_to_run) {
 			// d3e
 			// API _API_KEY_REDACTED_
 			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
+			// http://upcdatabase.org/api Max is 1,000 per day haha.
 			function A9_Snaptell_VSR__upcdatabase_com() {
 				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
 				var u = 'http://api.upcdatabase.org/json/'+
