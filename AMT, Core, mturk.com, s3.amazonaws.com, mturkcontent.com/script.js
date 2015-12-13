@@ -179029,52 +179029,50 @@ function top_window(okay_to_run) {
 			// Sample URL: http://api.upcdatabase.org/json/b2738129d173708ec15e401d73c05bbc/045496870096
 			function A9_Snaptell_VSR__upcitemdb_com() {
 				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
-					onerror: function(response) {
-						d3.value = '... searchupc ...';
-						console.log('error');
-						console.log(response);
-						// CALL NEXT
-						A9_Snaptell_VSR__next();
-						result.searchupc = false;
-					},
-					onload: function(response) {
-						//
-						d3.value = '... searchupc ...';
-						//
-						var rs = response.responseText;
-						if (response.status != 200) {
-							console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+				var u = 'http://api.upcdatabase.org/json/'+
+						'b2738129d173708ec15e401d73c05bbc/'+
+						encodeURIComponent(upc);
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d3e.value = '... upcdatabase ...';
 							// CALL NEXT
+							result.upcdatabase = false;
 							A9_Snaptell_VSR__next();
-							result.searchupc = false;
-							return;
+							return false;
 						}
-						var r;
-						r = /<td align="left" style="border-style:None;"><a[^>]*>([^<]*)<\/a><\/td>/.exec(rs);
-						if (r) {
-							//Ashton & Ross HD-922 Professional Home Theatre System
-							r = __js_clean_html_str(r[1]).trim();
-							d3.value = r;
-							d3.style.border = '4px solid blue';
-							d3.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								o.q[0].value = this.value;
-								o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
-								o.q[0].focus();
-								o.q[0].blur();
-								o.q[0].focus();
-							}
-							
-							result.searchupc = true;
-						} else {
-						
-							result.searchupc = false;
-							
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						d3.value = '... upcdatabase ...';
+						if (options.response.status != 200) {
+							result.upcdatabase = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						// {"valid":"true","number":"045496870096","itemname":"","alias":"","description":"Killer Instinct Gold (Nintendo 64)","avg_price":"","rate_up":0,"rate_down":0}
+						var r = JSON.parse(rs);
+						if (!r || !r.valid || !r.description || !r.number) {
+							result.upcdatabase = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						d3e.value = r.description;
+						d3e.style.border = '4px solid blue';
+						d3e.upc = r.number;
+						d3e.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q[0].value = this.value;
+							o.q[1].value = 'http://upcdatabase.org/code/' + encodeURIComponent(this.upc);
+							o.q[0].focus();
+							o.q[0].blur();
+							o.q[0].focus();
 						}
 						// CALL NEXT
+						result.searchupc = true;
 						A9_Snaptell_VSR__next();
 					}
 				});
@@ -179089,8 +179087,6 @@ function top_window(okay_to_run) {
 					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
 					onerror: function(response) {
 						d3.value = '... searchupc ...';
-						console.log('error');
-						console.log(response);
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 						result.searchupc = false;
@@ -179769,9 +179765,7 @@ function top_window(okay_to_run) {
 							});
 							return;
 						}
-						
-						
-						// still here?
+						// Still here?
 						console.log(url);
 						GM_xmlhttpRequest({
 							method: "GET",
@@ -179795,7 +179789,6 @@ function top_window(okay_to_run) {
 									});
 									return;
 								}
-								
 								// write to file !
 								rf.io__write_to_file(
 									{
