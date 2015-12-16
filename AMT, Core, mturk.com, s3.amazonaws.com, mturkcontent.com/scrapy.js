@@ -68,9 +68,8 @@ function init__scrapy() {
 					document.getElementById('Q2Url'),
 				],
 				SKIP_SITES: {},
-				util_url: null
-				//,
-				//~ auto_emails: ['info','contact','contactus']
+				util_url: null,
+				auto_emails: ['info','contact','contactus','admission','admissions'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
@@ -194,13 +193,47 @@ function init__scrapy() {
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
 									if (AMT__Global_Vars.isPreview) {
-									} else { // Add to tabs queue if not in preview
-										if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
-											addToTabsQ();
-										}
-										//~ document.body.style.backgroundColor = 'white';
-										document.body.style.zoom = '1';
+										return false;
+									}
+									// Add to tabs queue if not in preview
+									if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
 										addToTabsQ();
+									}
+									//~ document.body.style.backgroundColor = 'white';
+									document.body.style.zoom = '1';
+									addToTabsQ();
+									
+									// Let's try for some autos.
+									// o.auto_emails = []
+									/**
+									 * {
+									 *  email_contexts: Array[1]
+									 *  email_email: "info@vaultcrossfit.com"
+									 *  url: "https://www.facebook.com/VaultCrossfit/info
+									 * }
+									 */
+									if (callback_obj.matches && callback_obj.matches.length) {
+										var mt = callback_obj.matches;
+										//~ console.log(mt);
+										var reg = new RegExp(
+											'^(info|contact|contactus|admission|admissions)@' + __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+											'i'
+										);
+										for (var i in mt) {
+											if  (
+												mt[i].email_email &&
+												mt[i].email_email.length &&
+												reg.exec(mt[i].email_email)
+												)
+											{
+												o.q[0].value = mt[i].email_email;
+												alert('auto');
+												new AMT___core_factory().shiftFarLeft();
+												//doSubmit();
+												//return false; // Stop here
+												//showNextTab();
+											}
+										}
 									}
 									
 									// CONTINUES (job is NOT in "preview" mode)
