@@ -58,9 +58,9 @@ function init__scrapy() {
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
 			
-			var sp = document.getElementsByTagName('span');
+			var span = document.getElementsByTagName('span');
 			var o = {
-				sd_start_urls: [sp[2].innerText.trim()],
+				sd_start_urls: [span[2].innerText.trim()],
 				sd_allowed_domains: null,
 				//~ comp: td[1].innerText.trim(),
 				//~ name: td[3].innerText.trim(),
@@ -115,6 +115,16 @@ function init__scrapy() {
 				callback: init,
 				callback_err: function() {}
 			});
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				// SP search.
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ("contact" OR "about" OR "email")'),
+					callback_function: sp
+				});
+			}
 			// SP
 			function sp(response_obj) {
 				//o.sd_start_urls
@@ -135,16 +145,6 @@ function init__scrapy() {
 				}
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
-			}
-			// Init
-			function init(SKIP_SITES) {
-				o.SKIP_SITES = SKIP_SITES; // Populate.
-				// SP search.
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ("contact" OR "about" OR "email")'),
-					callback_function: sp
-				});
 			}
 			/**
 			 * function scrapy

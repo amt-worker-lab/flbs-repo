@@ -13579,7 +13579,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 					else if(o.obj_vars.hasOwnProperty('startPage_array')) {
 						rs = array_startPage_results(rs);
 					}
-					
 					// ...
 					if (o.obj_vars.return_init_object) {
 						o.obj_vars.rs = rs;
