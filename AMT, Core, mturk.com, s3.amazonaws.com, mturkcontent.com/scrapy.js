@@ -216,7 +216,7 @@ function init__scrapy() {
 										var mt = callback_obj.matches;
 										//~ console.log(mt);
 										var reg = new RegExp(
-											'^(info|contact|contactus|admission|admissions|admin|inquiry|registrar|support|help|helpdesk|communication)@' +
+											'^(info|information|register|contact|contactus|admission|admissions|admin|inquiry|registrar|support|help|helpdesk|communication)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);
