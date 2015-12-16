@@ -227,10 +227,10 @@ function init__scrapy() {
 												)
 											{
 												o.q[0].value = mt[i].email_email;
-												alert('auto');
-												new AMT___core_factory().shiftFarLeft();
-												//doSubmit();
-												//return false; // Stop here
+												//~ alert('auto');
+												//~ new AMT___core_factory().shiftFarLeft();
+												doSubmit();
+												break; // Stop here
 												//showNextTab();
 											}
 										}
