@@ -41,6 +41,193 @@ function init__scrapy() {
 	 * 
 	 * 
 	 */
+	// Olga Svensen
+	// Find general college email.
+	// 
+	// 
+	s = '<p><strong>1. Go to the University URL above. Navigate to an email address of contact for th university.&nbsp;</strong></p>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
+			GM_addStyle('input[type="text"],select {width:80% !important;}');
+			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
+			document.body.style.zoom = '0.5'; // This is default for "loading".
+			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
+			
+			var sp = document.getElementsByTagName('span');
+			var o = {
+				sd_start_urls: [sp[2].innerText.trim()],
+				sd_allowed_domains: null,
+				//~ comp: td[1].innerText.trim(),
+				//~ name: td[3].innerText.trim(),
+				q: [
+					document.getElementById('Q2Url'),
+				],
+				SKIP_SITES: {},
+				util_url: null
+				//,
+				//~ auto_emails: ['info','contact','contactus']
+			}
+			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
+			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
+			o.util_url = o.sd_start_urls[0];
+			console.log(o);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value.length < 6)
+					return false;
+				if (o.q[0].value.indexOf('@') == -1)
+					return false;
+				// Here?
+				doSubmit();
+				return false;
+			}
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips({
+				skips_key: 'austin_load_skips',
+				callback: init,
+				callback_err: function() {}
+			});
+			// SP
+			function sp(response_obj) {
+				//o.sd_start_urls
+				//o.sd_allowed_domains
+				var rs = response_obj;
+				if (!rs.length) {
+					// No URLs
+					// Init
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+					return;
+				}
+				// Look for Facebook pages in results.
+				// And secondly check if first result is a "non-skip" result,
+				// in which case add to both o.sd_start_urls and o.sd_allowed_domains.
+				var first = true;
+				for (var i in rs) {
+					o.sd_start_urls.push(rs[i][0]);
+				}
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
+			// Init
+			function init(SKIP_SITES) {
+				o.SKIP_SITES = SKIP_SITES; // Populate.
+				// SP search.
+				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+					startPage: true,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_allowed_domains[0] + ' ("contact" OR "about" OR "email")'),
+					callback_function: sp
+				});
+			}
+			/**
+			 * function scrapy
+			 */
+			function scrapy(start_urls, allowed_domains) {
+				//
+				var s_obj =
+				{
+					project: 'scrapy_amt',
+					spider: 'AMTSpider',
+					arg_allowed_domains: allowed_domains,	// array
+					arg_start_urls: start_urls,		// array
+					arg_max_pages_to_fetch: 40,
+					arg_type_scrape: 'all_emails',	// all_emails or str_match
+					settings: [
+						//'DEPTH_LIMIT=4',
+						//'SCHEDULER_ORDER=BFO',
+						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+						
+						'CONCURRENT_ITEMS=200', //DEFAUL = 100
+						'CONCURRENT_REQUESTS=16', //DEFAUL = 16
+						'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+						
+						'AJAXCRAWL_ENABLED=1', //true
+						'COOKIES_ENABLED=0', //false
+						//'RETRY_ENABLED=0', //false
+						//'DI=0', //false
+						'REDIRECT_MAX_TIMES=2'//,
+						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+						//'AJAXCRAWL_ENABLED=1', //true
+					]
+				}
+				
+				var req = new AMT___requests_factory();
+				AMT___POPUP__initializeGlobals(
+					function() {
+						req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+							s_obj,
+							(new AMT___items_factory()).create_dashboard__powers_v1,
+							{
+								// add PREVIEW all snippets
+								div: d1,
+								input_send_success: o.q[0],
+								skip_if_no_emails: true,
+								accept_if_emails: true,
+								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
+									
+									if (AMT__Global_Vars.isPreview) {
+									} else { // Add to tabs queue if not in preview
+										if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
+											addToTabsQ();
+										}
+										//~ document.body.style.backgroundColor = 'white';
+										document.body.style.zoom = '1';
+										addToTabsQ();
+									}
+									
+									// CONTINUES (job is NOT in "preview" mode)
+									return false;
+								},
+								// What to do onclick
+								input_onclick_callback: function() {
+									this.style.backgroundColor = 'LightGreen';
+									if  (
+										this.email.length > 6 &&
+										this.email.indexOf('@') != -1 &&
+										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
+										)
+									{
+										o.q[0].value = this.email;
+										doSubmit();
+									}
+								},
+							}
+						);
+					}
+				);
+			}
+		}
+		new run().f();
+		return false;
+	}
 	// Michael S. Bell
 	// 
 	// 
@@ -54,7 +241,6 @@ function init__scrapy() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
 			GM_addStyle('input[type="text"],select {width:80% !important;}');
-			
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			
@@ -321,17 +507,6 @@ function init__scrapy() {
 				// Here?
 				doSubmit();
 			}
-			// Radios...
-			/*o.q[1].onclick = o.q[2].onclick = o.q[3].onclick = function(e) {
-				if (!this.checked) return;
-				o.q[0].value = o.q[0].value.trim();
-				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
-					//~ return false;
-					return;
-				}
-				// Here?
-				doSubmit();
-			}*/
 			
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips({
@@ -586,17 +761,6 @@ function init__scrapy() {
 				// Here?
 				doSubmit();
 			}
-			// Radios...
-			/*o.q[1].onclick = o.q[2].onclick = o.q[3].onclick = function(e) {
-				if (!this.checked) return;
-				o.q[0].value = o.q[0].value.trim();
-				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
-					//~ return false;
-					return;
-				}
-				// Here?
-				doSubmit();
-			}*/
 			d2.onclick = function() {
 				if (this.contact_url && /^https?:\/\/[\d\D]{6,}/.exec(this.contact_url)) { // 6 or more
 					this.style.backgroundColor = 'yellow';
@@ -1378,9 +1542,6 @@ function init__scrapy() {
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
 					return false;
 				}
-				//~ // Here?
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
 			}
 			
 			//~ function init_url() {
