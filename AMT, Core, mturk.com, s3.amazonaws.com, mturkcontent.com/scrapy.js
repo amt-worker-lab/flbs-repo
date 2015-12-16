@@ -227,6 +227,7 @@ function init__scrapy() {
 												reg.exec(mt[i].email_email)
 												)
 											{
+												document.body.style.zoom = '0.4';
 												o.q[0].value = mt[i].email_email;
 												//~ alert('auto');
 												//~ new AMT___core_factory().shiftFarLeft();
@@ -249,6 +250,7 @@ function init__scrapy() {
 										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
 										)
 									{
+										//~ document.body.style.zoom = '0.4';
 										o.q[0].value = this.email;
 										showNextTab(); // Manually call this....
 										doSubmit();
