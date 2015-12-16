@@ -14143,9 +14143,11 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	}
 	
 	// removeMyUitilityTabs
-	chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {
-	});
+	chrome.extension.sendRequest({removeMyUitilityTabs: true}, function() {});
 	
+	// Do submit variables. The question here is whether the page
+	// is focused? If not focused then will nextTab still fire?
+	// Will showNextTab still fire?
 	// shiftFarLeft
 	// showNextTab
 	// nextTab
