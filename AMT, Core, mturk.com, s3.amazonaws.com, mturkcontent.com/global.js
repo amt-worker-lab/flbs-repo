@@ -48,6 +48,7 @@ var AMT__Global_Vars = //function()
 		{name: 'NumPassby',	value: '3', isPersistant:true},
 		{name: 'PassbyDelay',	value: '100', isPersistant:true},
 		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
+		{name: 'addToTabsQ:ShiftRight',	value: '1', isPersistant:true},
 		{name: 'Return NextTab',	value: '0', isPersistant:true},
 		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 		{name: 'Server Location',			value: 'http://192.168.1.2', isPersistant:true},
@@ -853,7 +854,8 @@ function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 	if(!jumpToFirst) {
 		var jumpToFirst = AMT__Global_Vars.scriptVars['TabsQ JumpToFirst'] != '0';
 	}
-	new AMT___core_factory().shiftFarRight();
+	if (AMT__Global_Vars.scriptVars['addToTabsQ:ShiftRight'] != '0')
+		new AMT___core_factory().shiftFarRight();
 	
 	
 	console.log('adding to tabsq in global');
