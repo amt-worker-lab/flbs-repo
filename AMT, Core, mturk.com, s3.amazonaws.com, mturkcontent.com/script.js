@@ -106938,11 +106938,36 @@ qatar,80
 			});
 		}
 	}
-	
-	//
+	/**
+	 * twitter.com API
+	 * 
+	 * 
+	 * 
+	 * ResponseAnalytics
+	 * HealthIT Reboot
+	 * Frederick W. Taylor
+	 * 
+	 * 
+	 */
+	// organic query
+	// 
+	// 
+	// 
+	s = '	<li>Find the number of followers for this account.&nbsp;(note: please make sure you find the number of followers of this account&nbsp;and NOT the number this user is following)</li>';
+	if (ih.indexOf(s) != -1) {
+		//twitter_oauth_user
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+		}
+		new run().f();
+		return;
+	}
 	// ResponseAnalytics
 	// generic twitter api user search (ex. va hospitals)
-	// 
+	// util.php?twitter_api_usersearch
 	// 
 	s = '<div>Example: The Twitter url for the Boston Globe&nbsp;is http://www.twitter.com/BostonGlobe</div>';
 	if (ih.indexOf(s) != -1) {
@@ -106955,7 +106980,6 @@ qatar,80
 		if (!b)
 			return;
 		console.log(b);
-		
 		
 		var d;
 		d = document.createElement('div');
@@ -107077,36 +107101,12 @@ qatar,80
 							\
 							';
 						if (c == 0) {
-							/*console.log(s.name.replace(/[^\w\d_]/g, '').toLowerCase());
-							console.log(s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase());
-							console.log(o_name);
-							if (o_url.length >= 6) { // xyz.com
-								if (url.toLowerCase().indexOf(o_url) === 0) {
-									if  (
-										(
-											s.name.replace(/[^\w\d_]/g, '').toLowerCase()			== o_name ||
-											s.screen_name.replace(/[^\w\d_]/g, '').toLowerCase()	== o_name
-										) &&
-										o_name.length >= 3
-										)
-									{	
-										var x = s.screen_name.trim();
-										q.value = 'https://twitter.com/'+x;
-										if (x != '' && x.length > 1) {
-											var y = d1.getElementsByTagName('input');
-											y[y.length - 1].style.backgroundColor = 'LightGreen';
-											doSubmit();
-										}
-									}
-								}
-							}*/
 						}
 						c++;
 					}
 					if (r.length) {
 						d1.innerHTML += '<div style="height:1400px;">&nbsp;</div>';
 					}
-					
 					var x = document.getElementsByClassName('exe');
 					for (var i in x) {
 						if (i == 'length') break;
