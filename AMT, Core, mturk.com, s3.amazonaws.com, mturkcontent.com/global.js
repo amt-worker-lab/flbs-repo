@@ -331,9 +331,12 @@ AMT__Global_Vars.initializeGroupId = function () {
 					if(!AMT__Global_Vars.isPreview)
 					{
 						//Record the HitId so we know if we've already been here
-						AMT___addQuestionAnswer('Skip Returns - ' + AMT__Global_Vars.groupId,
-									AMT__Global_Vars.hitId,
-									'');
+						// THIS IS TURNED OFF as of Dec 17 2015 :)
+						//~ AMT___addQuestionAnswer(
+							//~ 'Skip Returns - ' + AMT__Global_Vars.groupId,
+							//~ AMT__Global_Vars.hitId,
+							//~ ''
+						//~ );
 					}
 					clearInterval(interval);					
 					this.removeEventListener('click',arguments.callee,false);
