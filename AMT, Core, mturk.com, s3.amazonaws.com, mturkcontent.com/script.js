@@ -106961,6 +106961,33 @@ qatar,80
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');
+			var b = document.getElementsByTagName('b');
+			var o = {
+				user: b[0].innerText.trim().replace(/https?:\/\/w*\.*twitter\.com\//i, ''), // Remove leading...
+				q: [
+					document.getElementById('Q1Url')
+				]
+			}
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: MT___host + '/mturk/util.php?twitter_oauth_user='+encodeURIComponent(JSON.stringify({user: o.user})),
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						document.body.style.backgroundColor = 'pink';
+						return;
+					}
+					console.log(rs);
+					var r = JSON.parse(rs);
+					console.log(r);
+					if (r && r.followers_count && /^\d+$/.exec(r.followers_count)) {
+						o.q[0].value = r.followers_count;
+						doSubmit();
+					} else {
+						document.body.style.backgroundColor = 'blue';
+					}
+				}
+			});
 		}
 		new run().f();
 		return;
@@ -107051,19 +107078,14 @@ qatar,80
 				url: MT___host + '/mturk/util.php?twitter_api_usersearch='+encodeURIComponent(url),
 				onload: function(response) {
 					var rs = response.responseText;
-					
 					if (response.status != 200) {
 						d1.innerHTML = response.status;
 						return;
 					}
-					
 					d1.innerHTML = d2.value+'<hr >';
-					
 					var r;
-					
 					r = JSON.parse(rs);
 					console.log(r);
-					
 					var c = 0;
 					for (var i in r) {
 						var s = r[i];
