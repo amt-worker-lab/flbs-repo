@@ -290,28 +290,27 @@ function MT__RUN() {
 			var o = {
 				u: td[1].innerText.trim(),
 				q: [
-					document.getElementsByTagName('web_url')[0],
-					document.getElementsByTagName('web_url')[1],
-					document.getElementsByTagName('web_url')[2],
-					document.getElementsByTagName('web_url')[3],
-					document.getElementsByTagName('web_url')[4],
-					document.getElementsByTagName('web_url')[5],
-					document.getElementsByTagName('web_url')[6],
-					document.getElementsByTagName('web_url')[7],
-					document.getElementsByTagName('web_url')[8],
-					document.getElementsByTagName('web_url')[9],
-					document.getElementsByTagName('web_url')[10],
-					document.getElementsByTagName('web_url')[11],
-					document.getElementsByTagName('web_url')[12],
-				]
+					document.getElementsByName('web_url')[0],
+					document.getElementsByName('web_url')[1],
+					document.getElementsByName('web_url')[2],
+				],
+				qf: [
+					document.getElementsByName('web_url')[3],
+					document.getElementsByName('web_url')[4],
+					document.getElementsByName('web_url')[5],
+					document.getElementsByName('web_url')[6],
+					document.getElementsByName('web_url')[7],
+					document.getElementsByName('web_url')[8],
+					document.getElementsByName('web_url')[9],
+					document.getElementsByName('web_url')[10],
+					document.getElementsByName('web_url')[11],
+					document.getElementsByName('web_url')[12],
+				],
 			}
 			if (td[3].innerText.indexOf('/'+o.u+'/') == -1) {
 				alert('user!');
 				return;
 			}
-			o.u = 'http://ces16.mapyourshow.com/6_0/includes/includePage.cfm'+
-					'?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid='+
-					encodeURIComponent(/exhibitor-details\.cfm\?ExhID=(T\d+)$/.exec(o.u)[1]);
 			console.log(o.u);
 			// Get the user id
 			// xhr_with_disk_cache
@@ -320,6 +319,7 @@ function MT__RUN() {
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					//~ var rs = options.response.responseText;
 					//~ return false;
+					return true;
 				},
 				success_callback: function(options) {
 					var rs = options.response.responseText;
@@ -340,6 +340,7 @@ function MT__RUN() {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						//~ return false;
+						return true;
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
@@ -363,7 +364,7 @@ function MT__RUN() {
 						}
 						o.q[0].value = r.totalFans;
 						o.q[1].value = r.totalFansOf;
-						o.q[2].value = r.totalSubscribers;
+						o.q[2].value = (r.totalSubscribers != 0) ? r.totalSubscribers : '';
 						get2();
 					}
 				});
@@ -376,6 +377,7 @@ function MT__RUN() {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						//~ return false;
+						return true;
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
@@ -394,9 +396,9 @@ function MT__RUN() {
 							return;
 						}
 						for (var i in r.fans) {
-							for (var j in o.q) {
-								if (o.q[j].value == '') {
-									o.q[j].value = r.fans[i].name
+							for (var j in o.qf) {
+								if (o.qf[j].value == '') {
+									o.qf[j].value = MT___numberWithCommas(r.fans[i].bars);
 									break;
 								}
 							}
