@@ -455,8 +455,8 @@ function MT__RUN() {
 						}
 						for (var i in r.fans) {
 							var bars = r.fans[i].bars;
-							if (bars > 200000) {
-								alert('bars>200000');
+							if (bars > 300000) {
+								alert('bars>300000');
 								return;
 							}
 							for (var j in o.qf) {
