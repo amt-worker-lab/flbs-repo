@@ -345,17 +345,64 @@ function MT__RUN() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
-						if (!r || !r.userId || !/^\d+$/.exec(r.userId)) {
-							alert('x');
+						if (!r) {
+							alert('b');
 							return;
 						}
-						o.userId = r.userId;
-						get1();
+						if (!r.hasOwnProperty('totalFans') || !/^\d+$/.exec(r.totalFans)) {
+							alert('c');
+							return;
+						}
+						if (!r.hasOwnProperty('totalFansOf') || !/^\d+$/.exec(r.totalFansOf)) {
+							alert('d');
+							return;
+						}
+						if (!r.hasOwnProperty('totalSubscribers') || !/^\d+$/.exec(r.totalSubscribers)) {
+							alert('e');
+							return;
+						}
+						o.q[0].value = r.totalFans;
+						o.q[1].value = r.totalFansOf;
+						o.q[2].value = r.totalSubscribers;
+						get2();
 					}
 				});
 			}
 			function get2() {
-				
+				//https://cdn2.younow.com/php/api/channel/getTopPaidFans/channelId=14208094/numberOfRecords=12
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://cdn2.younow.com/php/api/channel/getTopPaidFans/channelId='+o.userId+'/numberOfRecords=12',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ return false;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						if (!r) {
+							alert('b');
+							return;
+						}
+						if (!r.hasOwnProperty('errorCode') || r.errorCode != 0) {
+							alert('errorcode');
+							return;
+						}
+						if (!r.hasOwnProperty('fans')) {
+							alert('f');
+							return;
+						}
+						for (var i in r.fans) {
+							for (var j in o.q) {
+								if (o.q[j].value == '') {
+									o.q[j].value = r.fans[i].name
+									break;
+								}
+							}
+						}
+					}
+				});
 			}
 		}
 		new run().f();return;
