@@ -326,7 +326,10 @@ function MT__RUN() {
 					if (options.response.status != 200) return;
 					var r = JSON.parse(rs);
 					if (!r || !r.userId || !/^\d+$/.exec(r.userId)) {
-						alert('x');
+						if (r.errorMsg == 'Invalid user Id') {
+							o.q[0].value = 'Invalid user Id';
+						} else
+							alert('x');
 						return;
 					}
 					o.userId = r.userId;
@@ -367,8 +370,19 @@ function MT__RUN() {
 							console.log('Converting fans=' + f);
 							f = Math.round(f / 100) / 10; //15,410 = 154
 							f += 'K';
-						} else if (r.totalFans >= 100000) {
-							alert('fans > 100000');
+						} else if (f >= 100000 && f < 1000000) {
+							f = Math.round(f / 1000); //105,410 = 105
+							f += 'K';
+						} else if (f >= 1000000) {
+							alert('fans > 1000000');
+							return;
+						}
+						if (r.totalFansOf > 10000) {
+							alert('totalFansOf>10000');
+							return;
+						}
+						if (r.totalSubscribers > 1000) {
+							alert('totalSubscribers>1000');
 							return;
 						}
 						o.q[0].value = MT___numberWithCommas(f);
@@ -416,6 +430,10 @@ function MT__RUN() {
 									break;
 								}
 							}
+						}
+						// Here?
+						if (/^[\d,\.KM]+$/.exec(o.q[0].value) && /^[\d,\.KM]+$/.exec(o.q[1].value)) {
+							doSubmit();
 						}
 					}
 				});
