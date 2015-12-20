@@ -326,6 +326,7 @@ function MT__RUN() {
 					document.getElementsByName('web_url')[11],
 					document.getElementsByName('web_url')[12],
 				],
+				sbm: true,
 			}
 			if (td[3].innerText.indexOf('/'+o.u+'/') == -1) {
 				alert('user!');
@@ -405,8 +406,9 @@ function MT__RUN() {
 							f = Math.round(f / 1000); //105,410 = 105
 							f += 'K';
 						} else if (f >= 1000000) {
-							alert('fans > 1000000');
-							return;
+							alert('fans > 1000000'); // always manual, e.g. 1,066,579 is "1M"
+							o.sbm = false;
+							//~ return;
 						}
 						if (fo >= 10000 && fo < 100000) {
 							console.log('Converting fans=' + fo);
@@ -455,8 +457,8 @@ function MT__RUN() {
 						}
 						for (var i in r.fans) {
 							var bars = r.fans[i].bars;
-							if (bars > 300000) {
-								alert('bars>300000');
+							if (bars > 1000000) {
+								alert('bars>1000000');
 								return;
 							}
 							for (var j in o.qf) {
@@ -467,7 +469,9 @@ function MT__RUN() {
 							}
 						}
 						// Here?
-						if (/^[\d,\.KM]+$/.exec(o.q[0].value) && /^[\d,\.KM]+$/.exec(o.q[1].value)) {
+						if (/^[\d,\.KM]+$/.exec(o.q[0].value) &&
+							/^[\d,\.KM]+$/.exec(o.q[1].value) &&
+							o.sbm) {
 							AMT___recordAndSubmit();
 						}
 					}
