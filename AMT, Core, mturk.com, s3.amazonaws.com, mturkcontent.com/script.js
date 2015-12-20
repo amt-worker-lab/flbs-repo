@@ -61,8 +61,6 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	
-	
 	// 
 	// 
 	// yukonalpha
@@ -152,9 +150,7 @@ function MT__RUN() {
 					doSubmit();
 				}
 				return false;
-				
 			}
-			
 			shortSelect.onchange = select.onchange = function(e) {
 					console.log(this.selectedIndex);
 					var opt = this.getElementsByTagName('option')[this.selectedIndex];
