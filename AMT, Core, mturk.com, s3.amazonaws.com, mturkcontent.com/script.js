@@ -274,8 +274,92 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
-	
-	
+	// Horatio Lun
+	// Find the listed data for each user profile URL
+	// 
+	// 
+	s = '<li>Before starting this job, take a look at&nbsp;<a href="http://i.imgur.com/55tRPCO.png" style="text-decoration: underline;">this screenshot</a>&nbsp;and note the yellow highlighted A, B, C, D sections. Note that for section D in the live webpage, this will be scroll-able and there will be up to 10 entries for section D specifically.</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//
+			// http://ces16.mapyourshow.com/6_0/includes/includePage.cfm?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid=T0007898
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByTagName('web_url')[0],
+					document.getElementsByTagName('web_url')[1],
+					document.getElementsByTagName('web_url')[2],
+					document.getElementsByTagName('web_url')[3],
+					document.getElementsByTagName('web_url')[4],
+					document.getElementsByTagName('web_url')[5],
+					document.getElementsByTagName('web_url')[6],
+					document.getElementsByTagName('web_url')[7],
+					document.getElementsByTagName('web_url')[8],
+					document.getElementsByTagName('web_url')[9],
+					document.getElementsByTagName('web_url')[10],
+					document.getElementsByTagName('web_url')[11],
+					document.getElementsByTagName('web_url')[12],
+				]
+			}
+			if (td[3].innerText.indexOf('/'+o.u+'/') == -1) {
+				alert('user!');
+				return;
+			}
+			o.u = 'http://ces16.mapyourshow.com/6_0/includes/includePage.cfm'+
+					'?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid='+
+					encodeURIComponent(/exhibitor-details\.cfm\?ExhID=(T\d+)$/.exec(o.u)[1]);
+			console.log(o.u);
+			// Get the user id
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: 'https://www.younow.com/php/api/broadcast/info/user='+o.u+'/curId=0',
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					//~ return false;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var r = JSON.parse(rs);
+					if (!r || !r.userId || !/^\d+$/.exec(r.userId)) {
+						alert('x');
+						return;
+					}
+					o.userId = r.userId;
+					get1();
+				}
+			});
+			function get1() {
+				// xhr_with_disk_cache
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://cdn2.younow.com/php/api/channel/getInfo/channelId='+o.userId,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ return false;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						if (!r || !r.userId || !/^\d+$/.exec(r.userId)) {
+							alert('x');
+							return;
+						}
+						o.userId = r.userId;
+						get1();
+					}
+				});
+			}
+			function get2() {
+				
+			}
+		}
+		new run().f();return;
+	}
 	// garrett grohman
 	// http://ces16.mapyourshow.com/6_0/exhibitor/exhibitor-details.cfm?ExhID=T0001561 scrape
 	// #2 - Address
