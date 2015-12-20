@@ -286,6 +286,26 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			//
 			// http://ces16.mapyourshow.com/6_0/includes/includePage.cfm?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid=T0007898
+			// AMT___addUserDecision
+			AMT___addUserDecision('Horatio Lun 12/20/2015', function() {
+					return o.u;
+				},
+				[
+				'Name(web_url)[0]',
+				'Name(web_url)[1]',
+				'Name(web_url)[2]',
+				'Name(web_url)[3]',
+				'Name(web_url)[4]',
+				'Name(web_url)[5]',
+				'Name(web_url)[6]',
+				'Name(web_url)[7]',
+				'Name(web_url)[8]',
+				'Name(web_url)[9]',
+				'Name(web_url)[10]',
+				'Name(web_url)[11]',
+				'Name(web_url)[12]',
+				]
+			);
 			var td = document.getElementsByTagName('td');
 			var o = {
 				u: td[1].innerText.trim(),
@@ -353,11 +373,11 @@ function MT__RUN() {
 							alert('b');
 							return;
 						}
-						if (!r.hasOwnProperty('totalFans') || !/^\d+$/.exec(r.totalFans)) {
+						if (!r.hasOwnProperty('totalFans')) {
 							alert('c');
 							return;
 						}
-						if (!r.hasOwnProperty('totalFansOf') || !/^\d+$/.exec(r.totalFansOf)) {
+						if (!r.hasOwnProperty('totalFansOf')) {
 							alert('d');
 							return;
 						}
@@ -365,7 +385,18 @@ function MT__RUN() {
 							alert('e');
 							return;
 						}
+						if (r.totalFans == '') r.totalFans = 0;
+						if (r.totalFansOf == '') r.totalFansOf = 0;
+						if (!/^\d+$/.exec(r.totalFans)) {
+							alert('c1');
+							return;
+						}
+						if (!/^\d+$/.exec(r.totalFansOf)) {
+							alert('d1');
+							return;
+						}
 						var f = r.totalFans;
+						var fo = r.totalFansOf;
 						if (f >= 10000 && f < 100000) {
 							console.log('Converting fans=' + f);
 							f = Math.round(f / 100) / 10; //15,410 = 154
@@ -377,7 +408,11 @@ function MT__RUN() {
 							alert('fans > 1000000');
 							return;
 						}
-						if (r.totalFansOf > 10000) {
+						if (fo >= 10000 && fo < 100000) {
+							console.log('Converting fans=' + fo);
+							fo = Math.round(fo / 100) / 10; //15,410 = 154
+							fo += 'K';
+						} else if (fo >= 100000) {
 							alert('totalFansOf>10000');
 							return;
 						}
@@ -386,7 +421,7 @@ function MT__RUN() {
 							return;
 						}
 						o.q[0].value = MT___numberWithCommas(f);
-						o.q[1].value = MT___numberWithCommas(r.totalFansOf);
+						o.q[1].value = MT___numberWithCommas(fo);
 						o.q[2].value = (r.totalSubscribers != 0) ? MT___numberWithCommas(r.totalSubscribers) : '';
 						get2();
 					}
@@ -433,7 +468,7 @@ function MT__RUN() {
 						}
 						// Here?
 						if (/^[\d,\.KM]+$/.exec(o.q[0].value) && /^[\d,\.KM]+$/.exec(o.q[1].value)) {
-							doSubmit();
+							AMT___recordAndSubmit();
 						}
 					}
 				});
