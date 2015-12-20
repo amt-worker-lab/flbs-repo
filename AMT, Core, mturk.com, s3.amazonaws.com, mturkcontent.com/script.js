@@ -370,6 +370,7 @@ function MT__RUN() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
+						console.log(r);
 						if (!r) {
 							alert('b');
 							return;
@@ -383,8 +384,9 @@ function MT__RUN() {
 							return;
 						}
 						if (!r.hasOwnProperty('totalSubscribers') || !/^\d+$/.exec(r.totalSubscribers)) {
+							r.totalSubscribers = 0;
+							o.sbm = false;
 							alert('e');
-							return;
 						}
 						if (r.totalFans == '') r.totalFans = 0;
 						if (r.totalFansOf == '') r.totalFansOf = 0;
