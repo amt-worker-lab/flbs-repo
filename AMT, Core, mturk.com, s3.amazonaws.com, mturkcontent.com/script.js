@@ -362,9 +362,18 @@ function MT__RUN() {
 							alert('e');
 							return;
 						}
-						o.q[0].value = r.totalFans;
-						o.q[1].value = r.totalFansOf;
-						o.q[2].value = (r.totalSubscribers != 0) ? r.totalSubscribers : '';
+						var f = r.totalFans;
+						if (f >= 10000 && f < 100000) {
+							console.log('Converting fans=' + f);
+							f = Math.round(f / 100) / 10; //15,410 = 154
+							f += 'K';
+						} else if (r.totalFans >= 100000) {
+							alert('fans > 100000');
+							return;
+						}
+						o.q[0].value = MT___numberWithCommas(f);
+						o.q[1].value = MT___numberWithCommas(r.totalFansOf);
+						o.q[2].value = (r.totalSubscribers != 0) ? MT___numberWithCommas(r.totalSubscribers) : '';
 						get2();
 					}
 				});
@@ -384,7 +393,7 @@ function MT__RUN() {
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
 						if (!r) {
-							alert('b');
+							alert('f');
 							return;
 						}
 						if (!r.hasOwnProperty('errorCode') || r.errorCode != 0) {
@@ -392,13 +401,18 @@ function MT__RUN() {
 							return;
 						}
 						if (!r.hasOwnProperty('fans')) {
-							alert('f');
+							alert('g');
 							return;
 						}
 						for (var i in r.fans) {
+							var bars = r.fans[i].bars;
+							if (bars > 200000) {
+								alert('bars>200000');
+								return;
+							}
 							for (var j in o.qf) {
 								if (o.qf[j].value == '') {
-									o.qf[j].value = MT___numberWithCommas(r.fans[i].bars);
+									o.qf[j].value = MT___numberWithCommas(bars);
 									break;
 								}
 							}
