@@ -178887,6 +178887,7 @@ function top_window(okay_to_run) {
 				d3b.value = 'google';
 				x.appendChild(d3b);
 				d3b.onclick = function() {
+					localStorage['goog-captcha'] = true; // RESET THIS!!!
 					this.style.backgroundColor = 'LightGreen';
 					A9_Snaptell_VSR__google();
 				}
@@ -179236,8 +179237,9 @@ function top_window(okay_to_run) {
 						A9_Snaptell_VSR__outpan_com();
 						break;
 					case 'g':
-						//~ console.log(result);
-						if (result.startpage == false && result.yahoo == false) {
+						console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
+						console.log(result);
+						if (result.startpage == false && (!localStorage['goog-captcha'] || localStorage['goog-captcha'] == null)) { // && result.yahoo == false
 							A9_Snaptell_VSR__google(); // DO IT
 							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
@@ -179255,10 +179257,12 @@ function top_window(okay_to_run) {
 					{
 						query: upc,
 						callback_error: function() {
+							localStorage['goog-captcha'] = true; // SET
 							d2c.style.backgroundColor = 'pink';
 							window.open('https://www.google.com/search?q='+Math.random()+'&ie=UTF-8');
 						},
 						callback_success: function(result_object) {
+							localStorage['goog-captcha'] = false; // SET
 							var arr = result_object.results;
 							// update button
 							d3b.value = '... google ...';
@@ -179271,7 +179275,6 @@ function top_window(okay_to_run) {
 								return;
 							}
 							d2c.innerText = '0';
-							console.log(result);
 							// AUTO?
 							// XX Keep this off by default.
 							if  (
@@ -179978,6 +179981,7 @@ function top_window(okay_to_run) {
 				//write_object
 				
 				//~ x1.focus();
+				d3_de.value = 'digit-eyes'; // reset this for now ....
 				
 				var r, r2;
 				var sbm = true;
@@ -180051,6 +180055,8 @@ function top_window(okay_to_run) {
 			 */
 			// ...
 			function A9_Snaptell_VSR() {
+				d3_de.value = '... digit-eyes ...'; //....
+				result.digital_eyes = false; // set to false by default!
 				var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
 				var rf = new AMT___requests_factory();
 				var md5_url = any_md5(url, '0123456789ABCDEF');
