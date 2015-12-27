@@ -179056,21 +179056,13 @@ function top_window(okay_to_run) {
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips2({
 				skips_key: 'VSR_Barcodes_Skips_File',
-				callback: init,
+				callback: function (SKIP_SITES) {
+					o.SKIP_SITES = SKIP_SITES; // Populate.
+					A9_Snaptell_VSR__next(); // INIT
+					A9_Snaptell_VSR__shopsavvy();
+				},
 				callback_err: function() {},
-				skips_obj: o.SKIP_SITES,
 			});
-			// Init
-			function init(SKIP_SITES) {
-				console.log(SKIP_SITES);
-				console.log(o);return;
-				A9_Snaptell_VSR__next();
-				A9_Snaptell_VSR__shopsavvy();
-				//~ console.log(SKIP_SITES);
-				//~ o.SKIP_SITES = SKIP_SITES; // Populate.
-				//~ // Init
-				//~ gs(d2);
-			}
 			//~ // INIT
 			//~ A9_Snaptell_VSR__next();
 			//~ // LOADS SHOPSAVVY INITIALLY

@@ -5328,8 +5328,12 @@ AMT___requests_factory.prototype.fs__load_skips2 = function(opts_obj) //
 				}
 			}
 			// Set skips_obj
-			if (opts_obj.skips_obj) {
-				opts_obj.skips_obj = SKIP_SITES;
+			if (opts_obj.hasOwnProperty('skips_obj')) {
+				opts_obj.SKIP_SITES = SKIP_SITES;
+				//~ opts_obj.skips_obj = SKIP_SITES;
+				//~ console.log(opts_obj);
+				//~ console.log(opts_obj.skips_obj);
+				//~ console.log('x');
 			}
 			// init
 			opts_obj.callback(SKIP_SITES); // Unnecessary return
