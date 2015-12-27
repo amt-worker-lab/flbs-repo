@@ -179243,8 +179243,18 @@ function top_window(okay_to_run) {
 						console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
 						console.log(localStorage['goog-captcha'] == false);
 						console.log(localStorage['goog-captcha'] == null);
-						if (result.startpage == false && (localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null)) { // && result.yahoo == false
-							console.log('x');
+						if (
+							result.startpage == false &&
+							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
+							result.digital_eyes == false &&
+							result.searchupc == false &&
+							result.shopsavvy == false &&
+							result.upcindex == false &&
+							result.upcitemdb == false &&
+							result.upcdatabase == false &&
+							result.yoopsie == false
+							) { // && result.yahoo == false
+							//~ console.log('x');
 							A9_Snaptell_VSR__google(); // DO IT
 							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
