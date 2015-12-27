@@ -3510,9 +3510,7 @@ AMT___requests_factory.prototype.ebay__get_listings_page = function(options_obje
 // google_search
 AMT___requests_factory.prototype.google_search = function(options_object) //
 {
-	
 	var opts = options_object;
-	
 	var u;
 	if (opts.hasOwnProperty('query')) {
 		u = 'https://www.google.com/search?'+
@@ -3520,14 +3518,12 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
 	} else if (opts.hasOwnProperty('url')) {
 		u = opts.url;
 	}
-		//~ '&aqs=chrome..69i57.791j0j7'+
-		//~ '&sourceid=chrome&es_sm=93&ie=UTF-8';
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: u,
 		onload: function (response) {
 			var rs = response.responseText;
-			
+			// callback_error
 			if (response.status > 200) {
 				if (opts.hasOwnProperty('callback_error'))
 					opts.callback_error();
@@ -3583,7 +3579,7 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
 					);
 				}
 			}
-			
+			// callback_success
 			opts.callback_success(
 				opts
 			);

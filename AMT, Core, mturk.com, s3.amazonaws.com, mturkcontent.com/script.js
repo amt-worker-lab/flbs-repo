@@ -179239,12 +179239,14 @@ function top_window(okay_to_run) {
 					case 'g':
 						console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
 						console.log(result);
+						console.log(result.startpage);
 						console.log(result.startpage == false);
 						console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
+						console.log(localStorage['goog-captcha']);
 						console.log(localStorage['goog-captcha'] == false);
 						console.log(localStorage['goog-captcha'] == null);
 						if (
-							result.startpage == false &&
+							(result.startpage == false || result.startpage == null) && // sometimes startpage == null
 							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
 							//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
 							result.searchupc == false &&
@@ -179766,6 +179768,9 @@ function top_window(okay_to_run) {
 					);
 				}
 			}
+			/**
+			 * A9_Snaptell_VSR__yahoo_complete
+			 */
 			// ...
 			// Scrape the first two results in each div.
 			// Do this using ...
@@ -179804,7 +179809,8 @@ function top_window(okay_to_run) {
 						var md5_filename = any_md5(rs[i][0], '0123456789ABCDEF');
 						tmp_url = 'http://192.168.1.2/mturk/.cached/' + md5_filename;
 						tmp_url_replace_scripts = 
-							MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+							MT___host +
+							'/mturk/util.php?AMT__output_html_from_URL=' +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 								{
 									htmlspecialchars: false, // FALSE!
@@ -179870,7 +179876,8 @@ function top_window(okay_to_run) {
 					// and WITH replace_scripts.
 					var u;
 					if (i < 3 && !isPDF)
-						u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+						u = MT___host +
+							'/mturk/util.php?AMT__output_html_from_URL=' +
 							'&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(
 								{
 									htmlspecialchars: false, // FALSE!
