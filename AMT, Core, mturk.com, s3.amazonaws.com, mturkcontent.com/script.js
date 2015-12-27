@@ -179235,14 +179235,14 @@ function top_window(okay_to_run) {
 						A9_Snaptell_VSR__outpan_com();
 						break;
 					case 'g':
-						console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
-						console.log(result);
-						console.log(result.startpage);
-						console.log(result.startpage == false);
-						console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
-						console.log(localStorage['goog-captcha']);
-						console.log(localStorage['goog-captcha'] == false);
-						console.log(localStorage['goog-captcha'] == null);
+						//~ console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
+						//~ console.log(result);
+						//~ console.log(result.startpage);
+						//~ console.log(result.startpage == false);
+						//~ console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
+						//~ console.log(localStorage['goog-captcha']);
+						//~ console.log(localStorage['goog-captcha'] == false);
+						//~ console.log(localStorage['goog-captcha'] == null);
 						if (
 							(result.startpage == false || result.startpage == null) && // sometimes startpage == null
 							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
@@ -179253,10 +179253,10 @@ function top_window(okay_to_run) {
 							result.upcitemdb == false &&
 							result.upcdatabase == false &&
 							result.yoopsie == false
-							) { // && result.yahoo == false
-							console.log('x');
+							// && result.yahoo == false
+							) {
+							//~ console.log('x');
 							A9_Snaptell_VSR__google(); // DO IT
-							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
 							//
 						}
@@ -179283,11 +179283,12 @@ function top_window(okay_to_run) {
 							d3b.value = '... google ...';
 							// ...
 							if (arr.length) {
-								A9_Snaptell_VSR__yahoo_complete(
+								var search_results = A9_Snaptell_VSR__yahoo_complete(
 									arr,
 									d2c
 								);
-								return;
+								if (search_results.num_good_results != 0)
+									return; // Stop here...
 							}
 							d2c.innerText = '0';
 							// AUTO?
@@ -179776,13 +179777,7 @@ function top_window(okay_to_run) {
 			// 1=full
 			function A9_Snaptell_VSR__yahoo_complete(rs, seed_argument) {
 				var out = seed_argument;
-				// Bad sites...
-				// 
-				var bad_sites = {
-					'werruftan.info':true,
-					'werwares.de':true,
-					'numberconnection.com':true
-				}
+				var num_good_results = 0;
 				for (var i in rs) {
 					// domain, link iframe, link blank, body
 					// Max == 3
@@ -179792,8 +179787,7 @@ function top_window(okay_to_run) {
 					var domain = rs[i][0];
 					domain = domain.replace(/https?:\/\/(www\.|)/i, '');
 					domain = domain.replace(/\/[\d\D]*/, '');
-					
-					
+					// skips
 					var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
 						domain: domain,
 						load_file: 'VSR_Barcodes_Skips_File', 
@@ -179803,17 +179797,10 @@ function top_window(okay_to_run) {
 					out.appendChild( el_inp_skip3__obj.el_button );
 					if ( el_inp_skip3__obj.isSkip ) {
 						continue; // Stops here
+					} else {
+						num_good_results++; // Increment num good results
 					}
-					
-					//~ // Is a "bad" / "skip" URL?
-					//~ // werruftan.info
-					//~ if (bad_sites.hasOwnProperty(domain)) {
-						//~ var div = document.createElement('div');
-						//~ div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
-						//~ div.innerText = domain;
-						//~ out.appendChild(div);
-						//~ continue;
-					//~ }
+					//
 					var tmp_url = rs[i][0];
 					var tmp_url_replace_scripts = rs[i][0];
 					if (i < 3) {
@@ -179971,6 +179958,10 @@ function top_window(okay_to_run) {
 				}
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
+				// Return status
+				return {
+					num_good_results: num_good_results
+				}
 			}
 			// ...
 			function A9_Snaptell_VSR__load_first() {
