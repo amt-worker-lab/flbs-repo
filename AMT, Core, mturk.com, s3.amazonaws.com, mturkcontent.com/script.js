@@ -179246,7 +179246,7 @@ function top_window(okay_to_run) {
 						if (
 							result.startpage == false &&
 							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
-							result.digital_eyes == false &&
+							//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
 							result.searchupc == false &&
 							result.shopsavvy == false &&
 							result.upcindex == false &&
