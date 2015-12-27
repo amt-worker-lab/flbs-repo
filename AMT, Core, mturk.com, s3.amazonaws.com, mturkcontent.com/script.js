@@ -179239,7 +179239,12 @@ function top_window(okay_to_run) {
 					case 'g':
 						console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
 						console.log(result);
-						if (result.startpage == false && (!localStorage['goog-captcha'] || localStorage['goog-captcha'] == null)) { // && result.yahoo == false
+						console.log(result.startpage == false);
+						console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
+						console.log(localStorage['goog-captcha'] == false);
+						console.log(localStorage['goog-captcha'] == null);
+						if (result.startpage == false && (localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null)) { // && result.yahoo == false
+							console.log('x');
 							A9_Snaptell_VSR__google(); // DO IT
 							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
