@@ -179254,7 +179254,7 @@ function top_window(okay_to_run) {
 							result.upcdatabase == false &&
 							result.yoopsie == false
 							) { // && result.yahoo == false
-							//~ console.log('x');
+							console.log('x');
 							A9_Snaptell_VSR__google(); // DO IT
 							//~ A9_Snaptell_VSR__google(); // DO NOT DO THIS AUTO! AS OF OCT24. GETTING CAPTCHA ON EVERY SEARCH!
 						} else {
@@ -179945,12 +179945,12 @@ function top_window(okay_to_run) {
 				// Num
 				if (!rs.length) {
 					out.innerText = '0';
-					result[result_key] = false;
+					result[ result_key ] = false;
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:2000px;');
 					out.appendChild(div);
-					result[result_key] = true;
+					result[ result_key ] = true;
 				}
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
