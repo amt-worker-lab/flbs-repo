@@ -179058,16 +179058,19 @@ function top_window(okay_to_run) {
 				skips_key: 'VSR_Barcodes_Skips_File',
 				callback: init,
 				callback_err: function() {},
-				skips_file: o.SKIP_SITES,
+				skips_obj: o.SKIP_SITES,
 			});
 			// Init
-			function init() {
+			function init(SKIP_SITES) {
+				console.log(SKIP_SITES);
+				console.log(o);return;
+				A9_Snaptell_VSR__next();
+				A9_Snaptell_VSR__shopsavvy();
 				//~ console.log(SKIP_SITES);
 				//~ o.SKIP_SITES = SKIP_SITES; // Populate.
 				//~ // Init
 				//~ gs(d2);
 			}
-			
 			//~ // INIT
 			//~ A9_Snaptell_VSR__next();
 			//~ // LOADS SHOPSAVVY INITIALLY
@@ -179126,7 +179129,7 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return;
 						}
-						
+						//
 						if  (
 							rs.indexOf('something went wrong') == -1 &&
 							rs.indexOf('<title>Advanced Search on ShopSavvy</title>') == -1
@@ -179175,13 +179178,11 @@ function top_window(okay_to_run) {
 						{
 							result.shopsavvy = false;
 						}
-						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 					}
 				});
 			}
-			
 			// ...
 			function A9_Snaptell_VSR__next() {
 				// Done?
@@ -179189,7 +179190,6 @@ function top_window(okay_to_run) {
 				if (!result.array_all.length) {
 					return;
 				}
-				
 				// Next
 				console.log(result.array_all);
 				var next = result.array_all.shift();
@@ -179800,15 +179800,28 @@ function top_window(okay_to_run) {
 					var domain = rs[i][0];
 					domain = domain.replace(/https?:\/\/(www\.|)/i, '');
 					domain = domain.replace(/\/[\d\D]*/, '');
-					// Is a "bad" / "skip" URL?
-					// werruftan.info
-					if (bad_sites.hasOwnProperty(domain)) {
-						var div = document.createElement('div');
-						div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
-						div.innerText = domain;
-						out.appendChild(div);
-						continue;
+					
+					
+					var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
+						domain: domain,
+						load_file: 'VSR_Barcodes_Skips_File', 
+						var_skip_sites: o.SKIP_SITES, 
+						callback_function: false,
+					});
+					out.appendChild( el_inp_skip3__obj.el_button );
+					if ( el_inp_skip3__obj.isSkip ) {
+						continue; // Stops here
 					}
+					
+					//~ // Is a "bad" / "skip" URL?
+					//~ // werruftan.info
+					//~ if (bad_sites.hasOwnProperty(domain)) {
+						//~ var div = document.createElement('div');
+						//~ div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+						//~ div.innerText = domain;
+						//~ out.appendChild(div);
+						//~ continue;
+					//~ }
 					var tmp_url = rs[i][0];
 					var tmp_url_replace_scripts = rs[i][0];
 					if (i < 3) {
@@ -179834,7 +179847,6 @@ function top_window(okay_to_run) {
 					inp.setAttribute('style', 'text-align:left;' + bg_isPDF);
 					inp.type = 'button';
 					inp.value = host;
-					//~ inp.innerText = host;
 					inp.host = host;
 					inp.full_url = tmp_url;
 					inp.output_url = rs[i][0];

@@ -13002,11 +13002,7 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		el_inp.setAttribute('style','width:auto;');
 		el_inp.setAttribute('type','button');
 		el_inp.value = ' S ';
-		//~ el_inp.className = 
-		//~ el_inp.id = url; //argv
-		//~ el_inp.skips_key_php_get = skips_key_php_get; //argv
 		el_inp.onclick = write_skips;
-		
 		return el_inp;
 	}
 	function remove_button() { //url
@@ -13016,12 +13012,9 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 		el_inp.value = '>' + input_skips_object.domain;
 		el_inp.className = 'input_skip_button2_rm_';
 		el_inp.onclick = remove_skips;
-		
 		return el_inp;
 	}
-	
 	// ERR: SHORT_DOMAIN IS "com" !!!
-	
 	// Is this a skip?	
 	if  (
 		input_skips_object.var_skip_sites.hasOwnProperty( input_skips_object.short_domain ) ||
