@@ -178763,12 +178763,9 @@ function top_window(okay_to_run) {
 				h3[1].parentNode.removeChild(h3[1]);
 			else if (h3[2] && h3[2].innerText.indexOf('Product barcode value: ') != -1)
 				h3[2].parentNode.removeChild(h3[2]);
-			
-			// ...
+			// copyInp
 			AMT__Global_Vars.copyInp = upc;
-			
-			// ...
-			// and "q"
+			// x1 - x4
 			var x1, x2, x3, x4;
 			x1 = document.getElementById('Answer_1_FreeText');
 			x2 = document.getElementById('Answer_3_FreeText');
@@ -178779,17 +178776,18 @@ function top_window(okay_to_run) {
 				this.value = d1.output_url; //.output_url
 				x1.focus();
 			}
+			// o
 			var o = {
 				select_container: document.getElementsByClassName('question-wrapper')[1],
 				q: [
 					x1, x2, x3, x4
-				]
+				],
+				SKIP_SITES: null, // Skips
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 			o.q[2].multiple = true;
 			o.q[2].size=2;
 			o.q[2].setAttribute('style','width:80%;zoom:1.8;'); // Add blue bgc
-			//~ o.select_container.setAttribute('style','position:absolute;left:60%;top:-40px !important;background-color:blue;'); // Add blue bgc
 			// Clear bold
 			var b = document.getElementsByTagName('b');
 			for (var i in b) {
@@ -178806,7 +178804,6 @@ function top_window(okay_to_run) {
 			}
 			// SELECT FIELD for submit...
 			// Changed from dblclick to click.
-			//
 			//~ o.q[2].ondblclick = function() {
 			o.q[2].onclick = function() {
 				if  (
@@ -178958,7 +178955,6 @@ function top_window(okay_to_run) {
 					//~ return false;
 				//~ }
 			}
-			
 			// Onclick
 			document.getElementsByName('/submit')[0].onclick = function(e) {
 				e.stopPropagation();
@@ -178976,7 +178972,6 @@ function top_window(okay_to_run) {
 				doSubmit('hitForm');
 				return false;
 			}
-			
 			// ...
 			AMT__Global_Vars.core.return_accept_run_nextTab = true;
 			// ...
@@ -178990,7 +178985,7 @@ function top_window(okay_to_run) {
 				this.checked = true;
 				doSubmit('hitForm');
 			}
-			
+			// middle-click-na
 			new AMT___core_factory().createScriptVar('middle-click-na', '0');
 			window.addEventListener('click', function(e) {
 				if(e.which == 2) {
@@ -179000,7 +178995,6 @@ function top_window(okay_to_run) {
 					} 
 				}
 			});
-			
 			// Zoom
 			// Tell child to zoom out & extend
 			var ifr_intv = setInterval(function() {
@@ -179013,7 +179007,6 @@ function top_window(okay_to_run) {
 							MT___text_scrollIntoView: new RegExp(upc, 'i'),
 							highlight_range_to_parent: {
 								completion_key: 'A9_Snaptell_VSR__iframe_complete'
-								//~ control_key_append: true // enable control key to tell parent to append this to field rather than overwrite; (optional would be to add a "glue" value, e.g. " ")
 							},
 						},
 						"*"
@@ -179039,8 +179032,7 @@ function top_window(okay_to_run) {
 					o.q[0].focus();
 				}
 			}
-			
-			// global
+			// Global
 			var result = {
 				digital_eyes:	null,
 				startpage:		null,
@@ -179054,18 +179046,32 @@ function top_window(okay_to_run) {
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, // 
 				google:			null,
-				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
 				array_all: ['de','su','sp','ss','db','ud','yp','op','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
-				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
-				
 				// This is the first URL for iframe d1.src.
 				first_url: null
+				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
+				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			}
 			
-			// INIT
-			A9_Snaptell_VSR__next();
-			// LOADS SHOPSAVVY INITIALLY
-			A9_Snaptell_VSR__shopsavvy();
+			// Get skips file
+			new AMT___requests_factory().fs__load_skips2({
+				skips_key: 'VSR_Barcodes_Skips_File',
+				callback: init,
+				callback_err: function() {},
+				skips_file: o.SKIP_SITES,
+			});
+			// Init
+			function init() {
+				//~ console.log(SKIP_SITES);
+				//~ o.SKIP_SITES = SKIP_SITES; // Populate.
+				//~ // Init
+				//~ gs(d2);
+			}
+			
+			//~ // INIT
+			//~ A9_Snaptell_VSR__next();
+			//~ // LOADS SHOPSAVVY INITIALLY
+			//~ A9_Snaptell_VSR__shopsavvy();
 			
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
