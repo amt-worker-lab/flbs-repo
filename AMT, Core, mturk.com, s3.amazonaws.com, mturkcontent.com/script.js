@@ -93641,7 +93641,9 @@ qatar,80
 	// 
 	// 
 	s = '	<li><strong>Do not </strong>include URLs for individuals or urls that include https:, /pub/, /dir/, /group/</li>';
-	if (ih.indexOf(s) != -1) {
+	s2 = '<li><strong style="font-size: 0.9em; line-height: 1.6em;">Do not </strong><span style="font-size: 0.9em; line-height: 1.6em;">include URLs that include';
+	if (ih.indexOf(s) != -1 ||
+		ih.indexOf(s2) != -1) {
 		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
 		
