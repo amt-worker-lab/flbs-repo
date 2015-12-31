@@ -47471,11 +47471,12 @@ function MT__RUN() {
 	// Find correct ID for audio metadata
 	// AMT_Requester_Rory_Bernard.tracks
 	// 
-	s = '<a href="https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing" target="_blank">https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing</a></li>';
+	s = '<li>Find the matching CP_TrackTitle - there may be mispellings or slight variations (in referal spreadsheet)</li>'
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function(){}
 		run.prototype.f = function() {
+			console.log('rb ran');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50% !important;}'); // Left:50%
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');//width:40% !important;	
@@ -47507,12 +47508,36 @@ function MT__RUN() {
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
+			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;backgroundColor:#eee;');
+			document.body.appendChild(d1a);
+			
 			var d1b = document.createElement('div');
+			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;backgroundColor:#eee;');
+			document.body.appendChild(d1b);
+
+
 			var d1c = document.createElement('div');
-			var detailsDiv = document.createElemnt('div');
+			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;backgroundColor:#eee;');
+			document.body.appendChild(d1c);
+
+
+			var detailsDiv = document.createElement('div');
+			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:15%;height:40px;line-height:20px;backgroundColor:#eee;')
+			document.body.appendChild(detailsDiv);
+
+			
 			var tTitle = document.createElement('textarea');
+			tTitle.setAttribute('style', 'position:absolute;left:15%;Top:0px;width:85%;line-height:20px;height:20px')
+			document.body.appendChild(tTitle);
+
 			var tArtsist = document.createElement('textarea');
+			tArtsist.setAttribute('style', 'position:absolute;left:0%;Top:20px;width:15%;height:40px;line-height:20px;backgroundColor:#eee;')
+			document.body.appendChild(tArtsist);
+			
 			/* END ITEMS */
+			
+			
+			
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -47520,14 +47545,11 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					o.divs[0],
-					o.divs[1],
-					o.divs[2],
-					o.divs[3],
-					o.divs[4],
-					o.divs[5],
+					d1a,
+					d1b,
+					d1c
 				],
-				offset: 100
+				offset: 40
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
@@ -47541,12 +47563,12 @@ function MT__RUN() {
 				}
 			}
 			// init
-			stores(o.inputs[0]);
-			stores(o.inputs[1]);
-			stores(o.inputs[2]);
-			stores(o.inputs[3]);
-			stores(o.inputs[4]);
-			stores(o.inputs[5]);
+			//~ stores(o.inputs[0]);
+			//~ stores(o.inputs[1]);
+			//~ stores(o.inputs[2]);
+			//~ stores(o.inputs[3]);
+			//~ stores(o.inputs[4]);
+			//~ stores(o.inputs[5]);
 			
 			// ...
 			function stores(input) {
@@ -47685,7 +47707,7 @@ function MT__RUN() {
 				// Still here...
 				doSubmit();
 			}
-		}
+		};
 		new run().f();return;
 	}
 	// John Curtis #2
