@@ -47508,30 +47508,29 @@ function MT__RUN() {
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
-			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;backgroundColor:#eee;');
+			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1a);
 			
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;backgroundColor:#eee;');
+			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
 
 
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;backgroundColor:#eee;');
+			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
-
-
+			
 			var detailsDiv = document.createElement('div');
-			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:15%;height:40px;line-height:20px;backgroundColor:#eee;')
+			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:40px;line-height:20px;background-color:#eee;border:1px solid black;')
 			document.body.appendChild(detailsDiv);
-
+			detailsDiv.innerText = 'Track:\nArtist:'
 			
 			var tTitle = document.createElement('textarea');
-			tTitle.setAttribute('style', 'position:absolute;left:15%;Top:0px;width:85%;line-height:20px;height:20px')
+			tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;line-height:20px;height:20px;border:1px solid black;')
 			document.body.appendChild(tTitle);
 
 			var tArtsist = document.createElement('textarea');
-			tArtsist.setAttribute('style', 'position:absolute;left:0%;Top:20px;width:15%;height:40px;line-height:20px;backgroundColor:#eee;')
+			tArtsist.setAttribute('style', 'position:absolute;left:8%;Top:20px;width:85%;height:20px;line-height:20px;backgroundColor:#eee;border:1px solid black;')
 			document.body.appendChild(tArtsist);
 			
 			/* END ITEMS */
