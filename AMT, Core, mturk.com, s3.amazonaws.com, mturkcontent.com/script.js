@@ -47491,7 +47491,6 @@ function MT__RUN() {
 				stores: [],
 				title: document.getElementsByTagName('td')[1],
 				artist: document.getElementsByTagName('td')[3],
-				//title: document.getElementsByTagName('td')[5],
 				q: [
 					document.getElementById('Counterpoint_ID'),
 					document.getElementById('MatchType'),
@@ -47515,7 +47514,6 @@ function MT__RUN() {
 			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
 
-
 			var d1c = document.createElement('div');
 			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1c);
@@ -47528,16 +47526,15 @@ function MT__RUN() {
 			var tTitle = document.createElement('textarea');
 			tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;line-height:20px;height:20px;border:1px solid black;')
 			document.body.appendChild(tTitle);
+			tTitle.value = o.title;
 
-			var tArtsist = document.createElement('textarea');
-			tArtsist.setAttribute('style', 'position:absolute;left:8%;Top:20px;width:85%;height:20px;line-height:20px;backgroundColor:#eee;border:1px solid black;')
-			document.body.appendChild(tArtsist);
-			
+			var tArtist = document.createElement('textarea');
+			tArtist.setAttribute('style', 'position:absolute;left:8%;Top:20px;width:85%;height:20px;line-height:20px;backgroundColor:#eee;border:1px solid black;')
+			document.body.appendChild(tArtist);
+			tArtist.value = o.artist;
 			/* END ITEMS */
-			
-			
-			
-			
+			// Onblur
+			tArtist.onblur = tTitle.onblur = search;
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -47562,40 +47559,94 @@ function MT__RUN() {
 				}
 			}
 			// init
-			//~ stores(o.inputs[0]);
-			//~ stores(o.inputs[1]);
-			//~ stores(o.inputs[2]);
-			//~ stores(o.inputs[3]);
-			//~ stores(o.inputs[4]);
-			//~ stores(o.inputs[5]);
+			search();
+			
 			
 			// ...
-			function stores(input) {
-				var s = input.__store;
-				var out = input.__parent;
-				out.innerHTML = '';
+			function search() {
+				//~ var s = input.__store;
+				//~ var out = input.__parent;
+				d1a.innerText = d1b.innerText = d1c.innerText = '';
 				
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
-						query: 'AMT__John_Curtis_Mall_Search2',
-						encodeStrings: [ { store: input.value, mall: s.mall } ],
-						__seed__: input,
+						query: 'AMT_Requester_Rory_Bernard',
+						encodeStrings: [ { track: tTrack.value.trim(), artist: tArtist.value.trim() } ],
+						//~ __seed__: input,
 					},
 					process
 				);
-				//~ var rf = new AMT___requests_factory();
-				//~ rf.database__select(
-					//~ {
-						//~ query: 'AMT__John_Curtis_Mall_Search2',
-						//~ encodeStrings: [ { store: d2.value} ],
-						//~ __seed__: d1b,
-					//~ },
-					//~ process
-				//~ );
+			}
+			// ...
+			function make_boxes(results_array, div) {
+				if (results_array.length == 0) {
+					div.innerText = 'No results!';
+					return;
+				}
+				for (var i in results_array) { //[ $row['CP_ID'], $row['CP_TrackTitle'], $row['CP_PerformedBy'], $row['CP_Composer'] ]
+					var x = results_array[i];
+					// 
+					var n = MT__bold(x[0], s.sbold);
+					var m = MT__bold(x[1], s.mbold, {color:'blue'}).bold_string;
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = n + ': ' + m;
+					eldiv.code = x[0];
+					eldiv.output_field = output_field; // Input field.....
+					eldiv.onclick = function() {
+						this.output_field.squished = true;
+						squish();
+						this.style.backgroundColor = 'LightGreen';
+						this.output_field.value = this.code;
+						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
+							try_sbm();
+							//~ doSubmit();
+						}
+					}
+					out.appendChild(eldiv);
+					console.log(s);
+					console.log(x);
+					if ( //i == 0 &&
+						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						s.store.clean_str_to_auto().length >= 4 &&
+						s.mall.clean_str_to_auto().length >= 4 &&
+						!s.auto
+						) {
+						s.auto = true;
+						eldiv.click();
+					}
+					
+					else if ( // try auto 2 (no "The"
+						s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						!s.auto
+						) {
+						s.auto = true;
+						eldiv.click();
+					}
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out .appendChild(eldiv);
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out.appendChild(eldiv);
+				}
 			}
 			// ...
 			function process(database_object) {
+				//database_object.responseObject.[['track+artist'=>'','artist'=>'','track'=>'']]
+				make_boxes(database_object.responseObject['track+artist'], d1a);
+				make_boxes(database_object.responseObject['track'], d1b);
+				make_boxes(database_object.responseObject['artist'], d1c);
+				
+				
 				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
 				//database_object.responseObject = JSON.parse(rs);
 				var input = database_object.__seed__;
