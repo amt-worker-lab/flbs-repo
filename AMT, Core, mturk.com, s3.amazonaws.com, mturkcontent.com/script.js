@@ -37,9 +37,35 @@ function MT__RUN() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('#submitButton {width:100%;height:300px}');
+			
+			// maker_retailer
+			
+		
+			var o = {
+				q: [
+					document.getElementsByName('maker_retailer')[0],
+					document.getElementsByName('not_maker_retailer')[0],
+				]
+			}
+			
+			for(var i = 0; i < o.q.length; i++) {
+				o.q[i].style.zoom = 4;
+				o.q[i].onclick = function() {
+					this.chcked = true;
+					try_sbm();
+				}
+			}
+			
+			function try_sbm() {
+				if(o.q[0].checked || o.q[1].checked) {
+					if(!(o.q[0].checked && o.q[1].checked)) {
+						doSubmit();
+					}
+				}
+			}
+			
 		}
 		new run().f();
-				
 	}
 	
 	
