@@ -93677,13 +93677,13 @@ qatar,80
 		//o.bold_array = o.comp.replace(/\.\w+$/g, '').clean_string_to_array();
 		
 		
-		AMT__setUtilityTabs([{url: o.url,
+		//~ AMT__setUtilityTabs([{url: o.url,
 			
-			options: {
-									task: "AMT__all_pages_util",
-									ScrollToPageButtom: true
-					}
-			}]);
+			//~ options: {
+									//~ task: "AMT__all_pages_util",
+									//~ ScrollToPageButtom: true
+					//~ }
+			//~ }]);
 		
 		//BEGIN ITEMS
 		var d1 = document.createElement('div');
