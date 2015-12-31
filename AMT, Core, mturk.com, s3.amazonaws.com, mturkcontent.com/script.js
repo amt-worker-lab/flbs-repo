@@ -47464,44 +47464,230 @@ function MT__RUN() {
 	 * Sol Rosenberg
 	 * Morgan Intrator
 	 * John Curtis
+	 * Rory Bernard
 	 * 
 	 */
-	//
-	// Morgan Intrator
-	// -SimpleSearch, Find this school in a list
+	// Rory Bernard
+	// Find correct ID for audio metadata
+	// AMT_Requester_Rory_Bernard.tracks
 	// 
-	//~ s = 'For each school, find it&nbsp;in the google spreadsheet here (<a href="https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914" target="_blank">https://docs.google.com/spreadsheets/d/119y2KtisoaX1JoU-0mv-IdnrykavPco-RsIoVbsk34I/edit#gid=2139241914</a>)';
-	//~ if (ih.indexOf(s) != -1)
-	//~ {		
-		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
-		//~ 
-		//~ var school = document.getElementsByTagName('td')[1].innerText.trim();
-		//~ var q = document.getElementById('unitid');
-		//~ 
-		//~ /* BEGIN ITEMS */
-		//~ var d1 = document.createElement('div');
-		//~ d1 .setAttribute('style','position:absolute;top:0px;left:0%;width:50%;height:10px;background-color:#eee;border:1px solid blue;overflow:auto;');
-		//~ document.body.appendChild(d1);
-		//~ /* */
-		//~ 
-		//~ GM_xmlhttpRequest({ // init
-			//~ method: "GET",
-			//~ url: MT___host + '/mturk/.miscellaneous/Morgan Intrator.csv',
-			//~ onload: function(response) {
-				//~ var rs = response.responseText;
-				//~ if (response.status != 200) return;
-				//~ 
-				//~ var r;
-				//~ 
-				//~ r = new RegExp('\\n(\\d+), *' + __js_escape_regEx(school) + '\\n', 'i').exec(rs);
-				//~ if (r) {
-					//~ r = r[1];
-					//~ q.value = r;
-					//~ doSubmit();
-				//~ }
-			//~ }
-		//~ });
-	//~ }
+	s = '<a href="https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing" target="_blank">https://docs.google.com/spreadsheets/d/1HQfsvsL1rLtRMfBgerXj2vap3kFXGL-hXJiFH4ZNMnQ/edit?usp=sharing</a></li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50% !important;}'); // Left:50%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');//width:40% !important;	
+			
+			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var tb = document.getElementsByTagName('table');
+			var o = {
+				stores: [],
+				title: document.getElementsByTagName('td')[1],
+				artist: document.getElementsByTagName('td')[3],
+				//title: document.getElementsByTagName('td')[5],
+				q: [
+					document.getElementById('Counterpoint_ID'),
+					document.getElementById('MatchType'),
+				],
+				//~ nas: [],
+				//~ divs: [],
+				//~ inputs: [],
+				//~ sbold: null,
+				//~ mbold: null,
+				//~ auto: false,
+				//~ store_no_the:null,
+				//~ mall_no_the:null,
+			}
+
+			/* BEGIN ITEMS */
+			var d1a = document.createElement('div');
+			var d1b = document.createElement('div');
+			var d1c = document.createElement('div');
+			var detailsDiv = document.createElemnt('div');
+			var tTitle = document.createElement('textarea');
+			var tArtsist = document.createElement('textarea');
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					o.divs[0],
+					o.divs[1],
+					o.divs[2],
+					o.divs[3],
+					o.divs[4],
+					o.divs[5],
+				],
+				offset: 100
+			});
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+			}
+			// init
+			stores(o.inputs[0]);
+			stores(o.inputs[1]);
+			stores(o.inputs[2]);
+			stores(o.inputs[3]);
+			stores(o.inputs[4]);
+			stores(o.inputs[5]);
+			
+			// ...
+			function stores(input) {
+				var s = input.__store;
+				var out = input.__parent;
+				out.innerHTML = '';
+				
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__John_Curtis_Mall_Search2',
+						encodeStrings: [ { store: input.value, mall: s.mall } ],
+						__seed__: input,
+					},
+					process
+				);
+				//~ var rf = new AMT___requests_factory();
+				//~ rf.database__select(
+					//~ {
+						//~ query: 'AMT__John_Curtis_Mall_Search2',
+						//~ encodeStrings: [ { store: d2.value} ],
+						//~ __seed__: d1b,
+					//~ },
+					//~ process
+				//~ );
+			}
+			// ...
+			function process(database_object) {
+				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
+				//database_object.responseObject = JSON.parse(rs);
+				var input = database_object.__seed__;
+				var s = input.__store;
+				var output_field = input.__output_field;
+				var out = input.__parent;
+				var show = (s.store + '\n' + s.mall).div({style:'border-bottom:2px solid teal;'});
+				// Show...
+				out.innerText = '';
+				out.appendChild(show);
+				// 0...
+				if (database_object.responseObject.length == 0) {
+					out.appendChild((input.value + "\n" + '0 results!').div());
+					return;
+				}
+				
+				// Loop
+				// AUTO
+				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				for (var i in database_object.responseObject) {
+					//
+					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
+					
+					//
+					var n = MT__bold(x[0], s.sbold);
+					var m = MT__bold(x[1], s.mbold, {color:'blue'}).bold_string;
+					
+					// ...
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = n + ': ' + m;
+					eldiv.code = x[2];
+					eldiv.output_field = output_field; // Input field.....
+					eldiv.onclick = function() {
+						this.output_field.squished = true;
+						squish();
+						this.style.backgroundColor = 'LightGreen';
+						this.output_field.value = this.code;
+						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
+							try_sbm();
+							//~ doSubmit();
+						}
+					}
+					out.appendChild(eldiv);
+					console.log(s);
+					console.log(x);
+					if ( //i == 0 &&
+						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						s.store.clean_str_to_auto().length >= 4 &&
+						s.mall.clean_str_to_auto().length >= 4 &&
+						!s.auto
+						) {
+						s.auto = true;
+						eldiv.click();
+					}
+					
+					else if ( // try auto 2 (no "The"
+						s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						!s.auto
+						) {
+						s.auto = true;
+						eldiv.click();
+					}
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out .appendChild(eldiv);
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out.appendChild(eldiv);
+			}
+			function squish() { // Minimize....
+				var num = 0;
+				for (var i in o.q) {
+					if (!o.q[i].squished) {
+						num++;
+					}
+				}
+				var tot = (99/num); // e.g. 99/2=49.5 99/4=24.75
+				var left = 0;
+				for (var i in o.q) {
+					if (o.q[i].squished) {
+						o.inputs[i].style.display = 'none';
+						o.divs[i].style.display = 'none';
+						o.nas[i].style.display = 'none';
+					} else {
+						o.inputs[i].style.width = tot+'%';
+						o.divs[i].style.width = tot+'%';
+						o.nas[i].style.width = tot+'%';
+						o.inputs[i].style.left = left+'%';
+						o.divs[i].style.left = left+'%';
+						o.nas[i].style.left = left+'%';
+						left += tot; // Increment left
+					}
+				}
+			}
+			function try_sbm() {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') return;
+				}
+				// Still here...
+				doSubmit();
+			}
+		}
+		new run().f();return;
+	}
 	// John Curtis #2
 	// Lookup store name in our data list and get ID
 	// AMT__John_Curtis_Mall_Search2
