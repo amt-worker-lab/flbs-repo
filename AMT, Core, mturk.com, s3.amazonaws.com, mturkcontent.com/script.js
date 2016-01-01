@@ -47498,6 +47498,7 @@ function MT__RUN() {
 				bold: [],
 				tbold: [],
 				abold: [],
+				auto: false,
 			}
 			o.tbold = o.title.clean_string_to_array();
 			o.abold = o.artist.clean_string_to_array();
@@ -47505,16 +47506,20 @@ function MT__RUN() {
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
-			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1a.setAttribute('style', 'position:absolute;width:24.5%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1a);
 			
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style', 'position:absolute;width:24.5%;left:24.5%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1c.setAttribute('style', 'position:absolute;width:24.5%;left:49%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1c);
+
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style', 'position:absolute;width:24.5%;left:73.5%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1d);
 			
 			var detailsDiv = document.createElement('div');
 			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:40px;line-height:20px;background-color:#eee;border:1px solid black;')
@@ -47541,7 +47546,8 @@ function MT__RUN() {
 				elements: [
 					d1a,
 					d1b,
-					d1c
+					d1c,
+					d1d
 				],
 				offset: 40
 			});
@@ -47560,7 +47566,7 @@ function MT__RUN() {
 			search();
 			// ...
 			function search() {
-				d1a.innerText = d1b.innerText = d1c.innerText = '';
+				d1a.innerText = d1b.innerText = d1c.innerText = d1d.innerText = '';
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
@@ -47620,18 +47626,17 @@ function MT__RUN() {
 						this.style.backgroundColor = 'aqua';
 					}
 					div.appendChild(eldiv);
-					//~ console.log(s);
-					//~ console.log(x);
-					//~ if ( //i == 0 &&
-						//~ s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
-						//~ s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
-						//~ s.store.clean_str_to_auto().length >= 4 &&
-						//~ s.mall.clean_str_to_auto().length >= 4 &&
-						//~ !s.auto
-						//~ ) {
-						//~ s.auto = true;
-						//~ eldiv.click();
-					//~ }
+					if (
+						div == d1a &&
+						x[1].clean_str_to_auto() == o.title.clean_str_to_auto() &&
+						x[2].clean_str_to_auto() == o.artist.clean_str_to_auto()
+						x[1].clean_str_to_auto().length >= 4 &&
+						x[2].clean_str_to_auto().length >= 4 &&
+						!o.auto
+						) {
+						o.auto = true;
+						eldiv.click();
+					}
 					//~ else if ( // try auto 2 (no "The"
 						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
 						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
@@ -47653,6 +47658,7 @@ function MT__RUN() {
 				make_boxes(database_object.responseObject['a_t'], d1a);
 				make_boxes(database_object.responseObject['title'], d1b);
 				make_boxes(database_object.responseObject['artist'], d1c);
+				make_boxes(database_object.responseObject['composer'], d1d);
 			}
 			//~ function squish() { // Minimize....
 				//~ var num = 0;
@@ -47678,14 +47684,6 @@ function MT__RUN() {
 						//~ left += tot; // Increment left
 					//~ }
 				//~ }
-			//~ }
-			//~ function try_sbm() {
-				//~ for (var i in o.q) {
-					//~ o.q[i].value = o.q[i].value.trim();
-					//~ if (o.q[i].value == '') return;
-				//~ }
-				//~ // Still here...
-				//~ doSubmit();
 			//~ }
 		};
 		new run().f();return;
