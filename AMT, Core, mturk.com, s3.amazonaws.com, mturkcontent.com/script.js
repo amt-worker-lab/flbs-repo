@@ -32053,6 +32053,679 @@ function MT__RUN() {
 	// Copy numbers from a PDF table
 	// XXXX Not doing this =)
 	
+	/**
+	 * Guidestar.org search
+	 * 
+	 * Andrew Ryan
+	 * Mike Mahoney
+	 * Kelly Garrott
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	// Kelly Garrott
+	// Find the nonprofit revenue
+	// 
+	//
+	s = 'Attached you will see a spreadsheet with nonprofit organization names. I need to know the revenue for each organization. You can find the revenue through a database called Guidestar.org.';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,b {margin:0;padding:0;font-size:14px !important;}');
+			GM_addStyle('body {width:40%;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:200px !important;width:40% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.div-result:hover {background-color:LightGreen;cursor:pointer;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				name: td[3].innerText.trim(),
+				address: td[5].innerText.trim(),
+				city: td[9].innerText.trim(),
+				state: td[11].innerText.trim(),
+				zip: td[13].innerText.trim(),
+				state_full: null,
+				city_st_hash: null,
+				zip_cln: null,
+				
+				bold: [],
+				bold_locn: [],
+				gs_popup: false, // Boolean to only open so many popups.
+				
+				viewState2: null,
+				distance_divs: {},
+				numRuns: 0, // counter
+				hv: new AMT___huge_vars_factory().Andrew_Ryan_charities_ein__vars() // o.hv.af1, o.hv.af2
+			};
+			//~ var viewState2;
+			o.state_full = o.state.stateAbbrToFull();
+			o.city_st_hash = o.city + '|' + o.state;
+			o.bold = o.name.clean_string_to_array();
+			o.bold_locn = o.city.clean_string_to_array().concat( o.state.clean_string_to_array() ).concat( o.zip.clean_string_to_array() ).concat( o.state_full.clean_string_to_array() );
+			o.zip_cln = o.zip.replace(/^(\d+)[\d\D]*$/, '$1');
+			console.log(o);
+			
+			// createScriptVar
+			new AMT___core_factory().createScriptVar('Daniel O\'Mahoney NT', '1', false);
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;left:20%;top:0px;height:200px;width:50%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style', 'position:absolute;left:70%;top:0px;height:200px;width:29%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(d1b);
+			var div_debug = document.createElement('div');
+			div_debug.setAttribute('style', 'position:absolute;left:0%;top:100px;height:100px;width:19%;background-color:#eee;overflow:auto;border:1px solid blue;');
+			document.body.appendChild(div_debug);
+			var d2 = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;left:0%;top:0px;height:100px;width:19%;');
+			document.body.appendChild(d2);
+			d2.onblur = function() {
+				o.numRuns = 0;
+				if (AMT__Global_Vars.scriptVars['Daniel O\'Mahoney NT'] == '1') {
+					new AMT___core_factory().nextTab();
+				}
+				init_gs();
+				init_nces();
+			};
+			d2.value = o.name;
+			/* END ITEMS */
+			
+			// Empty tds
+			var skip = {
+				'Unique ID':true,
+				'Organization Name':true,
+				'Address 1':true,
+				'Address 2':true,
+				'City':true,
+				'State':true,
+				'Post-Code':true
+			}
+			for (var i in td) {
+				if (i == 'length') break;
+				var k = td[i].innerText.trim();
+				if (!skip.hasOwnProperty( k )) continue;
+				if (td[i].innerHTML.toLowerCase().indexOf('name=') == -1 && td[i].innerHTML.toLowerCase().indexOf('name =') == -1) { // NO FORM ELEMENTS
+					td[i].innerText = td[i].innerText[0];
+				}
+			}
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1,d1b
+				],
+				offset: 0
+			});
+			// EF
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+		
+			// Init
+			init_gs();
+			init_nces();
+			
+			/**
+			 * function init_nces
+			 * 
+			 * http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&zipcode=94539&miles=&itemname=j&sortby=name&School=1&PrivSchool=1
+			 * 
+			 */
+			function init_nces() {
+				var abbr = d2.value.replace(/ *school *$/gi, '');
+				d1b.innerHTML = abbr + '\n' + o.zip_cln;
+				var u =
+					'http://nces.ed.gov/globallocator/index.asp?search=1&State=&city=&miles='+
+					'&zipcode='+encodeURIComponent(o.zip_cln)+ // Remove all but first digits.
+					'&itemname='+encodeURIComponent(abbr)+
+					'&sortby=name&School=1&PrivSchool=1';
+				// Xhr
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						//~ console.log({'rs':rs});
+						if (response.status != 200) {
+							d1b.innerText = response.status;
+							return;
+						}
+						
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						
+						// Public
+						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
+						var pub = dom.getElementById('hiddenitems_school');
+						if (!pub) {
+							d1b.appendChild('0'.div());
+						} else if (pub) {
+							pub = pub.getElementsByTagName('tr');
+							for (var i in pub) {
+								if (i == 'length') break;
+								var a = pub[i].getElementsByTagName('a');
+								if (!a.length) continue;
+								a = a[0]; // Must be at least one href. Non-schools TRs are at end of table.
+								var href = a.getAttribute('href');
+								var title = a.innerText;
+								var desc = pub[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
+								var grd = pub[i].getElementsByClassName('InstDetail')[0].innerText;
+								var url;
+								var nces;
+								
+								//JavaScript:MoreInfo('sch_info_popup.asp'+'?Type=Public'+'&ID=061440001673');
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)'\+'&ID=([a-z\d]{6,})'\);/.exec(href);
+								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
+								nces = x[2];
+								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
+								
+								// Div for each result
+								eldiv = document.createElement('div');
+								eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+								eldiv.className = 'div-result';
+								eldiv.nces = nces;
+								eldiv.url = url;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc +
+									'<br>'+nces+
+									'<br>'+url;
+								eldiv.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									document.getElementsByName('NCES School ID')[0].value = this.nces;
+									document.getElementsByName('Source')[0].value = this.url;
+									if (this.nces.length >=6 && this.nces.length<=20 && this.url.length>8) {
+										doSubmit();
+									}
+								}
+								d1b.appendChild(eldiv);
+							}
+						}
+						// Private
+						d1b.appendChild(''.div({style:'border-bottom:4px solid teal;'}));// HR
+						var priv = dom.getElementById('hiddenitems_privschool');
+						if (!priv) {
+							d1b.appendChild('0'.div());
+						} else if (priv) {
+							priv = priv.getElementsByTagName('tr');
+							for (var i in priv) {
+								if (i == 'length') break;
+								var a = priv[i].getElementsByTagName('a');
+								if (!a.length) continue;
+								a = a[0]; // Must be at least one href. Non-schools TRs are at end of table.
+								var href = a.getAttribute('href');
+								var title = a.innerText;
+								var desc = priv[i].getElementsByClassName('InstDesc')[0].innerText.replace(title, '');
+								var grd = priv[i].getElementsByClassName('InstDetail')[0].innerText;
+								var url;
+								var nces;console.log(href);
+								
+								var x = /JavaScript:MoreInfo\('sch_info_popup\.asp'\+'\?Type=(Public|Private)&ID=([a-z\d]{6,})'\);/i.exec(href);
+								url = 'http://nces.ed.gov/globallocator/sch_info_popup.asp?Type='+x[1]+'&ID='+x[2];
+								nces = x[2];
+								desc = MT__bold(desc, o.bold.concat(o.bold_locn));
+								
+								// Div for each result
+								eldiv = document.createElement('div');
+								eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;');
+								eldiv.className = 'div-result';
+								eldiv.nces = nces;
+								eldiv.url = url;
+								eldiv.innerHTML = MT__bold(title, o.bold) + '<br>' + desc +
+									'<br>'+nces+
+									'<br>'+url;
+								eldiv.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									document.getElementsByName('NCES School ID')[0].value = this.nces;
+									document.getElementsByName('Source')[0].value = this.url;
+									if (this.nces.length >=6 && this.nces.length<=20 && this.url.length>8) {
+										doSubmit();
+									}
+								}
+								d1b.appendChild(eldiv);
+							}
+						}
+					}
+				});
+			}
+			
+			// function 
+			function init_gs() {
+				
+				// Show display of status
+				//
+				//
+				d1.innerHTML = d2.value;// + '<hr>';
+				
+				var dataStarter = o.hv.af1; // INIT!!
+				
+				var u = encodeURIComponent(d2.value); // + (input.includeCitySearch ? ' ' + city : ''));
+				//24txtKeywords=cheese
+				dataStarter = dataStarter.replace(
+					/24txtKeywords=cheese[^&]*/,
+					'24txtKeywords=' + u
+				);
+				
+				// Xhr
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: 'http://www.guidestar.org/SearchResults.aspx',
+					data: dataStarter,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						console.log({'rs':rs});
+						
+						// Check error
+						gs_error(response);
+						
+						var oneResultReg = /produced[\r\n\s\t]*1[\r\n\s\t]*result/
+						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
+						var brokenPage = brokenPageReg.exec(rs);
+						var successfulRunReg = new RegExp(
+							'<strong>[\\r\\n\\s\\t]*' +
+							__js_escape_regEx(d2.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;')) +
+							//(input.includeCitySearch ? ' ' + city : '')) +
+							'[\\r\\n\\s\\t]*<\\/strong>',
+							'i'
+						);
+						
+						if(!successfulRunReg.exec(rs) || brokenPage){
+							if (o.numRuns < 4) {
+								o.numRuns++;
+								init_gs() // try again
+							}
+							return;
+						}
+						
+						// stateSearchAvailableReg
+						var stateSearchAvailableReg = /<label>[\r\n\s\t]*By[\r\n\s\t]*State[\r\n\s\t]*<\/label>/;
+						// isInStateSelectField
+						var isInStateSelectField;
+						var x = /<select size="6" name="ctl00\$phMainBody\$statenavigator\$listNavValues"((.|\s)*?(?=<\/select>|$)|$)/.exec(rs);
+						if (!x)
+							isInStateSelectField = false;
+						else {
+							x = x[1];
+							if (x.indexOf(o.state_full.replace(/"/g, '')) != -1) {
+								isInStateSelectField = true;
+							}
+						}
+						console.log('stateSearchAvailableReg');
+						console.log(stateSearchAvailableReg.exec(rs));
+						console.log('isInStateSelectField');
+						console.log(isInStateSelectField);
+						
+						if(oneResultReg.exec(rs) || !stateSearchAvailableReg.exec(rs) || !isInStateSelectField) {
+							parseResponse(rs);
+							console.log('running parseResponse');
+							return;
+						}
+						else {
+							var vsReg = /id="__VIEWSTATE"[\r\n\s\t]*value="([^"]+)"/
+							if(o.viewState2 = vsReg.exec(rs)) {
+								o.viewState2 = __js_clean_html_str(o.viewState2[1]);
+							}
+							else {
+								alert('failed to scrape 2nd viewstate');
+							}
+						}
+						// o.viewState2
+						if(o.viewState2) {
+							var u = encodeURIComponent(d2.value);
+							
+							var data = o.hv.af2;
+							var st = (o.state_full.indexOf(' ') != -1) ? '"'+o.state_full+'"': o.state_full;
+							data = data.replace(
+								/ctl00%24SearchBar2%24txtKeywords=[^&]*/,
+								'ctl00$SearchBar2$txtKeywords=' + u
+							);
+							data = data.replace(
+								/listNavValues=%5E[^%]*%24/,
+								'listNavValues=%5E' + encodeURIComponent(st) + '%24'
+							);
+							data = data.replace(/__VIEWSTATE=[^&]+/, '__VIEWSTATE=' + encodeURIComponent(o.viewState2))// + '&'+ af2;
+							//console.log(data);
+							data = data.replace(
+								/ctl00%24phMainBody%24keywordsAlliance%24txtFieldValue=[^&]*/,
+								'ctl00$phMainBody$keywordsAlliance$txtFieldValue=' + encodeURIComponent(u));
+							
+							// Do secondSearch
+							secondSearch(data);
+						}
+					}
+				});
+			}
+			// gs_error
+			function gs_error(response) {
+				var rs = response.responseText;
+				var err = false;
+				// Block
+				var block = /<div id="distil_ident_block">&nbsp;<\/div>/.exec(rs);
+				if (block) {
+					o.numRuns = 0;// reset o.numRuns
+					err = true;
+				}
+				//
+				if (response.status != 200) {
+					o.numRuns = 0;// reset o.numRuns
+					err = true;
+				}
+				
+				if (err) {
+					d1.innerText = response.status;
+					if (!o.gs_popup) {
+						o.gs_popup = true;
+						window.open('https://www.guidestar.org', '_blank');
+						setTimeout(function() { // Reset this in 6 seconds.
+							o.gs_popup = false;
+						}, 6000);
+					}
+					exit();
+				}
+			}
+			// secondSearch
+			function secondSearch(data) {
+				var data = data;
+
+				GM_xmlhttpRequest({
+					method: 'POST',
+					url: 'http://www.guidestar.org/SearchResults.aspx',
+					data: data,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						
+						var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
+						var brokenPage = brokenPageReg.exec(rs);
+						
+						// Successful -> Title + Optional City
+						var successfulRunReg = new RegExp(
+							'[\\r\\n\\s\\t]*' + __js_escape_regEx(d2.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;')) +
+							//(input.includeCitySearch ? ' ' + city : '')) +
+							'[\\r\\n\\s\\t]*(<\\/strong>|<\\/a>)', 'i'
+						).exec(rs);
+						
+						// Successful -> State
+						var successStateReg = new RegExp(
+							'<a id="ctl00_phMainBody_statename_lbRemoveNavElement"[^>]*><img src="[^"]*" width="10" height="10" alt="Close"[^>]*>&nbsp;'+__js_escape_regEx(o.state_full.replace(/"/g, ''))+'<\\/a>',
+							'i'
+						).exec(rs);
+						
+						console.log('HERE ARE secondSearch VARS:');
+						console.log('successfulRunReg');
+						console.log(successfulRunReg);
+						console.log('successStateReg');
+						console.log(successStateReg);
+						console.log('brokenPage');
+						console.log(brokenPage);
+						
+						// Check error
+						gs_error(response);
+						
+						// ..
+						if(!successfulRunReg || !successStateReg || brokenPage){
+							o.numRuns++;
+							if(o.numRuns < 4)
+								init_gs();
+							else 
+								d1.innerText = 'numRuns=' + o.numRuns;
+							return;
+						}
+						
+						parseResponse(rs);
+					}
+						
+				});
+			}
+			/**
+			 * function Andrew_Ryan_charities_ein__city_match
+			 * 
+			 */
+			function city_match(all_locations) {
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'Geo__US_Cities',
+						encodeStrings: all_locations
+					},
+					city_match_process
+				);
+			}
+			// ...
+			function city_match_process(database_object) {
+				// {} // Object of matches ($match objects)
+				// $match->name,lat,lon
+				// $match KEY = hash "city|state"
+				
+				// Distance is...
+				// MT___lat_lng_distance(lat1, lon1, lat2, lon2)
+				var r = database_object.responseObject;
+				console.log(r);
+				
+				// Set main/first point.
+				// It is the first result for search.
+				// Multiply by 1.
+				// o.city_st_hash
+				div_debug.innerText += '\n';
+				if (r.hasOwnProperty( o.city_st_hash ) && r[ o.city_st_hash ].length) {
+					div_debug.innerText += 'D'+r[ o.city_st_hash ][0].name;
+					var main_point = {
+						lat:r[ o.city_st_hash ][0].lat * 1,
+						lon:r[ o.city_st_hash ][0].lon * 1
+					}
+				} else {
+					return; //?
+				}
+				
+				// 
+				for (var hash in r) {
+					var matches = r[ hash ];
+					var less_than_20 = false;
+					
+					var str = '';
+					for (var i in matches) {
+						var match = matches[i];
+						var dist = MT___lat_lng_distance(main_point.lat, main_point.lon, match.lat * 1, match.lon * 1); // Mult by one
+						if (dist <= 20) {
+							less_than_20 = true;
+							str += '<b>' + match.name + ' ' +(Math.round(dist * 10) / 10) + '</b>';
+						} else {
+							str += match.name + ' ' +(Math.round(dist * 10) / 10);
+						}
+						str += '\n';
+					}
+					str = str.trim();
+					// Add to className 'dist-'+o.hash
+					var x = document.getElementsByClassName('dist-' + hash);
+					console.log(x);
+					console.log(hash);
+					for (var i in x) {
+						if (i == 'length') break;
+						x[i].innerHTML = ' ('+str+')';
+					}
+					
+					var divs = o.distance_divs[hash];
+					for (var i in divs) {
+						divs[i].innerHTML = str;
+						var p = divs[i].parentNode;
+						// If parent node is .div_result
+						// and distance is less than 20 miles for *ANY*
+						// city match then highlight parent div.
+						if  (
+							less_than_20 &&
+							p.className == 'div-result'
+							)
+						{
+							p.style.backgroundColor = 'aqua';
+						}
+					}
+				}
+			}
+			// parseResponse
+			function parseResponse(xhrRes) {
+				var rs = xhrRes;
+				var r, r2;
+				var r0;
+				d1.innerHTML = '';
+				
+				var dom = new DOMParser().parseFromString(rs, 'text/html');
+				var tds = dom.getElementsByClassName('sr11');
+				if (!tds || !tds.length) {
+					d1.innerText += d2.value+'\n0';
+					console.log('Here is 0 responseText:');
+					console.log({rs:rs});
+					return;
+				}
+				var trs = [];
+				for (var i in tds) {
+					if (i == 'length') break;
+					trs.push(tds[i].parentNode);
+				}
+				var c = 0;
+				var all_locations = [ [o.city, o.state] ];
+				for (var i in trs) {
+					
+					var row = {
+						name: '',
+						aka: '',
+						city: '',
+						state: '',
+						zip: '',
+						locn: '',
+						income: '',
+						hash: null,
+						ein: null,
+						url: null
+					}
+					
+					// Name, EIN
+					var a = trs[i].getElementsByTagName('a')[0];
+					//~ console.log(a);
+					//~ console.log(a.href);
+					var href = a.getAttribute('href'); 
+					row.ein = /organizations\/(\d{2}-\d{4,})\//.exec(href)[1];
+					row.url = 'http://www.guidestar.org/' + href;
+					row.name = a.innerText.trim();
+					
+					// AKA, Location
+					var sr12 = trs[i].getElementsByClassName('sr12')[0];
+					var spans = sr12.getElementsByTagName('span');
+					if (spans) {
+						var x;
+						for (var j in spans) {
+							if (j == 'length') break;
+							if (spans[j].id.indexOf('AkaName') != -1) {
+								row.aka = spans[j].innerText.trim().replace(/^Also known as: /, '');
+							}
+							else if (spans[j].id.indexOf('IncomeResult') != -1) {
+								row.income = spans[j].innerText.trim();
+							}
+							else if (spans[j].id.indexOf('spAddress') != -1) {
+								row.locn = spans[j].innerText.trim();
+								var x = row.locn;
+								x = x.split('\n');
+								if (x.length == 3) {
+									row.city = x[0].trim().replace(/ *,/, '').trim();
+									row.state = x[1].trim();
+									row.zip = x[2].trim();
+									row.hash = row.city + '|' + row.state;
+								}
+							}
+						}
+					}
+					console.log(row);
+					
+					// Div for each result
+					eldiv = document.createElement('div');
+					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
+					eldiv.className = 'div-result';
+					eldiv.ein = row.ein;
+					eldiv.url = row.url;
+					if(row.state != o.state){
+						eldiv.style.backgroundColor = 'pink';
+					}
+					
+					var x = document.createElement('div');
+					//x.
+					x.innerHTML =
+						MT__bold(row.name, o.bold) +
+						(row.aka != '' ? '(' + MT__bold(row.aka, o.bold) + ')' : '' ) +
+						'<br>'+
+						row.ein + ' :: ' +
+						row.url +
+						'<br>';
+					eldiv.appendChild(x);
+					
+					// Span of city
+					var span_loc = document.createElement('span');
+					span_loc.innerHTML = MT__bold(row.locn, o.bold_locn);
+					eldiv.appendChild(span_loc);
+					
+					// Span of distance offset
+					var span = document.createElement('span');
+					span.className = 'dist-'+row.hash;
+					eldiv.appendChild(span);
+					
+					// Distance div
+					var eldiv_dist = document.createElement('div');
+					eldiv_dist.setAttribute('style', 'visibility:hidden;position:absolute;background-color:#eee;border:1px solid teal;z-index:100;');
+					eldiv_dist.className = 'div_distance'; // GM_addStyle // GM_addStyle('div:hover .div_distance {visibility:visible;}');
+					eldiv_dist.city = row.city;
+					eldiv_dist.state = row.state;
+					eldiv.appendChild(eldiv_dist);
+					
+					// Add eldiv_dist element to o.distance_divs
+					if (row.hash) {
+						if (o.distance_divs.hasOwnProperty(row.hash))
+							o.distance_divs[row.hash].push(eldiv_dist);
+						else {
+							o.distance_divs[row.hash] = [ eldiv_dist ];
+						}
+					}
+					
+					// Add all_locations
+					all_locations.push([row.city, row.state]);
+					
+					// ...				
+					eldiv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						document.getElementsByName('EIN')[0].value = this.ein;
+						document.getElementsByName('Source')[0].value = this.url;
+						if (this.ein && this.url && this.ein.length > 4 && this.url.length > 10) {
+							doSubmit();
+						}
+					}
+					
+					// Append
+					d1.appendChild(eldiv);
+					
+					// Matches
+					c = 1;
+				}
+				
+				if (c == 0) {
+				} else { // append
+					var d = document.createElement('div');
+					d.setAttribute('style', 'height:1400px;');
+					d1.appendChild(d);
+				}
+				
+				// Get all of the city distances for this div.
+				// All of this div only.
+				//
+				//
+				if (all_locations.length > 1)
+					city_match(all_locations);
+			}
+		}
+		new run().f();
+	}
 	//
 	// Mike O'Mahoney
 	// Search for EIN or NCES Codes - March 25, 2015
@@ -33336,8 +34009,6 @@ function MT__RUN() {
 					var brokenPageReg = /Viewing[\r\n\s\t]+-[\r\n\s\t]+of[\r\n\s\t]+results/i
 					var brokenPage = brokenPageReg.exec(rs);
 					
-					
-					
 					// Successful -> Title + Optional City
 					var successfulRunReg = new RegExp(
 						'[\\r\\n\\s\\t]*' + __js_escape_regEx(input.value.trim().replace(/&/g, '&amp;').replace(/'/g, '&#39;') +
@@ -33357,23 +34028,14 @@ function MT__RUN() {
 						return;
 					}
 					
-					
 					if (response.status != 200) {
 						console.log(response.status);
 						return;
 					}
-					
-					//~ console.log('successStateReg');
-					//~ console.log(successStateReg.exec(rs));
-					//~ console.log('successfulRunReg');
-					//~ console.log(successfulRunReg.exec(rs));
-					
 					Andrew_Ryan_charities_ein__guidestar__parseResponse(div,rs);
-				}
-					
+				}	
 			});
 		}
-		
 		/**
 		 * function Andrew_Ryan_charities_ein__guidestar__parseResponse
 		 * 
