@@ -47495,6 +47495,10 @@ function MT__RUN() {
 					document.getElementById('Counterpoint_ID'),
 					document.getElementById('MatchType'),
 				],
+				
+				bold: [],
+				tbold: [],
+				abold: [],
 				//~ nas: [],
 				//~ divs: [],
 				//~ inputs: [],
@@ -47504,6 +47508,9 @@ function MT__RUN() {
 				//~ store_no_the:null,
 				//~ mall_no_the:null,
 			}
+			o.tbold = o.title.clean_string_to_array();
+			o.abold = o.artist.clean_string_to_array();
+			o.bold  = o.tbold.concat(o.abold);
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
@@ -47560,14 +47567,9 @@ function MT__RUN() {
 			}
 			// init
 			search();
-			
-			
 			// ...
 			function search() {
-				//~ var s = input.__store;
-				//~ var out = input.__parent;
 				d1a.innerText = d1b.innerText = d1c.innerText = '';
-				
 				var rf = new AMT___requests_factory();
 				rf.database__select(
 					{
@@ -47587,49 +47589,46 @@ function MT__RUN() {
 				for (var i in results_array) { //[ $row['CP_ID'], $row['CP_TrackTitle'], $row['CP_PerformedBy'], $row['CP_Composer'] ]
 					var x = results_array[i];
 					// 
-					var n = MT__bold(x[0], s.sbold);
-					var m = MT__bold(x[1], s.mbold, {color:'blue'}).bold_string;
+					var n1 = MT__bold(x[1], o.tbold);
+					var n2 = MT__bold(x[2], o.abold, {color:'blue'}).bold_string;
+					var n3 = MT__bold(x[3], o.bold);
 					// ...
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n + ': ' + m;
+					eldiv.innerHTML = 'T: ' + n1;
+					eldiv.innerHTML+= 'A: ' + n2;
+					eldiv.innerHTML+= 'C: ' + n3;
 					eldiv.code = x[0];
 					eldiv.output_field = output_field; // Input field.....
 					eldiv.onclick = function() {
-						this.output_field.squished = true;
-						squish();
-						this.style.backgroundColor = 'LightGreen';
-						this.output_field.value = this.code;
-						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
-							try_sbm();
-							//~ doSubmit();
-						}
+						o.q[0].value = this.code;
+						this.style.backgroundColor = 'teal';
 					}
-					out.appendChild(eldiv);
-					console.log(s);
-					console.log(x);
-					if ( //i == 0 &&
-						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
-						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
-						s.store.clean_str_to_auto().length >= 4 &&
-						s.mall.clean_str_to_auto().length >= 4 &&
-						!s.auto
-						) {
-						s.auto = true;
-						eldiv.click();
-					}
+					div.appendChild(eldiv);
+					//~ console.log(s);
+					//~ console.log(x);
+					//~ if ( //i == 0 &&
+						//~ s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						//~ s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						//~ s.store.clean_str_to_auto().length >= 4 &&
+						//~ s.mall.clean_str_to_auto().length >= 4 &&
+						//~ !s.auto
+						//~ ) {
+						//~ s.auto = true;
+						//~ eldiv.click();
+					//~ }
 					
-					else if ( // try auto 2 (no "The"
-						s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
-						s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
-						s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
-						s.mall_no_the.clean_str_to_auto().length >= 3 &&
-						!s.auto
-						) {
-						s.auto = true;
-						eldiv.click();
-					}
+					//~ else if ( // try auto 2 (no "The"
+						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						//~ s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						//~ !s.auto
+						//~ ) {
+						//~ s.auto = true;
+						//~ eldiv.click();
+					//~ }
 				}
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
