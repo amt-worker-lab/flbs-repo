@@ -47505,15 +47505,15 @@ function MT__RUN() {
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
-			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
+			d1a.setAttribute('style', 'position:absolute;width:33%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1a);
 			
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style', 'position:absolute;width:33%;left:33%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;');
+			d1c.setAttribute('style', 'position:absolute;width:33%;left:66%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1c);
 			
 			var detailsDiv = document.createElement('div');
@@ -47611,10 +47611,10 @@ function MT__RUN() {
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
 					eldiv.innerHTML = 'T: ' + n1;
-					eldiv.innerHTML+= 'A: ' + n2;
-					eldiv.innerHTML+= 'C: ' + n3;
+					eldiv.innerHTML+= '<br>A: ' + n2;
+					eldiv.innerHTML+= '<br>C: ' + n3;
 					eldiv.code = x[0];
-					eldiv.output_field = output_field; // Input field.....
+					//~ eldiv.output_field = output_field; // Input field.....
 					eldiv.onclick = function() {
 						o.q[0].value = this.code;
 						this.style.backgroundColor = 'aqua';
