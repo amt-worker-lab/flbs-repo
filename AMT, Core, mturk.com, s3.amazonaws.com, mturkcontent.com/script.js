@@ -32296,23 +32296,6 @@ function MT__RUN() {
 					'24txtKeywords=' + u
 				);
 				
-				//~ dataStarter = dataStarter.replace(
-					//~ /ctl00%24SearchBar2%24txtKeywords=[^&]*/,
-					//~ 'ctl00$SearchBar2$txtKeywords=' + u
-				//~ );
-				//~ dataStarter = dataStarter.replace(
-					//~ /ctl00%24phMainBody%24keywordsCarrollAreaChildCareCenter51401%24txtFieldValue=[^&]*/,
-					//~ 'ctl00$phMainBody$keywordsCarrollAreaChildCareCenter51401$txtFieldValue=' + encodeURIComponent(u)
-				//~ );
-				
-				//
-				//
-				//
-				//~ if(!runStateSearch) {
-					//~ alert('no state');
-					//~ return;
-				//~ }
-				
 				// Xhr
 				GM_xmlhttpRequest({
 					method: 'POST',
@@ -32338,13 +32321,6 @@ function MT__RUN() {
 							'[\\r\\n\\s\\t]*<\\/strong>',
 							'i'
 						);
-						
-						//~ console.log('numRuns: ' + div.numRuns);
-						//~ console.log(input.value.trim());
-						//~ console.log('successfulRunReg');
-						//~ console.log(successfulRunReg.exec(rs));
-						//~ console.log('brokenPage');
-						//~ console.log(brokenPage);
 						
 						if(!successfulRunReg.exec(rs) || brokenPage){
 							if (o.numRuns < 4) {
@@ -32386,7 +32362,7 @@ function MT__RUN() {
 								alert('failed to scrape 2nd viewstate');
 							}
 						}
-					
+						// o.viewState2
 						if(o.viewState2) {
 							var u = encodeURIComponent(d2.value);
 							
@@ -32412,7 +32388,7 @@ function MT__RUN() {
 					}
 				});
 			}
-			
+			// gs_error
 			function gs_error(response) {
 				var rs = response.responseText;
 				var err = false;
@@ -32440,8 +32416,7 @@ function MT__RUN() {
 					exit();
 				}
 			}
-
-
+			// secondSearch
 			function secondSearch(data) {
 				var data = data;
 
@@ -32497,8 +32472,6 @@ function MT__RUN() {
 						
 				});
 			}
-
-
 			/**
 			 * function Andrew_Ryan_charities_ein__city_match
 			 * 
@@ -32515,20 +32488,13 @@ function MT__RUN() {
 			}
 			// ...
 			function city_match_process(database_object) {
-				
 				// {} // Object of matches ($match objects)
 				// $match->name,lat,lon
 				// $match KEY = hash "city|state"
 				
 				// Distance is...
 				// MT___lat_lng_distance(lat1, lon1, lat2, lon2)
-				
-				//~ if (database_object.responseObject.length == 0) {
-					//~ return;
-				//~ }
-				
 				var r = database_object.responseObject;
-				
 				console.log(r);
 				
 				// Set main/first point.
@@ -32590,7 +32556,7 @@ function MT__RUN() {
 					}
 				}
 			}
-			
+			// parseResponse
 			function parseResponse(xhrRes) {
 				var rs = xhrRes;
 				var r, r2;
@@ -32664,12 +32630,6 @@ function MT__RUN() {
 					}
 					console.log(row);
 					
-					//~ var comp_aka = /Also known as: ((.|\s)*?(?=<\/span>|$)|$)/.exec(m0);
-					//~ if (comp_aka) {
-						//~ comp_aka = comp_aka[1].replace(/<[^>]*>/g, ' ');
-					//~ }
-					//~ comp_aka = (comp_aka) ? ' ' + MT__bold(comp_aka, o.bold) : '';
-					
 					// Div for each result
 					eldiv = document.createElement('div');
 					eldiv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;cursor:pointer;position:relative;');
@@ -32690,11 +32650,6 @@ function MT__RUN() {
 						row.url +
 						'<br>';
 					eldiv.appendChild(x);
-					//~ 
-					//~ var n = m3.split(',');
-					//~ locn.city = n[0].trim();
-					//~ locn.state = n[1].trim().replace(/ *[\d-]*$/, '');
-					//~ locn.hash = locn.city + '|' + locn.state;
 					
 					// Span of city
 					var span_loc = document.createElement('span');
@@ -32818,14 +32773,8 @@ function MT__RUN() {
 		
 		var state = loc.split(',')[1].trim();
 		var city = loc.split(',')[0].trim();
-		
 		var includeCitySearch = true;
-		
-		
 		var stateBefore = state;
-		
-		
-		
 		var runStateSearch = true;
 		
 		var o = {
@@ -33182,8 +33131,6 @@ function MT__RUN() {
 			this.select();
 		}
 		
-		
-			
 		// submit
 		// commas
 		// And ask the question, Is revenue a valid
@@ -33370,12 +33317,7 @@ function MT__RUN() {
 					//~ }
 				//~ );
 		}
-		
-		
-		
-		
-		
-		
+		// Andrew_Ryan_charities_ein__guidestar_secondSearch
 		function Andrew_Ryan_charities_ein__guidestar_secondSearch(data, div, input) {
 			var data = data;
 			var div = div;

@@ -14880,6 +14880,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 	var s = location.href;
 	var u = /^https:\/\/www\.mturk\.com\/mturk\/findhits\?match=false$/;
 	if (!u.exec(s)) return;
+	// Create script var
+	new AMT___core_factory().createScriptVar('AMT Front Page Threshold (0+)', '10');
+	// Globals...
 	var ignore_requesters__ids, ignore_requesters;
 	// Hosts
 	var MT___page1_hosts = [
@@ -16284,6 +16287,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			var table;
 			var len;
 			
+			// Skip?
+			// AMT Front Page Threshold (0+)
+			// Less than threshold?
+			if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
+				continue;
+			}
 			// Regular
 			if  (
 				!ignore_requesters.hasOwnProperty( d.requester_name ) &&
