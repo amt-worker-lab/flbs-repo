@@ -47506,34 +47506,39 @@ function MT__RUN() {
 
 			/* BEGIN ITEMS */
 			var d1a = document.createElement('div');
-			d1a.setAttribute('style', 'position:absolute;width:24.5%;left:0%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1a.setAttribute('style', 'position:absolute;width:24.5%;left:0%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1a);
 			
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style', 'position:absolute;width:24.5%;left:24.5%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style', 'position:absolute;width:24.5%;left:24.5%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style', 'position:absolute;width:24.5%;left:49%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1c.setAttribute('style', 'position:absolute;width:24.5%;left:49%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1c);
 
 			var d1d = document.createElement('div');
-			d1d.setAttribute('style', 'position:absolute;width:24.5%;left:73.5%;top:40px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1d.setAttribute('style', 'position:absolute;width:24.5%;left:73.5%;top:72px;height:2000px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1d);
 			
 			var detailsDiv = document.createElement('div');
-			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:40px;line-height:20px;background-color:#eee;border:1px solid black;')
+			detailsDiv.setAttribute('style', 'position:absolute;left:0%;Top:0px;width:8%;height:72px;line-height:24px;background-color:#eee;border:1px solid black;')
 			document.body.appendChild(detailsDiv);
-			detailsDiv.innerText = 'Track:\nArtist:'
+			detailsDiv.innerText = 'Track:\nArtist:\nComposer:';
 			
 			var tTitle = document.createElement('textarea');
-			tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;line-height:20px;height:20px;border:1px solid black;')
+			tTitle.setAttribute('style', 'position:absolute;left:8%;Top:0px;width:85%;height:24px;border:1px solid black;')
 			document.body.appendChild(tTitle);
 			tTitle.value = o.title;
 
 			var tArtist = document.createElement('textarea');
-			tArtist.setAttribute('style', 'position:absolute;left:8%;Top:20px;width:85%;height:20px;line-height:20px;backgroundColor:#eee;border:1px solid black;')
+			tArtist.setAttribute('style', 'position:absolute;left:8%;Top:24px;width:85%;height:24px;backgroundColor:#eee;border:1px solid black;')
 			document.body.appendChild(tArtist);
+			tArtist.value = o.artist;
+
+			var tComposer = document.createElement('textarea');
+			tComposer.setAttribute('style', 'position:absolute;left:8%;Top:48px;width:85%;height:24px;backgroundColor:#eee;border:1px solid black;')
+			document.body.appendChild(tComposer);
 			tArtist.value = o.artist;
 			/* END ITEMS */
 			// Onblur
@@ -47549,7 +47554,7 @@ function MT__RUN() {
 					d1c,
 					d1d
 				],
-				offset: 40
+				offset: 72
 			});
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
@@ -47600,6 +47605,11 @@ function MT__RUN() {
 				}
 			}, false);
 					
+			function try_sbm() {
+				if (/^\d+$/.exec(o.q[0].value) && /^\d+$/.exec(o.q[1].value)) {
+					doSubmit();
+				}
+			}
 			// ...
 			function make_boxes(results_array, div) {
 				if (results_array.length == 0) {
@@ -47629,13 +47639,15 @@ function MT__RUN() {
 					if (
 						div == d1a &&
 						x[1].clean_str_to_auto() == o.title.clean_str_to_auto() &&
-						x[2].clean_str_to_auto() == o.artist.clean_str_to_auto()
+						x[2].clean_str_to_auto() == o.artist.clean_str_to_auto() &&
 						x[1].clean_str_to_auto().length >= 4 &&
 						x[2].clean_str_to_auto().length >= 4 &&
 						!o.auto
 						) {
 						o.auto = true;
 						eldiv.click();
+						o.q[1].value = '1';
+						try_sbm();
 					}
 					//~ else if ( // try auto 2 (no "The"
 						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
