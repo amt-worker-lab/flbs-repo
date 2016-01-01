@@ -47489,24 +47489,15 @@ function MT__RUN() {
 			var tb = document.getElementsByTagName('table');
 			var o = {
 				stores: [],
-				title: document.getElementsByTagName('td')[1],
-				artist: document.getElementsByTagName('td')[3],
+				title: document.getElementsByTagName('td')[3].innerText,
+				artist: document.getElementsByTagName('td')[7].innerText,
 				q: [
 					document.getElementById('Counterpoint_ID'),
 					document.getElementById('MatchType'),
 				],
-				
 				bold: [],
 				tbold: [],
 				abold: [],
-				//~ nas: [],
-				//~ divs: [],
-				//~ inputs: [],
-				//~ sbold: null,
-				//~ mbold: null,
-				//~ auto: false,
-				//~ store_no_the:null,
-				//~ mall_no_the:null,
 			}
 			o.tbold = o.title.clean_string_to_array();
 			o.abold = o.artist.clean_string_to_array();
@@ -47574,12 +47565,35 @@ function MT__RUN() {
 				rf.database__select(
 					{
 						query: 'AMT_Requester_Rory_Bernard',
-						encodeStrings: [ { track: tTrack.value.trim(), artist: tArtist.value.trim() } ],
+						encodeStrings: [ { title: tTitle.value.trim(), artist: tArtist.value.trim() } ],
 						//~ __seed__: input,
 					},
 					process
 				);
 			}
+			/**
+			 * window.onkeypress
+			 */
+			window.addEventListener('keypress', function(e) {
+				var char = String.fromCharCode(e.charCode).toLowerCase();
+				// z
+				if (char == 'z') {
+					o.q[1].value = '1';
+					if (/^\d+$/.exec(o.q[0].value)) {
+						doSubmit();
+					}
+				} else if (char == 'x') {
+					o.q[1].value = '2';
+					if (/^\d+$/.exec(o.q[0].value)) {
+						doSubmit();
+					}
+				} else if (char == 'c') {
+					o.q[0].value = '';
+					o.q[1].value = '3';
+					doSubmit();
+				}
+			}, false);
+					
 			// ...
 			function make_boxes(results_array, div) {
 				if (results_array.length == 0) {
@@ -47603,7 +47617,7 @@ function MT__RUN() {
 					eldiv.output_field = output_field; // Input field.....
 					eldiv.onclick = function() {
 						o.q[0].value = this.code;
-						this.style.backgroundColor = 'teal';
+						this.style.backgroundColor = 'aqua';
 					}
 					div.appendChild(eldiv);
 					//~ console.log(s);
@@ -47618,7 +47632,6 @@ function MT__RUN() {
 						//~ s.auto = true;
 						//~ eldiv.click();
 					//~ }
-					
 					//~ else if ( // try auto 2 (no "The"
 						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
 						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
@@ -47632,130 +47645,48 @@ function MT__RUN() {
 				}
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
-				out .appendChild(eldiv);
-				var eldiv = document.createElement('div');
-				eldiv.setAttribute('style','height:2000px;');
-				out.appendChild(eldiv);
-				}
+				div .appendChild(eldiv);
 			}
 			// ...
 			function process(database_object) {
 				//database_object.responseObject.[['track+artist'=>'','artist'=>'','track'=>'']]
-				make_boxes(database_object.responseObject['track+artist'], d1a);
-				make_boxes(database_object.responseObject['track'], d1b);
+				make_boxes(database_object.responseObject['a_t'], d1a);
+				make_boxes(database_object.responseObject['title'], d1b);
 				make_boxes(database_object.responseObject['artist'], d1c);
-				
-				
-				// array_push($out_arr, [ $row['store'], $row['mall'], $row['magic_number'] ]);
-				//database_object.responseObject = JSON.parse(rs);
-				var input = database_object.__seed__;
-				var s = input.__store;
-				var output_field = input.__output_field;
-				var out = input.__parent;
-				var show = (s.store + '\n' + s.mall).div({style:'border-bottom:2px solid teal;'});
-				// Show...
-				out.innerText = '';
-				out.appendChild(show);
-				// 0...
-				if (database_object.responseObject.length == 0) {
-					out.appendChild((input.value + "\n" + '0 results!').div());
-					return;
-				}
-				
-				// Loop
-				// AUTO
-				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
-				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
-				for (var i in database_object.responseObject) {
-					//
-					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
-					
-					//
-					var n = MT__bold(x[0], s.sbold);
-					var m = MT__bold(x[1], s.mbold, {color:'blue'}).bold_string;
-					
-					// ...
-					var eldiv = document.createElement('div');
-					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
-					eldiv.className = 'exe';
-					eldiv.innerHTML = n + ': ' + m;
-					eldiv.code = x[2];
-					eldiv.output_field = output_field; // Input field.....
-					eldiv.onclick = function() {
-						this.output_field.squished = true;
-						squish();
-						this.style.backgroundColor = 'LightGreen';
-						this.output_field.value = this.code;
-						if (this.code.trim().length >= 1 && /^\d{3,}$/.exec(this.code)) { // Note, this is 1,2,3,...,14290
-							try_sbm();
-							//~ doSubmit();
-						}
-					}
-					out.appendChild(eldiv);
-					console.log(s);
-					console.log(x);
-					if ( //i == 0 &&
-						s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
-						s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
-						s.store.clean_str_to_auto().length >= 4 &&
-						s.mall.clean_str_to_auto().length >= 4 &&
-						!s.auto
-						) {
-						s.auto = true;
-						eldiv.click();
-					}
-					
-					else if ( // try auto 2 (no "The"
-						s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
-						s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
-						s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
-						s.mall_no_the.clean_str_to_auto().length >= 3 &&
-						!s.auto
-						) {
-						s.auto = true;
-						eldiv.click();
-					}
-				}
-				var eldiv = document.createElement('div');
-				eldiv.setAttribute('style','height:2000px;');
-				out .appendChild(eldiv);
-				var eldiv = document.createElement('div');
-				eldiv.setAttribute('style','height:2000px;');
-				out.appendChild(eldiv);
 			}
-			function squish() { // Minimize....
-				var num = 0;
-				for (var i in o.q) {
-					if (!o.q[i].squished) {
-						num++;
-					}
-				}
-				var tot = (99/num); // e.g. 99/2=49.5 99/4=24.75
-				var left = 0;
-				for (var i in o.q) {
-					if (o.q[i].squished) {
-						o.inputs[i].style.display = 'none';
-						o.divs[i].style.display = 'none';
-						o.nas[i].style.display = 'none';
-					} else {
-						o.inputs[i].style.width = tot+'%';
-						o.divs[i].style.width = tot+'%';
-						o.nas[i].style.width = tot+'%';
-						o.inputs[i].style.left = left+'%';
-						o.divs[i].style.left = left+'%';
-						o.nas[i].style.left = left+'%';
-						left += tot; // Increment left
-					}
-				}
-			}
-			function try_sbm() {
-				for (var i in o.q) {
-					o.q[i].value = o.q[i].value.trim();
-					if (o.q[i].value == '') return;
-				}
-				// Still here...
-				doSubmit();
-			}
+			//~ function squish() { // Minimize....
+				//~ var num = 0;
+				//~ for (var i in o.q) {
+					//~ if (!o.q[i].squished) {
+						//~ num++;
+					//~ }
+				//~ }
+				//~ var tot = (99/num); // e.g. 99/2=49.5 99/4=24.75
+				//~ var left = 0;
+				//~ for (var i in o.q) {
+					//~ if (o.q[i].squished) {
+						//~ o.inputs[i].style.display = 'none';
+						//~ o.divs[i].style.display = 'none';
+						//~ o.nas[i].style.display = 'none';
+					//~ } else {
+						//~ o.inputs[i].style.width = tot+'%';
+						//~ o.divs[i].style.width = tot+'%';
+						//~ o.nas[i].style.width = tot+'%';
+						//~ o.inputs[i].style.left = left+'%';
+						//~ o.divs[i].style.left = left+'%';
+						//~ o.nas[i].style.left = left+'%';
+						//~ left += tot; // Increment left
+					//~ }
+				//~ }
+			//~ }
+			//~ function try_sbm() {
+				//~ for (var i in o.q) {
+					//~ o.q[i].value = o.q[i].value.trim();
+					//~ if (o.q[i].value == '') return;
+				//~ }
+				//~ // Still here...
+				//~ doSubmit();
+			//~ }
 		};
 		new run().f();return;
 	}
