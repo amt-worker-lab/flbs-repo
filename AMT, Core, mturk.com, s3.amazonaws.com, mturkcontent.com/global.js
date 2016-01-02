@@ -15792,7 +15792,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		td.innerText = (row.reward) ? row.reward.replace(/^\$/, '') : '-';
 		tr.appendChild(td);
 		if (td.innerText == '-') {
-			alert('Row is "-". Is host correct (192.168.1.2)? Is row valid?');
+			//~ alert('Row is "-". Is host correct (192.168.1.2)? Is row valid?');
 			console.log('Row:');
 			console.log(row);
 			console.log('IsIgnored:');
