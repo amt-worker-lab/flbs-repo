@@ -15791,6 +15791,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		);
 		td.innerText = (row.reward) ? row.reward.replace(/^\$/, '') : '-';
 		tr.appendChild(td);
+		if (td.innerText == '-') {
+			alert('Row is "-". Is host correct (192.168.1.2)? Is row valid?');
+			console.log('Row:');
+			console.log(row);
+			console.log('IsIgnored:');
+			console.log(isIgnored);
+		}
 		
 		// Time since posted
 		var td = document.createElement('td');
@@ -16344,6 +16351,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				
 				// Parse
 				rs = JSON.parse(rs);
+				console.log(rs); // Comment out to debug.......
 				
 				// THIS IS WHERE THE TABLE WILL BE.
 				// FOR EACH RETURNED JOB IN "rs",
