@@ -16182,7 +16182,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		 * rs
 		 * Set history_id=null if not available.
 		 * Set reward=null if not available.
-			rs
 			0 job DB id
 			1 on_page_number
 			2 job title
@@ -16219,7 +16218,6 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				//~ requester_ratings: null,
 				//~ requester_comments: null
 			};
-			
 			// TODO
 			//~ d.title_ratings			= (rs[10]) ? null	: null;
 			//~ d.title_comments		= (rs[11]) ? null	: null;
