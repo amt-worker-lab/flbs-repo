@@ -16298,6 +16298,13 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
 				continue;
 			}
+			// Ensure this is valid.
+			// Hmmm.......
+			if (d.requester_name.trim() == '' && d.title.trim() == '') {
+				console.log('Skipping empty row:');
+				console.log(d);
+				continue;
+			}
 			// Regular
 			if  (
 				!ignore_requesters.hasOwnProperty( d.requester_name ) &&
