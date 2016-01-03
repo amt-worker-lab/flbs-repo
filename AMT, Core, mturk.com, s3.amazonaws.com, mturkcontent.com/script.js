@@ -179629,6 +179629,7 @@ function top_window(okay_to_run) {
 				q: [
 					x1, x2, x3, x4
 				],
+				ebaySuccess: false,
 				SKIP_SITES: null, // Skips
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
@@ -180216,7 +180217,7 @@ function top_window(okay_to_run) {
 						break;
 				}
 				
-				upc = '9780525478812'
+				//upc = '9780525478812'
 				
 				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct'+
 						'&SERVICE-VERSION=1.0.0'+
@@ -180252,10 +180253,16 @@ function top_window(okay_to_run) {
 										o.q[0].blur();
 										o.q[0].focus();							
 									}
+									o.ebaySuccess = true;
 									while(result.array_all[0] != 'g') {
 										result.array_all.shift();
 									}
 								}
+						}
+						if(result.array_all[0] == 'g') {
+							if(o.ebaySuccess == false) {
+								d3i.value = '... ebay ...';
+							}
 						}
 						A9_Snaptell_VSR__next();
 						//~ if (options.response.status != 200) {
