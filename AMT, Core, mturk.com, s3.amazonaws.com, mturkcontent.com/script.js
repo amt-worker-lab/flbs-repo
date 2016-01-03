@@ -180211,7 +180211,7 @@ function top_window(okay_to_run) {
 								)
 							{
 								naBut.click();
-							}
+							}  
 							else {
 							}
 						}
