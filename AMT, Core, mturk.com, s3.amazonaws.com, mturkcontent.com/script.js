@@ -180202,25 +180202,37 @@ function top_window(okay_to_run) {
 				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
 				var type = false;
 				switch(result.array_all[0]) {
-					case 'eb1':
+					case 'eb2':
 							type = 'ReferenceID'
 						break;
-					case 'eb2':
+					case 'eb3':
 							type = 'ISBN'
 						break;
-					case 'eb3':
+					case 'eb4':
 							type = 'UPC'
 						break;
-					case 'eb4':
+					case 'g':
 							type = 'EAN'
 						break;
 				}
-				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct&'+
-						'SERVICE-VERSION=1.12.0&'+
-						'SECURITY-APPNAME='+securityID+
+				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct'+
+						'&SERVICE-VERSION=1.0.0'+
+						'&SECURITY-APPNAME='+securityID+
 						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'+
-						'&productId.@type='+ encodeURIComponent(type)
+						'&productId.@type='+ encodeURIComponent(type)+
 						'&productId=' + encodeURIComponent(upc) ;
+						
+						//~ http://svcs.ebay.com/services/search/FindingService/v1?
+   //~ OPERATION-NAME=findItemsByProduct&
+   //~ SERVICE-VERSION=1.0.0&
+   //~ SECURITY-APPNAME=YourAppID&
+   //~ RESPONSE-DATA-FORMAT=XML&
+   //~ REST-PAYLOAD&
+   //~ paginationInput.entriesPerPage=2&
+   //~ productId.@type=ReferenceID&
+   //~ productId=53039031
+						
+						
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -180236,6 +180248,7 @@ function top_window(okay_to_run) {
 						return true;
 					},
 					success_callback: function(options) {
+						alert('here?');
 						var rs = options.response.responseText;
 						d3i.value = '... ebay ...';
 						var type = '';
