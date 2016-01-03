@@ -180215,6 +180215,9 @@ function top_window(okay_to_run) {
 							type = 'EAN'
 						break;
 				}
+				
+				upc = '9780525478812'
+				
 				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct'+
 						'&SERVICE-VERSION=1.0.0'+
 						'&SECURITY-APPNAME='+securityID+
