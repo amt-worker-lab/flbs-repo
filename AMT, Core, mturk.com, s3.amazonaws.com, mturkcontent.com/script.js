@@ -179907,7 +179907,7 @@ function top_window(okay_to_run) {
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, //
-				ebayRefernceID: false,
+				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
 				ebayUPC: false,
@@ -180191,6 +180191,96 @@ function top_window(okay_to_run) {
 					}
 				);
 			}
+			
+			// ...
+			// d3i
+			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
+			function A9_Snaptell_ebay_find_product() {
+				console.log('Running through A9_Snaptell_ebay_find_product');
+				var tmp = Math.floor(Math.random() * 1)
+				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
+				var type = false;
+				switch(result.array_all[0]) {
+					case 'eb1':
+							type = 'ReferenceID'
+						break;
+					case 'eb2':
+							type = 'ISBN'
+						break;
+					case 'eb3':
+							type = 'UPC'
+						break;
+					case 'eb4':
+							type = 'EAN'
+						break;
+				}
+				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct&'+
+						'SERVICE-VERSION=1.12.0&'+
+						'SECURITY-APPNAME='+securityID+'+
+						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'
+						'&productId.@type='+
+						'&productId=__variable__';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						return false;
+						if (options.response.status != 200) {
+							d3i.value = '... yoopsie ...';
+							// CALL NEXT
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						d3i.value = '... ebay ...';
+						var type = '';
+						switch(result.array_all[0]) {
+							case 'eb1':
+									type = 'ebayReferenceID'
+								break;
+							case 'eb2':
+									type = 'ebayEAN'
+								break;
+							case 'eb3':
+									type = 'ebayUPC'
+								break;
+							case 'eb4':
+									type = 'EAN'
+								break;
+						}
+						
+						if (options.response.status != 200) {
+											
+							result[type] = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						console.log(rs);
+
+						//~ info = info[0].innerText.trim();
+						//~ info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
+						//~ d3i.value = info;
+						//~ d3i.style.border = '4px solid blue';
+						//~ d3i.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ o.q[0].value = this.value;
+							//~ o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
+							//~ o.q[0].focus();
+							//~ o.q[0].blur();
+							//~ o.q[0].focus();
+						//~ }
+						// CALL NEXT
+						result.yoopsie = true;
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			
+			
 			// https://www.upcdatabase.com/php_example.txt
 			// This is a garbly site........................
 			//~ function sr() { // DOES NOT WORK................
@@ -180274,68 +180364,9 @@ function top_window(okay_to_run) {
 					}
 				});
 			}
+
 			// ...
 			// d3g
-			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
-			function A9_Snaptell_ebay_find_product() {
-				console.log('Running through A9_Snaptell_ebay_find_product');
-				var tmp = Math.floor(Math.random() * 1)
-				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
-				var u = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
-				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: u,
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						if (options.response.status != 200) {
-							d3g.value = '... yoopsie ...';
-							// CALL NEXT
-							result.yoopsie = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						return true;
-					},
-					success_callback: function(options) {
-						var rs = options.response.responseText;
-						d3g.value = '... yoopsie ...';
-						if (options.response.status != 200) {
-							result.yoopsie = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						var info = dom.getElementsByClassName('info');
-						if (!info || !info.length) {
-							result.yoopsie = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						info = info[0].getElementsByTagName('a');
-						if (!info || !info.length) {
-							result.yoopsie = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						info = info[0].innerText.trim();
-						info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
-						d3g.value = info;
-						d3g.style.border = '4px solid blue';
-						d3g.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
-						// CALL NEXT
-						result.yoopsie = true;
-						A9_Snaptell_VSR__next();
-					}
-				});
-			}
-			// ...
-			// d3i
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
 			function A9_Snaptell_VSR__yoopsie_com() {
 				console.log('Running through A9_Snaptell_VSR__yoopsie_com');
