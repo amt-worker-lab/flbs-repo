@@ -179600,7 +179600,7 @@ function top_window(okay_to_run) {
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
-			//upc ='9780525478812'
+			upc ='630509346776'
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
 			// won't be a false positive.
@@ -180202,50 +180202,60 @@ function top_window(okay_to_run) {
 			// ...
 			// d3i
 			// ebay
-			function A9_Snaptell_ebay_find_product() {
-				var canRunEbay = 	(result.searchupc == false &&
-									result.shopsavvy == false &&
-									result.upcindex == false &&
-									result.upcitemdb == false &&
-									result.upcdatabase == false &&
-									result.yoopsie == false) || d3i.forcedSearch
-									//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
-				if(!canRunEbay && result.array_all[0] == 'eb2') {
-					while(
-						result.array_all[0] == 'eb2' ||
-						result.array_all[0] == 'eb3' ||
-						result.array_all[0] == 'eb4') {
-						//d3i.value = '...Ebay...'
-						next = result.array_all.shift();
+			function A9_Snaptell_ebay_find_product(type) {
+				if(!type) {
+					var canRunEbay = 	(result.searchupc == false &&
+										result.shopsavvy == false &&
+										result.upcindex == false &&
+										result.upcitemdb == false &&
+										result.upcdatabase == false &&
+										result.yoopsie == false) || d3i.forcedSearch
+										//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
+					if(!canRunEbay && result.array_all[0] == 'eb2') {
+						while(
+							result.array_all[0] == 'eb2' ||
+							result.array_all[0] == 'eb3' ||
+							result.array_all[0] == 'eb4') {
+							//d3i.value = '...Ebay...'
+							next = result.array_all.shift();
+						}
+						o.ebaySuccess = false;
+						A9_Snaptell_VSR__next()
+					
+						d3i.onclick = function() {
+							this.forcedSearch = true;
+							this.style.backgroundColor = 'LightGreen';
+							A9_Snaptell_ebay_find_product('ReferenceID');
+							A9_Snaptell_ebay_find_product('ISBN');
+							A9_Snaptell_ebay_find_product('UPC');
+							A9_Snaptell_ebay_find_product('EAN');
+						}
+						return;
 					}
-					o.ebaySuccess = false;
-					A9_Snaptell_VSR__next()
-				
-					d3i.onclick = function() {
-						this.forcedSearch = true;
-						this.style.backgroundColor = 'LightGreen';
-						A9_Snaptell_ebay_find_product();
-					}
-					return;
 				}
 				
 				console.log('Running through A9_Snaptell_ebay_find_product');
 				var tmp = Math.floor(Math.random() * 1)
 				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
-				var type = false;
-				switch(result.array_all[0]) {
-					case 'eb2':
-							type = 'ReferenceID'
-						break;
-					case 'eb3':
-							type = 'ISBN'
-						break;
-					case 'eb4':
-							type = 'UPC'
-						break;
-					default:
-							type = 'EAN'
-						break;
+				if(!type) {
+					switch(result.array_all[0]) {
+						case 'eb2':
+								type = 'ReferenceID'
+							break;
+						case 'eb3':
+								type = 'ISBN'
+							break;
+						case 'eb4':
+								type = 'UPC'
+							break;
+						default:
+								type = 'EAN'
+							break;
+					}
+				}
+				else {
+					if(o.ebaySuccess)
+						return;
 				}
 				
 				//upc = '9780525478812'
