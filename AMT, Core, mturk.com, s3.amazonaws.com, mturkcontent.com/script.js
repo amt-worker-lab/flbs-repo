@@ -180236,44 +180236,33 @@ function top_window(okay_to_run) {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						return false;
-						if (options.response.status != 200) {
-							d3i.value = '... ebay ...';
-							// CALL NEXT
-							result.yoopsie = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						return true;
-					},
-					success_callback: function(options) {
+						console.log(JSON.parse(options.response.responseText));
 						alert('here?');
-						var rs = options.response.responseText;
-						d3i.value = '... ebay ...';
-						var type = '';
-						switch(result.array_all[0]) {
-							case 'eb1':
-									type = 'ebayReferenceID'
-								break;
-							case 'eb2':
-									type = 'ebayEAN'
-								break;
-							case 'eb3':
-									type = 'ebayUPC'
-								break;
-							case 'eb4':
-									type = 'EAN'
-								break;
-						}
+						//~ var rs = options.response.responseText;
+						//~ d3i.value = '... ebay ...';
+						//~ var type = '';
+						//~ switch(result.array_all[0]) {
+							//~ case 'eb1':
+									//~ type = 'ebayReferenceID'
+								//~ break;
+							//~ case 'eb2':
+									//~ type = 'ebayEAN'
+								//~ break;
+							//~ case 'eb3':
+									//~ type = 'ebayUPC'
+								//~ break;
+							//~ case 'eb4':
+									//~ type = 'EAN'
+								//~ break;
+						//~ }
 						
-						if (options.response.status != 200) {
-							console.log(JSON.stringify(rs));
-							result[type] = false;
-							A9_Snaptell_VSR__next();
-							return false;
-						}
-						console.log(rs);
+						//~ if (options.response.status != 200) {
+							//~ console.log(JSON.stringify(rs));
+							//~ result[type] = false;
+							//~ A9_Snaptell_VSR__next();
+							//~ return false;
+						//~ }
+						//~ console.log(rs);
 
 						//~ info = info[0].innerText.trim();
 						//~ info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
@@ -180287,9 +180276,9 @@ function top_window(okay_to_run) {
 							//~ o.q[0].blur();
 							//~ o.q[0].focus();
 						//~ }
-						// CALL NEXT
-						result[type] = true;
-						A9_Snaptell_VSR__next();
+						return false;
+					},
+					success_callback: function(options) {
 					}
 				});
 			}
