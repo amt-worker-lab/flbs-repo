@@ -179600,7 +179600,7 @@ function top_window(okay_to_run) {
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
-			upc ='9781615682867'
+			//upc ='9780525478812'
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
 			// won't be a false positive.
@@ -180062,15 +180062,16 @@ function top_window(okay_to_run) {
 									result.yoopsie == false
 									result.yoopsie == false
 									//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
-				if(!canRunEbay && next == 'eb1') {
-					while(
-						result.array_all[0] == 'eb2' ||
-						result.array_all[0] == 'eb3' ||
-						result.array_all[0] == 'eb4') {
-						d3i.value = '...Ebay...'
-						next = result.array_all.shift();
-					}
-				}
+				canRunEbay = true;
+				//~ if(!canRunEbay && next == 'eb1') {
+					//~ while(
+						//~ result.array_all[0] == 'eb2' ||
+						//~ result.array_all[0] == 'eb3' ||
+						//~ result.array_all[0] == 'eb4') {
+						//~ d3i.value = '...Ebay...'
+						//~ next = result.array_all.shift();
+					//~ }
+				//~ }
 				switch(next) {
 					case 'de':
 						// ...
@@ -180255,68 +180256,50 @@ function top_window(okay_to_run) {
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//console.log(JSON.parse(options.response.responseText));
-						if(options.response.status == 200) {
-							var rs = JSON.parse(options.response.responseText);
-							console.log(rs);
-							if(rs.findItemsByProductResponse &&
-								rs.findItemsByProductResponse.length == 1 &&
-								!rs.findItemsByProductResponse[0].errorMessage &&
-								rs.findItemsByProductResponse[0].searchResult &&
-								rs.findItemsByProductResponse[0].searchResult[0] &&
-								rs.findItemsByProductResponse[0].searchResult[0].item &&
-								rs.findItemsByProductResponse[0].searchResult[0].item[0] &&
-								rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL &&
-								rs.findItemsByProductResponse[0].searchResult[0].item[0].title) {
-									d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
-									d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
-									d3i.style.border = '4px solid blue';
-									d3i.onclick = function() {
-										this.style.backgroundColor = 'LightGreen';
-										o.q[0].value = this.value;
-										o.q[1].value = this.viewItemUrl;
-										o.q[0].focus();
-										o.q[0].blur();
-										o.q[0].focus();							
-									}
-									o.ebaySuccess = true;
-									while(result.array_all[0] == 'eb1' ||
-										  result.array_all[0] == 'eb2' ||
-										  result.array_all[0] == 'eb3' ||
-										  result.array_all[0] == 'eb4' 
-										  ) {
-										result.array_all.shift();
-									}
-								}
+						if(options.response.status != 200) {
+							return false;
 						}
-						if(result.array_all[0] == 'g') {
-							if(o.ebaySuccess == false) {
-								d3i.value = '... Ebay ...';
-							}
-						}
-						A9_Snaptell_VSR__next();
-						//~ if (options.response.status != 200) {
-							//~ console.log(JSON.stringify(rs));
-							//~ result[type] = false;
-							//~ A9_Snaptell_VSR__next();
-							//~ return false;
-						//~ }
-						//~ console.log(rs);
-
-						//~ info = info[0].innerText.trim();
-						//~ info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
-						//~ d3i.value = info;
-						//~ d3i.style.border = '4px solid blue';
-						//~ d3i.onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ o.q[0].value = this.value;
-							//~ o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
-							//~ o.q[0].focus();
-							//~ o.q[0].blur();
-							//~ o.q[0].focus();
-						//~ }
-						return false;
+						return true;
 					},
 					success_callback: function(options) {
+						
+						var rs = JSON.parse(options.response.responseText);
+						console.log(rs);
+						if(rs.findItemsByProductResponse &&
+							rs.findItemsByProductResponse.length == 1 &&
+							!rs.findItemsByProductResponse[0].errorMessage &&
+							rs.findItemsByProductResponse[0].searchResult &&
+							rs.findItemsByProductResponse[0].searchResult[0] &&
+							rs.findItemsByProductResponse[0].searchResult[0].item &&
+							rs.findItemsByProductResponse[0].searchResult[0].item[0] &&
+							rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL &&
+							rs.findItemsByProductResponse[0].searchResult[0].item[0].title) {
+								d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
+								d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
+								d3i.style.border = '4px solid blue';
+								d3i.onclick = function() {
+									this.style.backgroundColor = 'LightGreen';
+									o.q[0].value = this.value;
+									o.q[1].value = this.viewItemUrl;
+									o.q[0].focus();
+									o.q[0].blur();
+									o.q[0].focus();							
+								}
+								o.ebaySuccess = true;
+								while(result.array_all[0] == 'eb1' ||
+									  result.array_all[0] == 'eb2' ||
+									  result.array_all[0] == 'eb3' ||
+									  result.array_all[0] == 'eb4' 
+									  ) {
+									result.array_all.shift();
+								}
+							}
+							if(result.array_all[0] == 'g') {
+									if(o.ebaySuccess == false) {
+										d3i.value = '... Ebay ...';
+								}
+							}
+							A9_Snaptell_VSR__next();
 					}
 				});
 			}
