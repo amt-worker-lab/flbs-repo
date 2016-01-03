@@ -179777,7 +179777,7 @@ function top_window(okay_to_run) {
 			d3j.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
 			d3j.type = 'button';
 			d3j.value = '';
-			x.appendChild(d3g);		
+			x.appendChild(d3j);		
 			
 			
 			//
@@ -179912,7 +179912,7 @@ function top_window(okay_to_run) {
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb3','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// This is the first URL for iframe d1.src.
 				first_url: null
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
@@ -180192,6 +180192,7 @@ function top_window(okay_to_run) {
 				);
 			}
 			
+			
 			// ...
 			// d3i
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
@@ -180216,17 +180217,17 @@ function top_window(okay_to_run) {
 				}
 				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct&'+
 						'SERVICE-VERSION=1.12.0&'+
-						'SECURITY-APPNAME='+securityID+'+
-						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'
-						'&productId.@type='+
-						'&productId=__variable__';
+						'SECURITY-APPNAME='+securityID+
+						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'+
+						'&productId.@type='+ encodeURIComponent(type)
+						'&productId=' + encodeURIComponent(upc) ;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						return false;
 						if (options.response.status != 200) {
-							d3i.value = '... yoopsie ...';
+							d3i.value = '... ebay ...';
 							// CALL NEXT
 							result.yoopsie = false;
 							A9_Snaptell_VSR__next();
@@ -180254,7 +180255,7 @@ function top_window(okay_to_run) {
 						}
 						
 						if (options.response.status != 200) {
-											
+							console.log(JSON.stringify(rs));
 							result[type] = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180274,12 +180275,11 @@ function top_window(okay_to_run) {
 							//~ o.q[0].focus();
 						//~ }
 						// CALL NEXT
-						result.yoopsie = true;
+						result[type] = true;
 						A9_Snaptell_VSR__next();
 					}
 				});
 			}
-			
 			
 			// https://www.upcdatabase.com/php_example.txt
 			// This is a garbly site........................
