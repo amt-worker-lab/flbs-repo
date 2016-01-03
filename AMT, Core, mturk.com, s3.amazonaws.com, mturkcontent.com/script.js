@@ -180052,6 +180052,24 @@ function top_window(okay_to_run) {
 				// Next
 				console.log(result.array_all);
 				var next = result.array_all.shift();
+				
+				var canRunEbay = 	result.searchupc == false &&
+									result.shopsavvy == false &&
+									result.upcindex == false &&
+									result.upcitemdb == false &&
+									result.upcdatabase == false &&
+									result.yoopsie == false
+									result.yoopsie == false
+									//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
+				if(!canRunEbay && next == 'eb1') {
+					while(result.array_all[0] != 'eb1' &&
+						result.array_all[0] != 'eb2' &&
+						result.array_all[0] != 'eb3' &&
+						result.array_all[0] != 'eb4') {
+						d3i.value = '...Ebay...'
+						next = result.array_all.shift();
+					}
+				}
 				switch(next) {
 					case 'de':
 						// ...
@@ -180101,17 +180119,21 @@ function top_window(okay_to_run) {
 						//
 						A9_Snaptell_VSR__outpan_com();
 						break;
-					case 'eb1':
-						A9_Snaptell_ebay_find_product();
+					case 'eb1':				
+						if (canRunEbay)
+							A9_Snaptell_ebay_find_product();
 						break;
 					case 'eb2':
-						A9_Snaptell_ebay_find_product();
+						if (canRunEbay)
+							A9_Snaptell_ebay_find_product();
 						break;
 					case 'eb3':
-						A9_Snaptell_ebay_find_product();
+						if (canRunEbay)
+							A9_Snaptell_ebay_find_product();
 						break;
 					case 'eb4':
-						A9_Snaptell_ebay_find_product();
+						if (canRunEbay)
+							A9_Snaptell_ebay_find_product();
 						break;
 					case 'g':
 						//~ console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
@@ -180131,7 +180153,8 @@ function top_window(okay_to_run) {
 							result.upcindex == false &&
 							result.upcitemdb == false &&
 							result.upcdatabase == false &&
-							result.yoopsie == false
+							result.yoopsie == false &&
+							o.ebaySuccess == false
 							// && result.yahoo == false
 							) {
 							//~ console.log('x');
@@ -180181,7 +180204,8 @@ function top_window(okay_to_run) {
 								result.upcindex == false &&
 								result.upcitemdb == false &&
 								result.upcdatabase == false &&
-								result.yoopsie == false
+								result.yoopsie == false &&
+								o.ebaySuccess == false
 								)
 							{
 								naBut.click();
@@ -180212,7 +180236,7 @@ function top_window(okay_to_run) {
 					case 'eb4':
 							type = 'UPC'
 						break;
-					case 'g':
+					default:
 							type = 'EAN'
 						break;
 				}
@@ -180254,14 +180278,18 @@ function top_window(okay_to_run) {
 										o.q[0].focus();							
 									}
 									o.ebaySuccess = true;
-									while(result.array_all[0] != 'g') {
+									while(result.array_all[0] != 'eb1' &&
+										  result.array_all[0] != 'eb2' &&
+										  result.array_all[0] != 'eb3' &&
+										  result.array_all[0] != 'eb4' 
+										  ) {
 										result.array_all.shift();
 									}
 								}
 						}
 						if(result.array_all[0] == 'g') {
 							if(o.ebaySuccess == false) {
-								d3i.value = '... ebay ...';
+								d3i.value = '... Ebay ...';
 							}
 						}
 						A9_Snaptell_VSR__next();
