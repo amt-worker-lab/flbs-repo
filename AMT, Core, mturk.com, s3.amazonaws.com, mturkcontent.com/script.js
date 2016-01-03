@@ -179765,6 +179765,21 @@ function top_window(okay_to_run) {
 			d3h.type = 'button';
 			d3h.value = 'outpan';
 			x.appendChild(d3h);
+			
+			//
+			var d3i = document.createElement('input');
+			d3i.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
+			d3i.type = 'button';
+			d3i.value = 'Ebay';
+			x.appendChild(d3i);
+			//
+			var d3j = document.createElement('input');
+			d3j.setAttribute('style','float:left;width:24%;height:30px;cursor:pointer;font-weight:bold;');
+			d3j.type = 'button';
+			d3j.value = '';
+			x.appendChild(d3g);		
+			
+			
 			//
 			//~ var d3f = document.createElement('input');
 			//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
@@ -179891,9 +179906,13 @@ function top_window(okay_to_run) {
 				outpan:			null,  // op
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
-				upcitemdb:		null, // 
+				upcitemdb:		null, //
+				ebayRefernceID: false,
+				ebayISBN: false,
+				ebayEAN: false,
+				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','yp','op','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb3','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// This is the first URL for iframe d1.src.
 				first_url: null
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
@@ -180081,6 +180100,18 @@ function top_window(okay_to_run) {
 						//
 						A9_Snaptell_VSR__outpan_com();
 						break;
+					case 'eb1':
+						A9_Snaptell_ebay_find_product();
+						break;
+					case 'eb2':
+						A9_Snaptell_ebay_find_product();
+						break;
+					case 'eb3':
+						A9_Snaptell_ebay_find_product();
+						break;
+					case 'eb4':
+						A9_Snaptell_ebay_find_product();
+						break;
 					case 'g':
 						//~ console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
 						//~ console.log(result);
@@ -180245,6 +180276,66 @@ function top_window(okay_to_run) {
 			}
 			// ...
 			// d3g
+			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
+			function A9_Snaptell_ebay_find_product() {
+				console.log('Running through A9_Snaptell_ebay_find_product');
+				var tmp = Math.floor(Math.random() * 1)
+				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
+				var u = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d3g.value = '... yoopsie ...';
+							// CALL NEXT
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						d3g.value = '... yoopsie ...';
+						if (options.response.status != 200) {
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var info = dom.getElementsByClassName('info');
+						if (!info || !info.length) {
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						info = info[0].getElementsByTagName('a');
+						if (!info || !info.length) {
+							result.yoopsie = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						info = info[0].innerText.trim();
+						info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
+						d3g.value = info;
+						d3g.style.border = '4px solid blue';
+						d3g.onclick = function() {
+							this.style.backgroundColor = 'LightGreen';
+							o.q[0].value = this.value;
+							o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
+							o.q[0].focus();
+							o.q[0].blur();
+							o.q[0].focus();
+						}
+						// CALL NEXT
+						result.yoopsie = true;
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// ...
+			// d3i
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
 			function A9_Snaptell_VSR__yoopsie_com() {
 				console.log('Running through A9_Snaptell_VSR__yoopsie_com');
