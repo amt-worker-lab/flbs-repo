@@ -179600,6 +179600,7 @@ function top_window(okay_to_run) {
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
+			upc ='9781615682867'
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
 			// won't be a false positive.
@@ -180062,10 +180063,10 @@ function top_window(okay_to_run) {
 									result.yoopsie == false
 									//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
 				if(!canRunEbay && next == 'eb1') {
-					while(result.array_all[0] != 'eb1' &&
-						result.array_all[0] != 'eb2' &&
-						result.array_all[0] != 'eb3' &&
-						result.array_all[0] != 'eb4') {
+					while(
+						result.array_all[0] == 'eb2' ||
+						result.array_all[0] == 'eb3' ||
+						result.array_all[0] == 'eb4') {
 						d3i.value = '...Ebay...'
 						next = result.array_all.shift();
 					}
@@ -180278,10 +180279,10 @@ function top_window(okay_to_run) {
 										o.q[0].focus();							
 									}
 									o.ebaySuccess = true;
-									while(result.array_all[0] != 'eb1' &&
-										  result.array_all[0] != 'eb2' &&
-										  result.array_all[0] != 'eb3' &&
-										  result.array_all[0] != 'eb4' 
+									while(result.array_all[0] == 'eb1' ||
+										  result.array_all[0] == 'eb2' ||
+										  result.array_all[0] == 'eb3' ||
+										  result.array_all[0] == 'eb4' 
 										  ) {
 										result.array_all.shift();
 									}
