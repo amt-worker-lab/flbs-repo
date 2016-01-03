@@ -180223,42 +180223,41 @@ function top_window(okay_to_run) {
 						'&SECURITY-APPNAME='+securityID+
 						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'+
 						'&productId.@type='+ encodeURIComponent(type)+
-						'&productId=' + encodeURIComponent(upc) ;
-						
-						//~ http://svcs.ebay.com/services/search/FindingService/v1?
-   //~ OPERATION-NAME=findItemsByProduct&
-   //~ SERVICE-VERSION=1.0.0&
-   //~ SECURITY-APPNAME=YourAppID&
-   //~ RESPONSE-DATA-FORMAT=XML&
-   //~ REST-PAYLOAD&
-   //~ paginationInput.entriesPerPage=2&
-   //~ productId.@type=ReferenceID&
-   //~ productId=53039031
-						
+						'&productId=' + encodeURIComponent(upc) ;						
 						
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						console.log(JSON.parse(options.response.responseText));
-						alert('here?');
-						//~ var rs = options.response.responseText;
-						//~ d3i.value = '... ebay ...';
-						//~ var type = '';
-						//~ switch(result.array_all[0]) {
-							//~ case 'eb1':
-									//~ type = 'ebayReferenceID'
-								//~ break;
-							//~ case 'eb2':
-									//~ type = 'ebayEAN'
-								//~ break;
-							//~ case 'eb3':
-									//~ type = 'ebayUPC'
-								//~ break;
-							//~ case 'eb4':
-									//~ type = 'EAN'
-								//~ break;
-						//~ }
-						
+						//console.log(JSON.parse(options.response.responseText));
+						if(options.response.status == 200) {
+							var rs = JSON.parse(options.response.responseText);
+							console.log(rs);
+							if(rs.findItemsByProductResponse &&
+								rs.findItemsByProductResponse.length == 1 &&
+								!rs.findItemsByProductResponse[0].errorMessage &&
+								rs.findItemsByProductResponse[0].searchResult &&
+								rs.findItemsByProductResponse[0].searchResult[0] &&
+								rs.findItemsByProductResponse[0].searchResult[0].item &&
+								rs.findItemsByProductResponse[0].searchResult[0].item[0] &&
+								rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL &&
+								rs.findItemsByProductResponse[0].searchResult[0].item[0].title) {
+									d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
+									d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
+									d3i.style.border = '4px solid blue';
+									d3i.onclick = function() {
+										this.style.backgroundColor = 'LightGreen';
+										o.q[0].value = this.value;
+										o.q[1].value = this.viewItemUrl;
+										o.q[0].focus();
+										o.q[0].blur();
+										o.q[0].focus();							
+									}
+									while(result.array_all[0] != 'g') {
+										result.array_all.shift();
+									}
+								}
+						}
+						A9_Snaptell_VSR__next();
 						//~ if (options.response.status != 200) {
 							//~ console.log(JSON.stringify(rs));
 							//~ result[type] = false;
