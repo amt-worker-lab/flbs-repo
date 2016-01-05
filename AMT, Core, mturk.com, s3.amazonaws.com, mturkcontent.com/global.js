@@ -15633,11 +15633,11 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tasks_obj.table_rows[ row.db_id ] = tr;
 		
 		// Set functions
-		tr.f = function (){}; //.....
-		tr.f.prototype.hide = tr.f.prototype.hide2 = function() {
+		tr.f = {}; //.....
+		tr.f.hide = function() {
 			this.style.display = 'none';
 		}
-		tr.f.prototype.show = function() {
+		tr.f.show = function() {
 			this.style.display = 'block';
 		}
 		/**
@@ -16285,7 +16285,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				// AMT Front Page Threshold (0+)
 				// Less than threshold?
 				if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
-					row.f.hide2();
+					row.f.hide();
 				} else {
 					row.f.show();
 				}
