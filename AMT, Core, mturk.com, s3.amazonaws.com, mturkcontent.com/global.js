@@ -15635,10 +15635,16 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Set functions
 		tr.f = { tr: tr }; //.....
 		tr.f.hide = function() {
-			this.tr.style.visibility = 'hidden';
+			this.tr.style.display = 'none';
+			this.tr.hidden_tr.display = 'none';
+			//~ this.tr.style.visibility = 'hidden';
+			//~ this.tr.hidden_tr.style.visibility = 'hidden';
 		}
 		tr.f.show = function() {
-			this.tr.style.visibility = 'visible';
+			this.tr.style.display = 'table-row';
+			this.tr.hidden_tr.display = 'table-row';
+			//~ this.tr.style.visibility = 'visible';
+			//~ this.tr.hidden_tr.style.visibility = 'visible';
 		}
 		//Skip?
 		// AMT Front Page Threshold (0+)
