@@ -15632,6 +15632,14 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Add to global!
 		tasks_obj.table_rows[ row.db_id ] = tr;
 		
+		// Set functions
+		tr.f = function (){}; //.....
+		tr.f.prototype.hide = function() {
+			this.style.display = 'none';
+		}
+		tr.f.prototype.show = function() {
+			this.style.display = 'block';
+		}
 		/**
 		 * TDs ... ...
 		 * ID
@@ -16263,14 +16271,22 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 					if (first == row) continue; // Do not move if row is already first.
 					row.parentNode.insertBefore(hidden, first);	// Move the row's hidden row before first (has extended details).
 					row.parentNode.insertBefore(row, hidden);	// Move row before hidden row.
-					// Debug
-					console.log('Moved rows to top (row, hidden):' + row.innerText);
-					console.log(row);
-					console.log(hidden);
-					console.log('Before first row:' + first.innerText);
-					console.log(first);
+					//~ // Debug
+					//~ console.log('Moved rows to top (row, hidden):' + row.innerText);
+					//~ console.log(row);
+					//~ console.log(hidden);
+					//~ console.log('Before first row:' + first.innerText);
+					//~ console.log(first);
 				} else { // Update
 					row.hits_available.innerText = d.hits_available;
+				}
+				
+				//Skip?
+				// AMT Front Page Threshold (0+)
+				// Less than threshold?
+				if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
+					row.hide();
+					continue;
 				}
 				
 				// IF updating graphs
@@ -16296,9 +16312,9 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			// Skip?
 			// AMT Front Page Threshold (0+)
 			// Less than threshold?
-			if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
-				continue;
-			}
+			//~ if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
+				//~ continue;
+			//~ }
 			// Ensure this is valid.
 			// Hmmm.......
 			if (d.requester_name.trim() == '' && d.title.trim() == '') {
