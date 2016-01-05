@@ -1718,7 +1718,6 @@ function init__scrapy() {
 				//~ auto_emails: ['info','contact','contactus']
 			}
 			//~ o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
-			console.log(o);
 			
 			// Remove first tds
 			//~ var tr = document.getElementsByTagName('tr');
@@ -1863,6 +1862,9 @@ function init__scrapy() {
 						//'AJAXCRAWL_ENABLED=1', //true
 					]
 				}
+				
+				console.log('SCRAPYD SEED');
+				console.log(s_obj);
 				
 				var req = new AMT___requests_factory();
 				AMT___POPUP__initializeGlobals(
