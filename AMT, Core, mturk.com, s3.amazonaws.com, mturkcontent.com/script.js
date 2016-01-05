@@ -111130,7 +111130,7 @@ qatar,80
 			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
 			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 			GM_addStyle('table {position:absolute;top:1400px;}'); // MOVE THIS DOWN
-			GM_addStyle('#mturk_form {margin-top:1000px;}'); // MOVE THIS DOWN
+			GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
 			GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#full_address {position:absolute !important;top:-130px;left:0px;width:600px !important;}'); // MOVE STATE UP // -130?
@@ -111149,10 +111149,10 @@ qatar,80
 			//~ }
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:100px;left:20%;width:79%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:98px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:50px;left:20%;width:79%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:50px;left:0%;width:99%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp;
 			//~ var dx3 = document.createElement('div');
