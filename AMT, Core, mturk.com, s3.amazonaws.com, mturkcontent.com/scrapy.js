@@ -1790,6 +1790,8 @@ function init__scrapy() {
 			}
 			// SP
 			function sp(response_obj) {
+				console.log(response_obj);
+				
 				//o.sd_start_urls
 				//o.sd_allowed_domains
 				console.log(response_obj.length);
@@ -1800,7 +1802,8 @@ function init__scrapy() {
 					// No URLs
 					// Init
 					//~ scrapy(o.sd_start_urls, o.sd_allowed_domains);
-					AMT___Floater.skip();
+					if(AMT__Global_Vars.isPreview)
+						AMT___Floater.skip();
 					return;
 				} else {
 					/*([{
