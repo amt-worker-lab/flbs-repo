@@ -15633,12 +15633,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		tasks_obj.table_rows[ row.db_id ] = tr;
 		
 		// Set functions
-		tr.f = {}; //.....
+		tr.f = { tr: tr }; //.....
 		tr.f.hide = function() {
-			this.style.display = 'none';
+			this.tr.style.display = 'none';
 		}
 		tr.f.show = function() {
-			this.style.display = 'block';
+			this.tr.style.display = 'block';
 		}
 		/**
 		 * TDs ... ...
