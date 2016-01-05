@@ -111126,9 +111126,13 @@ qatar,80
 			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
 			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
 			//~ GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
-			GM_addStyle('input {height:auto !important;padding:0 !important;}');
+			GM_addStyle('input {height:auto !important;padding:0 !important;width:100%;}');// ADD WIDTH
 			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
 			GM_addStyle('table {position:absolute;top:1400px;}'); // MOVE THIS DOWN
+			GM_addStyle('#mturk_form {margin-top:1000px;}'); // MOVE THIS DOWN
+			GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			//~ GM_addStyle('#full_address {position:absolute !important;top:-130px;left:0px;width:600px !important;}'); // MOVE STATE UP // -130?
 			
 			var t = document.getElementsByTagName('strong');
@@ -111145,15 +111149,15 @@ qatar,80
 			//~ }
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:40px;left:20%;width:79%;height:260px;border:2px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:100px;left:20%;width:79%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:0px;left:20%;width:79%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:50px;left:20%;width:79%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp;
-			var dx3 = document.createElement('div');
-			dx3.setAttribute('style','position:absolute;top:300px;left:20%;width:79%;height:200px;border:2px dashed blue;');
-			document.body.appendChild(dx3);
+			//~ var dx3 = document.createElement('div');
+			//~ dx3.setAttribute('style','position:absolute;top:300px;left:20%;width:79%;height:200px;border:2px dashed blue;');
+			//~ document.body.appendChild(dx3);
 			/*END ITEMS*/
 			
 			//~ showPastReturns('ChrisLintz' + o.comp, function(e) {
@@ -111169,10 +111173,10 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					//~ dx1
-					dx3
+					dx1
+					//~ dx3
 				],
-				offset: 300 // offset top
+				offset: 100 // offset top
 			});
 			
 			// submitButton
@@ -111182,7 +111186,8 @@ qatar,80
 				for (var i in o.q) {
 					o.q[i].value = o.q[i].value.trim();
 					if (o.q[i].value == '') return false;
-					if (o.q[i].value == 'http://') return false;
+					if (o.q[i].value.length < 4) return false;
+					//~ if (o.q[i].value == 'http://') return false;
 				}
 				doSubmit(); // Still here? Submit.
 				return false;
@@ -111195,35 +111200,25 @@ qatar,80
 				parent: dx1,
 				parent_controller_el: dx2,
 				output_elements: {
-					website: o.q[0],
-					city: o.q[1],
-					state: o.q[2],
-					phone: o.q[3]
+					full_address: o.q[0],
+					zip: o.q[1],
+					//~ state: o.q[2],
+					//~ phone: o.q[3]
 				},
-				//~ build_complete_callback: function(opts) {
-					//~ // opts.o.first_fb_or_google_us
-					//~ if (!opts.o.first_fb_or_google_us) {
-						//~ document.body.style.backgroundColor = 'pink';
-					//~ } else {
-						//~ document.body.style.backgroundColor = 'white';
-					//~ }
-				//~ },
-				//accept_skip_us: true, // TODO: ADD UK, CA, AUS...
 				onclick_callback: function(opts) { // (opts)
-					console.log(opts);
-					// Change state abbr to state
+					//~ console.log(opts);
+					//~ // Change state abbr to state
 					//~ console.log(o);
 					//~ console.log(o.q[2]);
 					//~ console.log(o.q[2].value);
-					o.q[2].value = o.q[2].value.state_full_to_abbr();
-					// Change URL to include http
-					o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
-					o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
-					if (o.q[0].value == '' || o.q[0].value == 'http://') {
-						if (opts.profile_url)
-							o.q[0].value = opts.profile_url;
-					}
-					
+					//~ o.q[2].value = o.q[2].value.state_full_to_abbr();
+					//~ // Change URL to include http
+					//~ o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
+					//~ o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
+					//~ if (o.q[0].value == '' || o.q[0].value == 'http://') {
+						//~ if (opts.profile_url)
+							//~ o.q[0].value = opts.profile_url;
+					//~ }
 					// 
 					// IF ALL FROM LINK ARE FILLED IN
 					// THEN AUTO-SUBMIT?
@@ -111232,22 +111227,22 @@ qatar,80
 			};
 			new AMT___items_factory().create_dashboard_find_address(opts);
 			
-			// FIND URL
-			// create_dashboard_find_url
-			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.comp.clean_string_to_array(),
-				searches:[
-					o.comp,
-					'"'+o.comp.replace(/,[\d\D]*$/, '') + '"',
-				],
-				out_element: o.q[0],
-				parent: dx3,
-				offsetTop: 300,
-				onclick_success: function(e) {
-					o.q[0].value = this.value;
-					o.q[0].focus();
-				}
-			});
+			//~ // FIND URL
+			//~ // create_dashboard_find_url
+			//~ AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.comp.clean_string_to_array(),
+				//~ searches:[
+					//~ o.comp,
+					//~ '"'+o.comp.replace(/,[\d\D]*$/, '') + '"',
+				//~ ],
+				//~ out_element: o.q[0],
+				//~ parent: dx3,
+				//~ offsetTop: 300,
+				//~ onclick_success: function(e) {
+					//~ o.q[0].value = this.value;
+					//~ o.q[0].focus();
+				//~ }
+			//~ });
 		}
 		new run().f();
 		return;

@@ -10263,7 +10263,8 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			website: null,
 			lat: null,
 			lng: null,
-			full_address: null
+			full_address: null,
+			//~ full_address_2: null // No zip
 		},
 		first_fb_or_google_us: null // First FB or Google result is in US
 	}
