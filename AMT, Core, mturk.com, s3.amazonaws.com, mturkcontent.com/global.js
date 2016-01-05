@@ -15635,10 +15635,20 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		// Set functions
 		tr.f = { tr: tr }; //.....
 		tr.f.hide = function() {
-			this.tr.style.display = 'none';
+			this.tr.style.visibility = 'hidden';
 		}
 		tr.f.show = function() {
-			this.tr.style.display = 'block';
+			this.tr.style.visibility = 'visible';
+		}
+		//Skip?
+		// AMT Front Page Threshold (0+)
+		// Less than threshold?
+		tr.f.check_sv_hide = function() {
+			if (this.tr.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
+				this.tr.f.hide();
+			} else {
+				this.tr.f.show();
+			}
 		}
 		/**
 		 * TDs ... ...
@@ -15891,6 +15901,12 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 		hidden_tr.td = td; // Shortcut
 		// Sets tr "hidden_tr" attribute.
 		tr.hidden_tr = hidden_tr;
+		
+		// Set initial SV
+		//
+		//
+		//
+		tr.f.check_sv_hide(); // 
 		
 		// Return
 		return [tr, hidden_tr];
@@ -16284,6 +16300,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 				//Skip?
 				// AMT Front Page Threshold (0+)
 				// Less than threshold?
+				row.f.check_sv_hide();
 				if (d.hits_available*1 <= AMT__Global_Vars.scriptVars['AMT Front Page Threshold (0+)']*1) {
 					row.f.hide();
 				} else {
