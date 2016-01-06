@@ -179734,7 +179734,7 @@ function top_window(okay_to_run) {
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
-			upc ='630509346776'
+			//upc ='630509346776'
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
 			// won't be a false positive.
