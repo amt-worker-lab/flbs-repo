@@ -179981,6 +179981,7 @@ function top_window(okay_to_run) {
 				}
 				o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 				this.checked = true;
+				console.log('NA Button clicked');
 				doSubmit('hitForm');
 			}
 			// middle-click-na
@@ -180311,11 +180312,23 @@ function top_window(okay_to_run) {
 									return; // Stop here...
 							}
 							d2c.innerText = '0';
+							console.log(o);
+							console.log(result);
+							console.log('Auto NA results:');
+							console.log(result.digital_eyes == false)
+							console.log(	(result.startpage == false || result.startpage == null))
+							console.log(result.searchupc == false)
+							console.log(	result.shopsavvy == false)
+							console.log(	result.upcindex == false)
+							console.log(	result.upcitemdb == false)
+							console.log(	result.upcdatabase == false)
+							console.log(	result.yoopsie == false)
+							console.log(	o.ebaySuccess == false)
 							// AUTO?
 							// XX Keep this off by default.
 							if  (
 								result.digital_eyes == false &&
-								result.startpage == false &&
+								(result.startpage == false || result.startpage == null) &&
 								//~ result.yahoo == false &&
 								result.searchupc == false &&
 								result.shopsavvy == false &&
