@@ -180038,7 +180038,8 @@ function top_window(okay_to_run) {
 				shopsavvy:		null,
 				searchupc:		null, // Set to false for N/A, if skipping
 				//~ smoopa:			null,
-				yoopsie:		null,  // yp
+				yoopsie:		false,  // yp
+				//~ yoopsie:		null,  // yp
 				outpan:			null,  // op
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
@@ -180048,7 +180049,9 @@ function top_window(okay_to_run) {
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				// Removed yoopsie, yp
+				//~ array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// This is the first URL for iframe d1.src.
 				first_url: null
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
