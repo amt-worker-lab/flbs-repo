@@ -120134,11 +120134,12 @@ qatar,80
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
-				]
+				],
+				types: ['racing','motorcycle','snowmobile','motocross','cycle','atv','powersports']
 			}
 			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
 			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
-			o.boldArray = o.comp.clean_string_to_array().concat(['racing','motorcycle','snowmobile','motocross','cycle','atv','powersports']);
+			o.boldArray = o.comp.clean_string_to_array().concat(o.types);
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -120167,7 +120168,7 @@ qatar,80
 				searches:[
 					o.comp,
 					'"'+o.comp.split(' ').join('" "')+'"',     // quotes
-					o.comp + ' ("racing" OR "motorcycle" OR "snowmobile")', // quotes
+					o.comp + ' ("'+o.types.join('" OR "')+'")', // quotes
 				],
 				search_results: {
 					//~ use_domain_only: true
