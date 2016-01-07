@@ -28683,11 +28683,12 @@ function MT__RUN() {
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('.span5 {position:absolute !important;width:20% !important;left:80% !important;}');
 			
 			var str = document.getElementsByTagName('strong');
 			var o = {
-				fn:	str[0].innerText.trim(),
-				ln:	str[1].innerText.trim(),
+				fn:	str[0].parentNode.innerText.replace(/First Name:/, '').trim(),
+				ln:	str[1].parentNode.innerText.replace(/Last Name:/, '').trim(),
 				//~ name:	td[1].innerText.trim(),
 				//~ company:td[3].innerText.trim(),
 				//~ email:	td[5].innerText.trim(),
@@ -28714,24 +28715,24 @@ function MT__RUN() {
 			/* BEGIN ITEMS */
 			//
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:160px;left:0%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:40%;height:800px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style','position:absolute;top:0px;left:40%;width:40%;height:800px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
-			var d2 = document.createElement('input');
-			d2.type = 'button';
-			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
-			document.body.appendChild(d2);
-			d2.value = 'no image';
-			var d2b = document.createElement('input');
-			d2b.type = 'button';
-			d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
-			document.body.appendChild(d2b);
-			d2b.value = 'no profile';
-			var d3 = document.createElement('img');
-			d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
-			document.body.appendChild(d3);
+			//~ var d2 = document.createElement('input');
+			//~ d2.type = 'button';
+			//~ d2.setAttribute('style','position:absolute;top:0px;left:60%;width:20%;height:40px;');
+			//~ document.body.appendChild(d2);
+			//~ d2.value = 'no image';
+			//~ var d2b = document.createElement('input');
+			//~ d2b.type = 'button';
+			//~ d2b.setAttribute('style','position:absolute;top:0px;left:80%;width:20%;height:40px;');
+			//~ document.body.appendChild(d2b);
+			//~ d2b.value = 'no profile';
+			//~ var d3 = document.createElement('img');
+			//~ d3.setAttribute('style','position:absolute;top:0px;left:40%;max-width:60px;max-height:60px;');
+			//~ document.body.appendChild(d3);
 			/*END ITEMS*/
 			
 			//~ // ...
@@ -28770,7 +28771,7 @@ function MT__RUN() {
 				elements: [
 					d1, d1b
 				],
-				offset: 160 // offset top
+				offset: 0 // offset top
 			});
 			
 			// Do a LinkedIn search 1
