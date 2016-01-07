@@ -28448,7 +28448,8 @@ function MT__RUN() {
 	 * linkedin_people_search
 	 * 
 	 * Skylar Marcum
-	 * Andrew Angus
+	 * XXREMOVEDXXAndrew Angus
+	 * Brittany ""
 	 * Web Test
 	 * 
 	 * 
@@ -28669,11 +28670,11 @@ function MT__RUN() {
 		return;
 	}
 	
+	// Brittany ""
+	// Categorization
+	// 
 	//
-	// Andrew Angus
-	// Find the URL of a Linkedin Profile Image
-	//
-	s = '<p>Given the contact information provided, please locate the url for each contacts Linkedin <strong>profile image</strong>. We have provided name, last known company, last known title and last known email for many of the contacts.</p>';
+	s = '3. Once the results appear, identify where that specific contact is located. This is listed underneath the name.';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -28683,31 +28684,31 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:100% !important;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			
-			var td = document.getElementsByTagName('td');
+			var str = document.getElementsByTagName('strong');
 			var o = {
-				fn:		null,
-				ln:		null,
-				name:	td[1].innerText.trim(),
-				company:td[3].innerText.trim(),
-				email:	td[5].innerText.trim(),
+				fn:	str[0].innerText.trim(),
+				ln:	str[1].innerText.trim(),
+				//~ name:	td[1].innerText.trim(),
+				//~ company:td[3].innerText.trim(),
+				//~ email:	td[5].innerText.trim(),
 				//website:td[5].innerText.trim(),
-				bold_array_comp: []
+				//~ bold_array_comp: []
 				
 			};
-			o.bold_array_comp = o.company.clean_string_to_array().concat(
-				o.email.clean_string_to_array()
-			);
-			var x = o.name.split(' ');
-			if (x.length == 1) {
-				o.fn = x[0];
-				o.ln = '';
-			} else if (x.length == 2) {
-				o.fn = x[0];
-				o.ln = x[1];
-			} else if (x.length > 2) {
-				o.fn = x[0];
-				o.ln = x.slice(1).join(' ');
-			}
+			//~ o.bold_array_comp = o.company.clean_string_to_array().concat(
+				//~ o.email.clean_string_to_array()
+			//~ );
+			//~ var x = o.name.split(' ');
+			//~ if (x.length == 1) {
+				//~ o.fn = x[0];
+				//~ o.ln = '';
+			//~ } else if (x.length == 2) {
+				//~ o.fn = x[0];
+				//~ o.ln = x[1];
+			//~ } else if (x.length > 2) {
+				//~ o.fn = x[0];
+				//~ o.ln = x.slice(1).join(' ');
+			//~ }
 			console.log(o);
 			
 			/* BEGIN ITEMS */
@@ -28740,29 +28741,26 @@ function MT__RUN() {
 						//~ action: 'return_and_accept_button__nextTab'
 					//~ }
 				//~ );
-				
-			// ...
-			d2.onclick = d2b.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				q.value = this.value;
-				if (q.value == this.value && q.value.trim() != '') {
-					new AMT___core_factory().nextTab();
-					doSubmit();
-				}
-			}
-			
-			// ...
-			var q = document.getElementById('web_url');
-			q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;');
-			
-			// ...
-			document.getElementById('submitButton').onclick = function() {
-				if (q.value.length > 10) {
-					new AMT___core_factory().nextTab();
-					doSubmit();
-				}
-				return false;
-			}
+			//~ // ...
+			//~ d2.onclick = d2b.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ q.value = this.value;
+				//~ if (q.value == this.value && q.value.trim() != '') {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+			//~ }
+			//~ // ...
+			//~ var q = document.getElementById('web_url');
+			//~ q.setAttribute('style', 'position:absolute;top:0px;left:0px;width:40%;');
+			//~ // ...
+			//~ document.getElementById('submitButton').onclick = function() {
+				//~ if (q.value.length > 10) {
+					//~ new AMT___core_factory().nextTab();
+					//~ doSubmit();
+				//~ }
+				//~ return false;
+			//~ }
 			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -28785,13 +28783,13 @@ function MT__RUN() {
 					lastName: o.ln,
 					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
 					//~ titleScope: 'CP', // TITLE current or past
-					company: o.company, // blank
-					companyScope: 'CP'//, // blank
+					//~ company: o.company, // blank
+					//~ companyScope: 'CP'//, // blank
 					//~ website: o.website // DEBUG
 				},
 				sortResults: true,
 				nextTab: true, // nextTab()
-				image_search: true,
+				//~ image_search: true,
 				callback_function: function(comp_object) {
 					//~ {
 						//~ profile_url: url,
@@ -28810,17 +28808,17 @@ function MT__RUN() {
 					
 					// Is 200
 					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
-						new AMT___core_factory().nextTab(); // Next Tab
-						new AMT___requests_factory().url_to_status_code({
-							url: rs.image_full_url,
-							callback_function: function(callback_object) {
-								if (callback_object.status == 200) {
-									doSubmit();
-								} else {
+						//~ new AMT___core_factory().nextTab(); // Next Tab
+						//~ new AMT___requests_factory().url_to_status_code({
+							//~ url: rs.image_full_url,
+							//~ callback_function: function(callback_object) {
+								//~ if (callback_object.status == 200) {
+									//~ doSubmit();
+								//~ } else {
 									
-								}
-							}
-						});
+								//~ }
+							//~ }
+						//~ });
 					}
 					//~ 
 					//~ 
@@ -28849,10 +28847,10 @@ function MT__RUN() {
 					//~ companyScope: 'CP', // blank
 					//~ website: o.website // DEBUG
 				},
-				bold_array_comp: o.bold_array_comp, // bold_array_comp
+				//~ bold_array_comp: o.bold_array_comp, // bold_array_comp
 				sortResults: true,
 				nextTab: true, // nextTab()
-				image_search: true,
+				//~ image_search: true,
 				callback_function: function(comp_object) {
 					//~ {
 						//~ profile_url: url,
@@ -28869,38 +28867,24 @@ function MT__RUN() {
 					
 					// Is 200
 					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
-						new AMT___core_factory().nextTab(); // Next Tab
-						new AMT___requests_factory().url_to_status_code({
-							url: rs.image_full_url,
-							callback_function: function(callback_object) {
-								if (callback_object.status == 200) {
-									doSubmit();
-								} else {
+						//~ new AMT___core_factory().nextTab(); // Next Tab
+						//~ new AMT___requests_factory().url_to_status_code({
+							//~ url: rs.image_full_url,
+							//~ callback_function: function(callback_object) {
+								//~ if (callback_object.status == 200) {
+									//~ doSubmit();
+								//~ } else {
 									
-								}
-							}
-						});
+								//~ }
+							//~ }
+						//~ });
 					}
-					
-					//~ var rs = comp_object;
-					//~ console.log(comp_object);
-					//~ 
-					//~ q.value = rs.profile_url;
-					//~ 
-					//~ if (rs.found_valid_li_url) {
-						//~ new AMT___core_factory().nextTab();
-						//~ doSubmit();
-					//~ } else {
-						//~ q.style.border = '2px dashed blue';
-						//~ q.focus();
-					//~ }
 				}
 			});
 		}
 		new run().f();
 		return;
 	}
-	
 	//
 	// Skylar Marcum
 	//
