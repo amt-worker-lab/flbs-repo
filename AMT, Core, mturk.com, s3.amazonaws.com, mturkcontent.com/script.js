@@ -28741,7 +28741,7 @@ function MT__RUN() {
 					var x = document.getElementsByName('Category');
 					if (!x) return;
 					if (!x[0]) return;
-					if (x[0].value.length < 10) return;
+					if (x[0].value.length < 8) return;
 					//~ console.log(x[0].value); 
 					doSubmit();
 				}, 40);
@@ -28800,8 +28800,8 @@ function MT__RUN() {
 					//~ companyScope: 'CP'//, // blank
 					//~ website: o.website // DEBUG
 				},
-				sortResults: true,
-				nextTab: true, // nextTab()
+				//~ sortResults: true,
+				//~ nextTab: true, // nextTab()
 				//~ image_search: true,
 				callback_function: function(comp_object) {
 					//~ {
@@ -28811,16 +28811,30 @@ function MT__RUN() {
 					
 					var rs = comp_object;
 					console.log(comp_object);
+					console.log(comp_object.length);
+					console.log(comp_object[0]);
 					
 					var rs = comp_object;
 					
+					if (rs &&
+						rs.length > 0 &&
+						rs[0].person &&
+						rs[0].person.firstName == o.fn &&
+						rs[0].person.lastName == o.ln &&
+						fmt_location == 'Greater Los Angeles'
+						) {
+						var x = document.getElementsByName('Category');
+						x[0].value = 'Greater Los Angeles';
+						doSubmit();
+					}
+					
 					//~ rs.image_full_url = rs.image_full_url.replace(/shrink_60_60/, 'shrink_200_200');
 					
-					q.value = rs.image_full_url;
-					d3.src = rs.image_full_url;
+					//~ q.value = rs.image_full_url;
+					//~ d3.src = rs.image_full_url;
 					
 					// Is 200
-					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
+					//~ if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
 						//~ new AMT___core_factory().nextTab(); // Next Tab
 						//~ new AMT___requests_factory().url_to_status_code({
 							//~ url: rs.image_full_url,
@@ -28832,7 +28846,7 @@ function MT__RUN() {
 								//~ }
 							//~ }
 						//~ });
-					}
+					//~ }
 					//~ 
 					//~ 
 					//~ q.value = rs.profile_url;
