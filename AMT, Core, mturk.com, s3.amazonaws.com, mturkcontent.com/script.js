@@ -28735,6 +28735,17 @@ function MT__RUN() {
 			//~ document.body.appendChild(d3);
 			/*END ITEMS*/
 			
+			// sbm
+			document.body.addEventListener('mouseup', function() {
+				setTimeout(function() {
+					var x = document.getElementsByName('Category');
+					if (!x) return;
+					if (!x[0]) return;
+					if (x[0].value.length < 10) return;
+					//~ console.log(x[0].value); 
+					doSubmit();
+				}, 40);
+			}, false);
 			//~ // ...
 			//~ new AMT___core_factory().
 				//~ iframe2parent__postMessage( //
@@ -28782,6 +28793,7 @@ function MT__RUN() {
 				search_params: {
 					firstName: o.fn,
 					lastName: o.ln,
+					location: 'california',
 					//~ title: o.title.replace(/ \(\w+\)/, ''), // Remove "(CIO)", etc.
 					//~ titleScope: 'CP', // TITLE current or past
 					//~ company: o.company, // blank
