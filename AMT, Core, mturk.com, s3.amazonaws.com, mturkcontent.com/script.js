@@ -26,6 +26,48 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// KoMarketing Associates
+	// Use a free online resource to find a specific value for a given web address
+	// 
+	// 
+	s = '<p>Example: when entering the URL www.1010data.com into the "URL" field, the "Domain Authority" value retrieved should be "46/100"</p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:300px}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('da'),
+				]
+			}
+			g();
+			function g() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update=1450130277'+'999999999',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (!JSON.parse(rs)) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						var x = Math.round(r.data.authority.domain_authority);
+						o.q[0].value = x + '/100';
+						if (x && x > 0 && x <= 100) {
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	//
 	//
 	// Will Kuffel
