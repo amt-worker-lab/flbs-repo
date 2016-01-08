@@ -9740,8 +9740,8 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 				'?find_desc='	+encodeURIComponent(d2.value)+
 				'&find_loc='	+encodeURIComponent(d2b.value);
 		var opts = {
-				url: u,
-				strings_do_not_save_to_file: ["Hey there! Before you continue, we just need to check that you're not a robot."]
+			url: u,
+			strings_do_not_save_to_file: ["Hey there! Before you continue, we just need to check that you're not a robot."]
 		}
 		u = JSON.stringify(opts);
 		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(u);
