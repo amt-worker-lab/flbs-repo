@@ -48,6 +48,7 @@ function MT__RUN() {
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				url: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update='+t+Math.round((Math.random()*100000)),
 				callback_function: g,
+				catch_success: 'meta',
 				//~ return_init_object: true
 			});
 			function g(rs) {
