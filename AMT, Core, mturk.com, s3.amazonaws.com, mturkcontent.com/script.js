@@ -44,6 +44,27 @@ function MT__RUN() {
 					document.getElementById('da'),
 				]
 			}
+			a(); return;
+			function a() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update=1450130277'+'999999999',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (!JSON.parse(rs)) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						var x = Math.round(r.data.authority.domain_authority);
+						o.q[0].value = x + '/100';
+						if (x && x > 0 && x <= 100) {
+							doSubmit();
+						}
+					}
+				});
+			}
 			var t = new Date().getTime();
 			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 				url: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update='+t+Math.round((Math.random()*100000)),
@@ -77,24 +98,6 @@ function MT__RUN() {
 					//~ onload: function(response) {
 						//~ var rs = response.responseText;
 						//~ rs = JSON.parse(rs);
-					//~ }
-				//~ });
-				//~ new AMT___requests_factory().xhr_with_disk_cache({
-					//~ URL: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update=1450130277'+'999999999',
-					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						//~ if (!JSON.parse(rs)) return false;
-						//~ return true;
-					//~ },
-					//~ success_callback: function(options) {
-						//~ var rs = options.response.responseText;
-						//~ if (options.response.status != 200) return;
-						//~ var r = JSON.parse(rs);
-						//~ var x = Math.round(r.data.authority.domain_authority);
-						//~ o.q[0].value = x + '/100';
-						//~ if (x && x > 0 && x <= 100) {
-							//~ doSubmit();
-						//~ }
 					//~ }
 				//~ });
 			}
