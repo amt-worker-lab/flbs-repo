@@ -72107,8 +72107,142 @@ function MT__RUN() {
 	 * 
 	 * ReachLocal
 	 * Stephanie Hass
+	 * Anik Ray
 	 * 
 	 */
+	
+	// Anik Ray
+	// Find Zip Code for following cities
+	// 
+	// 
+	s  = '	<li>Enter the 5 digit zip code for the following cities</li>';
+	s2 = '	<li>Please enter only numbers</li>';
+	if  (
+		ih.indexOf(s)  != -1 &&
+		ih.indexOf(s2) != -1
+		)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.highlight-box {position:absolute;top:2000px;left:0;}');
+			GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
+			GM_addStyle('input {width:96%;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				city: td[1].innerText.trim(),
+				state: td[3].innerText.trim(),
+				state_abbr: '',
+				//~ country: 'United States',
+				use_proxy: true,
+				q: [ document.getElementById('web_url') ],
+			};
+			console.log(o);
+			
+			/*BEGIN ITEMS*/
+			var d = document.createElement('input');
+			d.setAttribute('id','d1');
+			d.setAttribute('style','position:absolute;top:0;left:0;');
+			document.body.appendChild(d);
+			var d1 = document.getElementById('d1');
+			d1.value = o.city + ',' + o.state;
+			d1.onblur = function() {
+				MT___google_api_geocode(this.value, zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
+			}
+			/*END ITEMS*/
+			// Turn off button
+			document.getElementById('submitButton').onclick = function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			// Scriptvar
+			new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
+			o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
+			
+			var firstRun = true;
+			var num_tries = 0;
+			
+			MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy); //(location, callback_function, return_complete_response, use_a_proxy)
+			
+			function zipcode_increment(rs) {
+				if (num_tries == 0) {
+					num_tries++;
+					if (rs && rs.results[0] && rs.results[0].geometry.location.lat) { // Has Lat Lng!
+						firstRun = false;
+						MT___google_api_reverseGeocode( // (latlng, callback_function)
+							rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+							zipcode,
+							o.use_proxy
+						);
+						return;
+					}
+				}
+				if (num_tries == 1) // Anything else?
+				{
+					//~ num_tries++;
+					//~ firstRun = false;
+					//~ if (d1.value.indexOf(nm) == -1) {
+						//~ d1.value = nm + ',' + d1.value;
+						//~ MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy);
+					//~ }
+				}
+				else if (num_tries == 2)
+				{
+					//~ num_tries++;
+					//~ if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+						//~ firstRun = false;
+
+						//~ MT___google_api_reverseGeocode(
+							//~ rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+							//~ Stephanie_Hass_restaurant_zipcode,
+							//~ o.use_proxy
+						//~ ); 
+					//~ }
+				}
+			}
+			function zipcode(rs) {
+				if (!firstRun) { // second run
+					document.body.style.backgroundColor = '#883388';
+				}
+				if (!rs || !rs.hasOwnProperty('results') || !rs.results.length) {
+					zipcode_increment();
+					return;
+				}
+				// TRY ALL RESULTS
+				for (var j in rs.results) {
+					var rslt = rs.results[j];
+					if (rslt.partial_match) {
+						document.body.style.backgroundColor = '#a3dda3';
+					}
+					for (var i in rslt.address_components) {
+						x = rslt.address_components[i];
+						if  (
+								(
+									x.types[0] == 'postal_code' ||
+									x.types[1] == 'postal_code'
+								) &&
+							x.short_name.length >= 4 // &&
+							//~ && x.short_name != '34200'
+							)
+						{
+							//~ XXXX// ADD A ' TO LEADING '0'
+							//~ XXXXx.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
+							o.q[0].value = x.short_name;
+							doSubmit();
+							return;
+						}
+					}
+				}
+				// Still here?
+				zipcode_increment(rs);
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Brittany Graham
 	// Find zip code
 	// 
@@ -72251,8 +72385,8 @@ function MT__RUN() {
 		}
 	}
 	
-	//
 	// Stephanie Hass
+	// 
 	// 
 	// 
 	s  = '<li>For this restaurant below, find the postal code</li>';
