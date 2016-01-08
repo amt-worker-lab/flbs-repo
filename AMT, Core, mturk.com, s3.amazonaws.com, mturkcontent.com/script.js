@@ -44,13 +44,29 @@ function MT__RUN() {
 					document.getElementById('da'),
 				]
 			}
-			a(); return;
+			a();
+			setTimeout(function() {
+				window.reload();
+			}, 80000); // Try reload....
+			function reload() {
+				setTimeout(function() {
+					window.reload();
+				}, 200);
+			}
 			function a() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update=1450130277'+'999999999',
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
-						if (!JSON.parse(rs)) return false;
+						var r = JSON.parse(rs);
+						if (!r) {
+							reload();
+							return false;
+						}
+						if (rs.indexOf('There was an error getting your data') != -1) {
+							reload();
+							return false;
+						}
 						return true;
 					},
 					success_callback: function(options) {
@@ -65,42 +81,25 @@ function MT__RUN() {
 					}
 				});
 			}
-			var t = new Date().getTime();
-			var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-				url: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update='+t+Math.round((Math.random()*100000)),
-				callback_function: g,
-				catch_success: 'meta',
-				//~ return_init_object: true
-			});
-			function g(rs) {
-				//~ var rs = options.response.responseText;
-				//~ if (options.response.status != 200) return;
-				var r = JSON.parse(rs);
-				if (!r) { return }
-				var x = Math.round(r.data.authority.domain_authority);
-				o.q[0].value = x + '/100';
-				if (x && x > 0 && x <= 100) {
-					doSubmit();
-				}
-				
-				//~ var u = MT___host + '/mturk/.scripts/google/get-page.php?u='+encodeURIComponent(u);
-				//~ var opts = {
-					//~ url: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update='+t+Math.round((Math.random()*100000)),
-					//strings_do_not_save_to_file: ["Hey there! Before you continue, we just need to check that you're not a robot."]
+			// Proxy method.....
+			//
+			//
+			//~ var t = new Date().getTime();
+			//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+				//~ url: 'https://moz.com/researchtools/ose/api/urlmetrics?site='+encodeURIComponent(o.u)+'&level=logged_out&last_update='+t+Math.round((Math.random()*100000)),
+				//~ callback_function: g,
+				//~ catch_success: 'meta',
+				//~ //return_init_object: true
+			//~ });
+			//~ function g(rs) {
+				//~ var r = JSON.parse(rs);
+				//~ if (!r) { return }
+				//~ var x = Math.round(r.data.authority.domain_authority);
+				//~ o.q[0].value = x + '/100';
+				//~ if (x && x > 0 && x <= 100) {
+					//~ doSubmit();
 				//~ }
-				//~ u = JSON.stringify(opts);
-				//~ u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(u);
-				
-				//~ // Xhr request.
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ rs = JSON.parse(rs);
-					//~ }
-				//~ });
-			}
+			//~ }
 		}
 		new run().f();
 	}
