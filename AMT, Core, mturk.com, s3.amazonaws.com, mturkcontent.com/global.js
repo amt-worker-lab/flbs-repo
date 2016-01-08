@@ -2769,9 +2769,6 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 	// Start with a call to command line curl to get the DNS information.
 	// e.g. curl -v --socks5-hostname 127.0.0.1:9050 curl -v --socks5-hostname 127.0.0.1:9050 "https://mapi.nextag.com/goto.jsp?search=&p=356732&t=ag%3D14476436321%26origin%3DPLA%26pla_t%3D-1%26node%3D500468%26product_partition_id%3D77365446041%26merchant_id%3D100491214%26product_country%3DUS%26product_language%3Den%26product_id%3D709954737%26product_channel%3Donline%26store_code%3D%26adtype%3Dpla&url=%2Fnorob%2FClickTracker.jsp%3Fchnl%3Dmain%26tag%3D709954737"
 	// This will produce something like.... "https://mapi.nextag.com/norob/ClickTracker.jsp;jsessionid=8ACFC18078F70C54687456BA5B87D91E?nxtg=2460a500585-7EA05009545EAB89&chnl=main&tag=709954737&search="
-
-
-
 	
 	// 
 	GM_xmlhttpRequest({
@@ -3442,7 +3439,6 @@ AMT___requests_factory.prototype.general_functions__color__hexToRGB = function(h
 	var hexToG = function (h) {return parseInt((cutHex(h)).substring(2,4),16)}
 	var hexToB = function (h) {return parseInt((cutHex(h)).substring(4,6),16)}
 	var cutHex = function (h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
-	
 	return [hexToR(hex), hexToG(hex), hexToB(hex)];
 }
 //
@@ -3595,10 +3591,11 @@ AMT___requests_factory.prototype.google_search = function(options_object) //
  * 		searches['search-key'] = value
  * 		Where search-key = first name, last name, company, zip code, find zip (find zip code from location), job title
  * 		This corresponds to the left-side inputs, typically d2a,d2b,d2c,d2d, etc.
- * : callback_function
+ * : callback_function : Event : button.onclick
  * : image_search : boolean (t,f)
  * : nextTab : boolean (t,f), call nextTab() on mouse click
  * : sortResults : boolean, sort by people by connectionCount
+ * : search_complete_callback : function( search_results_arr ) 
  * 
  * NOTES: companyScope and/or titleScope must follow company and title, respectively.
  * Features:
@@ -3637,7 +3634,6 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 	div_cx_debug = document.createElement('div');
 	div_cx_debug.setAttribute('style','border-top:1px solid blue;overflow:auto;');
 	
-	
 	//~ ps_object.container.appendChild(div_cx_debug);
 	
 	//
@@ -3659,10 +3655,10 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		bold_title_array:	[],
 		
 		// New
-		bold_locn_array:	[]
+		bold_locn_array:	[],
 		
+		search_complete_callback: ps_object.search_complete_callback ? ps_object.search_complete_callback : function() {}, // Default = None
 	};
-	
 	
 	// Keydown
 	// & mouseup__delete_range
@@ -4002,6 +3998,12 @@ AMT___requests_factory.prototype.linkedin_people_search = function(ps_object) //
 		
 		var x = r.content.page.voltron_unified_search_json.search.results;
 		console.log(x);
+		
+		// Callback for when search has completed
+		// 
+		// 
+		// 
+		o.search_complete_callback(x);
 		
 		var snp,s;
 		var y;

@@ -28803,30 +28803,29 @@ function MT__RUN() {
 				//~ sortResults: true,
 				//~ nextTab: true, // nextTab()
 				//~ image_search: true,
+				search_complete_callback: function(search_results_arr) {
+					var rs = search_results_arr;
+					console.log(rs);
+					console.log(rs.length);
+					console.log(rs[0]);
+					if (rs &&
+						rs.length > 0 &&
+						rs[0].person &&
+						rs[0].person.firstName == o.fn &&
+						rs[0].person.lastName == o.ln &&
+						rs[0].person.fmt_location == 'Greater Los Angeles Area'
+						) {
+						var x = document.getElementsByName('Category');
+						x[0].value = 'Greater Los Angeles';
+						doSubmit();
+					}
+				},
 				callback_function: function(comp_object) {
 					//~ {
 						//~ profile_url: url,
 						//~ found_valid_li_url: found_valid_li_url
 					//~ }
 					
-					var rs = comp_object;
-					console.log(comp_object);
-					console.log(comp_object.length);
-					console.log(comp_object[0]);
-					
-					var rs = comp_object;
-					
-					if (rs &&
-						rs.length > 0 &&
-						rs[0].person &&
-						rs[0].person.firstName == o.fn &&
-						rs[0].person.lastName == o.ln &&
-						fmt_location == 'Greater Los Angeles'
-						) {
-						var x = document.getElementsByName('Category');
-						x[0].value = 'Greater Los Angeles';
-						doSubmit();
-					}
 					
 					//~ rs.image_full_url = rs.image_full_url.replace(/shrink_60_60/, 'shrink_200_200');
 					
@@ -28876,36 +28875,10 @@ function MT__RUN() {
 				},
 				//~ bold_array_comp: o.bold_array_comp, // bold_array_comp
 				sortResults: true,
-				nextTab: true, // nextTab()
+				//~ nextTab: true, // nextTab()
 				//~ image_search: true,
 				callback_function: function(comp_object) {
-					//~ {
-						//~ profile_url: url,
-						//~ found_valid_li_url: found_valid_li_url
-					//~ }
 					
-					var rs = comp_object;
-					console.log(comp_object);
-					
-					var rs = comp_object;
-				
-					q.value = rs.image_full_url;
-					d3.src = rs.image_full_url;
-					
-					// Is 200
-					if (rs.hasOwnProperty('image_full_url') && rs.image_full_url && rs.image_full_url != '') {
-						//~ new AMT___core_factory().nextTab(); // Next Tab
-						//~ new AMT___requests_factory().url_to_status_code({
-							//~ url: rs.image_full_url,
-							//~ callback_function: function(callback_object) {
-								//~ if (callback_object.status == 200) {
-									//~ doSubmit();
-								//~ } else {
-									
-								//~ }
-							//~ }
-						//~ });
-					}
 				}
 			});
 		}
