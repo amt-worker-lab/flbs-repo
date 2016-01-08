@@ -28803,23 +28803,6 @@ function MT__RUN() {
 				//~ sortResults: true,
 				//~ nextTab: true, // nextTab()
 				//~ image_search: true,
-				search_complete_callback: function(search_results_arr) {
-					var rs = search_results_arr;
-					console.log(rs);
-					console.log(rs.length);
-					console.log(rs[0]);
-					if (rs &&
-						rs.length > 0 &&
-						rs[0].person &&
-						rs[0].person.firstName == o.fn &&
-						rs[0].person.lastName == o.ln &&
-						rs[0].person.fmt_location == 'Greater Los Angeles Area'
-						) {
-						var x = document.getElementsByName('Category');
-						x[0].value = 'Greater Los Angeles';
-						doSubmit();
-					}
-				},
 				callback_function: function(comp_object) {
 					//~ {
 						//~ profile_url: url,
@@ -28874,9 +28857,26 @@ function MT__RUN() {
 					//~ website: o.website // DEBUG
 				},
 				//~ bold_array_comp: o.bold_array_comp, // bold_array_comp
-				sortResults: true,
+				//~ sortResults: false,
 				//~ nextTab: true, // nextTab()
 				//~ image_search: true,
+				search_complete_callback: function(search_results_arr) {
+					var rs = search_results_arr;
+					console.log(rs);
+					console.log(rs.length);
+					console.log(rs[0]);
+					if (rs &&
+						rs.length > 0 &&
+						rs[0].person &&
+						rs[0].person.firstName == o.fn &&
+						rs[0].person.lastName == o.ln &&
+						rs[0].person.fmt_location == 'Greater Los Angeles Area'
+						) {
+						var x = document.getElementsByName('Category');
+						x[0].value = 'Greater Los Angeles';
+						doSubmit();
+					}
+				},
 				callback_function: function(comp_object) {
 					
 				}
