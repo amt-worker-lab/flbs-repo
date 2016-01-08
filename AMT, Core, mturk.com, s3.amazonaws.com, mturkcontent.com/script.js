@@ -72107,13 +72107,13 @@ function MT__RUN() {
 	 * 
 	 * ReachLocal
 	 * Stephanie Hass
+	 * 
 	 */
-	//
 	// Brittany Graham
 	// Find zip code
 	// 
+	// 
 	s  = '<li>Feel free to use google or any other means you would like. Please place the first zip code you find in the form below.</li>';
-	//~ s  = '	<li>For this restaurant below, find the zip code</li>';
 	if  (
 		ih.indexOf(s)  != -1
 		)
@@ -72470,74 +72470,7 @@ function MT__RUN() {
 				
 				// Still here?
 				Stephanie_Hass_restaurant_zipcode__increment(rs);
-				
-				// still here and second run !!
-				//~ if (!firstRun) {
-					//~ Stephanie_Hass_restaurant_zipcode__canadapost();
-					//~ return;
-				//~ }
-				
-				//~ if (AMT__Global_Vars.isPreview && !firstRun) {
-					//~ AMT___Floater.skip();
-					//~ //Stephanie_Hass_restaurant_zipcode__canadapost();
-					//~ return;
-				//~ }
 			}
-			//~ function Stephanie_Hass_restaurant_zipcode__canadapost__prof(id) {
-				//~ //http://ws1.postescanada-canadapost.ca/AddressComplete/Interactive/RetrieveFormatted/v2.00/json3.ws?_API_KEY_REDACTED_&Id=CAN%7CPR%7CX230730015%7CE%7C0%7C0&Source=&$cache=true
-				//~ 
-				//~ document.body.style.backgroundColor = '#aaa';
-				//~ 
-				//~ var url = 'http://ws1.postescanada-canadapost.ca/AddressComplete/Interactive/RetrieveFormatted/v2.00/json3.ws?_API_KEY_REDACTED_'+
-					//~ '&Id='+encodeURIComponent(id)+
-					//~ '&Source=&$cache=true';
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: url,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ if (response.status != 200)
-							//~ exit('');
-						//~ 
-						//~ rs = JSON.parse(rs);
-						//~ //{"Items":[{"Id":"CAN|PR|X230730015|E|0|0","Text":"2001 Centre St NW, Calgary, AB","Highlight":"","Cursor":30,"Description":"","Next":"Retrieve"}]}
-						//~ if (!rs.Items || !rs.Items.length || !rs.Items[0].PostalCode) {
-							//~ AMT___Floater.skip();
-							//~ return;
-						//~ }
-						//~ document.getElementById('Q1Url').value = rs.Items[0].PostalCode;
-						//~ if (document.getElementById('Q1Url').value.length >= 5 && document.getElementById('Q1Url').value.length < 10 && document.getElementById('Q1Url').value != undefined)
-							//~ doSubmit();
-					//~ }
-				//~ });
-			//~ }
-			//~ function Stephanie_Hass_restaurant_zipcode__canadapost() {
-				//~ //2001%20Centre%20St%20NW
-				//~ // 
-				//~ 
-				//~ document.body.style.backgroundColor = '#eee';
-				//~ 
-				//~ var url = 'http://ws1.postescanada-canadapost.ca/AddressComplete/Interactive/Find/v2.00/json3.ws?_API_KEY_REDACTED_&Country=CAN&SearchTerm='+
-					//~ encodeURIComponent(addr2.join(','))+
-					//~ '&LastId=&SearchFor=Everything&$block=true&$cache=true';
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: url,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ if (response.status != 200)
-							//~ exit('');
-						//~ 
-						//~ rs = JSON.parse(rs);
-						//~ //{"Items":[{"Id":"CAN|PR|X230730015|E|0|0","Text":"2001 Centre St NW, Calgary, AB","Highlight":"","Cursor":30,"Description":"","Next":"Retrieve"}]}
-						//~ if (!rs.Items || !rs.Items.length || !rs.Items[0].Id) {
-							//~ AMT___Floater.skip();
-							//~ return;
-						//~ }
-						//~ Stephanie_Hass_restaurant_zipcode__canadapost__prof(rs.Items[0].Id);
-					//~ }
-				//~ });
-			//~ }
 		}
 		new run().f();
 		return;
