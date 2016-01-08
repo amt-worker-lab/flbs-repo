@@ -46,11 +46,11 @@ function MT__RUN() {
 			}
 			a();
 			setTimeout(function() {
-				window.reload();
+				document.location.reload();
 			}, 80000); // Try reload....
 			function reload() {
 				setTimeout(function() {
-					window.reload();
+					document.location.reload();
 				}, 200);
 			}
 			function a() {
@@ -62,7 +62,7 @@ function MT__RUN() {
 						if (!r) {
 							reload();
 							return false;
-						}
+						} //There was an error getting your data
 						if (rs.indexOf('There was an error getting your data') != -1) {
 							reload();
 							return false;
