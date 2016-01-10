@@ -179927,6 +179927,8 @@ function top_window(okay_to_run) {
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
+			// Script vars
+			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
 			// MOVE "THETIME"
 			document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
 			// Item not found text
@@ -180149,6 +180151,11 @@ function top_window(okay_to_run) {
 					//~ document.getElementsByName('/submit')[0].click();
 					//~ return false;
 				//~ }
+				
+				// na button
+				if (AMT__Global_Vars.scriptVars['tilde-na-button'] == '1' && String.fromCharCode(e.keyCode) == '`') {
+					document.getElementsByClassName('question selection')[0].click();
+				}
 			}
 			// Onclick
 			document.getElementsByName('/submit')[0].onclick = function(e) {
