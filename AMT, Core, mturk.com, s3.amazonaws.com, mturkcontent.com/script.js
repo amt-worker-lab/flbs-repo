@@ -180859,8 +180859,9 @@ function top_window(okay_to_run) {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						if (options.response.status != 200) {
-							d3g.value = '... yoopsie ...';
+							//~ d3g.value = '... yoopsie ...';
 							// CALL NEXT
+							d4a.result_buttons.yp.value += '✘';
 							result.yoopsie = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180869,8 +180870,9 @@ function top_window(okay_to_run) {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						d3g.value = '... yoopsie ...';
+						//~ d3g.value = '... yoopsie ...';
 						if (options.response.status != 200) {
+							d4a.result_buttons.yp.value += '✘';
 							result.yoopsie = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180878,28 +180880,37 @@ function top_window(okay_to_run) {
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var info = dom.getElementsByClassName('info');
 						if (!info || !info.length) {
+							d4a.result_buttons.yp.value += '✘';
 							result.yoopsie = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
 						info = info[0].getElementsByTagName('a');
 						if (!info || !info.length) {
+							d4a.result_buttons.yp.value += '✘';
 							result.yoopsie = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
 						info = info[0].innerText.trim();
 						info = info.replace(/\.\.\.$/g, ''); // Remove "..." from end of strings...
-						d3g.value = info;
-						d3g.style.border = '4px solid blue';
-						d3g.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
+						// Add a result button here.
+						add_result_button({ // Title, Product URL, Iframe URL
+							title: info,
+							product_url: 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=',
+							//~ iframe_url: urls[0],
+							site_code: 'yp',
+						});
+						//~ d3g.value = info;
+						//~ d3g.style.border = '4px solid blue';
+						//~ d3g.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ o.q[0].value = this.value;
+							//~ o.q[1].value = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
+							//~ o.q[0].focus();
+							//~ o.q[0].blur();
+							//~ o.q[0].focus();
+						//~ }
 						// CALL NEXT
 						result.yoopsie = true;
 						A9_Snaptell_VSR__next();
@@ -180921,8 +180932,9 @@ function top_window(okay_to_run) {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						if (options.response.status != 200) {
-							d3e.value = '... upcdatabase ...';
+							//~ d3e.value = '... upcdatabase ...';
 							// CALL NEXT
+							d4a.result_buttons.ud.value += '✘';
 							result.upcdatabase = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180931,8 +180943,9 @@ function top_window(okay_to_run) {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						d3e.value = '... upcdatabase ...';
+						//~ d3e.value = '... upcdatabase ...';
 						if (options.response.status != 200) {
+							d4a.result_buttons.ud.value += '✘';
 							result.upcdatabase = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180940,21 +180953,29 @@ function top_window(okay_to_run) {
 						// {"valid":"true","number":"045496870096","itemname":"","alias":"","description":"Killer Instinct Gold (Nintendo 64)","avg_price":"","rate_up":0,"rate_down":0}
 						var r = JSON.parse(rs);
 						if (!r || !r.valid || !r.description || !r.number) {
+							d4a.result_buttons.ud.value += '✘';
 							result.upcdatabase = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						d3e.value = r.description.replace(/\s+/g, ' '); // Replace many spaces...
-						d3e.style.border = '4px solid blue';
-						d3e.upc = r.number;
-						d3e.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = 'http://upcdatabase.org/code/' + encodeURIComponent(this.upc);
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
+						// Add a result button here.
+						add_result_button({ // Title, Product URL, Iframe URL
+							title: r.description.replace(/\s+/g, ' '), // Replace many spaces...
+							product_url: 'http://upcdatabase.org/code/' + encodeURIComponent(r.number),
+							//~ iframe_url: urls[0],
+							site_code: 'ud',
+						});
+						//~ d3e.value = r.description.replace(/\s+/g, ' '); // Replace many spaces...
+						//~ d3e.style.border = '4px solid blue';
+						//~ d3e.upc = r.number;
+						//~ d3e.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ o.q[0].value = this.value;
+							//~ o.q[1].value = 'http://upcdatabase.org/code/' + encodeURIComponent(this.upc);
+							//~ o.q[0].focus();
+							//~ o.q[0].blur();
+							//~ o.q[0].focus();
+						//~ }
 						// CALL NEXT
 						result.upcdatabase = true;
 						A9_Snaptell_VSR__next();
@@ -180970,21 +180991,23 @@ function top_window(okay_to_run) {
 					asynchronous: false,
 					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
 					onerror: function(response) {
-						d3.value = '... searchupc ...';
+						//~ d3.value = '... searchupc ...';
 						// CALL NEXT
-						A9_Snaptell_VSR__next();
+						d4a.result_buttons.su.value += '✘';
 						result.searchupc = false;
+						A9_Snaptell_VSR__next();
 					},
 					onload: function(response) {
 						//
-						d3.value = '... searchupc ...';
+						//~ d3.value = '... searchupc ...';
 						//
 						var rs = response.responseText;
 						if (response.status != 200) {
-							console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
+							//~ console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
 							// CALL NEXT
-							A9_Snaptell_VSR__next();
+							d4a.result_buttons.su.value += '✘';
 							result.searchupc = false;
+							A9_Snaptell_VSR__next();
 							return;
 						}
 						var r;
@@ -180992,18 +181015,26 @@ function top_window(okay_to_run) {
 						if (r) {
 							//Ashton & Ross HD-922 Professional Home Theatre System
 							r = __js_clean_html_str(r[1]).trim();
-							d3.value = r;
-							d3.style.border = '4px solid blue';
-							d3.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								o.q[0].value = this.value;
-								o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
-								o.q[0].focus();
-								o.q[0].blur();
-								o.q[0].focus();
-							}
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: r,
+								product_url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+								//~ iframe_url: urls[0],
+								site_code: 'su',
+							});
+							//~ d3.value = r;
+							//~ d3.style.border = '4px solid blue';
+							//~ d3.onclick = function() {
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ o.q[0].value = this.value;
+								//~ o.q[1].value = 'http://searchupc.com/upc/' + encodeURIComponent(upc);
+								//~ o.q[0].focus();
+								//~ o.q[0].blur();
+								//~ o.q[0].focus();
+							//~ }
 							result.searchupc = true;
 						} else {
+							d4a.result_buttons.su.value += '✘';
 							result.searchupc = false;
 						}
 						// CALL NEXT
@@ -181011,32 +181042,37 @@ function top_window(okay_to_run) {
 					}
 				});
 			}
-			// ...
 			// d3f
 			// upcitemdb
+			// db
 			function A9_Snaptell_VSR__upcitemdb_com() {
 				console.log('Running through A9_Snaptell_VSR__upcitemdb_com');
 				GM_xmlhttpRequest({
 					method: "GET",
-					asynchronous: false,
+					timeout: 10000,
 					url: 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc),
-					onerror: function(response) {
-						d3f.value = '... upcitemdb ...';
-						console.log('error');
-						console.log(response);
-						// CALL NEXT
-						A9_Snaptell_VSR__next();
+					ontimeout: function(response) {
+						d4a.result_buttons.db.value += '✘';
 						result.upcitemdb = false;
+						A9_Snaptell_VSR__next();
+					},
+					onerror: function(response) {
+						//~ d3f.value = '... upcitemdb ...';
+						//~ console.log('error');
+						//~ console.log(response);
+						// CALL NEXT
+						d4a.result_buttons.db.value += '✘';
+						result.upcitemdb = false;
+						A9_Snaptell_VSR__next();
 					},
 					onload: function(response) {
-						
-						d3f.value = '... upcitemdb ...';
-						
+						//~ d3f.value = '... upcitemdb ...';
 						var rs = response.responseText;
 						if (response.status != 200) {
 							// CALL NEXT
-							A9_Snaptell_VSR__next();
+							d4a.result_buttons.db.value += '✘';
 							result.upcitemdb = false;
+							A9_Snaptell_VSR__next();
 							return;
 						}
 						var r;
@@ -181045,21 +181081,28 @@ function top_window(okay_to_run) {
 						if (r) {
 							//Ashton & Ross HD-922 Professional Home Theatre System
 							r = __js_clean_html_str(r[1]).trim();
-							d3f.value = r;
-							d3f.style.border = '4px solid blue';
-							d3f.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								o.q[0].value = this.value;
-								o.q[1].value = 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc);
-								o.q[0].focus();
-								o.q[0].blur();
-								o.q[0].focus();
-							}
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: r,
+								product_url: 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc),
+								//~ iframe_url: urls[0],
+								site_code: 'db',
+							});
+							//~ d3f.value = r;
+							//~ d3f.style.border = '4px solid blue';
+							//~ d3f.onclick = function() {
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ o.q[0].value = this.value;
+								//~ o.q[1].value = 'http://www.upcitemdb.com/upc/' + encodeURIComponent(upc);
+								//~ o.q[0].focus();
+								//~ o.q[0].blur();
+								//~ o.q[0].focus();
+							//~ }
 							result.upcitemdb = true;
 						} else {
+							d4a.result_buttons.db.value += '✘';
 							result.upcitemdb = false;
 						}
-						
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
 					}
