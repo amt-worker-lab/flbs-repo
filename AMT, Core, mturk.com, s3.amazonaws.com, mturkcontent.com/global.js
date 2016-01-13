@@ -11920,9 +11920,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			//
 			if (isDragging) {
 				add_index(this.index);
-				
 				isDragging = false;
-				
 				applyToOutputs();
 			}
 			

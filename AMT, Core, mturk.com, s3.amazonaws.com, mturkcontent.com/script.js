@@ -180077,29 +180077,29 @@ function top_window(okay_to_run) {
 			/* BEGIN ITEMS */
 			// Wrapper for top
 			var dqw = document.getElementsByClassName('question-wrapper')[0];
-				dqw.appendChild(document.createTextNode(' ' +upc)); // Add UPC text
+			dqw.appendChild(document.createTextNode(' ' +upc)); // Add UPC text
 			// Reset button
 			var reset_dqw = document.createElement('input');
-				reset_dqw.setAttribute('style', 'cursor:pointer;');
-				reset_dqw.type = 'button';
-				reset_dqw.value = ' R ';
-				reset_dqw.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					document.getElementById('hit-wrapper').style.position = 'relative';
-				}
-				dqw.appendChild(reset_dqw);
+			reset_dqw.setAttribute('style', 'cursor:pointer;');
+			reset_dqw.type = 'button';
+			reset_dqw.value = ' R ';
+			reset_dqw.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementById('hit-wrapper').style.position = 'relative';
+			}
+			dqw.appendChild(reset_dqw);
 			// Button to change title to mixed case
 			var case_btn_dqw = document.createElement('input');
-				case_btn_dqw.setAttribute('style', 'cursor:pointer;');
-				case_btn_dqw.type = 'button';
-				case_btn_dqw.value = 'case';
-				case_btn_dqw.onclick = function() {
-					this.style.backgroundColor = 'LightGreen';
-					var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
-					document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
-					document.getElementById('Answer_1_FreeText').focus();
-				}
-				dqw.appendChild(case_btn_dqw);
+			case_btn_dqw.setAttribute('style', 'cursor:pointer;');
+			case_btn_dqw.type = 'button';
+			case_btn_dqw.value = 'case';
+			case_btn_dqw.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				var x = document.getElementById('Answer_1_FreeText').value.toLowerCase();
+				document.getElementById('Answer_1_FreeText').value = x.replace(/(^| )([a-z])/g, function(match0, match1, match2) { return match1 + match2.toUpperCase(); });
+				document.getElementById('Answer_1_FreeText').focus();
+			}
+			dqw.appendChild(case_btn_dqw);
 			// Wrapper
 			// This is the element in the body that contains the HIT. 
 			var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
@@ -180152,16 +180152,16 @@ function top_window(okay_to_run) {
 			//~ d3.value = 'searchupc';
 			//~ x.appendChild(d3);
 			// Google
-			var d3b = document.createElement('input');
-			d3b.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3b.type = 'button';
-			d3b.value = 'google';
-			x.appendChild(d3b);
-			d3b.onclick = function() {
-				localStorage['goog-captcha'] = true; // RESET THIS!!!
-				this.style.backgroundColor = 'LightGreen';
-				A9_Snaptell_VSR__google();
-			}
+			//~ var d3b = document.createElement('input');
+			//~ d3b.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3b.type = 'button';
+			//~ d3b.value = 'google';
+			//~ x.appendChild(d3b);
+			//~ d3b.onclick = function() {
+				//~ localStorage['goog-captcha'] = true; // RESET THIS!!!
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ A9_Snaptell_VSR__google();
+			//~ }
 			// Shop savvy
 			//~ var d3d = document.createElement('input');
 			//~ d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
@@ -180194,7 +180194,7 @@ function top_window(okay_to_run) {
 			//~ x.appendChild(d3h);
 			// Ebay
 			var d3i = document.createElement('input');
-			d3i.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			d3i.setAttribute('style','float:left;width:59%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3i.type = 'button';
 			d3i.value = 'Ebay';
 			x.appendChild(d3i);
@@ -180364,11 +180364,24 @@ function top_window(okay_to_run) {
 				d4a.result_buttons = {}; // Object
 				for (var i in result.array_all) {
 					var btn = document.createElement('input');
+					var tmp_bv = result.array_all[i];
 					btn.setAttribute('style',''); //text-align:left;
 					btn.type = 'button';
-					btn.value = result.array_all[i];
 					d4a.appendChild(btn);
 					d4a.result_buttons[ result.array_all[i] ] = btn; // Associate HTML button to d4a
+					if (result.array_all[i] == 'g') { // GOOGLE
+						tmp_bv = ' google ';
+						btn.setAttribute('style','cursor:pointer;font-weight:bold;');
+						btn.onclick = function() {
+							localStorage['goog-captcha'] = true; // RESET THIS!!!
+							this.style.backgroundColor = 'LightGreen';
+							A9_Snaptell_VSR__google();
+							//~ setTimeout(function() {
+								//~ // reset button bgc...
+							//~ }, 1000);
+						}
+					}
+					btn.value = tmp_bv;
 				}
 			}
 			// Get skips file
@@ -180656,7 +180669,7 @@ function top_window(okay_to_run) {
 							localStorage['goog-captcha'] = false; // SET
 							var arr = result_object.results;
 							// update button
-							d3b.value = '... google ...';
+							//~ d3b.value = '... google ...';
 							// ...
 							if (arr.length) {
 								var search_results = A9_Snaptell_VSR__yahoo_complete(
