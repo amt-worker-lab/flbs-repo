@@ -180300,7 +180300,7 @@ function top_window(okay_to_run) {
 				callback: function (SKIP_SITES) {
 					o.SKIP_SITES = SKIP_SITES; // Populate.
 					A9_Snaptell_VSR__next(); // INIT
-					A9_Snaptell_VSR__shopsavvy();
+					//~ A9_Snaptell_VSR__shopsavvy();
 				},
 				callback_err: function() {},
 			});
@@ -180329,10 +180329,11 @@ function top_window(okay_to_run) {
 				//					site_code: 'ss',
 				//				});
 				console.log(result_obj);
+				// Add a result button
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				btn.type = 'button';
-				btn.value = result_obj.title;
+				btn.value = result_obj.site_code + ':' + result_obj.title;
 				btn.meta = result_obj;
 				btn.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
@@ -180343,7 +180344,9 @@ function top_window(okay_to_run) {
 					d1.src = this.meta.iframe_url;
 				}
 				console.log(btn);
-				d3b.appendChild(btn);
+				d4b.appendChild(btn);
+				// Add a status button
+				
 			}
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
