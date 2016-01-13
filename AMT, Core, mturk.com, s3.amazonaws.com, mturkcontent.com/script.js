@@ -180295,7 +180295,6 @@ function top_window(okay_to_run) {
 			//~ A9_Snaptell_VSR__next();
 			//~ // LOADS SHOPSAVVY INITIALLY
 			//~ A9_Snaptell_VSR__shopsavvy();
-			
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
 				var ss = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
@@ -180333,7 +180332,7 @@ function top_window(okay_to_run) {
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: urls[0],
-					//~ timeout: 10000,
+					timeout: 10000, // test this...
 					ontimeout: function() {
 						A9_Snaptell_VSR__shopsavvy();
 					},
