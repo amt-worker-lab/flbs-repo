@@ -179992,14 +179992,17 @@ function top_window(okay_to_run) {
 			// Changed from dblclick to click.
 			//~ o.q[2].ondblclick
 			o.q[2].onclick = function() {
-				if  (
-						(
-						x1.value.trim() == '' || x2.value.trim() == ''
-						) &&
-						!o.q[3].checked
-					)
-					return false;	
-				document.getElementsByName('/submit')[0].click();
+				try_sbm();
+				// OLD SUBMIT METHOD.....
+				// Changed: Jan 12 2016
+				//~ if  (
+						//~ (
+						//~ x1.value.trim() == '' || x2.value.trim() == ''
+						//~ ) &&
+						//~ !o.q[3].checked
+					//~ )
+					//~ return false;	
+				//~ document.getElementsByName('/submit')[0].click();
 			}
 			/* BEGIN ITEMS */
 			// Wrapper for top
@@ -180058,7 +180061,7 @@ function top_window(okay_to_run) {
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4a);
-			var d4b = '-'.div({
+			var d4b = ''.div({
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4b);
@@ -180162,34 +180165,44 @@ function top_window(okay_to_run) {
 			window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
 			function A9_Snaptell_VSR__keypress_submit(e) {
 				console.log(e.keyCode);
-				
 				//~ if (e.keyCode == 96 && String.fromCharCode(e.keyCode) == '`') {
 					//~ e.preventDefault();
 					//~ e.stopPropagation();
 					//~ document.getElementsByName('/submit')[0].click();
 					//~ return false;
 				//~ }
-				
 				// na button
 				if (AMT__Global_Vars.scriptVars['tilde-na-button'] == '1' && String.fromCharCode(e.keyCode) == '`') {
 					document.getElementsByClassName('question selection')[0].click();
 				}
 			}
-			// Onclick
-			document.getElementsByName('/submit')[0].onclick = function(e) {
-				e.stopPropagation();
-				e.preventDefault();
+			// try_sbm
+			function try_sbm() {
 				x1.value = x1.value.trim();
 				x2.value = x2.value.trim();
 				x1.value = x1.value.replace(/\s+/g, ' '); // spaces
-				if  (
+				x1.value = x1.value.replace(/ *,*$/g, ''); // remove trailing
+				if  ( // Non-NA and x1 or x2 is blank
 						(
 						x1.value == '' || x2.value == ''
 						) &&
 						!o.q[3].checked
 					)
-					return false;			
+					return false;
+				else if ( // NA and x1 or x2 is not blank
+						(
+						x1.value != '' || x2.value != ''
+						) &&
+						o.q[3].checked
+					)
+					return false;
 				doSubmit('hitForm');
+			}
+			// Onclick
+			document.getElementsByName('/submit')[0].onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				try_sbm();
 				return false;
 			}
 			// ...
@@ -180315,6 +180328,7 @@ function top_window(okay_to_run) {
 				//					iframe_url: urls[0],
 				//					site_code: 'ss',
 				//				});
+				console.log(result_obj);
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				btn.type = 'button';
@@ -180328,6 +180342,7 @@ function top_window(okay_to_run) {
 					d1.output_url = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
 					d1.src = this.meta.iframe_url;
 				}
+				console.log(btn);
 				d3b.appendChild(btn);
 			}
 			// ...
