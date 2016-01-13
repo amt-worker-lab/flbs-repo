@@ -180050,6 +180050,23 @@ function top_window(okay_to_run) {
 			//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d3c);
 			d3c.onclick = function() {}
+			// Add left divs
+			// 1) Div for small status of each site. These are text: e.g. "[de]" (loading) or "[de✘]" (none) or "[de✔]" (has result)
+			// 2) Div for any with "has result" (buttons)
+			// 3) Div for the titles of scraped websites (buttons)
+			var d4a = '-'.div({
+				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4a);
+			var d4b = '-'.div({
+				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4b);
+			var d4c = '-'.div({
+				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4c);
+			
 			// Digit Eyes
 			var d3_de = document.createElement('input');
 				d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
