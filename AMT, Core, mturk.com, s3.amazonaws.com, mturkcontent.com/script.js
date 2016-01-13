@@ -181493,25 +181493,20 @@ function top_window(okay_to_run) {
 			 */
 			function A9_Snaptell_VSR__process(write_object) {
 				//write_object
-				
-				//~ x1.focus();
-				d3_de.value = 'digit-eyes'; // reset this for now ....
-				
+				//~ d3_de.value = 'digit-eyes'; // reset this for now ....
 				var r, r2;
 				var sbm = true;
 				var rs = write_object.rs;
 				var url = write_object.url;
-				
 				if (rs.indexOf('<tr><td colspan="2" align="center">Sorry, no item name was found for ') != -1) {
-					d3_de.value = '... digit-eyes ...';
 					// CALL NEXT
+					//~ d3_de.value = '... digit-eyes ...';
+					d4a.result_buttons.de.value += '✘';
 					result.digital_eyes = false;
 					A9_Snaptell_VSR__next();
 					return;
 				}
-				
 				//This is a locally-assigned code that is used for items of random weight such as meat, fish or produce.This type of code is a way of price-marking an item. This item cost 11.88.
-				
 				//
 				r = /<H2 id="description">([^<]+)<\/H2>/.exec(rs);
 				if (r) {
@@ -181521,11 +181516,15 @@ function top_window(okay_to_run) {
 						'Each store uses this number differently, so it does not have a defined value.'
 					];
 					if (r.indexOf(bad[0]) == -1 && r.indexOf(bad[1]) == -1) {
-						
+						// ADDITIONAL TERMS
+						var rx = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
+						if (rx) {
+							// Add to button
+							r += ' ' + __js_clean_html_str(rx[1]).trim();
+						}
 						d3_de.value = r;
 						d3_de.style.border = '4px solid blue';
 						d3_de.de_url = url;
-						
 						d3_de.onclick = function() {
 							this.style.backgroundColor = 'LightGreen';
 							o.q[0].value = this.value;
@@ -181535,30 +181534,22 @@ function top_window(okay_to_run) {
 							o.q[0].focus();
 						}
 					} else {
-						d3_de.value = r;
-						d3_de.style.border = '4px dashed red';
+						d4a.result_buttons.de.value += '✘';
+						d4a.result_buttons.de.style.border = '2px dashed red'; // This is a code from a store......
 						result.digital_eyes = false;
-						console.log(result);
+						//~ d3_de.value = r;
+						//~ d3_de.style.border = '4px dashed red';
+						//~ console.log(result);
 					}
 				} else {
 					sbm = false;
 				}
-				
-				// ADDITIONAL TERMS
-				r = /<tr><td nowrap><H4>Size\/Weight:<\/H4><\/td><td id="uom">([^<]*)<\/td><\/tr>/.exec(rs);
-				if (r) {
-					// Add to button
-					d3_de.value += ' ' + __js_clean_html_str(r[1]).trim();
-				}
-				
 				// ...
 				if (sbm) {
-					//document.getElementById('Answer_2_FreeText').value = url;
 					result.digital_eyes = true;
 				} else {
 					result.digital_eyes = false;
 				}
-				
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
 			}
@@ -181589,21 +181580,17 @@ function top_window(okay_to_run) {
 							return;
 						}
 						// Still here?
-						console.log(url);
 						GM_xmlhttpRequest({
 							method: "GET",
 							url: url,
 							onload: function(response) {
 								var rs = response.responseText;
-								
-								//console.log(response.status);
 								if (response.status != 200) {
 									console.log(response.status);
 									return;
 								}
-								
-								// contains "An unusual pattern of access has been detected from this address." !! ??
-								// if no then do not save !
+								// Contains "An unusual pattern of access has been detected from this address." !! ??
+								// If no then do not save !
 								if (rs.indexOf('An unusual pattern of access has been detected from this address.') != -1) {
 									document.body.style.backgroundColor = 'red';
 									A9_Snaptell_VSR__process({
@@ -181612,7 +181599,7 @@ function top_window(okay_to_run) {
 									});
 									return;
 								}
-								// write to file !
+								// Write to file !
 								rf.io__write_to_file(
 									{
 										data:		'AMT__serverSide_write__value='	+encodeURIComponent(response.responseText)+
@@ -181624,7 +181611,6 @@ function top_window(okay_to_run) {
 									},
 									A9_Snaptell_VSR__process
 								);
-								
 							}
 						});
 					}
