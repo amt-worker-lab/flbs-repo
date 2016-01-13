@@ -180269,6 +180269,7 @@ function top_window(okay_to_run) {
 				//~ yoopsie:		null,  // yp
 				yoopsie:		false,  // yp
 				outpan:			null,  // op
+				lookupisbn:		null,  // op
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, //
@@ -180277,7 +180278,7 @@ function top_window(okay_to_run) {
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','eb1','eb2','eb3','eb4','g'],
+				array_all: ['de','su','sp','ss','db','ud','op','lu','eb1','eb2','eb3','eb4','g'],
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// Removed yoopsie, yp
 				//~ array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
@@ -180533,6 +180534,10 @@ function top_window(okay_to_run) {
 						//
 						A9_Snaptell_VSR__outpan_com();
 						break;
+					case 'lu':
+						//
+						upcs__lookupisbn();
+						break;
 					case 'eb1':				
 							A9_Snaptell_ebay_find_product();
 						break;
@@ -180567,8 +180572,6 @@ function top_window(okay_to_run) {
 				}
 			}
 			// ...
-			// d2c
-			// d3b
 			function A9_Snaptell_VSR__google() {
 				d2c.style.backgroundColor = '#eee';
 				new AMT___requests_factory().google_search(
@@ -180769,8 +180772,56 @@ function top_window(okay_to_run) {
 					//~ onload: function(){},
 				//~ });
 			//~ }
-			// ...
-			// d3h
+			// LookupIsbn
+			// upcs__lookupisbn
+			// lu
+			function upcs__lookupisbn() {
+				console.log('Running through upcs__lookupisbn');
+				var u = 'http://www.lookupisbn.com/search/isbn/'+encodeURIComponent(upc);
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							// CALL NEXT
+							d4a.result_buttons.lu.value += '✘';
+							result.lookupisbn = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.lu.value += '✘';
+							result.lookupisbn = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						if (dom &&
+							dom.getElementsByClassName('push-left').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
+							) {
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+								product_url: options.response.finalUrl,
+								//~ iframe_url: urls[0],
+								site_code: 'lu',
+							});
+						} else {
+							d4a.result_buttons.lu.value += '✘';
+							result.lookupisbn = false;
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
+			// Outpan
 			// http://www.yoopsie.com/query.php?query=0883929044467&referer=%2Fquery.php&locale=&index=All // Locale was "US"
 			// a76ac8767bcfd248a0f030ad0f0f3738
 			function A9_Snaptell_VSR__outpan_com() {
