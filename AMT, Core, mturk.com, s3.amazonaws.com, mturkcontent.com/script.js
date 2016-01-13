@@ -179990,9 +179990,10 @@ function top_window(okay_to_run) {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:100%;}');
+			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
+			GM_addStyle('#Answer_4 {position:absolute;top:0;right:100%;z-index:1000;}'); // ...
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
@@ -180640,7 +180641,7 @@ function top_window(okay_to_run) {
 						break;
 				}
 			}
-			// ...
+			// A9_Snaptell_VSR__google
 			function A9_Snaptell_VSR__google() {
 				d2c.style.backgroundColor = '#eee';
 				new AMT___requests_factory().google_search(
