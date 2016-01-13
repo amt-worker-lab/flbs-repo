@@ -179921,7 +179921,7 @@ function top_window(okay_to_run) {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-			GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:100%;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
@@ -179930,7 +179930,8 @@ function top_window(okay_to_run) {
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
 			// MOVE "THETIME"
-			document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
+			// OLD METHOD......
+			//~ document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
 			// Item not found text
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
@@ -180051,19 +180052,19 @@ function top_window(okay_to_run) {
 			}
 			//...
 			var d3_de = document.createElement('input');
-				d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;');
+				d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3_de.type = 'button';
 				d3_de.value = 'digit-eyes';
 				x.appendChild(d3_de);
 			//
 			var d3 = document.createElement('input');
-				d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;');
+				d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3.type = 'button';
 				d3.value = 'searchupc';
 				x.appendChild(d3);
 			//
 			var d3b = document.createElement('input');
-				d3b.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;');
+				d3b.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3b.type = 'button';
 				d3b.value = 'google';
 				x.appendChild(d3b);
@@ -180074,43 +180075,43 @@ function top_window(okay_to_run) {
 				}
 			//
 			var d3d = document.createElement('input');
-			d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;');
+			d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3d.type = 'button';
 			d3d.value = 'shopsavvy';
 			x.appendChild(d3d);
 			//
 			var d3e = document.createElement('input');
-			d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;');
+			d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3e.type = 'button';
 			d3e.value = 'upcdatabase'; // old smoopa
 			x.appendChild(d3e);
 			//
 			var d3f = document.createElement('input');
-			d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;');
+			d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3f.type = 'button';
 			d3f.value = 'upcitemdb';
 			x.appendChild(d3f);
 			//
 			var d3g = document.createElement('input');
-			d3g.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;');
+			d3g.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3g.type = 'button';
 			d3g.value = 'yoopsie';
 			x.appendChild(d3g);
 			//
 			var d3h = document.createElement('input');
-			d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;');
+			d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3h.type = 'button';
 			d3h.value = 'outpan';
 			x.appendChild(d3h);
 			//
 			var d3i = document.createElement('input');
-			d3i.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;');
+			d3i.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3i.type = 'button';
 			d3i.value = 'Ebay';
 			x.appendChild(d3i);
 			//
 			var d3j = document.createElement('input');
-			d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;');
+			d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3j.type = 'button';
 			d3j.value = '';
 			x.appendChild(d3j);		
