@@ -179927,6 +179927,7 @@ function top_window(okay_to_run) {
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
+			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
 			// MOVE "THETIME"
@@ -180048,21 +180049,20 @@ function top_window(okay_to_run) {
 			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
 			//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d3c);
-			d3c.onclick = function() {
-			}
-			//...
+			d3c.onclick = function() {}
+			// Digit Eyes
 			var d3_de = document.createElement('input');
 				d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3_de.type = 'button';
 				d3_de.value = 'digit-eyes';
 				x.appendChild(d3_de);
-			//
+			// Search upc
 			var d3 = document.createElement('input');
 				d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3.type = 'button';
 				d3.value = 'searchupc';
 				x.appendChild(d3);
-			//
+			// Google
 			var d3b = document.createElement('input');
 				d3b.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				d3b.type = 'button';
@@ -180073,43 +180073,43 @@ function top_window(okay_to_run) {
 					this.style.backgroundColor = 'LightGreen';
 					A9_Snaptell_VSR__google();
 				}
-			//
+			// Shop savvy
 			var d3d = document.createElement('input');
 			d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3d.type = 'button';
 			d3d.value = 'shopsavvy';
 			x.appendChild(d3d);
-			//
+			// UPC database
 			var d3e = document.createElement('input');
 			d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3e.type = 'button';
 			d3e.value = 'upcdatabase'; // old smoopa
 			x.appendChild(d3e);
-			//
+			// UPC item db
 			var d3f = document.createElement('input');
 			d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3f.type = 'button';
 			d3f.value = 'upcitemdb';
 			x.appendChild(d3f);
-			//
+			// Yoopsie
 			var d3g = document.createElement('input');
 			d3g.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3g.type = 'button';
 			d3g.value = 'yoopsie';
 			x.appendChild(d3g);
-			//
+			// Outpan
 			var d3h = document.createElement('input');
 			d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3h.type = 'button';
 			d3h.value = 'outpan';
 			x.appendChild(d3h);
-			//
+			// Ebay
 			var d3i = document.createElement('input');
 			d3i.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3i.type = 'button';
 			d3i.value = 'Ebay';
 			x.appendChild(d3i);
-			//
+			// ...
 			var d3j = document.createElement('input');
 			d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3j.type = 'button';
@@ -180853,7 +180853,6 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						//~ console.log(d3e);
 						d3e.value = r.description.replace(/\s+/g, ' '); // Replace many spaces...
 						d3e.style.border = '4px solid blue';
 						d3e.upc = r.number;
@@ -180912,12 +180911,9 @@ function top_window(okay_to_run) {
 								o.q[0].blur();
 								o.q[0].focus();
 							}
-							
 							result.searchupc = true;
 						} else {
-						
 							result.searchupc = false;
-							
 						}
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
