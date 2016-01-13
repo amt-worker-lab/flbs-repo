@@ -180069,79 +180069,71 @@ function top_window(okay_to_run) {
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
-			
 			// Digit Eyes
-			var d3_de = document.createElement('input');
-				d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-				d3_de.type = 'button';
-				d3_de.value = 'digit-eyes';
-				x.appendChild(d3_de);
+			//~ var d3_de = document.createElement('input');
+			//~ d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3_de.type = 'button';
+			//~ d3_de.value = 'digit-eyes';
+			//~ x.appendChild(d3_de);
 			// Search upc
-			var d3 = document.createElement('input');
-				d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-				d3.type = 'button';
-				d3.value = 'searchupc';
-				x.appendChild(d3);
+			//~ var d3 = document.createElement('input');
+			//~ d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3.type = 'button';
+			//~ d3.value = 'searchupc';
+			//~ x.appendChild(d3);
 			// Google
 			var d3b = document.createElement('input');
-				d3b.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-				d3b.type = 'button';
-				d3b.value = 'google';
-				x.appendChild(d3b);
-				d3b.onclick = function() {
-					localStorage['goog-captcha'] = true; // RESET THIS!!!
-					this.style.backgroundColor = 'LightGreen';
-					A9_Snaptell_VSR__google();
-				}
+			d3b.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			d3b.type = 'button';
+			d3b.value = 'google';
+			x.appendChild(d3b);
+			d3b.onclick = function() {
+				localStorage['goog-captcha'] = true; // RESET THIS!!!
+				this.style.backgroundColor = 'LightGreen';
+				A9_Snaptell_VSR__google();
+			}
 			// Shop savvy
-			var d3d = document.createElement('input');
-			d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3d.type = 'button';
-			d3d.value = 'shopsavvy';
-			x.appendChild(d3d);
+			//~ var d3d = document.createElement('input');
+			//~ d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3d.type = 'button';
+			//~ d3d.value = 'shopsavvy';
+			//~ x.appendChild(d3d);
 			// UPC database
-			var d3e = document.createElement('input');
-			d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3e.type = 'button';
-			d3e.value = 'upcdatabase'; // old smoopa
-			x.appendChild(d3e);
+			//~ var d3e = document.createElement('input');
+			//~ d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3e.type = 'button';
+			//~ d3e.value = 'upcdatabase'; // old smoopa
+			//~ x.appendChild(d3e);
 			// UPC item db
-			var d3f = document.createElement('input');
-			d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3f.type = 'button';
-			d3f.value = 'upcitemdb';
-			x.appendChild(d3f);
+			//~ var d3f = document.createElement('input');
+			//~ d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3f.type = 'button';
+			//~ d3f.value = 'upcitemdb';
+			//~ x.appendChild(d3f);
 			// Yoopsie
-			var d3g = document.createElement('input');
-			d3g.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3g.type = 'button';
-			d3g.value = 'yoopsie';
-			x.appendChild(d3g);
+			//~ var d3g = document.createElement('input');
+			//~ d3g.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3g.type = 'button';
+			//~ d3g.value = 'yoopsie';
+			//~ x.appendChild(d3g);
 			// Outpan
-			var d3h = document.createElement('input');
-			d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3h.type = 'button';
-			d3h.value = 'outpan';
-			x.appendChild(d3h);
+			//~ var d3h = document.createElement('input');
+			//~ d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3h.type = 'button';
+			//~ d3h.value = 'outpan';
+			//~ x.appendChild(d3h);
 			// Ebay
 			var d3i = document.createElement('input');
-			d3i.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			d3i.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3i.type = 'button';
 			d3i.value = 'Ebay';
 			x.appendChild(d3i);
 			// ...
-			var d3j = document.createElement('input');
-			d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3j.type = 'button';
-			d3j.value = '';
-			x.appendChild(d3j);		
-			//
-			//
-			//~ var d3f = document.createElement('input');
-			//~ d3f.setAttribute('style','float:left;width:25%;height:30px;cursor:pointer;font-weight:bold;');
-			//~ d3f.type = 'button';
-			//~ d3f.value = '';
-			//~ x.appendChild(d3f);
+			//~ var d3j = document.createElement('input');
+			//~ d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3j.type = 'button';
+			//~ d3j.value = '';
+			//~ x.appendChild(d3j);		
 			// END BUTTONS
 			// The columns for the searches! Put these
 			// on after the buttons and the debug textarea.
@@ -181522,21 +181514,28 @@ function top_window(okay_to_run) {
 							// Add to button
 							r += ' ' + __js_clean_html_str(rx[1]).trim();
 						}
-						d3_de.value = r;
-						d3_de.style.border = '4px solid blue';
-						d3_de.de_url = url;
-						d3_de.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.value;
-							o.q[1].value = this.de_url;
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
+						// Add a result button here.
+						add_result_button({ // Title, Product URL, Iframe URL
+							title: r,
+							product_url: url,
+							//~ iframe_url: urls[0],
+							site_code: 'de',
+						});
+						//~ d3_de.value = r;
+						//~ d3_de.style.border = '4px solid blue';
+						//~ d3_de.de_url = url;
+						//~ d3_de.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ o.q[0].value = this.value;
+							//~ o.q[1].value = this.de_url;
+							//~ o.q[0].focus();
+							//~ o.q[0].blur();
+							//~ o.q[0].focus();
+						//~ }
 					} else {
-						d4a.result_buttons.de.value += '✘';
 						d4a.result_buttons.de.style.border = '2px dashed red'; // This is a code from a store......
 						result.digital_eyes = false;
+						sbm = false;
 						//~ d3_de.value = r;
 						//~ d3_de.style.border = '4px dashed red';
 						//~ console.log(result);
@@ -181548,6 +181547,7 @@ function top_window(okay_to_run) {
 				if (sbm) {
 					result.digital_eyes = true;
 				} else {
+					d4a.result_buttons.de.value += '✘';
 					result.digital_eyes = false;
 				}
 				// CALL NEXT
@@ -181560,7 +181560,7 @@ function top_window(okay_to_run) {
 			 */
 			// ...
 			function A9_Snaptell_VSR() {
-				d3_de.value = '... digit-eyes ...'; //....
+				//~ d3_de.value = '... digit-eyes ...'; //....
 				result.digital_eyes = false; // set to false by default!
 				var url = 'https://www.digit-eyes.com/cgi-bin/digiteyes.fcgi?userid=&iP=0&override=0&upcCode='+upc+'&action=Search+Again';
 				var rf = new AMT___requests_factory();
