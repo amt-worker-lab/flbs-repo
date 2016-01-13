@@ -181373,6 +181373,33 @@ function top_window(okay_to_run) {
 				}
 			}
 			/**
+			 * create_title_annotation
+			 * 
+			 * e.g. {
+						title: dom.title,
+						product_url: result_object.url
+					}
+			 */
+			function create_title_annotation(options) {
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: options.title,
+					output_fields: [ o.q[0] ],
+					callback_mouseup: function(addField) {
+						// Remove trailing commas
+						addField.value = addField.value.replace(/ *,*$/, '');
+						addField.value = addField.value.replace(/ *-*$/, ''); // etc.
+						addField.value = addField.value.replace(/^ *,*/, '');
+						addField.value = addField.value.replace(/^ *-*/, ''); // etc.
+						o.q[1].value = options.product_url;
+					},
+					//~ appendToField: true,
+					//~ appendToField_glue: '\n',
+					//~ delimeter: '',
+					focusToField: true,
+				});
+				d4c.appendChild(buttons);
+			}
+			/**
 			 * A9_Snaptell_VSR__yahoo_complete
 			 */
 			// ...
@@ -181465,6 +181492,16 @@ function top_window(okay_to_run) {
 									setTimeout(function() {
 										A9_Snaptell_VSR__load_first();
 									}, 2000);
+									// Create buttons from response TITLE
+									// field here....
+									var rs = result_object.response.responseText;
+									var dom = new DOMParser().parseFromString(rs, 'text/html');
+									if (dom.title) {
+										create_title_annotation({
+											title: dom.title,
+											product_url: result_object.url
+										});
+									}
 								}
 							}
 						);
