@@ -2960,6 +2960,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 		if (chk.length < 6 || chk.indexOf('http') == -1) {
 			return false;
 		}
+		// xhr_timeout in ms (default=300s)
+		if (!options.hasOwnProperty('xhr_timeout')) {
+			options.xhr_timeout = 300000;
+		}
 		// ...
 		if (!options.hasOwnProperty('file_folder')) {
 			options.file_folder = '.cached';
@@ -3041,15 +3045,21 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 	 * 
 	 */	
 	function read_from_xhr() {
+
 		if (options.method == 'get') {
 			GM_xmlhttpRequest({
 				method: 'GET',
 				url: options.URL,
+				timeout: options.xhr_timeout,
+				ontimeout: function() { // Todo
+					alert('xhr timeout');
+				},
+				onerror: function() { // Todo
+					alert('xhr error');
+				},
 				onload: function (response) {
 					//~ var rs = response.responseText;
-					
 					options.response = response;
-					
 					var rslt = options.check_pre_write_to_disk(options);
 					console.log('bool_check_write_to_disk:'+rslt);
 					if (rslt) {
@@ -3067,11 +3077,16 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded"
 				},
+				timeout: options.xhr_timeout,
+				ontimeout: function() { // Todo
+					alert('xhr timeout');
+				},
+				onerror: function() { // Todo
+					alert('xhr error');
+				},
 				onload: function (response) {
 					//~ var rs = response.responseText;
-					
 					options.response = response;
-					
 					var rslt = options.check_pre_write_to_disk(options);
 					console.log('bool_check_write_to_disk:'+rslt);
 					if (rslt) {
