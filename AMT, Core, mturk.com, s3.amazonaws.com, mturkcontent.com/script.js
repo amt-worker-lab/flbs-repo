@@ -179988,7 +179988,7 @@ function top_window(okay_to_run) {
 			}
 			// SELECT FIELD for submit...
 			// Changed from dblclick to click.
-			//~ o.q[2].ondblclick = function() {
+			//~ o.q[2].ondblclick
 			o.q[2].onclick = function() {
 				if  (
 						(
