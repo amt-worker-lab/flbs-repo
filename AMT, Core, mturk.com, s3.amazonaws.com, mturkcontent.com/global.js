@@ -11482,7 +11482,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	out.appendChild(div);
 	out.xhr_scrape_page__context = div;
 	
-	
 	// Is this a URL
 	// or already downloaded?
 	if (options_object.html) {
@@ -11514,7 +11513,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 	 * Function activate_element
 	 */
 	function activate_element() {
-		
 		out.onmouseover = function() {
 			this.xhr_scrape_page__context.style.display = 'block';
 			//~ this.xhr_scrape_page__context.style.width = '';
@@ -11523,7 +11521,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 			this.xhr_scrape_page__context.style.display = 'none';
 			//~ this.xhr_scrape_page__context.style.width = '1%';
 		}
-		
 	}
 	
 	/**
@@ -11654,7 +11651,6 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 				out.xhr_scrape_page__index.style.border = err_status.s;
 				return;
 			}
-			
 			// Time Warner
 			if (rs.indexOf(err_TimeWarner.i) != -1) {
 				out.xhr_scrape_page__index.innerText = err_TimeWarner.m;
@@ -11664,8 +11660,11 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
 			
 			parse(rs);
 			
-			if (options_object.hasOwnProperty('callback_loaded'))
+			console.log(options_object);
+			if (options_object.hasOwnProperty('callback_loaded')) {
+				options_object.response = response;
 				options_object.callback_loaded(options_object);
+			}
 		}
 	});
 }

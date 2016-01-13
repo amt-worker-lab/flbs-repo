@@ -179993,7 +179993,7 @@ function top_window(okay_to_run) {
 			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
-			GM_addStyle('#Answer_4 {position:absolute;top:0;right:100%;z-index:1000;}'); // ...
+			GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;}'); // ...
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
@@ -181436,7 +181436,7 @@ function top_window(okay_to_run) {
 					inp.output_url = rs[i][0];
 					inp.onclick = A9_Snaptell_VSR__handle_clicks;
 					out.appendChild(inp);
-					// If first two then scrape.
+					// If 0,1,2 then scrape.
 					if (i < 3 && !isPDF) {
 						out.appendChild(document.createElement('br'));
 						// First URL
@@ -181450,8 +181450,7 @@ function top_window(okay_to_run) {
 							d1.output_url = rs[i][0]; //.output_url
 						}
 						var scrape_el = document.createElement('div');
-						scrape_el.setAttribute('style', //inline+absolute
-							//~ 'position:relative;width:1%;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
+						scrape_el.setAttribute('style',
 							'display:inline-block;cursor:pointer;background-color:#eee;border:1px solid teal;margin:0 0 0 2px;'
 						);
 						out.appendChild(scrape_el);
@@ -181465,7 +181464,7 @@ function top_window(okay_to_run) {
 								callback_loaded: function(result_object) {
 									setTimeout(function() {
 										A9_Snaptell_VSR__load_first();
-									}, 3000);
+									}, 2000);
 								}
 							}
 						);
@@ -181489,6 +181488,7 @@ function top_window(okay_to_run) {
 							));
 					else
 						u = tmp_url;
+					// IFR A
 					var a = document.createElement('a');
 					a.href = u;
 					a.output_url = rs[i][0];
