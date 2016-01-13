@@ -180127,7 +180127,7 @@ function top_window(okay_to_run) {
 			// 1) Div for small status of each site. These are text: e.g. "[de]" (loading) or "[de✘]" (none) or "[de✔]" (has result)
 			// 2) Div for any with "has result" (buttons)
 			// 3) Div for the titles of scraped websites (buttons)
-			var d4a = '-'.div({
+			var d4a = ''.div({
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4a);
@@ -180135,7 +180135,7 @@ function top_window(okay_to_run) {
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4b);
-			var d4c = '-'.div({
+			var d4c = ''.div({
 				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
@@ -181386,8 +181386,7 @@ function top_window(okay_to_run) {
 					output_fields: [ o.q[0] ],
 					callback_mouseup: function(addField) {
 						// Remove trailing commas
-						addField.value = addField.value.replace(/ *,*$/, '');
-						addField.value = addField.value.replace(/ *-*$/, ''); // etc.
+						addField.value = addField.value.replace(/ *[,\-;:]*$/g, '');
 						addField.value = addField.value.replace(/^ *,*/, '');
 						addField.value = addField.value.replace(/^ *-*/, ''); // etc.
 						o.q[1].value = options.product_url;
@@ -181396,6 +181395,7 @@ function top_window(okay_to_run) {
 					//~ appendToField_glue: '\n',
 					//~ delimeter: '',
 					focusToField: true,
+					style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;padding:1px 4px;',
 				});
 				d4c.appendChild(buttons);
 			}
