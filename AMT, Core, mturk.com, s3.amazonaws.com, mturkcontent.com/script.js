@@ -180295,6 +180295,41 @@ function top_window(okay_to_run) {
 			//~ A9_Snaptell_VSR__next();
 			//~ // LOADS SHOPSAVVY INITIALLY
 			//~ A9_Snaptell_VSR__shopsavvy();
+			
+			/**
+			 * function add_result_button
+			 * 
+			 * result_obj
+			 * .title
+			 * .product_url
+			 * .iframe_url
+			 * .site_code
+			 * 
+			 * Puts a new button into d3b.
+			 */
+			function add_result_button(result_obj) {
+				// title, product_url, iframe_url, source / "code" e.g. "de"
+				// e.g. add_result_button({ // Title, Product URL, Iframe URL
+				//					title: r,
+				//					product_url: 'http://shopsavvy.com/products/' + encodeURIComponent(upc),
+				//					iframe_url: urls[0],
+				//					site_code: 'ss',
+				//				});
+				var btn = document.createElement('input');
+				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+				btn.type = 'button';
+				btn.value = result_obj.title;
+				btn.meta = result_obj;
+				btn.onclick = function() {
+					this.style.backgroundColor = 'LightGreen';
+					o.q[0].value = this.value;
+					o.q[1].value = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+					o.q[0].focus();
+					d1.output_url = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+					d1.src = this.meta.iframe_url;
+				}
+				d3b.appendChild(btn);
+			}
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
 				var ss = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
@@ -180327,7 +180362,7 @@ function top_window(okay_to_run) {
 					MT___host + '/mturk/.cached/' + encodeURIComponent(md5_filename)
 				];
 				//
-				d3d.output_url = urls[0];
+				//~ d3d.output_url = urls[0];
 				// Xhr
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -180340,7 +180375,7 @@ function top_window(okay_to_run) {
 						alert('error shopsavvy');
 					},
 					onload: function(response) {
-						d3d.value = '... shopsavvy ...';
+						//~ d3d.value = '... shopsavvy ...';
 						var rs = response.responseText;
 						if (response.status != 200 || rs*1 > 200) {
 							// CALL NEXT
@@ -180360,16 +180395,23 @@ function top_window(okay_to_run) {
 							if (r && __js_clean_html_str(r[1]).trim() != '') {
 								result.shopsavvy = true;
 								r = __js_clean_html_str(r[1]).trim();
-								d3d.value = r;
-								d3d.style.border = '4px solid blue';
-								d3d.onclick = function() {
-									this.style.backgroundColor = 'LightGreen';
-									o.q[0].value = this.value;
-									o.q[1].value = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									o.q[0].focus();
-									d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-									d1.src = this.output_url;
-								}
+								// Add a result button here.
+								add_result_button({ // Title, Product URL, Iframe URL
+									title: r,
+									product_url: 'http://shopsavvy.com/products/' + encodeURIComponent(upc),
+									iframe_url: urls[0],
+									site_code: 'ss',
+								});
+								//~ d3d.value = r;
+								//~ d3d.style.border = '4px solid blue';
+								//~ d3d.onclick = function() {
+									//~ this.style.backgroundColor = 'LightGreen';
+									//~ o.q[0].value = this.value;
+									//~ o.q[1].value = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ o.q[0].focus();
+									//~ d1.output_url = 'http://shopsavvy.com/products/' + encodeURIComponent(upc);
+									//~ d1.src = this.output_url;
+								//~ }
 							} else { // No title!
 								// CALL NEXT
 								result.shopsavvy = false;
