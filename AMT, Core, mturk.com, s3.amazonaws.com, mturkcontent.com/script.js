@@ -180355,7 +180355,8 @@ function top_window(okay_to_run) {
 					o.q[1].value = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
 					o.q[0].focus();
 					d1.output_url = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
-					d1.src = this.meta.iframe_url;
+					if (this.meta.iframe_url) // This is optional to open page in iframe....
+						d1.src = this.meta.iframe_url;
 				}
 				console.log(btn);
 				d4b.appendChild(btn);
@@ -180411,6 +180412,7 @@ function top_window(okay_to_run) {
 						var rs = response.responseText;
 						if (response.status != 200 || rs*1 > 200) {
 							// CALL NEXT
+							d4a.result_buttons.ss.value += '✘';
 							result.shopsavvy = false;
 							A9_Snaptell_VSR__next();
 							return;
@@ -180434,6 +180436,7 @@ function top_window(okay_to_run) {
 									iframe_url: urls[0],
 									site_code: 'ss',
 								});
+								// OLD METHOD...........................
 								//~ d3d.value = r;
 								//~ d3d.style.border = '4px solid blue';
 								//~ d3d.onclick = function() {
@@ -180446,11 +180449,11 @@ function top_window(okay_to_run) {
 								//~ }
 							} else { // No title!
 								// CALL NEXT
+								d4a.result_buttons.ss.value += '✘';
 								result.shopsavvy = false;
 								A9_Snaptell_VSR__next();
 								return;
 							}
-							
 							// ADDITIONAL TERMS
 							r = /<h2 class="subtitle header-m-semibold text-italic">([^<]*)<\/h2>/.exec(rs);
 							if (r) {
@@ -180469,6 +180472,8 @@ function top_window(okay_to_run) {
 						}
 						else
 						{
+							// Update status button
+							d4a.result_buttons.ss.value += '✘';
 							result.shopsavvy = false;
 						}
 						// CALL NEXT
@@ -180486,8 +180491,7 @@ function top_window(okay_to_run) {
 				// Next
 				console.log(result.array_all);
 				var next = result.array_all.shift();
-				
-				
+				// Swtich next
 				switch(next) {
 					case 'de':
 						// ...
@@ -180550,14 +180554,6 @@ function top_window(okay_to_run) {
 							A9_Snaptell_ebay_find_product();
 						break;
 					case 'g':
-						//~ console.log('localStorage[goog-captcha]:'+localStorage['goog-captcha']);
-						//~ console.log(result);
-						//~ console.log(result.startpage);
-						//~ console.log(result.startpage == false);
-						//~ console.log(localStorage['goog-captcha'] == false || localStorage['goog-captcha'] == null);
-						//~ console.log(localStorage['goog-captcha']);
-						//~ console.log(localStorage['goog-captcha'] == false);
-						//~ console.log(localStorage['goog-captcha'] == null);
 						if (
 							(result.startpage == false || result.startpage == null) && // sometimes startpage == null
 							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
@@ -180571,7 +180567,6 @@ function top_window(okay_to_run) {
 							o.ebaySuccess == false
 							// && result.yahoo == false
 							) {
-							//~ console.log('x');
 							A9_Snaptell_VSR__google(); // DO IT
 						} else {
 							//
@@ -180607,24 +180602,23 @@ function top_window(okay_to_run) {
 									return; // Stop here...
 							}
 							d2c.innerText = '0';
-							console.log(o);
-							console.log(result);
-							console.log('Auto NA results:');
-							console.log(result.digital_eyes == false)
-							console.log(	(result.startpage == false || result.startpage == null))
-							console.log(result.searchupc == false)
-							console.log(	result.shopsavvy == false)
-							console.log(	result.upcindex == false)
-							console.log(	result.upcitemdb == false)
-							console.log(	result.upcdatabase == false)
-							console.log(	result.yoopsie == false)
-							console.log(	o.ebaySuccess == false)
+							//~ console.log(o);
+							//~ console.log(result);
+							//~ console.log('Auto NA results:');
+							//~ console.log(result.digital_eyes == false)
+							//~ console.log(	(result.startpage == false || result.startpage == null))
+							//~ console.log(result.searchupc == false)
+							//~ console.log(	result.shopsavvy == false)
+							//~ console.log(	result.upcindex == false)
+							//~ console.log(	result.upcitemdb == false)
+							//~ console.log(	result.upcdatabase == false)
+							//~ console.log(	result.yoopsie == false)
+							//~ console.log(	o.ebaySuccess == false)
 							// AUTO?
 							// XX Keep this off by default.
 							if  (
 								result.digital_eyes == false &&
 								(result.startpage == false || result.startpage == null) &&
-								//~ result.yahoo == false &&
 								result.searchupc == false &&
 								result.shopsavvy == false &&
 								result.upcindex == false &&
@@ -180632,6 +180626,7 @@ function top_window(okay_to_run) {
 								result.upcdatabase == false &&
 								result.yoopsie == false &&
 								o.ebaySuccess == false
+								//~ result.yahoo == false &&
 								)
 							{
 								naBut.click();
@@ -180642,8 +180637,6 @@ function top_window(okay_to_run) {
 					}
 				);
 			}
-			
-			
 			// ...
 			// d3i
 			// ebay
@@ -180797,8 +180790,9 @@ function top_window(okay_to_run) {
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						if (options.response.status != 200) {
-							d3h.value = '... outpan ...';
+							//~ d3h.value = '... outpan ...';
 							// CALL NEXT
+							d4a.result_buttons.op.value += '✘';
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -180807,7 +180801,7 @@ function top_window(okay_to_run) {
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						d3h.value = '... outpan ...';
+						//~ d3h.value = '... outpan ...';
 						if (options.response.status != 200) {
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
@@ -180819,8 +180813,8 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						var ex = [];
-						if (r.attributes) {
+						var ex = [];		// this is for debug.....
+						if (r.attributes) { // this is for debug.....
 							for (var i in r.attributes) {
 								ex.push(r.attributes[i]); // E.g. "Format": "CD", "Manufacturer": "Naxos of America"
 							}
@@ -180828,18 +180822,25 @@ function top_window(okay_to_run) {
 								ex = '|' + ex.join('|');
 							}
 						}
-						d3h.value = r.name + ex;
-						d3h.final_value = r.name;
-						d3h.style.border = '4px solid blue';
-						d3h.url = r.outpan_url;
-						d3h.onclick = function() {
-							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.final_value;
-							o.q[1].value = this.url;
-							o.q[0].focus();
-							o.q[0].blur();
-							o.q[0].focus();
-						}
+						// Add a result button here.
+						add_result_button({ // Title, Product URL, Iframe URL
+							title: r.name,
+							product_url: r.outpan_url,
+							//~ iframe_url: urls[0],
+							site_code: 'op',
+						});
+						//~ d3h.value = r.name + ex;
+						//~ d3h.final_value = r.name;
+						//~ d3h.style.border = '4px solid blue';
+						//~ d3h.url = r.outpan_url;
+						//~ d3h.onclick = function() {
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ o.q[0].value = this.final_value;
+							//~ o.q[1].value = this.url;
+							//~ o.q[0].focus();
+							//~ o.q[0].blur();
+							//~ o.q[0].focus();
+						//~ }
 						// CALL NEXT
 						result.outpan = true;
 						A9_Snaptell_VSR__next();
