@@ -120260,15 +120260,13 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[0].innerText.trim().replace(/^Company: /, ''),
-				cshort: null,
+				//~ cshort: null,
 				boldArray: [],
 				q: [
 					document.getElementById('web_url')
 				],
-				types: ['racing','motorcycle','snowmobile','motocross','cycle','atv','powersports']
+				types: ['']
 			}
-			o.cshort = o.comp.replace(/ +[^ ]+$/, '').trim();
-			o.cshort = (o.cshort == '' || o.cshort == o.comp) ? '"'+o.comp+'"' : o.cshort.replace(/,$/, ''); // If blank or unchanged sets to "[o.comp]"
 			o.boldArray = o.comp.clean_string_to_array().concat(o.types);
 			console.log(o);
 			/* BEGIN ITEMS */
@@ -120278,7 +120276,6 @@ qatar,80
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
-			
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -120289,19 +120286,18 @@ qatar,80
 				],
 				offset: 0 // offset top
 			});
-			
-			var x2; // If same then just enclose entire comp string in quotes.
-			x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
+			//~ var x2; // If same then just enclose entire comp string in quotes.
+			//~ x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					'"'+o.comp.split(' ').join('" "')+'"',     // quotes
-					o.comp + ' ("'+o.types.join('" OR "')+'")', // quotes
+					'"'+o.comp.split(' ').join('" "')+'"',
+					'"'+o.comp+'"'
 				],
 				search_results: {
-					//~ use_domain_only: true
+					use_domain_only: true
 				},
 				out_element: o.q[0],
 				parent: d1,
