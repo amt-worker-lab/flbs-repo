@@ -179993,7 +179993,7 @@ function top_window(okay_to_run) {
 			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
 			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
-			GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;}'); // ...
+			GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;zoom:10;cursor:pointer;}'); // ... old=18
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
@@ -180107,7 +180107,7 @@ function top_window(okay_to_run) {
 			// iframe
 			// add .output_url
 			var d1 = document.createElement('iframe');
-				d1.setAttribute('style','width:40%;float:right;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+				d1.setAttribute('style','width:50%;float:right;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
 				// flicker...
 				d1.style.visibility = 'hidden';
 				d1.output_url = null;
@@ -180120,7 +180120,6 @@ function top_window(okay_to_run) {
 			// Debug textarea
 			var d3c = document.createElement('textarea');
 			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
-			//~ d3c.setAttribute('style','position:absolute;left:40%;width:50%;margin-top:-30px;height:60px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d3c);
 			d3c.onclick = function() {}
 			// Add left divs
@@ -180128,15 +180127,15 @@ function top_window(okay_to_run) {
 			// 2) Div for any with "has result" (buttons)
 			// 3) Div for the titles of scraped websites (buttons)
 			var d4a = ''.div({
-				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4a);
 			var d4b = ''.div({
-				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4b);
 			var d4c = ''.div({
-				style: 'width:58%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
 			// Digit Eyes
@@ -180194,7 +180193,7 @@ function top_window(okay_to_run) {
 			//~ x.appendChild(d3h);
 			// Ebay
 			var d3i = document.createElement('input');
-			d3i.setAttribute('style','float:left;width:59%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 			d3i.type = 'button';
 			d3i.value = 'Ebay';
 			x.appendChild(d3i);
@@ -180209,7 +180208,7 @@ function top_window(okay_to_run) {
 			// on after the buttons and the debug textarea.
 			// Div 1
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','float:left;width:30%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2.setAttribute('style','float:left;width:25%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2);
 			//~ // Div 2
 			//~ var d2b = document.createElement('div');
@@ -180217,7 +180216,7 @@ function top_window(okay_to_run) {
 			//~ x.appendChild(d2b);
 			// Div 3
 			var d2c = document.createElement('div');
-			d2c.setAttribute('style','float:left;width:29%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2c.setAttribute('style','float:left;width:24%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2c);
 			// ...
 			x.appendChild(document.createElement('br'));
@@ -180271,14 +180270,14 @@ function top_window(okay_to_run) {
 			AMT__Global_Vars.core.return_accept_run_nextTab = true;
 			// ...
 			var naBut = document.getElementsByClassName('question selection')[0];
-			naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
+			//~ naBut.setAttribute('style', 'zoom:18;cursor:pointer;');
 			naBut.onclick = function() {
 				for(var i = 1; i <=3; i+=2) {
 					document.getElementsByName('Answer_'+i+'_FreeText')[0].value = '';
 				}
 				o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 				this.checked = true;
-				console.log('NA Button clicked');
+				//~ console.log('NA Button clicked');
 				doSubmit('hitForm');
 			}
 			// middle-click-na
@@ -180533,17 +180532,20 @@ function top_window(okay_to_run) {
 							// ADDITIONAL TERMS
 							r = /<h2 class="subtitle header-m-semibold text-italic">([^<]*)<\/h2>/.exec(rs);
 							if (r) {
-								var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
-								var div = document.createElement('div');
-								div.setAttribute('style', 'cursor:pointer');
-								div.innerText = 'sv ' + __js_clean_html_str(r[1]).trim();
-								div.sv_value = __js_clean_html_str(r[1]).trim();
-								div.onclick = function() {
-									this.style.backgroundColor = 'LightGreen';
-									x1.value += ' ' + this.sv_value;
-									x1.focus();
-								}
-								x3.appendChild(div);
+								d3c.value += __js_clean_html_str(r[1]).trim()+"\n";
+								// OLD METHOD.....
+								//
+								//~ var x3 = document.getElementsByClassName('free-text-answer-wrapper')[0];
+								//~ var div = document.createElement('div');
+								//~ div.setAttribute('style', 'cursor:pointer');
+								//~ div.innerText = 'sv ' + __js_clean_html_str(r[1]).trim();
+								//~ div.sv_value = __js_clean_html_str(r[1]).trim();
+								//~ div.onclick = function() {
+									//~ this.style.backgroundColor = 'LightGreen';
+									//~ x1.value += ' ' + this.sv_value;
+									//~ x1.focus();
+								//~ }
+								//~ x3.appendChild(div);
 							}
 						}
 						else
