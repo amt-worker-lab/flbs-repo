@@ -180270,12 +180270,12 @@ function top_window(okay_to_run) {
 			var result = {
 				digital_eyes:	null,
 				startpage:		null,
-				//~ yahoo:			null, // NULL
 				shopsavvy:		null,
 				searchupc:		null, // Set to false for N/A, if skipping
+				//~ yahoo:			null, // NULL
 				//~ smoopa:			null,
-				yoopsie:		false,  // yp
 				//~ yoopsie:		null,  // yp
+				yoopsie:		false,  // yp
 				outpan:			null,  // op
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
@@ -180285,7 +180285,8 @@ function top_window(okay_to_run) {
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
+				array_all: ['de','su','sp','ss','db','ud','op','eb1','eb2','eb3','eb4','g'],
+				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// Removed yoopsie, yp
 				//~ array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// This is the first URL for iframe d1.src.
@@ -180293,7 +180294,20 @@ function top_window(okay_to_run) {
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
 				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			}
-			
+			// For each in array_all add a status button to
+			// div d4a.
+			st_btn();
+			function st_btn() {
+				d4a.result_buttons = {}; // Object
+				for (var i in result.array_all) {
+					var btn = document.createElement('input');
+					btn.setAttribute('style',''); //text-align:left;
+					btn.type = 'button';
+					btn.value = result.array_all[i];
+					d4a.appendChild(btn);
+					d4a.result_buttons[ result.array_all[i] ] = btn; // Associate HTML button to d4a
+				}
+			}
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips2({
 				skips_key: 'VSR_Barcodes_Skips_File',
@@ -180333,7 +180347,7 @@ function top_window(okay_to_run) {
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				btn.type = 'button';
-				btn.value = result_obj.site_code + ':' + result_obj.title;
+				btn.value = result_obj.site_code + ': ' + result_obj.title;
 				btn.meta = result_obj;
 				btn.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
@@ -180345,8 +180359,8 @@ function top_window(okay_to_run) {
 				}
 				console.log(btn);
 				d4b.appendChild(btn);
-				// Add a status button
-				
+				// Update status button
+				d4a.result_buttons[ result_obj.site_code ].value += '✔'; //✘ (none) ✔ (has)
 			}
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
