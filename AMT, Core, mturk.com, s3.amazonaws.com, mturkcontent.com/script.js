@@ -180926,7 +180926,9 @@ function top_window(okay_to_run) {
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
+						console.log('outpan:cpw1');
 						if (options.response.status != 200) {
+							console.log('outpan:cpw2');
 							//~ d3h.value = '... outpan ...';
 							// CALL NEXT
 							d4a.result_buttons.op.value += '✘';
@@ -180934,18 +180936,24 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
+						console.log('outpan:cpw3');
 						return true;
 					},
 					success_callback: function(options) {
+						console.log('outpan:scc');
+						console.log(options);
 						var rs = options.response.responseText;
+						console.log(rs);
 						//~ d3h.value = '... outpan ...';
 						if (options.response.status != 200) {
+							d4a.result_buttons.op.value += '✘';
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
 						var r = JSON.parse(rs);
 						if (!r || !r.name || r.name == null || r.error) { // r.name can be null haha...
+							d4a.result_buttons.op.value += '✘';
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
 							return false;
@@ -181612,15 +181620,18 @@ function top_window(okay_to_run) {
 				}
 				// For result
 				var result_key = (out == d2) ? 'startpage' : 'yahoo';
+				var rk = (out == d1) ? 'sp' : 'g';
 				// Num
 				if (!rs.length) {
 					out.innerText = '0';
 					result[ result_key ] = false;
+					d4a.result_buttons[rk].value += '✘';
 				} else {
 					var div = document.createElement('div');
 					div.setAttribute('style', 'height:2000px;');
 					out.appendChild(div);
 					result[ result_key ] = true;
+					d4a.result_buttons[rk].value += '✔';
 				}
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
