@@ -100872,7 +100872,8 @@ qatar,80
 	//~ s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
 	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
 	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, you are finished with this survey)';
-	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
+	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
+	s = '<p>1. Does this link take you to a web page for a specific Financial Advisor from Wells Fargo Advisors? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)</p>';
 	//~ s = 'd. Email';
 	//~ s2 = '';
 	if (ih.indexOf(s) != -1) {
