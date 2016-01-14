@@ -180368,9 +180368,9 @@ function top_window(okay_to_run) {
 					btn.type = 'button';
 					d4a.appendChild(btn);
 					d4a.result_buttons[ result.array_all[i] ] = btn; // Associate HTML button to d4a
-					if (result.array_all[i] == 'ss') { // GOOGLE
-						btn.setAttribute('style','background-color:beige;'); //text-align:left;
-					}
+					//~ if (result.array_all[i] == 'ss') { // GOOGLE
+						//~ btn.setAttribute('style','background-color:beige;'); //text-align:left;
+					//~ }
 					if (result.array_all[i] == 'g') { // GOOGLE
 						tmp_bv = ' google ';
 						btn.setAttribute('style','cursor:pointer;font-weight:bold;');
@@ -180424,6 +180424,7 @@ function top_window(okay_to_run) {
 				// Add a result button
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+				if (result_obj.site_code == 'ss') btn.style.backgroundColor = '#CCCC66';
 				btn.type = 'button';
 				btn.value = result_obj.site_code + ': ' + result_obj.title;
 				btn.final_value = result_obj.title;
