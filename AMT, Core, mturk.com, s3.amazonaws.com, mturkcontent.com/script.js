@@ -180423,10 +180423,11 @@ function top_window(okay_to_run) {
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
 				btn.type = 'button';
 				btn.value = result_obj.site_code + ': ' + result_obj.title;
+				btn.final_value = result_obj.title;
 				btn.meta = result_obj;
 				btn.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
-					o.q[0].value = this.value;
+					o.q[0].value = this.final_value;
 					o.q[1].value = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);
 					o.q[0].focus();
 					d1.output_url = this.meta.product_url; //'http://shopsavvy.com/products/' + encodeURIComponent(upc);

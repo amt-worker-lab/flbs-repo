@@ -3052,10 +3052,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				url: options.URL,
 				timeout: options.xhr_timeout,
 				ontimeout: function() { // Todo
-					alert('xhr timeout');
+					//~ alert('xhr timeout');
 				},
 				onerror: function() { // Todo
-					alert('xhr error');
+					//~ alert('xhr error');
 				},
 				onload: function (response) {
 					//~ var rs = response.responseText;
@@ -3079,10 +3079,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				},
 				timeout: options.xhr_timeout,
 				ontimeout: function() { // Todo
-					alert('xhr timeout');
+					//~ alert('xhr timeout');
 				},
 				onerror: function() { // Todo
-					alert('xhr error');
+					//~ alert('xhr error');
 				},
 				onload: function (response) {
 					//~ var rs = response.responseText;
