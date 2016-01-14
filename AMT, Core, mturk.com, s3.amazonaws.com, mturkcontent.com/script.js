@@ -100734,136 +100734,80 @@ qatar,80
 	// Web Test (aka)
 	// Masters, WF 2
 	// 
-	s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
-	s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
-	s2 = 'Profile Picture';
-	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1 && 0 == 1) {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-		GM_addStyle('body {width:30%;margin-top:200px;}');
-		GM_addStyle('#submitButton {position:absolute;top:100px;left:0;width:100%;height:60px;}');
-		GM_addStyle('input[type="radio"] {zoom:2.2;}');
-		
-		GM_addStyle('strong {zoom:2;}');
-		
-		// move
-		//~ var prof_rad = document.getElementsByTagName('table')[6];
-		//~ prof_rad.setAttribute('style', 'position:absolute;top:0;');
-		//~ prof_rad = prof_rad.getElementsByTagName('input');
-		
-		var a = document.getElementsByTagName('a')[0].href;
-		//~ a = 'https://home.wellsfargoadvisors.com/vernon.gang';
-		//~ a = 'https://home.wellsfargoadvisors.com/charles.margolis';
-		
-		/*  */
-		var d1;
-		
-		d1 = document.createElement('img');
-		//~ d1 = document.createElement('div');
-		
-		d1.setAttribute('style','position:absolute;top:0px;left:0%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
-		//~ d1.setAttribute('style','position:absolute;top:40px;left:0%;width:98%;height:400px;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
-		document.body.appendChild(d1);
-		/*  */
-		
-		var sbm = true; //GLOBAL
-		
-		//~ prof_rad[0].onclick = prof_rad[1].onclick = function() {
-			//~ this.checked = true;
-			//~ if (sbm) {
-				//~ document.body.style.backgroundColor = 'LightGreen';
-				//~ doSubmit();
-			//~ }
-		//~ }
-		
-		LinkedIn_Test_Profile_Checking_WF2();
-		function LinkedIn_Test_Profile_Checking_WF2__img(u) {
+	//~ s = '<p>1. Does this link take you to a Financial Advisor\'s Web Page? (if no, you are finished with this survey)<\/p>';
+	//~ s = '1. Does this link take you to a Financial Advisor\'s Web Page? (if not, or if it takes you to the Wells Fargo Advisors home page, answer this question no and you are finished with this survey)';
+	//~ s2 = 'Profile Picture';
+	//~ if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1 && 0 == 1) {
+		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
+		//~ GM_addStyle('body {width:30%;margin-top:200px;}');
+		//~ GM_addStyle('#submitButton {position:absolute;top:100px;left:0;width:100%;height:60px;}');
+		//~ GM_addStyle('input[type="radio"] {zoom:2.2;}');
+		//~ GM_addStyle('strong {zoom:2;}');
+		//~ var a = document.getElementsByTagName('a')[0].href;
+		//~ /*  */
+		//~ var d1;
+		//~ d1 = document.createElement('img');
+		//~ d1.setAttribute('style','position:absolute;top:0px;left:0%;border:1px solid blue;border-bottom:4px solid blue;background-color:#eee;overflow:auto;');
+		//~ document.body.appendChild(d1);
+		//~ /*  */
+		//~ var sbm = true; //GLOBAL
+		//~ LinkedIn_Test_Profile_Checking_WF2();
+		//~ function LinkedIn_Test_Profile_Checking_WF2__img(u) {
 			
-			console.log(u);
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: u,
+			//~ console.log(u);
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
+				//~ url: u,
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ if (response.status != 200) {
+						//~ document.getElementsByName('Q3aProfilePicture')[1].checked = true;
+						//~ doSubmit();
+						//~ return;
+					//~ }
+					//~ else 
+					//~ {
+						//~ document.getElementsByName('Q3aProfilePicture')[0].checked = true;
+						//~ doSubmit();
+					//~ }
+				//~ }
+			//~ });
+		//~ }
+		//~ function LinkedIn_Test_Profile_Checking_WF2() {
+			//~ GM_xmlhttpRequest({
+				//~ method: "GET",
 				//~ url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(a),
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
+				//~ onload: function(response) {
+					//~ var rs = response.responseText;
+					//~ if (response.status != 200) {
 						//~ out.innerHTML = response.status;
+						//~ return;
+					//~ }
+					//~ var r;
+					//~ // NOT FOUND, GOES TO HOME PAGE!
+					//~ r = /<img alt="Should Your Game Plan Change for 2014’s Second Half\? Find out our top strategist’s thoughts\. Watch the videos\." border="0" src="images\/myo\/home-a\.gif"/.exec(rs); //
+					//~ r = '<title>Investing Services, Financial Advisors | Wells Fargo Advisors</title>';
+					//~ if (rs.indexOf(r) != -1) {
+						//~ document.body.style.backgroundColor = 'LightGreen';
+						//~ document.getElementById('Q5LinktoWebpage').checked = true;
+						//~ doSubmit();
+						//~ return;
+					//~ } else {
+						//~ document.getElementById('Q1LinktoWebpage').checked = true;
+					//~ }
+					//~ r = /<img id="faimg" src="([^"]*)" onerror="faImg2txt\(\)" alt="" \/>/i.exec(rs); //https://saf.wellsfargoadvisors.com/faphotos/Photos/95/1431695.jpg
+					//~ if (r) {
+						//~ LinkedIn_Test_Profile_Checking_WF2__img(__js_clean_html_str(r[1]).trim());
+					//~ } else {
+						//~ document.getElementsByName('Q3aProfilePicture')[1].checked = true;
+						//~ doSubmit();
 						
-						//~ document.getElementsByName('Q3ePhoto')[1].checked = true;
-						document.getElementsByName('Q3aProfilePicture')[1].checked = true;
-						doSubmit();
-						//~ 
-						return;
-					}
-					else 
-					{
-						//~ document.getElementsByName('Q3ePhoto')[0].checked = true;
-						document.getElementsByName('Q3aProfilePicture')[0].checked = true;
-						doSubmit();
-					}
-					//~ console.log(response);
-					//~ console.log(response.status);
-				}
-			});
-		}
-		function LinkedIn_Test_Profile_Checking_WF2() {
-			GM_xmlhttpRequest({
-				method: "GET",
-				url: MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(a),
-				onload: function(response) {
-					var rs = response.responseText;
-					
-					if (response.status != 200) {
-						out.innerHTML = response.status;
-						return;
-					}
-					
-					//~ console.log(rs);
-					
-					var r;
-					
-					// NOT FOUND, GOES TO HOME PAGE!
-					r = /<img alt="Should Your Game Plan Change for 2014’s Second Half\? Find out our top strategist’s thoughts\. Watch the videos\." border="0" src="images\/myo\/home-a\.gif"/.exec(rs); //
-					//~ r = '<img alt="Should Your Game Plan Change for 2014’s Second Half? Find out our top strategist’s thoughts. Watch the videos." border="0" src="images/myo/home-a.gif"';
-					r = '<title>Investing Services, Financial Advisors | Wells Fargo Advisors</title>';
-					if (rs.indexOf(r) != -1) {
-						
-						document.body.style.backgroundColor = 'LightGreen';
-						document.getElementById('Q5LinktoWebpage').checked = true;
-						doSubmit();
-						
-						return;
-					} else {
-						
-						document.getElementById('Q1LinktoWebpage').checked = true;
-						
-					}
-					
-					
-					r = /<img id="faimg" src="([^"]*)" onerror="faImg2txt\(\)" alt="" \/>/i.exec(rs); //https://saf.wellsfargoadvisors.com/faphotos/Photos/95/1431695.jpg
-					
-					if (r) {
-						LinkedIn_Test_Profile_Checking_WF2__img(__js_clean_html_str(r[1]).trim());
-					} else {
-						document.getElementsByName('Q3aProfilePicture')[1].checked = true;
-						doSubmit();
-						
-						return;
-					}
-					
-						// SUBMIT AUTO!!
-						//~ if (sbm) {
-							//~ document.body.style.backgroundColor = 'LightGreen';
-							//~ doSubmit();
-						//~ }
-					
-					
-					
-					
-				}
-			});
-		}
-	}
+						//~ return;
+					//~ }
+				//~ }
+			//~ });
+		//~ }
+	//~ }
 	
 	//
 	// LinkedIn Test ""
