@@ -2964,6 +2964,10 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 		if (!options.hasOwnProperty('xhr_timeout')) {
 			options.xhr_timeout = 300000;
 		}
+		// xhr_no_success
+		if (!options.hasOwnProperty('xhr_no_success')) {
+			options.xhr_no_success = function() {}
+		}
 		// ...
 		if (!options.hasOwnProperty('file_folder')) {
 			options.file_folder = '.cached';
@@ -3053,9 +3057,11 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				timeout: options.xhr_timeout,
 				ontimeout: function() { // Todo
 					//~ alert('xhr timeout');
+					options.xhr_no_success();
 				},
 				onerror: function() { // Todo
 					//~ alert('xhr error');
+					options.xhr_no_success();
 				},
 				onload: function (response) {
 					//~ var rs = response.responseText;
@@ -3080,9 +3086,11 @@ AMT___requests_factory.prototype.xhr_with_disk_cache = function(options) {
 				timeout: options.xhr_timeout,
 				ontimeout: function() { // Todo
 					//~ alert('xhr timeout');
+					options.xhr_no_success();
 				},
 				onerror: function() { // Todo
 					//~ alert('xhr error');
+					options.xhr_no_success();
 				},
 				onload: function (response) {
 					//~ var rs = response.responseText;

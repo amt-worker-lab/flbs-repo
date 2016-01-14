@@ -180442,6 +180442,7 @@ function top_window(okay_to_run) {
 				d4b.appendChild(btn);
 				// Update status button
 				d4a.result_buttons[ result_obj.site_code ].value += '✔'; //✘ (none) ✔ (has)
+				d4a.result_buttons[ result_obj.site_code ].style.backgroundColor = 'LightGreen'; //
 			}
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
@@ -181001,7 +181002,13 @@ function top_window(okay_to_run) {
 				var u = 'http://www.yoopsie.com/query.php?query='+encodeURIComponent(upc)+'&referer=%2Fquery.php&locale=&index=';
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
-					xhr_timeout: 6000,
+					xhr_timeout: 4000,
+					xhr_no_success: function() {
+						d4a.result_buttons.yp.value += '✘';
+						result.yoopsie = false;
+						A9_Snaptell_VSR__next();
+						return false;
+					},
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
 						if (options.response.status != 200) {
@@ -181620,7 +181627,7 @@ function top_window(okay_to_run) {
 				}
 				// For result
 				var result_key = (out == d2) ? 'startpage' : 'yahoo';
-				var rk = (out == d1) ? 'sp' : 'g';
+				var rk = (out == d2) ? 'sp' : 'g'; // d2 & d2c
 				// Num
 				if (!rs.length) {
 					out.innerText = '0';
@@ -181632,6 +181639,7 @@ function top_window(okay_to_run) {
 					out.appendChild(div);
 					result[ result_key ] = true;
 					d4a.result_buttons[rk].value += '✔';
+					d4a.result_buttons[rk].style.backgroundColor = 'LightGreen';
 				}
 				// CALL NEXT
 				A9_Snaptell_VSR__next();
