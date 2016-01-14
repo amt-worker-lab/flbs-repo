@@ -180642,6 +180642,13 @@ function top_window(okay_to_run) {
 							A9_Snaptell_ebay_find_product();
 						break;
 					case 'g':
+						console.log(o);
+						console.log(result);
+						console.log(localStorage['goog-captcha']);
+						if (localStorage['goog-captcha'] == true) {
+							console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+							return;
+						}
 						if (
 							(result.startpage == false || result.startpage == null) && // sometimes startpage == null
 							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
@@ -180664,7 +180671,7 @@ function top_window(okay_to_run) {
 				}
 			}
 			// A9_Snaptell_VSR__google
-			function A9_Snaptell_VSR__google() {
+			function A9_Snaptell_VSR__google() {console.log('x');
 				d2c.style.backgroundColor = '#eee';
 				new AMT___requests_factory().google_search(
 					{
@@ -180690,7 +180697,7 @@ function top_window(okay_to_run) {
 							}
 							d2c.innerText = '0';
 							//~ console.log(o);
-							//~ console.log(result);
+							console.log(result);
 							//~ console.log('Auto NA results:');
 							//~ console.log(result.digital_eyes == false)
 							//~ console.log(	(result.startpage == false || result.startpage == null))
