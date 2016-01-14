@@ -180646,7 +180646,9 @@ function top_window(okay_to_run) {
 						console.log(result);
 						console.log(localStorage['goog-captcha']);
 						if (localStorage['goog-captcha'] == true) {
-							console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+							//~ console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+							// Show...
+							d4a.result_buttons.g.style.backgroundColor = 'pink';
 							return;
 						}
 						if (
