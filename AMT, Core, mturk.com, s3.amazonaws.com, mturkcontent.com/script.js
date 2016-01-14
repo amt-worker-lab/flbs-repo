@@ -180058,14 +180058,14 @@ function top_window(okay_to_run) {
 				d1.output_url = null;
 				d1.addEventListener('load', function() {
 					this.style.visibility = 'visible';
-					this.onmouseover = function(e) {
-						this.style.width = '100%';
-						this.style.height = '900px';
-					}
-					this.onmouseout = function(e) {
-						this.style.width = '50%'
-						this.style.height = '580px'
-					}
+					//~ this.onmouseover = function(e) {
+						//~ this.style.width = '100%';
+						//~ this.style.height = '2000px';
+					//~ }
+					//~ this.onmouseout = function(e) {
+						//~ this.style.width = '50%'
+						//~ this.style.height = '580px'
+					//~ }
 				}, false);
 				x.appendChild(d1);
 			// THIS TEXTAREA MUST COME AFTER THE IFRAME.
