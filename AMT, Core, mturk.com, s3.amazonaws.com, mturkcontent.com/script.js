@@ -180335,8 +180335,8 @@ function top_window(okay_to_run) {
 				searchupc:		null, // Set to false for N/A, if skipping
 				//~ yahoo:			null, // NULL
 				//~ smoopa:			null,
-				yoopsie:		null,  // yp
-				//~ yoopsie:		false,  // yp
+				//~ yoopsie:		null,  // yp
+				yoopsie:		false,  // test default=false
 				outpan:			null,  // op
 				lookupisbn:		null,  // op
 				upcdatabase:	null,  // ud
@@ -180368,6 +180368,9 @@ function top_window(okay_to_run) {
 					btn.type = 'button';
 					d4a.appendChild(btn);
 					d4a.result_buttons[ result.array_all[i] ] = btn; // Associate HTML button to d4a
+					if (result.array_all[i] == 'ss') { // GOOGLE
+						btn.setAttribute('style','background-color:beige;'); //text-align:left;
+					}
 					if (result.array_all[i] == 'g') { // GOOGLE
 						tmp_bv = ' google ';
 						btn.setAttribute('style','cursor:pointer;font-weight:bold;');
@@ -180647,6 +180650,7 @@ function top_window(okay_to_run) {
 							result.upcitemdb == false &&
 							result.upcdatabase == false &&
 							result.yoopsie == false &&
+							result.lookupisbn == false &&
 							o.ebaySuccess == false
 							// && result.yahoo == false
 							) {
@@ -180706,6 +180710,7 @@ function top_window(okay_to_run) {
 								result.upcitemdb == false &&
 								result.upcdatabase == false &&
 								result.yoopsie == false &&
+								result.lookupisbn == false &&
 								o.ebaySuccess == false
 								//~ result.yahoo == false &&
 								)
@@ -180728,7 +180733,9 @@ function top_window(okay_to_run) {
 										result.upcindex == false &&
 										result.upcitemdb == false &&
 										result.upcdatabase == false &&
-										result.yoopsie == false) || d3i.forcedSearch
+										result.yoopsie == false &&
+										result.lookupisbn == false
+										) || d3i.forcedSearch
 										//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
 					if(!canRunEbay && result.array_all[0] == 'eb2') {
 						while(
