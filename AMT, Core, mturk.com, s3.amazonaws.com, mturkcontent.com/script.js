@@ -442,6 +442,7 @@ function MT__RUN() {
 			var td = document.getElementsByTagName('td');
 			var o = {
 				u: td[1].innerText.trim(),
+				full: td[3].innerText.trim(),
 				q: [
 					document.getElementById('fan'),
 					document.getElementById('fans_of'),
@@ -475,10 +476,17 @@ function MT__RUN() {
 				sbm: true,
 			}
 			if (td[3].innerText.indexOf('/'+o.u+'/') == -1 && td[3].innerText.indexOf('/'+o.u) == -1) {
-				alert('user!');
-				return;
+				// Do nothing.....
+				// Always use the url if different from UserId...
+				var x = /younow\.com\/([^\/]+)/i.exec(o.full);
+				if (!x) {
+					alert('user!');
+					return;
+				}
+				// Here...
+				o.u = x[1];
 			}
-			console.log(o.u);
+			console.log(o);
 			// Get the user id
 			// xhr_with_disk_cache
 			new AMT___requests_factory().xhr_with_disk_cache({
