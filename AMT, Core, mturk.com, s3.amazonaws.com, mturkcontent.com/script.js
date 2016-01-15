@@ -120242,14 +120242,16 @@ qatar,80
 				address: td[3].innerText.trim(),
 				phone: td[5].innerText.trim(),
 				boldArray: [],
-				boldPhoneArray: [],
+				boldPh: [],
 				q: [
 					document.getElementById('web_url')
 				],
 			}
 			o.boldArray = o.comp.clean_string_to_array().concat(o.types);
-			if (o.phone.length == 10)
-				o.boldPhoneArray = [ o.phone.slice(0,3), o.phone.slice(0,3), o.phone.slice(0,4) ]; // Index, Howmany
+			if (o.phone.length == 10) {
+				o.boldPh = [ o.phone.substr(0,3), o.phone.substr(3,3), o.phone.substr(6,4) ]; // Index, Howmany
+				o.phone = o.boldPh[0] + ' ' + o.boldPh[1] + ' ' + o.boldPh[2];
+			}
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -120273,19 +120275,19 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
-				bold: {
-					black: o.boldArray,
-					blue: o.address.clean_string_to_array(),
-					brown: o.boldPhoneArray,
-					//~ brown:,
-				},
 				searches:[
 					o.comp,
 					o.comp + ' ' + o.address,
 					o.comp + ' ' + o.phone,
 				],
 				search_results: {
-					//~ use_domain_only: true
+					//~ use_domain_only: true,
+					bold: {
+						black: o.boldArray,
+						blue: o.address.clean_string_to_array(),
+						brown: o.boldPh,
+						//~ brown:,
+					},
 				},
 				out_element: o.q[0],
 				parent: d1,
