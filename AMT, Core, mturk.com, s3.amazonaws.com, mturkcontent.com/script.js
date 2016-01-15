@@ -399,7 +399,8 @@ function MT__RUN() {
 	// 
 	// 
 	s = '<li>Before starting this job, take a look at&nbsp;<a href="http://i.imgur.com/55tRPCO.png" style="text-decoration: underline;">this screenshot</a>&nbsp;and note the yellow highlighted A, B, C, D sections. Note that for section D in the live webpage, this will be scroll-able and there will be up to 10 entries for section D specifically.</li>';
-	if (ih.indexOf(s) != -1) {
+	s2 = '<li>Before starting this job, take a look at&nbsp;<a href="http://i.imgur.com/55tRPCO.png" style="text-decoration: underline;">this screenshot</a>&nbsp;and note the yellow highlighted A, B, C, D sections.';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
