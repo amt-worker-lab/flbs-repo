@@ -8336,6 +8336,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	//~ GM_addStyle('form {position:absolute;top:1000px;}');
 	
 	var options_object = options_object;
+	console.log(options_object);
 	
 	// Defaults
 	//

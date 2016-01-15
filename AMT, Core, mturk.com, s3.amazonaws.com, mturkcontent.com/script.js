@@ -120247,7 +120247,7 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
-			o.boldArray = o.comp.clean_string_to_array().concat(o.types);
+			o.boldArray = o.comp.clean_string_to_array();
 			if (o.phone.length == 10) {
 				o.boldPh = [ o.phone.substr(0,3), o.phone.substr(3,3), o.phone.substr(6,4) ]; // Index, Howmany
 				o.phone = o.boldPh[0] + ' ' + o.boldPh[1] + ' ' + o.boldPh[2];
@@ -120284,7 +120284,7 @@ qatar,80
 					//~ use_domain_only: true,
 					bold: {
 						black: o.boldArray,
-						blue: o.address.clean_string_to_array(),
+						blue: [],// o.address.clean_string_to_array(), // Too much...
 						brown: o.boldPh,
 						//~ brown:,
 					},
