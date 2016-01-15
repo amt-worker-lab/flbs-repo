@@ -120222,7 +120222,7 @@ qatar,80
 	 */
 	// Brian ""
 	// A17KNB7ZBP9YNY
-	//
+	// Utilizes bold blue black....
 	// 
 	var s = '	<li><strong>Bonus will be awarded for every 25 accepted HITs</strong></li>';
 	if (ih.indexOf(s) != -1)
@@ -120238,15 +120238,18 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[0].innerText.trim().replace(/^Company: /, ''),
-				//~ cshort: null,
+				comp: td[1].innerText.trim().replace(/ EL/g, ' elementary').replace(/ H S/g, ' high school').replace(/ J H/g, ' junior high'),
+				address: td[3].innerText.trim(),
+				phone: td[5].innerText.trim(),
 				boldArray: [],
+				boldPhoneArray: [],
 				q: [
 					document.getElementById('web_url')
 				],
-				types: ['']
 			}
 			o.boldArray = o.comp.clean_string_to_array().concat(o.types);
+			if (o.phone.length == 10)
+				o.boldPhoneArray = [ o.phone.slice(0,3), o.phone.slice(0,3), o.phone.slice(0,4) ]; // Index, Howmany
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -120269,14 +120272,20 @@ qatar,80
 			//~ x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
-				bold_array: o.boldArray,
+				//~ bold_array: o.boldArray,
+				bold: {
+					black: o.boldArray,
+					blue: o.address.clean_string_to_array(),
+					brown: o.boldPhoneArray,
+					//~ brown:,
+				},
 				searches:[
 					o.comp,
-					'"'+o.comp.split(' ').join('" "')+'"',
-					'"'+o.comp+'"'
+					o.comp + ' ' + o.address,
+					o.comp + ' ' + o.phone,
 				],
 				search_results: {
-					use_domain_only: true
+					//~ use_domain_only: true
 				},
 				out_element: o.q[0],
 				parent: d1,
