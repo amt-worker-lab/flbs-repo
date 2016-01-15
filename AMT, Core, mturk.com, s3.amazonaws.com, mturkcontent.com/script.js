@@ -474,7 +474,7 @@ function MT__RUN() {
 				],
 				sbm: true,
 			}
-			if (td[3].innerText.indexOf('/'+o.u+'/') == -1) {
+			if (td[3].innerText.indexOf('/'+o.u+'/') == -1 && td[3].innerText.indexOf('/'+o.u) == -1) {
 				alert('user!');
 				return;
 			}
