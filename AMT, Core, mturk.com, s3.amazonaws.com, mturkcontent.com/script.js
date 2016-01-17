@@ -181845,6 +181845,17 @@ function top_window(okay_to_run) {
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: 'http://192.168.1.2/mturk/.cached/'+md5_url,
+					timeout: 10000, // 10s
+					onerror: function() {
+						
+					},
+					ontimeout: function() {
+						A9_Snaptell_VSR__process({
+							rs:			'',
+							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+							url:		url
+						});
+					},
 					onload: function(response) {
 						var rs = response.responseText;
 						if (response.status == 200) {
