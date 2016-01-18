@@ -277,7 +277,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			currentUtility = UtilityAMTPairs[senderId].utilities[i];
 			var tabIdentifier = '###tabId'+senderId+'###at'+i;
 			if(!currentUtility.url || currentUtility.url.trim() == '') {
-				currentUtility.url = 'http://localhost/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
+				currentUtility.url = 'http://192.168.1.2/mturk/util.php?AMT__utility_window_placeholder&random=0.2908705766312778';
 				//~ currentUtility.url = 'includes/blankUtilityTab.html';
 			}
 			currentUtility.url += tabIdentifier;
