@@ -35,6 +35,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
@@ -340,9 +341,9 @@ function MT__RUN() {
 						// Add sk_div....
 						//
 						//
-						dv.appendChild(sk_div);
+						//~ dv.appendChild(sk_div);
+						// ...
 						dv.className = 'exe-zi';
-						//~ dv.className = 'exe-prof';
 						d.appendChild(dv);
 						// onclick
 						dv.purl = options.url;
