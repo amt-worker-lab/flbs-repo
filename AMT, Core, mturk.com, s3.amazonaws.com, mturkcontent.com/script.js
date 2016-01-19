@@ -34,14 +34,17 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
 			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
 			GM_addStyle('tr {float:left;}');
 			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
+			// Task specific
 			GM_addStyle('fieldset {border:auto !important;}');
+			GM_addStyle('select {position:absolute;top:0;left:0%;width:100%;height:24px;}');
+			GM_addStyle('option {float:left;}');
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
@@ -81,6 +84,7 @@ function MT__RUN() {
 			//~ o.bold_nm = o.bold_nm.concat(ns);
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
 			console.log(o);
+			// name as search, that is, ("first middle last", "first m. last", "first last")
 			var x = o.nm.split(' ');
 			if (x.length == 1) {
 				o.name_search = o.nm;
@@ -96,14 +100,21 @@ function MT__RUN() {
 				o.nm_obj.f = x[0];
 				o.nm_obj.l = x[x.length - 1];
 			}
-			// name as search, that is, ("first middle last", "first m. last", "first last")
-			 
+			// Move & style outputs...
+			o.q[0].setAttribute('style', 'position:absolute;top:20px;left:0%;width:100%;height:24px;');
+			o.q[1].setAttribute('style', 'position:absolute;top:44px;left:0%;width:100%;height:24px;');
+			o.q[2].multiple = true;
+			// 
+			o.q[2].onclick = function() {
+				
+			}
+			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:10%;width:70%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:70px;left:10%;width:70%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d2.setAttribute('style','position:absolute;top:70px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d2);
 			//~ var d1b = document.createElement('div');
 			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
@@ -162,7 +173,7 @@ function MT__RUN() {
 			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				parent: d1,
-				offsetTop: 0,
+				offsetTop: 70, // ###
 				bold_array: o.bold,
 				linkedInIgnoreNoBold: o.bold_nm,
 				searches:[
@@ -329,7 +340,7 @@ function MT__RUN() {
 							this.inner.style.display = 'none';
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						str = '' + o.nm + '<br>' + o.state + '<hr>' + str; // No ~?
+						str = '' + o.nm + ',' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
 						//
@@ -359,11 +370,10 @@ function MT__RUN() {
 							}
 						}
 						
-						// New
-						// Make max height only 60px!
+						// Experience
 						//
 						//
-						var dvc = ''.div({style:'width:100%;max-height:60px;overflow:auto;'}); //background-color:#eee;
+						var dvc = ''.div({style:'width:100%;max-height:120px;overflow:auto;'}); //background-color:#eee; // default=60
 						dv.appendChild(dvc);
 						
 						// xxxxx old xxxxx Left & Right divs.
