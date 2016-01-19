@@ -282,8 +282,6 @@ function MT__RUN() {
 					site: 'LINKEDIN_PROFILE',
 					url: txt_area.full_url,
 					callback_function: function(options) {
-						
-						console.log(options);
 						// opts.response.vars.result.people_also_viewed.push( pav_person ); ({name:,title:})
 						
 						var d = txt_area.parent_p.profile_div_results;
@@ -302,6 +300,9 @@ function MT__RUN() {
 						var dm = (n.result.demographics) ? n.result.demographics : '';
 						var pav = n.result.people_also_viewed;
 						var sk = (n.result.skills && n.result.skills.length) ? n.result.skills.join('|'): '';
+						
+						console.log(options);
+						console.log(n);
 						
 						// Reset
 						d.innerHTML = '';
@@ -327,7 +328,7 @@ function MT__RUN() {
 							this.inner.style.display = 'none';
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
+						str = '' + o.nm + '<br>' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
 						//
@@ -351,7 +352,7 @@ function MT__RUN() {
 								return;
 							}
 							this.style.backgroundColor = 'LightGreen';
-							o.q[0].value = this.purl;
+							o.q[1].value = this.purl;
 							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
 								//~ doSubmit();
 							}
@@ -379,9 +380,13 @@ function MT__RUN() {
 						for (var i in exp) {
 							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
 							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
+							dx.headline = exp[i].headline;
 							dx.innerHTML = 
 								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
 							dvl.appendChild(dx);
+							dx.onclick = function() {
+								o.q[0].value = this.headline;
+							}
 						}
 						
 						// Spacer...
