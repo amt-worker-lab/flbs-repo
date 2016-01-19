@@ -35,7 +35,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
-			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border:1px solid #222;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
@@ -404,6 +404,16 @@ function MT__RUN() {
 								var x = this.headline.split(':');
 								o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
 								o.q[1].value = this.purl;
+								// try auto...
+								var x = x[0].clean_str_to_auto();
+								for (var i in o.q[2].options) {
+									var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
+									if (x == y && x.length >=3) { // Must be at least 3 chars.
+										o.q[2].value = o.q[2].options[i].value;
+										o.q[2].options[i].style.backgroundColor = 'LightGreen';
+										break;
+									}
+								}
 							}
 						}
 						
