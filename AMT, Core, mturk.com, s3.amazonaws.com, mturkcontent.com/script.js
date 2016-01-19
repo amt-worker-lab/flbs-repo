@@ -34,12 +34,13 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0;padding:0;top:0px;left:0;width:10% !important;zoom:0.8;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:10% !important;zoom:0.8;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
 			GM_addStyle('tr {float:left;}');
 			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
+			GM_addStyle('fieldset {border:auto !important;}');
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
@@ -69,12 +70,14 @@ function MT__RUN() {
 				//~ 'counsel','counselor','jury','jurist','judge','justice','dispute','resolution','judiciary'
 			];
 			var opt_min_three = {least_characters_per_word:2};
-			var n = o.nm.split(' ');			// Synonyms array...
-			var ns = n[0].getNameSynonyms();	//
+			//~ var n = o.nm.split(' ');			// Synonyms array...
+			//~ var ns = n[0].getNameSynonyms();	//
 			//~ o.nm_array = o.nm.split(' ');
+			o.nm_array = o.nm.clean_string_to_array();
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
-			o.bold_locn = o.city.clean_string_to_array(opt_min_three).concat(o.state_full.clean_string_to_array(opt_min_three));
-			o.bold_nm = o.nm.clean_string_to_array().concat(ns); //o.nm_array;//o.nm.clean_string_to_array();
+			o.bold_locn = o.state_full.clean_string_to_array(opt_min_three);
+			o.bold_nm = o.nm.clean_string_to_array();
+			//~ o.bold_nm = o.bold_nm.concat(ns);
 			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
 			console.log(o);
 			var x = o.nm.split(' ');
@@ -96,7 +99,7 @@ function MT__RUN() {
 			 
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:0%;width:80%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:0px;left:10%;width:70%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
 			d2.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
@@ -163,7 +166,7 @@ function MT__RUN() {
 				linkedInIgnoreNoBold: o.bold_nm,
 				searches:[
 					o.name_search + ' ',
-					o.name_search + ', ' + o.city + ' ',
+					o.name_search + ', ' + o.comp + ' ',
 					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
 				],
 				search: {
@@ -350,7 +353,7 @@ function MT__RUN() {
 							this.style.backgroundColor = 'LightGreen';
 							o.q[0].value = this.purl;
 							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
-								doSubmit();
+								//~ doSubmit();
 							}
 						}
 						
