@@ -35,7 +35,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
-			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border:1px solid #222;}');
 			GM_addStyle('.panel {position:absolute;top:1400px;}');
 			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
@@ -396,11 +396,14 @@ function MT__RUN() {
 							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
 							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
 							dx.headline = exp[i].headline;
+							dx.purl = options.url;
 							dx.innerHTML = 
 								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
 							dvl.appendChild(dx);
 							dx.onclick = function() {
-								o.q[0].value = this.headline;
+								var x = this.headline.split(':');
+								o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
+								o.q[1].value = this.purl;
 							}
 						}
 						
@@ -412,6 +415,8 @@ function MT__RUN() {
 		}
 		new run().f();
 	}
+	
+	
 	// Christopher Bail
 	// Transcribing Words from Image for Academic Study of Non-Profits
 	// 
@@ -430,11 +435,15 @@ function MT__RUN() {
 				q: document.getElementById('Q1Url'),
 			}
 			
+			
 			console.log(o);
 			o.q.focus();
-			o.q.ondblclick = function() {
-				if(this.value == '') {
-					this.value = 'no text';
+			o.q.style.lineHeight = '44px';
+			o.q.style.size = '44px';
+			o.q.style.fontSize = '44px';
+			document.body.ondblclick = function() {
+				if(o.q.value == '') {
+					o.q.value = 'no text';
 					doSubmit();
 				}
 			}
