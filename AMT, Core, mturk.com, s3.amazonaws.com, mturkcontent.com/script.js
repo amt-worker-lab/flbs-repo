@@ -36,14 +36,42 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('#submitButton {width:100%;height:300px}');
-			var td = document.getElementsByTagName('td');
+			GM_addStyle('#submitButton {width:100%;height:300px;position:absolute;top:400px;}');
+			var b = document.getElementsByTagName('b');
+			
 			var o = {
-				u: td[1].innerText.trim(),
-				q: [
-					document.getElementById('da'),
-				]
+				url: b[0].innerText.trim(),
+				q: document.getElementById('Q1Url'),
 			}
+			
+			console.log(o);
+			o.q.focus();
+			o.q.ondblclick = function() {
+				if(this.value == '') {
+					this.value = 'no text';
+					doSubmit();
+				}
+			}
+			
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+					doSubmit();
+				return false;
+				
+			}
+			
+			AMT__setUtilityTabs([
+						{
+							url: o.url,
+						}]);
+			
+			
+			
+			
+		}
+		new run().f();
+	}
 	
 	
 	// KoMarketing Associates
