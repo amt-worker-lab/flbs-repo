@@ -43,10 +43,10 @@ function MT__RUN() {
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
-				nm:			b[0].innerText.trim(),
-				city:		b[1].innerText.trim(),
-				state:		b[2].innerText.trim(),
-				state_full:	b[2].innerText.trim().stateAbbrToFull(),				
+				nm:			b[0].innerText.replace(/Name: /, '').trim(),
+				comp:		b[2].innerText.replace(/Company\/Website: /, '').trim(),
+				state:		b[1].innerText.replace(/State: /, '').trim(),
+				state_full:	b[1].innerText.replace(/State: /, '').trim().stateAbbrToFull(),				
 				nm_array:	null,
 				comp_cln:	null,
 				nm_obj: {
@@ -57,13 +57,13 @@ function MT__RUN() {
 				bold_locn: [],
 				bold_nm: [],
 				bold_types: [], // Set below
-				
 				name_search: '',
 				q: [
-					document.getElementById('Q1Url'),
-					document.getElementById('Q2Url'),
+					document.getElementsByName('comp')[0],
+					document.getElementsByName('url')[0],
 				]
 			};
+			console.log(o);
 			o.bold_types = [
 				//~ 'lawyer','parallegal','attorney','law','legal','litigation','arbitration',
 				//~ 'counsel','counselor','jury','jurist','judge','justice','dispute','resolution','judiciary'
@@ -92,7 +92,7 @@ function MT__RUN() {
 				o.nm_obj.f = x[0];
 				o.nm_obj.l = x[x.length - 1];
 			}
-			 // name as search, that is, ("first middle last", "first m. last", "first last")
+			// name as search, that is, ("first middle last", "first m. last", "first last")
 			 
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -153,7 +153,8 @@ function MT__RUN() {
 			});
 			
 			// create_dashboard_find_url
-			var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
+			var terms = '';
+			//~ var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
 			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				parent: d1,
@@ -234,7 +235,7 @@ function MT__RUN() {
 					this.style.backgroundColor = 'LightGreen';
 					o.q[0].value = 'N/A';
 					o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
-					doSubmit();
+					//~ doSubmit();
 				},
 			});
 			
@@ -308,11 +309,6 @@ function MT__RUN() {
 						dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
 						hd_bld = bold_blue_black(hd);
 						
-						//~ dm_bld = MT__bold(dm, o.bold_locn, {color: 'blue'}).bold_string;
-						//~ dm_bld = MT__bold(dm_bld, o.bold);
-						//~ dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
-						//~ hd_bld = MT__bold(hd, o.bold_locn, {color: 'blue'}).bold_string;
-						//~ hd_bld = MT__bold(hd_bld, o.bold);
 						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
 						var sk_fmt = bold_blue_black(sk); //MT__bold(sk, o.bold_types); // Types rather than .bold
 						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
@@ -328,7 +324,6 @@ function MT__RUN() {
 							this.inner.style.display = 'none';
 						}, false);
 						// Let's set the person's name & location close-by so it's possible to see it clearly.
-						//~ str = '~' + o.nm + '<br>~' + o.city + ',' + o.state + '<hr>' + str;
 						str = '' + o.nm + '<br>' + o.city + ',' + o.state + '<hr>' + str; // No ~?
 						// Set dv
 						//
@@ -365,7 +360,6 @@ function MT__RUN() {
 						//
 						var dvc = ''.div({style:'width:100%;max-height:60px;overflow:auto;'}); //background-color:#eee;
 						dv.appendChild(dvc);
-						//~ d.appendChild(dvc);
 						
 						// xxxxx old xxxxx Left & Right divs.
 						//
