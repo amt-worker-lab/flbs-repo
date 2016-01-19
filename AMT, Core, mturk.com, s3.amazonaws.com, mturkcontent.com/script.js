@@ -41,10 +41,13 @@ function MT__RUN() {
 			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
 			GM_addStyle('tr {float:left;}');
 			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
+			GM_addStyle('.row {margin-left:0 !important;margin-right:0 !important;}');
 			// Task specific
+			GM_addStyle('section {border:auto !important;}');
 			GM_addStyle('fieldset {border:auto !important;}');
-			GM_addStyle('select {position:absolute;top:0;left:0%;width:100%;height:24px;}');
-			GM_addStyle('option {float:left;}');
+			GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
+			GM_addStyle('option {float:left;border-left:2px solid #222;}');
+			GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
@@ -66,6 +69,7 @@ function MT__RUN() {
 				q: [
 					document.getElementsByName('comp')[0],
 					document.getElementsByName('url')[0],
+					document.getElementsByName('match')[0],
 				]
 			};
 			console.log(o);
@@ -101,8 +105,8 @@ function MT__RUN() {
 				o.nm_obj.l = x[x.length - 1];
 			}
 			// Move & style outputs...
-			o.q[0].setAttribute('style', 'position:absolute;top:20px;left:0%;width:100%;height:24px;');
-			o.q[1].setAttribute('style', 'position:absolute;top:44px;left:0%;width:100%;height:24px;');
+			o.q[0].setAttribute('style', 'position:absolute;top:30px;left:0%;width:99%;height:24px;');
+			o.q[1].setAttribute('style', 'position:absolute;top:54px;left:0%;width:99%;height:24px;');
 			o.q[2].multiple = true;
 			// 
 			o.q[2].onclick = function() {
@@ -111,7 +115,7 @@ function MT__RUN() {
 			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:70px;left:10%;width:70%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:80%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('div');
 			d2.setAttribute('style','position:absolute;top:70px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
@@ -173,7 +177,7 @@ function MT__RUN() {
 			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				parent: d1,
-				offsetTop: 70, // ###
+				offsetTop: 80, // ###
 				bold_array: o.bold,
 				linkedInIgnoreNoBold: o.bold_nm,
 				searches:[
