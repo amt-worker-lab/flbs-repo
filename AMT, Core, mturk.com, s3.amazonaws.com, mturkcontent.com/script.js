@@ -26,6 +26,26 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Christopher Bail
+	// Transcribing Words from Image for Academic Study of Non-Profits
+	// 
+	// 
+	s = '<p>3) Enter the text of all words that appear&nbsp;within this image&nbsp;into the text box below. <u>Do not transcribe';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:100%;height:300px}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('da'),
+				]
+			}
+	
+	
 	// KoMarketing Associates
 	// Use a free online resource to find a specific value for a given web address
 	// 
