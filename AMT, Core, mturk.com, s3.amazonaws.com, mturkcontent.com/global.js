@@ -1916,7 +1916,7 @@ String.prototype.clean_string_to_array = function(options) {
 		min = (options.hasOwnProperty('least_characters_per_word')) ? options.least_characters_per_word : 1;
 	else
 		min = 1
-	var reg = new RegExp('(^| )[\\w\\d]{'+min+'}($| )', 'g');
+	var reg = new RegExp('(^| )[\\w\\d]{0,'+min+'}($| )', 'g');
 	
 	// FIRST, make an array of the complete words to match, including all foreign characters, except <>
 	// Get rid of html-encoded characters:
