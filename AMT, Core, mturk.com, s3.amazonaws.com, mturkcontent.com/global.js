@@ -8168,7 +8168,8 @@ AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir = function(optio
 			);
 		dv.className = 'exe-result-create-dashboard-lipd ' + tmp_class + ' result_highlight'; // Create dashboard url: `var cls = x.replace(/^(https?:\/\/|)(www\.|)/, '');`
 		dv.profile_url = pobj.profile_url;
-		dv.onclick = function() {
+		dv.headline = pobj.title;
+		dv.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success : function(e) {
 			options_object.out_element.value = this.profile_url;
 			this.style.backgroundColor = 'LightGreen';
 			if  (

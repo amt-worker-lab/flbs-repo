@@ -570,6 +570,11 @@ function MT__RUN() {
 				//~ },
 				//~ search_results: {
 				//~ },
+				onclick_success: function(e) {
+					o.q[0].value = this.headline;
+					o.q[1].value = this.profile_url;
+					return false;
+				},
 			});
 			
 			// create_dashboard_find_url
