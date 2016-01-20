@@ -43,11 +43,11 @@ function MT__RUN() {
 			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
 			GM_addStyle('.row {margin-left:0 !important;margin-right:0 !important;}');
 			// Task specific
-			GM_addStyle('section {border:auto !important;}');
-			GM_addStyle('fieldset {border:auto !important;}');
-			GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
-			GM_addStyle('option {float:left;border-left:2px solid #222;}');
-			GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
+			//~ GM_addStyle('section {border:auto !important;}');
+			//~ GM_addStyle('fieldset {border:auto !important;}');
+			//~ GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
+			//~ GM_addStyle('option {float:left;border-left:2px solid #222;}');
+			//~ GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
 			
 			var b = document.getElementsByTagName('b');
 			var o = {
