@@ -26,6 +26,405 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Web Test
+	// (Fork Gerry Gorman (Fork BOE / Del Jones))
+	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
+	// 
+	s = 'You must have a LinkedIn account and be logged in. Utilizing LinkedIn, please search for ';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
+			GM_addStyle('.panel {position:absolute;top:1400px;}');
+			GM_addStyle('.div-zi:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.exe-prof:hover {cursor:pointer;background-color:aqua !important;}');
+			GM_addStyle('tr {float:left;}');
+			GM_addStyle('input[type="checkbox"] {zoom:2.6;cursor:pointer;}');
+			GM_addStyle('.row {margin-left:0 !important;margin-right:0 !important;}');
+			// Task specific
+			GM_addStyle('section {border:auto !important;}');
+			GM_addStyle('fieldset {border:auto !important;}');
+			GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
+			GM_addStyle('option {float:left;border-left:2px solid #222;}');
+			GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
+			
+			var b = document.getElementsByTagName('b');
+			var o = {
+				nm:			b[0].innerText.replace(/Name: /, '').trim(),
+				comp:		b[2].innerText.replace(/Company\/Website: /, '').trim(),
+				state:		b[1].innerText.replace(/State: /, '').trim(),
+				state_full:	b[1].innerText.replace(/State: /, '').trim().stateAbbrToFull(),				
+				nm_array:	null,
+				comp_cln:	null,
+				nm_obj: {
+					f: null,
+					l: null
+				},
+				bold: [],
+				bold_locn: [],
+				bold_nm: [],
+				bold_types: [], // Set below
+				name_search: '',
+				q: [
+					document.getElementsByName('comp')[0],
+					document.getElementsByName('url')[0],
+					document.getElementsByName('match')[0],
+				]
+			};
+			console.log(o);
+			o.bold_types = [
+				//~ 'lawyer','parallegal','attorney','law','legal','litigation','arbitration',
+				//~ 'counsel','counselor','jury','jurist','judge','justice','dispute','resolution','judiciary'
+			];
+			var opt_min_three = {least_characters_per_word:2};
+			//~ var n = o.nm.split(' ');			// Synonyms array...
+			//~ var ns = n[0].getNameSynonyms();	//
+			//~ o.nm_array = o.nm.split(' ');
+			o.nm_array = o.nm.clean_string_to_array();
+			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
+			o.bold_locn = o.state_full.clean_string_to_array(opt_min_three);
+			o.bold_nm = o.nm.clean_string_to_array();
+			//~ o.bold_nm = o.bold_nm.concat(ns);
+			o.bold = o.bold_nm.concat(o.bold_locn).concat(o.bold_types);
+			console.log(o);
+			// name as search, that is, ("first middle last", "first m. last", "first last")
+			var x = o.nm.split(' ');
+			if (x.length == 1) {
+				o.name_search = o.nm;
+				o.nm_obj.f = o.nm;
+			} else if (x.length == 2) {
+				o.name_search = o.nm;
+				o.nm_obj.f = x[0];
+				o.nm_obj.l = x[1];
+			} else { // >=3
+				var fl = x[0] + ' ' + x[x.length - 1];
+				var fm = x[0] + ' ' + x[1][0] + '. ' + x[x.length - 1];
+				o.name_search = '("'+o.nm+'" OR "'+fm+'" OR "'+fl+'")';
+				o.nm_obj.f = x[0];
+				o.nm_obj.l = x[x.length - 1];
+			}
+			// Move & style outputs...
+			o.q[0].setAttribute('style', 'position:absolute;top:30px;left:0%;width:99%;height:24px;');
+			o.q[1].setAttribute('style', 'position:absolute;top:54px;left:0%;width:99%;height:24px;');
+			o.q[2].multiple = true;
+			// 
+			o.q[2].onclick = function() {
+				
+			}
+			
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:70px;left:0%;width:80%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','position:absolute;top:70px;left:80%;width:19%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d2);
+			//~ var d1b = document.createElement('div');
+			//~ d1b.setAttribute('style','position:absolute;top:0px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;cursor:pointer;z-index:-1');
+			//~ document.body.appendChild(d1b);
+			/* END ITEMS */
+			
+			//~ //...
+			//~ d1.onclick = function() {
+				//~ this.style.height = d1b.style.height*2;
+				//~ d1b.style.zIndex = -1;
+			//~ }
+			//~ 
+			//~ // innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1b
+				//~ ],
+				//~ callback_function: function(inh) {
+					//~ d1b.style.height = inh/2;
+					//~ d1b.style.top = inh/2;
+				//~ }
+			//~ });
+			
+			//
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value == '') { return false; }
+				doSubmit();
+				return false;
+			}
+			
+			// Scrape of linkedin.com/pub/dir/
+			AMT___items_factory.prototype.create_dashboard_linkedin_pub_dir({
+				parent: d2,
+				offsetTop: 0,
+				bold_array: o.bold,
+				bold_location_array: o.bold_locn,
+				bold_types_array: o.bold_types,
+				searches:[
+					{first:o.nm_obj.f, last:o.nm_obj.l, location:o.city+','+o.state}
+				],
+				out_element: o.q[0], // Default is Profile URL to out_element
+				//~ search: {
+				//~ },
+				//~ search_results: {
+				//~ },
+			});
+			
+			// create_dashboard_find_url
+			var terms = '';
+			//~ var terms = '("lawyer" OR "attorney" OR "law" OR "legal" OR "")';
+			//~ var terms = '("lawyer" OR "parallegal" OR "attorney" OR "law" OR "legal" OR "litigation" OR "arbitration" "counsel" OR "")';
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				parent: d1,
+				offsetTop: 80, // ###
+				bold_array: o.bold,
+				linkedInIgnoreNoBold: o.bold_nm,
+				searches:[
+					o.name_search + ' ',
+					o.name_search + ', ' + o.comp + ' ',
+					o.name_search + ', (' + o.state + ' OR ' + o.state_full + ') '
+				],
+				search: {
+					str_add_to_searches_hidden: ' site:linkedin.com '+terms
+				},
+				search_results: {
+					replace_urls_in_result_body: true,
+					use_full_urls: true,
+					url_modifier_callback: function(url) {
+						return url.replace(/\?[\d\D]*$/, '');
+					},
+					url_ignore_test: function(obj_reslt) { // If true then ignore the URL.
+						//~ console.log(obj_reslt.url);
+						if 	(
+								(
+								obj_reslt.url.indexOf('linkedin.com/pub/') != -1 ||
+								obj_reslt.url.indexOf('linkedin.com/in/') != -1
+								) &&
+								obj_reslt.url.indexOf('linkedin.com/pub/dir/') == -1 &&
+								obj_reslt.url.indexOf('linkedin.com/in/updates') == -1
+							)
+						{
+							return false; // Good
+						}
+						return true; // Ignore
+					},
+					clean_body_regex: [
+						// e.g. Edward Lazarus | LinkedIn   View Edward Lazarus's professional profile on LinkedIn. LinkedIn is the world's largest business network, helping professionals like Edward Lazarus discover  ...
+						{a: /View ((.|\s)*?(?=on LinkedIn\.|$)|$)/, b:''}, // replace a/b
+						{a: /LinkedIn is the world's largest ((.|\s)*?(?=\.\.\.|$)|$)/, b:''},
+					],
+					//~ auto_click_callback: function() { // Function to auto click. This has the scope of the current iterator. Or div argument?
+						//~ 
+					//~ }
+				},
+				load_success_callback: function( options_object ) {
+					
+					//
+					var divs = options_object.results.divs;
+					if (divs[0].results.length) // 1st
+						divs[0].results[0].textarea.click();
+					if (divs[1].results.length) {
+						setTimeout(function() { // 2nd column
+							divs[1].results[0].textarea.click();
+						}, 1000);
+					}
+					if (divs[2].results.length) {
+						setTimeout(function() { // 3nd column
+							divs[2].results[0].textarea.click();
+						}, 2000);
+					}
+				},
+				out_element: o.q[0],
+				onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url, this.parent_p
+					if(e.which == 2) {
+						console.log('e.which == 2');
+						return;
+					}
+					// Replace "full_url" ?(trk|...) with ""
+					this.style.backgroundColor = 'Orange';
+					this.full_url = this.full_url.replace(/\?[\d\D]*$/, '');
+					liprof(this);
+					
+					// Hide this P!
+					var d = this.parentNode;
+					d.result.body.style.display = 'none';
+				},
+				na_callback: function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					o.q[0].value = 'N/A';
+					o.q[1].value = 'Could not find lawyer\'s profile on linkedin.com.';
+					//~ doSubmit();
+				},
+			});
+			
+			document.body.addEventListener('click', function(e) {
+				console.log(e);
+				switch(e.which) {
+					case 2:
+						document.getElementById('naButtonForDashboardFindUrl').click();
+					break;
+				}
+			});
+			
+			function bold_blue_black(str) {
+				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
+				str = MT__bold(str, o.bold);
+				return str;
+			}
+			// function liprof
+			// Textarea.parent_div, Textarea.full_url
+			function liprof(txt_area) {
+				if (!txt_area.parent_p.hasOwnProperty('profile_div_results')) {
+					var d = 'Retrieving Profile...'.div({style:'border-top:2px solid teal;border-bottom:2px solid teal;'});
+					d.is_showing = true;
+					txt_area.parent_p.appendChild(d);
+					txt_area.parent_p.profile_div_results = d;
+					d.onclick = function () {};
+				} else { // Hide/Show
+					var d = txt_area.parent_p.profile_div_results;
+					if (d.is_showing) {
+						d.is_showing = false;
+						d.style.display = 'none';
+						d.style.visibility = 'hidden';
+					} else {
+						d.is_showing = true;
+						d.style.display = 'block';
+						d.style.visibility = 'visible';
+					}
+				}
+				new AMT___site_scrapes().scrape({
+					site: 'LINKEDIN_PROFILE',
+					url: txt_area.full_url,
+					callback_function: function(options) {
+						// opts.response.vars.result.people_also_viewed.push( pav_person ); ({name:,title:})
+						
+						var d = txt_area.parent_p.profile_div_results;
+						
+						var err = options.response.vars.error;
+						var errType = options.response.vars.error;
+						if (err != null) {
+							d.innerText = errType;
+							return;
+						}
+						
+						var n = options.response.vars;
+						var exp = n.result.experience;
+						var name = n.result.name;
+						var hd = (n.result.headline) ? n.result.headline : '';
+						var dm = (n.result.demographics) ? n.result.demographics : '';
+						var pav = n.result.people_also_viewed;
+						var sk = (n.result.skills && n.result.skills.length) ? n.result.skills.join('|'): '';
+						
+						console.log(options);
+						console.log(n);
+						
+						// Reset
+						d.innerHTML = '';
+						
+						// str
+						var dm_bld, hd_bld;
+						dm_bld = bold_blue_black(dm);
+						dm_bld = dm_bld.replace('|', '<br>I:'); // Replace first "|" with <br>
+						hd_bld = bold_blue_black(hd);
+						
+						var str = 'N:' + MT__bold(name, o.bold_nm)+'<br>D:' + dm_bld+'<br>H:' + hd_bld +'<hr>';
+						var sk_fmt = bold_blue_black(sk); //MT__bold(sk, o.bold_types); // Types rather than .bold
+						var sk_div = ('S:'+(sk=='' ? '--' : '')).div({style:'border-bottom:1px solid #a2a2a2;'});
+						var sk_inn = document.createElement('span');
+						sk_inn.innerHTML = sk_fmt;
+						sk_inn.style.display = 'none';
+						sk_div.appendChild(sk_inn);
+						sk_div.inner = sk_inn;
+						sk_div.addEventListener('mouseover', function() {
+							this.inner.style.display = 'block';
+						}, false);
+						sk_div.addEventListener('mouseout', function() {
+							this.inner.style.display = 'none';
+						}, false);
+						// Let's set the person's name & location close-by so it's possible to see it clearly.
+						str = '' + o.nm + ',' + o.state + '<hr>' + str; // No ~?
+						// Set dv
+						//
+						//
+						//
+						var dv =
+							str.div(
+								{style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true} //background-color:#eee;
+							);
+						// Add sk_div....
+						//
+						//
+						//~ dv.appendChild(sk_div);
+						// ...
+						dv.className = 'exe-zi';
+						d.appendChild(dv);
+						// onclick
+						dv.purl = options.url;
+						dv.onclick = function(e) {
+							if(e.which == 2) {
+								console.log('e.which == 2');
+								return;
+							}
+							this.style.backgroundColor = 'LightGreen';
+							o.q[1].value = this.purl;
+							if (/^https?:\/\/[^\/]+\/(pub|in)\/[\d\D]+$/.exec(o.q[0].value)) { // If valid...
+								//~ doSubmit();
+							}
+						}
+						
+						// Experience
+						//
+						//
+						var dvc = ''.div({style:'width:100%;max-height:120px;overflow:auto;'}); //background-color:#eee; // default=60
+						dv.appendChild(dvc);
+						
+						// xxxxx old xxxxx Left & Right divs.
+						//
+						var dvl = ''.div({style:'border-top:1px solid #a2a2a2;'});
+						dvc.appendChild(dvl);
+						
+						if (!exp.length) {
+							dvl.appendChild('0 experience'.div({style:''}));
+							return;
+						} else {
+							
+						}
+						// Experience
+						for (var i in exp) {
+							var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
+							dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
+							dx.headline = exp[i].headline;
+							dx.purl = options.url;
+							dx.innerHTML = 
+								(dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
+							dvl.appendChild(dx);
+							dx.onclick = function() {
+								var x = this.headline.split(':');
+								o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
+								o.q[1].value = this.purl;
+								// try auto...
+								var x = x[0].clean_str_to_auto();
+								for (var i in o.q[2].options) {
+									var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
+									if (x == y && x.length >=3) { // Must be at least 3 chars.
+										o.q[2].value = o.q[2].options[i].value;
+										o.q[2].options[i].style.backgroundColor = 'LightGreen';
+										break;
+									}
+								}
+							}
+						}
+						
+						// Spacer...
+						dvc.appendChild(''.div({style:'height:2000px;'}));
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Pablo Lopez
 	// (Fork Gerry Gorman (Fork BOE / Del Jones))
 	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
