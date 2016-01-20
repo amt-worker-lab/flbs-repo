@@ -29,7 +29,7 @@ function MT__RUN() {
 	// Web Test
 	// (Fork Gerry Gorman (Fork BOE / Del Jones))
 	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
-	// 
+	// TODO
 	s = 'You must have a LinkedIn account and be logged in. Utilizing LinkedIn, please search for ';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -48,7 +48,7 @@ function MT__RUN() {
 			//~ GM_addStyle('select {position:absolute;top:0;left:0%;width:99%;height:24px;}');
 			//~ GM_addStyle('option {float:left;border-left:2px solid #222;}');
 			//~ GM_addStyle('option:hover {background-color:aqua;cursor:pointer;}');
-			
+			return;
 			var b = document.getElementsByTagName('b');
 			var o = {
 				nm:			b[0].innerText.replace(/Name: /, '').trim(),
@@ -121066,11 +121066,92 @@ qatar,80
 	 * Outspoken Media
 	 * Daniel W Siegel
 	 * Brian ""
+	 * DataArts Research
+	 * 
+	 * 
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// DataArts Research
+	// Find the Website Address for Non-profits
+	// Utilizes bold blue black....
+	// 
+	var s = '	<li><strong>If you can\'t find a&nbsp;URL</strong> within the first three Google result pages, write "none" in the "Website address" text box.';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {zoom:0.8;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().replace(/ EL/g, ' elementary').replace(/ H S/g, ' high school').replace(/ J H/g, ' junior high'),
+				address: td[3].innerText.trim(),
+				phone: td[5].innerText.trim(),
+				boldArray: [],
+				boldPh: [],
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			if (o.phone.length == 10) {
+				o.boldPh = [ o.phone.substr(0,3), o.phone.substr(3,3), o.phone.substr(6,4) ]; // Index, Howmany
+				o.phone = o.boldPh[0] + ' ' + o.boldPh[1] + ' ' + o.boldPh[2];
+			}
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			//~ var x2; // If same then just enclose entire comp string in quotes.
+			//~ x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					o.comp + ' ' + o.address,
+					o.comp + ' ' + o.phone,
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					bold: {
+						black: o.boldArray,
+						blue: [],// o.address.clean_string_to_array(), // Too much...
+						brown: o.boldPh,
+						//~ brown:,
+					},
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'not found',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Brian ""
 	// A17KNB7ZBP9YNY
 	// Utilizes bold blue black....
