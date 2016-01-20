@@ -121092,20 +121092,17 @@ qatar,80
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim().replace(/ EL/g, ' elementary').replace(/ H S/g, ' high school').replace(/ J H/g, ' junior high'),
+				comp: td[1].innerText.trim(),
 				address: td[3].innerText.trim(),
-				phone: td[5].innerText.trim(),
 				boldArray: [],
-				boldPh: [],
+				addr_arr: [],
+				//~ boldPh: [],
 				q: [
 					document.getElementById('web_url')
 				],
 			}
 			o.boldArray = o.comp.clean_string_to_array();
-			if (o.phone.length == 10) {
-				o.boldPh = [ o.phone.substr(0,3), o.phone.substr(3,3), o.phone.substr(6,4) ]; // Index, Howmany
-				o.phone = o.boldPh[0] + ' ' + o.boldPh[1] + ' ' + o.boldPh[2];
-			}
+			o.addr_arr = o.address.clean_string_to_array();
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -121131,15 +121128,15 @@ qatar,80
 				//~ bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					o.comp + ' ' + o.address,
-					o.comp + ' ' + o.phone,
+					o.comp + ', ' + o.address,
+					'"' + o.comp.split(' ').join('" "') + '", ' + o.address.replace(/^[^,]+,/, ''), // Removes first comma
 				],
 				search_results: {
 					//~ use_domain_only: true,
 					bold: {
 						black: o.boldArray,
 						blue: [],// o.address.clean_string_to_array(), // Too much...
-						brown: o.boldPh,
+						brown: o.addr_arr,
 						//~ brown:,
 					},
 				},
