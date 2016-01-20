@@ -1929,19 +1929,39 @@ String.prototype.clean_string_to_array = function(options) {
 	tmp = tmp.replace(/[\r\n\t\s]+/g, ' '); // Spaces
 	tmp = tmp.split(' ');
 	
+	// Next make an array of only the "cleaned"
+	// words. So only words & digits.
+	// Also, remove any strings less than len="min words".
 	// ...
 	s = s.replace(/[^\w\d]/g, '   ');
 	s = s.replace(reg, '   ');
 	s = s.replace(/[\r\n\t\s]+/g, ' '); // Spaces
 	s = s.split(' ');
+	s = s.concat(tmp); // Concat w/ tmp
 	
+	// Make a final pass removing duplicates (unnecessary but good for debugging)
+	// and once again only allowing len="min words".
+	//
+	var new_arr = [];
+	var tmpo = {}
+	for (var i in s) {
+		if (!tmpo[ s[i] ]) {
+			tmpo[ s[i] ] = true;
+			if (s[i].length > min)
+				new_arr.push(s[i]);
+		}
+	}
+	return new_arr;
 	// Debug
 	//~ console.log(original);
 	//~ console.log(s);
 	//~ console.log(tmp);
 	//~ console.log('-----------------------------------');
 	
-	return s.concat(tmp);
+	// OLD RETURN......
+	// Jan 20 2016
+	//
+	//~ return s.concat(tmp);
 }
 //http://www.abeautifulsite.net/parsing-urls-in-javascript/
 // fork from https://gist.github.com/jlong/2428561

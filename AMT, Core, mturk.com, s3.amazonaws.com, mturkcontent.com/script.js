@@ -121101,8 +121101,8 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
-			o.boldArray = o.comp.clean_string_to_array({least_characters_per_word:2});
-			o.addr_arr = o.address.clean_string_to_array({least_characters_per_word:2});
+			o.boldArray = o.comp.clean_string_to_array();
+			o.addr_arr = o.address.clean_string_to_array();
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
