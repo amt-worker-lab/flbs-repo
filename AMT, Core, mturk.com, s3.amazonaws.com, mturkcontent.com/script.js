@@ -455,6 +455,7 @@ function MT__RUN() {
 				state:		b[1].innerText.replace(/State: /, '').trim(),
 				state_full:	b[1].innerText.replace(/State: /, '').trim().stateAbbrToFull(),				
 				nm_array:	null,
+				comp_array:	null,
 				comp_cln:	null,
 				nm_obj: {
 					f: null,
@@ -481,6 +482,7 @@ function MT__RUN() {
 			//~ var ns = n[0].getNameSynonyms();	//
 			//~ o.nm_array = o.nm.split(' ');
 			o.nm_array = o.nm.clean_string_to_array();
+			o.comp_array = o.comp.clean_string_to_array();
 			//~ o.nm_array = o.nm_array[0].getNameSynonyms().concat(o.nm_array);
 			o.bold_locn = o.state_full.clean_string_to_array(opt_min_three);
 			o.bold_nm = o.nm.clean_string_to_array();
@@ -667,7 +669,8 @@ function MT__RUN() {
 			});
 			
 			function bold_blue_black(str) {
-				str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+				str = MT__bold(str, o.comp_array, {style: 'color:brown;text-decoration:underline;'}).bold_string;
+				//~ str = MT__bold(str, o.bold_types, {style: 'color:brown;text-decoration:underline;'}).bold_string;
 				str = MT__bold(str, o.bold_locn, {color: 'blue'}).bold_string;
 				str = MT__bold(str, o.bold);
 				return str;
