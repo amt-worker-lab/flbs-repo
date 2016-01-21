@@ -91585,7 +91585,8 @@ qatar,80
 			if (by_phone && o.bad_phones.length == 0) {
 				// In some cases there is no bad phone on the page!
 				var str_no_bad_phn = '<h3><strong><em><span style="line-height: 1.6em;">New phone number <u>(CANNOT BE </u></span><u>)</u><span style="line-height: 1.6em;">:</span></em></strong></h3>';
-				if (ih.indexOf(str_no_bad_phn) != -1) {
+				var str_no_bad_phn2 = '<h3><span style="color:#800080;"><strong><em><span style="line-height: 1.6em;">New phone number <u>(CANNOT BE </u></span><u>)</u><span style="line-height: 1.6em;">:</span></em></strong></span></h3>';
+				if (ih.indexOf(str_no_bad_phn) != -1 || ih.indexOf(str_no_bad_phn2) != -1) {
 					// Do nothing!
 				} else
 					alert('Bad phones is here but no phones found!');
@@ -91952,9 +91953,10 @@ qatar,80
 			}
 			/**
 			 * function find_phone__YellowPages
+			 * Off for Jan 2016
 			 */
 			function find_phone__YellowPages() {
-				
+				return;
 				d1d.innerHTML = '';
 				var dv = document.createElement('div');
 				d1d.appendChild(dv);
@@ -93073,19 +93075,17 @@ qatar,80
 							//~ console.log(this);
 							//~ console.log('isAuto:'+this.isAuto);return;
 							this.style.backgroundColor = 'teal';
-							
 							// set_divs_clicked
 							set_divs_clicked(this.gphone);
-							
-							q.value = this.gphone;
-							if (q2)
-								q2.value = this.gurl;
-							
 							if  (
 								//~ this.gphone == o.bad_phone ||
 								o.bad_phones_obj.hasOwnProperty( this.gphone ) ||
 								this.gphone.length != 10 ||
-								!/^https?:\/\/[^\/]+/.exec(this.gurl)
+								!/^https?:\/\/[^\/]+/.exec(this.gurl) ||
+								(
+									ih.indexOf('plus.google') != -1 && // Sometimes SP will say: "NO plus.google"!
+									this.gurl.indexOf('plus.google') != -1
+								)
 								)
 							{
 								d2.value = 'bad phone!';
@@ -93093,7 +93093,9 @@ qatar,80
 								q.style.border = '4px solid teal';
 								return;
 							}
-							
+							q.value = this.gphone;
+							if (q2)
+								q2.value = this.gurl;
 							// Here?
 							//new AMT___core_factory().nextTab();
 							doSubmit();
