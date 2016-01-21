@@ -91654,7 +91654,7 @@ qatar,80
 						rs = JSON.parse(rs);
 						if (!rs || !rs.geonames || !rs.geonames.length || !rs.geonames[0].lat) {
 							d1.innerText = 'GEONAMES RESPONSE--='+response.responseText;
-							AMT___Floater.skip(); // SKIP IF PREVIEW
+							//~ AMT___Floater.skip(); // SKIP IF PREVIEW
 							return;
 						}
 						
@@ -91947,7 +91947,7 @@ qatar,80
 				//~ console.log(o.stats.num_searches_complete);
 				if (AMT__Global_Vars.isPreview && o.stats.num_searches_complete == 4) { // FB / Yelp / FS
 					if (!o.check_accept_found) {
-						AMT___Floater.skip();
+						//~ AMT___Floater.skip(); // TURN OFF....
 					}
 				}
 			}
