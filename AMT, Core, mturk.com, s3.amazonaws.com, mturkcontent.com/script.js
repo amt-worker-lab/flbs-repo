@@ -180999,6 +180999,8 @@ function top_window(okay_to_run) {
 			document.getElementsByClassName('answer text')[0].setAttribute('style', 'vertical-align:top;');
 			// UPC
 			var upc = /<h3>Product barcode value: (\d+) <\/h3>/i.exec(ih)[1];
+			if (!upc) return;
+			console.log('UPC:'+upc);
 			//upc ='630509346776'
 			// Remove the barcode from page
 			// so that when doing CTRL+F it
@@ -182780,9 +182782,13 @@ function top_window(okay_to_run) {
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: 'http://192.168.1.2/mturk/.cached/'+md5_url,
-					timeout: 10000, // 10s
+					timeout: 6000, // 10s
 					onerror: function() {
-						
+						A9_Snaptell_VSR__process({
+							rs:			'',
+							debug_url:	'http://192.168.1.2/mturk/.cached/'+md5_url,
+							url:		url
+						});
 					},
 					ontimeout: function() {
 						A9_Snaptell_VSR__process({
