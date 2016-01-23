@@ -181144,72 +181144,12 @@ function top_window(okay_to_run) {
 				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
-			// Digit Eyes
-			//~ var d3_de = document.createElement('input');
-			//~ d3_de.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3_de.type = 'button';
-			//~ d3_de.value = 'digit-eyes';
-			//~ x.appendChild(d3_de);
-			// Search upc
-			//~ var d3 = document.createElement('input');
-			//~ d3.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3.type = 'button';
-			//~ d3.value = 'searchupc';
-			//~ x.appendChild(d3);
-			// Google
-			//~ var d3b = document.createElement('input');
-			//~ d3b.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3b.type = 'button';
-			//~ d3b.value = 'google';
-			//~ x.appendChild(d3b);
-			//~ d3b.onclick = function() {
-				//~ localStorage['goog-captcha'] = true; // RESET THIS!!!
-				//~ this.style.backgroundColor = 'LightGreen';
-				//~ A9_Snaptell_VSR__google();
-			//~ }
-			// Shop savvy
-			//~ var d3d = document.createElement('input');
-			//~ d3d.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3d.type = 'button';
-			//~ d3d.value = 'shopsavvy';
-			//~ x.appendChild(d3d);
-			// UPC database
-			//~ var d3e = document.createElement('input');
-			//~ d3e.setAttribute('style','float:left;width:30%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3e.type = 'button';
-			//~ d3e.value = 'upcdatabase'; // old smoopa
-			//~ x.appendChild(d3e);
-			// UPC item db
-			//~ var d3f = document.createElement('input');
-			//~ d3f.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3f.type = 'button';
-			//~ d3f.value = 'upcitemdb';
-			//~ x.appendChild(d3f);
-			// Yoopsie
-			//~ var d3g = document.createElement('input');
-			//~ d3g.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3g.type = 'button';
-			//~ d3g.value = 'yoopsie';
-			//~ x.appendChild(d3g);
-			// Outpan
-			//~ var d3h = document.createElement('input');
-			//~ d3h.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3h.type = 'button';
-			//~ d3h.value = 'outpan';
-			//~ x.appendChild(d3h);
-			// Ebay
-			var d3i = document.createElement('input');
-			d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			d3i.type = 'button';
-			d3i.value = 'Ebay';
-			x.appendChild(d3i);
-			// ...
-			//~ var d3j = document.createElement('input');
-			//~ d3j.setAttribute('style','float:left;width:29%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3j.type = 'button';
-			//~ d3j.value = '';
-			//~ x.appendChild(d3j);		
-			// END BUTTONS
+			//~ // Ebay
+			//~ var d3i = document.createElement('input');
+			//~ d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3i.type = 'button';
+			//~ d3i.value = 'Ebay';
+			//~ x.appendChild(d3i);
 			// The columns for the searches! Put these
 			// on after the buttons and the debug textarea.
 			// Div 1
@@ -181233,7 +181173,6 @@ function top_window(okay_to_run) {
 			if (t && t.top) {
 				d1.style.height = window.innerHeight - t.top - 10; // 10px extra padding
 			}
-			
 			// onkeypress
 			window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
 			function A9_Snaptell_VSR__keypress_submit(e) {
@@ -181354,12 +181293,13 @@ function top_window(okay_to_run) {
 				upcdatabase:	null,  // ud
 				upcindex:		false, // upcindex.com, Set to false for N/A, if skipping
 				upcitemdb:		null, //
+				amazon:			null, //
 				ebayReferenceID: false,
 				ebayISBN: false,
 				ebayEAN: false,
 				ebayUPC: false,
 				google:			null,
-				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','eb1','eb2','eb3','eb4','g'],
+				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','am','eb1','eb2','eb3','eb4','g'],
 				first_url: null, // This is the first URL for iframe d1.src.
 
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
@@ -181419,6 +181359,7 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__upcdatabase_com();
 					A9_Snaptell_VSR__yoopsie_com();
 					A9_Snaptell_VSR__outpan_com();
+					upcs__amazon();
 					upcs__lookupisbn();
 					
 					//~ A9_Snaptell_VSR__shopsavvy();
@@ -181602,7 +181543,7 @@ function top_window(okay_to_run) {
 					d4a.result_buttons.g.style.backgroundColor = 'pink';
 					return;
 				}
-				// Count number of false (5 of 8)
+				// Count number of false (6 of 9)
 				var num_false = 0;
 				if (result.startpage == false || result.startpage == null) num_false++;
 				if (result.searchupc == false) num_false++;
@@ -181612,8 +181553,9 @@ function top_window(okay_to_run) {
 				if (result.upcdatabase == false) num_false++;
 				if (result.yoopsie == false) num_false++;
 				if (result.lookupisbn == false) num_false++;
+				if (result.amazon == false) num_false++;
 				// Try ebay.
-				if (o.ebay_has_run == false && num_false >= 5) {
+				if (o.ebay_has_run == false && num_false >= 6) {
 					o.ebay_has_run = true;
 					A9_Snaptell_ebay_find_product();
 				}
@@ -181629,6 +181571,7 @@ function top_window(okay_to_run) {
 					result.upcdatabase == false &&
 					result.yoopsie == false &&
 					result.lookupisbn == false &&
+					result.amazon == false &&
 					o.goog_has_run == false
 					// && o.ebaySuccess == false
 					// && result.yahoo == false
@@ -181999,6 +181942,55 @@ function top_window(okay_to_run) {
 					//~ onload: function(){},
 				//~ });
 			//~ }
+			// Amazon
+			// upcs__amazon
+			// am
+			function upcs__lookupisbn() {
+				console.log('Running through upcs__amazon');
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords='+encodeURIComponent(upc)+'&x=0&y=0';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							// CALL NEXT
+							d4a.result_buttons.am.value += '✘';
+							result.amazon = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							d4a.result_buttons.lu.value += '✘';
+							result.lookupisbn = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						if (dom &&
+							dom.getElementsByClassName('push-left').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
+							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
+							) {
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
+								product_url: u,
+								//~ iframe_url: urls[0],
+								site_code: 'lu',
+							});
+						} else {
+							d4a.result_buttons.lu.value += '✘';
+							result.lookupisbn = false;
+						}
+						// CALL NEXT
+						A9_Snaptell_VSR__next();
+					}
+				});
+			}
 			// LookupIsbn
 			// upcs__lookupisbn
 			// lu
