@@ -182404,18 +182404,13 @@ function top_window(okay_to_run) {
 					url: 'http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc='+encodeURIComponent(upc),
 					//~ url: 'http://www.smoopa.com/u/' + encodeURIComponent(upc),
 					onload: function(response) {
-						
-						//~ d3e.value = '... smoopa ...';
-						
 						var rs = response.responseText;
 						if (response.status != 200) {
-							
 							// CALL NEXT
 							A9_Snaptell_VSR__next();
 							result.smoopa = false;
 							return;
 						}
-						
 						// Try parsing
 						try {
 							rs = JSON.parse(rs);
