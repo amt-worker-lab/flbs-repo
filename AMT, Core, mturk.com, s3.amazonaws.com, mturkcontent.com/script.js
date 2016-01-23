@@ -181034,6 +181034,7 @@ function top_window(okay_to_run) {
 					x1, x2, x3, x4
 				],
 				ebaySuccess: false,
+				ebay_has_run: false,
 				SKIP_SITES: null, // Skips
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
@@ -181412,7 +181413,6 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__yoopsie_com();
 					A9_Snaptell_VSR__outpan_com();
 					upcs__lookupisbn();
-					A9_Snaptell_ebay_find_product();
 					
 					//~ A9_Snaptell_VSR__shopsavvy();
 				},
@@ -181595,6 +181595,22 @@ function top_window(okay_to_run) {
 					d4a.result_buttons.g.style.backgroundColor = 'pink';
 					return;
 				}
+				// Count number of false (5 of 8)
+				var num_false = 0;
+				if (result.startpage == false || result.startpage == null) num_false++;
+				if (result.searchupc == false) num_false++;
+				if (result.shopsavvy == false) num_false++;
+				if (result.upcindex == false) num_false++;
+				if (result.upcitemdb == false) num_false++;
+				if (result.upcdatabase == false) num_false++;
+				if (result.yoopsie == false) num_false++;
+				if (result.lookupisbn == false) num_false++;
+				// Try ebay.
+				if (o.ebay_has_run == false && num_false >= 5) {
+					o.ebay_has_run = true;
+					A9_Snaptell_ebay_find_product();
+				}
+				// Try google (regardless of ebay)
 				if (
 					(result.startpage == false || result.startpage == null) && // sometimes startpage == null
 					(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
@@ -181605,8 +181621,8 @@ function top_window(okay_to_run) {
 					result.upcitemdb == false &&
 					result.upcdatabase == false &&
 					result.yoopsie == false &&
-					result.lookupisbn == false &&
-					o.ebaySuccess == false
+					result.lookupisbn == false
+					// && o.ebaySuccess == false
 					// && result.yahoo == false
 					)
 				{
@@ -181782,44 +181798,19 @@ function top_window(okay_to_run) {
 			// d3i
 			// ebay
 			function A9_Snaptell_ebay_find_product(type) {
-				if(!type) {
-					var canRunEbay = 	(result.searchupc == false &&
-										result.shopsavvy == false &&
-										result.upcindex == false &&
-										result.upcitemdb == false &&
-										result.upcdatabase == false &&
-										result.yoopsie == false &&
-										result.lookupisbn == false
-										) || d3i.forcedSearch
-										//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
-					if(!canRunEbay && result.array_all[0] == 'eb2') {
-						while(
-							result.array_all[0] == 'eb2' ||
-							result.array_all[0] == 'eb3' ||
-							result.array_all[0] == 'eb4') {
-							//d3i.value = '...Ebay...'
-							next = result.array_all.shift();
-						}
-						o.ebaySuccess = false;
-						A9_Snaptell_VSR__next()
-					
-						d3i.onclick = function() {
-							this.forcedSearch = true;
-							this.style.backgroundColor = 'LightGreen';
-							A9_Snaptell_ebay_find_product('ReferenceID');
-							A9_Snaptell_ebay_find_product('ISBN');
-							A9_Snaptell_ebay_find_product('UPC');
-							A9_Snaptell_ebay_find_product('EAN');
-						}
-						return;
-					}
+				if (o.ebaySuccess)
+					return;
+				d3i.onclick = function() {
+					this.forcedSearch = true;
+					this.style.backgroundColor = 'LightGreen';
+					A9_Snaptell_ebay_find_product('ReferenceID');
+					A9_Snaptell_ebay_find_product('ISBN');
+					A9_Snaptell_ebay_find_product('UPC');
+					A9_Snaptell_ebay_find_product('EAN');
 				}
-				
-				console.log('Running through A9_Snaptell_ebay_find_product');
-				var tmp = Math.floor(Math.random() * 1)
-				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
 				if(!type) {
-					switch(result.array_all[0]) {
+					var next = result.array_all[0].shift();
+					switch(next) {
 						case 'eb2':
 								type = 'ReferenceID'
 							break;
@@ -181834,20 +181825,72 @@ function top_window(okay_to_run) {
 							break;
 					}
 				}
-				else {
-					if(o.ebaySuccess)
-						return;
-				}
+				console.log('Running through A9_Snaptell_ebay_find_product');
+				var tmp = Math.floor(Math.random() * 1)
+				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
+				
+				//~ if(!type) {
+					//~ var canRunEbay = 	(result.searchupc == false &&
+										//~ result.shopsavvy == false &&
+										//~ result.upcindex == false &&
+										//~ result.upcitemdb == false &&
+										//~ result.upcdatabase == false &&
+										//~ result.yoopsie == false &&
+										//~ result.lookupisbn == false
+										//~ ) || d3i.forcedSearch
+					//~ if(!canRunEbay && result.array_all[0] == 'eb2') {
+						//~ while(
+							//~ result.array_all[0] == 'eb2' ||
+							//~ result.array_all[0] == 'eb3' ||
+							//~ result.array_all[0] == 'eb4') {
+							//~ //d3i.value = '...Ebay...'
+							//~ next = result.array_all.shift();
+						//~ }
+						//~ o.ebaySuccess = false;
+						//~ A9_Snaptell_VSR__next()
+					
+						//~ d3i.onclick = function() {
+							//~ this.forcedSearch = true;
+							//~ this.style.backgroundColor = 'LightGreen';
+							//~ A9_Snaptell_ebay_find_product('ReferenceID');
+							//~ A9_Snaptell_ebay_find_product('ISBN');
+							//~ A9_Snaptell_ebay_find_product('UPC');
+							//~ A9_Snaptell_ebay_find_product('EAN');
+						//~ }
+						//~ return;
+					//~ }
+				//~ }
+				//~ console.log('Running through A9_Snaptell_ebay_find_product');
+				//~ var tmp = Math.floor(Math.random() * 1)
+				//~ securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
+				//~ if(!type) {
+					//~ switch(result.array_all[0]) {
+						//~ case 'eb2':
+								//~ type = 'ReferenceID'
+							//~ break;
+						//~ case 'eb3':
+								//~ type = 'ISBN'
+							//~ break;
+						//~ case 'eb4':
+								//~ type = 'UPC'
+							//~ break;
+						//~ default:
+								//~ type = 'EAN'
+							//~ break;
+					//~ }
+				//~ }
+				//~ else {
+					//~ if(o.ebaySuccess)
+						//~ return;
+				//~ }
 				
 				//upc = '9780525478812'
-				
 				var u = 'http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByProduct'+
 						'&SERVICE-VERSION=1.0.0'+
 						'&SECURITY-APPNAME='+securityID+
 						'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&paginationInput.entriesPerPage=2'+
 						'&productId.@type='+ encodeURIComponent(type)+
 						'&productId=' + encodeURIComponent(upc) ;						
-						
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
