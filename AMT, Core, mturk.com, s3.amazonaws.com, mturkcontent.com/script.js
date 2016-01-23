@@ -181228,6 +181228,12 @@ function top_window(okay_to_run) {
 			x.appendChild(document.createElement('br'));
 			/* END ITEMS */
 			
+			// iframe size
+			var t = d1.getBoundingClientRect();
+			if (t && t.top) {
+				d1.style.height = window.innerHeight - t.top - 10; // 10px extra padding
+			}
+			
 			// onkeypress
 			window.addEventListener('keypress', A9_Snaptell_VSR__keypress_submit, false);
 			function A9_Snaptell_VSR__keypress_submit(e) {
@@ -182399,7 +182405,7 @@ function top_window(okay_to_run) {
 					//~ url: 'http://www.smoopa.com/u/' + encodeURIComponent(upc),
 					onload: function(response) {
 						
-						d3e.value = '... smoopa ...';
+						//~ d3e.value = '... smoopa ...';
 						
 						var rs = response.responseText;
 						if (response.status != 200) {
@@ -182459,7 +182465,7 @@ function top_window(okay_to_run) {
 					method: "GET",
 					url: 'http://www.upcindex.com/' + encodeURIComponent(upc),
 					onload: function(response) {
-						d3f.value = '... upcindex ...';
+						//~ d3f.value = '... upcindex ...';
 						var rs = response.responseText;
 						if (response.status != 200) {
 							// CALL NEXT
@@ -182635,7 +182641,8 @@ function top_window(okay_to_run) {
 						if  (
 							d1.src == '' &&
 							result.first_url == null &&
-							!isPDF
+							!isPDF &&
+							rs[i][0].indexOf('alibris.com') == -1 // No alibris (needs zoom fixed)
 							)
 						{
 							result.first_url = tmp_url_replace_scripts;
