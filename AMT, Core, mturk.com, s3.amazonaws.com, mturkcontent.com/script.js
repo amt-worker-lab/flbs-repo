@@ -181035,6 +181035,7 @@ function top_window(okay_to_run) {
 				],
 				ebaySuccess: false,
 				ebay_has_run: false,
+				goog_has_run: false,
 				SKIP_SITES: null, // Skips
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
@@ -181621,11 +181622,13 @@ function top_window(okay_to_run) {
 					result.upcitemdb == false &&
 					result.upcdatabase == false &&
 					result.yoopsie == false &&
-					result.lookupisbn == false
+					result.lookupisbn == false &&
+					o.goog_has_run == false
 					// && o.ebaySuccess == false
 					// && result.yahoo == false
 					)
 				{
+					o.goog_has_run = true;
 					A9_Snaptell_VSR__google(); // DO IT
 				} else {
 					//
@@ -181798,8 +181801,10 @@ function top_window(okay_to_run) {
 			// d3i
 			// ebay
 			function A9_Snaptell_ebay_find_product(type) {
-				if (o.ebaySuccess)
+				if (o.ebaySuccess) {
+					A9_Snaptell_VSR__next();
 					return;
+				}
 				d3i.onclick = function() {
 					this.forcedSearch = true;
 					this.style.backgroundColor = 'LightGreen';
@@ -181808,8 +181813,12 @@ function top_window(okay_to_run) {
 					A9_Snaptell_ebay_find_product('UPC');
 					A9_Snaptell_ebay_find_product('EAN');
 				}
+				if (result.array_all.length == 0) {
+					A9_Snaptell_VSR__next();
+					return;
+				}
 				if(!type) {
-					var next = result.array_all[0].shift();
+					var next = result.array_all.shift();
 					switch(next) {
 						case 'eb2':
 								type = 'ReferenceID'
@@ -181825,6 +181834,7 @@ function top_window(okay_to_run) {
 							break;
 					}
 				}
+				//d4a.result_buttons[
 				console.log('Running through A9_Snaptell_ebay_find_product');
 				var tmp = Math.floor(Math.random() * 1)
 				securityID = ['DSOI6d2a3-384b-4232-8121-37761aad963'][tmp]
@@ -181912,32 +181922,52 @@ function top_window(okay_to_run) {
 							rs.findItemsByProductResponse[0].searchResult[0].item[0] &&
 							rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL &&
 							rs.findItemsByProductResponse[0].searchResult[0].item[0].title) {
-								d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
-								d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
-								d3i.style.border = '4px solid blue';
-								d3i.onclick = function() {
-									this.style.backgroundColor = 'LightGreen';
-									o.q[0].value = this.value;
-									o.q[1].value = this.viewItemUrl;
-									o.q[0].focus();
-									o.q[0].blur();
-									o.q[0].focus();							
-								}
-								o.ebaySuccess = true;
-								while(result.array_all[0] == 'eb1' ||
-									  result.array_all[0] == 'eb2' ||
-									  result.array_all[0] == 'eb3' ||
-									  result.array_all[0] == 'eb4' 
-									  ) {
-									result.array_all.shift();
+							// Success
+							o.ebaySuccess = true;
+							// Show "x" for all other ebay
+							for (var i in result.array_all) {
+								if (i != next && d4a.result_buttons[ i ].value.indexOf('✘') == -1) {
+									d4a.result_buttons[ i ].value += '✘';
 								}
 							}
-							if(result.array_all[0] == 'g' || !result.array_all[0]) {
-									if(o.ebaySuccess == false) {
-										d3i.value = '... Ebay ...';
-								}
-							}
-							A9_Snaptell_VSR__next();
+							result.array_all = []; // Clear this........
+							// Add a result button here.
+							add_result_button({ // Title, Product URL, Iframe URL
+								title: rs.findItemsByProductResponse[0].searchResult[0].item[0].title.replace(/\s+/g, ' '), // Replace many spaces...
+								product_url: rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL,
+								//~ iframe_url: urls[0],
+								site_code: next,
+							});
+							A9_Snaptell_VSR__next(); // Go next.....
+							//~ d3i.value = rs.findItemsByProductResponse[0].searchResult[0].item[0].title;
+							//~ d3i.viewItemUrl = rs.findItemsByProductResponse[0].searchResult[0].item[0].viewItemURL;
+							//~ d3i.style.border = '4px solid blue';
+							//~ d3i.onclick = function() {
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ o.q[0].value = this.value;
+								//~ o.q[1].value = this.viewItemUrl;
+								//~ o.q[0].focus();
+								//~ o.q[0].blur();
+								//~ o.q[0].focus();							
+							//~ }
+							//~ while(result.array_all[0] == 'eb1' ||
+								  //~ result.array_all[0] == 'eb2' ||
+								  //~ result.array_all[0] == 'eb3' ||
+								  //~ result.array_all[0] == 'eb4' 
+								  //~ ) {
+								//~ result.array_all.shift();
+							//~ }
+						} else {
+							d4a.result_buttons[ next ].value += '✘';
+							A9_Snaptell_ebay_find_product(); // Try again........
+						}
+						//~ // d4a.result_buttons.op.value += '✘';
+						//~ if(result.array_all[0] == 'g' || !result.array_all[0]) {
+							//~ if(o.ebaySuccess == false) {
+								//~ d3i.value = '... Ebay ...';
+							//~ }
+						//~ }
+						//~ A9_Snaptell_VSR__next();
 					}
 				});
 			}
