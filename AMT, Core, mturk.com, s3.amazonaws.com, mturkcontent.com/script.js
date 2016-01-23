@@ -181353,7 +181353,7 @@ function top_window(okay_to_run) {
 					);
 					A9_Snaptell_VSR__searchUPC_com();
 					A9_Snaptell_VSR__shopsavvy();
-					A9_Snaptell_VSR__smoopa_com();
+					//~ A9_Snaptell_VSR__smoopa_com();
 					A9_Snaptell_VSR__upcindex_com();
 					A9_Snaptell_VSR__upcitemdb_com();
 					A9_Snaptell_VSR__upcdatabase_com();
@@ -181982,13 +181982,14 @@ function top_window(okay_to_run) {
 						{
 							var t = dom.getElementsByClassName('s-item-container');
 							for (var i in t) {
-								console.log(t[i]);
 								if (i == 'length') break;
-								var title = t[i].querySelectorAll('.a-size-medium .a-color-null .s-inline .s-access-title .a-text-normal');
-								//~ var title = t[i].getElementsByClassName('a-size-medium a-color-null s-inline s-access-title a-text-normal');
-								//~ console.log(t[i].getElementsByName);
+								//~ console.log(t[i]);
+								//~ console.log(t[i].querySelectorAll('a'));
+								var title = t[i].querySelectorAll('h2');
 								var a = t[i].querySelectorAll('a');
 								if (title.length && a.length) {
+									console.log(title);
+									console.log(a);
 									// Add a result button here.
 									add_result_button({ // Title, Product URL, Iframe URL
 										title: title[0].trim(),
@@ -182064,16 +182065,19 @@ function top_window(okay_to_run) {
 			function A9_Snaptell_VSR__outpan_com(second_run) {
 				console.log('Running through A9_Snaptell_VSR__outpan_com');
 				var tmp_upc = (!second_run) ? upc : '0' + upc;
-				var u = 'https://api.outpan.com/v2/products/'+encodeURIComponent(upc)+
+				var u = 'https://api.outpan.com/v2/products/'+encodeURIComponent(tmp_upc)+
 						'?_API_KEY_REDACTED_;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
+						var rs = options.response.responseText;
 						if (options.response.status != 200) {
 							console.log('outpan:cpw2');
 							console.log(options);
-							//~ d3h.value = '... outpan ...';
+							if (rs.indexOf('Invalid GTIN.') != -1 && !second_run) {
+								A9_Snaptell_VSR__outpan_com(true);
+								return;
+							}
 							// CALL NEXT
 							d4a.result_buttons.op.value += '✘';
 							result.outpan = false;
@@ -182083,9 +182087,7 @@ function top_window(okay_to_run) {
 						return true;
 					},
 					success_callback: function(options) {
-						console.log(options);
 						var rs = options.response.responseText;
-						console.log(rs);
 						//~ d3h.value = '... outpan ...';
 						if (options.response.status != 200) {
 							d4a.result_buttons.op.value += '✘';
@@ -182095,7 +182097,7 @@ function top_window(okay_to_run) {
 						}
 						var r = JSON.parse(rs);
 						if (!r || !r.name || r.name == null || r.error) { // r.name can be null haha...
-							if (r.error && r.error.message == 'Invalid GTIN.') {
+							if (r.error && r.error.message == 'Invalid GTIN.' && !second_run) {
 								A9_Snaptell_VSR__outpan_com(true);
 								return;
 							}
@@ -182120,18 +182122,6 @@ function top_window(okay_to_run) {
 							//~ iframe_url: urls[0],
 							site_code: 'op',
 						});
-						//~ d3h.value = r.name + ex;
-						//~ d3h.final_value = r.name;
-						//~ d3h.style.border = '4px solid blue';
-						//~ d3h.url = r.outpan_url;
-						//~ d3h.onclick = function() {
-							//~ this.style.backgroundColor = 'LightGreen';
-							//~ o.q[0].value = this.final_value;
-							//~ o.q[1].value = this.url;
-							//~ o.q[0].focus();
-							//~ o.q[0].blur();
-							//~ o.q[0].focus();
-						//~ }
 						// CALL NEXT
 						result.outpan = true;
 						A9_Snaptell_VSR__next();
