@@ -181352,17 +181352,16 @@ function top_window(okay_to_run) {
 				ebayUPC: false,
 				google:			null,
 				array_all: ['de','su','sp','ss','db','ud','op','lu','yp','eb1','eb2','eb3','eb4','g'],
+				first_url: null, // This is the first URL for iframe d1.src.
+
 				// Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 				// Removed yoopsie, yp
 				//~ array_all: ['de','su','sp','ss','db','ud','yp','op','eb1','eb2','eb3','eb4','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
-				// This is the first URL for iframe d1.src.
-				first_url: null
 				//~ array_all: ['de','su','sp','yh','ss','db','g'], // Remove YH
 				//~ array_all: ['de','su','sp','yh','ss','sm','db','g'], // Remove 'su' to remove searchupc.com. Removed 'up' to remove upcindex (since they blocked our ip). Added db upcitemdb.
 			}
 			// For each in array_all add a status button to
 			// div d4a.
-			st_btn();
 			function st_btn() {
 				d4a.result_buttons = {}; // Object
 				for (var i in result.array_all) {
@@ -181382,13 +181381,12 @@ function top_window(okay_to_run) {
 							localStorage['goog-captcha'] = true; // RESET THIS!!!
 							this.style.backgroundColor = 'LightGreen';
 							A9_Snaptell_VSR__google();
-							//~ setTimeout(function() {
-								//~ // reset button bgc...
-							//~ }, 1000);
 						}
 					}
 					btn.value = tmp_bv;
 				}
+				// Reset array all!
+				result.array_all = ['eb1','eb2','eb3','eb4'];
 			}
 			// Get skips file
 			new AMT___requests_factory().fs__load_skips2({
@@ -181400,6 +181398,7 @@ function top_window(okay_to_run) {
 					//~ A9_Snaptell_VSR__next(); // INIT
 					
 					// New init.....
+					st_btn(); // Makes the buttons
 					A9_Snaptell_VSR();
 					AMT___POPUP__initializeGlobals(
 						A9_Snaptell_VSR__startpage_init
@@ -181609,7 +181608,8 @@ function top_window(okay_to_run) {
 					result.lookupisbn == false &&
 					o.ebaySuccess == false
 					// && result.yahoo == false
-					) {
+					)
+				{
 					A9_Snaptell_VSR__google(); // DO IT
 				} else {
 					//
@@ -181717,7 +181717,7 @@ function top_window(okay_to_run) {
 				}*/
 			}
 			// A9_Snaptell_VSR__google
-			function A9_Snaptell_VSR__google() {console.log('x');
+			function A9_Snaptell_VSR__google() {
 				d2c.style.backgroundColor = '#eee';
 				new AMT___requests_factory().google_search(
 					{
