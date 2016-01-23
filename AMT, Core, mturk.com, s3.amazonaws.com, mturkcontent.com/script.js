@@ -181754,14 +181754,14 @@ function top_window(okay_to_run) {
 					A9_Snaptell_VSR__next();
 					return;
 				}
-				d3i.onclick = function() {
-					this.forcedSearch = true;
-					this.style.backgroundColor = 'LightGreen';
-					A9_Snaptell_ebay_find_product('ReferenceID');
-					A9_Snaptell_ebay_find_product('ISBN');
-					A9_Snaptell_ebay_find_product('UPC');
-					A9_Snaptell_ebay_find_product('EAN');
-				}
+				//~ d3i.onclick = function() {
+					//~ this.forcedSearch = true;
+					//~ this.style.backgroundColor = 'LightGreen';
+					//~ A9_Snaptell_ebay_find_product('ReferenceID');
+					//~ A9_Snaptell_ebay_find_product('ISBN');
+					//~ A9_Snaptell_ebay_find_product('UPC');
+					//~ A9_Snaptell_ebay_find_product('EAN');
+				//~ }
 				if (result.array_all.length == 0) {
 					A9_Snaptell_VSR__next();
 					return;
@@ -182061,17 +182061,18 @@ function top_window(okay_to_run) {
 			// Outpan
 			// 
 			// a76ac8767bcfd248a0f030ad0f0f3738
-			function A9_Snaptell_VSR__outpan_com() {
+			function A9_Snaptell_VSR__outpan_com(second_run) {
 				console.log('Running through A9_Snaptell_VSR__outpan_com');
+				var tmp_upc = (!second_run) ? upc : '0' + upc;
 				var u = 'https://api.outpan.com/v2/products/'+encodeURIComponent(upc)+
 						'?_API_KEY_REDACTED_;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
-						console.log('outpan:cpw1');
 						if (options.response.status != 200) {
 							console.log('outpan:cpw2');
+							console.log(options);
 							//~ d3h.value = '... outpan ...';
 							// CALL NEXT
 							d4a.result_buttons.op.value += '✘';
@@ -182079,11 +182080,9 @@ function top_window(okay_to_run) {
 							A9_Snaptell_VSR__next();
 							return false;
 						}
-						console.log('outpan:cpw3');
 						return true;
 					},
 					success_callback: function(options) {
-						console.log('outpan:scc');
 						console.log(options);
 						var rs = options.response.responseText;
 						console.log(rs);
@@ -182096,6 +182095,10 @@ function top_window(okay_to_run) {
 						}
 						var r = JSON.parse(rs);
 						if (!r || !r.name || r.name == null || r.error) { // r.name can be null haha...
+							if (r.error && r.error.message == 'Invalid GTIN.') {
+								A9_Snaptell_VSR__outpan_com(true);
+								return;
+							}
 							d4a.result_buttons.op.value += '✘';
 							result.outpan = false;
 							A9_Snaptell_VSR__next();
