@@ -180992,6 +180992,7 @@ function top_window(okay_to_run) {
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
 			GM_addStyle('.answer .text {vertical-align:top;}'); // ...
 			GM_addStyle('#theTime {position:absolute;top:0px;left:100px;background-color:white;}'); // ...
+			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
 			// MOVE "THETIME"
@@ -181317,6 +181318,7 @@ function top_window(okay_to_run) {
 					var tmp_bv = result.array_all[i];
 					btn.setAttribute('style',''); //text-align:left;
 					btn.type = 'button';
+					btn.className = 'exe-status-btn';
 					d4a.appendChild(btn);
 					d4a.result_buttons[ result.array_all[i] ] = btn; // Associate HTML button to d4a
 					//~ if (result.array_all[i] == 'ss') { // GOOGLE
@@ -181399,6 +181401,7 @@ function top_window(okay_to_run) {
 				btn.value = result_obj.site_code + ': ' + result_obj.title;
 				btn.final_value = result_obj.title;
 				btn.meta = result_obj;
+				btn.className = 'exe-result-btn';
 				btn.onclick = function() {
 					this.style.backgroundColor = 'LightGreen';
 					o.q[0].value = this.final_value;
@@ -181413,6 +181416,8 @@ function top_window(okay_to_run) {
 				// Update status button
 				d4a.result_buttons[ result_obj.site_code ].value += '✔'; //✘ (none) ✔ (has)
 				d4a.result_buttons[ result_obj.site_code ].style.backgroundColor = 'LightGreen'; //
+				if (result_obj.site_code != 'g') // Not Google
+					d4a.result_buttons[ result_obj.site_code ].style.float = 'left'; //
 			}
 			// ...
 			function A9_Snaptell_VSR__shopsavvy() {
@@ -181983,16 +181988,12 @@ function top_window(okay_to_run) {
 							var t = dom.getElementsByClassName('s-item-container');
 							for (var i in t) {
 								if (i == 'length') break;
-								//~ console.log(t[i]);
-								//~ console.log(t[i].querySelectorAll('a'));
 								var title = t[i].querySelectorAll('h2');
 								var a = t[i].querySelectorAll('a');
 								if (title.length && a.length) {
-									console.log(title);
-									console.log(a);
 									// Add a result button here.
 									add_result_button({ // Title, Product URL, Iframe URL
-										title: title[0].trim(),
+										title: title[0].innerText.trim(),
 										product_url: a[0].href,
 										//~ iframe_url: urls[0],
 										site_code: 'am',
