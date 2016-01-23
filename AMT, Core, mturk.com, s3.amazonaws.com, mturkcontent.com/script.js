@@ -181395,7 +181395,26 @@ function top_window(okay_to_run) {
 				skips_key: 'VSR_Barcodes_Skips_File',
 				callback: function (SKIP_SITES) {
 					o.SKIP_SITES = SKIP_SITES; // Populate.
-					A9_Snaptell_VSR__next(); // INIT
+					
+					// Old init.....
+					//~ A9_Snaptell_VSR__next(); // INIT
+					
+					// New init.....
+					A9_Snaptell_VSR();
+					AMT___POPUP__initializeGlobals(
+						A9_Snaptell_VSR__startpage_init
+					);
+					A9_Snaptell_VSR__searchUPC_com();
+					A9_Snaptell_VSR__shopsavvy();
+					A9_Snaptell_VSR__smoopa_com();
+					A9_Snaptell_VSR__upcindex_com();
+					A9_Snaptell_VSR__upcitemdb_com();
+					A9_Snaptell_VSR__upcdatabase_com();
+					A9_Snaptell_VSR__yoopsie_com();
+					A9_Snaptell_VSR__outpan_com();
+					upcs__lookupisbn();
+					A9_Snaptell_ebay_find_product();
+					
 					//~ A9_Snaptell_VSR__shopsavvy();
 				},
 				callback_err: function() {},
@@ -181571,7 +181590,31 @@ function top_window(okay_to_run) {
 			}
 			// ...
 			function A9_Snaptell_VSR__next() {
-				// Done?
+				if (localStorage['goog-captcha'] == true) {
+					//DEBUG//console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+					// Show...
+					d4a.result_buttons.g.style.backgroundColor = 'pink';
+					return;
+				}
+				if (
+					(result.startpage == false || result.startpage == null) && // sometimes startpage == null
+					(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
+					//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
+					result.searchupc == false &&
+					result.shopsavvy == false &&
+					result.upcindex == false &&
+					result.upcitemdb == false &&
+					result.upcdatabase == false &&
+					result.yoopsie == false &&
+					result.lookupisbn == false &&
+					o.ebaySuccess == false
+					// && result.yahoo == false
+					) {
+					A9_Snaptell_VSR__google(); // DO IT
+				} else {
+					//
+				}
+				/*// Done?
 				// If so, then it may be auto.
 				if (!result.array_all.length) {
 					return;
@@ -181646,9 +181689,6 @@ function top_window(okay_to_run) {
 							A9_Snaptell_ebay_find_product();
 						break;
 					case 'g':
-						console.log(o);
-						console.log(result);
-						console.log(localStorage['goog-captcha']);
 						if (localStorage['goog-captcha'] == true) {
 							//~ console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
 							// Show...
@@ -181674,7 +181714,7 @@ function top_window(okay_to_run) {
 							//
 						}
 						break;
-				}
+				}*/
 			}
 			// A9_Snaptell_VSR__google
 			function A9_Snaptell_VSR__google() {console.log('x');
