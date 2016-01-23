@@ -181746,7 +181746,7 @@ function top_window(okay_to_run) {
 				d2c.style.backgroundColor = '#eee';
 				new AMT___requests_factory().google_search(
 					{
-						query: upc,
+						query: '("' + upc + '" OR "0'+upc+'")', // Try also with a leading 0
 						callback_error: function() {
 							localStorage['goog-captcha'] = true; // SET
 							d2c.style.backgroundColor = 'pink';
