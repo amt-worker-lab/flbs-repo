@@ -181945,7 +181945,7 @@ function top_window(okay_to_run) {
 			// Amazon
 			// upcs__amazon
 			// am
-			function upcs__lookupisbn() {
+			function upcs__amazon() {
 				console.log('Running through upcs__amazon');
 				var u = 'http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords='+encodeURIComponent(upc)+'&x=0&y=0';
 				new AMT___requests_factory().xhr_with_disk_cache({
@@ -181964,27 +181964,45 @@ function top_window(okay_to_run) {
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
-							d4a.result_buttons.lu.value += '✘';
-							result.lookupisbn = false;
+							d4a.result_buttons.am.value += '✘';
+							result.amazon = false;
+							A9_Snaptell_VSR__next();
+							return false;
+						}
+						if (rs.indexOf('did not match any products.') != -1) {
+							d4a.result_buttons.am.value += '✘';
+							result.amazon = false;
 							A9_Snaptell_VSR__next();
 							return false;
 						}
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var found = false;
 						if (dom &&
-							dom.getElementsByClassName('push-left').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a').length &&
-							dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim() != 'Home'
-							) {
-							// Add a result button here.
-							add_result_button({ // Title, Product URL, Iframe URL
-								title: dom.getElementsByClassName('push-left')[0].getElementsByTagName('a')[0].innerText.trim(),
-								product_url: u,
-								//~ iframe_url: urls[0],
-								site_code: 'lu',
-							});
-						} else {
-							d4a.result_buttons.lu.value += '✘';
-							result.lookupisbn = false;
+							dom.getElementsByClassName('s-item-container').length)
+						{
+							var t = dom.getElementsByClassName('s-item-container');
+							for (var i in t) {
+								console.log(t[i]);
+								if (i == 'length') break;
+								var title = t[i].querySelectorAll('.a-size-medium .a-color-null .s-inline .s-access-title .a-text-normal');
+								//~ var title = t[i].getElementsByClassName('a-size-medium a-color-null s-inline s-access-title a-text-normal');
+								//~ console.log(t[i].getElementsByName);
+								var a = t[i].querySelectorAll('a');
+								if (title.length && a.length) {
+									// Add a result button here.
+									add_result_button({ // Title, Product URL, Iframe URL
+										title: title[0].trim(),
+										product_url: a[0].href,
+										//~ iframe_url: urls[0],
+										site_code: 'am',
+									});
+									found = true;
+								}
+							}
+						}
+						if (!found) {
+							d4a.result_buttons.am.value += '✘';
+							result.amazon = false;
 						}
 						// CALL NEXT
 						A9_Snaptell_VSR__next();
@@ -182391,6 +182409,11 @@ function top_window(okay_to_run) {
 			// behind JavaScript.
 			// New URL is e.g. "http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc=665721072899"
 			function A9_Snaptell_VSR__smoopa_com() {
+				// CALL NEXT
+				result.smoopa = false;
+				A9_Snaptell_VSR__next();
+				return;
+				// ............................................ //
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: 'http://www.smoopa.com/api/v4/public_price_reports.json?client=Website&collections=true&most_related=true&upc='+encodeURIComponent(upc),
@@ -182399,8 +182422,8 @@ function top_window(okay_to_run) {
 						var rs = response.responseText;
 						if (response.status != 200) {
 							// CALL NEXT
-							A9_Snaptell_VSR__next();
 							result.smoopa = false;
+							A9_Snaptell_VSR__next();
 							return;
 						}
 						// Try parsing
