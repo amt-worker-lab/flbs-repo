@@ -4160,6 +4160,11 @@ function MT__RUN() {
 				this.value = this.value.trim();
 				geo(); // Re-init
 			}
+			AMT___addUserDecision('john curtis google places id', function() {
+					return o.comp +'|||'+ o.addr;
+				},
+				['Id(GoogePlaceID)']
+			)
 			// Init
 			geo();
 			function geo() {
@@ -4215,7 +4220,8 @@ function MT__RUN() {
 								this.style.backgroundColor = 'LightGreen';
 								o.q[0].value = this.place_id;
 								if (this.place_id.length > 10) {
-									doSubmit();
+									AMT___recordAndSubmit();
+									//~ doSubmit();
 								}
 							}
 							d.innerHTML =	MT__bold(rslt.name, o.bold_array)  + '<br>' +
