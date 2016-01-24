@@ -4126,7 +4126,7 @@ function MT__RUN() {
 			}
 			o.bold_array = o.comp.clean_string_to_array().concat(o.addr.clean_string_to_array());
 			o.auto.c = o.comp.clean_str_to_auto();
-			o.auto.a = o.addr.clean_str_to_auto();
+			o.auto.a = o.addr.replace(/,[A-Z]{2}$/, '').clean_str_to_auto();// Remove state for matching.....
 			console.log(o);
 			/*Create Items*/
 			var d1 = document.createElement('div');
@@ -4153,6 +4153,13 @@ function MT__RUN() {
 				],
 				offset: 100 // offset top
 			});
+			var ef = new AMT___events_factory();
+			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2a.onblur = d2b.onblur = function() {
+				this.value = this.value.trim();
+				geo(); // Re-init
+			}
 			// Init
 			geo();
 			function geo() {
@@ -4176,7 +4183,7 @@ function MT__RUN() {
 				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
 				u+= '?location='+o.lat+','+o.lng; //lat,lng
 				u+= '&keyword=' + encodeURIComponent(d2a.value);
-				u+= '&radius=50';
+				u+= '&radius=50000';
 				u+= '&sensor=false&type=establishment';
 				//~ u+= '&rankBy=distance';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
@@ -4192,6 +4199,8 @@ function MT__RUN() {
 						if (!rs.results || !rs.results.length) {
 							d1.innerText = '0 results!';
 							return;
+						} else {
+							d1.innerText = '';
 						}
 						for (var i in rs.results) {
 							var rslt = rs.results[i];
@@ -4203,9 +4212,14 @@ function MT__RUN() {
 							d.place_id = rslt.place_id;
 							d.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.place_id;
+								if (this.place_id.length > 10) {
+									doSubmit();
+								}
 							}
 							d.innerHTML =	MT__bold(rslt.name, o.bold_array)  + '<br>' +
 											MT__bold(rslt.vicinity, o.bold_array);
+							d1.appendChild(d);
 							if (!o.autoed &&
 								rslt.name.clean_str_to_auto() == o.auto.c &&
 								rslt.vicinity.clean_str_to_auto() == o.auto.a &&
