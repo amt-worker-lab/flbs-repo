@@ -4098,136 +4098,128 @@ function MT__RUN() {
 	// 
 	//
 	//
-	s='Find the company in a Google Place Finder Tool&nbsp;and get the ID and put it in the input box below&nbsp;'
-	if(ih.indexOf(s) != -1) {
-	var run = function() {};
-	run.prototype.f = function() {
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset {margin:0 !important;padding:0 !important;font-size:12px !important;}');
-		GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
-		GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-		GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:100px}');			
-		GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
-		GM_addStyle('.exe:hover {background-color:LightGreen;}');
-		GM_addStyle('td {border:1px solid black;}');
-
-		var td = document.getElementsByTagName('td');
-		var o = {
-			lat: null,
-			lng: null,
-			addr1: td[1].innerText,
-			addr2: td[3].innerText,
-			cityState: td[5].innerText,
-			fullAddr: '',
-			bold_array:[],
-			q: [document.getElementsByName('tag1')[0],
-				document.getElementById('web_url')]
-			}
-		o.fullAddr = o.addr1 + (o.addr2 != '' ? ' ' + o.addr2 : '') + ', ' + o.cityState;
-		o.bold_array = o.fullAddr.replace(/,|\./g,'').replace(/\s\s/g,' ').split(' ');
-		console.log(o);
-		/*Create Items*/
-		var d1 = document.createElement('div');
-		d1.setAttribute('style','position:absolute;top:200px;width:98%;height:500px;background-color:#fff;');
-		document.body.appendChild(d1);
-		/*End of Items*/
-		MT___google_api_geocode(
-			o.fullAddr,
-			function(lat,lng) {
-				o.lat = lat;
-				o.lng = lng;
-				console.log(o);
-				if(!lat || !lng) {
-					document.body.style.backgroundColor = 'yellow';
-					return;
+	s = 'Find the company in a Google Place Finder Tool&nbsp;and get the ID and put it in the input box below&nbsp;'
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,tr,td,fieldset {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:100% !important;padding:0 !important;margin-top:0px !important;top:2000px}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('#submitButton {width:20% !important;height:150px;left:80%;position:absolute;top:100px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			//~ GM_addStyle('td {border:1px solid black;}');
+			// ..
+			var strong = document.getElementsByTagName('strong');
+			var o = {
+				lat: null,
+				lng: null,
+				addr: strong[4].innerText,
+				comp: strong[1].innerText,
+				bold_array:[],
+				q: [document.getElementById('GoogePlaceID')],
+				autoed: false,
+				auto: {
+					c: null,
+					a: null,
 				}
-				
-				//Use the first result
+			}
+			o.bold_array = o.comp.clean_string_to_array().concat(o.addr.clean_string_to_array());
+			o.auto.c = o.comp.clean_str_to_auto();
+			o.auto.a = o.addr.clean_str_to_auto();
+			console.log(o);
+			/*Create Items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:100px;width:99%;height:500px;background-color:#eee;border:1px solid blue;');
+			document.body.appendChild(d1);
+			var txt_div = ''.div({'style':'position:absolute;top:0px;width:99%;'});
+			document.body.appendChild(txt_div);
+			var d2a = document.createElement('textarea');
+			d2a.setAttribute('style','height:50px;width:100%;');
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','height:50px;width:100%;');
+			txt_div.appendChild(d2a);
+			txt_div.appendChild(d2b);
+			d2a.value = o.comp;
+			d2b.value = o.addr;
+			/*End of Items*/
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 100 // offset top
+			});
+			// Init
+			geo();
+			function geo() {
+				MT___google_api_geocode(
+					d2b.value,
+					function(lat,lng) {
+						if(!lat || !lng) {
+							document.body.style.backgroundColor = 'yellow';
+							return;
+						}
+						o.lat = lat;
+						o.lng = lng;
+						places();
+					},
+					false, true // False=Complete, True=Proxy
+				);
+			}
+			function places() {
+				d1.innerText = 'Loading...';
 				var u;
-				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-				u+= 'location='+o.lat+','+o.lng; //lat,lng
-				//u+= '&keyword=' + encodeURIComponent(d2.value);
+				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+				u+= '?location='+o.lat+','+o.lng; //lat,lng
+				u+= '&keyword=' + encodeURIComponent(d2a.value);
 				u+= '&radius=50';
 				u+= '&sensor=false&type=establishment';
-				u+= '&rankBy=distance';
+				//~ u+= '&rankBy=distance';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-				
-				// Xhr request.
+				// Xhr request
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
 					onload: function(response) {
 						var rs = response.responseText;
-									
 						rs = JSON.parse(rs);
-						
-						//console.log(rs);
-						
+						console.log(rs);
 						if (!rs.results || !rs.results.length) {
-							document.body.style.backgroundColor = 'pink';
+							d1.innerText = '0 results!';
 							return;
 						}
-						
 						for (var i in rs.results) {
 							var rslt = rs.results[i];
 							console.log(rslt);
-							
-							
 							var d = document.createElement('div');
-							d.setAttribute('style', 'cursor:pointer;border-bottom:1px dashed #828282');
+							d.setAttribute('style', 'cursor:pointer;border-bottom:1px dashed #828282;');
 							d.className = 'exe';
 							d.name = rslt.name;
 							d.place_id = rslt.place_id;
 							d.onclick = function() {
-								console.log(this.place_id);
-								o.q[0].value = this.name;
-								//Now we need to get the place details
-								var u = 'https://maps.googleapis.com/maps/api/place/details/json?';
-								u += 'placeid=' + this.place_id;
-								u += '&key=_GOOGLE_API_KEY_REDACTED_'
-								console.log(u);
-								u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-							
-								GM_xmlhttpRequest({
-									method: "GET",
-									url: u,
-									onload: function(response) {
-										console.log(response);
-										if(response.status != 200) {
-											document.body.style.backgroundColor = 'green';
-											return;
-										}
-										var rs = response.responseText;
-										rs = JSON.parse(rs);
-										console.log(rs);
-										o.q[1].value = rs.result.url;
-										if(o.q[0].value.length > 4 && o.q[1].value.length > 4) {
-											document.body.style.backgroundColor = 'lightgreen';
-											doSubmit();
-										}
-									}
-									
-								});
+								this.style.backgroundColor = 'LightGreen';
 							}
-							
-							var dx1 = document.createElement('div');
-							dx1.setAttribute('style', 'width:100%;');
-							dx1.innerHTML = rslt.name+'<br>'+
-											MT__bold(rslt.vicinity, o.bold_array);//rslt.name +'<br>'+rslt.vicinity;
-							d.appendChild(dx1);
-							
-							
-							
-							d1.appendChild(d);
-							
+							d.innerHTML =	MT__bold(rslt.name, o.bold_array)  + '<br>' +
+											MT__bold(rslt.vicinity, o.bold_array);
+							if (!o.autoed &&
+								rslt.name.clean_str_to_auto() == o.auto.c &&
+								rslt.vicinity.clean_str_to_auto() == o.auto.a &&
+								o.auto.c.length > 3 &&
+								o.auto.a.length > 3
+								)
+							{
+								o.autoed = true;
+								d.click();
+							}
 						}
-						
-						
-							
-						
 					}
-					});
-		})
+				});
+			}
 		}
 		new run().f();
 	}
