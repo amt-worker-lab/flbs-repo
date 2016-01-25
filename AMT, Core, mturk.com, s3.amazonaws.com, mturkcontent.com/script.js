@@ -26,6 +26,84 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Melissa Kendall
+	// Find the Latitude/Longitude of Airbnb Property
+	// 
+	// 
+	s = 'PLEASE NOTE: I only want you to get the latitude and longitude values for each property from the page source on Airbnb. Please don\'t try to "guesstimate" them&nbsp;based on the location of the map.';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
+			GM_addStyle('.panel {position:absolute;top:1400px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Age')[0],
+					document.getElementsByName('Age')[1],
+				],
+			};
+			// DoPast
+			AMT___addUserDecision(
+				'M.Kendall,Jan25,2016',
+				function() { return o.u; },
+				["Name(Age)[0]", "Name(Age)[1]"]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value != '' && o.q[1].value != '') {
+					AMT___recordAndSubmit();
+				}
+				return false;
+			}
+			o.q[0].ondblclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q[0].value = 'N/A';
+				o.q[1].value = 'N/A';
+				AMT___recordAndSubmit();
+				return false;
+			}
+			document.body.ondblclick = function() {
+				window.open(o.u, '_blank');
+			}
+			init();
+			//AMT___recordAndSubmit();
+			function init() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var rg = [
+							/<meta property="airbedandbreakfast:location:latitude" content="([\d\-\.]+)">/,
+							/<meta property="airbedandbreakfast:location:longitude" content="([\d\-\.]+)">/,
+						];
+						var x;
+						if (x = rg[0].exec(rs)) {
+							o.q[0].value = x[1];
+						}
+						var y;
+						if (y = rg[1].exec(rs)) {
+							o.q[1].value = y[1];
+						}
+						if (x && y && x[1].length > 3 && y[1].length > 3) {
+							//~ doSubmit();
+							AMT___recordAndSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Web Test
 	// (Fork Gerry Gorman (Fork BOE / Del Jones))
 	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)
