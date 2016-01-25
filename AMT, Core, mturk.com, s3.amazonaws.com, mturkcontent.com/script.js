@@ -96,6 +96,21 @@ function MT__RUN() {
 						if (x && y && x[1].length > 3 && y[1].length > 3) {
 							//~ doSubmit();
 							AMT___recordAndSubmit();
+							return;
+						}
+						// Here? Failed...
+						//~ console.log(options);
+						if (
+							rs.indexOf('<div class="panel-header filters-section show-sm">\n        Filters\n      </div>') != -1 && // Is here
+							rs.indexOf('<div id="room" itemscope itemtype="http://schema.org/Product">') == -1 && // Is not here
+							rs.indexOf(' <h4 class="screen-reader-only">\n        Request to Book\n      </h4>') == -1 && // Is not here
+							o.q[0].value == '' &&
+							o.q[1].value == ''
+							)
+						{
+							o.q[0].value = 'N/A';
+							o.q[1].value = 'N/A';
+							AMT___recordAndSubmit();
 						}
 					}
 				});
