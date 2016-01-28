@@ -91669,7 +91669,7 @@ qatar,80
 			/* BEGIN ITEMS */
 			var w = 98/5;
 			var divcont = document.createElement('div');
-			divcont.setAttribute('style','position:absolute;left:0%;top:62px;width:99%;height:200px;');
+			divcont.setAttribute('style','position:absolute;left:0%;top:60px;width:99%;height:200px;');
 			document.body.appendChild(divcont);
 			var d1 = document.createElement('div');
 			d1.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
@@ -91756,6 +91756,7 @@ qatar,80
 			var reg3 = /Business Name with city and state: *<\/em> <b>([^<]+)<\/b>/i.exec(ih);
 			var reg4 = /Business Name with city and state: *<b>([^<]+)<\/b>/i.exec(ih);
 			var reg5 = /<span style="[^"]*">Business Name \(location\):<\/span><\/span><\/u><span style="[^"]*"><span style="[^"]*">&nbsp;&nbsp;<\/span><\/span><em><span style="[^"]*"><b style="[^"]*">([^<]+)<\/b><\/span>/i.exec(ih);
+			var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
 			if (reg) {
 				name_locn(reg);
 			} else if (reg2) {
@@ -91766,6 +91767,8 @@ qatar,80
 				name_locn(reg4);
 			} else if(reg5) {
 				name_locn(reg5);
+			} else if(reg6) {
+				name_locn(reg6);
 			} else {
 				alert('Name/Location not found!');
 				return;
