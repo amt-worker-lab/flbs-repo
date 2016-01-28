@@ -88828,16 +88828,24 @@ qatar,80
 			//~ }, 60);
 			
 			var allLi = document.getElementsByTagName('li');
+			new AMT___core_factory().createScriptVar('reverse hotkeys', '1');
 			for(var i = 0; i < 5; i++) {
+				var tmp;
+				if(AMT__Global_Vars.scriptVars['reverse hotkeys'] == '1') {
+					tmp = 3 - i
+				}
+				else {
+					tmp = i;
+				}
 				if(allLi[i].getAttribute('ng-repeat').trim() == 'choice in categories') {
 					switch(i) {
-						case 0:	allLi[i].appendChild(document.createTextNode('1'));
+						case 0:	allLi[i].appendChild(document.createTextNode(tmp+1));
 						break;
-						case 1: allLi[i].appendChild(document.createTextNode('2'));
+						case 1: allLi[i].appendChild(document.createTextNode(tmp+1));
 						break;
-						case 2: allLi[i].appendChild(document.createTextNode('3'));
+						case 2: allLi[i].appendChild(document.createTextNode(tmp+1));
 						break;
-						case 3: allLi[i].appendChild(document.createTextNode('4'));
+						case 3: allLi[i].appendChild(document.createTextNode(tmp+1));
 						break
 						case 4: allLi[i].appendChild(document.createTextNode('r'));
 						break;
@@ -88849,7 +88857,20 @@ qatar,80
 				console.log(e.keyCode)
 				var allLi = document.getElementsByTagName('li');
 				var wasPressed = false;
-				switch(e.keyCode) {
+				var tmp = e.keyCode;
+				if(AMT__Global_Vars.scriptVars['reverse hotkeys'] == '0') {
+					switch(tmp) {
+						case 49: tmp = 52
+						break;
+						case 50: tmp = 51
+						break;
+						case 51: tmp = 50
+						break;
+						case 52: tmp = 49
+						break;
+					}
+				}
+				switch(tmp) {
 					case 49: //console.log(allLi[0].getElementsByTagName('div')[0].id);
 					document.getElementsByName('Category')[0].value = allLi[0].getElementsByTagName('div')[0].id; //65a
 					wasPressed = true;
@@ -88874,6 +88895,8 @@ qatar,80
 					document.getElementsByName('Category')[0].value = document.body.style.zoom = .75; //85v
 					break;
 				}
+				console.log(tmp);
+				return;
 				if(wasPressed && document.getElementsByName('Category')[0].value) {
 					doSubmit();
 					// Minimize images
@@ -88883,6 +88906,8 @@ qatar,80
 					}, 1000);
 				}
 			});
+		
+			
 			
 			// move
 			document.getElementsByClassName('span7 ng-scope')[0].style.width = '0';
