@@ -26,6 +26,77 @@ function MT__RUN() {
 	//
 	var s, s2, s3;
 	
+	// Ilya Levtov
+	// Record number of employees on Craft for each company
+	// 
+	// 
+	s = '<h3>Near the top right corner of the page, is a box: "Employees (estimated). &nbsp;Write down&nbsp;the number directly beneath the words "<strong>Employees (estimated)</strong>"</h3>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('hr {margin-top:0 !important;margin-bottom:0 !important;border-top:1px solid #222 !important;}');
+			//GM_addStyle('.panel {position:absolute;top:1400px;}');
+			GM_addStyle('#web_url {position:absolute;top:0px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('web_url')
+				],
+			};
+			// DoPast
+			AMT___addUserDecision(
+				'Ilya Levtov,Jan29,2016',
+				function() { return o.u; },
+				["Id(web_url)"]
+			);
+			//~ document.getElementById('submitButton').onclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ if (o.q[0].value != '' && o.q[1].value != '') {
+					//~ AMT___recordAndSubmit();
+				//~ }
+				//~ return false;
+			//~ }
+			//~ o.q[0].ondblclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ o.q[0].value = 'N/A';
+				//~ o.q[1].value = 'N/A';
+				//~ AMT___recordAndSubmit();
+				//~ return false;
+			//~ }
+			//~ document.body.ondblclick = function() {
+				//~ window.open(o.u, '_blank');
+			//~ }
+			init();
+			function init() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) return false;
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var d = dom.getElementsByClassName('employees-widget');
+						if (!d || d.length != 1) return;
+						d = d[0].getElementsByClassName('counter');
+						if (!d || !d.length) return;
+						d = d[0].innerText;
+						o.q[0].value = d;
+						if (/^[\d,]+$/.exec(d)) {
+							AMT___recordAndSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Melissa Kendall
 	// Find the Latitude/Longitude of Airbnb Property
 	// 
