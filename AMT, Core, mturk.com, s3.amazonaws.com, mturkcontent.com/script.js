@@ -91827,6 +91827,8 @@ qatar,80
 			var reg3 = /Business Name with city and state: *<\/em> <b>([^<]+)<\/b>/i.exec(ih);
 			var reg4 = /Business Name with city and state: *<b>([^<]+)<\/b>/i.exec(ih);
 			var reg5 = /<span style="[^"]*">Business Name \(location\):<\/span><\/span><\/u><span style="[^"]*"><span style="[^"]*">&nbsp;&nbsp;<\/span><\/span><em><span style="[^"]*"><b style="[^"]*">([^<]+)<\/b><\/span>/i.exec(ih);
+			//~ var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
+			//~ var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
 			var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
 			if (reg) {
 				name_locn(reg);
