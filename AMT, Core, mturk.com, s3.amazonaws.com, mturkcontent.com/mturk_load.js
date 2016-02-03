@@ -104,23 +104,51 @@ function mturk_load()
 				var interval = setInterval(function() {
 					GM_xmlhttpRequest({ // init
 						method: "GET",
-						url: 'https://www.mturk.com/mturk/myhits',
+						url: 'https://www.mturk.com/mturk/myhits', // ......OLD.......
+						// TODO URL:
+						//~ url: 'https://www.mturk.com/mturk/sortmyhits?searchSpec=HITSearch%23T%233%2310%23-1%23T%23%21Status%210%21rO0ABXQACEFzc2lnbmVk%21%23%21Deadline%210%21%23%21&selectedSearchType=hitgroups&searchWords=&sortType=Deadline%3A0&pageSize=100',
 						onload: function(response) {
 							var rs = response.responseText;
 							if (response.status != 200) return;
-							
-							// TODO: Check for John Roberts in this task!
-							var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
-							if (r) {
-								document.location.href = r[1];
-								return;
-							} else {
-								JR_check_time();
-							}
 							// Signed in?
 							if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
 								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 							}
+							// IN PROGRESS......
+							// Get all A on page.
+							var dom = new DOMParser().parseFromString(rs, 'text/html');
+							var a = document.getElementsByTagName('a');
+							for (var i in a) {
+								if (i == 'length') break;
+								if (a[i].innerText != 'Continue work on this HIT') continue;
+								// Is one....
+								// 8th Parent Node is TBODY
+								var req = a[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('requesterIdentity');
+								if (req) {
+									if (req.length != 1) {
+										alert('req length != 1');
+										return;
+									}
+									if (req[0].innerText == 'John Roberts') {
+										document.location.href = a[i].href;
+										return;
+									}
+								}
+							}
+							// Here?
+							JR_check_time();
+							
+							// ..................................
+							// ... OLD METHOD...
+							// ..................................
+							//~ // TODO: Check for John Roberts in this task!
+							//~ var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
+							//~ if (r) {
+								//~ document.location.href = r[1];
+								//~ return;
+							//~ } else {
+								//~ JR_check_time();
+							//~ }
 						}
 					});
 				}, 30000);
