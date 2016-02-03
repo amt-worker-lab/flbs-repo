@@ -65,11 +65,12 @@ AMT__Global_Vars.initializeGroupId = function () {
 	if(AMT__Global_Vars.isTopWindow)
 	{
 		var groupIdReg = /<input type="hidden" name="groupId" value="([^"]*)">/;
-		var groupId = groupIdReg.exec(ih)[1];
+		var groupId = groupIdReg.exec(ih);
 		if(!groupId)
 		{
 			//alert('Error initializing groupId. Try scraping it from the href? Or using the document element rather than a regex?');
-		}
+			return;
+		} else groupId = groupId[1];
 		AMT__Global_Vars.groupId = groupId;		
 		
 		//Now that we have the groupId, listen for whether the child frame wants to learn it as well.
@@ -139,12 +140,13 @@ AMT__Global_Vars.initializeHitId = function () {
 		if(!innerIframe || !hitId)
 		{	
 			var hitIdReg = /name="hitId" value="([^"]+)">///<input type="hidden" name="groupId" value="([^"]+)">/;
-			var hitId = hitIdReg.exec(ih)
+			var hitId = hitIdReg.exec(ih);
 			if(!hitId)
 			{
 				//alert('Error initializing groupId');
-			}
-			hitId = hitId[1];
+				hitId = null;
+			} else
+				hitId = hitId[1];
 		}
 		AMT__Global_Vars.hitId = hitId;
 	}
@@ -217,7 +219,9 @@ AMT__Global_Vars.initializeTabId = function() {
 			alert('error in initializeHitRecordDetails');
 		if(AMT__Global_Vars.isPreview)
 			alert('error in initializeHitRecordDetails');	
-		
+		if (document.body.innerHTML.indexOf('<span id="alertboxHeader">\n    \n        There are currently no HITs assigned to you.\n    \n    </span>') != -1) {
+			return;
+		}
 		
 		//Get COMPUTER_ID and Current User from localhost 
 		GM_xmlhttpRequest({
