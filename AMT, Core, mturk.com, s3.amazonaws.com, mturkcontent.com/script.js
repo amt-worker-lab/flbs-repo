@@ -85287,11 +85287,11 @@ qatar,80
 			// Add to tabs q
 			if (!AMT__Global_Vars.isPreview) {
 				AMT___doPastBehavior(
-					'MarkCarey,Oct.23,2015',
+					'MarkCarey,Feb.26.2016',
 					1
 				);
 				AMT___addUserDecision(
-					'MarkCarey,Oct.23,2015',
+					'MarkCarey,Feb.26.2016',
 					function() {
 						return o.url
 					},
@@ -85461,7 +85461,7 @@ qatar,80
 										skip();
 										// If in preview mode then add to queue!
 										if (!AMT__Global_Vars.isPreview) {
-											addToTabsQ(); // Add to queue.....
+											//~ addToTabsQ(); // Add to queue.....
 										}
 										return false;
 									}
@@ -85520,7 +85520,7 @@ qatar,80
 					AMT___Floater.accept();
 					return;
 				} else if (has_em) {
-					addToTabsQ();
+					//addToTabsQ();
 				}
 				// Here...
 				//~ d4c.innerText = '';
@@ -85591,7 +85591,7 @@ qatar,80
 							AMT___Floater.accept();
 							return;
 						} else { // Accepted...
-							addToTabsQ();
+							//addToTabsQ();
 						}
 						// Next...
 						em0();
@@ -85660,8 +85660,11 @@ qatar,80
 					'referer: ' + o.url
 				];
 				// ...
+				// URL changed from c4_profile_ajax to channels_profile_ajax
+				// Feb 26 2016.
 				var opts = {
-					url: 'https://www.youtube.com/c4_profile_ajax?action_get_business_email_captcha=1',
+					url: 'https://www.youtube.com/channels_profile_ajax?action_get_business_email_captcha=1', // CHANGED  
+					//~ url: 'https://www.youtube.com/c4_profile_ajax?action_get_business_email_captcha=1', 
 					do_not_save_to_file: true,
 					cookie_filename: o.cookie_filename,
 					headers_array: harray
@@ -85722,8 +85725,11 @@ qatar,80
 					'&channel_id='+encodeURIComponent(o.channel_id)+
 					'&session_token='+encodeURIComponent(o.session_token);
 				// ...
+				// CHANGED: c4_profile_ajax TO channels_profile_ajax
+				// Feb 26 2016
 				var opts = {
-					url: 'https://www.youtube.com/c4_profile_ajax?action_verify_business_email_captcha=1',
+					url: 'https://www.youtube.com/channels_profile_ajax?action_verify_business_email_captcha=1',
+					//url: 'https://www.youtube.com/c4_profile_ajax?action_verify_business_email_captcha=1',
 					do_not_save_to_file: true,
 					cookie_filename: o.cookie_filename,
 					post_object_as_str: strp,
@@ -85752,7 +85758,7 @@ qatar,80
 							// FOCUS AND DO AGAIN!!!
 							// Use same CAPTCHA as first time!
 							d3.focus();
-							addToTabsQ(); // Add to queue.....
+							//addToTabsQ(); // Add to queue.....
 							// ...
 							return;
 						}
@@ -85761,14 +85767,14 @@ qatar,80
 						console.log(rs);
 						if (!rs.str_code || rs.str_code != 'EMAIL_ADDR') {
 							d2.innerText = '!=email_addr';
-							addToTabsQ(); // Add to queue.....
+							//addToTabsQ(); // Add to queue.....
 							return;
 						}
 						rs = rs.html_content;
 						var reg = /<a href="mailto:([^@]+@[^"]+)"/.exec(rs);
 						if (!reg) {
 							d2.innerText = 'BAD EMAIL / ' + rs;
-							addToTabsQ(); // Add to queue.....
+							//addToTabsQ(); // Add to queue.....
 							return;
 						}
 						d2.innerText = 'Success!';
