@@ -85574,7 +85574,7 @@ qatar,80
 							//
 							//
 							new AMT___core_factory().createScriptVar('MC-CAPTCHA-Only', '0');
-							if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1' && AMT__Global_Vars.isPreview) {
+							if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1') { // Never continue here... //&& AMT__Global_Vars.isPreview) {
 								skip();
 								return;
 							}
