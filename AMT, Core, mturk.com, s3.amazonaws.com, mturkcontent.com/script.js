@@ -175695,6 +175695,10 @@ qatar,80
 		GM_addStyle('body {width:50%;}');
 		//~ GM_addStyle('#submitButton {position:absolute;top:0;left:0;width:40%;height:40px;}');
 		
+		// Alarm
+		//
+		//
+		new AMT___core_factory().createScriptVar('HE Alarm', '1');
 		/*ITEMS*/
 		var d=document.createElement('div');
 		d.setAttribute('id','d1');
@@ -175855,8 +175859,13 @@ qatar,80
 		var total_water_loaded	= -1;
 		var total_water_amount	= 0;
 		
+		// Init!
+		//
+		//
 		HOWARD_EIFERMAN_water__init();
-		
+		//
+		//
+		//
 		function HOWARD_EIFERMAN_water__init(watch_for_alarm) {
 			console.log('init');
 			
@@ -175890,6 +175899,10 @@ qatar,80
 							HOWARD_EIFERMAN_water__init();
 						}, 1000);
 						return;
+					}
+					// Make a noise!!!
+					if(AMT__Global_Vars.scriptVars['HE Alarm'] != '1') {
+						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
 					}
 					// DOM
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
