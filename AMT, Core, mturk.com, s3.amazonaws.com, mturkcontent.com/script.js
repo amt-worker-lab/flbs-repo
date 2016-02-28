@@ -175771,9 +175771,7 @@ qatar,80
 				}
 			}
 		}
-
-
-
+		
 		var block, lot;
 		block = /Block:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
 		lot = /Lot:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
