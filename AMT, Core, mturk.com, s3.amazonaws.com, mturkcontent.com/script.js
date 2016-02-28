@@ -175691,31 +175691,63 @@ qatar,80
 		)
 	{
 		console.log('');
-		
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p {margin:0;padding:0;font-size:10px;}');
 		GM_addStyle('body {width:50%;}');
-		//GM_addStyle('#Field4 {position:absolute;top:40px;left:0;width:30%;height:20px;}');
-		GM_addStyle('#submitButton {position:absolute;top:0;left:0;width:40%;height:40px;}');
+		//~ GM_addStyle('#submitButton {position:absolute;top:0;left:0;width:40%;height:40px;}');
 		
+		/*ITEMS*/
 		var d=document.createElement('div');
 		d.setAttribute('id','d1');
 		document.body.appendChild(d);
-		d1 = document.getElementById('d1');
+		var d1 = document.getElementById('d1');
 		d1.style.position='absolute';
-		d1.style.top='0px';
+		d1.style.top='60px';
 		d1.style.left='50%';
 		d1.style.width='50%';
-		d1.style.height='800px';
+		d1.style.height='600px';
 		d1.style.overflow='auto';
 		d1.style.border='1px solid blue';
 		d1.style.backgroundColor='white';
-		
-		var d=document.createElement('textarea');
+		//
+		//
+		//
+		var d3 = ''.div(
+			{style:'position:absolute;top:0;left:50%;width:50%;height:60px;background-color:#eee;border:1px solid blue;'}
+		);
+		document.body.appendChild(d3);
+		// Add two buttons, a Y-Submit and N-Submit
+		//
+		//
+		var d4a, d4b;
+		d4a = document.createElement('input');
+		d4a.type = 'button';
+		d4a.value = 'Y - Is Person';
+		d4a.setAttribute('style', 'position:absolute;top:0;left:0;width:25%;height:40px;cursor:pointer;');
+		document.body.appendChild(d4a);
+		d4b = document.createElement('input');
+		d4b.type = 'button';
+		d4b.value = 'N - Is Business';
+		d4b.setAttribute('style', 'position:absolute;top:0;left:25%;width:25%;height:40px;cursor:pointer;');
+		document.body.appendChild(d4b);
+		//
+		//
+		//
+		var d = document.createElement('textarea');
 		d.setAttribute('id','d2');
 		d.setAttribute('style','position:absolute;top:0;left:40%;width:10%;height:100px;');
 		document.body.appendChild(d);
 		var d2 = document.getElementById('d2');
+		/*END ITEMS*/
 		
+		// InnerHeight
+		new AMT___core_factory().el_innerHeight({
+			// This set the elements d1,d1b, and d1c
+			// to fill up the whole window, minus their
+			// distance from page top (top:XX pixels;).
+			elements: [d1],
+			offset: 60 // offset top
+		});
+		// Which burrough?
 		var x = /located in (Brooklyn|Bronx), NY that/.exec(ih);
 		if (!x) {
 			return;
@@ -175727,16 +175759,29 @@ qatar,80
 		var o = {
 			br: x
 		}
-		
+		// d4a / b onclick
+		//d4a.onclick = 
+		d4a.onclick = d4b.onclick = function(e) {
+			document.getElementById('Field4').value = (this.value == 'Y - Is Person') ? 'Y' : 'N';
+			this.style.backgroundColor = 'LightGreen';
+			for (var i = 1; i<=4; i++) {
+				if (document.getElementById('Field'+i).value.trim() == '') {
+					//~ e.preventDefault();
+					//~ e.stopPropagation();
+					return false;
+				}
+			}
+			// Still here?
+			doSubmit();
+		}
+		// ...
 		document.getElementById('Field4').value = 'Y';
 		document.getElementById('Field4').style.position = 'absolute';
 		document.getElementById('Field4').style.top = '60px';
 		document.getElementById('Field4').style.width = '100px';
 		document.getElementById('Field4').style.height = '20px';
 		document.getElementById('Field4').style.cursor = 'pointer';
-		//~ document.getElementById('Field4').focus();
-		//~ document.getElementById('Field4').select();
-		
+		// submitButton
 		document.getElementById('submitButton').onclick = function(e) {
 			this.style.backgroundColor = 'LightGreen';
 			for (var i = 1; i<=4; i++) {
@@ -175751,7 +175796,6 @@ qatar,80
 			e.stopPropagation();
 			return false;
 		}
-		
 		document.getElementById('Field4').onclick = function() {
 			if (this.value == 'Y')
 				this.value = 'N';
@@ -175759,8 +175803,6 @@ qatar,80
 				this.value = 'Y';
 			this.select();
 		}
-		
-		
 		document.getElementById('mturk_form').onsubmit = function(e) {
 			var s = true;
 			for (var i = 1; i<=4; i++) {
@@ -175771,7 +175813,9 @@ qatar,80
 				}
 			}
 		}
-		
+		// ....
+		//
+		//
 		var block, lot;
 		block = /Block:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
 		lot = /Lot:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
@@ -175838,8 +175882,8 @@ qatar,80
 					"Content-Type": "application/x-www-form-urlencoded"
 				},
 				onload: function(response) {
-					var rs=response.responseText;
-					
+					var rs = response.responseText;
+					// Error?
 					if (response.status != 200) {
 						console.log(response.status);
 						setTimeout(function() {
@@ -175847,10 +175891,11 @@ qatar,80
 						}, 1000);
 						return;
 					}
-					
+					// DOM
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// ...
 					var requests = [];
 					var r1,r2,r3;
-					
 					// i = num accounts - get water
 					for (var i = 0; i < 100; i++) {
 						r1 = new RegExp('NAME="GRID_NAME_'+i+'" VALUE="([^"]+)">', '');
@@ -175871,7 +175916,24 @@ qatar,80
 							break;
 						}
 					}
-					
+					// Output the "account names" for the final question: "Is this a biz or person?"
+					//
+					//
+					var wtr_biz_nm;
+					var i = 0;
+					console.log(dom.getElementsByName('GRID_NAME_'+i));
+					console.log(dom.getElementsByName('GRID_NAME_'+i).length);
+					console.log(dom.getElementsByName('GRID_NAME_'+i)[0]);
+					while (wtr_biz_nm = dom.getElementsByName('GRID_NAME_'+i)) { // && wtr_biz_nm && wtr_biz_nm.length
+						if (wtr_biz_nm.length == 0) break;
+						console.log('WATER NAME:------------------------------------');
+						console.log(wtr_biz_nm);
+						d3.innerText += wtr_biz_nm[0].value + "\n";
+						i++; // Increment and continue....
+					}
+					// ... ... ...
+					//
+					//
 					if (total_water_to_load != -1) {
 						if (AMT__Global_Vars.isPreview) {
 							AMT___Floater.accept();
