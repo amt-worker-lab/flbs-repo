@@ -175939,7 +175939,7 @@ qatar,80
 							AMT___Floater.accept();
 						} else {
 							
-							// is this an alarm request!!??
+							// Is this an alarm request!!??
 							if (watch_for_alarm) {
 								
 								return; // !!
@@ -176090,7 +176090,7 @@ qatar,80
 				
 				AUTO_SUBMIT++;
 				if (AUTO_SUBMIT == 2) {
-					document.getElementById('submitButton').click();
+					//document.getElementById('submitButton').click();
 				}
 			}
 		}
