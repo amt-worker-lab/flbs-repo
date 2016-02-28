@@ -177288,85 +177288,99 @@ qatar,80
 	}
 	
 	
-	//
 	// Andy Sparks
 	// Find Employee Count from LinkedIn
 	//
-	s='<li><span style="line-height: 1.6em;">Visit the link below and record the number of employees (for reference see this image&nbsp;</span>http://cl.ly/image/280g1v2T1p44)</li>';
-	if (ih.indexOf(s) != -1) {
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
-		GM_addStyle('.highlight-box {position:absolute;top:300px;}');
-		
-		var b = document.getElementsByTagName('b')[0].innerText;
-		b = b.replace(/\/p\?/, '/pj?');
-		
-		AMT___addUserDecision("Andy Sparks, LI 1", 
-			function() {return document.getElementsByTagName('b')[0].innerText},
-			["Id(Q1Url)"]
-		);
-			
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: b,
-			onload: function(response) {
-				var rs = response.responseText;
-				
-				if (response.status != 200) {
-					exit(response.status);
-					return;
-				}
-				
-				rs = JSON.parse(rs);
-				
-				if (/^\d+$/.exec(rs.content.page.voltron_unified_search_json.search.baseData.resultCount)) {
-					
-					//"results_count_without_keywords_i18n":"<strong>3</strong> results"
-					
-					var sbm = true;
-					
-					var i = rs.content.page.voltron_unified_search_json.search.baseData.resultCount;
-					
-					//~ if (i*1 >= 1000)
-						//~ sbm = false;
-					
-					i = MT___numberWithCommas(i);
-					
-					if (/^[\d,]+$/.exec(i)) {
-						document.getElementById('Q1Url').value = i;
-						if (sbm) {
-							AMT___recordAndSubmit();
-							
-							//doSubmit();
-						}
-						// write
-						//~ GM_xmlhttpRequest({
-							//~ method: "GET",
-							//~ url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+i,
-							//~ onload: function(response) {
-								//~ var rs = response.responseText;
-								//~ if (response.status != 200) {
-									//~ console.log('x');
-									//~ return;
-								//~ }
-								//~ kronopin_linkedin_company_employees_submit();
-							//~ }
-						//~ });
-					}
-				} else
-				{
-					console.log(rs);
-				}
-				
-			}
-		});
-	}
-	
 	//
+	s='<li><span style="line-height: 1.6em;">Visit the link below and record the number of employees (for reference see this image&nbsp;</span>http://cl.ly/image/280g1v2T1p44)</li>';
+	// ssears
+	// 
+	// 
+	//
+	s = 'You must have a free LinkedIn profile in order to complete this task.</strong></span>&nbsp;The goal of this task is to find the number of employees who work at a given company using data available on LinkedIn. To do this, please follow the steps below:';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function () {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
+			//GM_addStyle('body {width:30%;margin-top:30px;}');
+			GM_addStyle('img {position:absolute;top:1400px;}');
+			GM_addStyle('table {position:absolute;top:1000px;}');
+			
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[0].href,
+				q: [
+					document.getElementById('company_size'),
+					document.getElementById('employees_on_li'),
+				]
+			}
+			if (a.length != 1 || /^http://www\.linkedin\.com\/company\/[^\/]+$/.exec(o.u)) {
+				return;
+			}
+			AMT___addUserDecision(
+				'ssears li feb27 2016',
+				function() {
+					return o.u;
+				},
+				['Id(company_size)', 'Id(employees_on_li)']
+			);
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//console.log(JSON.parse(options.response.responseText));
+					if(options.response.status != 200) {
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					//~ console.log(rs);
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// emp
+					var reg;
+					var num;
+					reg = /<a class="density" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+					if (!reg) {
+						if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
+							num = 0;
+						} else { // invalid page!
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						if (/Employees? on LinkedIn/i.exec(rs)) {
+							document.body.style.backgroundColor = 'aqua'; // valid?
+							return;
+						}
+					} else {
+						num = reg[1].replace(/[^\d]/g, ''); // no commas......
+					}
+					o.q[1].value = num;
+					// cs
+					var r;
+					r = dom.getElementsByClassName('company-size');
+					if (!r.length || r.length != 1) {
+						if (/Company Size/.exec(rs)) {
+							document.body.style.backgroundColor = 'blue'; // valid?
+							return;
+						}
+					}
+					r = r[0].innerText.replace(/Company Size/, '').trim();
+					o.q[0].value = r;
+					if (!/^\d+-\d+ employees?$/.exec(r)) {
+						return;
+					}
+					AMT___recordAndSubmit();
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Jason Santiago
 	// Kronopin (aka)
 	// 3I2IYPM3ZTX3XI6LHP7MND84RC9J84
-	//~ s='<h2><span style="font-family:arial,helvetica,sans-serif;"><b>Your task is to determine the number of employees a company has on LinkedIn.</b></span></h2>';
+	//
 	s='<b>Your task is to determine the "<em>Employees on LinkedIn</em>"&nbsp;a company has displayed&nbsp;on its LinkedIn page.</b>';
 	if (ih.indexOf(s) != -1) {
 		
@@ -177494,82 +177508,12 @@ qatar,80
 			 * function company_employees_tor
 			 */
 			//~ function company_employees_tor(obj_complete) {
-				//~ //obj_complete is the init object + .rs which is the responseText
-				//~ 
-				//~ console.log(obj_complete);
-				//~ 
-				//~ var rs = obj_complete.rs;
-				//~ var count = obj_complete.seed.count;
-				//~ var companyId = obj_complete.seed.companyId;
-				//~ 
-				//~ var reg;
-				//~ var num;
-				//~ reg = /<a class="density" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
-				//~ if (!reg) {
-					//~ if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
-						//~ num = 0;
-					//~ } else { // invalid page!
-						//~ document.body.style.backgroundColor = 'pink';
-						//~ return;
-					//~ }
-				//~ } else {
-					//~ num = reg[1].replace(/[^\d]/g, '');
-				//~ }
-				//~ 
-				//~ if (/^\d+$/.exec(num)) {
-					//~ 
-					//~ num = MT___numberWithCommas(num);
-					//~ 
-					//~ if (/^[\d,]+$/.exec(num)) {
-						//~ 
-						//~ document.getElementById('Q'+count+'Url').value = num;
-						//~ console.log(num);
-						//~ if((num*1) != 0) {
-							//~ GM_xmlhttpRequest({
-								//~ method: "GET",
-								//~ url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
-								//~ onload: function(response) {
-									//~ var rs = response.responseText;
-									//~ if (response.status != 200) {
-										//~ console.log('x');
-										//~ return;
-									//~ }
-									//~ company_employees_submit();
-								//~ }
-							//~ });
-						//~ }
-						//~ else {
-							//~ company_employees_submit();
-						//~ }
-					//~ }
-				//~ }
-				//~ else
-				//~ {
-					//~ console.log(rs);
-				//~ }
+				
 			//~ }
 			/**
 			 * function company_employees
 			 */
 			function company_employees(companyId, count) {
-				//~ // INIT _PROXY_REDACTED_
-				//~ var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					//~ url: 'http://www.linkedin.com/company/'+companyId,
-					//~ callback_function: company_employees_tor,
-					//catch_include: 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
-					//~ catch_include_array: [
-						//~ 'Sorry, we are unable to serve your request at this time due to unusual traffic from your network connection.',
-						//~ '<title>503 Service Temporarily Unavailable</title>',
-						//~ 'newLocation = "https://" + domain +  "/uas/login?trk=sentinel_org_block&session_redirect=" + encodeURIComponent(window.location)'
-					//~ ],
-					//~ seed: {
-						//~ companyId:companyId,
-						//~ count:count
-					//~ },
-					//~ return_init_object: true
-				//~ });
-				//~ return;
-				//~ 
 				//
 				GM_xmlhttpRequest({
 					method: "GET",
@@ -177578,8 +177522,7 @@ qatar,80
 					url: 'https://www.linkedin.com/company/'+companyId,
 					headers:{
 							"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-							"Cache-Control":"max-age=0",
-							//"Cookie":'bcookie="v=2&2de06c6c-0214-4223-87f4-35fea8a260c8"; bscookie="v=1&201504081743094ab80224-60fe-4d52-8258-14265ab0ebb8AQHZR595zw655ZJJxn6ds-2F7XzVX_qQ"; visit="v=1&M"; L1c=6f29b53; L1l=2a7ffea8; L1e=390560fd; _leo_profile=""; X-ATS-Node-0=0; X-ATS-Node-1=0; X-ATS-Node-2=0; oz_props_fetch_size1_undefined=undefined; lidc="b=VB60:g=198:u=3:i=1431551933:t=1431636313:s=AQFmNC9-nHIV-DWZ8sPVrhVGSI-Y2g5s"; sl="v=1&srDyg"; li_at=AQECAQ_76YgD0kJFAAABTU8lQr8AAAFNT5Mfv02wo94nm3X7NOQ2RIaKTEqtNe7ftiMMSPK7SP-1Ed79zK9llhk_JCOgUsJD5pwxV_5PkxZaDtMUCUH8gPumO5ZxWqbsi-URbD_Jm6IUZ-idAw_LJzk; JSESSIONID="ajax:6226582427997387956"; RT=s=1431552655933&r=https%3A%2F%2Fwww.linkedin.com%2Fhp%2F%3Fdnr%3D9mmH1Hl5mlVhTTb-91AH6HlwE6tprC3MbgPM; share_setting=PUBLIC; _lipt=0_kDaTIRnon-z6WH8rGM0VazdXlyORYgb1iMKDBdyVPvYW3jfrcezGcPPvSN-bsrlffJSXjeSJp-9EFOcrhMpUIPWQH8yy8tkTie5_By01uKqgMTGnqrlyVKd58pRi2yl1; lang="v=2&lang=en-us&c="; sdsc=1%3A1SZM1shxDNbLt36wZwCgPgvN58iw%3D'							
+							"Cache-Control":"max-age=0",						
 						},
 					onload: function(response) {
 						var rs = response.responseText;
@@ -177660,61 +177603,6 @@ qatar,80
 	// aka Kronopin
 	//Your task is to determine the number of employees a company has on LinkedIn, then type them into the form below.
 	s='Your task is to determine the number of employees a company has on LinkedIn, then type that number into the form below';
-	if (ih.indexOf(s) != -1 && 0 == 1) {
-		
-		var a,id;
-		a=document.getElementsByTagName('a')[1].href;
-		id = a.replace(/[^a-z0-9_\-&]/gi, '');
-		
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: 'http://localhost/mturk-jason_santiago/'+id,
-			timeout: 4,
-			onload: function(response) {
-				if (response.status == 200) {
-					var rs;
-					rs=response.responseText;
-					if (/^[\d]+$/.exec(rs)) {
-						document.getElementById('Q1Url').value = rs;
-						doSubmit();
-					}
-				} else {
-					GM_xmlhttpRequest({
-						method: "GET",
-						url: a,
-						onload: function(response) {
-							var rs=response.responseText;
-							
-							var rg;
-							rg=/extra_biz_employees_deg_connected">([^<]+)/;
-							if (rg.exec(rs)) {
-								rg=rg.exec(rs)[1].trim();
-								rg=rg.replace(/[\D]/g, '');
-								document.getElementById('Q1Url').value = rg;
-								jason_santiago_write(id,rg);
-								doSubmit();
-							}
-							else if (/Overview \| LinkedIn<\/title>/.exec(rs))
-							{
-								document.getElementById('Q1Url').value = '0';
-								jason_santiago_write(id,'0');
-								doSubmit();
-							}
-						}
-					});
-				}
-			}
-		});
-	}
-	function jason_santiago_write(id,a) {
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: 'http://localhost/mturk-jason_santiago.php?id='+encodeURIComponent(id)+'&a='+a,
-			onload: function(response) {
-				//
-			}
-		});
-	}
 	//
 	// Skylar Marcum
 	// LinkedIn followers/employees
