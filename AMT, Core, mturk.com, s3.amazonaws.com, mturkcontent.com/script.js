@@ -177314,7 +177314,10 @@ qatar,80
 					document.getElementById('employees_on_li'),
 				]
 			}
-			if (a.length != 1 || /^http://www\.linkedin\.com\/company\/[^\/]+$/.exec(o.u)) {
+			console.log(o);
+			// e.g. "http://www.linkedin.com/company/3361280"
+			if (!/^http:\/\/www\.linkedin\.com\/company\/[^\/]+$/.exec(o.u)) {
+				alert('x');
 				return;
 			}
 			AMT___addUserDecision(
@@ -177353,13 +177356,19 @@ qatar,80
 							return;
 						}
 					} else {
-						num = reg[1].replace(/[^\d]/g, ''); // no commas......
+						num = reg[1].replace(/,/g, ''); // no commas......
+						if (/[^\d]/.exec(num)) {
+							o.q[1].value = num;
+							alert('has non-digits');
+							return;
+						}
 					}
 					o.q[1].value = num;
 					// cs
 					var r;
 					r = dom.getElementsByClassName('company-size');
-					if (!r.length || r.length != 1) {
+					console.log(r);
+					if (!r.length || r.length != 2) {
 						if (/Company Size/.exec(rs)) {
 							document.body.style.backgroundColor = 'blue'; // valid?
 							return;
@@ -177368,6 +177377,7 @@ qatar,80
 					r = r[0].innerText.replace(/Company Size/, '').trim();
 					o.q[0].value = r;
 					if (!/^\d+-\d+ employees?$/.exec(r)) {
+						alert('bad emp');
 						return;
 					}
 					AMT___recordAndSubmit();
