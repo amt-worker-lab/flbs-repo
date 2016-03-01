@@ -175690,506 +175690,553 @@ qatar,80
 		ih.indexOf(s2)!= -1
 		)
 	{
-		console.log('');
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p {margin:0;padding:0;font-size:10px;}');
-		GM_addStyle('body {width:50%;}');
-		//~ GM_addStyle('#submitButton {position:absolute;top:0;left:0;width:40%;height:40px;}');
-		
-		// Alarm
-		//
-		//
-		new AMT___core_factory().createScriptVar('HE Alarm', '1');
-		/*ITEMS*/
-		var d=document.createElement('div');
-		d.setAttribute('id','d1');
-		document.body.appendChild(d);
-		var d1 = document.getElementById('d1');
-		d1.style.position='absolute';
-		d1.style.top='60px';
-		d1.style.left='50%';
-		d1.style.width='50%';
-		d1.style.height='600px';
-		d1.style.overflow='auto';
-		d1.style.border='1px solid blue';
-		d1.style.backgroundColor='white';
-		//
-		//
-		//
-		var d3 = ''.div(
-			{style:'position:absolute;top:0;left:50%;width:50%;height:60px;background-color:#eee;border:1px solid blue;'}
-		);
-		document.body.appendChild(d3);
-		// Add two buttons, a Y-Submit and N-Submit
-		//
-		//
-		var d4a, d4b;
-		d4a = document.createElement('input');
-		d4a.type = 'button';
-		d4a.value = 'Y - Is Person';
-		d4a.setAttribute('style', 'position:absolute;top:0;left:0;width:25%;height:40px;cursor:pointer;');
-		document.body.appendChild(d4a);
-		d4b = document.createElement('input');
-		d4b.type = 'button';
-		d4b.value = 'N - Is Business';
-		d4b.setAttribute('style', 'position:absolute;top:0;left:25%;width:25%;height:40px;cursor:pointer;');
-		document.body.appendChild(d4b);
-		//
-		//
-		//
-		var d = document.createElement('textarea');
-		d.setAttribute('id','d2');
-		d.setAttribute('style','position:absolute;top:0;left:40%;width:10%;height:100px;');
-		document.body.appendChild(d);
-		var d2 = document.getElementById('d2');
-		/*END ITEMS*/
-		
-		// InnerHeight
-		new AMT___core_factory().el_innerHeight({
-			// This set the elements d1,d1b, and d1c
-			// to fill up the whole window, minus their
-			// distance from page top (top:XX pixels;).
-			elements: [d1],
-			offset: 60 // offset top
-		});
-		// Which burrough?
-		var x = /located in (Brooklyn|Bronx), NY that/.exec(ih);
-		if (!x) {
-			return;
-		} else if (x[1] == 'Brooklyn') {
-			x = 3;
-		} else if (x[1] == 'Bronx') {
-			x = 2;
-		}
-		var o = {
-			br: x
-		}
-		// d4a / b onclick
-		//d4a.onclick = 
-		d4a.onclick = d4b.onclick = function(e) {
-			document.getElementById('Field4').value = (this.value == 'Y - Is Person') ? 'Y' : 'N';
-			this.style.backgroundColor = 'LightGreen';
-			for (var i = 1; i<=4; i++) {
-				if (document.getElementById('Field'+i).value.trim() == '') {
-					//~ e.preventDefault();
-					//~ e.stopPropagation();
-					return false;
+		var run = function() {};
+		run.prototype.f = function () {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('body {width:50%;}');
+			//~ GM_addStyle('#submitButton {position:absolute;top:0;left:0;width:40%;height:40px;}');
+			
+			// Alarm
+			//
+			//
+			new AMT___core_factory().createScriptVar('HE Alarm', '1');
+			new AMT___core_factory().createScriptVar('HE Keys Yes', ',');
+			new AMT___core_factory().createScriptVar('HE Keys No', '.');
+			/*ITEMS*/
+			var d=document.createElement('div');
+			d.setAttribute('id','d1');
+			document.body.appendChild(d);
+			var d1 = document.getElementById('d1');
+			d1.style.position='absolute';
+			d1.style.top='60px';
+			d1.style.left='50%';
+			d1.style.width='50%';
+			d1.style.height='600px';
+			d1.style.overflow='auto';
+			d1.style.border='1px solid blue';
+			d1.style.backgroundColor='white';
+			//
+			//
+			//
+			var d3 = ''.div(
+				{style:'position:absolute;top:0;left:50%;width:50%;height:60px;background-color:#eee;border:1px solid blue;'}
+			);
+			document.body.appendChild(d3);
+			// Add two buttons, a Y-Submit and N-Submit
+			//
+			//
+			var d4a, d4b;
+			d4a = document.createElement('input');
+			d4a.type = 'button';
+			d4a.value = 'Y - Is Person';
+			d4a.setAttribute('style', 'position:absolute;top:0;left:0;width:25%;height:40px;cursor:pointer;');
+			document.body.appendChild(d4a);
+			d4b = document.createElement('input');
+			d4b.type = 'button';
+			d4b.value = 'N - Is Business';
+			d4b.setAttribute('style', 'position:absolute;top:0;left:25%;width:25%;height:40px;cursor:pointer;');
+			document.body.appendChild(d4b);
+			//
+			//
+			//
+			var d = document.createElement('textarea');
+			d.setAttribute('id','d2');
+			d.setAttribute('style','position:absolute;top:0;left:40%;width:10%;height:100px;');
+			document.body.appendChild(d);
+			var d2 = document.getElementById('d2');
+			/*END ITEMS*/
+			// CHANGE ID of comments field!
+			// This is because the ID conflicts with Field4!
+			document.getElementsByName('comments')[0].id = 'Field88';
+			// InnerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [d1],
+				offset: 60 // offset top
+			});
+			// Which burrough?
+			var x = /located in (Brooklyn|Bronx), NY that/.exec(ih);
+			if (!x) {
+				return;
+			} else if (x[1] == 'Brooklyn') {
+				x = 3;
+			} else if (x[1] == 'Bronx') {
+				x = 2;
+			}
+			var o = {
+				br: x
+			}
+			// d4a / b onclick
+			//d4a.onclick = 
+			d4a.onclick = d4b.onclick = function(e) {
+				document.getElementById('Field4').value = (this.value == 'Y - Is Person') ? 'Y' : 'N';
+				this.style.backgroundColor = 'LightGreen';
+				for (var i = 1; i<=4; i++) {
+					if (document.getElementById('Field'+i).value.trim() == '') {
+						//~ e.preventDefault();
+						//~ e.stopPropagation();
+						return false;
+					}
+				}
+				// Still here?
+				doSubmit();
+			}
+			// ...
+			document.getElementById('Field4').value = 'Y';
+			document.getElementById('Field4').style.position = 'absolute';
+			document.getElementById('Field4').style.top = '60px';
+			document.getElementById('Field4').style.width = '100px';
+			document.getElementById('Field4').style.height = '20px';
+			document.getElementById('Field4').style.cursor = 'pointer';
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				this.style.backgroundColor = 'LightGreen';
+				for (var i = 1; i<=4; i++) {
+					if (document.getElementById('Field'+i).value.trim() == '') {
+						e.preventDefault();
+						e.stopPropagation();
+						return false;
+					}
+				}
+				doSubmit();
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+			document.getElementById('Field4').onclick = function() {
+				if (this.value == 'Y')
+					this.value = 'N';
+				else
+					this.value = 'Y';
+				this.select();
+			}
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				var s = true;
+				for (var i = 1; i<=4; i++) {
+					if (document.getElementById('Field'+i).value.trim() == '') {
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
 				}
 			}
-			// Still here?
-			doSubmit();
-		}
-		// ...
-		document.getElementById('Field4').value = 'Y';
-		document.getElementById('Field4').style.position = 'absolute';
-		document.getElementById('Field4').style.top = '60px';
-		document.getElementById('Field4').style.width = '100px';
-		document.getElementById('Field4').style.height = '20px';
-		document.getElementById('Field4').style.cursor = 'pointer';
-		// submitButton
-		document.getElementById('submitButton').onclick = function(e) {
-			this.style.backgroundColor = 'LightGreen';
-			for (var i = 1; i<=4; i++) {
-				if (document.getElementById('Field'+i).value.trim() == '') {
-					e.preventDefault();
-					e.stopPropagation();
-					return false;
+			// onkeypress
+			window.addEventListener('keypress', hfkeypress, false);
+			function hfkeypress(e) {
+				var k = String.fromCharCode(e.keyCode);
+				console.log(e.keyCode);
+				console.log(k);
+				// na button
+				if (k == AMT__Global_Vars.scriptVars['HE Keys Yes']
+					&& AMT__Global_Vars.scriptVars['HE Keys Yes'] != 0)
+				{
+					d4a.click();
+				} else if (k == AMT__Global_Vars.scriptVars['HE Keys No']
+					&& AMT__Global_Vars.scriptVars['HE Keys No'] != 0)
+				{
+					d4b.click();
 				}
 			}
-			doSubmit();
-			e.preventDefault();
-			e.stopPropagation();
-			return false;
-		}
-		document.getElementById('Field4').onclick = function() {
-			if (this.value == 'Y')
-				this.value = 'N';
-			else
-				this.value = 'Y';
-			this.select();
-		}
-		document.getElementById('mturk_form').onsubmit = function(e) {
-			var s = true;
-			for (var i = 1; i<=4; i++) {
-				if (document.getElementById('Field'+i).value.trim() == '') {
-					e.stopPropagation();
-					e.preventDefault();
-					return false;
-				}
+			// ....
+			//
+			//
+			var block, lot;
+			block = /Block:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
+			lot = /Lot:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
+			if (!block || !lot) {
+				return;
+			} //lot = 28+'';1650?
+			while (block.length <= 4) 	block = '0' + block;
+			while (lot.length <= 3) 	lot = '0' + lot;
+			block	= encodeURIComponent(block);
+			lot		= encodeURIComponent(lot);
+			block2	= encodeURIComponent(block);
+			lot2	= encodeURIComponent(lot);
+			
+			console.log(block +':'+ lot);
+			
+			var AUTO_SUBMIT = 0;
+			
+			var date = new Date();
+			var m = {
+				month: date.getMonth() + 1, // 0-11
+				year:  date.getFullYear(), // 0-11
+				day:   date.getDate(), // 0-11
 			}
-		}
-		// ....
-		//
-		//
-		var block, lot;
-		block = /Block:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
-		lot = /Lot:<\/td>[\r\n\t\s]+<td>([^<]+)/.exec(ih)[1];
-		if (!block || !lot) {
-			return;
-		} //lot = 28+'';1650?
-		while (block.length <= 4) 	block = '0' + block;
-		while (lot.length <= 3) 	lot = '0' + lot;
-		block	= encodeURIComponent(block);
-		lot		= encodeURIComponent(lot);
-		block2	= encodeURIComponent(block);
-		lot2	= encodeURIComponent(lot);
-		
-		console.log(block +':'+ lot);
-		
-		var AUTO_SUBMIT = 0;
-		
-		var date = new Date();
-		var m = {
-			month: date.getMonth() + 1, // 0-11
-			year:  date.getFullYear(), // 0-11
-			day:   date.getDate(), // 0-11
-		}
-		m.month = (m.month < 10) ? '0' + m.month : m.month;
-		m.day   = (m.day < 10)   ? '0' + m.day   : m.day;
-		var d2_1 = 'BBL_BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D'+m.month+'%7CINTEREST_THROUGH_DAY%3D'+m.day+'%7CINTEREST_THROUGH_YEAR%3D'+m.year+'%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH='+m.month+'&INTEREST_THROUGH_DAY='+m.day+'&INTEREST_THROUGH_YEAR='+m.year+'&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
-		console.log(d2_1);
-		console.log(m);
+			m.month = (m.month < 10) ? '0' + m.month : m.month;
+			m.day   = (m.day < 10)   ? '0' + m.day   : m.day;
+			var d2_1 = 'BBL_BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&EASEMENT=++&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FCityCollector&ServiceName=TAX_PROPERTY_TAXES_BY_BBL&MethodName=NONE&PageID=PropertyTaxSearch&ParamCount=0&LinkType=B&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FCityCollector%7CServiceName%3DTAX_PROPERTY_TAXES_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CBBL_BOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CEASEMENT%3D++%7CPageID%3DPropertyTaxSearch%7CLinkType%3DB%7CADDRESS_BOROUGH%3D1%7CBUILDING_NUMBER%3D%7CSTREET_ADDRESS%3D%7CAPARTMENT_NUMBER%3D%7CINTEREST_THROUGH_MONTH%3D'+m.month+'%7CINTEREST_THROUGH_DAY%3D'+m.day+'%7CINTEREST_THROUGH_YEAR%3D'+m.year+'%7CDATE_RANGE%3DTAX_PROPERTY_TAXES_BY_BBL%7CTP_BEGIN_MONTH%3D++%7CTP_BEGIN_DAY%3D++%7CTP_BEGIN_YEAR%3D++%7CTP_END_MONTH%3D++%7CTP_END_DAY%3D++%7CTP_END_YEAR%3D++%7CACCOUNT_YEAR%3D++%7CACCOUNT_TYPE%3D++&ADDRESS_BOROUGH=1&BUILDING_NUMBER=&STREET_ADDRESS=&APARTMENT_NUMBER=&INTEREST_THROUGH_MONTH='+m.month+'&INTEREST_THROUGH_DAY='+m.day+'&INTEREST_THROUGH_YEAR='+m.year+'&DATE_RANGE=TAX_PROPERTY_TAXES_BY_BBL&TP_BEGIN_MONTH=++&TP_BEGIN_DAY=++&TP_BEGIN_YEAR=++&TP_END_MONTH=++&TP_END_DAY=++&TP_END_YEAR=++&ACCOUNT_YEAR=++&ACCOUNT_TYPE=++';
+			console.log(d2_1);
+			console.log(m);
+				
 			
-		
-		//function() {
-		//WATER_CHARGE_ACC_NUMBER=&BOROUGH=3&BLOCK=01174&LOT=0001
-		//&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D3%7CBLOCK%3D01174%7CLOT%3D0001%7CPageID%3DWaterChargeSearch%7CLinkType%3DEMPTY		
-		
-		//water
-		var total_water_to_load	= 1000;
-		var total_water_loaded	= -1;
-		var total_water_amount	= 0;
-		
-		// Init!
-		//
-		//
-		HOWARD_EIFERMAN_water__init();
-		//
-		//
-		//
-		function HOWARD_EIFERMAN_water__init(watch_for_alarm) {
-			console.log('init');
+			//function() {
+			//WATER_CHARGE_ACC_NUMBER=&BOROUGH=3&BLOCK=01174&LOT=0001
+			//&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D3%7CBLOCK%3D01174%7CLOT%3D0001%7CPageID%3DWaterChargeSearch%7CLinkType%3DEMPTY		
 			
-			var d1_1 = 'WATER_CHARGE_ACC_NUMBER=&BOROUGH='+o.br+'&BLOCK='+
-			block+
-			'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+
-			block2+
-			'%7CLOT%3D'+lot2+
-			'%7CPageID%3DWaterChargeSearch%7CLinkType%3DEMPTY'+'&random='+Math.random();
+			//water
+			var total_water_to_load	= 1000;
+			var total_water_loaded	= -1;
+			var total_water_amount	= 0;
 			
-			console.log(d1_1);
-			
-			GM_xmlhttpRequest({
-				method: "POST",
-				url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
-				data: d1_1,
-				timeout: 4000,
-				ontimeout: function() {
-					console.log('timeout');
-					HOWARD_EIFERMAN_water__init();
-				},
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				},
-				onload: function(response) {
-					var rs = response.responseText;
-					// Error?
-					if (response.status != 200) {
-						console.log(response.status);
-						setTimeout(function() {
-							HOWARD_EIFERMAN_water__init();
-						}, 1000);
-						return;
-					}
-					// Make a noise!!!
-					if(AMT__Global_Vars.scriptVars['HE Alarm'] != '1') {
-						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-					}
-					// DOM
-					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					// ...
-					var requests = [];
-					var r1,r2,r3;
-					// i = num accounts - get water
-					for (var i = 0; i < 100; i++) {
-						r1 = new RegExp('NAME="GRID_NAME_'+i+'" VALUE="([^"]+)">', '');
-						r1 = r1.exec(rs);
-						if (r1) {
-							r1 = r1[1];
-							r2 = new RegExp('NAME="GRID_ADDRESS_'+i+'" VALUE="([^"]+)">', '');
-							r3 = new RegExp('NAME="GRID_ACCT_NUM_'+i+'" VALUE="([^"]+)">', '');
-							r2 = r2.exec(rs)[1];
-							r3 = r3.exec(rs)[1];
-							
-							requests.push([r1, r2, r3]);
-							//HOWARD_EIFERMAN_water(r1,r2,r3); // LOAD_FUNC !!
-							
-						} else { // the last
-							console.log('total_water_to_load:'+ (i));
-							total_water_to_load = i - 1;
-							break;
-						}
-					}
-					// Output the "account names" for the final question: "Is this a biz or person?"
-					//
-					//
-					var wtr_biz_nm;
-					var i = 0;
-					console.log(dom.getElementsByName('GRID_NAME_'+i));
-					console.log(dom.getElementsByName('GRID_NAME_'+i).length);
-					console.log(dom.getElementsByName('GRID_NAME_'+i)[0]);
-					while (wtr_biz_nm = dom.getElementsByName('GRID_NAME_'+i)) { // && wtr_biz_nm && wtr_biz_nm.length
-						if (wtr_biz_nm.length == 0) break;
-						console.log('WATER NAME:------------------------------------');
-						console.log(wtr_biz_nm);
-						d3.innerText += wtr_biz_nm[0].value + "\n";
-						i++; // Increment and continue....
-					}
-					// ... ... ...
-					//
-					//
-					if (total_water_to_load != -1) {
-						if (AMT__Global_Vars.isPreview) {
-							AMT___Floater.accept();
-						} else {
-							
-							// Is this an alarm request!!??
-							if (watch_for_alarm) {
-								
-								return; // !!
-							}
-							
-							// run
-							var r;
-							for (var i in requests) {
-								r = requests[i];
-								HOWARD_EIFERMAN_water(r[0], r[1], r[2]); // EACH WATER BILL !
-							}
-							HOWARD_EIFERMAN_tax__property_init(); // INIT PROPERTY !
-						}
-					}
-					if (total_water_to_load == -1) {
-						// err?
-						if (rs.indexOf('VALUE="The BBL was not found. Please verify the BBL, correct the values, and search again.">') != -1) {
-							
-							if (AMT__Global_Vars.isPreview)
-								AMT___Floater.skip();
-							d2.value += 'water:"BBL was not found"'+"\n";
-							d2.style.border = '4px solid orange';
-							
-							// GO TO HOWARD_EIFERMAN_tax__property_init!
-							//
-							document.getElementById('Field1').value = '0';
-							HOWARD_EIFERMAN_tax__property_init();
-							return;
-						}
-						
-						if (/value="\d{2,}"[\r\n\t\s]*name="BLOCK"/.exec(rs)) {
-							console.log('x01');
-							//document.getElementById('Field1').value = '0';
-							
-							// AGAIN !?
+			// Init!
+			//
+			//
+			HOWARD_EIFERMAN_water__init();
+			//
+			//
+			//
+			function HOWARD_EIFERMAN_water__init(watch_for_alarm) {
+				console.log('init');
+				
+				var d1_1 = 'WATER_CHARGE_ACC_NUMBER=&BOROUGH='+o.br+'&BLOCK='+
+				block+
+				'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH_BY_BBL&MethodName=NONE&PageID=WaterChargeSearch&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH_BY_BBL%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CWATER_CHARGE_ACC_NUMBER%3D%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+
+				block2+
+				'%7CLOT%3D'+lot2+
+				'%7CPageID%3DWaterChargeSearch%7CLinkType%3DEMPTY'+'&random='+Math.random();
+				
+				console.log(d1_1);
+				
+				GM_xmlhttpRequest({
+					method: "POST",
+					url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
+					data: d1_1,
+					timeout: 4000,
+					ontimeout: function() {
+						console.log('timeout');
+						HOWARD_EIFERMAN_water__init();
+					},
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs = response.responseText;
+						// Error?
+						if (response.status != 200) {
+							console.log(response.status);
 							setTimeout(function() {
 								HOWARD_EIFERMAN_water__init();
 							}, 1000);
-						} else {
-							// THIS WILL DO AN ALARM IF NYCSERV.GOV
-							// SITE SLOWS DOWN
-							setTimeout(function() {
-								HOWARD_EIFERMAN_water__init(true);
-							}, 10000);
-							console.log('x02');
+							return;
 						}
-					}
-				}
-			});
-		}
-		
-		function HOWARD_EIFERMAN_tax__property_init() {
-			//property
-			GM_xmlhttpRequest({
-				method: "POST",
-				url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
-				data: d2_1,
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				},
-				onload: function(response) {
-					var rs=response.responseText;
-
-					var sb = 0;
-					
-					console.log(rs);
-					var r, r2;
-					
-					/**
-					 * 
-					 * NEW
-					 <td width="120" valign="top" class="detailStatus"><b>Name(s):</b></td>
-		 <td width="160" valign="top" class="detailStatus">COYNE, HAROD/TRUSTTE 
-		 <!-- Code Changes for defect NYCS200006185  -->
-		</td>
-					*/
-					/**
-					 * NEW 2
-					 <a href="javascript:browserpopupNames('ELLISON, JEFFREY<br>ELLISON, DEBRA')">    more...</a> </td>
-					 */
-					//names
-					r = /<a href="javascript:browserpopup\([\r\n\t\s]+'([^']+)',/.exec(rs);
-					r2 =/<td width="120" valign="top" class="detailStatus"><b>Name\(s\):<\/b><\/td>[\r\n\t\s]+<td width="160" valign="top" class="detailStatus">([^<]+)<!-- Code Changes for defect NYCS200006185  -->[\r\n\t\s]+<\/td>/.exec(rs);
-					// E.G. ELLISON, JEFFREY<br>ELLISON, DEBRA
-					r3 =/<a href="javascript:browserpopupNames\('((.|\s)*?(?='\)">    *more...<\/a> <\/td>|$)|$)/.exec(rs); //
-					if (r) {
-						r = r[1];
-						d1.innerHTML += r+'<br>';
-					} else if (r2) {
-						r2 = r2[1];
-						d1.innerHTML += r2+'<br>';
-					} else if (r3) {
-						r3 = r3[1];
-						d1.innerHTML += r3+'<br>';
-					} else sb++;
-					// amounts
-					r = /<input name="check0"/.exec(rs);
-					if (r) {
+						// Make a noise!!!
+						if(AMT__Global_Vars.scriptVars['HE Alarm'] != '1') {
+							chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+						}
+						// DOM
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// ...
+						var requests = [];
+						var r1,r2,r3;
+						// i = num accounts - get water
+						for (var i = 0; i < 100; i++) {
+							r1 = new RegExp('NAME="GRID_NAME_'+i+'" VALUE="([^"]+)">', '');
+							r1 = r1.exec(rs);
+							if (r1) {
+								r1 = r1[1];
+								r2 = new RegExp('NAME="GRID_ADDRESS_'+i+'" VALUE="([^"]+)">', '');
+								r3 = new RegExp('NAME="GRID_ACCT_NUM_'+i+'" VALUE="([^"]+)">', '');
+								r2 = r2.exec(rs)[1];
+								r3 = r3.exec(rs)[1];
+								
+								requests.push([r1, r2, r3]);
+								//HOWARD_EIFERMAN_water(r1,r2,r3); // LOAD_FUNC !!
+								
+							} else { // the last
+								console.log('total_water_to_load:'+ (i));
+								total_water_to_load = i - 1;
+								break;
+							}
+						}
+						// Output the "account names" for the final question: "Is this a biz or person?"
 						//
-					} else sb++;
-					// total
-					r = /<td width="90" align="right" class="totalText">\$([\d,\.]+)/.exec(rs);
-					if (r) {
-						r = r[1];//.replace(/,/, '');
-						document.getElementById('Field2').value = r;
-					} else sb++;
-					//table
-					//<!---------------Table #9, Outstanding Property Taxes Table------------------>
-					r = /<!---------------Table #9, Outstanding Property Taxes Table------------------>((.|\s)*?(?=<!--end of table #9-->|$)|$)/
-					r = r.exec(rs);
-					if (r) {
-						r = r[1]
-						d1.innerHTML += 't:'+r+'<br>';
-						if (r.indexOf("<font color='red'>") != -1)
-							document.getElementById('Field3').value = 'Y';
-						else
-							document.getElementById('Field3').value = 'N';
-						
-					} else sb++;
-					
-					if (sb == 4 && /value="\d{2,}"[\r\n\t\s]*name="BLOCK"/.exec(rs)) {
-						document.getElementById('Field2').value = '0';
-						document.getElementById('Field3').value = 'N';
-						AUTO_SUBMIT++;
-						if (AUTO_SUBMIT == 2) {
-							document.getElementById('submitButton').click();
+						//
+						var wtr_biz_nm;
+						var i = 0;
+						console.log(dom.getElementsByName('GRID_NAME_'+i));
+						console.log(dom.getElementsByName('GRID_NAME_'+i).length);
+						console.log(dom.getElementsByName('GRID_NAME_'+i)[0]);
+						while (wtr_biz_nm = dom.getElementsByName('GRID_NAME_'+i)) { // && wtr_biz_nm && wtr_biz_nm.length
+							if (wtr_biz_nm.length == 0) break;
+							console.log('WATER NAME:------------------------------------');
+							console.log(wtr_biz_nm);
+							d3.innerText += wtr_biz_nm[0].value + "\n";
+							i++; // Increment and continue....
+						}
+						// ... ... ...
+						//
+						//
+						if (total_water_to_load != -1) {
+							if (AMT__Global_Vars.isPreview) {
+								AMT___Floater.accept();
+							} else {
+								
+								// Is this an alarm request!!??
+								if (watch_for_alarm) {
+									
+									return; // !!
+								}
+								
+								// run
+								var r;
+								for (var i in requests) {
+									r = requests[i];
+									HOWARD_EIFERMAN_water(r[0], r[1], r[2]); // EACH WATER BILL !
+								}
+								HOWARD_EIFERMAN_tax__property_init(); // INIT PROPERTY !
+							}
+						}
+						if (total_water_to_load == -1) {
+							// err?
+							if (rs.indexOf('VALUE="The BBL was not found. Please verify the BBL, correct the values, and search again.">') != -1) {
+								
+								if (AMT__Global_Vars.isPreview)
+									AMT___Floater.skip();
+								d2.value += 'water:"BBL was not found"'+"\n";
+								d2.style.border = '4px solid orange';
+								
+								// GO TO HOWARD_EIFERMAN_tax__property_init!
+								//
+								document.getElementById('Field1').value = '0';
+								HOWARD_EIFERMAN_tax__property_init();
+								return;
+							}
+							
+							if (/value="\d{2,}"[\r\n\t\s]*name="BLOCK"/.exec(rs)) {
+								console.log('x01');
+								//document.getElementById('Field1').value = '0';
+								
+								// AGAIN !?
+								setTimeout(function() {
+									HOWARD_EIFERMAN_water__init();
+								}, 1000);
+							} else {
+								// THIS WILL DO AN ALARM IF NYCSERV.GOV
+								// SITE SLOWS DOWN
+								setTimeout(function() {
+									HOWARD_EIFERMAN_water__init(true);
+								}, 10000);
+								console.log('x02');
+							}
 						}
 					}
-				}
-			});
-		}
-		
-		function HOWARD_EIFERMAN_water__round(num) {
-			if (total_water_loaded == total_water_to_load) {
-				total_water_amount = Math.round(total_water_amount * 100) / 100;
-				var x = (total_water_amount + '').split('.');
-				if (x.length == 1)  {
-					total_water_amount = total_water_amount + '.00';
-				} else {
-					if (x[1].length == 1) { // .1, .2, etc.
-						total_water_amount = x[0] + '.' + x[1] + '0';
-					} else if (x[1].length > 2) { // .002, .000004, etc.
-						total_water_amount = x[0] + '.' + x[1].substr(0, 2);
+				});
+			}
+			
+			function try_auto() {
+				for (var i = 1; i<=4; i++) {
+					if (document.getElementById('Field'+i).value.trim() == '') {
+						return false;
 					}
 				}
-				//total_water_amount = /\.(\d+)/
-				document.getElementById('Field1').value = total_water_amount;
-				
-				AUTO_SUBMIT++;
-				if (AUTO_SUBMIT == 2) {
-					//document.getElementById('submitButton').click();
+				// Here?
+				// This: "ELLISON, JEFFREY<br>ELLISON, DEBRA"
+				if (o.names.length) {
+					for (var i in o.names) {
+						if (/ (llc|inc|realty|corp)\.?(<|$)/.exec(o.names[i])) { // < or $
+							d4b.click(); // Click "No" button
+						}
+						return; // Quit...
+					}
 				}
 			}
-		}
-		function HOWARD_EIFERMAN_water(n,a,an) {
 			
-			var INPUTS = [n,a,an];
-			console.log('water');
-			console.log(block + ' ' + lot + ' ' + block2 + ' ' + lot2); 
+			function HOWARD_EIFERMAN_tax__property_init() {
+				//property
+				GM_xmlhttpRequest({
+					method: "POST",
+					url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
+					data: d2_1,
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						var rs=response.responseText;
+
+						var sb = 0;
+						
+						console.log(rs);
+						var r, r2;
+						
+						/**
+						 * 
+						 * NEW
+						 <td width="120" valign="top" class="detailStatus"><b>Name(s):</b></td>
+			 <td width="160" valign="top" class="detailStatus">COYNE, HAROD/TRUSTTE 
+			 <!-- Code Changes for defect NYCS200006185  -->
+			</td>
+						*/
+						/**
+						 * NEW 2
+						 <a href="javascript:browserpopupNames('ELLISON, JEFFREY<br>ELLISON, DEBRA')">    more...</a> </td>
+						 */
+						// Names
+						r  = /<a href="javascript:browserpopup\([\r\n\t\s]+'([^']+)',/.exec(rs);
+						r2 = /<td width="120" valign="top" class="detailStatus"><b>Name\(s\):<\/b><\/td>[\r\n\t\s]+<td width="160" valign="top" class="detailStatus">([^<]+)<!-- Code Changes for defect NYCS200006185  -->[\r\n\t\s]+<\/td>/.exec(rs);
+						// E.G. ELLISON, JEFFREY<br>ELLISON, DEBRA
+						r3 = /<a href="javascript:browserpopupNames\('((.|\s)*?(?='\)">    *more...<\/a> <\/td>|$)|$)/.exec(rs); //
+						if (r) {
+							r = r[1];
+							d1.innerHTML += r+'<br>';
+							o.names.push(r1);
+						} else if (r2) {
+							r2 = r2[1];
+							d1.innerHTML += r2+'<br>';
+							o.names.push(r2);
+						} else if (r3) {
+							r3 = r3[1];
+							d1.innerHTML += r3+'<br>';
+							o.names.push(r3);
+						} else sb++;
+						// amounts
+						r = /<input name="check0"/.exec(rs);
+						if (r) {
+							//
+						} else sb++;
+						// total
+						r = /<td width="90" align="right" class="totalText">\$([\d,\.]+)/.exec(rs);
+						if (r) {
+							r = r[1];//.replace(/,/, '');
+							document.getElementById('Field2').value = r;
+						} else sb++;
+						//table
+						//<!---------------Table #9, Outstanding Property Taxes Table------------------>
+						r = /<!---------------Table #9, Outstanding Property Taxes Table------------------>((.|\s)*?(?=<!--end of table #9-->|$)|$)/
+						r = r.exec(rs);
+						if (r) {
+							r = r[1]
+							d1.innerHTML += 't:'+r+'<br>';
+							if (r.indexOf("<font color='red'>") != -1)
+								document.getElementById('Field3').value = 'Y';
+							else
+								document.getElementById('Field3').value = 'N';
+							
+						} else sb++;
+						// Field 2/3
+						if (sb == 4 && /value="\d{2,}"[\r\n\t\s]*name="BLOCK"/.exec(rs)) {
+							document.getElementById('Field2').value = '0';
+							document.getElementById('Field3').value = 'N';
+						}
+						// Try auto submit
+						try_auto();
+					}
+				});
+			}
 			
-			var n = encodeURIComponent(n);
-			var a = encodeURIComponent(a);
-			var an = encodeURIComponent(an);
-			var n2 = encodeURIComponent(n);
-			var a2 = encodeURIComponent(a);
-			var an2 = encodeURIComponent(an);
-			var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D'+an2+'%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D'+an2+'%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER='+an+'&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'+'&random='+Math.random();
-			
-			//&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch
-			//var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH=3&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D7000271267001%7CBOROUGH%3D3%7CBLOCK%3D01174%7CLOT%3D0001%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D7000271267001%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER=7000271267001&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'
-			
-			console.log(d1_2);
-			
-			GM_xmlhttpRequest({
-				method: "POST",
-				url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
-				data: d1_2,
-				timeout: 4000,
-				ontimeout: function() {
-					console.log('timeout');
-					HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
-				},
-				onerror: function() {
-					console.log('error');
-					HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
-				},
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				},
-				onload: function(response) {
-					console.log(response);
-					var rs=response.responseText;
+			function HOWARD_EIFERMAN_water__round(num) {
+				if (total_water_loaded == total_water_to_load) {
+					total_water_amount = Math.round(total_water_amount * 100) / 100;
+					var x = (total_water_amount + '').split('.');
+					if (x.length == 1)  {
+						total_water_amount = total_water_amount + '.00';
+					} else {
+						if (x[1].length == 1) { // .1, .2, etc.
+							total_water_amount = x[0] + '.' + x[1] + '0';
+						} else if (x[1].length > 2) { // .002, .000004, etc.
+							total_water_amount = x[0] + '.' + x[1].substr(0, 2);
+						}
+					}
+					//total_water_amount = /\.(\d+)/
+					document.getElementById('Field1').value = total_water_amount;
 					
-					if (rs.indexOf('VALUE="There are no open charges on account') != -1) {
-						total_water_loaded++;
-						total_water_amount += 0;
-						HOWARD_EIFERMAN_water__round();
-						return;
+					AUTO_SUBMIT++;
+					if (AUTO_SUBMIT == 2) {
+						//document.getElementById('submitButton').click();
 					}
 					
-					var r;
-					
-					 
-					//<td width="150" align="right" class="totalText">             <font color = "red">$(10,371.69)</font>
-					r = /<td width="150" align="right" class="totalText">[\r\n\t\s]+<font color = "red">\$\(([\d,\.]+)/.exec(rs);
-					if (r) {
+					try_auto();
+				}
+			}
+			function HOWARD_EIFERMAN_water(n,a,an) {
+				
+				var INPUTS = [n,a,an];
+				console.log('water');
+				console.log(block + ' ' + lot + ' ' + block2 + ' ' + lot2); 
+				
+				var n = encodeURIComponent(n);
+				var a = encodeURIComponent(a);
+				var an = encodeURIComponent(an);
+				var n2 = encodeURIComponent(n);
+				var a2 = encodeURIComponent(a);
+				var an2 = encodeURIComponent(an);
+				var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH='+o.br+'&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D'+an2+'%7CBOROUGH%3D'+o.br+'%7CBLOCK%3D'+block2+'%7CLOT%3D'+lot2+'%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D'+an2+'%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER='+an+'&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'+'&random='+Math.random();
+				
+				//&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch
+				//var d1_2 = 'GRID_INDEX_0=0&GRID_NAME_0='+n+'&GRID_ADDRESS_0='+a+'&GRID_ACCT_NUM_0='+a+'&BOROUGH=3&BLOCK='+block+'&LOT='+lot+'&ChannelType=ct%2FBrowser&RequestType=rt%2FBusiness&SubSystemType=st%2FPayments&AgencyType=at%2FDEP&ServiceName=DEP_WATER_CHARGE_SEARCH&MethodName=NONE&PageID=WaterChargeSelectItem&ParamCount=0&LinkType=EMPTY&NycservRequest=ChannelType%3Dct%2FBrowser%7CRequestType%3Drt%2FBusiness%7CSubSystemType%3Dst%2FPayments%7CAgencyType%3Dat%2FDEP%7CServiceName%3DDEP_WATER_CHARGE_SEARCH%7CMethodName%3DNONE%7CParamCount%3Dundefined%7CGRID_INDEX_0%3D0%7CGRID_NAME_0%3D'+n2+'%7CGRID_ADDRESS_0%3D'+a2+'%7CGRID_ACCT_NUM_0%3D7000271267001%7CBOROUGH%3D3%7CBLOCK%3D01174%7CLOT%3D0001%7CPageID%3DWaterChargeSelectItem%7CLinkType%3DEMPTY%7CWATER_CHARGE_ACC_NUMBER%3D7000271267001%7CWATER_PAYMENT_HISTORY_ACC_NUMBER%3DNONE%7CPAGE_CALLED_FROM%3DWaterChargeSearch&WATER_CHARGE_ACC_NUMBER=7000271267001&WATER_PAYMENT_HISTORY_ACC_NUMBER=NONE&PAGE_CALLED_FROM=WaterChargeSearch'
+				
+				console.log(d1_2);
+				
+				GM_xmlhttpRequest({
+					method: "POST",
+					url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
+					data: d1_2,
+					timeout: 4000,
+					ontimeout: function() {
+						console.log('timeout');
+						HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
+					},
+					onerror: function() {
+						console.log('error');
+						HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
+					},
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					onload: function(response) {
+						console.log(response);
+						var rs=response.responseText;
+						
+						if (rs.indexOf('VALUE="There are no open charges on account') != -1) {
+							total_water_loaded++;
+							total_water_amount += 0;
+							HOWARD_EIFERMAN_water__round();
+							return;
+						}
+						
+						var r;
+						
+						 
+						//<td width="150" align="right" class="totalText">             <font color = "red">$(10,371.69)</font>
+						r = /<td width="150" align="right" class="totalText">[\r\n\t\s]+<font color = "red">\$\(([\d,\.]+)/.exec(rs);
+						if (r) {
+							r = r[1].replace(/,/, '');
+							r = r*1;
+							total_water_amount += r;
+							total_water_loaded++;
+							HOWARD_EIFERMAN_water__round();
+							return;
+						}
+
+						r = /<td width="150" align="right" class="totalText">[\r\n\t\s]+\$([\d,\.]+)/.exec(rs);
+						if (!r) {
+							console.log('xx');
+							
+							HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
+							
+							//~ total_water_loaded++;
+							//~ if (total_water_loaded == total_water_to_load) {
+								//~ document.getElementById('Field1').value = total_water_amount;
+							//~ }
+							return;
+						}
+						
 						r = r[1].replace(/,/, '');
 						r = r*1;
+						console.log('$>>'+r);
 						total_water_amount += r;
+						
 						total_water_loaded++;
 						HOWARD_EIFERMAN_water__round();
-						return;
 					}
-
-					r = /<td width="150" align="right" class="totalText">[\r\n\t\s]+\$([\d,\.]+)/.exec(rs);
-					if (!r) {
-						console.log('xx');
-						
-						HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
-						
-						//~ total_water_loaded++;
-						//~ if (total_water_loaded == total_water_to_load) {
-							//~ document.getElementById('Field1').value = total_water_amount;
-						//~ }
-						return;
-					}
-					
-					r = r[1].replace(/,/, '');
-					r = r*1;
-					console.log('$>>'+r);
-					total_water_amount += r;
-					
-					total_water_loaded++;
-					HOWARD_EIFERMAN_water__round();
-				}
-			});
+				});
+			}
 		}
+		new run().f();
+		return;
 	}
 	
 	//
