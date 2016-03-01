@@ -175906,7 +175906,7 @@ qatar,80
 					method: "POST",
 					url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
 					data: d1_1,
-					timeout: 4000,
+					timeout: 10000,
 					ontimeout: function() {
 						console.log('timeout');
 						HOWARD_EIFERMAN_water__init();
@@ -176184,7 +176184,7 @@ qatar,80
 					method: "POST",
 					url: 'http://nycserv.nyc.gov/NYCServWeb/NYCSERVMain',
 					data: d1_2,
-					timeout: 4000,
+					timeout: 10000,
 					ontimeout: function() {
 						console.log('timeout');
 						HOWARD_EIFERMAN_water(INPUTS[0],INPUTS[1],INPUTS[2]);
