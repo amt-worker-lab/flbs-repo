@@ -175767,7 +175767,8 @@ qatar,80
 				x = 2;
 			}
 			var o = {
-				br: x
+				br: x,
+				names: [], // global store of names
 			}
 			// d4a / b onclick
 			//d4a.onclick = 
@@ -175965,6 +175966,9 @@ qatar,80
 							console.log('WATER NAME:------------------------------------');
 							console.log(wtr_biz_nm);
 							d3.innerText += wtr_biz_nm[0].value + "\n";
+							//~ console.log(o);
+							//~ console.log(o.names);
+							o.names.push(wtr_biz_nm[0].value); // Add to global names.....
 							i++; // Increment and continue....
 						}
 						// ... ... ...
@@ -176023,6 +176027,8 @@ qatar,80
 								console.log('x02');
 							}
 						}
+						// Try auto...
+						try_auto();
 					}
 				});
 			}
@@ -176034,13 +176040,17 @@ qatar,80
 					}
 				}
 				// Here?
+				// First, turn the BG color so 
+				// we will know job is done. ("Job's done!")
+				document.body.style.backgroundColor = 'aqua';
 				// This: "ELLISON, JEFFREY<br>ELLISON, DEBRA"
+				console.log(o.names);
 				if (o.names.length) {
 					for (var i in o.names) {
-						if (/ (llc|inc|realty|corp)\.?(<|$)/.exec(o.names[i])) { // < or $
+						if (/ (llc|trust|trustee|inc|ltd|realty|corp|church)\.?(<|$)/i.exec(o.names[i])) { // < or $
 							d4b.click(); // Click "No" button
+							return; // Quit...
 						}
-						return; // Quit...
 					}
 				}
 			}
@@ -176082,7 +176092,7 @@ qatar,80
 						if (r) {
 							r = r[1];
 							d1.innerHTML += r+'<br>';
-							o.names.push(r1);
+							o.names.push(r);
 						} else if (r2) {
 							r2 = r2[1];
 							d1.innerHTML += r2+'<br>';
@@ -176126,7 +176136,7 @@ qatar,80
 					}
 				});
 			}
-			
+			//
 			function HOWARD_EIFERMAN_water__round(num) {
 				if (total_water_loaded == total_water_to_load) {
 					total_water_amount = Math.round(total_water_amount * 100) / 100;
@@ -176143,11 +176153,11 @@ qatar,80
 					//total_water_amount = /\.(\d+)/
 					document.getElementById('Field1').value = total_water_amount;
 					
-					AUTO_SUBMIT++;
-					if (AUTO_SUBMIT == 2) {
-						//document.getElementById('submitButton').click();
-					}
-					
+					//~ AUTO_SUBMIT++;
+					//~ if (AUTO_SUBMIT == 2) {
+						//~ document.getElementById('submitButton').click();
+					//~ }
+					// Try auto...
 					try_auto();
 				}
 			}
