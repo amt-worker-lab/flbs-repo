@@ -67,7 +67,7 @@ function mturk_load()
 			}
 			
 			// Are we at "All HITs Available to You"?
-			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
+			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 			
 			var myHITsNoneAvailable = ih.indexOf('There are currently no HITs assigned to you.');
 			
@@ -166,32 +166,34 @@ function mturk_load()
 		 * However, stop running if on the "No more HITs available" page
 		 */
 		var l = document.location.href;
+		var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
+		console.log('x0');
+		console.log(l);
+		console.log(check_right_page);
 		if  (
 			!( // Running on any of the following:
 			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
 			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
 			) ||
-			
-			/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(ih)
+			check_right_page
 			)
-		{
-			if(document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1) {
-				AMT__Global_Vars.initializeNextTabPassBy();
-				new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
-				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {
-					doSubmit(false, false, function(timeToSkip){
+		{	console.log('x1');
+			if(document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1) {console.log('x2');
+				AMT__Global_Vars.initializeNextTabPassBy();console.log('x3');
+				new AMT___core_factory().createScriptVar('Reload on No Hits', 0);console.log('x4');
+				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {console.log('x5');
+					doSubmit(false, false, function(timeToSkip){console.log('x6');
 						window.setTimeout(function() {
 									window.location.reload(true);
 								}
 								, timeToSkip);
 								
 					}
-					, 1000);
+					, 1000);console.log('x7');
 				}
 			}
 			console.log('Hit the "All HITs" page. Returning.');
-			
 			return;
 		}
 		AMT__Global_Vars.isTopWindow = true;
