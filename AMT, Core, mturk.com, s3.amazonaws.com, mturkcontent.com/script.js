@@ -64724,9 +64724,8 @@ function MT__RUN() {
 			}
 		}, 60);
 	}
-	
-	//
 	// Giphy
+	//
 	// 
 	// 
 	s = 'Please carefully read the individual ratings for each rating. Rate each GIF according to the criteria. Please do not provide the rating for the original media!';
@@ -64759,7 +64758,6 @@ function MT__RUN() {
 				container: p[3],
 			}
 			
-			
 			var rf = new AMT___requests_factory();
 			o.imgMd5 = rf.general_functions__md5(o.imgSrc) + '.gif';// + '2x';
 			o.img2xFileName = MT___host + '/mturk/.cached/' + o.imgMd5+ '2x.gif';
@@ -64768,8 +64766,6 @@ function MT__RUN() {
 			//Add to images on the page, and get ready to change their source once the polling is through
 			var img2x = o.img2x = document.createElement('img');
 			var img3x = o.img3x = document.createElement('img');
-			
-
 			
 			o.container.insertBefore(img2x,img[0]);
 			o.container.insertBefore(img3x,img[0]);
@@ -64851,11 +64847,8 @@ function MT__RUN() {
 					doSubmit();
 				}
 			}, 60);
-		
-
 		}
 		new run().f();
-	
 	}
 	
 	//
