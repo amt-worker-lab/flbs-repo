@@ -88928,7 +88928,7 @@ qatar,80
 				var allLi = document.getElementsByTagName('li');
 				var wasPressed = false;
 				var tmp = e.keyCode;
-				if(AMT__Global_Vars.scriptVars['reverse hotkeys'] == '0') {
+				if(AMT__Global_Vars.scriptVars['reverse hotkeys'] == '1') {
 					switch(tmp) {
 						case 49: tmp = 52
 						break;
@@ -88966,7 +88966,6 @@ qatar,80
 					break;
 				}
 				console.log(tmp);
-				return;
 				if(wasPressed && document.getElementsByName('Category')[0].value) {
 					doSubmit();
 					// Minimize images
