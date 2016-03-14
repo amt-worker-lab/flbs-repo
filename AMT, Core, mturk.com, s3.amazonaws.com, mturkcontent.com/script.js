@@ -73311,11 +73311,14 @@ function MT__RUN() {
 	}
 	
 	/**
-	 * zip codes
+	 * Zip codes
 	 * 
 	 * ReachLocal
 	 * Stephanie Hass
 	 * Anik Ray
+	 * Seth Hays
+	 * Eric McGehearty
+	 * Emily Mchale
 	 * 
 	 */
 	
@@ -73594,14 +73597,16 @@ function MT__RUN() {
 	}
 	
 	// Stephanie Hass
-	// 
+	// **Emily Mchale**: "For this attraction below, find the postal code"
 	// 
 	// 
 	s  = '<li>For this restaurant below, find the postal code</li>';
 	s2 = 'If there is no postal code, write NA';
+	var s3 = 'For this attraction below, find the postal code';
 	if  (
-		ih.indexOf(s)  != -1 &&
-		ih.indexOf(s2) != -1
+		ih.indexOf(s)  != -1 ||
+		ih.indexOf(s2) != -1 ||
+		ih.indexOf(s3) != -1
 		)
 	{
 		var run = function(){}
@@ -73618,7 +73623,6 @@ function MT__RUN() {
 			var addr1 = [];
 			var addr2 = [];
 			addr2.push(nm);
-			
 			for (var i = 0; i<=3; i++) {
 				addr1.push(b[i].innerText.trim())
 			}
@@ -73629,7 +73633,8 @@ function MT__RUN() {
 			// blank str addr or str addr == city
 			if (b[0].innerText.trim() == '' || b[0].innerText.trim() == b[1].innerText.trim())
 				addr1.unshift(nm); // !
-			
+			// o...
+			// Note: Skip if text is "NULL"
 			var o = {
 				comp: nm,
 				addr: b[0].innerText.trim(),
@@ -73637,9 +73642,13 @@ function MT__RUN() {
 				state: b[2].innerText.trim(),
 				state_abbr: '',
 				country: b[3].innerText.trim(),
-				
 				use_proxy: true
 			};
+			// Remove "NULL"
+			o.comp = (o.comp == 'NULL') ? '' : o.comp ;
+			o.addr = (o.addr == 'NULL') ? '' : o.addr ;
+			o.city = (o.city == 'NULL') ? '' : o.city ;
+			o.state = (o.state == 'NULL') ? '' : o.state ;
 			//http://www.cwcsoftware.com/webhelp/Transactions/Canadian_province_codes.htm
 			switch(o.state) {
 				case 'Alberta':
@@ -73713,13 +73722,11 @@ function MT__RUN() {
 				//~ d1.value += ', Australia';
 			//~ } else return;
 			
-			//~ var google = true;
-			
 			var firstRun = true;
 			var num_tries = 0;
-			
+			// Init
 			MT___google_api_geocode(d1.value, Stephanie_Hass_restaurant_zipcode, true, o.use_proxy); //(location, callback_function, return_complete_response, use_a_proxy)
-			
+			// Stephanie_Hass_restaurant_zipcode__increment
 			function Stephanie_Hass_restaurant_zipcode__increment(rs) {
 				if (num_tries == 0) {
 					num_tries++;
