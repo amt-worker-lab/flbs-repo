@@ -73616,9 +73616,14 @@ function MT__RUN() {
 			GM_addStyle('.highlight-box {position:absolute;top:2000px;left:0;}');
 			GM_addStyle('#submitButton {width:100%;height:80px;margin-top:10px;}');
 			GM_addStyle('input {width:96%;}');
-			
+			//
 			var b = document.getElementsByTagName('b');
 			var nm= document.getElementsByTagName('strong')[0].innerText;
+			// Add an extra "b" element if necessary
+			// e.g.: [<b>​963, Jung1-dong, Haeundae-gu​</b>​, <b>​Busan​</b>​, <b>​4129534​</b>​]
+			if (b.length == 3) {
+				b[3] = ''.div(); // Empty div
+			}
 			
 			var addr1 = [];
 			var addr2 = [];
@@ -73645,10 +73650,18 @@ function MT__RUN() {
 				use_proxy: true
 			};
 			// Remove "NULL"
-			o.comp = (o.comp == 'NULL') ? '' : o.comp ;
-			o.addr = (o.addr == 'NULL') ? '' : o.addr ;
-			o.city = (o.city == 'NULL') ? '' : o.city ;
-			o.state = (o.state == 'NULL') ? '' : o.state ;
+			o.comp = (o.comp == 'NULL') ? '' : o.comp;
+			o.addr = (o.addr == 'NULL') ? '' : o.addr;
+			o.city = (o.city == 'NULL') ? '' : o.city;
+			o.state = (o.state == 'NULL') ? '' : o.state;
+			o.country = (o.country == 'NULL') ? '' : o.country;
+			// If State is missing or Country is missing...
+			if (ih.indexOf('State:') == -1) {
+				o.state = '';
+			}
+			if (ih.indexOf('Country:') == -1) {
+				o.country = '';
+			}
 			//http://www.cwcsoftware.com/webhelp/Transactions/Canadian_province_codes.htm
 			switch(o.state) {
 				case 'Alberta':
@@ -73674,7 +73687,7 @@ function MT__RUN() {
 					break;
 			}
 			console.log(o);
-			
+			// Istanbul
 			if (o.city == 'Istanbul') {
 				o.city = '';
 				o.addr = o.addr.replace(/((no|d|k)[:\.\/ ]+[a-z0-9\/]+ *)*$/gi, '').trim();
@@ -73743,8 +73756,7 @@ function MT__RUN() {
 						return;
 					}
 				}
-				
-				if (num_tries == 1)
+				if (num_tries == 1) // Try with name
 				{
 					num_tries++;
 					firstRun = false;
