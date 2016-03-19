@@ -14,17 +14,26 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
+	// Init Scrapy Tasks
+	// NOTE: If the init__scrapy function returns false
+	// then there was an "s" match. In which case end now.
+	//
+	//
+	if (!init__scrapy()) return;
+	// ...
+	// Begin tasks...
+	//
+	// Global vars...
+	var s, s2, s3;
 	
-	
-	
-	
-	
-	
-	
+	// KoMarketing Associates
+	//
+	//
+	//
 	s = '<p>The search query you would enter in Google would look like this: <em>john smith + abc company + linkedin';
 	if(ih.indexOf(s) != -1) {
 		console.log('in here');
-	var run = function() {};
+		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			
@@ -100,25 +109,22 @@ function MT__RUN() {
 			 * function
 			 */
 			function getnextpage() {
-				
 				o.time_since_last_init = 0; // reset this!
 				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: o.url,
-					ontimeout: function() {
-						document.body.style.backgroundColor = 'black';
-						alert();
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'black';
+							alert();
+							return false;
+						}
+						return true;
 					},
-					onerror: function() {
-						document.body.style.backgroundColor = 'black';
-						alert();
-					},
-					timeout: 20000,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status > 200) {
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						//var dom = new DOMParser().parseFromString(rs, 'text/html');
+						if (options.response.status > 200) {
 							document.body.style.backgroundColor = 'blue';
 							if (/captcha/.exec(rs)) {
 								document.body.style.backgroundColor = 'pink';
@@ -131,89 +137,44 @@ function MT__RUN() {
 								return;
 							}
 							return;
-						} 
-						
-						var errors = [
-							'The image is too big, or the network connection is too slow to download it.',
-							'The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.',
-							'The URL doesn\'t refer to an image, or the image is not publicly accessible.',
-							'Images must be smaller than 20MB.',
-							'The image is no longer available or is not publicly accessible.'
-						];
-						var has_error = false;
-						for (var i in errors) {
-							var err = errors[i];
-							if (rs.indexOf(err) != -1) {
-								if (q.value == '') {
-									document.body.style.backgroundColor = 'LightGreen';
-									q.value = 'NONE';
-									doSubmit('hitForm');
-								}
-								//~ has_error = true;
-								//~ d2.value = err;
-								//~ d2.style.border = '8px dashed green';
-								//~ d2.style.backgroundColor = 'MintCream';
-								//~ chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
-								return;
-							}
 						}
-
-						
-						
-						// NO LONGER SPLITTING THE PAGE BY "BEST MATCH" AND 
-						// "VISUALLY SIMILAR IMAGES". Instead of this remove
-						// anything prior to "Pages that include matching images"
-						// if it shows up!
-						// >Pages that include matching images<
-						if (rs.indexOf('>Pages that include matching images<') != -1) {
-							rs = rs.split('>Pages that include matching images<');
-							rs.shift(); // remove first!
-							rs = rs.join('>Pages that include matching images<');
-							//~ console.log(rs);
-						}
-						
-						var r, m;
-						
 						// results
+						var r, m;
 						// <h3 class="r"><a href="http://www.emedicinehealth.com/broken_arm/page11_em.htm"
 						r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
 						var count = 0;
 						if (r.exec(rs)) {
 							r.lastIndex = 0;
 							while (m = r.exec(rs)) {
-								//~ if (m[2].indexOf('>Translate this page<') == -1) {
-									
-									// replace "harm your comp."
-									m[1] = m[1].replace(/^\/interstitial\?url=/, '');
-									
-									// "/url?url=http://www.oregonlive.com/blazers/index.ssf/2015/04/10_adjustments_for_the_blazers_to_win_game_2.html&amp;rct=j&amp;q=&amp;esrc=s&amp;sa=U&amp;ved=0CCIQFjAAahUKEwiWiZT505THAhUMooAKHbnqCEc&amp;sig2=FUjgtEbgHmIeAOosyDcDvQ&amp;usg=AFQjCNEnjPmevSe7Kvf1-aSBKOpt1UUpEA"
-									if (m[1].indexOf('/url?url=') == 0) {
-										m[1] = m[1].replace('/url?url=', ''); // Replace first
-										m[1] = m[1].replace(/&amp;[\d\D]+/, ''); // Replace rest
-										m[1] = decodeURIComponent(m[1]);
-									}
-									
-									if (!/^(https?|ftp):\/\//.exec(m[1])) {
-										alert('x');
-										console.log(m);
-										return;
-									}
-									var theLink = m[1].replace(/&amp;/gi, '&') +' '+"\n";
-									d2.value = (d2.value*1) + 1;
-									count++;
-									if(theLink.indexOf('linkedin.com/in/') != -1 &&
-									   theLink.match(/^https?:\/\/[^\.]+.linkedin/i)) {
-										o.q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
-										break;
-									}
-									else {
-										console.log('case of skip over ' + theLink);
-									}
-								//~ }
+								// replace "harm your comp."
+								m[1] = m[1].replace(/^\/interstitial\?url=/, '');
+								// "/url?url=http://www.oregonlive.com/blazers/index.ssf/2015/04/10_adjustments_for_the_blazers_to_win_game_2.html&amp;rct=j&amp;q=&amp;esrc=s&amp;sa=U&amp;ved=0CCIQFjAAahUKEwiWiZT505THAhUMooAKHbnqCEc&amp;sig2=FUjgtEbgHmIeAOosyDcDvQ&amp;usg=AFQjCNEnjPmevSe7Kvf1-aSBKOpt1UUpEA"
+								if (m[1].indexOf('/url?url=') == 0) {
+									m[1] = m[1].replace('/url?url=', ''); // Replace first
+									m[1] = m[1].replace(/&amp;[\d\D]+/, ''); // Replace rest
+									m[1] = decodeURIComponent(m[1]);
+								}
+								// correct extension
+								if (!/^(https?|ftp):\/\//.exec(m[1])) {
+									alert('x');
+									console.log(m);
+									return;
+								}
+								var theLink = m[1].replace(/&amp;/gi, '&');
+								d2.value = (d2.value*1) + 1;
+								count++;
+								if(theLink.indexOf('linkedin.com/in/') != -1 &&
+								   theLink.match(/^https?:\/\/[^\.]*\.linkedin/i)) {
+									o.q.value = theLink;//m[1].replace(/&amp;/gi, '&');
+									break;
+								}
+								else {
+									console.log('case of skip over ' + theLink);
+								}
 							}
 						}
+						// Results
 						console.log(count);
-						
 						if (count == 0) {
 							console.log('are there no links on the page?');
 							document.body.backgroundColor = 'yellow';
@@ -221,7 +182,7 @@ function MT__RUN() {
 							//window.open(o.url);
 							return;
 						}
-						
+						// Submit
 						if (o.q.value != '' && o.q.value.indexOf('linkedin.com/in/') != -1 ) {
 							console.log('dosubmit');
 							doSubmit();
@@ -237,28 +198,6 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// Init Scrapy Tasks
-	// NOTE: If the init__scrapy function returns false
-	// then there was an "s" match. In which case end now.
-	//
-	//
-	if (!init__scrapy()) return;
-	
-	// ...
-	// Begin tasks...
-	//
-	var s, s2, s3;
 	
 	// Ilya Levtov
 	// Record number of employees on Craft for each company
