@@ -21,10 +21,9 @@ function MT__RUN() {
 	
 	
 	
-	s = 'The search query you would enter in Google would look like this: john smith + abc company';
+	s = '<p>The search query you would enter in Google would look like this: <em>john smith + abc company + linkedin';
 	if(ih.indexOf(s) != -1) {
-	
-	
+		console.log('in here');
 	var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
@@ -38,22 +37,21 @@ function MT__RUN() {
 			
 			//~ var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
 			var o = {
-				name: document.getElementsByTagName('td')[1].innerText,
-				business: document.getElementsByTagName('td')[3].innerText
+				name: document.getElementsByTagName('td')[5].innerText.trim(),
+				business: document.getElementsByTagName('td')[7].innerText.trim(),
+				q: document.getElementById('web_url'),
+				start: 0,
+				num_zero_pages: 0,
+				time_since_last_init: 0,
+				url: ""
 			}
-			var url = "http://google.com/search?q=" + o.name +' + ' + o.business + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
+			o.url =  "http://google.com/search?q=" + o.name +' + ' + o.business + ' linkedin&filter=0';
 			
-			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
-			
-			console.log(url);
-			
-			var start = 0;
-			
-			var q = document.getElementById('Answer_1_FreeText');
+			console.log(o.url);
 			
 			var url_correct = false;
 			
-			var url_current = url;
+			//var url_current = url;
 			
 			/*BEGIN ITEMS*/
 			var d1=document.createElement('input'); //
@@ -69,35 +67,15 @@ function MT__RUN() {
 			var d2=document.createElement('input'); //
 			d2.setAttribute('type','text');
 			d2.setAttribute('value','0');
-			d2.setAttribute('style','position:absolute;top:40px;left:10%;width:10%;');
+			d2.setAttribute('style','position:absolute;top:40px;left:10%;width:30%;height:100px;');
 			document.body.appendChild(d2);
-			//
-			var d3=document.createElement('input'); //
-			d3.setAttribute('type','text');
-			d3.setAttribute('value','');
-			d3.setAttribute('style','position:absolute;top:40px;left:10%;width:10%;');
-			document.body.appendChild(d3);
 			/*END ITEMS*/
 			
-			// ...
-			var o = {
-				num_zero_pages: 0,
-				time_since_last_init: 0
-			};
 			
-			// Set interval!
-			var xint = setInterval(timer, 1000);
 			
 			// INIT
 			getnextpage();
-			
-			/**
-			 * function
-			 */
-			function timer() {
-				o.time_since_last_init++;
-				d3.value = 'LastTime:' + o.time_since_last_init + 's';
-			}
+
 			
 			function alert() {
 				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
@@ -116,7 +94,7 @@ function MT__RUN() {
 				
 				GM_xmlhttpRequest({
 					method: 'GET',
-					url: url_current,
+					url: o.url,
 					ontimeout: function() {
 						document.body.style.backgroundColor = 'aqua';
 						alert();
@@ -159,21 +137,7 @@ function MT__RUN() {
 								return;
 							}
 						}
-						//~ if  (
-							//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
-							//~ rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
-							//~ rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1 ||
-							//~ rs.indexOf('Images must be smaller than 20MB.') != -1
-							//rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1
-							//~ )
-						//~ {
-							//~ d2.value = 'The image is too big, or the network connection is too slow to download it.';
-							//~ d2.style.border = '8px dashed green';
-							//~ d2.style.backgroundColor = 'MintCream';
-							//~ console.log('The image is too big, or the network connection is too slow to download it.');
-							//~ return;
-						//~ }
-						
+
 						
 						
 						// NO LONGER SPLITTING THE PAGE BY "BEST MATCH" AND 
@@ -214,59 +178,29 @@ function MT__RUN() {
 										console.log(m);
 										return;
 									}
-									q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
+									var theLink = m[1].replace(/&amp;/gi, '&') +' '+"\n";
+									o.q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
 									d2.value = (d2.value*1) + 1;
 									count++;
+									if(theLink.indexOf('https://www.linkedin.com/in/') != -1) {
+										break;
+									}
+									else {
+										alert('case of no good imfeeling lucky ' + theLink);
+									}
 								}
 							}
 						}
 						console.log(count);
 						
 						if (count == 0) {
-							o.num_zero_pages++;
-							if (o.num_zero_pages > 6 && q.value != '') {
-								// Consider it done.
-								console.log('6 zero pages in a row');
-								doSubmit('hitForm');
-								return;
-							}
-						} else {
-							o.num_zero_pages = 0;
+							console.log('are there no links on the page?');
 						}
 						
-						// NEXT BUTTON
-						var utmp = /href="([^"]+)" id="pnnext" style="[^"]+"><span[^>]{0,}><\/span><span[^>]{0,}>Next<\/span>/.exec(rs);
 						
-						if  (
-								utmp
-							)
-						{
-							url_current = 'https://www.google.com' + utmp[1].replace(/&amp;/g, '&').replace(/(\?|&)num=\d+/g, '$1'); // NOTE (&num=xx) BROKEN! SEP2015
-							
-							console.log(url_current);
-							
-							if (url_current.indexOf('&filter=') == -1)
-								url_current += '&filter=0';
-							else
-								url_current = url_current.replace(/&filter=1/g, '&filter=0');
-								
-							setTimeout(function() {
-								getnextpage();
-							}, 440); // 1100 ?
-						}
-						else if (rs.indexOf('>Next<') == -1) {
-							if (q.value != '') {
-								doSubmit('hitForm');
-							}
-							else if (d2.value == '0') {
-								document.body.style.backgroundColor = 'yellow';
-								if (q.value == '')
-									q.value = 'NONE';
-								doSubmit('hitForm');
-							}
-							else {
-								console.log(q);
-							}
+						if (o.q.value != '') {
+							console.log('dosubmit');
+							//doSubmit();
 						}
 					}
 				});
