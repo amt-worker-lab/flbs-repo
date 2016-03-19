@@ -14,6 +14,279 @@ var beginRunTime = new Date().getTime();
  * 
  */
 function MT__RUN() {
+	
+	
+	
+	
+	
+	
+	
+	s = 'The search query you would enter in Google would look like this: john smith + abc company';
+	if(ih.indexOf(s) != -1) {
+	
+	
+	var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			
+			//GM_addStyle('body {width:20%}');
+			
+			GM_addStyle('ul {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {position:absolute;top:0px;left:30%;}');
+			GM_addStyle('#Answer_1_FreeText {position:absolute;top:80px;left:0;width:80%;height:120px;}');
+			
+			
+			//~ var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
+			var o = {
+				name: document.getElementsByTagName('td')[1].innerText,
+				business: document.getElementsByTagName('td')[3].innerText
+			}
+			var url = "http://google.com/search?q=" + o.name +' + ' + o.business + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
+			
+			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
+			
+			console.log(url);
+			
+			var start = 0;
+			
+			var q = document.getElementById('Answer_1_FreeText');
+			
+			var url_correct = false;
+			
+			var url_current = url;
+			
+			/*BEGIN ITEMS*/
+			var d1=document.createElement('input'); //
+			d1.setAttribute('type','button');
+			d1.setAttribute('style','position:absolute;top:40px;left:0;width:10%;cursor:pointer;');
+			document.body.appendChild(d1);
+			d1.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				document.body.style.backgroundColor = 'white';
+				getnextpage();
+			}
+			//
+			var d2=document.createElement('input'); //
+			d2.setAttribute('type','text');
+			d2.setAttribute('value','0');
+			d2.setAttribute('style','position:absolute;top:40px;left:10%;width:10%;');
+			document.body.appendChild(d2);
+			//
+			var d3=document.createElement('input'); //
+			d3.setAttribute('type','text');
+			d3.setAttribute('value','');
+			d3.setAttribute('style','position:absolute;top:40px;left:10%;width:10%;');
+			document.body.appendChild(d3);
+			/*END ITEMS*/
+			
+			// ...
+			var o = {
+				num_zero_pages: 0,
+				time_since_last_init: 0
+			};
+			
+			// Set interval!
+			var xint = setInterval(timer, 1000);
+			
+			// INIT
+			getnextpage();
+			
+			/**
+			 * function
+			 */
+			function timer() {
+				o.time_since_last_init++;
+				d3.value = 'LastTime:' + o.time_since_last_init + 's';
+			}
+			
+			function alert() {
+				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+				if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
+					setInterval(function() {
+						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+					}, 30000);
+				}
+			}
+			/**
+			 * function
+			 */
+			function getnextpage() {
+				
+				o.time_since_last_init = 0; // reset this!
+				
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url_current,
+					ontimeout: function() {
+						document.body.style.backgroundColor = 'aqua';
+						alert();
+					},
+					onerror: function() {
+						document.body.style.backgroundColor = 'aqua';
+						alert();
+					},
+					timeout: 20000,
+					onload: function (response) {
+						var rs = response.responseText;
+						
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'pink';
+							alert();
+							return;
+						}
+						
+						var errors = [
+							'The image is too big, or the network connection is too slow to download it.',
+							'The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.',
+							'The URL doesn\'t refer to an image, or the image is not publicly accessible.',
+							'Images must be smaller than 20MB.',
+							'The image is no longer available or is not publicly accessible.'
+						];
+						var has_error = false;
+						for (var i in errors) {
+							var err = errors[i];
+							if (rs.indexOf(err) != -1) {
+								if (q.value == '') {
+									document.body.style.backgroundColor = 'LightGreen';
+									q.value = 'NONE';
+									doSubmit('hitForm');
+								}
+								//~ has_error = true;
+								//~ d2.value = err;
+								//~ d2.style.border = '8px dashed green';
+								//~ d2.style.backgroundColor = 'MintCream';
+								//~ chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'}); // SOUND :)
+								return;
+							}
+						}
+						//~ if  (
+							//~ rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1 ||
+							//~ rs.indexOf('The image is too large (over 8000 by 6000 pixels), or Google can\'t read its encoding.') != -1 ||
+							//~ rs.indexOf('The URL doesn\'t refer to an image, or the image is not publicly accessible.') != -1 ||
+							//~ rs.indexOf('Images must be smaller than 20MB.') != -1
+							//rs.indexOf('The image is too big, or the network connection is too slow to download it.') != -1
+							//~ )
+						//~ {
+							//~ d2.value = 'The image is too big, or the network connection is too slow to download it.';
+							//~ d2.style.border = '8px dashed green';
+							//~ d2.style.backgroundColor = 'MintCream';
+							//~ console.log('The image is too big, or the network connection is too slow to download it.');
+							//~ return;
+						//~ }
+						
+						
+						
+						// NO LONGER SPLITTING THE PAGE BY "BEST MATCH" AND 
+						// "VISUALLY SIMILAR IMAGES". Instead of this remove
+						// anything prior to "Pages that include matching images"
+						// if it shows up!
+						// >Pages that include matching images<
+						if (rs.indexOf('>Pages that include matching images<') != -1) {
+							rs = rs.split('>Pages that include matching images<');
+							rs.shift(); // remove first!
+							rs = rs.join('>Pages that include matching images<');
+							//~ console.log(rs);
+						}
+						
+						var r, m;
+						
+						// results
+						// <h3 class="r"><a href="http://www.emedicinehealth.com/broken_arm/page11_em.htm"
+						r = /<h3 class="r"><a href="([^"]+)((.|\s)*?(?=<!--n-->|$)|$)/g;
+						var count = 0;
+						if (r.exec(rs)) {
+							r.lastIndex = 0;
+							while (m = r.exec(rs)) {
+								if (m[2].indexOf('>Translate this page<') == -1) {
+									
+									// replace "harm your comp."
+									m[1] = m[1].replace(/^\/interstitial\?url=/, '');
+									
+									// "/url?url=http://www.oregonlive.com/blazers/index.ssf/2015/04/10_adjustments_for_the_blazers_to_win_game_2.html&amp;rct=j&amp;q=&amp;esrc=s&amp;sa=U&amp;ved=0CCIQFjAAahUKEwiWiZT505THAhUMooAKHbnqCEc&amp;sig2=FUjgtEbgHmIeAOosyDcDvQ&amp;usg=AFQjCNEnjPmevSe7Kvf1-aSBKOpt1UUpEA"
+									if (m[1].indexOf('/url?url=') == 0) {
+										m[1] = m[1].replace('/url?url=', ''); // Replace first
+										m[1] = m[1].replace(/&amp;[\d\D]+/, ''); // Replace rest
+										m[1] = decodeURIComponent(m[1]);
+									}
+									
+									if (!/^(https?|ftpXXXXXXX):\/\//.exec(m[1])) {
+										alert('x');
+										console.log(m);
+										return;
+									}
+									q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
+									d2.value = (d2.value*1) + 1;
+									count++;
+								}
+							}
+						}
+						console.log(count);
+						
+						if (count == 0) {
+							o.num_zero_pages++;
+							if (o.num_zero_pages > 6 && q.value != '') {
+								// Consider it done.
+								console.log('6 zero pages in a row');
+								doSubmit('hitForm');
+								return;
+							}
+						} else {
+							o.num_zero_pages = 0;
+						}
+						
+						// NEXT BUTTON
+						var utmp = /href="([^"]+)" id="pnnext" style="[^"]+"><span[^>]{0,}><\/span><span[^>]{0,}>Next<\/span>/.exec(rs);
+						
+						if  (
+								utmp
+							)
+						{
+							url_current = 'https://www.google.com' + utmp[1].replace(/&amp;/g, '&').replace(/(\?|&)num=\d+/g, '$1'); // NOTE (&num=xx) BROKEN! SEP2015
+							
+							console.log(url_current);
+							
+							if (url_current.indexOf('&filter=') == -1)
+								url_current += '&filter=0';
+							else
+								url_current = url_current.replace(/&filter=1/g, '&filter=0');
+								
+							setTimeout(function() {
+								getnextpage();
+							}, 440); // 1100 ?
+						}
+						else if (rs.indexOf('>Next<') == -1) {
+							if (q.value != '') {
+								doSubmit('hitForm');
+							}
+							else if (d2.value == '0') {
+								document.body.style.backgroundColor = 'yellow';
+								if (q.value == '')
+									q.value = 'NONE';
+								doSubmit('hitForm');
+							}
+							else {
+								console.log(q);
+							}
+						}
+					}
+				});
+				return;
+			}
+		}
+		new run().f();
+		return;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Init Scrapy Tasks
 	// NOTE: If the init__scrapy function returns false
 	// then there was an "s" match. In which case end now.
