@@ -69,6 +69,18 @@ function MT__RUN() {
 			d2.setAttribute('value','0');
 			d2.setAttribute('style','position:absolute;top:40px;left:10%;width:30%;height:100px;');
 			document.body.appendChild(d2);
+
+
+			var naBut=document.createElement('input'); //
+			naBut.setAttribute('type','button');
+			naBut.setAttribute('value','N/A');
+			naBut.setAttribute('style','position:absolute;top:300px;left:10%;width:10%;height:100px;');
+			document.body.appendChild(naBut);
+			naBut.onclick = function() {
+				o.q.value = 'N/A';
+				doSubmit();
+			}
+
 			/*END ITEMS*/
 			
 			o.q.style.zoom = 4;
@@ -205,12 +217,16 @@ function MT__RUN() {
 						if (count == 0) {
 							console.log('are there no links on the page?');
 							document.body.backgroundColor = 'yellow';
+							naBut.click();							
+							//window.open(o.url);
+							return;
 						}
 						
 						if (o.q.value != '' && o.q.value.indexOf('://www.linkedin.com/in/') != -1 ) {
 							console.log('dosubmit');
 							doSubmit();
 						} else {
+							naBut.click();
 							document.body.style.backgroundColor = 'orange';
 						}
 					}
