@@ -71,7 +71,7 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			/*END ITEMS*/
 			
-			
+			o.q.style.zoom = 4;
 			
 			// INIT
 			getnextpage();
@@ -96,11 +96,11 @@ function MT__RUN() {
 					method: 'GET',
 					url: o.url,
 					ontimeout: function() {
-						document.body.style.backgroundColor = 'aqua';
+						document.body.style.backgroundColor = 'black';
 						alert();
 					},
 					onerror: function() {
-						document.body.style.backgroundColor = 'aqua';
+						document.body.style.backgroundColor = 'black';
 						alert();
 					},
 					timeout: 20000,
@@ -108,10 +108,19 @@ function MT__RUN() {
 						var rs = response.responseText;
 						
 						if (response.status > 200) {
-							document.body.style.backgroundColor = 'pink';
-							alert();
+							document.body.style.backgroundColor = 'blue';
+							if (/captcha/.exec(rs)) {
+								document.body.style.backgroundColor = 'pink';
+								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+								if(AMT__Global_Vars.scriptVarsp['JR_Wakeup_Alarm'] != '0') {
+									setInterval(function() {
+										chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+									},2000);
+								}
+								return;
+							}
 							return;
-						}
+						} 
 						
 						var errors = [
 							'The image is too big, or the network connection is too slow to download it.',
@@ -161,7 +170,7 @@ function MT__RUN() {
 						if (r.exec(rs)) {
 							r.lastIndex = 0;
 							while (m = r.exec(rs)) {
-								if (m[2].indexOf('>Translate this page<') == -1) {
+								//~ if (m[2].indexOf('>Translate this page<') == -1) {
 									
 									// replace "harm your comp."
 									m[1] = m[1].replace(/^\/interstitial\?url=/, '');
@@ -179,28 +188,30 @@ function MT__RUN() {
 										return;
 									}
 									var theLink = m[1].replace(/&amp;/gi, '&') +' '+"\n";
-									o.q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
 									d2.value = (d2.value*1) + 1;
 									count++;
-									if(theLink.indexOf('https://www.linkedin.com/in/') != -1) {
+									if(theLink.indexOf('://www.linkedin.com/in/') != -1) {
+										o.q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
 										break;
 									}
 									else {
-										alert('case of no good imfeeling lucky ' + theLink);
+										console.log('case of skip over ' + theLink);
 									}
-								}
+								//~ }
 							}
 						}
 						console.log(count);
 						
 						if (count == 0) {
 							console.log('are there no links on the page?');
+							document.body.backgroundColor = 'yellow';
 						}
 						
-						
-						if (o.q.value != '') {
+						if (o.q.value != '' && o.q.value.indexOf('://www.linkedin.com/in/') != -1 ) {
 							console.log('dosubmit');
-							//doSubmit();
+							doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'orange';
 						}
 					}
 				});
