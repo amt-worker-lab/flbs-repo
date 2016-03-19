@@ -54,14 +54,11 @@ function MT__RUN() {
 				time_since_last_init: 0,
 				url: ""
 			}
-			o.url =  "http://google.com/search?q=" + o.name +' + ' + o.business + ' linkedin&filter=0';
-			
+			o.url =  "http://google.com/search?q=" + encodeURIComponent(o.name + ' + ' + o.business + ' + linkedin');
 			console.log(o.url);
-			
 			var url_correct = false;
-			
-			//var url_current = url;
-			
+			o.q.style.zoom = 4;
+
 			/*BEGIN ITEMS*/
 			var d1=document.createElement('input'); //
 			d1.setAttribute('type','button');
@@ -89,21 +86,32 @@ function MT__RUN() {
 				o.q.value = 'N/A';
 				doSubmit();
 			}
-
 			/*END ITEMS*/
-			
-			o.q.style.zoom = 4;
-			
+
 			// INIT
 			getnextpage();
-			
-			function alert() {
-				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-				if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
-					setInterval(function() {
-						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-					}, 30000);
+			// Wait
+			function wait() {
+				if (localStorage['ko'] == undefined || localStorage['ko'] == '0') {
+					getnextpage(); // Init!
+				} else {
+					setTimeout(wait, 1000); // Wait 1s to continue...
 				}
+			}
+			// Alert
+			function alert() {
+				if (localStorage['ko'] == undefined || localStorage['ko'] == '0') { // Open?
+					localStorage['ko'] = '1';
+					window.open(o.url);
+					chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+					if(AMT__Global_Vars.scriptVars['JR_Wakeup_Alarm'] != '0') {
+						setInterval(function() {
+							chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+						}, 30000);
+					}
+				}
+				wait(); // Wait to continue...
+				return;
 			}
 			/**
 			 * function
@@ -118,6 +126,9 @@ function MT__RUN() {
 							document.body.style.backgroundColor = 'black';
 							alert();
 							return false;
+						}
+						else { // Reset localStorage!
+							localStorage['ko'] = '0';
 						}
 						return true;
 					},
