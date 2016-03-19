@@ -87,7 +87,6 @@ function MT__RUN() {
 			
 			// INIT
 			getnextpage();
-
 			
 			function alert() {
 				chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
@@ -194,7 +193,7 @@ function MT__RUN() {
 										m[1] = decodeURIComponent(m[1]);
 									}
 									
-									if (!/^(https?|ftpXXXXXXX):\/\//.exec(m[1])) {
+									if (!/^(https?|ftp):\/\//.exec(m[1])) {
 										alert('x');
 										console.log(m);
 										return;
@@ -202,7 +201,8 @@ function MT__RUN() {
 									var theLink = m[1].replace(/&amp;/gi, '&') +' '+"\n";
 									d2.value = (d2.value*1) + 1;
 									count++;
-									if(theLink.indexOf('://www.linkedin.com/in/') != -1) {
+									if(theLink.indexOf('linkedin.com/in/') != -1 &&
+									   theLink.match(/^https?:\/\/[^\.]+.linkedin/i)) {
 										o.q.value += m[1].replace(/&amp;/gi, '&') +' '+"\n";
 										break;
 									}
@@ -222,7 +222,7 @@ function MT__RUN() {
 							return;
 						}
 						
-						if (o.q.value != '' && o.q.value.indexOf('://www.linkedin.com/in/') != -1 ) {
+						if (o.q.value != '' && o.q.value.indexOf('linkedin.com/in/') != -1 ) {
 							console.log('dosubmit');
 							doSubmit();
 						} else {
