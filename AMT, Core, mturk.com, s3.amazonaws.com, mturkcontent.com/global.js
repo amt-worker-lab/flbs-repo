@@ -8963,10 +8963,20 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					//~ }
 				//~ }
 			//~ }
+			////////////////////////////////////
 			// Mouse event functions
 			// Note: New functionality! ... Each "<p>" has a .className ("cls_[HREF] result_highlight") and .tmp_className ("cls_[HREF]").
-			// 
-			//
+			////////////////////////////////////
+			// MouseMove
+			function df_mmov_(e) {
+				inp_top.value = this.full_url;
+				var x = document.getElementsByClassName(this.className);
+				for (var i in x) {
+					if (i == 'length') break;
+					x[i].style.backgroundColor = 'LightGreen';
+				}
+			}
+			// MouseOver
 			function df_movr_(e) {
 				inp_top.value = this.full_url;
 				var x = document.getElementsByClassName(this.className);
@@ -8987,6 +8997,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					//~ }
 				//~ }
 			}
+			// MouseOut
 			function df_mout_(e) {
 				inp_top.value = '';
 				var x = document.getElementsByClassName('result_highlight');
@@ -9016,6 +9027,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			d.addEventListener('mouseover', df_movr_, false);
 			//mouseout
 			d.addEventListener('mouseout', df_mout_, false);
+			// mousemove
+			d.addEventListener('mousemove', df_mmov_, false);
+			// ...
 			d._df_mo_ = df_movr_;
 			d._df_mout_ = df_mout_;
 			
