@@ -121636,6 +121636,79 @@ qatar,80
 	 * 
 	 * 
 	 */
+	// Paul S. Chun
+	// Find the Website Address for Companies Name
+	// Utilizes bold blue black....
+	// 
+	var s = '<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch, Facebook, Twitter or Google Maps.</li>\n	<li><strong>Ignore Position, Location and Person Name in the Sheet</strong></li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');//width:40% !important;
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				address: td[5].innerText.trim(),
+				boldArray: [],
+				addr_arr: [],
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			o.addr_arr = o.address.clean_string_to_array();
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			//~ var x2; // If same then just enclose entire comp string in quotes.
+			//~ x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					o.comp + ', ' + o.address,
+					'"' + o.comp.split(' ').join('" "') + '", ' + o.address.replace(/^[^,]+,/, ''), // Removes first comma
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					bold: {
+						black: o.boldArray,
+						blue: [],// o.address.clean_string_to_array(), // Too much...
+						brown: o.addr_arr,
+						//~ brown:,
+					},
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'not found',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// DataArts Research
 	// Find the Website Address for Non-profits
 	// Utilizes bold blue black....
