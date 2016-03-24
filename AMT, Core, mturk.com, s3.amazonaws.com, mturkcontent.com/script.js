@@ -75,8 +75,7 @@ function MT__RUN() {
 			d2.setAttribute('value','0');
 			d2.setAttribute('style','position:absolute;top:40px;left:10%;width:30%;height:100px;');
 			document.body.appendChild(d2);
-
-
+			//
 			var naBut=document.createElement('input'); //
 			naBut.setAttribute('type','button');
 			naBut.setAttribute('value','N/A');
