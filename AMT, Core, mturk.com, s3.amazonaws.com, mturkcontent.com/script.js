@@ -94,7 +94,10 @@ function MT__RUN() {
 				if (localStorage['ko'] == undefined || localStorage['ko'] == '0') {
 					getnextpage(); // Init!
 				} else {
-					setTimeout(wait, 1000); // Wait 1s to continue...
+					// Wait 3s to continue.
+					// The longer time here, the more "stagger" when
+					// getting started again.
+					setTimeout(wait, 3000);
 				}
 			}
 			// Alert
