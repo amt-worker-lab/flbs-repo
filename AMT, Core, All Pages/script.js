@@ -3698,6 +3698,7 @@ function load()
 		// Poll
 		var run = function() {};
 		run.prototype.f = function() {
+			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
 				if (x && x.length && x.length == 1) {
