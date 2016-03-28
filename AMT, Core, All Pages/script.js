@@ -3698,13 +3698,29 @@ function load()
 		// Poll
 		var run = function() {};
 		run.prototype.f = function() {
-			var x = document.getElementById('time_out_dialog').parentNode;
-			var b = x.getElementsByClassName('ui-button-text')[1];
 			setInterval(function() {
-				if (x.style.display != 'none' && // != none means it is showing
-					b.innerText == 'yes') {		 // ensures this is the right button
-					b.click();					 // This works in a console......
+				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
+				if (x && x.length x.length == 1) {
+					x.style.top = 'inherit'; // This is the big black box.......
 				}
+				//~ var x = document.getElementById('time_out_dialog');
+				//~ if (!x) return;
+				//~ x = x.parentNode;
+				//~ var b = x.getElementsByClassName('ui-button-text');
+				//~ if (!b || b.length < 2) return;
+				//~ b = b[1];
+				//
+				// Set opacity to 0
+				//~ x.style.opacity = 0; // fully transparent
+				//
+				// Or.... you could click the Yes button....
+				//~ if (x.style.display != 'none' && // != none means it is showing
+					//~ b &&
+					//~ b.innerText &&
+					//~ b.innerText == 'yes') {		 // ensures this is the right button
+					//~ b.click();					 // This works in a console......
+				//~ } else {
+				//~ }
 			}, 1000);
 		}
 		new run().f();
