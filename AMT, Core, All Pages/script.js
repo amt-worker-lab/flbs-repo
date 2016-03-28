@@ -28,6 +28,8 @@ var RUN__ALL_PAGES__Andrew_Ryan_Hangouts = true;
 var RUN__JR_Amazon_Login_Alert = true;
 // SUNY Plattsburgh Ratemyprofessor.com script.
 var RUN__SUNY_PB_Ratemyprofessor = true;
+//
+var RUN__SUNY_PB_Vhlcentral = true;
 
 var SCRIPT_IDS_FOR_UTILITY_CHECKING = ['gcfnekbbpmbgadddbojhlojhddnkcpje',//core mturk
 										'bpbbmbgkdconjgghffedjkojaoebdnii', //work localhost
@@ -3685,9 +3687,29 @@ function load()
 	 * RUN_Sahar_ReferIt_Game
 	 * RUN_James_M_Ratcliffe_Verizon_com
 	 * RUN_HOWE_CODE
+	 * RUN__SUNY_PB_Vhlcentral
+	 * 
 	 * 
 	 */
-	 
+	// RUN__SUNY_PB_Vhlcentral
+	// @Desc: Poll for inactivity screen to come up and click "yes" button when it does.
+	// 
+	if (RUN__SUNY_PB_Vhlcentral && document.location.href.indexOf('.vhlcentral.com') != -1) {
+		// Poll
+		var run = function() {};
+		run.prototype.f = function() {
+			var x = document.getElementById('time_out_dialog').parentNode;
+			var b = x.getElementsByClassName('ui-button-text')[1];
+			setInterval(function() {
+				if (x.style.display != 'none' && // != none means it is showing
+					b.innerText == 'yes') {		 // ensures this is the right button
+					b.click();					 // This works in a console......
+				}
+			}, 1000);
+		}
+		new run().f();
+	}
+	
 	// RUN__SUNY_PB_Ratemyprofessor
 	// 30 second alert to login to AMT.
 	// Note: >=2.5 = yellow, <2.5 = red, >=3.5 = LightGreen
@@ -3697,7 +3719,7 @@ function load()
 	//~ if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/') != -1) {
 	if (RUN__SUNY_PB_Ratemyprofessor && document.location.href.indexOf('https://banner.plattsburgh.edu/pls/prod/bwskfcls.P_GetCrse_Advanced') != -1) {
 		var run = function() {};
-		run.prototype.f = function() {console.log(AP___huge_vars_factory);
+		run.prototype.f = function() {
 			var r = new AP___huge_vars_factory().Rate_My_Professor_SUNY_Ratings();
 			var ro = obj(r); // r object
 			
