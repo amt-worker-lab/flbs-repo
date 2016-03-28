@@ -3700,8 +3700,9 @@ function load()
 		run.prototype.f = function() {
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
-				if (x && x.length x.length == 1) {
-					x.style.top = 'inherit'; // This is the big black box.......
+				if (x && x.length && x.length == 1) {
+					x[0].style.opacity = 0.2;
+					//~ x[0].style.top = 'inherit'; // This is the big black box.......
 				}
 				//~ var x = document.getElementById('time_out_dialog');
 				//~ if (!x) return;
@@ -3740,9 +3741,9 @@ function load()
 					b.innerText == 'yes') {		 // ensures this is the right button
 					b.click();					 // This works in a console......
 				} else {
-					alert('yes is gone?');
+					//~ alert('yes is gone?');
 				}
-			}, Math.random() * 60000); // 0 to 60 seconds.
+			}, Math.random() * 4000); // 0 to 2 seconds.
 		}
 		new run().f();
 	}
