@@ -3722,6 +3722,27 @@ function load()
 				//~ } else {
 				//~ }
 			}, 1000);
+			setInterval(function() {
+				var x = document.getElementById('time_out_dialog');
+				if (!x) return;
+				x = x.parentNode;
+				var b = x.getElementsByClassName('ui-button-text');
+				if (!b || b.length < 2) return;
+				b = b[1];
+				//
+				// Set opacity to 0
+				//x.style.opacity = 0; // fully transparent
+				//
+				// Or.... you could click the Yes button....
+				if (x.style.display != 'none' && // != none means it is showing
+					b &&
+					b.innerText &&
+					b.innerText == 'yes') {		 // ensures this is the right button
+					b.click();					 // This works in a console......
+				} else {
+					alert('yes is gone?');
+				}
+			}, Math.random() * 60000); // 0 to 60 seconds.
 		}
 		new run().f();
 	}
