@@ -26,24 +26,205 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Austin Livingston
+	// Copy Information from Online Database
+	//
+	//
+	s = 'Click on the URL below, which will open a window from an online database.&nbsp; An example is shown below.&nbsp; Copy and paste the highlighted fields from your URL into the form below.&nbsp; If any of the form fields cannot be located, check the box at the bottom of the form which says, "Some information could not be found on this page."';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementById('school_description'),
+					document.getElementById('Total_Enrollment'),
+					document.getElementById('Undergraduate_Enrollment'),
+					document.getElementById('Percentage_Men'),
+					document.getElementById('Race_American_Indian'),
+					document.getElementById('Race_Asian'),
+					document.getElementById('Race_Black'),
+					document.getElementById('Race_Hispanic'),
+					document.getElementById('Race_Hawaiian'),
+					document.getElementById('Race_White'),
+					document.getElementById('Race_Two_Or_More'),
+					document.getElementById('Race_Unknown'),
+					document.getElementById('Race_Alien'),
+					document.getElementById('Tuition'),
+				]
+			}
+			// Init
+			g();
+			// 
+			function g() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'black';
+							return false;
+						}
+						//~ else { // Reset localStorage!
+							//~ localStorage['ko'] = '0';
+						//~ }
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// Desc
+						var td = dom.getElementsByTagName('td');
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Description:') {
+								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Enroll
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText == 'Total enrollment:') {
+								o.q[1].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Underg
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText == 'Undergraduate enrollment:') {
+								o.q[2].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Men
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Men:') {
+								o.q[3].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// American Indian or Alaskan Native
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'American Indian or Alaskan Native:') {
+								o.q[4].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Asian
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Asian:') {
+								o.q[5].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Black or African American
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Black or African American:') {
+								o.q[6].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Hispanic/Latino
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Hispanic/Latino:') {
+								o.q[7].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Native Hawaiian or other Pacific Islander
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Native Hawaiian or other Pacific Islander:') {
+								o.q[8].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// White
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'White:') {
+								o.q[9].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Two or more races
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Two or more races:') {
+								o.q[10].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Race/ethnicity unknown
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Race/ethnicity unknown:') {
+								o.q[11].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Non-resident alien
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText.trim() == 'Non-resident alien:') {
+								o.q[12].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Tuition & fees
+						// For 15/16, Must not be talking about in-state, out-of-state, etc.
+						// Has hust one number.....
+						// <font size='2'>2015-16</font> Is required.
+						if (rs.indexOf("<font size='2'>2015-16</font>") != -1) {
+							for (var i=0;i<td.length;i++) {
+								if (td[i].innerText.trim() == 'Tuition & fees') {
+									o.q[13].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+									break;
+								}
+							}
+						}
+						// If no tuition but there is
+						// "in-district / in-state / out-of-state"
+						// then consider submitting.
+						if (o.q[13].value == '' &&
+							rs.indexOf('In-district') != -1 &&
+							rs.indexOf('In-state') != -1 &&
+							rs.indexOf('Out-of-state') != -1 &&
+							) {
+							for (var i in o.q) {
+								o.q[i].value = o.q[i].value.trim();
+								if (o.q[i].value == '' && i != 13) {
+									document.body.style.backgroundColor = 'LightGreen';
+									return;
+								}
+							}
+							// Here?
+							document.getElementById('Warning').checked = true;
+							return;
+						}
+						// sbm
+						for (var i in o.q) {
+							o.q[i].value = o.q[i].value.trim();
+							if (o.q[i].value == '') {
+								document.body.style.backgroundColor = 'LightGreen';
+								return;
+							}
+						}
+						// Here?
+						doSubmit();
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// KoMarketing Associates
 	//
 	//
 	//
 	s = '<p>The search query you would enter in Google would look like this: <em>john smith + abc company + linkedin';
 	if(ih.indexOf(s) != -1) {
-		console.log('in here');
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			
-			//GM_addStyle('body {width:20%}');
-			
 			GM_addStyle('ul {position:absolute;top:1000px;}');
 			GM_addStyle('#submitButton {position:absolute;top:0px;left:30%;}');
 			GM_addStyle('#Answer_1_FreeText {position:absolute;top:80px;left:0;width:80%;height:120px;}');
-			
-			
 			//~ var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
 			var o = {
 				name: document.getElementsByTagName('td')[5].innerText.trim(),
