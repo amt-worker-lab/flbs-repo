@@ -3699,6 +3699,9 @@ function load()
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
+			// Add a div for general controls...
+			var d1 = ''.div({style:'position:absolute;top:0;left:0;'});
+			// ...
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
 				if (x && x.length && x.length == 1) {
