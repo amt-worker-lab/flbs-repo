@@ -3705,18 +3705,24 @@ function load()
 			var intv = setInterval(function() {
 				var ifr = document.getElementsByClassName('c-flash-frame  js-flash-frame');
 				if (ifr && ifr.length == 1) {
-					clearInterval(ifr);
-					var btn = document.createElement('input');
-					btn.type = 'button';
+					clearInterval(intv);
+					var btn = document.createElement('button');
 					btn.onclick = ifr_full_size;
+					btn.innerText = 'Go to <iframe> SRC!';
 					d1.appendChild(btn);
 				}
 			}, 2000);
 			function ifr_full_size(e) {
-				this.style.backgroundColor = 'LightGreen';
-				document.getElementsByClassName('c-flash-frame  js-flash-frame')[0].setAttribute('style',
-					'position:absolute;top:0;left:0;width:100%;height:100%;'
-				);
+				window.location.href = document.getElementsByClassName('c-flash-frame  js-flash-frame')[0].src;
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ document.getElementById('page_container').style.width = '100%';
+				//~ var x = document.getElementsByClassName('c-flash-frame  js-flash-frame')[0].style;
+				//~ x.position = 'absolute';
+				//~ x.top = '-120px';
+				//~ x.left = '0';
+				//~ x.width = '100%';
+				//~ x.height = window.innerHeight + 'px';
+				//~ x.zIndex = 100000000000;
 			}
 			// ...
 			setInterval(function() {

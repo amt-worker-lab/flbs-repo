@@ -1857,6 +1857,10 @@ String.prototype.div = function(opts) {
 	} else { // Default
 		div.innerText = s;
 	}
+	// Append to...
+	if (opts && opts.hasOwnProperty('a')) {
+		opts.a.appendChild(div);
+	}
 	return div;
 }
 /**
