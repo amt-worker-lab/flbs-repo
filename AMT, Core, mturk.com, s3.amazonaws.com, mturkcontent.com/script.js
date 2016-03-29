@@ -184,17 +184,19 @@ function MT__RUN() {
 						if (o.q[13].value == '' &&
 							rs.indexOf('In-district') != -1 &&
 							rs.indexOf('In-state') != -1 &&
-							rs.indexOf('Out-of-state') != -1 &&
+							rs.indexOf('Out-of-state') != -1
 							) {
 							for (var i in o.q) {
 								o.q[i].value = o.q[i].value.trim();
 								if (o.q[i].value == '' && i != 13) {
 									document.body.style.backgroundColor = 'LightGreen';
-									return;
+									document.getElementById('Warning').checked = true;
+									//~ return;
 								}
 							}
 							// Here?
 							document.getElementById('Warning').checked = true;
+							doSubmit();
 							return;
 						}
 						// sbm
@@ -202,7 +204,8 @@ function MT__RUN() {
 							o.q[i].value = o.q[i].value.trim();
 							if (o.q[i].value == '') {
 								document.body.style.backgroundColor = 'LightGreen';
-								return;
+								document.getElementById('Warning').checked = true;
+								//~ return;
 							}
 						}
 						// Here?
