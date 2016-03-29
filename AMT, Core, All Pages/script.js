@@ -3700,7 +3700,24 @@ function load()
 		run.prototype.f = function() {
 			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
 			// Add a div for general controls...
-			var d1 = ''.div({style:'position:absolute;top:0;left:0;'});
+			var d1 = ''.div({style:'position:absolute;top:0;left:0;border:1px solid #a2a2a2;', a: document.body});
+			// Add button to move iframe
+			var intv = setInterval(function() {
+				var ifr = document.getElementsByClassName('c-flash-frame  js-flash-frame');
+				if (ifr && ifr.length == 1) {
+					clearInterval(ifr);
+					var btn = document.createElement('input');
+					btn.type = 'button';
+					btn.onclick = ifr_full_size;
+					d1.appendChild(btn);
+				}
+			}, 2000);
+			function ifr_full_size(e) {
+				this.style.backgroundColor = 'LightGreen';
+				document.getElementsByClassName('c-flash-frame  js-flash-frame')[0].setAttribute('style',
+					'position:absolute;top:0;left:0;width:100%;height:100%;'
+				);
+			}
 			// ...
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');

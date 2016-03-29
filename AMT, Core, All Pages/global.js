@@ -1760,9 +1760,11 @@ String.prototype.clean_str_to_auto = function(opts) {
 /**
  * .div
  * 
- * @style		...
- * @innerHTML	Default=false.
- * @ce			Default='div'. createElement. E.g. 'br'.
+ * @params
+ *  .style		String; Default='';
+ *  .innerHTML	Default=false;
+ *  .ce			Default='div'; createElement. E.g. 'br'.
+ *  .a			AppendTo: Default=false; An HTML element. If provided then it appends DIV to this item.
  */
 String.prototype.div = function(opts) {
 	var s = this.toString();
