@@ -3699,6 +3699,10 @@ function load()
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
+			// global var.
+			var o = {
+				last_user_mousemove: 0
+			}
 			// Add a div for general controls...
 			var d1 = ''.div({style:'position:absolute;top:0;left:0;border:1px solid #a2a2a2;', a: document.body});
 			// Add button to move iframe
@@ -3723,6 +3727,10 @@ function load()
 				//~ x.width = '100%';
 				//~ x.height = window.innerHeight + 'px';
 				//~ x.zIndex = 100000000000;
+			}
+			// on mouse move
+			document.onmousemove = function(e) {
+				o.last_user_mousemove = new Date().getTime() / 1000; // Time in seconds.
 			}
 			// ...
 			setInterval(function() {
@@ -3765,7 +3773,9 @@ function load()
 				if (x.style.display != 'none' && // != none means it is showing
 					b &&
 					b.innerText &&
-					b.innerText == 'yes') {		 // ensures this is the right button
+					b.innerText == 'yes' &&		 // ensures this is the right button
+					(new Date().getTime()/1000) - o.last_user_mousemove < 60*30 // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
+					) {
 					b.click();					 // This works in a console......
 				} else {
 					//~ alert('yes is gone?');
