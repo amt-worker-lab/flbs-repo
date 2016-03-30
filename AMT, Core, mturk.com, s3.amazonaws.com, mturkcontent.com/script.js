@@ -9912,6 +9912,9 @@ function MT__RUN() {
 				//~ document.getElementById('submitButton').blur();
 			//~ }, 2000);
 			
+			document.getElementsByTagName("table")[0].style.position = "absolute";
+			document.getElementsByTagName("table")[0].style.left = "100px";
+			
 			/*ITEMS*/
 			var dv = ''.div({style:'width:20%;top:0;left:80%;position:absolute;'});
 			document.body.appendChild(dv);
