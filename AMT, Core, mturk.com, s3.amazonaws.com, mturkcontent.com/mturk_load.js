@@ -170,6 +170,7 @@ function mturk_load()
 		console.log('x0');
 		console.log(l);
 		console.log(check_right_page);
+		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);console.log('x4');
 		if  (
 			!( // Running on any of the following:
 			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
@@ -181,7 +182,6 @@ function mturk_load()
 		{	console.log('x1');
 			if(document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1) {console.log('x2');
 				AMT__Global_Vars.initializeNextTabPassBy();console.log('x3');
-				new AMT___core_factory().createScriptVar('Reload on No Hits', 0);console.log('x4');
 				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {console.log('x5');
 					doSubmit(false, false, function(timeToSkip){console.log('x6');
 						window.setTimeout(function() {
