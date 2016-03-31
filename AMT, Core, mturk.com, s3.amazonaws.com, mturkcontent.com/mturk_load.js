@@ -171,7 +171,7 @@ function mturk_load()
 		console.log(l);
 		//~ console.log(check_right_page);
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);console.log('x4');
-		if  (
+		if  ( false &&
 			( // Running on any of the following:
 			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
