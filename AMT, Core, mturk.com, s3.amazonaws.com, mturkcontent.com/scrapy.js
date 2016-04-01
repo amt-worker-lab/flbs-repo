@@ -1919,11 +1919,12 @@ function init__scrapy() {
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
-				sd_start_urls: [], //[td[11].innerText.trim()],
+				sd_start_urls: [],
 				sd_allowed_domains: [],
 				name: td[1].innerText.trim(),
 				city: td[5].innerText.trim(),
-				country: td[9].innerText.trim(),
+				country: td[7].innerText.trim(),
+				website: td[9].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				],
@@ -1941,7 +1942,11 @@ function init__scrapy() {
 				//,
 				//~ auto_emails: ['info','contact','contactus']
 			}
-			//~ o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
+			o.sd_allowed_domains = [o.website.replace(/^https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/i,"$2")]; // Remove https & trailing / if present
+			if (!/^http/i.exec(o.website)) {
+				o.website = 'http://'+o.website;
+			}
+			o.sd_start_urls = [ o.website ];
 			
 			// Remove first tds
 			//~ var tr = document.getElementsByTagName('tr');
@@ -1953,7 +1958,7 @@ function init__scrapy() {
 				}
 			}
 			
-			//Move the website TD up below the name TD
+			// Move the website TD up below the name TD
 			var allTds = document.getElementsByTagName('td');
 			var webTd = allTds[11];
 			var streetTd = allTds[3];
@@ -1982,17 +1987,13 @@ function init__scrapy() {
 			});
 			
 			// ...
-			document.getElementById('submitButton').onclick = function() {
+			document.getElementById('submitButton').onclick = function(e) {
 				o.q[0].value = o.q[0].value.trim();
 				if (o.q[0].value.length < 6 || o.q[0].value.indexOf('@') == -1) {
+					e.stopPropagation();
+					e.preventDefault();
 					return false;
 				}
-				//~ new AMT___core_factory().shiftFarLeft();
-				//~ alert('here?');
-				
-				//~ // Here?
-				//~ new AMT___core_factory().nextTab();
-				//~ doSubmit();
 			}
 
 			// Get skips file
@@ -2005,12 +2006,17 @@ function init__scrapy() {
 			function init(SKIP_SITES) {
 				o.SKIP_SITES = SKIP_SITES; // Populate.
 				
-				// SP search.
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.name+', '+o.city+', '+o.country),
-					callback_function: sp
-				});
+				if (!o.website || o.website == '') {
+					// SP search.
+					var req_proxy = new AMT___xhr_PROXY_REDACTED_({
+						startPage: true,
+						url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(o.name+', '+o.city+', '+o.country),
+						callback_function: sp
+					});
+				} else {
+					// Init
+					scrapy(o.sd_start_urls, o.sd_allowed_domains);
+				}
 			}
 			// SP
 			function sp(response_obj) {
@@ -2041,7 +2047,6 @@ function init__scrapy() {
 				var first = true;
 				for (var i in rs) {
 					var dm = rs[i][0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/, "$2");
-					//~ console.log(dm);continue;
 					if (dm == 'facebook.com') {
 						o.sd_start_urls.push(rs[i][0]); // Push URL
 					}
@@ -2059,8 +2064,6 @@ function init__scrapy() {
 			 * function scrapy
 			 */
 			function scrapy(start_urls, allowed_domains) {
-				//~ console.log(start_urls);
-				//~ console.log(allowed_domains);
 				//
 				var s_obj =
 				{
@@ -2107,21 +2110,14 @@ function init__scrapy() {
 								accept_if_emails: true,
 								callback__scrapy__begin_scrape__process_completed: function(callback_obj) { // RETURNS: TRUE(CONTINUE), FALSE(END SCRIPT PROCESSING)
 									
+									document.body.style.backgroundColor = 'white'; // Show loaded...
+									
 									if (AMT__Global_Vars.isPreview) {
-										//~ // If no email match results
-										//~ if (!callback_obj.matches || !callback_obj.matches.length) {
-											//~ AMT___Floater.skip();
-										//~ }
-										//~ else
-										//~ {
-											//~ AMT___Floater.accept();
-										//~ }
-										//~ // ENDS SCRIPT PROCESSING
-										//~ return true;
+										
 									} else { // Add to tabs queue if not in preview
-										console.log('addint to tabs q');
-										addToTabsQ();
-										document.body.style.backgroundColor = 'white';
+										//~ console.log('addint to tabs q');
+										//~ addToTabsQ();
+										//~ document.body.style.backgroundColor = 'white';
 										
 										//~ // Let's try for some autos.
 										//~ // o.auto_emails = []
@@ -2160,13 +2156,7 @@ function init__scrapy() {
 									// CONTINUES (job is NOT in "preview" mode)
 									return false;
 								},
-								//~ do_submit_callback: function() {
-									//~ 
-									//~ // NOTE: DEC1 2014
-									//~ // THIS NEEDS TO BE TESTED FIRST!!
-									//~ //document.getElementById('submitButton').click();
-								//~ },
-								//~ // What to do onclick
+								// What to do onclick
 								input_onclick_callback: function() {
 									this.style.backgroundColor = 'LightGreen';
 									if  (
@@ -2179,21 +2169,6 @@ function init__scrapy() {
 									{
 										o.q[0].value = this.email;
 										doSubmit();
-										//~ showNextTab();
-										
-										//~ if (next_tab)
-										//~ {
-											//~ new AMT___core_factory().nextTab();
-										//~ }
-										//~ if (add_to_tabs_queue)
-										//~ {
-											//~ showNextTab();
-										//~ }
-										//~ 
-										//~ if(AMT__Global_Vars.scriptVars['EmailJobs DS ShiftLeft'] != '0') {
-											//~ new AMT___core_factory().shiftFarLeft();
-										//~ }
-										//~ doSubmit();
 									}
 								},
 								//do_submit_next_tab: true
