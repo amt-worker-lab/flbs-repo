@@ -75,7 +75,6 @@ function load()
 		is_running_on_amt: true // default=true
 	}
 	
-	
 	// Exit if inside of a frame and inurl "ASSIGNMENT_ID_NOT_AVAILABLE"
 	//
 	//
@@ -3701,7 +3700,8 @@ function load()
 			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
 			// global var.
 			var o = {
-				last_user_mousemove: 0
+				last_user_mousemove: 0,
+				num_sec_timeout: 10, // Time in seconds before letting the screen timeout.
 			}
 			// Add a div for general controls...
 			var d1 = ''.div({style:'position:absolute;top:0;left:0;border:1px solid #a2a2a2;', a: document.body});
@@ -3774,7 +3774,7 @@ function load()
 					b &&
 					b.innerText &&
 					b.innerText == 'yes' &&		 // ensures this is the right button
-					(new Date().getTime()/1000) - o.last_user_mousemove < 60*30 // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
+					(new Date().getTime()/1000) - o.last_user_mousemove < 60*o.num_sec_timeout // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
 					) {
 					b.click();					 // This works in a console......
 				} else {
