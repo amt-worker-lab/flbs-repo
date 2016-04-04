@@ -26,6 +26,57 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Prospect Smarter
+	//  Test....
+	//
+	//
+	s = '<li>CLICK THE STREETVIEW IMAGE (the last batch had a lot of HITS returned that used the regular Google maps image. These will be rejected this time.)</li>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[0].href.replace(/https:\/\/www\.google\.com\/search\?q=/, ''),
+				q: [
+					document.getElementById('web_url'),
+				],
+			}
+			o.u = 'https://www.google.com/maps/place/' + encodeURIComponent(decodeURIComponent(o.u)).replace(/%20/g, '+');
+			console.log(o);
+			//https://www.google.com/maps/place/3033+W+Vina+Del+Mar+Blvd,+St+Pete+Beach,+FL+33706?dg=dbrw&newdg=1
+			// Note: Be sure to add "?dg=dbrw&newdg=1"
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'black';
+						return false;
+					}
+					//~ else { // Reset localStorage!
+						//~ localStorage['ko'] = '0';
+					//~ }
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					//console.log(options);
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//gb_vb gb_yb
+					var g = dom.getElementsByClassName('gb_vb gb_yb');
+					if (!g || g.length != 1) {
+						return;
+					}
+					g = g[0].getAttribute('href').replace(/\?authuser=0$/, '');
+					o.q[0].value = g;
+					if (/^https:\/\/www\.google\.com\/maps\/place\/[^\/]+\/@[\d\-\.]+,[\d\-\.]+,[\d\-\.]+z\/data=[^\/\?]+$/.exec(g)) {
+						
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Aaron Latchaw
 	// Copy Information from Online Database
 	//
