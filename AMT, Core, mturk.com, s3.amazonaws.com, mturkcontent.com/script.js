@@ -62,15 +62,54 @@ function MT__RUN() {
 					var rs = options.response.responseText;
 					//console.log(options);
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Make this:
+					// /maps/place/3033+W+Vina+Del+Mar+Blvd,+St+Pete+Beach,+FL+33706/@27.705795,-82.726853,16z/data=!4m2!3m1!1s [ 0x88... ]
+					// scrape for...
+					// e.g. cacheResponse([[[3532.372005708596,-82.72685299999999,27.705795]
+					var r1 = /cacheResponse\(\[\[\[[\d\.]+,([\d\-\.]+),([\d\-\.]+)\]/.exec(rs); // r[1] r[2]
+					if (!r1) {
+						return;
+					}
 					//gb_vb gb_yb
 					var g = dom.getElementsByClassName('gb_vb gb_yb');
 					if (!g || g.length != 1) {
 						return;
 					}
 					g = g[0].getAttribute('href').replace(/\?authuser=0$/, '');
-					o.q[0].value = g;
-					if (/^https:\/\/www\.google\.com\/maps\/place\/[^\/]+\/@[\d\-\.]+,[\d\-\.]+,[\d\-\.]+z\/data=[^\/\?]+$/.exec(g)) {
-						
+					o.q[0].value = 'https://www.google.com' + g;
+					// The ninth element....
+					// cacheResponse(.....
+					var x = /cacheResponse\(([^\n]+)/.exec(rs); // r[1] r[2]
+					if (!x) {
+						return;
+					}
+					x = x[1].trim().replace(/\);$/, '');
+					x = JSON.parse(x);
+					console.log('cacheResponse:');
+					console.log(x);
+					// sixth array...
+					var j = 0;
+					var found = false;
+					for (var i in x) {
+						if (x[i] && typeof x[i] == 'object') {
+							console.log(j + ' ' + x[i].length);
+							if (x[i].length == 28) {
+								found = true;
+								break;
+							}
+						}
+						j++;
+					}
+					if (!found) {
+						return;
+					}
+					// Make .....
+					o.q[0].value += '/@'+r1[2]+','+r1[1]+',16z/data=!4m2!3m1!1s'+x[j][0][0];
+					if (/^https:\/\/www\.google\.com\/maps\/place\/[^\/]+\/@[\d\-\.]+,[\d\-\.]+,[\d\-\.]+z\/data=[^\/\?]+$/
+						.exec(o.q[0].value)
+						) {
+						// Do submit here... it ought to be okay to go now...
+						doSubmit();
 					}
 				}
 			});
