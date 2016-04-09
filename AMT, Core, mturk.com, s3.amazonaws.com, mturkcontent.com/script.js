@@ -174147,10 +174147,8 @@ qatar,80
 			var xint_check_iframe = setInterval(function() {
 				console.log(d1);
 				if (!d1 || d1 == null || !d1.contentWindow) {
-					console.log('xint_check_iframe::d1 not...');
-					document.location.reload();
-					//~ window.reload(); // WTF!?
-					//create_iframe();
+					console.log('xint_check_iframe::d1.contentWindow does not exist!?');
+					document.location.reload(); // wtf?
 				}
 			}, 2000);
 			// Init wait
