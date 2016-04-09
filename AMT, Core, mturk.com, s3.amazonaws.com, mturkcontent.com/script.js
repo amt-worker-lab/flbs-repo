@@ -174175,14 +174175,16 @@ qatar,80
 						var er = document.getElementsByName('0 - Result Type')[0];
 						er.selectedIndex = 1;
 						document.getElementById('submitButton').focus();
-						
+						document.body.style.backgroundColor = "lightgreen";
 						doSubmit(); // comment to debug
 					}
 					else if (rs == 'This is an invalid PIN for year 2010 or Prior') {
 						var er = document.getElementsByName('0 - Result Type')[0];
 						er.selectedIndex = 2;
 						document.getElementById('submitButton').focus();
-						
+
+						document.body.style.backgroundColor = "lightgreen";
+
 						doSubmit(); // comment to debug
 					}
 					else if (rs.indexOf('[') == 0)
@@ -174354,6 +174356,10 @@ qatar,80
 						}
 						if (!blank && sbm) {
 							console.log('SUBMIT');
+							
+		
+							document.body.style.backgroundColor = "lightgreen";
+
 							
 							doSubmit();
 							
