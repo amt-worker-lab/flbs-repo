@@ -1717,8 +1717,9 @@ function load()
 					console.log(IMAGE_SRC);
 				}
 			}
-			
-			var y, z; // stage 1
+			// Delinquent Form
+			// Stage 1
+			var y, z;
 			z = document.getElementsByClassName('delinquentForm');
 			if (z) {
 				if (z[0]) {
@@ -1734,7 +1735,10 @@ function load()
 						
 						y = z[1].getElementsByTagName('input')[0];
 						y.focus();
-						
+						var input_df = y;
+						setInterval(function() {
+							input_df.focus();
+						}, 1000);
 						
 						// IF TRY == 0
 						
@@ -1750,7 +1754,6 @@ function load()
 						{
 							setInterval_manual(IMAGE_SRC);
 						}
-						
 						
 						// move boxes around!!
 						var x = document.getElementById('newsComponentZone1');

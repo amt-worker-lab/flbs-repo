@@ -174098,11 +174098,9 @@ qatar,80
 			
 			var b = document.getElementsByTagName('b')[0].innerText;
 			b = b.replace(/^PIN: /, '');
-			
-			d=document.createElement('iframe');
-			d.setAttribute('id','d1');
-			document.body.appendChild(d);
-			var d1 = document.getElementById('d1');
+			// Iframe
+			var d1 = document.createElement('iframe');
+			document.body.appendChild(d1);
 			d1.style.position='absolute';
 			d1.style.top='0px';
 			d1.style.left='40%';
@@ -174114,8 +174112,8 @@ qatar,80
 			d1.style.backgroundColor='#eee';
 			d1.style.fontSize='8px';
 			d1.src = 'http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/DelinquentTaxSearch.aspx/?u='+encodeURIComponent(b)+'&t=0';
-			
-			d=document.createElement('textarea');
+			// Textarea
+			var d=document.createElement('textarea');
 			d.setAttribute('id','d2');
 			document.body.appendChild(d);
 			var d2 = document.getElementById('d2');
@@ -174127,18 +174125,17 @@ qatar,80
 			d2.style.border='1px solid blue';
 			d2.style.fontSize='12px';
 			d2.style.display='none';
-			
 			d2.onblur = function() {
 				this.parentNode.removeChild(this);
 			}
-			
 			// post to child
 			var ifr_intv = setInterval(function() {
-				d1.contentWindow.postMessage('AMT__Newline_Financial_cookcountyclerk_com', "*");
+				if (d1 && d1.contentWindow)
+					d1.contentWindow.postMessage('AMT__Newline_Financial_cookcountyclerk_com', "*");
 			}, 400);
-			
+			// Init wait
 			check_complete(); // Init wait
-			
+			// check_complete
 			function check_complete() {
 				GM_xmlhttpRequest({
 					method: "GET",
