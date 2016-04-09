@@ -520,7 +520,9 @@ function mturk_load()
 			}
 			if(ifr) {
 				console.log('focusing on iframe. Comment me out when tested in max-speed scenario');
-				ifr.focus();
+				//~ window.setTimeout(function() {
+					ifr.focus();
+				//~ },2000);
 			}
 		}
 		

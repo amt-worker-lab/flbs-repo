@@ -174095,23 +174095,11 @@ qatar,80
 			GM_addStyle('body {width:40%;margin-top:20px;}');
 			GM_addStyle('.highlight-box {position:absolute;top:800px;width:40%;left:0;}');
 			GM_addStyle('#submitButton {position:absolute;top:0px;left:0;}');
-			
+			// 
 			var b = document.getElementsByTagName('b')[0].innerText;
 			b = b.replace(/^PIN: /, '');
 			// Iframe
-			var d1 = document.createElement('iframe');
-			document.body.appendChild(d1);
-			d1.style.position='absolute';
-			d1.style.top='0px';
-			d1.style.left='40%';
-			d1.style.width='60%';
-			d1.style.height='720px';
-			d1.style.overflow='auto';
-			d1.style.border='1px solid blue';
-			d1.style.borderBottom='2px solid blue';
-			d1.style.backgroundColor='#eee';
-			d1.style.fontSize='8px';
-			d1.src = 'http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/DelinquentTaxSearch.aspx/?u='+encodeURIComponent(b)+'&t=0';
+			var d1;
 			// Textarea
 			var d=document.createElement('textarea');
 			d.setAttribute('id','d2');
@@ -174132,7 +174120,39 @@ qatar,80
 			var ifr_intv = setInterval(function() {
 				if (d1 && d1.contentWindow)
 					d1.contentWindow.postMessage('AMT__Newline_Financial_cookcountyclerk_com', "*");
+				else {
+					console.log('xxxx? no iframe!?');
+					//~ create_iframe();
+				}
 			}, 400);
+			// iframe
+			create_iframe();
+			function create_iframe() {
+				d1 = document.createElement('iframe');
+				document.body.appendChild(d1);
+				d1.id = 'd1';
+				d1.style.position='absolute';
+				d1.style.top='0px';
+				d1.style.left='40%';
+				d1.style.width='60%';
+				d1.style.height='720px';
+				d1.style.overflow='auto';
+				d1.style.border='1px solid blue';
+				d1.style.borderBottom='2px solid blue';
+				d1.style.backgroundColor='#eee';
+				d1.style.fontSize='8px';
+				d1.src = 'http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/DelinquentTaxSearch.aspx/?u='+encodeURIComponent(b)+'&t=0';
+			}
+			// Check iframe...
+			var xint_check_iframe = setInterval(function() {
+				console.log(d1);
+				if (!d1 || d1 == null || !d1.contentWindow) {
+					console.log('xint_check_iframe::d1 not...');
+					document.location.reload();
+					//~ window.reload(); // WTF!?
+					//create_iframe();
+				}
+			}, 2000);
 			// Init wait
 			check_complete(); // Init wait
 			// check_complete
@@ -174365,20 +174385,6 @@ qatar,80
 					}
 				}
 			}
-			//~ //set int
-			//~ var xint = setInterval(function() {
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(b),
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						//~ 
-						//~ //console.log(rs);
-						//~ 
-						//~ 
-					//~ }
-				//~ });
-			//~ }, 400);
 		}
 		new run().f();
 		return;
