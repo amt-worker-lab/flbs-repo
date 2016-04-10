@@ -1667,8 +1667,12 @@ function load()
 			var id = r[1]; // ORIGINAL
 			var action = r[2]; // NUM TRIES!
 			// Header background color
-			GM_addStyle('.topArea {background-color:#aaaaaa; background: #bbccdd;}');
-			GM_addStyle('#newsComponentZone1 {background-color:#aaaaaa !important; background: #bbccdd !important;}');
+			new AMT___core_factory().createScriptVar('NF:BG Color', '#ccddee');
+			if (AMT__Global_Vars.scriptVars['NF:BG Color']) {
+				var x = AMT__Global_Vars.scriptVars['NF:BG Color'];
+				GM_addStyle('.topArea {background-color:#aaaaaa; background: '+x+';}');
+				GM_addStyle('#newsComponentZone1 {background-color:#aaaaaa !important; background: '+x+' !important;}');
+			}
 			// Action...
 			document.getElementsByTagName('form')[0].action = document.getElementsByTagName('form')[0].action.replace(/&t=0/, '&t=1');
 			// Tax ID
