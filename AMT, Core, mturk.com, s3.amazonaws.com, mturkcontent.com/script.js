@@ -174168,6 +174168,7 @@ qatar,80
 					}
 				});
 			}
+			// Done
 			function done(rs) {
 				if (rs.trim() != '') {
 					
@@ -174182,25 +174183,21 @@ qatar,80
 						var er = document.getElementsByName('0 - Result Type')[0];
 						er.selectedIndex = 2;
 						document.getElementById('submitButton').focus();
-
 						document.body.style.backgroundColor = "lightgreen";
-
 						doSubmit(); // comment to debug
 					}
 					else if (rs.indexOf('[') == 0)
-					{
-						
+					{	
 						rs = JSON.parse(rs); // array of arrays
-						
 						console.log(rs);
-						
+						// Vars
 						var r, x;
 						var y;
 						var found;
 						var i,j;
 						var pause = false;
 						var sbm = true;
-						
+						// Loop through entries
 						for (i in rs) {
 							
 							found = false;
@@ -174385,7 +174382,6 @@ qatar,80
 						}
 						console.log(found);
 						console.log(blank);
-						
 					}
 				}
 			}

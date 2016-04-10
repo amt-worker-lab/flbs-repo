@@ -1656,23 +1656,23 @@ function load()
 					y.scrollIntoView();
 				}
 			}
-			
+			// Page...
 			var r, id;
 			r = /http:\/\/www\.cookcountyclerk\.com\/tsd\/delinquenttaxsearch\/Pages\/DelinquentTaxSearch\.aspx\/?\?u=([^&]+)&t=([\d])/.exec(x);
-			
 			// http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/DelinquentTaxSearch.aspx/DelinquentTaxSearch.aspx/?u=24-24-300-044-1007&t=1
-			
 			if (!r) {
 				return;
 			}
-			
+			// 
 			var id = r[1]; // ORIGINAL
 			var action = r[2]; // NUM TRIES!
-			
+			// Header background color
+			GM_addStyle('.topArea {background-color:#aaaaaa; background: #bbccdd;}');
+			GM_addStyle('#newsComponentZone1 {background-color:#aaaaaa !important; background: #bbccdd !important;}');
+			// Action...
 			document.getElementsByTagName('form')[0].action = document.getElementsByTagName('form')[0].action.replace(/&t=0/, '&t=1');
-			
+			// Tax ID
 			var x = id;
-			
 			x = x.replace(/-/g, '');
 			x = [
 				x.substr(0,2),
@@ -1681,31 +1681,27 @@ function load()
 				x.substr(7,3),
 				x.substr(10,4)
 			];
-			
-			//r = x;
-			
-			// image
+			// Move image
 			var th = document.getElementsByTagName('th');
 			for (var i in th) {
 				if (i == 'length') break;
 				if (th[i].innerText == '*Verify Image') {
-					//~ console.log(th[i])
 					th[i].innerText = '';
-					
 					var tr = th[i].parentNode;
-					
 					tr.removeChild(th[i]);
-					
 					tr.style.position	= 'absolute';
 					tr.style.top		= '0';
 					tr.style.left		= '0';
 					tr.style.zIndex		= '10000000';
 					tr.style.backgroundColor = '#fff';
-					
+					//~ // Set border of image
+					//~ var j = tr.getElementsByTagName('img');
+					//~ if (j && j[0] && j[0].style)
+						//~ j[0].style.border = '1px solid #111';
 					break;
 				}
 			}
-			// image
+			// Image var
 			var im = document.getElementsByTagName('img');
 			for (var i in im) {
 				if (i == 'length') break;
@@ -1728,11 +1724,11 @@ function load()
 					if (z) {
 						y = z[0];
 						y = y.getElementsByTagName('input');
-						
+						//
 						for (var i = 0; i < x.length; i++) { //
 							y[i].value = x[i]; //
 						} //
-						
+						//
 						y = z[1].getElementsByTagName('input')[0];
 						y.focus();
 						var input_df = y;
