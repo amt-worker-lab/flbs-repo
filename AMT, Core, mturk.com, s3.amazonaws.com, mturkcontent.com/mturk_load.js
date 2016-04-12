@@ -57,124 +57,121 @@ function mturk_load()
 				document.location.href != 'https://www.mturk.com/mturk/findhits?match=false' // init page
 			)
 		{
-			// If not signed in the make alert!
-			if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
-				setInterval(function() {
-					chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-				}, 30000);
-				document.style.backgroundColor = 'pink';
-				return;
-			}
-			
-			// Are we at "All HITs Available to You"?
-			var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
-			
-			var myHITsNoneAvailable = ih.indexOf('There are currently no HITs assigned to you.');
-			
-			if (allHITsReg || myHITsNoneAvailable != -1)
-			{
-				var input = document.createElement('input');
-				input.setAttribute('style', 'position:absolute;top:0;left:0;width:140px;zoom:1.8;');
-				input.value = 'Starting...';
-				document.body.appendChild(input);
-				
-				var JR_start = new Date().getTime()/1000; // Seconds
-				JR_check_time();
-				John_Roberts_xhr_check_HITs_Assigned_to_You();
-				return;
-			}
-			function JR_check_time() {
-				//~ var x = (input.value.split(' ')[1] * 1) + 1;
-				var p = ((new Date().getTime()/1000) - JR_start) / 60;
-				p = Math.round(p*100) / 100; // Two decimals
-				var n = Math.floor(p); // Int portion
-				var d = p - n; // Decimal portion
-				var elapsed;
-				if (d < 0.25)
-					elapsed = String(n) + ':00';
-				else if (d >= 0.25 && d < .75)
-					elapsed = String(n) + ':30';
-				else // (d >= 0.75)
-					elapsed = String(n+1) + ':00';
-
-				input.value = 'Elapsed: ' + elapsed;
-			}
-			function John_Roberts_xhr_check_HITs_Assigned_to_You() {
-				
-				var interval = setInterval(function() {
-					GM_xmlhttpRequest({ // init
-						method: "GET",
-						// NEW:
-						url: 'https://www.mturk.com/mturk/sortmyhits?searchSpec=HITSearch%23T%231%2310%23-1%23T%23%21Status%210%21rO0ABXQACEFzc2lnbmVk%21%23%21Deadline%210%21%23%21&selectedSearchType=hitgroups&searchWords=&sortType=Deadline%3A0&pageSize=100',
-						// OLD URL:
-						//~ url: 'https://www.mturk.com/mturk/myhits', // ......OLD.......
-						// TODO URL:
-						//~ url: 'https://www.mturk.com/mturk/sortmyhits?searchSpec=HITSearch%23T%233%2310%23-1%23T%23%21Status%210%21rO0ABXQACEFzc2lnbmVk%21%23%21Deadline%210%21%23%21&selectedSearchType=hitgroups&searchWords=&sortType=Deadline%3A0&pageSize=100',
-						onload: function(response) {
-							var rs = response.responseText;
-							if (response.status != 200) return;
-							// Signed in?
-							if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
-								chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
-							}
-							// IN PROGRESS......
-							// Get all A on page.
-							var dom = new DOMParser().parseFromString(rs, 'text/html');
-							var a = document.getElementsByTagName('a');
-							for (var i in a) {
-								if (i == 'length') break;
-								if (a[i].innerText != 'Continue work on this HIT') continue;
-								// Is one....
-								// 8th Parent Node is TBODY
-								var req = a[i];
-								var ri = null;
-								while (req.parentNode) {
-									req = a[i].parentNode;
-									if (req &&
-										req.getElementsByClassName('requesterIdentity') &&
-										req.getElementsByClassName('requesterIdentity').length
-										) {
-										ri = req.getElementsByClassName('requesterIdentity')[0].innerText.trim();
-										break;
+			var run = function() {};
+			run.prototype.f = function() {
+				// If not signed in the make alert!
+				if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
+					setInterval(function() {
+						chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+					}, 30000);
+					document.style.backgroundColor = 'pink';
+					return;
+				}
+				// Are we at "All HITs Available to You"?
+				var allHITsReg = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
+				// myHITsNoneAvailable
+				var myHITsNoneAvailable = ih.indexOf('There are currently no HITs assigned to you.');
+				// Check...
+				if (allHITsReg || myHITsNoneAvailable != -1)
+				{
+					// Info input
+					var input = document.createElement('input');
+					input.setAttribute('style', 'position:absolute;top:0;left:0;width:140px;zoom:1.8;');
+					input.value = 'Starting...';
+					document.body.appendChild(input);
+					// Start checking
+					var JR_start = new Date().getTime()/1000; // Seconds
+					JR_check_time();
+					John_Roberts_xhr_check_HITs_Assigned_to_You();
+					return;
+				}
+				// Format elapsed
+				function JR_check_time() {
+					//~ var x = (input.value.split(' ')[1] * 1) + 1;
+					var p = ((new Date().getTime()/1000) - JR_start) / 60;
+					p = Math.round(p*100) / 100; // Two decimals
+					var n = Math.floor(p); // Int portion
+					var d = p - n; // Decimal portion
+					var elapsed;
+					if (d < 0.25)
+						elapsed = String(n) + ':00';
+					else if (d >= 0.25 && d < .75)
+						elapsed = String(n) + ':30';
+					else // (d >= 0.75)
+						elapsed = String(n+1) + ':00';
+					// Update value
+					input.value = 'Elapsed: ' + elapsed;
+				}
+				// John_Roberts_xhr_check_HITs_Assigned_to_You
+				function John_Roberts_xhr_check_HITs_Assigned_to_You() {
+					console.log('init interval check hits assigned');
+					// Interval
+					var interval = setInterval(function() {
+						GM_xmlhttpRequest({ // init
+							method: "GET",
+							//
+							url: 'https://www.mturk.com/mturk/myhits', // ......OLD.......
+							// TODO URL:
+							//~ url: 'https://www.mturk.com/mturk/sortmyhits?searchSpec=HITSearch%23T%233%2310%23-1%23T%23%21Status%210%21rO0ABXQACEFzc2lnbmVk%21%23%21Deadline%210%21%23%21&selectedSearchType=hitgroups&searchWords=&sortType=Deadline%3A0&pageSize=100',
+							onload: function(response) {
+								var rs = response.responseText;
+								if (response.status != 200) return;
+								// Signed in?
+								if (ih.indexOf('<a href="/mturk/beginsignin" id="lnkWorkerSignin" class="black_text_bold">Sign In</a>') != -1) {
+									chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+								}
+								// IN PROGRESS......
+								// Get all A on page.
+								var dom = new DOMParser().parseFromString(rs, 'text/html');
+								var a = dom.getElementsByTagName('a');//console.log(a);
+								for (var i in a) {
+									if (i == 'length') break;//console.log(a[i].innerText);
+									if (a[i].innerText != 'Continue work on this HIT') continue;
+									//console.log(a[i].innerText);
+									// Is one....
+									// 8th Parent Node is TBODY
+									var req = a[i];
+									var ri = null;
+									while (req.parentNode) {
+										req = req.parentNode;
+										if (req &&
+											req.getElementsByClassName('requesterIdentity') &&
+											req.getElementsByClassName('requesterIdentity').length
+											) {
+											ri = req.getElementsByClassName('requesterIdentity')[0].innerText.trim();
+											break;
+										}
+									}
+									console.log(ri);
+									if (ri == 'John Roberts') {
+										document.location.href = a[i].href;
+										return;
 									}
 								}
-								if (ri == 'John Roberts') {
-									document.location.href = a[i].href;
-									return;
-								}
-								//~ var req = a[i].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('requesterIdentity');
-								//~ if (req) {
-									//~ if (req.length != 1) {
-										//~ alert('req length != 1');
-										//~ return;
-									//~ }
-									//~ if (req[0].innerText == 'John Roberts') {
-										//~ document.location.href = a[i].href;
-										//~ return;
-									//~ }
+								// Still here?
+								// Update timer display.
+								JR_check_time();
+								
+								
+								
+								
+								//~ // ..................................
+								//~ // ... OLD METHOD...
+								//~ // ..................................
+								//~ // TODO: Check for John Roberts in this task!
+								//~ var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
+								//~ if (r) {
+									//~ document.location.href = r[1];
+									//~ return;
+								//~ } else {
+									//~ JR_check_time();
 								//~ }
 							}
-							// Still here?
-							JR_check_time();
-							
-							
-							
-							
-							//~ // ..................................
-							//~ // ... OLD METHOD...
-							//~ // ..................................
-							//~ // TODO: Check for John Roberts in this task!
-							//~ var r = /<a href="(\/mturk\/continue\?[^"]+)">Continue work on this HIT<\/a>/.exec(rs);
-							//~ if (r) {
-								//~ document.location.href = r[1];
-								//~ return;
-							//~ } else {
-								//~ JR_check_time();
-							//~ }
-						}
-					});
-				}, 30000);
+						});
+					}, 30000);
+				}
 			}
+			new run().f();// return;
 		}
 		// End Roberts myHITs
 		//
@@ -188,11 +185,8 @@ function mturk_load()
 		 * However, stop running if on the "No more HITs available" page
 		 */
 		var l = document.location.href;
-		//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
-		console.log('x0');
-		console.log(l);
-		//~ console.log(check_right_page);
-		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);console.log('x4');
+			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
+		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
 		if  ( false &&
 			( // Running on any of the following:
 			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
