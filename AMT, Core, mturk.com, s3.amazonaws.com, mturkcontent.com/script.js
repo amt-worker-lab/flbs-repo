@@ -26,8 +26,102 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// dinnertan
+	// Find the Details for a Construction Company	
+	//
+	//
+	s = '<li>Extract 6 data fields; ALAMAT BERDAFTAR, TELEFON, NO. FAKS, EMEL, NO. DAFTAR PERNIAGAAN, TARIKH TAMAT SIJIL SEMASA</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[0].href,
+				q: [
+					document.getElementById('alamat'),
+					document.getElementById('telefon'),
+					document.getElementById('faks'),
+					document.getElementById('emel'),
+					document.getElementById('daftar'),
+					document.getElementById('tamat')
+				],
+			}
+			console.log(o);
+			// DoPast
+			AMT___addUserDecision(
+				'dinnertan,apr11,2016',
+				function() { return o.u; },
+				[
+				"Id(alamat)",
+				"Id(telefon)",
+				"Id(faks)",
+				"Id(emel)",
+				"Id(daftar)",
+				"Id(tamat)",
+				]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
+			//AMT___recordAndSubmit();
+					
+			//
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'black';
+						return false;
+					}
+					//~ else { // Reset localStorage!
+						//~ localStorage['ko'] = '0';
+					//~ }
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					//console.log(options);
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					
+					// Scrape...
+					var d = dom.getElementById('contSummary');
+					if (!d) return;
+					d = d.getElementsByTagName('table');
+					for (var i=0; i<d.length; i++) {
+						// Rows in table...
+						var tr = d[i].getElementsByTagName('tr');
+						for (var j=0; j<tr.length; j++) {
+							var td = tr[j].getElementsByTagName('td');
+							console.log(td.length);
+							if (td.length == 4) {
+								if (o.q[0].value == '' && td[1].innerText == 'ALAMAT BERDAFTAR') {
+									o.q[0].value = td[3].innerText.trim();
+								} else if (o.q[1].value == '' && td[1].innerText == 'ALAMAT BERDAFTAR') {
+									o.q[1].value = td[3].innerText.trim();
+								} else if (o.q[2].value == '' && td[1].innerText == 'TELEFON') {
+									o.q[2].value = td[3].innerText.trim();
+								} else if (o.q[3].value == '' && td[1].innerText == 'NO. FAKS') {
+									o.q[3].value = td[3].innerText.trim();
+								} else if (o.q[4].value == '' && td[1].innerText == 'EMEL') {
+									o.q[4].value = td[3].innerText.trim();
+								} else if (o.q[5].value == '' && td[1].innerText == 'NO. DAFTAR PERNIAGAAN / SYARIKAT / KOPERASI') {
+									o.q[5].value = td[3].innerText.trim();
+								} else if (o.q[6].value == '' && td[1].innerText == 'TARIKH TAMAT SIJIL SEMASA') {
+									o.q[6].value = td[3].innerText.trim();
+								}
+							}
+						}
+					}
+				}
+			})
+		}
+		new run().f();
+	}
 	// Prospect Smarter
-	//  Test....
+	// Test scrape... Works ok...
 	//
 	//
 	s = '<li>CLICK THE STREETVIEW IMAGE (the last batch had a lot of HITS returned that used the regular Google maps image. These will be rejected this time.)</li>';
