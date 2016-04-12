@@ -142,9 +142,11 @@ function mturk_load()
 											break;
 										}
 									}
-									console.log(ri);
+									console.log('Found task. Requester name:' + ri);
 									if (ri == 'John Roberts') {
-										document.location.href = a[i].href;
+										console.log(a[i].getAttribute('href'));
+										// E.g. /mturk/continue?hitId=3U088ZLJVL1W4XV2YJGVDNTBX0Y0WN
+										document.location.href = 'https://www.mturk.com' + a[i].getAttribute('href');
 										return;
 									}
 								}

@@ -17099,8 +17099,12 @@ function AMT___returnAndAcceptButton() {
 		var MT__gm_groupId;
 		MT__gm_groupId = /<a href="\/mturk\/return\?([^"]+)/.exec(ih)[1];
 		MT__gm_groupId = __js_clean_html_str(MT__gm_groupId);
-		MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId)[1];
-		//~ MT__gm_groupId = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih)[1];
+		MT__gm_groupId = /groupId=([^&]+)/.exec(MT__gm_groupId);
+		if (MT__gm_groupId)
+			MT__gm_groupId = MT__gm_groupId[1];
+		else
+			return; // Quit here!
+			//~ MT__gm_groupId = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(ih)[1];
 		console.log('HERE');
 		var d = document.createElement('input');
 		d.setAttribute('id','MT__gm_returnaccept');
