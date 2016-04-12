@@ -90,6 +90,7 @@ function MT__RUN() {
 					var d = dom.getElementById('contSummary');
 					if (!d) return;
 					d = d.getElementsByTagName('table');
+					var found_one = false;
 					for (var i=0; i<d.length; i++) {
 						// Rows in table...
 						var tr = d[i].getElementsByTagName('tr');
@@ -97,24 +98,31 @@ function MT__RUN() {
 							var td = tr[j].getElementsByTagName('td');
 							console.log(td.length);
 							if (td.length == 4) {
-								if (o.q[0].value == '' && td[1].innerText == 'ALAMAT BERDAFTAR') {
-									o.q[0].value = td[3].innerText.trim();
-								} else if (o.q[1].value == '' && td[1].innerText == 'ALAMAT BERDAFTAR') {
-									o.q[1].value = td[3].innerText.trim();
-								} else if (o.q[2].value == '' && td[1].innerText == 'TELEFON') {
-									o.q[2].value = td[3].innerText.trim();
-								} else if (o.q[3].value == '' && td[1].innerText == 'NO. FAKS') {
-									o.q[3].value = td[3].innerText.trim();
-								} else if (o.q[4].value == '' && td[1].innerText == 'EMEL') {
-									o.q[4].value = td[3].innerText.trim();
-								} else if (o.q[5].value == '' && td[1].innerText == 'NO. DAFTAR PERNIAGAAN / SYARIKAT / KOPERASI') {
-									o.q[5].value = td[3].innerText.trim();
-								} else if (o.q[6].value == '' && td[1].innerText == 'TARIKH TAMAT SIJIL SEMASA') {
-									o.q[6].value = td[3].innerText.trim();
+								var n = td[3].innerText.replace(/\n\t+/g, "").trim(); // Match copy/paste.
+								var m = td[1].innerText.trim();
+								if (o.q[0].value == '' && m == 'ALAMAT BERDAFTAR') {
+									o.q[0].value = n;
+									found_one = true;
+								} else if (o.q[1].value == '' && m == 'TELEFON') {
+									o.q[1].value = n;
+									found_one = true;
+								} else if (o.q[2].value == '' && m == 'NO. FAKS') {
+									o.q[2].value = n;
+									found_one = true;
+								} else if (o.q[3].value == '' && m == 'EMEL') {
+									o.q[3].value = n;
+									found_one = true;
+								} else if (o.q[4].value == '' && m == 'NO. DAFTAR PERNIAGAAN / SYARIKAT / KOPERASI') {
+									o.q[4].value = n;
+									found_one = true;
+								} else if (o.q[5].value == '' && m == 'TARIKH TAMAT SIJIL SEMASA') {
+									o.q[5].value = n;
+									found_one = true;
 								}
 							}
 						}
 					}
+					if (found_one) AMT___recordAndSubmit();
 				}
 			})
 		}
