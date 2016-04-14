@@ -53209,49 +53209,15 @@ function MT__RUN() {
 		new run().f();
 		return;
 	}
-	//
-	// Chios System
-	// Lowe's store search, Home Depot
-	// New Nov21 2014, Uses Utility Window
-	/**
-	 * This is an example of using Street View images.
-	 * https://maps.googleapis.com/maps/api/streetview?size=600x600&location=1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095&heading=-80&key=_GOOGLE_API_KEY_REDACTED_
-	 */
-	var s = 'Draw a complete polygon around the target&nbsp;store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
-	var s2= 'Draw a complete polygon around all the building(s) of a&nbsp;target&nbsp;mall (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
-	var s3= 'Draw a complete polygon around the target&nbsp;dealer (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
-	var s4= 'Draw a complete polygon around the target store&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
-	var s5= 'Draw a complete polygon around the target restaurant&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
-	var s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
-	var s7= '<li>Draw a complete polygon around the store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
-	var s8= '<li>Draw a complete polygon around the hospital/medical facility&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
-	var s9= '	<li>Use street-view to confirm hotel and building identity when unsure (e.g., some hotels are actually located across the street from the official&nbsp;address).</li>';
-	var s10= '<li>Please include the building of the target. <u>PLEASE DO NOT INCLUDE ANY PARKING LOT</u>.&nbsp;</li>';
-	var s11= "If you cannot find the store, click the 'Can't Label' button <u>and explain reasons briefly";
-	var s12 = 'If the target shares a parking lot with other stores, only include the area of the parking lot that is most';
-	var s13 = "Draw a complete polygon around the target gas station (by clicking on the map). If you don't like the first polygon you drew";
-	var s14 = "Draw a complete polygon around the target&nbsp;hotel";
-	var s15 = "Some areas of map will allow you to use Satellite view at a 45 degree angle, <u>please do NOT draw the polygon in this view.</u> Uncheck the box and use the overhead Satellite view when drawing your polygon.";
-	if  (
-		ih.indexOf(s)  != -1 ||
-		ih.indexOf(s2) != -1 ||
-		ih.indexOf(s3) != -1 ||
-		ih.indexOf(s4) != -1 ||
-		ih.indexOf(s5) != -1 ||
-		ih.indexOf(s6) != -1 ||
-		ih.indexOf(s7) != -1 ||
-		ih.indexOf(s8) != -1 ||
-		ih.indexOf(s9) != -1 ||
-		ih.indexOf(s10)!= -1 ||
-		ih.indexOf(s11) != -1 ||
-		ih.indexOf(s12) != -1 ||
-		ih.indexOf(s13) != -1 ||
-		ih.indexOf(s14) != -1 ||
-		ih.indexOf(s15) != -1
-		)
-	{
+	// Chios System #2
+	// Parking lots only......
+	// 35.720839855434306,-81.69798374176025;35.71860995331177,-81.69300556182861;35.71596186348609,-81.69828414916992;35.7169374857655,-81.70103073120117;xxxxxxxxxx
+	// 35.71665692263838,-81.69681429862976;35.7191133559119,-81.69721126556396;35.71867296839054,-81.69896998655162;35.716211182732174,-81.69857397447015;35.71665692263838,-81.69681429862976;
+	var s = 'Some areas of map will allow you to use Satellite view at a 45 degree angle, <u>please do NOT draw the polygon in this view.</u> Uncheck the box and use the overhead Satellite view when drawing your polygon.';
+	if (s) {
 		var run = function() {};
 		run.prototype.f = function() {
+			getCenterBeforeChiosRuns();
 			function getCenterBeforeChiosRuns() {
 				new AMT___core_factory().createScriptVar('Start in top-down view', 0, false);
 				var inp = document.createElement('input')
@@ -53269,7 +53235,6 @@ function MT__RUN() {
 				
 				//Draw a marker onto the map for lat/lng
 				AMT___RunPageScript("function() {"+
-						"console.log('attempting image xxx');"+
 						"var image = {"+
 							"url: 'https://google-developers.appspot.com/maps/documentation/javascript/examples/full/images/beachflag.png',"+
 							"size: new google.maps.Size(20, 32),"+
@@ -53391,30 +53356,689 @@ function MT__RUN() {
 									"new google.maps.Size(16, 16),"+
 									"new google.maps.Point(0, 0),"+
 									"new google.maps.Point(8, 8));"+
-									//~ "map.addEventListener('mousemove', " +
-										//~ "function(e) { " +
-									//~ "console.log(e);"+
-									//~ "if(window.mouseMoveShowRect) {" +
-										//~ "console.log('showRect');"+
-										//~ "var diffLat = e.latLng.lat() - window.threeRectPoints[1].position.A;"+
-											//~ "var diffLng = e.latLng.lng() - window.threeRectPoints[1].position.F;"+
-											//~ "var newLatLng = {"+
-													//~ "lat: diffLat + window.threeRectPoints[0].position.A,"+
-													//~ "lng: diffLng + window.threeRectPoints[0].position.F"+
-												//~ "};"+
-												//~ 
-//~ 
-											//~ "var lastPoint = new google.maps.Marker({"+
-											//~ "		position: newLatLng,"+
-											//~ "		map: map,"+
-											//~ "		icon: window.markerImage"+
-											//~ "	});"+
-											//~ "	window.demoPolyLine.path = ["+
-											//~ "	  window.threeRectPoints[0].position,"+
-											//~ "	  lastPoint.position,"+
-											//~ "	  e.latLng];"+
-											//~ "	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
-									//~ "}});"+
+								"google.maps.event.addListener(map, 'rightclick', function(e) {"+
+								"console.log(e);"+
+								"console.log(e.latLng);"+
+								"map.set('disableDoubleClickZoom', true);"+								
+								"if(!window.shiftKey) {"+
+								"	var m = new google.maps.Marker({"+
+								"		position: e.latLng,"+
+								"		map: map,"+
+								"		icon: window.markerImage"+
+								"	});"+  
+								"   if(window.threeRectPoints.length < 3) {"+
+										"window.threeRectPoints.push(m);"+
+										"if(window.threeRectPoints.length > 1 && window.threeRectPoints.length < 4) {"+
+										"	var polyline = new google.maps.Polyline({"+
+										"     path:["+
+										"	  m.position,"+
+										"	  window.threeRectPoints[window.threeRectPoints.length-2].position],"+
+										"	  strokeWeight:3,"+
+										"	  strokeColor:'#00FF00'});"+
+										"	polyline.setMap(map);"+
+										"	window.fourLines.push(polyline);"+
+										"}"+
+										
+										"if(window.threeRectPoints.length == 3) {"+
+											"var diffLat = window.threeRectPoints[2].position.lat() - window.threeRectPoints[1].position.lat();"+
+											"var diffLng = window.threeRectPoints[2].position.lng() - window.threeRectPoints[1].position.lng();"+
+											"var newLatLng = {"+
+													"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
+													"lng: diffLng + window.threeRectPoints[0].position.lng()"+
+												"};"+
+												
+												
+											"var randOff = 0.00000898472*1;"+ //1 meter is 1/111,300
+											"var w = randOff * Math.sqrt(Math.random());"+
+											"var t = 2 * Math.PI * Math.random();"+
+											"var x = newLatLng.lat*1 + w*Math.cos(t);"+
+											"var y = newLatLng.lng*1 + w*Math.sin(t);"+
+											"newLatLng = {lat:x,lng:y};"+
+
+											"var lastPoint = new google.maps.Marker({"+
+											"		position: newLatLng,"+
+											"		map: map,"+
+											"		icon: window.markerImage"+
+											"	});"+
+											"window.threeRectPoints.push(lastPoint);"+
+											
+											"	var polyline = new google.maps.Polyline({"+
+											"     path:["+
+											"	  window.threeRectPoints[2].position,"+
+											"	  window.threeRectPoints[3].position],"+
+											"	  strokeWeight:3,"+
+											"	  strokeColor:'#00FF00'});"+
+											"	polyline.setMap(map);"+
+											"	window.fourLines.push(polyline);"+
+											"	var polyline = new google.maps.Polyline({"+
+											"     path:["+
+											"	  window.threeRectPoints[3].position,"+
+											"	  window.threeRectPoints[0].position],"+
+											"	  strokeWeight:3,"+
+											"	  strokeColor:'#00FF00'});"+
+											"	polyline.setMap(map);"+
+											"	window.fourLines.push(polyline);"+
+											
+											
+											"document.getElementById('polygon').value = '';"+
+											"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
+												"document.getElementById('polygon').value += window.threeRectPoints[i].position.lat() + ',' + window.threeRectPoints[i].position.lng() +';';"+
+											"}"+
+											"document.getElementById('polygon').value += window.threeRectPoints[0].position.lat() + ',' + window.threeRectPoints[0].position.lng()+';';"+
+										"}"+ 
+									"}"+
+									"else {"+
+											"for(var i = 0; i < window.threeRectPoints.length; i++) {"+
+												"window.threeRectPoints[i].setMap(null);"+
+												"window.fourLines[i].setMap(null);"+
+											"}"+
+											"window.threeRectPoints = [];"+
+											"window.fourLines = [];"+
+											"window.threeRectPoints.push(m);"+
+									"};"+
+									"if(window.threeRectPoints.length == 2) {" +
+									"window.mouseMoveShowRect = true;" +
+									"} else {window.mouseMoveShowRect = false;window.demoPolyLine.setMap(null);}"+
+								"} else {"+
+									"var panorama = map.getStreetView();"+
+									"panorama.setPosition(e.latLng);"+
+									"var toggle = panorama.getVisible();"+
+									"if (toggle == false) {"+
+									"panorama.setVisible(true);"+
+									"} else {"+
+									"panorama.setVisible(false);"+
+									"}"+
+									"return false;"+
+								 "}"+
+								"});"+
+								"displayNewCoors = function(coors) {\n"+
+								"var str = '';"+
+								"var p1 = null;"+
+								"var p2 = null;"+
+								"var co = new Array();"+
+									"for (var i =0; i < coors.getLength(); i++) {\n"+
+									    "if(i == 1) {p1 = coors.getAt(i)};"+
+									    "if(i == coors.getLength()-1) {p2 = coors.getAt(i)};"+
+										"var latlng = coors.getAt(i);"+
+										"str += latlng.lat() + ',' + latlng.lng() + ';';"+
+								  "}\n"+
+								  
+								  "console.log(p1);"+
+								  "console.log(p2);"+
+								  
+								  //~ "\n"+
+								  "var latlng1 = coors.getAt(0);"+
+								  "var latlng2 = coors.getAt(coors.getLength()-1);"+
+								  "if(latlng1.lat() != latlng2.lat() ||"+
+								     "latlng1.lng() != latlng2.lng()) {\n\n\n\n\n\n\n\n\n"+
+									"str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ';';"+
+								  "};"+
+								  
+								 " var polyline = new google.maps.Polyline({"+
+											"     path:["+
+											"	  coors.getAt(0),"+
+											"	  coors.getAt(coors.getLength()-1)],"+
+											"	  strokeWeight:3,"+
+											"	  strokeColor:'#FFFFFF'});\n"+
+								  "polyline.setMap(map);"+
+								  "document.getElementById('polygon').value = str;"+
+
+								  "};"+
+
+								
+								"var streetViewLayer = new google.maps.StreetViewCoverageLayer();"+
+								"streetViewLayer.setMap(map);"+
+							"},2000)}")
+			}
+			// runAfterGettingCenter
+			function runAfterGettingCenter() {
+				GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:10px;}');
+				GM_addStyle('body {margin-top:0px;}');
+				GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+				GM_addStyle('#submitButton {width:100%;height:60px;margin-top:-16px;}');
+				GM_addStyle('#polygon {position:absolute;top:0px;left:42%;width:40%;height:20px;}');
+				GM_addStyle('#map {width:100% !important;}');
+				
+				// h3
+				GM_addStyle('h3:hover {background-color:aqua;}');
+				GM_addStyle('h3 {width:40%;}');
+				
+				// ENDS HERE.........
+				//
+				//~ return;
+				
+				
+				//~ var x = document.getElementsByTagName('h3')[0];
+				//~ x.innerText = x.innerText.replace(/\n/g, ' ');
+				
+				//...
+				// This will change occasionally.
+				// Sometimes the first <b> on the page will be
+				// a note rather than the name!
+				//~ var b		= document.getElementsByTagName('b');
+				//~ var name	= b[0].innerText.trim();
+				//~ var addr	= b[1].innerText.trim();
+				//~ var btns	= document.getElementsByTagName('button');
+				//~ // Is this one with b[1] b[2]?
+				//~ if (b[1].parentNode.innerText.indexOf('Address:') == -1) {
+					//~ name = b[1].innerText.trim();
+					//~ addr = b[2].innerText.trim();
+				//~ }
+				
+				// vars
+				var o = {
+					//~ lat: null,
+					//~ lon: null,
+					//~ centerMapLat: this.value.match(/^[^;]+/)[0],
+					//~ centerMapLng: this.value.match(/[^;]+$/)[0],
+					//~ name: name,
+					//~ addr: addr,
+					//~ button_cannot_find: btns[0],
+					//~ max_streetview_height: 600, // default=600
+					//~ curr_map_view: null, // For Z hotkey
+					q: document.getElementById('polygon'),
+					
+				};
+				//~ console.log(o);
+				//~ if(o.name.toLowerCase() == 'marshalls') {
+					//~ document.body.style.backgroundColor = 'green';
+				//~ }else if(o.name.toLowerCase() != 'ross dress for less') {
+					//~ document.body.style.backgroundColor = 'pink';
+				//~ }
+				
+				// Only add user decision if not running @ dev.
+				//~ if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+					//~ AMT___addUserDecision('Chios Polygon - Quality Control',
+						//~ function() {
+							//~ return o.name + '||||' + o.addr + '||||' + AMT__Global_Vars.hitId;
+						//~ },
+						//~ [
+							//~ 'Id(polygon)',
+							//~ 'Id(reasons)'
+						//~ ]
+					//~ );
+				//~ }
+				// hide Ps
+				var p = document.getElementsByTagName('p');
+				var i,x;
+				for (i in p) {
+					if (i == 'length') break;
+					x = p[i].getElementsByTagName('img'); // Images
+					if (x.length && (x.length == 4 || x.length == 3 || x.length == 2)) {
+						p[i].style.position = 'absolute';
+						p[i].style.marginTop = '400px';
+						break;
+					}
+				}
+				var p = document.getElementsByTagName('p');
+				for (i = p.length - 2; i>=0; i--) { // Blank Ps
+					console.log(i);
+					if (i == 'length') continue;
+					console.log(p[i].innerHTML);
+					if  (
+						p[i].innerHTML.trim() == '&nbsp;' ||
+						p[i].innerHTML.trim() == 'Polygon:'
+						)
+					{
+						p[i].parentNode.removeChild(p[i]);
+					}
+				}
+				// h3[0]
+				var x = document.getElementsByTagName('h3')[0];
+				if (x && x[0]) { 
+					x.setAttribute('style', 'overflow:auto;');
+					x.style.border = '2px solid LightGreen';
+					x.style.cursor = 'pointer';
+					x.style.height = '28px';
+					x.style.fontSize = '24px';
+					x.innerText = name + '\n' + x.innerText;
+				}
+				
+				/*BEGIN ITEMS*/
+				// Middle line
+				var middleLine = document.createElement('div');
+				middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
+				document.body.appendChild(middleLine);
+				// Chios submitted check
+				if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+					var d4 = document.createElement('div');
+					d4.setAttribute('style',
+						'position:absolute;top:20px;left:42%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
+					);
+					document.body.appendChild(d4);
+					d4.id = 'd4';
+				}
+				
+				//~ showPastReturns(name + addr, function() {
+					//~ document.body.style.backgroundColor = 'aqua';
+					//~ document.getElementById('d4').innerHTML += 'Was Returned'
+				//~ });
+				
+				// innerHeight
+				new AMT___core_factory().el_innerHeight({
+					// This set the elements d1,d1b, and d1c
+					// to fill up the whole window, minus their
+					// distance from page top (top:XX pixels;).
+					callback_function: function(innerHeight) {
+						console.log('got cb from el_innerHeight');
+						var new_h = (innerHeight-80) + 'px'; //...
+						
+						// Set a timeout
+						// There is a problem here. It goes gray sometimes.
+						// Which happens to be the background color of the map div.
+						setTimeout(function() {
+							document.getElementById('map').style.height = new_h;
+						}, 1000);
+					}
+				});
+				
+				// window.onContextMenu
+				window.onContextMenu = function(e) {
+					console.log('context menu fired for body');
+					e.preventDefault();
+					e.stopPropogation();
+					return false;
+				}
+				
+				// ...
+				document.getElementById('submitButton').onclick = function(e) {
+					// Run here if not running @ dev.
+					if (!AMT__Global_Vars.core.is_running_on_local_dev) {
+						this.style.backgroundColor = 'LightGreen';
+						if (o.q.value.trim() == '')
+							return false;
+						(new AMT___core_factory()).nextTab({focusOnPage: true});
+						AMT___recordAndSubmit();
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+				
+				/**
+				 * js_append
+				 */
+				function js_append(func, values) {
+					// ...
+					var code = '(' + func + ')('+values+');';
+					var script = document.createElement('script');
+					script.textContent = code;
+					(document.head||document.documentElement).appendChild(script);
+					script.parentNode.removeChild(script);
+				}
+				
+				/**
+				 * window.onkeydown
+				 * This is somewhat different from keypress. For example "e.keyCode" for CTRL only comes in 
+				 * on keydown NOT keypress. Er wtf?
+				 */
+				window.addEventListener('keyup', function(e) {
+					
+					console.log('keyCode'+e.keyCode);
+					console.log('charCode'+e.charCode); //Always=0
+					
+					// Submit button (CTRL key)
+					if (e.keyCode == '17' && document.getElementById('polygon').value.length > 4 ) {
+						document.getElementById('submitButton').click();
+					}
+				}, false);
+				/**
+				 * window.onkeypress
+				 */
+				window.addEventListener('keypress', function(e) {
+					var char = String.fromCharCode(e.charCode);
+					// Exit Steet View
+					if (char == 'z' || char == 'Z') {
+						console.log('Exit:' + char);
+						var x = document.getElementsByTagName('div');
+						// AMT___RunPageScript
+						AMT___RunPageScript(
+							function() {
+							
+								//console.log('haha! PageScript has run!');
+								var headingAngle = map.streetView.pov.heading;
+								headingAngle *= -1;
+								
+								 map.streetView.pov.heading
+
+								console.log(headingAngle);
+								headingAngle = headingAngle * Math.PI / 180;
+								
+								console.log(headingAngle);
+								var currentLat = map.streetView.location.latLng.lat();
+								var currentLng = map.streetView.location.latLng.lng();
+								
+								var nextLat = currentLat + 0.003*Math.cos(headingAngle);
+								var nextLng = currentLng - 0.003*Math.sin(headingAngle); 
+								var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
+								var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
+								var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
+								var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
+								console.log(currentLat);
+								console.log(currentLng);
+								console.log(nextLat);
+								console.log(nextLng);
+								var path = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat, nextLng)
+											];
+								var path2 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat2, nextLng2)
+											];
+								var path3 = [new google.maps.LatLng(currentLat, currentLng),
+											new google.maps.LatLng(nextLat3, nextLng3)
+											];
+								 
+								//~ var path = [new google.maps.LatLng(currentLat, currentLng),
+											//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
+										//	];
+
+								var lineSymbol = {
+									path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+								};
+								if(window.angleShower)
+									window.angleShower.setMap(null);
+								window.angleShower = new google.maps.Polyline({
+										path: path,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower.setMap(map);
+								
+								if(window.angleShower2)
+									window.angleShower2.setMap(null);
+								window.angleShower2 = new google.maps.Polyline({
+										path: path2,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower2.setMap(map);
+								
+								if(window.angleShower3)
+									window.angleShower3.setMap(null);
+								window.angleShower3 = new google.maps.Polyline({
+										path: path3,
+										geodesic: true,
+										icons: [{
+											  icon: lineSymbol,
+											  offset: '100%'
+											}],
+										strokeColor: '#00FF00',
+										strokeOpacity: 1.0,
+										strokeWeight: 4
+									});
+								window.angleShower3.setMap(map);
+								
+								
+
+			
+								
+								//console.log(angleShower);
+								return;
+							}
+						);
+						
+						AMT___RunPageScript(function() {
+							var panorama = map.getStreetView();
+							panorama.setVisible(false);
+							//~ console.log('panorama');
+							//~ console.log(panorama);
+						});
+					}
+					// Go to map view
+					else if (char == 'b' || char == 'B') {
+						AMT___RunPageScript(function() {
+							if(map.getMapTypeId() != 'roadmap') {
+								map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+							}else {
+								map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+							}
+						});
+					}
+					// Go to satellite
+					else if (char == 'x' || char == 'X') {
+						AMT___RunPageScript(function() {
+							console.log('map.getTilt' + map.getTilt()*1);
+							if(map.getTilt()*1 == 45)
+								map.setTilt(0);
+							else
+								map.setTilt(45);
+						});
+					}
+					// C
+					else if (char == 'c' || char == 'C') {
+						AMT___RunPageScript(function() {
+							if(!map.getHeading() && map.getHeading() != 0) {
+								map.setHeading(90);
+							}
+							else { 
+								map.setHeading(map.getHeading() + 90);
+							}
+						});
+					}
+					// V
+					else if (char == 'v' || char == 'V') {
+						AMT___RunPageScript(function() {
+							map.setHeading(map.getHeading() - 90 || 0);
+						});
+					}
+				}, false);
+				
+				// Zoom map exit button
+				var xintv = setInterval(function() {
+					var x = document.getElementsByTagName('div');
+					for (var i in x) {
+						if (i == 'length') break;
+						if (x[i].hasOwnProperty('title') && x[i].title == 'Exit Street View') {
+							x[i].style.zoom = 2.4;
+							clearInterval(xintv);
+							break;
+						}
+					};
+				}, 1000);
+				
+				/**
+				 * Do a map resize
+				 * Script embed
+				 * .....?
+				 */
+				var sc = document.createElement('script');
+				sc.innerText = 'google.maps.event.trigger(map, "resize");';
+				document.body.appendChild(sc);
+			}
+		}
+		new run().f();
+	}
+	// Chios System
+	// Lowe's store search, Home Depot
+	// New Nov21 2014, Uses Utility Window
+	/**
+	 * This is an example of using Street View images.
+	 * https://maps.googleapis.com/maps/api/streetview?size=600x600&location=1901%20E%20Edwardsville%20Rd,Wood%20River%20IL,62095&heading=-80&key=_GOOGLE_API_KEY_REDACTED_
+	 */
+	var s = 'Draw a complete polygon around the target&nbsp;store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	var s2= 'Draw a complete polygon around all the building(s) of a&nbsp;target&nbsp;mall (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	var s3= 'Draw a complete polygon around the target&nbsp;dealer (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	var s4= 'Draw a complete polygon around the target store&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	var s5= 'Draw a complete polygon around the target restaurant&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.';
+	var s6= 'Geofence the restaurant&nbsp;at the given location (notice: new changed instructions)';
+	var s7= '<li>Draw a complete polygon around the store (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	var s8= '<li>Draw a complete polygon around the hospital/medical facility&nbsp;(by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	var s9= '	<li>Use street-view to confirm hotel and building identity when unsure (e.g., some hotels are actually located across the street from the official&nbsp;address).</li>';
+	var s10= '<li>Please include the building of the target. <u>PLEASE DO NOT INCLUDE ANY PARKING LOT</u>.&nbsp;</li>';
+	var s11= "If you cannot find the store, click the 'Can't Label' button <u>and explain reasons briefly";
+	var s12 = 'If the target shares a parking lot with other stores, only include the area of the parking lot that is most';
+	var s13 = "Draw a complete polygon around the target gas station (by clicking on the map). If you don't like the first polygon you drew";
+	var s14 = "Draw a complete polygon around the target&nbsp;hotel";
+	
+	if  (
+		ih.indexOf(s)  != -1 ||
+		ih.indexOf(s2) != -1 ||
+		ih.indexOf(s3) != -1 ||
+		ih.indexOf(s4) != -1 ||
+		ih.indexOf(s5) != -1 ||
+		ih.indexOf(s6) != -1 ||
+		ih.indexOf(s7) != -1 ||
+		ih.indexOf(s8) != -1 ||
+		ih.indexOf(s9) != -1 ||
+		ih.indexOf(s10)!= -1 ||
+		ih.indexOf(s11) != -1 ||
+		ih.indexOf(s12) != -1 ||
+		ih.indexOf(s13) != -1 ||
+		ih.indexOf(s14) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			function getCenterBeforeChiosRuns() {
+				new AMT___core_factory().createScriptVar('Start in top-down view', 0, false);
+				var inp = document.createElement('input')
+				inp.setAttribute('style', 'width:20%;top:2000px;position:absolute;left:40%');
+				document.body.appendChild(inp);
+				inp.id = 'latlng_starting_value';
+				inp.type = 'button';
+				inp.onclick = runAfterGettingCenter;
+				
+				//Draw a marker onto the map for center of map
+				AMT___RunPageScript("function() {"+
+						
+					"}"
+					);
+				
+				//Draw a marker onto the map for lat/lng
+				AMT___RunPageScript("function() {"+
+						"var image = {"+
+							"url: 'https://google-developers.appspot.com/maps/documentation/javascript/examples/full/images/beachflag.png',"+
+							"size: new google.maps.Size(20, 32),"+
+							"origin: new google.maps.Point(0,0),"+
+							"anchor: new google.maps.Point(0, 32)"+
+						  "};"+
+					"}");
+				
+				AMT___RunPageScript("function() {"+
+							"window.mouseMoveShowRect = false;" +
+							"window.demoPolyLine = new google.maps.Polyline({"+
+											"     path:[],"+
+											"     clickable:true,"+
+											"	  strokeWeight:3,"+
+											"	  strokeColor:'#00FFFF'});"+
+							"google.maps.event.addListener(window.demoPolyLine, 'rightclick', function(e) {"+
+								"console.log(e.latLng);"+
+								"google.maps.event.trigger(map, 'rightclick', e);"+
+							"});"+
+							"window.getLatLngByOffset = function( map, offsetX, offsetY ){"+
+								"var currentBounds = map.getBounds();"+
+								"var topLeftLatLng = new google.maps.LatLng( currentBounds.getNorthEast().lat(),"+
+																			"currentBounds.getSouthWest().lng());"+
+								"var point = map.getProjection().fromLatLngToPoint( topLeftLatLng );"+
+								"point.x += offsetX / ( 1<<map.getZoom() );"+
+								"point.y += offsetY / ( 1<<map.getZoom() );"+
+								"return map.getProjection().fromPointToLatLng( point );"+
+							"};"+
+							"document.getElementById('map').addEventListener('mousemove', function(e) {"+
+								//"console.log(e);"+
+								"if(window.mouseMoveShowRect) {" +
+									"console.log('mouseMoveShowRect');"+
+									"var offsetX = e.clientX - document.getElementById('map').offsetLeft;"+
+									"var offsetY = e.clientY - document.getElementById('map').offsetTop;"+
+									"var latLng = window.getLatLngByOffset(map,offsetX,offsetY);"+
+									"var lat = latLng.lat();"+
+									"var lng = latLng.lng();"+
+									"var diffLat = lat - window.threeRectPoints[1].position.lat();"+
+										"var diffLng = lng - window.threeRectPoints[1].position.lng();"+
+										"var newLatLng = {"+
+												"lat: diffLat + window.threeRectPoints[0].position.lat(),"+
+												"lng: diffLng + window.threeRectPoints[0].position.lng()"+
+											"};"+
+										
+
+										"	window.demoPolyLine.setPath(["+
+										"	  window.threeRectPoints[0].position,"+
+										"	  newLatLng,"+
+										"	  {lat:lat,lng:lng}," +
+										"	  window.threeRectPoints[1].position]);"+
+										"	if(window.demoPolyLine.getMap() == null) {window.demoPolyLine.setMap(map);}"+
+							"}});"+
+							"window.setTimeout(function() {"+
+							    "console.log('here is de map');" +
+								"console.log(map);"+
+								"console.log(map.getCenter());"+
+								"var lat = map.getCenter().lat();" +
+								"var lng = map.getCenter().lng();" +
+								"console.log(lat);"+
+								"map.setTilt(45);"+
+								"if(" + AMT__Global_Vars.scriptVars['Start in top-down view'] + ' != 0) { map.setTilt(0); }' +
+								
+								"var marker2 = new google.maps.Marker({"+
+										"position: new google.maps.LatLng(lat,lng),"+
+										"map: map,"+
+										"title: 'testing2',"+
+									"});"+
+								"document.getElementById('latlng_starting_value').value = lat + ';' + lng;" +
+								"document.getElementById('latlng_starting_value').click();"+
+								
+								"var marker = new google.maps.Marker({"+
+								"		position: new google.maps.LatLng(lat,lng),"+
+								"		map: map,"+
+								"		title: 'testing'"+
+								"	});"+
+								"map.setMapTypeId(google.maps.MapTypeId.HYBRID);"+
+								"map.setZoom(("+AMT__Global_Vars.scriptVars.InitialChiosZoom+")*1);"+
+								"map.setCenter(new google.maps.LatLng(lat,lng));" +
+								
+								"google.maps.event.addListener(map.streetView, 'visible_changed', function(){"+
+								"console.log('visible changed');"+
+								"if(window.notFirstDrop == undefined) {"+
+									"console.log('first drop');"+
+									"var toLoc = new google.maps.LatLng(lat,lng);"+
+									"var fromLoc = this.getPosition();"+
+									"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+									"console.log(fromLoc);"+
+									"console.log(toLoc);"+
+									"console.log(heading);"+
+									"map.streetView.setPov({heading:heading, pitch:0});"+
+									"window.notFirstDrop = true;"+
+								"}});"+
+								"function orientToFirstPoint() {" +
+								"var toLoc = new google.maps.LatLng(lat,lng);"+
+								"var fromLoc = map.streetView.getPosition();"+
+								"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
+								"map.streetView.setPov({heading:heading, pitch:0});"+
+								"};"+
+								"window.addEventListener('keypress', function(e) {"+
+									"if(e.keyCode == 115) {"+
+										"orientToFirstPoint();"+
+									"}"+
+								"});"+
+								"window.addEventListener('keydown', function(e) {"+
+									"if(e.keyCode == 16) {"+
+										"window.shiftKey = true;"+
+										"console.log('shiftdown');"+
+									"}"+
+								"});"+
+								"window.addEventListener('keyup', function(e) {"+
+									"if(e.keyCode == 16) {"+
+										"window.shiftKey = false;"+
+										"console.log('shiftup');"+
+									"}"+
+								"});"+
+								"window.threeRectPoints = [];"+
+								"window.fourLines = [];"+
+								"window.markerImage = new google.maps.MarkerImage('"+MT___host+"/media/images/Yellow_dot.svg',"+
+									"new google.maps.Size(16, 16),"+
+									"new google.maps.Point(0, 0),"+
+									"new google.maps.Point(8, 8));"+
 								"google.maps.event.addListener(map, 'rightclick', function(e) {"+
 								"console.log(e);"+
 								"console.log(e.latLng);"+
