@@ -3739,8 +3739,7 @@ function load()
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
 				if (x && x.length && x.length == 1) {
-					x[0].style.opacity = 0.2;
-					//~ x[0].style.top = 'inherit'; // This is the big black box.......
+					//~ x[0].style.opacity = 0.2;
 				}
 				//~ var x = document.getElementById('time_out_dialog');
 				//~ if (!x) return;
