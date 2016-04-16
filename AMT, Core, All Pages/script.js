@@ -3762,6 +3762,9 @@ function load()
 				//~ }
 			}, 1000);
 			setInterval(function() {
+				var time_since_moved = (new Date().getTime()/1000) - o.last_user_mousemove; // E.g. Now (10) - Old (8) = 2 minutes.
+				if (time_since_moved < 100000) // Assume that code in iframes without mouse movement is probably not important.
+					console.log(time_since_moved + ' seconds since last mouse move.');
 				var x = document.getElementById('time_out_dialog');
 				if (!x) return;
 				x = x.parentNode;
@@ -3776,12 +3779,16 @@ function load()
 				if (x.style.display != 'none' && // != none means it is showing
 					b &&
 					b.innerText &&
-					b.innerText == 'yes' &&		 // ensures this is the right button
-					(new Date().getTime()/1000) - o.last_user_mousemove < 60*o.num_sec_timeout // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
-					) {
-					b.click();					 // This works in a console......
+					b.innerText == 'yes'		 // Ensures correct button
+					)
+				{
+					if (time_since_moved < 60*o.num_sec_timeout) { // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
+						b.click();					 // This works in a console......
+						console.log('Clicked the button!');
+					} else
+						console.log('Not going to click the button - Too much time has elapsed!');
 				} else {
-					//~ alert('yes is gone?');
+					//~ alert('...');
 				}
 			}, Math.random() * 4000); // 0 to 2 seconds.
 		}
