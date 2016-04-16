@@ -3775,7 +3775,7 @@ function load()
 				//x.style.opacity = 0; // fully transparent
 				//
 				// Or.... you could click the Yes button....
-				if (x.style.display != 'none' && // != none means it is showing
+				if (//x.style.display != 'none' && // != none means it is showing
 					b &&
 					b.innerText &&
 					b.innerText == 'yes'		 // Ensures correct button
