@@ -3704,7 +3704,7 @@ function load()
 			// global var.
 			var o = {
 				last_user_mousemove: 0,
-				num_min_timeout: 1, // Time in seconds before letting the screen timeout.
+				num_min_timeout: 10, // Time in seconds before letting the screen timeout.
 			}
 			// Add a div for general controls...
 			var d1 = ''.div({style:'position:absolute;top:0;left:0;border:1px solid #a2a2a2;', a: document.body});
@@ -3762,19 +3762,19 @@ function load()
 			}, 1000);
 			setInterval(function() {
 				var time_since_moved = (new Date().getTime()/1000) - o.last_user_mousemove; // E.g. Now (10) - Old (8) = 2 minutes.
-				if (time_since_moved < 100000) // Assume that code in iframes without mouse movement is probably not important.
-					console.log(time_since_moved + ' seconds since last mouse move.');
+				// Shows a status of last mouse movement.
+				//if (time_since_moved < 100000) // Code in iframes without mouse movement is not important.
+				//	console.log(time_since_moved + ' seconds since last mouse move.');
 				var x = document.getElementById('time_out_dialog');
 				if (!x) return;
 				x = x.parentNode;
 				var b = x.getElementsByClassName('ui-button-text');
 				if (!b || b.length < 2) return;
 				b = b[1];
+				// Sets opacity to 0
+				// x.style.opacity = 0; // fully transparent
 				//
-				// Set opacity to 0
-				//x.style.opacity = 0; // fully transparent
-				//
-				// Or.... you could click the Yes button....
+				// Clicks the Yes button....
 				if (//x.style.display != 'none' && // != none means it is showing
 					b &&
 					b.innerText &&
@@ -3788,9 +3788,8 @@ function load()
 						console.log('Not going to click the button - Too much time has elapsed!');
 				} else {
 					console.log('hmmmmmm');
-					//~ alert('...');
 				}
-			}, Math.random() * 8000); // 0 to 2 seconds.
+			}, Math.random() * 2000); // 0 to 2 seconds.
 		}
 		new run().f();
 	}
