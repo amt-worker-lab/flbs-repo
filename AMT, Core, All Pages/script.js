@@ -3704,7 +3704,7 @@ function load()
 			// global var.
 			var o = {
 				last_user_mousemove: 0,
-				num_sec_timeout: 10, // Time in seconds before letting the screen timeout.
+				num_min_timeout: 1, // Time in seconds before letting the screen timeout.
 			}
 			// Add a div for general controls...
 			var d1 = ''.div({style:'position:absolute;top:0;left:0;border:1px solid #a2a2a2;', a: document.body});
@@ -3781,15 +3781,16 @@ function load()
 					b.innerText == 'yes'		 // Ensures correct button
 					)
 				{
-					if (time_since_moved < 60*o.num_sec_timeout) { // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
+					if (time_since_moved < 60*o.num_min_timeout) { // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
 						b.click();					 // This works in a console......
 						console.log('Clicked the button!');
 					} else
 						console.log('Not going to click the button - Too much time has elapsed!');
 				} else {
+					console.log('hmmmmmm');
 					//~ alert('...');
 				}
-			}, Math.random() * 4000); // 0 to 2 seconds.
+			}, Math.random() * 8000); // 0 to 2 seconds.
 		}
 		new run().f();
 	}
