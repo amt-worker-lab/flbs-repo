@@ -3700,7 +3700,7 @@ function load()
 		// Poll
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('#master-audio_wrapper {width: 200% !important;}'); // For audio player!
+			GM_addStyle('#master-audio_wrapper {width: 347% !important;}'); // For audio player!
 			// global var.
 			var o = {
 				last_user_mousemove: 0,
@@ -3739,7 +3739,7 @@ function load()
 			setInterval(function() {
 				var x = document.getElementsByClassName('ui-widget-overlay ui-front');
 				if (x && x.length && x.length == 1) {
-					//~ x[0].style.opacity = 0.2;
+					x[0].style.opacity = 0.2;
 				}
 				//~ var x = document.getElementById('time_out_dialog');
 				//~ if (!x) return;
@@ -3772,7 +3772,7 @@ function load()
 				if (!b || b.length < 2) return;
 				b = b[1];
 				// Sets opacity to 0
-				 x.style.opacity = 0; // fully transparent
+				// x.style.opacity = 0; // fully transparent
 				//
 				// Clicks the Yes button....
 				if (//x.style.display != 'none' && // != none means it is showing
