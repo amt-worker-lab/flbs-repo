@@ -3763,8 +3763,8 @@ function load()
 			setInterval(function() {
 				var time_since_moved = (new Date().getTime()/1000) - o.last_user_mousemove; // E.g. Now (10) - Old (8) = 2 minutes.
 				// Shows a status of last mouse movement.
-				//if (time_since_moved < 100000) // Code in iframes without mouse movement is not important.
-				//	console.log(time_since_moved + ' seconds since last mouse move.');
+				if (time_since_moved < 100000) // Code in iframes without mouse movement is not important.
+					console.log(time_since_moved + ' seconds since last mouse move.');
 				var x = document.getElementById('time_out_dialog');
 				if (!x) return;
 				x = x.parentNode;
