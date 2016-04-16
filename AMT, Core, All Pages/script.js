@@ -3772,7 +3772,7 @@ function load()
 				if (!b || b.length < 2) return;
 				b = b[1];
 				// Sets opacity to 0
-				// x.style.opacity = 0; // fully transparent
+				 x.style.opacity = 0; // fully transparent
 				//
 				// Clicks the Yes button....
 				if (//x.style.display != 'none' && // != none means it is showing
@@ -3782,7 +3782,7 @@ function load()
 					)
 				{
 					if (time_since_moved < 60*o.num_min_timeout) { // Less than 30 minutes. Eg now=100min, then=10min, diff=90min
-						b.click();					 // This works in a console......
+						//b.click();					 // This works in a console......
 						console.log('Clicked the button!');
 					} else
 						console.log('Not going to click the button - Too much time has elapsed!');
