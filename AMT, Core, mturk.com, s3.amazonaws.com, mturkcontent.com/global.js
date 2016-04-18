@@ -17277,7 +17277,10 @@ function AMT___checkCaptchaStatus() {
 	}
 	
 	//AMT__Global_Vars.core.captcha_string
-	console.log('ih.indexOf(AMT__Global_Vars.core.captcha_string):' + ih.indexOf(AMT__Global_Vars.core.captcha_string)); // =9812
+	console.log(
+		'ih.indexOf(AMT__Global_Vars.core.captcha_string):' +
+		ih.indexOf(AMT__Global_Vars.core.captcha_string)// 9812 or -1
+	);
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
 		// Set localstorage
 		localStorage['mt_captcha'] = 1;
