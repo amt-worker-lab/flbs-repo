@@ -1400,6 +1400,8 @@ CAPTCHA_tab_queue_obj.prototype.getStaggerVars = function (tabId) {
 		this.svars.min_tb = 4;
 		this.svars.timeout = 200;
 	}
+	console.log('CAPTCHA_tab_queue_obj:');
+	console.log(this);
 }
 CAPTCHA_tab_queue_obj.prototype.add = function (tabId) {
 	if (!this.queue__obj.hasOwnProperty(tabId)) {
@@ -1517,7 +1519,7 @@ CAPTCHA_tab_queue_obj.prototype.check_response = function(response) {
 		console.log('is_active '+this.dbg_ic+''+ this.svars.is_active);
 		console.log('min tabs '+this.dbg_ic+''+ this.svars.min_tb);
 		console.log('timeout '+this.dbg_ic+''+ this.svars.timeout);
-		console.log('.num_tabs_at_start '+this.dbg_ic+''+ this.num_tabs_at_start);
+		console.log('num_tabs_at_start '+this.dbg_ic+''+ this.num_tabs_at_start);
 	}
 	
 	// Is staggering active?

@@ -11,10 +11,14 @@ function mturk_load()
 	startPerformanceTime = new Date();
 	
 	// ENSURE THAN MT_CAPTCHA IS SET!
-	if (GM_getValue('mt_captcha') == undefined)
-		GM_setValue('mt_captcha', '0');
-	if (GM_getValue('mt_captcha') != 0 && GM_getValue('mt_captcha') != 1)
-		GM_setValue('mt_captcha', '0');
+	if (localStorage['mt_captcha'] == undefined)
+		localStorage['mt_captcha'] = 0;
+	if (localStorage['mt_captcha'] != 0 && localStorage['mt_captcha'] != 1)
+		localStorage['mt_captcha'] = 0;
+	//~ if (GM_getValue('mt_captcha') == undefined)
+		//~ GM_setValue('mt_captcha', '0');
+	//~ if (GM_getValue('mt_captcha') != 0 && GM_getValue('mt_captcha') != 1)
+		//~ GM_setValue('mt_captcha', '0');
 	
 	
 	// John Roberts Set Interval Reload Page
@@ -36,13 +40,12 @@ function mturk_load()
 	// 
 	if 	(
 		window.top == window.self &&
-		(
+			(
 			/^https?:\/\/(www\.|)mturk\.com\//.exec(document.location.href) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(document.location.href) ||
 			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
-		)
+			)
 		) {
-
 		
 		// TRY show jobs
 		//~ MT___page1_show_jobs(); // findhits?match=false
@@ -587,8 +590,7 @@ function mturk_load()
 	AMT__Global_Vars.initializeTabId();
 	AMT__Global_Vars.initializeHitId();
 	AMT__Global_Vars.core.is_running_on_local_dev = rl; // Boolean, True or False.
-		
-		
+	
 	// This is running at mturkcontent.com or amazonaws.com or http://localhost/mturk/.dev/HITs/
 	// If top window or job is ... then always run.
 	// ADDED TO DESCRIPTION: http://localhost/mturk/.dev/HITs/
@@ -602,7 +604,6 @@ function mturk_load()
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
 		AMT__Global_Vars.initializeRightClickRA();
-
 		// Init MT__RUN();
 		MT__RUN();
 	}
@@ -616,9 +617,6 @@ function mturk_load()
 		// Unaccepted
 		
 		// Have a run button
-		//
-		//
-		//
 		var d;
 		d = document.createElement('input');
 		d.setAttribute('id','MT___RUN_MANUAL_vlskclbdkbpskfkxpclsk');
@@ -708,10 +706,7 @@ function mturk_load()
 				});
 			}
 		}
-		
 		// End of script.
-		//
-		//
 		//
 		return;
 	}
@@ -722,8 +717,6 @@ function mturk_load()
  * 
  * 
  */
-
-
 
 function checkIfLocalScriptVarsExists(callback) {
 	chrome.storage.local.get('scriptVars', function(storageObj) {

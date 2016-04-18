@@ -17221,12 +17221,13 @@ function AMT___returnAndAcceptButton() {
  * Plus -> some interesting captcha behavior.
  */
 function AMT___checkCaptchaStatus() {
-	
 	var s,t,u,w;
 	t=/you were viewing could not be accepted/; // Not accepted
 	u=/The HIT you were viewing has expired/; // Not accepted
 	w=/Want to work on this HIT/; // Not accepted
-	
+	//======================
+	// CAPTCHA queue testing
+	//======================
 	var test=false;
 	var test2=false;
 	var test3=false;
@@ -17276,9 +17277,10 @@ function AMT___checkCaptchaStatus() {
 	}
 	
 	//AMT__Global_Vars.core.captcha_string
-	// s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
-	
+	console.log('ih.indexOf(AMT__Global_Vars.core.captcha_string):' + ih.indexOf(AMT__Global_Vars.core.captcha_string)); // =9812
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
+		// Set localstorage
+		localStorage['mt_captcha'] = 1;
 		/**
 		 * Change icon
 		 */
@@ -17301,8 +17303,6 @@ function AMT___checkCaptchaStatus() {
 			//Squelch response
 			}
 		);
-		// Set localstorage
-		GM_setValue('mt_captcha','1');
 		// Captcha response focus 
 		var inp=document.getElementsByName("userCaptchaResponse")[0];
 		if (inp) {
@@ -17371,19 +17371,31 @@ function AMT___checkCaptchaStatus() {
 	 */
 	else if (!/^https?:\/\/(www\.)mturk\.com\/mturk\/continue\?/i.exec(document.location.href))
 	{
-		//
-		GM_setValue('mt_captcha','0');
-		/**
-		 * CAPTCHA_tab_queue_process
-		 */
-		chrome.extension.sendRequest(
-		{
-			CAPTCHA_tab_queue_process: true
-		}, 
-		function(response) {
-			//Squelch response
-			}
-		);
+		// Set the CAPTCHA value to 0.
+		// But only do this if you are looking at a "real" job.
+		// "No Hits Assigned to You" and "No More Hits in the Group"
+		// do not count!
+		if (
+			ih.indexOf('There are no HITs in this group available to you at the moment.') == -1 &&
+				(
+				ih.indexOf('Finished with this HIT?') != -1 ||
+				ih.indexOf('Want to see other HITs?') != -1 ||
+				ih.indexOf('Want to work on this HIT?') != -1
+				)
+			) {
+			localStorage['mt_captcha'] = 0;//
+			/**
+			 * CAPTCHA_tab_queue_process
+			 */
+			chrome.extension.sendRequest(
+			{
+				CAPTCHA_tab_queue_process: true
+			}, 
+			function(response) {
+				//Squelch response
+				}
+			);
+		}
 		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
 			// Amicus Labs
