@@ -207,7 +207,6 @@ function mturk_load()
 									window.location.reload(true);
 								}
 								, timeToSkip);
-								
 					}
 					, 1000);console.log('x7');
 				}
