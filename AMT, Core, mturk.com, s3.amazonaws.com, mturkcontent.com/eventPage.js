@@ -408,7 +408,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	//~ }
 	
 	/**
-	 * 
+	 * add_tab_to_captcha_queue
 	 */
 	if (request.add_tab_to_captcha_queue) {
 		if (!sender.tab.incognito)
@@ -416,9 +416,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		else
 			CAPTCHA_tab_queue__incognito.add(sender.tab.id);
 	}
-	
 	/**
-	 * 
+	 * CAPTCHA_tab_queue_process
 	 */
 	if (request.CAPTCHA_tab_queue_process) {
 		if (!sender.tab.incognito)
@@ -426,16 +425,18 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		else
 			CAPTCHA_tab_queue__incognito.init_process();
 	}
-	
-	
+	/**
+	 * play_random_next_sound
+	 */
 	if(request.play_random_next_sound) {
 		
 		playRandomNextSound();
 	
 		//AMT___play_single_sound(soundName)
 	}
-	
-	
+	/**
+	 * copyInp
+	 */
 	if(request.copyInp) {
 		copyInp = document.createElement('input');
 		copyInp.setAttribute('type','text');
@@ -453,15 +454,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		//Copy Content
 		document.execCommand("Copy", false, null);
 	}
-	
-	//RA Hotkey
+	//toggleRAHotkey
 	if(request.toggleRAHotkey) {
 		localStorage['RAHotkey'] = request.toggleRAHotkey;
 	}
+	//getRAHotkey
 	if(request.getRAHotkey) {
 		sendResponse({RAHotkey:localStorage['RAHotkey']});
 	}
-	
 	//NTPassBy
 	if(request.getNTPassBy) {
 		sendResponse({NTPassBy:localStorage['NTPassBy']});
@@ -469,7 +469,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.toggleNTPassBy) {
 		localStorage['NTPassBy'] = request.toggleNTPassBy;
 	}
-	
 	//isUtilityWindow
 	if(request.getIsUtilityWindow) {
 		if(localStorage['UTILITY_WINDOW'] == 'unset' || localStorage['UTILITY_WINDOW'] == undefined){
@@ -493,7 +492,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return true;
 		}
 	}
-	
+	// setUTILITY_WINDOW
 	if(request.setUTILITY_WINDOW) {
 		//console.log(sender.tab.window);
 		//console.log(sender.window);
@@ -505,8 +504,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
 		return true;
 	}
-	
-	
+	// getIsSpecialWorkflowWindow
 	if(request.getIsSpecialWorkflowWindow) {
 		if(localStorage['SPECIAL_WORKFLOW_WINDOW'] == 'unset' || localStorage['SPECIAL_WORKFLOW_WINDOW'] == undefined){
 			sendResponse({SPECIAL_WORKFLOW_WINDOW:'unset'});
@@ -529,11 +527,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			return true;
 		}
 	}
-	
+	// amISpecialWorkflowWindow
 	if(request.amISpecialWorkflowWindow) {
 		sendResponse({detail: (localStorage['SPECIAL_WORKFLOW_WINDOW']*1 == sender.tab.windowId)});
 	}
-	
+	// setSPECIAL_WORKFLOW_WINDOW
 	if(request.setSPECIAL_WORKFLOW_WINDOW) {
 		//console.log(sender.tab.window);
 		//console.log(sender.window);
@@ -545,8 +543,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
 		return true;
 	}
-	
-	
 	//RA_Button_NextTab
 	if(request.toggleRA_Button_NextTab) {
 		localStorage['RA_Button_NextTab'] = request.toggleRA_Button_NextTab;
@@ -561,11 +557,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});
 	}
+	//getRA_Button_NextTab
 	if(request.getRA_Button_NextTab) {
 		sendResponse({RA_Button_NextTab:localStorage['RA_Button_NextTab']});
 	}
-	
-	
 	//R_Button_NextTab
 	if(request.toggleR_Button_NextTab) {
 		localStorage['R_Button_NextTab'] = request.toggleR_Button_NextTab;
@@ -573,10 +568,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if(request.getR_Button_NextTab) {
 		sendResponse({R_Button_NextTab:localStorage['R_Button_NextTab']});
 	}
-	
-	
-	
-	
+	//setRACustomKey
 	if(request.setRACustomKey) {
 		localStorage['RACustomKey'] = request.setRACustomKey;
 		var RACustomKey = request.setRACustomKey;
@@ -590,22 +582,16 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});
 	}
-
-	
-	
+	//getRACustomKey
 	if(request.getRACustomKey) {
 		sendResponse({RACustomKey:localStorage['RACustomKey']});
 	}
-	
 	/**
 	 * 
 	 * Dosubmit change tab
 	 * 
 	 * **/
-	 //console.log('abc123');
 	 if(request.doSubmitChangeTabIcon) {
-		 //console.log('here123');
-		 //console.log(sender);
 		 chrome.tabs.executeScript(sender.tab.id, {
 					code: 
 						"(function() {console.log('green light!');var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2/83n8/+BzvL/Qbjv/4/S8v+P0vL/dMry/7Tf8//29vb/9vb2//b29v/29vb/9vb2//b29v/N5/P/gc7y/0G47/+aAQL/kQAB/48AAP+P0vL/j9Ly/6MKBf+bAAH/nQAE/3TK8v+03/P/9vb2//b29v/29vb/lAYB/5kAAv+XAAL/kwAC/40AAP+SAgH/j9Ly/4/S8v+gAgH/owgD/54BAv+fAwD/owkC/6MGBf/29vb/9vb2/5cEAf+VAQH/jQAC/4sAAf+QAQH/mAMC/4/S8v+P0vL/pA0F/6cTBP+cBQH/nAcA/6IPAP+bBQD/9vb2//b29v+zKAj/lA0A/4YBAP+IAAD/lgAC/6AHAv+P0vL/j9Ly/7UuCv+tGAX/qA8I/6cRAf+tGgH/pxEG//b29v/29vb/5JYQ/8ZjCv+gGQL/mQYB/5gDBP+kGQP/j9Ly/4/S8v+uHQT/owoF/6oZAv+4Lgn/sikL/58UCP/29vb/9vb2/81wBf/lkg7/0mMK/741Cv+mIwL/x2YM/4/S8v+P0vL/pwkB/7kjA//ENg7/ty8N/5EKAf+LAgf/9vb2//b29v+kGgP/rS8D/7s9C/+oIwP/zWsO/+60J/+P0vL/j9Ly/6QFAv+mBQL/nwUB/5UFAf+IAAL/hAAI//b29v/29vb/nwEC/58GAP+mFwT/rygE/8l2Bv/Qhgb/j9Ly/4/S8v+XAAL/nAAB/5kAA/+RAAT/iAAC/4QAAf/29vb/9vb2/50AAf+aAQL/mwMD/7IcA//Sfwj/Tr3x/8Pk9P/C4/P/Tr3x/5kJAP+SAgD/jwAD/4wAA/+JAAH/9/f3//f39/+KAQD/igAE/0698f+b1vL/3e31/9rt9v+O1/b/jtf2/9rt9v/d7fX/m9by/0698f+fBgH/kgMA//f39//39/f/nNfz/93t9f/b7vf/jtf2/zi+9//Uhgb/4ZoL/9J3Bf+zPgL/OL73/4/Y9//a7fb/3u72/5vW8v/4+Pj/+Pj4//j4+P+C1Pf/fgEE/4kJAP/HXAz/zYAD/9OEBv/GXQn/sDcH/5wDAv+RAgD/kgUB/4LU9//4+Pj/+Pj4//j4+P/5+fn/+Pj4//n5+f/L6/j/gtT3/0bC9//CXwf/pCAB/0fD+P+C1Pf/zOz5//j4+P/5+fn/+Pj4//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/+fn5//n5+f/5+fn/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
@@ -616,24 +602,20 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 * Captcha change tab icon
 	 * 
 	 * **/
-	 //console.log('abc123');
 	 if(request.captchaChangeTabIcon) {
-		 //console.log('here123');
-		 //console.log(sender);
 		 chrome.tabs.executeScript(sender.tab.id, {
 					code: 
 						"(function() {console.log('green light!');var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADs7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/93d3f+Tk5P/YmJi/z4+Pv8jIyP/Dg4O/w4ODv8ODg7/Dg4O/x8fH/89PT3/YmJi/6enp//m5ub/7Ozs/5aWlv8MDAz/IyMj/2BgYP+JiYn/oaGh/7a2tv+9vb3/vb29/7Kysv+YmJj/fn5+/2BgYP8oKCj/GBgY/7S0tP8zMzP/w8PD/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/7S0tP89PT3/YmJi/9PT0//s7Oz/7Ozs/4mJif/s7Oz/7Ozs/9PT0/+YmJj/7Ozs/+zs7P+6urr/u7u7/+zs7P/Z2dn/bW1t/+Li4v+0tLT/7Ozs/+zs7P9eXl7/0tLS/+zs7P/s7Oz/PT09/+Tk5P/s7Oz/5ubm/0pKSv/s7Oz/v7+//+Dg4P/s7Oz/7Ozs/+zs7P/s7Oz/mJiY/3l5ef/s7Oz/7Ozs/21tbf+JiYn/7Ozs/+zs7P9GRkb/ysrK/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/4uLi/9lZWX/7Ozs/+zs7P+Pj4//S0tL/+zs7P/s7Oz/OTk5/7i4uP/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/9fX1/8WFhb/urq6/+zs7P/s7Oz/TU1N/2JiYv/s7Oz/mpqa/yMjI//q6ur/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P9ERET/a2tr/+zs7P/s7Oz/mJiY/wcHB//IyMj/0tLS/xISEv+6urr/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/FxcX/ISEh/+bm5v/s7Oz/zs7O/wsLC/+IiIj/7Ozs/3Jycv9tbW3/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/uLi4/09PT//s7Oz/7Ozs/2NjY/9AQED/7Ozs/+zs7P9lZWX/oaGh/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+rq6v89PT3/7Ozs/+zs7P9KSkr/j4+P/+zs7P/s7Oz/tLS0/3Jycv/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/lZWV/8XFxf/s7Oz/goKC/3R0dP/s7Oz/7Ozs/+zs7P9vb2//7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/g4OD/7Ozs/9/f3/9GRkb/7Ozs/+zs7P/s7Oz/39/f/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/jY2N/9fX1//s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
 					});
 	}
-	 
-	
+	//shiftFarLeft
 	if(request.shiftFarLeft) {
 		var tabId = sender.tab.id;
 		chrome.tabs.move(tabId, {index: 0}, function (tab) {
 				//console.log('Moved tab');
 			});
 	}
-	
+	//shiftFarRight
 	if(request.shiftFarRight) {
 		var tabId = sender.tab.id;
 		chrome.tabs.getAllInWindow(sender.tab.windowId, function (tabs) {
@@ -645,11 +627,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				});
 			});
 	}
-	
-	
-	
-	
-	
 	/**
 	 * request.addToTabsQ
 	 */
@@ -663,10 +640,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		console.log('testing whether this runs');
 		console.log('attempting to move');
 		
-		
-		
-		
-
 		console.log('Recieved "AddTo" from tab: ' + tabId +' window:' + winId);
 		console.log('isTopWindow: ' + request.isTopWindow);
 		getAllTabsInQ(function(allQTabs) {
@@ -686,7 +659,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		}, isTopWindow);
 		return true;
 	}
-	
 	/**
 	 * request.showNextTab
 	 */
@@ -766,17 +738,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		showNextTabAttempt(isTopWindow);
 		return true;
 	}
-
 	/**
 	 * request.match
 	 */
 	if(request.match)
 	{
-		//~ console.log("\n Inside match");
 		var match = JSON.stringify(request.match);
-		//~ console.log(match);
-		//alert("recieved match");
-		
 		GM_xmlhttpRequest({
 				method: "POST",
 				url: //'http://192.168.1.9/mturk/.scripts/AMT_InputOutputRecords/inputOutputRecords.php',
@@ -798,7 +765,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				}
 			});	
 	}
-	
 	/**
 	 * play_single_sound
 	 */
@@ -806,13 +772,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		AMT___play_single_sound(request.fileName);
 	}
-	
+	// getTabId
 	if(request.getTabId) {
 		sendResponse({id:sender.tab.id});
 	}
-	
-	
-	
 	/**
 	 * request.core_nextWindow
 	 * 
@@ -828,11 +791,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	 */
 	if(request.core_nextWindow)
 	{
-		
 		//~ chrome.windows.getLastFocused({}, function(window) { // RETURN THE "FOCUSED=TRUE" WINDOW
 			//~ console.log(window.id);
 		//~ });
-		
 		chrome.windows.getAll({}, function(windows) { // []
 			
 			//~ // FIND THE LARGEST WINDOW
@@ -893,7 +854,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//~ chrome.windows.update(windows[0].id, {active: true});
 		});
 	}
-
 	/**
 	 * The incognito boolean must be known for these
 	 */
@@ -959,7 +919,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			}
 		});
 	}
-	
 	/*request.method*/
 	// get
 	if (request.method == "getLocalStorage") {
@@ -1031,9 +990,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				storage__delete(w.id, request);
 			});
 		}
-	} else
+	} else {
 		sendResponse({}); // snub them.
-	
+	}
 	//~ /**
 	 //~ * request.method = submit queue
 	 //~ * doSubmit_eventPage__queue
@@ -1048,25 +1007,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 /**
  * End of onRequest
  */
- 
- function nextTab(request,sender,sendResponse) {
+function nextTab(request,sender,sendResponse) {
 	window.request = request;
 	//~ console.log(request.isTopWindow) //true
 	//~ console.log(window.request) // object
 	//~ console.log(window.request.options) // undefined
-	//~ console.log(window.request.options.isTopWindow)
-	
-	//XXXXXXXXXXXXXXXXX
-	//window.request.options.isTopWindow = request.isTopWindow;
-	
-	//window.request.isTopWindow = request.isTopWindow;
-	
-	//console.log('nexttab');
 	chrome.tabs.getAllInWindow(sender.tab.windowId, function(allTabs) {
-		
-		//~ console.log('Here2');
-		//~ console.log(sender);
-		
 		var currentIndex = -1;
 		for(var i = 0; i < allTabs.length; i++)
 		{
@@ -1081,9 +1027,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			//Consider processing option's object even though we will not switch
 		}
 		else {
-			//~ console.log(currentIndex);
-			//~ console.log(currentIndex);
-			
 			var nextTab =  false;
 			for(var i = 0; i < allTabs.length; i++)
 			{
@@ -1111,8 +1054,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			});
 		}
 	});
- }
- 
+}
 /**
  * Listen for messages from OTHER scripts
  * */
@@ -1124,7 +1066,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
      //~ * amIUtilityTab
      //~ */  
     //~ if(request.amIUtilityTab) {
-    
     
     function removeSingleUtilityTab(ownerId) {
 		//Foremostly, don't close any tabs if there's only 1 tab in the utility window
@@ -1175,38 +1116,28 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 				
 			}
 			sendResponse({continueOn: true});
-	});
-}
-    
-    
-    
+		});
+	}
+    //nextTab
     if(request.nextTab)
 	{
 		nextTab(request,sender,sendResponse);
-	}	
-    
+	}
 	/**
      * amIUtilityTab
      */  
     if(request.amIUtilityTab) {
-		//console.log('recieved msg from:');
-		//console.log(sender.tab);
 		if(!sender.tab) {
-			//console.log('no sender tab for asking amIUtilityTab');
 			sendResponse({});
 			return;
 		}
 		if(sender.tab.windowId == localStorage['UTILITY_WINDOW']) {
-			//console.log(UtilityAMTPairs);
 			//Set all the global options that every utility tab should have
-			
 			var optionsToSet = {};
 			//~ for(var i in UtilityAMTPairs.options) {
 				//~ optionsToSet[i] = UtilityAMTPairs.options[i]
 			//~ }
-
 			//UtilityAMTPairs
-			
 			//Set any options specific to This tab
 			for_loop_break:
 			for(var i in UtilityAMTPairs) {
@@ -1237,7 +1168,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		}
 		return false;
 	}
-    
     /**
      * LISTEN FOR ALL PAGES UTILITY WINDOW MESSAGE PASSING
      * 
@@ -1255,8 +1185,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 		//console.log(UtilityAMTPairs);
 		//console.log(sender);
 		//console.log(request);
-		
-		
 		//Pass whatever the message is to the top:
 		for_loop_break_dance_if_you_want_to:
 		for(var i in UtilityAMTPairs) {
@@ -1299,9 +1227,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 							break for_loop_break_dance_if_you_want_to;
 						}
 					}
-			}		
+				}		
+			}
 		}
-	}
 	}
 	if(request.addUtilityTab) {
 			var senderId = sender.tab.id;
@@ -1314,7 +1242,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			var parentTabId;
 			
 			//Loop through UtilityAMTPairs to find which parent I am
-			
 			for(var i in UtilityAMTPairs) {
 				if(UtilityAMTPairs[i] &&
 				   UtilityAMTPairs[i].utilities &&
@@ -1331,10 +1258,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			if(parentTabId == null || parentTabId == undefined) {
 				return;
 			}
-			
-			//console.log('UtilityAMTPairs');
-			//console.log(UtilityAMTPairs);
-			//console.log(parentTabId);
 			newTabPos = UtilityAMTPairs[parentTabId].utilities.length;
 			UtilityAMTPairs[parentTabId].utilities.push(request.addUtilityTab.utility);
 			currentUtility = UtilityAMTPairs[parentTabId].utilities[newTabPos];
@@ -1364,7 +1287,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 					//~ console.log(UtilityAMTPairs);
 				})
 	}
-	
+	//addUtilityOptionsToSelf
 	if(request.addUtilityOptionsToSelf) {
 		//console.log(sender.tab.id);
 		for(var i in UtilityAMTPairs) {
@@ -1381,7 +1304,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			}
 		}
 	}
-	
+	//switchToUtilityTab
 	if(request.switchToUtilityTab) {
 		for(var i in UtilityAMTPairs) {
 			if(UtilityAMTPairs[i] && UtilityAMTPairs[i].utilities && UtilityAMTPairs[i].utilities.length) {
@@ -1394,7 +1317,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 			}
 		}
 	}
-	
+	//addOptionsToAllRelatedUtilities
 	if(request.addOptionsToAllRelatedUtilities) {
 		var toAdd = request.addOptionsToAllRelatedUtilities;
 		//console.log('addOptionsToAllRelatedUtilities');
@@ -1450,14 +1373,11 @@ var CAPTCHA_tab_queue_obj = function(is_incognito) {
 	this.debug = true;
 	this.dbg_ic = (is_incognito) ? '(i) ' : '';
 	
-	
 	this.svars = {
 		is_active: null,
 		min_tb: null,
 		timeout: null
 	}
-	//~ this.is_test2 = null;
-	
 }
 CAPTCHA_tab_queue_obj.prototype.getQueueLength = function (tabId) {
 	this.num_tabs_at_start = this.queue.length;
@@ -1493,13 +1413,14 @@ CAPTCHA_tab_queue_obj.prototype.add = function (tabId) {
 			console.log('TabId already in queue '+this.dbg_ic+'('+tabId+')');
 		}
 	}
-	
 	if (this.debug) {
-		//~ console.log(this.queue);
 		console.log('Queue'+this.dbg_ic+':' + this.queue.join(','));
 		console.log('Process in progress'+this.dbg_ic+':' + this.process_in_progress);
 	}
 }
+/**
+ * init_process
+ */
 CAPTCHA_tab_queue_obj.prototype.init_process = function () {
 	if (this.process_in_progress) {
 		if (this.debug) {
@@ -1515,14 +1436,13 @@ CAPTCHA_tab_queue_obj.prototype.init_process = function () {
 		this.process();
 	}
 }
+/**
+ * process
+ */
 CAPTCHA_tab_queue_obj.prototype.process = function () {
-	
 	var next_tab = null;
 	while (this.queue && this.queue.length && next_tab == null) {
 		var next_tab = this.queue.shift();
-		//~ chrome.tabs.get(x, function() {
-			//~ 
-		//~ });
 	}
 	// Done?
 	if (next_tab == null) {
@@ -1569,7 +1489,6 @@ CAPTCHA_tab_queue_obj.prototype.check_response = function(response) {
 		//console.log('Queue'+this.dbg_ic+':' + this.queue.join(','));
 		//console.log('Queue length'+this.dbg_ic+':' + this.queue.length);
 		//console.log('Process in progress'+this.dbg_ic+':' + this.process_in_progress);
-		
 		//~ return;
 	}
 	
@@ -1608,7 +1527,7 @@ CAPTCHA_tab_queue_obj.prototype.check_response = function(response) {
 		)
 	{
 		if (this.debug) {
-			console.log('Staggering the reload. '+this.dbg_ic+'Pause... ' + this.svars.timeout + ' ms');
+			console.log('Staggering the reload. '+this.dbg_ic+';Pause... ' + this.svars.timeout + ' ms');
 		}
 		setTimeout(this.process.bind(this), this.svars.timeout);//.bind(this)
 	}
@@ -1637,7 +1556,6 @@ var CAPTCHA_tab_queue__incognito = new CAPTCHA_tab_queue_obj(true);
 
 var turnOnAutoCopy = false;
 
-
 // NEXT WINDOW
 var next_window__windowIds = []
 function __js_inarray(array, needle) // //
@@ -1656,7 +1574,6 @@ function tabWindowPair(tabId, windowId) {
 	//~ console.log('tabId:'+tabId);
 	//~ console.log('windowId:'+windowId);
 	//~ console.log('Window:'+windowId+';Tab:'+tabId);
-	
 	this.tabId = tabId;
 	this.winId = windowId;
 }
@@ -1721,7 +1638,6 @@ function getAllTabsInQ(callback, isTopWindow) {
 	});
 }
 
-
 //Checks if the new activated tab is already in submission
 //If it is, then it switches it forward unless...
 //a) this is the SECOND time the user has arrived AFTER a submission has occurred
@@ -1735,69 +1651,63 @@ chrome.tabs.onActivated.addListener(function(tab) {
 
 var copyInp = false;
 
+// AMT___play_single_sound
 function AMT___play_single_sound(fileName) {
-	
-	
 	var sound =  new Audio(fileName);//document.createElement('audio');
 	//sound.setAttribute("src", fileName);
 	sound.play();
 	console.log("got here");
 };
-
-
+// playRandomNextSound
 function playRandomNextSound() {
-		var soundName = 'http://localhost/mturk/.sounds/next/';
-		var allSounds = [
-		'110314__mrown1__tick.wav',
-		'127149__daphne-in-wonderland__ding.wav',
-		'136651__stomachache__snarenorattlesclose1.wav',
-		'146733__fins__energy.wav',
-		'150933__yikitama__wubbadubba.wav',
-		'157420__symphoid__lil-bender.wav',
-		'159682__duskstep__heavy-snare-10.wav',
-		'174721__drminky__watch-tick (1).wav',
-		'174721__drminky__watch-tick.wav',
-		'198867__corsica-s__squeaktoy-bd.wav',
-		'210887__soundscape-leuphana__20131211-clubmatevswastecontainer-h2nextxy.wav',
-		'215033__taira-komori__katana1.mp3',
-		'215364__reitanna__bee.wav',
-		'215671__breizhizou29__youpi.wav',
-		'23152__owlstorm__ding.wav',
-		'235779__elliotlp__quick-pour.mp3',
-		'35903__syna-max__a-duck-sneeze.wav',
-		'37154__volivieri__soccer-ball-hit-ground-01.wav',
-		'52448__john9__next-please.wav',
-		'54999__carbonparlour__tick.wav',
-		'57211__mab__mab-clock-tick-1-20080713.wav',
-		'678__dropthedyle__dd1.aif',
-		'88481__davidou__groovinhouse.wav',
-		'93015__cosmicd__44.wav',
-		'49952__simon-rue__ratt-placerad-atom-v2.wav',
-		'94670__twiggles__woo-hoo.wav',
-		'966__flatfly__s2.wav',
-		'heavy_medic01.mp3'
-		]
-		try {
-			soundName += allSounds[Math.floor(Math.random() * allSounds.length)];
-		}
-		catch(e) {
-			alert('soundName isnt an int?');
-			
-		}
+	var soundName = 'http://localhost/mturk/.sounds/next/';
+	var allSounds = [
+	'110314__mrown1__tick.wav',
+	'127149__daphne-in-wonderland__ding.wav',
+	'136651__stomachache__snarenorattlesclose1.wav',
+	'146733__fins__energy.wav',
+	'150933__yikitama__wubbadubba.wav',
+	'157420__symphoid__lil-bender.wav',
+	'159682__duskstep__heavy-snare-10.wav',
+	'174721__drminky__watch-tick (1).wav',
+	'174721__drminky__watch-tick.wav',
+	'198867__corsica-s__squeaktoy-bd.wav',
+	'210887__soundscape-leuphana__20131211-clubmatevswastecontainer-h2nextxy.wav',
+	'215033__taira-komori__katana1.mp3',
+	'215364__reitanna__bee.wav',
+	'215671__breizhizou29__youpi.wav',
+	'23152__owlstorm__ding.wav',
+	'235779__elliotlp__quick-pour.mp3',
+	'35903__syna-max__a-duck-sneeze.wav',
+	'37154__volivieri__soccer-ball-hit-ground-01.wav',
+	'52448__john9__next-please.wav',
+	'54999__carbonparlour__tick.wav',
+	'57211__mab__mab-clock-tick-1-20080713.wav',
+	'678__dropthedyle__dd1.aif',
+	'88481__davidou__groovinhouse.wav',
+	'93015__cosmicd__44.wav',
+	'49952__simon-rue__ratt-placerad-atom-v2.wav',
+	'94670__twiggles__woo-hoo.wav',
+	'966__flatfly__s2.wav',
+	'heavy_medic01.mp3'
+	];
+	try {
+		soundName += allSounds[Math.floor(Math.random() * allSounds.length)];
+	}
+	catch(e) {
+		alert('soundName isnt an int?');
 		
-		//Unused
-		//'154506__ecfike__let-s-go-have-a-party-man-2.wav',
-		//'156667__unfa__stereo-tick.flac',
-		
-		AMT___play_single_sound(soundName);
+	}
+	
+	//Unused
+	//'154506__ecfike__let-s-go-have-a-party-man-2.wav',
+	//'156667__unfa__stereo-tick.flac',
+	AMT___play_single_sound(soundName);
 }
-
 /**
  * Play a random sound EVERY time script is reloaded.
  */
 //~ playRandomNextSound();
-
-
 /**
  * 
  * Does ourUtility Window exist? If not, let localStorage know this.
@@ -1830,8 +1740,7 @@ chrome.windows.getAll({populate:true}, function(allWindows) {
 		}
 	}
 })
-
-
+// chrome.tabs.onRemoved
 chrome.tabs.onRemoved.addListener(function (tabId, removeInfo){
 		if(removeInfo.windowId == localStorage['UTILITY_WINDOW']) {
 			for(var i in UtilityAMTPairs) {

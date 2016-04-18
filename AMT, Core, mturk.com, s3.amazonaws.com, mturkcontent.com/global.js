@@ -17279,7 +17279,6 @@ function AMT___checkCaptchaStatus() {
 	// s=/In order to accept your next HIT, please type this word into the text box below/; // Captcha
 	
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
-		
 		/**
 		 * Change icon
 		 */
@@ -17291,7 +17290,6 @@ function AMT___checkCaptchaStatus() {
 			//Squelch response
 			}
 		);
-		
 		/**
 		 * Add this tab to reload captcha queue
 		 */
@@ -17303,10 +17301,8 @@ function AMT___checkCaptchaStatus() {
 			//Squelch response
 			}
 		);
-		
 		// Set localstorage
 		GM_setValue('mt_captcha','1');
-		
 		// Captcha response focus 
 		var inp=document.getElementsByName("userCaptchaResponse")[0];
 		if (inp) {
@@ -17316,6 +17312,7 @@ function AMT___checkCaptchaStatus() {
 			setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 1000);
 			setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 2000);
 			setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 3000);
+			setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 4000);
 		}
 		// LAST RELOAD
 		// set continue for duplicate windows
@@ -17359,8 +17356,6 @@ function AMT___checkCaptchaStatus() {
 			elapsed = Math.round(elapsed); // Round to integer.
 			inp.value = elapsed;
 		}, 1000);
-		//~ cpim.parentNode.insertBefore(inp, cmip);
-		//~ GM_addStyle('{}');
 	}
 	/**
 	 * No CAPTCHA
@@ -17378,7 +17373,6 @@ function AMT___checkCaptchaStatus() {
 	{
 		//
 		GM_setValue('mt_captcha','0');
-		
 		/**
 		 * CAPTCHA_tab_queue_process
 		 */
@@ -17390,7 +17384,6 @@ function AMT___checkCaptchaStatus() {
 			//Squelch response
 			}
 		);
-		
 		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
 			// Amicus Labs
