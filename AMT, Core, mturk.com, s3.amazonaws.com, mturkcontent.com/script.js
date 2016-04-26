@@ -21663,11 +21663,10 @@ function MT__RUN() {
 			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
-			var b = document.getElementsByTagName('b')[0].innerText.trim().replace(/^Website: /, '');
+			var b = document.getElementsByTagName('a')[0].innerText.trim();//.replace(/^Website: /, '');
 			var o = {
 				domain: b,
 				url: null,
-				
 				// q
 				q: document.getElementById('web_url')
 			};
