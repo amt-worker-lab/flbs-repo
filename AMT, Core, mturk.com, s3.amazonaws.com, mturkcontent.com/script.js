@@ -187998,6 +187998,9 @@ function top_window(okay_to_run) {
 								console.log('x');
 								d2.value = 'X 0 Results?';
 								d2.style.border = '8px dashed green';
+								setInterval(function() {
+									chrome.extension.sendRequest({method:'play_single_sound',fileName:'next3.wav'});
+								},2000);
 							}
 						}
 					}
