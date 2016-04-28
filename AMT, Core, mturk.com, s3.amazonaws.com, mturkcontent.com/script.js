@@ -182862,7 +182862,9 @@ function top_window(okay_to_run) {
 	// A9 Snaptell Visual Search Requester
 	// Visual Search Requester
 	// Find associated product information for a given barcode value
-	//
+	//     width: 40%;
+    //~ zoom: 1.8;
+    //~ height: 78px;
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -182989,10 +182991,51 @@ function top_window(okay_to_run) {
 			// This is the element in the body that contains the HIT. 
 			var x = document.getElementsByClassName('free-text-answer-wrapper')[1];
 			x.appendChild(document.createElement('br'));
+			
+			// THIS TEXTAREA MUST COME AFTER THE IFRAME.
+			// And before the following three divs.
+			// Debug textarea
+			var d3c = document.createElement('textarea');
+			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
+			x.appendChild(d3c);
+			d3c.onclick = function() {}
+			// Add left divs
+			// 1) Div for small status of each site. These are text: e.g. "[de]" (loading) or "[de✘]" (none) or "[de✔]" (has result)
+			// 2) Div for any with "has result" (buttons)
+			// 3) Div for the titles of scraped websites (buttons)
+			var d4a = ''.div({
+				style: 'width:98%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4a);
+			var d4b = ''.div({
+				style: 'width:98%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4b);
+			var d4c = ''.div({
+				style: 'width:98%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+			});
+			x.appendChild(d4c);
+			//~ // Ebay
+			//~ var d3i = document.createElement('input');
+			//~ d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
+			//~ d3i.type = 'button';
+			//~ d3i.value = 'Ebay';
+			//~ x.appendChild(d3i);
+			// The columns for the searches! Put these
+			// on after the buttons and the debug textarea.
+			// Div 1
+			var d2 = document.createElement('div');
+			d2.setAttribute('style','float:left;width:50%;height:200px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d2);
+			// Div 3
+			var d2c = document.createElement('div');
+			d2c.setAttribute('style','float:left;width:48%;height:200px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			x.appendChild(d2c);
 			// iframe
 			// add .output_url
+			// old=580 apr28 2016
 			var d1 = document.createElement('iframe');
-				d1.setAttribute('style','width:50%;float:right;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+				d1.setAttribute('style','width:98%;float:right;height:280px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
 				// flicker...
 				d1.style.visibility = 'hidden';
 				d1.output_url = null;
@@ -183008,49 +183051,8 @@ function top_window(okay_to_run) {
 					//~ }
 				}, false);
 				x.appendChild(d1);
-			// THIS TEXTAREA MUST COME AFTER THE IFRAME.
-			// And before the following three divs.
-			// Debug textarea
-			var d3c = document.createElement('textarea');
-			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
-			x.appendChild(d3c);
-			d3c.onclick = function() {}
-			// Add left divs
-			// 1) Div for small status of each site. These are text: e.g. "[de]" (loading) or "[de✘]" (none) or "[de✔]" (has result)
-			// 2) Div for any with "has result" (buttons)
-			// 3) Div for the titles of scraped websites (buttons)
-			var d4a = ''.div({
-				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
-			});
-			x.appendChild(d4a);
-			var d4b = ''.div({
-				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
-			});
-			x.appendChild(d4b);
-			var d4c = ''.div({
-				style: 'width:48%;float:left;border:1px solid blue;background-color:#eee;' // auto height
-			});
-			x.appendChild(d4c);
-			//~ // Ebay
-			//~ var d3i = document.createElement('input');
-			//~ d3i.setAttribute('style','float:left;width:49%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
-			//~ d3i.type = 'button';
-			//~ d3i.value = 'Ebay';
-			//~ x.appendChild(d3i);
-			// The columns for the searches! Put these
-			// on after the buttons and the debug textarea.
-			// Div 1
-			var d2 = document.createElement('div');
-			d2.setAttribute('style','float:left;width:25%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
-			x.appendChild(d2);
-			//~ // Div 2
-			//~ var d2b = document.createElement('div');
+			//~ // Old middle div....
 			//~ d2b.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
-			//~ x.appendChild(d2b);
-			// Div 3
-			var d2c = document.createElement('div');
-			d2c.setAttribute('style','float:left;width:24%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
-			x.appendChild(d2c);
 			// ...
 			x.appendChild(document.createElement('br'));
 			/* END ITEMS */
