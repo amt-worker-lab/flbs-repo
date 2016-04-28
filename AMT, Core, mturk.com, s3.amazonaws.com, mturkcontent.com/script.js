@@ -53213,7 +53213,7 @@ function MT__RUN() {
 	// 35.720839855434306,-81.69798374176025;35.71860995331177,-81.69300556182861;35.71596186348609,-81.69828414916992;35.7169374857655,-81.70103073120117;xxxxxxxxxx
 	// 35.71665692263838,-81.69681429862976;35.7191133559119,-81.69721126556396;35.71867296839054,-81.69896998655162;35.716211182732174,-81.69857397447015;35.71665692263838,-81.69681429862976;
 	var s = 'Some areas of map will allow you to use Satellite view at a 45 degree angle, <u>please do NOT draw the polygon in this view.</u> Uncheck the box and use the overhead Satellite view when drawing your polygon.';
-	if (s) {
+	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
 			getCenterBeforeChiosRuns();
