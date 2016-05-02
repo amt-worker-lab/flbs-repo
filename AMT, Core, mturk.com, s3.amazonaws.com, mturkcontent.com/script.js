@@ -5004,7 +5004,7 @@ function MT__RUN() {
 			console.log(o);
 			/*Create Items*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:100px;width:99%;height:500px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:100px;width:70%;height:500px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var txt_div = ''.div({'style':'position:absolute;top:0px;width:99%;'});
 			document.body.appendChild(txt_div);
@@ -5016,6 +5016,11 @@ function MT__RUN() {
 			txt_div.appendChild(d2b);
 			d2a.value = o.comp;
 			d2b.value = o.addr;
+			// N/A button
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.setAttribute('position:absolute;top:100px;left:70%;width:29%;height:500px;', '');
+			document.body.appendChild(d3);
 			/*End of Items*/
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
@@ -5023,7 +5028,7 @@ function MT__RUN() {
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1
+					d1,d3
 				],
 				offset: 100 // offset top
 			});
@@ -5034,11 +5039,16 @@ function MT__RUN() {
 				this.value = this.value.trim();
 				geo(); // Re-init
 			}
-			AMT___addUserDecision('john curtis google places id', function() {
-					return o.comp +'|||'+ o.addr;
+			AMT___addUserDecision('johncurtis gpid may2,2016', function() {
+					return o.comp +'|'+ o.addr;
 				},
 				['Id(GoogePlaceID)']
 			)
+			// d3
+			d3.onclick = function() {
+				o.q[0].value = 'n/a';
+				AMT___recordAndSubmit();
+			}
 			// Init
 			geo();
 			function geo() {
