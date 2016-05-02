@@ -5019,7 +5019,8 @@ function MT__RUN() {
 			// N/A button
 			var d3 = document.createElement('input');
 			d3.type = 'button';
-			d3.setAttribute('position:absolute;top:100px;left:70%;width:29%;height:500px;', '');
+			d3.setAttribute('style', 'position:absolute;top:100px;left:70%;width:29%;height:500px;');
+			d3.value = 'N/A';
 			document.body.appendChild(d3);
 			/*End of Items*/
 			// innerHeight
