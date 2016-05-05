@@ -102,10 +102,10 @@ function MT__RUN() {
 			});
 			function choice(text) { // returns clickable div
 				text = text.replace(/, USA$/, '');
-				text = text.split(',');
+				text = text.split(' ');
 				var a = [];
 				for (var i in text) {
-					var n = text[i].trim().stateAbbrToFull(); // Try...
+					var n = text[i].trim().replace(/,/g, '').stateAbbrToFull(); // Try...
 					a.push(n);
 				}
 				a = a.join(' ');// By space
