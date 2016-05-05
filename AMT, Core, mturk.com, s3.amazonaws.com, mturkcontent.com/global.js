@@ -11851,7 +11851,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		//
 		//
 		if (options_object.hasOwnProperty('appendToField')) {
-			if (options_object.hasOwnProperty('appendToField_glue')) {
+			if (options_object.hasOwnProperty('appendToField_glue') && output_fields[0].value.trim() != '') {
 				output_fields[0].value += options_object.appendToField_glue;
 			}
 			

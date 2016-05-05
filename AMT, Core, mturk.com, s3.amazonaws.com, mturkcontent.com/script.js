@@ -26,6 +26,115 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Justin Farrell
+	// 
+	//
+	//
+	s = '	<li>Look through first few results and find a reference to a location [CITY or COUNTY] <u>and</u> [the STATE] ("Douglas County, Nebraska" &nbsp;or "Atlanta, Georgia")</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.highlight-box {margin-top:200px;}');
+			var h3 = document.getElementsByTagName('h3');
+			var o = {
+				u: h3[1].innerText,
+				q: [
+					document.getElementById('Q1Url')
+				],
+			}
+			console.log(o);
+			//Elements
+			var d1 = ''.div({style:'position:absolute;top:0;width:99%;height:200px;background-color:#eee;border:1px solid blue;'});
+			document.body.appendChild(d1);
+			// ih
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 0 // offset top
+			//~ });
+			// DoPast
+			AMT___addUserDecision(
+				'JustinFarrell,2016',
+				function() { return o.u; },
+				[
+				"Id(Q1Url)",
+				]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value.trim() == '') return false;
+				AMT___recordAndSubmit();
+				return false;
+			}
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL:	
+						'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+						'query='+encodeURIComponent(o.u)+'&key=_GOOGLE_API_KEY_REDACTED_',
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					//~ if (options.response.status != 200) {
+						//~ add_static_img(); // Add basic image....
+					//~ }
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					rs = JSON.parse(rs);
+					console.log(rs);
+					/** **/
+					if (!rs.results || !rs.results.length) {
+						//~ add_static_img(); // Add basic image....
+						return;
+					}
+					for (var i in rs.results) {
+						var n = rs.results[i];
+						// js_append (add marker)
+						console.log(n);
+						d1.appendChild(choice(n.formatted_address));
+					}
+					//~ if (xo.markers.nearby_searches.length) {
+						//~ add_static_img();
+					//~ }
+				}
+			});
+			function choice(text) { // returns clickable div
+				text = text.replace(/, USA$/, '');
+				text = text.split(',');
+				var a = [];
+				for (var i in text) {
+					var n = text[i].trim().stateAbbrToFull(); // Try...
+					a.push(n);
+				}
+				a = a.join(' ');// By space
+				// Out div
+				var d = ''.div({style:'width:100%;border:1px solid #a2a2a2;'});
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: a,
+					output_fields: o.q,
+					//~ callback_mouseup: function(addField) {
+						//~ // Remove trailing commas
+						//~ addField.value = addField.value.replace(/ *,*$/, '');
+						//~ addField.value = addField.value.replace(/ *-*$/, ''); // etc.
+						//~ addField.value = addField.value.replace(/^ *,*/, '');
+						//~ addField.value = addField.value.replace(/^ *-*/, ''); // etc.
+						
+						//~ addField.value = addField.value.replace(/^ *, */, ''); // etc.
+						
+					//~ },
+					appendToField: true,
+					appendToField_glue: ', ',
+					//~ delimeter: '',
+					focusToField: true,
+				});
+				d.appendChild(buttons);
+				return d;
+			}
+		}
+		new run().f();
+	}
 	// dinnertan
 	// Find the Details for a Construction Company	
 	//
