@@ -60,6 +60,10 @@ function MT__RUN() {
 			d2a.setAttribute('style', 'position:absolute;top:1000px;');
 			var d2b = document.createElement('input');
 			d2b.setAttribute('style', 'position:absolute;top:1000px;');
+			// add mouseup for 2nd search....
+			dx2.addEventListener('blur', function() {
+				setTimeout(place_search, 400); // short timeout
+			}, false);
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
@@ -107,6 +111,8 @@ function MT__RUN() {
 			};
 			// Init create_dashboard_find_address
 			new AMT___items_factory().create_dashboard_find_address(opts);
+			// Init place search
+			place_search();
 			// convert
 			function convert(arr) {
 				var a = [];
@@ -117,38 +123,37 @@ function MT__RUN() {
 				return a.join(', ');
 			}
 			// XHR textsearch
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL:	
-						'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
-						'query='+encodeURIComponent(o.u)+'&key=_GOOGLE_API_KEY_REDACTED_',
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					//~ var rs = options.response.responseText;
-					//~ if (options.response.status != 200) {
-						//~ add_static_img(); // Add basic image....
-					//~ }
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					rs = JSON.parse(rs);
-					console.log(rs);
-					/** **/
-					if (!rs.results || !rs.results.length) {
-						//~ add_static_img(); // Add basic image....
-						return;
+			function place_search() {
+				d1.innerText = 'Loading ...';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL:	
+							'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							'query='+encodeURIComponent(dx2.value)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ if (options.response.status != 200) {
+							//~ add_static_img(); // Add basic image....
+						//~ }
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						d1.innerText = '';
+						/** **/
+						if (!rs.results || !rs.results.length) {
+							return;
+						}
+						for (var i in rs.results) {
+							var n = rs.results[i];
+							console.log(n);
+							d1.appendChild(choice(n.name, n.formatted_address));
+						}
 					}
-					for (var i in rs.results) {
-						var n = rs.results[i];
-						// js_append (add marker)
-						console.log(n);
-						d1.appendChild(choice(n.formatted_address));
-					}
-					//~ if (xo.markers.nearby_searches.length) {
-						//~ add_static_img();
-					//~ }
-				}
-			});
-			function choice(text) { // returns clickable div
+				});
+			}
+			function choice(name, text) { // returns clickable div
 				text = text.replace(/, USA$/, '');
 				text = text.split(' ');
 				var a = [];
@@ -158,7 +163,7 @@ function MT__RUN() {
 				}
 				a = a.join(' ');// By space
 				// Out div
-				var d = ''.div({style:'width:100%;border:1px solid #a2a2a2;'});
+				var d = (name + ' ').div({style:'width:100%;border:1px solid #a2a2a2;'});
 				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
 					textToAnnotate: a,
 					output_fields: o.q,
@@ -170,7 +175,9 @@ function MT__RUN() {
 					appendToField_glue: ', ',
 					//~ delimeter: '',
 					focusToField: true,
+					style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;',
 				});
+				buttons.style.display = 'inline';
 				d.appendChild(buttons);
 				return d;
 			}
