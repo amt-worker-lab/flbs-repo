@@ -10595,19 +10595,17 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					div.setAttribute('style', 'width:98%;border-bottom:1px solid teal;cursor:pointer;');
 					div.innerHTML = (opts.bold_locn_array ? MT__bold(""+rs[i].description, opts.bold_locn_array) :
 									rs[i].description);
-					
 					// Set o.first_fb_or_google_us
 					if (rs[i].description.match(/United States$/i)) {
 						o.first_fb_or_google_us = true;
 					}
-					
-					//~ div.json_response = JSON.stringify(rs[i]);
+					// Set json_response
 					div.json_response = rs[i];
 					// .onclick
 					div.onclick = function() {
-						
 						// focus
-						opts.first_element.focus();
+						if (opts.first_element)
+							opts.first_element.focus();
 						//
 						if  (
 							this.style.backgroundColor != 'LightGreen' &&

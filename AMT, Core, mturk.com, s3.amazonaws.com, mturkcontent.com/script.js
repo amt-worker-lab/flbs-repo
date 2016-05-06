@@ -36,6 +36,7 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('#Q1Url {position:absolute;top:0;left:0;width:99%;height:24px;}');
 			var h3 = document.getElementsByTagName('h3');
 			var o = {
 				u: h3[1].innerText,
@@ -45,21 +46,28 @@ function MT__RUN() {
 			}
 			console.log(o);
 			//Elements
-			var d1 = ''.div({style:'position:absolute;top:0;width:99%;height:200px;background-color:#eee;border:1px solid blue;'});
+			var d1 = ''.div({style:'position:absolute;top:26px;width:99%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:150px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.u;
 			// ih
-			//~ new AMT___core_factory().el_innerHeight({
-				//~ elements: [
-					//~ d1
-				//~ ],
-				//~ offset: 0 // offset top
-			//~ });
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					dx1
+				],
+				offset: 150 // offset top
+			});
 			// DoPast
 			AMT___addUserDecision(
 				'JustinFarrell,2016',
 				function() { return o.u; },
 				[
-				"Id(Q1Url)",
+					"Id(Q1Url)",
 				]
 			);
 			document.getElementById('submitButton').onclick = function(e) {
@@ -69,6 +77,37 @@ function MT__RUN() {
 				AMT___recordAndSubmit();
 				return false;
 			}
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					//~ full_address: o.q[0],
+					//~ zip: o.q[1],
+					//~ state: o.q[2],
+					//~ phone: o.q[3]
+				},
+				onclick_callback: function(opts) { // (opts)
+					console.log(opts);
+					//~ // Change state abbr to state
+					//~ console.log(o);
+					//~ console.log(o.q[2]);
+					//~ console.log(o.q[2].value);
+					//~ o.q[2].value = o.q[2].value.state_full_to_abbr();
+					//~ // Change URL to include http
+					//~ o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
+					//~ o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
+					//~ if (o.q[0].value == '' || o.q[0].value == 'http://') {
+						//~ if (opts.profile_url)
+							//~ o.q[0].value = opts.profile_url;
+					//~ }
+					// 
+					// IF ALL FROM LINK ARE FILLED IN
+					// THEN AUTO-SUBMIT?
+					// No because of e.g. http://healthgrades.com/profile/29384974/bleh
+				}
+			};
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL:	
 						'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
