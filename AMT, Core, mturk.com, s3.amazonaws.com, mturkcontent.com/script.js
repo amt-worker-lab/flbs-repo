@@ -93286,12 +93286,17 @@ qatar,80
 			var d1d = document.createElement('div');
 			d1d.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 			divcont.appendChild(d1d);
+			//~ // d1f
+			//~ var d1f = document.createElement('div');
+			//~ d1f.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			//~ divcont.appendChild(d1f);
+			// === INPUTS ===
 			// d2
 			var d2 = document.createElement('input');
 			d2.type = 'text';
 			d2.setAttribute('style','position:absolute;left:0px;top:0px;width:99%;height:30px;');
 			document.body.appendChild(d2);
-			// d2
+			// d2b
 			var d2b = document.createElement('input');
 			d2b.type = 'text';
 			d2b.setAttribute('style','position:absolute;left:0px;top:30px;width:99%;height:30px;');
@@ -93390,7 +93395,6 @@ qatar,80
 					alert('Name/Location not found! (name_locn)');
 				}
 			}
-			
 			/**
 			 * showPastReturns
 			 */
@@ -93399,23 +93403,16 @@ qatar,80
 				d2.style.backgroundColor = 'LightPink';
 				d2b.style.backgroundColor = 'LightPink';
 			});
-			
 			// Add to tabs queue
+			//
+			//
 			new AMT___core_factory().createScriptVar('Signpost addToTabsQ', '0');
 			if (AMT__Global_Vars.scriptVars['Signpost addToTabsQ'] == '1' && !AMT__Global_Vars.isPreview)
 				addToTabsQ();
-				
 			new AMT___core_factory().createScriptVar('SP LevRatio', '0.9'); // 0 is completely dissimilar. 1 is identical.
-			//~ /**
-			 //~ * PREVIEW MODE
-			 //~ * Accept if doing skips
-			 //~ */
-			//~ if (!AMT__Global_Vars.isPreview) {
-				//~ 
-			//~ }
-			
-			//
 			// IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED. THIS NUMBER CHANGES WITH EVERY NEW HIT.
+			//
+			//
 			var by_phone = false;
 			if (ih.indexOf('IF YOU ENTER THIS NUMBER YOUR HIT WILL BE REJECTED.') != -1) {
 				by_phone = true;
@@ -93448,7 +93445,6 @@ qatar,80
 						o.bad_phones_obj[ reg[i] ] = true;
 					}
 				}
-				
 				//Finally try 10-consecutive digits 
 				var reg = /(\d{10})/g;
 				var m;
@@ -93457,7 +93453,6 @@ qatar,80
 					o.bad_phones.push( m[1] );
 					o.bad_phones_obj[ m[1] ] = true;
 				}
-				
 			}
 			if (by_phone && o.bad_phones.length == 0) {
 				// In some cases there is no bad phone on the page!
@@ -93599,14 +93594,15 @@ qatar,80
 			 * function find_phone__FB
 			 */
 			function find_phone__FB() {
-				
+				// Clear divs
+				//
 				d1b.innerHTML = '';
 				var dv = document.createElement('div');
 				d1b.appendChild(dv);
 				dv.setAttribute('style', 'border-bottom:4px solid teal;width:100%;');
 				dv.innerText = d2.value;
-				
 				// URL
+				//
 				var u = 
 					'https://graph.facebook.com/search'+
 					'?q='+encodeURIComponent(d2.value)+'&type=user&type=page&type=place'+
@@ -93621,8 +93617,8 @@ qatar,80
 					//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
 					// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-				
-				// Xhr
+				// Xhr request
+				//
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: u,
@@ -93631,12 +93627,13 @@ qatar,80
 						if (response.status != 200) {
 							d1b.style.backgroundColor = 'pink';
 							return;
-						 }
-						
+						}
+						// Reset stats
 						o.stats.num_fb_results = 0; // Reset
-						
+						// Parse rs
 						var r = JSON.parse(rs);
-						if (!r.data) { // No data?
+						// No data?
+						if (!r.data) {
 							d1b.appendChild('0'.div());
 							// 
 							o.stats.fb_search_complete = true;
@@ -93645,8 +93642,8 @@ qatar,80
 							return;
 						}
 						r = r.data;
-						
 						// 0 results.
+						//
 						if (r.length == 0) {
 							d1b.appendChild('0'.div());
 							// Finished
@@ -93661,17 +93658,15 @@ qatar,80
 								//~ return;
 							//~ }
 						}
-						
 						// Loop
+						//
 						var c = 0;
 						var found = false;
 						for (var i in r) {
-							
 							// Type != event
 							if (r[i].type) {
 								if (r[i].type == 'event') continue;
 							}
-							
 							// Talking about count
 							if (r[i].talking_about_count != null) {
 							} else
@@ -93679,29 +93674,24 @@ qatar,80
 							if (r[i].likes != null) {
 							} else
 								r[i].likes = '';
-							
 							// Phone
 							r[i].phone = (r[i].phone == null) ? '' : r[i].phone;
-							
 							// SKIP BY BAD PHONE?
 							var test = r[i].phone.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10);
 							if (r[i].phone && by_phone && test.length==10 && o.bad_phones_obj.hasOwnProperty( test )) {
 								continue; //SKIP
 							}
 							if (r[i].phone == '') continue;
-							
 							// Here? Increment result count.
 							o.stats.num_fb_results++;
-							
 							// check_accept
-							console.log('PHONEFB:'+r[i].phone+'X');
+								//~ console.log('PHONEFB:'+r[i].phone+'X');
 							check_accept(r[i].name, r[i].phone);
-							
 							// Location
 							var dist = '-';
 							var dist_bgc = '';
 							if (r[i].location) {
-								//MT___lat_lng_distance(lat1, lon1, lat2, lon2)  MILES
+								// MT___lat_lng_distance(lat1, lon1, lat2, lon2) Returns MILES
 								if (r[i].location.latitude && r[i].location.longitude) {
 									dist = MT___lat_lng_distance(ll.lat*1, ll.lng*1, r[i].location.latitude*1, r[i].location.longitude*1);
 									if (dist) {
@@ -93710,7 +93700,6 @@ qatar,80
 											dist_bgc = 'background-color:aqua;';
 									}
 								}
-								
 								if (r[i].location.latitude) {
 									delete r[i].location.latitude;
 								}
@@ -93720,13 +93709,20 @@ qatar,80
 							}
 							// ...
 							var locn__ = '';
+							// short locations (state abbreviated)
+							var search_state_found = false;
 							if (r[i].location) {
 								for (var j in r[i].location) {
 									locn__ += ', ' + r[i].location[j];
+									if (r[i].location[j] == d2b.value)
+										search_state_found = true;
 								}
 							}
+							if (d2b.value.length == 2 && !search_state_found) {
+								continue; // Go to next entry!
+							}
+							// No comma
 							locn__ = locn__.replace(/^,/, '').trim();
-							
 							// ...
 							var y = JSON.stringify(r[i]);
 							
@@ -93764,7 +93760,8 @@ qatar,80
 									q.style.border = '4px solid teal';
 									return;
 								}
-								
+								//
+								//
 								p = p.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10); // SUBSTR !
 								// set divs clicked
 								set_divs_clicked(p);
@@ -94096,7 +94093,39 @@ qatar,80
 				find_phone__FB(); // Init FB
 				yelp(); // Init FB
 				foursquare();
+				//~ google_phone2();
 				return;
+			}
+			function google_phone2() {
+				// XHR textsearch
+				//~ d1f.innerText = 'Loading ...';
+				//~ new AMT___requests_factory().xhr_with_disk_cache({
+					//~ URL:	
+							//~ 'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							//~ 'query='+encodeURIComponent(dx2.value)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ return true;
+					//~ },
+					//~ success_callback: function(options) {
+						//~ var rs = options.response.responseText;
+						//~ rs = JSON.parse(rs);
+						//~ console.log(rs);
+						//~ d1f.innerText = '';
+						//~ /** **/
+						//~ if (!rs.results || !rs.results.length) {
+							//~ d1f.innerText = '0';
+							//~ return;
+						//~ }
+						//~ for (var i in rs.results) {
+							//~ var n = rs.results[i];
+							//~ console.log(n);
+							//~ d1f.appendChild(google_phone2_choice(n));
+						//~ }
+					//~ }
+				//~ });
+			}
+			function google_phone2_choice(n) {
+				
 			}
 			/**
 			 * function yelp_success
@@ -94729,12 +94758,16 @@ qatar,80
 				// 2
 				var u;
 				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-				u+= 'location='+ll.lat+','+ll.lng; //lat,lng
 				u+= '&keyword=' + encodeURIComponent(d2.value);
-				//~ u+= '&rankby=distance';
-				u+= '&radius=50000';
 				u+= '&sensor=false';
+				// If only an abbreviated state then do not use
+				// a location.
+				if (d2b.value.length > 2) {
+					u+= 'location='+ll.lat+','+ll.lng; //lat,lng
+					u+= '&radius=50000';
+				}
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
+				//~ u+= '&rankby=distance';
 				// Set to MT___host
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				
@@ -94766,7 +94799,7 @@ qatar,80
 						var m_comp;
 						var m_locn;
 						for (var i in rs.results) {
-							if (i > 20) break; // 8 only!
+							//~ if (i > 20) break; // 8 only!
 							// Increment
 							o.stats.num_google_results++;
 							// ...
@@ -94787,13 +94820,13 @@ qatar,80
 										dist_bgc = 'background-color:aqua;';
 								}
 							}
-							
 							// Set vicinity to '' if it does not exist.
 							if (!x.hasOwnProperty('vicinity') || !x.vicinity) {
 								x.vicinity = '';
 							}
-							
 							// Div
+							//
+							//
 							var dv = document.createElement('div');
 							d1.appendChild(dv);
 							dv.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'+dist_bgc);
@@ -94801,10 +94834,8 @@ qatar,80
 							dv.isAuto = false;
 							dv.greference = x.reference;
 							//~ dv.gurl = x.url.replace(/about\?hl=en-US/, '');
-							
 							var tmp_nm = MT__bold(x.name, o.name_arr, {percent_matched:true});
 							var tmp_vc = MT__bold(x.vicinity, o.locn_arr, {percent_matched:true});
-							
 							// Check for skip based on bolding!
 							//
 							//						
@@ -94863,16 +94894,11 @@ qatar,80
 			 * Add .url from response.
 			 */
 			function google_find_phone__profile(div) {
-				
 				//greference
-				
 				var u;
 				u = 'https://maps.googleapis.com/maps/api/place/details/json?reference='+div.greference+'&sensor=true&key=_GOOGLE_API_KEY_REDACTED_';
-				
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-				
 				var div = div;
-				
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
@@ -94883,7 +94909,6 @@ qatar,80
 							return;
 						}
 						rs = JSON.parse(rs);
-						//~ console.log(rs);
 						if (!rs.result) {
 							d1.innerHTML = 'X';
 							return;
@@ -94931,8 +94956,7 @@ qatar,80
 							//new AMT___core_factory().nextTab();
 							doSubmit();
 						}
-						
-						// is good?
+						// If good....
 						div.click();
 					}
 				});
