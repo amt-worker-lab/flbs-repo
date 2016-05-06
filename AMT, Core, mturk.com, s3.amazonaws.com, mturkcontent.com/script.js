@@ -36,7 +36,7 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.highlight-box {margin-top:200px;}');
-			GM_addStyle('#Q1Url {position:absolute;top:0;left:0;width:99%;height:24px;}');
+			GM_addStyle('#Q1Url {position:absolute;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
 			var h3 = document.getElementsByTagName('h3');
 			var o = {
 				u: h3[1].innerText,
@@ -52,7 +52,7 @@ function MT__RUN() {
 			dx1.setAttribute('style','position:absolute;top:150px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:104px;left:0%;width:99%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.u;
 			// dummy inputs
@@ -88,33 +88,35 @@ function MT__RUN() {
 				output_elements: {
 					city: d2a,
 					state: d2b,
-					//~ zip: o.q[1],
-					//~ state: o.q[2],
-					//~ phone: o.q[3]
 				},
 				onclick_callback: function(opts) { // (opts)
 					console.log(opts);
-					//~ console.log(o);
-					//~ // Change state abbr to state
-					//~ console.log(o);
-					//~ console.log(o.q[2]);
-					//~ console.log(o.q[2].value);
-					//~ o.q[2].value = o.q[2].value.state_full_to_abbr();
-					//~ // Change URL to include http
-					//~ o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
-					//~ o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
-					//~ if (o.q[0].value == '' || o.q[0].value == 'http://') {
-						//~ if (opts.profile_url)
-							//~ o.q[0].value = opts.profile_url;
-					//~ }
-					// 
-					// IF ALL FROM LINK ARE FILLED IN
-					// THEN AUTO-SUBMIT?
-					// No because of e.g. http://healthgrades.com/profile/29384974/bleh
+					console.log(o);
+					var fc = [];
+					if (opts.o.final_location.city != null &&
+						opts.o.final_location.city.trim() != '') {
+						fc.push(opts.o.final_location.city);
+					}
+					if (opts.o.final_location.state != null &&
+						opts.o.final_location.state.trim() != '') {
+						fc.push(opts.o.final_location.state);
+					}
+					o.q[0].value = convert(fc);
+					o.q[0].focus();
 				}
 			};
+			// Init create_dashboard_find_address
 			new AMT___items_factory().create_dashboard_find_address(opts);
-			
+			// convert
+			function convert(arr) {
+				var a = [];
+				for (var i in arr) {
+					var n = arr[i].trim().replace(/,/g, '').stateAbbrToFull(); // Try...
+					a.push(n);
+				}
+				return a.join(', ');
+			}
+			// XHR textsearch
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL:	
 						'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
@@ -163,12 +165,6 @@ function MT__RUN() {
 					//~ callback_mouseup: function(addField) {
 						//~ // Remove trailing commas
 						//~ addField.value = addField.value.replace(/ *,*$/, '');
-						//~ addField.value = addField.value.replace(/ *-*$/, ''); // etc.
-						//~ addField.value = addField.value.replace(/^ *,*/, '');
-						//~ addField.value = addField.value.replace(/^ *-*/, ''); // etc.
-						
-						//~ addField.value = addField.value.replace(/^ *, */, ''); // etc.
-						
 					//~ },
 					appendToField: true,
 					appendToField_glue: ', ',

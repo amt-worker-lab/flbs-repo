@@ -10629,7 +10629,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								typeof id.result.geometry == 'object' &&
 								id.result.geometry.hasOwnProperty('location') &&
 								typeof id.result.geometry.location == 'object'
-								) {
+								)
+							{
+								var g = id.result.geometry.location;
 								opts.o.final_location.lat = g.lat;
 								opts.o.final_location.lat = g.lng;
 								// Set inputs
@@ -10638,7 +10640,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 									opts.output_elements.hasOwnProperty('lng')
 									)
 								{
-									var g = id.result.geometry.location;
 									opts.output_elements.lat.value = g.lat;
 									opts.output_elements.lng.value = g.lng;
 								}
@@ -11421,6 +11422,11 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						}
 						if (l.city) {
 							a.push(l.city);
+							opts.o.final_location.city = l.city;
+						}
+						if (l.state) {
+							a.push(l.state);
+							opts.o.final_location.state = l.state;
 						}
 						if (l.country) {
 							a.push(l.country);
