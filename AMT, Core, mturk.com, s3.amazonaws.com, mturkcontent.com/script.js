@@ -78,7 +78,7 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				if (o.q[0].value.trim() == '') return false;
+				if (o.q[0].value.trim() == '' || o.q[0].value.trim().indexOf(', ') == -1) return false;
 				AMT___recordAndSubmit();
 				return false;
 			}
