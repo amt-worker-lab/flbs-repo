@@ -10526,12 +10526,15 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 		el.style.backgroundColor = 'MintCream';
 		
 		// obj
-		var id = el.json_response;
+		//~ console.log(el.json_response);
+		//~ console.log(el.json_response.res);
+		var id;
+		if (!el.json_response.reference) id = el.json_response.result.reference;
+		else id = el.json_response.reference;
 		var u =
 			'https://maps.googleapis.com/maps/api/place/details/json?reference='+
-			id.reference+
+			id+
 			'&sensor=false&key=_GOOGLE_API_KEY_REDACTED_';
-		
 		// XHR
 		GM_xmlhttpRequest({ // init
 			method: "GET",
@@ -10539,16 +10542,13 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			onload: function(response) {
 				var rs = response.responseText;
 				if (response.status != 200) return;
-				//~ 
-				//~ var s = rs;
-				
+				// ...
 				rs = JSON.parse(rs);
 				if (rs.status != 'OK') {
 					console.log(rs.status);
 					return;
 				}
 				console.log(rs);
-				
 				// Update button id/value
 				el.appendChild(document.createElement('br'));
 				el.appendChild(document.createTextNode(rs.result.formatted_address));
@@ -10609,9 +10609,11 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						//
 						if  (
 							this.style.backgroundColor != 'LightGreen' &&
-							this.style.backgroundColor != 'rgb(245, 255, 250)' // MintCream
+							this.style.backgroundColor != 'rgb(245, 255, 250)' && // MintCream
+							this.style.backgroundColor.toLowerCase() != 'mintcream'
 							)
 						{
+							console.log(this.style.backgroundColor);
 							this.style.backgroundColor = 'LightGreen';
 							google_addr_prof(this);
 						}
@@ -10621,51 +10623,40 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							clear_output_elements();
 							var id = this.json_response;
 							console.log(id);
-							
-							//~ var obj = {
-								//~ name: null,
-								//~ street: null,
-								//~ city: null,
-								//~ state: null,
-								//~ zip: null,
-								//~ country: null,
-								//~ lat: null,
-								//~ lng: null
-							//~ }
-							
 							// Lat/Lng
-							if  (
-								opts.output_elements.hasOwnProperty('lat') &&
-								opts.output_elements.hasOwnProperty('lng') &&
+							if (
 								id.result.hasOwnProperty('geometry') &&
 								typeof id.result.geometry == 'object' &&
 								id.result.geometry.hasOwnProperty('location') &&
 								typeof id.result.geometry.location == 'object'
-								)
-							{
-								var g = id.result.geometry.location;
-								opts.output_elements.lat.value = g.lat;
-								opts.output_elements.lng.value = g.lng;
-								o.final_location.lat = g.lat;
-								o.final_location.lat = g.lng;
+								) {
+								opts.o.final_location.lat = g.lat;
+								opts.o.final_location.lat = g.lng;
+								// Set inputs
+								if  (
+									opts.output_elements.hasOwnProperty('lat') &&
+									opts.output_elements.hasOwnProperty('lng')
+									)
+								{
+									var g = id.result.geometry.location;
+									opts.output_elements.lat.value = g.lat;
+									opts.output_elements.lng.value = g.lng;
+								}
 							}
 							// Name
-							if  (
-								opts.output_elements.hasOwnProperty('name') &&
-								id.result.hasOwnProperty('name')
-								)
-							{
-								opts.output_elements.name.value = id.result.name;
-								o.final_location.name = id.result.name;
+							if  (id.result.hasOwnProperty('name')) {
+								opts.o.final_location.name = id.result.name;
+								if (opts.output_elements.hasOwnProperty('name')) 
+									opts.output_elements.name.value = id.result.name;
 							}
 							// Website
 							if  (
-								opts.output_elements.hasOwnProperty('website') &&
 								id.result.hasOwnProperty('website')
 								)
 							{
-								opts.output_elements.website.value = id.result.website;
-								o.final_location.website = id.result.website;
+								opts.o.final_location.website = id.result.website;
+								if (opts.output_elements.hasOwnProperty('website'))
+									opts.output_elements.website.value = id.result.website;
 							}
 							// Address
 							var country;
@@ -10673,61 +10664,53 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								var type = id.result.address_components[i].types[0];
 								var j = id.result.address_components[i].long_name;
 								
-								if (opts.output_elements.hasOwnProperty('city') && (type == 'locality' || type == 'sublocality_level_1')) {
-									opts.output_elements.city.value = j;
-									o.final_location.city = j;
+								if ((type == 'locality' || type == 'sublocality_level_1')) {
+									if (opts.output_elements.hasOwnProperty('city'))
+										opts.output_elements.city.value = j;
+									opts.o.final_location.city = j;
 								}
 								
-								if (opts.output_elements.hasOwnProperty('state') && type == 'administrative_area_level_1') {
-									opts.output_elements.state.value = j;
-									o.final_location.state = j;
+								if (type == 'administrative_area_level_1') {
+									if (opts.output_elements.hasOwnProperty('state'))
+										opts.output_elements.state.value = j;
+									opts.o.final_location.state = j;
 								}
 								
-								if (opts.output_elements.hasOwnProperty('zip') && type == 'postal_code') {
-									opts.output_elements.zip.value = j;
-									o.final_location.zip = j;
+								if (type == 'postal_code') {
+									if (opts.output_elements.hasOwnProperty('zip'))
+										opts.output_elements.zip.value = j;
+									opts.o.final_location.zip = j;
 								}
 								
-								if (opts.output_elements.hasOwnProperty('country') && type == 'country') {
-									opts.output_elements.country.value = j;
-									o.final_location.country = j;
+								if (type == 'country') {
+									if (opts.output_elements.hasOwnProperty('country'))
+										opts.output_elements.country.value = j;
+									opts.o.final_location.country = j;
 								}
-									
 								// Set country
 								if (type == 'country')
 									country = j;
-								
-								//~ if  (
-									//~ opts.output_elements.hasOwnProperty('street') &&
-									//~ (
-										//~ type == 'street_number' ||
-										//~ type == 'street_address' ||
-										//~ type == 'sublocality_level_2'
-									//~ )
-									//~ )
-								//~ {
-									// OLD TRY //opts.output_elements.street.value = (j + ' ' + opts.output_elements.street.value).trim();
-									//~ opts.output_elements.street.value = (opts.output_elements.street.value + ' ' + j).trim();
-								//~ } // TODO: Does this value = formatted address? If not the border then ... outline?
-								//~ if (opts.output_elements.hasOwnProperty('street') && type == 'route')
-									//~ opts.output_elements.street.value = (opts.output_elements.street.value+' '+j).trim();
 							}
 							
 							// Set street address from formatted...
-							if (opts.output_elements.hasOwnProperty('street') && id.result.hasOwnProperty('formatted_address')) {
+							if (id.result.hasOwnProperty('formatted_address')) {
 								var s = id.result.formatted_address.replace(/,[\d\D]*$/, '');
-								opts.output_elements.street.value = s;
-								o.final_location.street = s;
+								if (opts.output_elements.hasOwnProperty('street'))
+									opts.output_elements.street.value = s;
+								opts.o.final_location.street = s;
 							}
 							
 							// Full address
-							if (opts.output_elements.hasOwnProperty('full_address') && id.result.hasOwnProperty('formatted_address')) {
-								opts.output_elements.full_address.value = id.result.formatted_address;
-								o.final_location.full_address = id.result.formatted_address;
+							if (id.result.hasOwnProperty('formatted_address')) {
+								if (opts.output_elements.hasOwnProperty('full_address'))
+									opts.output_elements.full_address.value = id.result.formatted_address;
+								opts.o.final_location.full_address = id.result.formatted_address;
 							}
 							
 							// Phone
 							// If not United States then use international phone?
+							// Todo: opts.o.final_location not implemented
+							// 		 when !opts.output_elements.hasOwnProperty('phone').
 							if  (
 								opts.output_elements.hasOwnProperty('phone') &&
 								id.result.hasOwnProperty('formatted_phone_number')
@@ -10741,12 +10724,13 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								} else { // any
 									p = opts.output_elements.phone.value = id.result.formatted_phone_number;
 								}
-								o.final_location.phone = p;
+								opts.o.final_location.phone = p;
 							}
 							
 							// opts.profile_url
 							opts.profile_url = id.result.url.replace(/\/about\?[\d\D]*$/, ''); // e.g. "https://plus.google.com/101686557708089217019/about?hl=en-US" 
-							
+							console.log(o);
+							console.log(opts.o.final_location);
 							// Call callback
 							if (opts.hasOwnProperty('onclick_callback'))
 								opts.onclick_callback(opts);
@@ -10828,23 +10812,23 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					if (opts.output_elements.hasOwnProperty('street')) {
 						opts.output_elements.street.value = addr[0];
-						o.final_location.street = addr[0];
+						opts.o.final_location.street = addr[0];
 					}
 					if (opts.output_elements.hasOwnProperty('city')) {
 						opts.output_elements.city.value = addr[1];
-						o.final_location.city = addr[1];
+						opts.o.final_location.city = addr[1];
 					}
 					if (opts.output_elements.hasOwnProperty('state')) {
 						opts.output_elements.state.value = addr[2];
-						o.final_location.state = addr[2];
+						opts.o.final_location.state = addr[2];
 					}
 					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = addr[3];
-						o.final_location.zip = addr[3];
+						opts.o.final_location.zip = addr[3];
 					}
 					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = addr[4];
-						o.final_location.country = addr[4];
+						opts.o.final_location.country = addr[4];
 					}
 					if 	(
 						opts.output_elements.hasOwnProperty('lat') &&
@@ -10858,7 +10842,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					// Full address
 					if (opts.output_elements.hasOwnProperty('full_address')) {
 						opts.output_elements.full_address.value = location;
-						o.final_location.full_address = location;
+						opts.o.final_location.full_address = location;
 					}
 					
 					// onclick_callback
@@ -10881,7 +10865,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = r[r.length - 1];
-						o.final_location.country = r[r.length - 1];
+						opts.o.final_location.country = r[r.length - 1];
 					}
 					// DEBUG
 					//~ var dbg = r.slice(0, r.length - 1).join(' ');
@@ -10961,13 +10945,12 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					inp.innerHTML = m[2];
 					inp.url_bw = m[1];
 					inp.name_bw = m[2];
-					
+					//
 					inp.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						
 						// focus
-						opts.first_element.focus();
-						
+						if (opts.first_element)
+							opts.first_element.focus();
 						businessweek_addr_prof(this);
 					}
 					
@@ -11064,23 +11047,23 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					if (opts.output_elements.hasOwnProperty('street')) {
 						opts.output_elements.street.value = r[1];
-						o.final_location.street = r[1];
+						opts.o.final_location.street = r[1];
 					}
 					if (opts.output_elements.hasOwnProperty('city')) {
 						opts.output_elements.city.value = r[2];
-						o.final_location.city = r[2];
+						opts.o.final_location.city = r[2];
 					}
 					if (opts.output_elements.hasOwnProperty('state')) {
 						opts.output_elements.state.value = r[3];
-						o.final_location.state = r[3];
+						opts.o.final_location.state = r[3];
 					}
 					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = r[4];
-						o.final_location.zip = r[4];
+						opts.o.final_location.zip = r[4];
 					}
 					if (opts.output_elements.hasOwnProperty('country')) {
 						opts.output_elements.country.value = r[5];
-						o.final_location.country = r[5];
+						opts.o.final_location.country = r[5];
 					}
 					
 					if 	(
@@ -11095,7 +11078,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					// Full address
 					if (opts.output_elements.hasOwnProperty('full_address')) {
 						opts.output_elements.full_address.value = location;
-						o.final_location.full_address = location;
+						opts.o.final_location.full_address = location;
 					}
 					
 					// opts.profile_url
@@ -11145,7 +11128,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					// First el?
 					opts.output_elements[0].value = r[1];
-					o.final_location.name = r[1];
+					opts.o.final_location.name = r[1];
 				}
 			}
 		});
@@ -11182,10 +11165,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					
 					inp.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						
 						// focus
-						opts.first_element.focus();
-						
+						if (opts.first_element)
+							opts.first_element.focus();
 						hoovers_addr_prof(this);
 					}
 					
@@ -11308,23 +11290,22 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						var is_geocoding = false;
 						
 						// focus
-						opts.first_element.focus();
+						if (opts.first_element)
+							opts.first_element.focus();
 						
 						// clear
 						clear_output_elements();
-						
 						var i = this.json_object;
-						
 						// Phone
 						if (i.phone && opts.output_elements.hasOwnProperty('phone')) {
 							FB_test_phone(i.phone); // Test
 							opts.output_elements.phone.value = i.phone;
-							o.final_location.phone = i.phone;
+							opts.o.final_location.phone = i.phone;
 						}
 						// Website
 						if (i.website && opts.output_elements.hasOwnProperty('website')) {
 							opts.output_elements.website.value = i.website;
-							o.final_location.website = i.website;
+							opts.o.final_location.website = i.website;
 						}
 						// Name
 						if  (
@@ -11333,7 +11314,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							)
 						{
 							opts.output_elements.name.value = i.name;
-							o.final_location.name = i.name;
+							opts.o.final_location.name = i.name;
 						}
 						if (i.link) {
 							//~ 
@@ -11353,30 +11334,30 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							
 							if (i.street && opts.output_elements.hasOwnProperty('street')) {
 								opts.output_elements.street.value = i.street;
-								o.final_location.street = i.street;
+								opts.o.final_location.street = i.street;
 							}
 							if (i.city && opts.output_elements.hasOwnProperty('city')) {
 								opts.output_elements.city.value = i.city;
-								o.final_location.city = i.city;
+								opts.o.final_location.city = i.city;
 							}
 							if (i.state && opts.output_elements.hasOwnProperty('state')) {
 								opts.output_elements.state.value = i.state;
-								o.final_location.state = i.state;
+								opts.o.final_location.state = i.state;
 							}
 							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
 								opts.output_elements.zip.value = i.zip;
-								o.final_location.zip = i.zip;
+								opts.o.final_location.zip = i.zip;
 							}
 							if (i.country && opts.output_elements.hasOwnProperty('country')) {
 								opts.output_elements.country.value = i.country;
-								o.final_location.country = i.country;
+								opts.o.final_location.country = i.country;
 							}
 							if (opts.output_elements.hasOwnProperty('lat') && opts.output_elements.hasOwnProperty('lng')) {
 								if (i.latitude && i.longitude) {
 									opts.output_elements.lat.value = i.latitude;
 									opts.output_elements.lng.value = i.longitude;
-									o.final_location.lat = i.latitude;
-									o.final_location.lng = i.longitude;
+									opts.o.final_location.lat = i.latitude;
+									opts.o.final_location.lng = i.longitude;
 								} else {
 									is_geocoding = true;
 									var location =  (i.street ? i.street + ", ": "") +
@@ -11395,7 +11376,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								if (i.country && i.country != '') location.push(i.country);
 								if (i.zip && i.zip != '') location.push(i.zip);
 								opts.output_elements.full_address.value = location.join(', ');
-								o.final_location.full_address = location.join(', ');
+								opts.o.final_location.full_address = location.join(', ');
 							}
 						}
 						// onclick_callback

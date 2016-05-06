@@ -55,6 +55,11 @@ function MT__RUN() {
 			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.u;
+			// dummy inputs
+			var d2a = document.createElement('input');
+			d2a.setAttribute('style', 'position:absolute;top:1000px;');
+			var d2b = document.createElement('input');
+			d2b.setAttribute('style', 'position:absolute;top:1000px;');
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
@@ -81,13 +86,15 @@ function MT__RUN() {
 				parent: dx1,
 				parent_controller_el: dx2,
 				output_elements: {
-					//~ full_address: o.q[0],
+					city: d2a,
+					state: d2b,
 					//~ zip: o.q[1],
 					//~ state: o.q[2],
 					//~ phone: o.q[3]
 				},
 				onclick_callback: function(opts) { // (opts)
 					console.log(opts);
+					//~ console.log(o);
 					//~ // Change state abbr to state
 					//~ console.log(o);
 					//~ console.log(o.q[2]);
