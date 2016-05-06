@@ -93243,6 +93243,7 @@ qatar,80
 			GM_addStyle('body {margin-top:1000px;}');
 			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen !important;}');
 			GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			GM_addStyle('form {margin-top:1500px !important;}');
 			//GM_addStyle('input {width:96%;}');
 			//GM_addStyle('#submitButton {width:96%;height:80px;}');
 			
@@ -93351,9 +93352,8 @@ qatar,80
 			var reg3 = /Business Name with city and state: *<\/em> <b>([^<]+)<\/b>/i.exec(ih);
 			var reg4 = /Business Name with city and state: *<b>([^<]+)<\/b>/i.exec(ih);
 			var reg5 = /<span style="[^"]*">Business Name \(location\):<\/span><\/span><\/u><span style="[^"]*"><span style="[^"]*">&nbsp;&nbsp;<\/span><\/span><em><span style="[^"]*"><b style="[^"]*">([^<]+)<\/b><\/span>/i.exec(ih);
-			//~ var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
-			//~ var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
 			var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
+			var reg7 = /<h3>Business Name with U\.S\.&nbsp;state: <b>([^<]+)<\/b><\/h3>/i.exec(ih);
 			if (reg) {
 				name_locn(reg);
 			} else if (reg2) {
@@ -93366,6 +93366,8 @@ qatar,80
 				name_locn(reg5);
 			} else if(reg6) {
 				name_locn(reg6);
+			} else if(reg7) {
+				name_locn(reg7);
 			} else {
 				alert('Name/Location not found!');
 				return;
@@ -93612,7 +93614,8 @@ qatar,80
 					'&fields=category,id,name,likes,talking_about_count,location,link,phone'+ // phone?
 					'&limit=10'+ //8 to 10 Mar11,2015
 					'&center='+ll.lat+','+ll.lng+ //
-					'&distance=30000'+ // 30k ~ 19mi
+					// This will limit to a distance in kilometers
+						//'&distance=30000'+ // 30k ~ 19mi
 					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 				
 					//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
@@ -93985,15 +93988,11 @@ qatar,80
 				d1e.appendChild(
 					d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
 				);
-				var d = new Date();
+				var d = new Date(); // e.g. 20150515
 				var v = d.getFullYear();
 				v += (d.getMonth().length == 2) ? d.getMonth() : '0' + d.getMonth();
 				v += (d.getDate().length == 2) ? d.getDate() : '0' + d.getDate();
-				// e.g. 20150515
-				
-				//
-				//
-				//
+				// URL
 				var url = 'https://api.foursquare.com/v2/venues/search?'+
 					'query='+encodeURIComponent(d2.value)+
 					'&ll='+encodeURIComponent(ll.lat + ',' + ll.lng)+
@@ -94014,10 +94013,11 @@ qatar,80
 						if (response.status != 200 || /^\d{3}$/.exec(rs)) { // If status code is returned
 							return;
 						}
-						
 						rs = JSON.parse(rs); // {}
+						console.log('========================================');
+						console.log(rs);
 						rs = rs.response.venues; // objects
-						
+						// Loop
 						var found = false;
 						for (var i in rs) {
 							var b = rs[i];
@@ -94686,43 +94686,7 @@ qatar,80
 			 * function bing
 			 */
 			function bing() {
-				//~ //
-				//~ d1c.innerHTML = '';
-				//~ d1c.appendChild(
-					//~ d2.value.div( {'style':'border-bottom:4px solid teal;width:100%;'} )
-				//~ );
-				//~ var u = 'http://www.bing.com/maps/search.ashx?q='+encodeURIComponent(d2.value)+
-					//~ '&wh=%22'+encodeURIComponent(d2b.value)+'%22'+
-					//~ '&n=11&mkt=%22en-us%22'+
-					//~ '&cp=%2242.43610000599999%2C-76.50129699700001%22'+
-					//~ '&si=0&ob=&r=80&md=%221381%2C382%22&z=4&qh=%22st%22&ep=&oj=&ai=&ca=&cid=&jsonso=r8&culture=%22en-us%22'+'&_API_KEY_REDACTED_;
-				//~ 
-				//~ // xhr_with_disk_cache
-				//~ new AMT___requests_factory().xhr_with_disk_cache({
-					//~ 
-					//~ URL: u,
-					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						//~ 
-						//~ if (rs.indexOf('XXXXXXXXXXXXXXXXXXXX robot XXXXXXXXXXXXXXXXXXXXXXX') != -1) { //?
-							//~ d1c.style.backgroundColor = 'yellow';
-							//~ window.open(options.response.finalUrl;
-							//~ return false;
-						//~ }
-						//~ else
-							//~ return true;
-					//~ },
-					//~ success_callback: function(options) {
-						//~ var rs = options.response.responseText;
-						//~ 
-						//
-						//~ 
-						//~ bing_success(options.response);
-					//~ }
-					//~ 
-				//~ });
-				//~ 
-				//~ return;
+				
 			}
 			/**
 			 * function bing_success
@@ -94756,7 +94720,6 @@ qatar,80
 			 * function google_find_phone
 			 */
 			function google_find_phone() {
-				//~ console.log('xxxxxxxxxxxxx');
 				d1.innerHTML = '';
 				var dv = document.createElement('div');
 				d1.appendChild(dv);
@@ -94768,7 +94731,7 @@ qatar,80
 				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
 				u+= 'location='+ll.lat+','+ll.lng; //lat,lng
 				u+= '&keyword=' + encodeURIComponent(d2.value);
-				//u+= '&rankby=distance';
+				//~ u+= '&rankby=distance';
 				u+= '&radius=50000';
 				u+= '&sensor=false';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
@@ -94777,8 +94740,6 @@ qatar,80
 				
 				//u+= '&radius=40000'; // 5k = 3.1 mi.
 				//u+= '&types=accounting|atm|bank';
-				//u+= '&name=' + encodeURIComponent(b[0].innerText);
-				//u+= '&name=';
 				//u+= '&name='+encodeURIComponent(b[0].innerText);
 				
 				// Xhr request.
@@ -94787,10 +94748,10 @@ qatar,80
 					url: u,
 					onload: function(response) {
 						var rs = response.responseText;
-						
+						// Parse rs
 						rs = JSON.parse(rs);
 						console.log(rs);
-						
+						// No results
 						if (!rs.results || !rs.results.length) {
 							d1.innerHTML += '0';
 							// 
@@ -94798,7 +94759,6 @@ qatar,80
 							check_if_yp_init();
 							return;
 						}
-						
 						// Loop
 						var x;
 						var icon;
@@ -94806,16 +94766,12 @@ qatar,80
 						var m_comp;
 						var m_locn;
 						for (var i in rs.results) {
-							
 							if (i > 20) break; // 8 only!
-							
 							// Increment
 							o.stats.num_google_results++;
-							
 							// ...
 							x = rs.results[i];
 							console.log(x);
-							
 							// Dist
 							//~ geometry: Object
 							//~ location: Object
