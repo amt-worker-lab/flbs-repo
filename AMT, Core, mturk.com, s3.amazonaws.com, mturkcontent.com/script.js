@@ -93263,7 +93263,7 @@ qatar,80
 			}
 			
 			/* BEGIN ITEMS */
-			var w = 98/5;
+			var w = 98/4;
 			var divcont = document.createElement('div');
 			divcont.setAttribute('style','position:absolute;left:0%;top:60px;width:99%;height:200px;');
 			document.body.appendChild(divcont);
@@ -93282,10 +93282,10 @@ qatar,80
 			var d1e = document.createElement('div');
 			d1e.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
 			divcont.appendChild(d1e);
-			// d1d
-			var d1d = document.createElement('div');
-			d1d.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
-			divcont.appendChild(d1d);
+			//~ // d1d
+			//~ var d1d = document.createElement('div');
+			//~ d1d.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
+			//~ divcont.appendChild(d1d);
 			//~ // d1f
 			//~ var d1f = document.createElement('div');
 			//~ d1f.setAttribute('style','float:left;width:'+w+'%;height:400px;border:1px solid blue;overflow:auto;background-color:#eee;');
@@ -93493,7 +93493,7 @@ qatar,80
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b, d1c, d1d, d1e
+					d1, d1b, d1c, d1e
 				],
 				offset: 80 // offset top
 			});
@@ -93682,8 +93682,6 @@ qatar,80
 								continue; //SKIP
 							}
 							if (r[i].phone == '') continue;
-							// Here? Increment result count.
-							o.stats.num_fb_results++;
 							// check_accept
 								//~ console.log('PHONEFB:'+r[i].phone+'X');
 							check_accept(r[i].name, r[i].phone);
@@ -93723,10 +93721,12 @@ qatar,80
 							}
 							// No comma
 							locn__ = locn__.replace(/^,/, '').trim();
+							// Here? Increment result count.
+							o.stats.num_fb_results++;
 							// ...
 							var y = JSON.stringify(r[i]);
-							
 							// Clean phone
+							//
 							var cln_ph = r[i].phone.replace(/[^\d]/g, '').replace(/^1+/, '').substr(0,10);
 							
 							// Div
@@ -94090,8 +94090,8 @@ qatar,80
 				ll.lat = lat;
 				ll.lng = lng;
 				google_find_phone(); // UPDATE JUN.25,2015 *uncomment* TO REVERT!
-				find_phone__FB(); // Init FB
-				yelp(); // Init FB
+				find_phone__FB(); // 
+				yelp(); // 
 				foursquare();
 				//~ google_phone2();
 				return;
@@ -94593,7 +94593,7 @@ qatar,80
 			/**
 			 * function sp_yelp
 			 **/
-			function sp_yelp() {
+			function sp_yelp() { return;
 				// create_dashboard_find_url
 				AMT___items_factory.prototype.create_dashboard_find_url({
 					bold_array: o.name_arr,
@@ -94757,18 +94757,22 @@ qatar,80
 				
 				// 2
 				var u;
-				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-				u+= '&keyword=' + encodeURIComponent(d2.value);
-				u+= '&sensor=false';
 				// If only an abbreviated state then do not use
 				// a location.
 				if (d2b.value.length > 2) {
-					u+= 'location='+ll.lat+','+ll.lng; //lat,lng
+					u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+					u+= '?location='+ll.lat+','+ll.lng; //lat,lng
 					u+= '&radius=50000';
+					u+= '&keyword=' + encodeURIComponent(d2.value);
+				} else { // textsearch
+					// Add in the state value to search
+					// in order to help limit the results!
+					u = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
+					u+= '?query=' + encodeURIComponent(d2.value + ', ' + d2b.value);
 				}
+				u+= '&sensor=false';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
-				//~ u+= '&rankby=distance';
-				// Set to MT___host
+				// Set to MT___host to cache the response.
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
 				
 				//u+= '&radius=40000'; // 5k = 3.1 mi.
@@ -94783,6 +94787,7 @@ qatar,80
 						var rs = response.responseText;
 						// Parse rs
 						rs = JSON.parse(rs);
+						console.log('ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg');
 						console.log(rs);
 						// No results
 						if (!rs.results || !rs.results.length) {
@@ -94799,9 +94804,7 @@ qatar,80
 						var m_comp;
 						var m_locn;
 						for (var i in rs.results) {
-							//~ if (i > 20) break; // 8 only!
-							// Increment
-							o.stats.num_google_results++;
+							//~ if (i > 20) break; // Limit results....
 							// ...
 							x = rs.results[i];
 							console.log(x);
@@ -94820,10 +94823,21 @@ qatar,80
 										dist_bgc = 'background-color:aqua;';
 								}
 							}
-							// Set vicinity to '' if it does not exist.
+							// Set vicinity to "" if it does not exist.
 							if (!x.hasOwnProperty('vicinity') || !x.vicinity) {
 								x.vicinity = '';
+								if (x.formatted_address) {
+									x.vicinity = x.formatted_address; //textsearch
+									// This is a state search because
+									// textsearch'ing..... So limit to
+									// state only.
+									if (x.formatted_address.indexOf(d2b.value) == -1) {
+										continue; // Skip
+									}
+								}
 							}
+							// Increment result count
+							o.stats.num_google_results++;
 							// Div
 							//
 							//
@@ -94877,10 +94891,13 @@ qatar,80
 							count++;
 						}
 						// ...
-						var dv = document.createElement('div');
-						dv.setAttribute('style', 'height:1400px;');
-						d1.appendChild(dv);
-						
+						if (count != 0) {
+							var dv = document.createElement('div');
+							dv.setAttribute('style', 'height:1400px;');
+							d1.appendChild(dv);
+						} else {
+							d1.appendChild('0'.div());
+						}
 						// ...
 						o.stats.google_search_complete = true;
 						check_if_yp_init();
