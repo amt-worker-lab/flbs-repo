@@ -93991,11 +93991,19 @@ qatar,80
 				v += (d.getDate().length == 2) ? d.getDate() : '0' + d.getDate();
 				// URL
 				var url = 'https://api.foursquare.com/v2/venues/search?'+
-					'query='+encodeURIComponent(d2.value)+
-					'&ll='+encodeURIComponent(ll.lat + ',' + ll.lng)+
-					'&limit=10'+
-					'&intent=browse'+
-					'&radius=50000'+// radius ~30 miles
+					'limit=50'+ 			// 50 max
+					(d2b.value.length == 2
+					?
+						'&query='+encodeURIComponent(d2.value)+
+						'&near='+encodeURIComponent(d2b.value)+
+						//~ '&query='+encodeURIComponent(d2.value + ', ' + d2b.value)+
+						'&intent=browse' 	// Match apparently only with "almost exact" matching...?
+					:
+						'&query='+encodeURIComponent(d2.value)+
+						'&ll='+encodeURIComponent(ll.lat + ',' + ll.lng)+
+						'&intent=browse'+
+						'&radius=100000'	// Radius ~60 miles, 100k max meters.
+					)+
 					'&v='+v+
 					'&client_id=5OXZ3M1Y3EU42VDIYAEL012GKBY4AU3DEVIFLABFBTCXQDRZ&client__API_KEY_REDACTED_;
 					//~ '&near='+encodeURIComponent(d2b.value)+
@@ -94018,7 +94026,7 @@ qatar,80
 						var found = false;
 						for (var i in rs) {
 							var b = rs[i];
-							
+							// Skip no contact, id
 							if (!b.contact || !b.contact.phone || !b.id || b.id.length < 8) {
 								continue;
 							}
@@ -94028,15 +94036,23 @@ qatar,80
 							if (o.bad_phones_obj.hasOwnProperty( tmp_phone )) continue;
 							// check_accept
 							check_accept(b.name, tmp_phone);
-							
-							found = true;// Set found
-							
+							// Location
 							var loc = '';
 							loc += (b.location && b.location.city) ? b.location.city : '';
 							loc += (b.location && b.location.state) ? ','+b.location.state : '';
 							loc = MT__bold(loc, o.locn_arr);
 							loc += (loc != '') ? '<br>' : '';
-							
+							// Skip if STATE abbreviate only and 
+							// state does not match.
+							//
+							if (d2b.value.length == 2 &&
+								b.location.state != d2b.value)
+							{
+								continue;
+							}
+							// Set found
+							found = true;
+							// Bgc
 							var bgc = ''; // 6400m = 4mi
 							bgc = (b.location && b.location.distance && b.location.distance > 6437) ? 'background-color:aqua;' : '';
 							
@@ -94592,6 +94608,11 @@ qatar,80
 			}
 			/**
 			 * function sp_yelp
+			 * // DISABED: May 6, 2016
+			 * Description: This is a dashboard find url which
+			 * 		searches w/ domain yelp.com. It is so-so. 
+			 * 		There is some code to scrape yelp afteward
+			 * 		but it is not quite functional.
 			 **/
 			function sp_yelp() { return;
 				// create_dashboard_find_url
