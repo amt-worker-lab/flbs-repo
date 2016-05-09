@@ -44047,9 +44047,9 @@ function MT__RUN() {
 			// because for some reason FB gets pissed off if
 			// you send in an abbreviation. Srsly.......
 			// Use .stateAbbrToFull();
-			o.addr = o.addr.replace(/ ([A-Z]{2}), US$/, function(p0, p1) {
+			o.addr = o.addr.replace(/ ([A-Z]{2}), (US|CA|UK|AU|AS|[A-Z]{2})$/, function(p0, p1) {
 				o.state_abbr = p1; // Fill this...
-				return ' ' + p1.stateAbbrToFull();// + ', US';
+				return ' ' + p1.stateAbbrToFull();// + ', ';
 			});
 			
 			// AMT___addUserDecision
@@ -44311,7 +44311,11 @@ function MT__RUN() {
 								var x = document.getElementsByClassName(this.className);
 								for (var i in x) {
 									if (i == 'length') break;
-									x[i].style.backgroundColor = 'LightGreen';
+									if (x[i].original_bgc == '') {
+										x[i].style.backgroundColor = 'LightGreen';
+									} else {
+										x[i].style.backgroundColor = 'purple';
+									}
 								}
 							}
 							// onmouseout
