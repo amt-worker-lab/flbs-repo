@@ -26,6 +26,38 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Alik Mokeichev
+	// Estimation of gender and age of faces
+	//
+	//
+	s = '<li>For <b>gender&nbsp;</b>estimation, few of the pictures may contain non-human faces. For example, images of statues, &nbsp;painted faces, etc. For such cases, <u>please press the "A non-human face"</u>. &nbsp;</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			//GM_addStyle('.panel-primary {position:absolute;top:1400px;}');
+			GM_addStyle('fieldset {float:left;width:19%;}');
+			
+			// Move first fieldset to second parent. From the
+			// first parent where it currently resides.
+			var f = document.getElementsByTagName('fieldset');
+			var p = f[0].parentNode.parentNode;
+			p.insertBefore(f[0],p.firstChild);
+			
+			// Move instructions div outside of top of HTML
+			// page and append to the bottom of the page. 
+			// At the beginning it resides between the first
+			// and the second fieldset on the page!
+			var f = document.getElementsByClassName('row col-xs-12 col-md-12');
+			document.body.appendChild(f[0]);
+			// Ensure that f[0] does not contain any inputs!
+			var x = f[0].getElementsByTagName('input');
+			if (x.length > 0) {
+				alert('Moved an input element outside of the AMT form - check code!');
+			}
+		}
+		new run().f();
+	}
 	// Justin Farrell
 	// 
 	//
