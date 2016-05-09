@@ -40,9 +40,9 @@ function MT__RUN() {
 			
 			// Move first fieldset to second parent. From the
 			// first parent where it currently resides.
-			var f = document.getElementsByTagName('fieldset');
-			var p = f[0].parentNode.parentNode;
-			p.insertBefore(f[0],p.firstChild);
+			var fs = document.getElementsByTagName('fieldset');
+			var p = fs[0].parentNode.parentNode;
+			p.insertBefore(fs[0],p.firstChild);
 			
 			// Move instructions div outside of top of HTML
 			// page and append to the bottom of the page. 
@@ -54,6 +54,97 @@ function MT__RUN() {
 			var x = f[0].getElementsByTagName('input');
 			if (x.length > 0) {
 				alert('Moved an input element outside of the AMT form - check code!');
+			}
+			
+			// For fieldsets within fieldsets, set width to 100%.
+			for (var i=0; i<fs.length; i++) {
+				if (fs[i].parentNode.type == 'fieldset') {
+					fs[i].style.width = '100%';
+					fs[i].style.float = 'none';
+				}
+			}
+			
+			// For each fieldset make two select fields, one for
+			// each gender. On click of the select field it will
+			// select a random offset +- 5 years unless the age is
+			// less than 10. For 0 to 10...
+			for (var i=0; i<fs.length; i++) {
+				if (fs[i].parentNode.type == 'fieldset') {
+					continue;// Skip these...
+				}
+				fs[i].appendChild(selects());
+			}
+			// Return div with two select fields.
+			function selects() {
+				var d = ''.div();
+				//1
+				var sl = document.createElement('select');
+				sl.gender = 'm';
+				sl.onclick = sl_click;
+				sl.multiple = true;
+				sl.size = 24;
+				sl.setAttribute('style','position:absolute;margin-left:-145px;margin-top:-170px;');
+				for (var i=0; i<=10; i+=2) {
+					var x = document.createElement('option');
+					x.value = i;
+					x.innerText = i;
+					sl.appendChild(x);
+				}
+				for (var i=15; i<=90; i+=5) {
+					var x = document.createElement('option');
+					x.value = i;
+					x.innerText = i;
+					sl.appendChild(x);
+				}
+				d.appendChild(sl);
+				//2
+				var sl = document.createElement('select');
+				sl.gender = 'f';
+				sl.onclick = sl_click;
+				sl.multiple = true;
+				sl.size = 24;
+				sl.setAttribute('style','position:absolute;margin-left:-125px;margin-top:-170px;');
+				for (var i=0; i<=10; i+=2) {
+					var x = document.createElement('option');
+					x.value = i;
+					x.innerText = i;
+					sl.appendChild(x);
+				}
+				for (var i=15; i<=90; i+=5) {
+					var x = document.createElement('option');
+					x.value = i;
+					x.innerText = i;
+					sl.appendChild(x);
+				}
+				d.appendChild(sl);
+				return d;
+			}
+			function sl_click() {
+				var age = this.value*1;
+				var ip = this.parentNode.parentNode.getElementsByClassName('form-control')[0];
+				var ge = this.parentNode.parentNode.getElementsByTagName('input');
+				if (this.gender == 'm') {
+					ge[0].checked = true;
+				} else {
+					ge[1].checked = true;
+				}
+				if (age <= 9) { // +0,1
+					var r1 = Math.round(Math.random()*1); // 0,1
+					var r2 = Math.round(Math.random()*1); // 0,1
+					if (r2 == 0) {// xxx never negative!
+						//~ r1 *= -1; // Makes negative
+					}
+					age += r1; 
+				}
+				else if (age >= 10) {
+					var r1 = Math.round(Math.random()*4); // 0,1,2,3,4
+					var r2 = Math.round(Math.random()*1); // 0,1
+					if (r2 == 0) {// xxx never negative!
+						//~ r1 *= -1; // Makes negative
+					}
+					age += r1; // Offset age
+				}
+				ip.value = age;
 			}
 		}
 		new run().f();
