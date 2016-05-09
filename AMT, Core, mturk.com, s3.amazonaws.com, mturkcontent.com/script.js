@@ -114230,6 +114230,147 @@ qatar,80
 	 * 
 	 * ...
 	 */
+	// Kari Hartnett
+	// Find the street address and phone number for this business
+	// 
+	// 
+	s = '<li>Enter ONLY street address in box&nbsp;below, for example 123 Main St. If there is a suite, floor or apartment please add a comma before the suite information</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:20% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			//~ GM_addStyle('body {width:18%;margin-top:160px !important;}');
+			//~ GM_addStyle('.highlight-box {position:absolute;top:1600px;}');
+			GM_addStyle('input {height:auto !important;padding:0 !important;width:100%;}');// ADD WIDTH
+			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
+			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
+			GM_addStyle('table {position:absolute;top:1400px;}'); // MOVE THIS DOWN
+			GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
+			GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
+			//~ GM_addStyle('#full_address {position:absolute !important;top:-130px;left:0px;width:600px !important;}'); // MOVE STATE UP // -130?
+			
+			var t = document.getElementsByTagName('td');
+			var o = {
+				comp: t[1].innerText.trim(),
+				city: t[3].innerText.trim(),
+				state: t[5].innerText.trim().stateAbbrToFull(),
+				zip: t[7].innerText.trim(),
+				q: [
+					document.getElementById('phone'),
+					document.getElementById('address'),
+					document.getElementById('city'),
+					document.getElementById('state'),
+					document.getElementById('zip'),
+				]
+			}
+			//~ // Remove placeholder
+			//~ for (var i in o.q) {
+				//~ o.q[i].placeholder = '';
+			//~ }
+			/*BEGIN ITEMS*/
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:98px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:50px;left:0%;width:99%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.comp +', ' + (o.city ? o.city  + ', ' : '') + o.state + ', ' + o.zip;
+			//~ var dx3 = document.createElement('div');
+			//~ dx3.setAttribute('style','position:absolute;top:300px;left:20%;width:79%;height:200px;border:2px dashed blue;');
+			//~ document.body.appendChild(dx3);
+			/*END ITEMS*/
+			
+			//~ showPastReturns('ChrisLintz' + o.comp, function(e) {
+				//~ if (e) {
+					//~ document.body.style.backgroundColor = 'pink';
+					//~ document.body.style.zoom = '0.8';
+				//~ }
+			//~ });
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					dx1
+					//~ dx3
+				],
+				offset: 100 // offset top
+			});
+			
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') return false;
+					if (o.q[i].value.length < 4) return false;
+					//~ if (o.q[i].value == 'http://') return false;
+				}
+				doSubmit(); // Still here? Submit.
+				return false;
+			}
+			// Opts
+			// TODO#1: RUN ONLY GOOGLE, OR SET UP FACEBOOK AND RUN ONLY GOOGLE/FB. TODO#2:Preview mode skip when COUNTRY!=USA.
+			// #3:On Google, show by line, e.g.: Street Address:698. From:
+			// adr_address: "<span class="street-address">698</span> <span class="extended-address">Azu</span>, <span class="locality">Hanno</span>, <span class="region">Saitama Prefecture</span> <span class="postal-code">357-0046</span>, <span class="country-name">Japan</span>"
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					phone: o.q[0],
+					full_address: o.q[1],
+					city: o.q[2],
+					state: o.q[3],
+					zip: o.q[4],
+				},
+				onclick_callback: function(opts) { // (opts)
+					console.log(opts);
+					//~ // Change state abbr to state
+					//~ console.log(o);
+					//~ console.log(o.q[2]);
+					//~ console.log(o.q[2].value);
+					//~ o.q[2].value = o.q[2].value.state_full_to_abbr();
+					//~ // Change URL to include http
+					//~ o.q[0].value = (!/^http/i.exec(o.q[0].value) && o.q[0].value != '') ? 'http://' + o.q[0].value : o.q[0].value;
+					//~ o.q[0].value = o.q[0].value.replace(/(\w)\/$/, '$1'); // Remove trailing slash! (Must come after a \w character.)
+					//~ if (o.q[0].value == '' || o.q[0].value == 'http://') {
+						//~ if (opts.profile_url)
+							//~ o.q[0].value = opts.profile_url;
+					//~ }
+					// 
+					// IF ALL FROM LINK ARE FILLED IN
+					// THEN AUTO-SUBMIT?
+					// No because of e.g. http://healthgrades.com/profile/29384974/bleh
+				}
+			};
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			
+			//~ // FIND URL
+			//~ // create_dashboard_find_url
+			//~ AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.comp.clean_string_to_array(),
+				//~ searches:[
+					//~ o.comp,
+					//~ '"'+o.comp.replace(/,[\d\D]*$/, '') + '"',
+				//~ ],
+				//~ out_element: o.q[0],
+				//~ parent: dx3,
+				//~ offsetTop: 300,
+				//~ onclick_success: function(e) {
+					//~ o.q[0].value = this.value;
+					//~ o.q[0].focus();
+				//~ }
+			//~ });
+		}
+		new run().f();
+		return;
+	}
 	// David
 	// Find the Address and Zip Code of an Organization (Contact)
 	// 
