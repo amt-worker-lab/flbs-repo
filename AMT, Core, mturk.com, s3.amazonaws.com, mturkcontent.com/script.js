@@ -44032,6 +44032,7 @@ function MT__RUN() {
 				comp: td[1].innerText.trim(),
 				comp_array: [],
 				addr: td[3].innerText.trim(),
+				state_addr: null,
 				phone: td[5].innerText.trim(),
 				q:[
 					document.getElementById('web_url')
@@ -44040,7 +44041,15 @@ function MT__RUN() {
 			//~ // Replace "The "...
 			//~ o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
+			// Replace State abbreviation with full state name
+			// because for some reason FB gets pissed off if
+			// you send in an abbreviation. Srsly.......
+			// Use .stateAbbrToFull();
+			o.addr = o.addr.replace(/ ([A-Z]{2}), US$/, function(p0, p1) {
+				return ' ' + p1.stateAbbrToFull();// + ', US';
+			});
 			
+			// AMT___addUserDecision
 			AMT___addUserDecision(
 				'MK,FB,May,2015',
 				function() {
@@ -44048,7 +44057,6 @@ function MT__RUN() {
 				},
 				[ 'Id(web_url)' ]
 			);
-			
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
@@ -44104,7 +44112,7 @@ function MT__RUN() {
 			// Values...
 			d2.value  = o.comp;
 			d2b.value = o.comp + ',' + o.addr; 
-			d2c.value = o.comp + ',' + o.phone; 
+			d2c.value = o.phone; 
 			// Keydown
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
@@ -44157,8 +44165,10 @@ function MT__RUN() {
 				out.innerHTML = '';
 				if (out == d1)
 					v = d2.value;
-				else
+				else if (out == d1b)
 					v = d2b.value;
+				else
+					v = d2c.value;
 				// URL
 				// just type=page is used here (user ignored)
 				var u = 
@@ -44169,12 +44179,18 @@ function MT__RUN() {
 					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 				// E.g. search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
-				GM_xmlhttpRequest({ // init
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs = response.responseText;
-						if (response.status != 200) return;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
 						if (!r.data) {
 							out.innerHTML = '!r.data';
@@ -44243,6 +44259,7 @@ function MT__RUN() {
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// Location
+							var found_state
 							if (r[i].location) {
 								var l = [];
 								for (var j in r[i].location) {
@@ -44311,6 +44328,14 @@ function MT__RUN() {
 						}
 					}
 				});
+				//~ GM_xmlhttpRequest({ // init
+					//~ method: "GET",
+					//~ url: u,
+					//~ onload: function(response) {
+						//~ var rs = response.responseText;
+						
+					//~ }
+				//~ });
 			}
 		}
 		new run().f();
