@@ -44062,20 +44062,24 @@ function MT__RUN() {
 			);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:100px;left:33%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:100px;left:25%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:100px;left:66%;width:33%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1c.setAttribute('style','position:absolute;top:100px;left:50%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1c);
+			//
+			var d1d = document.createElement('div');
+			d1d.setAttribute('style','position:absolute;top:100px;left:75%;width:24%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1d);
 			//
 			var d2 = document.createElement('textarea'); // Offset these from N/A.....
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:40px;left:0;width:33%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:40px;left:0;width:25%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -44083,7 +44087,7 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			//
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:40px;left:33%;width:33%;height:60px;');
+			d2b.setAttribute('style','position:absolute;top:40px;left:25%;width:25%;height:60px;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1b);
@@ -44091,12 +44095,21 @@ function MT__RUN() {
 			document.body.appendChild(d2b);
 			//
 			var d2c = document.createElement('textarea');
-			d2c.setAttribute('style','position:absolute;top:40px;left:66%;width:33%;height:60px;');
+			d2c.setAttribute('style','position:absolute;top:40px;left:50%;width:25%;height:60px;');
 			d2c.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1c);
 			}
 			document.body.appendChild(d2c);
+			//
+			var d2d = document.createElement('textarea');
+			d2d.setAttribute('style','position:absolute;top:40px;left:75%;width:24%;height:60px;');
+			d2d.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				this.value = this.value.replace(/[,\-]$/g, '').trim();
+				facebook_company_reviews(d1d);
+			}
+			document.body.appendChild(d2d);
 			//
 			var d3 = document.createElement('input');
 			d3.setAttribute('type','button');
@@ -44115,12 +44128,14 @@ function MT__RUN() {
 			// Values...
 			d2.value  = o.comp;
 			d2b.value = o.comp + ', ' + o.addr; 
-			d2c.value = o.phone; 
+			d2c.value = o.comp + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // Chop all but the first "word" of address.
+			d2d.value = o.phone; 
 			// Keydown
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2c.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2d.addEventListener('keydown', ef.keydown__blur_field, true);
 			ef.mouseup__delete_range({
 				element: d2,
 				callback: function(input_object) {
@@ -44139,13 +44154,19 @@ function MT__RUN() {
 					input_object.element.blur();
 				}
 			});
+			ef.mouseup__delete_range({
+				element: d2d,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1,d1b,d1c
+					d1,d1b,d1c,d1d
 				],
 				offset: 100 // offset top
 			});
@@ -44154,6 +44175,7 @@ function MT__RUN() {
 			facebook_company_reviews(d1);
 			facebook_company_reviews(d1b);
 			facebook_company_reviews(d1c);
+			facebook_company_reviews(d1d);
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -44170,8 +44192,10 @@ function MT__RUN() {
 					v = d2.value;
 				else if (out == d1b)
 					v = d2b.value;
-				else
+				else if (out == d1c)
 					v = d2c.value;
+				else
+					v = d2d.value;
 				// URL
 				// just type=page is used here (user ignored)
 				var u = 
