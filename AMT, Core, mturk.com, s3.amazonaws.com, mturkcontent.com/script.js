@@ -44032,20 +44032,23 @@ function MT__RUN() {
 				comp: td[1].innerText.trim(),
 				comp_array: [],
 				addr: td[3].innerText.trim(),
+				addr_array: [],
 				state_addr: null,
 				phone: td[5].innerText.trim(),
-				q:[
+				q: [
 					document.getElementById('web_url')
 				],
 			}
 			//~ // Replace "The "...
 			//~ o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
+			o.addr_array = o.addr.clean_string_to_array();
 			// Replace State abbreviation with full state name
 			// because for some reason FB gets pissed off if
 			// you send in an abbreviation. Srsly.......
 			// Use .stateAbbrToFull();
 			o.addr = o.addr.replace(/ ([A-Z]{2}), US$/, function(p0, p1) {
+				o.state_abbr = p1; // Fill this...
 				return ' ' + p1.stateAbbrToFull();// + ', US';
 			});
 			
@@ -44111,7 +44114,7 @@ function MT__RUN() {
 			//~ second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
 			// Values...
 			d2.value  = o.comp;
-			d2b.value = o.comp + ',' + o.addr; 
+			d2b.value = o.comp + ', ' + o.addr; 
 			d2c.value = o.phone; 
 			// Keydown
 			var ef = new AMT___events_factory();
@@ -44259,15 +44262,29 @@ function MT__RUN() {
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// Location
-							var found_state
+							var found_state_abbr = false;
 							if (r[i].location) {
 								var l = [];
 								for (var j in r[i].location) {
-									if (r[i].location[j].length > 0)
+									if (r[i].location[j].length > 0) {
 										l.push(r[i].location[j]);
+										// State abbreviation.
+										if (r[i].location[j] == o.state_abbr) {
+											found_state_abbr = true;
+										}
+									}
 										//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
 								}
-								tmp += '<hr>A:'+l.join(',');
+								var t = MT__bold(l.join(','), o.addr_array, {color: 'blue'}).bold_string;
+								tmp += '<hr>A:'+t;
+							}
+							// Bgc
+							if (found_state_abbr) {
+								div.style.backgroundColor = ''; // Good
+								div.original_bgc = '';
+							} else {
+								div.style.backgroundColor = 'aqua';
+								div.original_bgc = 'aqua';
 							}
 							// Category
 							if (r[i].category) {
@@ -44303,7 +44320,7 @@ function MT__RUN() {
 								for (var i in x) {
 									if (i == 'length') break;
 									if (!x[i].clicked)
-										x[i].style.backgroundColor = '';
+										x[i].style.backgroundColor = x[i].original_bgc;
 								}
 							}
 							// Init this div if first!
