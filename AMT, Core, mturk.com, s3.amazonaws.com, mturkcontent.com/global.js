@@ -97,7 +97,6 @@ var AMT__Global_Vars = //function()
 for(var i = 0; i < AMT__Global_Vars.defaultPersistantScriptVars.length; i++) {
 	AMT__Global_Vars.associativeArrayofDPSV[AMT__Global_Vars.defaultPersistantScriptVars[i].name] = AMT__Global_Vars.defaultPersistantScriptVars[i];
 }
-//console.log(AMT__Global_Vars);
 
 /**
  * var getReturnButton

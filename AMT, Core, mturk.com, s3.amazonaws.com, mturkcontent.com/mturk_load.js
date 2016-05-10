@@ -46,9 +46,7 @@ function mturk_load()
 			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(document.location.href)
 			)
 		) {
-		
 		// TRY show jobs
-		//~ MT___page1_show_jobs(); // findhits?match=false
 		new AMT___core_factory().amt_home_show_tasks();
 		
 		// Run myHITs
@@ -562,7 +560,6 @@ function mturk_load()
 		//~ AMT__Global_Vars.isTopWindow = true;
 		//AMT__Global_Vars.initializeGroupId();
 		//~ AMT__Global_Vars.initializeHitId();
-
 		
 		// Run jobs in top window
 		top_window();

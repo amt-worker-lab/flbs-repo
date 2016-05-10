@@ -182919,7 +182919,8 @@ qatar,80
 /**
  * function top_window
  * TOP_WINDOW
- * 
+ * This is a collection of tasks that run in the top window of AMT.
+ * By top window it is meant the non-iframe window on the page.
  * 
  * 
  * @param okay_to_run
@@ -182928,7 +182929,7 @@ qatar,80
  */
  
 function top_window(okay_to_run) {
-	
+	var s, s2, s3;
 	/**
 	 * Check job is accepted;
 	 * Check no captcha;
@@ -182955,28 +182956,23 @@ function top_window(okay_to_run) {
 		}
 	}
 	
-	var s, s2, s3;
-	
-	//
 	// Sentimeta
 	// Rate an aspect of a hotel on a 1-5 scale, from very negative to very positive
+	// 
 	// 
 	var s = '<p class="overview title">Is the word used in the same sense, or different sense in the two sentences, given below? </p>';
 	if (ih.indexOf(s) != -1)
 	{		
-		//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
-		
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
-		GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
-		GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
-		GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-		GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
-		GM_addStyle('b {zoom:1.2;}');
-		GM_addStyle('.text {margin-top:10px;}'); // ?
-		
 		var run = function() {}
 		run.prototype.f = function() {
-			
+			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
+			GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
+			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
+			GM_addStyle('input[type="radio"] {zoom:2;cursor:pointer;}');
+			GM_addStyle('b {zoom:1.2;}');
+			GM_addStyle('.text {margin-top:10px;}'); // ?
 			// className(' text')
 			
 			var hw = document.getElementById('hit-wrapper');
@@ -183013,10 +183009,10 @@ function top_window(okay_to_run) {
 		}
 		new run().f();
 	}
-	//
 	// Crowd Task
 	// Top window find URL (No iframe)
 	// (3NVVDJT9G6NCC7MWGLSHAEOQMY0PX3)
+	//
 	var s = 'Find this company\'s website and enter the URL below. Country and industry are for reference and do not need to match exactly with what\'s shown on the website.';
 	var s2 = "Country and state are for reference and do not need to match exactly with what's shown on the website.";
 	if (ih.indexOf(s) != -1 ||
@@ -183026,14 +183022,11 @@ function top_window(okay_to_run) {
 		run.prototype.f = function() {
 			console.log('');
 			//~ GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;}');
-			
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:14px;}');
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
 			GM_addStyle('#hit-wrapper {position:absolute;top:40px;width:100%;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-			
 			GM_addStyle('#Answer_1_FreeText, {width:60%;}');
-			
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 			
@@ -183816,10 +183809,10 @@ function top_window(okay_to_run) {
 		new run().f();
 	}
 	
-	//
 	// A9 Snaptell Visual Search Requester
 	// Visual Search Requester
 	// Find associated product information for a given barcode value
+	//
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
@@ -185815,19 +185808,12 @@ function top_window(okay_to_run) {
 		new run().f();
 	}
 	
-	//
 	// NoblisCV
 	// Classify faces
 	//
-	//~ s = 'groupId=333IBSSEKJHHTRC5MX8C5E6OOSTTZZ';
-	//~ s2= 'groupId=33X7UBO5WUEZRJL4I8LU4BP4PZCU0U';
-	//~ s3= 'groupId=375MF9UHMR1R9WZBWFF1YOUREAFSXC';
+	//
 	if  (
 		ih.indexOf(' value="NoblisCV">') != -1
-		//~ ih.indexOf('<input type="hidden" name="groupId" value="375MF9UHMR1R9WZBWFF1YOUREAFSXC">') != -1
-		//~ document.location.href.indexOf(s)  != -1 ||
-		//~ document.location.href.indexOf(s2) != -1 ||
-		//~ document.location.href.indexOf(s3) != -1
 		)
 	{
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
@@ -187663,90 +187649,6 @@ function top_window(okay_to_run) {
 		 * call init function
 		 */
 		Fiber_Data_Co_three_names__init();
-		
-		//tableInside += "</tr>";
-			//~ // OLD
-			//~ tableInside = "<tr><td></td>";
-			//~ cols = 0;
-			//~ for(i in parseText)
-			//~ {
-				//~ tableInside +="<td>"+parseText[i].replace(/([;:,\.Â]+)$/,"<span style='font-weight:bold;color:lime;font-size:24px;'>$1</span>")+"</td>";
-				//~ cols++;
-			//~ }
-			//~ tableInside +="</tr>";
-			//~ 
-			//~ tableInside +="<tr><td></td>";
-			//~ cols = 0;
-			//~ for(i in parseText)
-			//~ {
-				//~ tableInside +="<td>"+parseText[i].replace(/[;:,\.Â]+$/,"")+"</td>";
-				//~ cols++;
-			//~ }
-			//~ tableInside +="</tr>";
-			//var tableInside = '';
-			// OLD
-			//~ tableInside += "<tr><td>";
-			//~ switch(i)
-			//~ {
-				 //~ case 0: tableInside += "First";break;
-				 //~ case 1: tableInside += "Mid";break;
-				 //~ case 2: tableInside += "Last";break
- 				 //~ case 3: tableInside += "Email";break
-				 //~ case 4: tableInside += "Phone";break;
-				 //~ case 5: tableInside += "Title";break;
-				 //~ case 6: tableInside += "Fax";break;	 
-			//~ }
-			//~ tableInside += "</td>";		
-			//~ 
-			//~ for(j = 0; j < cols; j++)
-			//~ {
-				//~ var k = i;
-				//~ var tIns;
-				//~ switch(i)
-				//~ {
-					//~ case 0: 
-						//~ tIns = "f";
-						//~ break;
-					//~ case 1:
-						//~ tIns = "m";
-						//~ break;
-					//~ case 2:
-						//~ tIns = "l";
-						//~ break;
-					//~ case 3:
-						//~ tIns = "e";
-						//~ k = 6;
-						//~ break;
-					//~ case 4:
-						//~ tIns = "p";
-						//~ k = 3;
-						//~ break;
-					//~ case 5:
-						//~ tIns = "t";
-						//~ k = 5;
-						//~ break;
-					//~ case 6:
-						//~ tIns = "f";
-						//~ k = 4;
-						//~ break;
-				//~ }
-				//~ tableInside+="<td id='r"+k+"c"+j+"' class='hover-td'>"+tIns+"</td>";
-			//~ }
-			//~ tableInside += "</tr>";
-		//~ //
-		//~ tableParse.innerHTML = tableInside;
-		// window.onsubmit
-		/*document.getElementsByName('hitForm')[0].onsubmit = function() {
-			if (!/^[A-Z]\.$/.exec(document.getElementById('Answer_2_FreeText').value.trim())) {
-				return false;
-			}
-			if (!/^[A-Z]\.$/.exec(document.getElementById('Answer_9_FreeText').value.trim())) {
-				return false;
-			}
-			if (!/^[A-Z]\.$/.exec(document.getElementById('Answer_16_FreeText').value.trim())) {
-				return false;
-			}
-		}*/
 	}
 	
 	//
@@ -188566,27 +188468,17 @@ function top_window(okay_to_run) {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			
-			//GM_addStyle('body {width:20%}');
-			
 			GM_addStyle('ul {position:absolute;top:1000px;}');
 			GM_addStyle('#submitButton {position:absolute;top:0px;left:30%;}');
 			GM_addStyle('#Answer_1_FreeText {position:absolute;top:80px;left:0;width:80%;height:120px;}');
-			
+
 			//~ var url = document.getElementsByTagName('a')[0].href + '&filter=0&num=10';
-			
 			var url = document.getElementsByClassName('text')[0].getElementsByTagName('a')[0].href + '&filter=0'; // Remove num=10 Sep2015 (&filter=0&num=10)
-			
 			new AMT___core_factory().createScriptVar('JR_Wakeup_Alarm', 0);
-			
 			console.log(url);
-			
 			var start = 0;
-			
 			var q = document.getElementById('Answer_1_FreeText');
-			
 			var url_correct = false;
-			
 			var url_current = url;
 			
 			/*BEGIN ITEMS*/
@@ -188827,12 +188719,9 @@ function top_window(okay_to_run) {
 			l.indexOf('accept') == -1 // This is temporary. It allows running reloader in Chrome while also running "HITs Assigned".
 		)
 	{
-		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-		//~ GM_addStyle('body {width:20%}');
-		
 		var run = function() {};
 		run.prototype.f = function() {
-			
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			
 			var d2=document.createElement('input'); //
 			d2.setAttribute('type','text');
