@@ -44033,7 +44033,7 @@ function MT__RUN() {
 				comp_array: [],
 				addr: td[3].innerText.trim(),
 				addr_array: [],
-				state_addr: null,
+				state_abbr: null, // This will remain null when there is not a / [A-Z]{2] [A-Z]{2}$/
 				phone: td[5].innerText.trim(),
 				unofficial_divs: [],
 				q: [
@@ -44350,7 +44350,7 @@ function MT__RUN() {
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
 							// Bgc
-							if (found_state_abbr) {
+							if (found_state_abbr || o.state_abbr == null) {
 								tmp += '<hr>A:'+temp_location;
 								div.style.backgroundColor = ''; // Good
 								div.original_bgc = '';
