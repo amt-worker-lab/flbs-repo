@@ -44209,7 +44209,6 @@ function MT__RUN() {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
 						if (options.response.status != 200) {
 							return false;
 						}
@@ -44235,19 +44234,45 @@ function MT__RUN() {
 							if (r[i].type) {
 								if (r[i].type == 'event') continue;
 							}
-							// Generic, unclaimed profiles.
-							if  (
-								!r[i].link || 
-								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
-								)
-							{
-								// Append a "blank"
-								out.appendChild(
-									(r[i].name+'\nL:'+r[i].likes).div({style:'border-bottom:2px solid teal;'})
-								);
-								c++;// // //
-								continue;
+							// Remove lat / lng
+							if (r[i].location) {
+								if (r[i].location.latitude) {
+									delete r[i].location.latitude;
+								}
+								if (r[i].location.longitude) {
+									delete r[i].location.longitude;
+								}
 							}
+							// Location formatted with bold.
+							var found_state_abbr = false;
+							var temp_location = '';
+							if (r[i].location) {
+								var l = [];
+								for (var j in r[i].location) {
+									if (r[i].location[j].length > 0) {
+										l.push(r[i].location[j]);
+										// State abbreviation.
+										if (r[i].location[j] == o.state_abbr) {
+											found_state_abbr = true;
+										}
+									}
+								}
+								temp_location = MT__bold(l.join(','), o.addr_array, {color: 'blue'}).bold_string;
+							}
+							// Generic, unclaimed profiles.
+							//~ if  (
+								//~ !r[i].link || 
+								//~ /^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
+								//~ )
+							//~ {
+								//~ // Append a "blank"
+								//~ out.appendChild(
+									//~ (r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
+									//~ .div({style:'border-bottom:2px solid teal;', innerHTML:true})
+								//~ );
+								//~ c++;// // //
+								//~ continue;
+							//~ }
 							// talking_about_count
 							if (r[i].talking_about_count != null) {
 								//
@@ -44258,19 +44283,9 @@ function MT__RUN() {
 								//
 							} else
 								r[i].likes = '';
-							// location
-							if (r[i].location) {
-								if (r[i].location.latitude) {
-									delete r[i].location.latitude;
-								}
-								if (r[i].location.longitude) {
-									delete r[i].location.longitude;
-								}
-							}
 							// Overview?
 							//
 							//~ r[i].company_overview = (r[i].company_overview) ? r[i].company_overview : '';
-							
 							// Out div
 							//
 							var div = document.createElement('div');
@@ -44285,25 +44300,9 @@ function MT__RUN() {
 							tmp += '<br>T:'+r[i].talking_about_count;
 							if (r[i].company_overview)
 								tmp += '<hr>O:'+MT__bold(r[i].company_overview.substr(0,200), o.comp_array); // only 200 chars
-							// Location
-							var found_state_abbr = false;
-							if (r[i].location) {
-								var l = [];
-								for (var j in r[i].location) {
-									if (r[i].location[j].length > 0) {
-										l.push(r[i].location[j]);
-										// State abbreviation.
-										if (r[i].location[j] == o.state_abbr) {
-											found_state_abbr = true;
-										}
-									}
-										//~ tmp += '<hr>' + r[i].location[j]; //MT__bold(r[i].location[j], o.location_array);
-								}
-								var t = MT__bold(l.join(','), o.addr_array, {color: 'blue'}).bold_string;
-								tmp += '<hr>A:'+t;
-							}
 							// Bgc
 							if (found_state_abbr) {
+								tmp += '<hr>A:'+temp_location;
 								div.style.backgroundColor = ''; // Good
 								div.original_bgc = '';
 							} else {
@@ -44318,17 +44317,35 @@ function MT__RUN() {
 							tmp += '<hr>' + r[i].link;
 							// innerHTML
 							div.innerHTML = tmp;
+							// Unofficial pages.
+							if  (
+								!r[i].link || 
+								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
+								)
+							{
+								div.style.height = '20px';
+								div.style.overflow = 'hidden';
+								div.unofficial = true;
+							} else div.official = true;
 							// onclick
 							div.onclick = function() {
-								this.clicked = true;
-								this.style.backgroundColor = 'LightGreen';
-								o.q[0].value = this.link;
-								if (
-									!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
-									/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
-									)
-									AMT___recordAndSubmit();
-									//~ doSubmit();
+								if (this.official && this.official == true) {
+									this.clicked = true;
+									this.style.backgroundColor = 'LightGreen';
+									o.q[0].value = this.link;
+									if (
+										!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+										/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
+										)
+										AMT___recordAndSubmit();
+										//~ doSubmit();
+								} else if (this.unofficial && this.unofficial == true) {
+									if (this.style.height == '20px') {
+										// Unhide all!
+										this.style.height = 'auto';
+										div.style.overflow = 'hidden';
+									}
+								}
 							}
 							// onmouseover
 							div.onmouseover = function() {
@@ -184377,12 +184394,12 @@ function top_window(okay_to_run) {
 			}
 			// ...
 			function A9_Snaptell_VSR__next() {
-				if (localStorage['goog-captcha'] == true) {
-					//DEBUG//console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
-					// Show...
-					d4a.result_buttons.g.style.backgroundColor = 'pink';
-					return;
-				}
+				//~ if (localStorage['goog-captcha'] == true) {
+					//~ //DEBUG//console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+					//~ // Show...
+					//~ d4a.result_buttons.g.style.backgroundColor = 'pink';
+					//~ return;
+				//~ }
 				// Count number of false (6 of 9)
 				var num_false = 0;
 				if (result.startpage == false || result.startpage == null) num_false++;
@@ -184417,6 +184434,14 @@ function top_window(okay_to_run) {
 					// && result.yahoo == false
 					)
 				{
+					if (localStorage['goog-captcha'] == true) {
+						//DEBUG//console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+						// Show...
+						d4a.result_buttons.g.style.backgroundColor = 'pink';
+						window.setTimeout(A9_Snaptell_VSR__next, 500);
+						return;
+					}
+					
 					o.goog_has_run = true;
 					A9_Snaptell_VSR__google(); // DO IT
 				} else {
@@ -184854,7 +184879,7 @@ function top_window(okay_to_run) {
 				var u = 'http://www.lookupisbn.com/search/isbn/'+encodeURIComponent(upc);
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
-					xhr_timeout: 10000, // 20 seconds
+					xhr_timeout: 10000, // 10 second timeout
 					xhr_no_success: function() {
 						// CALL NEXT
 						d4a.result_buttons.lu.value += '✘';
@@ -184864,9 +184889,6 @@ function top_window(okay_to_run) {
 					},
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;
-						console.log('===========================================================');
-						console.log(rs);
-						console.log(options);
 						if (options.response.status != 200 ||
 							rs.indexOf('The web server reported a gateway time-out error.') != -1
 						) {
