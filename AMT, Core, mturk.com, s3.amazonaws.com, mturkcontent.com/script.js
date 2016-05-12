@@ -44035,6 +44035,7 @@ function MT__RUN() {
 				addr_array: [],
 				state_addr: null,
 				phone: td[5].innerText.trim(),
+				unofficial_divs: [],
 				q: [
 					document.getElementById('web_url')
 				],
@@ -44061,25 +44062,30 @@ function MT__RUN() {
 				[ 'Id(web_url)' ]
 			);
 			/* BEGIN ITEMS */
+			var w = 99/5;
 			var d1 = document.createElement('div');
-			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			//
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:100px;left:25%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:100px;left:'+w+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			//
 			var d1c = document.createElement('div');
-			d1c.setAttribute('style','position:absolute;top:100px;left:50%;width:25%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1c.setAttribute('style','position:absolute;top:100px;left:'+(w*2)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1c);
 			//
 			var d1d = document.createElement('div');
-			d1d.setAttribute('style','position:absolute;top:100px;left:75%;width:24%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1d.setAttribute('style','position:absolute;top:100px;left:'+(w*3)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1d);
+			//
+			var d1e = document.createElement('div');
+			d1e.setAttribute('style','position:absolute;top:100px;left:'+(w*4)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1e);
 			//
 			var d2 = document.createElement('textarea'); // Offset these from N/A.....
 			d2.setAttribute('type','text');
-			d2.setAttribute('style','position:absolute;top:40px;left:0;width:25%;height:60px;');
+			d2.setAttribute('style','position:absolute;top:40px;left:0;width:'+w+'%;height:60px;');
 			d2.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1);
@@ -44087,7 +44093,7 @@ function MT__RUN() {
 			document.body.appendChild(d2);
 			//
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:40px;left:25%;width:25%;height:60px;');
+			d2b.setAttribute('style','position:absolute;top:40px;left:'+(w*1)+'%;width:'+w+'%;height:60px;');
 			d2b.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1b);
@@ -44095,7 +44101,7 @@ function MT__RUN() {
 			document.body.appendChild(d2b);
 			//
 			var d2c = document.createElement('textarea');
-			d2c.setAttribute('style','position:absolute;top:40px;left:50%;width:25%;height:60px;');
+			d2c.setAttribute('style','position:absolute;top:40px;left:'+(w*2)+'%;width:'+w+'%;height:60px;');
 			d2c.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				facebook_company_reviews(d1c);
@@ -44103,13 +44109,21 @@ function MT__RUN() {
 			document.body.appendChild(d2c);
 			//
 			var d2d = document.createElement('textarea');
-			d2d.setAttribute('style','position:absolute;top:40px;left:75%;width:24%;height:60px;');
+			d2d.setAttribute('style','position:absolute;top:40px;left:'+(w*3)+'%;width:'+w+'%;height:60px;');
 			d2d.onblur = function() {
 				this.value = this.value.replace(/\s+/g, ' ').trim();
 				this.value = this.value.replace(/[,\-]$/g, '').trim();
 				facebook_company_reviews(d1d);
 			}
 			document.body.appendChild(d2d);
+			//
+			var d2e = document.createElement('textarea');
+			d2e.setAttribute('style','position:absolute;top:40px;left:'+(w*4)+'%;width:'+w+'%;height:60px;');
+			d2e.onblur = function() {
+				this.value = this.value.replace(/\s+/g, ' ').trim();
+				facebook_company_reviews(d1e);
+			}
+			document.body.appendChild(d2e);
 			//
 			var d3 = document.createElement('input');
 			d3.setAttribute('type','button');
@@ -44126,10 +44140,18 @@ function MT__RUN() {
 			//~ var n = o.comp.split(' ');
 			//~ second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
 			// Values...
+			var t = o.comp.split(' ');
+			var comp_short = '';
+			for (var i in t) {
+				if (comp_short.length < 5) { // 5 or more chars
+					comp_short += ' ' + t[i].trim();
+				}
+			}
 			d2.value  = o.comp;
 			d2b.value = o.comp + ', ' + o.addr; 
 			d2c.value = o.comp + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // Chop all but the first "word" of address.
 			d2d.value = o.phone; 
+			d2e.value = comp_short.trim() + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // All but first
 			// Keydown
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
@@ -44160,13 +44182,19 @@ function MT__RUN() {
 					input_object.element.blur();
 				}
 			});
+			ef.mouseup__delete_range({
+				element: d2e,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1,d1b,d1c,d1d
+					d1,d1b,d1c,d1d,d1e
 				],
 				offset: 100 // offset top
 			});
@@ -44176,6 +44204,7 @@ function MT__RUN() {
 			facebook_company_reviews(d1b);
 			facebook_company_reviews(d1c);
 			facebook_company_reviews(d1d);
+			facebook_company_reviews(d1e);
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -44194,8 +44223,14 @@ function MT__RUN() {
 					v = d2b.value;
 				else if (out == d1c)
 					v = d2c.value;
-				else
+				else if (out == d1d)
 					v = d2d.value;
+				else
+					v = d2e.value;
+				if (v.trim() == '') {
+					out.innerText = '0';
+					return;
+				}
 				// URL
 				// just type=page is used here (user ignored)
 				var u = 
@@ -44260,19 +44295,33 @@ function MT__RUN() {
 								temp_location = MT__bold(l.join(','), o.addr_array, {color: 'blue'}).bold_string;
 							}
 							// Generic, unclaimed profiles.
-							//~ if  (
-								//~ !r[i].link || 
-								//~ /^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
-								//~ )
-							//~ {
-								//~ // Append a "blank"
-								//~ out.appendChild(
-									//~ (r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
-									//~ .div({style:'border-bottom:2px solid teal;', innerHTML:true})
-								//~ );
+							var unofficial = false;
+							if  (
+								!r[i].link || 
+								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
+								)
+							{
+								// Append a "blank"
+								var unofficial_div =
+									(r[i].name+'<br>L:'+r[i].likes+'<br>A:'+temp_location)
+									.div({style:'border-bottom:2px solid teal;cursor:pointer;', innerHTML:true});
+								out.appendChild(
+									unofficial_div
+								);
+								unofficial = true;
+								unofficial_div.onclick = function() {
+									for (var i in o.unofficial_divs) {
+										if (o.unofficial_divs[i] && o.unofficial_divs[i].real_div) {
+											var rd = o.unofficial_divs[i].real_div;
+											rd.style.display = '';
+											o.unofficial_divs[i].style.display = 'none';
+										}
+									}
+								}
+								o.unofficial_divs.push(unofficial_div); // Push global
 								//~ c++;// // //
 								//~ continue;
-							//~ }
+							}
 							// talking_about_count
 							if (r[i].talking_about_count != null) {
 								//
@@ -44317,35 +44366,42 @@ function MT__RUN() {
 							tmp += '<hr>' + r[i].link;
 							// innerHTML
 							div.innerHTML = tmp;
-							// Unofficial pages.
-							if  (
-								!r[i].link || 
-								/^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
-								)
-							{
-								div.style.height = '20px';
-								div.style.overflow = 'hidden';
-								div.unofficial = true;
-							} else div.official = true;
+							if (unofficial) {
+								div.style.display = 'none';
+								// Unofficial pages.
+								unofficial_div.real_div = div;
+							}
+							//~ if  (
+								//~ !r[i].link || 
+								//~ /^https?:\/\/www\.facebook\.com\/pages\//.exec(r[i].link)
+								//~ )
+							//~ {
+								//~ div.style.height = '20px';
+								//~ div.style.overflow = 'hidden';
+								//~ div.unofficial = true;
+							//~ } else div.official = true;
 							// onclick
 							div.onclick = function() {
-								if (this.official && this.official == true) {
-									this.clicked = true;
-									this.style.backgroundColor = 'LightGreen';
-									o.q[0].value = this.link;
-									if (
-										!/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
-										/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
-										)
-										AMT___recordAndSubmit();
-										//~ doSubmit();
-								} else if (this.unofficial && this.unofficial == true) {
-									if (this.style.height == '20px') {
-										// Unhide all!
-										this.style.height = 'auto';
-										div.style.overflow = 'hidden';
-									}
-								}
+								this.clicked = true;
+								this.style.backgroundColor = 'LightGreen';
+								o.q[0].value = this.link;
+								if (
+										// This is only necessary to check
+										// that a FB page is in fact an
+										// official page.
+										//~ !/^https?:\/\/www\.facebook\.com\/pages\//.exec(o.q[0].value) &&
+									/^https?:\/\/www\.facebook\.com\/[^\?#&]+$/.exec(o.q[0].value)
+									)
+									AMT___recordAndSubmit();
+									//~ doSubmit();
+								//~ if (this.official && this.official == true) {
+								//~ } else if (this.unofficial && this.unofficial == true) {
+									//~ if (this.style.height == '20px') {
+										//~ // Unhide all!
+										//~ this.style.height = 'auto';
+										//~ div.style.overflow = 'hidden';
+									//~ }
+								//~ }
 							}
 							// onmouseover
 							div.onmouseover = function() {
