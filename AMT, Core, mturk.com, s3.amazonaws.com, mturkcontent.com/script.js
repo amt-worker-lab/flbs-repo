@@ -183822,7 +183822,8 @@ function top_window(okay_to_run) {
 			GM_addStyle('#submitButton {position:absolute;margin-top:-40px;margin-left:50%;width:50%;height:40px;}');
 			GM_addStyle('#hit-wrapper {position:absolute;top:20px;width:98% !important;max-width:100% !important;left:0 !important;margin:0 !important;}');
 			GM_addStyle('.overview-wrapper {position:absolute;top:2000px;}');
-			GM_addStyle('#Answer_1_FreeText,#Answer_3_FreeText {width:60%;}'); // ...
+			GM_addStyle('#Answer_1_FreeText {width:90%;zoom:1.4}'); // ...
+			GM_addStyle('#Answer_3_FreeText {width:90%;}'); // ...
 			GM_addStyle('#Answer_4 {position:absolute;top:0;right:0%;z-index:1000;zoom:10;cursor:pointer;}'); // ... old=18
 			GM_addStyle('option {float:left;cursor:pointer;}'); // ...
 			GM_addStyle('option:hover {background-color:aqua;}'); // ...
@@ -183942,7 +183943,7 @@ function top_window(okay_to_run) {
 			// iframe
 			// add .output_url
 			var d1 = document.createElement('iframe');
-				d1.setAttribute('style','width:30%;float:right;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
+				d1.setAttribute('style','width:60%;float:right;height:580px;border:1px solid blue;background-color:#eee;sandbox:allow-scripts allow-same-origin allow-forms;');
 				// flicker...
 				d1.style.visibility = 'hidden';
 				d1.output_url = null;
@@ -183962,7 +183963,7 @@ function top_window(okay_to_run) {
 			// And before the following three divs.
 			// Debug textarea
 			var d3c = document.createElement('textarea');
-			d3c.setAttribute('style','position:absolute;left:90%;width:9%;margin-top:-60px;height:60px;border:1px solid blue;background-color:#eee;');
+			d3c.setAttribute('style','position:absolute;left:90%;width:5%;margin-top:-60px;height:20px;border:1px solid blue;background-color:#eee;');
 			x.appendChild(d3c);
 			d3c.onclick = function() {}
 			// Add left divs
@@ -183970,15 +183971,15 @@ function top_window(okay_to_run) {
 			// 2) Div for any with "has result" (buttons)
 			// 3) Div for the titles of scraped websites (buttons)
 			var d4a = ''.div({
-				style: 'width:69%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:39%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4a);
 			var d4b = ''.div({
-				style: 'width:69%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:39%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4b);
 			var d4c = ''.div({
-				style: 'width:69%;float:left;border:1px solid blue;background-color:#eee;' // auto height
+				style: 'width:39%;float:left;border:1px solid blue;background-color:#eee;' // auto height
 			});
 			x.appendChild(d4c);
 			//~ // Ebay
@@ -183991,11 +183992,11 @@ function top_window(okay_to_run) {
 			// on after the buttons and the debug textarea.
 			// Div 1
 			var d2 = document.createElement('div');
-			d2.setAttribute('style','float:left;width:35%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2.setAttribute('style','float:left;width:19%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2);
 			// Div 3
 			var d2c = document.createElement('div');
-			d2c.setAttribute('style','float:left;width:34%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d2c.setAttribute('style','float:left;width:19%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			x.appendChild(d2c);
 			//~ // Old middle div....
 			//~ d2b.setAttribute('style','float:left;width:16%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
