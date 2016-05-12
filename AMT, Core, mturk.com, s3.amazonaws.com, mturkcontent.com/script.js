@@ -184854,9 +184854,22 @@ function top_window(okay_to_run) {
 				var u = 'http://www.lookupisbn.com/search/isbn/'+encodeURIComponent(upc);
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
+					xhr_timeout: 10000, // 20 seconds
+					xhr_no_success: function() {
+						// CALL NEXT
+						d4a.result_buttons.lu.value += '✘';
+						result.lookupisbn = false;
+						A9_Snaptell_VSR__next();
+						return false;
+					},
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ var rs = options.response.responseText;
-						if (options.response.status != 200) {
+						var rs = options.response.responseText;
+						console.log('===========================================================');
+						console.log(rs);
+						console.log(options);
+						if (options.response.status != 200 ||
+							rs.indexOf('The web server reported a gateway time-out error.') != -1
+						) {
 							// CALL NEXT
 							d4a.result_buttons.lu.value += '✘';
 							result.lookupisbn = false;
