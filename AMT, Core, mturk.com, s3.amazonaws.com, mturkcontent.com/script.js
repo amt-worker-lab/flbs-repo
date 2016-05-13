@@ -123867,7 +123867,7 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.boldArray,
 				search: {
-					str_add_to_searches_hidden: ' site:linkedin.com/',
+					str_add_to_searches_hidden: ' site:linkedin.com/company/', // -site:linkedin.com/in/
 				},
 				searches: [
 					o.comp,
@@ -123879,6 +123879,7 @@ qatar,80
 					//~ console.log(this.full_url);
 					// Scrape result
 					li(this.full_url);
+					this.style.backgroundColor = 'LightGreen';
 				},
 				search_results: {
 					use_domain_only: true,
@@ -123899,6 +123900,9 @@ qatar,80
 				//~ naText:'not found',
 			});
 			function li(u) {
+				// Goto next tab
+				new AMT___core_factory().nextTab();
+				// Request
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -123913,10 +123917,47 @@ qatar,80
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var js = dom.getElementById('stream-footer-embed-id-content');
 						if (!js) return;
-						js = js.innerText.replace(/(^<!--|-->$)/g, '');
+						js = js.innerHTML;
+						//~ console.log(js);
+						js = js.replace(/(^<!--|-->$)/g, '');
+						//~ console.log(js);
 						js = JSON.parse(js);
 						console.log(js);
 						//
+						var sbm = true;
+						if (js.industry) {
+							o.q[0].value = js.industry;
+							// Check
+							if (o.q[0].options[o.q[0].selectedIndex].innerText != js.industry) {
+								sbm = false;
+							}
+						} else sbm = false;
+						if (js.size) {
+							if (js.size == 'Myself Only') {
+								js.size = '1-10';
+							}
+							js.size = js.size.replace(/ employees/, '');
+							if (js.size == '501-1000') {
+								js.size = '501-1,000';
+							}
+							if (js.size == '1001-5,000') {
+								js.size = '1,001-5,000';
+							}
+							if (js.size == '5001-10,000') {
+								js.size = '5,001-10,000';
+							}
+							if (js.size == '10001+') {
+								js.size = '10,001+';
+							}
+							o.q[2].value = js.size;
+							// Check
+							if (o.q[2].options[o.q[2].selectedIndex].innerText != js.size) {
+								sbm = false;
+							}
+						} else sbm = false;
+						if (sbm) {
+							doSubmit();
+						}
 					}
 				});
 			}
