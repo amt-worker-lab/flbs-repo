@@ -26,6 +26,131 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// chuck wells
+	// Given URL, find Contact information
+	//
+	//
+	s = '<p>2. Go to the "About Us" Tab</p>\n\n<p style="line-height: 20.8px;">Copy and Paste the name in the "Appointed Clergy" section below</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var x = /1\.&nbsp; Copy and paste this URL into your browser: ([^<]+)/.exec(ih)[1];
+			var o = {
+				u: x.replace(/&amp;/g, ''),
+				q: [
+					document.getElementsByName('Q1Url')[0],
+					document.getElementsByName('Q2Url')[0],
+					document.getElementsByName('comment')[0],
+				],
+			}
+			console.log(o);
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style: 'position:absolute;top:0px;left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				// Submit test.
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+				}
+				if (o.q[0].value == '' || o.q[0].value.length < 6) {
+					return false;
+				}
+				if (o.q[1].value == '' || o.q[1].value.indexOf('@') == -1 || o.q[1].value.length < 6) {
+					return false;
+				}
+				doSubmit();
+				return false;
+			}
+			// xhr_with_disk_cache
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Auto e-mail
+					var t4 = dom.getElementById('tab4');
+					if (!t4) return;
+					var a = t4.getElementsByTagName('a');
+					for (var i=0; i<a.length; i++) {
+						if (a[i].getAttribute('href').indexOf('mailto:') == 0) { // Starts with mailto:
+							o.q[1].value = a[i].innerText;
+							break;
+						}
+					}
+					// Add all a to d1
+					var a = dom.getElementsByTagName('a');
+					for (var i=0; i<a.length; i++) {
+						if (a[i].getAttribute('href').indexOf('mailto:') == 0 ||
+							a[i].getAttribute('href').indexOf('@') != -1
+						   ) {
+							var div = ''.div({style:'border-bottom:2px solid #a2a2a2;cursor:pointer;'});
+							div.onclick = function() {
+								this.style.backgroundColor = 'Green';
+								o.q[0].value = this.innerText;
+								o.q[0].focus();
+							}
+							div.innerText = a[i].innerText;
+							div.className = 'exe';
+							d1.appendChild(div);
+						}
+					}
+					// Auto pastor
+					var t3 = dom.getElementById('tab3');
+					if (!t3) return;
+					var p = t3.getElementsByTagName('p');
+					var found = false;
+					for (var i=0; i<p.length; i++) {
+						if (p[i].getAttribute('class') == 'pastorname') { // Starts with mailto:
+							if (!found) {
+								o.q[0].value = p[i].innerText;
+							} else {
+								o.q[2].value += 'Additional Appointed Clergy:'+p[i].innerText+'\n';
+							}
+						}
+					}
+					// Submit test.
+					for (var i in o.q) {
+						o.q[i].value = o.q[i].value.trim();
+					}
+					if (o.q[0].value == '' || o.q[0].value.length < 6) {
+						return;
+					}
+					if (o.q[1].value == '' || o.q[1].value.indexOf('@') == -1 || o.q[1].value.length < 6) {
+						return;
+					}
+					// Submit
+					
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Alik Mokeichev
 	// Estimation of gender and age of faces
 	//
