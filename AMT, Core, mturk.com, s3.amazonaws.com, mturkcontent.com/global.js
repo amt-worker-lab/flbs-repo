@@ -8926,37 +8926,38 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			
 			// Onclick
 			//
-			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success : function(e) {
-				if(options_object.clickIntoUtilityTabs) { //Utility behavior: jump into utility tab
-					if(!this.utilityTabBtn) {
-						this.utilityTabBtn = addUtilityTab({
-								url: this.full_url,
-								options: options_object.clickIntoUtilityTabs 
-							}
-							);
-					}else {
-						//click on my associated utility tab
-						this.utilityTabBtn.click();
+			txa.onclick = (options_object.hasOwnProperty('onclick_success')) ? options_object.onclick_success :
+				function(e) {
+					if(options_object.clickIntoUtilityTabs) { //Utility behavior: jump into utility tab
+						if(!this.utilityTabBtn) {
+							this.utilityTabBtn = addUtilityTab({
+									url: this.full_url,
+									options: options_object.clickIntoUtilityTabs 
+								}
+								);
+						}else {
+							//click on my associated utility tab
+							this.utilityTabBtn.click();
+							
+						}
+					}
+					else { //Standard behavior, put url in out_element
+						this.style.backgroundColor = 'LightGreen';
+						//~ update_bgc_results_onclick(this.parentNode);
+						// Has CTRL key?
+						if (!e.ctrlKey)
+							options_object.out_element.value = this.value;
+						else
+							options_object.out_element.value = this.full_url;
 						
+						if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
+							doSubmit();
+						else {
+							showNextTab();
+							doSubmit();
+						}
 					}
-				}
-				else { //Standard behavior, put url in out_element
-					this.style.backgroundColor = 'LightGreen';
-					//~ update_bgc_results_onclick(this.parentNode);
-					// Has CTRL key?
-					if (!e.ctrlKey)
-						options_object.out_element.value = this.value;
-					else
-						options_object.out_element.value = this.full_url;
-					
-					if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
-						doSubmit();
-					else {
-						showNextTab();
-						doSubmit();
-					}
-				}
-			};
+				};
 			//~ function update_bgc_results_onclick(div) {
 				//~ var x = document.getElementsByClassName('result_highlight');
 				//~ for (var i in x) {

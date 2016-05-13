@@ -96929,6 +96929,9 @@ qatar,80
 	/**
 	 * LinkedIn->Find company LinkedIn URL based on company's 
 	 * website URL.
+	 * .linkedin_company_search
+	 *   These no longer appear to be working since LI closed up shop!
+	 *   As of Fall 2015.
 	 * 
 	 * Steve Sears
 	 * Mike Rocha
@@ -96936,33 +96939,28 @@ qatar,80
 	 * Matthew Kennedy
 	 * Oceanos Research
 	 * Cherise Chin
+	 * James Lovell
 	 * 
 	 */
-	//
 	// Cherise Chin
 	// Find this company on LinkedIn
 	// 
+	// 
 	s = '<li>In the search bar, type in the name of the Account (if the Account yields no results, then type in the Domain) -- <u><strong>DO NOT HIT ENTER/SEARCH!</strong></u></li>';
 	if (ih.indexOf(s) != -1) {
-		
 		var run = function() {}
 		run.prototype.f = function() {
 			console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,tbody,th,tr,td {margin:0;padding:0;font-size:12px;}');
-			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:160px !important;}'); //;width:100%
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			GM_addStyle('img {position:absolute;top:1600px;}');
 			GM_addStyle('select {max-width:20%;}');
 			GM_addStyle('.text-center {text-align:left !important;}');
-			
-			//~ GM_addStyle('body {position:absolute;margin-top:80px;width:100%;}');
-			//~ GM_addStyle('.panel {position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('b {zoom:1.2 !important;}');
 			
 			var td = document.getElementsByTagName('td');
-			
 			var o = {
 				comp: td[1].innerText.trim(), // Seems to be a domain
 				comp_array: null,
@@ -123816,11 +123814,116 @@ qatar,80
 	 * DataArts Research
 	 * Paul S. Chun
 	 * Noam Benoni
-	 * 
+	 * James Lovell
 	 * 
 	 * 
 	 * 
 	 */
+	// James Lovell
+	// Get Data About a Company from LinkedIn
+	// 
+	// 
+	var s = '<p>Enter the industry classification and number of employees&nbsp;as shown on LinkedIn profile for the provided company name.</p>\n\n<ul>\n	<li>Go to http://linkedin.com/</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				boldArray: [],
+				q: [
+					document.getElementById('industry_classification'),
+					document.getElementById('industry_classification_manual'),
+					document.getElementById('number_of_employees')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				bold_array: o.boldArray,
+				search: {
+					str_add_to_searches_hidden: ' site:linkedin.com/',
+				},
+				searches: [
+					o.comp,
+					'"' + o.comp + '"',
+					'"' + o.comp.split(' ').join('" "') + '"',
+				],
+				onclick_success: function(e) { // This is a button.onclick event.
+					// this
+					//~ console.log(this.full_url);
+					// Scrape result
+					li(this.full_url);
+				},
+				search_results: {
+					use_domain_only: true,
+					use_full_urls: true,
+					//~ bold: {
+						//~ black: o.boldArray,
+						//~ blue: [],// o.address.clean_string_to_array(), // Too much...
+						//~ brown: o.addr_arr,
+					//~ },
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+				},
+				//~ out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'not found',
+			});
+			function li(u) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//console.log(JSON.parse(options.response.responseText));
+						if(options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var js = dom.getElementById('stream-footer-embed-id-content');
+						if (!js) return;
+						js = js.innerText.replace(/(^<!--|-->$)/g, '');
+						js = JSON.parse(js);
+						console.log(js);
+						//
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
 	// Noam Benoni
 	// Find the Website Address for Companies
 	// Utilizes bold blue black....
@@ -123866,8 +123969,6 @@ qatar,80
 				],
 				offset: 0 // offset top
 			});
-			//~ var x2; // If same then just enclose entire comp string in quotes.
-			//~ x2 = (o.state != o.stateFull) ? '"'+o.comp.split(' ').join('" "')+'"'  + ' ' + o.stateFull : '"'+o.comp+'"'  + ' ' + o.state;
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
