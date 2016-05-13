@@ -130,7 +130,7 @@ function MT__RUN() {
 							if (!found) {
 								o.q[0].value = p[i].innerText;
 							} else {
-								o.q[2].value += 'Additional Appointed Clergy:'+p[i].innerText+'\n';
+								o.q[2].value += 'Additional Appointed Clergy: '+p[i].innerText+'\n';
 							}
 						}
 					}
@@ -144,7 +144,7 @@ function MT__RUN() {
 					if (o.q[1].value == '' || o.q[1].value.indexOf('@') == -1 || o.q[1].value.length < 6) {
 						return;
 					}
-					// Submit
+					// Auto-Submit if here.
 					
 				}
 			});
