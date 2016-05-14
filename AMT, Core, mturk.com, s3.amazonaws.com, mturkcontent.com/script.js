@@ -44118,6 +44118,117 @@ function MT__RUN() {
 	}
 	
 	/**
+	 * Facebook image search
+	 * 
+	 * 
+	 * Melissa Kendall
+	 * 
+	 */
+	// Melissa Kendall
+	// WARNING: This assignment might make you hungry and/or want to adopt a puppy.
+	// To get general biz info:
+	// 		https://graph.facebook.com/v2.6/416932781675782/?access_token=...
+	// 
+	s = '<p><span style="font-size: 12.6px; line-height: 18px;"><strong>Step 1:</strong> Click on the provided URL to view the restaurant\'s Facebook page.</span></p>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0 !important;padding:0 !important;font-size:12px;}');
+			//~ GM_addStyle('body {margin-top:1000px;}');
+			GM_addStyle('.container {position:absolute;top:1000px;margin-left:0px;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
+			// Data
+			var td = document.getElementsByTagName('td');
+			// o
+			var o = {
+				u: td[5].innerText.trim(),
+				ux: null,
+				id: null,
+				// Facebook access token
+				at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
+				q: [
+					document.getElementsByName('web_url')[0],
+					document.getElementsByName('web_url')[1],
+					document.getElementsByName('web_url')[2],
+					document.getElementsByName('web_url')[3],
+				],
+			}
+			// E.g. https://www.facebook.com/AmicisBestPizzaLaJolla/
+			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/$/i.exec(o.u);
+			if (!o.id) {
+				return;
+			} else {
+				o.id = o.id[2];
+			}
+			o.ux = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at;
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({style:
+				'position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			/*END ITEMS*/
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// Get images
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.ux,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					if (options.response.status != 200) {
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) return;
+					var r = JSON.parse(rs);
+					console.log(r);
+					if (!r.data) {
+						d1.innerText = '!r.data';
+						return;
+					}
+					if (r.data.length == 0) {
+						d1.innerText = '0 images';
+						return;
+					}
+					// Loop
+					var x;
+					for (var i in r.data) {
+						var x = r.data[i];
+						var im = document.createElement('img');
+						im.src = 'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at;
+						im.setAttribute('style','width:'+(99/5)+'%;');
+						d1.appendChild(im);
+						im.onload = function() {
+							console.log(this.naturalWidth);
+							console.log(this.naturalHeight);
+							// If less than 500 (700 required)
+							// then remove.
+							if (this.naturalWidth < 500) {
+								this.parentNode.removeChild(this);
+							}
+						}
+						//~ console.log(im.naturalWidth);// Is 0
+					}
+					// Append a blank div for spacing.
+					d1.appendChild(''.div({style:'height:2000px;'}));
+				}
+			});
+		}
+		new run().f();return;
+	}
+	/**
 	 * Facebook company search
 	 * 
 	 * Skylar Marcum
@@ -44135,7 +44246,6 @@ function MT__RUN() {
 	 * // Facebook
 	 * // Companies
 	 */
-	
 	// Melissa Kendall
 	// Find the Facebook Page for Restaurants
 	// 
@@ -44313,7 +44423,7 @@ function MT__RUN() {
 					input_object.element.blur();
 				}
 			});
-			// innerHeight
+			// ih
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
 				// to fill up the whole window, minus their
