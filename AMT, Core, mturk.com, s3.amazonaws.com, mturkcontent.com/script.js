@@ -44213,18 +44213,43 @@ function MT__RUN() {
 						im.onload = function() {
 							console.log(this.naturalWidth);
 							console.log(this.naturalHeight);
+							console.log(this.src);
 							// If less than 500 (700 required)
 							// then remove.
-							if (this.naturalWidth < 500) {
+							if (this.naturalWidth < 690) {
+								this.parentNode.removeChild(this);
+							}
+							// Width needs to be smaller than height*.98
+							// E.g. w=100, h=102, h-new = 102*.98 = 100
+							// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
+							if (this.naturalWidth < this.naturalHeight * .98) { //
 								this.parentNode.removeChild(this);
 							}
 						}
-						//~ console.log(im.naturalWidth);// Is 0
+						im.onclick = im_click;
+						//~ console.log(im.naturalWidth);// Is 0 at first.
 					}
 					// Append a blank div for spacing.
 					d1.appendChild(''.div({style:'height:2000px;'}));
 				}
 			});
+			function im_click() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: this.src,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						console.log(r);
+					}
+				});
+			}
 		}
 		new run().f();return;
 	}
