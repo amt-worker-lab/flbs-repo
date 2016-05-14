@@ -44138,7 +44138,8 @@ function MT__RUN() {
 			//~ GM_addStyle('body {margin-top:1000px;}');
 			GM_addStyle('.container {position:absolute;top:1000px;margin-left:0px;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
-			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.exe {cursor:pointer;}');
+			//GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
 			// Data
 			var td = document.getElementsByTagName('td');
@@ -44157,13 +44158,13 @@ function MT__RUN() {
 				],
 			}
 			// E.g. https://www.facebook.com/AmicisBestPizzaLaJolla/
-			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/$/i.exec(o.u);
+			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/([\?&][^\/]+|)$/i.exec(o.u);
 			if (!o.id) {
 				return;
 			} else {
 				o.id = o.id[2];
 			}
-			o.ux = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at;
+			o.ux = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({style:
 				'position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
@@ -44179,6 +44180,32 @@ function MT__RUN() {
 					d1
 				],
 				offset: 0 // offset top
+			});
+			// Enter key
+			window.addEventListener('keydown', function(e) {
+				var k = e.keyCode;
+				if (k == 13) {
+					// Clear o.q
+					for (var i in o.q) {
+						o.q[i].value = '';
+					}
+					// Get all green, up to 3.
+					var x = document.getElementsByClassName('exe');
+					var num_reg = 0, num_dog = 0;
+					for (var i=0; i<=x.length; i++) {
+						if (!x[i] || !x[i].finalType) continue; // Image is not selected.
+						if (x[i].finalType == 'regular' && // For o.q 0-2
+							num_reg <= 2
+							//o.q[ num_reg ] &&
+						) {
+							o.q[ num_reg ].value = x[i].graph_source; // Set next empty.
+							num_reg++;
+						} else if (num_dog == 0) { // For o.q[3]
+							num_dog = -1; // No longer necessary, only one is required.
+							o.q[3].value = x[i].graph_source;
+						}
+					}
+				}
 			});
 			// Get images
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -44208,7 +44235,10 @@ function MT__RUN() {
 						var x = r.data[i];
 						var im = document.createElement('img');
 						im.src = 'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at;
-						im.setAttribute('style','width:'+(99/5)+'%;');
+						im.graph_id = x.id;
+						im.finalType = null; // Null at first, set when clicked, null when unclicked.
+						im.className = 'exe';
+						im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
 						d1.appendChild(im);
 						im.onload = function() {
 							console.log(this.naturalWidth);
@@ -44218,12 +44248,14 @@ function MT__RUN() {
 							// then remove.
 							if (this.naturalWidth < 690) {
 								this.parentNode.removeChild(this);
+								return;
 							}
 							// Width needs to be smaller than height*.98
 							// E.g. w=100, h=102, h-new = 102*.98 = 100
 							// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
 							if (this.naturalWidth < this.naturalHeight * .98) { //
 								this.parentNode.removeChild(this);
+								return;
 							}
 						}
 						im.onclick = im_click;
@@ -44233,9 +44265,17 @@ function MT__RUN() {
 					d1.appendChild(''.div({style:'height:2000px;'}));
 				}
 			});
-			function im_click() {
+			function im_click(e) {
+				if (this.finalType) { // If true, then unset.
+					this.finalType = null;
+					this.style.border = '6px solid #eee';
+					return;
+				}
+				var image = this;
+				var ctrlKey = e.ctrlKey;
+				console.log(ctrlKey);
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: this.src,
+					URL: 'https://graph.facebook.com/'+this.graph_id+'?'+o.at,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						if (options.response.status != 200) {
 							return false;
@@ -44247,6 +44287,22 @@ function MT__RUN() {
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
 						console.log(r);
+						if (!r || !r.source) {
+							image.style.border = '3px solid black';
+							return;
+						}
+						// Set graph_source
+						image.graph_source = r.source;
+						// Was control key pressed?
+						if (!ctrlKey) {
+							image.style.border = '6px solid LightGreen';
+							image.finalType = 'regular';
+						} else {
+							image.style.border = '6px dotted LightGreen';
+							image.finalType = 'dog_photo';
+						}
+						//~ for (var i in o.q[0]) {
+						//~ }
 					}
 				});
 			}
