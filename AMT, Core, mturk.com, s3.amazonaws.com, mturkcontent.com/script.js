@@ -44236,9 +44236,9 @@ function MT__RUN() {
 							o.q[3].value = x[i].graph_source;
 						}
 					}
+					// ScrollIntoView
+					document.getElementById('submitButton').scrollIntoView();
 				}
-				// Scrollintoview
-				document.getElementById('submitButton').scrollIntoView();
 			});
 			// Init
 			// Images
