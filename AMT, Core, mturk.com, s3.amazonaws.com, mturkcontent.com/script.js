@@ -44150,6 +44150,7 @@ function MT__RUN() {
 				id: null,
 				// Facebook access token
 				at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
+				images_loaded: {}, // Associative array
 				q: [
 					document.getElementsByName('web_url')[0],
 					document.getElementsByName('web_url')[1],
@@ -44160,11 +44161,18 @@ function MT__RUN() {
 			// E.g. https://www.facebook.com/AmicisBestPizzaLaJolla/
 			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/([\?&][^\/]+|)$/i.exec(o.u);
 			if (!o.id) {
-				return;
+				o.id = /https:\/\/www\.facebook\.com\/pages\/[^\/]+\/(\d+)/i.exec(o.u);
+				if (!o.id) {
+					return;
+				} else {
+					o.id = o.id[1];
+				}
 			} else {
 				o.id = o.id[2];
 			}
-			o.ux = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
+			// cafeADAM-245795537409
+			// Replace??
+			o.id = o.id.replace(/^[^\-]+-(\d+)$/, '$1');
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({style:
 				'position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
@@ -44207,64 +44215,86 @@ function MT__RUN() {
 					}
 				}
 			});
+			// Init
+			var x;
+			x = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
+			console.log(x);
+			get_images(x);
+			x = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
+			get_images(x);
+			console.log(x);
+			
 			// Get images
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: o.ux,
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					if (options.response.status != 200) {
-						return false;
-					}
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					if (options.response.status != 200) return;
-					var r = JSON.parse(rs);
-					console.log(r);
-					if (!r.data) {
-						d1.innerText = '!r.data';
-						return;
-					}
-					if (r.data.length == 0) {
-						d1.innerText = '0 images';
-						return;
-					}
-					// Loop
-					var x;
-					for (var i in r.data) {
-						var x = r.data[i];
-						var im = document.createElement('img');
-						im.src = 'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at;
-						im.graph_id = x.id;
-						im.finalType = null; // Null at first, set when clicked, null when unclicked.
-						im.className = 'exe';
-						im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
-						d1.appendChild(im);
-						im.onload = function() {
-							console.log(this.naturalWidth);
-							console.log(this.naturalHeight);
-							console.log(this.src);
-							// If less than 500 (700 required)
-							// then remove.
-							if (this.naturalWidth < 690) {
-								this.parentNode.removeChild(this);
-								return;
-							}
-							// Width needs to be smaller than height*.98
-							// E.g. w=100, h=102, h-new = 102*.98 = 100
-							// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
-							if (this.naturalWidth < this.naturalHeight * .98) { //
-								this.parentNode.removeChild(this);
-								return;
-							}
+			// There are two types of images, apparently. "uploaded"
+			// and "...???"
+			function get_images(url) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
 						}
-						im.onclick = im_click;
-						//~ console.log(im.naturalWidth);// Is 0 at first.
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						console.log(r);
+						if (!r.data) {
+							d1.innerText = '!r.data';
+							return;
+						}
+						if (r.data.length == 0) {
+							d1.innerText = '0 images';
+							return;
+						}
+						// Loop
+						var x;
+						for (var i in r.data) {
+							var x = r.data[i];
+							// Set global....
+							if (o.images_loaded[ x.id ]) {
+								continue; // Already on page...
+							} else {
+								o.images_loaded[ x.id ] = true;
+							}
+							var im = document.createElement('img');
+							im.src = 'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at;
+							im.graph_id = x.id;
+							im.finalType = null; // Null at first, set when clicked, null when unclicked.
+							im.className = 'exe';
+							im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
+							d1.appendChild(im);
+							im.onload = function() {
+								console.log(this.naturalWidth);
+								console.log(this.naturalHeight);
+								console.log(this.src);
+								if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
+									this.style.border = '6px dashed blue';
+								}
+								// If less than 500 (700 required)
+								// then remove.
+								if (this.naturalWidth < 690) {
+									this.parentNode.removeChild(this);
+									return;
+								}
+								// Width needs to be smaller than height*.98
+								// E.g. w=100, h=102, h-new = 102*.98 = 100
+								// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
+								if (this.naturalWidth < this.naturalHeight * .98) { //
+									this.parentNode.removeChild(this);
+									return;
+								}
+							}
+							im.onclick = im_click;
+							//~ console.log(im.naturalWidth);// Is 0 at first.
+						}
+						// Append a blank div for spacing.
+						d1.appendChild(''.div({style:'height:2000px;'}));
 					}
-					// Append a blank div for spacing.
-					d1.appendChild(''.div({style:'height:2000px;'}));
-				}
-			});
+				});
+			}
 			function im_click(e) {
 				if (this.finalType) { // If true, then unset.
 					this.finalType = null;
