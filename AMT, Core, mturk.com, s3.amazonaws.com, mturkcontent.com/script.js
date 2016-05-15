@@ -44288,7 +44288,7 @@ function MT__RUN() {
 								// If less than 500 (700 required)
 								// then remove.
 								if (this.naturalWidth < 690) {
-									this.parentNode.removeChild(this);
+									//~ this.parentNode.removeChild(this);
 									console.log('removing <690:'+this.naturalWidth);
 									return;
 								}
@@ -44297,7 +44297,7 @@ function MT__RUN() {
 								// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
 								if (this.naturalWidth < this.naturalHeight * .96) { //
 									console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
-									this.parentNode.removeChild(this);
+									//~ this.parentNode.removeChild(this);
 									return;
 								}
 								
