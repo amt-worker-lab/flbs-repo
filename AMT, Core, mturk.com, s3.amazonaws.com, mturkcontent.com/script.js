@@ -44153,6 +44153,8 @@ function MT__RUN() {
 				images_loaded: {}, // Associative array
 				get_loaded: 0, // Counts number of get requests.
 				image_requests: 0, // Counts number of completed image details get requests
+				max_images_possible: 0, // 
+				found_good_images: 0,
 				q: [
 					document.getElementsByName('web_url')[0],
 					document.getElementsByName('web_url')[1],
@@ -44182,9 +44184,13 @@ function MT__RUN() {
 			}
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({style:
-				'position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:30px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
+			var d1b = ''.div({style:
+				'position:absolute;top:0px;left:0%;width:99%;height:30px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			// ih
 			new AMT___core_factory().el_innerHeight({
@@ -44194,7 +44200,7 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 0 // offset top
+				offset: 30 // offset top
 			});
 			// Enter key
 			window.addEventListener('keydown', function(e) {
@@ -44227,7 +44233,7 @@ function MT__RUN() {
 			var x1,x2,x3;
 			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
 			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
-			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at+'';
+			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at+'&redirect=0&fields=url,width,height';
 			console.log('Get1:'+x1);
 			console.log('Get2:'+x2);
 			// Scrape the page
@@ -44253,8 +44259,24 @@ function MT__RUN() {
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
 						console.log(r);
+						var im = document.createElement('img');
+						im.onload = function() {
+							if (acceptable(this.naturalWidth, this.naturalHeight)) {
+								//o.images_loaded[ x.id ]
+								add_img(this.src);
+							}
+						}
+						im.src = r.data.url;
+						document.body.appendChild(im);
 					}
 				});
+			}
+			function update_counter() {
+				var l = Object.keys(o.images_loaded).length;
+				var m = o.image_requests;
+				d1b.innerHTML = 'Checked '+m+' of '+l;
+				d1b.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;Maximum: '+o.max_images_possible;
+				d1b.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;Found: '+o.found_good_images;
 			}
 			// Get images
 			// There are two types of images, apparently. "uploaded"
@@ -44291,6 +44313,8 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
+							// Update o.max_images_possible counter.
+							o.max_images_possible++;
 							//~ if (Object.keys(o.images_loaded).length > 100) break; // temp..............
 							// Retrieve image details:
 							//		'https://graph.facebook.com/'+this.graph_id+'?'+o.at
@@ -44300,6 +44324,7 @@ function MT__RUN() {
 								'https://graph.facebook.com/'+x.id+'?'+o.at
 							);
 						}
+						update_counter();
 						// Append a blank div for spacing.
 						o.get_loaded++;
 						test_images_loaded();
@@ -44366,46 +44391,55 @@ function MT__RUN() {
 							}
 						}
 						if (im_most) {
-							// Cache the image....
-							var cim = MT___host +
-								'/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent
-							(
-								r.source
-								//im_most.source
-							);
-							var im = document.createElement('img');
-							im.src = im_most.source;
-							im.graph_source = im_most.source;
-							im.finalType = null; // Null at first, set when clicked, null when unclicked.
-							im.className = 'exe';
-							im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
-							d1.appendChild(im);
-							im.onload = function() {
-								//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
-									//~ this.style.border = '6px dashed blue';
-								//~ }
-								// If less than 500 (700 required)
-								// then remove.
-								//~ if (this.naturalWidth < 690) {
-									//~ this.parentNode.removeChild(this);
-									//~ console.log('removing <690:'+this.naturalWidth);
-									//~ return;
-								//~ }
-								// Width needs to be smaller than height*.98
-								// E.g. w=100, h=102, h-new = 102*.98 = 100
-								// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
-								//~ if (this.naturalWidth < this.naturalHeight * .96) { //
-									//~ console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
-									//~ this.parentNode.removeChild(this);
-									//~ return;
-								//~ }
-							}
-							im.onclick = im_click;
+							// Add the image
+							add_img(r.source);
+							// Increment found counter
+							o.found_good_images++;
+						} else {
+							// Increment completed counter here.
+							o.image_requests++;
+							update_counter();
 						}
-						// Increment image requests.
-						o.image_requests++;
 					}
 				});
+			}
+			function add_img(img_url) {
+				var cim = MT___host + // Cache the image!
+					'/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent
+				(
+					img_url
+				);
+				var im = document.createElement('img');
+				im.src = cim;
+				im.graph_source = img_url;
+				im.finalType = null; // Null at first, set when clicked, null when unclicked.
+				im.className = 'exe';
+				im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
+				d1.appendChild(im);
+				im.onload = function() {
+					//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
+						//~ this.style.border = '6px dashed blue';
+					//~ }
+					// If less than 500 (700 required)
+					// then remove.
+					//~ if (this.naturalWidth < 690) {
+						//~ this.parentNode.removeChild(this);
+						//~ console.log('removing <690:'+this.naturalWidth);
+						//~ return;
+					//~ }
+					// Width needs to be smaller than height*.98
+					// E.g. w=100, h=102, h-new = 102*.98 = 100
+					// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
+					//~ if (this.naturalWidth < this.naturalHeight * .96) { //
+						//~ console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
+						//~ this.parentNode.removeChild(this);
+						//~ return;
+					//~ }
+				}
+				im.onclick = im_click;
+				// Increment completed counter here.
+				o.image_requests++;
+				update_counter();
 			}
 			function im_click(e) {
 				if (this.finalType) { // If true, then unset.
