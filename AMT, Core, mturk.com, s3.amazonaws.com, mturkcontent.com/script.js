@@ -44222,13 +44222,14 @@ function MT__RUN() {
 				}
 			});
 			// Init
-			var x;
-			x = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
-			console.log(x);
-			get_images(x);
-			x = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
-			get_images(x);
-			console.log(x);
+			var x1,x2;
+			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
+			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
+			console.log('Get1:'+x1);
+			console.log('Get2:'+x2);
+			get_images(x1);
+			get_images(x2);
+			
 			// And this? 
 			// https://www.facebook.com/search/100854003292003/photos-in
 			
@@ -44267,55 +44268,110 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
-							if (o.images_loaded.length >100) break; // temp..............
+							console.log(o.images_loaded.length);
+							if (o.images_loaded.length > 100) break; // temp..............
+							// Retrieve image details:
+							//		'https://graph.facebook.com/'+this.graph_id+'?'+o.at
+							// To get picture now without getting details:
+							// 		'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at
+							check_image(
+								'https://graph.facebook.com/'+x.id+'?'+o.at
+							);
+						}
+						// Append a blank div for spacing.
+						o.get_loaded++;
+						//~ if (o.get_loaded == 2) {
+							//~ d1.appendChild(''.div({style:'height:2000px;'}));	
+						//~ }
+					}
+				});
+			}
+			function acceptable(w, h) {
+				console.log('w:'+w+'h:'+h);
+				// If less than 500 (700 required)
+				// then remove.
+				if (w < 690) {
+					return false;
+				}
+				// Width needs to be smaller than height*.98
+				// E.g. w=100, h=102, h-new = 102*.98 = 100
+				// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
+				if (w < h * .97) {
+					return false;
+				}
+				// Default=true
+				return true;
+			}
+			function check_image(u) {
+				//console.log(u);return;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						console.log(r);
+						if (!r || !r.images || !r.images.length) {
+							alert('bad image?');
+							return;
+						}
+						var im_most;
+						//~ var im_acceptable;
+						var curr = 0;
+						for (var i in r.images) {
+							var sz = r.images[i].width*r.images[i].height;
+							var ac = acceptable(r.images[i].width, r.images[i].height);
+							if (sz > curr && ac) {
+								im_most = r.images[i];
+								curr = sz;
+								//~ // Set acceptable on first image.
+								//~ if (!im_acceptable) {
+									//~ im_acceptable = r.images[i];
+								//~ }
+							}
+						}
+						if (im_most) {
 							// Cache the image....
 							var cim = MT___host +
 								'/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent
 							(
-								'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at
+								r.source
+								//im_most.source
 							);
 							var im = document.createElement('img');
-							im.src = cim;
-							im.graph_id = x.id;
+							im.src = im_most.source;
+							im.graph_source = im_most.source;
 							im.finalType = null; // Null at first, set when clicked, null when unclicked.
 							im.className = 'exe';
 							im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
 							d1.appendChild(im);
 							im.onload = function() {
-								if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
-									this.style.border = '6px dashed blue';
-								}
+								//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
+									//~ this.style.border = '6px dashed blue';
+								//~ }
 								// If less than 500 (700 required)
 								// then remove.
-								if (this.naturalWidth < 690) {
+								//~ if (this.naturalWidth < 690) {
 									//~ this.parentNode.removeChild(this);
-									console.log('removing <690:'+this.naturalWidth);
-									return;
-								}
+									//~ console.log('removing <690:'+this.naturalWidth);
+									//~ return;
+								//~ }
 								// Width needs to be smaller than height*.98
 								// E.g. w=100, h=102, h-new = 102*.98 = 100
 								// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
-								if (this.naturalWidth < this.naturalHeight * .96) { //
-									console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
+								//~ if (this.naturalWidth < this.naturalHeight * .96) { //
+									//~ console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
 									//~ this.parentNode.removeChild(this);
-									return;
-								}
-								
-								 
-								//~ else if (
-									//~ this.naturalWidth >= this.naturalHeight &&
-									//~ this.naturalWidth < this.naturalHeight
-								//~ ) {
-									//~ this.style.border = '6px dashed blue';
+									//~ return;
 								//~ }
 							}
 							im.onclick = im_click;
-							//~ console.log(im.naturalWidth);// Is 0 at first.
-						}
-						// Append a blank div for spacing.
-						o.get_loaded++;
-						if (o.get_loaded == 2) {
-							d1.appendChild(''.div({style:'height:2000px;'}));	
 						}
 					}
 				});
@@ -44329,37 +44385,45 @@ function MT__RUN() {
 				var image = this;
 				var ctrlKey = e.ctrlKey;
 				console.log(ctrlKey);
-				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://graph.facebook.com/'+this.graph_id+'?'+o.at,
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						if (options.response.status != 200) {
-							return false;
-						}
-						return true;
-					},
-					success_callback: function(options) {
-						var rs = options.response.responseText;
-						if (options.response.status != 200) return;
-						var r = JSON.parse(rs);
-						console.log(r);
-						if (!r || !r.source) {
-							image.style.border = '3px solid black';
-							return;
-						}
-						// Set graph_source
-						image.graph_source = r.source;
-						// Was control key pressed?
-						if (!ctrlKey) {
-							image.style.border = '6px solid LightGreen';
-							image.finalType = 'regular';
-						} else {
-							image.style.border = '6px dotted LightGreen';
-							image.finalType = 'dog_photo';
-						}
-						//~ for (var i in o.q[0]) {
+				// Set graph_source
+				//~ image.graph_source = r.source;
+				// Was control key pressed?
+				if (!ctrlKey) {
+					image.style.border = '6px solid LightGreen';
+					image.finalType = 'regular';
+				} else {
+					image.style.border = '6px dotted LightGreen';
+					image.finalType = 'dog_photo';
+				}
+				//~ new AMT___requests_factory().xhr_with_disk_cache({
+					//~ URL: 'https://graph.facebook.com/'+this.graph_id+'?'+o.at,
+					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ if (options.response.status != 200) {
+							//~ return false;
 						//~ }
-					}
-				});
+						//~ return true;
+					//~ },
+					//~ success_callback: function(options) {
+						//~ var rs = options.response.responseText;
+						//~ if (options.response.status != 200) return;
+						//~ var r = JSON.parse(rs);
+						//~ console.log(r);
+						//~ if (!r || !r.source) {
+							//~ image.style.border = '3px solid black';
+							//~ return;
+						//~ }
+						//~ // Set graph_source
+						//~ image.graph_source = r.source;
+						//~ // Was control key pressed?
+						//~ if (!ctrlKey) {
+							//~ image.style.border = '6px solid LightGreen';
+							//~ image.finalType = 'regular';
+						//~ } else {
+							//~ image.style.border = '6px dotted LightGreen';
+							//~ image.finalType = 'dog_photo';
+						//~ }
+					//~ }
+				//~ });
 			}
 		}
 		new run().f();return;
