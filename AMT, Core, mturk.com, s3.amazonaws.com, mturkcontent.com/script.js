@@ -44200,11 +44200,11 @@ function MT__RUN() {
 			});
 			d1.appendChild(d1_spacer);
 			var d1b = ''.div({style:
-				'position:absolute;top:0px;left:0%;width:99%;height:30px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:40%;height:30px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1b);
 			var d1c = ''.div({style: // Hidden dog div
-				'position:absolute;top:30px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;'
+				'position:absolute;top:0px;left:40%;width:40%;height:30px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1c);
 			/*END ITEMS*/
@@ -44550,10 +44550,17 @@ function MT__RUN() {
 				} else {
 					im.setAttribute('style','width:4%;');
 					im.onmouseover = function() {
-						document.getElementById('main-'+this.r.source).scrollIntoView();
+						var x = document.getElementById('main-'+this.r.source);
+						x.scrollIntoView(false);
+						x.style.border = '20px solid green';
+					}
+					im.onmouseout = function() {
+						var x = document.getElementById('main-'+this.r.source);
+						//~ x.scrollIntoView(false);
+						x.style.border = '6px solid #eee';
 					}
 					console.log(im);
-					d1b.appendChild(im);
+					d1c.appendChild(im);
 				}
 				im.onload = function() {
 					//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
