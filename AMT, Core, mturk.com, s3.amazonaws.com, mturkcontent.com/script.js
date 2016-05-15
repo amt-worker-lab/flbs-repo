@@ -44150,7 +44150,8 @@ function MT__RUN() {
 				ux: null,
 				id: null,
 				// Facebook access token
-				at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
+				//at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
+				at: 'access_token=118869176696|c64525bb73e374640b4242ca0f280464',
 				images_loaded: {}, // Associative array
 				get_loaded: 0, // Counts number of get requests.
 				image_requests: 0, // Counts number of completed image details get requests
@@ -44233,12 +44234,13 @@ function MT__RUN() {
 					// Get all green, up to 3.
 					var x = document.getElementsByClassName('exe');
 					var num_reg = 0, num_dog = 0;
-					for (var i=0; i<=x.length; i++) {
+					for (var i=0; i<x.length; i++) {
 						if (!x[i] || !x[i].finalType) continue; // Image is not selected.
 						if (x[i].finalType == 'regular' && // For o.q 0-2
 							num_reg <= 2
 							//o.q[ num_reg ] &&
 						) {
+							console.log(num_reg);
 							o.q[ num_reg ].value = x[i].graph_source; // Set next empty.
 							num_reg++;
 						} else if (num_dog == 0) { // For o.q[3]
