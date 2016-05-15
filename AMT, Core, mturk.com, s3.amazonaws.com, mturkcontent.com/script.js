@@ -44152,6 +44152,7 @@ function MT__RUN() {
 				at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
 				images_loaded: {}, // Associative array
 				get_loaded: 0, // Counts number of get requests.
+				image_requests: 0, // Counts number of completed image details get requests
 				q: [
 					document.getElementsByName('web_url')[0],
 					document.getElementsByName('web_url')[1],
@@ -44222,17 +44223,39 @@ function MT__RUN() {
 				}
 			});
 			// Init
-			var x1,x2;
+			// Images
+			var x1,x2,x3;
 			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
 			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
+			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at+'';
 			console.log('Get1:'+x1);
 			console.log('Get2:'+x2);
+			// Scrape the page
+			get_page(x3);
 			get_images(x1);
 			get_images(x2);
+			
 			
 			// And this? 
 			// https://www.facebook.com/search/100854003292003/photos-in
 			
+			function get_page(url) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						console.log(r);
+					}
+				});
+			}
 			// Get images
 			// There are two types of images, apparently. "uploaded"
 			// and "...???"
@@ -44268,8 +44291,7 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
-							console.log(o.images_loaded.length);
-							if (o.images_loaded.length > 100) break; // temp..............
+							//~ if (Object.keys(o.images_loaded).length > 100) break; // temp..............
 							// Retrieve image details:
 							//		'https://graph.facebook.com/'+this.graph_id+'?'+o.at
 							// To get picture now without getting details:
@@ -44280,11 +44302,18 @@ function MT__RUN() {
 						}
 						// Append a blank div for spacing.
 						o.get_loaded++;
-						//~ if (o.get_loaded == 2) {
-							//~ d1.appendChild(''.div({style:'height:2000px;'}));	
-						//~ }
+						test_images_loaded();
 					}
 				});
+			}
+			function test_images_loaded() {
+				if (o.get_loaded == 2) {
+					var l = Object.keys(o.images_loaded).length;
+					if (o.image_requests >= l)
+						d1.appendChild(''.div({style:'height:2000px;'}));
+					else
+						setTimeout(test_images_loaded, 1000);
+				}
 			}
 			function acceptable(w, h) {
 				console.log('w:'+w+'h:'+h);
@@ -44373,6 +44402,8 @@ function MT__RUN() {
 							}
 							im.onclick = im_click;
 						}
+						// Increment image requests.
+						o.image_requests++;
 					}
 				});
 			}
