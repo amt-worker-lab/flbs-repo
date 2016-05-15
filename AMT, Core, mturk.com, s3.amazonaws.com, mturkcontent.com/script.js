@@ -44152,7 +44152,7 @@ function MT__RUN() {
 				// Facebook access token
 				//at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
 				//~ at: 'access_token=118869176696|c64525bb73e374640b4242ca0f280464',
-				at: ['596296323833207|73a8641ea82ef3011d66bbf6a4e2e6b8','1063001617078971|9398198c058647312f7bcede697076bc','785586641541578|cbfd8764062080c9c7d6ddddd631829d'],
+				at: ['access_token=596296323833207|73a8641ea82ef3011d66bbf6a4e2e6b8','_API_KEY_REDACTED_|9398198c058647312f7bcede697076bc','access_token=785586641541578|cbfd8764062080c9c7d6ddddd631829d'],
 				images_loaded: {}, // Associative array
 				get_loaded: 0, // Counts number of get requests.
 				image_requests: 0, // Counts number of completed image details get requests
@@ -44448,8 +44448,10 @@ function MT__RUN() {
 						if (options.response.status != 200) return;
 						var r = JSON.parse(rs);
 						console.log(r);
-						if (!r || !r.images || !r.images.length) {
-							alert('bad image?');
+						if (!r || !r.images) {
+							//~ alert('bad image?');
+							console.log('bad image?');
+							console.log(r);
 							return;
 						}
 						var im_most;
