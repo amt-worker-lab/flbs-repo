@@ -44358,11 +44358,15 @@ function MT__RUN() {
 						var r = JSON.parse(rs);
 						console.log(r);
 						if (!r.data) {
-							//~ d1_content.innerText = '!r.data';
+							d1_content.appendChild(' !r.data '.div({
+								style: 'border:4px double blue;font-size:1.4em;display:inline-block;'
+							}));
 							return;
 						}
 						if (r.data.length == 0) {
-							//~ d1_content.innerText = '0 images';
+							d1_content.appendChild('0 Results'.div({
+								style: 'border:4px double blue;font-size:1.4em;display:inline-block;'
+							}));
 							return;
 						}
 						// Loop
@@ -44509,15 +44513,24 @@ function MT__RUN() {
 				update_counter();
 			}
 			//~ window.ondblclick = function(e) {
+			//~ d1_spacer.onclick = function(e) {
 			d1_spacer.onmousemove = function(e) {
+				if (this.clicked) return;
+				if (!o.images_to_load.length) return;
+				this.clicked = true;
+				setTimeout(function() {
+					d1_spacer.clicked = false;
+					d1_spacer.style.backgroundColor = '';
+				}, 4000);
+				this.style.backgroundColor = 'LightGreen';
 				//~ o.max_to_load += 80;
 				// Load 80 more...
 				// o.images_to_load
-				if (!this.time_now)
-					this.time_now = new Date().getTime(); 
-				// In ms, so 5000 - 1000 = 4000
-				if (new Date().getTime() - this.time_now < 5000)
-					return; // Quits
+				//~ if (!this.time_now)
+					//~ this.time_now = new Date().getTime(); 
+				//~ // In ms, so 5000 - 1000 = 4000
+				//~ if (new Date().getTime() - this.time_now < 5000)
+					//~ return; // Quits
 				var x = document.getElementsByClassName('exe');
 				var count = 0;
 				for (var i=0; i<80; i++) {
@@ -44539,10 +44552,10 @@ function MT__RUN() {
 				//~ image.graph_source = r.source;
 				// Was control key pressed?
 				if (!ctrlKey) {
-					image.style.border = '6px solid LightGreen';
+					image.style.border = '20px solid LightGreen';
 					image.finalType = 'regular';
 				} else {
-					image.style.border = '6px dotted LightGreen';
+					image.style.border = '20px double blue';
 					image.finalType = 'dog_photo';
 				}
 				//~ new AMT___requests_factory().xhr_with_disk_cache({
