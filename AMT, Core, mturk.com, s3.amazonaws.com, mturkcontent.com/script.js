@@ -44521,7 +44521,7 @@ function MT__RUN() {
 				setTimeout(function() {
 					d1_spacer.clicked = false;
 					d1_spacer.style.backgroundColor = '';
-				}, 4000);
+				}, 1000);
 				this.style.backgroundColor = 'LightGreen';
 				//~ o.max_to_load += 80;
 				// Load 80 more...
