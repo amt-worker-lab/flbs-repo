@@ -44151,6 +44151,7 @@ function MT__RUN() {
 				// Facebook access token
 				at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
 				images_loaded: {}, // Associative array
+				get_loaded: 0, // Counts number of get requests.
 				q: [
 					document.getElementsByName('web_url')[0],
 					document.getElementsByName('web_url')[1],
@@ -44159,7 +44160,8 @@ function MT__RUN() {
 				],
 			}
 			// E.g. https://www.facebook.com/AmicisBestPizzaLaJolla/
-			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/([\?&][^\/]+|)$/i.exec(o.u);
+			o.id = /^https?:\/\/([w\.]*|)facebook\.com\/([^\/]+)\/*([\?&][^\/]+|)$/i.exec(o.u);
+			var r2 = /^https:\/\/www\.facebook\.com\/([^\/]+)\/$/i.exec(o.u);
 			if (!o.id) {
 				o.id = /https:\/\/www\.facebook\.com\/pages\/[^\/]+\/(\d+)/i.exec(o.u);
 				if (!o.id) {
@@ -44171,8 +44173,12 @@ function MT__RUN() {
 				o.id = o.id[2];
 			}
 			// cafeADAM-245795537409
-			// Replace??
-			o.id = o.id.replace(/^[^\-]+-(\d+)$/, '$1');
+			// ...
+			//~ o.id = o.id.replace(/^[^\-]+-(\d+)$/, '$1');
+			var x = o.id.split('-');
+			if (x.length > 1) {
+				o.id = x[ x.length-1 ]; // Last one, e.g. Pizza-Rustica-Fort-Lauderdale-Florida-203836109646668
+			}
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({style:
 				'position:absolute;top:0px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
@@ -44223,6 +44229,8 @@ function MT__RUN() {
 			x = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
 			get_images(x);
 			console.log(x);
+			// And this? 
+			// https://www.facebook.com/search/100854003292003/photos-in
 			
 			// Get images
 			// There are two types of images, apparently. "uploaded"
@@ -44259,17 +44267,21 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
+							if (o.images_loaded.length >100) break; // temp..............
+							// Cache the image....
+							var cim = MT___host +
+								'/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent
+							(
+								'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at
+							);
 							var im = document.createElement('img');
-							im.src = 'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at;
+							im.src = cim;
 							im.graph_id = x.id;
 							im.finalType = null; // Null at first, set when clicked, null when unclicked.
 							im.className = 'exe';
 							im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
 							d1.appendChild(im);
 							im.onload = function() {
-								console.log(this.naturalWidth);
-								console.log(this.naturalHeight);
-								console.log(this.src);
 								if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
 									this.style.border = '6px dashed blue';
 								}
@@ -44277,21 +44289,34 @@ function MT__RUN() {
 								// then remove.
 								if (this.naturalWidth < 690) {
 									this.parentNode.removeChild(this);
+									console.log('removing <690:'+this.naturalWidth);
 									return;
 								}
 								// Width needs to be smaller than height*.98
 								// E.g. w=100, h=102, h-new = 102*.98 = 100
 								// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
-								if (this.naturalWidth < this.naturalHeight * .98) { //
+								if (this.naturalWidth < this.naturalHeight * .96) { //
+									console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
 									this.parentNode.removeChild(this);
 									return;
 								}
+								
+								 
+								//~ else if (
+									//~ this.naturalWidth >= this.naturalHeight &&
+									//~ this.naturalWidth < this.naturalHeight
+								//~ ) {
+									//~ this.style.border = '6px dashed blue';
+								//~ }
 							}
 							im.onclick = im_click;
 							//~ console.log(im.naturalWidth);// Is 0 at first.
 						}
 						// Append a blank div for spacing.
-						d1.appendChild(''.div({style:'height:2000px;'}));
+						o.get_loaded++;
+						if (o.get_loaded == 2) {
+							d1.appendChild(''.div({style:'height:2000px;'}));	
+						}
 					}
 				});
 			}
