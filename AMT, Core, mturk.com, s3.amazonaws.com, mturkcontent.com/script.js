@@ -44151,7 +44151,8 @@ function MT__RUN() {
 				id: null,
 				// Facebook access token
 				//at: 'access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be',
-				at: 'access_token=118869176696|c64525bb73e374640b4242ca0f280464',
+				//~ at: 'access_token=118869176696|c64525bb73e374640b4242ca0f280464',
+				at: ['596296323833207|73a8641ea82ef3011d66bbf6a4e2e6b8','1063001617078971|9398198c058647312f7bcede697076bc','785586641541578|cbfd8764062080c9c7d6ddddd631829d'],
 				images_loaded: {}, // Associative array
 				get_loaded: 0, // Counts number of get requests.
 				image_requests: 0, // Counts number of completed image details get requests
@@ -44261,10 +44262,10 @@ function MT__RUN() {
 			// Init
 			// Images
 			var x1,x2,x3,x4;
-			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
-			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
-			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at+'&redirect=0&fields=url,width,height';
-			x4 = 'https://graph.facebook.com/'+o.id+'?'+o.at;
+			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at[Math.floor(Math.random() * o.at.length)]+'&limit=1000';
+			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at[Math.floor(Math.random() * o.at.length)]+'&limit=1000'; // "uploaded"
+			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at[Math.floor(Math.random() * o.at.length)]+'&redirect=0&fields=url,width,height';
+			x4 = 'https://graph.facebook.com/'+o.id+'?'+o.at[Math.floor(Math.random() * o.at.length)];
 			console.log('Get1:'+x1);
 			console.log('Get2:'+x2);
 			console.log('Get3:'+x3);
@@ -44384,7 +44385,7 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
-							var n = 'https://graph.facebook.com/'+x.id+'?'+o.at;
+							var n = 'https://graph.facebook.com/'+x.id+'?'+o.at[Math.floor(Math.random() * o.at.length)];
 							// Update o.max_images_possible counter.
 							o.max_images_possible++;
 							//~ if (Object.keys(o.images_loaded).length > 100) break; // temp..............
