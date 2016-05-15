@@ -44238,12 +44238,14 @@ function MT__RUN() {
 						if (!x[i] || !x[i].finalType) continue; // Image is not selected.
 						if (x[i].finalType == 'regular' && // For o.q 0-2
 							num_reg <= 2
-							//o.q[ num_reg ] &&
 						) {
 							console.log(num_reg);
 							o.q[ num_reg ].value = x[i].graph_source; // Set next empty.
 							num_reg++;
-						} else if (num_dog == 0) { // For o.q[3]
+						} else if (
+							x[i].finalType == 'dog_photo' &&
+							num_dog == 0
+						) { // For o.q[3]
 							num_dog = -1; // No longer necessary, only one is required.
 							o.q[3].value = x[i].graph_source;
 						}
@@ -44506,11 +44508,16 @@ function MT__RUN() {
 				o.image_requests++;
 				update_counter();
 			}
-			window.ondblclick = function(e) {
+			//~ window.ondblclick = function(e) {
+			d1_spacer.onmousemove = function(e) {
 				//~ o.max_to_load += 80;
 				// Load 80 more...
 				// o.images_to_load
-				
+				if (!this.time_now)
+					this.time_now = new Date().getTime(); 
+				// In ms, so 5000 - 1000 = 4000
+				if (new Date().getTime() - this.time_now < 5000)
+					return; // Quits
 				var x = document.getElementsByClassName('exe');
 				var count = 0;
 				for (var i=0; i<80; i++) {
