@@ -44465,14 +44465,21 @@ function MT__RUN() {
 									//~ im_acceptable = r.images[i];
 								//~ }
 							}
-							// Check dog
-							check_dog(r);
 						}
 						if (im_most) {
+							var ob = {
+								full: im_most.source,
+								small: r.source,
+								r: r,
+								is_dog: false
+							}
 							// Add the image
-							add_img(r.source);
+							add_img(ob);
+							//~ add_img(r.source);
 							// Increment found counter
 							o.found_good_images++;
+							// Check dog
+							check_dog(r, im_most.source);
 						} else {
 							// Increment completed counter here.
 							o.image_requests++;
@@ -44481,39 +44488,69 @@ function MT__RUN() {
 					}
 				});
 			}
-			function add_img(img_url) {
+			function add_dog(r, full) {
+				d1c.style.display = 'block';
+				if (!d1.isSmall) {
+					d1.style.height = ((d1.style.height.replace(/px/, ''))*1 - 200) + 'px';
+					d1.style.top = '230px';
+					d1.isSmall = true;
+				}
+				var ob = {
+					full: full,
+					small: r.source,
+					r: r,
+					is_dog: true
+				}
+				add_img(ob);
+			}
+			function check_dog(r, full) {
+				var io = (r.comments) ? (JSON.stringify(r.comments)).toLowerCase() : null;
+				if (r.name && /dog|pup/i.exec(r.name)) {
+					add_dog(r, src);
+					return;
+				} else if (
+					r.comments &&
+					(
+					io.indexOf('dog') != -1 ||
+					io.indexOf('pup') != -1)
+				) {
+					add_dog(r, full);
+				}
+			}
+			// "NORMAL" ...../p720x720/11113918_997565453587541_5538084777084620937_n.jpg?oh=
+			// FULL     ...../11113918_997565453587541_5538084777084620937_n.jpg?oh=
+			function add_img(obj) {// img_url, is_dog) {
+				//~ obj.full
+				//~ obj.small
+				//~ obj.is_dog
 				var cim = MT___host + // Cache the image!
 					'/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent
 				(
-					img_url
+					obj.small
 				);
 				var im = document.createElement('img');
-				//~ // Do not load.... 
-				//~ // See o.max_to_load
-				//~ if (o.image_requests < o.max_to_load) {
-					//~ im.src = cim;
-					//~ im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
-				//~ } else {
-					//~ im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;display:none;');
-				//~ }
-				//~ im.temporary_src = cim; //
 				im.src = cim;
+				im.r = obj.r;
 				im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
-				im.graph_source = img_url;
+				im.graph_source = obj.full;
 				im.finalType = null; // Null at first, set when clicked, null when unclicked.
 				im.className = 'exe';
-				d1_content.appendChild(im);
+				if (!obj.is_dog) {
+					d1_content.appendChild(im);
+					// Increment completed counter here.
+					o.image_requests++;
+				} else {
+					d1c.appendChild(im);
+				}
 				im.onload = function() {
 					//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
 					// ......................
 				}
 				im.onclick = im_click;
-				// Increment completed counter here.
-				o.image_requests++;
 				update_counter();
 			}
-			//~ window.ondblclick = function(e) {
-			//~ d1_spacer.onclick = function(e) {
+				//~ window.ondblclick = function(e) {
+				//~ d1_spacer.onclick = function(e) {
 			d1_spacer.onmousemove = function(e) {
 				if (this.clicked) return;
 				if (!o.images_to_load.length) return;
@@ -44533,6 +44570,7 @@ function MT__RUN() {
 				}
 			}
 			function im_click(e) {
+				console.log(this.r);// debug
 				if (this.finalType) { // If true, then unset.
 					this.finalType = null;
 					this.style.border = '6px solid #eee';
@@ -44551,35 +44589,6 @@ function MT__RUN() {
 					image.style.border = '20px double blue';
 					image.finalType = 'dog_photo';
 				}
-				//~ new AMT___requests_factory().xhr_with_disk_cache({
-					//~ URL: 'https://graph.facebook.com/'+this.graph_id+'?'+o.at,
-					//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						//~ if (options.response.status != 200) {
-							//~ return false;
-						//~ }
-						//~ return true;
-					//~ },
-					//~ success_callback: function(options) {
-						//~ var rs = options.response.responseText;
-						//~ if (options.response.status != 200) return;
-						//~ var r = JSON.parse(rs);
-						//~ console.log(r);
-						//~ if (!r || !r.source) {
-							//~ image.style.border = '3px solid black';
-							//~ return;
-						//~ }
-						//~ // Set graph_source
-						//~ image.graph_source = r.source;
-						//~ // Was control key pressed?
-						//~ if (!ctrlKey) {
-							//~ image.style.border = '6px solid LightGreen';
-							//~ image.finalType = 'regular';
-						//~ } else {
-							//~ image.style.border = '6px dotted LightGreen';
-							//~ image.finalType = 'dog_photo';
-						//~ }
-					//~ }
-				//~ });
 			}
 		}
 		new run().f();return;
