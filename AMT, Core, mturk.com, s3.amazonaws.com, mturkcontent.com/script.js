@@ -44140,7 +44140,8 @@ function MT__RUN() {
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			GM_addStyle('.exe {cursor:pointer;}');
 			//GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
-			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
+			GM_addStyle('#submitButton {position:absolute;top:1400px;width:100%;height:40px;left:0;margin-left:0;}');
+			//~ GM_addStyle('#submitButton {width:100%;height:40px;}');
 			// Data
 			var td = document.getElementsByTagName('td');
 			// o
@@ -44202,13 +44203,22 @@ function MT__RUN() {
 				],
 				offset: 30 // offset top
 			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit();
+				//~ doSubmit();
+				return false;
+			}
 			// Enter key
 			window.addEventListener('keydown', function(e) {
 				var k = e.keyCode;
 				if (k == 13) {
 					// Clear o.q
 					for (var i in o.q) {
-						o.q[i].value = '';
+						if (o.q[i].value != 'N/A')
+							o.q[i].value = '';
 					}
 					// Get all green, up to 3.
 					var x = document.getElementsByClassName('exe');
@@ -44227,25 +44237,60 @@ function MT__RUN() {
 						}
 					}
 				}
+				// Scrollintoview
+				document.getElementById('submitButton').scrollIntoView();
 			});
 			// Init
 			// Images
-			var x1,x2,x3;
+			var x1,x2,x3,x4;
 			x1 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos?'+o.at+'&limit=1000';
 			x2 = 'https://graph.facebook.com/v2.6/'+o.id+'/photos/uploaded?'+o.at+'&limit=1000'; // "uploaded"
 			x3 = 'https://graph.facebook.com/'+o.id+'/picture?'+o.at+'&redirect=0&fields=url,width,height';
+			x4 = 'https://graph.facebook.com/'+o.id+'?'+o.at;
 			console.log('Get1:'+x1);
 			console.log('Get2:'+x2);
+			console.log('Get3:'+x3);
+			console.log('Get4:'+x4);
 			// Scrape the page
-			get_page(x3);
+			get_page_photo(x3);
 			get_images(x1);
 			get_images(x2);
-			
-			
-			// And this? 
-			// https://www.facebook.com/search/100854003292003/photos-in
-			
-			function get_page(url) {
+			get_page_id(x4)
+			// AMT___addUserDecision
+			AMT___addUserDecision(
+				'MK,FB photos,May,2015',
+				function() {
+					return o.u;
+				},
+				[ 'Name(web_url)[0]','Name(web_url)[1]','Name(web_url)[2]','Name(web_url)[3]' ]
+			);
+			// get_page_id
+			function get_page_id(url) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						var r = JSON.parse(rs);
+						console.log(r);
+						// Utility window.
+						// i.e. https://www.facebook.com/search/100854003292003/photos-in/
+						AMT__setUtilityTabs([
+							{
+								url: 'https://www.facebook.com/search/'+r.id+'/photos-in/'
+							}
+						]);
+					}
+				});
+			}
+			// get_page_photo
+			function get_page_photo(url) {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
