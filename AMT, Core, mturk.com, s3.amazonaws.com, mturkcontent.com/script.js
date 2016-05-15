@@ -44157,6 +44157,7 @@ function MT__RUN() {
 				max_images_possible: 0, // 
 				found_good_images: 0,
 				max_to_load: 80, // Increment this by 80 each time up to 1,000
+				images_to_load: [], // Array of images waiting to load (80 at a time, on user request)
 				q: [
 					document.getElementsByName('web_url')[0],
 					document.getElementsByName('web_url')[1],
@@ -44292,7 +44293,10 @@ function MT__RUN() {
 						// i.e. https://www.facebook.com/search/100854003292003/photos-in/
 						AMT__setUtilityTabs([
 							{
-								url: 'https://www.facebook.com/search/'+r.id+'/photos-in/'
+								// Comp's main FB page
+								url: 'https://www.facebook.com/'+r.id+'/'
+								// This is for "Tagged" images
+								//~ url: 'https://www.facebook.com/search/'+r.id+'/photos-in/'
 							}
 						]);
 					}
@@ -44359,6 +44363,7 @@ function MT__RUN() {
 						}
 						// Loop
 						var x;
+						var count = 0;
 						for (var i in r.data) {
 							var x = r.data[i];
 							// Set global....
@@ -44367,6 +44372,7 @@ function MT__RUN() {
 							} else {
 								o.images_loaded[ x.id ] = true;
 							}
+							var n = 'https://graph.facebook.com/'+x.id+'?'+o.at;
 							// Update o.max_images_possible counter.
 							o.max_images_possible++;
 							//~ if (Object.keys(o.images_loaded).length > 100) break; // temp..............
@@ -44374,9 +44380,12 @@ function MT__RUN() {
 							//		'https://graph.facebook.com/'+this.graph_id+'?'+o.at
 							// To get picture now without getting details:
 							// 		'https://graph.facebook.com/v2.6/'+x.id+'/picture?'+o.at
-							check_image(
-								'https://graph.facebook.com/'+x.id+'?'+o.at
-							);
+							if (count < o.max_to_load) {
+								check_image(n);
+							} else { // add to array
+								o.images_to_load.push(n);
+							}
+							count++;
 						}
 						update_counter();
 						// Append a blank div for spacing.
@@ -44412,7 +44421,13 @@ function MT__RUN() {
 				return true;
 			}
 			function check_image(u) {
-				//console.log(u);return;
+				//~ //console.log(u);return;
+				//~ if (o.image_requests > o.max_to_load) { // cache
+					
+					//~ return;
+				//~ } else {
+					
+				//~ }
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -44465,39 +44480,24 @@ function MT__RUN() {
 					img_url
 				);
 				var im = document.createElement('img');
-				// Do not load.... 
-				// See o.max_to_load
-				if (o.image_requests < o.max_to_load) {
-					im.src = cim;
-					//~ im.style.display = 'none';
-					im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;display:none;');
-				} else {
-					im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
-				}
-				im.temporary_src = cim; //
+				//~ // Do not load.... 
+				//~ // See o.max_to_load
+				//~ if (o.image_requests < o.max_to_load) {
+					//~ im.src = cim;
+					//~ im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
+				//~ } else {
+					//~ im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;display:none;');
+				//~ }
+				//~ im.temporary_src = cim; //
+				im.src = cim;
+				im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
 				im.graph_source = img_url;
 				im.finalType = null; // Null at first, set when clicked, null when unclicked.
 				im.className = 'exe';
 				d1_content.appendChild(im);
 				im.onload = function() {
 					//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
-						//~ this.style.border = '6px dashed blue';
-					//~ }
-					// If less than 500 (700 required)
-					// then remove.
-					//~ if (this.naturalWidth < 690) {
-						//~ this.parentNode.removeChild(this);
-						//~ console.log('removing <690:'+this.naturalWidth);
-						//~ return;
-					//~ }
-					// Width needs to be smaller than height*.98
-					// E.g. w=100, h=102, h-new = 102*.98 = 100
-					// E.g. w=100, h=103, h-new = 103*.98 ~= 100.3
-					//~ if (this.naturalWidth < this.naturalHeight * .96) { //
-						//~ console.log('removing:'+this.naturalWidth+'<'+this.naturalHeight);
-						//~ this.parentNode.removeChild(this);
-						//~ return;
-					//~ }
+					// ......................
 				}
 				im.onclick = im_click;
 				// Increment completed counter here.
@@ -44507,15 +44507,14 @@ function MT__RUN() {
 			window.ondblclick = function(e) {
 				//~ o.max_to_load += 80;
 				// Load 80 more...
+				// o.images_to_load
+				
 				var x = document.getElementsByClassName('exe');
 				var count = 0;
-				for (var i=0; i<x.length; i++) {
-					if (!x[i].src || x[i].src == null) {
-						count++;
-						x[i].src = x[i].temporary_src;
-						x[i].style.display = 'block';
-					}
-					if (count >= o.max_to_load) return; // quit
+				for (var i=0; i<80; i++) {
+					if (!o.images_to_load.length) return;
+					var n = o.images_to_load.shift();
+					check_image(n);
 				}
 			}
 			function im_click(e) {
