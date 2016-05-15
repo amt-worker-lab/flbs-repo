@@ -44157,7 +44157,7 @@ function MT__RUN() {
 				image_requests: 0, // Counts number of completed image details get requests
 				max_images_possible: 0, // 
 				found_good_images: 0,
-				max_to_load: 80, // Increment this by 80 each time up to 1,000
+				max_to_load: 140, // Increment this by 80 each time up to 1,000
 				images_to_load: [], // Array of images waiting to load (80 at a time, on user request)
 				q: [
 					document.getElementsByName('web_url')[0],
@@ -44203,6 +44203,10 @@ function MT__RUN() {
 				'position:absolute;top:0px;left:0%;width:99%;height:30px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1b);
+			var d1c = ''.div({style: // Hidden dog div
+				'position:absolute;top:30px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;display:none;'
+			});
+			document.body.appendChild(d1c);
 			/*END ITEMS*/
 			// ih
 			new AMT___core_factory().el_innerHeight({
@@ -44413,7 +44417,6 @@ function MT__RUN() {
 				//~ }
 			}
 			function acceptable(w, h) {
-				//~ console.log('w:'+w+'h:'+h);
 				// If less than 500 (700 required)
 				// then remove.
 				if (w < 690) {
@@ -44428,14 +44431,9 @@ function MT__RUN() {
 				// Default=true
 				return true;
 			}
+			// check_image
+			// Scrape "name" and Comments for "dog"
 			function check_image(u) {
-				//~ //console.log(u);return;
-				//~ if (o.image_requests > o.max_to_load) { // cache
-					
-					//~ return;
-				//~ } else {
-					
-				//~ }
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -44467,6 +44465,8 @@ function MT__RUN() {
 									//~ im_acceptable = r.images[i];
 								//~ }
 							}
+							// Check dog
+							check_dog(r);
 						}
 						if (im_most) {
 							// Add the image
@@ -44523,14 +44523,7 @@ function MT__RUN() {
 					d1_spacer.style.backgroundColor = '';
 				}, 1000);
 				this.style.backgroundColor = 'LightGreen';
-				//~ o.max_to_load += 80;
 				// Load 80 more...
-				// o.images_to_load
-				//~ if (!this.time_now)
-					//~ this.time_now = new Date().getTime(); 
-				//~ // In ms, so 5000 - 1000 = 4000
-				//~ if (new Date().getTime() - this.time_now < 5000)
-					//~ return; // Quits
 				var x = document.getElementsByClassName('exe');
 				var count = 0;
 				for (var i=0; i<80; i++) {
