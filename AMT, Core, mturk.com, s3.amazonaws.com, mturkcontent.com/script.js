@@ -44141,7 +44141,7 @@ function MT__RUN() {
 			GM_addStyle('.exe {cursor:pointer;}');
 			//GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('#submitButton {position:absolute;top:1400px;width:100%;height:40px;left:0;margin-left:0;}');
-			//~ GM_addStyle('#submitButton {width:100%;height:40px;}');
+			new AMT___core_factory().createScriptVar('MK#Rows', 7);
 			// Data
 			var td = document.getElementsByTagName('td');
 			// o
@@ -44489,12 +44489,12 @@ function MT__RUN() {
 				});
 			}
 			function add_dog(r, full) {
-				d1c.style.display = 'block';
-				if (!d1.isSmall) {
-					d1.style.height = ((d1.style.height.replace(/px/, ''))*1 - 200) + 'px';
-					d1.style.top = '230px';
-					d1.isSmall = true;
-				}
+				//~ d1c.style.display = 'block';
+				//~ if (!d1.isSmall) {
+					//~ d1.style.height = ((d1.style.height.replace(/px/, ''))*1 - 200) + 'px';
+					//~ d1.style.top = '230px';
+					//~ d1.isSmall = true;
+				//~ }
 				var ob = {
 					full: full,
 					small: r.source,
@@ -44504,12 +44504,18 @@ function MT__RUN() {
 				add_img(ob);
 			}
 			function check_dog(r, full) {
+				//~ if (r.comments)
+					//~ console.log((JSON.stringify(r.comments)).toLowerCase());
 				var io = (r.comments) ? (JSON.stringify(r.comments)).toLowerCase() : null;
+				if (io && io.indexOf('dog')) {
+					console.log('====='+io.indexOf('dog'));
+					console.log((JSON.stringify(r.comments)).toLowerCase());
+				}
 				if (r.name && /dog|pup/i.exec(r.name)) {
-					add_dog(r, src);
-					return;
+					add_dog(r, full);
 				} else if (
 					r.comments &&
+					io &&
 					(
 					io.indexOf('dog') != -1 ||
 					io.indexOf('pup') != -1)
@@ -44531,16 +44537,23 @@ function MT__RUN() {
 				var im = document.createElement('img');
 				im.src = cim;
 				im.r = obj.r;
-				im.setAttribute('style','width:'+(96/5)+'%;border:6px solid #eee;');
 				im.graph_source = obj.full;
 				im.finalType = null; // Null at first, set when clicked, null when unclicked.
 				im.className = 'exe';
 				if (!obj.is_dog) {
+					var w = 99 / (AMT__Global_Vars.scriptVars['MK#Rows']*1);
+					im.setAttribute('style','width:'+(w)+'%;border:6px solid #eee;');
+					im.id = 'main-'+obj.r.source;
 					d1_content.appendChild(im);
 					// Increment completed counter here.
 					o.image_requests++;
 				} else {
-					d1c.appendChild(im);
+					im.setAttribute('style','width:4%;');
+					im.onmouseover = function() {
+						document.getElementById('main-'+this.r.source).scrollIntoView();
+					}
+					console.log(im);
+					d1b.appendChild(im);
 				}
 				im.onload = function() {
 					//~ if (this.naturalWidth >= 690 && this.naturalWidth < 700) {
