@@ -5134,24 +5134,70 @@ AMT___requests_factory.prototype.io__AMT__displayPostStrAsHTML = function(str, i
  **/
 AMT___requests_factory.prototype.disk_file = function(opts_object) //
 {
-	var host = (!write_object.host) ? AMT___POPUP___PROXY_REDACTED_ : write_object.host;
-	// Check exists
-	new AMT___requests_factory().io__file_exists('', cb, {folder: opts_object.folder});
-	
-	function write() {
-		GM_xmlhttpRequest({
-			method: "POST",
-			url: host + '/mturk/util.php',
-			data: write_object.data,
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			onload: function(response) {
-				var rs = response.responseText;
-				if (response.status != 200) return;
-			}
-		});
+	var host = (!opts_object.host) ? AMT___POPUP___PROXY_REDACTED_ : opts_object.host;
+	if (opts_object.filename.length > 20) {
+		alert('Filename > 20 characters....exiting!');
+		return;
 	}
+	// Check exists
+	var rf = new AMT___requests_factory();
+	//~ .io__file_exists('', cb, {folder: opts_object.folder});
+	// Init read.
+	read_init();
+	function read_init() {
+		rf.io__read_file({
+				filename: MT___host + '/mturk/.miscellaneous/'+opts_object.filename+'?random=' + Math.random()
+			},
+			read_tmpcb
+		);
+	}
+	function read_tmpcb(fo) {
+		/**
+		 * file_object.responseText	= rs;
+		 * file_object.response		= response;
+		 * file_object.status		= response.status;
+		 */
+		var x;
+		if (fo.responseText == '' || fo.status != 200) {
+			x = {}; // Empty object
+		} else {
+			x = JSON.parse(fo.responseText);
+		}
+		opts_object.callback_init_read(x); // Send back an object.
+	}
+	this.load_and_update = function() {
+		rf.io__read_file(
+			{
+				filename: MT___host + '/mturk/.miscellaneous/'+opts_object.filename+'?random=' + Math.random()
+			},
+			lu_tmpcb
+		);
+	}
+	function lu_tmpcb(fo) {
+		var x;
+		if (fo.responseText == '' || fo.status != 200) {
+			x = {}; // Empty object
+		} else {
+			x = JSON.parse(fo.responseText);
+		}
+		opts_object.callback_init_write(x);
+		// x is now updated! So now write to disk.
+		write(JSON.stringify(x));
+	}
+	function write(json) {
+		rf.io__write_to_file({
+				data:		'AMT__serverSide_write__value='	+encodeURIComponent(json)+
+							'&AMT__serverSide_write__folder=.miscellaneous'+
+							'&AMT__serverSide_write__file='	+ encodeURIComponent(opts_object.filename),
+				//~ rs:			json,
+			},
+			write_complete
+		);
+	}
+	function write_complete() {
+		opts_object.callback_write_complete();
+	}
+	return this;
 }
 //
 AMT___requests_factory.prototype.io__write_to_file = function(write_object, callback_function) //

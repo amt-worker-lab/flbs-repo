@@ -45,6 +45,7 @@ function MT__RUN() {
 			var o = {
 				p: x[1].innerText.trim(),
 				u: null,
+				df: null, // A factory object for disk file
 				submits: {}, // to be filled in from disk!
 				q: [
 					document.getElementById('web_url')
@@ -92,10 +93,8 @@ function MT__RUN() {
 				}
 			}, false);
 			function sbm() {
-				new AMT___core_factory().nextTab();
-				setTimeout(function() { // Pause before submit...
-					doSubmit();
-				}, 5000);
+				new AMT___core_factory().nextTab(); // Leave for now...
+				o.df.load_and_update();
 			}
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
@@ -123,27 +122,43 @@ function MT__RUN() {
 			// Get "front page" pdf URL
 			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
 			o.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
-			get_first_pg();
 			/**
 			 * Load (read)
 			 * Load and Update (write)
 			 * o.submits = {} // to be filled in from disk
-			 * 
-			 * var f = new AMT__
+			 * Calls get_first_pg(); to initialize OCR.
 			 */
-			new AMT___requests_factory().disk_file({
-				json: true,
+			o.df = new AMT___requests_factory().disk_file({
+				//~ json: true,
 				folder: '.miscellaneous',
-				callback_read: f_load,
-				callback_write: f_load_and_update,
+				callback_init_read: f_load,
+				callback_init_write: f_load_and_update,
+				callback_write_complete: f_write_complete,
 				filename: 'david-rigby.json',
 				//md5_filename: true,
 			});
-			function f_load() {
-				
+			console.log(o.df);
+			function f_load(obj) { // Loaded object
+				o.submits = obj;
+					console.log(obj);
+					console.log('===========');
+				// Call initialize script...
+				get_first_pg();
 			}
-			function f_load_and_update() {
-				
+			function f_load_and_update(obj) {
+				o.submits = obj; // From disk.
+				// Check key
+				if (o.submits[ d4.value ]) {
+					o.submits[ d4.value ]++;
+				} else {
+					o.submits[ d4.value ] = 1; // First instance
+				}
+				return o.submits; // Return updated file for writing.
+			}
+			function f_write_complete() { // Assumes a submit.
+				setTimeout(function() { // Pause before submit...
+					doSubmit();
+				}, 5000);
 			}
 			// get_first_pg
 			function get_first_pg() {
