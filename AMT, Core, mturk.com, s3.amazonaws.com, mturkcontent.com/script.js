@@ -60,20 +60,77 @@ function MT__RUN() {
 			d2.setAttribute('style', 'max-height:100%;max-width:100%;');//width:50%;
 			d1.appendChild(d2);
 			var d3 = ''.div({style:
-				'position:absolute;top:28px;left:0%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:56px;left:0%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
+			//~ var d3b = ''.div({style:
+				//~ 'position:absolute;top:28px;left:0%;width:40%;height:28px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			//~ });
+			//~ document.body.appendChild(d3b);
 			var d4 = document.createElement('input');
 			d4.type = 'text';
-			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:40%;height:27px;');
+			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:40%;height:28px;');
 			document.body.appendChild(d4);
+			var d4b = document.createElement('input');
+			d4b.type = 'text';
+			d4b.setAttribute('style', 'position:absolute;top:28px;left:0;width:40%;height:28px;');
+			document.body.appendChild(d4b);
 			/*END ITEMS*/
 			// Onkeypress...
-			window.addEventListener('keypress', function(e) {
+			d4.addEventListener('keyup', function(e) {
+				// d4b
+				// Autocomplete
+				// Loops through o.submits_sorted
+				/**o.submits_sorted.push({
+					amount: num,
+					city: c[0].trim(),
+					city_lw: c[0].trim().toLowerCase(),
+					state: c[1].trim(),
+					state_lw: c[1].trim().toLowerCase(),
+					location: key
+				});**/
+				if (d4.value.length >= 2) {
+					var longest = 0;
+					var best_match = null;
+					var x = d4.value.toLowerCase();
+					for (var i in o.submits_sorted) {
+						var n = o.submits_sorted[i];
+						// Find the longest match, starting from
+						// beginning of string.
+						if (n.city_lw.indexOf(x) == 0 && n.city_lw.length > longest) {
+							longest = n.city_lw.length;
+							best_match = n;
+						}
+						if (n.amount <= 1) { // Do not go lower than 2.
+							break;
+						}
+					}
+					if (best_match) {
+						d4b.value = best_match.location;
+					} else {
+						d4b.value = '';
+					}
+				} else {
+					d4b.value = '';
+				}
+			}
+			// Onkeypress...
+			d4.addEventListener('keypress', function(e) {
 				var c = e.keyCode;
-				//var str = String.fromCharCode(e.keyCode).toLowerCase();
+				var str = String.fromCharCode(e.keyCode).toLowerCase();
 				console.log(c);
-				//
+				// Grave key. Select the first best match auto fill.
+				if  (
+					s == '`' && c == 96 // double check correct key...
+					)
+				{
+					if (d4b.innerText.length > 4)
+						d4.value = d4b.value;
+					e.stopPropagation();
+					e.preventDefault();
+					return;
+				}
+				// Enter key
 				if  (
 					c == 13
 					)
@@ -145,7 +202,7 @@ function MT__RUN() {
 				elements: [
 					d3
 				],
-				offset: 28 // offset top
+				offset: 56 // offset top
 			});
 			// focus
 			setTimeout(function() {
@@ -256,14 +313,14 @@ function MT__RUN() {
 				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
 				
 				// Try first instance in o.submits_sorted
-				//~ o.submits_sorted.push({
-					//~ amount: num,
-					//~ city: c[0].trim(),
-					//~ city_lw: c[0].trim().toLowerCase(),
-					//~ state: c[1].trim(),
-					//~ state_lw: c[1].trim().toLowerCase(),
-					//~ location: key
-				//~ });
+				/**o.submits_sorted.push({
+					amount: num,
+					city: c[0].trim(),
+					city_lw: c[0].trim().toLowerCase(),
+					state: c[1].trim(),
+					state_lw: c[1].trim().toLowerCase(),
+					location: key
+				});**/
 				if (d4.value == '') {
 					var first_matched_indexOf = 9999;
 					var best_match = null;
