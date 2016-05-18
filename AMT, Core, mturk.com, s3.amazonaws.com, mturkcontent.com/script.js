@@ -26,6 +26,61 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// david rigby
+	// Find the location for patents on website
+	//
+	//
+	s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var x = document.getElementsByTagName('td');
+			var o = {
+				p: x[1].innerText.trim(),
+				u: null,
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			// Get "front page" pdf URL
+			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
+			x.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var em = dom.getElementsByTagName('embed')
+					if (!em.length) {
+						return;
+					}
+					em = em[0].src;
+					console.log(em);
+					var rf = new AMT___requests_factory().image_2_OCR({
+						url: document.getElementsByTagName('img')[0].src,
+						resize: '800%',
+						nobatch: 'AMT_Requester_Proffinu',
+						crop: '-2+0',
+						callback_function: ocr
+					});
+				}
+			});
+		}
+		new run().f();
+	}
 	// chuck wells
 	// Given URL, find Contact information
 	//

@@ -3302,7 +3302,6 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	console.log(options_object);
 	
 	//AMT__image_2_OCR
-	
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: MT___host + '/mturk/util.php?AMT__image_2_OCR='+encodeURIComponent(JSON.stringify(options_object)), //&AMT__image_2_OCR__options=
@@ -3312,7 +3311,6 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	
 	// SET INTERVAL
 	options_object.CHECK_COMPLETE = true;
-	
 	var x_interval = setInterval(function() {
 		GM_xmlhttpRequest({
 			method: 'GET',
@@ -3322,7 +3320,6 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 				
 				if (rs.indexOf('__OCR_COMPLETE__') != -1) {
 					clearInterval(x_interval);
-					//~ clearInterval(x_interval_init);
 					rs = rs.replace(/^__OCR_COMPLETE__/, '');
 				} else {
 					return;
@@ -3331,12 +3328,9 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 				// Here?
 				// RETURN options_object
 				// Add response.
-				
 				options_object.response = response;
 				options_object.text = rs;
-				
 				options_object.callback_function(options_object);
-				
 				//{response:response, text: rs});
 			}
 		});
