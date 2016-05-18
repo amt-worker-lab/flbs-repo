@@ -2086,6 +2086,18 @@ String.prototype.state_abbr_is_valid = function() {
 	// Return false.
 	return false;
 }
+// Full state, non-abbreviated
+String.prototype.state_is_valid = function() {
+	str = this.toString().toLowerCase().trim();
+	for (var i in MT___states) {
+		if (i.toLowerCase() == str) {
+			return true;
+		}
+	}
+	// Here?
+	// Return false.
+	return false;
+}
 
 String.prototype.regexIndexOf = function(regex, startpos) {
     var indexOf = this.substring(startpos || 0).search(regex);
@@ -3310,14 +3322,12 @@ AMT___requests_factory.prototype.load_precache_urls = function(options) {
  * 
  * JS Response Object:
  *  o.response
- *  o.response_details
+ *  o.response_details [PHP=> thumb: [converted PNG filename, @.cached]; text_file: [ocr filename, @.cached] ]
  *  o.text
  *  e.g. => .callback_function(o)
  */
 AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
-	
 	console.log(options_object);
-	
 	//AMT__image_2_OCR
 	GM_xmlhttpRequest({
 		method: 'GET',

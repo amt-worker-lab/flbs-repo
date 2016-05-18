@@ -47,15 +47,27 @@ function MT__RUN() {
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:0px;width:60%;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style', 'position:absolute;top:24px;left:0;width:60%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('img');
 			d2.setAttribute('style', 'width:99%;');
 			d1.appendChild(d2);
+			var d3 = ''.div({style:
+				'position:absolute;top:24px;left:60%;width:39%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d3);
 			/*END ITEMS*/
+			// Onkeypress...
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1, d3
+				],
+				offset: 24 // offset top
+			});
 			// Get "front page" pdf URL
 			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
-			x.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
+			o.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: o.u,
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -78,7 +90,7 @@ function MT__RUN() {
 					em = em[0].src;
 					console.log(em);
 					var rf = new AMT___requests_factory().image_2_OCR({
-						url: document.getElementsByTagName('img')[0].src,
+						url: em,
 						custom: true,
 						//~ resize: '800%',
 						//~ nobatch: 'none',
@@ -90,7 +102,61 @@ function MT__RUN() {
 			function ocr(response) {
 				var r = response;
 				// Thumb Image
-				d2.src = r.response_details.thumbail;
+				d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
+				// Try for an auto.
+				// E.g. EDWIN F. KIEFER, OF CLEVELAND, OHIO, ASSIGNOR ’I‘O
+				var x = /\n[^,]+, *OF *([^,]+), *([^,]+)/i.exec(r.text);
+				if (x) {
+					// Debug
+					d3.appendChild((x[1]+', '+x[2]).div({style:'width:99%;border-bottom:1px solid green;'}));
+					if (x[2].state_is_valid()) {
+						// Display
+						// Try Google Places
+						d3.appendChild(
+							gp(x[1], x[2])
+						);
+					}
+				}
+				// Append full text.
+				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
+			}
+			function gp(city, state) { // Return:div
+				var d = ''.div({style:'width:99%;border-bottom:1px solid green;'}); // Placeholder
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL:	'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							'query='+encodeURIComponent(city +' '+ state)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						//~ if (options.response.status != 200) {
+							//~ add_static_img(); // Add basic image....
+						//~ }
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						/** **/
+						if (!rs.results || !rs.results.length) {
+							d = '--'
+							return;
+						}
+						for (var i in rs.results) {
+							var n = rs.results[i];
+							console.log(n);
+							d.appendChild(choice(n.formatted_address));
+						}
+					}
+				});
+				return d;
+			}
+			function choice(addr) {
+				addr = addr.div({style:'border-bottom:1px dashed orange;'});
+				addr.className = 'exe';
+				addr.onclick = function() {
+					
+				}
+				return addr;
 			}
 		}
 		new run().f();
