@@ -45,6 +45,14 @@ function MT__RUN() {
 					document.getElementById('web_url')
 				],
 			}
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:0px;width:60%;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('img');
+			d2.setAttribute('style', 'width:99%;');
+			d1.appendChild(d2);
+			/*END ITEMS*/
 			// Get "front page" pdf URL
 			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
 			x.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
@@ -71,13 +79,19 @@ function MT__RUN() {
 					console.log(em);
 					var rf = new AMT___requests_factory().image_2_OCR({
 						url: document.getElementsByTagName('img')[0].src,
+						custom: true,
 						//~ resize: '800%',
-						nobatch: 'none',
-						crop: '-2+0',
+						//~ nobatch: 'none',
+						//~ crop: '-2+0',
 						callback_function: ocr
 					});
 				}
 			});
+			function ocr(response) {
+				var r = response;
+				// Thumb Image
+				d2.src = r.response_details.thumbail;
+			}
 		}
 		new run().f();
 	}

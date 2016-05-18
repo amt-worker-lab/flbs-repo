@@ -3296,6 +3296,23 @@ AMT___requests_factory.prototype.load_precache_urls = function(options) {
 }
 /**
  * image_2_OCR 
+ * 
+ * textcleaner is copied to /usr/local/bin for this script.
+ * http://www.fmwconcepts.com/imagemagick/textcleaner/index.php
+ * 
+ * ({
+		url: document.getElementsByTagName('img')[0].src,
+		//~ resize: '800%',
+		nobatch: 'none',
+		crop: '-2+0',
+		callback_function: ocr
+	});
+ * 
+ * JS Response Object:
+ *  o.response
+ *  o.response_details
+ *  o.text
+ *  e.g. => .callback_function(o)
  */
 AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 	
@@ -3323,6 +3340,13 @@ AMT___requests_factory.prototype.image_2_OCR = function(options_object) {
 					rs = rs.replace(/^__OCR_COMPLETE__/, '');
 				} else {
 					return;
+				}
+				// Custom response from PHP...
+				if (rs.indexOf('__response_details__') == 0) {
+					rs = rs.replace(/^__response_details__/, ''); // Replace first instance
+					rs = rs.split('__end_details__');
+					options_object.response_details = JSON.parse(rs[0]);
+					rs = rs[1]; // Removes [0]
 				}
 				
 				// Here?
