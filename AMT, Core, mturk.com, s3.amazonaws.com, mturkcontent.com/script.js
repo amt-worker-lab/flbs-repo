@@ -35,7 +35,7 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			var x = document.getElementsByTagName('td');
 			var o = {
@@ -108,7 +108,9 @@ function MT__RUN() {
 				var x = /\n[^,]+, *OF *([^,]+), *([^,]+)/i.exec(r.text);
 				if (x) {
 					// Debug
-					d3.appendChild((x[1]+', '+x[2]).div({style:'width:99%;border-bottom:1px solid green;'}));
+					//~ var n = (x[1]+', '+x[2]).string_to_mixed_case();
+					//~ d3.appendChild(n.div({style:'width:99%;border-bottom:1px solid green;'}));
+					d3.appendChild(choice(x[1]+', '+x[2]));
 					if (x[2].state_is_valid()) {
 						// Display
 						// Try Google Places
@@ -121,7 +123,7 @@ function MT__RUN() {
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
 			}
 			function gp(city, state) { // Return:div
-				var d = ''.div({style:'width:99%;border-bottom:1px solid green;'}); // Placeholder
+				var d = ''.div({style:''}); // Placeholder
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL:	'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
 							'query='+encodeURIComponent(city +' '+ state)+'&key=_GOOGLE_API_KEY_REDACTED_',
@@ -151,7 +153,13 @@ function MT__RUN() {
 				return d;
 			}
 			function choice(addr) {
-				addr = addr.div({style:'border-bottom:1px dashed orange;'});
+				addr = addr.replace(/, USA$/, ''); // Removes USA
+				addr = addr.replace(/, ([A-Z]{2})$/, function(p0, p1) { // State to full
+					p1 = p1.stateAbbrToFull();
+					return ', ' + p1;}
+				);
+				addr = addr.string_to_mixed_case(); // Case
+				addr = addr.div({style:'border-bottom:1px dashed green;'});
 				addr.className = 'exe';
 				addr.onclick = function() {
 					

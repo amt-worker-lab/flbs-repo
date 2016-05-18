@@ -2087,10 +2087,11 @@ String.prototype.state_abbr_is_valid = function() {
 	return false;
 }
 // Full state, non-abbreviated
+// MT___states ==> e.g. "AL": "Alabama",
 String.prototype.state_is_valid = function() {
 	str = this.toString().toLowerCase().trim();
 	for (var i in MT___states) {
-		if (i.toLowerCase() == str) {
+		if (MT___states[i].toLowerCase() == str) {
 			return true;
 		}
 	}
