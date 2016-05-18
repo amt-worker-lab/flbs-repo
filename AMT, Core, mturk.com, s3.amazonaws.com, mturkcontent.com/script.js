@@ -71,8 +71,8 @@ function MT__RUN() {
 					console.log(em);
 					var rf = new AMT___requests_factory().image_2_OCR({
 						url: document.getElementsByTagName('img')[0].src,
-						resize: '800%',
-						nobatch: 'AMT_Requester_Proffinu',
+						//~ resize: '800%',
+						nobatch: 'none',
 						crop: '-2+0',
 						callback_function: ocr
 					});
