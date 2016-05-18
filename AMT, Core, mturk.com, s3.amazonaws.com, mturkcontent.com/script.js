@@ -92,12 +92,26 @@ function MT__RUN() {
 						f_write_complete(); // Calls timeout dosubmit
 						return;
 					}
-					d4.value = uppr(d4.value);
+					var x = d4.value.string_to_mixed_case(); // Case
+					x = x.replace(/\s+/g, ' '); // Multiple spaces
+					// Upper state and a comma.
+					if (/, ([a-z]{2})$/i.exec(x)) {
+						x = x.replace(/, ([a-z]{2})$/i, function(p0, p1) {
+							return ', ' + p1.toUpperCase();
+						});
+					}
+					// Upper state and no comma.
+					else {
+						x = x.replace(/([^,]) ([a-z]{2})$/i, function(p0, p1, p2) {
+							return p1 + ', ' + p2.toUpperCase();
+						});
+					}
+					d4.value = x;
 					o.q[0].value = d4.value;
 					if (o.q[0].value == '' || o.q[0].value.length < 4) {
 						return false;
 					}
-					if (/^[^,]{2,}, [\d\D]{2}$/.exec(o.q[0].value)) {
+					if (/^[^,]{2,}, [A-Z]{2}$/.exec(o.q[0].value)) {
 						sbm(); return;
 					}
 				}
@@ -248,10 +262,15 @@ function MT__RUN() {
 				if (d4.value == '') {
 					var first_matched_indexOf = 9999;
 					var best_match = null;
+					var try_txt = r.text;
+					try_txt = try_txt.replace(/ *\n *- */g, '');
+					try_txt = try_txt.replace(/\n/g, '');
+					try_txt = try_txt.replace(/\s+/g, ' ');
+					try_txt = try_txt.toLowerCase();
 					for (var i in o.submits_sorted) {
 						if (i > 200) break;
 						var n = o.submits_sorted[ i ];
-						var f = r.text.toLowerCase().indexOf( n.city_lw );
+						var f = try_txt.indexOf( n.city_lw );
 						if (f != -1) {
 							if (f < first_matched_indexOf) { // Is sooner
 								first_matched_indexOf = f;
