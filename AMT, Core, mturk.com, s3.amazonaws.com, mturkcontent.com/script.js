@@ -124643,8 +124643,8 @@ qatar,80
 				searches:[
 					o.comp,
 					//~ '"' + o.comp + '" ' + o.address,
-					'' + o.comp + ' ' + o.address,
-					'"' + o.comp.split(' ').join('" "') + '" ' + o.address,
+					'' + o.comp + ' "' + o.address + '"',
+					'"' + o.comp.split(' ').join('" "') + '" "' + o.address + '"',
 				],
 				search_results: {
 					use_domain_only: true,
