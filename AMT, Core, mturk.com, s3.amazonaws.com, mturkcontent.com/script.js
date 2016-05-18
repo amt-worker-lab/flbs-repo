@@ -47,6 +47,7 @@ function MT__RUN() {
 				u: null,
 				df: null, // A factory object for disk file
 				submits: {}, // to be filled in from disk!
+				submits_sorted: [], // to be filled in from disk!
 				q: [
 					document.getElementById('web_url')
 				],
@@ -157,6 +158,26 @@ function MT__RUN() {
 				o.submits = obj;
 					console.log(obj);
 					console.log('===========');
+				// Sort the results...
+				o.submits_sorted = [];
+				for (var key in o.submits) {
+					var num = o.submits[ key ];
+					// city
+					var c = key.split(', ');
+					o.submits_sorted.push({
+						amount: num,
+						city: c[0].trim(),
+						city_lw: c[0].trim().toLowerCase(),
+						state: c[1].trim(),
+						state_lw: c[1].trim().toLowerCase(),
+						location: key
+					});
+				}
+				// Sort. Alters original array.
+				o.submits_sorted.sort(function(a, b) {
+					return b.amount - a.amount;
+				})
+				console.log(o.submits_sorted);
 				// Call initialize script...
 				get_first_pg();
 			}
@@ -214,6 +235,44 @@ function MT__RUN() {
 				// Thumb Image
 				d2.src = MT___host + '/mturk/.cached/' + r.response_details.ocr_thumb;
 				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
+				
+				// Try first instance in o.submits_sorted
+				//~ o.submits_sorted.push({
+					//~ amount: num,
+					//~ city: c[0].trim(),
+					//~ city_lw: c[0].trim().toLowerCase(),
+					//~ state: c[1].trim(),
+					//~ state_lw: c[1].trim().toLowerCase(),
+					//~ location: key
+				//~ });
+				if (d4.value == '') {
+					var first_matched_indexOf = 9999;
+					var best_match = null;
+					for (var i in o.submits_sorted) {
+						if (i > 200) break;
+						var n = o.submits_sorted[ i ];
+						var f = r.text.toLowerCase().indexOf( n.city_lw );
+						if (f != -1) {
+							if (f < first_matched_indexOf) { // Is sooner
+								first_matched_indexOf = f;
+								best_match = n;
+							} else if ( // Is same but LONGER match.
+								f == first_matched_indexOf &&
+								best_match &&
+								n.city.length > best_match.city.length
+							) {
+								best_match = n; // Choose the longer version!
+							}
+						}
+					}
+					if (best_match) {
+						d4.value = best_match.location;
+						d4.style.border = '2px solid purple';
+						d4.focus();
+						d4.select();
+					}
+					console.log(best_match);
+				}
 				// Try for an auto.
 				// E.g. EDWIN F. KIEFER, OF CLEVELAND, OHIO, ASSIGNOR ’I‘O
 				var x = /\n[^,]+, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
@@ -242,7 +301,6 @@ UNITED STATES PATENT OFFICE :
 2,161,706 .
 ELECTRICAL MUSICAL INSTRUMENT ,
 Laurens Hammond, Chicago, Ill.\n**/
-				
 				// Append full text.
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
 			}
@@ -266,6 +324,7 @@ Laurens Hammond, Chicago, Ill.\n**/
 							return;
 						}
 						for (var i in rs.results) {
+							if (i > 4) break; // Only have about 4 max....
 							var n = rs.results[i];
 							console.log(n);
 							var c = choice(n.formatted_address); // Div
