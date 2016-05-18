@@ -177,6 +177,14 @@ function MT__RUN() {
 						//~ );
 					//~ }
 				}
+				// How about this
+				/**
+Patented June 6, 1939 . 2,161,706
+
+UNITED STATES PATENT OFFICE :
+2,161,706 .
+ELECTRICAL MUSICAL INSTRUMENT ,
+Laurens Hammond, Chicago, Ill.\n**/
 				// Append full text.
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
 			}
