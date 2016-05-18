@@ -36,10 +36,10 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
-			GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
+			GM_addStyle('#mturk_form {margin-top:1000px;}');
+			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
 			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
-			GM_addStyle('.panel-primary {position:absolute;top:1400px;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:1400px !important;}');
 			
 			var x = document.getElementsByTagName('td');
 			var o = {
@@ -60,8 +60,29 @@ function MT__RUN() {
 				'position:absolute;top:28px;left:60%;width:39%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
+			var d4 = document.createElement('input');
+			d4.type = 'text';
+			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:60%;height:27px;');
+			document.body.appendChild(d4);
 			/*END ITEMS*/
 			// Onkeypress...
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				//var str = String.fromCharCode(e.keyCode).toLowerCase();
+				console.log(c);
+				//
+				if  (
+					c == 13
+					)
+				{
+					d4.value = uppr(d4.value);
+					o.q[0].value = d4.value;
+					new AMT___core_factory().nextTab();
+					setTimeout(function() { // Pause before submit...
+						doSubmit();
+					}, 5000);
+				}
+			}, false);
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -79,6 +100,13 @@ function MT__RUN() {
 				],
 				offset: 24 // offset top
 			});
+			// focus
+			setTimeout(function() {
+				d4.focus();
+			}, 10000);
+			//#######################################
+			// Init
+			//#######################################
 			// Get "front page" pdf URL
 			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
 			o.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
@@ -170,21 +198,29 @@ function MT__RUN() {
 				});
 				return d;
 			}
-			function choice(addr) {
-				addr = addr.replace(/,* USA$/g, ''); // Removes USA
-				addr = addr.replace(/,* \d+$/g, ''); // Removes zip codes
+			function uppr(addr) {
 				addr = addr.string_to_mixed_case(); // Case
-				addr = addr.replace(/, ([A-Z]{2})$/i, function(p0, p1) { // State to full
-					//p1 = p1.stateAbbrToFull();
-					//~ p1 = p1.stateAbbrToFull();
-					return ', ' + p1.toUpperCase();
-				});
+				if (addr.indexOf(',') != -1) {
+					addr = addr.split(',');
+					addr = addr[addr.length - 2].trim() + ', ' + addr[addr.length -1].toUpperCase().trim();
+				}
+				return addr;
+			}
+			function choice(addr) {
+				addr = addr.replace(/,* (|USA|United States|)$/g, '').trim(); // Removes USA
+				addr = addr.replace(/,* \d+$/g, '').trim(); // Removes zip codes
+				addr = uppr(addr);
+					//~ addr = addr.replace(/^(([\d#]+[^,]+, )*)([^,+], [a-z]{2})$/i, '$2'); // Removes street...
+					//~ addr = addr.replace(/, ([A-Z]{2})$/i, function(p0, p1) { // State to full
+						//~ return ', ' + p1.toUpperCase();
+					//~ });
 				addr = addr.div({style:'border-bottom:1px dashed green;'});
 				addr.className = 'exe';
 				addr.onclick = function(e) {
 					this.style.backgroundColor = 'LightGreen';
+					d4.value = this.innerText;
 					o.q[0].value = this.innerText;
-					o.q[0].focus();
+					doSubmit();
 				}
 				return addr;
 			}
