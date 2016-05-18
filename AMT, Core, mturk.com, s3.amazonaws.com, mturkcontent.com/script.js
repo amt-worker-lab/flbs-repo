@@ -53,18 +53,18 @@ function MT__RUN() {
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:228px;left:0;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style', 'position:absolute;top:0px;left:40%;width:59%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('img');
-			d2.setAttribute('style', 'width:100%;');
+			d2.setAttribute('style', 'max-height:100%;max-width:100%;');//width:50%;
 			d1.appendChild(d2);
 			var d3 = ''.div({style:
-				'position:absolute;top:28px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:28px;left:0%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
 			var d4 = document.createElement('input');
 			d4.type = 'text';
-			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:60%;height:27px;');
+			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:40%;height:27px;');
 			document.body.appendChild(d4);
 			/*END ITEMS*/
 			// Onkeypress...
@@ -80,7 +80,16 @@ function MT__RUN() {
 					if (d4.value == 'f') {
 						d4.value = 'foreign';
 						o.q[0].value = 'foreign';
-						sbm(); return;
+						new AMT___core_factory().nextTab();
+						f_write_complete(); // Calls timeout dosubmit
+						return;
+					}
+					if (d4.value == 'na') {
+						d4.value = 'NA';
+						o.q[0].value = 'NA';
+						new AMT___core_factory().nextTab();
+						f_write_complete(); // Calls timeout dosubmit
+						return;
 					}
 					d4.value = uppr(d4.value);
 					o.q[0].value = d4.value;
@@ -108,14 +117,20 @@ function MT__RUN() {
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
-					d1//, d3
+					d1
 				],
-				offset: 228 // offset top
+				offset: 0 // offset top
+			});
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d3
+				],
+				offset: 28 // offset top
 			});
 			// focus
 			setTimeout(function() {
 				d4.focus();
-			}, 10000);
+			}, 4000);
 			//#######################################
 			// Init
 			//#######################################
@@ -158,7 +173,7 @@ function MT__RUN() {
 			function f_write_complete() { // Assumes a submit.
 				setTimeout(function() { // Pause before submit...
 					doSubmit();
-				}, 5000);
+				}, 4000);
 			}
 			// get_first_pg
 			function get_first_pg() {
@@ -197,7 +212,8 @@ function MT__RUN() {
 			function ocr(response) {
 				var r = response;
 				// Thumb Image
-				d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
+				d2.src = MT___host + '/mturk/.cached/' + r.response_details.ocr_thumb;
+				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
 				// Try for an auto.
 				// E.g. EDWIN F. KIEFER, OF CLEVELAND, OHIO, ASSIGNOR ’I‘O
 				var x = /\n[^,]+, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
@@ -237,9 +253,7 @@ Laurens Hammond, Chicago, Ill.\n**/
 							'query='+encodeURIComponent(city +' '+ state)+'&key=_GOOGLE_API_KEY_REDACTED_',
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						//~ var rs = options.response.responseText;
-						//~ if (options.response.status != 200) {
-							//~ add_static_img(); // Add basic image....
-						//~ }
+						//~ if (options.response.status != 200)
 						return true;
 					},
 					success_callback: function(options) {
