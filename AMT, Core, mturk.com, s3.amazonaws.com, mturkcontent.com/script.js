@@ -78,6 +78,25 @@ function MT__RUN() {
 			/*END ITEMS*/
 			// Onkeypress...
 			d4.addEventListener('keyup', function(e) {
+				
+			}, false);
+			// Onkeypress...
+			d4.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				var str = String.fromCharCode(e.keyCode).toLowerCase();
+				console.log(c);
+				console.log(str);
+				// Grave key. Select the first best match auto fill.
+				if  (
+					str == '`' && c == 96 // double check correct key...
+					)
+				{
+					if (d4b.value.length > 4)
+						d4.value = d4b.value;
+					e.stopPropagation();
+					e.preventDefault();
+					return;
+				}
 				// d4b
 				// Autocomplete
 				// Loops through o.submits_sorted
@@ -89,10 +108,12 @@ function MT__RUN() {
 					state_lw: c[1].trim().toLowerCase(),
 					location: key
 				});**/
-				if (d4.value.length >= 2) {
+				var x = d4.value + str;
+				console.log('ac:'+x);
+				if (x.length >= 2) {
 					var longest = 0;
 					var best_match = null;
-					var x = d4.value.toLowerCase();
+					x = x.toLowerCase();
 					for (var i in o.submits_sorted) {
 						var n = o.submits_sorted[i];
 						// Find the longest match, starting from
@@ -112,23 +133,6 @@ function MT__RUN() {
 					}
 				} else {
 					d4b.value = '';
-				}
-			}
-			// Onkeypress...
-			d4.addEventListener('keypress', function(e) {
-				var c = e.keyCode;
-				var str = String.fromCharCode(e.keyCode).toLowerCase();
-				console.log(c);
-				// Grave key. Select the first best match auto fill.
-				if  (
-					s == '`' && c == 96 // double check correct key...
-					)
-				{
-					if (d4b.innerText.length > 4)
-						d4.value = d4b.value;
-					e.stopPropagation();
-					e.preventDefault();
-					return;
 				}
 				// Enter key
 				if  (
