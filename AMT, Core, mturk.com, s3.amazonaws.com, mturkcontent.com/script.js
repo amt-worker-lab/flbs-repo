@@ -91,8 +91,12 @@ function MT__RUN() {
 					str == '`' && c == 96 // double check correct key...
 					)
 				{
-					if (d4b.value.length > 4)
+					if (d4b.value.length > 4) {
 						d4.value = d4b.value;
+						new AMT___core_factory().nextTab();
+						f_write_complete(); // Calls timeout dosubmit
+						return;
+					}
 					e.stopPropagation();
 					e.preventDefault();
 					return;
