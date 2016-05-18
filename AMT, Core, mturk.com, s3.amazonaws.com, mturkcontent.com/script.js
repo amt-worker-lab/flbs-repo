@@ -75,14 +75,27 @@ function MT__RUN() {
 					c == 13
 					)
 				{
+					if (d4.value == 'f') {
+						d4.value = 'foreign';
+						o.q[0].value = 'foreign';
+						sbm(); return;
+					}
 					d4.value = uppr(d4.value);
 					o.q[0].value = d4.value;
-					new AMT___core_factory().nextTab();
-					setTimeout(function() { // Pause before submit...
-						doSubmit();
-					}, 5000);
+					if (o.q[0].value == '' || o.q[0].value.length < 4) {
+						return false;
+					}
+					if (/^[^,]{2,}, [\d\D]{2}$/.exec(o.q[0].value)) {
+						sbm(); return;
+					}
 				}
 			}, false);
+			function sbm() {
+				new AMT___core_factory().nextTab();
+				setTimeout(function() { // Pause before submit...
+					doSubmit();
+				}, 5000);
+			}
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -90,8 +103,7 @@ function MT__RUN() {
 				if (o.q[0].value == '' || o.q[0].value.length < 4) {
 					return false;
 				}
-				doSubmit();
-				return false;
+				sbm(); return false;
 			}
 			// ih
 			new AMT___core_factory().el_innerHeight({
@@ -149,7 +161,7 @@ function MT__RUN() {
 				// E.g. EDWIN F. KIEFER, OF CLEVELAND, OHIO, ASSIGNOR ’I‘O
 				var x = /\n[^,]+, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
 				if (!x) { // #2
-					x = /, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
+					x = /, *[0o][fnr] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
 				}
 				if (x) {
 					// Debug
@@ -192,7 +204,12 @@ function MT__RUN() {
 						for (var i in rs.results) {
 							var n = rs.results[i];
 							console.log(n);
-							d.appendChild(choice(n.formatted_address));
+							var c = choice(n.formatted_address); // Div
+							d.appendChild(c);
+							if (i == 0 && d4.value == '') { // First run, Must be blank.
+								d4.value = c.innerText;
+								d4.select(); // Pre-select
+							}
 						}
 					}
 				});
@@ -220,7 +237,8 @@ function MT__RUN() {
 					this.style.backgroundColor = 'LightGreen';
 					d4.value = this.innerText;
 					o.q[0].value = this.innerText;
-					doSubmit();
+					//doSubmit();
+					sbm();
 				}
 				return addr;
 			}
