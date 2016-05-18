@@ -111,7 +111,12 @@ function MT__RUN() {
 					if (o.q[0].value == '' || o.q[0].value.length < 4) {
 						return false;
 					}
-					if (/^[^,]{2,}, [A-Z]{2}$/.exec(o.q[0].value)) {
+					if (// Starts with uppercase
+						// city, state or
+						// city, county, state
+						/^[A-Z][^,]{1,}, [A-Z]{2}$/.exec(o.q[0].value) ||
+						/^[A-Z][^,]{1,}, [A-Z][^,]{1,}, [A-Z]{2}$/.exec(o.q[0].value)
+					) {
 						sbm(); return;
 					}
 				}
