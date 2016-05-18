@@ -36,6 +36,10 @@ function MT__RUN() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			//~ GM_addStyle('#mturk_form {margin-top:1000px;}');
+			GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1400px;}');
 			
 			var x = document.getElementsByTagName('td');
 			var o = {
@@ -47,17 +51,27 @@ function MT__RUN() {
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:24px;left:0;width:60%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style', 'position:absolute;top:28px;left:0;width:60%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('img');
 			d2.setAttribute('style', 'width:99%;');
 			d1.appendChild(d2);
 			var d3 = ''.div({style:
-				'position:absolute;top:24px;left:60%;width:39%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:28px;left:60%;width:39%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
 			/*END ITEMS*/
 			// Onkeypress...
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (o.q[0].value == '' || o.q[0].value.length < 4) {
+					return false;
+				}
+				doSubmit();
+				return false;
+			}
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
@@ -105,19 +119,23 @@ function MT__RUN() {
 				d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
 				// Try for an auto.
 				// E.g. EDWIN F. KIEFER, OF CLEVELAND, OHIO, ASSIGNOR ’I‘O
-				var x = /\n[^,]+, *OF *([^,]+), *([^,]+)/i.exec(r.text);
+				var x = /\n[^,]+, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
+				if (!x) { // #2
+					x = /, *[0o][fn] *([^,\n]+), *([^,\n]+)/i.exec(r.text);
+				}
 				if (x) {
 					// Debug
-					//~ var n = (x[1]+', '+x[2]).string_to_mixed_case();
-					//~ d3.appendChild(n.div({style:'width:99%;border-bottom:1px solid green;'}));
 					d3.appendChild(choice(x[1]+', '+x[2]));
-					if (x[2].state_is_valid()) {
-						// Display
-						// Try Google Places
-						d3.appendChild(
-							gp(x[1], x[2])
-						);
-					}
+					d3.appendChild(
+						gp(x[1], x[2])
+					);
+					//~ if (x[2].state_is_valid() || x[2].state_abbr_is_valid()) {
+						//~ // Display
+						//~ // Try Google Places
+						//~ d3.appendChild(
+							//~ gp(x[1], x[2])
+						//~ );
+					//~ }
 				}
 				// Append full text.
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
@@ -153,16 +171,20 @@ function MT__RUN() {
 				return d;
 			}
 			function choice(addr) {
-				addr = addr.replace(/, USA$/, ''); // Removes USA
-				addr = addr.replace(/, ([A-Z]{2})$/, function(p0, p1) { // State to full
-					p1 = p1.stateAbbrToFull();
-					return ', ' + p1;}
-				);
+				addr = addr.replace(/,* USA$/g, ''); // Removes USA
+				addr = addr.replace(/,* \d+$/g, ''); // Removes zip codes
 				addr = addr.string_to_mixed_case(); // Case
+				addr = addr.replace(/, ([A-Z]{2})$/i, function(p0, p1) { // State to full
+					//p1 = p1.stateAbbrToFull();
+					//~ p1 = p1.stateAbbrToFull();
+					return ', ' + p1.toUpperCase();
+				});
 				addr = addr.div({style:'border-bottom:1px dashed green;'});
 				addr.className = 'exe';
-				addr.onclick = function() {
-					
+				addr.onclick = function(e) {
+					this.style.backgroundColor = 'LightGreen';
+					o.q[0].value = this.innerText;
+					o.q[0].focus();
 				}
 				return addr;
 			}
