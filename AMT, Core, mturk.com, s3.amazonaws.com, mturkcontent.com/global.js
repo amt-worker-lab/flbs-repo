@@ -5126,6 +5126,33 @@ AMT___requests_factory.prototype.io__AMT__displayPostStrAsHTML = function(str, i
 		}
 	});
 }
+/**
+ * Returns the following methods:
+ * 		.load
+ * 		.load_and_update
+ * 
+ **/
+AMT___requests_factory.prototype.disk_file = function(opts_object) //
+{
+	var host = (!write_object.host) ? AMT___POPUP___PROXY_REDACTED_ : write_object.host;
+	// Check exists
+	new AMT___requests_factory().io__file_exists('', cb, {folder: opts_object.folder});
+	
+	function write() {
+		GM_xmlhttpRequest({
+			method: "POST",
+			url: host + '/mturk/util.php',
+			data: write_object.data,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) return;
+			}
+		});
+	}
+}
 //
 AMT___requests_factory.prototype.io__write_to_file = function(write_object, callback_function) //
 {
@@ -5183,17 +5210,14 @@ AMT___requests_factory.prototype.io__file_exists = function(filename, callback_f
 AMT___requests_factory.prototype.io__read_file = function(file_object, callback_function) //
 {
 	var file_object = file_object;
-	
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: file_object.filename,
 		onload: function (response) {
 			var rs = response.responseText;
-			
 			file_object.responseText	= rs;
 			file_object.response		= response;
 			file_object.status			= response.status;
-			
 			callback_function(file_object);
 		}
 	});

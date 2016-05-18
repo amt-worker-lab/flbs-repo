@@ -45,19 +45,20 @@ function MT__RUN() {
 			var o = {
 				p: x[1].innerText.trim(),
 				u: null,
+				submits: {}, // to be filled in from disk!
 				q: [
 					document.getElementById('web_url')
 				],
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:28px;left:0;width:60%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style', 'position:absolute;top:228px;left:0;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('img');
-			d2.setAttribute('style', 'width:99%;');
+			d2.setAttribute('style', 'width:100%;');
 			d1.appendChild(d2);
 			var d3 = ''.div({style:
-				'position:absolute;top:28px;left:60%;width:39%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:28px;left:0%;width:99%;height:200px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
 			var d4 = document.createElement('input');
@@ -108,9 +109,9 @@ function MT__RUN() {
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
-					d1, d3
+					d1//, d3
 				],
-				offset: 24 // offset top
+				offset: 228 // offset top
 			});
 			// focus
 			setTimeout(function() {
@@ -122,37 +123,62 @@ function MT__RUN() {
 			// Get "front page" pdf URL
 			// http://pdfpiw.uspto.gov/.piw?docid=US1774381&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/
 			o.u = 'http://pdfpiw.uspto.gov/.piw?docid='+encodeURIComponent(o.p)+'&SectionNum=1&IDKey=79D63F0C68E1&HomeUrl=http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1%2526Sect2=HITOFF%2526p=1%2526u=/netahtml/PTO/search-bool.html%2526r=1%2526f=G%2526l=50%2526d=PALL%2526S1=.PN.%2526OS=PN/%2526RS=PN/';
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: o.u,
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					//~ var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						return false;
-					}
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						return false;
-					}
-					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var em = dom.getElementsByTagName('embed')
-					if (!em.length) {
-						return;
-					}
-					em = em[0].src;
-					console.log(em);
-					var rf = new AMT___requests_factory().image_2_OCR({
-						url: em,
-						custom: true,
-						//~ resize: '800%',
-						//~ nobatch: 'none',
-						//~ crop: '-2+0',
-						callback_function: ocr
-					});
-				}
+			get_first_pg();
+			/**
+			 * Load (read)
+			 * Load and Update (write)
+			 * o.submits = {} // to be filled in from disk
+			 * 
+			 * var f = new AMT__
+			 */
+			new AMT___requests_factory().disk_file({
+				json: true,
+				folder: '.miscellaneous',
+				callback_read: f_load,
+				callback_write: f_load_and_update,
+				filename: 'david-rigby.json',
+				//md5_filename: true,
 			});
+			function f_load() {
+				
+			}
+			function f_load_and_update() {
+				
+			}
+			// get_first_pg
+			function get_first_pg() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						//~ var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var em = dom.getElementsByTagName('embed')
+						if (!em.length) {
+							return;
+						}
+						em = em[0].src;
+						console.log(em);
+						var rf = new AMT___requests_factory().image_2_OCR({
+							url: em,
+							custom: true,
+							//~ resize: '800%',
+							//~ nobatch: 'none',
+							//~ crop: '-2+0',
+							callback_function: ocr
+						});
+					}
+				});
+			}
 			function ocr(response) {
 				var r = response;
 				// Thumb Image
@@ -177,7 +203,7 @@ function MT__RUN() {
 						//~ );
 					//~ }
 				}
-				// How about this
+				// How about this...
 				/**
 Patented June 6, 1939 . 2,161,706
 
@@ -185,6 +211,7 @@ UNITED STATES PATENT OFFICE :
 2,161,706 .
 ELECTRICAL MUSICAL INSTRUMENT ,
 Laurens Hammond, Chicago, Ill.\n**/
+				
 				// Append full text.
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
 			}
@@ -34670,7 +34697,6 @@ Laurens Hammond, Chicago, Ill.\n**/
 								},
 								BrianAPDC_amazon_products__process
 							);
-							
 						}
 					});
 				}
