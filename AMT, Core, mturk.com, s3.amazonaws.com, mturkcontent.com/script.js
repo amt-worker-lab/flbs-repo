@@ -76,13 +76,25 @@ function MT__RUN() {
 			d4b.setAttribute('style', 'position:absolute;top:28px;left:40%;width:59%;height:28px;');
 			document.body.appendChild(d4b);
 			/*END ITEMS*/
-			// Onkeypress...
-			d4.addEventListener('keyup', function(e) {
-				
+			// keydown...
+			d4.addEventListener('keydown', function(e) { // keypress is for capturing CTRL
+				//~ var c = e.keyCode;
+				//~ if (c == 17) {
+					//~ if (d4b.value.length > 4) {
+						//~ e.stopPropagation();
+						//~ e.preventDefault();
+						
+						//~ d4.value = d4b.value;
+						//~ new AMT___core_factory().nextTab();
+						//~ f_write_complete(); // Calls timeout dosubmit
+						//~ return;
+					//~ }
+				//~ }
 			}, false);
-			// Onkeypress...
+			// keypress...
 			d4.addEventListener('keypress', function(e) {
 				var c = e.keyCode;
+				console.log('ctrl:'+e.ctrlKey);
 				var str = String.fromCharCode(e.keyCode).toLowerCase();
 				console.log(c);
 				console.log(str);
