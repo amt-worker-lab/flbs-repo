@@ -177,7 +177,7 @@ function MT__RUN() {
 						f_write_complete(); // Calls timeout dosubmit
 						return;
 					}
-					var x = d4.value.string_to_mixed_case(); // Case
+					var x = d4.value.string_to_mixed_case({REG_INCLUDE_DASHES:true}); // Case
 					x = x.replace(/\s+/g, ' '); // Multiple spaces
 					// Upper state and a comma.
 					if (/, ([a-z]{2})$/i.exec(x)) {
@@ -468,7 +468,7 @@ Laurens Hammond, Chicago, Ill.\n**/
 				return d;
 			}
 			function uppr(addr) {
-				addr = addr.string_to_mixed_case(); // Case
+				addr = addr.string_to_mixed_case({REG_INCLUDE_DASHES:true}); // Case
 				if (addr.indexOf(',') != -1) {
 					addr = addr.split(',');
 					addr = addr[addr.length - 2].trim() + ', ' + addr[addr.length -1].toUpperCase().trim();
