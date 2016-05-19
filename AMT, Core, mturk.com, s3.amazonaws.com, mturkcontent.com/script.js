@@ -219,6 +219,24 @@ function MT__RUN() {
 				}
 				sbm(); return false;
 			}
+			// img onclick
+				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.ocr_thumb;
+				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
+			d2.onclick = function() {
+				if (this.ocr && this.showing == 'full') {
+					this.src = this.ocr;
+					this.showing = 'ocr';
+					this.style.width = '';
+					this.style.maxHeight = '100%';
+				} else if (this.full && this.showing == 'ocr') {
+					this.src = this.full;
+					this.showing = 'full';
+					this.style.width = '100%';
+					this.style.maxHeight = '';
+				}
+				// Always re-focus on d4
+				d4.focus();
+			}
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
@@ -337,9 +355,11 @@ function MT__RUN() {
 			function ocr(response) {
 				var r = response;
 				// Thumb Image
-				d2.src = MT___host + '/mturk/.cached/' + r.response_details.ocr_thumb;
-				//~ d2.src = MT___host + '/mturk/.cached/' + r.response_details.thumb;
-				
+				// d2.showing
+				d2.showing = 'ocr';
+				d2.full = MT___host + '/mturk/.cached/' + r.response_details.thumb;
+				d2.ocr = MT___host + '/mturk/.cached/' + r.response_details.ocr_thumb;
+				d2.src = d2.ocr; // Init on OCR image.
 				// Try first instance in o.submits_sorted
 				/**o.submits_sorted.push({
 					amount: num,
