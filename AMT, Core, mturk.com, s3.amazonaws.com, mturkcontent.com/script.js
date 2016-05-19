@@ -54,13 +54,13 @@ function MT__RUN() {
 			}
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style', 'position:absolute;top:0px;left:40%;width:59%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style', 'position:absolute;top:56px;left:40%;width:59%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('img');
 			d2.setAttribute('style', 'max-height:100%;max-width:100%;');//width:50%;
 			d1.appendChild(d2);
 			var d3 = ''.div({style:
-				'position:absolute;top:56px;left:0%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:0px;left:0%;width:40%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d3);
 			//~ var d3b = ''.div({style:
@@ -69,11 +69,11 @@ function MT__RUN() {
 			//~ document.body.appendChild(d3b);
 			var d4 = document.createElement('input');
 			d4.type = 'text';
-			d4.setAttribute('style', 'position:absolute;top:0px;left:0;width:40%;height:28px;');
+			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;width:59%;height:28px;');
 			document.body.appendChild(d4);
 			var d4b = document.createElement('input');
 			d4b.type = 'text';
-			d4b.setAttribute('style', 'position:absolute;top:28px;left:0;width:40%;height:28px;');
+			d4b.setAttribute('style', 'position:absolute;top:28px;left:40%;width:59%;height:28px;');
 			document.body.appendChild(d4b);
 			/*END ITEMS*/
 			// Onkeypress...
@@ -114,21 +114,29 @@ function MT__RUN() {
 				});**/
 				var x = d4.value + str;
 				console.log('ac:'+x);
-				if (x.length >= 2) {
-					var longest = 0;
+				if (x.length >= 1) { // At least one character
+					//~ var longest = 0;
 					var best_match = null;
 					x = x.toLowerCase();
 					for (var i in o.submits_sorted) {
 						var n = o.submits_sorted[i];
-						// Find the longest match, starting from
-						// beginning of string.
-						if (n.city_lw.indexOf(x) == 0 && n.city_lw.length > longest) {
-							longest = n.city_lw.length;
+						if (n.city_lw.indexOf(x) == 0) {
 							best_match = n;
-						}
-						if (n.amount <= 1) { // Do not go lower than 2.
 							break;
 						}
+						// This is to find the longest matching
+						// string. It is probably best to go with
+						// most popular result first because 
+						// it is most relevant.
+						//~ // Find the longest match, starting from
+						//~ // beginning of string.
+						//~ if (n.city_lw.indexOf(x) == 0 && n.city_lw.length > longest) {
+							//~ longest = n.city_lw.length;
+							//~ best_match = n;
+						//~ }
+						//~ if (n.amount < 1) { // Go all the way to 1
+							//~ break;
+						//~ }
 					}
 					if (best_match) {
 						d4b.value = best_match.location;
@@ -204,18 +212,18 @@ function MT__RUN() {
 				elements: [
 					d1
 				],
-				offset: 0 // offset top
+				offset: 56 // offset top
 			});
 			new AMT___core_factory().el_innerHeight({
 				elements: [
 					d3
 				],
-				offset: 56 // offset top
+				offset: 0 // offset top
 			});
 			// focus
 			setTimeout(function() {
 				d4.focus();
-			}, 4000);
+			}, 2000);
 			//#######################################
 			// Init
 			//#######################################
@@ -278,7 +286,7 @@ function MT__RUN() {
 			function f_write_complete() { // Assumes a submit.
 				setTimeout(function() { // Pause before submit...
 					doSubmit();
-				}, 4000);
+				}, 3000);
 			}
 			// get_first_pg
 			function get_first_pg() {
