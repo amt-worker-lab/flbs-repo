@@ -88489,10 +88489,13 @@ qatar,80
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('#mturk_form {margin-top:200px !important;}');
-			GM_addStyle('#submitButton {width:40%;height:40px;margin-top:-20px;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input {margin:0 !important;padding:0 !important;font-size:10px;}');
+			//~ GM_addStyle('#mturk_form {margin-top:200px !important;}');
+			GM_addStyle('#submitButton {width:40%;height:40px;position:absolute;top:1000px;}');
 			GM_addStyle('.exe:hover {cursor:pointer;background-color:LightGreen;}');
+			GM_addStyle('.container {margin:0 important!;padding:0 !important;margin-top:0px !important;width:100% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
+			GM_addStyle('.form-control {width:60% !important;height:24px !important;position:absolute;left:40%;}');
 			
 			var a = document.getElementsByTagName('a');
 			var o = {
@@ -88539,11 +88542,11 @@ qatar,80
 			document.body.appendChild(d3);
 			// d4
 			var d4 = document.createElement('div');
-			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:140px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4.setAttribute('style', 'position:absolute;top:0px;left:40%;height:140px;width:45%;background-color:#eee;border:1px solid blue;overflow:auto;               display:none;'); //display:none;
 			document.body.appendChild(d4);
 			// d4
 			var d4b = document.createElement('div');
-			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:140px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;'); //
+			d4b.setAttribute('style', 'position:absolute;top:0px;left:85%;height:140px;width:14%;background-color:#eee;border:1px solid blue;overflow:auto;               display:none;'); //display:none;
 			document.body.appendChild(d4b);
 			// d4
 			var d4c = document.createElement('div');
@@ -88777,9 +88780,7 @@ qatar,80
 								div: d2,
 								input_send_success: o.q[0],
 								do_submit_callback: function() {
-									
 									// do nothing
-									
 									// ...
 									//~ showNextTab();
 									//~ doSubmit();
@@ -88818,7 +88819,7 @@ qatar,80
 										)
 									{
 										o.q[0].value = this.email;
-										//~ doSubmit();
+										doSubmit();
 									}
 								},
 							}
@@ -89162,6 +89163,7 @@ qatar,80
 						o.q[0].value = m;
 						if (m.length > 6) {
 							//~ AMT___recordAndSubmit();
+							doSubmit();
 						}
 					}
 				});
