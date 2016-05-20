@@ -88484,7 +88484,8 @@ qatar,80
 	// Mark Carey
 	// Find the business enquiries email address of given YouTube channel
 	// 3QLL1RLFYUGHXA7A8G5E8R9FP6KG4S
-	s = '<p>Find the business enquiries email address for the following YouTube channel</p>';
+	s = 'If there is no "view email address" button, the email may be included as part of the channel description text. If not, you may find the email by other means, often emails can be found at the top of their Instagram profile or their blog, if linked from "About" page. If you can\'t find an email after reasonable efforts, please enter na@na.com (such submissions will be spot-checked)';
+		//~ s = '<p>Find the business enquiries email address for the following YouTube channel</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -88507,7 +88508,9 @@ qatar,80
 				
 				final_rs: null,
 				q: [
-					document.getElementById('web_url')
+					document.getElementById('web_url'),
+					document.getElementById('twitter_url'),
+					document.getElementById('facebook_url')
 				],
 				SKIP_SITES: null,
 			}
@@ -88665,7 +88668,7 @@ qatar,80
 				var start_urls = [];
 				var allowed_domains = [];
 				for (var i=0;i<l.length;i++) {
-					var hr = l[i].getAttribute('href').trim();
+					var hr = l[i].getAttribute('href').trim().toLowerCase();
 					if (!/^https?:\/\//.exec(hr)) {
 						hr = 'http://'+hr;
 					}
@@ -88688,6 +88691,19 @@ qatar,80
 					}
 					if (/^https?:\/\/plus\.google\.com\//i.exec(hr)) { //https://plus.google.com/............
 						continue;
+					}
+					// Fill in o.q[1] and o.q[2]
+					if  (
+						hr.indexOf('facebook.com') != -1
+						)
+					{
+						o.q[1].value = hr;
+					}
+					if  (
+						hr.indexOf('twitter.com') != -1
+						)
+					{
+						o.q[2].value = hr;
 					}
 					//
 					var x = hr.replace(/^https?:\/\/(w+\d*\.|)/g, '');	// Initial...
@@ -88735,22 +88751,20 @@ qatar,80
 					arg_max_pages_to_fetch: 60,
 					arg_type_scrape: 'all_emails',	// all_emails or str_match
 					settings: [
-						//'DEPTH_LIMIT=4',
-						//'SCHEDULER_ORDER=BFO',
+							//'DEPTH_LIMIT=4',
+							//'SCHEDULER_ORDER=BFO',
 						'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
-						//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
-						
+							//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
 						'CONCURRENT_ITEMS=40', //DEFAUL = 100
 						'CONCURRENT_REQUESTS=12', //DEFAUL = 16
 						'CONCURRENT_REQUESTS_PER_DOMAIN=8', //DEFAUL = 8
-						
 						'AJAXCRAWL_ENABLED=1', //true
 						'COOKIES_ENABLED=0', //false
-						//'RETRY_ENABLED=0', //false
-						//'DI=0', //false
+							//'RETRY_ENABLED=0', //false
+							//'DI=0', //false
 						'REDIRECT_MAX_TIMES=1'//,
-						//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
-						//'AJAXCRAWL_ENABLED=1', //true
+							//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+							//'AJAXCRAWL_ENABLED=1', //true
 					]
 				}
 				var req = new AMT___requests_factory();
@@ -88811,6 +88825,54 @@ qatar,80
 						);
 					}
 				);
+			}
+			/**
+			 * function about_fb_tw
+			 */
+			function about_fb_tw(rs) {
+				var dom =  new DOMParser().parseFromString(rs,'text/html');
+				// any in dom?
+				var c = dom.getElementsByClassName('about-metadata branded-page-box-padding clearfix'); // Container
+				if (!c || c.length != 1) {
+					return;
+				}
+				c = c[0];
+				var l = c.getElementsByClassName('about-channel-link')
+				if (!l || !l.length) {
+					return;
+				}
+				// Here...
+				for (var i=0;i<l.length;i++) {
+					var hr = l[i].getAttribute('href').trim().toLowerCase();
+					if (!/^https?:\/\//.exec(hr)) {
+						hr = 'http://'+hr;
+					}
+					if  (
+						/^https?:\/\/(\w+\.|)youtube\.com\//i.exec(hr)
+						)
+					{
+						continue; // Skip
+					}
+					// Fill in o.q[1] and o.q[2]
+					if  (
+						hr.indexOf('facebook.com') != -1 || 
+						hr.indexOf('//fb.me') != -1 ||
+						hr.indexOf('www.fb.me') != -1 ||
+						hr.indexOf('fb.me') == 0
+						)
+					{
+						o.q[1].value = hr;
+					}
+					if  (
+						hr.indexOf('twitter.com') != -1 ||
+						hr.indexOf('//t.co') != -1 ||
+						hr.indexOf('www.t.co') != -1 ||
+						hr.indexOf('t.co') == 0
+						)
+					{
+						o.q[2].value = hr;
+					}
+				}
 			}
 			/**
 			 * function about_text
@@ -88888,7 +88950,8 @@ qatar,80
 							//
 							//
 							new AMT___core_factory().createScriptVar('MC-CAPTCHA-Only', '0');
-							if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1') { // Never continue here... //&& AMT__Global_Vars.isPreview) {
+							if (AMT__Global_Vars.scriptVars['MC-CAPTCHA-Only'] == '1') {
+								// Never continue here... //&& AMT__Global_Vars.isPreview) {
 								skip();
 								return;
 							}
@@ -88900,6 +88963,8 @@ qatar,80
 							//...
 							return;
 						}
+						// Check for fb and tw
+						about_fb_tw(rs);
 						// Accept
 						if (AMT__Global_Vars.isPreview) {
 							AMT___Floater.accept();
