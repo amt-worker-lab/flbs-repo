@@ -29,7 +29,14 @@ function MT__RUN() {
 	// david rigby
 	// Find the location for patents on website
 	//
-	//
+	// Sample OCR:
+	/**
+Patented June 6, 1939 . 2,161,706
+
+UNITED STATES PATENT OFFICE :
+2,161,706 .
+ELECTRICAL MUSICAL INSTRUMENT ,
+Laurens Hammond, Chicago, Ill.**/
 	s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -422,14 +429,6 @@ function MT__RUN() {
 						//~ );
 					//~ }
 				}
-				// How about this...
-				/**
-Patented June 6, 1939 . 2,161,706
-
-UNITED STATES PATENT OFFICE :
-2,161,706 .
-ELECTRICAL MUSICAL INSTRUMENT ,
-Laurens Hammond, Chicago, Ill.\n**/
 				// Append full text.
 				d3.appendChild((r.text).div({style:'width:99%;border-bottom:1px solid green;'}));
 			}
@@ -88507,11 +88506,10 @@ qatar,80
 				cookie_filename: null,
 				
 				final_rs: null,
-				
-				q: document.getElementById('web_url'),
-				
+				q: [
+					document.getElementById('web_url')
+				],
 				SKIP_SITES: null,
-				
 			}
 			
 			function cookie() {
@@ -88520,7 +88518,6 @@ qatar,80
 			}
 			o.channel_id = /channel\/([^\/]+)\//.exec(o.url)[1]; // e.g. UCFN3lenUT-LVL3SMvn-z7Vg
 			//~ o.cookie_filename = new AMT___requests_factory().general_functions__md5(o.url + o.rand_id + '.csookie');
-			
 			
 			/*BEGIN ITEMS*/
 			// d1
@@ -88764,7 +88761,7 @@ qatar,80
 							new AMT___items_factory().create_dashboard__powers_v1,
 							{
 								div: d2,
-								input_send_success: o.q,
+								input_send_success: o.q[0],
 								do_submit_callback: function() {
 									
 									// do nothing
@@ -88806,8 +88803,8 @@ qatar,80
 										!/[\/\(\)\[\]\{\}%\|]/i.exec(this.email) // ...Exclude: anything that contains /, (), [], {}, %, |, 
 										)
 									{
-										o.q.value = this.email;
-										doSubmit();
+										o.q[0].value = this.email;
+										//~ doSubmit();
 									}
 								},
 							}
@@ -88841,7 +88838,6 @@ qatar,80
 					//addToTabsQ();
 				}
 				// Here...
-				//~ d4c.innerText = '';
 				emailReg.lastIndex = 0; // Reset lastIndex
 				var eobj = {};
 				var earr = [];
@@ -88860,9 +88856,9 @@ qatar,80
 					btn.className = 'exe';
 					btn.onclick = function() {
 						this.style.backgroundColor = 'teal';
-						o.q.value = this.innerText;
-						if (o.q.value.indexOf('@') != -1 && o.q.value.length > 6) {
-							AMT___recordAndSubmit();
+						o.q[0].value = this.innerText;
+						if (o.q[0].value.indexOf('@') != -1 && o.q[0].value.length > 6) {
+							//~ AMT___recordAndSubmit();
 						}
 					}
 					d4c.appendChild(btn);
@@ -88887,7 +88883,7 @@ qatar,80
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						// Skip?
-						if (!/<span class="[^"]+">View email address<\/span>/.exec(rs)) {
+						if (!/<span class="[^"]+">(View email address|Afficher l&#39;adresse e-mail)<\/span>/.exec(rs)) { // In fr also...
 							// If only in CAPTCHA mode then skip here!
 							//
 							//
@@ -89098,9 +89094,9 @@ qatar,80
 						d2.innerText = 'Success!';
 						// Sbm
 						var m = __js_clean_html_str(reg[1]).trim();
-						o.q.value = m;
+						o.q[0].value = m;
 						if (m.length > 6) {
-							AMT___recordAndSubmit();
+							//~ AMT___recordAndSubmit();
 						}
 					}
 				});
