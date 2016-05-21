@@ -45136,7 +45136,8 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ GM_addStyle('body {margin-top:1000px;}');
 			GM_addStyle('.container {position:absolute;top:1000px;margin-left:0px;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
-			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			GM_addStyle('.exe {word-wrap:break-word;white-space:normal;}');  // NOTE WORD WRAP..............
 			GM_addStyle('#submitButton {position:absolute;top:1400px;}');
 			
 			var td = document.getElementsByTagName('td');
@@ -45197,7 +45198,7 @@ Laurens Hammond, Chicago, Ill.**/
 			document.body.appendChild(d1e);
 			// 9% wide div for site scrape
 			var d1z = document.createElement('div');
-			d1z.setAttribute('style','position:absolute;top:20px;left:90%;width:9%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1z.setAttribute('style','position:absolute;top:20px;left:0%;width:99%;height:80px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1z);
 			//
 			var d2 = document.createElement('textarea'); // Offset these from N/A.....
@@ -45323,13 +45324,6 @@ Laurens Hammond, Chicago, Ill.**/
 				],
 				offset: 100 // offset top
 			});
-			// ih (d1z)
-			new AMT___core_factory().el_innerHeight({
-				elements: [
-					d1z
-				],
-				offset: 20 // offset top
-			});
 			// Init
 			//
 			facebook_company_reviews(d1);
@@ -45348,13 +45342,13 @@ Laurens Hammond, Chicago, Ill.**/
 			//
 			function site_scrape() {
 				o.website = o.website.replace(/^https?:*\/*(www\.|)/i, '').trim();
-				o.website = 'http://' + o.website;
 				console.log('=================================================');
 				console.log(o.website);
 				if (o.website == '') {
 					d1z.innerText = '--';
 					return;
 				}
+				o.website = 'http://' + o.website;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: o.website,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -45375,16 +45369,29 @@ Laurens Hammond, Chicago, Ill.**/
 								site_scrape_div(a[i].href);
 							}
 						}
+						// if ""
+						if (d1z.innerHTML == '') {
+							d1z.innerText = '--';
+						}
 					}
 				});
 			}
 			function site_scrape_div(href) {
-				var d = (href).div({style:'border-bottom:1px solid teal;'});
+				href = href.replace(/\?[\d\D]*/, ''); // Remove args
+				href = href.replace(/^http:/i, 'https:'); // Set to https
+				//~ var d = (href).div({style:'border-bottom:1px solid teal;'});
+				var d = document.createElement('input');
+				d.type = 'button';
+				d.setAttribute('style', 'cursor:pointer;');
 				d.className = 'exe';
-				d.innerText = href;
+				d.link = href;
+				d.original_bgc = '';
+				d.value = href.replace(/^https?:\/\/(www\.|)facebook\.com\//i, '').replace(/\/$/, '');
 				d1z.appendChild(d);
 				d.onclick = function(e) {
-					o.q[0].value = this.innerText;
+					o.q[0].value = this.link;
+					this.style.backgroundColor = 'LightGreen';
+					doSubmit();
 				}
 			}
 			// facebook_company_reset_user_token
@@ -45587,7 +45594,8 @@ Laurens Hammond, Chicago, Ill.**/
 							//
 							var div = document.createElement('div');
 							div.setAttribute('style', 'width:100%;border-bottom:2px solid teal;cursor:pointer;');
-							div.className	= r[i].link;
+							//~ div.className	= r[i].link;
+							div.className	= 'exe';
 							div.link		= r[i].link;
 							out.appendChild(div);
 							// Tmp
@@ -45611,7 +45619,7 @@ Laurens Hammond, Chicago, Ill.**/
 								var x = r[i].category;
 								tmp += '<hr>C:'+x;
 							}
-							tmp += '<hr>' + r[i].link;
+							tmp += '<hr>' + r[i].link.replace(/^https:\/\/www\.facebook\.com/, '');
 							// innerHTML
 							div.innerHTML = tmp;
 							if (unofficial) {
@@ -45653,9 +45661,10 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							// onmouseover
 							div.onmouseover = function() {
-								var x = document.getElementsByClassName(this.className);
+								var x = document.getElementsByClassName('exe');
 								for (var i in x) {
 									if (i == 'length') break;
+									if (!x[i].link || this.link.toLowerCase() != x[i].link.toLowerCase()) continue;
 									if (x[i].original_bgc == '') {
 										x[i].style.backgroundColor = 'LightGreen';
 									} else {
@@ -45665,9 +45674,10 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							// onmouseout
 							div.onmouseout = function() {
-								var x = document.getElementsByClassName(this.className);
+								var x = document.getElementsByClassName('exe');
 								for (var i in x) {
 									if (i == 'length') break;
+									if (!x[i].link || this.link.toLowerCase() != x[i].link.toLowerCase()) continue;
 									if (!x[i].clicked)
 										x[i].style.backgroundColor = x[i].original_bgc;
 								}
