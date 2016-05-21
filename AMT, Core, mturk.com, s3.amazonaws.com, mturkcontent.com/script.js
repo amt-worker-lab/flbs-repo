@@ -45129,7 +45129,7 @@ Laurens Hammond, Chicago, Ill.**/
 				addr: td[3].innerText.trim(),
 				addr_array: [],
 				state_abbr: null, // This will remain null when there is not a / [A-Z]{2] [A-Z]{2}$/
-				phone: td[5].innerText.trim(),
+				street: td[7].innerText.trim(),
 				unofficial_divs: [],
 				q: [
 					document.getElementById('web_url')
@@ -45138,7 +45138,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ // Replace "The "...
 			//~ o.comp = o.comp.replace(/^The +/gi, '');
 			o.comp_array = o.comp.clean_string_to_array();
-			o.addr_array = o.addr.clean_string_to_array();
+			o.addr_array = o.addr.clean_string_to_array().concat(o.street.clean_string_to_array());
 			// Replace State abbreviation with full state name
 			// because for some reason FB gets pissed off if
 			// you send in an abbreviation. Srsly.......
@@ -45150,9 +45150,9 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			// AMT___addUserDecision
 			AMT___addUserDecision(
-				'MK,FB,May,2015',
+				'JR,FB,May,2015',
 				function() {
-					return o.comp + '|' + o.addr + '|' + o.phone;
+					return o.comp + '|' + o.addr + '|' + o.street;
 				},
 				[ 'Id(web_url)' ]
 			);
@@ -45234,19 +45234,29 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ var second;
 			//~ var n = o.comp.split(' ');
 			//~ second = (n.length > 1) ? n.slice(0, n.length-1).join(' ').trim().replace(/[^\w\d]+$/, '') : '"'+o.comp+'"'; // Trim end of str of ",", ".", etc.
-			// Values...
+			
+			// The first word of company.
+			// But if the first word is less than 5 characters, then
+			// first and second word. And so on until more than 5
+			// characters.
+			// For example, "The Best Drinks, Inc." becomes "The Best".
 			var t = o.comp.split(' ');
-			var comp_short = '';
+			var t_comp = '';
 			for (var i in t) {
-				if (comp_short.length < 5) { // 5 or more chars
-					comp_short += ' ' + t[i].trim();
+				if (t_comp.replace(/ /g, '').length < 5) { // Up to five non-space characters.
+					t_comp += ' ' + t[i].trim();
 				}
 			}
+			// Comp
 			d2.value  = o.comp;
+			// City
 			d2b.value = o.comp + ', ' + o.addr; 
-			d2c.value = o.comp + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // Chop all but the first "word" of address.
-			d2d.value = o.phone; 
-			d2e.value = comp_short.trim() + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // All but first
+			// Street + City
+			d2c.value = o.comp + ', ' + o.street + ', ' + o.addr;
+			// Comp[first*] + Street[first] + City[first]
+			d2d.value = t_comp + ', ' + o.street.replace(/^([^ ]*)[\d\D]*$/, '$1') + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1');
+			// Comp[first*] + City[first]
+			d2e.value = t_comp + ', ' + o.addr.replace(/^([^ ]*)[\d\D]*$/, '$1'); // All but first
 			// Keydown
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
