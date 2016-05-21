@@ -45334,11 +45334,64 @@ Laurens Hammond, Chicago, Ill.**/
 				e.preventDefault();
 				return false;
 			}
+			// facebook_company_reset_user_token
+			//
+			function facebook_company_reset_user_token(div) {
+				// Increment counter
+				if (!localStorage['fb_access_token__dynamic_counter']) {
+					localStorage['fb_access_token__dynamic_counter'] = 1;
+				} else {
+					localStorage['fb_access_token__dynamic_counter']++;
+				}
+				// Returns e.g.:
+				// {"access_token":"EAABkFZA143qIBALzuVw2vBbHFRo8PjZBnMAbZ
+				//  CaHRXBQNiMrqr4ZCtn48UQvtM5vpPOuBKusexxS2iZCQ28k4Jk8
+				//  eKjApL9mZAkdZBvxyGROAAh6TlZCmPMsK6ZA1nIYUxpA8FVfZBH
+				//  LZBE4TgEn9TPSBqj1RQZAUWHKNikZD",
+				// "token_type":"bearer","expires_in":5179398}
+				var u =
+					'https://graph.facebook.com/v2.6/oauth/access_token?'+
+					'client_id=110043999035042&'+
+					'client__API_KEY_REDACTED_&'+
+					'fb_exchange__API_KEY_REDACTED_+
+					'an2oGvjOG3Y6HnW0P4yh2XmhxzRjEnnZAaR6hnTnCuGSj0Gg0Tem'+
+					'8qZCw9KocbbV9HKqurFmfKeIDGwXBciqBADKLZA2nNywk3FFfgbA'+
+					'l4B4Tp1IREDVafxZCZA1XWKTd7Ei2ynunVAZDZD'+
+					'&grant_type=fb_exchange_token&suppress_http_code=1'+
+					'&__user=613706455&__a=1'+
+					'&__dyn=7xeXxmdwgrgmwCwRyax68xfLFwgoqwgEoyUnwgU6C7Qdw'+
+					'PwDyVHxe3K7E4i3K225ob8qx22S1QxG48hw'+
+					'&__req=2&__be=0&__pc=PHASED%3ADEFAULT'+
+					'&fb_dtsg=AQEEGjxRaebM%3AAQGp1gi0MqJP'+
+					'&ttstamp=26581696971106120829710198775865817111249'+
+					'10310548771137480'+
+					'&__rev=2349332'+
+					'&randomized='+Math.round(Math.random()*1000000000000000000)
+					;
+				GM_xmlhttpRequest({ // init
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs = response.responseText;
+						if (response.status != 200) {
+							return; // Failed.....?
+						}
+						rs = JSON.parse(rs);
+						if (!rs.access_token) {
+							return; // Failed.....?
+						}
+						localStorage['fb_access_token__dynamic'] = rs.access_token;
+						// Continue task...
+						//facebook_company_reviews(div);
+					}
+				});
+			}
 			// facebook_company_reviews
 			//
 			function facebook_company_reviews(div) {
 				var out = div;
 				var v;
+				var at;
 				out.innerHTML = '';
 				if (out == d1)
 					v = d2.value;
@@ -45354,6 +45407,16 @@ Laurens Hammond, Chicago, Ill.**/
 					out.innerText = '0';
 					return;
 				}
+				// Access token.
+				// This is stored in localStorage. If it does not
+				// exist then this is probably first run. So get a
+				// new one by calling facebook_company_reset_user_token.
+				if (!localStorage['fb_access_token__dynamic']) {
+					facebook_company_reset_user_token(div);
+					return;
+				} else {
+					at = localStorage['fb_access_token__dynamic'];
+				}
 				// URL
 				// just type=page is used here (user ignored)
 				// 114463268581528|6619aa9c8ea70e1228c17c69ab1882be:
@@ -45366,16 +45429,16 @@ Laurens Hammond, Chicago, Ill.**/
 					'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
 					'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
 					'&limit=10'+
-					//~ '&_API_KEY_REDACTED_nO14slVF7wqHt6Iz8p4Bbh5IXDyVa8sv69lh7dURsuYDKWRrKsagG4vCVdVFbe7K4kGo6EGKZAusyx4KFQvMHkuAlAGr0oXhSSkT8bBg4O7DuiG0wH2ZC4LcZD';
-					'&_API_KEY_REDACTED_znF7R54fLtrF3otlrc3EgVAaL6zRAZC2vVPDBIKYbwXM6hdXDi15pZBDFMZD';
-					//~ '&access_token=114463268581528|naw8IaAndbfBTdu-k1I1FTX2CbA';
+					'&access_token='+at;
 					//~ '&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
-				// E.g. search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						if (options.response.status != 200) {
+							// Try again but first reset the "user" token.
+							// See notes...
+							facebook_company_reset_user_token(div);
 							return false;
 						}
 						return true;
@@ -46024,14 +46087,6 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 				});
-				//~ GM_xmlhttpRequest({ // init
-					//~ method: "GET",
-					//~ url: u,
-					//~ onload: function(response) {
-						//~ var rs = response.responseText;
-						
-					//~ }
-				//~ });
 			}
 		}
 		new run().f();
