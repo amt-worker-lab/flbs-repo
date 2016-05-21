@@ -45149,6 +45149,7 @@ Laurens Hammond, Chicago, Ill.**/
 				state_abbr: null, // This will remain null when there is not a / [A-Z]{2] [A-Z]{2}$/
 				street: td[7].innerText.trim(),
 				website: td[5].innerText.trim(),
+				site_unique_results: {},
 				unofficial_divs: [],
 				q: [
 					document.getElementById('web_url')
@@ -45338,6 +45339,13 @@ Laurens Hammond, Chicago, Ill.**/
 				e.preventDefault();
 				return false;
 			}
+			// Notes for doing a web search for FB pages. E.g. one panel.
+			// Returns only the URLs, no further detail?
+			// Returns a unique set of URLs in the format:
+			// 		facebook.com/..../[trim] or facebook.com/pages/..../[trim]
+			// site:facebook.com [...]
+			//
+			
 			// Site scrape
 			//
 			function site_scrape() {
@@ -45377,8 +45385,11 @@ Laurens Hammond, Chicago, Ill.**/
 			function site_scrape_div(href) {
 				href = href.replace(/\?[\d\D]*/, ''); // Remove args
 				href = href.replace(/^http:/i, 'https:'); // Set to https
-				console.log(href);
-				//~ var d = (href).div({style:'border-bottom:1px solid teal;'});
+				//~ console.log(href);
+				// Only adds if not already added. That is, unique.
+				if (!o.site_unique_results[ href ]) {
+					o.site_unique_results[ href ] = true;
+				} else return;
 				var d = document.createElement('input');
 				d.type = 'button';
 				d.setAttribute('style', 'cursor:pointer;');
