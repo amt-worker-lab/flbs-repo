@@ -45247,6 +45247,7 @@ Laurens Hammond, Chicago, Ill.**/
 					t_comp += ' ' + t[i].trim();
 				}
 			}
+			t_comp = t_comp.trim();
 			// Comp
 			d2.value  = o.comp;
 			// City
