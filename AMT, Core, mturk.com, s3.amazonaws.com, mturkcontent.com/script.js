@@ -45095,6 +45095,16 @@ Laurens Hammond, Chicago, Ill.**/
 	 *  more results sometimes? Wtf? So odd... And of course the
 	 *  "user" token expires every 2 months or so. That means you need
 	 *  to "re-authorize" it repeatedly...
+	 *  //// Or not... Apparently there is a rate limiter here on the
+	 *  "user" token... Okay. So back to regular...
+	 *  Here is the use case for this. The search was "Denton" "vape n vapor".
+	 *   "user" token, shows result.
+	 *   _API_KEY_REDACTED_
+	 *    nO14slVF7wqHt6Iz8p4Bbh5IXDyVa8sv69lh7dURsuYDKWRrKsagG4vCVdVFbe7
+	 *    K4kGo6EGKZAusyx4KFQvMHkuAlAGr0oXhSSkT8bBg4O7DuiG0wH2ZC4LcZD
+		 "regular" token, does not show result.
+		 access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be
+	 *
 	 *  Note: In graph.facebook.com/v2.6/search ... likes is changed
 	 *        to fan_count.
 	 * 
@@ -45351,8 +45361,8 @@ Laurens Hammond, Chicago, Ill.**/
 					'?q='+encodeURIComponent(v)+'&type=page'+ //&type=user
 					'&fields=category,id,name,likes,talking_about_count,location,link,company_overview'+
 					'&limit=10'+
-					'&_API_KEY_REDACTED_nO14slVF7wqHt6Iz8p4Bbh5IXDyVa8sv69lh7dURsuYDKWRrKsagG4vCVdVFbe7K4kGo6EGKZAusyx4KFQvMHkuAlAGr0oXhSSkT8bBg4O7DuiG0wH2ZC4LcZD';
-					//~ '&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
+					//~ '&_API_KEY_REDACTED_nO14slVF7wqHt6Iz8p4Bbh5IXDyVa8sv69lh7dURsuYDKWRrKsagG4vCVdVFbe7K4kGo6EGKZAusyx4KFQvMHkuAlAGr0oXhSSkT8bBg4O7DuiG0wH2ZC4LcZD';
+					'&access_token=114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 					//'&access_token=114463268581528|0dyWLwILhmGwtvdenkm1tAxuWNM';
 				// E.g. search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 				new AMT___requests_factory().xhr_with_disk_cache({
