@@ -45147,6 +45147,7 @@ Laurens Hammond, Chicago, Ill.**/
 				addr_array: [],
 				state_abbr: null, // This will remain null when there is not a / [A-Z]{2] [A-Z]{2}$/
 				street: td[7].innerText.trim(),
+				website: td[5].innerText.trim(),
 				unofficial_divs: [],
 				q: [
 					document.getElementById('web_url')
@@ -45174,7 +45175,7 @@ Laurens Hammond, Chicago, Ill.**/
 				[ 'Id(web_url)' ]
 			);
 			/* BEGIN ITEMS */
-			var w = 99/5;
+			var w = 90/5;
 			var d1 = document.createElement('div');
 			d1 .setAttribute('style','position:absolute;top:100px;left:0%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
@@ -45194,6 +45195,10 @@ Laurens Hammond, Chicago, Ill.**/
 			var d1e = document.createElement('div');
 			d1e.setAttribute('style','position:absolute;top:100px;left:'+(w*4)+'%;width:'+w+'%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1e);
+			// 9% wide div for site scrape
+			var d1z = document.createElement('div');
+			d1z.setAttribute('style','position:absolute;top:20px;left:90%;width:9%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1z);
 			//
 			var d2 = document.createElement('textarea'); // Offset these from N/A.....
 			d2.setAttribute('type','text');
@@ -45313,13 +45318,17 @@ Laurens Hammond, Chicago, Ill.**/
 			});
 			// ih
 			new AMT___core_factory().el_innerHeight({
-				// This set the elements d1,d1b, and d1c
-				// to fill up the whole window, minus their
-				// distance from page top (top:XX pixels;).
 				elements: [
 					d1,d1b,d1c,d1d,d1e
 				],
 				offset: 100 // offset top
+			});
+			// ih (d1z)
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1z
+				],
+				offset: 20 // offset top
 			});
 			// Init
 			//
@@ -45328,11 +45337,55 @@ Laurens Hammond, Chicago, Ill.**/
 			facebook_company_reviews(d1c);
 			facebook_company_reviews(d1d);
 			facebook_company_reviews(d1e);
+			site_scrape(); // Site scrape
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
 				return false;
+			}
+			// Site scrape
+			//
+			function site_scrape() {
+				o.website = o.website.replace(/^https?:*\/*(www\.|)/i, '').trim();
+				o.website = 'http://' + o.website;
+				console.log('=================================================');
+				console.log(o.website);
+				if (o.website == '') {
+					d1z.innerText = '--';
+					return;
+				}
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.website,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) return;
+						// Parse
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// Iterate
+						var a = dom.getElementsByTagName('a');
+						for (var i=0; i<a.length; i++) {
+							if (/(fb.me|facebook.com)/i.exec(a[i].href)) {
+								site_scrape_div(a[i].href);
+							}
+						}
+					}
+				});
+			}
+			function site_scrape_div(href) {
+				var d = (href).div({style:'border-bottom:1px solid teal;'});
+				d.className = 'exe';
+				d.innerText = href;
+				d1z.appendChild(d);
+				d.onclick = function(e) {
+					o.q[0].value = this.innerText;
+				}
 			}
 			// facebook_company_reset_user_token
 			//
