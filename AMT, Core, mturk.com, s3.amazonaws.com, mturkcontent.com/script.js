@@ -45411,12 +45411,13 @@ Laurens Hammond, Chicago, Ill.**/
 				// This is stored in localStorage. If it does not
 				// exist then this is probably first run. So get a
 				// new one by calling facebook_company_reset_user_token.
-				if (!localStorage['fb_access_token__dynamic']) {
-					facebook_company_reset_user_token(div);
-					return;
-				} else {
-					at = localStorage['fb_access_token__dynamic'];
-				}
+				//~ if (!localStorage['fb_access_token__dynamic']) {
+					//~ facebook_company_reset_user_token(div);
+					//~ return;
+				//~ } else {
+					//~ at = localStorage['fb_access_token__dynamic'];
+				//~ }
+				var at = '114463268581528|6619aa9c8ea70e1228c17c69ab1882be';
 				// URL
 				// just type=page is used here (user ignored)
 				// 114463268581528|6619aa9c8ea70e1228c17c69ab1882be:
