@@ -45,6 +45,15 @@ function MT__RUN() {
 					x[i].click();
 				}
 			}
+			// Class form-group.
+			// Clear floats on "watch" to put it on new line.
+			var x = document.getElementsByClassName('form-group');
+			for (var i=0; i<x.length; i++) {
+				if (x[i] && x[i].innerText && x[i].innerText.indexOf('watch') != -1) {
+					x[i].style.clear = 'both';
+					break;
+				}
+			}
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
