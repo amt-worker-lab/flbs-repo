@@ -191,11 +191,11 @@ function mturk_load()
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
 		if  ( true && // Why was this false?
-			( // Running on any of the following:
-			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
-			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
-			/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
-			)
+				( // Running on any of the following:
+				/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
+				/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
+				/^http:\/\/192\.168\.1\.2\/mturk\/\.dev\/HITs\//.exec(l)
+				)
 			//|| check_right_page
 			)
 		{	console.log('x1');
@@ -215,9 +215,9 @@ function mturk_load()
 						1000
 					);console.log('x7');
 				}
+				console.log('Hit the "All HITs" page. Returning.');
+				return;
 			}
-			console.log('Hit the "All HITs" page. Returning.');
-			return;
 		}
 		AMT__Global_Vars.isTopWindow = true;
 		AMT__Global_Vars.initializeGroupId();

@@ -2286,7 +2286,7 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 		// v.innerHeight
 		
 		// If callback
-		if (options.hasOwnProperty('callback_function')) {
+		if (options.hasOwnProperty('callback_function')) {console.log('testing:callback function for EL_INNERHEIGHT');
 			options.callback_function(v.innerHeight);
 			return; //exit
 		}
