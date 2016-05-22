@@ -42,6 +42,26 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function() {};
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+		}
+		new run().f();
+	});
+	// david rigby
+	// Find the location for patents on website
+	//
+	// Sample OCR:
+	/**
+Patented June 6, 1939 . 2,161,706
+
+UNITED STATES PATENT OFFICE :
+2,161,706 .
+ELECTRICAL MUSICAL INSTRUMENT ,
+Laurens Hammond, Chicago, Ill.**/
+	s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			GM_addStyle('#mturk_form {margin-top:1000px;}');
 			//~ GM_addStyle('#web_url {position:absolute;top:0;width:99%;margin:0;padding:0;}');
