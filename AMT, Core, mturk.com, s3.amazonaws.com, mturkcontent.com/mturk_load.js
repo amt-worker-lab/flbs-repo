@@ -190,7 +190,7 @@ function mturk_load()
 		var l = document.location.href;
 			//var check_right_page = /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-\d+ of \d+ Results/.exec(ih)
 		new AMT___core_factory().createScriptVar('Reload on No Hits', 0);
-		if  ( false &&
+		if  ( true && // Why was this false?
 			( // Running on any of the following:
 			/^https?:\/\/(www\.|)mturk\.com\/mturk\/(preview|previewandaccept|continue|accept|submit|return)/i.exec(l) ||
 			/^http:\/\/localhost\/mturk\/\.dev\/HITs\//.exec(l) ||
@@ -199,17 +199,21 @@ function mturk_load()
 			//|| check_right_page
 			)
 		{	console.log('x1');
-			if(document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
-			   document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.')) {console.log('x2');
+			if (// Note: This was (indexOf) == true!! and submitting in
+				// all cases! Rather than (indexOf) == -1
+				document.body.innerHTML.toLowerCase().indexOf('there are no more available hits in this group.') != -1 ||
+				document.body.innerHTML.toLowerCase().indexOf('there are no hits in this group available to you at the moment.') != -1
+			   ) {console.log('x2');
 				AMT__Global_Vars.initializeNextTabPassBy();console.log('x3');
 				if(AMT__Global_Vars.scriptVars['Reload on No Hits'] != '0') {console.log('x5');
 					doSubmit(false, false, function(timeToSkip){console.log('x6');
-						window.setTimeout(function() {
-									window.location.reload(true);
-								}
-								, timeToSkip);
-					}
-					, 1000);console.log('x7');
+							window.setTimeout(function() {
+								window.location.reload(true);
+							}
+							, timeToSkip);
+						},
+						1000
+					);console.log('x7');
 				}
 			}
 			console.log('Hit the "All HITs" page. Returning.');

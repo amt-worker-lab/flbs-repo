@@ -26,26 +26,45 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
-	// david rigby
-	// Find the location for patents on website
+	// 
+	// 
 	//
-	// Sample OCR:
-	/**
-Patented June 6, 1939 . 2,161,706
-
-UNITED STATES PATENT OFFICE :
-2,161,706 .
-ELECTRICAL MUSICAL INSTRUMENT ,
-Laurens Hammond, Chicago, Ill.**/
-	s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
+	// 
+	s = '<meta charset="UTF-8">\n<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">\n<div id="reactSlot"><div class="container-fluid" data-reactid=".0"><div class="myRow" data-reactid=".0.0"><div class="colLeftFloat" data-reactid=".0.0.0"><img class="image"';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
-		run.prototype.f = function() {
+		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.form-group {float:left !important;border: 1px solid blue;}');
+			var x = document.getElementsByTagName('button');
+			for (var i=0; i<x.length; i++) {
+				if (x[i] && x[i].innerText && x[i].innerText == 'No') {
+					x[i].click();
+				}
+			}
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+			// keypress...
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				console.log('ctrl:'+e.ctrlKey);
+				var str = String.fromCharCode(e.keyCode).toLowerCase();
+				console.log(c);
+				console.log(str);
+				if (c == 13) {
+					doSubmit();
+				}
+			}, false);
 		}
 		new run().f();
-	});
+	}
 	// david rigby
 	// Find the location for patents on website
 	//
