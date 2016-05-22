@@ -38,6 +38,7 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
 			GM_addStyle('.form-group {float:left !important;border: 1px solid blue;}');
+			GM_addStyle('img {max-width:100%;}');
 			var x = document.getElementsByTagName('button');
 			for (var i=0; i<x.length; i++) {
 				if (x[i] && x[i].innerText && x[i].innerText == 'No') {

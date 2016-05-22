@@ -2252,13 +2252,11 @@ AMT___core_factory.prototype.el_innerHeight = function(options) {
 	//~ var target = document.getElementById('myId');
 	//~ observer.observe(target, { attributes : true, attributeFilter : ['style'] });
 	
-	
 	// 
 	if (window.top == window.self) {
 		success(options, {
 			innerHeight: window.innerHeight
 		})
-		
 		// Quit here
 		return;
 	}
