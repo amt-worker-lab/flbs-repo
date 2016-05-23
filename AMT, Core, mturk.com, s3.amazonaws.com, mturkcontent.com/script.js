@@ -26,7 +26,7 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
-	// 
+	// A9
 	// 
 	//
 	// 
@@ -40,10 +40,11 @@ function MT__RUN() {
 			GM_addStyle('.form-group {\
 				cursor: pointer;\
 				float:left !important;border: 1px solid blue;padding: 0 4px 0 4px;\
+				margin-bottom: 0px !important !important;\
 				margin: 0px 0px 0px 0px !important !important;}');
 			GM_addStyle('.image {max-width: 100% !important;max-height: none !important;}');
 			// Larger buttons
-			GM_addStyle('.buttonsWithMargins .btn {margin-right: 10px;width: 44%;}');
+			GM_addStyle('.buttonsWithMargins .btn {margin-right: 10px;width: 40%;}');
 			//~ GM_addStyle('.form-group {margin-bottom: 0px !important !important;}');
 			var x = document.getElementsByTagName('button');
 			for (var i=0; i<x.length; i++) {
@@ -72,13 +73,34 @@ function MT__RUN() {
 					//~ break;
 				}
 			}
+			// Form-group margin bottom
+			//~ setTimeout(function() {
+				//~ for (var i=0; i<x.length; i++) {
+					//~ if (x[i] && x[i].style) {
+						//~ x[i].style.marginBottom = '0px !important !important';
+					//~ }
+				//~ }
+			//~ }, 2000);
 			// Make the form-group div toggle the elements within...
 			for (var i=0; i<x.length; i++) {
-				//~ if (x[i] && x[i].innerText) {
-					//~ x[i].style.cursor = 'pointer';
-					//~ x[i].
-					//~ x[i].style.clear = 'both';
-					//~ break;
+				//~ if (x[i] && x[i].innerText && !x[i].has_functions) {
+					//~ x[i].has_functions = true;
+					//~ x[i].addEventListener('click', function(e) {
+						//~ console.log(this);
+						//~ e.stopPropagation();
+						//~ e.preventDefault();
+						//~ var b = this.getElementsByTagName('button');
+						//~ if (!b || b.length != 2) return;
+						//~ if (!b[0].is_clicked) {
+							//~ b[0].click();
+							//~ b[0].is_clicked = true;
+							//~ return;
+						//~ } else {
+							//~ b[0].is_clicked = false;
+							//~ b[1].click();
+						//~ }
+						//~ return false;
+					//~ }, false);
 				//~ }
 			}
 			// submitButton
@@ -103,6 +125,12 @@ function MT__RUN() {
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(h) {console.log(h);
 					GM_addStyle('.image {max-width: 100% !important;max-height:'+h+'px !important;height: none !important;width: none !important;}');
+					//~ var im = document.getElementsByClassName('image')[0];
+					//~ if (h > im.naturalWidth) {
+						//~ GM_addStyle('.image {height:'+h+'px !important;}');
+					//~ } else {
+						//~ GM_addStyle('.image {width: 100% !important;}');
+					//~ }
 					//~ GM_addStyle('.image {max-width: 100% !important;max-height: none !important;height:'+h+'px;}');
 				},
 				elements: [],
