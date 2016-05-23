@@ -150,7 +150,8 @@ UNITED STATES PATENT OFFICE :
 2,161,706 .
 ELECTRICAL MUSICAL INSTRUMENT ,
 Laurens Hammond, Chicago, Ill.**/
-	s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
+	s = '<li>Click on the drop-down menu next to "Page" and select "Abstract Claims Description"/"Description"/"Abstract Description".</li>';
+	//~ s = '<li>The location should in most cases be located in the first 10/20 lines. In many cases, there are mistakes in the text, such as falsely identified characters.</li>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {
