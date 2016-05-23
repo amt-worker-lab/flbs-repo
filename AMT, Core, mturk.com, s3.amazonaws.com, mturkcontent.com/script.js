@@ -37,8 +37,14 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
-			GM_addStyle('.form-group {float:left !important;border: 1px solid blue;padding: 0 4px 0 4px;}');
+			GM_addStyle('.form-group {\
+				cursor: pointer;\
+				float:left !important;border: 1px solid blue;padding: 0 4px 0 4px;\
+				margin: 0px 0px 0px 0px !important !important;}');
 			GM_addStyle('.image {max-width: 100% !important;max-height: none !important;}');
+			// Larger buttons
+			GM_addStyle('.buttonsWithMargins .btn {margin-right: 10px;width: 44%;}');
+			//~ GM_addStyle('.form-group {margin-bottom: 0px !important !important;}');
 			var x = document.getElementsByTagName('button');
 			for (var i=0; i<x.length; i++) {
 				if (x[i] && x[i].innerText && x[i].innerText == 'No') {
@@ -54,13 +60,26 @@ function MT__RUN() {
 				}
 			}
 			// Class form-group.
-			// Clear floats on "watch" to put it on new line.
+			// Clear floats to put these onto a new line.
 			var x = document.getElementsByClassName('form-group');
 			for (var i=0; i<x.length; i++) {
 				if (x[i] && x[i].innerText && x[i].innerText.indexOf('watch') != -1) {
 					x[i].style.clear = 'both';
-					break;
+					//~ break;
 				}
+				if (x[i] && x[i].innerText && x[i].innerText.indexOf(' man\'s top') != -1) {
+					x[i].style.clear = 'both';
+					//~ break;
+				}
+			}
+			// Make the form-group div toggle the elements within...
+			for (var i=0; i<x.length; i++) {
+				//~ if (x[i] && x[i].innerText) {
+					//~ x[i].style.cursor = 'pointer';
+					//~ x[i].
+					//~ x[i].style.clear = 'both';
+					//~ break;
+				//~ }
 			}
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
