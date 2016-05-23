@@ -37,12 +37,20 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
-			GM_addStyle('.form-group {float:left !important;border: 1px solid blue;}');
+			GM_addStyle('.form-group {float:left !important;border: 1px solid blue;padding: 0 4px 0 4px;}');
 			GM_addStyle('.image {max-width: 100% !important;max-height: none !important;}');
 			var x = document.getElementsByTagName('button');
 			for (var i=0; i<x.length; i++) {
 				if (x[i] && x[i].innerText && x[i].innerText == 'No') {
 					x[i].click();
+					x[i].onclick = function(e) {
+						this.parentNode.parentNode.style.backgroundColor = '';
+					}
+				} else if (x[i] && x[i].innerText && x[i].innerText == 'Yes') {
+					x[i].click();
+					x[i].onclick = function(e) {
+						this.parentNode.parentNode.style.backgroundColor = 'LightGreen';
+					}
 				}
 			}
 			// Class form-group.
@@ -75,7 +83,7 @@ function MT__RUN() {
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				callback_function: function(h) {console.log(h);
-					GM_addStyle('.image {max-width: 100% !important;max-height:'+h+'px;}');
+					GM_addStyle('.image {max-width: 100% !important;max-height:'+h+'px !important;height: none !important;width: none !important;}');
 					//~ GM_addStyle('.image {max-width: 100% !important;max-height: none !important;height:'+h+'px;}');
 				},
 				elements: [],
