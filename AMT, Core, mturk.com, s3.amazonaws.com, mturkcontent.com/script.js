@@ -291,7 +291,7 @@ Laurens Hammond, Chicago, Ill.**/
 						f_write_complete(); // Calls timeout dosubmit
 						return;
 					}
-					if (d4.value == 'na') {
+					if (d4.value.toLowerCase() == 'na') {
 						d4.value = 'NA';
 						o.q[0].value = 'NA';
 						new AMT___core_factory().nextTab();
