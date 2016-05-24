@@ -437,7 +437,7 @@ Laurens Hammond, Chicago, Ill.**/
 			function f_write_complete() { // Assumes a submit.
 				setTimeout(function() { // Pause before submit...
 					doSubmit();
-				}, 3000);
+				}, 10000); // Trial and error... 3 is too low sometimes...
 			}
 			// get_first_pg
 			function get_first_pg() {
