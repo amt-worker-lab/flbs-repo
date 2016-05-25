@@ -52759,7 +52759,7 @@ Laurens Hammond, Chicago, Ill.**/
 			function process(database_object) {
 				// Note: type is now NULL
 				// array_push($out_arr, [...]);
-				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'], pop]
+				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'], pop, col2]
 				// database_object.responseObject = JSON.parse(rs);
 				var input = database_object.__seed__;
 				var out = input.out;
@@ -52784,6 +52784,7 @@ Laurens Hammond, Chicago, Ill.**/
 				var found_auto = false;
 				var num_results = 0;
 				var num_exact_match = 0;
+				var is_county = false;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
@@ -52793,21 +52794,27 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ if (x[1].length == 1) x[1] = '0'+x[1];
 					//~ if (x[2].length == 1) x[2] = '0'+x[2];
 					//~ if (x[3].length == 1) x[3] = '0'+x[3];
-					var code;
-					if (x[5] == 'County') {
-						code = x[1] +''+ x[2];
-					} else { // city / town, etc.
-						code = x[1] +''+ x[3];
-					}
 					// 26/000/54321 & 26/123/00000 === Beware of these!
 					// Not county or state but 0!
+					
 					if (x[4].indexOf('County') == -1 &&
-						(
-							//~ x[2] == '000' ||
-							x[3] == '00000'
-						)
+						x[3] == '00000' &&
+						x[7] != '00000'
 					) {
-						continue;
+						x[3] = x[7];
+					}
+					// Both 0s
+					// This is a __State__
+					if (x[2] == '000' && x[3] == '00000') continue; //  
+					//~ console.log(x[3] == '00000');return;
+					//~ console.log(x);return;
+					// Code
+					var code;
+					if (x[4].indexOf(' County') != -1) {
+						code = x[1] +''+ x[2];
+						is_county = true;
+					} else { // city / town, etc.
+						code = x[1] +''+ x[3];
 					}
 					// Unique
 					if (unq_codes[ code ]) {
@@ -52818,7 +52825,7 @@ Laurens Hammond, Chicago, Ill.**/
 					var type = / (city|town|township|county|village)$/i.exec(x[4]);
 					var name_initial = x[4];
 					if (type) {
-						type = type[0].trim()+', ';
+						type = type[0].trim()+': ';
 						x[4] = x[4].replace(/ (city|town|township|county|village)$/i, '');
 					} else type = '';
 					//
@@ -52829,7 +52836,7 @@ Laurens Hammond, Chicago, Ill.**/
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n2 + ' (<i>'+type+MT___numberWithCommas(x[6])+'</i>:'+code+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
+					eldiv.innerHTML = n2 + ' (<i>'+type+MT___numberWithCommas(x[6])+': '+code+'</i>)<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					// No state!
 					//~ eldiv.innerHTML = n1 + ':' + n2 + ' (<i>'+MT___numberWithCommas(x[6])+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					eldiv.code = code;
@@ -52856,6 +52863,10 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					
 				}
+				// None...
+				if (num_results == 0) {
+					out.appendChild('0'.div());
+				}
 				// Found auto and auto is the first result
 				// And there is only one exact match.
 				if (num_exact_match == 1 && found_auto) {
@@ -52875,6 +52886,9 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			function try_sbm() {
 				if (!/^(0|\d{5}|\d{7})$/.exec(o.q[0].value)) {
+					return false;
+				}
+				if (/00000$/.exec(o.q[0].value)) {
 					return false;
 				}
 				// Still here...
