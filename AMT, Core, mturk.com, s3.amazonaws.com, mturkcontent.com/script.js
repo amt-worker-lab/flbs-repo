@@ -52785,6 +52785,7 @@ Laurens Hammond, Chicago, Ill.**/
 				var num_results = 0;
 				var num_exact_match = 0;
 				var is_county = false;
+				var least = false; // population
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
@@ -52802,6 +52803,11 @@ Laurens Hammond, Chicago, Ill.**/
 						x[7] != '00000'
 					) {
 						x[3] = x[7];
+					}
+					if (x[4].indexOf('County') == -1 &&
+						x[3] == '00000'
+					) {
+						continue; // !skip
 					}
 					// Both 0s
 					// This is a __State__
@@ -52848,6 +52854,12 @@ Laurens Hammond, Chicago, Ill.**/
 					out.appendChild(eldiv);
 					num_results++;
 					if (out != d1a) continue; // Only d1a
+					// Difference in population.
+					if (!least) least = eldiv;
+					eldiv.diff = Math.abs(o.population*1 - x[6]*1);
+					if (eldiv.diff < least.diff && i < 8) { // Only top 8!
+						least = eldiv;
+					}
 					if (i == 0) first_result = eldiv;
 					if (
 						(
@@ -52863,6 +52875,13 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					
 				}
+				// Least pop difference
+				if (o.population != '')
+					least.style.textDecoration = 'underline';
+				//~ least.style.border = '2px solid teal';
+				//~ if () {
+					
+				//~ }
 				// None...
 				if (num_results == 0) {
 					out.appendChild('0'.div());
