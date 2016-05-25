@@ -52659,6 +52659,9 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ store_no_the:null,
 				//~ mall_no_the:null,
 			}
+			// Remove st abbr from city (their data seems broken)
+			// Changes "Kasson, MN" to "Kasson".
+			o.city = o.city.replace(new RegExp(', '+o.state+'$', 'i'), '');
 			o.bold = o.city.clean_string_to_array();
 			/* BEGIN ITEMS */
 			var d1a = ''.div({
@@ -52745,7 +52748,7 @@ Laurens Hammond, Chicago, Ill.**/
 				rf.database__select(
 					{
 						query: 'AMT__Tucker_Severson',
-						encodeStrings: [ { city: x[0].trim(), state: x[1].trim() } ],
+						encodeStrings: [ { city: x[0].trim(), state: x[1].trim().stateAbbrToFull() } ],
 						__seed__: input,
 					},
 					process
@@ -52753,6 +52756,7 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// ...
 			function process(database_object) {
+				// Note: type is now NULL
 				// array_push($out_arr, [...]);
 				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'], pop]
 				// database_object.responseObject = JSON.parse(rs);
@@ -52774,9 +52778,15 @@ Laurens Hammond, Chicago, Ill.**/
 				var auto = (database_object.responseObject.length == 1) ? true : false;
 				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
 				//~ var auto = false;
+				var unq_codes = {}; // Unique only!
+				var first_result = null;
+				var found_auto = false;
+				var num_results = 0;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
+					// 
+					if (x[4].indexOf('(pt.)') != -1) continue; // Skip these, they're odd.....
 					if (x[1].length == 1) x[1] = '0'+x[1];
 					if (x[2].length == 1) x[2] = '0'+x[2];
 					if (x[3].length == 1) x[3] = '0'+x[3];
@@ -52786,6 +52796,17 @@ Laurens Hammond, Chicago, Ill.**/
 					} else { // city / town, etc.
 						code = x[1] +''+ x[3];
 					}
+					// Unique
+					if (unq_codes[ code ]) {
+						continue;
+					}
+					unq_codes[ code ] = true;
+					// Type
+					var type = / (city|town|township|county)$/i.exec(x[4]);
+					if (type) {
+						type = type[0].trim()+', ';
+						x[4] = x[4].replace(/ (city|town|township|county)$/i, '');
+					} else type = '';
 					//
 					var n1 = MT__bold(x[0], o.bold);
 					var n2 = MT__bold(x[4], o.bold, {color:'blue'}).bold_string;
@@ -52794,7 +52815,9 @@ Laurens Hammond, Chicago, Ill.**/
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n1 + ':' + n2 + ' (<i>'+n3+'</i>,'+MT___numberWithCommas(x[6])+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
+					eldiv.innerHTML = n2 + ' (<i>'+type+MT___numberWithCommas(x[6])+'</i>)<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
+					// No state!
+					//~ eldiv.innerHTML = n1 + ':' + n2 + ' (<i>'+MT___numberWithCommas(x[6])+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					eldiv.code = code;
 					eldiv.onclick = function(e) {
 						o.q[0].value = this.code;
@@ -52802,38 +52825,21 @@ Laurens Hammond, Chicago, Ill.**/
 						try_sbm();
 					}
 					out.appendChild(eldiv);
+					num_results++;
+					if (i == 0) first_result = eldiv;
 					if (i == 0 &&
-							(
-							database_object.responseObject.length == 1 ||
-							o.population == '' // No specified population!
-							) &&
+							//~ (
+							//~ //database_object.responseObject.length == 1 ||
+							//~ o.population == '' // No specified population!
+							//~ ) &&
 						x[4].toLowerCase() == o.city.toLowerCase() && x[4].length >= 4
 					   ) {
-						eldiv.click();
+						found_auto = true;
+						//~ eldiv.click();
 					}
-					//~ console.log(s);
-					//~ console.log(x);
-					//~ if ( //i == 0 &&
-						//~ s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
-						//~ s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
-						//~ s.store.clean_str_to_auto().length >= 4 &&
-						//~ s.mall.clean_str_to_auto().length >= 4 &&
-						//~ !s.auto
-						//~ ) {
-						//~ s.auto = true;
-						//~ eldiv.click();
-					//~ }
-					//~ // try auto 2 (no "The"
-					//~ else if (
-						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
-						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
-						//~ s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
-						//~ s.mall_no_the.clean_str_to_auto().length >= 3 &&
-						//~ !s.auto
-						//~ ) {
-						//~ s.auto = true;
-						//~ eldiv.click();
-					//~ }
+				}
+				if (found_auto && num_results == 1) {
+					first_result.click();
 				}
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
