@@ -52822,11 +52822,11 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					unq_codes[ code ] = true;
 					// Type
-					var type = / (city|town|township|county|village)$/i.exec(x[4]);
+					var type = / (city|town|township|county|village|borough)$/i.exec(x[4]);
 					var name_initial = x[4];
 					if (type) {
 						type = type[0].trim()+': ';
-						x[4] = x[4].replace(/ (city|town|township|county|village)$/i, '');
+						x[4] = x[4].replace(/ (city|town|township|county|village|borough)$/i, '');
 					} else type = '';
 					//
 					var n1 = MT__bold(x[0], o.bold);
