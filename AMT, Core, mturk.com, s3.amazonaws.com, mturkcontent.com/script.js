@@ -52658,7 +52658,7 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ auto: false,
 				//~ store_no_the:null,
 				//~ mall_no_the:null,
-			}
+			} // "city of, town of"
 			// Remove st abbr from city (their data seems broken)
 			// Changes "Kasson, MN" to "Kasson".
 			o.city = o.city.replace(new RegExp(', '+o.state+'$', 'i'), '');
@@ -52742,6 +52742,7 @@ Laurens Hammond, Chicago, Ill.**/
 			else d2b.value = '';
 			// ...
 			function stores(input) {
+				input.value = input.value.replace(/, *,/g, ','); // clean space
 				var x = input.value.split(',');
 				input.out.innerHTML = '';
 				var rf = new AMT___requests_factory();
@@ -52782,19 +52783,31 @@ Laurens Hammond, Chicago, Ill.**/
 				var first_result = null;
 				var found_auto = false;
 				var num_results = 0;
+				var num_exact_match = 0;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
 					// 
 					if (x[4].indexOf('(pt.)') != -1) continue; // Skip these, they're odd.....
-					if (x[1].length == 1) x[1] = '0'+x[1];
-					if (x[2].length == 1) x[2] = '0'+x[2];
-					if (x[3].length == 1) x[3] = '0'+x[3];
+					if (x[4].indexOf('Balance of ') == 0) continue; // Skip these, they're odd.....
+					//~ if (x[1].length == 1) x[1] = '0'+x[1];
+					//~ if (x[2].length == 1) x[2] = '0'+x[2];
+					//~ if (x[3].length == 1) x[3] = '0'+x[3];
 					var code;
 					if (x[5] == 'County') {
 						code = x[1] +''+ x[2];
 					} else { // city / town, etc.
 						code = x[1] +''+ x[3];
+					}
+					// 26/000/54321 & 26/123/00000 === Beware of these!
+					// Not county or state but 0!
+					if (x[4].indexOf('County') == -1 &&
+						(
+							x[2] == '000' ||
+							x[3] == '00000'
+						)
+					) {
+						continue;
 					}
 					// Unique
 					if (unq_codes[ code ]) {
@@ -52802,10 +52815,11 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					unq_codes[ code ] = true;
 					// Type
-					var type = / (city|town|township|county)$/i.exec(x[4]);
+					var type = / (city|town|township|county|village)$/i.exec(x[4]);
+					var name_initial = x[4];
 					if (type) {
 						type = type[0].trim()+', ';
-						x[4] = x[4].replace(/ (city|town|township|county)$/i, '');
+						x[4] = x[4].replace(/ (city|town|township|county|village)$/i, '');
 					} else type = '';
 					//
 					var n1 = MT__bold(x[0], o.bold);
@@ -52826,21 +52840,32 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					out.appendChild(eldiv);
 					num_results++;
+					if (out != d1a) continue; // Only d1a
 					if (i == 0) first_result = eldiv;
-					if (i == 0 &&
-							//~ (
-							//~ //database_object.responseObject.length == 1 ||
-							//~ o.population == '' // No specified population!
-							//~ ) &&
-						x[4].toLowerCase() == o.city.toLowerCase() && x[4].length >= 4
+					if (
+						(
+							x[4].toLowerCase()			== o.city.toLowerCase() ||
+							name_initial.toLowerCase()	== o.city.toLowerCase() ||
+							x[4].toLowerCase()			== o.city.replace(/^(town of |city of |township of )/i, '').toLowerCase()
+						) &&
+						x[4].length >= 4
 					   ) {
-						found_auto = true;
-						//~ eldiv.click();
+						if (i == 0)
+							found_auto = true;
+						num_exact_match++;
 					}
+					
 				}
-				if (found_auto && num_results == 1) {
+				// Found auto and auto is the first result
+				// And there is only one exact match.
+				if (num_exact_match == 1 && found_auto) {
 					first_result.click();
 				}
+				//~ if (found_auto && num_results == 1) {
+					//~ first_result.click();
+				//~ } else if (num_exact_match == 1) {
+					
+				//~ }
 				var eldiv = document.createElement('div');
 				eldiv.setAttribute('style','height:2000px;');
 				out.appendChild(eldiv);
