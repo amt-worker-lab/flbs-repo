@@ -1858,7 +1858,11 @@ String.prototype.div = function(opts) {
 	}
 	// Append to...
 	if (opts && opts.hasOwnProperty('a')) {
-		opts.a.appendChild(div);
+		if (opts.a === true) { // append to body by default!
+			document.body.appendChild(div);
+		} else {
+			opts.a.appendChild(div);
+		}
 	}
 	return div;
 }

@@ -52619,8 +52619,210 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Morgan Intrator
 	 * John Curtis
 	 * Rory Bernard
+	 * Tucker Severson
+	 * 
+	 * 
 	 * 
 	 */
+	// Tucker Severson
+	//
+	//
+	// 
+	s = '<li>Enter the 7-digit FIPS code for cities, or 5-digit code for counties,&nbsp;of the given place in the following format: xxxxxxx</li>';
+	if(ih.indexOf(s) != -1)
+	{
+		var run = function(){}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;left:50% !important;}'); // Left:50%
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:400px !important;}');//width:40% !important;	
+			//~ GM_addStyle('body {width:40%;margin-top:50px;}');
+			GM_addStyle('input {width:90%;}');
+			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				city: td[1].innerText.trim(),
+				state: td[3].innerText.trim(),
+				q: [
+					document.getElementById('fips_code'),
+				],
+				//~ nas: [],
+				//~ divs: [],
+				//~ inputs: [],
+				//~ sbold: null,
+				//~ mbold: null,
+				//~ auto: false,
+				//~ store_no_the:null,
+				//~ mall_no_the:null,
+			}
+			
+			/* BEGIN ITEMS */
+			var d1a = ''.div({
+				style:
+				'position:absolute;top:60px;'+
+				'left:0;width:50%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true, // Append to body
+			});
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:60px;'+
+				'left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true, // Append to body
+			});
+			// Inputs....
+			var ef = new AMT___events_factory();
+			var d2a = document.createElement('input');
+			d2a.setAttribute('type','text');
+			d2a.setAttribute('style',
+				'position:absolute;top:0px;left:0;width:50%;height:60px;'
+			);
+			ef.mouseup__delete_range({
+				element: d2a,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2a.out = d1a;
+			d2a.value = o.city + ',' + o.state;
+			document.body.appendChild(d2a);
+			var d2b = document.createElement('input');
+			d2b.setAttribute('type','text');
+			d2b.setAttribute('style',
+				'position:absolute;top:0px;left:50%;width:49%;height:60px;'
+			);
+			ef.mouseup__delete_range({
+				element: d2b,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.out = d1b;
+			d2b.value = o.city.replace(/ [^ ]+$/, '') + ',' + o.state; // Remove final word
+			document.body.appendChild(d2b);
+			/* END ITEMS */
+			
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1a,d1b
+				],
+				offset: 60
+			});
+			// ...
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				try_sbm();
+				return false;
+			}
+			// init
+			stores(d2a);
+			if (d2a.value != d2b.value)
+				stores(d2b);
+			
+			// ...
+			function stores(input) {
+				var x = input.value.split(',');
+				input.out.innerHTML = '';
+				var rf = new AMT___requests_factory();
+				rf.database__select(
+					{
+						query: 'AMT__Tucker_Severson',
+						encodeStrings: [ { city: x[0].trim(), mall: x[1].trim() } ],
+						__seed__: input,
+					},
+					process
+				);
+			}
+			// ...
+			function process(database_object) {
+				// array_push($out_arr, [...]);
+				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'] ]
+				// database_object.responseObject = JSON.parse(rs);
+				var input = database_object.__seed__;
+				var out = input.out;
+				var show = (input.value).div({style:'border-bottom:2px solid teal;'});
+				// Show...
+				out.innerText = '';
+				out.appendChild(show);
+				// 0...
+				if (database_object.responseObject.length == 0) {
+					out.appendChild('0 results!'.div());
+					return;
+				}
+				
+				// Loop
+				// AUTO
+				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				for (var i in database_object.responseObject) {
+					//
+					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
+					var code = (x[5] == 'County') ? x[1] +''+ x[2] : x[1] +''+ x[3];
+					//
+					var n1 = MT__bold(x[0], s.sbold);
+					var n2 = MT__bold(x[4], s.mbold, {color:'blue'}).bold_string;
+					var n3 = x[5];
+					//
+					var eldiv = document.createElement('div');
+					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
+					eldiv.className = 'exe';
+					eldiv.innerHTML = n1 + ':' + n2 + '<i>('+n3+')</i>';
+					eldiv.code = code;
+					eldiv.onclick = function(e) {
+						o.q[0].value = this.code;
+						this.style.backgroundColor = 'LightGreen';
+						try_sbm();
+					}
+					out.appendChild(eldiv);
+					//~ console.log(s);
+					//~ console.log(x);
+					//~ if ( //i == 0 &&
+						//~ s.store.clean_str_to_auto() == x[0].clean_str_to_auto() &&
+						//~ s.mall.clean_str_to_auto() == x[1].clean_str_to_auto() &&
+						//~ s.store.clean_str_to_auto().length >= 4 &&
+						//~ s.mall.clean_str_to_auto().length >= 4 &&
+						//~ !s.auto
+						//~ ) {
+						//~ s.auto = true;
+						//~ eldiv.click();
+					//~ }
+					//~ // try auto 2 (no "The"
+					//~ else if (
+						//~ s.store_no_the.clean_str_to_auto() == x[0].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.mall_no_the.clean_str_to_auto() == x[1].replace(/^The +/, '').clean_str_to_auto() &&
+						//~ s.store_no_the.clean_str_to_auto().length >= 3 && // Min length=3
+						//~ s.mall_no_the.clean_str_to_auto().length >= 3 &&
+						//~ !s.auto
+						//~ ) {
+						//~ s.auto = true;
+						//~ eldiv.click();
+					//~ }
+				}
+				var eldiv = document.createElement('div');
+				eldiv.setAttribute('style','height:2000px;');
+				out.appendChild(eldiv);
+				//~ var eldiv = document.createElement('div');
+				//~ eldiv.setAttribute('style','height:2000px;');
+				//~ out.appendChild(eldiv);
+			}
+			function try_sbm() {
+				if (!/^(0|\d{5}|\d{7)}$/.exec(o.q[0])) {
+					return false;
+				}
+				// Still here...
+				doSubmit();
+			}
+		}
+		new run().f();return;
+	}
 	// Rory Bernard
 	// Find correct ID for audio metadata
 	// AMT_Requester_Rory_Bernard.tracks
