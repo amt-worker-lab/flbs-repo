@@ -52651,13 +52651,13 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ nas: [],
 				//~ divs: [],
 				//~ inputs: [],
-				//~ sbold: null,
+				bold: null,
 				//~ mbold: null,
 				//~ auto: false,
 				//~ store_no_the:null,
 				//~ mall_no_the:null,
 			}
-			
+			o.bold = o.city.clean_string_to_array();
 			/* BEGIN ITEMS */
 			var d1a = ''.div({
 				style:
@@ -52687,6 +52687,7 @@ Laurens Hammond, Chicago, Ill.**/
 			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2a.out = d1a;
 			d2a.value = o.city + ',' + o.state;
+			d2a.onblur = function () { stores(this); };
 			document.body.appendChild(d2a);
 			var d2b = document.createElement('input');
 			d2b.setAttribute('type','text');
@@ -52702,6 +52703,7 @@ Laurens Hammond, Chicago, Ill.**/
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.out = d1b;
 			d2b.value = o.city.replace(/ [^ ]+$/, '') + ',' + o.state; // Remove final word
+			d2b.onblur = function () { stores(this); };
 			document.body.appendChild(d2b);
 			/* END ITEMS */
 			
@@ -52726,7 +52728,7 @@ Laurens Hammond, Chicago, Ill.**/
 			stores(d2a);
 			if (d2a.value != d2b.value)
 				stores(d2b);
-			
+			else d2b.value = '';
 			// ...
 			function stores(input) {
 				var x = input.value.split(',');
@@ -52735,7 +52737,7 @@ Laurens Hammond, Chicago, Ill.**/
 				rf.database__select(
 					{
 						query: 'AMT__Tucker_Severson',
-						encodeStrings: [ { city: x[0].trim(), mall: x[1].trim() } ],
+						encodeStrings: [ { city: x[0].trim(), state: x[1].trim() } ],
 						__seed__: input,
 					},
 					process
@@ -52759,22 +52761,32 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 				
 				// Loop
-				// AUTO
-				//~ var auto = (database_object.responseObject.length == 1) ? true : false;
+				// AUTO :: When 1 result and exact match and length >= 4.
+				// 
+				var auto = (database_object.responseObject.length == 1) ? true : false;
 				//~ var first_word = d2.value.split(' ')[0].toUpperCase();
+				//~ var auto = false;
 				for (var i in database_object.responseObject) {
 					//
 					var x = database_object.responseObject[i]; // 0=store, 1=mall, 2=#
-					var code = (x[5] == 'County') ? x[1] +''+ x[2] : x[1] +''+ x[3];
+					if (x[1].length == 1) x[1] = '0'+x[1];
+					if (x[2].length == 1) x[2] = '0'+x[2];
+					if (x[3].length == 1) x[3] = '0'+x[3];
+					var code;
+					if (x[5] == 'County') {
+						code = x[1] +''+ x[2];
+					} else { // city / town, etc.
+						code = x[1] +''+ x[3];
+					}
 					//
-					var n1 = MT__bold(x[0], s.sbold);
-					var n2 = MT__bold(x[4], s.mbold, {color:'blue'}).bold_string;
+					var n1 = MT__bold(x[0], o.bold);
+					var n2 = MT__bold(x[4], o.bold, {color:'blue'}).bold_string;
 					var n3 = x[5];
 					//
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n1 + ':' + n2 + '<i>('+n3+')</i>';
+					eldiv.innerHTML = n1 + ':' + n2 + '<i>('+n3+')</i><br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					eldiv.code = code;
 					eldiv.onclick = function(e) {
 						o.q[0].value = this.code;
@@ -52782,6 +52794,12 @@ Laurens Hammond, Chicago, Ill.**/
 						try_sbm();
 					}
 					out.appendChild(eldiv);
+					if (i == 0 &&
+						database_object.responseObject.length == 1 &&
+						x[4].toLowerCase() == o.city.toLowerCase() && x[4].length >= 4
+						) {
+						eldiv.click();
+					}
 					//~ console.log(s);
 					//~ console.log(x);
 					//~ if ( //i == 0 &&
@@ -52814,7 +52832,7 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ out.appendChild(eldiv);
 			}
 			function try_sbm() {
-				if (!/^(0|\d{5}|\d{7)}$/.exec(o.q[0])) {
+				if (!/^(0|\d{5}|\d{7})$/.exec(o.q[0].value)) {
 					return false;
 				}
 				// Still here...
