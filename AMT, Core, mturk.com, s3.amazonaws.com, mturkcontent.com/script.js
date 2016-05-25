@@ -52640,11 +52640,13 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('input {width:90%;}');
 			GM_addStyle('.div-highlight {position:absolute;top:1200px;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('#mturk_form {margin-top:1000px;}');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
 				city: td[1].innerText.trim(),
 				state: td[3].innerText.trim(),
+				population: td[5].innerText.trim(),
 				q: [
 					document.getElementById('fips_code'),
 				],
@@ -52671,12 +52673,18 @@ Laurens Hammond, Chicago, Ill.**/
 				'left:50%;width:49%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;',
 				a: true, // Append to body
 			});
+			var d3 = (o.population != '' ? MT___numberWithCommas(o.population) : '--').div({
+				style:
+				'position:absolute;top:0px;'+
+				'left:0;width:99%;height:20px;background-color:#eee;border:1px solid blue;overflow:auto;',
+				a: true, // Append to body
+			});
 			// Inputs....
 			var ef = new AMT___events_factory();
 			var d2a = document.createElement('input');
 			d2a.setAttribute('type','text');
 			d2a.setAttribute('style',
-				'position:absolute;top:0px;left:0;width:50%;height:60px;'
+				'position:absolute;top:20px;left:0;width:50%;height:40px;'
 			);
 			ef.mouseup__delete_range({
 				element: d2a,
@@ -52692,7 +52700,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var d2b = document.createElement('input');
 			d2b.setAttribute('type','text');
 			d2b.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:49%;height:60px;'
+				'position:absolute;top:20px;left:50%;width:49%;height:40px;'
 			);
 			ef.mouseup__delete_range({
 				element: d2b,
@@ -52746,7 +52754,7 @@ Laurens Hammond, Chicago, Ill.**/
 			// ...
 			function process(database_object) {
 				// array_push($out_arr, [...]);
-				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'] ]
+				// 		[ $row['state_abbreviation'], $row['state_fips'], $row['county_fips'], $row['entity_fips'], $row['name'], $row['type'], pop]
 				// database_object.responseObject = JSON.parse(rs);
 				var input = database_object.__seed__;
 				var out = input.out;
@@ -52786,7 +52794,7 @@ Laurens Hammond, Chicago, Ill.**/
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n1 + ':' + n2 + '<i>('+n3+')</i><br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
+					eldiv.innerHTML = n1 + ':' + n2 + ' (<i>'+n3+'</i>,'+MT___numberWithCommas(x[6])+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					eldiv.code = code;
 					eldiv.onclick = function(e) {
 						o.q[0].value = this.code;
@@ -52795,9 +52803,12 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					out.appendChild(eldiv);
 					if (i == 0 &&
-						database_object.responseObject.length == 1 &&
+							(
+							database_object.responseObject.length == 1 ||
+							o.population == '' // No specified population!
+							) &&
 						x[4].toLowerCase() == o.city.toLowerCase() && x[4].length >= 4
-						) {
+					   ) {
 						eldiv.click();
 					}
 					//~ console.log(s);
