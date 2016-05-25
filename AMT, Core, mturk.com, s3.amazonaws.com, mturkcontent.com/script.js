@@ -52803,7 +52803,7 @@ Laurens Hammond, Chicago, Ill.**/
 					// Not county or state but 0!
 					if (x[4].indexOf('County') == -1 &&
 						(
-							x[2] == '000' ||
+							//~ x[2] == '000' ||
 							x[3] == '00000'
 						)
 					) {
@@ -52829,7 +52829,7 @@ Laurens Hammond, Chicago, Ill.**/
 					var eldiv = document.createElement('div');
 					eldiv.setAttribute('style','border-bottom:1px solid #a2a2a2;cursor:pointer;');
 					eldiv.className = 'exe';
-					eldiv.innerHTML = n2 + ' (<i>'+type+MT___numberWithCommas(x[6])+'</i>)<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
+					eldiv.innerHTML = n2 + ' (<i>'+type+MT___numberWithCommas(x[6])+'</i>:'+code+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					// No state!
 					//~ eldiv.innerHTML = n1 + ':' + n2 + ' (<i>'+MT___numberWithCommas(x[6])+')<br>&nbsp;&nbsp;&nbsp;&nbsp;'+x[1]+':'+x[2]+':'+x[3];
 					eldiv.code = code;
