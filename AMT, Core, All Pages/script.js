@@ -3219,6 +3219,7 @@ function load()
 			)
 		{
 			if (new Date().getFullYear() != '2016') {
+				alert('_YEAR_'+ new Date().getFullYear());
 				alert('_YEAR_');
 				return;
 			};
@@ -3336,7 +3337,7 @@ function load()
 		input.parentNode.parentNode.style.top = '0';
 		input.parentNode.parentNode.style.left = '0';
 		//~ input.scrollIntoView(true);
-		setTimeout(function() {
+		setInterval(function() {
 			input.focus();
 		}, 1000);
 		

@@ -516,10 +516,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && AMT__Global_Vars.isTopWindow) {
 			//document.body.focus();
 			document.getElementsByTagName('iframe')[0].focus();
-			//~ console.log('clicked to focus on');
+			console.log('NextTab Iframe Focus:' + document.getElementsByTagName('iframe')[0]);
 			//~ console.log(document.getElementsByTagName('iframe')[0]);
 		} else if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0' && !AMT__Global_Vars.isTopWindow){
 			window.focus();
+			console.log('NextTab Iframe Focus (window):' + window);
 		}
 	}
 	else if(request.switchTabNotifier) {
@@ -17420,7 +17421,14 @@ function AMT___checkCaptchaStatus() {
 		var x = document.getElementsByTagName('img');
 		for (var i in x) {
 			if (i == 'length') break;
-			if (x[i] && x[i].src && x[i].src.indexOf('capi-na') != -1) {
+			if (!x[i] || !x[i].src) continue;
+			if (x[i].src.indexOf('capi-na') != -1) {
+				cpim = x[i];
+				break;
+			}
+			// Newer version
+			// https://opfcaptcha-prod.s3.amazonaws.com/4bcf982c7a364017994041c08697d66d.jpg?AWSAccessKeyId=AKIAJHQS2V6DWFDNDZZA&Expires=1464736867&Signature=urvL8yBa%2BYCPGTyBMfXiO3%2BFzUY%3D
+			if (x[i].src.indexOf('opfcaptcha-prod') != -1) {
 				cpim = x[i];
 				break;
 			}
