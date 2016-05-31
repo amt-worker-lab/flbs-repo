@@ -3218,7 +3218,7 @@ function load()
 			ih.indexOf('<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year ') != -1
 			)
 		{
-			if (new Date().getFullYear() != '2015') {
+			if (new Date().getFullYear() != '2016') {
 				alert('_YEAR_');
 				return;
 			};
@@ -3235,13 +3235,13 @@ function load()
 			var dvc;
 			for (var i in dv) {
 				if (i == 'length') break;
-				if (dv[i].getElementsByClassName('pinsummarytaxyeardisplay')[0].innerText.trim() == '2014') {
+				if (dv[i].getElementsByClassName('pinsummarytaxyeardisplay')[0].innerText.trim() == '2015') {
 					dvc = dv[i];
 					break;
 				}
 			}
 			if (!dvc) {
-				console.log('No 2014 Div');
+				console.log('No 2015 Div');
 				return;
 			}
 			complete.ContentPlaceHolder1_CP_BalanceDue = dvc.getElementsByClassName('pinsummaryamountduevalue')[0].innerText.trim();
@@ -3258,7 +3258,8 @@ function load()
 					alert('missing '+id);
 					return;
 				}
-				var y = x.value;console.log(y);
+				var y = x.value;
+				console.log(y);
 				var y = Math.round(y * 100) / 100;console.log(y);
 				y = MT___numberWithCommas(y);console.log(y);
 				y = y.replace(/(\.\d)$/, '$1' + '0');console.log(y);
@@ -3266,9 +3267,13 @@ function load()
 					y += '.00';
 				complete[ id ] = y;
 			}
-			
 			console.log(complete);
-			//~ var filename = 'newline_financial_' + (data.id.replace(/[^\d]/g, '').substr(0, 20));
+			// DEBUG 2ND INSTALLMENT!
+			// May 31, 2016
+			if (document.body.innerText.indexOf('2nd Installment') != -1) {
+				alert('DEBUG:2nd installment exists -- wow!');
+			}
+			// Filename
 			var filename = data.filename;
 			// WRITE TO FILE!
 			// e.g. http://192.168.1.2/mturk/.cached/newline_financial_16234080470000
@@ -3330,13 +3335,17 @@ function load()
 		input.parentNode.parentNode.style.zoom = '2.2';
 		input.parentNode.parentNode.style.top = '0';
 		input.parentNode.parentNode.style.left = '0';
-		input.focus();
-		input.scrollIntoView(true);
+		//~ input.scrollIntoView(true);
+		setTimeout(function() {
+			input.focus();
+		}, 1000);
 		
 		input.style.position = 'absolute';
-		input.style.top = '44px';
-		input.style.left = '2px';
+		input.style.top = '40px';
+		input.style.left = '0px';
 		input.style.width = '120px';
+		input.style.padding = '8px';
+		input.style.border = '2px solid blue';
 		
 		var img = input.parentNode.parentNode.getElementsByTagName('img')[0];
 		img.scrollIntoView(true);
@@ -3371,27 +3380,24 @@ function load()
 		//  > ContentPlaceHolder1_PaymentSearchBox1_cmdSearch 
 		//  > ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch
 		// Set arg GET->cookcountytreasurer.
-		
 		if (document.getElementById('ContentPlaceHolder1_PaymentSearchAgainBox1_cmdSearch'))
 			return;
-			
+		
+		// This id
 		var id = data.id + 'cookcountytreasurer';
 		
 		// DO NOT DO CAPTCHA ON THIS!
 		// BAD SUCCESS RATE!
 		// IT IS 6 CHARACTERS LONG AND HAS VERY BAD SUCCESS RATE.
-		//~ captcha();
 		function captcha() {
 			GM_xmlhttpRequest({
 				method: "GET",
 				url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(img.src)+'&init&cookcountytreasurer',
 				onload: function(response) {
 					var rs = response.responseText;
-					
 					// CAPTCHA_INT
 					//
 					//
-					
 					CAPTCHA_INT = setInterval(function() {
 						GM_xmlhttpRequest({
 							method: "GET",
@@ -3402,11 +3408,9 @@ function load()
 									clearInterval(CAPTCHA_INT);
 								}
 								else return;
-								
 								rs = rs.replace(/ /g, ''); // SPACES!
 								rs = rs.trim();
-								
-								console.log(rs);
+								//~ console.log(rs);
 								
 								// TRY TO FILL IN THIS VALUE
 								// This will always be only 6 digits.
@@ -3414,10 +3418,8 @@ function load()
 								// is returned here. (Closest to 6 digits
 								// is returned.) So check first.
 								if (rs.length != 6) return;
-								
 								input.value = rs;
 								search.click();
-								
 							}
 						});
 					}, 1000);
