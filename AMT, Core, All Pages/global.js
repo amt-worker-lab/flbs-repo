@@ -529,8 +529,19 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	//~ console.log(request);
 	
+	// There is a bug here. Global.js is replicated in Chrome:AllPages and Chrome:AMT.
+	// But next tab passby only needs to run on Chrome:AMT.
+	// Therefore do not run on global.js by filter by id.
+	// That is, if id == "epflnpjnljncblipaikibpjhobgkfmoh"
 	if(request.checkNTPassBy) {
 		console.log('recieved NTPassBy Check msg');
+		console.log('==============');
+		if (chrome.runtime.id == 'epflnpjnljncblipaikibpjhobgkfmoh') {
+			console.log('chrome.runtime.id == epflnpjnljncblipaikibpjhobgkfmoh. Exiting!');
+			return;
+		} else {
+			console.log('chrome.runtime.id == '+chrome.runtime.id + '. Continuing!');
+		}
 		if(AMT__Global_Vars.isSubmitting && 
 		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
 		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {

@@ -31,10 +31,10 @@ var RUN__SUNY_PB_Ratemyprofessor = true;
 //
 var RUN__SUNY_PB_Vhlcentral = true;
 
-var SCRIPT_IDS_FOR_UTILITY_CHECKING = ['gcfnekbbpmbgadddbojhlojhddnkcpje',//core mturk
+var SCRIPT_IDS_FOR_UTILITY_CHECKING = [ 'gcfnekbbpmbgadddbojhlojhddnkcpje', //core mturk
 										'bpbbmbgkdconjgghffedjkojaoebdnii', //work localhost
-										'mabgkkenedddfkfmpocdekdjckalpddc' //work localhost, from David's chrome extension
-										]
+										'mabgkkenedddfkfmpocdekdjckalpddc'  //work localhost, from David's chrome extension
+									  ]
 // scripts
 var RUN__ALL_PAGES_ZOOM = false;
 var RUN__ALL_PAGES_EXTEND = false;
