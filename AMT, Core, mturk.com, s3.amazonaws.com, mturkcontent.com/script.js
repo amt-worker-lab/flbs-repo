@@ -186427,8 +186427,8 @@ function top_window(okay_to_run) {
 			}
 			o.q[2].selectedIndex = o.q[2].getElementsByTagName('option').length - 1;
 			o.q[2].multiple = true;
-			o.q[2].size=2;
-			o.q[2].setAttribute('style','width:80%;zoom:1.8;'); // Add blue bgc
+			o.q[2].size = 3; // Changed from 2 to 3, June 5.
+			o.q[2].setAttribute('style','width:60%;zoom:1.8;'); // Add blue bgc
 			// Clear bold
 			var b = document.getElementsByTagName('b');
 			for (var i in b) {
@@ -186712,7 +186712,7 @@ function top_window(okay_to_run) {
 						tmp_bv = ' google ';
 						btn.setAttribute('style','cursor:pointer;font-weight:bold;');
 						btn.onclick = function() {
-							localStorage['goog-captcha'] = true; // RESET THIS!!!
+							localStorage['goog-captcha'] = '0'; // RESET THIS!!!
 							this.style.backgroundColor = 'LightGreen';
 							A9_Snaptell_VSR__google();
 						}
@@ -186723,6 +186723,7 @@ function top_window(okay_to_run) {
 				result.array_all = ['eb1','eb2','eb3','eb4'];
 			}
 			// Get skips file
+			// Using fs__load_skips2
 			new AMT___requests_factory().fs__load_skips2({
 				skips_key: 'VSR_Barcodes_Skips_File',
 				callback: function (SKIP_SITES) {
@@ -186752,11 +186753,7 @@ function top_window(okay_to_run) {
 				},
 				callback_err: function() {},
 			});
-			//~ // INIT
-			//~ A9_Snaptell_VSR__next();
-			//~ // LOADS SHOPSAVVY INITIALLY
-			//~ A9_Snaptell_VSR__shopsavvy();
-			
+		
 			/**
 			 * function add_result_button
 			 * 
@@ -186776,7 +186773,7 @@ function top_window(okay_to_run) {
 				//					iframe_url: urls[0],
 				//					site_code: 'ss',
 				//				});
-				console.log(result_obj);
+				//~ console.log(result_obj);
 				// Add a result button
 				var btn = document.createElement('input');
 				btn.setAttribute('style','width:100%;height:30px;cursor:pointer;font-weight:bold;text-align:left;');
@@ -186951,7 +186948,7 @@ function top_window(okay_to_run) {
 				// Try google (regardless of ebay)
 				if (
 					(result.startpage == false || result.startpage == null) && // sometimes startpage == null
-					(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
+					(localStorage['goog-captcha'] == "0" || localStorage['goog-captcha'] == null) &&
 					//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
 					result.searchupc == false &&
 					result.shopsavvy == false &&
@@ -186966,120 +186963,17 @@ function top_window(okay_to_run) {
 					// && result.yahoo == false
 					)
 				{
-					if (localStorage['goog-captcha'] == true) {
-						//DEBUG//console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
+					if (localStorage['goog-captcha'] == "1") {
 						// Show...
 						d4a.result_buttons.g.style.backgroundColor = 'pink';
-						window.setTimeout(A9_Snaptell_VSR__next, 500);
+						window.setTimeout(A9_Snaptell_VSR__next, 2000);
 						return;
 					}
-					
 					o.goog_has_run = true;
 					A9_Snaptell_VSR__google(); // DO IT
 				} else {
 					//
 				}
-				/*// Done?
-				// If so, then it may be auto.
-				if (!result.array_all.length) {
-					return;
-				}
-				// Next
-				console.log(result.array_all);
-				var next = result.array_all.shift();
-				// Swtich next
-				switch(next) {
-					case 'de':
-						// ...
-						A9_Snaptell_VSR();
-						break;
-					case 'sp':
-						// ...
-						AMT___POPUP__initializeGlobals(
-							A9_Snaptell_VSR__startpage_init
-						);
-						break;
-					//~ case 'yh':
-						//~ // ...
-						//~ AMT___POPUP__initializeGlobals(
-							//~ A9_Snaptell_VSR__yahoo_init
-						//~ );
-						//~ break;
-					case 'su':
-						// searchupc
-						A9_Snaptell_VSR__searchUPC_com();
-						break;
-					case 'ss':
-						// shopsavvy
-						A9_Snaptell_VSR__shopsavvy();
-						break;
-					case 'sm':
-						// smoopa
-						A9_Snaptell_VSR__smoopa_com();
-						break;
-					case 'up':
-						// upcindex
-						A9_Snaptell_VSR__upcindex_com();
-						break;
-					case 'db':
-						// upcitemdb
-						A9_Snaptell_VSR__upcitemdb_com();
-						break;
-					case 'ud':
-						// 
-						A9_Snaptell_VSR__upcdatabase_com();
-						break;
-					case 'yp':
-						//
-						A9_Snaptell_VSR__yoopsie_com();
-						break;
-					case 'op':
-						//
-						A9_Snaptell_VSR__outpan_com();
-						break;
-					case 'lu':
-						//
-						upcs__lookupisbn();
-						break;
-					case 'eb1':				
-							A9_Snaptell_ebay_find_product();
-						break;
-					case 'eb2':
-							A9_Snaptell_ebay_find_product();
-						break;
-					case 'eb3':
-							A9_Snaptell_ebay_find_product();
-						break;
-					case 'eb4':
-							A9_Snaptell_ebay_find_product();
-						break;
-					case 'g':
-						if (localStorage['goog-captcha'] == true) {
-							//~ console.log("localStorage['goog-captcha'] :: " + localStorage['goog-captcha']);
-							// Show...
-							d4a.result_buttons.g.style.backgroundColor = 'pink';
-							return;
-						}
-						if (
-							(result.startpage == false || result.startpage == null) && // sometimes startpage == null
-							(localStorage['goog-captcha'] == 'false' || localStorage['goog-captcha'] == null) &&
-							//~ result.digital_eyes == false && // IGNORE DIGITAL EYES!!! 
-							result.searchupc == false &&
-							result.shopsavvy == false &&
-							result.upcindex == false &&
-							result.upcitemdb == false &&
-							result.upcdatabase == false &&
-							result.yoopsie == false &&
-							result.lookupisbn == false &&
-							o.ebaySuccess == false
-							// && result.yahoo == false
-							) {
-							A9_Snaptell_VSR__google(); // DO IT
-						} else {
-							//
-						}
-						break;
-				}*/
 			}
 			// A9_Snaptell_VSR__google
 			function A9_Snaptell_VSR__google() {
@@ -187088,12 +186982,12 @@ function top_window(okay_to_run) {
 					{
 						query: '("' + upc + '" OR "0'+upc+'")', // Try also with a leading 0
 						callback_error: function() {
-							localStorage['goog-captcha'] = true; // SET
+							localStorage['goog-captcha'] = '1'; // SET
 							d2c.style.backgroundColor = 'pink';
 							window.open('https://www.google.com/search?q='+Math.random()+'&ie=UTF-8');
 						},
 						callback_success: function(result_object) {
-							localStorage['goog-captcha'] = false; // SET
+							localStorage['goog-captcha'] = '0'; // SET
 							var arr = result_object.results;
 							// update button
 							//~ d3b.value = '... google ...';
