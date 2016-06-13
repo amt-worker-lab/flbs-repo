@@ -26,6 +26,26 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Matthew Hill
+	// Type License Plate Numbers
+	//
+	// 
+	s = '<div class="panel-body">\n<p>Type in the license plate number as seen in the image</p>\n</div>';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				doSubmit();
+				return false;
+			}
+		}
+		new run().f();return;
+	}
 	// A9
 	// 
 	//
