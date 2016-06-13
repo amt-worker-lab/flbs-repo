@@ -41,7 +41,14 @@ function MT__RUN() {
                 //~ selected_idx = get_closest_point_idx();
                 //~ console.log('x');
                 selected_idx = canvas_fix.global_counter;
-                if (selected_idx >= 4) { // 0-3 is valid.
+                // 0-3 is valid.
+                if (canvas_fix.global_counter == 2) {
+					selected_idx = 3;
+				}
+				else if (canvas_fix.global_counter == 3) {
+					selected_idx = 2;
+				}
+				else if (canvas_fix.global_counter == 4) { // RESET
 					selected_idx = 0;
 					canvas_fix.global_counter = 0;
 				}
