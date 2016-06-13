@@ -55,6 +55,9 @@ function MT__RUN() {
                 draw_canvas();
                 selected_idx = -1;
                 canvas_fix.global_counter++;
+                // SET THE RESULTS VALUE!!
+                var results = get_results_string();
+                document.getElementById('keypoints').value = results;
             }
             function reset(na) {
 				canvas_fix.onmouseup = mouseup_canvas;
@@ -66,12 +69,21 @@ function MT__RUN() {
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				if (document.getElementById('keypoints').value.length < 10)
-					return false;
-				console.log(document.getElementById('keypoints').value);
-				doSubmit();
 				return false;
 			}
+			// Enter key
+			// keypress...
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				//~ var str = String.fromCharCode(e.keyCode).toLowerCase();
+				//~ console.log(c);
+				//~ console.log(str);
+				console.log(document.getElementById('keypoints').value);
+				if (c == 13 && document.getElementById('keypoints').value.length > 10) {
+					doSubmit();
+				}
+			}, false);
+			//
 			function js_append(func, values) { // run code
 				// ...
 				var code = '(' + func + ')('+values+');';
