@@ -27,6 +27,71 @@ function MT__RUN() {
 	var s, s2, s3;
 	
 	// Matthew Hill
+	// Corners...
+	//
+	// 
+	s = '<p>This HIT requires you to drag four labels to the appropriate location in the image. For example, the Top_Left label should be placed in the top left corner of the license plate.</p>';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			// Append
+			function mouseup_canvas(event){
+                //~ selected_idx = get_closest_point_idx();
+                //~ console.log('x');
+                selected_idx = canvas_fix.global_counter;
+                if (selected_idx >= 4) { // 0-3 is valid.
+					selected_idx = 0;
+					canvas_fix.global_counter = 0;
+				}
+                var xy = grab_xy(event);
+                cx = xy[0];
+                cy = xy[1];
+                if(selected_idx >= 0){
+                    x[selected_idx] = cx;
+                    y[selected_idx] = cy;
+                }
+                draw_canvas();
+                selected_idx = -1;
+                canvas_fix.global_counter++;
+            }
+            function reset(na) {
+				canvas_fix.onmouseup = mouseup_canvas;
+				canvas_fix.global_counter = 0;
+			}
+            js_append2(mouseup_canvas);
+            js_append(reset, null);
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				if (document.getElementById('keypoints').value.length < 10)
+					return false;
+				console.log(document.getElementById('keypoints').value);
+				doSubmit();
+				return false;
+			}
+			function js_append(func, values) { // run code
+				// ...
+				var code = '(' + func + ')('+values+');';
+				var script = document.createElement('script');
+				script.textContent = code;
+				(document.head||document.documentElement).appendChild(script);
+				script.parentNode.removeChild(script);
+			}
+			function js_append2(func, values) { // add code to page
+				// ...
+				var code = func;
+				var script = document.createElement('script');
+				script.textContent = code;
+				(document.head||document.documentElement).appendChild(script);
+				script.parentNode.removeChild(script);
+			}
+		}
+		new run().f();return;
+	}
+	// Matthew Hill
 	// Type License Plate Numbers
 	//
 	// 
