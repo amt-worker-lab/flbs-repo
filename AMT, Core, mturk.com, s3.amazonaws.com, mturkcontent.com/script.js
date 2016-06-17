@@ -113,6 +113,8 @@ function MT__RUN() {
 						if (i == 'length') break;
 						o.q[i].value = o.q[i].value.trim();
 					}
+					document.getElementById('submitButton').style.backgroundColor = 'black';
+					document.getElementById('submitButton').style.zoom = '1.4';
 					AMT___recordAndSubmit();
 				}
 			}, false);
@@ -170,6 +172,11 @@ function MT__RUN() {
 					o.q[5].value = x[4].innerText.trim();
 					if (o.q[5].value == '' && x[4].getAttribute('itemprop') == 'postalCode') {
 						o.q[5].value = 'N/A';
+					}
+					// Zip code test
+					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
+						sbm = false;
+						o.q[5].style.backgroundColor = 'aqua';
 					}
 					var x = dom.getElementsByClassName('listing-contacts')[0];console.log(x);
 					if (x) {
@@ -239,19 +246,15 @@ function MT__RUN() {
 					} else {
 						o.q[25].value = 'N/A';
 					}
-					// Zip code test
-					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
-						sbm = false;
-					}
 					// Test for suite!
 					// Address 1
-					if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
-						var x = / +(ste|suite|apt|apartment|unit|building|bldg) *([a-z0-9]+)$/i.exec(o.q[1].value);
+					if (/(ste|suite|#|apt|apartment|unit|building|bldg|,)/i.exec(o.q[1].value)) {
+						var x = /,* +(ste|suite|apt|#|apartment|unit|building|bldg)\.* *([a-z0-9#]+)$/i.exec(o.q[1].value);
 						if (x) {
 							var g = x[0];
 							o.q[1].value = o.q[1].value.replace(g, '').trim(); // remove
 							o.q[1].value = o.q[1].value.replace(/,+/, '').trim(); // remove
-							o.q[2].value = g.trim();
+							o.q[2].value = g.replace(/^,/, '').trim();
 							if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
 								sbm = false;
 								o.q[1].style.backgroundColor = 'aqua';
@@ -368,8 +371,11 @@ function MT__RUN() {
 					}// else
 					//	o.q[i].style.backgroundColor = '';
 				}
-				if (o.sbm)
+				if (o.sbm) {
 					AMT___recordAndSubmit();
+					document.getElementById('submitButton').style.backgroundColor = 'black';
+					document.getElementById('submitButton').style.zoom = '1.4';
+				}
 			}
 		}
 		new run().f();
