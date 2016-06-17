@@ -37,6 +37,8 @@ function MT__RUN() {
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
 			var a = document.getElementsByTagName('a');
 			var q = document.getElementsByClassName('form-control');
 			var o = {
@@ -130,7 +132,15 @@ function MT__RUN() {
 					x = x.getElementsByTagName('span');
 					o.q[1].value = x[0].innerText.replace(/ *,* *$/, '').trim();
 					//o.q[1].value = x[0].innerText; // ? ADDRESS 2?
+					if (o.q[1].value.length < 3) {
+						o.q[1].style.backgroundColor = 'aqua';
+						sbm = false;
+					}
 					o.q[3].value = x[1].innerText.trim();
+					if (o.q[3].value.length < 3) {
+						o.q[3].style.backgroundColor = 'aqua';
+						sbm = false;
+					}
 					o.q[4].value = x[3].innerText.trim();
 					o.q[5].value = x[4].innerText.trim();
 					var x = dom.getElementsByClassName('listing-contacts')[0];console.log(x);
@@ -140,10 +150,12 @@ function MT__RUN() {
 							var t = x[i].getAttribute('itemprop');
 							switch (t) {
 								case 'telephone':
-									o.q[8].value = x[i].innerText;
+									o.q[8].value = x[i].innerText.trim();
+									if (o.q[8].value == '') o.q[8].value = 'N/A';
 									break;
 								case 'email':
-									o.q[9].value = x[i].innerText;
+									o.q[9].value = x[i].innerText.trim();
+									if (o.q[9].value == '') o.q[9].value = 'N/A';
 									break;
 								default:
 									sbm = false;
@@ -190,9 +202,12 @@ function MT__RUN() {
 							}
 						}
 					}
-					var x = dom.getElementsByClassName('listing-logo');console.log(x);
+					var x = dom.getElementsByClassName('listing-logo');
 					if (x) {
-						o.q[25].value = x[0].src;
+						if (x[0].src == '' || x[0].outerHTML.indexOf('/attachments_missing/') != -1)
+							o.q[25].value = 'N/A';
+						else
+							o.q[25].value = x[0].src;
 					} else {
 						o.q[25].value = 'N/A';
 					}
@@ -204,11 +219,12 @@ function MT__RUN() {
 					// Address 1
 					if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
 						sbm = false;
+						o.q[1].style.backgroundColor = 'aqua';
 					}
-					o.sbm = sbm;
-					if (sbm = false) {
-						document.body.style.backgroundColor = 'aqua';
-					}
+					//~ if (sbm = false) {
+						//~ document.body.style.backgroundColor = 'teal';
+					//~ }
+					o.sbm = sbm; // Set global
 					// Do geocode
 					//
 					//~ var a = o.q[1].value + ',' + o.q[2].value + ',' + o.q[3].value + ',';
@@ -266,7 +282,7 @@ function MT__RUN() {
 			}
 			function zipcode(rs) {
 				if (!firstRun) { // second run
-					document.body.style.backgroundColor = '#883388';
+					//document.body.style.backgroundColor = '#883388';
 				}
 				if (!rs || !rs.hasOwnProperty('results') || !rs.results.length) {
 					zipcode_increment();
@@ -279,14 +295,36 @@ function MT__RUN() {
 					}
 					var rslt = rs.results[j];
 					if (rslt.partial_match) {
-						document.body.style.backgroundColor = '#a3dda3';
+						//~ document.body.style.backgroundColor = '#a3dda3';
 					}
 					for (var i in rslt.address_components) {
 						x = rslt.address_components[i];
 						if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
 							o.q[6].value = rs.results[0].geometry.location.lat;
 							o.q[7].value = rs.results[0].geometry.location.lng;
-							//~ AMT___recordAndSubmit();
+							// Trim and auto
+							// Check state auto, Valid US state?
+							var state_is_valid = o.q[ 4 ].value.state_abbr_is_valid();
+							//~ console.log(i+':');
+							//~ console.log(state_is_valid);
+							//~ console.log(o.q[ 4 ].value);
+							for (var i in o.q) {
+								if (i == 'length') break;
+								//~ console.log(o.q[i]);
+								//~ console.log(o.q[i].value);
+								o.q[i].value = o.q[i].value.trim();
+								if (o.q[i].value.length < 3 ) {
+									//~ console.log(i);
+									if (state_is_valid && (i == 4 || 'Q5_State')) {
+										// THIS IS VALID!
+									} else {
+										o.q[i].style.backgroundColor = 'aqua';
+										o.sbm = false;
+									}
+								}
+							}
+							if (o.sbm)
+								AMT___recordAndSubmit();
 							return;
 						}
 					}
