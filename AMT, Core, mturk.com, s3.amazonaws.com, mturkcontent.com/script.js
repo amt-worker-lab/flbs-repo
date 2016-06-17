@@ -26,6 +26,214 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// Luis Mota
+	// 
+	//
+	// 
+	s = '<li>Collect the name of the dispensary and enter it into the "Name of Dispensary" field below.</li>';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			var a = document.getElementsByTagName('a');
+			var q = document.getElementsByClassName('form-control');
+			var o = {
+				u: a[0].href,
+				q: q,
+			}
+			
+			
+			AMT___addUserDecision(
+				'Luis Mota,Jun062016',
+				function() { return o.u; },
+				[
+				"Name(Q1_Name)[0]",
+				 "Name(Q2_Address)[0]",
+				 "Name(Q3_Address2)[0]",
+				 "Name(Q4_City)[0]",
+				 "Name(Q5_State)[0]",
+				 "QName(6_ZipCode)[0]",
+				 "Name(Q7_Latitude)[0]",
+				 "Name(Q8_Longitude)[0]",
+				 "Name(Q9_Number)[0]",
+				 "Name(Q10_Email)[0]",
+				 "Name(Q11_URL)[0]",
+				 "Name(Q12_MondayOpen)[0]",
+				 "Name(Q13_MondayClose)[0]",
+				 "Name(Q14_TuesdayOpen)[0]",
+				 "Name(Q15_TuesdayClose)[0]",
+				 "Name(Q16_WednesdayOpen)[0]",
+				 "Name(Q17_WednesdayClose)[0]",
+				 "Name(Q18_ThursdayOpen)[0]",
+				 "Name(Q19_ThursdayClose)[0]",
+				 "Name(Q20_FridayOpen)[0]",
+				 "Name(Q21_FridayClose)[0]",
+				 "Name(Q22_SaturdayOpen)[0]",
+				 "Name(Q23_SaturdayClose)[0]",
+				 "Name(Q24_SundayOpen)[0]",
+				 "Name(Q25_SundayClose)[0]",
+				 "QName(26_ImageURL)[0]",
+				]
+			);
+			
+			
+			// Scriptvar
+			new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
+			o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
+			var firstRun = true;
+			var num_tries = 0;
+			
+			// XHR
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var sbm = true; //  Submit test...
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					o.q[0].value = dom.getElementsByClassName('listing-name')[0].innerText;
+					var x = dom.getElementsByClassName('listing-address')[0].getElementsByTagName('span');
+					o.q[1].value = x[0].innerText;
+					//o.q[1].value = x[0].innerText; // ? ADDRESS 2?
+					o.q[3].value = x[2].innerText;
+					o.q[4].value = x[3].innerText;
+					o.q[5].value = x[4].innerText;
+					var x = dom.getElementsByClassName('listing-contacts')[0].getElementsByTagName('span');
+					if (x) {
+						x = x.getElementsByTagName('a');
+						for (var i=0;i<x.length;i++) {
+							var t = x[i].getAttribute('itemprop');
+							switch (t) {
+								case 'telephone':
+									o.q[8].value = x[i].innerText;
+									break;
+								case 'email':
+									o.q[9].value = x[i].innerText;
+									break;
+								default:
+									sbm = false;
+							}
+						}
+					} else {
+						o.q[8].value = 'N/A';
+						o.q[9].value = 'N/A';
+					}
+					// Website
+					var x = dom.getElementsByClassName('details-card-item-label');
+					if (x) {
+						for (var i=0;i<x.length;i++) {
+							var y = dom.getElementsByTagName('a');
+							if (y && y.length) {
+								var t = x[i].getAttribute('itemprop');
+								if (t && t == 'url') {
+									o.q[10].value = 'N/A';
+									break;
+								}
+							}
+							
+						}
+					}
+					// Zip code test
+					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
+						sbm = false;
+					}
+					// Test for suite!
+					// Address 1
+					if (/(ste|suite|#|apt|apartment)/i.exec(o.q[1].value)) {
+						sbm = false;
+					}
+					
+				}
+			});
+			//(location, callback_function, return_complete_response, use_a_proxy)
+			function zipcode_increment(rs) {
+				if (num_tries == 0) {
+					num_tries++;
+					if (rs && rs.results[0] && rs.results[0].geometry.location.lat) { // Has Lat Lng!
+						firstRun = false;
+						MT___google_api_reverseGeocode( // (latlng, callback_function)
+							rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+							zipcode,
+							o.use_proxy
+						);
+						return;
+					}
+				}
+				if (num_tries == 1) // Anything else?
+				{
+					//~ num_tries++;
+					//~ firstRun = false;
+					//~ if (d1.value.indexOf(nm) == -1) {
+						//~ d1.value = nm + ',' + d1.value;
+						//~ MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy);
+					//~ }
+				}
+				else if (num_tries == 2)
+				{
+					//~ num_tries++;
+					//~ if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+						//~ firstRun = false;
+
+						//~ MT___google_api_reverseGeocode(
+							//~ rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+							//~ Stephanie_Hass_restaurant_zipcode,
+							//~ o.use_proxy
+						//~ ); 
+					//~ }
+				}
+			}
+			function zipcode(rs) {
+				if (!firstRun) { // second run
+					document.body.style.backgroundColor = '#883388';
+				}
+				if (!rs || !rs.hasOwnProperty('results') || !rs.results.length) {
+					zipcode_increment();
+					return;
+				}
+				// TRY ALL RESULTS
+				for (var j in rs.results) {
+					var rslt = rs.results[j];
+					if (rslt.partial_match) {
+						document.body.style.backgroundColor = '#a3dda3';
+					}
+					for (var i in rslt.address_components) {
+						x = rslt.address_components[i];
+						if  (
+								(
+									x.types[0] == 'postal_code' ||
+									x.types[1] == 'postal_code'
+								) &&
+							x.short_name.length >= 4 // &&
+							//~ && x.short_name != '34200'
+							)
+						{
+							//~ XXXX// ADD A ' TO LEADING '0'
+							//~ XXXXx.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
+							o.q[0].value = x.short_name;
+							
+							//doSubmit();
+							AMT___recordAndSubmit();
+							return;
+						}
+					}
+				}
+				// Still here?
+				zipcode_increment(rs);
+			}
+		}
+		new run().f();
+	}
 	// Matthew Hill
 	// Corners...
 	//
@@ -77672,12 +77880,9 @@ Laurens Hammond, Chicago, Ill.**/
 			// Scriptvar
 			new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
 			o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
-			
 			var firstRun = true;
 			var num_tries = 0;
-			
 			MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy); //(location, callback_function, return_complete_response, use_a_proxy)
-			
 			function zipcode_increment(rs) {
 				if (num_tries == 0) {
 					num_tries++;
