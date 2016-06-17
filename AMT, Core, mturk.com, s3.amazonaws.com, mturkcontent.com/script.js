@@ -72,7 +72,7 @@ function MT__RUN() {
 				 "Name(Q3_Address2)[0]",
 				 "Name(Q4_City)[0]",
 				 "Name(Q5_State)[0]",
-				 "QName(6_ZipCode)[0]",
+				 "Name(Q6_ZipCode)[0]",
 				 "Name(Q7_Latitude)[0]",
 				 "Name(Q8_Longitude)[0]",
 				 "Name(Q9_Number)[0]",
@@ -92,7 +92,7 @@ function MT__RUN() {
 				 "Name(Q23_SaturdayClose)[0]",
 				 "Name(Q24_SundayOpen)[0]",
 				 "Name(Q25_SundayClose)[0]",
-				 "QName(26_ImageURL)[0]",
+				 "Name(Q26_ImageURL)[0]",
 				]
 			);
 			
@@ -122,18 +122,20 @@ function MT__RUN() {
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					// Name
 					o.q[0].value = dom.getElementsByClassName('listing-name')[0].innerText;
+					// Address Line 2 = NA to start
+					o.q[2].value = 'N/A';
 					// Address
 					var x = dom.getElementsByClassName('listing-address')[0];
 					var address = x.innerText;
 					x = x.getElementsByTagName('span');
-					o.q[1].value = x[0].innerText;
+					o.q[1].value = x[0].innerText.replace(/ *,* *$/, '').trim();
 					//o.q[1].value = x[0].innerText; // ? ADDRESS 2?
-					o.q[3].value = x[2].innerText;
-					o.q[4].value = x[3].innerText;
-					o.q[5].value = x[4].innerText;
-					var x = dom.getElementsByClassName('listing-contacts')[0].getElementsByTagName('span');
-					if (x) {console.log(x);
-						x = x[0].getElementsByTagName('a');
+					o.q[3].value = x[1].innerText.trim();
+					o.q[4].value = x[3].innerText.trim();
+					o.q[5].value = x[4].innerText.trim();
+					var x = dom.getElementsByClassName('listing-contacts')[0];console.log(x);
+					if (x) {
+						x = x.getElementsByTagName('a');
 						for (var i=0;i<x.length;i++) {
 							var t = x[i].getAttribute('itemprop');
 							switch (t) {
@@ -152,20 +154,21 @@ function MT__RUN() {
 						o.q[9].value = 'N/A';
 					}
 					// Website
-					var x = dom.getElementsByClassName('details-card-item-label');
+					var x = dom.getElementsByClassName('details-card-item-data');
 					if (x) {
 						for (var i=0;i<x.length;i++) {
-							var y = x[i].getElementsByTagName('a');
+							var y = x[i].getElementsByTagName('a');//console.log(y);
 							if (y && y.length) {
-								var t = x[i].getAttribute('itemprop');
-								if (t && t == 'url') {
-									o.q[10].value = 'N/A';
+								var t = y[0].getAttribute('itemprop');//console.log(t);
+								if (t && t == 'url') {console.log(x[i]);
+									o.q[10].value = x[i].innerText;
 									break;
 								}
 							}
-							
 						}
 					}
+					if (o.q[10].value == '')
+						o.q[10].value = 'N/A';
 					// hours-item
 					var x = dom.getElementsByClassName('hours-item');
 					var dw = '';
@@ -174,7 +177,7 @@ function MT__RUN() {
 						if (y && y.length) {
 							//var t = x[i].getAttribute('itemprop');
 							//if (t
-							dw = y.innerText;
+							dw = y[0].innerText; // Day of week
 						}
 						if (x[i].innerText.indexOf('Closed') != -1) {
 							fill(dw, '', 'Closed');
@@ -183,9 +186,15 @@ function MT__RUN() {
 							if (y) {
 								y = y[0].getElementsByTagName('span');
 								fill(dw, 'open', y[0].innerText.trim().replace(/ -/, ''));
-								fill(dw, 'closed', y[1].innerText.trim());
+								fill(dw, 'close', y[1].innerText.trim());
 							}
 						}
+					}
+					var x = dom.getElementsByClassName('listing-logo');console.log(x);
+					if (x) {
+						o.q[25].value = x[0].src;
+					} else {
+						o.q[25].value = 'N/A';
 					}
 					// Zip code test
 					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
@@ -197,6 +206,9 @@ function MT__RUN() {
 						sbm = false;
 					}
 					o.sbm = sbm;
+					if (sbm = false) {
+						document.body.style.backgroundColor = 'aqua';
+					}
 					// Do geocode
 					//
 					//~ var a = o.q[1].value + ',' + o.q[2].value + ',' + o.q[3].value + ',';
@@ -206,11 +218,12 @@ function MT__RUN() {
 			function fill(dw, optype, time) {
 				// if closed
 				if (time == 'Closed') {
-					o.q_dict[ 'open'+dw ].value = 'Closed';
-					o.q_dict[ 'closed'+dw ].value = 'Closed';
+					o.q_dict[ 'open'+dw ].value = 'CLOSED';
+					o.q_dict[ 'close'+dw ].value = 'CLOSED';
 				} else {
 					// 
-					var n = o.q_dict[ optype+dw ];
+					//~ console.log(optype+dw);
+					var n = o.q_dict[ optype+dw ];//console.log(n);
 					// Convert times
 					var rg = /^(\d+):(\d+)(am|pm)$/.exec(time);
 					if (rg[1] == '12') {
@@ -235,12 +248,12 @@ function MT__RUN() {
 				if (num_tries == 0) {
 					num_tries++;
 					if (rs && rs.results[0] && rs.results[0].geometry.location.lat) { // Has Lat Lng!
-						firstRun = false;
-						MT___google_api_reverseGeocode( // (latlng, callback_function)
-							rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
-							zipcode,
-							o.use_proxy
-						);
+						//~ firstRun = false;
+						//~ MT___google_api_reverseGeocode( // (latlng, callback_function)
+							//~ rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
+							//~ zipcode,
+							//~ o.use_proxy
+						//~ );
 						return;
 					}
 				}
@@ -261,27 +274,19 @@ function MT__RUN() {
 				}
 				// TRY ALL RESULTS
 				for (var j in rs.results) {
+					if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+						
+					}
 					var rslt = rs.results[j];
 					if (rslt.partial_match) {
 						document.body.style.backgroundColor = '#a3dda3';
 					}
 					for (var i in rslt.address_components) {
 						x = rslt.address_components[i];
-						if  (
-								(
-									x.types[0] == 'postal_code' ||
-									x.types[1] == 'postal_code'
-								) &&
-							x.short_name.length >= 4 // &&
-							//~ && x.short_name != '34200'
-							)
-						{
-							//~ XXXX// ADD A ' TO LEADING '0'
-							//~ XXXXx.short_name = (x.short_name[0] == '0') ? "'" + x.short_name : x.short_name;
-							o.q[0].value = x.short_name;
-							
-							//doSubmit();
-							AMT___recordAndSubmit();
+						if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
+							o.q[6].value = rs.results[0].geometry.location.lat;
+							o.q[7].value = rs.results[0].geometry.location.lng;
+							//~ AMT___recordAndSubmit();
 							return;
 						}
 					}
