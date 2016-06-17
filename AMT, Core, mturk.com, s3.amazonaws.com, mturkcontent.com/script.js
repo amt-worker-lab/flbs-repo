@@ -42,6 +42,24 @@ function MT__RUN() {
 			var o = {
 				u: a[0].href,
 				q: q,
+				q_dict: null,
+				sbm: true,
+			}
+			o.q_dict = {
+				'openMonday': o.q[11],
+				'closeMonday': o.q[12],
+				'openTuesday': o.q[13],
+				'closeTuesday': o.q[14],
+				'openWednesday': o.q[15],
+				'closeWednesday': o.q[16],
+				'openThursday': o.q[17],
+				'closeThursday': o.q[18],
+				'openFriday': o.q[19],
+				'closeFriday': o.q[20],
+				'openSaturday': o.q[21],
+				'closeSaturday': o.q[22],
+				'openSunday': o.q[23],
+				'closeSunday': o.q[24],
 			}
 			
 			
@@ -102,16 +120,20 @@ function MT__RUN() {
 					}
 					var sbm = true; //  Submit test...
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Name
 					o.q[0].value = dom.getElementsByClassName('listing-name')[0].innerText;
-					var x = dom.getElementsByClassName('listing-address')[0].getElementsByTagName('span');
+					// Address
+					var x = dom.getElementsByClassName('listing-address')[0];
+					var address = x.innerText;
+					x = x.getElementsByTagName('span');
 					o.q[1].value = x[0].innerText;
 					//o.q[1].value = x[0].innerText; // ? ADDRESS 2?
 					o.q[3].value = x[2].innerText;
 					o.q[4].value = x[3].innerText;
 					o.q[5].value = x[4].innerText;
 					var x = dom.getElementsByClassName('listing-contacts')[0].getElementsByTagName('span');
-					if (x) {
-						x = x.getElementsByTagName('a');
+					if (x) {console.log(x);
+						x = x[0].getElementsByTagName('a');
 						for (var i=0;i<x.length;i++) {
 							var t = x[i].getAttribute('itemprop');
 							switch (t) {
@@ -133,7 +155,7 @@ function MT__RUN() {
 					var x = dom.getElementsByClassName('details-card-item-label');
 					if (x) {
 						for (var i=0;i<x.length;i++) {
-							var y = dom.getElementsByTagName('a');
+							var y = x[i].getElementsByTagName('a');
 							if (y && y.length) {
 								var t = x[i].getAttribute('itemprop');
 								if (t && t == 'url') {
@@ -144,18 +166,70 @@ function MT__RUN() {
 							
 						}
 					}
+					// hours-item
+					var x = dom.getElementsByClassName('hours-item');
+					var dw = '';
+					for (var i=0;i<x.length;i++) {
+						var y = x[i].getElementsByClassName('hours-item-label');
+						if (y && y.length) {
+							//var t = x[i].getAttribute('itemprop');
+							//if (t
+							dw = y.innerText;
+						}
+						if (x[i].innerText.indexOf('Closed') != -1) {
+							fill(dw, '', 'Closed');
+						} else { //
+							var y = x[i].getElementsByClassName('hours-item-data');
+							if (y) {
+								y = y[0].getElementsByTagName('span');
+								fill(dw, 'open', y[0].innerText.trim().replace(/ -/, ''));
+								fill(dw, 'closed', y[1].innerText.trim());
+							}
+						}
+					}
 					// Zip code test
 					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
 						sbm = false;
 					}
 					// Test for suite!
 					// Address 1
-					if (/(ste|suite|#|apt|apartment)/i.exec(o.q[1].value)) {
+					if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
 						sbm = false;
 					}
-					
+					o.sbm = sbm;
+					// Do geocode
+					//
+					//~ var a = o.q[1].value + ',' + o.q[2].value + ',' + o.q[3].value + ',';
+					MT___google_api_geocode(address, zipcode, true, o.use_proxy);
 				}
 			});
+			function fill(dw, optype, time) {
+				// if closed
+				if (time == 'Closed') {
+					o.q_dict[ 'open'+dw ].value = 'Closed';
+					o.q_dict[ 'closed'+dw ].value = 'Closed';
+				} else {
+					// 
+					var n = o.q_dict[ optype+dw ];
+					// Convert times
+					var rg = /^(\d+):(\d+)(am|pm)$/.exec(time);
+					if (rg[1] == '12') {
+						if (rg[3] == 'am') {
+							n.value = '00' + rg[2];
+						} else { // pm
+							n.value = '12' + rg[2];
+						}
+					} else if (rg[3] == 'am') {
+						rg[1] = parseInt(rg[1]); // 0-11
+						if (rg[1] < 10) rg[1] = '0' + rg[1];
+						n.value = rg[1] + '' + rg[2];
+					} else if (rg[3] == 'pm') {
+						rg[1] = parseInt(rg[1]); // 1-11
+						rg[1] += 12; // 13-23
+						n.value = rg[1] + '' + rg[2];
+					}
+				}
+			}
 			//(location, callback_function, return_complete_response, use_a_proxy)
 			function zipcode_increment(rs) {
 				if (num_tries == 0) {
@@ -171,26 +245,10 @@ function MT__RUN() {
 					}
 				}
 				if (num_tries == 1) // Anything else?
-				{
-					//~ num_tries++;
-					//~ firstRun = false;
-					//~ if (d1.value.indexOf(nm) == -1) {
-						//~ d1.value = nm + ',' + d1.value;
-						//~ MT___google_api_geocode(d1.value, zipcode, true, o.use_proxy);
-					//~ }
+				{	
 				}
 				else if (num_tries == 2)
 				{
-					//~ num_tries++;
-					//~ if (rs && rs.results[0] && rs.results[0].geometry.location.lat) {
-						//~ firstRun = false;
-
-						//~ MT___google_api_reverseGeocode(
-							//~ rs.results[0].geometry.location.lat + ',' + rs.results[0].geometry.location.lng,
-							//~ Stephanie_Hass_restaurant_zipcode,
-							//~ o.use_proxy
-						//~ ); 
-					//~ }
 				}
 			}
 			function zipcode(rs) {
