@@ -78412,24 +78412,28 @@ Laurens Hammond, Chicago, Ill.**/
 			var addr2 = [];
 			addr2.push(nm);
 			for (var i = 0; i<=3; i++) {
-				addr1.push(b[i].innerText.trim())
+				if (b[i] && b[i].innerText)
+					addr1.push(b[i].innerText.trim())
 			}
 			for (var i = 0; i<=1; i++) {
-				addr2.push(b[i].innerText.trim())
+				if (b[i] && b[i].innerText)
+					addr2.push(b[i].innerText.trim())
 			}
 			
 			// blank str addr or str addr == city
 			if (b[0].innerText.trim() == '' || b[0].innerText.trim() == b[1].innerText.trim())
 				addr1.unshift(nm); // !
+			if (!b[2]) addr1.push('');
+			if (!b[3]) addr1.push('');
 			// o...
 			// Note: Skip if text is "NULL"
 			var o = {
 				comp: nm,
-				addr: b[0].innerText.trim(),
-				city: b[1].innerText.trim(),
-				state: b[2].innerText.trim(),
+				addr: addr1[0].trim(),
+				city: addr1[1].trim(),
+				state: addr1[2].trim(),
 				state_abbr: '',
-				country: b[3].innerText.trim(),
+				country: addr1[3].trim(),
 				use_proxy: true
 			};
 			// Remove "NULL"
@@ -78487,7 +78491,6 @@ Laurens Hammond, Chicago, Ill.**/
 			document.body.appendChild(d);
 			var d1 = document.getElementById('d1');
 			d1.value = addr1;
-			//~ d1.value = addr1.join(',');
 			d1.onblur = function() {
 				MT___google_api_geocode(this.value, Stephanie_Hass_restaurant_zipcode, true, true); //(location, callback_function, return_complete_response, use_a_proxy)
 			}
