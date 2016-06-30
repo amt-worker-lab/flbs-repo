@@ -126456,12 +126456,88 @@ qatar,80
 	 * Noam Benoni
 	 * James Lovell
 	 * Christopher R. Chi
-	 * 
+	 * Signpost
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// Signpost
+	// Find the official website for businesses
+	//
+	// 
+	var s = '	<div><strong>We will not accept any non-official websites for businesses</strong></div>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Validate the page.....
+			var x = /<div>Business Name with U\.\S.&nbsp;state: <b>[^<]+<\/b><\/div>/.exec(ih);
+			if (!x) alert('Bad validation!');
+			// Elements
+			var td = document.getElementsByTagName('b');
+			var o = {
+				comp: td[0].innerText.trim(),
+				boldArray: [],
+				//~ addrArray: [],
+				q: [
+					document.getElementById('Q1Url')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			//~ o.addrArray = o.locn.clean_string_to_array().concat(o.email.clean_string_to_array()).concat(o.phone.clean_string_to_array());
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					'"' + o.comp + '"',
+					'"' + o.comp.split(' ').join('" "'),
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.addrArray,// o.address.clean_string_to_array(), // Too much...
+						//~ brown: o.addr_arr,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'not found',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Christopher R. Chi
 	// Find the Website Address for Business
 	//
