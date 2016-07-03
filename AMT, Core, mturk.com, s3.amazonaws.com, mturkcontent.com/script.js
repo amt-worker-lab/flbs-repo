@@ -5542,6 +5542,8 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			
 			
+
+			
 			for(var i = 0; i < spans.length; i++) {
 				if(spans[i] && spans[i].innerHTML.toLowerCase().indexOf('does the above product contain a') != -1) {
 					spans[i].innerHTML = '';
@@ -186991,6 +186993,9 @@ function top_window(okay_to_run) {
 			GM_addStyle('.exe-result-btn:hover {text-decoration:underline;}'); // ...
 			// Script vars
 			new AMT___core_factory().createScriptVar('tilde-na-button', '1'); // on / off
+			
+			new AMT___core_factory().createScriptVar('RunBenStrat','0');
+			
 			// MOVE "THETIME"
 			// OLD METHOD......
 			//~ document.getElementsByTagName('td')[0].appendChild(document.getElementById('theTime'));
@@ -187607,8 +187612,26 @@ function top_window(okay_to_run) {
 									arr,
 									d2c
 								);
-								if (search_results.num_good_results != 0)
+								if (search_results.num_good_results != 0) {
+									if(AMT__Global_Vars.scriptVars['RunBenStrat'] != '0') {
+										if  (
+											result.digital_eyes == false &&
+											(result.startpage == false || result.startpage == null) &&
+											result.searchupc == false &&
+											result.shopsavvy == false &&
+											result.upcindex == false &&
+											result.upcitemdb == false &&
+											result.upcdatabase == false &&
+											result.yoopsie == false &&
+											result.lookupisbn == false &&
+											o.ebaySuccess == false
+											//~ result.yahoo == false &&
+											)
+										{
+											document.getElementById('MT__gm_returnaccept').click();
+										}
 									return; // Stop here...
+								}
 							}
 							d2c.innerText = '0';
 							//~ console.log(o);
@@ -187642,6 +187665,7 @@ function top_window(okay_to_run) {
 								naBut.click();
 							}  
 							else {
+								
 							}
 						}
 					}
