@@ -183310,23 +183310,37 @@ qatar,80
 						var x = /<code id="stream-right-rail-embed-id-content"><!--((.|\s)*?(?=--><\/code>)|$)/.exec(rs);
 						if (!x) {
 							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
-								num = 0;
+								document.getElementById('Q'+count+'Url').value = 0;
+								if (rs.indexOf('We\'re sorry, but the company you are looking for is not active.') != -1)
+									company_employees_submit();
+								else
+									document.body.style.backgroundColor = 'yellow';
+								return;
 							} else { // Invalid page!
 								document.body.style.backgroundColor = 'pink';
 								return;
 							}
 						}
-						x = JSON.parse(x[1]);
-						if (x.companyId && x.companyId == companyId && x.employeeCount && /^\d+$/.exec(x.employeeCount)) {
+						x = JSON.parse(x[1]);console.log(x);
+						if (x.companyId && x.companyId == companyId) {
+							var num;
+							if (x.employeeCount && /^\d+$/.exec(x.employeeCount)) {
+								num = x.employeeCount;
+							} else {
+								num = 0;
+								if (x.employeeCount) { // What would be here? May never know.......
+									document.body.style.backgroundColor = 'blue';
+									return;
+								}
+							}
 							// format
-							num = MT___numberWithCommas(x.employeeCount);
+							num = MT___numberWithCommas(num);
 							// save
 							if (/^[\d,]+$/.exec(num)) {
 								document.getElementById('Q'+count+'Url').value = num;
-								if(num == 0) {
+								if (num == 0) {
 									company_employees_submit();
-								}
-								else {
+								} else {
 									GM_xmlhttpRequest({
 										method: "GET",
 										url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
