@@ -183284,9 +183284,7 @@ qatar,80
 						},
 					onload: function(response) {
 						var rs = response.responseText;
-						
 						runs++;
-						
 						// !=200
 						if (response.status != 200) {
 							console.log('x'+runs);
@@ -183303,10 +183301,58 @@ qatar,80
 							return;
 						}
 						//
-						
 						var reg;
 						var num;
-						reg = /<a class="density" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+						//reg = /<a class="density" href="[^"]+">([\d,\+]+)<\/a> <span>Employees? on LinkedIn<\/span>/.exec(rs);
+						//~ reg = /"remainingAlsoViewedCount":[\d]+,"employeeCount":([\d]+),"description":"/.exec(rs);
+						// Scrape <code>.... <code id="stream-right-rail-embed-id-content">...--></code>
+						//var x = /<code id="stream-right-rail-embed-id-content"><!--[^>] --></code>/
+						var x = /<code id="stream-right-rail-embed-id-content"><!--((.|\s)*?(?=--><\/code>)|$)/.exec(rs);
+						if (!x) {
+							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
+								num = 0;
+							} else { // Invalid page!
+								document.body.style.backgroundColor = 'pink';
+								return;
+							}
+						}
+						x = JSON.parse(x[1]);
+						if (x.companyId && x.companyId == companyId && x.employeeCount && /^\d+$/.exec(x.employeeCount)) {
+							// format
+							num = MT___numberWithCommas(x.employeeCount);
+							// save
+							if (/^[\d,]+$/.exec(num)) {
+								document.getElementById('Q'+count+'Url').value = num;
+								if(num == 0) {
+									company_employees_submit();
+								}
+								else {
+									GM_xmlhttpRequest({
+										method: "GET",
+										url: MT___host+'/mturk/util.php?mt__write_cache='+companyId+'&mt__write_cache_value='+num,
+										onload: function(response) {
+											var rs = response.responseText;
+											if (response.status != 200) {
+												console.log('x');
+												return;
+											}
+											company_employees_submit();
+										}
+									});
+								}
+							}
+						} else {
+							console.log(x);
+							document.body.style.backgroundColor = 'teal';
+							return;
+						}
+						return;
+						// old.......
+						//
+						//
+						//
+						//
+						reg = /,"employeeCount":([\d]+),/.exec(rs);
 						if (!reg) {
 							if (rs.indexOf(' | LinkedIn</title>') != -1) { // valid page?
 								num = 0;
@@ -183316,12 +183362,21 @@ qatar,80
 							}
 						} else {
 							num = reg[1].replace(/[^\d]/g, '');
+							// Check more than one?
+							var x = rs.match(/,"employeeCount":([\d]+),/g);
+							if (!x) {
+								document.body.style.backgroundColor = 'teal';
+								return;
+							} else if (x.length != 1) {
+								document.body.style.backgroundColor = 'aqua';
+								return;
+							}
 						}
-						
+						//
 						if (/^\d+$/.exec(num)) {
-							
+							// format
 							num = MT___numberWithCommas(num);
-							
+							// save
 							if (/^[\d,]+$/.exec(num)) {
 								
 								document.getElementById('Q'+count+'Url').value = num;
