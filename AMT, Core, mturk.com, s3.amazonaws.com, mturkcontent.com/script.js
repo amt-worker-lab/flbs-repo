@@ -96568,7 +96568,8 @@ qatar,80
 	var s6= 'or the business below, enter the official <strong><u>10 digit</u></strong> US phone number from preferably their <strong>official&nbsp;website';
 	var s7= '<h3><strong>For the U.S. Business below, enter the official U.S. 10 digit phone number and website <u><em>(official website, Facebook website, and Yelp website are preferred)</em></u></strong></h3>';
 	var s8 = '<b><i>We will not accept any homeadvisor.com websites or any phone numbers from the business Home Advisor.</i></b></span></h3>';
-	var s = '<span style="font-family:times new roman,times,serif;">For the business below, enter the official <strong><u>10 digit</u></strong> US phone number from the website given or if not found there, in an online search.</span>';
+	var s9 = '<span style="font-family:times new roman,times,serif;">For the business below, enter the official <strong><u>10 digit</u></strong> US phone number from the website given or if not found there, in an online search.</span>';
+	var s10 = 'For the U.S. Business below, enter the official U.S. 10 digit phone number';
 	if  (
 		ih.indexOf(s) != -1 ||
 		ih.indexOf(s2)!= -1 ||
@@ -96577,7 +96578,9 @@ qatar,80
 		ih.indexOf(s5) != -1 ||
 		ih.indexOf(s6) != -1 ||
 		ih.indexOf(s7) != -1 ||
-		ih.indexOf(s8) != -1 
+		ih.indexOf(s8) != -1 ||
+		ih.indexOf(s9) != -1 ||
+		ih.indexOf(s10) != -1 
 		)
 	{
 		var run = function() {};
@@ -96688,6 +96691,9 @@ qatar,80
 				}
 			};
 			
+			// Replace &nbsp; and multi-spaces.
+			ih = ih.replace(/&nbsp;/g, ' ');
+			ih = ih.replace(/\s+/g, ' ');
 			// Biz name
 			// e.g. two styles:
 			//<p style="line-height: 20.7999992370605px;">Business Name (U.S. City and State):&nbsp;<b>John Kruger Construction (Lake Hughes, CA)</b></p>
@@ -96701,7 +96707,8 @@ qatar,80
 			var reg4 = /Business Name with city and state: *<b>([^<]+)<\/b>/i.exec(ih);
 			var reg5 = /<span style="[^"]*">Business Name \(location\):<\/span><\/span><\/u><span style="[^"]*"><span style="[^"]*">&nbsp;&nbsp;<\/span><\/span><em><span style="[^"]*"><b style="[^"]*">([^<]+)<\/b><\/span>/i.exec(ih);
 			var reg6 = /<h3>Business Name \(U\.S\. city\/state\):&nbsp;<strong>([^<]+)<\/strong><\/h3>/i.exec(ih);
-			var reg7 = /<h3>Business Name with U\.S\.&nbsp;state: <b>([^<]+)<\/b><\/h3>/i.exec(ih);
+			var reg7 = /<h3>Business Name with U\.S\.&nbsp;state: <b><\/b><\/h3>/i.exec(ih);
+			var reg8 = /<h3>Business Name with U\.S\. *address: *<b>([^<]+)<\/b><\/h3>/i.exec(ih);
 			if (reg) {
 				name_locn(reg);
 			} else if (reg2) {
@@ -96716,6 +96723,8 @@ qatar,80
 				name_locn(reg6);
 			} else if(reg7) {
 				name_locn(reg7);
+			} else if(reg8) {
+				name_locn(reg8);
 			} else {
 				alert('Name/Location not found!');
 				return;
@@ -96852,8 +96861,12 @@ qatar,80
 			//?
 			//~ MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
 			//~ MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
-			
+			// Init Geo
 			geo();
+			/**
+			 * Function geo()
+			 * For those APIs which require Lat / Lng.
+			 */
 			function geo() {
 				var u = 'http://api.geonames.org/searchJSON?q='+encodeURIComponent(d2b.value)+'&maxRows=1&username=there';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
@@ -96870,6 +96883,12 @@ qatar,80
 						if (!rs || !rs.geonames || !rs.geonames.length || !rs.geonames[0].lat) {
 							d1.innerText = 'GEONAMES RESPONSE--='+response.responseText;
 							//~ AMT___Floater.skip(); // SKIP IF PREVIEW
+							MT___google_api_geocode(
+								d2b.value,
+								google_set_ll,
+								false,// Only return lat / lng
+								true
+							);
 							return;
 						}
 						
@@ -96884,7 +96903,24 @@ qatar,80
 					}
 				});
 			}
-			
+			/**
+			 * function google_set_ll
+			 */
+			function google_set_ll(lat, lng) {
+				if (!lat || !lng) {
+					document.body.style.backgroundColor = 'aqua';
+					d1b.innerText = '!Google Google';
+					return;
+				}
+				ll.lat = lat;
+				ll.lng = lng;
+				google_find_phone(); // UPDATE JUN.25,2015 SET=false TO REVERT!
+				find_phone__FB(); // Init FB
+				//~ yelp(); // Init Yelp
+				yelp_api(); // Init Yelp API
+				foursquare(); // Init Foursquare API
+				sp_yelp(); // Init StartPage Yelp
+			}
 			/**
 			 * function check_accept
 			 * 
