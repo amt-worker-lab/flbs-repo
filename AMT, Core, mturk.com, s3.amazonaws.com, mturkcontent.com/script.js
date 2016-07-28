@@ -96672,6 +96672,7 @@ qatar,80
 				locn_arr: [],
 				name_cln: null,
 				locn_cln: null,
+				state_abbr: null,
 				
 				bad_phones: [], // bad phones
 				bad_phones_obj: {}, // bad phones
@@ -96742,6 +96743,13 @@ qatar,80
 					o.name_cln = o.name.replace(/[^\w\d]/g, '').toLowerCase();
 					o.locn_cln = o.locn.replace(/[^\w\d]/g, '').toLowerCase();
 					
+					// Find a state....
+					o.state_abbr = /([A-Z]{2})$/.exec(o.locn);
+					if (o.state_abbr) {
+						o.state_abbr = o.state_abbr[1];
+					} else {
+						o.state_abbr = false;
+					}
 					o.exact_name_match = o.name.clean_str_to_auto();
 				} else {
 					alert('Name/Location not found! (name_locn)');
@@ -96996,8 +97004,9 @@ qatar,80
 					//Search for a place. You can narrow your search to a specific location and distance by adding the center parameter (with latitude and longitude) and an optional distance parameter:
 					// search?q=antiflag&type=user&type=page&fields=category,id,name,likes,talking_about_count
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
+				///////////////
 				// Xhr request
-				//
+				///////////////
 				GM_xmlhttpRequest({ // init
 					method: "GET",
 					url: u,
@@ -97097,6 +97106,11 @@ qatar,80
 							}
 							if (d2b.value.length == 2 && !search_state_found) {
 								continue; // Go to next entry!
+							}
+							if (o.state_abbr) { // Has State Abbr
+								if (locn__.indexOf(o.state_abbr) == -1) {
+									continue; // Skip...
+								}
 							}
 							// No comma
 							locn__ = locn__.replace(/^,/, '').trim();
@@ -97398,8 +97412,8 @@ qatar,80
 							return;
 						}
 						rs = JSON.parse(rs); // {}
-						console.log('========================================');
-						console.log(rs);
+						//~ console.log('========================================');
+						//~ console.log(rs);
 						rs = rs.response.venues; // objects
 						// Loop
 						var found = false;
@@ -97409,7 +97423,6 @@ qatar,80
 							if (!b.contact || !b.contact.phone || !b.id || b.id.length < 8) {
 								continue;
 							}
-							
 							// Check skip
 							var tmp_phone = b.contact.phone.replace(/[^\d]/g, '');
 							if (o.bad_phones_obj.hasOwnProperty( tmp_phone )) continue;
@@ -97428,6 +97441,12 @@ qatar,80
 								b.location.state != d2b.value)
 							{
 								continue;
+							}
+							// Check skip, state
+							if (o.state_abbr) { // Has State Abbr
+								if (b.location.state != o.state_abbr) {
+									continue; // Skip...
+								}
 							}
 							// Set found
 							found = true;
@@ -97683,13 +97702,6 @@ qatar,80
 							}
 						}
 					}
-					
-					//~ // Diff
-					//~ var df = MT___diffString(
-						//~ div.yname,
-						//~ o.name
-					//~ );
-					
 					// Check skip
 					if  (
 						o.bad_phones_obj.hasOwnProperty( div.yphone )
@@ -97697,6 +97709,13 @@ qatar,80
 					{
 						div.innerHTML = '(RESULT=BAD PHONE!)';
 						continue;
+					}
+					// Check skip wrong state...
+					// [ Note: This is untested... ]
+					if (o.state_abbr) { // Has State Abbr
+						if (div.ylocn.indexOf(o.state_abbr) == -1) {
+							continue; // Skip...
+						}
 					}
 					// check_accept
 					check_accept(div.yname, div.yphone);
@@ -97895,11 +97914,12 @@ qatar,80
 					check_if_yp_init();
 					return;
 				}
+				// Loop
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
+				var found_one = false;
 				for (var i in b) {
-					
 					var dist;
 					if 	(
 						b[i].location &&
@@ -97925,7 +97945,15 @@ qatar,80
 						b[i].location.address + ',' + b[i].location.city + ',' + b[i].location.state_code :
 						b[i].location.display_address
 					);
+					// Check skip, state
+					if (o.state_abbr) { // Has State Abbr
+						if (tmp_addr.indexOf(o.state_abbr) == -1) {
+							continue; // Skip...
+						}
+					}
 					
+					// Still here?
+					found_one = true;
 					// Div
 					var d = document.createElement('div');
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;'+bgc);
@@ -97976,10 +98004,14 @@ qatar,80
 						//~ auto_found = true;
 					//~ }
 				}
-				if (d1c.innerHTML != '') {
+				if (d1c.innerHTML != '' && found_one) {
 					var d = document.createElement('div');
 					d.setAttribute('style','height:2000px;');
 					d1c.appendChild(d);
+				} else {
+					d1c.appendChild(
+						'0'.div()
+					);
 				}
 				// 
 				o.stats.yelp_search_complete = true;
