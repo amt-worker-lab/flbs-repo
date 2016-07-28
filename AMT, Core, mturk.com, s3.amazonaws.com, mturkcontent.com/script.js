@@ -96876,6 +96876,16 @@ qatar,80
 			 * For those APIs which require Lat / Lng.
 			 */
 			function geo() {
+				MT___google_api_geocode(
+					d2b.value,
+					google_set_ll,
+					false,// Only return lat / lng
+					true
+				);
+				/////////////////
+				// Skip for now...
+				return;
+				/////////////////
 				var u = 'http://api.geonames.org/searchJSON?q='+encodeURIComponent(d2b.value)+'&maxRows=1&username=there';
 				u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' + encodeURIComponent(u);
 				GM_xmlhttpRequest({
