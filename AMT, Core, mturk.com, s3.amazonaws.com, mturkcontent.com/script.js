@@ -15053,12 +15053,14 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width:40% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			window.ondblclick = google; // Do restart
 			google();
-			function google() {
+			function google(e) { // If "e" Then this is an override call!
 				//document.body.style.backgroundColor = 'white';// Reset bg.
 				//d1.innerText = 'Trying Google.\n';
-				if (localStorage['dk-gcaptcha'] && localStorage['dk-gcaptcha'] == '1') {
+				if (localStorage['dk-gcaptcha'] && localStorage['dk-gcaptcha'] == '1' && !e) {
 					setTimeout(google, 400); // Try again in 400ms.
+					document.body.style.backgroundColor = 'pink';
 					return;
 				}
 				new AMT___requests_factory().google_search(
@@ -15066,18 +15068,22 @@ Laurens Hammond, Chicago, Ill.**/
 						url: document.getElementsByTagName('a')[0],
 						callback_error: function() {
 							document.body.style.backgroundColor = 'pink';
-							window.ondblclick = google; // Do restart
 							localStorage['dk-gcaptcha'] = '1';
+							// Start watching
+							google();
 						},
 						callback_success: function(result_object) {
 							localStorage['dk-gcaptcha'] = '0'; // Reset
+							document.body.style.backgroundColor = 'white';
 							var arr = result_object.results;
 							//~ console.log(arr);return;
 							// 0=URL, 1=Body
-							if (arr.length == 0) {
+							if (arr.length == 0) { // NA
 								document.body.style.backgroundColor = 'blue';
-								//o.q.value = 'NA';//return;
-								//doSubmit();
+								for (var i=0; i<=9; i++) {
+									document.getElementById('web_url' + i).value = 'n/a';
+								}
+								doSubmit();
 								return;
 							}
 							// arr: [0] = URL, [1] = Body
@@ -15100,8 +15106,12 @@ Laurens Hammond, Chicago, Ill.**/
 							for (var i=0; i<=9; i++) {
 								var x = document.getElementById('web_url' + i).value.trim();
 								if (!/^https?:\/\//.exec(x) || x.indexOf('homeadvisor') == -1) {
-									sbm = false;
-									break;
+									if (x == '') {
+										document.getElementById('web_url' + i).value = 'n/a';
+									} else { // Error!
+										sbm = false;
+										break;
+									}
 								}
 							}
 							if (sbm) {
