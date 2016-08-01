@@ -15036,7 +15036,88 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 		return;
 	}
+	// David Kohreidze
+	// Extract the search result URL from page
+	// Google Search
+	// google_search
+	//
 	// 
+	s = '<li>Copy the entire website URL from the address bar and enter into the corresponding field below</li>\n	<li>If there are not 10 search results&nbsp;enter&nbsp;<em>n/a</em></li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select {margin:0;padding:0;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;width:40% !important;}'); // width:1100px=default
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			google();
+			function google() {
+				//document.body.style.backgroundColor = 'white';// Reset bg.
+				//d1.innerText = 'Trying Google.\n';
+				if (localStorage['dk-gcaptcha'] && localStorage['dk-gcaptcha'] == '1') {
+					setTimeout(google, 400); // Try again in 400ms.
+					return;
+				}
+				new AMT___requests_factory().google_search(
+					{
+						url: document.getElementsByTagName('a')[0],
+						callback_error: function() {
+							document.body.style.backgroundColor = 'pink';
+							window.ondblclick = google; // Do restart
+							localStorage['dk-gcaptcha'] = '1';
+						},
+						callback_success: function(result_object) {
+							localStorage['dk-gcaptcha'] = '0'; // Reset
+							var arr = result_object.results;
+							//~ console.log(arr);return;
+							// 0=URL, 1=Body
+							if (arr.length == 0) {
+								document.body.style.backgroundColor = 'blue';
+								//o.q.value = 'NA';//return;
+								//doSubmit();
+								return;
+							}
+							// arr: [0] = URL, [1] = Body
+							var c = 0;
+							for (var i=0; i<arr.length; i++) {
+								document.getElementById('web_url' + i).value = arr[i][0];
+								//~ if (arr[i][0].indexOf('/advertisers/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/brands/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/commercials/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/agencies/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/agencias/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/publicistas/') != -1) continue;
+								//~ if (arr[i][0].indexOf('/products/') != -1) continue;
+								//~ profile(arr[i][0]);
+								//~ if (c >= 1) break;
+								//~ c++;
+							}
+							// All ten filled in?
+							var sbm = true;
+							for (var i=0; i<=9; i++) {
+								var x = document.getElementById('web_url' + i).value.trim();
+								if (!/^https?:\/\//.exec(x) || x.indexOf('homeadvisor') == -1) {
+									sbm = false;
+									break;
+								}
+							}
+							if (sbm) {
+								doSubmit();
+							}
+							if (c == 0) { // No "real" results
+								//~ o.q.value = 'NA';//return;
+								//~ doSubmit();
+							}
+						}
+					}
+				);
+			}
+		}
+		new run().f();
+	}
 	// Pat Moore
 	// search advertolog.com to get advertisement release dates
 	//
