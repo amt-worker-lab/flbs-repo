@@ -13378,10 +13378,9 @@ Laurens Hammond, Chicago, Ill.**/
 
 
 	}
-	//
-	//
 	// Max Powers
 	// +Scrapy
+	//
 	//
 	s= 'If an email is not found on the registration page, look for the website url of their event website. If you see one'
 	if(ih.indexOf(s) != -1)
@@ -13670,174 +13669,284 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 			);
 		}
-		//~ function Max_Powers_eventbrite__showScrapyResult(jobid, object_response) { // // // // jobid, object_response, seed_object
-			//~ 
-			//~ // RESULTS
-			//~ //var object_response = ALL_SCRAPES[d3.selectedIndex].object_response; // [] array !!
-			//~ 
-			//~ var out_div = d1;
-			//~ 
-			//~ out_div.innerHTML = '';
-			//~ 
-			//~ if (AMT__Global_Vars.isPreview) {
-				//~ if (object_response.matches.length == 0) {
-					//~ AMT___Floater.skip();
-					//~ return;
-				//~ } else {
-					//~ AMT___Floater.accept();
-					//~ return;
-				//~ }
-			//~ }
-			//~ 
-			//~ // matches select
-			//~ var el_select = document.createElement('select');
-			//~ out_div.appendChild(el_select);
-			//~ el_select.setAttribute('style','width:98%;height:120px;');//display:inline;
-			//~ el_select.multiple = 'multiple';
-			//~ el_select.onchange = function() {
-				//~ if (this.value == '') return;
-				//~ Max_Powers_eventbrite__showScrapyResult_contexts(
-					//~ this.options[this.selectedIndex].results_array
-				//~ );
-			//~ }
-			//~ for (var i in object_response.matches) {
-				//~ rslt = object_response.matches[i];
-				//~ // add option
-				//~ el_option = document.createElement('option');
-				//~ el_option.value = rslt.email_email;
-				//~ el_option.innerText = rslt.email_email;
-				//~ // email highlight !!
-				//~ console.log(rslt.url);
-				//~ if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
-					//~ el_option.setAttribute('style', 'background-color:LightGreen;');
-				//~ }
-				//~ el_option.results_array = rslt;
-				//~ el_select.appendChild(el_option);
-			//~ }
-			//~ for (var i = 0; i<20; i++) {// append blank lines!
-				//~ // add option
-				//~ el_option = document.createElement('option');
-				//~ el_option.value = '';
-				//~ el_option.innerText = '';
-				//~ el_select.appendChild(el_option);
-			//~ }
-			//~ 
-			//~ // urls select
-			//~ var el_select2 = document.createElement('select');
-			//~ out_div.appendChild(el_select2);
-			//~ el_select2.setAttribute('style','width:98%;height:120px;');
-			//~ el_select2.multiple = 'multiple';
-			//~ el_select2.onclick = function() {
-				//~ if (this.value == '') return;
-				//~ window.open(this.value,'new');
-			//~ }
-			//~ //for (var i in object_response.urls) {
-			//~ //console.log(object_response.urls.complete_high_to_low);
-			//~ for (var i in object_response.urls.complete_high_to_low) {
-				//~ 
-				//~ rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
-				//~ 
-				//~ // add option
-				//~ el_option = document.createElement('option');
-				//~ el_option.value = rslt.url;
-				//~ el_option.innerText = rslt.url;
-				//~ // color
-				//~ var bg;
-				//~ switch(rslt.priority) {
-					//~ case 'high':
-						//~ bg = 'LightGreen';
-						//~ break;
-					//~ case 'low':
-						//~ bg = 'Orange';
-						//~ break;
-					//~ case 'none':
-						//~ bg = '#fff';
-						//~ break;
-					//~ case 'outside':
-						//~ bg = 'pink';
-						//~ break;
-				//~ }
-				//~ el_option.setAttribute('style', 'background-color:'+bg+';');
-				//~ el_select2.appendChild(el_option);
-			//~ }
-			//~ for (var i = 0; i<20; i++) {// append blank lines!
-				//~ // add option
-				//~ el_option = document.createElement('option');
-				//~ el_option.value = '';
-				//~ el_option.innerText = '';
-				//~ el_select2.appendChild(el_option);
-			//~ }
-			//~ 
-			//~ // auto-click first email
-			//~ if (object_response.matches.length > 0) {
-				//~ Max_Powers_eventbrite__showScrapyResult_contexts(
-					//~ el_select.options[0].results_array
-				//~ );
-			//~ }
-			//~ 
-			//~ // br
-			//~ out_div.appendChild(document.createElement('br'));
-		//~ }
-		//~ // switch select field of d1
-		//~ function Max_Powers_eventbrite__showScrapyResult_contexts(results_array) {
-			//~ var out_div = d1;
-			//~ 
-			//~ var old_divs = out_div.getElementsByTagName('div');
-			//~ for (var i = old_divs.length - 1; i>=0; i--) {
-				//~ old_divs[i].parentNode.removeChild(old_divs[i]);
-			//~ }
-			//~ 
-			//~ var email_contexts = results_array.email_contexts;
-			//~ var url = results_array.url;
-			//~ 
-			//~ var el_div = document.createElement('div');
-			//~ el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
-			//~ el_div.innerText = url;
-			//~ 
-			//~ var el_a = document.createElement('a');
-			//~ el_a.href = url;
-			//~ el_a.target = '_blank';
-			//~ el_a.innerText = url;
-			//~ el_div.appendChild(el_a);
-//~ 
-			//~ out_div.appendChild(el_div);
-			//~ 
-			//~ for (var j in email_contexts) {
-				//~ var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
-				//~ context = __js_clean_html_str(context);
-				//~ context = context				.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
-				//~ //context = context.replace(/[\r\n]/g, '<br>');
-				//~ context = context.replace(/\t/g, '&nbsp;&nbsp;');
-				//~ context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
-				//~ context = context.replace(
-					//~ new RegExp('(' + __js_escape_regEx(results_array.email_email) + ')', 'gi'),
-					//~ '<span style="zoom:1.2;color:DarkGreen;">$1</span>'
-				//~ );
-				//~ //context = MT__bold(context, NAME_ARRAY);
-				//~ 
-				//~ var el_div = document.createElement('div');
-				//~ el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
-				//~ //el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
-				//~ //newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
-				//~ el_div.innerHTML = context;
-				//~ el_div.email = results_array.email_email;
-				//~ el_div.onclick = function() {
-					//~ //this.style.border = '8px solid LightGreen';
-					//~ this.style.backgroundColor = 'LightGreen';
-					//~ document.getElementById('Q1Url').value = this.email;
-					//~ if (this.email.length > 6 && this.email.indexOf('@') != -1) {
-						//~ doSubmit();
-					//~ }
-				//~ }
-			//~ 
-				//~ out_div.appendChild(el_div);
-			//~ }
-			//~ 
-			//~ //extend page
-			//~ var el_div = document.createElement('div');
-			//~ el_div.setAttribute('style','height:1400px;');
-			//~ out_div.appendChild(el_div);
-		//~ }
+	}
+	// Tim Gilboy
+	// +Scrapy
+	//
+	//
+	s= '<li>Enter the event address for the organizer of the event.</li>\n	<li>Include the full address, e.g. test@test.com.</li>';
+	if(ih.indexOf(s) != -1)
+	{		
+		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:14px;}');
+		GM_addStyle('.highlight-box {position:absolute;top:1000px;}');
+		//GM_addStyle('body {width:30%;}');
+		
+		var d = document.createElement('div');
+		d.setAttribute('id','d1');
+		d.setAttribute('style','position:absolute;top:160px;left:0%;width:98%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;');
+		document.body.appendChild(d);
+		var d1 = document.getElementById('d1');
+		var link = document.getElementsByTagName('td')[1].innerText;
+		
+		// Cached?
+		Max_Powers_eventbrite();
+		function Max_Powers_eventbrite() {
+			
+			var url;
+			url = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(link);
+			
+			GM_xmlhttpRequest({
+				method: "GET",
+				url: url,
+				onload: function(response) {
+					var rs = response.responseText;
+					if (response.status != 200) {
+						console.log(response);
+						console.log('page not loaded');
+						AMT___Floater.skip();
+						document.body.style.backgroundColor = "red";
+						return;
+					}
+					
+					// Still here? (Not |%40)
+					var emailReg = /([a-z0-9]+([_\.-][a-z0-9]+)*(@|[ ]{0,}[\[\(] *at *[\]\)][ ]{0,}|&#064;)([a-z0-9]+([\.-][a-z0-9]+)*)+\.[a-z]{2,})/gi;
+					var email;
+					
+					if (emailReg.exec(rs)) {
+						if (AMT___Floater.accept())
+							return;
+					} else {
+						//~ AMT___Floater.skip(); // // // // // // //
+						//~ return;
+						
+						var start_urls = [];
+						var allowed_domains = [];
+						
+						var r = /<div id="organizer_facebook" class="organizer_link">[\r\n\t\s]*<a class="url" href="(http:\/\/www\.facebook\.com\/[^"]{3,})" target="_blank">/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							start_urls.push(r);
+						}
+						
+						var r = /<div id="organizer_website" class="organizer_link">[\r\n\t\s]*<a class="url" href="(http:\/\/[^"]{4,})" target="_blank">/.exec(rs);
+						if (r) {
+							r = __js_clean_html_str(r[1]).trim();
+							start_urls.push(r);
+							var domain = r.replace(/https?:\/\/(www\.|)/i, '');
+							allowed_domains.push(domain);
+						}
+						
+						if (start_urls.length) {
+							Max_Powers_eventbrite__scrapy(start_urls, allowed_domains);
+							
+							// START A SCRAPY INSTANCE HERE !!
+							
+						} else if (AMT__Global_Vars.isPreview) {
+							AMT___Floater.skip();
+							return;
+						}
+						else
+						{
+							document.body.style.backgroundColor = "blue";
+						}
+						return;
+					}
+					
+					// Still here?
+					AMT___addUserDecision('Tim Gilboy',
+						function() { 
+							return 'EventName: ' + document.getElementsByTagName('td')[1].innerText;
+						},
+						[
+							'Name(Email)[0]'
+						]
+					);
+				
+					var uniqueEmails = [];
+					var uniqueEmails_case = [];
+					emailReg.lastIndex = 0;
+					
+					while(email = emailReg.exec(rs))
+					{
+						if(!__js_inarray(uniqueEmails,email[0]))
+						{
+							uniqueEmails.push(email[0]);
+						}
+						if(!__js_inarray(uniqueEmails_case,email[0].toLowerCase()))
+						{
+							uniqueEmails_case.push(email[0].toLowerCase());
+						}
+					}
+					
+					// display results
+					d1.appendChild(document.createTextNode(uniqueEmails_case.length));
+					var hr = document.createElement('hr');
+					hr.setAttribute('style', 'border-bottom:6px solid #a2a2a2;margin:0;padding:0;');
+					d1.appendChild(hr);
+					
+					for(var i = 0; i < uniqueEmails.length; i++)
+					{
+						var contextReg = new RegExp('[\\d\\D]{0,300}'+__js_escape_regEx(uniqueEmails[i])+'[\\d\\D]{0,300}','gi');
+						var context;
+						// header
+						var h2 = document.createElement('h2');
+						h2.setAttribute('style', 'border-bottom:1px dashed #626262;margin:0;padding:0;');
+						h2.innerText = uniqueEmails[i];
+						d1.appendChild(h2);
+						
+						// loop context
+						while(context = contextReg.exec(rs))
+						{
+							// replace extraneous newlines
+							context[0] = context[0].replace(/\n[\r\n\t\s]+/g,"\n");
+							context[0] = context[0].replace(/<[^>]*>/g,' ');
+							context[0] = context[0].replace(/[<>]/g,' ');
+							context[0] = context[0].replace(/\s+/g,' ');
+							
+							// div
+							var newDiv = document.createElement('div');
+							newDiv.setAttribute('id', context[0]);
+							newDiv.setAttribute('style', 'border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
+							newDiv.id = 'em_'+uniqueEmails[i];
+							newDiv.onclick = function() {
+								var x = this.id.replace('em_','');
+								this.style.backgroundColor = 'LightGreen';
+								document.getElementById('Q1Url').value = x;
+								if (x.length > 6)
+								{
+									AMT___recordAndSubmit();
+								}
+							}
+							
+							newDiv.innerHTML = MT__bold(context[0], [uniqueEmails[i]]); // BOLD
+							//newDiv.innerText = context[0];
+							
+							d1.appendChild(newDiv);
+						}
+						// add hr
+						var hr = document.createElement('hr');
+						hr.setAttribute('style', 'border-bottom:6px solid #a2a2a2;margin:0;padding:0;');
+						d1.appendChild(hr);
+					}
+					
+					// add blank div
+					var x = document.createElement('div');
+					x.setAttribute('style', 'height:1200px;');
+					d1.appendChild(x);
+				}				
+			});
+		}
+		function Max_Powers_eventbrite__fb(fb_link) {
+			// facebook
+			d2.innerText = fb_link;
+			var fb_link;
+			if (fb_link.indexOf('?sk=info') == -1 && fb_link.indexOf('/info') == -1)
+			{
+				if (/\d{7,}$/.exec(fb_link))
+					fb_link += '?sk=info';
+				else
+					fb_link += '/info';
+			}
+			
+			d2.appendChild(document.createElement('br'));
+			d2.innerText += fb_link;
+			d2.appendChild(document.createElement('br'));
+			
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: fb_link,
+				onload: function (response) {
+					var rs = response.responseText;
+					
+					//txtarea.style.border = '2px solid LightGreen';
+					
+					if (response.status > 200) {
+						d2.style.border = '2px solid pink';
+						return;
+					}
+					
+					var r;
+					var found = false;
+					
+					// on map
+					r = /<div class="mtm ptm uiBoxWhite topborder">((.|\s)*?(?=<\/div>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1];
+						r = r.replace(/<[^>]*>/g, ' ');
+						r = r.replace(/[<>]/g, '');
+						r = r.replace(/\s+/g, ' ');
+						r = __js_clean_html_str(r).trim();
+						found = true;
+						d2.innerText += r;
+						d2.appendChild(document.createElement('br'));
+					}
+					
+					// on right
+					r = /<div><h4 class="uiHeaderTitle">Contact Info<\/h4><\/div><\/div><\/div><table[^>]*>((.|\s)*?(?=<\/table>|$)|$)/.exec(rs);
+					if (r) {
+						r = r[1];
+						r = r.replace(/<[^>]*>/g, ' ');
+						r = r.replace(/[<>]/g, '');
+						r = r.replace(/\s+/g, ' ');
+						r = __js_clean_html_str(r).trim();
+						d2.innerText += r;
+						d2.appendChild(document.createElement('br'));
+						//~ if (found)
+							//~ txtarea.value+= "\n"+r;
+						//~ else
+							//~ txtarea.value = r;
+					}
+				}
+			});
+		}
+		function Max_Powers_eventbrite__scrapy(start_urls, allowed_domains) {
+			//
+			var s_obj = 
+			{
+				project: 'scrapy_amt',
+				spider: 'AMTSpider',
+				arg_allowed_domains: allowed_domains,	// array
+				arg_start_urls: start_urls,		// array
+				arg_max_pages_to_fetch: 10,
+				arg_type_scrape: 'all_emails',	// all_emails or str_match
+				settings: [
+					//'DEPTH_LIMIT=4',
+					//'SCHEDULER_ORDER=BFO',
+					'LOG_LEVEL=ERROR', // DEFAULT = DEBUG
+					//'LOG_LEVEL=DEBUG', // DEFAULT = DEBUG
+					
+					'CONCURRENT_ITEMS=400', //DEFAUL = 100
+					'CONCURRENT_REQUESTS=64', //DEFAUL = 16
+					'CONCURRENT_REQUESTS_PER_DOMAIN=12', //DEFAUL = 8
+					
+					'AJAXCRAWL_ENABLED=1', //true
+					'COOKIES_ENABLED=0', //false
+					//'RETRY_ENABLED=0', //false
+					//'DI=0', //false
+					'REDIRECT_MAX_TIMES=2'//,
+					//'DOWNLOAD_TIMEOUT=14' //ERR !? :"14 is not greater than or equal to 0 seconds"
+					//'AJAXCRAWL_ENABLED=1', //true
+				]
+			}
+			
+			var req = new AMT___requests_factory();
+			AMT___POPUP__initializeGlobals(
+				function() {
+					req.scrapy__begin_scrape( //parameters_object, callback_function, seed_object
+						s_obj,
+						(new AMT___items_factory()).create_dashboard__powers_v1,
+						{
+							div: d1
+						}
+						//Max_Powers_eventbrite__showScrapyResult
+						/*,
+						{
+							'start_url': start_url
+						}*/
+					);
+				}
+			);
+		}
 	}
 	//
 	//
