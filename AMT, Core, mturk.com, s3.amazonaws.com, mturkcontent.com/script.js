@@ -26,6 +26,174 @@ function MT__RUN() {
 	// Global vars...
 	var s, s2, s3;
 	
+	// David Kohreidze
+	// Extract contact information from a provided webpage
+	//
+	// 
+	s = '<li>Required fields: business name, phone number, address, website (if available)</li>\n	<li>If there is no website listed on the webpage, please enter&nbsp;<em>n/a</em></li>';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			var a = document.getElementsByTagName('a');
+			var q = document.getElementsByClassName('form-control');
+			var o = {
+				u: a[0].href,
+				q: [
+					document.getElementById('business'),
+					document.getElementById('phone_num'),
+					document.getElementById('address1'),
+					document.getElementById('address2'),
+					document.getElementById('web_url'),
+				],
+				//~ sbm: true,
+			}
+			//~ AMT___addUserDecision(
+				//~ 'Luis Mota,Jun062016',
+				//~ function() { return o.u; },
+				//~ [
+				//~ "Name(Q1_Name)[0]",
+				 //~ "Name(Q2_Address)[0]",
+				 //~ "Name(Q3_Address2)[0]",
+				 //~ "Name(Q4_City)[0]",
+				 //~ "Name(Q5_State)[0]",
+				 //~ "Name(Q6_ZipCode)[0]",
+				 //~ "Name(Q7_Latitude)[0]",
+				 //~ "Name(Q8_Longitude)[0]",
+				 //~ "Name(Q9_Number)[0]",
+				 //~ "Name(Q10_Email)[0]",
+				 //~ "Name(Q11_URL)[0]",
+				 //~ "Name(Q12_MondayOpen)[0]",
+				 //~ "Name(Q13_MondayClose)[0]",
+				 //~ "Name(Q14_TuesdayOpen)[0]",
+				 //~ "Name(Q15_TuesdayClose)[0]",
+				 //~ "Name(Q16_WednesdayOpen)[0]",
+				 //~ "Name(Q17_WednesdayClose)[0]",
+				 //~ "Name(Q18_ThursdayOpen)[0]",
+				 //~ "Name(Q19_ThursdayClose)[0]",
+				 //~ "Name(Q20_FridayOpen)[0]",
+				 //~ "Name(Q21_FridayClose)[0]",
+				 //~ "Name(Q22_SaturdayOpen)[0]",
+				 //~ "Name(Q23_SaturdayClose)[0]",
+				 //~ "Name(Q24_SundayOpen)[0]",
+				 //~ "Name(Q25_SundayClose)[0]",
+				 //~ "Name(Q26_ImageURL)[0]",
+				//~ ]
+			//~ );
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				try_auto();
+				return false;
+			}
+			//~ // keypress...
+			//~ window.addEventListener('keypress', function(e) {
+				//~ var c = e.keyCode;
+				//~ if (c == 13) {
+					//~ for (var i in o.q) {
+						//~ if (i == 'length') break;
+						//~ o.q[i].value = o.q[i].value.trim();
+					//~ }
+					//~ document.getElementById('submitButton').style.backgroundColor = 'black';
+					//~ document.getElementById('submitButton').style.zoom = '1.4';
+					//~ //AMT___recordAndSubmit();
+					//~ doSubmit();
+				//~ }
+			//~ }, false);
+			// Scriptvar
+			//~ new AMT___core_factory().createScriptVar('S.Hass Use Proxy', '1');
+			//~ o.use_proxy = (AMT__Global_Vars.scriptVars['S.Hass Use Proxy'] == '1') ? true : false;
+			var firstRun = true;
+			var num_tries = 0;
+			function doNA() {
+				for (var i=0;i<o.q.length;i++) {
+					o.q[i].value = 'n/a';
+				}
+			}
+			// XHR
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						// do NA
+						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+							//~ doNA();
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var sbm = true; //  Submit test...
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// Name
+					var x = dom.getElementsByClassName('sp-company-name t-header-secondary l-inline-block l-header-margin');
+					if (!x || x.length != 1) {
+						return;
+					} else {
+						o.q[0].value = x[0].innerText.trim();
+					}
+					// Phone
+					var x = dom.getElementsByClassName('sp-tel');
+					if (!x || x.length != 1) {
+						return;
+					} else {
+						o.q[1].value = x[0].innerText.trim();
+					}
+					// Address 1&2
+					var x = dom.getElementsByClassName('sp-address');
+					if (!x || x.length != 1) {
+						console.log(x);
+						console.log('-1-');
+						return;
+					} else {
+						x = x[0].innerText.trim().split('\n'); // 
+						console.log(x);
+						if (x.length != 2) {
+							return;
+						} else {
+							o.q[2].value = x[0].trim(); // StreetAddr
+							o.q[3].value = x[1].trim(); // City/State/Zip
+						}
+					}
+					// Web URL //sp-column-div
+					var x = dom.getElementsByClassName('sp-column-div');
+					if (!x) {
+						return;
+					} else {
+						var found = false;
+						for (var i=0; i<x.length; i++) {
+							if (x[i].getAttribute('data-omni-module') == 'Company Website Link') {
+								var y = x[i].getElementsByTagName('a');
+								if (!y) {
+									return;
+								} else {
+									o.q[3].value = y[0].getAttribute('href');
+								}
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							o.q[3].value = 'n/a';
+						}
+					}
+					// Sbm
+				}
+			});
+		}
+		new run().f();
+	}
 	// Luis Mota
 	// 
 	//
