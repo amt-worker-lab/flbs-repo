@@ -137,6 +137,14 @@ function MT__RUN() {
 					}
 					var sbm = true; //  Submit test...
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					// NA?
+					if (rs.indexOf('The page you are looking for is no longer available.') != -1) {
+						for (var i=0; i<o.q.length; i++) {
+							o.q[i].value = 'n/a';
+						}
+						AMT___recordAndSubmit();
+						return;
+					}
 					// Name
 					var x = dom.getElementsByClassName('sp-company-name t-header-secondary l-inline-block l-header-margin');
 					if (!x || x.length != 1) {
