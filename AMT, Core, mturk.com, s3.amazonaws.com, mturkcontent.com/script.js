@@ -30,6 +30,53 @@ function MT__RUN() {
 	// Extract contact information from a provided webpage
 	//
 	// 
+	s = '<li style="font-size: 0.9em;">Go the website URL listed below.</li>\n	<li style="font-size: 0.9em;">Click on the dark gray "Occupancy / Fire Sprinkers" tab (2nd&nbsp;tab underneath&nbsp;the green "License Info" tab).</li>';
+	var ih = document.body.innerHTML; // Needs to be run here to make this match...
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			//~ var a = document.getElementsByTagName('a');
+			// XHR
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: document.getElementsByTagName('td')[1].innerText.trim(),
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						// do NA
+						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+							//~ doNA();
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					//~ var sbm = true; //  Submit test...
+					//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//~ document.getElementById('web_url');
+					var x = /<tr>[\r\n\t\s]+<td class="label" valign="top">Resident Capacity:<\/td>[\r\n\t\s]+<td class="value">([\d,]+)<\/td>/.exec(rs);
+					console.log(x);
+					if (x) {
+						document.getElementById('web_url').value = x[1].trim();
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
+	// David Kohreidze
+	// Extract contact information from a provided webpage
+	//
+	// 
 	s = '<li>Required fields: business name, phone number, address, website (if available)</li>\n	<li>If there is no website listed on the webpage, please enter&nbsp;<em>n/a</em></li>';
 	var ih = document.body.innerHTML; // Needs to be run here to make this match...
 	if (ih.indexOf(s) != -1) {
