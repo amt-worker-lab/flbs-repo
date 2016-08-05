@@ -96,13 +96,16 @@ function MT__RUN() {
 					if (x) {
 						o.q[3].value = x[1].trim();
 					} else {
-						sbm = false;
+						if (rs.indexOf('licon-banos') != -1) // Must not have word "Baño"?? No actually: licon-banos
+							sbm = false;
+						else
+							o.q[3].value = 'NA';
 					}
 					// Use dom
 					// eg 190.000
 					var x = dom.getElementById('go_to_map');
 					if (x) {
-						x = x.innerText.trim();
+						x = x.innerText.replace(/\s+/g, ' ').trim();
 						o.q[4].value = x;
 						if (x.length < 4) sbm = false;
 					} else {
