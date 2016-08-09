@@ -4451,9 +4451,61 @@ Laurens Hammond, Chicago, Ill.**/
 							out.appendChild('0 results (Cannot find google.pmc!)'.div());
 							return;
 						}
-						console.log(x);
+						//~ console.log(x);
 						x = JSON.parse('{'+x[1]+'}');
-						console.log(x);return;
+						console.log(x);//return;
+						// Object where each element is an array-as-result
+						// with 91 to 95 elements. Arrays with 95 elements
+						// are actually subcontainers that will take you
+						// to another page with multiple (more than 1)
+						// results! Arrays with 91 elements are one
+						// item/result only!
+						for (var i in x.spop.r) {
+							var z = x.spop.r[i];
+							var dv = ''.div(
+								{ style:
+									'border:1px solid #a2a2a2;float:left;width:49%;margin:0 -1px -1px 0;'}); //height:120px;overflow:hidden;border-bottom:0;
+							dv.className = 'exe';
+							dv.href = null;
+							out.appendChild(dv);
+							// onclick
+							dv.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								//profile(this); // e.g. send d1
+							}
+							// Title
+							if (z[34] &&
+								z[34] != null &&
+								z[34].length >= 1 &&
+								z[34][0] != null) {
+								dv.title = z[34][0];
+								dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+							}
+							// Price
+							if (z[89] &&
+								z[89] != null &&
+								z[89].length >= 3 &&
+								z[89][2] != null) {
+								dv.price  = z[89][2];
+								dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
+								dv.appendChild(dv.price.div());
+							}
+							// Link
+							if (z[34] &&
+								z[34] != null &&
+								z[34].length >= 7 &&
+								z[34][6] != null) {
+								dv.link = /^(https?:\/\/[^\/]+)/i.exec(z[34][6])[1];
+								dv.appendChild(dv.link.div());
+								//~ dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+							}
+							// Multi
+							if (z.length == 95) {
+								dv.style.backgroundColor = 'pink';
+							}
+						}
+						// Spacer
+						out.appendChild(''.div({style:'height:2000px;'}));
 						
 						// Old Method, scrape HTML on page
 						// New method is above which is scrape JS object
@@ -4478,7 +4530,9 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ console.log(images);
 						// Loop
 						for (var i=0;i<c.length;i++) {
-							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;width:49%;float:left;height:120px;overflow:hidden;'}); //
+							var dv = ''.div(
+								{ style:
+									'border-bottom:1px solid #a2a2a2;float:left;width:49%;margin:0 -1px -1px 0;height:120px;overflow:hidden;'}); //
 							dv.className = 'exe';
 							dv.href = null;
 							out.appendChild(dv);
