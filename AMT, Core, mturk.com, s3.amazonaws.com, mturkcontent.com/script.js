@@ -4608,7 +4608,12 @@ Laurens Hammond, Chicago, Ill.**/
 												this_is_ue = true;
 											}
 										} else {
-											dv.domain = 'NA';
+											//~ dv.domain = 'NA';
+											dv.url = 'https://www.google.com' + a[0].getAttribute('href');
+											console.log('Going to proxy this...... '+dv.url);
+											//~ div.is_dirty = true; // Set is_dirty
+											//~ fill(div);
+											resolve(dv);
 										}
 									}
 									// Append Skip button......
@@ -4616,16 +4621,17 @@ Laurens Hammond, Chicago, Ill.**/
 									// @returns obj.el_button, obj.isSkip
 									console.log(dv);
 									console.log(dv.domain);
-									var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
-										domain: dv.domain,
-										load_file: 'Russ_Behrens_Google_Shopping', 
-										var_skip_sites: o.SKIP_SITES, 
-										callback_function: false
-									});//console.log(el_inp_skip3__obj);
-									dv.appendChild( el_inp_skip3__obj.el_button );
-									if ( el_inp_skip3__obj.isSkip ) {
-										o.good[ dv.domain ] = true; // Add to good domains.
-									}
+									// Commented out below, Aug 9 2016
+									//~ var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
+										//~ domain: dv.domain,
+										//~ load_file: 'Russ_Behrens_Google_Shopping', 
+										//~ var_skip_sites: o.SKIP_SITES, 
+										//~ callback_function: false
+									//~ });//console.log(el_inp_skip3__obj);
+									//~ dv.appendChild( el_inp_skip3__obj.el_button );
+									//~ if ( el_inp_skip3__obj.isSkip ) {
+										//~ o.good[ dv.domain ] = true; // Add to good domains.
+									//~ }
 								}
 							}
 							// 
@@ -4678,9 +4684,9 @@ Laurens Hammond, Chicago, Ill.**/
 				o.q[1].value = o.q[1].value.trim();
 				o.q[2].value = o.q[2].value.trim();
 				o.q[3].value = o.q[3].value.trim();
-				//~ console.log(div);
-				//~ console.log(div.price);
-				//~ console.log(div.domain);
+				console.log(div);
+				console.log(div.price);
+				console.log(div.domain);
 				if (!div.price || !div.domain) {
 					console.log('a');
 					return; 
@@ -4704,7 +4710,6 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log('old:'+div.url);
 					div.url = decodeURIComponent( /&ds_dest_url=([^&]+)/.exec(div.url)[1] );
 					div.domain = url2domain(div.url);
-					
 					div.is_good = true; // Set is_good
 					fill(div);
 					return;
@@ -4714,7 +4719,6 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log('old:'+div.url);
 					div.url = decodeURIComponent( /&url=([^&]+)/.exec(div.url)[1] );
 					div.domain = url2domain(div.url);
-					
 					div.is_good = true; // Set is_good
 					fill(div);
 					return;
