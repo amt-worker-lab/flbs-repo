@@ -4474,7 +4474,7 @@ Laurens Hammond, Chicago, Ill.**/
 								n = n[0];
 								if (images.hasOwnProperty( n.id )) { // e.g. srpresultimg_4478312870737106424
 									var x = document.createElement('img');
-									x.src = images[ n.id ];
+									x.src = images[ n.id ].replace(/\\x3d/g, '');
 									x.setAttribute('style', 'max-width:120px;max-height:120px;float:left;');
 									dv.appendChild(x);
 								}
@@ -4578,6 +4578,8 @@ Laurens Hammond, Chicago, Ill.**/
 							// ... In this case tor_resolve_URL() could cache domains..... but it is very complicated.
 							// ... It is probably best to try to resolve every URL.
 							// ... http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
+							// ... Breaks on .....
+							// ... http://192.168.1.2/aclk?sa=l&ai=DChcSEwj_7PyDmrXOAhXLHoYKHetiB98YABAD&sig=AOD64_0X3DLxaxi7sPtqyjs9C8mZmbkcZA&ctype=5&q=&ved=0ahUKEwjemfqDmrXOAhVJyyYKHWZBCMUQ2ikIJw&adurl=
 							//
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
@@ -4586,8 +4588,9 @@ Laurens Hammond, Chicago, Ill.**/
 								}
 								dv.appendChild((n[0].innerText.trim()).div({}));
 								var a = n[0].getElementsByTagName('a');
+								console.log(a[0].getAttribute('href'));
 								if (a && a[0]) {
-									var x = /&adurl=([^$&]+)/.exec(a[0].getAttribute('href'));
+									var x = /&adurl=([^$&]{4,})/.exec(a[0].getAttribute('href'));
 									if (x) {
 										dv.url = decodeURIComponent(x[1]);
 										dv.domain = url2domain(dv.url);
@@ -4604,11 +4607,15 @@ Laurens Hammond, Chicago, Ill.**/
 											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
 												this_is_ue = true;
 											}
+										} else {
+											dv.domain = 'NA';
 										}
 									}
 									// Append Skip button......
 									// @create__input_skip_button3
 									// @returns obj.el_button, obj.isSkip
+									console.log(dv);
+									console.log(dv.domain);
 									var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
 										domain: dv.domain,
 										load_file: 'Russ_Behrens_Google_Shopping', 

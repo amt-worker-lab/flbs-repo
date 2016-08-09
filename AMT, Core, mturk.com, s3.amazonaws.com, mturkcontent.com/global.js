@@ -13077,31 +13077,23 @@ AMT___items_factory.prototype.create__input_skip_button3 = function(input_skips_
 	// ["cylex-uk.co.uk", "cylex-uk", undefined, undefined, undefined, undefined, "cylex-uk", "co.uk", index: 20, input: "http://west-malling.cylex-uk.co.uk"]
 	// ["bongareevillage.com", "bongareevillage", undefined, undefined, undefined, undefined, "bongareevillage", "com", index: 7, input: "http://bongareevillage.com"]
 	if (x = new RegExp(reg_domain, '').exec(input_skips_object.domain)) {
-		
 		// 6 and 7
-		
 		// Debug
 		//~ console.log(x);
-		
 		if (x[6] == 'www')
 			x[6] = '';
-		
 		var tmp_domain;
 		tmp_domain = (x[6] != '') ? x[6] + '.' + x[7] : x[7];
-		
-		
 		// Contains .
 		if (tmp_domain.indexOf('.') != -1)
 			input_skips_object.short_domain = tmp_domain;
 		else
 			input_skips_object.short_domain = input_skips_object.domain.trim();
-		
-		
-	} else
+	} else {
+		console.log(input_skips_object);
 		input_skips_object.short_domain = input_skips_object.domain.trim();
+	}
 	// Debug
-	//
-	//
 	//~ console.log('domain ' + input_skips_object.domain + ' short_domain ' + input_skips_object.short_domain);
 	
 	// remove_skips
