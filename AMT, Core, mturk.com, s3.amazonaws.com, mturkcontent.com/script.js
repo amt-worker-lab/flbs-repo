@@ -4557,9 +4557,13 @@ Laurens Hammond, Chicago, Ill.**/
 						// Count num clicked
 						var num_clicked = 0;
 						// Loop
+						// Note: Check for "used" in 
 						for (var i=0;i<c.length;i++) {
 							var this_is_ue = false;
-							var dv = ''.div({style:'border-bottom:1px solid #a2a2a2;'});
+							var dv = ''.div(
+								{ style:
+									'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:49%;margin:0 -1px -1px 0'}
+							);
 							dv.className = 'exe';
 							dv.url = null; // Full URL for later resolving
 							dv.domain = null;
@@ -4699,6 +4703,10 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log('c');
 					return; // "[word/digit/hyphen][period][non-slash characters]"
 				}
+				if (/^https:\/\/(\w+\.|)ebay\.com/i.exec(div.domain)) {
+					console.log('d');
+					return;
+				}
 				//~ // Mark output fields for this div....
 				//~ fill(div);
 				div.is_dirty = false;
@@ -4727,16 +4735,16 @@ Laurens Hammond, Chicago, Ill.**/
 				// This does not really work. E.g. cannot resolve DNS if in /etc/hosts.....
 				// Try to resolve
 				// Also, it is unnecessary to resolve when "Company"=="domain"
-				if 	(
-					!o.good.hasOwnProperty(div.domain)
-					)
-				{
-					console.log('Going to proxy this...... '+div.url);
-					div.is_dirty = true; // Set is_dirty
-					fill(div);
-					resolve(div);
-					return;
-				}
+				//~ if 	(
+					//~ !o.good.hasOwnProperty(div.domain)
+					//~ )
+				//~ {
+					//~ console.log('Going to proxy this...... '+div.url);
+					//~ div.is_dirty = true; // Set is_dirty
+					//~ fill(div);
+					//~ resolve(div);
+					//~ return;
+				//~ }
 				// Here...
 				div.is_good = true; // Set is_good
 				fill(div);
@@ -4787,7 +4795,7 @@ Laurens Hammond, Chicago, Ill.**/
 				div.domain = url2domain(u);
 				// Clear is_dirty!
 				div.is_dirty = false;
-				fill(div);
+				//~ fill(div);
 			}
 		}
 		new run().f();
