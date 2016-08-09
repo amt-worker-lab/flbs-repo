@@ -4590,6 +4590,7 @@ Laurens Hammond, Chicago, Ill.**/
 								if (!this_is_ue && /ebay/i.exec(n[0].innerText)) { // Skip eBay
 									this_is_ue = true;
 								}
+								// Limit to 40 characters...
 								dv.appendChild((n[0].innerText.trim()).div({}));
 								var a = n[0].getElementsByTagName('a');
 								console.log(a[0].getAttribute('href'));
@@ -4617,7 +4618,7 @@ Laurens Hammond, Chicago, Ill.**/
 											console.log('Going to proxy this...... '+dv.url);
 											//~ div.is_dirty = true; // Set is_dirty
 											//~ fill(div);
-											resolve(dv);
+											//~ resolve(dv);
 										}
 									}
 									// Append Skip button......
@@ -4642,8 +4643,10 @@ Laurens Hammond, Chicago, Ill.**/
 							var n = c[i].getElementsByClassName('os-details-col');
 							if (n && n[0]) {
 								var u = n[0].innerText.trim();
-								dv.appendChild(u.div({}));
-								if (!this_is_ue && /Used/i.exec(u)) { // Skip "Used"
+								if (u == '') u = '-'; // Include a blank to keep newlines even!
+								// Limit to 40 characters!
+								dv.appendChild(u.substr(0,40).div({}));
+								if (!this_is_ue && /Used/i.exec(u)) { // Skip "Used"!
 									this_is_ue = true;
 								}
 								// Not this......
@@ -4669,9 +4672,15 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							// Here....
 							if (num_clicked <= 1) { // 0 and 1
-								num_clicked++;
-								dv.click();
+								//~ dv.num_to_fill = num_clicked; // 0 or 1
+								//~ dv.click();
+								var z = num_clicked === 0 ? 0 : 2;
+								o.q[ z ].is_taken = dv;
 							}
+							if (num_clicked <= 3) { // 0,1,2,3
+								resolve(dv);
+							}
+							num_clicked++;
 						}
 						// Spacer
 						out.appendChild(''.div({style:'height:2000px;'}));
@@ -4751,14 +4760,14 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			function fill(div) {
 				var out;
-				if (!o.q[0].is_taken) {
-					o.q[0].is_taken = div;
-					o.q[0].is_good = div.is_good;
-				}
-				else if (!o.q[2].is_taken) {
-					o.q[2].is_taken = div;
-					o.q[2].is_good = div.is_good;
-				}
+				//~ if (!o.q[0].is_taken) {
+					//~ o.q[0].is_taken = div;
+					//~ o.q[0].is_good = div.is_good;
+				//~ }
+				//~ else if (!o.q[2].is_taken) {
+					//~ o.q[2].is_taken = div;
+					//~ o.q[2].is_good = div.is_good;
+				//~ }
 				if (o.q[0].is_taken == div) {
 					out = [ o.q[0], o.q[1] ];
 				} else if (o.q[2].is_taken == div) {
@@ -4795,7 +4804,9 @@ Laurens Hammond, Chicago, Ill.**/
 				div.domain = url2domain(u);
 				// Clear is_dirty!
 				div.is_dirty = false;
-				//~ fill(div);
+				fill(div);
+				// Show that resolve is complete......!
+				div.style.fontWeight = 'bold';
 			}
 		}
 		new run().f();
