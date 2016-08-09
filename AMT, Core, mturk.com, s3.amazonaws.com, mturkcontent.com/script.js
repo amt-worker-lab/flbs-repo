@@ -4432,7 +4432,9 @@ Laurens Hammond, Chicago, Ill.**/
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'https://www.google.com/search?q='+
 						encodeURIComponent(input.value) +
-						'&tbs=vw:l&tbm=shop&ei=&ved=', // "tbs=vw:l" rather than "tbs=vw:l,p_ord:p" (Default vs. order by price)
+						'&tbs=vw:l,p_ord:p&tbm=shop&ei=&ved=', // "tbs=vw:l" rather than "tbs=vw:l,p_ord:p" (Default vs. order by price)
+						//~ '&tbs=vw:l&tbm=shop&ei=&ved=', // "tbs=vw:l" rather than "tbs=vw:l,p_ord:p" (Default vs. order by price)
+						// Let's do by price mebbe.....! tbs=vw:l,p_ord:p
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
@@ -4440,9 +4442,23 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ var c = dom.getElementsByClassName('pslmain');
 						var c = dom.getElementsByClassName('psli');
 						if (!c || !c.length) {
-							out.appendChild('0 results!'.div());
+							out.appendChild('0 results'.div());
 							return;
 						}
+						var x = /google\.pmc=\{((.|\s)*?(?=\};|$)|$)/.exec(rs);
+						// Ends with "};google.y.first.push"
+						if (!x) {
+							out.appendChild('0 results (Cannot find google.pmc!)'.div());
+							return;
+						}
+						console.log(x);
+						x = JSON.parse('{'+x[1]+'}');
+						console.log(x);return;
+						
+						// Old Method, scrape HTML on page
+						// New method is above which is scrape JS object
+						// on page and then pull the data from there...
+						//
 						//~ console.log(c);
 						// Here...
 						// Get all encoded images
