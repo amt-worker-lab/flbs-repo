@@ -4344,7 +4344,7 @@ Laurens Hammond, Chicago, Ill.**/
 		run.prototype.f = function() {
 			GM_addStyle('body,h2,h1,h3,h4,ul,li,form,span,p,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important}');//width:40% !important;
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:20% !important}');//width:40% !important;
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			
 			//
@@ -4384,12 +4384,12 @@ Laurens Hammond, Chicago, Ill.**/
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:40px;left:30%;width:69%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:40px;left:20%;width:79%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
 			d2.setAttribute('style',
-				'position:absolute;top:0px;left:30%;width:69%;height:40px;'
+				'position:absolute;top:0px;left:20%;width:79%;height:40px;'
 			);
 			document.body.appendChild(d2);
 			d2.value = o.item + ' ' + o.description;
@@ -4454,24 +4454,53 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ console.log(x);
 						x = JSON.parse('{'+x[1]+'}');
 						console.log(x);//return;
+						// Sort by price!
+						var arrItms = [];
+						for (var i in x.spop.r) {
+							arrItms.push(x.spop.r[i]);
+						}
+						arrItms.sort(function(a, b) {
+							//~ if (z[89] &&
+								//~ z[89] != null &&
+								//~ z[89].length >= 3 &&
+								//~ z[89][2] != null) {
+								//~ dv.price  = z[89][2];
+								//~ dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
+								//~ dv.appendChild(dv.price.div());
+							//~ }
+							var x = a[89][2].replace(/[^\d\.]/g, '') * 1;
+							var y = b[89][2].replace(/[^\d\.]/g, '') * 1;
+							return x - y;
+						});
 						// Object where each element is an array-as-result
 						// with 91 to 95 elements. Arrays with 95 elements
 						// are actually subcontainers that will take you
 						// to another page with multiple (more than 1)
 						// results! Arrays with 91 elements are one
 						// item/result only!
-						for (var i in x.spop.r) {
-							var z = x.spop.r[i];
+						for (var i in arrItms) {
+							var z = arrItms[i];
 							var dv = ''.div(
 								{ style:
-									'border:1px solid #a2a2a2;float:left;width:49%;margin:0 -1px -1px 0;'}); //height:120px;overflow:hidden;border-bottom:0;
+									'border:1px solid #a2a2a2;float:left;width:33%;margin:0 -1px -1px 0;height:100px;'}); //height:120px;overflow:hidden;border-bottom:0;
 							dv.className = 'exe';
 							dv.href = null;
+							dv.multi = false;
 							out.appendChild(dv);
 							// onclick
 							dv.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
 								//profile(this); // e.g. send d1
+								if (!this.multi) {
+									if (o.q[0].value == '' && o.q[1].value == '') {
+										o.q[0].value = this.price;
+										o.q[1].value = this.link;
+									} else if (o.q[2].value == '' && o.q[3].value == '' ) {
+										o.q[2].value = this.price;
+										o.q[3].value = this.link;	
+									}
+									o.q[0].focus();
+								}
 							}
 							// Title
 							if (z[34] &&
@@ -4495,13 +4524,17 @@ Laurens Hammond, Chicago, Ill.**/
 								z[34] != null &&
 								z[34].length >= 7 &&
 								z[34][6] != null) {
-								dv.link = /^(https?:\/\/[^\/]+)/i.exec(z[34][6])[1];
+								dv.link = /^https?:\/\/(www\.|)([^\/]+)/i.exec(z[34][6])[2];
 								dv.appendChild(dv.link.div());
 								//~ dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+								if (dv.link.indexOf('ebay.com') != -1) {
+									dv.style.backgroundColor = 'aqua';
+								}
 							}
 							// Multi
 							if (z.length == 95) {
 								dv.style.backgroundColor = 'pink';
+								dv.multi = true;
 							}
 						}
 						// Spacer
