@@ -4430,16 +4430,8 @@ Laurens Hammond, Chicago, Ill.**/
 				d1.appendChild((d2.value).div({style:'border-bottom:2px solid teal;'}));
 				// Sort
 				o.results.sort(function(a, b) {
-					//~ if (z[89] &&
-						//~ z[89] != null &&
-						//~ z[89].length >= 3 &&
-						//~ z[89][2] != null) {
-						//~ dv.price  = z[89][2];
-						//~ dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
-						//~ dv.appendChild(dv.price.div());
-					//~ }
-					var x = a[89][2].replace(/[^\d\.]/g, '') * 1;
-					var y = b[89][2].replace(/[^\d\.]/g, '') * 1;
+					var x = a.priceR;
+					var y = b.priceR;
 					return x - y;
 				});
 				// Object where each element is an array-as-result
@@ -4459,16 +4451,32 @@ Laurens Hammond, Chicago, Ill.**/
 					// onclick
 					dv.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
-						//profile(this); // e.g. send d1
+							//profile(this); // e.g. send d1
 						// If this is a single AND this is not
 						// an eBay...
 						if (!this.multi && !this.ebay) {
-							if (o.q[0].value == '' && o.q[1].value == '') {
-								o.q[0].value = this.price;
-								o.q[1].value = this.link;
-							} else if (o.q[2].value == '' && o.q[3].value == '' ) {
-								o.q[2].value = this.price;
-								o.q[3].value = this.link;	
+							if (!o.q[0].is_taken) {
+								if (o.q[0].value == '' && o.q[1].value == '') {
+									// If this needs to be resolved...
+									if (this.link_to_resolve) {
+										o.q[0].is_taken = this;
+										resolve(this);
+									} else {
+										o.q[0].value = this.price;
+										o.q[1].value = this.link;
+									}
+								}
+							} else if (!o.q[2].is_taken) {
+								if (o.q[2].value == '' && o.q[3].value == '' ) {
+									// If this needs to be resolved...
+									if (this.link_to_resolve) {
+										o.q[2].is_taken = this;
+										resolve(this);
+									} else {
+										o.q[2].value = this.price;
+										o.q[3].value = this.link;
+									}
+								}
 							}
 							o.q[0].focus();
 						} else if (this.multi) {
@@ -4491,7 +4499,7 @@ Laurens Hammond, Chicago, Ill.**/
 					if (dv.multi) dv.style.backgroundColor = 'pink';
 				}
 				// Spacer
-				out.appendChild(''.div({style:'height:2000px;'}));
+				d1.appendChild(''.div({style:'height:2000px;'}));
 			}
 			// gs
 			function gs(input) {
@@ -4675,8 +4683,7 @@ Laurens Hammond, Chicago, Ill.**/
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
-						//~ console.log(dom);
-						out.innerText = '';
+						//~ d1.innerText = '';
 						// <tr class="os-row" jsaction="mouseover:pdui.misg;mouseout:pdui.mosg"> 
 						// <span class="os-seller-name-primary"> <a href="/aclk ... &amp;adurl=http://www.garrett-smarthome.com/proddetail...">Garretts Smart Electronics</a> </span>
 						// <td class="os-rating-col">
@@ -4686,142 +4693,106 @@ Laurens Hammond, Chicago, Ill.**/
 						var c = dom.getElementsByClassName('os-row');
 						if (!c || !c.length) {
 							out.appendChild('0 results!'.div());
+							array_sort_and_display();
 							return;
 						}
 						// Here...
-						out.appendChild((c.length + ' results!').div({style:'border-bottom:2px solid teal;'}));
+						//~ out.appendChild((c.length + ' results!').div({style:'border-bottom:2px solid teal;'}));
 						// Count the number of "used" / "refurbished"(?) / ebay to ensure that it is not more than 25 (page limit).
-						var ue_count = 0;
+						//~ var ue_count = 0;
 						// Count num clicked
-						var num_clicked = 0;
+						//~ var num_clicked = 0;
 						// Loop
 						// Note: Check for "used" in 
-						for (var i=0;i<c.length;i++) {
-							var this_is_ue = false;
-							var dv = ''.div(
-								{ style:
-									'border:1px solid #a2a2a2;border-collapse:collapse;float:left;width:49%;margin:0 -1px -1px 0'}
-							);
-							dv.className = 'exe';
-							dv.url = null; // Full URL for later resolving
-							dv.domain = null;
-							dv.price = null;
-							out.appendChild(dv);
-							// onclick
-							dv.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								complete(this);
-							}
-							// ...
-							// Note: Different link style....: <a href="/url?q=http://www.elightbulbs.com/GE-19517-150PAR46-Miniature-Automotive-Light-Bulb%26source%3DGooglePPC-ProductAds&amp;sa=U&amp;ved=0CAsQ2ylqFQoTCM-Cx9LX7sgCFQlFJgodw4gALw&amp;sig2=psiQLlXnjsqb8TmHXABVsQ&amp;usg=AFQjCNGNi8BsgWiR631piJN_mN2L3JBLgA">eLightBulbs</a>
-							// Note:
-							// ... **Interstitiary*** for sites such as newegg.com. For these sites a _PROXY_REDACTED_ could resolve the final address.
-							// ... Is blocked in /etc/hosts. So e.g. create and use ```new AMT___requests_factory().tor_resolve_URL({[options]})```
-							// ... In this case tor_resolve_URL() could cache domains..... but it is very complicated.
-							// ... It is probably best to try to resolve every URL.
-							// ... http://clickserve.dartsearch.net/link/click%3Flid%3D92700006870030278%26ds_s_kwgid%3D58700000458801936%26ds_e_adid%3D45772603783%26ds_e_product_group_id%3D60450504662%26ds_e_product_id%3D9SIA5D52NZ0535%26ds_e_product_merchant_id%3D100799833%26ds_e_product_country%3DUS%26ds_e_product_language%3Den%26ds_e_product_channel%3Donline%26ds_e_product_store_id%3D%26ds_e_ad_type%3Dpla%26ds_s_inventory_feed_id%3D97700000001052771%26ds_url_v%3D2%26ds_dest_url%3Dhttp://www.newegg.com/Product/Product.aspx%3FItem%3D9SIA5D52NZ0535%26nm_mc%3DKNC-GoogleMKP-PC%26cm_mmc%3DKNC-GoogleMKP-PC-_-pla-_-Light%2BKits-_-9SIA5D52NZ0535
-							// ... Breaks on .....
-							// ... http://192.168.1.2/aclk?sa=l&ai=DChcSEwj_7PyDmrXOAhXLHoYKHetiB98YABAD&sig=AOD64_0X3DLxaxi7sPtqyjs9C8mZmbkcZA&ctype=5&q=&ved=0ahUKEwjemfqDmrXOAhVJyyYKHWZBCMUQ2ikIJw&adurl=
-							//
+						for (var i=0; i<c.length; i++) {
+							//~ var this_is_ue = false;
+							var y = {
+								title:null,
+								price:null,
+								priceR:null,
+								link:null,
+								multi:false, // Default
+								ebay:false,  // Deafult
+								link_multi:null,
+								link_to_resolve:null,
+								description:null,
+							};
+							// Link & Title
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
-								if (!this_is_ue && /ebay/i.exec(n[0].innerText)) { // Skip eBay
-									this_is_ue = true;
+								if (/ebay\./i.exec(n[0].innerText)) { // Skip eBay
+									y.ebay = true;
 								}
-								// Limit to 40 characters...
-								dv.appendChild((n[0].innerText.trim()).div({}));
+								// Title
+								y.title = n[0].innerText.trim();
 								var a = n[0].getElementsByTagName('a');
-								console.log(a[0].getAttribute('href'));
 								if (a && a[0]) {
 									var x = /&adurl=([^$&]{4,})/.exec(a[0].getAttribute('href'));
 									if (x) {
-										dv.url = decodeURIComponent(x[1]);
-										dv.domain = url2domain(dv.url);
-										dv.appendChild((dv.domain).div({style:'display:inline;'}));
-										if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
-											this_is_ue = true;
+										y.link = /^https?:\/\/(www\.|)([^\/]+)/i.exec(decodeURIComponent(x[1]))[2];
+										if (/(^|\.|\/\/)ebay\./i.exec(y.link)) {
+											y.ebay = true;
 										}
 									} else {
-										var x = /\/url\?q=([^&]+)/.exec(a[0].getAttribute('href'));
-										if (x) {
-											dv.url = decodeURIComponent(x[1]);
-											dv.domain = url2domain(dv.url);
-											dv.appendChild((dv.domain).div({style:'display:inline;'}));
-											if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
-												this_is_ue = true;
-											}
-										} else {
-											//~ dv.domain = 'NA';
-											dv.url = 'https://www.google.com' + a[0].getAttribute('href');
-											console.log('Going to proxy this...... '+dv.url);
-											//~ div.is_dirty = true; // Set is_dirty
-											//~ fill(div);
-											//~ resolve(dv);
-										}
+										y.link_to_resolve = 'https://www.google.com' + a[0].getAttribute('href');
+										//~ var x = /\/url\?q=([^&]+)/.exec(a[0].getAttribute('href'));
+										//~ if (x) {
+											//~ dv.url = decodeURIComponent(x[1]);
+											//~ dv.domain = url2domain(dv.url);
+											//~ dv.appendChild((dv.domain).div({style:'display:inline;'}));
+											//~ if (!this_is_ue && /(^|\.)ebay\./i.exec(dv.domain)) { // Skip "ebay." and ".ebay."
+												//~ this_is_ue = true;
+											//~ }
+										//~ } else {
+											//~ dv.url = 'https://www.google.com' + a[0].getAttribute('href');
+											//console.log('Going to proxy this...... '+dv.url);
+										//~ }
 									}
-									// Append Skip button......
-									// @create__input_skip_button3
-									// @returns obj.el_button, obj.isSkip
-									console.log(dv);
-									console.log(dv.domain);
-									// Commented out below, Aug 9 2016
-									//~ var el_inp_skip3__obj = new AMT___items_factory().create__input_skip_button3({
-										//~ domain: dv.domain,
-										//~ load_file: 'Russ_Behrens_Google_Shopping', 
-										//~ var_skip_sites: o.SKIP_SITES, 
-										//~ callback_function: false
-									//~ });//console.log(el_inp_skip3__obj);
-									//~ dv.appendChild( el_inp_skip3__obj.el_button );
-									//~ if ( el_inp_skip3__obj.isSkip ) {
-										//~ o.good[ dv.domain ] = true; // Add to good domains.
-									//~ }
 								}
 							}
-							// 
+							// Details
 							var n = c[i].getElementsByClassName('os-details-col');
 							if (n && n[0]) {
 								var u = n[0].innerText.trim();
 								if (u == '') u = '-'; // Include a blank to keep newlines even!
 								// Limit to 40 characters!
-								dv.appendChild(u.substr(0,40).div({}));
-								if (!this_is_ue && /Used/i.exec(u)) { // Skip "Used"!
-									this_is_ue = true;
+								y.description = u.substr(0,40);
+								if (y.description.length >= 39) y.description += '...';
+								//~ 
+								//~ dv.appendChild(u.substr(0,40).div({}));
+								if (/[, ]Used/i.exec(u)) { // Skip "Used"!
+									continue; // Skip!
 								}
 								// Not this......
 								//if (!this_is_ue && /(Used|Refurbished)/i.exec(u)) { // Skip "ebay." and ".ebay.com"
 							}
-							// 
+							// Price
 							var n = c[i].getElementsByClassName('os-base_price');
 							if (n && n[0]) {
-								dv.appendChild((n[0].innerText.trim()).div({}));
-								dv.price = n[0].innerText.trim();
+								y.price = n[0].innerText.trim();
+								y.priceR = y.price.replace(/[^\d\.]/g, '') * 1;
 							}
 							// 
 							var n = c[i].getElementsByClassName('os-total-col');
 							if (n && n[1]) {
-								dv.appendChild((n[0].innerText.trim()).div({}));
+								console.log('Err what is this again...?:' + n[0].innerText.trim());
 							}
-							//
-							if (this_is_ue) {
-								ue_count++;
-								dv.onclick = null;
-								dv.style.backgroundColor = 'aqua';
-								continue;
-							}
-							// Here....
-							if (num_clicked <= 1) { // 0 and 1
-								//~ dv.num_to_fill = num_clicked; // 0 or 1
-								//~ dv.click();
-								var z = num_clicked === 0 ? 0 : 2;
-								o.q[ z ].is_taken = dv;
-							}
-							if (num_clicked <= 3) { // 0,1,2,3
-								resolve(dv);
-							}
-							num_clicked++;
+							// Add to o.results
+							o.results.push(y);
+							//~ // Here....
+							//~ if (num_clicked <= 1) { // 0 and 1
+								//~ var z = num_clicked === 0 ? 0 : 2;
+								//~ o.q[ z ].is_taken = dv;
+							//~ }
+							//~ if (num_clicked <= 3) { // 0,1,2,3
+								//~ resolve(dv);
+							//~ }
+							//~ num_clicked++;
 						}
-						// Spacer
-						out.appendChild(''.div({style:'height:2000px;'}));
+						// Sort and display!
+						array_sort_and_display();
+						//~ // Spacer
+						//~ out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
 			}
@@ -4913,12 +4884,13 @@ Laurens Hammond, Chicago, Ill.**/
 				} else {
 					return; // ends
 				}
-				
-				// Fill?
-				if (!div.is_dirty) {
-					out[0].value = div.price;
-					out[1].value = div.domain;
-				}
+				out[0].value = div.price;
+				out[1].value = div.link;
+				//~ // Fill?
+				//~ if (!div.is_dirty) {
+					//~ out[0].value = div.price;
+					//~ out[1].value = div.domain;
+				//~ }
 				if  (
 					o.q[0].value != '' && o.q[1].value != '' && o.q[2].value != '' && o.q[3].value != '' &&
 					o.q[0].is_good && o.q[2].is_good
@@ -4931,7 +4903,7 @@ Laurens Hammond, Chicago, Ill.**/
 			function resolve(div) {
 				// Because this is asynchronous, it is necessary to connect this request with the given output fields!
 				// This way if a higher price completes first it will not go into the first empty output fields.....
-				new AMT___requests_factory().proxy_resolve_URL({URL: div.url, success_callback: resolve_complete, __seed__: div}) 
+				new AMT___requests_factory().proxy_resolve_URL({URL: div.link_to_resolve, success_callback: resolve_complete, __seed__: div}) 
 			}
 			// resolve_complete
 			// Note: options, options.response.responseText, options.__seed__
