@@ -4379,6 +4379,8 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ 'theavspot.com': true,
 					//~ 'markertek.com': true,
 				},
+				
+				results: [], // To be filled...
 			};
 			o.bold = o.item.clean_string_to_array().concat(o.description.clean_string_to_array());
 			/* BEGIN ITEMS */
@@ -4422,12 +4424,81 @@ Laurens Hammond, Chicago, Ill.**/
 				// Init
 				gs(d2);
 			}
+			// ArraySortAndDisplay
+			function array_sort_and_display() {
+				d1.innerText = '';
+				d1.appendChild((d2.value).div({style:'border-bottom:2px solid teal;'}));
+				// Sort
+				o.results.sort(function(a, b) {
+					//~ if (z[89] &&
+						//~ z[89] != null &&
+						//~ z[89].length >= 3 &&
+						//~ z[89][2] != null) {
+						//~ dv.price  = z[89][2];
+						//~ dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
+						//~ dv.appendChild(dv.price.div());
+					//~ }
+					var x = a[89][2].replace(/[^\d\.]/g, '') * 1;
+					var y = b[89][2].replace(/[^\d\.]/g, '') * 1;
+					return x - y;
+				});
+				// Object where each element is an array-as-result
+				// with 91 to 95 elements. Arrays with 95 elements
+				// are actually subcontainers that will take you
+				// to another page with multiple (more than 1)
+				// results! Arrays with 91 elements are one
+				// item/result only!
+				for (var i in o.results) {
+					var z = o.results[i];
+					var dv = ''.div({
+						style:'border:1px solid #a2a2a2;float:left;width:33%;margin:0 -1px -1px 0;height:100px;'
+					}); //height:120px;overflow:hidden;border-bottom:0;
+					dv.className = 'exe';
+					//~ dv.href = null;
+					d1.appendChild(dv);
+					// onclick
+					dv.onclick = function() {
+						this.style.backgroundColor = 'LightGreen';
+						//profile(this); // e.g. send d1
+						// If this is a single AND this is not
+						// an eBay...
+						if (!this.multi && !this.ebay) {
+							if (o.q[0].value == '' && o.q[1].value == '') {
+								o.q[0].value = this.price;
+								o.q[1].value = this.link;
+							} else if (o.q[2].value == '' && o.q[3].value == '' ) {
+								o.q[2].value = this.price;
+								o.q[3].value = this.link;	
+							}
+							o.q[0].focus();
+						} else if (this.multi) {
+							profile(this);
+							// Turn off this.multi!
+							this.multi = false;
+						}
+					}
+					dv.title  = z.title;
+					dv.price  = z.price;
+					dv.priceR = z.priceR;
+					dv.link   = z.link;
+					dv.ebay   = z.ebay;
+					dv.multi  = z.multi;
+					// Display....
+					dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+					dv.appendChild(dv.price.div());
+					dv.appendChild(dv.link.div());
+					if (dv.ebay) dv.style.backgroundColor = 'aqua';
+					if (dv.multi) dv.style.backgroundColor = 'pink';
+				}
+				// Spacer
+				out.appendChild(''.div({style:'height:2000px;'}));
+			}
 			// gs
 			function gs(input) {
-				input.value = input.value.trim();
-				var out = input.div;
-				out.innerText = '';
-				out.appendChild((input.value).div({style:'border-bottom:2px solid teal;'}));
+				//~ input.value = input.value.trim();
+				//~ var out = input.div;
+				//~ out.innerText = '';
+				//~ out.appendChild((input.value).div({style:'border-bottom:2px solid teal;'}));
 				// xhr_with_disk_cache
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'https://www.google.com/search?q='+
@@ -4455,90 +4526,53 @@ Laurens Hammond, Chicago, Ill.**/
 						x = JSON.parse('{'+x[1]+'}');
 						console.log(x);//return;
 						// Sort by price!
-						var arrItms = [];
 						for (var i in x.spop.r) {
-							arrItms.push(x.spop.r[i]);
-						}
-						arrItms.sort(function(a, b) {
-							//~ if (z[89] &&
-								//~ z[89] != null &&
-								//~ z[89].length >= 3 &&
-								//~ z[89][2] != null) {
-								//~ dv.price  = z[89][2];
-								//~ dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
-								//~ dv.appendChild(dv.price.div());
-							//~ }
-							var x = a[89][2].replace(/[^\d\.]/g, '') * 1;
-							var y = b[89][2].replace(/[^\d\.]/g, '') * 1;
-							return x - y;
-						});
-						// Object where each element is an array-as-result
-						// with 91 to 95 elements. Arrays with 95 elements
-						// are actually subcontainers that will take you
-						// to another page with multiple (more than 1)
-						// results! Arrays with 91 elements are one
-						// item/result only!
-						for (var i in arrItms) {
-							var z = arrItms[i];
-							var dv = ''.div(
-								{ style:
-									'border:1px solid #a2a2a2;float:left;width:33%;margin:0 -1px -1px 0;height:100px;'}); //height:120px;overflow:hidden;border-bottom:0;
-							dv.className = 'exe';
-							dv.href = null;
-							dv.multi = false;
-							out.appendChild(dv);
-							// onclick
-							dv.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								//profile(this); // e.g. send d1
-								if (!this.multi) {
-									if (o.q[0].value == '' && o.q[1].value == '') {
-										o.q[0].value = this.price;
-										o.q[1].value = this.link;
-									} else if (o.q[2].value == '' && o.q[3].value == '' ) {
-										o.q[2].value = this.price;
-										o.q[3].value = this.link;	
-									}
-									o.q[0].focus();
-								}
-							}
+							var z = x.spop.r[i];
+							var y = {
+								title:null,
+								price:null,
+								priceR:null,
+								link:null,
+								multi:false, // Default
+								ebay:false,  // Deafult
+								link_multi:null,
+							};
 							// Title
 							if (z[34] &&
 								z[34] != null &&
 								z[34].length >= 1 &&
 								z[34][0] != null) {
-								dv.title = z[34][0];
-								dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+								y.title = z[34][0];
 							}
 							// Price
 							if (z[89] &&
 								z[89] != null &&
 								z[89].length >= 3 &&
 								z[89][2] != null) {
-								dv.price  = z[89][2];
-								dv.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
-								dv.appendChild(dv.price.div());
+								y.price  = z[89][2];
+								y.priceR = z[89][2].replace(/[^\d\.]/g, '') * 1; // real price
 							}
 							// Link
 							if (z[34] &&
 								z[34] != null &&
 								z[34].length >= 7 &&
 								z[34][6] != null) {
-								dv.link = /^https?:\/\/(www\.|)([^\/]+)/i.exec(z[34][6])[2];
-								dv.appendChild(dv.link.div());
-								//~ dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
-								if (dv.link.indexOf('ebay.com') != -1) {
-									dv.style.backgroundColor = 'aqua';
+								y.link = /^https?:\/\/(www\.|)([^\/]+)/i.exec(z[34][6])[2];
+								if (y.link.indexOf('ebay.com') != -1) {
+									y.ebay = true;
 								}
 							}
 							// Multi
 							if (z.length == 95) {
-								dv.style.backgroundColor = 'pink';
-								dv.multi = true;
+								y.multi = true;
+								y.link_multi = 'https://www.google.com' + z[94][2];
 							}
+							o.results.push(y);
 						}
-						// Spacer
-						out.appendChild(''.div({style:'height:2000px;'}));
+						// Display results!
+						array_sort_and_display();
+						return;
+						//........
 						
 						// Old Method, scrape HTML on page
 						// New method is above which is scrape JS object
@@ -4626,16 +4660,17 @@ Laurens Hammond, Chicago, Ill.**/
 			function profile(div) {
 				// div.href is e.g. "/shopping/product{...}".
 				//~ var u = div.href.replace(/\?q=/, '/update/online?q=');
-				var u = div.href.replace(/\?q=/, '/online?q=');
-				u += '&prds=scoring%3Ap';
-				u += '&num=10000000000'; // Shows only the first 25 by the way.....
-				u = 'https://www.google.com' + u;
-				var out = div.parentNode;
-				out.innerText = 'Loading...';
-				console.log(u);
+				//~ var u = div.href.replace(/\?q=/, '/online?q=');
+				//~ u += '&prds=scoring%3Ap';
+				//~ u += '&num=10000000000'; // Shows only the first 25 by the way.....
+				//~ u = 'https://www.google.com' + u;
+				//~ var out = div.parentNode;
+				//~ out.innerText = 'Loading...';
+				//~ console.log(u);
+				d1.innerText = 'Loading...';
 				// xhr_with_disk_cache
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: u,
+					URL: div.link_multi,
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) return;
