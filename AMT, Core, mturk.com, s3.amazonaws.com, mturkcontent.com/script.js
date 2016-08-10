@@ -19356,20 +19356,31 @@ Laurens Hammond, Chicago, Ill.**/
 			 * 
 			 */
 			function scrape_petflow() {
-				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
-				d1.innerHTML = '';
-				var out = d1;
-				// Xhr
-				GM_xmlhttpRequest({
-					method: "GET",
-					url: u,
-					onload: function(response) {
-						var rs=response.responseText;
-						if (response.status != 200) {
-							d1.innerText = response.status;
-							document.body.style.backgroundColor = 'pink';
-							return;
+				// XHR
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							//
+							return false;
 						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						var sbm = true; //  Submit test...
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var p = dom.getElementById('product_image');
+						console.log(p.getAttribute('src'));
+						console.log(p.src);
+						console.log(p);
+						p.src = 'https://www.petflow.com' + p.getAttribute('src');
+						document.body.appendChild(p);
+						p.setAttribute('style', 'position:absolute;top:0;left:40%;max-width:20%;max-height:198px;border:2px solid teal;');
 					}
 				});
 			}
