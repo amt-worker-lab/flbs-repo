@@ -4456,17 +4456,19 @@ Laurens Hammond, Chicago, Ill.**/
 						// an eBay...
 						if (!this.multi && !this.ebay) {
 							if (!o.q[0].is_taken) {
+								o.q[0].is_taken = this;
 								if (o.q[0].value == '' && o.q[1].value == '') {
 									// If this needs to be resolved...
 									if (this.link_to_resolve) {
-										o.q[0].is_taken = this;
 										resolve(this);
 									} else {
 										o.q[0].value = this.price;
 										o.q[1].value = this.link;
+										check_sbm();
 									}
 								}
 							} else if (!o.q[2].is_taken) {
+								o.q[2].is_taken = this;
 								if (o.q[2].value == '' && o.q[3].value == '' ) {
 									// If this needs to be resolved...
 									if (this.link_to_resolve) {
@@ -4475,6 +4477,7 @@ Laurens Hammond, Chicago, Ill.**/
 									} else {
 										o.q[2].value = this.price;
 										o.q[3].value = this.link;
+										check_sbm();
 									}
 								}
 							}
@@ -4504,6 +4507,14 @@ Laurens Hammond, Chicago, Ill.**/
 					dv.link_multi = z.link_multi;
 					dv.link_to_resolve = z.link_to_resolve;
 					// Display....
+					if (z.image) { // Image
+						var fl = ''.div({style:'height:100%;float:left;'});
+						var im = document.createElement('img');
+						im.src = z.image;
+						im.style.width = '60px';
+						fl.appendChild(im);
+						dv.appendChild(fl);
+					}
 					var t = (z.from_profile_page) ? '★★ ' : '' ; // Title
 					t += MT__bold(dv.title, o.bold);
 					dv.appendChild(t.div({innerHTML: true}));
@@ -4561,6 +4572,7 @@ Laurens Hammond, Chicago, Ill.**/
 								multi:false, // Default
 								ebay:false,  // Deafult
 								link_multi:null,
+								image:null,
 							};
 							// Title
 							if (z[34] &&
@@ -4587,12 +4599,31 @@ Laurens Hammond, Chicago, Ill.**/
 									y.ebay = true;
 								}
 							}
+							// Image
+							if (z[3] &&
+								z[3] != null &&
+								z[3].length >= 1 &&
+								z[3][0] &&
+								z[3][0] != null &&
+								z[3][0].length >= 3 &&
+								z[3][0][2] &&
+								z[3][0][2].length >= 1) {
+								y.image = z[3][0][2][0];
+							}
 							// Multi
 							if (z.length == 95) {
 								//~ console.log(z[94]);
 								y.multi = true;
 								y.link_multi = 'https://www.google.com' + z[94][1][2];
 							}
+							// If ebay and not multi then continue / skip!
+							// Otherwise if ebay and multi then a lot of
+							// times there are other results there on the profile
+							// page...
+							if (y.ebay && !y.multi) {
+								continue; // Skip!
+							}
+							// Push
 							o.results.push(y);
 						}
 						// Display results!
@@ -4683,7 +4714,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
 			// e.g. URL #3 (includes num=...):
 				// 					https://www.google.com/shopping/product/6861338441390837688/online?num=30&q=blender&oq=blender&sa=X&ved=0CDUQ6SRqFQoTCNOhzq-z7sgCFUvuJgodEhsH9w
-			function profile(div) {console.log(div);
+			function profile(div) {
 				// div.href is e.g. "/shopping/product{...}".
 				//~ var u = div.href.replace(/\?q=/, '/update/online?q=');
 				//~ var u = div.href.replace(/\?q=/, '/online?q=');
@@ -4910,10 +4941,19 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ out[0].value = div.price;
 					//~ out[1].value = div.domain;
 				//~ }
+				check_sbm();
+			}
+			function check_sbm() {
+				// Check duplicates...
+				// That is 0!=2, 1!=3
+				if (o.q[0].value == o.q[2].value &&
+					o.q[1].value == o.q[3].value)
+					return;
 				if  (
 					o.q[0].value != '' && o.q[1].value != '' && o.q[2].value != '' && o.q[3].value != '' &&
-					o.q[0].value.replace(/[^\d\.]/g, '')*1 < o.q[2].value.replace(/[^\d\.]/g, '')*1
-					//o.q[0].is_good && o.q[2].is_good
+					o.q[0].value.replace(/[^\d\.]/g, '')*1 <= o.q[2].value.replace(/[^\d\.]/g, '')*1 &&
+					!/ebay\./i.exec(o.q[1].value) &&
+					!/ebay\./i.exec(o.q[3].value)
 					) {
 					// submit...
 					document.body.style.backgroundColor = 'orange';
