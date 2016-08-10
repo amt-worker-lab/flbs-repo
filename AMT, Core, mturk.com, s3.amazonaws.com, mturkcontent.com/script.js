@@ -4491,12 +4491,17 @@ Laurens Hammond, Chicago, Ill.**/
 					dv.link   = z.link;
 					dv.ebay   = z.ebay;
 					dv.multi  = z.multi;
+					dv.link_multi = z.link_multi;
+					dv.link_to_resolve = z.link_to_resolve;
 					// Display....
-					dv.appendChild((MT__bold(dv.title, o.bold)).div({innerHTML: true}));
+					var t = (z.from_profile_page) ? '★★ ' : '' ; // Title
+					t += MT__bold(dv.title, o.bold);
+					dv.appendChild(t.div({innerHTML: true}));
 					dv.appendChild(dv.price.div());
-					dv.appendChild(dv.link.div());
+					dv.appendChild(dv.link ? dv.link.div() : ''.div());
 					if (dv.ebay) dv.style.backgroundColor = 'aqua';
 					if (dv.multi) dv.style.backgroundColor = 'pink';
+					if (z.from_profile_page) dv.style.border = '2px solid blue';
 				}
 				// Spacer
 				d1.appendChild(''.div({style:'height:2000px;'}));
@@ -4572,8 +4577,9 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							// Multi
 							if (z.length == 95) {
+								//~ console.log(z[94]);
 								y.multi = true;
-								y.link_multi = 'https://www.google.com' + z[94][2];
+								y.link_multi = 'https://www.google.com' + z[94][1][2];
 							}
 							o.results.push(y);
 						}
@@ -4665,7 +4671,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// https://www.google.com/shopping/product/9455459859435950642/update/online?q=Telex%20RTS%20SPK300L%20A5F%20Telex%20RTS%20SPK300L%20A5F%20Portable%20Desktop%20Speaker%20User%20Station&prds=scoring%3Ap&sa=X&ved=0CCUQ0ilqFQoTCLSEjPCl7sgCFcc7Jgodj5YBZA&ei=wog1VrSbA8f3mAGPrYagBg
 			// e.g. URL #3 (includes num=...):
 				// 					https://www.google.com/shopping/product/6861338441390837688/online?num=30&q=blender&oq=blender&sa=X&ved=0CDUQ6SRqFQoTCNOhzq-z7sgCFUvuJgodEhsH9w
-			function profile(div) {
+			function profile(div) {console.log(div);
 				// div.href is e.g. "/shopping/product{...}".
 				//~ var u = div.href.replace(/\?q=/, '/update/online?q=');
 				//~ var u = div.href.replace(/\?q=/, '/online?q=');
@@ -4716,6 +4722,7 @@ Laurens Hammond, Chicago, Ill.**/
 								link_multi:null,
 								link_to_resolve:null,
 								description:null,
+								from_profile_page:true, // All here are true!
 							};
 							// Link & Title
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
@@ -4791,8 +4798,6 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 						// Sort and display!
 						array_sort_and_display();
-						//~ // Spacer
-						//~ out.appendChild(''.div({style:'height:2000px;'}));
 					}
 				});
 			}
@@ -4903,7 +4908,7 @@ Laurens Hammond, Chicago, Ill.**/
 			function resolve(div) {
 				// Because this is asynchronous, it is necessary to connect this request with the given output fields!
 				// This way if a higher price completes first it will not go into the first empty output fields.....
-				new AMT___requests_factory().proxy_resolve_URL({URL: div.link_to_resolve, success_callback: resolve_complete, __seed__: div}) 
+				new AMT___requests_factory().proxy_resolve_URL({URL: div.link_to_resolve, success_callback: resolve_complete, __seed__: div, use_curl:true}) 
 			}
 			// resolve_complete
 			// Note: options, options.response.responseText, options.__seed__
@@ -4911,12 +4916,13 @@ Laurens Hammond, Chicago, Ill.**/
 			function resolve_complete(options) {console.log(options);
 				var u = options.response.responseText;
 				var div = options.__seed__;
-				div.domain = url2domain(u);
-				// Clear is_dirty!
-				div.is_dirty = false;
-				fill(div);
+				div.link = url2domain(u);
 				// Show that resolve is complete......!
 				div.style.fontWeight = 'bold';
+				//~ // Clear is_dirty!
+				//~ div.is_dirty = false;
+				// Fill in...
+				fill(div);
 			}
 		}
 		new run().f();

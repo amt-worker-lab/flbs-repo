@@ -2812,10 +2812,21 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 	// e.g. curl -v --socks5-hostname 127.0.0.1:9050 curl -v --socks5-hostname 127.0.0.1:9050 "https://mapi.nextag.com/goto.jsp?search=&p=356732&t=ag%3D14476436321%26origin%3DPLA%26pla_t%3D-1%26node%3D500468%26product_partition_id%3D77365446041%26merchant_id%3D100491214%26product_country%3DUS%26product_language%3Den%26product_id%3D709954737%26product_channel%3Donline%26store_code%3D%26adtype%3Dpla&url=%2Fnorob%2FClickTracker.jsp%3Fchnl%3Dmain%26tag%3D709954737"
 	// This will produce something like.... "https://mapi.nextag.com/norob/ClickTracker.jsp;jsessionid=8ACFC18078F70C54687456BA5B87D91E?nxtg=2460a500585-7EA05009545EAB89&chnl=main&tag=709954737&search="
 	
-	// 
+	// If use_curl = true
+	// Then use curl rather than util.php?AMT__proxy_resolve_URL
+	GM_xmlhttpRequest({
+		method: "GET",
+		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
+		onload: function(response) {
+			var rs = response.responseText;
+			if (response.status != 200) {
+			}
+		}
+	});
+	// Init
 	GM_xmlhttpRequest({
 		method: "POST",
-		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
+		url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=&_PROXY_REDACTED__use_proxy=true&CURLINFO_EFFECTIVE_URL=true',
 		data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify({URL: options.URL})),
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"
