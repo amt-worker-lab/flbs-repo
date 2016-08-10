@@ -19298,7 +19298,8 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ url: a,
 				product: td[3].innerText.trim() + ',' + td[5].innerText.trim() + ',' + td[7].innerText.trim(),
 				bold_array: [],
-				q: document.getElementsByName('Q5FreeTextInput')[0]
+				q: document.getElementsByName('Q5FreeTextInput')[0],
+				u: td[1].innerText.trim(),
 			};
 			d2.value = o.product;
 			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
@@ -19347,6 +19348,31 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// Init
 			scrape_amazon();
+			// Scrape their site...
+			scrape_petflow();
+			
+			/**
+			 * function scrape_amazon
+			 * 
+			 */
+			function scrape_petflow() {
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
+				d1.innerHTML = '';
+				var out = d1;
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							d1.innerText = response.status;
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+					}
+				});
+			}
 			/**
 			 * function scrape_amazon
 			 * 
@@ -19453,7 +19479,9 @@ Laurens Hammond, Chicago, Ill.**/
 							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
 							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
 							// <h2 class="a-size-medium s-inline s-access-title a-text-normal">
-							reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+							//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+							//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+							reg = /href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 data-attribute=[^>]+>([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
 							if (reg) {
 								title = __js_clean_html_str(reg[2]);
 								link = __js_clean_html_str(reg[1]);
@@ -19489,7 +19517,7 @@ Laurens Hammond, Chicago, Ill.**/
 								ratng += ' (<B>'+reg[1]+'</B> ratings)';
 							}
 							// image
-							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
+							reg = /src="(https?:\/\/[^\.]+\.ssl-images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
 							var image;
 							if (reg) {
 								image = __js_clean_html_str(reg[1]).trim();
@@ -19551,7 +19579,14 @@ Laurens Hammond, Chicago, Ill.**/
 							// .onclick
 							div.onclick = function() {
 								this.style.backgroundColor = 'aqua';
-								if (this.hasOwnProperty('link') && this.link.length > 10 && this.link.indexOf('/dp/') != -1 && this.asin && this.asin.length >= 6) {
+								console.log(this.link);
+								console.log(this.asin);
+								console.log(this);
+								if (this.hasOwnProperty('link') &&
+									this.link.length > 10 &&
+									this.link.indexOf('/dp/') != -1 &&
+									this.asin &&
+									this.asin.length >= 6) {
 									//doSubmit();
 									// check_asin
 									check_asin(this);
