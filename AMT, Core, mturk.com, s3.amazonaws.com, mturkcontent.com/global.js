@@ -2814,19 +2814,34 @@ AMT___requests_factory.prototype.proxy_resolve_URL = function(options) {
 	
 	// If use_curl = true
 	// Then use curl rather than util.php?AMT__proxy_resolve_URL
-	GM_xmlhttpRequest({
-		method: "GET",
-		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
-		onload: function(response) {
-			var rs = response.responseText;
-			if (response.status != 200) {
-			}
+	if (options.use_curl) {
+		var opts = {
+			url: options.URL,
+			_PROXY_REDACTED__use_proxy: true,
+			CURLINFO_EFFECTIVE_URL: true,
 		}
-	});
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(JSON.stringify(opts)),
+			// '/mturk/util.php?AMT__output_html_from_URL='++'&_PROXY_REDACTED__use_proxy=true&CURLINFO_EFFECTIVE_URL=true',
+			onload: function(response) {
+				var rs = response.responseText;
+				if (response.status != 200) {
+					//...
+					return;
+				}
+				// Here....
+				// Callback
+				options.response = response; // Set options.response.
+				options.success_callback(options);
+			}
+		});
+		return;
+	}
 	// Init
 	GM_xmlhttpRequest({
 		method: "POST",
-		url: MT___host + '/mturk/util.php?AMT__output_html_from_URL=&_PROXY_REDACTED__use_proxy=true&CURLINFO_EFFECTIVE_URL=true',
+		url: MT___host + '/mturk/util.php',//?AMT__proxy_resolve_URL='options.URL,
 		data: 'AMT__proxy_resolve_URL=' + encodeURIComponent(JSON.stringify({URL: options.URL})),
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"

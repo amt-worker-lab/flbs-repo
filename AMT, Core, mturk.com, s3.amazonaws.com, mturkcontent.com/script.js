@@ -4480,9 +4480,19 @@ Laurens Hammond, Chicago, Ill.**/
 							}
 							o.q[0].focus();
 						} else if (this.multi) {
+							// Remove this from o.results!
+							for (var i in o.results) {
+								if (o.results[i].link == this.link &&
+									o.results[i].multi == this.multi &&
+									o.results[i].price == this.price &&
+									o.results[i].link_multi == this.link_multi) {
+									o.results.splice(i, 1); // Remove 1
+									break;	
+								}
+							}
 							profile(this);
 							// Turn off this.multi!
-							this.multi = false;
+							//this.multi = false;
 						}
 					}
 					dv.title  = z.title;
@@ -4508,6 +4518,8 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// gs
 			function gs(input) {
+				// Reset results!
+				o.results = [];
 				//~ input.value = input.value.trim();
 				//~ var out = input.div;
 				//~ out.innerText = '';
@@ -4727,7 +4739,7 @@ Laurens Hammond, Chicago, Ill.**/
 							// Link & Title
 							var n = c[i].getElementsByClassName('os-seller-name-primary');
 							if (n && n[0]) {
-								if (/ebay\./i.exec(n[0].innerText)) { // Skip eBay
+								if (/ebay/i.exec(n[0].innerText)) { // Skip eBay
 									y.ebay = true;
 								}
 								// Title
@@ -4802,6 +4814,8 @@ Laurens Hammond, Chicago, Ill.**/
 				});
 			}
 			function url2domain(u) {
+				console.log('url2domain ::');
+				console.log(u);
 				return /^https?:\/\/(www\.|)([^\/]+)/i.exec(u)[2];
 			}
 			// complete
@@ -4898,17 +4912,20 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ }
 				if  (
 					o.q[0].value != '' && o.q[1].value != '' && o.q[2].value != '' && o.q[3].value != '' &&
-					o.q[0].is_good && o.q[2].is_good
+					o.q[0].value.replace(/[^\d\.]/g, '')*1 < o.q[2].value.replace(/[^\d\.]/g, '')*1
+					//o.q[0].is_good && o.q[2].is_good
 					) {
 					// submit...
 					document.body.style.backgroundColor = 'orange';
-					//doSubmit();
+					doSubmit();
 				}
 			}
 			function resolve(div) {
 				// Because this is asynchronous, it is necessary to connect this request with the given output fields!
 				// This way if a higher price completes first it will not go into the first empty output fields.....
-				new AMT___requests_factory().proxy_resolve_URL({URL: div.link_to_resolve, success_callback: resolve_complete, __seed__: div, use_curl:true}) 
+				new AMT___requests_factory().proxy_resolve_URL(
+					{URL: div.link_to_resolve, success_callback: resolve_complete, __seed__: div, use_curl:true}
+				);
 			}
 			// resolve_complete
 			// Note: options, options.response.responseText, options.__seed__
