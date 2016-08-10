@@ -19246,9 +19246,374 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Rob Stanicic
 	 * Jonathan Huston
 	 * Ed Kohler
-	 * 
+	 * RRS
 	 * 
 	 */
+	// RRS
+	// Match a website's data to Amazon.com data
+	// 
+	// 
+	s = '<li>Once inside the details page, make sure the image is the same as the one on the website link. &nbsp;Also check to see that the Title, By, and Option match. &nbsp;If they do then it is a match and record the ASIN.</li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {};
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,fieldset,table,tr,td,th,tbody,label {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;}');
+			GM_addStyle('.panel-primary {position:absolute;top:2000px;}');
+			GM_addStyle('#submitButton {position:absolute;top:900px;}');
+			GM_addStyle('.exe:hover {background-color:Bisque;cursor:pointer;}');
+			// Move image right
+			GM_addStyle('.imagecontainer {float:left !important;}');
+			
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div'); //
+			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('textarea'); //
+			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:200px;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('input'); //
+			d2b.type = 'button';
+			d2b.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:200px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'NA';
+			/*END ITEMS*/
+			
+			// TD
+			var td = document.getElementsByTagName('td');
+			var a = td[1].innerText.replace(/\s*Link for more info\.\s*/, '');
+			// A
+			//~ var a = document.getElementsByTagName('a');
+			//~ if (a.length) {
+				//~ a = a[0].innerText.trim(); // In A
+			//~ } else {
+				//~ a = document.getElementsByTagName('td');
+				//~ a = a[1].innerText.trim(); // In TD
+			//~ }
+			var o = {
+				//~ url: a,
+				product: td[3].innerText.trim() + ',' + td[5].innerText.trim() + ',' + td[7].innerText.trim(),
+				bold_array: [],
+				q: document.getElementsByName('Q5FreeTextInput')[0]
+			};
+			d2.value = o.product;
+			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
+			d2.onblur = function() {
+				amazon_product_search();
+			}
+			d2b.onclick = function() {
+				//~ this.style.backgroundColor = 'LightGreen';
+				//~ var q = document.getElementsByName('ASIN')[0];
+				//~ q.value = 'NOASIN';
+				//~ new AMT___core_factory().nextTab();
+				//~ doSubmit();
+			}
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 200 // offset top
+			});
+			//
+			d2.onblur = function() {
+				scrape_amazon();
+			}
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: d2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				o.q.value = o.q.value.trim();
+				if (o.q.value == '') {
+					return false;
+				}
+				doSubmit();
+				return false;
+			}
+			// Init
+			scrape_amazon();
+			/**
+			 * function scrape_amazon
+			 * 
+			 */
+			function scrape_amazon() {
+				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
+				d1.innerHTML = '';
+				var out = d1;
+				// Xhr
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: u,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							d1.innerText = response.status;
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						/*
+						<h3 class="newaps">
+						<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+						*/
+						var r,m,r2;
+						// remove sponsored, to end
+						//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+						rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+						
+						// num results
+						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
+						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
+						if (r) {
+							out.appendChild(document.createTextNode(r[1]+' results'));
+							out.appendChild(document.createElement('br'));
+						} else if (r2) {
+							r = r2;
+							out.appendChild(document.createTextNode(r[1]+' results'));
+							out.appendChild(document.createElement('br'));
+						}
+						// no results
+						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
+						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
+						if (r || r3) {
+							out.appendChild(document.createTextNode('No results'));
+							return;
+						}
+						// Dom
+						var dom = new DOMParser().parseFromString(rs, 'text/html'); // id = atfResults
+						// Images
+						// src="http://ecx.images-amazon.com/images/I/
+						var images = [];
+						r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+						while (m = r.exec(rs)) {
+							images.push(m[1]);
+						}
+						out.appendChild(document.createTextNode(images.length+' images'));
+						out.appendChild(document.createElement('br'));
+						// Items
+						var dp, c = 0, multi, highlight = '';
+						//~ r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+						r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+						var results = dom.getElementById('atfResults');
+						if (results) {
+							rs = results.innerHTML;
+						}
+						while (m = r.exec(rs)) {
+							console.log('items:');
+							console.log(m);
+							var div = document.createElement('div');
+							div.setAttribute('style',
+								'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49%;'
+							);
+							div.className = 'exe';
+							out.appendChild(div);
+							div.asin = false; // Default
+							if (c % 2 == 0) {
+								div.style.clear = 'both';
+							}
+							// link
+							// stars
+							// reviews
+							//offer, ratng;
+							var offer = '';
+							var ratng = '';
+							var link;
+							var title = '';
+							var author = '';
+							var n;
+							var reg;
+							var asin;
+							var prime, prime_bgc;
+							
+							// Author
+							reg = /by <\/span><span class="a-size-small a-color-secondary">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+							//~ reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+							if (reg) {
+								author = __js_clean_html_str(reg[1].replace(/<[^>]*>/g, ''));
+							} else {
+								author = '';
+							}
+							
+							// Link/title
+							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
+							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+							// <h2 class="a-size-medium s-inline s-access-title a-text-normal">
+							reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+							if (reg) {
+								title = __js_clean_html_str(reg[2]);
+								link = __js_clean_html_str(reg[1]);
+								
+								// div.title
+								div.title = title;
+								// div.link
+								div.link = link;
+								// div.asin
+								var x = /\/dp\/([a-z0-9]+)\//i.exec(link);
+								if (x) {
+									div.asin = x[1];
+								}
+							} else {
+								//
+							}
+							// Offers
+							reg = /\([\d,]+ offers\)/g;
+							if (reg.exec(m[1])) {
+								reg.lastIndex = 0;
+								while (n = reg.exec(m[1])) {
+									offer += n[0];
+								}
+							}
+							// rating
+							reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
+							if (reg) {
+								ratng += reg[1] + '<br >';
+							}
+							// reviews
+							reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
+							if (reg) {
+								ratng += ' (<B>'+reg[1]+'</B> ratings)';
+							}
+							// image
+							reg = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
+							var image;
+							if (reg) {
+								image = __js_clean_html_str(reg[1]).trim();
+								//console.log(image);
+							}
+							// Prime?
+							reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
+							if (reg) {
+								prime = true;
+								prime_bgc = 'border:4px solid teal;';
+							} else {
+								prime = false;
+								prime_bgc = '';
+							}
+							// Title formatting.
+							// Exact name match?
+							if  (
+								title.replace(/[\r\n\t\s]+/g, '').toLowerCase() ==
+								o.product.replace(/[\r\n\t\s]+/g, '').toLowerCase()
+								)
+							{
+								tmptitle = '<span style="zoom:3;font-weight:bold;">✔</span>';
+								tmptitle += MT__bold(title, o.bold_array);
+							} else {
+								tmptitle = MT__bold(title, o.bold_array);
+							}
+							// If title == ''
+							if (title == '' && image) {
+								continue; // Skip here! This is essentially debug.
+								div.innerText = '-- NO TITLE --\n';
+								var img = document.createElement('img');
+								img.setAttribute('style', 'max-width:140px;'+prime_bgc);
+								img.src = image;
+								div.appendChild(img);
+								continue; // Skip here! This is essentially debug.
+							}
+							// div_l, div_r, divs left and right
+							var dvl = ''.div();
+							var dvr = ''.div();
+							dvl.setAttribute('style', 'float:left;width:30%;');
+							dvr.setAttribute('style', 'float:left;width:68%;');
+							// Append
+							div.appendChild(dvl);
+							div.appendChild(dvr);
+							// .innerHTML
+							dvr.innerHTML += tmptitle + '<br>';
+							dvr.innerHTML += MT__bold(author, o.bold_array) + '<br>';
+							dvr.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
+							dvr.innerHTML += 'A:' + div.asin + '<br>';
+							// Diff
+							dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
+							// Image
+							if (image) {
+								var img = document.createElement('img');
+								img.setAttribute('style', 'max-width:100%;'+prime_bgc);
+								img.src = image;
+								dvl.appendChild(img);
+							}
+							// .onclick
+							div.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								if (this.hasOwnProperty('link') && this.link.length > 10 && this.link.indexOf('/dp/') != -1 && this.asin && this.asin.length >= 6) {
+									//doSubmit();
+									// check_asin
+									check_asin(this);
+								}
+							}
+							c++;
+						}
+						// Spacer
+						var div = document.createElement('div');
+						div.setAttribute('style', 'height:1800px;');
+						out.appendChild(div);
+					}
+				});
+			}
+			/**
+			 * function check_asin
+			 */
+			function check_asin(div) {
+				// Next Tab before loading
+				new AMT___core_factory().nextTab();
+				GM_xmlhttpRequest({
+					method: "GET",
+					url: div.link,
+					onload: function(response) {
+						var rs=response.responseText;
+						if (response.status != 200) {
+							d1.innerText = response.status;
+							document.body.style.backgroundColor = 'pink';
+							return;
+						}
+						var asin = /<tr><td class='label'>ASIN<\/td><td class='value'>([A-Z\d]+)<\/td><\/tr>/.exec(rs);
+						if (!asin) {
+							asin = /<li><b>ASIN: *<\/b> *([A-Z\d]+)<\/li>/.exec(rs); //<li><b>ASIN:</b> B00PY9S6PS</li>
+						}
+						if (!asin) {
+							asin = /<span class="a-text-bold">ASIN:[\r\n\t\s]*<\/span>[\r\n\t\s]*<span>([A-Z\d]+)<\/span>/.exec(rs);
+						}
+						if (!asin) {
+							asin = /<li><b>ISBN-10: *<\/b> *([A-Z\d\-]+)<\/li>/.exec(rs);
+						}
+						if (asin) {
+							asin = asin[1];
+						}
+						else if (div.asin && /^[a-z0-9]{6,20}$/i.exec(div.asin)) {
+							asin = div.asin;
+						}
+						else {
+							div.style.border = '8px dashed blue';
+							return;
+						}
+						// Here...
+						o.q.value = asin;
+						// Here...
+						if (o.q.value != '') {
+							doSubmit();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// 
 	// Ed Kohler
 	// Look up Amazon ASIN for product
