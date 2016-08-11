@@ -19271,16 +19271,16 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div'); //
-			d1.setAttribute('style','position:absolute;top:200px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:100px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea'); //
-			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:200px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:100px;');
 			document.body.appendChild(d2);
-			var d2b = document.createElement('input'); //
-			d2b.type = 'button';
-			d2b.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:200px;');
-			document.body.appendChild(d2b);
-			d2b.value = 'NA';
+			//~ var d2b = document.createElement('input'); //
+			//~ d2b.type = 'button';
+			//~ d2b.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:100px;');
+			//~ document.body.appendChild(d2b);
+			//~ d2b.value = 'NA';
 			/*END ITEMS*/
 			
 			// TD
@@ -19375,10 +19375,19 @@ Laurens Hammond, Chicago, Ill.**/
 						var sbm = true; //  Submit test...
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var p = dom.getElementById('product_image');
+						if (!p) {
+							p = dom.getElementsByClassName('kor-zoom-default ws-product-image');
+							if (!p) {
+								return;
+							}
+							// Still here.
+							p = p[0];
+						}
 						console.log(p.getAttribute('src'));
 						console.log(p.src);
 						console.log(p);
-						p.src = 'https://www.petflow.com' + p.getAttribute('src');
+						if (p.getAttribute('src').indexOf('http') == -1)
+							p.src = 'https://www.petflow.com' + p.getAttribute('src');
 						document.body.appendChild(p);
 						p.setAttribute('style', 'position:absolute;top:0;left:40%;max-width:20%;max-height:198px;border:2px solid teal;');
 					}
