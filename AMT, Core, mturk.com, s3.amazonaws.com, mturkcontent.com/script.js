@@ -19348,10 +19348,42 @@ Laurens Hammond, Chicago, Ill.**/
 				return false;
 			}
 			// Init
-			scrape_amazon();
+			//~ scrape_amazon();
 			// Scrape their site...
+			// This is followed by amazon scrape.
 			scrape_petflow();
+			var rf = new AMT___requests_factory();
 			
+			/**
+			 * function check_same
+			 * NOT GOING TO USE THIS FOR NOW.....
+			 */
+			function check_same(img) {
+				//~ if (o.load_status != 2) {
+					//~ return;
+				//~ }
+				// Here...
+				// [ "$( compare -metric rmse bag_frame2.gif bag_frame1.gif null: 2>&1 )" = "0 (0)" ] && echo "same" || echo "not same"
+				// rf.io__command_line_request
+				rf.io__command_line_request(
+					{
+						command: 'checkDupImage',
+						image1: o.image.src,
+						image2: img.src,
+						//~ image_obj: img
+					},
+					function(options_object) {
+						console.log(options_object);
+						//~ ed_laczynski_word_doc__processComplete(options_object.responseText);
+						//~ var img = options_object.image_obj;
+						if (options_object.responseText == 'same') {
+							img.src = 'http://192.168.1.2/media/images/1.gif';
+							img.style.width = '60px';
+							img.style.height = '60px';
+						}
+					}
+				);
+			}
 			/**
 			 * function scrape_amazon
 			 * 
@@ -19398,6 +19430,8 @@ Laurens Hammond, Chicago, Ill.**/
 								o.image.style.maxHeight = (innerHeight-10)+'px';
 							}
 						});
+						// Start amazon scrape.
+						scrape_amazon();
 					}
 				});
 			}
@@ -19591,6 +19625,8 @@ Laurens Hammond, Chicago, Ill.**/
 								img.setAttribute('style', 'width:100%;');//+prime_bgc
 								//~ img.setAttribute('style', 'max-width:100%;height:200px;');//+prime_bgc
 								div.appendChild(img);
+								// SKIP THIS!!
+								//~ check_same(img);
 							}
 							// div_l, div_r, divs left and right
 							var dvl = ''.div({style:'width:99%;'});

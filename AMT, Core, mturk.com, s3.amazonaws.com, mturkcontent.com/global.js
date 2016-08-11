@@ -5030,16 +5030,16 @@ AMT___requests_factory.prototype.io__command_line_request = function(options_obj
 			onload: function(response) {
 				var rs = response.responseText;
 				if (response.status != 200) return;
-				
+				// Empty
 				if (rs == '') {
 					return;
 				}
-				
+				// Here.
+				// Clear Interval
 				clearInterval(xint);
-				
+				// Respond
 				options_object.responseText = rs;
 				options_object.rs = rs; // synonym of responseText
-				
 				callback_function_complete(options_object); // send this back!
 				
 				//~ console.log(rs);
