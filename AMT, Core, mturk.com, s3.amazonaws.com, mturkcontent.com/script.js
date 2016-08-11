@@ -19269,20 +19269,6 @@ Laurens Hammond, Chicago, Ill.**/
 			// Move image right
 			GM_addStyle('.imagecontainer {float:left !important;}');
 			
-			/*BEGIN ITEMS*/
-			var d1 = document.createElement('div'); //
-			d1.setAttribute('style','position:absolute;top:80px;left:0;width:60%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
-			document.body.appendChild(d1);
-			var d2 = document.createElement('textarea'); //
-			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:76px;border:2px solid #a0a0a0;');
-			document.body.appendChild(d2);
-			//~ var d2b = document.createElement('input'); //
-			//~ d2b.type = 'button';
-			//~ d2b.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:100px;');
-			//~ document.body.appendChild(d2b);
-			//~ d2b.value = 'NA';
-			/*END ITEMS*/
-			
 			// TD
 			var td = document.getElementsByTagName('td');
 			var a = td[1].innerText.replace(/\s*Link for more info\.\s*/, '');
@@ -19309,11 +19295,42 @@ Laurens Hammond, Chicago, Ill.**/
 			while (y = x.exec(o.size)) {
 				o.size_dict[ y[0] ] = true;
 			}
-			d2.value = o.product;
 			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div'); // Results
+			d1.setAttribute('style','position:absolute;top:80px;left:0;width:60%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div'); // Annotate
+			d1b.setAttribute('style','position:absolute;top:40px;left:20%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1b);
+			var d2 = document.createElement('textarea'); // Input
+			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:36px;border:2px solid #a0a0a0;');
+			document.body.appendChild(d2);
+			//~ var d2b = document.createElement('input'); //
+			//~ d2b.type = 'button';
+			//~ d2b.setAttribute('style','position:absolute;top:0px;left:90%;width:10%;height:100px;');
+			//~ document.body.appendChild(d2b);
+			//~ d2b.value = 'NA';
+			/*END ITEMS*/
+			d2.value = o.product;
 			d2.onblur = function() {
 				amazon_product_search();
 			}
+			// Create annotation for filtering results...
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.product,
+				exitBeforeAppendToField: true, // Stops before adding trying to add to any field.
+				callback_mouseup_pre_apply: function(options_object) {
+					var x = options_object.selectedText;
+					// Remove trailing commas
+					x = x.replace(/ *,*$/, '');
+				}
+				//~ appendToField: true,
+				//~ appendToField_glue: '\n',
+				//~ delimeter: '',
+				//~ focusToField: false
+			});
+			d1b.appendChild(buttons);
 			// ScriptVar
 			new AMT___core_factory().createScriptVar('RRS:SkipNoSize', '0', false); // Default=0
 			//~ d2b.onclick = function() {

@@ -11857,6 +11857,8 @@ AMT___items_factory.prototype.xhr_scrape_page = function(options_object) {
  * @param focusToField
  * 
  * @param style
+ * @param selectedText	Text that has been selected.
+ * 
  */
 AMT___items_factory.prototype.create_annotation_to_output_fields = function(options_object) {
 	
@@ -11879,7 +11881,7 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 	
 	var options_object = options_object;
 	
-	var output_fields = options_object.output_fields;
+	var output_fields = (options_object.output_fields) ? options_object.output_fields : []; // Default=Empty array!
 	var current_selection = [];
 	var current_index = {
 		start: 0,
@@ -11907,7 +11909,6 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		}
 		isDragging = false;
 	}
-	
 	// return for *append*
 	return div;
 	
@@ -11927,13 +11928,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		else
 			btn.style.backgroundColor = 'LightGreen';
 	}
-	
 	/**
 	 * function applyToOutputs
 	 *
 	 */
 	function applyToOutputs() {
-		
 		var s = '';
 		if (current_index.start <= current_index.end) { // ++
 			for (var i = current_index.start; i <= current_index.end; i++) {
@@ -11952,6 +11951,8 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			//for (var i = current_index.start; i >= current_index.end; i--) {
 		}
 		s = s.trim();
+		// Set return selectedText for use elsewhere if desired.
+		options_object.selectedText = s;
 		
 		// callback_mouseup_pre_apply
 		// This could be made to stop or go on TRUE/FALSE RETURN
@@ -11960,6 +11961,11 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			options_object.callback_mouseup_pre_apply(options_object);
 			//~ var continue_on = options_object.callback_mouseup_pre_apply(options_object);
 			//~ if (!continue_on) return;
+		}
+		
+		// Callback with no fields in mind...
+		if (options_object.hasOwnProperty('exitBeforeAppendToField')) {
+			return;
 		}
 		
 		// appendToField
@@ -11993,7 +11999,6 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 			}
 			return;
 		}
-		 
 		//
 		var found = false;
 		for (var i in output_fields) {
@@ -12003,7 +12008,6 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				output_fields[i].focus();
 				output_fields[i].select();
 				output_fields[i].select();
-				
 				// CALLBACK
 				if (options_object.callback_mouseup) {
 					options_object.callback_mouseup(output_fields[i]);	// THIS SENDS THE FIELD BACK
@@ -12068,17 +12072,14 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 		t.full_text = text;
 		
 		t.onmousedown	= function() {
-			
 			this.style.backgroundColor = 'LightGreen';
 			current_index.start = this.index * 1; // WOW. MAKE SURE TO MULTIPLY BY 1. AT "10" THIS BECOMES A STRING.
 			current_index.end   = this.index * 1;
-			
 			//~ isActive = true;
 			isDragging = true;
 		}
 		
 		t.onmouseup		= function() {
-			
 			// Only apply if... isDragging?
 			//
 			//
@@ -12087,23 +12088,14 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				isDragging = false;
 				applyToOutputs();
 			}
-			
 		}
 		
 		t.onmouseover	= function() {
-			
 			this.style.cursor = 'pointer'; //?
-			
 			// Highlight
 			// from index.start to index.end
-			
 			if (isDragging) {
-				
 				add_index(this.index);
-				
-				//~ console.log('this:'+this.index);
-				//~ console.log(current_index);
-				
 				if (current_index.start <= current_index.end) {
 					for (var i = current_index.start; i <= current_index.end; i++) {
 						array_all_buttons[i].style.backgroundColor = 'LightGreen';
@@ -12113,19 +12105,13 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 						array_all_buttons[i].style.backgroundColor = 'LightGreen';
 					}
 				}
-				//~ for (var i = current_index.start; i <= current_index.end; i++) {
-					//~ array_all_buttons[i].style.backgroundColor = 'LightGreen';
-				//~ }
 			}
-			
 			else
-			{
-				
+			{	
 			}
 		}
 		
 		t.onmouseout	= function() {
-			
 			if (isDragging) {
 				// RESET ALL HOVER COLOR!
 				if (current_index.start <= current_index.end) {
@@ -12137,7 +12123,6 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 						array_all_buttons[i].style.backgroundColor = '#fff';
 					}
 				}
-				
 				// Reset the index.end to whatever
 				// is the index.start.
 				// And then *just* the initial word
@@ -12145,12 +12130,10 @@ AMT___items_factory.prototype.create_annotation_to_output_fields = function(opti
 				current_index.end = current_index.start;
 				array_all_buttons[current_index.start].style.backgroundColor = 'LightGreen';
 			}
-			
 		}
 		
 		// append here
 		div.appendChild(t);
-		
 		// push here
 		array_all_buttons.push(t);
 	}
