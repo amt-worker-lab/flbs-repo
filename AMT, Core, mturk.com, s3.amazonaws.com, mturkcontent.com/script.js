@@ -19471,7 +19471,7 @@ Laurens Hammond, Chicago, Ill.**/
 							console.log(m);
 							var div = document.createElement('div');
 							div.setAttribute('style',
-								'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49%;'
+								'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49.25%;'
 							);
 							div.className = 'exe';
 							out.appendChild(div);
@@ -19583,10 +19583,10 @@ Laurens Hammond, Chicago, Ill.**/
 								continue; // Skip here! This is essentially debug.
 							}
 							// div_l, div_r, divs left and right
-							var dvl = ''.div();
-							var dvr = ''.div();
-							dvl.setAttribute('style', 'float:left;width:50%;');
-							dvr.setAttribute('style', 'float:left;width:49%;');
+							var dvl = ''.div({style:'width:99%;'});
+							var dvr = ''.div({style:'float:left;width:99%;'});
+							//~ dvl.setAttribute('style', 'width:99%;');
+							//~ dvr.setAttribute('style', 'float:left;width:99%;');
 							// Append
 							div.appendChild(dvl);
 							div.appendChild(dvr);
@@ -19601,7 +19601,7 @@ Laurens Hammond, Chicago, Ill.**/
 							// Image
 							if (image) {
 								var img = document.createElement('img');
-								img.setAttribute('style', 'max-width:100%;'+prime_bgc);
+								//~ img.setAttribute('style', 'max-width:100%;'+prime_bgc);
 								img.src = image;
 								dvl.appendChild(img);
 							}
