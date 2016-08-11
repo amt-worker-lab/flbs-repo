@@ -19289,6 +19289,8 @@ Laurens Hammond, Chicago, Ill.**/
 				u: td[1].innerText.trim(),
 				image: null, // To fill...
 				size_dict: {}, // To fill... A dictionary...
+				rs: null, // To fill as scrape_amazon() runs
+				filter_by: null, // To fill as display runs
 			};
 			var x = /[\d]+\.*\d*/g; // One or more digit plus 0+ periods plus 0+ digits.
 			var y;
@@ -19301,10 +19303,10 @@ Laurens Hammond, Chicago, Ill.**/
 			d1.setAttribute('style','position:absolute;top:80px;left:0;width:60%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div'); // Annotate
-			d1b.setAttribute('style','position:absolute;top:40px;left:20%;width:40%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:40px;left:0%;width:60%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1b);
 			var d2 = document.createElement('textarea'); // Input
-			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:36px;border:2px solid #a0a0a0;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0%;width:60%;height:38px;border:2px solid #a0a0a0;');
 			document.body.appendChild(d2);
 			//~ var d2b = document.createElement('input'); //
 			//~ d2b.type = 'button';
@@ -19324,6 +19326,9 @@ Laurens Hammond, Chicago, Ill.**/
 					var x = options_object.selectedText;
 					// Remove trailing commas
 					x = x.replace(/ *,*$/, '');
+					o.filter_by = x.toLowerCase(); // Set as lowercase...
+					// Update results...
+					display_results();
 				}
 				//~ appendToField: true,
 				//~ appendToField_glue: '\n',
@@ -19373,13 +19378,13 @@ Laurens Hammond, Chicago, Ill.**/
 				doSubmit();
 				return false;
 			}
+			// Global rf
+			var rf = new AMT___requests_factory();
 			// Init
 			//~ scrape_amazon();
 			// Scrape their site...
 			// This is followed by amazon scrape.
 			scrape_petflow();
-			var rf = new AMT___requests_factory();
-			
 			/**
 			 * function check_same
 			 * NOT GOING TO USE THIS FOR NOW.....
@@ -19477,6 +19482,249 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 				});
 			}
+			
+			/**
+			 * function display_results
+			 * o.rs
+			 */
+			function display_results() {
+				/*
+				<h3 class="newaps">
+				<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
+				*/
+				var r, m, r2;
+				var out = d1;
+				d1.innerText = '';
+				// remove sponsored, to end
+				//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
+				o.rs = o.rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
+				// num results
+				r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(o.rs);
+				r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(o.rs);
+				if (r) {
+					out.appendChild(document.createTextNode(r[1]+' results'));
+					out.appendChild(document.createElement('br'));
+				} else if (r2) {
+					r = r2;
+					out.appendChild(document.createTextNode(r[1]+' results'));
+					out.appendChild(document.createElement('br'));
+				}
+				// no results
+				r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(o.rs);
+				r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(o.rs);
+				if (r || r3) {
+					out.appendChild(document.createTextNode('No results'));
+					return;
+				}
+				// Dom
+				var dom = new DOMParser().parseFromString(o.rs, 'text/html'); // id = atfResults
+				//~ // Images
+				//~ // src="http://ecx.images-amazon.com/images/I/
+				//~ var images = [];
+				//~ r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
+				//~ while (m = r.exec(o.rs)) {
+					//~ images.push(m[1]);
+				//~ }console.log('x000004');
+				//~ out.appendChild(document.createTextNode(images.length+' images'));
+				//~ out.appendChild(document.createElement('br'));
+				// Items
+				var dp, c = 0, multi, highlight = '';
+				r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
+					// Old scrape
+					//~ r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
+				var results = dom.getElementById('atfResults');
+				var xrs = o.rs;
+				if (results) {
+					xrs = results.innerHTML;
+				} else {
+					//~ return; // .... No results...! Hmmmmmmm.....
+				}
+				while (m = r.exec(xrs)) {
+					var div = document.createElement('div');
+					div.setAttribute('style',
+						'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49.25%;'
+					);
+					div.className = 'exe';
+					out.appendChild(div);
+					div.asin = false; // Default
+					if (c % 2 == 0) {
+						div.style.clear = 'both';
+					}
+					// link
+					// stars
+					// reviews
+					//offer, ratng;
+					var offer = '';
+					var ratng = '';
+					var link;
+					var title = '';
+					var author = '';
+					var n;
+					var reg;
+					var asin;
+					var prime, prime_bgc;
+					
+					// Author
+					reg = /by <\/span><span class="a-size-small a-color-secondary">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+					//~ reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
+					if (reg) {
+						author = __js_clean_html_str(reg[1].replace(/<[^>]*>/g, ''));
+					} else {
+						author = '';
+					}
+					
+					// Link/title
+					// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
+					//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
+					//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
+					// <h2 class="a-size-medium s-inline s-access-title a-text-normal">
+					//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+					//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+					reg = /href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 data-attribute=[^>]+>([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
+					if (reg) {
+						title = __js_clean_html_str(reg[2]);
+						link = __js_clean_html_str(reg[1]);
+						
+						// div.title
+						div.title = title;
+						// div.link
+						div.link = link;
+						// div.asin
+						var x = /\/dp\/([a-z0-9]+)\//i.exec(link);
+						if (x) {
+							div.asin = x[1];
+						}
+						// If title has a numerical size included...
+						// If title does not contain SIZE
+						// the skip this result...
+						// If scriptvar, that is...
+						// Then if check_skip is true then skip
+						// this result.
+						console.log(title);
+						if (AMT__Global_Vars.scriptVars['RRS:SkipNoSize'] == '1' &&
+							Object.keys(o.size_dict).length > 0 &&
+							check_skip( title )) {
+							console.log('Skipping title:'+title);
+							continue;
+						}console.log('x11111');
+						// Is o.filter_by set???
+						if (o.filter_by &&
+							o.filter_by != null &&
+							title.toLowerCase().indexOf(o.filter_by) == -1
+							) {
+							continue;
+						}
+					} else {
+						//
+					}console.log('x22222');
+					// Offers
+					reg = /\([\d,]+ offers\)/g;
+					if (reg.exec(m[1])) {
+						reg.lastIndex = 0;
+						while (n = reg.exec(m[1])) {
+							offer += n[0];
+						}
+					}
+					// rating
+					reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
+					if (reg) {
+						ratng += reg[1] + '<br >';
+					}
+					// reviews
+					reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
+					if (reg) {
+						ratng += ' (<B>'+reg[1]+'</B> ratings)';
+					}
+					// image
+					reg = /src="(https?:\/\/[^\.]+\.ssl-images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
+					var image;
+					if (reg) {
+						// Change to a larger size image via URL...
+						reg[1] = reg[1].replace(/160_/, '460_');
+						image = __js_clean_html_str( reg[1] ).trim();
+						//console.log(image);
+					}
+					// Prime?
+					reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
+					if (reg) {
+						prime = true;
+						prime_bgc = 'border:4px solid teal;';
+					} else {
+						prime = false;
+						prime_bgc = '';
+					}
+					// Title formatting.
+					// Exact name match?
+					if  (
+						title.replace(/[\r\n\t\s]+/g, '').toLowerCase() ==
+						o.product.replace(/[\r\n\t\s]+/g, '').toLowerCase()
+						)
+					{
+						tmptitle = '<span style="zoom:3;font-weight:bold;">✔</span>';
+						tmptitle += MT__bold(title, o.bold_array);
+					} else {
+						tmptitle = MT__bold(title, o.bold_array);
+					}
+					// If title == ''
+					if (title == '' && image) {
+						continue; // Skip here! This is essentially debug.
+						div.innerText = '-- NO TITLE --\n';
+						var img = document.createElement('img');
+						img.setAttribute('style', 'max-width:140px;'+prime_bgc);
+						img.src = image;
+						div.appendChild(img);
+						continue; // Skip here! This is essentially debug.
+					}
+					// Image
+					if (image) {
+						var img = document.createElement('img');
+						img.src = image;
+						img.setAttribute('style', 'width:100%;');//+prime_bgc
+						//~ img.setAttribute('style', 'max-width:100%;height:200px;');//+prime_bgc
+						div.appendChild(img);
+						// SKIP THIS!!
+						//~ check_same(img);
+					}
+					// div_l, div_r, divs left and right
+					var dvl = ''.div({style:'width:99%;'});
+					var dvr = ''.div({style:'width:99%;'});
+					//~ dvl.setAttribute('style', 'width:99%;');
+					//~ dvr.setAttribute('style', 'float:left;width:99%;');
+					// Append divs
+					div.appendChild(dvl);
+					div.appendChild(dvr);
+					// .innerHTML
+					dvr.innerHTML += tmptitle + '<br>';
+					dvr.innerHTML += MT__bold(author, o.bold_array) + '<br>';
+					dvr.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
+					dvr.innerHTML += 'A:' + div.asin + '<br>';
+					// Diff
+					//dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
+					// Show any words not in original...?
+					
+					// .onclick
+					div.onclick = function() {
+						this.style.backgroundColor = 'aqua';
+						console.log(this.link);
+						console.log(this.asin);
+						console.log(this);
+						if (this.hasOwnProperty('link') &&
+							this.link.length > 10 &&
+							this.link.indexOf('/dp/') != -1 &&
+							this.asin &&
+							this.asin.length >= 6) {
+							//doSubmit();
+							// check_asin
+							check_asin(this);
+						}
+					}
+					c++;
+				}
+				// Spacer
+				var div = document.createElement('div');
+				div.setAttribute('style', 'height:1800px;');
+				out.appendChild(div);
+			}
 			/**
 			 * function scrape_amazon
 			 * 
@@ -19484,244 +19732,23 @@ Laurens Hammond, Chicago, Ill.**/
 			function scrape_amazon() {
 				var u = 'http://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3D&field-keywords='+encodeURIComponent(d2.value);
 				d1.innerHTML = '';
-				var out = d1;
+				// Reset filter_by each time there is a search!
+				o.filter_by = null;
 				// Xhr
 				GM_xmlhttpRequest({
 					method: "GET",
 					url: u,
 					onload: function(response) {
-						var rs=response.responseText;
+						var rs = response.responseText;
 						if (response.status != 200) {
 							d1.innerText = response.status;
 							document.body.style.backgroundColor = 'pink';
 							return;
 						}
-						/*
-						<h3 class="newaps">
-						<a href="http://www.amazon.com/Earths-Best-Tots-Conditioner/dp/B009IWP3Y4/ref=sr_1_2?ie=UTF8&amp;qid=1364531167&amp;sr=8-2&amp;keywords=078522007524"><span class="lrg bold">Earth's Best Tots Conditioner</span>
-						*/
-						var r,m,r2;
-						// remove sponsored, to end
-						//~ rs = rs.replace(/<div id="sponsoredLinks" class="celwidget"  style="padding-bottom:20px; clear:left; padding-top:5px">[\d\D]+$/, '');
-						rs = rs.replace(/<!-- START SPONSORED LINKS SCRIPT -->[\d\D]+$/, '');
-						
-						// num results
-						r =  /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">([\d,]+) results for/.exec(rs);
-						r2 = /<h2 id="s-result-count" class="a-size-base a-spacing-small a-spacing-top-small a-text-normal">[\d,\- ]+of ([\d,]+) results for/.exec(rs);
-						if (r) {
-							out.appendChild(document.createTextNode(r[1]+' results'));
-							out.appendChild(document.createElement('br'));
-						} else if (r2) {
-							r = r2;
-							out.appendChild(document.createTextNode(r[1]+' results'));
-							out.appendChild(document.createElement('br'));
-						}
-						// no results
-						r = /Your search <span class="noResultsTitleKeyword">[^<]+<\/span> did not match any products\.<\/h1>/.exec(rs);
-						r3= /<h1[^>]*>Your search <span[^>]*>[^<]*<\/span> did not match any products\.<\/h1><\/div>/.exec(rs);
-						if (r || r3) {
-							out.appendChild(document.createTextNode('No results'));
-							return;
-						}
-						// Dom
-						var dom = new DOMParser().parseFromString(rs, 'text/html'); // id = atfResults
-						// Images
-						// src="http://ecx.images-amazon.com/images/I/
-						var images = [];
-						r = /src="(http:\/\/ecx\.images-amazon\.com\/images\/I\/[^"]+)/g;
-						while (m = r.exec(rs)) {
-							images.push(m[1]);
-						}
-						//~ out.appendChild(document.createTextNode(images.length+' images'));
-						//~ out.appendChild(document.createElement('br'));
-						// Items
-						var dp, c = 0, multi, highlight = '';
-						//~ r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
-						r = /<li id="result_\d+"[^>]*>((.|\s)*?(?=<\/li>|$)|$)/g;
-						var results = dom.getElementById('atfResults');
-						if (results) {
-							rs = results.innerHTML;
-						}
-						while (m = r.exec(rs)) {
-							//~ console.log('items:');
-							//~ console.log(m);
-							var div = document.createElement('div');
-							div.setAttribute('style',
-								'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49.25%;'
-							);
-							div.className = 'exe';
-							out.appendChild(div);
-							div.asin = false; // Default
-							if (c % 2 == 0) {
-								div.style.clear = 'both';
-							}
-							// link
-							// stars
-							// reviews
-							//offer, ratng;
-							var offer = '';
-							var ratng = '';
-							var link;
-							var title = '';
-							var author = '';
-							var n;
-							var reg;
-							var asin;
-							var prime, prime_bgc;
-							
-							// Author
-							reg = /by <\/span><span class="a-size-small a-color-secondary">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
-							//~ reg = /<div class="a-row a-spacing-mini"><span class="a-size-small a-color-secondary">([^<]+)<\/span>/.exec(m[1]);
-							if (reg) {
-								author = __js_clean_html_str(reg[1].replace(/<[^>]*>/g, ''));
-							} else {
-								author = '';
-							}
-							
-							// Link/title
-							// http://www.amazon.com/ss/customer-reviews/B0006G4KR2/
-							//~ reg = /<a class="title" href="([^"]+)">(<span[^>]+>|)([^<]+)/.exec(m[1]);
-							//~ reg = /<h2 class="a-size-medium s-inline s-access-title a-text-normal">([^<]+)<\/h2>/.exec(m[1]);
-							// <h2 class="a-size-medium s-inline s-access-title a-text-normal">
-							//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
-							//~ reg = /href="(http:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 class="a-size-\w+[^"]*">([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
-							reg = /href="(https?:\/\/www\.amazon\.com\/[^\/]+\/dp\/[^\/]+\/)[^"]*"><h2 data-attribute=[^>]+>([^<]+)<\/h2>/.exec(m[1]); // s-inline s-access-title a-text-normal
-							if (reg) {
-								title = __js_clean_html_str(reg[2]);
-								link = __js_clean_html_str(reg[1]);
-								
-								// div.title
-								div.title = title;
-								// div.link
-								div.link = link;
-								// div.asin
-								var x = /\/dp\/([a-z0-9]+)\//i.exec(link);
-								if (x) {
-									div.asin = x[1];
-								}
-								// If title has a numerical size included...
-								// If title does not contain SIZE
-								// the skip this result...
-								// If scriptvar, that is...
-								// Then if check_skip is true then skip
-								// this result.
-								console.log(title);
-								if (AMT__Global_Vars.scriptVars['RRS:SkipNoSize'] == '1' &&
-									Object.keys(o.size_dict).length > 0 &&
-									check_skip( title )) {
-									console.log('Skipping title:'+title);
-									continue;
-								}
-							} else {
-								//
-							}
-							// Offers
-							reg = /\([\d,]+ offers\)/g;
-							if (reg.exec(m[1])) {
-								reg.lastIndex = 0;
-								while (n = reg.exec(m[1])) {
-									offer += n[0];
-								}
-							}
-							// rating
-							reg = /<a alt="([\d\.]+ out of 5 stars)/.exec(m[1]);
-							if (reg) {
-								ratng += reg[1] + '<br >';
-							}
-							// reviews
-							reg = /<div class="reviewsCount">\([^>]+>([\d,]+)/.exec(m[1]);
-							if (reg) {
-								ratng += ' (<B>'+reg[1]+'</B> ratings)';
-							}
-							// image
-							reg = /src="(https?:\/\/[^\.]+\.ssl-images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
-							var image;
-							if (reg) {
-								// Change to a larger size image via URL...
-								reg[1] = reg[1].replace(/160_/, '460_');
-								image = __js_clean_html_str( reg[1] ).trim();
-								//console.log(image);
-							}
-							// Prime?
-							reg = /<i class="a-icon a-icon-prime a-icon-small s-align-text-bottom">/.exec(m[1]);
-							if (reg) {
-								prime = true;
-								prime_bgc = 'border:4px solid teal;';
-							} else {
-								prime = false;
-								prime_bgc = '';
-							}
-							// Title formatting.
-							// Exact name match?
-							if  (
-								title.replace(/[\r\n\t\s]+/g, '').toLowerCase() ==
-								o.product.replace(/[\r\n\t\s]+/g, '').toLowerCase()
-								)
-							{
-								tmptitle = '<span style="zoom:3;font-weight:bold;">✔</span>';
-								tmptitle += MT__bold(title, o.bold_array);
-							} else {
-								tmptitle = MT__bold(title, o.bold_array);
-							}
-							// If title == ''
-							if (title == '' && image) {
-								continue; // Skip here! This is essentially debug.
-								div.innerText = '-- NO TITLE --\n';
-								var img = document.createElement('img');
-								img.setAttribute('style', 'max-width:140px;'+prime_bgc);
-								img.src = image;
-								div.appendChild(img);
-								continue; // Skip here! This is essentially debug.
-							}
-							// Image
-							if (image) {
-								var img = document.createElement('img');
-								img.src = image;
-								img.setAttribute('style', 'width:100%;');//+prime_bgc
-								//~ img.setAttribute('style', 'max-width:100%;height:200px;');//+prime_bgc
-								div.appendChild(img);
-								// SKIP THIS!!
-								//~ check_same(img);
-							}
-							// div_l, div_r, divs left and right
-							var dvl = ''.div({style:'width:99%;'});
-							var dvr = ''.div({style:'width:99%;'});
-							//~ dvl.setAttribute('style', 'width:99%;');
-							//~ dvr.setAttribute('style', 'float:left;width:99%;');
-							// Append divs
-							div.appendChild(dvl);
-							div.appendChild(dvr);
-							// .innerHTML
-							dvr.innerHTML += tmptitle + '<br>';
-							dvr.innerHTML += MT__bold(author, o.bold_array) + '<br>';
-							dvr.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
-							dvr.innerHTML += 'A:' + div.asin + '<br>';
-							// Diff
-							//dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
-							// Show any words not in original...?
-							
-							// .onclick
-							div.onclick = function() {
-								this.style.backgroundColor = 'aqua';
-								console.log(this.link);
-								console.log(this.asin);
-								console.log(this);
-								if (this.hasOwnProperty('link') &&
-									this.link.length > 10 &&
-									this.link.indexOf('/dp/') != -1 &&
-									this.asin &&
-									this.asin.length >= 6) {
-									//doSubmit();
-									// check_asin
-									check_asin(this);
-								}
-							}
-							c++;
-						}
-						// Spacer
-						var div = document.createElement('div');
-						div.setAttribute('style', 'height:1800px;');
-						out.appendChild(div);
+						// Set o.rs
+						o.rs = rs;
+						// Display results!
+						display_results();
 					}
 				});
 			}
