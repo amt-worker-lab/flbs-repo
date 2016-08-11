@@ -19297,16 +19297,25 @@ Laurens Hammond, Chicago, Ill.**/
 			var o = {
 				//~ url: a,
 				product: td[3].innerText.trim() + ',' + td[5].innerText.trim() + ',' + td[7].innerText.trim(),
+				size: td[7].innerText.trim(),
 				bold_array: [],
 				q: document.getElementsByName('Q5FreeTextInput')[0],
 				u: td[1].innerText.trim(),
 				image: null, // To fill...
+				size_dict: {}, // To fill... A dictionary...
 			};
+			var x = /[\d]+\.*\d*/g; // One or more digit plus 0+ periods plus 0+ digits.
+			var y;
+			while (y = x.exec(o.size)) {
+				o.size_dict[ y[0] ] = true;
+			}
 			d2.value = o.product;
 			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
 			d2.onblur = function() {
 				amazon_product_search();
 			}
+			// ScriptVar
+			new AMT___core_factory().createScriptVar('RRS:SkipNoSize', '0', false); // Default=0
 			//~ d2b.onclick = function() {
 				//~ this.style.backgroundColor = 'LightGreen';
 				//~ var q = document.getElementsByName('ASIN')[0];
@@ -19383,6 +19392,22 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 				);
+			}
+			/**
+			 * function check_skip
+			 * Uses o.size_cln to check result title. Return false
+			 * where there is a match.
+			 */
+			function check_skip(title) {
+				console.log('2');
+				//o.size_cln[ o.size ] = true;
+				for (var i in o.size_dict) {console.log(i);
+					if (title.indexOf( i ) != -1) {
+						return false;
+					}
+				}
+				// Here? Then there is not match.
+				return true;
 			}
 			/**
 			 * function scrape_amazon
@@ -19501,8 +19526,8 @@ Laurens Hammond, Chicago, Ill.**/
 							rs = results.innerHTML;
 						}
 						while (m = r.exec(rs)) {
-							console.log('items:');
-							console.log(m);
+							//~ console.log('items:');
+							//~ console.log(m);
 							var div = document.createElement('div');
 							div.setAttribute('style',
 								'border-bottom:1px solid teal;border:1px solid teal;border-collapse:collapse;cursor:pointer;float:left;width:49.25%;'
@@ -19556,6 +19581,19 @@ Laurens Hammond, Chicago, Ill.**/
 								var x = /\/dp\/([a-z0-9]+)\//i.exec(link);
 								if (x) {
 									div.asin = x[1];
+								}
+								// If title has a numerical size included...
+								// If title does not contain SIZE
+								// the skip this result...
+								// If scriptvar, that is...
+								// Then if check_skip is true then skip
+								// this result.
+								console.log(title);
+								if (AMT__Global_Vars.scriptVars['RRS:SkipNoSize'] == '1' &&
+									Object.keys(o.size_dict).length > 0 &&
+									check_skip( title )) {
+									console.log('Skipping title:'+title);
+									continue;
 								}
 							} else {
 								//
