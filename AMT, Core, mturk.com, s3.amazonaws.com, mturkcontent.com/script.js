@@ -19274,7 +19274,7 @@ Laurens Hammond, Chicago, Ill.**/
 			d1.setAttribute('style','position:absolute;top:80px;left:0;width:60%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea'); //
-			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:80px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:76px;border:2px solid #a0a0a0;');
 			document.body.appendChild(d2);
 			//~ var d2b = document.createElement('input'); //
 			//~ d2b.type = 'button';
@@ -19548,7 +19548,9 @@ Laurens Hammond, Chicago, Ill.**/
 							reg = /src="(https?:\/\/[^\.]+\.ssl-images-amazon\.com\/images\/I\/[^"]+)/i.exec(m[1]);
 							var image;
 							if (reg) {
-								image = __js_clean_html_str(reg[1]).trim();
+								// Change to a larger size image via URL...
+								reg[1] = reg[1].replace(/160_/, '460_');
+								image = __js_clean_html_str( reg[1] ).trim();
 								//console.log(image);
 							}
 							// Prime?
@@ -19582,12 +19584,20 @@ Laurens Hammond, Chicago, Ill.**/
 								div.appendChild(img);
 								continue; // Skip here! This is essentially debug.
 							}
+							// Image
+							if (image) {
+								var img = document.createElement('img');
+								img.src = image;
+								img.setAttribute('style', 'width:100%;');//+prime_bgc
+								//~ img.setAttribute('style', 'max-width:100%;height:200px;');//+prime_bgc
+								div.appendChild(img);
+							}
 							// div_l, div_r, divs left and right
 							var dvl = ''.div({style:'width:99%;'});
-							var dvr = ''.div({style:'float:left;width:99%;'});
+							var dvr = ''.div({style:'width:99%;'});
 							//~ dvl.setAttribute('style', 'width:99%;');
 							//~ dvr.setAttribute('style', 'float:left;width:99%;');
-							// Append
+							// Append divs
 							div.appendChild(dvl);
 							div.appendChild(dvr);
 							// .innerHTML
@@ -19598,13 +19608,7 @@ Laurens Hammond, Chicago, Ill.**/
 							// Diff
 							//dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
 							// Show any words not in original...?
-							// Image
-							if (image) {
-								var img = document.createElement('img');
-								//~ img.setAttribute('style', 'max-width:100%;'+prime_bgc);
-								img.src = image;
-								dvl.appendChild(img);
-							}
+							
 							// .onclick
 							div.onclick = function() {
 								this.style.backgroundColor = 'aqua';
