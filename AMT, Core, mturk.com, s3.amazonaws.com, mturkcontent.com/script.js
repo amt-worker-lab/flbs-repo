@@ -127782,6 +127782,12 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			// for i in location try changing to state
+			var x = o.locn.split(' ');
+			for (var i in x) {
+				x[i] = x[i].stateAbbrToFull();
+			}
+			o.locn = x.join(' ');
 			o.boldArray = o.comp.clean_string_to_array();
 			o.addrArray = o.locn.clean_string_to_array().concat(o.metro.clean_string_to_array()).concat(o.category.clean_string_to_array());
 			console.log(o);
