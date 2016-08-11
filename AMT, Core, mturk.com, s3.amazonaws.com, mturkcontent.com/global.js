@@ -14802,6 +14802,7 @@ function MT___escape(s) {
 	return n;
 }
 function MT___diffString( o, n ) {
+	// , opts var opts // Aug 10 2016
   o = o.replace(/\s+$/, '');
   n = n.replace(/\s+$/, '');
 
@@ -14841,6 +14842,11 @@ function MT___diffString( o, n ) {
 		for (n = out.n[i].row + 1; n < out.o.length && out.o[n].text == null; n++ ) {
 		  pre += '<del>' + MT___escape(out.o[n]) + oSpace[n] + "</del>";
 		}
+		//~ if (opts && opts.ignore_normals) {
+			//~ // Skip below
+			//~ continue;
+		//~ }
+		// Normals...
 		str += " " + out.n[i].text + nSpace[i] + pre;
 	  }
 	}

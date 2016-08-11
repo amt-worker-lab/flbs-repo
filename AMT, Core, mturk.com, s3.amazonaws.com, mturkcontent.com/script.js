@@ -19271,10 +19271,10 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div'); //
-			d1.setAttribute('style','position:absolute;top:100px;left:0;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:80px;left:0;width:60%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('textarea'); //
-			d2.setAttribute('style','position:absolute;top:0px;left:60%;width:30%;height:100px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:20%;width:40%;height:80px;');
 			document.body.appendChild(d2);
 			//~ var d2b = document.createElement('input'); //
 			//~ d2b.type = 'button';
@@ -19300,19 +19300,20 @@ Laurens Hammond, Chicago, Ill.**/
 				bold_array: [],
 				q: document.getElementsByName('Q5FreeTextInput')[0],
 				u: td[1].innerText.trim(),
+				image: null, // To fill...
 			};
 			d2.value = o.product;
 			o.bold_array = o.product.replace(/[^\w\d]/g, '  ').replace(/( |^)[\w\d]{1}( |$)/g, '  ').split(' ');
 			d2.onblur = function() {
 				amazon_product_search();
 			}
-			d2b.onclick = function() {
+			//~ d2b.onclick = function() {
 				//~ this.style.backgroundColor = 'LightGreen';
 				//~ var q = document.getElementsByName('ASIN')[0];
 				//~ q.value = 'NOASIN';
 				//~ new AMT___core_factory().nextTab();
 				//~ doSubmit();
-			}
+			//~ }
 			// innerHeight
 			new AMT___core_factory().el_innerHeight({
 				// This set the elements d1,d1b, and d1c
@@ -19321,7 +19322,7 @@ Laurens Hammond, Chicago, Ill.**/
 				elements: [
 					d1
 				],
-				offset: 200 // offset top
+				offset: 80 // offset top
 			});
 			//
 			d2.onblur = function() {
@@ -19389,7 +19390,14 @@ Laurens Hammond, Chicago, Ill.**/
 						if (p.getAttribute('src').indexOf('http') == -1)
 							p.src = 'https://www.petflow.com' + p.getAttribute('src');
 						document.body.appendChild(p);
-						p.setAttribute('style', 'position:absolute;top:0;left:40%;max-width:20%;max-height:198px;border:2px solid teal;');
+						p.setAttribute('style', 'position:absolute;top:0;left:60%;max-width:40%;max-height:600px;border:2px solid teal;');
+						o.image = p;
+						// innerHeight
+						new AMT___core_factory().el_innerHeight({ // IH Callback
+							callback_function: function(innerHeight) {
+								o.image.style.maxHeight = (innerHeight-10)+'px';
+							}
+						});
 					}
 				});
 			}
@@ -19448,8 +19456,8 @@ Laurens Hammond, Chicago, Ill.**/
 						while (m = r.exec(rs)) {
 							images.push(m[1]);
 						}
-						out.appendChild(document.createTextNode(images.length+' images'));
-						out.appendChild(document.createElement('br'));
+						//~ out.appendChild(document.createTextNode(images.length+' images'));
+						//~ out.appendChild(document.createElement('br'));
 						// Items
 						var dp, c = 0, multi, highlight = '';
 						//~ r = /<h3 class="title"[^>]*>((.|\s)*?(?=<div class="unfloat"><\/div>|$)|$)/g;
@@ -19577,8 +19585,8 @@ Laurens Hammond, Chicago, Ill.**/
 							// div_l, div_r, divs left and right
 							var dvl = ''.div();
 							var dvr = ''.div();
-							dvl.setAttribute('style', 'float:left;width:30%;');
-							dvr.setAttribute('style', 'float:left;width:68%;');
+							dvl.setAttribute('style', 'float:left;width:50%;');
+							dvr.setAttribute('style', 'float:left;width:49%;');
 							// Append
 							div.appendChild(dvl);
 							div.appendChild(dvr);
@@ -19588,7 +19596,8 @@ Laurens Hammond, Chicago, Ill.**/
 							dvr.innerHTML += offer + ratng + '<br>'; //(prime ? ' <b>prime</b>' : '')
 							dvr.innerHTML += 'A:' + div.asin + '<br>';
 							// Diff
-							dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
+							//dvr.innerHTML += MT___diffString(o.product.toUpperCase(), title.toUpperCase()) + '<br>';
+							// Show any words not in original...?
 							// Image
 							if (image) {
 								var img = document.createElement('img');
