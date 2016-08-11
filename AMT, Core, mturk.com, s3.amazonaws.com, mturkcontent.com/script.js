@@ -19318,7 +19318,7 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// Create annotation for filtering results...
 			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
-				textToAnnotate: o.product,
+				textToAnnotate: o.product.replace(/-,/g, ' '), // Make space!
 				exitBeforeAppendToField: true, // Stops before adding trying to add to any field.
 				callback_mouseup_pre_apply: function(options_object) {
 					var x = options_object.selectedText;
