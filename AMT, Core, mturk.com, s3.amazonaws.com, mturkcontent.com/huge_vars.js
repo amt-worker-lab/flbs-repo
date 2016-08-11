@@ -1362,6 +1362,16 @@ HoTvXx9n6G43nUzzA16ehXGRLgOeydW0tWPP3ir6wVgVQ1vx9He3tya1of6Dzb7Tb0RwBAMwriq/Baz/
 var MT___states;
 var MT___countries;
 MT___states = {
+	"BC": "British Colombia",
+	"ON": "Ontario",
+	"QC": "Quebec",
+	"NS": "Nova Scotia",
+	"NB": "New Brunswick",
+	"MB": "Manitoba",
+	"PE": "Prince Edward Island",
+	"SK": "Saskatchewan",
+	"AB": "Alberta",
+	"NL": "Newfoundland and Labrador",
 	"AL": "Alabama",
 	"AK": "Alaska",
 	"AS": "American Samoa",

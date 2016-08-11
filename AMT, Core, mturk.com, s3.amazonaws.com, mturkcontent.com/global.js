@@ -8604,7 +8604,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	options_object.parent.appendChild(br);
 	// divs
 	var d1 = document.createElement('div');
-	d1.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	d1.setAttribute('style','float:left;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1);
 	d1.id = 'd1a';
 	d1.txa = d3;
@@ -8612,7 +8612,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	options_object.results.divs.push(d1);
 	//
 	var d1b = document.createElement('div');
-	d1b.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	d1b.setAttribute('style','float:left;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1b);
 	d1b.id = 'd1b';
 	d1b.txa = d3b;
@@ -8620,7 +8620,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	options_object.results.divs.push(d1b);
 	//
 	var d1c = document.createElement('div');
-	d1c.setAttribute('style','float:left;width:33%;height:200px;overflow:auto;border:1px solid blue;background-color:#eee;');
+	d1c.setAttribute('style','float:left;width:33%;height:600px;overflow:auto;border:1px solid blue;background-color:#eee;');
 	options_object.parent.appendChild(d1c);
 	d1c.id = 'd1c';
 	d1c.txa = d3c;

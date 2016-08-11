@@ -127785,7 +127785,11 @@ qatar,80
 			// for i in location try changing to state
 			var x = o.locn.split(' ');
 			for (var i in x) {
-				x[i] = x[i].stateAbbrToFull();
+				var z = x[i].stateAbbrToFull();
+				if (z != x[i]) // diff?
+					x[i] = '"' + z + '"';
+				else
+					x[i] = z;
 			}
 			o.locn = x.join(' ');
 			o.boldArray = o.comp.clean_string_to_array();
