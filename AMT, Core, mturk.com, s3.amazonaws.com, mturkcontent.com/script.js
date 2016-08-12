@@ -127912,10 +127912,10 @@ qatar,80
 			// Elements
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
-				locn: td[3].innerText.trim(),
-				metro: td[5].innerText.trim(),
-				category: td[7].innerText.trim(),
+				comp: td[1].innerText.replace(/NULL/gi, ' ').trim(),
+				locn: td[3].innerText.replace(/NULL/g, ' ').trim(),
+				metro: td[5].innerText.replace(/NULL/g, ' ').trim(),
+				category: td[7].innerText.replace(/NULL/g, ' ').trim(),
 				boldArray: [],
 				addrArray: [],
 				q: [
