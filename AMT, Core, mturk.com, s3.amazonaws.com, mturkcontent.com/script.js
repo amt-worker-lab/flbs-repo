@@ -127914,6 +127914,8 @@ qatar,80
 			var o = {
 				comp: td[1].innerText.replace(/NULL/gi, ' ').trim(),
 				locn: td[3].innerText.replace(/NULL/g, ' ').trim(),
+				stateAbbr: null,
+				locn_plus_abbr_state: null,
 				metro: td[5].innerText.replace(/NULL/g, ' ').trim(),
 				category: td[7].innerText.replace(/NULL/g, ' ').trim(),
 				boldArray: [],
@@ -127924,14 +127926,17 @@ qatar,80
 			}
 			// for i in location try changing to state
 			var x = o.locn.split(' ');
+			//~ var y = o.locn.split(' ');
 			for (var i in x) {
 				var z = x[i].stateAbbrToFull();
-				if (z != x[i]) // diff?
-					x[i] = '"' + z + '"';
-				else
-					x[i] = z;
+				if (z != x[i]) { // If different than this is a full state!
+					o.stateAbbr = x[i]; // Abbr state
+					x[i] = '"' + z + '"';	// Make full state
+				} else { // No match found!
+				}
 			}
 			o.locn = x.join(' ');
+			//~ o.locn_plus_abbr_state = y.join(' ');
 			o.boldArray = o.comp.clean_string_to_array();
 			o.addrArray = o.locn.clean_string_to_array().concat(o.metro.clean_string_to_array()).concat(o.category.clean_string_to_array());
 			console.log(o);
@@ -127958,7 +127963,9 @@ qatar,80
 				searches:[
 					o.comp,
 					o.comp + ' ' + o.locn,
-					o.comp + ' ' + o.locn + ' ' + o.metro + ' ' + o.category,
+					o.comp + ' ' +
+						(o.stateAbbr != null ? '"'+o.stateAbbr+'"' : o.locn) +
+						' ' + o.metro + ' ' + o.category,
 				],
 				search_results: {
 					//~ use_domain_only: true,
