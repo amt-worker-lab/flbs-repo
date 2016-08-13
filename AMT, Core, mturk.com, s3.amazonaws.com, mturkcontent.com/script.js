@@ -127916,6 +127916,7 @@ qatar,80
 				locn: td[3].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
 				locn_quote_state: null,
 				stateAbbr: null,
+				stateFull: null,
 				locn_plus_abbr_state: null,
 				metro: td[5].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
 				category: td[7].innerText.replace(/NULL/g, ' ').trim(),
@@ -127932,12 +127933,16 @@ qatar,80
 				var z = x[i].stateAbbrToFull();
 				if (z != x[i]) { // If different than this is a full state!
 					o.stateAbbr = x[i]; // Abbr state
+					o.stateFull = z; // Full state
 					x[i] = '"' + z + '"';	// Make full state
+					
 				} else { // No match found!
 				}
 			}
 			if (o.stateAbbr != null) {
 				o.locn_quote_state = x.join(' ');
+				o.locn = o.locn.replace(new RegExp('[, ]*' + o.stateAbbr + '$'), '');
+				o.locn = '"'+o.locn.trim()+'" '+o.stateAbbr+' '+o.stateFull;
 			} else {
 				o.locn_quote_state = o.locn;
 			}
@@ -127971,7 +127976,7 @@ qatar,80
 					o.comp + ' ' + o.locn_quote_state,
 					o.comp + ' ' +
 						(o.stateAbbr != null ? '"'+o.stateAbbr+'"' : o.locn) +
-						' ' + o.metro, // No Category.... + ' ' + o.category,
+						' ' + o.metro + ' ' + o.category,
 				],
 				search_results: {
 					//~ use_domain_only: true,
