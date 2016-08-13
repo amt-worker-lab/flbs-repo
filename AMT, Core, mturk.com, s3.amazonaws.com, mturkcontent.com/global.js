@@ -14048,34 +14048,26 @@ MT__DOSUBMIT__BY_ID_THIS_ID = xid;
  * @param
  */
 function doSubmit__serverSide(form, location, callback_function, offsetTime) {
-
-	
-	
 	/**
 	 * OPTIONAL PARAMETERS. THESE ARE SET FROM doSubmit OR ELSE
 	 * THEY MAY BE SET HERE.
 	 * 
 	 * Which form to submit
 	 */
-	// 
 	if (!form)
 		MT__DOSUBMIT__FORM = document.getElementById('mturk_form');
 	else if (document.getElementById(form))
 		MT__DOSUBMIT__FORM = document.getElementById(form);
 	else if (document.getElementsByName(form)[0])
 		MT__DOSUBMIT__FORM = document.getElementsByName(form)[0];
-	
 	// Debug
 	if (MT___TEST_DEBUG) {
 		var d = new Date();
 		MT___TEST_DEBUG_start_time = d.getTime() / 1000;
 	}
-	
-	
 	// Set global vars
 	MT__DOSUBMIT__LOCATION = location;
 	MT__DOSUBMIT__CALLBACK_FUNCTION = callback_function;
-	
 	// Exit if err
 	if (MT__DOSUBMIT__CALLBACK_FUNCTION) {
 		if (typeof MT__DOSUBMIT__CALLBACK_FUNCTION != 'function') {
@@ -14083,13 +14075,18 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 			return;
 		}
 	}
+	var opts = {
+		queue: MT__DOSUBMIT__USER_SET_TYPE,
+	}
 	/**
 	 * END OPTIONAL PARAMETERS.
 	 */
-	
+	// XHR
 	GM_xmlhttpRequest({
 		method: "GET",
-		url: MT___host + '/mturk/util.php?AMT__doSubmit__serverSide_read=',
+		url: MT___host +
+			'/mturk/util.php?AMT__doSubmit__serverSide_read='+
+			'&AMT__doSubmit__serverSide_read_opts='+encodeURIComponent(JSON.stringify(opts)),
 		timeout: 10000,
 		onload: function(response) {
 			var rs = response.responseText;
@@ -14122,18 +14119,17 @@ function doSubmit__serverSide(form, location, callback_function, offsetTime) {
 			GM_xmlhttpRequest({
 				method: "POST",
 				url: MT___host + '/mturk/util.php',
-				data: 'AMT__doSubmit__serverSide_write='+encodeURIComponent(JSON.stringify(arr_all_submits)),
+				data: 'AMT__doSubmit__serverSide_write='+encodeURIComponent(JSON.stringify(arr_all_submits))+
+					  '&AMT__doSubmit__serverSide_write_opts='+encodeURIComponent(JSON.stringify(opts)),
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded"
 				},
 				onload: function(response) {
 					var rs = response.responseText;
-					
 					if (response.status != 200) {
 						alert('write failed! doSubmit__serverSide');
 						return;
 					}
-					
 					// go to submit 2
 					// does: callback (if necessary), setTimeout, and then submit
 					doSubmit_2();
@@ -14159,14 +14155,16 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 	
 	if (offsetTime == undefined)
 		offsetTime = 0;
-		
-	console.log(data);
-	console.log('offsetTime '+offsetTime);
-	
+		////////////////
+		// Debug
+		////////////////
+		console.log(data);
+		console.log('offsetTime '+offsetTime);
+		////////////////
+		// End Debug
+		////////////////
 	var arr_all_submits = data;
-		
 	MT__DOSUBMIT__TIME_TO_SUBMIT = 0;
-	
 	//
 	var currentTime;
 	// set currentTime (milliseconds)
@@ -14180,15 +14178,14 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 	// is blank or false
 	if (!arr_all_submits || arr_all_submits == '') {
 		// add this
-		arr_all_submits = [{'id' : MT__DOSUBMIT__BY_ID_THIS_ID, 'time_to_submit' : currentTime}];
+		arr_all_submits = [
+			{'id' : MT__DOSUBMIT__BY_ID_THIS_ID, 'time_to_submit' : currentTime}
+		];
 	}
 	// else JSON.parse
 	else {
-		
 		arr_all_submits = JSON.parse(arr_all_submits);
-		
 		var i;
-		
 		// remove err
 		for (i = arr_all_submits.length-1; i >= 0; i--) {
 			if  (
@@ -14201,7 +14198,6 @@ function AMT__doSubmit__editSubmitArray(data, offsetTime, serverSide_currentTime
 				arr_all_submits.splice(i, 1); // index, howmany
 			}
 		}
-		
 		var changed = false;
 		var last = false;
 		var addThis = true;
@@ -14387,7 +14383,10 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 	 * @var MT__DOSUBMIT__USER_SET_TYPE
 	 */
 	if (
-		MT__DOSUBMIT__USER_SET_TYPE == 'server side'
+		MT__DOSUBMIT__USER_SET_TYPE == 'server side' ||
+		MT__DOSUBMIT__USER_SET_TYPE == 'server side2' ||
+		MT__DOSUBMIT__USER_SET_TYPE == 'server side3' ||
+		MT__DOSUBMIT__USER_SET_TYPE == 'server side4'
 	) {
 		doSubmit__serverSide(form, location, callback_function, offsetTime, doServerSideSubmit);
 		return;
@@ -14469,55 +14468,8 @@ function doSubmit_2() {
 		else {
 			// do nothing
 		}
-		
-		/*if (noSubmit)
-			return;
-		else if (!location)
-			MT__DOSUBMIT__FORM.submit();
-		else if (location)
-			window.location = location;*/
-		
-		// OLD, NO REALLY USING THIS
-		//~ // remove from submit
-		//~ /*var all = GM_getValue('MT__DOSUBMIT__ALL_JOBS');
-		//~ if (all) {
-			//~ 
-			//~ // !! if time_to_submit > 0 !!
-			//~ // ?? Sept. 19, 2013
-			//~ if (time_to_submit != 0) {
-				//~ // remove
-				//~ all = JSON.parse(all);
-				//~ var i;
-				//~ var changed = false;
-				//~ for (i = all.length-1; i >= 0; i--) {
-					//~ if (all[i].id == MT__DOSUBMIT__BY_ID_THIS_ID) {
-						//~ all.splice(i, 1); // index, howmany
-						//~ changed = true;
-						//~ //break;
-					//~ }
-				//~ }
-				//~ if (changed)
-					//~ GM_setValue('MT__DOSUBMIT__ALL_JOBS', JSON.stringify(all));
-			//~ }
-		//~ }*/
-		//
-		// save job submissions here
-		//
-		/*
-		var d = new Date();
-		GM_setValue(
-			'MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS',
-			GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS') + "\n" + (d.getTime() / 1000) + ' ' + MT__DOSUBMIT__BY_ID_THIS_ID
-		);
-		console.log(GM_getValue('MT__DOSUBMIT__DEBUG_JOB_SUMBISSIONS'));*/
-		//console.log(MT__DOSUBMIT__FORM);
-		//console.log(MT__DOSUBMIT__LOCATION);
-		
 	}, MT__DOSUBMIT__TIME_TO_SUBMIT);
 }
-//~ function doSubmit_3() {
-	//~ //
-//~ }
 //
 // doSubmit debug
 //
