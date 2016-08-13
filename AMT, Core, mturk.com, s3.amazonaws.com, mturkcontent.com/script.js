@@ -127913,10 +127913,10 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.replace(/NULL/gi, ' ').trim(),
-				locn: td[3].innerText.replace(/NULL/g, ' ').trim(),
+				locn: td[3].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
 				stateAbbr: null,
 				locn_plus_abbr_state: null,
-				metro: td[5].innerText.replace(/NULL/g, ' ').trim(),
+				metro: td[5].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
 				category: td[7].innerText.replace(/NULL/g, ' ').trim(),
 				boldArray: [],
 				addrArray: [],
@@ -127939,6 +127939,7 @@ qatar,80
 			//~ o.locn_plus_abbr_state = y.join(' ');
 			o.boldArray = o.comp.clean_string_to_array();
 			o.addrArray = o.locn.clean_string_to_array().concat(o.metro.clean_string_to_array()).concat(o.category.clean_string_to_array());
+			if (o.stateAbbr != null) o.addrArray.push(o.stateAbbr);
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
