@@ -8811,28 +8811,40 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		return str;
 	}
 	/**
+	 * function check_site_is200
+	 */
+	function check_site_is200(site) {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: site,
+			onload: function (response) {
+				//~ var rs = response.responseText;
+				if (response.status == 200) {
+					doSubmit();
+				}
+			}
+		});
+	}
+	/**
 	 * function company_URL__processProxyResponse
 	 * 
 	 * @param		response		object
 	 */
 	function company_URL__processProxyResponse(response) {
-		
 		var rs = response.rs;
-		
-		// rs
-		// 0=url
-		// 1=full
-		
+			// rs
+			// 0=url
+			// 1=full
 		// seed_arg
 		var out_div = response.seed;
 		out_div.innerHTML = '';
-		
+		// No results
 		if (!rs.length) {
 			out_div.innerHTML = '0';
 			count_domains();
 			return;
 		}
-		
+		//
 		var count = 0;
 		var col;
 		if(out_div == d1)
@@ -8842,7 +8854,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		else if(out_div == d1c)
 			col = 2;
 		for (var i in rs) {
-			
 			var x = rs[i][0];
 			var link = rs[i][0];
 			var full = rs[i][1];
@@ -8852,7 +8863,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				body: null, //TODO
 				textarea: null,
 			}
-			
 			// Skip here?
 			// This is a callback function test.
 			// True=Skip. False=Okay.
@@ -8865,7 +8875,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			{
 				continue;
 			}
-			
 			// Skip here?
 			// This is a callback function test.
 			// True=Skip. False=Okay.
@@ -8873,11 +8882,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				options_object.linkedInIgnoreNoBold
 				)
 			{
-				//~ console.log('linkedInIgnoreNoBold');
-				//~ console.log(options_object.linkedInIgnoreNoBold);
 				var name = /^([^\|]+)\|/i.exec(full);
-				//~ console.log('name');
-				//~ console.log(name);
 				if(!name || (name && !name[1].trim())) {
 					console.log('improper formatting?');
 				} else {
@@ -8894,12 +8899,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						}
 					}
 					if(!found) {
-						//~ console.log('not found');
 						continue;
 					}
 				}
 			}
-			
 			// Clean body of...
 			// clean_body_regex [{a:,b:},{a:,b:},...{}]
 			// clean_body_strings
@@ -8908,37 +8911,28 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				var rgx_ = options_object.search_results.clean_body_regex[ rgx ];
 				full = full.replace(rgx_.a, rgx_.b);
 			}
-			
 			// callback_link_and_body
 			//
 			//
-			//
 			options_object.search_results.callback_link_and_body(link, full);
-			
 			//~ // ..
 			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
-
-			
 			// Return domain only (no WWW, no HTTP)
 			if (options_object.search_results.use_domain_only)
 				x = x.replace(/^https?:\/\/(www[\d]*\.|)/i, ''); // Remove https, www., www[0,1,...,n].,
-			
 			// TRAILING
 			if (!options_object.search_results.use_full_urls)
 				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
-			
+			// Modifier callback
 			if (options_object.search_results.url_modifier_callback) {
 				x = options_object.search_results.url_modifier_callback( x );
 			}
-			
 			// Set div_result.url
 			//
 			//
 			div_result.url = x;
-			
 			// DOMAIN
 			var domain = x.replace(/^https?:\/\//, ''); // beginning
-			
 			// SKIP BUTTON CREATE
 			// returns obj.el_button, obj.isSkip
 			var el_inp_skip2__obj = new AMT___items_factory().
