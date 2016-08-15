@@ -8463,6 +8463,8 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .search_results.clean_body_regex					Array(regexes)
  * .search_results.clean_body_string				Array(strings)
  * .search_results.use_domain_only					Boolean, Default=NULL or False
+ * .onclick_check_site_is200						BOOLEAN
+ * .onclick_check_site_is200_err_callback			Function()
  * .search											Object
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
  * .hide_search_fields BOOLEAN
@@ -8477,24 +8479,16 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	// Styles
 	//
 	//
-	//
 	GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr,table,thead,tbody,tr,td {margin:0;padding:0;font-size:12px;}');
 	GM_addStyle('table,thead,tbody,tr,td {margin:0 !important;padding:0 !important;}');
 	GM_addStyle('.highlight-box {position:absolute;top:2200px;}');
 	GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 	GM_addStyle('.input_skip_button2_rm_:hover {background-color:LightGreen;}');
 	//~ GM_addStyle('body {margin-top:900px;}'); //;width:100%
-	// REMOVED THESE THREE!
-	// JULY 25, 2015
-	//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;}'); //margin-top:1000px !important
-	//~ GM_addStyle('.panel {position:absolute;top:2000px;}');
-	//~ GM_addStyle('form {position:absolute;top:1000px;}');
-	
+	// ...
 	var options_object = options_object;
 	console.log(options_object);
-	
 	// Defaults
-	//
 	//
 	//
 	if (!options_object.hasOwnProperty('search')) {// search_results
@@ -8564,7 +8558,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
 	}
 	options_object.o = o; // ...
-	
 	/* BEGINS ITEMS */
 	//
 	var na = document.createElement('input');
@@ -8626,6 +8619,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	d1c.txa = d3c;
 	d1c.results = [];
 	options_object.results.divs.push(d1c);
+	//
+	var d1_console = document.createElement('div');
+	d1_console.setAttribute('style',
+		'position:absolute;display:none;top:0;left:80%;width:19%;height:20px;overflow:auto;border:1px solid blue;background-color:red;'
+	);
+	options_object.parent.appendChild(d1_console);
 	/*END ITEMS*/
 	// Onblur
 	d3.onblur = function() {
@@ -8811,16 +8810,52 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		return str;
 	}
 	/**
+	 * function check_site_is200_err
+	 */
+	function check_site_is200_err(status, type) {
+		document.body.style.backgroundColor = 'pink';
+		d1_console.innerText = 'Err:response.status='+status;
+		d1_console.style.display = 'block';
+		switch(type) {
+			case 0:
+				d1_console.innerText += '(n-timeout)';
+				break;
+			case 1:
+				d1_console.innerText += '(n-error)';
+				break;
+			case 2:
+				d1_console.innerText += '(n-loaded)';
+				break;
+		}
+	}
+	/**
 	 * function check_site_is200
 	 */
 	function check_site_is200(site) {
+		// Go next tab!
+		new AMT___core_factory().nextTab();
+		// Do Xhr
 		GM_xmlhttpRequest({
 			method: 'GET',
 			url: site,
+			timeout: 120000, // 120 second timeout
+			ontimeout: function(response) {
+				check_site_is200_err(response.status, 0);
+			},
+			onerror: function(response) {
+				check_site_is200_err(response.status, 1);
+			},
 			onload: function (response) {
 				//~ var rs = response.responseText;
 				if (response.status == 200) {
 					doSubmit();
+				} else {
+					if (options_object.onclick_check_site_is200_err_callback) {
+						// Run a custome callback...
+						options_object.onclick_check_site_is200_err_callback();
+						return;
+					}
+					check_site_is200_err(response.status, 2);
 				}
 			}
 		});
@@ -9073,7 +9108,12 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 							options_object.out_element.value = this.value;
 						else
 							options_object.out_element.value = this.full_url;
-						
+						// Check site is 200?
+						if (options_object.onclick_check_site_is200) {
+							check_site_is200(options_object.out_element.value);
+							return;
+						}
+						// Regular submit...
 						if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
 							doSubmit();
 						else {

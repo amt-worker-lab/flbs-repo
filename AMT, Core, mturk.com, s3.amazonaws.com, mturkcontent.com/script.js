@@ -127990,6 +127990,7 @@ qatar,80
 						//~ return url;
 					//~ },
 				},
+				onclick_check_site_is200: true,
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
@@ -181304,7 +181305,6 @@ qatar,80
 				url: u,
 				onload: function (response) {
 					var rs = response.responseText;
-					
 					if (rs.trim() != '' && response.status == 200 && response.finalUrl.trim().length > 10) {
 						document.getElementById('image_url').value = response.finalUrl.trim();
 						doSubmit();
@@ -181313,7 +181313,6 @@ qatar,80
 						//return false;
 						alert('is200 code:'+response.status);
 					}
-					
 				}
 			});
 		}
