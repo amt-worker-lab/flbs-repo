@@ -127825,7 +127825,10 @@ qatar,80
 	//
 	// 
 	var s = '<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">We have a list of company names from the US, Canada and certain countries in the EU. We need your help to find their missing web address (URL).&nbsp;</span></p>';
-	if (ih.indexOf(s) != -1)
+	var s2 = '<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">We have a list of company names from the England. We need your help to find their missing web address (URL).&nbsp;</span></p>';
+	if (ih.indexOf(s) != -1 ||
+		ih.indexOf(s2)!= -1
+		)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
