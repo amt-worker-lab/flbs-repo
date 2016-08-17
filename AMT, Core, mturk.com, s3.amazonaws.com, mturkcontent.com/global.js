@@ -17371,15 +17371,19 @@ function AMT___checkCaptchaStatus() {
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
 		// Is it currently non-captcha?
 		// If so then user may desire to "JumpToThisTab"
+		// Wait a moment before jumping so that the captcha will have
+		// a better chance to be loaded upon arrival.
 		if (!localStorage['mt_captcha'] || localStorage['mt_captcha'] == 0) {
 			if (AMT__Global_Vars.scriptVars['JumpToCaptchas'] == '1') {
-				chrome.extension.sendRequest({
-						jumpToCaptchaTab: true
-					},
-					function(response) {
-						//Squelch response
-					}
-				);
+				setTimeout(function() { 
+					chrome.extension.sendRequest({
+							jumpToCaptchaTab: true
+						},
+						function(response) {
+							//Squelch response
+						}
+					);
+				}, 1000);
 			}
 		}
 		// Set localstorage
