@@ -44,14 +44,17 @@ var AMT__Global_Vars = //function()
 		{name: 'Record Job Timings',		value: '0', isPersistant:true},
 		{name: 'Return Button Hotkey',		value: '`', isPersistant:true},
 		{name: 'Return Button ShowNextTab',	value: '1', isPersistant:true},
-		{name: 'Right-Click-R&A',	value: '0', isPersistant:true},
-		{name: 'NumPassby',	value: '3', isPersistant:true},
-		{name: 'PassbyDelay',	value: '100', isPersistant:true},
-		{name: 'TabsQ JumpToFirst',	value: '1', isPersistant:true},
-		{name: 'addToTabsQ:ShiftRight',	value: '1', isPersistant:true},
-		{name: 'Return NextTab',	value: '0', isPersistant:true},
-		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
+		{name: 'Right-Click-R&A',			value: '0', isPersistant:true},
+		{name: 'NumPassby',					value: '3', isPersistant:true},
+		{name: 'PassbyDelay',				value: '100', isPersistant:true},
+		{name: 'TabsQ JumpToFirst',			value: '1', isPersistant:true},
+		{name: 'addToTabsQ:ShiftRight',		value: '1', isPersistant:true},
+		{name: 'Return NextTab',			value: '0', isPersistant:true},
 		{name: 'Server Location',			value: 'http://192.168.1.2', isPersistant:true},
+		{name: 'JumpToCaptchas',			value: '1', isPersistant:true},
+		//
+		//
+		//~ {name: 'SkipInPreviewMode', value: '1', isPersistant:true},
 	],
 	associativeArrayofDPSV: {},
 	isTopWindow: null,
@@ -17357,13 +17360,28 @@ function AMT___checkCaptchaStatus() {
 			);
 		}
 	}
-	
+	//====================================
 	//AMT__Global_Vars.core.captcha_string
+	//====================================
 	console.log(
 		'ih.indexOf(AMT__Global_Vars.core.captcha_string):' +
 		ih.indexOf(AMT__Global_Vars.core.captcha_string)// 9812 or -1
 	);
+	// If -1 then this is first
 	if (ih.indexOf(AMT__Global_Vars.core.captcha_string) != -1) {
+		// Is it currently non-captcha?
+		// If so then user may desire to "JumpToThisTab"
+		if (!localStorage['mt_captcha'] || localStorage['mt_captcha'] == 0) {
+			if (AMT__Global_Vars.scriptVars['JumpToCaptchas'] == '1') {
+				chrome.extension.sendRequest({
+						jumpToCaptchaTab: true
+					},
+					function(response) {
+						//Squelch response
+					}
+				);
+			}
+		}
 		// Set localstorage
 		localStorage['mt_captcha'] = 1;
 		/**
@@ -17385,7 +17403,7 @@ function AMT___checkCaptchaStatus() {
 			add_tab_to_captcha_queue: true
 		}, 
 		function(response) {
-			//Squelch response
+				//Squelch response
 			}
 		);
 		// Captcha response focus 
@@ -17479,24 +17497,31 @@ function AMT___checkCaptchaStatus() {
 			/**
 			 * CAPTCHA_tab_queue_process
 			 */
-			chrome.extension.sendRequest(
-			{
-				CAPTCHA_tab_queue_process: true
-			}, 
-			function(response) {
-				//Squelch response
+			chrome.extension.sendRequest({
+					CAPTCHA_tab_queue_process: true
+				}, 
+				function(response) {
+					//Squelch response
 				}
 			);
+			/**
+			 * JumpToCaptchas
+			 * Return to work if this is on.
+			 */
+			if (AMT__Global_Vars.scriptVars['JumpToCaptchas'] == '1') {
+				chrome.extension.sendRequest({
+						jumpToCaptchaTab_returnToWork: true
+					},
+					function(response) {
+						//Squelch response
+					}
+				);
+			}
 		}
 		// Reload after captcha, /mturk/submit
 		if (document.location == 'https://www.mturk.com/mturk/submit' && ih.indexOf('Your request was not completed successfully.') != -1) {
-			// Amicus Labs
-			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
-			// Amazon Labs
-			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=279O8JIA0RYNZFGK1ID0CBMLV3P05D';
-			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2J2GSCWY2AOS5XFSWTFOPQSCODK11V';
-			// Andrew Brown
-			//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=2PBXCNHMVHVKKX4AS9T7CJ7DNYW130';
+				// Amicus Labs
+				//document.location.href='https://www.mturk.com/mturk/previewandaccept?groupId=25M5K4F0OHOZUIXOFXF2U92HGJX21C';
 		}
 	}
 }

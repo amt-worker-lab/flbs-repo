@@ -608,9 +608,24 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 						"(function() {console.log('green light!');var link = document.createElement('link');link.type = 'image/x-icon';link.rel = 'icon';link.href='data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADs7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/93d3f+Tk5P/YmJi/z4+Pv8jIyP/Dg4O/w4ODv8ODg7/Dg4O/x8fH/89PT3/YmJi/6enp//m5ub/7Ozs/5aWlv8MDAz/IyMj/2BgYP+JiYn/oaGh/7a2tv+9vb3/vb29/7Kysv+YmJj/fn5+/2BgYP8oKCj/GBgY/7S0tP8zMzP/w8PD/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/7S0tP89PT3/YmJi/9PT0//s7Oz/7Ozs/4mJif/s7Oz/7Ozs/9PT0/+YmJj/7Ozs/+zs7P+6urr/u7u7/+zs7P/Z2dn/bW1t/+Li4v+0tLT/7Ozs/+zs7P9eXl7/0tLS/+zs7P/s7Oz/PT09/+Tk5P/s7Oz/5ubm/0pKSv/s7Oz/v7+//+Dg4P/s7Oz/7Ozs/+zs7P/s7Oz/mJiY/3l5ef/s7Oz/7Ozs/21tbf+JiYn/7Ozs/+zs7P9GRkb/ysrK/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/4uLi/9lZWX/7Ozs/+zs7P+Pj4//S0tL/+zs7P/s7Oz/OTk5/7i4uP/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/9fX1/8WFhb/urq6/+zs7P/s7Oz/TU1N/2JiYv/s7Oz/mpqa/yMjI//q6ur/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P9ERET/a2tr/+zs7P/s7Oz/mJiY/wcHB//IyMj/0tLS/xISEv+6urr/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/FxcX/ISEh/+bm5v/s7Oz/zs7O/wsLC/+IiIj/7Ozs/3Jycv9tbW3/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/uLi4/09PT//s7Oz/7Ozs/2NjY/9AQED/7Ozs/+zs7P9lZWX/oaGh/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+rq6v89PT3/7Ozs/+zs7P9KSkr/j4+P/+zs7P/s7Oz/tLS0/3Jycv/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/lZWV/8XFxf/s7Oz/goKC/3R0dP/s7Oz/7Ozs/+zs7P9vb2//7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/g4OD/7Ozs/9/f3/9GRkb/7Ozs/+zs7P/s7Oz/39/f/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/jY2N/9fX1//s7Oz/7Ozs/+zs7P/s7Oz/7Ozs/+zs7P/s7Oz/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';document.getElementsByTagName('head')[0].appendChild(link);})();"
 					});
 	}
+	// jumpToCaptchaTab_returnToWork
+	if (request.jumpToCaptchaTab_returnToWork) {
+		if (JumpToCaptcha && JumpToCaptcha.jump_to_id) {
+			chrome.tabs.update(JumpToCaptcha.jump_to_id, {active: true});
+			JumpToCaptcha.jump_to_id = null;			// Reset to null.
+			JumpToCaptcha.jump_to_captcha_id = null;	// Reset to null.
+		}
+	}
 	// jumpToCaptchaTab
 	if (request.jumpToCaptchaTab) {
-		
+		JumpToCaptcha.jump_to_captcha_id = sender.tab.id;
+		chrome.tabs.query({active: true}, function (tab) { // array of Tab
+			for (var i in tab) { // There is only one active tab, so only one element in this array!
+				JumpToCaptcha.jump_to_id = tab[i].id;
+			}
+			chrome.tabs.update(JumpToCaptcha.jump_to_captcha_id, {active: true});
+		})
+
 	}
 	//shiftFarLeft
 	if(request.shiftFarLeft) {
@@ -1327,6 +1342,13 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 
 
 
+/**
+ * JumpToCaptcha
+ */
+var JumpToCaptcha = {
+	jump_to_id: null,
+	jump_to_captcha_id: null,
+}
 /**
  * CAPTCHA_tab_queue
  *
