@@ -17375,7 +17375,7 @@ function AMT___checkCaptchaStatus() {
 		// a better chance to be loaded upon arrival.
 		if (!localStorage['mt_captcha'] || localStorage['mt_captcha'] == 0) {
 			if (AMT__Global_Vars.scriptVars['JumpToCaptchas'] == '1') {
-				setTimeout(function() { 
+				setTimeout(function() {
 					chrome.extension.sendRequest({
 							jumpToCaptchaTab: true
 						},

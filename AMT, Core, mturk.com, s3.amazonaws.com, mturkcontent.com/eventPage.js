@@ -609,9 +609,27 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 					});
 	}
 	// jumpToCaptchaTab_returnToWork
+	// It must be at least 10 seconds since last captcha was solved.
+	// However, this does not account for when false solving occurs.
+	// Note that "false solving" is eg browsing many different parts of
+	// AMT after a captcha has appeared. In this case the user is kicked
+	// back to the work tab "falsely" and on the next captcha will be
+	// returned to fill it in.
 	if (request.jumpToCaptchaTab_returnToWork) {
-		if (JumpToCaptcha && JumpToCaptcha.jump_to_id) {
+		if (JumpToCaptcha &&
+			JumpToCaptcha.jump_to_id &&
+				(
+				JumpToCaptcha.solveTime == null ||
+				new Date().getTime() - JumpToCaptcha.solveTime > 10000
+				)
+			) {
+			
+			// First, set a timestamp so that it is possible to know the
+			// exact time when it was solved.
+			JumpToCaptcha.solveTime = new Date().getTime();
+			// Now return to last tab...
 			chrome.tabs.update(JumpToCaptcha.jump_to_id, {active: true});
+			// And reset these...
 			JumpToCaptcha.jump_to_id = null;			// Reset to null.
 			JumpToCaptcha.jump_to_captcha_id = null;	// Reset to null.
 		}
@@ -1348,6 +1366,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
 var JumpToCaptcha = {
 	jump_to_id: null,
 	jump_to_captcha_id: null,
+	solveTime: null,
 }
 /**
  * CAPTCHA_tab_queue
