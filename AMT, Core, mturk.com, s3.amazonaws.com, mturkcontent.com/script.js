@@ -2672,6 +2672,81 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 		return;
 	}
+	// Mech Turker
+	// Find the title and company name
+	//
+	//
+	s = '<li>Scroll to the Experience section of the LinkedIn profile page<span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">.</span></li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,hr {margin:0;padding:0;font-size:12px;font-family: Verdana, Geneva, sans-serif !important;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText,
+				q: [
+					document.getElementById('title'),
+					document.getElementById('company'),
+				]
+			}
+			// AMT___addUserDecision
+			AMT___addUserDecision('MechTurker,Aug19,2016', function() {
+					return o.u;
+				},
+				['Id(title)','Id(company)']
+			)
+			new AMT___site_scrapes().scrape({
+				site: 'LINKEDIN_PROFILE',
+				url: o.u,
+				callback_function: function(options) {
+					console.log(options);
+					var n = options.response.vars;
+					console.log(n);
+					var exp = n.result.experience;
+					for (var i in exp) {
+						o.q[1].value = exp[i].comp_name.trim();
+						o.q[0].value = exp[i].title.trim();
+						if (o.q[0].value.length > 2 && 
+							o.q[1].value.length > 2 && 
+							o.q[0].value != 'null' && o.q[0].value != 'undefined' &&
+							o.q[1].value != 'null' && o.q[1].value != 'undefined'
+							)
+							{
+							AMT___recordAndSubmit();
+							//doSubmit
+						}
+						return; // Quit
+						//~ var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
+						//~ dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
+						//~ dx.headline = exp[i].headline;
+						//~ dx.purl = options.url;
+						//~ dx.innerHTML = 
+							//~ (dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
+						//~ dvl.appendChild(dx);
+						//~ dx.onclick = function() {
+							//~ var x = this.headline.split(':');
+							//~ o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
+							//~ o.q[1].value = this.purl;
+							//~ // try auto...
+							//~ var x = x[0].clean_str_to_auto();
+							//~ for (var i in o.q[2].options) {
+								//~ var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
+								//~ if (x == y && x.length >=3) { // Must be at least 3 chars.
+									//~ o.q[2].value = o.q[2].options[i].value;
+									//~ o.q[2].options[i].style.backgroundColor = 'LightGreen';
+									//~ break;
+								//~ }
+							//~ }
+						//~ }
+					}
+				}
+			});
+		}
+		new run().f();
+		return; 
+	}
 	// Web Test
 	// (Fork Gerry Gorman (Fork BOE / Del Jones))
 	// (Latest linkedin.com, i.e. SP + logged out LinkedIn profile scrape)

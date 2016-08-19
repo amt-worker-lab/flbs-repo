@@ -5824,26 +5824,21 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 	 * xhr_get
 	 */
 	function xhr_get() {
-		
+		//
 		var xwdc = {
 			URL: opts.url,
 			host: 'http://' + AMT__Global_Vars.scriptVars['Server Location'], // Adds http:// !
 			success_callback: function(options) { // options.response[responseText, status, ...]
-				
 				var rs = options.response.responseText;
-				
 				// not 200 response.status
 				if (options.response.status > 200) {
 					console.log('RESPONSE!:'+options.response.status);
 				}
-				
 				opts.response = options.response;
-				
 				if (!opts.tmp_callback(rs)) {
 					console.log('Returned False');
 					return;
 				}
-				
 				// Callback final
 				opts.callback_function(opts);
 			},
@@ -5854,7 +5849,6 @@ AMT___site_scrapes.prototype.scrape = function(options_object) {
 				return true; // Always return true.
 			}
 		}
-		
 		// Perform request
 		//
 		//
@@ -6977,7 +6971,6 @@ http%3A%2F%2Fdeancdawson%2Ecom
 		if (!exp) {
 			 // do nothing
 		} else {
-			//~ var p = exp.getElementsByClassName('position');
 			var p = exp.getElementsByClassName('editable-item section-item');
 			if (!p || !p.length) {
 				var p = exp.getElementsByClassName('position');
