@@ -92948,8 +92948,9 @@ qatar,80
 				// Remove any unnecessary characters. I.e., typos.
 				this.value = this.value.replace(/[^a-z0-9]/gi, '');
 				// Length >= 6?
-				if (this.value.length > 6) {
-					this.value = this.value.substr(0, 6); // Index, how many.
+				if (this.value.length >= 5) {
+				//~ if (this.value.length > 6) {
+					//~ this.value = this.value.substr(0, 6); // Index, how many.
 					this.blur(); // No more focus.
 					dvlottery_2(); // Go to 4.
 				} else if (this.value.length == 6) {
@@ -92994,7 +92995,9 @@ qatar,80
 				d2.innerText = 'Loading CAPTCHA...';
 				// ...
 				var opts = {
-					url: 'https://www.dvlottery.state.gov/ESC/Secure/StatusCheck.aspx',
+					//~ url: 'https://www.dvlottery.state.gov/ESC/Secure/StatusCheck.aspx',
+					//~ url: 'https://www.dvlottery.state.gov/ESC/(S(oupq2o51zo3i5w315gj414a5))/CheckStatus.aspx',
+					url: 'https://www.dvlottery.state.gov/ESC//CheckStatus.aspx', //?
 					do_not_save_to_file: true,
 					cookie_filename: o.cookie_filename,
 					display_curl_info: true
@@ -93027,13 +93030,14 @@ qatar,80
 								rs: rs
 							}
 						} else { // Error?
-							return;
+							//return;
 						}
 						
 						//
 						// https://www.dvlottery.state.gov/ESC/(S(fbhbv0qk0wff1ihptgvpw51m))/Secure/
 						// e.g. BotDetectCaptcha.ashx?get=image&amp;c=c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30&amp;t=1bff9b5cd4c54d27a6e27c6681307318&amp;s=ouj9qoh62KODh2PnjcfMEy0d%2fb71OOQypZhOf1JRrjzsA%2bcb035v9w6qyi7D9JjRsg4ytmJXGXKZoYHmDtQlNw%3d%3d
-						var reg = /<img class="LBD_CaptchaImage" id="c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30_CaptchaImage" src="([^"]+)" alt="CAPTCHA" \/>/.exec(rs);
+						// OLD // var reg = /<img class="LBD_CaptchaImage" id="c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30_CaptchaImage" src="([^"]+)" alt="CAPTCHA" \/>/.exec(rs);
+						var reg = /<img class="LBD_CaptchaImage" id="c_checkstatus_uccaptcha30_CaptchaImage" src="([^"]+)" alt="CAPTCHA" \/>/.exec(rs);
 						if (reg) {
 							console.log(reg);
 							reg = __js_clean_html_str(reg[1]);
@@ -93082,29 +93086,55 @@ qatar,80
 					vsg:''
 				}
 				// VIEWSTATE
-				var reg = /id="__VIEWSTATE" value="([^"]+)"/.exec(rs);
+				var reg = /id="__VIEWSTATE" value="([^"]*)"/.exec(rs);
 				if (!reg) {
 					err();
 				}
 				v.vs = __js_clean_html_str(reg[1]);
 				// EVENTVALIDATION
-				var reg = /id="__EVENTVALIDATION" value="([^"]+)"/.exec(rs);
+				var reg = /id="__EVENTVALIDATION" value="([^"]*)"/.exec(rs);
 				if (!reg) {
 					err();
 				}
 				v.ev = __js_clean_html_str(reg[1]);
-				// VIEWSTATEGENERATOR, e.g. "63A28BC0"
-				var reg = /id="__VIEWSTATEGENERATOR" value="([^"]+)"/.exec(rs);
+				// __EVENTTARGET & __EVENTARGUMENT always empty.
+				//~ // __EVENTTARGET
+				//~ var reg = /id="__EVENTTARGET" value="([^"]*)"/.exec(rs);
+				//~ if (!reg) {
+					//~ err();
+				//~ }
+				//~ v.et = __js_clean_html_str(reg[1]);
+				//~ // __EVENTARGUMENT
+				//~ var reg = /id="__EVENTARGUMENT" value="([^"]*)"/.exec(rs);
+				//~ if (!reg) {
+					//~ err();
+				//~ }
+				//~ v.ea = __js_clean_html_str(reg[1]);
+				//~ // VIEWSTATEGENERATOR, e.g. "63A28BC0"
+				//~ var reg = /id="__VIEWSTATEGENERATOR" value="([^"]+)"/.exec(rs);
+				//~ if (!reg) {
+					//~ err();
+				//~ }
+				//~ v.vsg = __js_clean_html_str(reg[1]);
+				// 
+				var reg = /id="LBD_VCID_c_checkstatus_uccaptcha30" value="([^"]+)"/.exec(rs);
 				if (!reg) {
 					err();
 				}
-				v.vsg = __js_clean_html_str(reg[1]);
-				// LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30, e.g. "c8719fa771454dfeb229fa9e52038082"
-				var reg = /id="LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30" value="([^"]+)"/.exec(rs);
+				v.lbd_vcid = __js_clean_html_str(reg[1]);
+				// 
+				var reg = /id="LBD_BackWorkaround_c_checkstatus_uccaptcha30" value="([^"]+)"/.exec(rs);
 				if (!reg) {
 					err();
 				}
-				v.lbd = __js_clean_html_str(reg[1]);
+				v.lbd_bw = __js_clean_html_str(reg[1]);
+				// old ............
+				//~ // LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30, e.g. "c8719fa771454dfeb229fa9e52038082"
+				//~ var reg = /id="LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30" value="([^"]+)"/.exec(rs);
+				//~ if (!reg) {
+					//~ err();
+				//~ }
+				//~ v.lbd = __js_clean_html_str(reg[1]);
 				
 				return v;
 			}
@@ -93134,17 +93164,48 @@ qatar,80
 					"__EVENTTARGET":			'',
 					"__EVENTARGUMENT":			'',
 					"__VIEWSTATE":				encodeURIComponent(v.vs), // [GET THIS]
-					"__VIEWSTATEGENERATOR":		encodeURIComponent(v.vsg),// [GET THIS]
+					"__EVENTVALIDATION":		encodeURIComponent(v.ev),// [GET THIS]
 					"__EVENTVALIDATION":		encodeURIComponent(v.ev)  // [GET THIS]
+					
+					//~ "__LASTFOCUS":				'',
+					//~ "__EVENTTARGET":			'',
+					//~ "__EVENTARGUMENT":			'',
+					//~ "__VIEWSTATE":				encodeURIComponent(v.vs), // [GET THIS]
+					//~ "__VIEWSTATEGENERATOR":		encodeURIComponent(v.vsg),// [GET THIS]
+					//~ "__EVENTVALIDATION":		encodeURIComponent(v.ev)  // [GET THIS]
 				};
 				var others = [
-					[encodeURIComponent("ctl00$ContentPlaceHolder$ucQ_EntrantInfo$txtCN"),						encodeURIComponent(o.conf)],
-					[encodeURIComponent("ctl00$ContentPlaceHolder$ucQ_EntrantInfo$grpLast"),					'rbLastName'],
-					[encodeURIComponent("ctl00$ContentPlaceHolder$ucQ_EntrantInfo$txtLastName"),				encodeURIComponent(o.name)],
-					[encodeURIComponent("ctl00$ContentPlaceHolder$ucQ_EntrantInfo$txtYOB"),						encodeURIComponent(o.dob)],
-					[encodeURIComponent("LBD_VCID_c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30"),	encodeURIComponent(v.lbd)],
-					[encodeURIComponent("ctl00$ContentPlaceHolder$txtCodeInput"),								encodeURIComponent(d1.value)],
-					[encodeURIComponent("ctl00$ContentPlaceHolder$btnCSubmit"),									encodeURIComponent('Submit')]
+					[
+					encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$txtCN"),
+					encodeURIComponent(o.conf)
+					],
+					//~ [
+					//~ encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$cbNoLastName"),
+					//~ //////'rbLastName'
+					//~ ],
+					[
+					encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$txtLastName"),
+					encodeURIComponent(o.name)
+					],
+					[
+					encodeURIComponent("ctl00$mainCPH$ucEntrantInfo$txtYOB"),
+					encodeURIComponent(o.dob)
+					],
+					[
+					encodeURIComponent("LBD_VCID_c_checkstatus_uccaptcha30"),
+					encodeURIComponent(v.lbd_vcid)
+					],
+					[
+					encodeURIComponent("LBD_BackWorkaround_c_checkstatus_uccaptcha30"),								encodeURIComponent(v.lbd_bw)
+					],
+					[
+					encodeURIComponent("ctl00$mainCPH$txtCodeInput"),
+					encodeURIComponent(d1.value)
+					],
+					[
+					encodeURIComponent("ctl00$mainCPH$btnCSubmit"),
+					encodeURIComponent('Submit')
+					]
 				];
 				for (var i in others) {
 					data[ others[i][0] ] = others[i][1];
@@ -93214,17 +93275,18 @@ qatar,80
 							o.q[0].checked = true;
 							o.q[1].checked = false;
 							if (o.q[2].value != '') doSubmit();
-						} else {
-							d2.style.border = '2px solid blue';
+							return;
 						}
 						
-						//~ document.getElementById('submitButton').focus();
+						// Bad search!
+						// "The information entered is not valid."
 						
-						//~ // Set tmprs. This is for ncua_4().
-						//~ o.tmprs = rs;
-						//~ 
-						//~ // Third stage.
-						//~ ncua_3(rs);
+
+						// If still here then selected?
+						// Need to test this ~~
+						// 
+						d2.style.border = '8px solid blue';
+						d2.innerText = 'SELECTED???';
 					}
 				});
 			}

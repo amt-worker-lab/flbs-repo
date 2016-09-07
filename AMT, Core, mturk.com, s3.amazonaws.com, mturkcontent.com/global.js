@@ -2601,7 +2601,7 @@ function setScriptVarFromWriteQueue(obj) {
 
 AMT___core_factory.prototype.iframe2parent__postMessage = function(options) {
 	
-	//~ console.log(options);
+	console.log(options);
 	console.log('post message testing:');
 	parent.postMessage({
 		action: options.action,
