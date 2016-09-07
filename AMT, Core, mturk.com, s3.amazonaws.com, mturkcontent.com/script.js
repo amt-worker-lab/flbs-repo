@@ -49,35 +49,45 @@ function MT__RUN() {
 			}
 			o.q[0].value = '';
 			// XHR
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: o.u,
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						// do NA
-						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
-							//~ doNA();
-						document.body.style.backgroundColor = 'blue';
-						return false;
+			r();
+			function r() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: o.u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							// do NA
+							//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+								//~ doNA();
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						// Do over if... Error message is...
+						if (rs.indexOf('Inventory statistic data has expired.') != -1) {
+							// console
+							console.log('Found: Inventory statistic data has expired." (Try Again)');
+							r();
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						var sbm = true; //  Submit test...
+						//var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var x = /This website is in top (\d+)% at PopAds\./.exec(rs);
+						if (x) {
+							o.q[0].value = x[1];
+							doSubmit();
+						} else {
+							document.body.style.backgroundColor = 'pink';
+						}
 					}
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						return false;
-					}
-					var sbm = true; //  Submit test...
-					//var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var x = /This website is in top (\d+)% at PopAds\./.exec(rs);
-					if (x) {
-						o.q[0].value = x[1];
-						doSubmit();
-					} else {
-						document.body.style.backgroundColor = 'pink';
-					}
-				}
-			});
+				});
+			}
 		}
 		new run().f();
 	}
