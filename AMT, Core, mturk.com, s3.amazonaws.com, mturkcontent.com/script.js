@@ -25,7 +25,109 @@ function MT__RUN() {
 	//
 	// Global vars...
 	var s, s2, s3;
+	var ih = document.body.innerHTML; // ...
 	
+	// mike onghai
+	// Find the Percentile # of a given Website ID
+	//
+	// 
+	s = '	<li style="font-size: 0.9em;">Log in as looksmart with the&nbsp;password is looker1001<span style="font-size: 0.9em; line-height: 1.6em;">&nbsp;</span></li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			var x = /<p>Copy this url \(to a browser tab url\) (https:\/\/www\.popads\.net\/traffics\/website\/\d+)&nbsp;<\/p>/.exec(ih)[1];
+			var o = {
+				u: x,
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			o.q[0].value = '';
+			// XHR
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						// do NA
+						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+							//~ doNA();
+						document.body.style.backgroundColor = 'blue';
+						return false;
+					}
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var sbm = true; //  Submit test...
+					//var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var x = /This website is in top (\d+)% at PopAds\./.exec(rs);
+					if (x) {
+						o.q[0].value = x[1];
+						//~ doSubmit();
+					} else {
+						document.body.style.backgroundColor = 'pink';
+					}
+					
+					
+					// eg 190.000
+					var x = /<li>[\r\n\t\s]+<span class="nombre">[\r\n\t\s]+<i class="licon licon-ficha_precio"><\/i>Precio Venta[\r\n\t\s]+<\/span>[\r\n\t\s]+<span class="valor" > *U*\$S* *([\d\.,]+)<\/span>/.exec(rs);
+					if (x) {
+						o.q[0].value = x[1].trim();
+					} else {
+						sbm = false;
+					}
+					// eg 67
+					var x = /<span class="nombre"><i class="licon licon-superficie_total"><\/i>([\d,\.]+)<small>m&#178;<\/small> Superficie total<\/span>/.exec(rs);
+					if (x) {
+						o.q[1].value = x[1].trim();
+					} else {
+						sbm = false;
+					}
+					// eg 3
+					var x = /<span class="nombre"><i class="licon licon-ambientes"><\/i>([\d,\.]+) Ambientes?<\/span>/.exec(rs);
+					if (x) {
+						o.q[2].value = x[1].trim();
+					} else {
+						sbm = false;
+					}
+					// eg 1
+					var x = /<span class="nombre"><i class="licon licon-banos"><\/i>([\d,\.]+) Baños?<\/span>/.exec(rs);
+					if (x) {
+						o.q[3].value = x[1].trim();
+					} else {
+						if (rs.indexOf('licon-banos') != -1) // Must not have word "Baño"?? No actually: licon-banos
+							sbm = false;
+						else
+							o.q[3].value = 'NA';
+					}
+					// Use dom
+					// eg 190.000
+					var x = dom.getElementById('go_to_map');
+					if (x) {
+						x = x.innerText.replace(/\s+/g, ' ').trim();
+						o.q[4].value = x;
+						if (x.length < 4) sbm = false;
+					} else {
+						//sbm = false;
+						o.q[4].value = 'NA';
+					}
+					if (sbm) {
+						doSubmit();
+					}
+				}
+			});
+		}
+		new run().f();
+	}
 	// Rolf Middendorp (RM, R M)
 	// Copy and paste information from website
 	//
