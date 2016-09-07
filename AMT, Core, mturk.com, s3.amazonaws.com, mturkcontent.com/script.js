@@ -93268,6 +93268,19 @@ qatar,80
 							o.q[2].value = x.url;
 						}
 						
+						// 
+						//
+						if (rs.indexOf('Case Number:') != -1) {
+							d2.style.backgroundColor = 'LightGreen';
+							var dom = new DOMParser().parseFromString(rs, 'text/html');
+							o.q[3].value = dom.getElementById('lblLRN1').value;
+							// Check more than one match of "lblLRN1" on page?
+							o.q[1].checked = true;
+							// Stop here for now... 
+							// Todo: Test that this works...
+							return;
+						}
+						
 						// Not selected
 						var notsel = 'Based on the information provided, the Entry <b>HAS NOT BEEN SELECTED</b> for further';
 						if (rs.indexOf(notsel) != -1) {
@@ -93280,8 +93293,8 @@ qatar,80
 						
 						// Bad search!
 						// "The information entered is not valid."
+						// Todo: Fill this in... With...
 						
-
 						// If still here then selected?
 						// Need to test this ~~
 						// 
