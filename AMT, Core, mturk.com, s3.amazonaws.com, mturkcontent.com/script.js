@@ -92359,7 +92359,6 @@ qatar,80
 					em3(); // Go to 4.
 				} else if (e.keyCode == 13) {
 					//~ this.blur(); // No more focus.
-					//~ dvlottery_2(); // Go to 4.
 				}
 			}
 			d3b.value = o.nobj.l;
@@ -92439,31 +92438,7 @@ qatar,80
 						o.final_rs = rs;
 						// Get image
 						em2();
-						//~ // Image
-						//~ //
-						//~ var reg = /<img class="LBD_CaptchaImage" id="c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30_CaptchaImage" src="([^"]+)" alt="CAPTCHA" \/>/.exec(rs);
-						//~ if (reg) {console.log(reg);
-							//~ reg = __js_clean_html_str(reg[1]);
-							//~ var src = url.replace(/\/[^\/]+$/, '/')+reg;
-							//~ 
-							//~ var opts = {
-								//~ url: src,
-								//~ do_not_save_to_file: true,
-								//~ cookie_filename: o.cookie_filename
-							//~ }
-							//~ opts = JSON.stringify(opts);
-							//~ var u = AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=&AMT__output_html_from_URL__options=' + encodeURIComponent(opts);
-							//~ o.im.src = u;
-							//~ 
-							//~ AMT___POPUP___PROXY_REDACTED_ + '/mturk/util.php?AMT__output_html_from_URL=' + src;
-							//~ o.im.src = src;
-							//~ o.im.src = url.replace(/\/[^\/]+$/, '/')+reg;
-							//~ o.im.src = 'https://www.dvlottery.state.gov/ESC/Secure/'+reg;
-						//~ }
-						//~ 
-						//~ //
-						//~ o.final_rs = rs;
-						//~ em2();
+						
 					}
 				});
 			}
@@ -92917,7 +92892,8 @@ qatar,80
 	// David Camacho
 	// Get results for visa lottery participants.
 	//
-	s='<p><font size="2">1. </font><font size="2">Go to&nbsp;</font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
+	//~ s='<p><font size="2">1. </font><font size="2">Go to&nbsp;</font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
+	s='<p><span style="font-family:verdana,geneva,sans-serif;"><font size="2">1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
 	if (ih.indexOf(s) != -1 && 1 == 1) {
 		var run = function() {};
 		run.prototype.f = function() {
@@ -93050,13 +93026,16 @@ qatar,80
 								curlobj: x,
 								rs: rs
 							}
+						} else { // Error?
+							return;
 						}
 						
 						//
-						//https://www.dvlottery.state.gov/ESC/(S(fbhbv0qk0wff1ihptgvpw51m))/Secure/
+						// https://www.dvlottery.state.gov/ESC/(S(fbhbv0qk0wff1ihptgvpw51m))/Secure/
 						// e.g. BotDetectCaptcha.ashx?get=image&amp;c=c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30&amp;t=1bff9b5cd4c54d27a6e27c6681307318&amp;s=ouj9qoh62KODh2PnjcfMEy0d%2fb71OOQypZhOf1JRrjzsA%2bcb035v9w6qyi7D9JjRsg4ytmJXGXKZoYHmDtQlNw%3d%3d
 						var reg = /<img class="LBD_CaptchaImage" id="c_secure_statuscheck_ctl00_contentplaceholder_uccaptcha30_CaptchaImage" src="([^"]+)" alt="CAPTCHA" \/>/.exec(rs);
-						if (reg) {console.log(reg);
+						if (reg) {
+							console.log(reg);
 							reg = __js_clean_html_str(reg[1]);
 							var src = url.replace(/\/[^\/]+$/, '/')+reg;
 							
