@@ -72,56 +72,9 @@ function MT__RUN() {
 					var x = /This website is in top (\d+)% at PopAds\./.exec(rs);
 					if (x) {
 						o.q[0].value = x[1];
-						//~ doSubmit();
+						doSubmit();
 					} else {
 						document.body.style.backgroundColor = 'pink';
-					}
-					
-					
-					// eg 190.000
-					var x = /<li>[\r\n\t\s]+<span class="nombre">[\r\n\t\s]+<i class="licon licon-ficha_precio"><\/i>Precio Venta[\r\n\t\s]+<\/span>[\r\n\t\s]+<span class="valor" > *U*\$S* *([\d\.,]+)<\/span>/.exec(rs);
-					if (x) {
-						o.q[0].value = x[1].trim();
-					} else {
-						sbm = false;
-					}
-					// eg 67
-					var x = /<span class="nombre"><i class="licon licon-superficie_total"><\/i>([\d,\.]+)<small>m&#178;<\/small> Superficie total<\/span>/.exec(rs);
-					if (x) {
-						o.q[1].value = x[1].trim();
-					} else {
-						sbm = false;
-					}
-					// eg 3
-					var x = /<span class="nombre"><i class="licon licon-ambientes"><\/i>([\d,\.]+) Ambientes?<\/span>/.exec(rs);
-					if (x) {
-						o.q[2].value = x[1].trim();
-					} else {
-						sbm = false;
-					}
-					// eg 1
-					var x = /<span class="nombre"><i class="licon licon-banos"><\/i>([\d,\.]+) Baños?<\/span>/.exec(rs);
-					if (x) {
-						o.q[3].value = x[1].trim();
-					} else {
-						if (rs.indexOf('licon-banos') != -1) // Must not have word "Baño"?? No actually: licon-banos
-							sbm = false;
-						else
-							o.q[3].value = 'NA';
-					}
-					// Use dom
-					// eg 190.000
-					var x = dom.getElementById('go_to_map');
-					if (x) {
-						x = x.innerText.replace(/\s+/g, ' ').trim();
-						o.q[4].value = x;
-						if (x.length < 4) sbm = false;
-					} else {
-						//sbm = false;
-						o.q[4].value = 'NA';
-					}
-					if (sbm) {
-						doSubmit();
 					}
 				}
 			});
