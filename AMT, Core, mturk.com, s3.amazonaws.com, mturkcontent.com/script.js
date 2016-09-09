@@ -19391,11 +19391,11 @@ Laurens Hammond, Chicago, Ill.**/
 	 */
 	// RRS
 	// Match a website's data to Amazon.com data
-	// 
+	// DO NOT DO THIS REQUESTER! THEY REJECTED 555 OF EMILY'S! AUG. 2016.
 	// 
 	s = '<li>Once inside the details page, make sure the image is the same as the one on the website link. &nbsp;Also check to see that the Title, By, and Option match. &nbsp;If they do then it is a match and record the ASIN.</li>';
 	if  (
-		ih.indexOf(s) != -1
+		ih.indexOf(s) != -1 && 0 == 1
 		)
 	{
 		var run = function() {};
