@@ -2739,7 +2739,7 @@ Laurens Hammond, Chicago, Ill.**/
 	}
 	// Mech Turker
 	// Find the title and company name
-	//
+	// (5 minute expiry
 	//
 	s = '<li>Scroll to the Experience section of the LinkedIn profile page<span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">.</span></li>';
 	if (ih.indexOf(s) != -1) {
@@ -2757,7 +2757,7 @@ Laurens Hammond, Chicago, Ill.**/
 				]
 			}
 			// AMT___addUserDecision
-			AMT___addUserDecision('MechTurker,Aug19,2016', function() {
+			AMT___addUserDecision('MechTurker,Sep13,2016', function() {
 					return o.u;
 				},
 				['Id(title)','Id(company)']
@@ -2779,32 +2779,13 @@ Laurens Hammond, Chicago, Ill.**/
 							o.q[1].value != 'null' && o.q[1].value != 'undefined'
 							)
 							{
-							AMT___recordAndSubmit();
+							setTimeout(function() {
+								AMT___recordAndSubmit();
+							}, 30000); // Try 30 seconds.
+							
 							//doSubmit
 						}
 						return; // Quit
-						//~ var dx = ''.div({style:'border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;'}); //background-color:#eee;
-						//~ dx.current = (exp[i].current_or_past == 'current-position') ? true : false;
-						//~ dx.headline = exp[i].headline;
-						//~ dx.purl = options.url;
-						//~ dx.innerHTML = 
-							//~ (dx.current ? 'C:' : 'P:') + bold_blue_black(exp[i].headline);//MT__bold(exp[i].headline, o.bold);
-						//~ dvl.appendChild(dx);
-						//~ dx.onclick = function() {
-							//~ var x = this.headline.split(':');
-							//~ o.q[0].value = x.slice(1).join(':').trim(); // Take after first ":" in case there is more than one
-							//~ o.q[1].value = this.purl;
-							//~ // try auto...
-							//~ var x = x[0].clean_str_to_auto();
-							//~ for (var i in o.q[2].options) {
-								//~ var y = o.q[2].options[i].innerText.trim().clean_str_to_auto();
-								//~ if (x == y && x.length >=3) { // Must be at least 3 chars.
-									//~ o.q[2].value = o.q[2].options[i].value;
-									//~ o.q[2].options[i].style.backgroundColor = 'LightGreen';
-									//~ break;
-								//~ }
-							//~ }
-						//~ }
 					}
 				}
 			});
