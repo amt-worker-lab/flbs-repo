@@ -2739,7 +2739,7 @@ Laurens Hammond, Chicago, Ill.**/
 	}
 	// Mech Turker
 	// Find the title and company name
-	// (5 minute expiry
+	// (5 minute expiry)
 	//
 	s = '<li>Scroll to the Experience section of the LinkedIn profile page<span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">.</span></li>';
 	if (ih.indexOf(s) != -1) {
@@ -2781,7 +2781,7 @@ Laurens Hammond, Chicago, Ill.**/
 							{
 							setTimeout(function() {
 								AMT___recordAndSubmit();
-							}, 30000); // Try 30 seconds.
+							}, 62000); // Try 1:02 minute.
 							
 							//doSubmit
 						}
