@@ -128263,8 +128263,8 @@ qatar,80
 				stateAbbr: null,
 				stateFull: null,
 				locn_plus_abbr_state: null,
-				metro: td[5].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
-				category: td[7].innerText.replace(/NULL/g, ' ').trim(),
+				//metro: td[5].innerText.replace(/NULL/g, ' ').replace(/ and surrounding areas/gi, '').trim(),
+				category: td[5].innerText.replace(/NULL/g, ' ').trim(),
 				boldArray: [],
 				addrArray: [],
 				q: [
@@ -128293,9 +128293,15 @@ qatar,80
 			}
 			//~ o.locn_plus_abbr_state = y.join(' ');
 			o.boldArray = o.comp.clean_string_to_array();
-			o.addrArray = o.locn.clean_string_to_array().concat(o.metro.clean_string_to_array()).concat(o.category.clean_string_to_array());
+			o.addrArray = o.locn.clean_string_to_array().concat(o.category.clean_string_to_array());
+			//~ o.addrArray = o.locn.clean_string_to_array().concat(o.metro.clean_string_to_array()).concat(o.category.clean_string_to_array());
 			if (o.stateAbbr != null) o.addrArray.push(o.stateAbbr);
 			console.log(o);
+			// Two Searches
+			o.x1 = o.comp + ' ' + o.locn;
+			o.x2 = o.comp + ' ' + o.locn_quote_state;
+			// Make this one more precise.
+			if (o.x1 == o.x2) o.x2 = '"'+o.comp + '" ' + o.locn_quote_state;
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -128317,11 +128323,11 @@ qatar,80
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
 				searches:[
-					o.comp + ' ' + o.locn,
-					o.comp + ' ' + o.locn_quote_state,
+					o.x1,
+					o.x2,
 					o.comp + ' ' +
 						(o.stateAbbr != null ? '"'+o.stateAbbr+'"' : o.locn) +
-						' ' + o.metro + ' ' + o.category,
+						' ' + o.category,
 				],
 				search_results: {
 					//~ use_domain_only: true,
