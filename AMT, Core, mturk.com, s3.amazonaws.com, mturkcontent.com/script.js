@@ -128002,7 +128002,7 @@ qatar,80
 	// Find the Website Address for Toy Products - Merchants
 	//
 	// 
-	var s = '<p><span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">We have a list of company names from the US, Canada and certain countries in the EU. We need your help to find their missing web address (URL).&nbsp;</span></p>';
+	var s = '<li>Include the full address, e.g. http://www.bibletoys.com/</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch, .gov, .edu, .au, .mil.</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -128016,6 +128016,8 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim(),
+				web: td[3].innerText.trim(),
+				catg: td[7].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				],
@@ -128040,19 +128042,18 @@ qatar,80
 				offset: 0 // offset top
 			});
 			// create_dashboard_find_url
-			var x = o.city+','+o.state+','+o.country+','+o.stateFull;
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
 				searches:[
 					o.comp,
 					'"' + o.comp + '"',
-					'"' + o.comp.split(' ').join('" "') + '"',
+					'"' + o.comp.split(' ').join('" "') + '" ' + (o.web != '' ? o.web + ' ' : '') + o.catg,
 				],
 				search_results: {
 					//~ use_domain_only: true,
 					bold: {
 						black: o.boldArray,
-						blue: o.addrArray,// o.address.clean_string_to_array(), // Too much...
+//						blue: o.addrArray,// o.address.clean_string_to_array(), // Too much...
 						//~ brown: o.addr_arr,
 					},
 					//~ url_modifier_callback: function(url) { // Add @ symbol
