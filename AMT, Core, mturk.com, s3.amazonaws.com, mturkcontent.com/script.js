@@ -83369,7 +83369,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1,d1b
+					d1, d1b
 				],
 				offset: 60 // offset top
 			});
@@ -83395,7 +83395,7 @@ Laurens Hammond, Chicago, Ill.**/
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
 			ef.mouseup__delete_range({
-				elements: [d2,d2b],
+				elements: [d2, d2b],
 				blur_element: true
 			});
 			// submitButton
@@ -83528,6 +83528,7 @@ Laurens Hammond, Chicago, Ill.**/
 					return;
 				}
 				d1.innerText = '';
+				d1b.innerText = '--';
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
@@ -83535,7 +83536,6 @@ Laurens Hammond, Chicago, Ill.**/
 				for (var i in b) {
 					// AUTO + CLEAN
 					b[i].name = yelp_clean_name(b[i].name);
-					
 					var fmt_address = '';
 					var fmt_address_match = '';
 					if (b[i].location && b[i].location.display_address && b[i].location.display_address.length) {
@@ -83703,179 +83703,73 @@ Laurens Hammond, Chicago, Ill.**/
 						//
 						out.innerHTML = '';
 						//
-						out.innerHTML = rs;return;
-						
-						//~ //
-						//~ var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
-						//~ var k;
-						//~ var num = 1;
-						//~ var auto_found = false;
-						//~ var addr_cln = '', ypnm_cln = '';
-						//~ while (k = rrslt.exec(rs)) {
-							//~ //
-							//~ k = k[1];
-							//~ var r;
-							//~ var ypurl;
-							//~ var ypnm;
-							//~ r = /<a class="biz-name" href="([^"]+)"[^>]*>((.|\s)*?(?=<\/a>|$)|$)/.exec(k);
-							//~ if (r) {
-								//~ ypurl = r[1].replace(/#[\d\D]+$/, '');
-								//~ // Spam / Ad
-								//~ if (ypurl.indexOf('/adredir?') == 0) {
-									//~ ypurl = /redirect_url=([^&$]+)/.exec(ypurl);
-									//~ if (!ypurl)
-										//~ return;
-									//~ ypurl = decodeURIComponent(ypurl[1]);
-									//~ continue; // SKIP HERE
-								//~ }
-								//~ if (ypurl.indexOf('http://www.yelp.com') != 0) {
-									//~ ypurl = 'http://www.yelp.com' + ypurl;
-								//~ }
-								//~ // Replace ?xx
-								//~ ypurl = ypurl.replace(/\?osq=[\d\D]*/, '');
-								//~ //..
-								//~ ypnm = r[2].replace(/<[^>]*>/g, ''); // Remove html tags (<span highlighted>, etc.)
-								//~ ypnm = yelp_clean_name(ypnm);
-								//~ ypnm_cln = ypnm.toLowerCase().replace(/[^a-z0-9]/gi, '');
-							//~ } else {
-								//~ //console.log(k);
-								//~ return;
-							//~ }
-							
-							//~ var ypcat = '';
-							//~ r = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/<[^>]+>/g, '');
-								//~ r = __js_clean_html_str(r);
-								//~ r = r.replace(/\s+/g, ' ').trim();
-								//~ ypcat = r;
-							//~ }
-							//~ //
-							//~ var yprtg = '';
-							//~ var yprtg_formatted = '';
-							//~ r = /<i class="star-img stars?[^"]+" title="([\d\.]+) stars? rating">/.exec(k);
-							//~ if (r) {
-								//~ r = r[1].trim();
-								//~ if (r == '-') r = '--';
-								//~ yprtg = yprtg_formatted = r;
-							//~ } else {
-								//~ yprtg = '--';
-								//~ yprtg_formatted = '<em style="zoom:2;">--</em>';
-							//~ }
-							//~ //
-							//~ var yprvw = '';
-							//~ var yprvw_formatted = '';
-							//~ r = /<span class="review-count rating-qualifier">[\r\n\t\s]+([\d,]+) reviews?[\r\n\t\s]+<\/span>/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ if (r == '-') r = '--';
-								//~ yprvw = yprvw_formatted = r;
-							//~ } else {
-								//~ yprvw = '--';
-								//~ yprvw_formatted = '<em style="zoom:2;">--</em>';
-							//~ }
-							//~ //
-							//~ var ypprc = '';
-							//~ r = /<span class="business-attribute price-range">([\$£]+)/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.length; //$$ = 2 OR £
-								//~ if (r < 1 || r > 4)
-									//~ alert('$' + r.length);
-								//~ ypprc = r; // 1...4
-							//~ }
-							//~ //
-							//~ // Phone
-							//~ // e.g. (704) 536-6444
-							//~ var phone = '', phone_fmt = '';
-							//~ r = /<span class="biz-phone">[\r\n\t\s]+([^<]+)<\/span>/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/<[^>]*>/g, ' ');
-								//~ r = __js_clean_html_str(r).trim();
-								//~ phone = (r == '') ? '-' : r;
-								//~ console.log(phone);
-								//~ if (phone.replace(/[^\d]/g, '') == o.phone && o.phone.length > 4) {
-									//~ phone_fmt = '<em>'+phone+'</em>';
-								//~ } else {
-									//~ phone_fmt = phone;
-								//~ }
-							//~ } else {
-								//~ phone_fmt = '-';
-							//~ }
-							//~ // Addr
-							//~ var addr = '';
-							//~ r = /<address>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/address>/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/<[^>]*>/g, ' ');
-								//~ r = __js_clean_html_str(r);
-								//~ addr = r;
-								//~ addr_cln = r.toLowerCase().replace(/[^\w\d]/g, '');//replace(/ [\d\-]+$/, '').replace(/[ \-]/g, ''); // remove zip
-							//~ }
-							//~ // Complete addr
-							//~ addr = '<i>(' + addr +')</i>';
-							
-							//~ //Price str
-							//~ var p_str = '';
-							//~ if (ypprc != '') {
-								//~ for (var i = 0; i<ypprc; i++){
-									//~ p_str += '$';
-								//~ }
-							//~ } else {
-								//~ p_str = '-';
-							//~ }
-							
-							//~ //
-							//~ var d = document.createElement('div');
-							//~ d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-							//~ d.className = 'exe';
-							//~ d.ypurl = ypurl;
-							//~ d.yprtg = yprtg;
-							//~ d.yprvw = yprvw;
-							//~ out.appendChild(d);
-							//~ d.innerHTML = MT__bold(ypnm, o.bold_comp) + ' ' + MT__bold(addr, o.bold_addr) +'<br>'+
-								//~ // UNNECESSARY // '$:'+p_str+'<br>'+
-								//~ // UNNECESSARY //'RTG:'+yprtg_formatted+'<br>'+
-								//~ 'RVW:'+yprvw_formatted+'<br>'+
-								//~ // UNNECESSARY // 'P:'+phone_fmt+'<br>'+
-								//~ 'C:'+ypcat;
-							//~ d.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ if (this.yprtg == '--' || this.yprvw == '--') {
-									//~ this.style.backgroundColor = 'pink';
-								//~ }
-								//~ // NextTab
-								//~ new AMT___core_factory().nextTab();
-								//~ yp_profile(this);
-							//~ }
-							
-							//~ // Auto found?
-							//~ if  (
-								//~ !auto_found &&
-								//~ o.comp_cln == ypnm_cln &&
-								//~ o.addr_cln == addr_cln &&
-								//~ o.comp_cln.length > 4 &&
-								//~ o.addr_cln.length > 4
-								//~ )
-							//~ {
-								//~ d.click();
-								//~ auto_found = true;
-							//~ }
-						//~ }
-						//~ if (out.innerHTML != '') {
-							//~ var d = document.createElement('div');
-							//~ d.setAttribute('style','height:2000px;');
-							//~ out.appendChild(d);
-						//~ }
+						//~ out.innerHTML = rs;return;
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						var rg = dom.getElementsByClassName('regular-search-result');
+						for (var i=0; i<rg.length; i++) {
+							var u    = rg[i].getElementsByClassName('biz-name')[0];
+							var rvct = rg[i].getElementsByClassName('review-count');
+							var rtg  = /(\d\.\d) stars? rating/.exec(rg[i].innerHTML);
+							if (!rvct || rvct.length == 0) {
+								console.log(rg[i].innerHTML);
+								rvct = 'NA';
+							} else {
+								rvct = rvct[0].innerText.replace(/ reviews?/, '').trim();
+							}
+							if (!rtg || rtg.length == 0) {
+								console.log(rg[i].innerHTML);
+								rtg = 'NA';
+							} else {
+								rtg = rtg[1].replace(/\.0/, '');
+							}
+							// Div
+							var d = document.createElement('div');
+							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+							d.className = 'exe';
+							d.api_response = {
+								url: u.getAttribute('href'),
+								review_count: rvct,
+								rating: rtg
+							}
+							out.appendChild(d);
+							d.innerHTML =
+								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>' +
+								MT__bold(
+									dom.getElementsByTagName('address')[0].innerText.trim(),
+									o.bold_addr, {style: 'color:blue;'}
+								).bold_string+'<br>'+
+								'R:'+rvct;
+							d.onclick = function() {
+								this.style.backgroundColor = 'LightGreen';
+								console.log(this.api_response);
+								// NextTab
+								new AMT___core_factory().nextTab();
+								// Fill in details
+								var a = this.api_response;
+								o.q[1].value = 'https://www.yelp.com'+a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
+								o.q[2].value = a.review_count;
+								o.q[3].value = a.rating;
+								//~ o.q[4].value = a.categories;
+								// In order to get price range (q5) it is
+								// necessary to scrape the page!
+								this.chk_url = o.q[1].value;
+								yp_profile(this, true);
+							}
+						}
+						if (d1b.innerHTML != '') {
+							var d = document.createElement('div');
+							d.setAttribute('style','height:2000px;');
+							d1b.appendChild(d);
+						} else {
+							d1b.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+						}
 					}
 				});
 			}
 			// yp_profile
 			// http://www.yelp.com/biz/longhorn-steakhouse-enfield/review_feed/?start=0&sort_by=date_desc
 			//~ u = u + '/review_feed/?start=0&sort_by=date_desc'; // DESCENDING
-			function yp_profile(div) {
+			function yp_profile(div, getCategories) {
 				new AMT___requests_factory().xhr_with_disk_cache({
 					URL: div.chk_url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
@@ -83892,11 +83786,23 @@ Laurens Hammond, Chicago, Ill.**/
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						//~ div.response = options.response;//console.log(options);
-						//~ yp_profile_success(div);
 						var dom = new DOMParser().parseFromString(rs,'text/html');
+						// get catg?
+						if (getCategories) {
+							var x = dom.getElementsByClassName('category-str-list');
+							if (!x) {
+								o.q[4].value = 'NA';
+							} else {
+								o.q[4].value = x[0].innerText.trim().replace(/\s+/g, ' '); // Remove multi-spaces
+							}
+							// Also do isclosed
+							if (rs.indexOf('Yelpers report this location has closed') != -1) {
+								o.q[0].value = 'Y'; // This will in turn force all fields to NA on function:try_sbm();
+							} else {
+								o.q[0].value = 'N';
+							}
+						}
 						var x = dom.getElementsByClassName('business-attribute price-range');
-						console.log(x);
 						if (x.length) {
 							x = x[0].innerText.trim();
 							if (/^\$+$/.exec(x)) { // Is one or more $
