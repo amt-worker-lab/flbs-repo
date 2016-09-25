@@ -83548,7 +83548,7 @@ Laurens Hammond, Chicago, Ill.**/
 						var lfmt = [];
 						for (var j in l) {
 							lfmt.push(
-								MT__bold(l[j], o.bold_addr, {style: 'color:blue;text-decoration:underline;'}).bold_string
+								MT__bold(l[j], o.bold_addr, {style: 'color:blue;text-decoration:none;'}).bold_string
 							);
 							fmt_address_match += l[j];
 							// Old
