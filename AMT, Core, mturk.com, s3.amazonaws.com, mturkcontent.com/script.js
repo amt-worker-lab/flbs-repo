@@ -83264,7 +83264,7 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Becky "" (fork chios)
 	 * 
 	 */
-	// 
+	// Becky ""
 	// 
 	// 
 	// 
@@ -83281,7 +83281,7 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('em {font-weight:bold;zoom:2;}');
 			GM_addStyle('#mturk_form {zoom:0.6;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:40% !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:50% !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			//
 			var td = document.getElementsByTagName('td');
@@ -83307,6 +83307,10 @@ Laurens Hammond, Chicago, Ill.**/
 				]
 			}
 			//
+			for (var i in o.q) {
+				o.q[i].value = '';
+			}
+			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
 			//
@@ -83318,22 +83322,22 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ }
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1. setAttribute('style','position:absolute;top:160px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1. setAttribute('style','position:absolute;top:60px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1b.setAttribute('style','position:absolute;top:160px;left:50%;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;display:none;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
 			var d2  = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:20%;height:30px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:50%;height:30px;');
 			document.body.appendChild(d2);
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:20%;height:30px;');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:50%;height:30px;');
 			document.body.appendChild(d2b);
-			var d3b = document.createElement('input');
-			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:20%;height:30px;');
-			document.body.appendChild(d3b);
-			d3b.value = 'Incorrect address';
-			d3b.type = 'button';
+			//~ var d3b = document.createElement('input');
+			//~ d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
+			//~ document.body.appendChild(d3b);
+			//~ d3b.value = 'Incorrect address';
+			//~ d3b.type = 'button';
 			/*END ITEMS*/
 			
 			// innerHeight
@@ -83342,44 +83346,45 @@ Laurens Hammond, Chicago, Ill.**/
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b
+					d1
 				],
-				offset: 160 // offset top
+				offset: 60 // offset top
 			});
-			
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr;
 			//
 			d2.onblur = d2b.onblur = document.body.ondblclick = function() {
-				d2.value = d2.value.trim();
-				d2b.value = d2b.value.trim();
-				yelp();
+				//~ d2.value = d2.value.trim();
+				//~ d2b.value = d2b.value.trim();
+				//~ yelp();
 				//~ new AMT___core_factory().nextTab();
 				//~ yelp_search_snippet();
 			}
-			
-			d3b.onclick = function() {
-				document.getElementsByTagName('button')[0].click();
-				document.getElementsByName('reasons')[0].value = 'Incorrect address';
-				doSubmit();
-			}
-			
+			//
+			//~ d3b.onclick = function() {
+				//~ document.getElementsByTagName('button')[0].click();
+				//~ document.getElementsByName('reasons')[0].value = 'Incorrect address';
+				//~ doSubmit();
+			//~ }
+			//
 			var ef = new AMT___events_factory();
 			d2. addEventListener('keydown', ef.keydown__blur_field, true);
 			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
-			
 			// submitButton
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				o.q.value = o.q.value.trim();
-				if (o.q.value == '') return false;
-				this.style.backgroundColor = 'LightGreen';
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				document.body.style.backgroundColor = 'LightGreen';
 				doSubmit();
 				return false;
 			}
-			
 			// Init
 			yelp();
 			//~ yelp_search_snippet();
@@ -83388,7 +83393,27 @@ Laurens Hammond, Chicago, Ill.**/
 			 * 
 			 */
 			function try_sbm() {
-				
+				if (o.q[0].value != 'N') {
+					return false;
+				}
+				if (!/^https:\/\/www\.yelp\.com[\d\D]+/.exec(o.q[1].value)) {
+					return false;
+				}
+				if (/^\d+$/.exec(o.q[2].value)) {
+					return false;
+				}
+				if (/^\d+\.*\d*$/.exec(o.q[3].value)) {
+					return false;
+				}
+				if (o.q[3].value != 'N') {
+					return false;
+				}
+				if (o.q[4].value != 'N') {
+					return false;
+				}
+				if (o.q[5].value != 'N') {
+					return false;
+				}
 			}
 			/**
 			 * function yelp
@@ -83466,14 +83491,14 @@ Laurens Hammond, Chicago, Ill.**/
 				if (!rs.businesses || rs.businesses.length == 0) {
 					d1.innerText += '\n0 results';
 					// DO RIGHT
-					yelp_search_snippet();
+					//~ yelp_search_snippet();
 					return;
 				}
 				d1.innerText = '';
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
-				new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
+				//~ new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
 				for (var i in b) {
 					// AUTO + CLEAN
 					b[i].name = yelp_clean_name(b[i].name);
@@ -83485,18 +83510,18 @@ Laurens Hammond, Chicago, Ill.**/
 						if (l.length == 3) { // REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
 							l.splice(1, 1); // REMOVES array item #2 ([1,2,3])
 						}
-							//~ var dups = {}; // No duplicates!
 						var lfmt = [];
 						for (var j in l) {
-								//~ if (dups.hasOwnProperty( l[j] )) continue;
-								//~ dups[ l[j] ] = true;
-							lfmt.push( MT__bold(l[j], o.bold_addr) );
+							lfmt.push(
+								MT__bold(l[j], o.bold_addr, {style: 'color:blue;text-decoration:underline;'}).bold_string
+							);
 							fmt_address_match += l[j];
+							// Old
+							//~ lfmt.push( MT__bold(l[j], o.bold_addr) );
 						}
 						if (lfmt.length)
 							fmt_address = lfmt.join(',');
 					}
-					
 					// Number of bolds in address?
 					// Versus number of words
 					var nb_numwords = fmt_address.split(' ').length;
@@ -83508,7 +83533,7 @@ Laurens Hammond, Chicago, Ill.**/
 						found_close_enough_street = true;
 						console.log('close enough');
 					}
-					
+					// ...
 					var fmt_cat = [];
 					if (b[i].categories) {
 						var c = b[i].categories;
@@ -83533,22 +83558,25 @@ Laurens Hammond, Chicago, Ill.**/
 					d.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						console.log(this.api_response);
-						//~ // NextTab
-						//~ new AMT___core_factory().nextTab();
-						//~ yp_profile(this);
-						
+						// NextTab
+						new AMT___core_factory().nextTab();
+						// Fill in details
 						var a = this.api_response;
-						o.q[0].value = a.is_closed === false ? 'n' : 'y'; // If is_closed !== false then is_closed == true
+						o.q[0].value = a.is_closed === false ? 'N' : 'Y'; // If is_closed !== false then is_closed == true
 						o.q[1].value = a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
 						o.q[2].value = a.review_count;
-						o.q[3].value = a.review_count;
+						o.q[3].value = a.rating;
 						var x = [];
 						for (var i in a.categories) {
 							x.push(a.categories[i][0]);
 						}
 						o.q[4].value = x.join(', ');
-						o.q[5].value = x.join(', ');
-						try_sbm();
+							//o.q[5].value = x.join(', ');
+							//try_sbm();
+						// In order to get price range (q5) it is
+						// necessary to scrape the page!
+						this.chk_url = o.q[1].value;
+						yp_profile(this);
 					}
 					//
 					var ypnm_cln = b[i].name.clean_str_to_auto();
@@ -83588,233 +83616,12 @@ Laurens Hammond, Chicago, Ill.**/
 				return name;
 			}
 			
-			// function yelp_search_snippet
-			function yelp_search_snippet() {
-				var out = d1b;
-				u = 'http://www.yelp.com/search/snippet'+
-						'?find_desc='+encodeURIComponent(d2.value) +
-						'&find_loc='+ encodeURIComponent(d2b.value)+
-						//'&cflt=restaurants'+
-						'&parent_request_id=&request_origin=user';
-				
-				out.innerText = d2.value + '\n' + d2b.value;
-				
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: u,
-					onload: function (response) {
-						var rs = response.responseText;
-						
-						if (response.status != 200) return;
-						
-						// ...
-						rs = JSON.parse(rs);
-						var map = rs.search_map;
-						
-						if (rs.hasOwnProperty('search_exception') && rs.search_exception.indexOf('<h2>We\'ve found multiple locations matching your search.</h2>') != -1) {
-							out.innerText += '\n"We\'ve found multiple locations matching your search."';
-							return;
-						}
-						
-						rs = rs.search_results;
-						if (rs.indexOf('<div class="no-results">') != -1) {
-							out.innerText += '\n0';
-							return;
-						}
-						
-						out.innerHTML = '';
-						
-						var rrslt = /<h3 class="search-result-title">((.|\s)*?(?=<h3 class="search-result-title">|$)|$)/g;
-						var k;
-						var num = 1;
-						var auto_found = false;
-						var addr_cln = '', ypnm_cln = '';
-						while (k = rrslt.exec(rs)) {
-						
-							k = k[1];
-							//console.log(k);
-							
-							var r;
-							
-							var ypurl;
-							var ypnm;
-							r = /<a class="biz-name" href="([^"]+)"[^>]*>((.|\s)*?(?=<\/a>|$)|$)/.exec(k);
-							if (r) {
-								
-								ypurl = r[1].replace(/#[\d\D]+$/, '');
-								
-								// Spam / Ad
-								if (ypurl.indexOf('/adredir?') == 0) {
-									ypurl = /redirect_url=([^&$]+)/.exec(ypurl);
-									if (!ypurl)
-										return;
-									ypurl = decodeURIComponent(ypurl[1]);
-									continue; // SKIP HERE
-								}
-								
-								if (ypurl.indexOf('http://www.yelp.com') != 0) {
-									ypurl = 'http://www.yelp.com' + ypurl;
-								}
-								
-								// Replace ?xx
-								ypurl = ypurl.replace(/\?osq=[\d\D]*/, '');
-								
-								//..
-								ypnm = r[2].replace(/<[^>]*>/g, ''); // Remove html tags (<span highlighted>, etc.)
-								ypnm = yelp_clean_name(ypnm);
-								ypnm_cln = ypnm.toLowerCase().replace(/[^a-z0-9]/gi, '');
-							} else {
-								//console.log(k);
-								return;
-							}
-							
-							var ypcat = '';
-							r = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(k);
-							if (r) {
-								r = r[1];
-								r = r.replace(/<[^>]+>/g, '');
-								r = __js_clean_html_str(r);
-								r = r.replace(/\s+/g, ' ').trim();
-								ypcat = r;
-							}
-							//
-							var yprtg = '';
-							var yprtg_formatted = '';
-							r = /<i class="star-img stars?[^"]+" title="([\d\.]+) stars? rating">/.exec(k);
-							if (r) {
-								r = r[1].trim();
-								if (r == '-') r = '--';
-								yprtg = yprtg_formatted = r;
-							} else {
-								yprtg = '--';
-								yprtg_formatted = '<em style="zoom:2;">--</em>';
-							}
-							//
-							var yprvw = '';
-							var yprvw_formatted = '';
-							r = /<span class="review-count rating-qualifier">[\r\n\t\s]+([\d,]+) reviews?[\r\n\t\s]+<\/span>/.exec(k);
-							if (r) {
-								r = r[1];
-								if (r == '-') r = '--';
-								yprvw = yprvw_formatted = r;
-							} else {
-								yprvw = '--';
-								yprvw_formatted = '<em style="zoom:2;">--</em>';
-							}
-							//
-							var ypprc = '';
-							r = /<span class="business-attribute price-range">([\$£]+)/.exec(k);
-							if (r) {
-								r = r[1];
-								r = r.length; //$$ = 2 OR £
-								if (r < 1 || r > 4)
-									alert('$' + r.length);
-								ypprc = r; // 1...4
-							}
-							//
-							//~ var ypnhd = '';
-							//~ r = /<span class="neighborhood-str-list">([^<]+)<\/span>/.exec(k);
-							//~ if (r) {
-								//~ r = r[1];
-								//~ r = r.replace(/<[^>]+>/g, '');
-								//~ r = __js_clean_html_str(r);
-								//~ r = r.replace(/\s+/g, ' ').trim();
-								//~ ypnhd = r;
-							//~ }
-							// Phone
-							// e.g. (704) 536-6444
-							var phone = '', phone_fmt = '';
-							r = /<span class="biz-phone">[\r\n\t\s]+([^<]+)<\/span>/.exec(k);
-							if (r) {
-								r = r[1];
-								r = r.replace(/<[^>]*>/g, ' ');
-								r = __js_clean_html_str(r).trim();
-								phone = (r == '') ? '-' : r;
-								console.log(phone);
-								if (phone.replace(/[^\d]/g, '') == o.phone && o.phone.length > 4) {
-									phone_fmt = '<em>'+phone+'</em>';
-								} else {
-									phone_fmt = phone;
-								}
-							} else {
-								phone_fmt = '-';
-							}
-							// Addr
-							var addr = '';
-							r = /<address>[\r\n\t\s]+([^\r\n]+)[\r\n\t\s]+<\/address>/.exec(k);
-							if (r) {
-								r = r[1];
-								r = r.replace(/<[^>]*>/g, ' ');
-								r = __js_clean_html_str(r);
-								addr = r;
-								addr_cln = r.toLowerCase().replace(/[^\w\d]/g, '');//replace(/ [\d\-]+$/, '').replace(/[ \-]/g, ''); // remove zip
-							}
-							// Complete addr
-							addr = '<i>(' + addr +')</i>';
-							
-							//Price str
-							var p_str = '';
-							if (ypprc != '') {
-								for (var i = 0; i<ypprc; i++){
-									p_str += '$';
-								}
-							} else {
-								p_str = '-';
-							}
-							
-							//
-							var d = document.createElement('div');
-							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-							d.className = 'exe';
-							d.ypurl = ypurl;
-							d.yprtg = yprtg;
-							d.yprvw = yprvw;
-							out.appendChild(d);
-							d.innerHTML = MT__bold(ypnm, o.bold_comp) + ' ' + MT__bold(addr, o.bold_addr) +'<br>'+
-								// UNNECESSARY // '$:'+p_str+'<br>'+
-								// UNNECESSARY //'RTG:'+yprtg_formatted+'<br>'+
-								'RVW:'+yprvw_formatted+'<br>'+
-								// UNNECESSARY // 'P:'+phone_fmt+'<br>'+
-								'C:'+ypcat;
-							d.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
-								if (this.yprtg == '--' || this.yprvw == '--') {
-									this.style.backgroundColor = 'pink';
-									//~ return;
-								}
-								// NextTab
-								new AMT___core_factory().nextTab();
-								yp_profile(this);
-							}
-							
-							// Auto found?
-							if  (
-								!auto_found &&
-								o.comp_cln == ypnm_cln &&
-								o.addr_cln == addr_cln &&
-								o.comp_cln.length > 4 &&
-								o.addr_cln.length > 4
-								)
-							{
-								d.click();
-								auto_found = true;
-							}
-						}
-						if (out.innerHTML != '') {
-							var d = document.createElement('div');
-							d.setAttribute('style','height:2000px;');
-							out.appendChild(d);
-						}
-					}
-				});
-			}
 			// yp_profile
 			// http://www.yelp.com/biz/longhorn-steakhouse-enfield/review_feed/?start=0&sort_by=date_desc
 			//~ u = u + '/review_feed/?start=0&sort_by=date_desc'; // DESCENDING
 			function yp_profile(div) {
-				var u = div.ypurl + '/review_feed/?start=0&sort_by=date_asc';
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: u,
+					URL: div.chk_url,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						var rs = options.response.responseText;//console.log(rs);return false;
 						if  (
@@ -83828,55 +83635,23 @@ Laurens Hammond, Chicago, Ill.**/
 							return true;
 					},
 					success_callback: function(options) {
-						//~ var rs = options.response.responseText;
-						div.response = options.response;//console.log(options);
-						yp_profile_success(div);
+						var rs = options.response.responseText;
+						//~ div.response = options.response;//console.log(options);
+						//~ yp_profile_success(div);
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						var x = dom.getElementsByClassName('business-attribute price-range');
+						console.log(x);
+						if (x.length) {
+							x = x[0].innerText.trim();
+							if (/^\$+$/.exec(x)) { // Is one or more $
+								o.q[5].value = x;
+								try_sbm();
+							} else {
+								// Fail
+							}
+						}
 					}
 				});
-			}
-			function yp_zero() {
-				//~ div.appendChild('0 REVIEWS!'.div({style:'zoom:1;'}));
-				document.getElementById('open_date').value = "NA"; // THIS IS CHIOS' CODE! It is actually ineffective!
-				document.getElementById('reasons').value = 'No reviews';
-				doSubmit();
-			}
-			function yp_profile_success(div) {
-				var rs = div.response.responseText;
-				
-				if (div.response.status != 200) {
-					console.log(div.response.status);
-					return;
-				}
-				
-				rs = JSON.parse(rs);
-				rs = rs.review_list;
-				var dom = new DOMParser().parseFromString(rs,'text/html');
-				var d = dom.getElementsByClassName('review review--with-sidebar');
-				if (d.length == 0) {
-					yp_zero();
-					return;
-				}
-				// <meta itemprop="datePublished" content="2015-06-09"> // yyyy-mm-dd
-				for (var i=0; i<d.length; i++) {
-					if (d[i].innerHTML.indexOf('<p>Start your review of <strong>') != -1) { // Must not be...
-						continue;
-					}
-					var date = /<meta itemprop="datePublished" content="(\d{4}-\d{2}-\d{2})">/.exec(d[i].innerHTML);
-					var date_check = /<meta itemprop="datePublished"/.exec(d[i].innerHTML);
-					if (!date && date_check) { alert('<meta itemprop="datePublished"');return; }
-					if (!date && !date_check) continue; // Must have this.
-					date = date[1];
-					// e.g. document.getElementById('open_date').value = '2000-12-20';
-					o.q.value = date;
-					if (o.q.value == date) {
-						// BGC
-						document.body.style.backgroundColor = 'aqua';
-						doSubmit();
-					}
-					return; // STOP HERE
-				}
-				// If here then there was no success with date. So do zero.
-				yp_zero();
 			}
 		}
 		new run().f();
