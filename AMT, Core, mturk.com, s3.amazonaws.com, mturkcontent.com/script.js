@@ -27,6 +27,108 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Brent Dixon
+	// Search, Copy, Paste, Done!
+	//
+	// 
+	s = '<h3 style="color: rgb(51, 51, 51);">2. Type "Society Voice Foundation" into the search bar and click "Go."</h3>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			var x = /"Accreditation\(s\)\/Affiliation\(s\)"&nbsp;<\/em>info for&nbsp;"<span style="color: rgb\(75, 0, 130\);">([^<]+)<\/span>/.exec(ih)[1];
+			var o = {
+				u: x.trim(),
+				bold: null,
+				q: [
+					document.getElementById('Field1'),
+				]
+			}
+			o.q[0].value = '';
+			o.bold = o.u.clean_string_to_array();
+			//
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style', 'position:absolute;top:60px;left:0%;width:99%;height:600px;background-color:#eee;border:1px solid blue;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:50%;height:56px;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('input');
+			d2b.type = 'button';
+			d2b.setAttribute('style', 'position:absolute;top:0px;left:50%;width:49%;height:56px;');
+			document.body.appendChild(d2b);
+			d2b.value = 'None';
+			/*END ITEMS*/
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					d1
+				],
+				offset: 60 // offset top
+			});
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2],
+				blur_element: true
+			});
+			d2.onblur = function() {
+				r();
+			}
+			d2.value = o.u;
+			// XHR
+			r();
+			function r() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://esango.un.org/civilsociety/simpleSearch.do?method=search&searchTypeRedef=simpleSearch&sessionCheck=false&searchType=simpleSearch&organizationNamee='+encodeURIComponent(d2.value),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							// do NA
+							//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+								//~ doNA();
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						var sbm = true; //  Submit test...
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var x = dom.getElementsByClassName('searchResult');
+						if (x.length == 0) {
+							d1.innerText = d2.value + ':\n0 results!';
+							return;
+						}
+						for (var i=0; i<x.length; i++) {
+							var td = x[i].getElementsByTagName('td');
+							var d = (MT__bold(td[0].innerText.trim(), o.bold) + '<br>' + td[1].innerText.trim())
+								.div({style:'',className:'exe', innerHTML:true});
+							d.category = td[1].innerText.trim();
+							d.onclick = function() {
+								this.style.backgroundColor = 'aqua';
+								o.q[0].value = this.category;
+								//~ doSubmit();
+							}
+							d1.appendChild(d);
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// mike onghai
 	// Find the Percentile # of a given Website ID
 	//
