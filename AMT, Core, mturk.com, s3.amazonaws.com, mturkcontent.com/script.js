@@ -114,7 +114,7 @@ function MT__RUN() {
 						for (var i=0; i<x.length; i++) {
 							var td = x[i].getElementsByTagName('td');
 							var d = (MT__bold(td[0].innerText.trim(), o.bold) + '<br>' + td[1].innerText.trim())
-								.div({style:'',className:'exe', innerHTML:true});
+								.div({style:'', class:'exe', innerHTML:true});
 							d.category = td[1].innerText.trim();
 							d.onclick = function() {
 								this.style.backgroundColor = 'aqua';
