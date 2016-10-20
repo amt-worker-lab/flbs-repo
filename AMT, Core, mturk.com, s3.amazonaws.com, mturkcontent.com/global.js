@@ -9594,6 +9594,19 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 	// ef
 	var ef = new AMT___events_factory();
 	d2.addEventListener('keydown', ef.keydown__blur_field, true);
+	d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+	ef.mouseup__delete_range({
+		element: d2,
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
+	ef.mouseup__delete_range({
+		element: d2b,
+		callback: function(input_object) {
+			input_object.element.blur();
+		}
+	});
 	
 	//~ // innerHeight
 	//~ new AMT___core_factory().el_innerHeight({

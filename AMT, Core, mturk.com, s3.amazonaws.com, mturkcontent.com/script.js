@@ -24115,7 +24115,7 @@ Laurens Hammond, Chicago, Ill.**/
 		var run = function() {};
 		run.prototype.f = function() {
 			console.log('');
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tbody,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tbody,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;font-family: Verdana, Geneva, sans-serif !important;}');
 			
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:40% !important;}'); // width:1100px=default
 			GM_addStyle('.panel-primary {position:absolute;top:600px;}');
@@ -24157,18 +24157,18 @@ Laurens Hammond, Chicago, Ill.**/
 				o.location = o.comp;
 			else { // Remove loc from comp now...
 				o.comp = o.comp.replace(o.location, '').trim();
-				o.comp = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)$/gi, '');
+				o.comp = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)[\. :;]*$/gi, '');
 			}
 			//~ console.log(o);return;
 			
 			/*BEGIN ITEMS*/
 			// d1
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:0px;left:40%;width:60%;height:160px;overflow:auto;background-color:#eee;border:1px solid blue;word-wrap: break-word;');
+			d1.setAttribute('style','position:absolute;top:0px;left:40%;width:60%;height:20px;overflow:auto;background-color:#eee;border:1px solid blue;word-wrap: break-word;');
 			document.body.appendChild(d1);
 			// d1b
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:160px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
+			d1b.setAttribute('style','position:absolute;top:20px;left:0%;width:99%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;');
 			document.body.appendChild(d1b);
 			/*END ITEMS*/
 			
@@ -24180,7 +24180,7 @@ Laurens Hammond, Chicago, Ill.**/
 				elements: [
 					d1b
 				],
-				offset: 160 // offset top
+				offset: 20 // offset top
 			});
 			
 			// create_dashboard_find_phone
@@ -24247,7 +24247,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// q
 				q: document.getElementsByName('phone')[0]
 			};
-			o.comp_clean = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)$/gi, '');
+			o.comp_clean = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)[\.,;: ]*$/gi, '');
 			o.state_full = o.state.stateAbbrToFull();
 			o.hl_strings = o.comp.clean_string_to_array().concat([o.zip, o.state]).concat(o.state_full.clean_string_to_array());
 			
