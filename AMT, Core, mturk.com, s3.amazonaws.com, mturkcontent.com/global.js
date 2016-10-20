@@ -9900,13 +9900,33 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						}
 					}
 					// ...
-					var locn__ = '';
-					if (r[i].location) {
-						for (var j in r[i].location) {
-							locn__ += ', ' + r[i].location[j];
-						}
-					}
-					locn__ = locn__.replace(/^,/, '').trim();
+					//~ var locn__ = '';
+					//~ console.log(r[i].location);return;
+					//~ if (r[i].location) {
+						//~ for (var j in r[i].location) {
+							//~ locn__ += '<br>' + MT__bold(r[i].location[j], o.locn_arr);
+							//~ locn__ += '<br>' + r[i].location[j];
+						//~ }
+					//~ }
+					var locn__ = 
+						(r[i].location['city'] ? r[i].location['city'] + ',' : '') +
+						(r[i].location['state'] ? r[i].location['state'] + ',' : '') +
+						(r[i].location['country'] ? r[i].location['country'] + ',' : '') +
+						(r[i].location['zip'] ? r[i].location['zip'] + ',' : '');
+					var locn__ = MT__bold(
+						locn__,
+						o.locn_arr,
+						{color: 'blue'}
+					).bold_string;console.log('x');
+					var locn2__ = MT__bold(
+						(r[i].location['street'] ? r[i].location['street'] + ',' : ''),
+						o.locn_arr,
+						{color: 'blue'}
+					).bold_string;console.log('a');
+					
+					//str = MT__bold(str, o.bold.blue, {color: 'blue'}).bold_string;
+					
+					//~ locn__ = locn__.replace(/^,/, '').trim();
 					
 					// ...
 					var y = JSON.stringify(r[i]);
@@ -9920,7 +9940,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					dv.className = 'exe ' + cln_ph;
 					dv.phone = r[i].phone;
 					dv.fblink = r[i].link;
-					dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + MT__bold(locn__, o.locn_arr);
+					dv.innerHTML = MT__bold(r[i].name, o.name_arr) + '('+dist+')<br>' + locn2__ +'<br>'+ locn__ // MT__bold(locn__, o.locn_arr);
 					dv.innerHTML += '<br>Likes:'+r[i].likes;
 					dv.innerHTML += '<br>Talking About:'+r[i].talking_about_count;
 					dv.innerHTML += '<br>P:'+r[i].phone+'<br>';
