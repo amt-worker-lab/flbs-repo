@@ -9489,21 +9489,6 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 	var q = options_object.input_phone;
 	var callback = options_object.callback;
 	
-	//~ var q  = document.getElementById('Q1Url');
-	//~ var q2 = document.getElementById('Q1Url2');
-	//~ var b = document.getElementsByTagName('b');
-	//~ var strong = document.getElementsByTagName('strong');
-	//~ 
-	//~ document.getElementById('mturk_form').onsubmit = function() {
-		//~ q.value = q.value.trim();
-		//~ var x = q.value.replace(/[^\d]/g,'');
-		//~ if (x.length != 10) return false;
-		//~ if (q1.value == '' || q2.value == '')
-			//~ return false;
-	//~ }
-	
-	
-	
 	/* BEGIN ITEMS */
 	// d2
 	var d2 = document.createElement('input');
@@ -9515,15 +9500,15 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 	d2b.type = 'text';
 	d2b.setAttribute('style','width:99%;height:30px;');
 	parent.appendChild(d2b);
-	// d1
+	// d1 (Google)
 	var d1 = document.createElement('div');
 	d1.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
 	parent.appendChild(d1);
-	// d1b
+	// d1b (FB)
 	var d1b = document.createElement('div');
 	d1b.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
 	parent.appendChild(d1b);
-	// d1c
+	// d1c (Yelp)
 	var d1c = document.createElement('div');
 	d1c.setAttribute('style','float:left;width:25%;height:20px;border:1px solid blue;overflow:auto;background-color:#eee;');
 	parent.appendChild(d1c);
@@ -9563,6 +9548,22 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 		google_find_phone();
 		find_phone__FB();
 		yelp();
+	}
+	d2b.onblur = function() {
+		o.stats = {// RESET THIS!!!
+			google_search_complete: false,
+			fb_search_complete: false,
+			yelp_search_complete: false,
+			num_google_results: 0,
+			num_fb_results: 0,
+			num_yelp_results: 0,
+			gotYelpCaptcha: false
+		}
+		this.value = this.value.trim();
+		// global lat long
+		ll = {};
+		// google places api
+		MT___google_api_geocode(o.locn, google_find_phone__setll, false, true);
 	}
 	
 	// vars
@@ -10027,6 +10028,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						var sm = rs.search_map.markers[ i ];
 						if  (
 							sm.hasOwnProperty('location') &&
+							sm.location &&
 							sm.location.hasOwnProperty('latitude') &&
 							sm.location.hasOwnProperty('longitude')
 							)
@@ -10047,15 +10049,15 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 				d1c.appendChild(
 					amt.div({style:'width:100%;border-bottom:4px solid teal;'}) // Add HR border
 				);
+				console.log(rs.search_results); //return;
 				
-				// While loop
-				var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
-				var m;
-				while (m = r.exec(rs.search_results)) {
-					
+				var dom =  new DOMParser().parseFromString(rs.search_results, 'text/html');
+				var x = dom.getElementsByClassName('media-story');
+				// Loop dom
+				for (var i=0; i<x.length; i++) {
+					var m = [ 0, x[i].innerHTML ];
 					// Replace all highlights!
 					m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
-					//~ console.log(m);
 					
 					// Div
 					var div = document.createElement('div');
@@ -10071,8 +10073,8 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					div.yzip = '';
 					div.yurl = null; // THIS IS TO BE FILLED IN WITH yelp_profile()
 					div.yslug = null;
-					d1c.appendChild(div);
-					
+					d1c.appendChild(div);//console.log('x-----------------------------------------------------');
+					console.log(div);
 					
 					// (619) 238-4949
 					// 
@@ -10089,7 +10091,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					}
 					// Name, href
 					//
-					var reg = /<span class="indexed-biz-name">\d+\.     <a class="biz-name" href="(\/biz\/[^"]+)" data-hovercard-id="[^"]+">([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
+					var reg = /<span class="indexed-biz-name">\d+\.[^<]*<a class="biz-name" href="(\/biz\/[^"]+)"[^>]*>([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
 					if (reg) {
 						//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
 						div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
@@ -10100,6 +10102,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					}
 					// IF NO NAME THEN DO NOT CONTINUE
 					else {
+						d1c.removeChild(div);
 						continue;
 					}
 					// reviews
@@ -10147,6 +10150,8 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					// Distance
 					var dist = '';
 					var dist_bgc = '';
+					console.log(div.yslug);
+					console.log(markers);
 					if ( div.yslug && markers.hasOwnProperty( div.yslug ) ) { // e.g. /biz/staples-walnut
 						dist = MT___lat_lng_distance(
 							ll.lat*1,
@@ -10158,15 +10163,27 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 							dist = Math.round(dist*100) / 100;
 							if (dist*1 >= 4) {
 								div.style.backgroundColor = 'aqua';
+								//~ dist_bgc = 'background-color:aqua;';
 							}
 						}
 					}
-					
-					//~ // Diff
-					//~ var df = MT___diffString(
-						//~ div.yname,
-						//~ o.name
-					//~ );
+					// Check skip
+					if  (
+						o.bad_phones_obj.hasOwnProperty( div.yphone )
+						)
+					{
+						div.innerHTML = '(RESULT=BAD PHONE!)';
+						continue;
+					}
+					// Check skip wrong state...
+					// [ Note: This is untested... ]
+					if (o.state_abbr) { // Has State Abbr
+						if (div.ylocn.indexOf(o.state_abbr) == -1) {
+							continue; // Skip...
+						}
+					}
+					// check_accept
+					check_accept(div.yname, div.yphone);
 					
 					// Display
 					div.innerHTML = 
@@ -10174,9 +10191,12 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						':'+ MT__bold(div.ystreet, o.locn_arr) + '<br>' +
 						':'+ MT__bold(div.ylocn, o.locn_arr) + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
 						':'+ ph + '<br>' +
+						//~ ':'+ df + '<br>' +
+						//~ 'reviews:'+ div.yreviews + '<br>' +
+						//~ 'catg.:'+ div.ycategories + '<br>' +
 						':'
 					;
-					var link = document.createElement('a'); // Link
+					var link = document.createElement(a); // Link
 					link.innerText = 'link';
 					link.href = div.yhref;
 					link.onclick = function(e) {
@@ -10191,7 +10211,22 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						this.style.backgroundColor = 'teal';
 						set_divs_clicked(this.yphone); // SET ALL WITH SAME PHONE AS TEAL
 						q.value = this.yphone;
-						callback(); // Callback
+						if (q2)
+							q2.value = this.yhref;
+						if  (
+							o.bad_phones_obj.hasOwnProperty( this.yphone ) ||
+							this.yphone.length != 10 ||
+							!/^https?:\/\/[^\/]+\/[^$]+$/.exec( this.yhref )
+							)
+						{
+							d2.value = 'bad phone!';
+							d2.style.backgroundColor = 'LightGreen';
+							q.style.border = '4px solid teal';
+							return;
+						}
+						
+						// Here?
+						doSubmit();
 					}
 					
 					// Add mouse events to div
@@ -10200,6 +10235,19 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					// Increment count
 					o.stats.num_yelp_results++;
 				}
+				
+				//~ // While loop
+				//~ var r = /<div class="media-story">((.|\s)*?(?=[\r\n]            <\/div>[\r\n\t\s]+<div class="media-story">|$)|$)/g;
+				//~ var m;
+				//~ while (m = r.exec(rs.search_results)) {
+					//~ console.log('YelpResult:');
+					//~ console.log(m[1]);
+					
+					//~ // Replace all highlights!
+					//~ m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+					
+					
+				//~ }
 				if (o.stats.num_yelp_results != 0) {
 					d1c.appendChild(
 						''.div({style:'height:1400px;'})

@@ -24129,28 +24129,36 @@ Laurens Hammond, Chicago, Ill.**/
 				location: null,
 				//~ state: td[3].innerText.trim(),
 				//~ zip: td[5].innerText.trim(),
-				comp_clean: null,
-				state_full: null,
+				//~ comp_clean: null,
+				//~ state_full: null,
 				//~ domain: null,
-				states_on_page_obj: {
-				},
-				hl_strings: [], // For Util Window
+				//~ states_on_page_obj: {
+				//~ },
+				//~ hl_strings: [], // For Util Window
 				// q
-				q: document.getElementsByName('phone')[0]
+				q: [document.getElementById('web_url')],
 			};
-			o.comp_clean = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)$/gi, '');
-			o.state_full = o.state.stateAbbrToFull();
-			o.hl_strings = o.comp.clean_string_to_array().concat([o.zip, o.state]).concat(o.state_full.clean_string_to_array());
+			//~ o.state_full = o.state.stateAbbrToFull();
+			//~ o.hl_strings = o.comp.clean_string_to_array().concat([o.zip, o.state]).concat(o.state_full.clean_string_to_array());
 			// Assume that location is at least not something including
 			// the first "street number" if available.
 			// Eg Ignore starting at "1500": "Jim's Biz [1500] S Main"
-			o.location = o.comp.replace(/^[^ ]+( [^\d])*( [\d][\d\D]+)$/, '$2');
+			o.location = o.comp.replace(/^[^ ]+( [^\d]+)*( [\d][\d\D]+)$/, '$2').trim();
 			// Start with non-space. Go until space.
 			// Then 0 or more "SpaceNondigit".
 			// Then a "SpaceDigit" followed by anything.
 			// Replace with second capture.
 			// Could be blank?
-			if (o.location == '') o.location = o.comp;
+			//~ console.log(o);return;
+			if (o.location == '' ||  // Change to o.comp in this case...
+				o.location == o.comp // Do nothing on this case...
+				)
+				o.location = o.comp;
+			else { // Remove loc from comp now...
+				o.comp = o.comp.replace(o.location, '').trim();
+				o.comp = o.comp.replace(/ (pty|plc|llc|llp|ltd|limited|inc|incorporated|corp|corporation|bv|ab|gmbh|ag|as|nv|sa|pc)$/gi, '');
+			}
+			//~ console.log(o);return;
 			
 			/*BEGIN ITEMS*/
 			// d1
@@ -24177,17 +24185,16 @@ Laurens Hammond, Chicago, Ill.**/
 			// create_dashboard_find_phone
 			new AMT___items_factory().create_dashboard_find_phone({
 				parent: d1b,
-				input_phone: o.q,
+				input_phone: o.q[0],
 				search_term: o.comp,
 				location: o.location, // String
 				distance_close_match: 20, // Integer (miles)
 				callback: function() {
-					o.q.value = o.q.value.trim();
-					if (o.q.value == '') return false; // not blank
-					if (o.q.value.length != 10) return false;
-					
+					o.q[0].value = o.q[0].value.trim();
+					if (o.q[0].value == '') return false; // not blank
+					if (o.q[0].value.length != 10) return false;
 					// Format o.q.value (phone) to be "phone" like.
-					o.q.value = o.q.value.replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3');
+					o.q[0].value = o.q[0].value.replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3');
 					doSubmit();
 				}
 			});
@@ -24196,134 +24203,10 @@ Laurens Hammond, Chicago, Ill.**/
 			document.getElementById('submitButton').onclick = function(e) { // For manual submits.
 				e.stopPropagation(); // Prevent default
 				e.preventDefault();
-				o.q.value = o.q.value.trim();
-				if (o.q.value == '') return false; // not blank
-				if (o.q.value.length < 6 || o.q.value.length > 20) return false;
+				o.q[0].value = o.q[0].value.trim();
+				if (o.q[0].value == '') return false; // not blank
+				if (o.q[0].value.length < 6 || o.q[0].value.length > 20) return false;
 				return false;
-			}
-			
-			// Init
-			SP_init();
-			//
-			function SP_init() {
-				var u; // ZIP is required.
-				u =
-					o.comp + ' ("'+o.zip+'" OR "'+o.state+'" OR "'+o.state_full+'")';
-				//~ u =
-					//~ '("'+o.comp+'" OR "'+o.comp_clean+'" OR '+o.comp+')' + ' "'+o.zip+'" ("'+o.state+'" OR "'+o.state_full+'") '+
-					//~ '"contact" OR "contact us" OR "phone" OR "headquarters" OR "address" OR "zip" OR "postal code" OR "kontakt" OR "about us" OR "about" OR "fax"';
-				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
-					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(u),
-					callback_function: SP_process
-				});
-			}
-			// @param uw, array
-			function set_util(uw) {
-				// Set opts
-				uw[0].options = {
-					task: 'AMT__all_pages_util',
-					show_remove_links_button: true,
-					highlight_range_to_parent: true,
-					//~ highlight_phone_numbers: true,
-					MT___all_pages_zoom: '1.0', // Larger
-					highlight_strings_in_page: {
-						strings: o.hl_strings
-					}
-				}
-				
-				//
-				AMT__setUtilityTabs(uw, null, {backgroundColor:'pink'}, false,
-					function(response) {
-						if  (
-							response.hasOwnProperty('data') &&
-							response.data.hasOwnProperty('text_range')
-							)
-						{
-							var phone = response.data.text_range.trim();
-							var sbm = true;
-							
-							// bgcolor
-							if (!sbm) {
-								o.q.style.backgroundColor = 'aqua';
-							}
-							
-							o.q.value = phone;
-							o.q.focus();
-							
-							if (!response.data.control_key_is_active) { // submit
-								if (sbm) { // Only when valid
-									document.body.style.backgroundColor = 'aqua';
-									
-									// shownexttab or nexttab
-									//~ new AMT___core_factory().nextTab();
-									//~ doSubmit();
-								}
-							} else { // control key is active, so do not submit
-								//
-							}
-						}
-					}
-				);
-			}
-			//
-			function SP_process(object) {
-			
-				console.log(object);
-				
-				var rs = object;
-				//~ var rs = object.rs;
-				var out = d1;
-				var uw = [];
-				
-				if (rs.length == 0) {
-					out.innerText = '0 results';
-					uw.push({
-						url: o.url//,
-						//~ options: {
-							//~ task: 'AMT__all_pages_util',
-							//~ show_remove_links_button: true,
-							//~ highlight_range_to_parent: true,
-							//~ MT___all_pages_zoom: '1.6', // Larger
-							//~ highlight_strings_in_page: {
-								//~ strings: o.hl_strings
-							//~ }
-						//~ }
-					});
-					set_util(uw);
-				} else {
-					
-					// Do first
-					uw.push({
-						url: rs[0][0]
-					});
-					set_util(uw);
-				}
-				
-				// Optionals
-				for (var i in rs) {
-					var div = document.createElement('div');
-					div.setAttribute('style', 'border-bottom:1px solid #a2a2a2;'); //height:40px;overflow:auto;
-					div.className = 'exe';
-					div.innerHTML = '<b>' + rs[i][0] + '</b><br>' + rs[i][1];
-					div.url = rs[i][0];
-					out.appendChild(div);
-					div.onclick = function() {
-						this.style.backgroundColor = 'aqua';
-						set_util([{
-							url: this.url
-						}]);
-					}
-					// If 0
-					if (i == 0) {
-						div.style.backgroundColor = 'aqua';
-					}
-				}
-				
-				// Length
-				var div = document.createElement('div');
-				div.setAttribute('style', 'height:2000px;');
-				out.appendChild(div);
 			}
 		}
 		new run().f();
