@@ -10052,12 +10052,21 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 				console.log(rs.search_results); //return;
 				
 				var dom =  new DOMParser().parseFromString(rs.search_results, 'text/html');
-				var x = dom.getElementsByClassName('media-story');
+				//~ var x = dom.getElementsByClassName('media-story');
+				//~ var x = dom.getElementsByClassName('snippet-block media-block snippet-block--small');
+				var x = dom.getElementsByClassName('biz-listing-large');
+				console.log('yelp # results:'+x.length);
+				
 				// Loop dom
 				for (var i=0; i<x.length; i++) {
-					var m = [ 0, x[i].innerHTML ];
+					//~ var m = [ 0, x[i].innerHTML ];
 					// Replace all highlights!
-					m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+					//~ m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
+					// If this is an ad then skip now!
+					if (x[i].innerHTML.indexOf('/adredir') != -1) {
+						// Skip
+						continue;
+					}//console.log('==================\n'+x[i].innerHTML);
 					
 					// Div
 					var div = document.createElement('div');
@@ -10078,9 +10087,11 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					
 					// (619) 238-4949
 					// 
-					var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
-					if (ph) {
-						ph = __js_clean_html_str(ph[1]).trim();
+					var ph = x[i].getElementsByClassName('biz-phone');
+					//~ var ph = /<span class="biz-phone">([^<]+)<\/span>/.exec(m[1]);
+					if (ph && ph.length) {console.log(ph);
+						//~ ph = __js_clean_html_str(ph[1]).trim();
+						ph = ph[0].innerText.trim();
 						// Format phone
 						ph = ph.replace(/[\- \(\)]/g, '');
 						ph = ph.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
@@ -10091,12 +10102,17 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					}
 					// Name, href
 					//
-					var reg = /<span class="indexed-biz-name">\d+\.[^<]*<a class="biz-name" href="(\/biz\/[^"]+)"[^>]*>([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
-					if (reg) {
+					var bn = x[i].getElementsByClassName('biz-name');
+					//~ var reg = /<span class="indexed-biz-name">\d+\.[^<]*<a class="biz-name" href="(\/biz\/[^"]+)"[^>]*>([^<]+)<\/a>/.exec(m[1]); //McDonald’s</a>
+					if (bn && bn.length) {
+						//~ console.log(bn);
+						//~ console.log(bn[0]);
+						//~ console.log(bn[0].href);
+						//~ console.log(bn[0].getAttribute);
 						//reg = 'http://www.yelp.com' + __js_clean_html_str(r[1]);
-						div.yslug = __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
+						div.yslug = bn[0].getAttribute('href'); // __js_clean_html_str(reg[1]).replace(/\?[\d\D]*$/g, '');
 						div.yhref = 'http://www.yelp.com' + div.yslug;
-						div.yname = __js_clean_html_str(reg[2]).trim();
+						div.yname = bn[0].innerText.trim(); //__js_clean_html_str(reg[2]).trim();
 						// Replace "’" with "'" in name
 						div.yname = div.yname.replace(/’/g, "'");
 					}
@@ -10105,53 +10121,83 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						d1c.removeChild(div);
 						continue;
 					}
-					// reviews
+					// Reviews
 					//
-					var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
-					if (reg) {
-						reg = reg[1];
-						div.yreviews = reg;
+					//~ var reg = /<span class="review-count[^"]*">[\r\n\t\s]*([\d,]+) review/.exec(m[1]);
+					var rc = x[i].getElementsByClassName('review-count');
+					if (rc && rc.length) {
+						//~ reg = reg[1];
+						rc = rc[0].innerText.replace(/[^\d]/, '');
+						if (rc != '')
+							div.yreviews = rc;
 					}
 					// catg.
 					// e.g. <a href="/search?find_desc=Pok+Pok+Noi&amp;find_loc=Portland%2C+Oregon&amp;cflt=thai">Thai</a>    
-					var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
-					if (reg) {
-						reg = reg[1].replace(/<[^>]*>/g, '').trim();
-						div.ycategories = reg;
+					//~ var reg = /<span class="category-str-list">((.|\s)*?(?=<\/span>|$)|$)/.exec(m[1]);
+					var cg = x[i].getElementsByClassName('category-str-list');
+					if (cg && cg.length) {
+						cg = cg[0].innerText.trim();//reg = reg[1].replace(/<[^>]*>/g, '').trim();
+						div.ycategories = cg;
 					}
 					// addr
 					// e.g. (2240 N Interstate Ave) (Portland, OR 97227)
-					var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
-					var reg2= /<address>[\r\n\t\s]+([^<]+)<\/address>/.exec(m[1]);
-					if (reg) {
-						reg[1] = __js_clean_html_str(reg[1]).trim();
-						reg[2] = __js_clean_html_str(reg[2]).trim();
-						div.ystreet = reg[1];
-						div.ylocn = reg[2];
-						var z = / ([\d\-]{4,})$/.exec(div.ylocn);
-						div.yzip = (z) ? z[1] : null;
-					}
-					else if (reg2) { // Try ONLY CITY/STATE INFO
-						var x = __js_clean_html_str(reg2[1]).trim();
-						div.ylocn = x;
-						var z = / ([\d\-]{4,})$/.exec(div.ylocn);
-						div.yzip = (z) ? z[1] : null;
-					} else { // Try "Service Area"
-						var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
-						// Serving Chicago and the Surrounding Area
-						if (reg && div.ylocn == '') {
-							var x = __js_clean_html_str(reg[1]).trim();
-							if (/^Serving/.exec(x) && / and the Surrounding Area$/.exec(x))
-								x = x.replace(/^Serving /, '').replace(/ and the Surrounding Area$/, '');
-							div.ylocn = x;
+					var ad = x[i].getElementsByTagName('address');console.log(ad);
+					if (ad && ad.length && ad[0]) {
+						// If it has a \n then it is two lines.
+						// Else it is only one line.
+						ad = ad[0].innerText.trim().split('\n');
+						// Split street address and city/state info.
+						// Trim the resultants.
+						// And check existence of cs[1].
+						//~ var cs = ad[0].split(',');
+						//~ cs[0] = cs[0].trim();console.log(cs);return;
+						//~ cs[1] = (cs[1]) ? cs[1].trim() : '';
+						if (ad.length == 1) {
+							div.ystreet = ad[0];
+							//~ div.ylocn = ad[1];
+							//~ div.yzip = null;
+						} else if (ad.length == 2) {
+							div.ystreet = ad[0];
+							var zp = / ([\d\-]{5,})$/.exec(ad[1]);
+							if (zp) { // Has zip
+								div.ylocn = ad[1].replace(zp[1]);
+								div.yzip = zp[1].trim();
+							} else { // No zip
+								div.ylocn = ad[1];
+							}
 						}
 					}
+					//~ var reg = /<address>[\r\n\t\s]+([^<]+)<br>([^<]+)<\/address>/.exec(m[1]);
+					//~ var reg2= /<address>[\r\n\t\s]+([^<]+)<\/address>/.exec(m[1]);
+					//~ if (reg) {
+						//~ reg[1] = __js_clean_html_str(reg[1]).trim();
+						//~ reg[2] = __js_clean_html_str(reg[2]).trim();
+						//~ div.ystreet = reg[1];
+						//~ div.ylocn = reg[2];
+						//~ var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+						//~ div.yzip = (z) ? z[1] : null;
+					//~ }
+					//~ else if (reg2) { // Try ONLY CITY/STATE INFO
+						//~ var x = __js_clean_html_str(reg2[1]).trim();
+						//~ div.ylocn = x;
+						//~ var z = / ([\d\-]{4,})$/.exec(div.ylocn);
+						//~ div.yzip = (z) ? z[1] : null;
+					//~ } else { // Try "Service Area"
+						//~ var reg = /<div class="service-area">[\r\n\t\s]+([^<]+)<\/div>/.exec(m[1]);
+						//~ // Serving Chicago and the Surrounding Area
+						//~ if (reg && div.ylocn == '') {
+							//~ var x = __js_clean_html_str(reg[1]).trim();
+							//~ if (/^Serving/.exec(x) && / and the Surrounding Area$/.exec(x))
+								//~ x = x.replace(/^Serving /, '').replace(/ and the Surrounding Area$/, '');
+							//~ div.ylocn = x;
+						//~ }
+					//~ }
 					
 					// Distance
 					var dist = '';
 					var dist_bgc = '';
-					console.log(div.yslug);
-					console.log(markers);
+					//~ console.log(div.yslug);
+					//~ console.log(markers);
 					if ( div.yslug && markers.hasOwnProperty( div.yslug ) ) { // e.g. /biz/staples-walnut
 						dist = MT___lat_lng_distance(
 							ll.lat*1,
@@ -10163,12 +10209,12 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 							dist = Math.round(dist*100) / 100;
 							if (dist*1 >= 4) {
 								div.style.backgroundColor = 'aqua';
-								//~ dist_bgc = 'background-color:aqua;';
 							}
 						}
 					}
 					// Check skip
 					if  (
+						o.bad_phones_obj &&
 						o.bad_phones_obj.hasOwnProperty( div.yphone )
 						)
 					{
@@ -10183,20 +10229,20 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 						}
 					}
 					// check_accept
-					check_accept(div.yname, div.yphone);
+					//~ check_accept(div.yname, div.yphone);
 					
 					// Display
 					div.innerHTML = 
 						':'+ MT__bold(div.yname, o.name_arr) + (dist != '' ? '('+dist+')' : '') + '<br>' +
 						':'+ MT__bold(div.ystreet, o.locn_arr) + '<br>' +
 						':'+ MT__bold(div.ylocn, o.locn_arr) + '<br>' + //(div.yzip != '' ? '('+div.yzip+')' : '')
-						':'+ ph + '<br>' +
+						':'+ ph + // '<br>' +
 						//~ ':'+ df + '<br>' +
 						//~ 'reviews:'+ div.yreviews + '<br>' +
 						//~ 'catg.:'+ div.ycategories + '<br>' +
 						':'
 					;
-					var link = document.createElement(a); // Link
+					var link = document.createElement('a'); // Link
 					link.innerText = 'link';
 					link.href = div.yhref;
 					link.onclick = function(e) {
@@ -10245,8 +10291,6 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 					
 					//~ // Replace all highlights!
 					//~ m[1] = m[1].replace(/<span class="highlighted">([^<]*)<\/span>/g, '$1');
-					
-					
 				//~ }
 				if (o.stats.num_yelp_results != 0) {
 					d1c.appendChild(
