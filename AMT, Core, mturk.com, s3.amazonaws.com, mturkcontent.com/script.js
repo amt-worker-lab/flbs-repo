@@ -24106,7 +24106,8 @@ Laurens Hammond, Chicago, Ill.**/
 	// taylor l grisham
 	// Find the Phone Number for a Business
 	// 
-	s = '	<li>Websites like<strong>&nbsp;http://www.manta.com/</strong>&nbsp;are also great places to search for phone numbers</li>';
+	//~ s = '	<li>Websites like<strong>&nbsp;http://www.manta.com/</strong>&nbsp;are also great places to search for phone numbers</li>';
+	s = '	<li>Websites like<strong>&nbsp;Manta.com</strong>&nbsp;are also great places to search for phone numbers</li>';
 	if (
 		ih.indexOf(s) != -1
 		)
