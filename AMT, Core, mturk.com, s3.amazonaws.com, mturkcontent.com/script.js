@@ -133075,17 +133075,17 @@ qatar,80
 		}
 		new run().f();
 	}
-	 
-	//
+	
 	// Will Kuffel
 	// Find a Company's Website
+	// 
 	// 
 	s = '<li>If you cannot find the official website becuase the listed company is a subsidiary or a division of another&nbsp;company, give the website of the larger company.';
 	if(ih.indexOf(s) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
-			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;margin-top:1000px;}');
 			
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
@@ -133139,8 +133139,6 @@ qatar,80
 				offset: 30 // offset top
 			});
 			
-			
-			
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				bold_array: o.comp.clean_string_to_array(),
@@ -133150,15 +133148,15 @@ qatar,80
 					o.compShort
 				],
 				naText:'N/A',
+				search_results: {
+					use_domain_only:true
+				},
 				//~ load_success_callback: function() {
 					//~ addToTabsQ(); // Add to tabs queue.
 				//~ },
 				out_element: o.q[0],
 				//~ onclick_success: function(e) { //PROVIDES:// button.click // this.value, this.full_url
-					//~ // shownext
-					//~ showNextTab();
-					//~ 
-					//~ // ...
+					
 					//~ d1.style.zIndex = '8';
 					//~ d2.value = this.value;
 					//~ o.sd_start_urls = [this.value, this.full_url];
