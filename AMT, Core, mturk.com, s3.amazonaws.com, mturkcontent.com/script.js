@@ -83798,18 +83798,19 @@ Laurens Hammond, Chicago, Ill.**/
 						this.chk_url = o.q[1].value;
 						yp_profile(this);
 					}
-					d.onmouseover = d.onmousemove = function() {console.log(this.className)
-						var x = document.getElementsByClassName(this.className);
-						for (var i=0; i<x.length; x++) {
-							x[i].style.backgroundColor = 'LightGreen';
-						}
-					}
-					d.onmouseout = function() {
-						var x = document.getElementsByClassName(this.className);
-						for (var i=0; i<x.length; x++) {
-							x[i].style.backgroundColor = '';
-						}
-					}
+					//~ d.onmouseover = d.onmousemove = function() {console.log(this.className)
+						//~ var x = document.getElementsByClassName(this.className);
+						//~ for (var i=0; i<x.length; x++) {
+							//~ console.log(x[i]);
+							//~ x[i].style.backgroundColor = 'aqua';
+						//~ }
+					//~ }
+					//~ d.onmouseout = function() {
+						//~ var x = document.getElementsByClassName(this.className);
+						//~ for (var i=0; i<x.length; x++) {
+							//~ x[i].style.backgroundColor = '';
+						//~ }
+					//~ }
 					//
 					var ypnm_cln = b[i].name.clean_str_to_auto();
 					var ypad_cln = fmt_address_match.clean_str_to_auto().replace(/\d+$/, '');
@@ -83952,18 +83953,19 @@ Laurens Hammond, Chicago, Ill.**/
 								this.chk_url = o.q[1].value;
 								yp_profile(this, true);
 							}
-							d.onmouseover = d.onmousemove = function() {console.log(this.className);
-								var x = document.getElementsByClassName(this.className);
-								for (var i=0; i<x.length; x++) {
-									x[i].style.backgroundColor = 'LightGreen';
-								}
-							}
-							d.onmouseout = function() {
-								var x = document.getElementsByClassName(this.className);
-								for (var i=0; i<x.length; x++) {
-									x[i].style.backgroundColor = '';
-								}
-							}
+							//~ d.onmouseover = d.onmousemove = function() {console.log(this.className);
+								//~ var x = document.getElementsByClassName(this.className);
+								//~ for (var i=0; i<x.length; x++) {
+									//~ console.log(x[i]);
+									//~ x[i].style.backgroundColor = 'aqua';
+								//~ }
+							//~ }
+							//~ d.onmouseout = function() {
+								//~ var x = document.getElementsByClassName(this.className);
+								//~ for (var i=0; i<x.length; x++) {
+									//~ x[i].style.backgroundColor = '';
+								//~ }
+							//~ }
 						}
 						if (d1b.innerHTML != '') {
 							var d = document.createElement('div');
