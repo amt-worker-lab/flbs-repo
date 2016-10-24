@@ -83568,6 +83568,7 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			// NA
 			d3b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
 				o.q[0].value = 'Y';
 				for (var i=1; i<=5; i++) {
 					o.q[i].value = 'NA';
@@ -83777,6 +83778,7 @@ Laurens Hammond, Chicago, Ill.**/
 						//'C:'+fmt_cat;
 					d.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
+						document.body.style.backgroundColor = 'LightGreen';
 						console.log(this.api_response);
 						// NextTab
 						new AMT___core_factory().nextTab();
@@ -83798,19 +83800,18 @@ Laurens Hammond, Chicago, Ill.**/
 						this.chk_url = o.q[1].value;
 						yp_profile(this);
 					}
-					//~ d.onmouseover = d.onmousemove = function() {console.log(this.className)
-						//~ var x = document.getElementsByClassName(this.className);
-						//~ for (var i=0; i<x.length; x++) {
-							//~ console.log(x[i]);
-							//~ x[i].style.backgroundColor = 'aqua';
-						//~ }
-					//~ }
-					//~ d.onmouseout = function() {
-						//~ var x = document.getElementsByClassName(this.className);
-						//~ for (var i=0; i<x.length; x++) {
-							//~ x[i].style.backgroundColor = '';
-						//~ }
-					//~ }
+					d.onmouseover = d.onmousemove = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							x[i].style.backgroundColor = 'aqua';
+						}
+					}
+					d.onmouseout = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							x[i].style.backgroundColor = '';
+						}
+					}
 					//
 					var ypnm_cln = b[i].name.clean_str_to_auto();
 					var ypad_cln = fmt_address_match.clean_str_to_auto().replace(/\d+$/, '');
@@ -83904,10 +83905,12 @@ Laurens Hammond, Chicago, Ill.**/
 						//~ out.innerHTML = rs;return;
 						var dom = new DOMParser().parseFromString(rs,'text/html');
 						var rg = dom.getElementsByClassName('regular-search-result');
-						for (var i=0; i<rg.length; i++) {
+						
+						for (var i=0; i<rg.length; i++) {console.log(rg[i]);
 							var u    = rg[i].getElementsByClassName('biz-name')[0];
 							var rvct = rg[i].getElementsByClassName('review-count');
 							var rtg  = /(\d\.\d) stars? rating/.exec(rg[i].innerHTML);
+							var ad = rg[i].getElementsByTagName('address');
 							if (!rvct || rvct.length == 0) {
 								console.log(rg[i].innerHTML);
 								rvct = 'NA';
@@ -83920,6 +83923,10 @@ Laurens Hammond, Chicago, Ill.**/
 							} else {
 								rtg = rtg[1].replace(/\.0/, '');
 							}
+							if (!ad || ad.length == 0 || !ad[0].innerText) {
+								ad = '';
+							} else 
+								ad = ad[0].innerText.replace(/\s+/g, ' ').trim();
 							// Div
 							var d = document.createElement('div');
 							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
@@ -83933,12 +83940,14 @@ Laurens Hammond, Chicago, Ill.**/
 							d.innerHTML =
 								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>' +
 								MT__bold(
-									dom.getElementsByTagName('address')[0].innerText.trim(),
+									ad,
+									//~ dom.getElementsByTagName('address')[0].innerText.trim(),
 									o.bold_addr, {style: 'color:blue;'}
 								).bold_string+'<br>'+
 								'R:'+rvct;
 							d.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
+								document.body.style.backgroundColor = 'LightGreen';
 								console.log(this.api_response);
 								// NextTab
 								new AMT___core_factory().nextTab();
@@ -83953,19 +83962,18 @@ Laurens Hammond, Chicago, Ill.**/
 								this.chk_url = o.q[1].value;
 								yp_profile(this, true);
 							}
-							//~ d.onmouseover = d.onmousemove = function() {console.log(this.className);
-								//~ var x = document.getElementsByClassName(this.className);
-								//~ for (var i=0; i<x.length; x++) {
-									//~ console.log(x[i]);
-									//~ x[i].style.backgroundColor = 'aqua';
-								//~ }
-							//~ }
-							//~ d.onmouseout = function() {
-								//~ var x = document.getElementsByClassName(this.className);
-								//~ for (var i=0; i<x.length; x++) {
-									//~ x[i].style.backgroundColor = '';
-								//~ }
-							//~ }
+							d.onmouseover = d.onmousemove = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									x[i].style.backgroundColor = 'aqua';
+								}
+							}
+							d.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									x[i].style.backgroundColor = '';
+								}
+							}
 						}
 						if (d1b.innerHTML != '') {
 							var d = document.createElement('div');
