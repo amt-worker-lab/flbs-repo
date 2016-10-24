@@ -83439,11 +83439,12 @@ Laurens Hammond, Chicago, Ill.**/
 	 * Yelp biz profile search
 	 * 
 	 * Chios
-	 * Becky "" (fork chios)
+	 * "Becky" (fork chios) (aka "Brendan")
+	 * 
 	 * 
 	 */
 	// Becky ""
-	// 
+	// Brendan ""
 	// 
 	// 
 	var s = '<p><span style="font-family:arial,helvetica,sans-serif;">Include the full address, e.g. https://www.yelp.com/biz/707-sutter-san-francisco</span></p>';
@@ -83459,7 +83460,7 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
 			GM_addStyle('em {font-weight:bold;zoom:2;}');
 			GM_addStyle('#mturk_form {zoom:0.6;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:50% !important;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			//
 			var td = document.getElementsByTagName('td');
@@ -83514,7 +83515,7 @@ Laurens Hammond, Chicago, Ill.**/
 			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:98px;left:60%;width:39%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
 			var d2  = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:50%;height:30px;');
@@ -83522,6 +83523,10 @@ Laurens Hammond, Chicago, Ill.**/
 			var d2b = document.createElement('textarea');
 			d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:50%;height:30px;');
 			document.body.appendChild(d2b);
+			var d2c  = document.createElement('textarea');
+			d2c.setAttribute('style','position:absolute;top:0px;left:50%;width:50%;height:30px;');
+			d2c.disabled = true; // Disable
+			document.body.appendChild(d2c);
 			var d3b = document.createElement('input');
 			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
 			document.body.appendChild(d3b);
@@ -83530,7 +83535,7 @@ Laurens Hammond, Chicago, Ill.**/
 			/*END ITEMS*/
 			
 			AMT___addUserDecision(
-				'Becky,YelpScrape,Sept25',
+				'Brendan,YelpScrape,Oct.',
 				function() {
 					return o.comp+'|'+o.addr;
 				},
@@ -83554,10 +83559,9 @@ Laurens Hammond, Chicago, Ill.**/
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr;
+			d2c.value = o.comp; // Original name
 			//
 			d2.onblur = d2b.onblur = function() {
-				//~ d2.value = d2.value.trim();
-				//~ d2b.value = d2b.value.trim();
 				yelp();
 				//~ new AMT___core_factory().nextTab();
 				//~ yelp_search_snippet();
@@ -83701,13 +83705,13 @@ Laurens Hammond, Chicago, Ill.**/
 			function yelp_success(response) {
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
+				d1.innerText = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
 					d1.innerText += '0 results\n';
 					// DO RIGHT
 					yelp_search_snippet();
 					return;
 				}
-				d1.innerText = '';
 				d1b.innerText = '--';
 				var b = rs.businesses;
 				var auto_found = false;
@@ -83762,15 +83766,15 @@ Laurens Hammond, Chicago, Ill.**/
 					// Div
 					var d = document.createElement('div');
 					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-					d.className = 'exe';
+					d.className = 'exe '+b[i].url.replace(/\?[\d\D]*/, '');
 					d.ypurl = b[i].url;
 					d.api_response = b[i];
 					d1.appendChild(d);
 					d.innerHTML =
 						MT__bold(b[i].name, o.bold_comp) + '<br>' +
 						fmt_address +'<br>'+
-						'R:'+b[i].review_count+'<br>'+
-						'C:'+fmt_cat;
+						'R:'+b[i].review_count; //+'<br>'+
+						//'C:'+fmt_cat;
 					d.onclick = function() {
 						this.style.backgroundColor = 'LightGreen';
 						console.log(this.api_response);
@@ -83793,6 +83797,18 @@ Laurens Hammond, Chicago, Ill.**/
 						// necessary to scrape the page!
 						this.chk_url = o.q[1].value;
 						yp_profile(this);
+					}
+					d.onmouseover = d.onmousemove = function() {console.log(this.className)
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; x++) {
+							x[i].style.backgroundColor = 'LightGreen';
+						}
+					}
+					d.onmouseout = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; x++) {
+							x[i].style.backgroundColor = '';
+						}
 					}
 					//
 					var ypnm_cln = b[i].name.clean_str_to_auto();
@@ -83839,6 +83855,8 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			/**
 			 * function yelp_search_snippet
+			 * 
+			 * NOTE: THIS IS THE RIGHT SIDE!
 			 */
 			function yelp_search_snippet() {
 				var out = d1b;
@@ -83904,7 +83922,7 @@ Laurens Hammond, Chicago, Ill.**/
 							// Div
 							var d = document.createElement('div');
 							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
-							d.className = 'exe';
+							d.className = 'exe https://www.yelp.com'+u.getAttribute('href').replace(/\?[\d\D]*/, '');
 							d.api_response = {
 								url: u.getAttribute('href'),
 								review_count: rvct,
@@ -83933,6 +83951,18 @@ Laurens Hammond, Chicago, Ill.**/
 								// necessary to scrape the page!
 								this.chk_url = o.q[1].value;
 								yp_profile(this, true);
+							}
+							d.onmouseover = d.onmousemove = function() {console.log(this.className);
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; x++) {
+									x[i].style.backgroundColor = 'LightGreen';
+								}
+							}
+							d.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; x++) {
+									x[i].style.backgroundColor = '';
+								}
 							}
 						}
 						if (d1b.innerHTML != '') {
