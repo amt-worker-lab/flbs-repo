@@ -83518,13 +83518,13 @@ Laurens Hammond, Chicago, Ill.**/
 			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
 			var d2  = document.createElement('textarea');
-			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:50%;height:30px;');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2);
 			var d2b = document.createElement('textarea');
-			d2b.setAttribute('style','position:absolute;top:32px;left:0px;width:50%;height:30px;');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:60%;height:30px;');
 			document.body.appendChild(d2b);
 			var d2c  = document.createElement('textarea');
-			d2c.setAttribute('style','position:absolute;top:0px;left:50%;width:50%;height:30px;');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
 			d2c.disabled = true; // Disable
 			document.body.appendChild(d2c);
 			var d3b = document.createElement('input');
@@ -83777,7 +83777,7 @@ Laurens Hammond, Chicago, Ill.**/
 						'R:'+b[i].review_count; //+'<br>'+
 						//'C:'+fmt_cat;
 					d.onclick = function() {
-						this.style.backgroundColor = 'LightGreen';
+						this.style.backgroundColor = 'teal';
 						document.body.style.backgroundColor = 'LightGreen';
 						console.log(this.api_response);
 						// NextTab
@@ -83803,12 +83803,14 @@ Laurens Hammond, Chicago, Ill.**/
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
 						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal') continue; // Skip
 							x[i].style.backgroundColor = 'aqua';
 						}
 					}
 					d.onmouseout = function() {
 						var x = document.getElementsByClassName(this.className);
 						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal') continue; // Skip
 							x[i].style.backgroundColor = '';
 						}
 					}
@@ -83946,7 +83948,7 @@ Laurens Hammond, Chicago, Ill.**/
 								).bold_string+'<br>'+
 								'R:'+rvct;
 							d.onclick = function() {
-								this.style.backgroundColor = 'LightGreen';
+								this.style.backgroundColor = 'teal';
 								document.body.style.backgroundColor = 'LightGreen';
 								console.log(this.api_response);
 								// NextTab
@@ -83965,12 +83967,14 @@ Laurens Hammond, Chicago, Ill.**/
 							d.onmouseover = d.onmousemove = function() {
 								var x = document.getElementsByClassName(this.className);
 								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal') continue; // Skip
 									x[i].style.backgroundColor = 'aqua';
 								}
 							}
 							d.onmouseout = function() {
 								var x = document.getElementsByClassName(this.className);
 								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal') continue; // Skip
 									x[i].style.backgroundColor = '';
 								}
 							}
