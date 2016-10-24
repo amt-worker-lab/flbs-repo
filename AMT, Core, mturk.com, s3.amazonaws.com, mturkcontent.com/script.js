@@ -83512,11 +83512,14 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ }
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
+			var d1c = document.createElement('div');
+			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			document.body.appendChild(d1c);
 			var d2  = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2);
@@ -83552,7 +83555,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b
+					d1, d1b, d1c
 				],
 				offset: 98 // offset top
 			});
@@ -83699,21 +83702,48 @@ Laurens Hammond, Chicago, Ill.**/
 					},
 					success_callback: function(options) {
 						var rs = options.response.responseText;
-						yelp_success(options.response);
+						yelp_success(options.response, d1);
 					}
 				});
+				
+				// If d2.value != "" (blank) then 
+				// run a search with the address
+				// only!
+				if (d2.value != '') {
+					new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://api.yelp.com/v2/search' + p,
+					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1c.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						yelp_success(options.response, d1c);
+					}
+				});
+				}
 			}
-			function yelp_success(response) {
+			function yelp_success(response, div) {
 				var rs = response.responseText;
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
-				d1.innerText = '';
+				div.innerText = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
-					d1.innerText += '0 results\n';
+					div.innerText += '0 results\n';
 					// DO RIGHT
 					yelp_search_snippet();
 					return;
 				}
-				d1b.innerText = '--';
+					//d1b.innerText = '--';
 				var b = rs.businesses;
 				var auto_found = false;
 				var found_close_enough_street = false;
@@ -83770,7 +83800,7 @@ Laurens Hammond, Chicago, Ill.**/
 					d.className = 'exe '+b[i].url.replace(/\?[\d\D]*/, '');
 					d.ypurl = b[i].url;
 					d.api_response = b[i];
-					d1.appendChild(d);
+					div.appendChild(d);
 					d.innerHTML =
 						MT__bold(b[i].name, o.bold_comp) + '<br>' +
 						fmt_address +'<br>'+
@@ -83834,12 +83864,12 @@ Laurens Hammond, Chicago, Ill.**/
 						auto_found = true;
 					}
 				}
-				if (d1.innerHTML != '') {
+				if (div.innerHTML != '') {
 					var d = document.createElement('div');
 					d.setAttribute('style','height:2000px;');
-					d1.appendChild(d);
+					div.appendChild(d);
 				} else {
-					d1.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+					div.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
 				}
 				// If no street from above is close enough based on 
 				// bolding of street string, then run search snippet.
