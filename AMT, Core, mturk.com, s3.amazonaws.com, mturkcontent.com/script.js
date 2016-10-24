@@ -83517,7 +83517,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
-			var d1c = document.createElement('div');
+			var d1c = document.createElement('div'); // D1c is for address with no name! (the far right column)
 			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1c);
 			var d2  = document.createElement('textarea');
@@ -83661,22 +83661,17 @@ Laurens Hammond, Chicago, Ill.**/
 				parameters = [];
 				parameters.push(['term', terms]);
 				parameters.push(['location', near]);
-				//~ parameters.push(['callback', 'cb']);
 				parameters.push(['oauth_consumer_key', auth.consumerKey]);
 				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
 				parameters.push(['oauth_token', auth.accessToken]);
 				parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
-				//~ parameters.push(['oauth_timestamp', new Date().getTime() + 100000000000]); // Does not work
-
 				var message = {
 					'action' : 'http://api.yelp.com/v2/search',
 					'method' : 'GET',
 					'parameters' : parameters
 				};
-
 				OAuth.setTimestampAndNonce(message);
 				OAuth.SignatureMethod.sign(message, accessor);
-
 				var parameterMap = OAuth.getParameterMap(message.parameters);
 				var p = [];
 				for (var i in parameterMap) {
@@ -83710,6 +83705,32 @@ Laurens Hammond, Chicago, Ill.**/
 				// run a search with the address
 				// only!
 				if (d2.value != '') {
+					var terms = '';
+					var near = d2b.value;//'San+Francisco';
+					var accessor = {
+						consumerSecret : auth.consumerSecret,
+						tokenSecret : auth.accessTokenSecret
+					};
+					parameters = [];
+					parameters.push(['term', terms]);
+					parameters.push(['location', near]);
+					parameters.push(['oauth_consumer_key', auth.consumerKey]);
+					parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+					parameters.push(['oauth_token', auth.accessToken]);
+					parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+					var message = {
+						'action' : 'http://api.yelp.com/v2/search',
+						'method' : 'GET',
+						'parameters' : parameters
+					};
+					OAuth.setTimestampAndNonce(message);
+					OAuth.SignatureMethod.sign(message, accessor);
+					var parameterMap = OAuth.getParameterMap(message.parameters);
+					var p = [];
+					for (var i in parameterMap) {
+						p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+					}
+					p = '?' + p.join('&');
 					new AMT___requests_factory().xhr_with_disk_cache({
 					URL: 'http://api.yelp.com/v2/search' + p,
 					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
