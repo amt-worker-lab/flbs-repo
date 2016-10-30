@@ -6,6 +6,11 @@
  *			e.g. function a(){ return false}; console.log(a() == false) // true
  * 
  * Note: On starting scrapy...
+ * cd /home/dave/share/Development/scrapy/ && ./start-scrapyd.sh
+ * cd scrapy_amt/ && scrapyd-deploy
+ * Note: If running on David's computer then run scrapyd-deploy a second
+ * time because it fails the first time.
+ * 
  */
 function init__scrapy() {
 	/**
@@ -201,11 +206,11 @@ function init__scrapy() {
 									}
 									// Add to tabs queue if not in preview
 									if (AMT__Global_Vars.scriptVars['MSBell-TabsQueue'] == '1') {
-										addToTabsQ();
+										//~ addToTabsQ();
 									}
 									//~ document.body.style.backgroundColor = 'white';
 									document.body.style.zoom = '1';
-									addToTabsQ();
+									//~ addToTabsQ();
 									
 									// Let's try for some autos.
 									// o.auto_emails = []
@@ -254,7 +259,7 @@ function init__scrapy() {
 										document.body.style.backgroundColor = 'orange';
 										//~ document.body.style.zoom = '0.4';
 										o.q[0].value = this.email;
-										showNextTab(); // Manually call this....
+										//~ showNextTab(); // Manually call this....
 										doSubmit();
 									}
 								},
