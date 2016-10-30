@@ -77,7 +77,7 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
-				auto_emails: ['info','contact','contactus','mail'],
+				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
@@ -225,7 +225,8 @@ function init__scrapy() {
 										var mt = callback_obj.matches;
 										//~ console.log(mt);
 										var reg = new RegExp(
-											'^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
+											'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+											//~ '^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);
