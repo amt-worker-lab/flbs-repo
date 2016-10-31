@@ -87,7 +87,7 @@ function init__scrapy() {
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
-				'position:absolute;top:0px;left:30%;width:70%;height:400px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:40px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
 			/* END ITEMS */
@@ -100,7 +100,7 @@ function init__scrapy() {
 				elements: [
 					d1
 				],
-				offset: 0 // offset top
+				offset: 40 // offset top
 			});
 			
 			// ...
