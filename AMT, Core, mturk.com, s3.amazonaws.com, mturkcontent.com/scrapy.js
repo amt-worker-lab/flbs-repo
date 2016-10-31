@@ -60,7 +60,7 @@ function init__scrapy() {
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:30% !important;}');// Set width
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');// Set width=width:30% !important;
 			GM_addStyle('input[type="text"],select {width:80% !important;}');
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
