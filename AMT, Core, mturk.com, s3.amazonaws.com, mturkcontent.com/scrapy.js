@@ -53,7 +53,8 @@ function init__scrapy() {
 	// Find contact email on the website of a hotel
 	// 
 	// 
-	s = '<li><span style="font-size: 0.9em; line-height: 1.6em;">Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</span></li>';
+	//~ s = '<li><span style="font-size: 0.9em; line-height: 1.6em;">Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</span></li>';
+	s = '<li>Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
