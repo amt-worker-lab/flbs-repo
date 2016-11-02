@@ -54,7 +54,8 @@ function init__scrapy() {
 	// 
 	// 
 	//~ s = '<li><span style="font-size: 0.9em; line-height: 1.6em;">Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</span></li>';
-	s = '<li>Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</li>';
+	//~ s = '<li>Sometimes it helps to use a Google search of "site:exampledomain.com email @" to search through a website for an email contact.&nbsp;</li>';
+	s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for webmaster, but please DO NOT use whois privacy contacts.</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
