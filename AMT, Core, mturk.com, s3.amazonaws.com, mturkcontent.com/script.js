@@ -27,6 +27,109 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Jameson Rodgers
+	// Please Separate the Addresses into multiple boxes
+	//
+	// 
+	s = '<p><span font-size:="" new="" style="color: inherit; font-family: " times="">This list contains addresses that have been inputted into one line. Please reformat these addresses so that they are separated into multiple categories,</span></p>';
+	//~ s = 'Now begin filling out the boxes that correspond to the correct part of the address.';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			var x = document.getElementsByClassName('col-xs-12 col-sm-8 image')[0];
+			var o = {
+				u: x.innerText.trim(),
+				q: [
+					document.getElementById('Street'),
+					document.getElementById('City'),
+					document.getElementById('State'),
+					document.getElementById('ZIP'),
+					document.getElementById('Country'),
+				]
+			}
+			// Invalid
+			document.getElementById('Invalid').onclick = function(e) {
+				this.checked = true;
+				// Empty all fields...
+				for (var i in o.q) {
+					o.q[i].value = '';
+				}
+				doSubmit();
+			}
+			// Has USA, remove this...
+			var n = /[, ]*(USA|united states)$/i.exec(o.u);
+			if (n && n[1]) {
+				o.u = o.u.replace(/[, ]*(USA|united states)$/i, '').trim();
+			}
+			// Has zip?
+			var n = /[, ]*(\d{5})$/.exec(o.u);console.log(n);console.log(o);
+			if (n && n[1]) {
+				o.u = o.u.replace(/[, ]*\d{5}$/, '').trim();
+				o.q[3].value = n[1];
+			}
+			// Has state?
+			var n = /[, ]*([A-Z]{2})$/.exec(o.u);
+			if (n && n[1]) {
+				o.u = o.u.replace(/[, ]*([A-Z]{2})$/, '').trim();
+				o.q[2].value = n[1];
+			}
+			// text...
+			x.innerText = '';
+			var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+				textToAnnotate: o.u,
+				output_fields: o.q,
+				callback_mouseup: function(addField) {
+					// Remove trailing commas
+					addField.value = addField.value.replace(/ *[,;]*$/, '');
+					addField.value = addField.value.replace(/^ *[,;]* */, '');
+					if (addField == o.q[2]) { // State. Try going full to abbreviation.
+						addField.value = addField.value.state_full_to_abbr();
+					}
+				},
+				//~ appendToField: true,
+				//~ appendToField_glue: ', ',
+				//~ delimeter: '',
+				focusToField: true,
+				style: 'border-radius:4px;border:2;border-style:solid;background-color:#efefef;cursor:pointer;zoom:2;',
+			});
+			buttons.style.display = 'inline';
+			x.appendChild(buttons);
+			// onsubmit
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					}
+				}
+			}
+			// Keypress
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				if (c == 13) {
+					for (var i in o.q) {
+						o.q[i].value = o.q[i].value.trim();
+						if (o.q[i].value == '' && o.q[i] != o.q[4]) { // Blank and not country
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						}
+					}
+					// Here?
+					doSubmit();
+				}
+			}, false);
+		}
+		new run().f();
+	}
 	// Brent Dixon
 	// Search, Copy, Paste, Done!
 	//
@@ -65985,9 +66088,6 @@ Laurens Hammond, Chicago, Ill.**/
 				e.preventDefault();
 				return false;
 			}
-			
-			
-			
 		}
 		
 		// init
