@@ -66,6 +66,7 @@ function init__scrapy() {
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
 			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '40');
+			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -104,7 +105,6 @@ function init__scrapy() {
 				],
 				offset: 40 // offset top
 			});
-			
 			// ...
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -121,12 +121,21 @@ function init__scrapy() {
 				doSubmit();
 				return false;
 			}
-			// Get skips file
-			new AMT___requests_factory().fs__load_skips({
-				skips_key: 'austin_load_skips',
-				callback: init,
-				callback_err: function() {}
-			});
+			// Check bird var scrapy_do_websearch
+			// Whether or not to do a web search to begin with.
+			if (AMT__Global_Vars.scriptVars['scrapy_do_web_search'] == '1') {
+				// Get skips file
+				new AMT___requests_factory().fs__load_skips({
+					skips_key: 'austin_load_skips',
+					callback: init,
+					callback_err: function() {}
+				});
+			} else {
+				// Else straight to scrapy...
+				// scrapy_do_websearch
+				// Init
+				scrapy(o.sd_start_urls, o.sd_allowed_domains);
+			}
 			// Init
 			function init(SKIP_SITES) {
 				o.SKIP_SITES = SKIP_SITES; // Populate.
