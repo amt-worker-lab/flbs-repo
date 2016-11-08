@@ -83545,7 +83545,7 @@ Laurens Hammond, Chicago, Ill.**/
 	 */
 	// Becky ""
 	// Brendan ""
-	// 
+	// TODO: Add onmouseout of body? page? window?
 	// 
 	var s = '<p><span style="font-family:arial,helvetica,sans-serif;">Include the full address, e.g. https://www.yelp.com/biz/707-sutter-san-francisco</span></p>';
 	if  (
@@ -83612,14 +83612,14 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ }
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
-			d1. setAttribute('style','position:absolute;top:98px;left:0;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
-			d1b.setAttribute('style','position:absolute;top:98px;left:33%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
 			document.body.appendChild(d1b);
-			var d1c = document.createElement('div'); // D1c is for address with no name! (the far right column)
-			d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
-			document.body.appendChild(d1c);
+			//~ var d1c = document.createElement('div'); // D1c is for address with no name! (the far right column)
+			//~ d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			//~ document.body.appendChild(d1c);
 			var d2  = document.createElement('textarea');
 			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
 			document.body.appendChild(d2);
@@ -83638,7 +83638,7 @@ Laurens Hammond, Chicago, Ill.**/
 			/*END ITEMS*/
 			
 			AMT___addUserDecision(
-				'Brendan,YelpScrape,Oct.',
+				'Brendan,YelpScrape,Nov.8',
 				function() {
 					return o.comp+'|'+o.addr;
 				},
@@ -83804,7 +83804,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// If d2.value != "" (blank) then 
 				// run a search with the address
 				// only!
-				if (d2.value != '') {
+				if (d2.value != '' && 0 == 1) {
 					var terms = '';
 					var near = d2b.value;//'San+Francisco';
 					var accessor = {
@@ -83832,26 +83832,26 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					p = '?' + p.join('&');
 					new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'http://api.yelp.com/v2/search' + p,
-					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
-					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-						var rs = options.response.responseText;
-						if  (
-							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
-							rs.indexOf('"text": "Signature was invalid"') != -1
-							)
-						{
-							d1c.style.backgroundColor = 'yellow';
-							return false;
+						URL: 'http://api.yelp.com/v2/search' + p,
+						filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
+						check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+							var rs = options.response.responseText;
+							if  (
+								rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+								rs.indexOf('"text": "Signature was invalid"') != -1
+								)
+							{
+								d1c.style.backgroundColor = 'yellow';
+								return false;
+							}
+							else
+								return true;
+						},
+						success_callback: function(options) {
+							var rs = options.response.responseText;
+							yelp_success(options.response, d1c);
 						}
-						else
-							return true;
-					},
-					success_callback: function(options) {
-						var rs = options.response.responseText;
-						yelp_success(options.response, d1c);
-					}
-				});
+					});
 				}
 			}
 			function yelp_success(response, div) {
