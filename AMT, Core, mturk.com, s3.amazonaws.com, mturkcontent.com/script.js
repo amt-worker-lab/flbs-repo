@@ -83601,11 +83601,12 @@ Laurens Hammond, Chicago, Ill.**/
 			for (var i in o.q) {
 				o.q[i].value = '';
 			}
+			o.comp = o.comp.replace(/&/g, 'and'); // Try this to improve yield...
 			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
 			//
-			o.addr_cln = o.addr.toLowerCase().replace(/usa$/, '').replace(/[^a-z0-9]/gi, '').replace(/\d{5}$/, ''); // Remove zip
+			o.addr_cln = o.addr.toLowerCase().replace(/[, ]*(usa|us)$/, '').replace(/[^a-z0-9]/gi, '').replace(/\d{5}$/, ''); // Remove zip
 			o.comp_cln = o.comp.toLowerCase().replace(/[^a-z0-9]/gi, '');
 			//~ //
 			//~ if (o.comp_cln == 'homedepot') {
