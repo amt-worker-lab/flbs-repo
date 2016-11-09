@@ -83546,7 +83546,8 @@ Laurens Hammond, Chicago, Ill.**/
 	// Becky ""
 	// Brendan ""
 	// TODO: Add onmouseout of body? page? window?
-	// 
+	// TODO: Autos: Remove US from Original; Remove Zip from Yelp;
+	//
 	var s = '<p><span style="font-family:arial,helvetica,sans-serif;">Include the full address, e.g. https://www.yelp.com/biz/707-sutter-san-francisco</span></p>';
 	if  (
 		ih.indexOf(s) != -1
