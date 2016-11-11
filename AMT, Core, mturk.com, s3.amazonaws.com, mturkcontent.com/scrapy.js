@@ -165,6 +165,7 @@ function init__scrapy() {
 				// Init
 				scrapy(o.sd_start_urls, o.sd_allowed_domains);
 			}
+			
 			/**
 			 * function scrapy
 			 */
@@ -219,7 +220,6 @@ function init__scrapy() {
 									}
 									//~ document.body.style.backgroundColor = 'white';
 									document.body.style.zoom = '1';
-									//~ addToTabsQ();
 									
 									// Let's try for some autos.
 									// o.auto_emails = []
@@ -256,7 +256,11 @@ function init__scrapy() {
 											}
 										}
 									}
+
 									// CONTINUES (job is NOT in "preview" mode)
+
+									addToTabsQ();
+
 									return false;
 								},
 								// What to do onclick

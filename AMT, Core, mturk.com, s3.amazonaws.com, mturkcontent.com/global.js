@@ -49,6 +49,7 @@ var AMT__Global_Vars = //function()
 		{name: 'PassbyDelay',				value: '100', isPersistant:true},
 		{name: 'TabsQ JumpToFirst',			value: '1', isPersistant:true},
 		{name: 'addToTabsQ:ShiftRight',		value: '1', isPersistant:true},
+		{name: 'EnableTabsQ',				value: '1', isPersistant:true},
 		{name: 'Return NextTab',			value: '0', isPersistant:true},
 		{name: 'Server Location',			value: 'http://192.168.1.2', isPersistant:true},
 		{name: 'JumpToCaptchas',			value: '1', isPersistant:true},
@@ -580,17 +581,38 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		} else {
 			console.log('chrome.runtime.id == '+chrome.runtime.id + '. Continuing!');
 		}
+		
+		//Passby if we're already submitting
 		if(AMT__Global_Vars.isSubmitting && 
 		  AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
-		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') {
+		   !AMT__Global_Vars.isPreview && AMT__Global_Vars.toggle_ntpassby == 'On') { 
 			window.setTimeout(function() {
 				AMT__Global_Vars.numSubmitQueries++;
 				new AMT___core_factory().nextTab();
 			}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
 			//alert('here here');
 		}
-		else if(AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1)) {
-		
+		//Check if we're special - isQProduct
+		else if(AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1) &&
+				AMT__Global_Vars.toggle_ntpassby == 'On' &&
+				!AMT__Global_Vars.isPreview &&
+				AMT__Global_Vars.scriptVars["EnableTabsQ"] != "0") {
+				if(AMT__Global_Vars.isQProduct) {
+					//Stay here, and check for iframe focus 
+					if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
+						console.log('focusing');
+						console.log(document.getElementsByTagName('iframe')[0]);
+						document.getElementsByTagName('iframe')[0].focus();
+					}
+				}
+				else { //jump away
+					console.log("ENABLE_TABES_Q JUMPING AWAY");
+
+					window.setTimeout(function() {
+						AMT__Global_Vars.numSubmitQueries++;
+						new AMT___core_factory().nextTab();
+					}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
+				}
 		}
 		else if(AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
@@ -855,14 +877,14 @@ function recordReturn() {
 /**
  * Tab Switching 
  ***/
-isQProduct = false;
-qProductId = false;
-
+isQProduct = false; //deprecated
+qProductId = false; //deprecated
+AMT__Global_Vars.isQProduct = false;
 
 
 //NOTE: The parameters are currently deprecated
 function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
-	isQProduct = true;
+	AMT__Global_Vars.isQProduct = true;
 	/*AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	if(!jumpToFirst) {
 		var jumpToFirst = AMT__Global_Vars.scriptVars['TabsQ JumpToFirst'] != '0';
@@ -912,8 +934,14 @@ function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 
 
 
+//Deprecated
+//This now simply calls nextTab
 function showNextTab(options) {
 	console.log('Showing Next Tab');
+	new AMT___core_factory().nextTab();
+	return;
+
+	//Everything below is deprecated and doesn't get called
 	isQProduct = false;
 	if(options && options.hasOwnProperty("isTopWindow")) {
 		console.log("isTopWindow: " +options.isTopWindow);
@@ -14661,7 +14689,7 @@ function doSubmit(form, location, callback_function, offsetTime, doServerSideSub
 			new AMT___core_factory().shiftFarLeft();
 		}
 		if (AMT__Global_Vars.scriptVars['DS ShowNextTab'] != '0') {
-			showNextTab();
+			//showNextTab(); deprecated
 		}
 		if (AMT__Global_Vars.scriptVars['DS NextTab'] != '0') {
 			new AMT___core_factory().nextTab();
