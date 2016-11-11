@@ -136,9 +136,10 @@ function init__scrapy() {
 			function init(SKIP_SITES) {
 				o.SKIP_SITES = SKIP_SITES; // Populate.
 				// SP search.
+				var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email")'),
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email")') + opts,
 					callback_function: sp
 				});
 			}
