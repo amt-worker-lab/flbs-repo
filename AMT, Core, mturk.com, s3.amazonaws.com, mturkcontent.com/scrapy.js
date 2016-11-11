@@ -67,6 +67,8 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
 			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '20');
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
+			// Call nextTab now...
+			new AMT___core_factory().nextTab();
 			
 			var td = document.getElementsByTagName('td');
 			var o = {
@@ -256,11 +258,8 @@ function init__scrapy() {
 											}
 										}
 									}
-
-									// CONTINUES (job is NOT in "preview" mode)
-
+									//
 									addToTabsQ();
-
 									return false;
 								},
 								// What to do onclick
