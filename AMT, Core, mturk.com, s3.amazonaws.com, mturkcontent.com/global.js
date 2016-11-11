@@ -588,7 +588,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				new AMT___core_factory().nextTab();
 			}, AMT__Global_Vars.scriptVars['PassbyDelay']*1);
 			//alert('here here');
-		}else if(AMT__Global_Vars.isTopWindow) {
+		}
+		else if(AMT__Global_Vars.numSubmitQueries < (AMT__Global_Vars.scriptVars['NumPassby']*1 -1)) {
+		
+		}
+		else if(AMT__Global_Vars.isTopWindow) {
 			if(AMT__Global_Vars.scriptVars['NextTab Iframe Focus'] != '0') {
 				console.log('focusing');
 				console.log(document.getElementsByTagName('iframe')[0]);
@@ -856,9 +860,10 @@ qProductId = false;
 
 
 
+//NOTE: The parameters are currently deprecated
 function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 	isQProduct = true;
-	AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
+	/*AMT__Global_Vars.callbackOnShowNextTabArrival = callbackOnShowNextTabArrival;
 	if(!jumpToFirst) {
 		var jumpToFirst = AMT__Global_Vars.scriptVars['TabsQ JumpToFirst'] != '0';
 	}
@@ -894,7 +899,7 @@ function addToTabsQ(callbackOnShowNextTabArrival, jumpToFirst) {
 								  }, function(response) {
 									qProductId = response.qProductId;
 								});
-	}
+	}*/
 	if(!AMT__Global_Vars.isTopWindow) {
 		new AMT___core_factory().iframe2parent__postMessage({
 			action: 'tabsQTitleChange'
