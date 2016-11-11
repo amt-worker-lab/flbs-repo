@@ -13763,7 +13763,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	// : post_request (DEFAULT=null), an object {}, {query: 'query'}
 	// : headers_array
 	// : remove_urls_from_body, boolean, remove URLs from the result body
-	
 	/*
 	 * obj_vars = {
 	 * 		catch_include: 'This is a string that means it is time to SKIP!',
@@ -13771,7 +13770,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	 * 		startPage: true
 	 * }
 	 */
-	
 	var o = {
 		local_URL_init: '',
 		local_URL_complete: '',
@@ -14044,9 +14042,9 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	function proxy_init() {
 		AMT___POPUP__initializeGlobals(
 			function() {
-				
-				o.local_URL_init		= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_init;
-				o.local_URL_complete	= AMT___POPUP___PROXY_REDACTED_ + o.local_URL_complete;
+				var h = (o.obj_vars && o.obj_vars.host) ? o.obj_vars.host : AMT___POPUP___PROXY_REDACTED_;
+				o.local_URL_init		= h + o.local_URL_init;
+				o.local_URL_complete	= h + o.local_URL_complete;
 				// Xhr
 				GM_xmlhttpRequest({ // init
 					method: "GET",
@@ -14113,7 +14111,6 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		proxy_waitComplete(
 			this.obj_vars.callback_function
 		);
-		
 		return;
 	}
 }

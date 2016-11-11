@@ -140,7 +140,8 @@ function init__scrapy() {
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
 					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email")') + opts,
-					callback_function: sp
+					callback_function: sp,
+					host: MT___host
 				});
 			}
 			// SP
