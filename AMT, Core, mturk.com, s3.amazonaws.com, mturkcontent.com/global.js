@@ -4769,13 +4769,18 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				}
 				if (obj[i].email_email) {
 					// replace non-digit non-word starting...
-					obj[i].email_email = obj[i].email_email.replace(/^[^\d\w]+/, '');
+					var x = obj[i].email_email
+					x = x.replace(/^[^\d\w]+/, '');
 					//maps.google.com
 					//google.com/maps
-					//\+[A-Z]{2}\+\d\/@\d\.\d
+					//google.com/calendar
+					//\+[A-Z]{2}\+\d+\/@\d+\.\d+
 					//noreply@
 					//@noreply
-					callback_obj.matches.push(obj[i]);
+					//noreply@blogger.com
+					x = x.trim();
+					if (x != '')
+						callback_obj.matches.push(obj[i]);
 				}
 				//~ if (callback_obj.matches.length)
 				//~ else 						// is match
