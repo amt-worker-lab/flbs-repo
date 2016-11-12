@@ -4711,11 +4711,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 		data += ampersand + encodeURIComponent(i) + '=' + encodeURIComponent(value);
 	}
 	
-	// DEBUG
-	//~ console.log(data);
-	//~ console.log(data.split('&').join(' -d '));
-	//~ console.log(data.split('&').join(' -a '));
-	
 	/** Function scrapy__begin_scrape__process_completed
 	 * @param: input_object
 	 * @param: input_object.rs
@@ -4772,8 +4767,16 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 							break;
 					}
 				}
-				if (obj[i].email_email)
+				if (obj[i].email_email) {
+					// replace non-digit non-word starting...
+					obj[i].email_email = obj[i].email_email.replace(/^[^\d\w]+/, '');
+					//maps.google.com
+					//google.com/maps
+					//\+[A-Z]{2}\+\d\/@\d\.\d
+					//noreply@
+					//@noreply
 					callback_obj.matches.push(obj[i]);
+				}
 				//~ if (callback_obj.matches.length)
 				//~ else 						// is match
 				//~ {
@@ -4804,21 +4807,11 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 				return;
 			}
 		}
-		
-		//
-		// max powers
-		//
-		//~ console.log(callback_obj);
-		
 		// Changed to
 		// (callback_obj, seed_object)
 		// from
 		// (jobid, callback_obj, seed_object)
-		//
 		callback_function(callback_obj, seed_object);
-		
-		//~ callback_function(jobid, callback_obj, seed_object);
-		
 	}
 	
 	// CACHE !! //
@@ -4931,13 +4924,6 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 			});
 		}
 	});
-	
-	
-	
-		// XXXXX SET A DEFAULT TIMEOUT FOR THIS TASK!
-		// b/c cpu sitting at max...
-		//~ var rf = new AMT___requests_factory();
-		//~ rf.scrapy__cancel_job(jobid, 40000);
 }
 /**
  * database__select
