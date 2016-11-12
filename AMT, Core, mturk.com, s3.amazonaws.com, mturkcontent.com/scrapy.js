@@ -94,6 +94,12 @@ function init__scrapy() {
 				'position:absolute;top:40px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style',
+				'position:absolute;top:0px;left:50%;width:49%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1b);
+			d1b.innerText = o.sd_start_urls[0].replace(/https?:\/\//i, '');
 			/* END ITEMS */
 			
 			// innerHeight
