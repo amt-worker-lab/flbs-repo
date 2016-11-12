@@ -256,13 +256,31 @@ function init__scrapy() {
 											{
 												document.body.style.zoom = '0.4';
 												o.q[0].value = mt[i].email_email;
-												//~ o.q[1].value = mt[i].url;
-												//~ if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
-													//~ return false;
 												doSubmit();
 												break; // Stop here
 											}
 										}
+									} else {
+										// Auto return and accept because
+										// there are no emails found.
+										// R&A from global.js...
+										//~ if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && document.getElementById('MT__gm_returnaccept')) {
+											//~ document.getElementById('MT__gm_returnaccept').click();
+											//~ event.preventDefault();
+											//~ return false;
+										//~ }
+										//~ else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
+										//~ {
+										//~ }
+										//Send a message to the top window and
+										//tell it to return and acceptfresh
+										new AMT___core_factory().
+											iframe2parent__postMessage( //
+												{
+													action: 'return_and_accept'
+												}
+											);
+										return false;
 									}
 									//
 									addToTabsQ();
@@ -279,9 +297,6 @@ function init__scrapy() {
 									{
 										document.body.style.backgroundColor = 'orange';
 										o.q[0].value = this.email;
-										//~ o.q[1].value = this.url;
-										//~ if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
-											//~ return false;
 										doSubmit();
 									}
 								},

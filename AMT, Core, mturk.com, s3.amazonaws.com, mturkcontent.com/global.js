@@ -4768,18 +4768,23 @@ AMT___requests_factory.prototype.scrapy__begin_scrape = function(parameters_obje
 					}
 				}
 				if (obj[i].email_email) {
-					// replace non-digit non-word starting...
-					var x = obj[i].email_email
-					x = x.replace(/^[^\d\w]+/, '');
-					//maps.google.com
-					//google.com/maps
-					//google.com/calendar
-					//\+[A-Z]{2}\+\d+\/@\d+\.\d+
-					//noreply@
-					//@noreply
-					//noreply@blogger.com
-					x = x.trim();
-					if (x != '')
+					// Integrity check
+					var x = obj[i].email_email;
+					x = x.replace(/^\+[A-Z]{2}\+\d+\/@\d+\.\d+$/, ''); // eg ...
+					x = x.replace(/^[^\d\w]+/, ''); // Remove non-digit non-word characters at start
+					if (x.indexOf('@example.com') != -1) // Ends with @example.com
+						x = '';
+					if (x.indexOf('@noreply') != -1) // Ends with @noreply
+						x = '';
+					if (x.indexOf('noreply@') == 0) // Starts with noreply@
+						x = '';
+					if (x.indexOf('maps.google.com') != -1) // maps.google.com
+						x = '';
+					if (x.indexOf('google.com/maps') != -1) // google.com/maps
+						x = '';
+					if (x.indexOf('google.com/calendar') != -1) // google.com/calendar
+						x = '';
+					if (x.trim() != '')
 						callback_obj.matches.push(obj[i]);
 				}
 				//~ if (callback_obj.matches.length)
@@ -17474,6 +17479,7 @@ function AMT___ReturnAndAcceptKeyPress(event) {
 					}
 				});
 				break;
+				// Return button
 				case AMT__Global_Vars.scriptVars['Return Button Hotkey'].toLowerCase().charCodeAt(): 
 					if(AMT__Global_Vars.scriptVars['Return Button Hotkey'] != "0") {
 						new AMT___core_factory().iframe2parent__postMessage({	
