@@ -128910,12 +128910,92 @@ qatar,80
 	 * Richard A. Garro 
 	 * Richard A. Garro #2
 	 * Susan
+	 * Sherry Gould
+	 * 
+	 * 
 	 * 
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// Sherry Gould
+	// Find the Website Address for Company
+	//
+	// 
+	var s = '<li>Enter the website address for the <strong>official website </strong>of the business.</li>\n	<li>Include the full address, e.g. http://www.amazon.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				addr: td[3].innerText.trim(),
+				phone: td[5].innerText.trim(),
+				boldArray: [],
+				boldArray2: [],
+				boldArray3: [],
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			o.boldArray2= o.addr.clean_string_to_array();
+			o.boldArray3= o.phone.clean_string_to_array();
+			console.log(o);
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					o.comp +' '+ o.addr,
+					'"' + o.comp.split(' ').join('" "') + '" ' + (o.web != '' ? o.web + ' ' : '') + o.catg,
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					bold: {
+						black: o.boldArray,
+						blue: o.boldArray2,
+						brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				//~ naText:'not found',
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Susan
 	// Find the Website Address for Toy Products - Merchants
 	//
