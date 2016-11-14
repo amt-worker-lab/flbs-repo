@@ -128949,6 +128949,7 @@ qatar,80
 			o.boldArray = o.comp.clean_string_to_array();
 			o.boldArray2= o.addr.clean_string_to_array();
 			o.boldArray3= o.phone.clean_string_to_array();
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
@@ -128973,7 +128974,7 @@ qatar,80
 				searches:[
 					o.comp,
 					o.comp +' '+ o.addr,
-					'"' + o.comp.split(' ').join('" "') + '" ' + (o.web != '' ? o.web + ' ' : '') + o.catg,
+					(o.phone != '' ? o.comp+' '+o.phone : o.spaced+o.addr),
 				],
 				search_results: {
 					//~ use_domain_only: true,
