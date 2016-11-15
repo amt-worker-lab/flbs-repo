@@ -69,7 +69,7 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
-			
+			//
 			var td = document.getElementsByTagName('td');
 			var o = {
 				sd_start_urls: [td[3].innerText.trim()],
@@ -567,6 +567,9 @@ function init__scrapy() {
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
+			// Call nextTab now...
+			new AMT___core_factory().nextTab();
+			//
 			var td = document.getElementsByTagName('td');
 			var o = {
 				sd_start_urls: [td[1].innerText.trim()],
@@ -745,8 +748,30 @@ function init__scrapy() {
 												break; // Stop here
 											}
 										}
+									} else {
+										// Auto return and accept because
+										// there are no emails found.
+										// R&A from global.js...
+										//~ if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && document.getElementById('MT__gm_returnaccept')) {
+											//~ document.getElementById('MT__gm_returnaccept').click();
+											//~ event.preventDefault();
+											//~ return false;
+										//~ }
+										//~ else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
+										//~ {
+										//~ }
+										//Send a message to the top window and
+										//tell it to return and acceptfresh
+										new AMT___core_factory().
+											iframe2parent__postMessage( //
+												{
+													action: 'return_and_accept'
+												}
+											);
+										return false;
 									}
-									// CONTINUES (job is NOT in "preview" mode)
+									//
+									addToTabsQ();
 									return false;
 								},
 								// What to do onclick
