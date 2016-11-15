@@ -8500,6 +8500,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .search											Object
  * .search.str_add_to_searches_hidden				String, A default string to add to all searched. E.g. " site:linkedin.com".
  * .hide_search_fields BOOLEAN
+ * .AmtRecordAndSubmit								Use AMT__recordAndSubmit rather than doSubmit
  * 
  * @return Not much to return. However, `options_object` is modified / modifiable.
  * 		options_object.results.divs
@@ -8675,9 +8676,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	d3c. addEventListener('keydown', ef.keydown__blur_field, true);
 	
 	// Na Button
-	//
-	//
-	//
 	if (options_object.naText) {
 		na.onclick = function() {
 			this.style.backgroundColor = 'LightGreen';
@@ -8697,7 +8695,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	}
 	
 	// Hide empty columns!
-	//
 	if (options_object.searches.length == 1) {
 		d1b.style.display =
 		d1c.style.display = 'none';
@@ -8706,8 +8703,7 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	} else if (options_object.searches.length == 2) {
 		d1c.style.display = 
 		d3c.style.display = 
-		'none';
-		
+			'none';
 		d3.style.width =
 		d3b.style.width =
 		d1.style.width =
@@ -8766,12 +8762,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 		var x = rs.split("\n");
 		SKIP_SITES = {}; // ASSOC.
 		// FULL
-		//
 		for (var i in x) {
 			SKIP_SITES[x[i]] = true;
 		}
 		// SUBDOMAINS
-		//
 		for (var i in x) {
 			var y;
 			if (y = /\.([^\.]+\.[^\.]+)$/.exec(x[i])) {
@@ -8779,7 +8773,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			}
 		}
 		// Init
-		//
 		company_URL__SP_init();
 	}
 	// Init
@@ -9145,25 +9138,20 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 							check_site_is200(options_object.out_element.value);
 							return;
 						}
-						// Regular submit...
-						if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
-							doSubmit();
-						else {
-							showNextTab();
-							doSubmit();
+						// Submit...
+						if (options_object.AmtRecordAndSubmit) { // Test:alert('x');
+							AMT___recordAndSubmit(); // Record
+						} else {
+							doSubmit();				 // Regular
 						}
+						//~ if(AMT__Global_Vars.scriptVars['Skip For High Yield'] == '0')
+							//~ doSubmit();
+						//~ else {
+							//~ showNextTab();
+							//~ doSubmit();
+						//~ }
 					}
 				};
-			//~ function update_bgc_results_onclick(div) {
-				//~ var x = document.getElementsByClassName('result_highlight');
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ if (x[i].className == div.className) {
-						//~ x[i].style.backgroundColor = 'LightGreen';
-						//~ x[i].is_selected = true; // Set .is_selected
-					//~ }
-				//~ }
-			//~ }
 			////////////////////////////////////
 			// Mouse event functions
 			// Note: New functionality! ... Each "<p>" has a .className ("cls_[HREF] result_highlight") and .tmp_className ("cls_[HREF]").

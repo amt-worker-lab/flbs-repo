@@ -128951,6 +128951,11 @@ qatar,80
 			o.boldArray3= o.phone.clean_string_to_array();
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			console.log(o);
+			AMT___addUserDecision(
+				'Sherry Gould', function() {
+					return o.comp +'|'+ o.addr +'|'+ o.phone;
+				}, ['Id(web_url)']
+			)
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
@@ -128991,6 +128996,10 @@ qatar,80
 				out_element: o.q[0],
 				parent: d1,
 				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				//~ onclick_success: function(e) {
+					
+				//~ },
 				//~ naText:'not found',
 			});
 		}
