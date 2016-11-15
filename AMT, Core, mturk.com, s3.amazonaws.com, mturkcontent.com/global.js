@@ -9173,18 +9173,6 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 					if (i == 'length') break;
 					x[i].style.backgroundColor = 'LightGreen';
 				}
-				// OLD
-				//
-				//
-				//~ var x = document.getElementsByTagName('p');
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ if (x[i].className == this.className) {
-						//~ x[i].style.backgroundColor = 'LightGreen';
-					//~ } else {
-						//~ x[i].style.backgroundColor = x[i].original_bg_color;
-					//~ }
-				//~ }
 			}
 			// MouseOut
 			function df_mout_(e) {
@@ -9197,20 +9185,8 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						//~ x[i].style.backgroundColor = x[i].original_bg_color; // DEPRECATE THIS.............
 					}
 				}
-				// OLD
-				//
-				//
-				//~ var x = document.getElementsByTagName('p');
-				//~ for (var i in x) {
-					//~ if (i == 'length') break;
-					//~ if (x[i].className == this.className) {
-						//~ x[i].style.backgroundColor = x[i].original_bg_color;
-					//~ }
-				//~ }
 			}
 			// Add Mouse event functions
-			//
-			//
 			//
 			//mouseover
 			d.addEventListener('mouseover', df_movr_, false);
@@ -9224,13 +9200,9 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			
 			// ADD THIS TO out_div RESULTS!
 			//
-			//
-			//
 			out_div.results.push(div_result); // Add this element to DIV.results
 			
 			//~ // counter
-			//~ //
-			//~ //
 			//~ counter++;
 		}
 		count_domains();
@@ -9367,8 +9339,22 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			if (options_object.hasOwnProperty('load_success_callback')) {
 				options_object.load_success_callback( options_object );
 			}
-			
-			// Mark most domains...
+			// Zero reults in all columns?
+			if (o.first_domains.length == 0) {
+				// Auto return accept?
+				if (options_object.AutoReturnAcceptIfZero) {
+					//Send a message to the top window and
+					//tell it to return and acceptfresh
+					new AMT___core_factory().
+						iframe2parent__postMessage( //
+							{
+								action: 'return_and_accept'
+							}
+						);
+					return;
+				}
+			}
+			// Mark most domain.
 			var max = 0;
 			for (var i in o.domain_counts) {
 				if (o.domain_counts[i] > max) {
@@ -9387,11 +9373,11 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 				}
 			}
 			
-			if(o.panels_loaded == o.num_panels && o.clickIntoUtilityTabs) {
+			if(o.clickIntoUtilityTabs) {
 				createUtilityTabsAndRewriteExeBehavior();
 			}
 			
-			if(o.panels_loaded == o.num_panels && o.onLoadAddToTabsQ) {
+			if(o.onLoadAddToTabsQ) {
 				onLoadAddToTabsQ();
 			}
 			

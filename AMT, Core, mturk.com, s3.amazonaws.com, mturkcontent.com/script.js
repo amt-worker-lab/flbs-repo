@@ -128997,6 +128997,7 @@ qatar,80
 				parent: d1,
 				offsetTop: 0,
 				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
 				//~ onclick_success: function(e) {
 					
 				//~ },
