@@ -128979,7 +128979,7 @@ qatar,80
 				searches:[
 					o.comp,
 					o.comp +' '+ o.addr,
-					(o.phone != '' ? o.comp+' '+o.phone : o.spaced+o.addr),
+					(o.phone != '' ? '"'+o.phone+'"' : o.spaced+o.addr), // Just phone if available
 				],
 				search_results: {
 					//~ use_domain_only: true,
