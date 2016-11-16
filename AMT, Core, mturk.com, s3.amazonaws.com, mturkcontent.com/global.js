@@ -8588,7 +8588,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			options_object.out_element
 		],
 		onLoadAddToTabsQ: options_object.onLoadAddToTabsQ,
-		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs
+		clickIntoUtilityTabs: options_object.clickIntoUtilityTabs,
+		bad_regex_domain: [// This is an array of matches to domains to ignore, such as amfibi.directory
+		   /\.amfibi\.directory[\/]*$/
+		], 
 	}
 	options_object.o = o; // ...
 	/* BEGINS ITEMS */
@@ -9004,6 +9007,17 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 						callback_function: false
 					}
 				);
+			
+			// Is this a bad regex domain?
+			// If so continue.
+			var found_brd = false;
+			for (var j in o.bad_regex_domain) {
+				if (o.bad_regex_domain[j].exec(domain)) {
+					found_brd = true;
+					break;
+				}
+			}
+			if (found_brd) continue; // Skip result.
 			
 			// Remove search engine bolding!
 			full = full.replace(/<\/?b[^>]*>/gi, '');
