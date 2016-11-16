@@ -522,6 +522,7 @@ function init__scrapy() {
 										}
 									}
 									// CONTINUES (job is NOT in "preview" mode)
+									addToTabsQ();
 									return false;
 								},
 								// What to do onclick
