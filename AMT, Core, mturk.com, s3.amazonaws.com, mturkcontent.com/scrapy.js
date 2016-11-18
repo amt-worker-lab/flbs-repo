@@ -731,8 +731,8 @@ function init__scrapy() {
 										var mt = callback_obj.matches;
 										//~ console.log(mt);
 										var reg = new RegExp(
-											'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											//~ '^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
+											//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+											'^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
 											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 											'i'
 										);
