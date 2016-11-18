@@ -27,8 +27,10 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-
-
+	//
+	//
+	//
+	//
 	s = '<li>Images that include food items OTHER than the Food Category we are looking for are Bad images';
 	//~ s = 'Now begin filling out the boxes that correspond to the correct part of the address.';
 	if (ih.indexOf(s) != -1) {
@@ -40,14 +42,111 @@ function MT__RUN() {
 			for(var i = 0; i < radios.length; i++) {
 				radios[i].style.zoom = 4;
 				radios[i].style.border = "1px solid blue";
-				radios[i].getElementsByTagName("lable")[0].onclick = function() {
-					this.getElementsByTagName("input")[0].click();
+				radios[i].style.float = "left";
+				
+				radios[i].onclick = function() {
+					console.log("checked");
+					this.getElementsByTagName("input")[0].checked = true;
+					doSubmit();
 				}
+				radios[i].style.cursor = "pointer";
 			}
+			
+			document.getElementsByTagName("label")[0].style.float = "left";
 		}
-		new run().f();	
+		new run().f();return;
 	}
 
+	// Rohit Sharma
+	// Get Product Price from Online Retailer Product Pages for given Color & Size
+	//
+	// 
+	s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
+			GM_addStyle('fieldset {float:left;width:32%;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			var x = document.getElementsByTagName('a')[1];
+			var o = {
+				u: x.innerText.trim(),
+				//~ color:
+				//~ size: 
+				q: [
+					document.getElementById('companyName')
+				]
+			}
+			AMT___addUserDecision(
+				'RohitSharma,Nov18,2016',
+				function() { return o.u; },
+				[
+					"Id(companyName)",
+				]
+			);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						// do NA
+						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
+							//~ doNA();
+						document.body.style.backgroundColor = 'blue';
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						return false;
+					}
+					var sbm = true; //  Submit test...
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					
+					// ...
+					//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
+					var pr = dom.getElementsByClassName('lbl_ItemPriceSingleItem product-price');
+					if (pr && pr[0] && pr[0].innerText) {
+						pr = pr[0].innerText.trim();
+						if (/^\$[\d\.,]+$/.exec(pr)) {
+							o.q[0].value = pr;
+							AMT___recordAndSubmit();
+							return;
+						}
+					}
+					// ...
+					//<span tabindex="0" class="pos1override item-price" itemprop="price" >\n					$226.00
+					var pr = dom.getElementsByClassName('pos1override item-price');
+					if (pr && pr[0] && pr[0].innerText) {
+						pr = pr[0].innerText.trim();
+						if (/^\$[\d\.,]+$/.exec(pr)) {
+							o.q[0].value = pr;
+							AMT___recordAndSubmit();
+							return;
+						}
+					}
+					// NA
+					var none = dom.getElementsByClassName('cannotorder');
+					if (none && none[0] && none[0].innerText) {
+						none = none[0].innerText.trim();
+						if (none.indexOf('This item is not available.') != -1) {
+							o.q[0].value = 'NA';
+							AMT___recordAndSubmit();
+							return;
+						}
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Jameson Rodgers
 	// Please Separate the Addresses into multiple boxes
 	//
