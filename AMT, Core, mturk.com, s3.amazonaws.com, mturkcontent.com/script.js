@@ -27,6 +27,27 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+
+
+	s = '<li>Images that include food items OTHER than the Food Category we are looking for are Bad images';
+	//~ s = 'Now begin filling out the boxes that correspond to the correct part of the address.';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			document.getElementsByClassName("panel panel-primary")[0].style.position = "absolute";
+			document.getElementsByClassName("panel panel-primary")[0].style.top = "2000px";
+			var radios = document.getElementsByClassName("radio");
+			for(var i = 0; i < radios.length; i++) {
+				radios[i].style.zoom = 4;
+				radios[i].style.border = "1px solid blue";
+				radios[i].getElementsByTagName("lable")[0].onclick = function() {
+					this.getElementsByTagName("input")[0].click();
+				}
+			}
+		}
+		new run().f();	
+	}
+
 	// Jameson Rodgers
 	// Please Separate the Addresses into multiple boxes
 	//
