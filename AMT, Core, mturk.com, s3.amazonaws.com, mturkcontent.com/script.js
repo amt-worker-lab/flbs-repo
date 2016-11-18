@@ -99,6 +99,9 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'blue';
 						return false;
 					}
+					if (options.response.responseText.trim() == '') {
+						return false; // do not save blanks
+					}
 					//
 					return true;
 				},
@@ -116,7 +119,7 @@ function MT__RUN() {
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr;
+							o.q[0].value = pr.replace('$','');
 							AMT___recordAndSubmit();
 							return;
 						}
@@ -127,7 +130,7 @@ function MT__RUN() {
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr;
+							o.q[0].value = pr.replace('$','');;
 							AMT___recordAndSubmit();
 							return;
 						}
