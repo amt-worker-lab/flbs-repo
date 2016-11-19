@@ -27,7 +27,7 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-	//
+	// Anthony Ortiz
 	//
 	//
 	//
@@ -43,7 +43,6 @@ function MT__RUN() {
 				radios[i].style.zoom = 4;
 				radios[i].style.border = "1px solid blue";
 				radios[i].style.float = "left";
-				
 				radios[i].onclick = function() {
 					console.log("checked");
 					this.getElementsByTagName("input")[0].checked = true;
@@ -51,8 +50,23 @@ function MT__RUN() {
 				}
 				radios[i].style.cursor = "pointer";
 			}
-			
 			document.getElementsByTagName("label")[0].style.float = "left";
+			setInterval(function() {
+				window.focus();
+			}, 1000);
+			// Keypress
+			window.addEventListener('keypress', function(e) {
+				//var c = e.keyCode;
+				var str = String.fromCharCode(e.keyCode).toLowerCase();
+				if (str == 'z') {
+					document.getElementsByName('answer')[0].checked=true;
+					doSubmit();
+				}
+				if (str == 'x') {
+					document.getElementsByName('answer')[1].checked=true;
+					doSubmit();
+				}
+			}, false);
 		}
 		new run().f();return;
 	}
