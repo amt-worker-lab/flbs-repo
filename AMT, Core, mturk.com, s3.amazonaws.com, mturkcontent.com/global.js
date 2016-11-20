@@ -13015,7 +13015,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_cont
 	
 	var el_div = document.createElement('div');
 	el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
-	el_div.innerText = url;
+	//~ el_div.innerText = url;
 	
 	var el_a = document.createElement('a');
 	el_a.href = url;
@@ -13198,11 +13198,11 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','width:60%;height:200px;');//display:inline;
+	el_select.setAttribute('style','float:left;width:60%;height:200px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
-	el_select.onchange = function() {
+	el_select.onclick = function() {
 		if (this.value == '') return;
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
@@ -13230,10 +13230,10 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		//~ el_select.appendChild(el_option);
 	//~ }
 	// urls on right select, for email-on-page
-	var el_select = document.createElement('select');
-	out_div.appendChild(el_select);
-	el_select.setAttribute('style','float:left;width:39%;height:200px;');//display:inline;
-	el_select.multiple = 'multiple';
+	var el_select3 = document.createElement('select');
+	out_div.appendChild(el_select3);
+	el_select3.setAttribute('style','float:left;width:39%;height:200px;');//display:inline;
+	el_select3.multiple = 'multiple';
 	// urls select
 	var el_select2 = document.createElement('select');
 	out_div.appendChild(el_select2);
@@ -13250,25 +13250,54 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		el_option = document.createElement('option');
 		el_option.value = rslt.email_email;
 		el_option.innerText = rslt.email_email;
+		el_option.style.cursor = 'pointer';
 		// email highlight !!
 		console.log(rslt.url);
 		if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
-			el_option.setAttribute('style', 'background-color:LightGreen;');
-		}
+			//~ el_option.setAttribute('style', 'background-color:LightGreen;');
+			el_option.style.backgroundColor = 'LightGreen';
+			el_option.is_facebook = true;
+		} else
+			el_option.is_facebook = false;
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
+		el_option.onmouseover = function(e) {
+			var x = this.parentNode.getElementsByTagName('option');
+			for (var i=0; i<x.length; i++) {
+				x[i].style.backgroundColor = '';
+				if (x[i].is_facebook)
+					x[i].style.backgroundColor = 'LightGreen';
+			}
+			this.style.backgroundColor = 'DeepSkyBlue';
+			var x = this.field_selector.parentNode.getElementsByTagName('option');
+			for (var i=0; i<x.length; i++) {
+				x[i].style.backgroundColor = '';
+				if (x[i].is_facebook)
+					x[i].style.backgroundColor = 'LightGreen';
+			}
+			this.field_selector.style.backgroundColor = 'DeepSkyBlue';
+			//~ this.parentNode.value = '9999';
+			//~ this.selected = true;
+			//~ this.field_selector.parentNode.value='9999';
+			//~ this.field_selector.selected = true;
+		}
 		// Right
 		// add option
-		var u = rslt.url.replace(/^https?:\/\/*/g, '')
-		el_option = document.createElement('option');
-		el_option.value = u;
-		el_option.innerText = u;
+		var u = rslt.url.replace(/^https?:\/\/(www*\d*\.|)/g, '')
+		el_option2 = document.createElement('option');
+		el_option2.value = u;
+		el_option2.innerText = u;
+		el_option2.field_selector = i;
 		// email highlight !!
 		console.log(rslt.url);
 		if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
-			el_option.setAttribute('style', 'background-color:LightGreen;');
-		}
-		el_select2.appendChild(el_option);
+			el_option2.setAttribute('style', 'background-color:LightGreen;');
+			el_option2.is_facebook = true;
+		} else
+			el_option2.is_facebook = false;
+		el_select3.appendChild(el_option2);
+		// Set option1 to point to option2 .onclick
+		el_option.field_selector = el_option2;
 	}
 	for (var i = 0; i<60; i++) { // Append blank lines to #1!
 		// add option

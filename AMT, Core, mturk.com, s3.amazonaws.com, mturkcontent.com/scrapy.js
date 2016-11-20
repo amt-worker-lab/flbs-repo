@@ -595,6 +595,29 @@ function init__scrapy() {
 				'position:absolute;top:40px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
 			);
 			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.type = 'text';
+			d2.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:99%;height:38px;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d2);
+			d2.value = td[1].innerText.trim();
+			d2.onblur = function() {
+				d1.parentNode.removeChild(d1);
+				d1 = document.createElement('div'); // Reset d1
+				d1.setAttribute('style',
+					'position:absolute;top:40px;left:0%;width:99%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				);
+				document.body.appendChild(d1);
+				o.sd_start_urls = [ this.value ];
+				o.sd_allowed_domains = [ o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2") ];
+				o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
+				new AMT___requests_factory().fs__load_skips({
+					skips_key: 'austin_load_skips',
+					callback: init,
+					callback_err: function() {}
+				});
+			}
 			/* END ITEMS */
 			
 			// innerHeight
@@ -640,8 +663,6 @@ function init__scrapy() {
 			}
 			// SP
 			function sp(response_obj) {
-				//o.sd_start_urls
-				//o.sd_allowed_domains
 				var rs = response_obj;
 				if (!rs.length) {
 					// No URLs
