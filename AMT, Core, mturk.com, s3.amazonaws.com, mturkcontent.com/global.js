@@ -12841,139 +12841,6 @@ AMT___items_factory.prototype.create_annotation_from_elements = function(options
 	}
 	
 }
-/**
- * function create_dashboard__powers_v1__showScrapyResult_contexts
- * 
- * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1
- * 
- * @param results_array
- * @param out_div
- * @param seed_object.{}
- * @param seed_object.input_send_success
- * @param seed_object.do_submit_callback
- * @param seed_object.input_onclick_callback
- * @param seed_object.do_submit_next_tab
- * @param seed_object.do_submit_add_to_tabs_queue
- */
-// switch select field of d1
-AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
-	//var out_div = d1;
-	
-	//~ console.log(results_array);
-	//~ console.log(out_div);
-	//~ console.log(seed_object);return;
-	
-	var old_divs = out_div.getElementsByTagName('div');
-	for (var i = old_divs.length - 1; i>=0; i--) {
-		old_divs[i].parentNode.removeChild(old_divs[i]);
-	}
-	
-	var email_contexts = results_array.email_contexts;
-	var url = results_array.url;
-	
-	var el_div = document.createElement('div');
-	el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
-	el_div.innerText = url;
-	
-	var el_a = document.createElement('a');
-	el_a.href = url;
-	el_a.target = '_blank';
-	el_a.innerText = url;
-	el_div.appendChild(el_a);
-
-	out_div.appendChild(el_div);
-	
-	// ...
-	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
-	
-	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : default__doSubmit;
-	
-	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
-	
-	var do_submit_next_tab			= (seed_object.do_submit_next_tab)			? seed_object.do_submit_next_tab : false;
-	
-	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
-	
-	// default ds
-	function default__doSubmit(next_tab, add_to_tabs_queue) {
-		
-		if (next_tab)
-		{
-			//~ new AMT___core_factory().nextTab();
-		}
-		if (add_to_tabs_queue)
-		{
-			//~ showNextTeab();
-		}
-		doSubmit();
-	}
-	
-	// ...
-	for (var j in email_contexts) {
-		var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
-		context = __js_clean_html_str(context);
-		context = context				.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
-		//context = context.replace(/[\r\n]/g, '<br>');
-		context = context.replace(/\t/g, '&nbsp;&nbsp;');
-		context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
-		context = context.replace(
-			new RegExp('(' + __js_escape_regEx(results_array.email_email) + ')', 'gi'),
-			'<span style="zoom:1.2;color:DarkGreen;">$1</span>'
-		);
-		//context = MT__bold(context, NAME_ARRAY);
-		
-		var el_div = document.createElement('div');
-		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
-		//el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
-		//newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
-		
-		
-
-		el_div.innerHTML = context;
-		el_div.email = results_array.email_email;
-		el_div.complete = results_array.email_email;
-		el_div.url = url;
-
-		
-		//input_success
-		el_div.input_send_success	= input_send_success;
-		
-		//do_submit_callback
-		el_div.do_submit_callback	= do_submit_callback;
-		
-		//do_submit_callback
-		el_div.do_submit_next_tab	= do_submit_next_tab;
-		
-		//do_submit_callback
-		el_div.do_submit_add_to_tabs_queue	= do_submit_add_to_tabs_queue;
-		
-		//onclick
-		if (!input_onclick_callback) {
-			el_div.onclick = function() {
-				this.style.backgroundColor = 'LightGreen';
-				
-				this.input_send_success.value = this.email;
-				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
-					
-					this.do_submit_callback(this.do_submit_next_tab, this.do_submit_add_to_tabs_queue);
-					//~ doSubmit();
-				
-				}
-			}
-		}
-		else
-		{
-			el_div.onclick = input_onclick_callback;
-		}
-		
-		out_div.appendChild(el_div);
-	}
-	
-	//extend page
-	var el_div = document.createElement('div');
-	el_div.setAttribute('style','height:1400px;');
-	out_div.appendChild(el_div);
-}
 
 /*
  * 
@@ -13115,6 +12982,135 @@ AMT___items_factory.prototype.startJobTimer = function() {
 	}
 }
 
+
+/**
+ * function create_dashboard__powers_v1__showScrapyResult_contexts
+ * 
+ * THIS IS A HELPER FUNCTION FOR create_dashboard__powers_v1
+ * 
+ * @param results_array
+ * @param out_div
+ * @param seed_object.{}
+ * @param seed_object.input_send_success
+ * @param seed_object.do_submit_callback
+ * @param seed_object.input_onclick_callback
+ * @param seed_object.do_submit_next_tab
+ * @param seed_object.do_submit_add_to_tabs_queue
+ */
+// switch select field of d1
+AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
+	//var out_div = d1;
+	
+	//~ console.log(results_array);
+	//~ console.log(out_div);
+	//~ console.log(seed_object);return;
+	
+	var old_divs = out_div.getElementsByTagName('div');
+	for (var i = old_divs.length - 1; i>=0; i--) {
+		old_divs[i].parentNode.removeChild(old_divs[i]);
+	}
+	
+	var email_contexts = results_array.email_contexts;
+	var url = results_array.url;
+	
+	var el_div = document.createElement('div');
+	el_div.setAttribute('style','width:100%;height:40px;overflow:auto;border:1px solid #a2a2a2;');
+	el_div.innerText = url;
+	
+	var el_a = document.createElement('a');
+	el_a.href = url;
+	el_a.target = '_blank';
+	el_a.innerText = url;
+	el_div.appendChild(el_a);
+
+	out_div.appendChild(el_div);
+	
+	// ...
+	var input_send_success		= (seed_object.input_send_success)		? seed_object.input_send_success : document.getElementById('Q1Url'); // default Q1Url
+	
+	var do_submit_callback		= (seed_object.do_submit_callback)		? seed_object.do_submit_callback : default__doSubmit;
+	
+	var input_onclick_callback	= (seed_object.input_onclick_callback)	? seed_object.input_onclick_callback : false;
+	
+	var do_submit_next_tab			= (seed_object.do_submit_next_tab)			? seed_object.do_submit_next_tab : false;
+	
+	var do_submit_add_to_tabs_queue	= (seed_object.do_submit_add_to_tabs_queue)	? seed_object.do_submit_add_to_tabs_queue : false;
+	
+	// default ds
+	function default__doSubmit(next_tab, add_to_tabs_queue) {
+		
+		if (next_tab)
+		{
+			//~ new AMT___core_factory().nextTab();
+		}
+		if (add_to_tabs_queue)
+		{
+			//~ showNextTeab();
+		}
+		doSubmit();
+	}
+	
+	// ...
+	for (var j in email_contexts) {
+		var context = email_contexts[j]	.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
+		context = __js_clean_html_str(context);
+		context = context				.replace(/<[^>]*>/g, '').replace(/[<>]/g, '');
+		//context = context.replace(/[\r\n]/g, '<br>');
+		context = context.replace(/\t/g, '&nbsp;&nbsp;');
+		context = context.replace(/\s{2,}/g, '&nbsp;&nbsp;');
+		context = context.replace(
+			new RegExp('(' + __js_escape_regEx(results_array.email_email) + ')', 'gi'),
+			'<span style="zoom:1.2;color:DarkGreen;">$1</span>'
+		);
+		//context = MT__bold(context, NAME_ARRAY);
+		
+		var el_div = document.createElement('div');
+		el_div.setAttribute('style','cursor:pointer;width:100%;border-bottom:1px dashed #626262;');
+		//el_div.setAttribute('style','cursor:pointer;min-width:400px;width:60%;height:140px;overflow:auto;border:1px solid #a2a2a2;');
+		//newDiv.setAttribute('style','border-bottom:1px dashed #626262;margin:0;padding:0;cursor:pointer;');
+	
+		el_div.innerHTML = context;
+		el_div.email = results_array.email_email;
+		el_div.complete = results_array.email_email;
+		el_div.url = url;
+	
+		//input_success
+		el_div.input_send_success	= input_send_success;
+		
+		//do_submit_callback
+		el_div.do_submit_callback	= do_submit_callback;
+		
+		//do_submit_callback
+		el_div.do_submit_next_tab	= do_submit_next_tab;
+		
+		//do_submit_callback
+		el_div.do_submit_add_to_tabs_queue	= do_submit_add_to_tabs_queue;
+		
+		//onclick
+		if (!input_onclick_callback) {
+			el_div.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				
+				this.input_send_success.value = this.email;
+				if (this.email.length > 6 && this.email.indexOf('@') != -1 && this.input_send_success && this.input_send_success.value == this.email) {
+					
+					this.do_submit_callback(this.do_submit_next_tab, this.do_submit_add_to_tabs_queue);
+					//~ doSubmit();
+				
+				}
+			}
+		}
+		else
+		{
+			el_div.onclick = input_onclick_callback;
+		}
+		out_div.appendChild(el_div);
+	}
+	//extend page
+	var el_div = document.createElement('div');
+	el_div.setAttribute('style','height:1400px;');
+	out_div.appendChild(el_div);
+}
 /**
  * .create_dashboard__powers_v2
  * 
@@ -13153,16 +13149,6 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 	var out_div = seed_object.div;
 	
 	out_div.innerHTML = '';
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	return;
 }
 //
@@ -13171,31 +13157,12 @@ AMT___items_factory.prototype.create_dashboard__powers_v2 = function(object_resp
 AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_response, seed_object)// dashboard/area
 {
 	var out_div = seed_object.div;
-	
 	out_div.innerHTML = '';
-	
-	//~ console.log(object_response);
-	//~ console.log(seed_object);return;
-	
-	//@callback_function: Return 1) scrapyd jobid, 2) response_object, 3) seed_object 
-	//~ var req = new AMT___requests_factory();
-	//~ AMT___POPUP__initializeGlobals(
-		//~ function() {
-			//~ req.scrapy__begin_scrape(//parameters_object, callback_function, seed_object
-				//~ s_obj,
-				//~ Max_Powers_eventbrite__showScrapyResult
-				//~ (new AMT___items_factory).create_dashboard__powers_v1
-			//~ );
-		//~ }
-	//~ );
-		
 	// jobid, object_response, seed_object
 	// RESULTS
 	//var object_response = ALL_SCRAPES[d3.selectedIndex].object_response; // [] array !!
 	
-	// 
 	// seed_object.skip_if_no_emails
-	//
 	//
 	if  (
 		seed_object.hasOwnProperty('skip_if_no_emails') &&
@@ -13215,9 +13182,7 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		//~ }
 	}
 	
-	//
 	// seed_object.accept_if_emails
-	//
 	//
 	if  (
 		seed_object.hasOwnProperty('accept_if_emails') &&
@@ -13233,13 +13198,12 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 	// matches select
 	var el_select = document.createElement('select');
 	out_div.appendChild(el_select);
-	el_select.setAttribute('style','width:98%;height:180px;');//display:inline;
+	el_select.setAttribute('style','width:60%;height:200px;');//display:inline;
 	el_select.multiple = 'multiple';
 	el_select.main_div = out_div;
 	el_select.seed_object = seed_object;
 	el_select.onchange = function() {
 		if (this.value == '') return;
-		
 		(new AMT___items_factory())
 			.create_dashboard__powers_v1__showScrapyResult_contexts(
 				this.options[this.selectedIndex].results_array,
@@ -13251,8 +13215,37 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ this.options[this.selectedIndex].results_array
 		//~ );
 	}
+	//~ for (var i in object_response.matches) {
+		//~ rslt = object_response.matches[i];
+		//~ // add option
+		//~ el_option = document.createElement('option');
+		//~ el_option.value = rslt.email_email;
+		//~ el_option.innerText = rslt.email_email;
+		//~ // email highlight !!
+		//~ console.log(rslt.url);
+		//~ if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
+			//~ el_option.setAttribute('style', 'background-color:LightGreen;');
+		//~ }
+		//~ el_option.results_array = rslt;
+		//~ el_select.appendChild(el_option);
+	//~ }
+	// urls on right select, for email-on-page
+	var el_select = document.createElement('select');
+	out_div.appendChild(el_select);
+	el_select.setAttribute('style','float:left;width:39%;height:200px;');//display:inline;
+	el_select.multiple = 'multiple';
+	// urls select
+	var el_select2 = document.createElement('select');
+	out_div.appendChild(el_select2);
+	el_select2.setAttribute('style','width:60%;height:40px;');
+	el_select2.multiple = 'multiple';
+	el_select2.onclick = function() {
+		if (this.value == '') return;
+		window.open(this.value,'new');
+	}
 	for (var i in object_response.matches) {
 		rslt = object_response.matches[i];
+		// Left
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = rslt.email_email;
@@ -13264,26 +13257,26 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 		}
 		el_option.results_array = rslt;
 		el_select.appendChild(el_option);
+		// Right
+		// add option
+		var u = rslt.url.replace(/^https?:\/\/*/g, '')
+		el_option = document.createElement('option');
+		el_option.value = u;
+		el_option.innerText = u;
+		// email highlight !!
+		console.log(rslt.url);
+		if (/https?:\/\/([^\.]+\.|)facebook.com[\/$]/i.exec(rslt.url)) { //https://www.facebook.com/voltvapes1/info 
+			el_option.setAttribute('style', 'background-color:LightGreen;');
+		}
+		el_select2.appendChild(el_option);
 	}
-	for (var i = 0; i<40; i++) { // Append blank lines!
+	for (var i = 0; i<60; i++) { // Append blank lines to #1!
 		// add option
 		el_option = document.createElement('option');
 		el_option.value = '';
 		el_option.innerText = '';
 		el_select.appendChild(el_option);
 	}
-	
-	// urls select
-	var el_select2 = document.createElement('select');
-	out_div.appendChild(el_select2);
-	el_select2.setAttribute('style','width:98%;height:60px;');
-	el_select2.multiple = 'multiple';
-	el_select2.onclick = function() {
-		if (this.value == '') return;
-		window.open(this.value,'new');
-	}
-	//for (var i in object_response.urls) {
-	//console.log(object_response.urls.complete_high_to_low);
 	for (var i in object_response.urls.complete_high_to_low) {
 		
 		rslt = object_response.urls.complete_high_to_low[i]; // {.url, .priority}
@@ -13331,14 +13324,9 @@ AMT___items_factory.prototype.create_dashboard__powers_v1 = function(object_resp
 			//~ el_select.options[0].results_array
 		//~ );
 	}
-	
 	// br
 	out_div.appendChild(document.createElement('br'));
 }
-//~ AMT___items_factory.prototype.create_element__textarea = function()// X: pass reference
-//~ {
-	//~ 
-//~ }
 AMT___items_factory.prototype.create__input_scrapy_button = function(short_domain,full_url,object_options,callback_function)// X: pass reference
 {
 	
