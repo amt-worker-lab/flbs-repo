@@ -129122,7 +129122,7 @@ qatar,80
 				searches:[
 					o.comp,
 					o.comp +' '+ o.addr,
-					o.spaced + ' ' + (o.zip ? o.zip : o.addr), // Just phone if available
+					(o.zip ? o.comp+' "'+o.zip.replace(/-\d+$/,'')+'"' : o.spaced+o.addr), // Remove "-9999" from zip if there...
 				],
 				search_results: {
 					//~ use_domain_only: true,
