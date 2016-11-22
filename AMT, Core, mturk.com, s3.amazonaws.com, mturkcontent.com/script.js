@@ -126,14 +126,14 @@ function MT__RUN() {
 					}
 					var sbm = true; //  Submit test...
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					
+					// Note no commas...
 					// ...
 					//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
 					var pr = dom.getElementsByClassName('lbl_ItemPriceSingleItem product-price');
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr.replace('$','');
+							o.q[0].value = pr.replace(/[\$,]/g,'');
 							AMT___recordAndSubmit();
 							return;
 						}
@@ -144,7 +144,7 @@ function MT__RUN() {
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr.replace('$','');;
+							o.q[0].value = pr.replace(/[\$,]/g,'');
 							AMT___recordAndSubmit();
 							return;
 						}
