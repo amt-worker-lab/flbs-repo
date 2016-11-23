@@ -126,6 +126,11 @@ function MT__RUN() {
 						document.body.style.backgroundColor = 'blue';
 						return false;
 					}
+					if (options.response.responseText.indexOf(
+						'<span class="_1-title2">\nWe apologize for the inconvenience.\n</span>'
+						) != -1) {
+						return false; // do not save
+					}
 					if (options.response.responseText.trim() == '') {
 						return false; // do not save blanks
 					}
