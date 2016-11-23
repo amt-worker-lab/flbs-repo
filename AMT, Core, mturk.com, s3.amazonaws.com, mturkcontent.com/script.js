@@ -76,6 +76,8 @@ function MT__RUN() {
 	//
 	// 
 	s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
+	s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
+     	 //<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
@@ -85,9 +87,20 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
 			GM_addStyle('fieldset {float:left;width:32%;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
-			var x = document.getElementsByTagName('a')[1];
+			var x = document.getElementsByTagName('a');
+			if (x && x[1] && x[1].innerText && x[1].innerText.trim() != '')
+				x = x[1];
+			else {
+				x = /website_url=([^&]+)&/.exec(document.location.href);
+				if (x && x[1]) {
+					x = x[1];
+				} else {
+					console.log('err');
+					return;
+				}
+			}
 			var o = {
-				u: x.innerText.trim(),
+				u: x.trim(),//innerText.trim(),
 				//~ color:
 				//~ size: 
 				q: [
@@ -95,7 +108,7 @@ function MT__RUN() {
 				]
 			}
 			AMT___addUserDecision(
-				'RohitSharma,Nov18,2016',
+				'RohitSharma,Nov23,2016',
 				function() { return o.u; },
 				[
 					"Id(companyName)",
