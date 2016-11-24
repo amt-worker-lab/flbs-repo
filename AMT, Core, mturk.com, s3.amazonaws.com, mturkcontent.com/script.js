@@ -116,14 +116,16 @@ function MT__RUN() {
 			// eg prod187640021 http://www.neimanmarcus.com/prod187640021/p.prod
 			var o = {
 				u: x.trim(),//innerText.trim(),
-				prodid: /neimanmarcus\.com\/(en-us\/|)(prod\d+)\//.exec(x)[2],
+				//prodid: /neimanmarcus\.com\/(en-us\/|)(prod\d+)\//.exec(x)[2],
 				color: /color_variation=([^&]+)&assignmentId=/.exec(document.location.href)[1],
 				q: [
 					document.getElementById('companyName')
 				]
 			}
-			//~ o.prodid = (o.prodid)
 			o.color = o.color.toUpperCase().replace(/%20/g, ' ');
+			// color mismatching ...
+			// grey[rohit]=gray[neiman]
+			o.color = (o.color == 'GREY') ? 'GRAY' : o.color;
 			AMT___addUserDecision(
 				'RohitSharma,Nov23,2016',
 				function() { return o.u; },
@@ -161,6 +163,10 @@ function MT__RUN() {
 					}
 					var sbm = true; //  Submit test...
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var no_color = false
+					if (o.color.toUpperCase() == '_NO_VARIANT_' || o.color.toUpperCase() == 'NONE') {
+						no_color = true;
+					}
 					// Note no commas...
 					// ...
 					//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
@@ -169,8 +175,10 @@ function MT__RUN() {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
-							//~ AMT___recordAndSubmit();
-							//~ return;
+							if (no_color) {
+								AMT___recordAndSubmit();
+								return;
+							}
 						}
 					}
 					// ...
@@ -180,8 +188,10 @@ function MT__RUN() {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
-							//~ AMT___recordAndSubmit();
-							//~ return;
+							if (no_color) {
+								AMT___recordAndSubmit();
+								return;
+							}
 						}
 					}
 					// NA
@@ -281,7 +291,7 @@ function MT__RUN() {
 								// So loop looking for one matching color
 								// which is in stock. Then submit if found.
 								for (var j in a) {
-									if (a[j].color.indexOf(o.color) == 0 &&
+									if (a[j].color.toUpperCase().indexOf(o.color) == 0 &&
 										(
 											a[j].status == 'In Stock' ||
 											a[j].status == 'Pre-Order' ||
