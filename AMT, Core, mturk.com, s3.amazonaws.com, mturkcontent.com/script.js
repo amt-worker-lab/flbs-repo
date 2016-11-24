@@ -935,8 +935,8 @@ function MT__RUN() {
 							x1 = x1.innerText;
 							o.q[1].value = x1;
 							result.region = x1;
-						}
-					}
+						} else sbm = false;
+					} else sbm = false;
 					// Address Line 2 = NA to start
 						//~ o.q[2].value = 'N/A';
 					// Address
@@ -963,7 +963,7 @@ function MT__RUN() {
 							//~ sbm = false;
 							//~ o.q[5].style.backgroundColor = 'aqua';
 						//~ }
-					var x = dom.getElementsByClassName('listing-contacts')[0];//console.log(x);
+					var x = dom.getElementsByClassName('listing-contacts')[0];
 					if (x) {
 						x = x.getElementsByTagName('a');
 						for (var i=0;i<x.length;i++) {
@@ -1056,29 +1056,33 @@ function MT__RUN() {
 							//~ }
 						//~ }
 					o.sbm = sbm; // Set global
+					if (result.region && result.state) {
+						gbiz(result.region, result.state); // Now Google Search Textsearch
+					}
 					// Find the lat/lng of a Starbucks in the "region".
 					// Use result.region, result.state
 					//~ var x = /var wmVariables = \{"regionsData":\{"dispensary":\{"id":\d+,"name":"[^"]+","slug":"[^"]+","latitude":([\-\d\.]+),"longitude":([\-\d\.]+)/.exec(rs);
-					var x = /<script type="text\/javascript">window\.markers = \[\{"id":"\d+","latitude":([\-\d\.]+),"longitude":([\-\d\.]+)/.exec(rs);
-					if (!x) {
+					//~ var x = /<script type="text\/javascript">window\.markers = \[\{"id":"\d+","latitude":([\-\d\.]+),"longitude":([\-\d\.]+)/.exec(rs);
+					//~ if (!x) {
 						
-					} else {
-						// Do a biz search
-						gbiz(x[1],x[2])
-					}
+					//~ } else {
+						//~ // Do a biz search
+						//~ gbiz(x[1],x[2])
+					//~ }
 						
 					//~ // Do geocode
 					//~ var a = o.q[1].value + ',' + o.q[2].value + ',' + o.q[3].value + ',';
 					//~ MT___google_api_geocode(address, zipcode, true, o.use_proxy);
 				}
 			});
-			function gbiz(lat,lng) {
+			function gbiz(region, state) { //lat,lng
 				var u;
-				u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
-				u+= 'location='+lat+','+lng; //lat,lng
-				u+= '&keyword=' + encodeURIComponent('Starbucks');
+				//~ u = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+				u = 'https://maps.googleapis.com/maps/api/place/textsearch/json?';
+				//~ u+= 'location='+lat+','+lng; //lat,lng
+				u+= '&query=' + encodeURIComponent('Starbucks near '+region+', '+state);
 				//u+= '&rankby=distance';
-				u+= '&radius=50000';
+				//~ u+= '&radius=50000';
 				u+= '&sensor=false';
 				u+= '&key=_GOOGLE_API_KEY_REDACTED_';
 				// Set to MT___host
@@ -1107,7 +1111,9 @@ function MT__RUN() {
 						if (x.geometry && x.geometry.location && x.geometry.location.lat && x.geometry.location.lng) {
 							o.q[3].value = x.geometry.location.lat;
 							o.q[4].value = x.geometry.location.lng;
+							try_auto(); // Try auto here ...
 						}
+						
 					}
 				});
 			}
@@ -1205,13 +1211,16 @@ function MT__RUN() {
 							o.q[i].style.backgroundColor = 'aqua';
 							o.sbm = false;
 						}
-					}// else
-					//	o.q[i].style.backgroundColor = '';
+					}
+					if (o.q[i].value == 'undefined') {
+						o.sbm = false;
+						o.q[i].focus();
+					}
 				}
 				if (o.sbm) {
 					AMT___recordAndSubmit();
 					document.getElementById('submitButton').style.backgroundColor = 'black';
-					document.getElementById('submitButton').style.zoom = '1.4';
+					document.getElementById('submitButton').style.zoom = '0.4';
 				}
 			}
 		}
