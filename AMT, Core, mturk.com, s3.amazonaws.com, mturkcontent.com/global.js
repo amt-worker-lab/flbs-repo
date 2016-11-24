@@ -10602,7 +10602,6 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 		u+= '&key=_GOOGLE_API_KEY_REDACTED_';
 		// Set to MT___host
 		u = MT___host + '/mturk/util.php?AMT__output_html_from_URL='+encodeURIComponent(u);
-		
 		//u+= '&radius=40000'; // 5k = 3.1 mi.
 		//u+= '&types=accounting|atm|bank';
 		//u+= '&name=' + encodeURIComponent(b[0].innerText);
@@ -10615,10 +10614,8 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
 			url: u,
 			onload: function(response) {
 				var rs = response.responseText;
-				
 				rs = JSON.parse(rs);
 				console.log(rs);
-				
 				if (!rs.results || !rs.results.length) {
 					d1.innerHTML += '0';
 					// 
