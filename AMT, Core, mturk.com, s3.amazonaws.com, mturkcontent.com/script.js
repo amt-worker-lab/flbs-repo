@@ -1124,13 +1124,21 @@ function MT__RUN() {
 					o.q_dict[ 'close'+dw ].value = 'CLOSED';
 				} else {
 					// 
-					//~ console.log(optype+dw);
-					var n = o.q_dict[ optype+dw ];//console.log(n);
+					var n = o.q_dict[ optype+dw ];
 					// Convert times
 					var rg = /^(\d+):(\d+)(am|pm)$/.exec(time);
-					if (rg[1] == '12') {
+					console.log('Converting time:'+time)
+					if (time == '') { // No time given, eg, "2:00-" or "-2:00"
+						n.value = 'N/A';
+					} else if (!rg) {
+						//
+					} else if (rg[1] == '12') {
 						if (rg[3] == 'am') {
-							n.value = '00' + rg[2];
+							if (rg[2] == '00') {
+								n.value = '2400';
+							} else {
+								n.value = '00' + rg[2];
+							}
 						} else { // pm
 							n.value = '12' + rg[2];
 						}
