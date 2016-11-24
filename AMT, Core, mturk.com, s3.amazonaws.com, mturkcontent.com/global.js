@@ -17208,10 +17208,10 @@ function AMT___oldTopWindowFloatStuff() {
 			var float___kristin_howe_hid;
 			var x = document.getElementsByTagName('iframe')[0].src;
 			
-			x = /hitId=([^&$]+)/.exec(x);
+			x = /hitId=([^&]+)/.exec(x);
 			if (!x) return;
 			float___kristin_howe_hid = x[1];
-			x = /groupId=([^&$]+)/.exec(document.location.href);
+			x = /groupId=([^&]+)/.exec(document.location.href);
 			if (!x) return;
 			float___kristin_howe_gid = x[1];
 			
@@ -17297,11 +17297,11 @@ function AMT___oldTopWindowFloatStuff() {
 			var float___kristin_howe_gid;
 			var float___kristin_howe_hid;
 			var x = document.getElementsByTagName('iframe')[0].src;
-			x = /hitId=([^&$]+)/.exec(x);
+			x = /hitId=([^&]+)/.exec(x);
 			if (!x) return;
 			float___kristin_howe_hid = x[1];
 			
-			x = /groupId=([^&$]+)/.exec(document.location.href);
+			x = /groupId=([^&]+)/.exec(document.location.href);
 			if (!x) return;
 			float___kristin_howe_gid = x[1];
 			

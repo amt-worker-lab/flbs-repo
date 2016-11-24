@@ -494,8 +494,6 @@ function mturk_load()
 				AMT___Floater.float();
 			}
 			
-
-			
 			var numActiveFloaters = 0;
 			for(var i = 0; i < AllFloaters.length; i++)
 			{
@@ -557,8 +555,6 @@ function mturk_load()
 		new AMT___core_factory().top_window__addEventListener_iframe();
 		AMT___InitializeReturnAndAcceptKeyPress();
 		AMT__Global_Vars.initializeNextTabPassBy();
-		
-		
 		
 		//var duration = new Date().getTime() - beginRunTime;
 		//~ alert('Runtime took: ' + duration);
@@ -676,7 +672,7 @@ function mturk_load()
 			document.location.href.indexOf('groupId=2J2GSCWY2AOO2EH0X4FONQSFUBI11R') != -1
 			)
 		{
-			var x = /&hitId=([^&$]+)/.exec(document.location.href);
+			var x = /&hitId=([^&]+)/.exec(document.location.href);
 			if (x) {
 				x = x[1];
 				GM_xmlhttpRequest({
@@ -692,7 +688,7 @@ function mturk_load()
 						else { // run once
 							MT___RUN_MANUAL.click();
 							setTimeout(function() {
-								var x = /&hitId=([^&$]+)/.exec(document.location.href);
+								var x = /&hitId=([^&]+)/.exec(document.location.href);
 								if (x) {
 									x = x[1];
 									GM_xmlhttpRequest({
@@ -737,7 +733,6 @@ function initializePermanentScriptVars() {
 	
 	chrome.storage.local.get('scriptVars', function(storageObj) {
 		var scriptVars = storageObj.scriptVars;
-		
 		var hasChanged = false;
 		
 		//Get rid of any persistent vars in scriptvars that's not in the global

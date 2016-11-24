@@ -73,11 +73,13 @@ function MT__RUN() {
 
 	// Rohit Sharma
 	// Get Product Price from Online Retailer Product Pages for given Color & Size
-	//
+	// Note: base64 encode. Is JS the built-in function is btoa.
+	//       Thus, btoa('{"ProductSizeAndColor":{"productIds":"prod187640021"}}')
+	//		 Yields:
+	//       "eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19"
 	// 
-	s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
-	s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
-     	 //<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>
+  //s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
+	s = '<p>Offer Price : Price at which the Product is being sold by\n					Retailer for a product after discount/offer.</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
@@ -88,9 +90,9 @@ function MT__RUN() {
 			GM_addStyle('fieldset {float:left;width:32%;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
 			var x = document.getElementsByTagName('a');
-			if (x && x[1] && x[1].innerText && x[1].innerText.trim() != '')
+			if (x && x[1] && x[1].innerText && x[1].innerText.trim() != '') {
 				x = x[1];
-			else {
+			} else {
 				x = /website_url=([^&]+)&/.exec(document.location.href);
 				if (x && x[1]) {
 					x = x[1];
@@ -99,14 +101,17 @@ function MT__RUN() {
 					return;
 				}
 			}
+			// prodid
+			// eg prod187640021 http://www.neimanmarcus.com/prod187640021/p.prod
 			var o = {
 				u: x.trim(),//innerText.trim(),
-				//~ color:
-				//~ size: 
+				prodid: /neimanmarcus\.com\/(en-us\/|)(prod\d+)\//.exec(x)[2],
+				color: /color_variation=([^&]+)&assignmentId=/.exec(document.location.href)[1],
 				q: [
 					document.getElementById('companyName')
 				]
 			}
+			//~ o.prodid = (o.prodid)
 			AMT___addUserDecision(
 				'RohitSharma,Nov23,2016',
 				function() { return o.u; },
@@ -152,8 +157,8 @@ function MT__RUN() {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
-							AMT___recordAndSubmit();
-							return;
+							//~ AMT___recordAndSubmit();
+							//~ return;
 						}
 					}
 					// ...
@@ -163,8 +168,8 @@ function MT__RUN() {
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
-							AMT___recordAndSubmit();
-							return;
+							//~ AMT___recordAndSubmit();
+							//~ return;
 						}
 					}
 					// NA
@@ -173,12 +178,66 @@ function MT__RUN() {
 						none = none[0].innerText.trim();
 						if (none.indexOf('This item is not available.') != -1) {
 							o.q[0].value = 'NA';
-							AMT___recordAndSubmit();
-							return;
+							//~ AMT___recordAndSubmit();
+							//~ return;
 						}
 					}
+					// Now run nmapi ...
+					nmapi();
 				}
 			});
+			function nmapi() {
+				// btoa('{"ProductSizeAndColor":{"productIds":"prod187640021"}}') 
+				// yields "eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19"
+				// and thus...
+				// data=$b64$eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp=
+				// And now, note that this is a POST originally.
+				// Ie it is a POST to: http://www.neimanmarcus.com/product.service?instart_disable_injection=true.
+				// However, also note that GET is available.
+				// Eg http://www.neimanmarcus.com/product.service?instart_disable_injection=true&data=$b64$eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp=1480018904647
+				var u = 'http://www.neimanmarcus.com/product.service?instart_disable_injection=true'+
+						'&data=$b64$'+btoa('{"ProductSizeAndColor":{"productIds":"'+o.prodid+'"}}')+
+						'&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp=1480018904647'
+						;
+				// xh
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'blue';
+							return false;
+						}
+						if (options.response.responseText.trim() == '') {
+							return false; // do not save blanks
+						}
+						//
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						if (options.response.status != 200) {
+							return false;
+						}
+						rs = JSON.parse(rs);
+						console.log(rs);
+						if (rs.ProductSizeAndColor) {
+							rs = rs.ProductSizeAndColor;
+						} else {
+							document.body.innerText = 'bad obj';
+							return;
+						}
+						if (rs.productIds != o.prodid) {
+							document.body.innerText = 'no prod id';
+							return;
+						}
+						if (rs.productSizeAndColorJSON) {
+							var x = JSON.parse(rs.productSizeAndColorJSON);
+							console.log(x);
+						}
+					}
+				});
+			}
 		}
 		new run().f();return;
 	}
