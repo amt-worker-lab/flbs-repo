@@ -780,6 +780,7 @@ function MT__RUN() {
 	//
 	// 
 	s = '<li>Collect the name of the dispensary and enter it into the "Name of Dispensary" field below.</li>';
+	s = '<li>Collect the <strong>Name</strong> of the Delivery Service and enter it into the "Name of Delivery Service" field below.</li>';
 	var ih = document.body.innerHTML; // Needs to be run here to make this match...
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -900,33 +901,45 @@ function MT__RUN() {
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					// Name
 					o.q[0].value = dom.getElementsByClassName('listing-name')[0].innerText;
+					// Region
+					// <div class="listing-breadcrumbs"><a href="/">Home</a><a href="/deliveries/in/california">California</a><a href="/deliveries/in/ocean-beach">Ocean Beach</a>Anodized Group</div>
+					var x = dom.getElementsByClassName('listing-breadcrumbs');
+					if (x && x.length) {
+						x = x[0].getElementsByTagName('a');
+						x = x[x.length-1]; // Last element
+						h = x.getAttribute('href');
+						// Some checks on h
+						if (h && h.trim().length != '' && h.indexOf('/in/') != -1) {
+							x = x.innerText;
+							o.q[1].value = x;
+						}
+					}
 					// Address Line 2 = NA to start
-					o.q[2].value = 'N/A';
+						//~ o.q[2].value = 'N/A';
 					// Address
-					var x = dom.getElementsByClassName('listing-address')[0];
-					var address = x.innerText;
-					x = x.getElementsByTagName('span');
-					o.q[1].value = x[0].innerText.replace(/ *,* *$/, '').trim();
-					//o.q[1].value = x[0].innerText; // ? ADDRESS 2?
-					if (o.q[1].value.length < 3) {
-						o.q[1].style.backgroundColor = 'aqua';
-						sbm = false;
-					}
-					o.q[3].value = x[1].innerText.trim();
-					if (o.q[3].value.length < 3) {
-						o.q[3].style.backgroundColor = 'aqua';
-						sbm = false;
-					}
-					o.q[4].value = x[3].innerText.trim();
-					o.q[5].value = x[4].innerText.trim();
-					if (o.q[5].value == '' && x[4].getAttribute('itemprop') == 'postalCode') {
-						o.q[5].value = 'N/A';
-					}
+						//~ var x = dom.getElementsByClassName('listing-address')[0];
+						//~ var address = x.innerText;
+						//~ x = x.getElementsByTagName('span');
+						//~ o.q[1].value = x[0].innerText.replace(/ *,* *$/, '').trim();
+						//~ if (o.q[1].value.length < 3) {
+							//~ o.q[1].style.backgroundColor = 'aqua';
+							//~ sbm = false;
+						//~ }
+						//~ o.q[3].value = x[1].innerText.trim();
+						//~ if (o.q[3].value.length < 3) {
+							//~ o.q[3].style.backgroundColor = 'aqua';
+							//~ sbm = false;
+						//~ }
+						//~ o.q[4].value = x[3].innerText.trim();
+						//~ o.q[5].value = x[4].innerText.trim();
+						//~ if (o.q[5].value == '' && x[4].getAttribute('itemprop') == 'postalCode') {
+							//~ o.q[5].value = 'N/A';
+						//~ }
 					// Zip code test
-					if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
-						sbm = false;
-						o.q[5].style.backgroundColor = 'aqua';
-					}
+						//~ if (!/^\d{5}$/i.exec(o.q[5].value) && o.q[5].value != 'N/A') {
+							//~ sbm = false;
+							//~ o.q[5].style.backgroundColor = 'aqua';
+						//~ }
 					var x = dom.getElementsByClassName('listing-contacts')[0];console.log(x);
 					if (x) {
 						x = x.getElementsByTagName('a');
