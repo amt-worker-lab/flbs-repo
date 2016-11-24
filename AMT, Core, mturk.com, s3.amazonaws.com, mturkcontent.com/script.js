@@ -112,6 +112,7 @@ function MT__RUN() {
 				]
 			}
 			//~ o.prodid = (o.prodid)
+			o.color = o.color.toUpperCase().replace(/%20/g, ' ');
 			AMT___addUserDecision(
 				'RohitSharma,Nov23,2016',
 				function() { return o.u; },
@@ -224,16 +225,36 @@ function MT__RUN() {
 						if (rs.ProductSizeAndColor) {
 							rs = rs.ProductSizeAndColor;
 						} else {
-							document.body.innerText = 'bad obj';
+							document.body.appendChild('bad obj'.div());
 							return;
 						}
 						if (rs.productIds != o.prodid) {
-							document.body.innerText = 'no prod id';
+							document.body.appendChild('no prod id'.div());
 							return;
 						}
 						if (rs.productSizeAndColorJSON) {
 							var x = JSON.parse(rs.productSizeAndColorJSON);
 							console.log(x);
+							if (x.length != 1) {
+								document.body.appendChild('length != 1'.div());
+								return;
+							}
+							x = x[0];
+							if (!x.skus) {
+								document.body.appendChild('skus'.div());
+								return;
+							}
+							x = x.skus;
+							// Only one in stock is necessary.
+							// So loop looking for one matching color
+							// which is in stock. Then submit if found.
+							for (var i in x) {
+								if (x[i].color.indexOf(o.color) == 0) {
+									// Submit this ...
+									
+									break;
+								}
+							}
 						}
 					}
 				});
