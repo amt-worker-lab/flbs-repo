@@ -89,6 +89,17 @@ function MT__RUN() {
 			GM_addStyle('#submitButton {position:absolute !important;top:0px;left:0px;width:99%;}');
 			GM_addStyle('fieldset {float:left;width:32%;}');
 			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			// Has size on page?
+			if (document.body.innerText.toLowerCase().indexOf('size') != -1) {
+				alert('"size" on page - Exiting!');
+				return;
+			}
+			// Has color on page?
+			if (document.body.innerText.toLowerCase().indexOf('color') == -1) {
+				alert('"color" not on page - Exiting!');
+				return;
+			}
+			// And what if color == '_No_VARIANT_'
 			var x = document.getElementsByTagName('a');
 			if (x && x[1] && x[1].innerText && x[1].innerText.trim() != '') {
 				x = x[1];
@@ -179,11 +190,20 @@ function MT__RUN() {
 						none = none[0].innerText.trim();
 						if (none.indexOf('This item is not available.') != -1) {
 							o.q[0].value = 'NA';
-							//~ AMT___recordAndSubmit();
-							//~ return;
+							AMT___recordAndSubmit();
+							return;
 						}
 					}
 					// Now run nmapi ...
+					// But first scrape for ids if necessary
+					var x = /\\*"product_id\\*":\[([^\]]+)\]/.exec(rs);
+					if (!x) {
+						document.body.appendChild('bad product id scrape'.div());
+						return;
+					}
+					// Only the string eg prod188840039,prod188840040 is necessary.
+					x = x[1].replace(/[^a-z\d,]/g, '');
+					o.prodid = x;
 					nmapi();
 				}
 			});
@@ -196,9 +216,14 @@ function MT__RUN() {
 				// Ie it is a POST to: http://www.neimanmarcus.com/product.service?instart_disable_injection=true.
 				// However, also note that GET is available.
 				// Eg http://www.neimanmarcus.com/product.service?instart_disable_injection=true&data=$b64$eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp=1480018904647
+				// NOTE
+				// Product Id is on page. And multiple products on a single page are possible!
+				// Thus, product id(s) are: \"product_id\":[\"prod188840039\",\"prod188840040\"]
+				/*window.utag_data={\"page_definition_id\":\"product\",\"parent_cmos_item_code\":\"-6QYM\",\"customer_country\":\"United States\",\"ab_test_id\":[\"8700001\"],\"product_price\":[\"955.00\",\"395.00\"],\"customer_segment_name\":\"\",\"product_sellable_sku\":[\"\",\"\"],\"logged_in_status\":\"false\",\"universal_customer_id\":\"1b04c897-1727-48ce-aa73-acf5eebf362d\",\"emerging_elite\":\"0\",\"product_id\":[\"prod188840039\",\"prod188840040\"],\"site_environment\" ... ... ... */
+				// Therefore, json obj is comma-separated eg "prod188840039,prod188840040"
 				var u = 'http://www.neimanmarcus.com/product.service?instart_disable_injection=true'+
 						'&data=$b64$'+btoa('{"ProductSizeAndColor":{"productIds":"'+o.prodid+'"}}')+
-						'&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp=1480018904647'
+						'&sid=getSizeAndColorData&bid=ProductSizeAndColor&timestamp='+(new Date().getTime() / 1000)
 						;
 				// xh
 				new AMT___requests_factory().xhr_with_disk_cache({
@@ -235,24 +260,44 @@ function MT__RUN() {
 						if (rs.productSizeAndColorJSON) {
 							var x = JSON.parse(rs.productSizeAndColorJSON);
 							console.log(x);
-							if (x.length != 1) {
-								document.body.appendChild('length != 1'.div());
+							if (x.length == 0) {
+								document.body.appendChild('length == 0'.div());
 								return;
 							}
-							x = x[0];
-							if (!x.skus) {
-								document.body.appendChild('skus'.div());
-								return;
-							}
-							x = x.skus;
-							// Only one in stock is necessary.
-							// So loop looking for one matching color
-							// which is in stock. Then submit if found.
+							// Loop through array. When there is more than
+							// one here it means we are looking at multiple
+							// items on one page.
+							// Eg http://www.neimanmarcus.com/prod191890034/p.prod
+							//    which contains two products.
 							for (var i in x) {
-								if (x[i].color.indexOf(o.color) == 0) {
-									// Submit this ...
-									
-									break;
+								//x = x[0];
+								if (!x[i].skus) {
+									//~ document.body.appendChild('skus'.div());
+									//~ return;
+									continue; // Skip to next
+								}
+								var a = x[i].skus;
+								// Only one in stock is necessary.
+								// So loop looking for one matching color
+								// which is in stock. Then submit if found.
+								for (var j in a) {
+									if (a[j].color.indexOf(o.color) == 0 &&
+										(
+											a[j].status == 'In Stock' ||
+											a[j].status == 'Pre-Order' ||
+											a[j].status == 'Pre Order' ||
+											a[j].status == 'Back-Order' ||
+											a[j].status == 'Back Order'
+										)
+										) {
+										// Submit this ...
+										document.body.style.backgroundColor = '#dedede';
+										if (/^([\d\.]+)$/.exec(o.q[0].value)) {
+											AMT___recordAndSubmit();
+											return;
+										}
+										break;
+									}
 								}
 							}
 						}
