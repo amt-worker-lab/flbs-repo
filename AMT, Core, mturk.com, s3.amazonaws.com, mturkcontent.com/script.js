@@ -899,6 +899,10 @@ function MT__RUN() {
 					}
 					var sbm = true; //  Submit test...
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var result = { // Used for various data here
+						region:null,
+						state:null,
+					}
 					// Name
 					o.q[0].value = dom.getElementsByClassName('listing-name')[0].innerText;
 					// Region
@@ -906,12 +910,17 @@ function MT__RUN() {
 					var x = dom.getElementsByClassName('listing-breadcrumbs');
 					if (x && x.length) {
 						x = x[0].getElementsByTagName('a');
-						x = x[x.length-1]; // Last element
-						h = x.getAttribute('href');
+						// 0="Home"
+						// 1="State" eg CA
+						// 2="Regions" eg Ocean Beach
+						result.state = x[1].innerText;
+						var x1 = x[x.length-1]; // Last element
+						h = x1.getAttribute('href');
 						// Some checks on h
 						if (h && h.trim().length != '' && h.indexOf('/in/') != -1) {
-							x = x.innerText;
-							o.q[1].value = x;
+							x1 = x1.innerText;
+							o.q[1].value = x1;
+							result.region = x1;
 						}
 					}
 					// Address Line 2 = NA to start
@@ -940,7 +949,7 @@ function MT__RUN() {
 							//~ sbm = false;
 							//~ o.q[5].style.backgroundColor = 'aqua';
 						//~ }
-					var x = dom.getElementsByClassName('listing-contacts')[0];console.log(x);
+					var x = dom.getElementsByClassName('listing-contacts')[0];//console.log(x);
 					if (x) {
 						x = x.getElementsByTagName('a');
 						for (var i=0;i<x.length;i++) {
@@ -966,9 +975,9 @@ function MT__RUN() {
 					var x = dom.getElementsByClassName('details-card-item-data');
 					if (x) {
 						for (var i=0;i<x.length;i++) {
-							var y = x[i].getElementsByTagName('a');//console.log(y);
+							var y = x[i].getElementsByTagName('a');
 							if (y && y.length) {
-								var t = y[0].getAttribute('itemprop');//console.log(t);
+								var t = y[0].getAttribute('itemprop');
 								if (t && t == 'url') {console.log(x[i]);
 									o.q[10].value = x[i].innerText;
 									break;
@@ -1009,31 +1018,30 @@ function MT__RUN() {
 						o.q[25].value = 'N/A';
 					}
 					// Test for suite!
-					// Address 1
-					if (/(ste|suite|#|apt|apartment|unit|building|bldg|,)/i.exec(o.q[1].value)) {
-						var x = /,* +(ste|suite|apt|#|apartment|unit|building|bldg)\.* *([a-z0-9#]+)$/i.exec(o.q[1].value);
-						if (x) {
-							var g = x[0];
-							o.q[1].value = o.q[1].value.replace(g, '').trim(); // remove
-							o.q[1].value = o.q[1].value.replace(/,+/, '').trim(); // remove
-							o.q[2].value = g.replace(/^,/, '').trim();
-							if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
-								sbm = false;
-								o.q[1].style.backgroundColor = 'aqua';
-							}
-						} else {
-							sbm = false;
-							o.q[1].style.backgroundColor = 'aqua';
-						}
-					}
-					//~ if (sbm = false) {
-						//~ document.body.style.backgroundColor = 'teal';
-					//~ }
+						//~ // Address 1
+						//~ if (/(ste|suite|#|apt|apartment|unit|building|bldg|,)/i.exec(o.q[1].value)) {
+							//~ var x = /,* +(ste|suite|apt|#|apartment|unit|building|bldg)\.* *([a-z0-9#]+)$/i.exec(o.q[1].value);
+							//~ if (x) {
+								//~ var g = x[0];
+								//~ o.q[1].value = o.q[1].value.replace(g, '').trim(); // remove
+								//~ o.q[1].value = o.q[1].value.replace(/,+/, '').trim(); // remove
+								//~ o.q[2].value = g.replace(/^,/, '').trim();
+								//~ if (/(ste|suite|#|apt|apartment|unit|building|bldg)/i.exec(o.q[1].value)) {
+									//~ sbm = false;
+									//~ o.q[1].style.backgroundColor = 'aqua';
+								//~ }
+							//~ } else {
+								//~ sbm = false;
+								//~ o.q[1].style.backgroundColor = 'aqua';
+							//~ }
+						//~ }
 					o.sbm = sbm; // Set global
-					// Do geocode
-					//
+					// Find the lat/lng of a Starbucks in the "region".
+					// Use result.region, result.state
+					
+					//~ // Do geocode
 					//~ var a = o.q[1].value + ',' + o.q[2].value + ',' + o.q[3].value + ',';
-					MT___google_api_geocode(address, zipcode, true, o.use_proxy);
+					//~ MT___google_api_geocode(address, zipcode, true, o.use_proxy);
 				}
 			});
 			function fill(dw, optype, time) {
