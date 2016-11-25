@@ -39,15 +39,16 @@ function MT__RUN() {
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
 			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
 			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:40px;left:0%;width:99%;height:420px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
 			var d1b = ''.div({
 				style:
-				'position:absolute;top:440px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:460px;left:0%;width:99%;height:420px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1b);
 			var d2 = ''.div({
@@ -75,8 +76,14 @@ function MT__RUN() {
 				console.log(trs[i]);
 				img = img[0];
 				var d = ''.div(); // Make a container for the image.
-				d.appendChild(img); // Move image
-				d.setAttribute('style', 'text-align:center;border:1px solid blue;width:33%;float:left;');
+				// Add output
+				var x = ''.div({style:'font-weight:bold;font-size:30px;'});
+				x.innerText = 'No';
+				d.appendChild(x);
+				// Add image by moving it
+				d.appendChild(img);
+				d.setAttribute('style', 'text-align:center;border:1px solid blue;width:33%;height:100%;float:left;');
+				d.className = 'exe';
 				if (i>=1 && i<=3) {
 					d1.appendChild(d)
 					//t=0;
@@ -84,12 +91,8 @@ function MT__RUN() {
 					d1b.appendChild(d)
 					//t=400
 				}
-				// Add output
-				var x = ''.div({style:'font-weight:bold;font-size:30px;'});
-				x.innerText = 'No';
-				d.appendChild(x);
 				//
-				var st = 'max-width:100%;max-height:360px;';
+				var st = 'max-width:96%;max-height:320px;';
 				console.log(st);
 				img.setAttribute('style',
 					st
@@ -99,29 +102,41 @@ function MT__RUN() {
 				img.selected = 1;
 				img.style.cursor = 'pointer';
 				img.outputBox = x;
+				img.container = d;
 				img.onclick = function() {
 					this.selected--;
 					if (this.selected<0) {
 						this.selected = 3;
 					}
 					this.radios[this.selected].checked = true;
-					if (this.selected == 0) {
-						this.style.border = '8px solid teal';
-					} else {
-						this.style.border = '';
-					}
+					//~ if (this.selected != 1) {
+						//~ this.container.style.backgroundColor = 'LightGreen';
+					//~ } else {
+						//~ this.container.style.backgroundColor = '';
+					//~ }
+					//~ if (this.selected == 0) {
+						//~ this.style.border = '10px solid blue';
+						//~ this.style.marginTop = 0;
+					//~ } else {
+						//~ this.style.border = '';
+						//~ this.style.marginTop = '10px';
+					//~ }
 					switch(this.selected) {
 						case 0:
 							this.outputBox.innerText = 'Yes';
+							this.style.border = '14px solid blue';
 							break;
 						case 1:
 							this.outputBox.innerText = 'No';
+							this.style.border = '';
 							break;
 						case 2:
 							this.outputBox.innerText = 'Unsure';
+							this.style.border = '6px solid blue';
 							break;
 						case 3:
 							this.outputBox.innerText = 'Unclear';
+							this.style.border = '10px solid blue';
 							break;
 					}
 				}
