@@ -38,6 +38,32 @@ function MT__RUN() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
 			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:40px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:440px;left:0%;width:99%;height:400px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1b);
+			var d2 = ''.div({
+				style:
+				'position:absolute;top:0px;left:0%;width:99%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;font-size:30px;font-weight:bold;'
+			});
+			document.body.appendChild(d2);
+			/* */
+			var text = /Is the content of the picture is ([^\?]+)\?/.exec(ih)[1]; // Or breaks...
+			d2.innerText = text;
+			// Make sure there are five of these on the page...
+			var p = ih.match(new RegExp(text, 'g'));
+			if (!p || !p.length || p.length != 5) { // Exit
+				return;
+			}
+			//
 			var trs = document.getElementsByTagName("tr");
 			var left;
 			for (var i=0; i<trs.length; i++) {
@@ -47,22 +73,32 @@ function MT__RUN() {
 				}
 				left = (i-1)*33;
 				console.log(trs[i]);
-				if (i>=1 && i<=3) {
-					top=0;
-				} else {
-					top=400
-				}
-				//~ trs[i].setAttribute('style',
-				//trs[i].className = 'exe';
 				img = img[0];
+				var d = ''.div(); // Make a container for the image.
+				d.appendChild(img); // Move image
+				d.setAttribute('style', 'text-align:center;border:1px solid blue;width:33%;float:left;');
+				if (i>=1 && i<=3) {
+					d1.appendChild(d)
+					//t=0;
+				} else {
+					d1b.appendChild(d)
+					//t=400
+				}
+				// Add output
+				var x = ''.div({style:'font-weight:bold;font-size:30px;'});
+				x.innerText = 'No';
+				d.appendChild(x);
+				//
+				var st = 'max-width:100%;max-height:360px;';
+				console.log(st);
 				img.setAttribute('style',
-					'position:absolute !important;left:'+left+'%;max-width:33%;max-height:400px;'
+					st
 				);
-				img.style.top = top;
 				img.radios = trs[i].getElementsByTagName('input');
 				img.radios[1].checked = true; // No
 				img.selected = 1;
 				img.style.cursor = 'pointer';
+				img.outputBox = x;
 				img.onclick = function() {
 					this.selected--;
 					if (this.selected<0) {
@@ -74,6 +110,20 @@ function MT__RUN() {
 					} else {
 						this.style.border = '';
 					}
+					switch(this.selected) {
+						case 0:
+							this.outputBox.innerText = 'Yes';
+							break;
+						case 1:
+							this.outputBox.innerText = 'No';
+							break;
+						case 2:
+							this.outputBox.innerText = 'Unsure';
+							break;
+						case 3:
+							this.outputBox.innerText = 'Unclear';
+							break;
+					}
 				}
 			}
 			//~ document.getElementsByTagName("label")[0].style.float = "left";
@@ -81,8 +131,32 @@ function MT__RUN() {
 				//~ window.focus();
 			//~ }, 1000);
 			//~ // Keypress
-			//~ window.addEventListener('keypress', function(e) {
-				//~ //var c = e.keyCode;
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				if (c == 13) {
+					// Validate
+					for (var i=1; i<=5; i++) {
+						var n = document.getElementsByName('tag'+i); // tag1-5
+						var found = false;
+						var err = false;
+						for (var j=0; j<n.length; j++) {
+							if (n[j].checked) {
+								// Ensure no double checked
+								if (found)
+									err = true;
+								// Set found
+								found = true;
+							}
+						}
+						if (!found || err) { // Exit
+							e.stopPropagation();
+							e.preventDefault();
+							return false;
+						} else {
+							doSubmit();
+						}
+					}
+				}
 				//~ var str = String.fromCharCode(e.keyCode).toLowerCase();
 				//~ if (str == 'z') {
 					//~ document.getElementsByName('answer')[0].checked=true;
@@ -92,7 +166,7 @@ function MT__RUN() {
 					//~ document.getElementsByName('answer')[1].checked=true;
 					//~ doSubmit();
 				//~ }
-			//~ }, false);
+			}, false);
 		}
 		new run().f();return;
 	}
