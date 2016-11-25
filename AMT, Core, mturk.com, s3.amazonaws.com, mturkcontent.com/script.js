@@ -27,6 +27,75 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Viisights Solutions Ltd
+	// Describe if an object in the image (WARNING: This HIT may contain adult content. Worker discretion is advised.)
+	//
+	//
+	s = '<p>Please specify if an object in the image match the question the title.</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			var trs = document.getElementsByTagName("tr");
+			var left;
+			for (var i=0; i<trs.length; i++) {
+				var img = trs[i].getElementsByTagName('img');
+				if (!img || !img[0]) {
+					continue;
+				}
+				left = (i-1)*33;
+				console.log(trs[i]);
+				if (i>=1 && i<=3) {
+					top=0;
+				} else {
+					top=400
+				}
+				//~ trs[i].setAttribute('style',
+				//trs[i].className = 'exe';
+				img = img[0];
+				img.setAttribute('style',
+					'position:absolute !important;left:'+left+'%;max-width:33%;max-height:400px;'
+				);
+				img.style.top = top;
+				img.radios = trs[i].getElementsByTagName('input');
+				img.radios[1].checked = true; // No
+				img.selected = 1;
+				img.style.cursor = 'pointer';
+				img.onclick = function() {
+					this.selected--;
+					if (this.selected<0) {
+						this.selected = 3;
+					}
+					this.radios[this.selected].checked = true;
+					if (this.selected == 0) {
+						this.style.border = '8px solid teal';
+					} else {
+						this.style.border = '';
+					}
+				}
+			}
+			//~ document.getElementsByTagName("label")[0].style.float = "left";
+			//~ setInterval(function() {
+				//~ window.focus();
+			//~ }, 1000);
+			//~ // Keypress
+			//~ window.addEventListener('keypress', function(e) {
+				//~ //var c = e.keyCode;
+				//~ var str = String.fromCharCode(e.keyCode).toLowerCase();
+				//~ if (str == 'z') {
+					//~ document.getElementsByName('answer')[0].checked=true;
+					//~ doSubmit();
+				//~ }
+				//~ if (str == 'x') {
+					//~ document.getElementsByName('answer')[1].checked=true;
+					//~ doSubmit();
+				//~ }
+			//~ }, false);
+		}
+		new run().f();return;
+	}
 	// Anthony Ortiz
 	//
 	//
@@ -36,8 +105,11 @@ function MT__RUN() {
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
-			document.getElementsByClassName("panel panel-primary")[0].style.position = "absolute";
-			document.getElementsByClassName("panel panel-primary")[0].style.top = "2000px";
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:40px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			//~ document.getElementsByClassName("panel panel-primary")[0].style.position = "absolute";
+			//~ document.getElementsByClassName("panel panel-primary")[0].style.top = "2000px";
 			var radios = document.getElementsByClassName("radio");
 			for(var i = 0; i < radios.length; i++) {
 				radios[i].style.zoom = 4;
