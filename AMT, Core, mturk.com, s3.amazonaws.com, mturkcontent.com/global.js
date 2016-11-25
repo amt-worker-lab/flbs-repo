@@ -12996,12 +12996,6 @@ AMT___items_factory.prototype.startJobTimer = function() {
  */
 // switch select field of d1
 AMT___items_factory.prototype.create_dashboard__powers_v1__showScrapyResult_contexts = function(results_array, out_div, seed_object) {
-	//var out_div = d1;
-	
-	//~ console.log(results_array);
-	//~ console.log(out_div);
-	//~ console.log(seed_object);return;
-	
 	var old_divs = out_div.getElementsByTagName('div');
 	for (var i = old_divs.length - 1; i>=0; i--) {
 		old_divs[i].parentNode.removeChild(old_divs[i]);
