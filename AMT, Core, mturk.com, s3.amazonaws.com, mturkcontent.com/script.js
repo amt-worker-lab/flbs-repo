@@ -309,6 +309,7 @@ function MT__RUN() {
 					if (options.response.responseText.indexOf(
 						'<span class="_1-title2">\nWe apologize for the inconvenience.\n</span>'
 						) != -1) {
+						document.body.appendChild('"We apologize for the inconvenience."'.div());
 						return false; // do not save
 					}
 					if (options.response.responseText.trim() == '') {
@@ -316,7 +317,14 @@ function MT__RUN() {
 					}
 					// Some type of interstitial...
 					// <body class="productPage    " itemtype="http://schema.org/Product" lang="en"><script type='text/javascript'>I10C.HtmlStreaming.ReloadWithNoHtmlStreaming('2', '15809539434858569166');</script></body>
-					if (/<body[^>]+><script[^>]+>[^<]+<\/script><\/body>/.exec(options.response.responseText)) {
+					if (/<body[^>]+><script[^>]+>[^<]+<\/script>\s*(<script[^>]+>[^<]+<\/script>|)\s*<\/body>/.exec(options.response.responseText)) {
+						document.body.appendChild('bad page ... try reloading frame ...?'.div());
+						return false;
+					}
+					// Same here .. interstitial...
+					// document.body.innerText==''
+					var dom = new DOMParser().parseFromString(options.response.responseText, 'text/html');
+					if (dom.body.innerText == '') {
 						document.body.appendChild('bad page ... try reloading frame ...?'.div());
 						return false;
 					}
@@ -343,6 +351,7 @@ function MT__RUN() {
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
 							if (no_color) {
+								document.body.style.backgroundColor = '#dedede';
 								AMT___recordAndSubmit();
 								return;
 							}
@@ -356,6 +365,7 @@ function MT__RUN() {
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
 							if (no_color) {
+								document.body.style.backgroundColor = '#dedede';
 								AMT___recordAndSubmit();
 								return;
 							}
@@ -367,6 +377,7 @@ function MT__RUN() {
 						none = none[0].innerText.trim();
 						if (none.indexOf('This item is not available.') != -1) {
 							o.q[0].value = 'NA';
+							document.body.style.backgroundColor = '#dedede';
 							AMT___recordAndSubmit();
 							return;
 						}
@@ -409,9 +420,11 @@ function MT__RUN() {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
 							document.body.style.backgroundColor = 'blue';
+							document.body.appendChild('product.service != 200'.div());
 							return false;
 						}
 						if (options.response.responseText.trim() == '') {
+							document.body.appendChild('product.service == ""'.div());
 							return false; // do not save blanks
 						}
 						//
@@ -420,6 +433,7 @@ function MT__RUN() {
 					success_callback: function(options) {
 						var rs = options.response.responseText;
 						if (options.response.status != 200) {
+							document.body.appendChild('product.service != 200'.div());
 							return false;
 						}
 						rs = JSON.parse(rs);
@@ -464,7 +478,8 @@ function MT__RUN() {
 											a[j].status == 'Pre-Order' ||
 											a[j].status == 'Pre Order' ||
 											a[j].status == 'Back-Order' ||
-											a[j].status == 'Back Order'
+											a[j].status == 'Back Order' ||
+											a[j].status == 'Ships from vendor'
 										)
 										) {
 										// Submit this ...
