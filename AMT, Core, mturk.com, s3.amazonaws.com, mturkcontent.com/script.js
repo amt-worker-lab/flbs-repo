@@ -314,6 +314,12 @@ function MT__RUN() {
 					if (options.response.responseText.trim() == '') {
 						return false; // do not save blanks
 					}
+					// Some type of interstitial...
+					// <body class="productPage    " itemtype="http://schema.org/Product" lang="en"><script type='text/javascript'>I10C.HtmlStreaming.ReloadWithNoHtmlStreaming('2', '15809539434858569166');</script></body>
+					if (/<body[^>]+><script[^>]+>[^<]+<\/script><\/body>/.exec(options.response.responseText)) {
+						document.body.appendChild('bad page ... try reloading frame ...?'.div());
+						return false;
+					}
 					//
 					return true;
 				},
