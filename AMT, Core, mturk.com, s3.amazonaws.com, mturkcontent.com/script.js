@@ -279,7 +279,8 @@ function MT__RUN() {
 			var o = {
 				u: x.trim(),//innerText.trim(),
 				//prodid: /neimanmarcus\.com\/(en-us\/|)(prod\d+)\//.exec(x)[2],
-				color: /color_variation=([^&]+)&assignmentId=/.exec(document.location.href)[1],
+				//color: /color_variation=([^&]+)&assignmentId=/.exec(document.location.href)[1],
+				color: /color_variation=([^$]+)/.exec(document.location.href)[1],
 				q: [
 					document.getElementById('listPrice'),
 					document.getElementById('offerPrice'),
@@ -287,10 +288,11 @@ function MT__RUN() {
 				],
 				sbm:true,
 			}
+			o.color = o.color.replace(/&assignment[\d\D]*/,'');
 			o.color = o.color.toUpperCase().replace(/%20/g, ' ');
 			// color mismatching ...
 			// grey[rohit]=gray[neiman]
-			o.color = (o.color == 'GREY') ? 'GRAY' : o.color;
+			o.color = (o.color == 'GRAY') ? 'GREY' : o.color;
 			AMT___addUserDecision(
 				'RohitSharma,Nov29,2016',
 				function() { return o.u; },
@@ -359,7 +361,7 @@ function MT__RUN() {
 							if (no_color) {
 								//~ document.body.style.backgroundColor = '#dedede';
 								//AMT___recordAndSubmit();
-								return;
+								//~ return;
 							}
 						}
 					}
@@ -375,7 +377,9 @@ function MT__RUN() {
 							if (no_color) {
 								//~ document.body.style.backgroundColor = '#dedede';
 								//AMT___recordAndSubmit();
-								return;
+								//return;
+							} else {
+								//
 							}
 						} else {
 							//o.q[1].value = 'NA';
@@ -395,7 +399,7 @@ function MT__RUN() {
 							if (no_color) {
 								//~ document.body.style.backgroundColor = '#dedede';
 								//AMT___recordAndSubmit();
-								return;
+								//return;
 							}
 						} else {
 							//o.q[1].value = 'NA';
@@ -411,11 +415,13 @@ function MT__RUN() {
 							if (o.q[0].value != '' || o.q[1].value != '') {
 								o.sbm = false;
 								document.body.appendChild('inspect 3'.div());
+								o.q[0].value = 'NA';
+								o.q[1].value = 'NA'; // Pause
+							} else {
+								o.q[0].value = 'NA';
+								o.q[1].value = 'NA'; // Submit
+								AMT___recordAndSubmit();
 							}
-							o.q[0].value = 'NA';
-							o.q[1].value = 'NA';
-							//~ document.body.style.backgroundColor = '#dedede';
-							//~ AMT___recordAndSubmit();
 							return;
 						}
 					}
@@ -424,6 +430,19 @@ function MT__RUN() {
 					var x = /\\*"product_id\\*":\[([^\]]+)\]/.exec(rs);
 					if (!x) {
 						document.body.appendChild('bad product id scrape'.div());
+						return;
+					}
+					// Submit this ...
+					//~ console.log(/^([\d\.]+)$/.exec(o.q[0].value))
+					//~ console.log(/^([\d\.]+)$/.exec(o.q[1].value))
+					//~ console.log(o.sbm)
+					//~ console.log(no_color)
+					if (/^([\d\.]+)$/.exec(o.q[0].value) &&
+						/^([\d\.]+)$/.exec(o.q[1].value) &&
+						o.sbm &&
+						no_color
+						) {
+						AMT___recordAndSubmit();
 						return;
 					}
 					// Only the string eg prod188840039,prod188840040 is necessary.
