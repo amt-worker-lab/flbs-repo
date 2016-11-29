@@ -240,7 +240,8 @@ function MT__RUN() {
 	//       "eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19"
 	// 
   //s = '<p>Offer Price : Price at which the Product is being sold by Retailer for a product after discount/offer.</p>';
-	s = '<p>Offer Price : Price at which the Product is being sold by\n					Retailer for a product after discount/offer.</p>';
+  //s = '<p>Offer Price : Price at which the Product is being sold by\n					Retailer for a product after discount/offer.</p>';
+	s = '<p>Step3: Collect the List Price and Offer Price at which the product is being\n					sold for.</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
@@ -280,18 +281,22 @@ function MT__RUN() {
 				//prodid: /neimanmarcus\.com\/(en-us\/|)(prod\d+)\//.exec(x)[2],
 				color: /color_variation=([^&]+)&assignmentId=/.exec(document.location.href)[1],
 				q: [
-					document.getElementById('companyName')
-				]
+					document.getElementById('listPrice'),
+					document.getElementById('offerPrice'),
+					//~ document.getElementById('companyName')
+				],
+				sbm:true,
 			}
 			o.color = o.color.toUpperCase().replace(/%20/g, ' ');
 			// color mismatching ...
 			// grey[rohit]=gray[neiman]
 			o.color = (o.color == 'GREY') ? 'GRAY' : o.color;
 			AMT___addUserDecision(
-				'RohitSharma,Nov23,2016',
+				'RohitSharma,Nov29,2016',
 				function() { return o.u; },
 				[
-					"Id(companyName)",
+					"Id(listPrice)",
+					"Id(offerPrice)"
 				]
 			);
 			// xhr
@@ -346,13 +351,14 @@ function MT__RUN() {
 					// ...
 					//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
 					var pr = dom.getElementsByClassName('lbl_ItemPriceSingleItem product-price');
-					if (pr && pr[0] && pr[0].innerText) {
+					if (pr && pr[0] && pr[0].innerText) { console.log(pr);
 						pr = pr[0].innerText.trim();
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
+							o.q[1].value = pr.replace(/[\$,]/g,'');
 							if (no_color) {
-								document.body.style.backgroundColor = '#dedede';
-								AMT___recordAndSubmit();
+								//~ document.body.style.backgroundColor = '#dedede';
+								//AMT___recordAndSubmit();
 								return;
 							}
 						}
@@ -362,23 +368,54 @@ function MT__RUN() {
 					var pr = dom.getElementsByClassName('pos1override item-price');
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
+						o.sbm = false; // Inspect...
+						document.body.appendChild('inspect 1'.div());
+						if (/^\$[\d\.,]+$/.exec(pr)) {
+							o.q[1].value = pr.replace(/[\$,]/g,'');
+							if (no_color) {
+								//~ document.body.style.backgroundColor = '#dedede';
+								//AMT___recordAndSubmit();
+								return;
+							}
+						} else {
+							//o.q[1].value = 'NA';
+						}
+					} else {
+						//o.q[1].value = 'NA';
+					}
+					// Original price, if a sale is on...
+					// item-price
+					var pr = dom.getElementsByClassName('item-price');
+					if (pr && pr[0] && pr[0].innerText) {
+						pr = pr[0].innerText.trim();
+						o.sbm = false; // Inspect...
+						document.body.appendChild('inspect 2'.div());
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
 							if (no_color) {
-								document.body.style.backgroundColor = '#dedede';
-								AMT___recordAndSubmit();
+								//~ document.body.style.backgroundColor = '#dedede';
+								//AMT___recordAndSubmit();
 								return;
 							}
+						} else {
+							//o.q[1].value = 'NA';
 						}
+					} else {
+						//o.q[1].value = 'NA';
 					}
 					// NA
 					var none = dom.getElementsByClassName('cannotorder');
 					if (none && none[0] && none[0].innerText) {
 						none = none[0].innerText.trim();
 						if (none.indexOf('This item is not available.') != -1) {
+							if (o.q[0].value != '' || o.q[1].value != '') {
+								o.sbm = false;
+								document.body.appendChild('inspect 3'.div());
+							}
 							o.q[0].value = 'NA';
-							document.body.style.backgroundColor = '#dedede';
-							AMT___recordAndSubmit();
+							o.q[1].value = 'NA';
+							//~ document.body.style.backgroundColor = '#dedede';
+							//~ AMT___recordAndSubmit();
 							return;
 						}
 					}
@@ -484,7 +521,10 @@ function MT__RUN() {
 										) {
 										// Submit this ...
 										document.body.style.backgroundColor = '#dedede';
-										if (/^([\d\.]+)$/.exec(o.q[0].value)) {
+										if (/^([\d\.]+)$/.exec(o.q[0].value) &&
+											/^([\d\.]+)$/.exec(o.q[1].value) &&
+											o.sbm
+											) {
 											AMT___recordAndSubmit();
 											return;
 										}
