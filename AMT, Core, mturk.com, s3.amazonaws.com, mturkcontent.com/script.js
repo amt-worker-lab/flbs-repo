@@ -302,8 +302,19 @@ function MT__RUN() {
 				]
 			);
 			// doubleclick
-			document.body.ondblclick = function() {
+			window.ondblclick = function() {
 				document.location.reload();
+			}
+			document.getElementById('submitButton').onclick = function(e) {
+				o.q[0].value = o.q[0].value.trim();
+				o.q[1].value = o.q[1].value.trim();
+				if (o.q[0].value == '' || o.q[1].value == '') {
+					e.stopPropagation();
+					e.preventDefault();
+					return false;
+				}
+				AMT___recordAndSubmit();
+				return false;
 			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -427,6 +438,21 @@ function MT__RUN() {
 								AMT___recordAndSubmit();
 							}
 							return;
+						}
+					}
+					// override?
+					if (rs.indexOf('line-item-promo-elim-suites') != -1) {
+						// line-item-promo-elim-suites
+						o.sbm = false;
+						document.body.appendChild('inspect 4'.div());
+						// 40% Off : 
+						var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
+						if (pr && pr[0] && pr[0].innerText) {
+							pr = pr[0].innerText.trim().replace(/\d+% Off :/i, '');
+							document.body.appendChild('inspect 2'.div());
+							if (/^\$[\d\.,]+$/.exec(pr)) {
+								o.q[0].value = pr.replace(/[\$,]/g,'');
+							}
 						}
 					}
 					// Now run nmapi ...
