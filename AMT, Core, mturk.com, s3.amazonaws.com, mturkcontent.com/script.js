@@ -301,6 +301,10 @@ function MT__RUN() {
 					"Id(offerPrice)"
 				]
 			);
+			// doubleclick
+			document.body.ondblclick = function() {
+				document.location.reload();
+			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: o.u,
@@ -370,7 +374,7 @@ function MT__RUN() {
 					var pr = dom.getElementsByClassName('pos1override item-price');
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
-						o.sbm = false; // Inspect...
+						//o.sbm = false; // Inspect...
 						document.body.appendChild('inspect 1'.div());
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[1].value = pr.replace(/[\$,]/g,'');
@@ -392,7 +396,7 @@ function MT__RUN() {
 					var pr = dom.getElementsByClassName('item-price');
 					if (pr && pr[0] && pr[0].innerText) {
 						pr = pr[0].innerText.trim();
-						o.sbm = false; // Inspect...
+						//o.sbm = false; // Inspect...
 						document.body.appendChild('inspect 2'.div());
 						if (/^\$[\d\.,]+$/.exec(pr)) {
 							o.q[0].value = pr.replace(/[\$,]/g,'');
