@@ -17081,6 +17081,7 @@ AMT___core_factory.prototype.amt_home_show_tasks = function() {
 			'A3A0N4OPTWRYPD':true, //Research Project
 			'A2GGMBBJ00PKKX':true, //AdultNetHITs
 			'A222T6DOEXIL8L':true, //zTask by zCrowd.com
+			'A3RRY7BIF8JDCS':true, //ScoutIt
 		};
 		ignore_requesters = {
 			'Mark Yatskar':true,
