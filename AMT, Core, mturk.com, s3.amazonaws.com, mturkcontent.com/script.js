@@ -129910,10 +129910,11 @@ qatar,80
 	}
 	// Sherry Gould
 	// Find the Website Address for Company
-	//
+	// (Not email...)
 	// 
 	var s = '<li>Enter the website address for the <strong>official website </strong>of the business.</li>\n	<li>Include the full address, e.g. http://www.amazon.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>';
-	if (ih.indexOf(s) != -1)
+	var s2= 'Email address:';
+	if (ih.indexOf(s) != -1 && ih.indexOf(s2) == -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
