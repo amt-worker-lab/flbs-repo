@@ -459,7 +459,7 @@ function MT__RUN() {
 							document.body.appendChild('inspect 2'.div());
 							
 							if (/^\$[\d\.,]+$/.exec(pr)) {
-								o.q[0].value = pr.replace(/[\$,]/g,'');
+								o.q[1].value = pr.replace(/[\$,]/g,'');
 							}
 						}
 					}
@@ -470,6 +470,7 @@ function MT__RUN() {
 						document.body.appendChild('bad product id scrape'.div());
 						return;
 					}
+					
 					// Submit this ...
 					//~ console.log(/^([\d\.]+)$/.exec(o.q[0].value))
 					//~ console.log(/^([\d\.]+)$/.exec(o.q[1].value))
