@@ -387,7 +387,7 @@ function MT__RUN() {
 						pr = pr[0].innerText.trim();
 						//o.sbm = false; // Inspect...
 						document.body.appendChild('inspect 1'.div());
-						if (/^\$[\d\.,]+$/.exec(pr)) {
+						if (/^\$[\r\n\s\t]*[\d\.,]+$/.exec(pr)) {
 							o.q[1].value = pr.replace(/[\$,]/g,'');
 							if (no_color) {
 								//~ document.body.style.backgroundColor = '#dedede';
@@ -453,8 +453,11 @@ function MT__RUN() {
 						// 40% Off : 
 						var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
 						if (pr && pr[0] && pr[0].innerText) {
-							pr = pr[0].innerText.trim().replace(/\d+% Off :/i, '').trim();
+							pr = pr[0].innerText.trim().replace(/\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
+							console.log("trace - line-item-promo-elim, pr: " + pr);
+							
 							document.body.appendChild('inspect 2'.div());
+							
 							if (/^\$[\d\.,]+$/.exec(pr)) {
 								o.q[0].value = pr.replace(/[\$,]/g,'');
 							}
