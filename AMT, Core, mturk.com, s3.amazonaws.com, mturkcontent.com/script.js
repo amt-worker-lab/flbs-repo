@@ -422,9 +422,12 @@ function MT__RUN() {
 					} else {
 						//o.q[1].value = 'NA';
 					}
+					
 					// NA
 					var none = dom.getElementsByClassName('cannotorder');
+					//var soldOut = dom.getElementsByClassName('flag-sold-out');
 					if (none && none[0] && none[0].innerText) {
+						console.log("inside non check");
 						none = none[0].innerText.trim();
 						if (none.indexOf('This item is not available.') != -1) {
 							if (o.q[0].value != '' || o.q[1].value != '') {
@@ -440,6 +443,8 @@ function MT__RUN() {
 							return;
 						}
 					}
+					
+					
 					// override?
 					if (rs.indexOf('line-item-promo-elim-suites') != -1) {
 						// line-item-promo-elim-suites
@@ -448,7 +453,7 @@ function MT__RUN() {
 						// 40% Off : 
 						var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
 						if (pr && pr[0] && pr[0].innerText) {
-							pr = pr[0].innerText.trim().replace(/\d+% Off :/i, '');
+							pr = pr[0].innerText.trim().replace(/\d+% Off :/i, '').trim();
 							document.body.appendChild('inspect 2'.div());
 							if (/^\$[\d\.,]+$/.exec(pr)) {
 								o.q[0].value = pr.replace(/[\$,]/g,'');
