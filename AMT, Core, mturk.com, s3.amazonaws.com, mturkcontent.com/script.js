@@ -59696,7 +59696,7 @@ Laurens Hammond, Chicago, Ill.**/
 								"window.addEventListener('keypress', function(e) {"+
 									"if(e.keyCode == 115) {"+
 										"orientToFirstPoint();"+
-									"}"+
+									"} else if(e.keyCode == 70) {  }"+
 								"});"+
 								"window.addEventListener('keydown', function(e) {"+
 									"if(e.keyCode == 16) {"+
