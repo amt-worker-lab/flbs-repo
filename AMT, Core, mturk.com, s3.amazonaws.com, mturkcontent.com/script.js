@@ -261,6 +261,18 @@ function MT__RUN() {
 				alert('"color" not on page - Exiting!');
 				return;
 			}
+			// na button
+			var x = document.createElement('input');
+			x.type = 'button';
+			x.setAttribute('style','position:absolute;top:0;left:0;width:5%;height:400px;');
+			document.body.appendChild(x);
+			x.value = 'NA';
+			x.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'NA';
+				o.q[1].value = 'NA';
+				AMT___recordAndSubmit();
+			}
 			// And what if color == '_No_VARIANT_'
 			var x = document.getElementsByTagName('a');
 			if (x && x[1] && x[1].innerText && x[1].innerText.trim() != '') {
@@ -448,20 +460,20 @@ function MT__RUN() {
 					// override?
 					if (rs.indexOf('line-item-promo-elim-suites') != -1) {
 						// line-item-promo-elim-suites
-						o.sbm = false;
+						//~ o.sbm = false;
 						document.body.appendChild('inspect 4'.div());
 						// 40% Off : 
 						var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
 						if (pr && pr[0] && pr[0].innerText) {
 							pr = pr[0].innerText.trim().replace(/\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
 							console.log("trace - line-item-promo-elim, pr: " + pr);
-							
 							document.body.appendChild('inspect 2'.div());
-							
 							if (/^\$[\d\.,]+$/.exec(pr)) {
 								o.q[1].value = pr.replace(/[\$,]/g,'');
-							}
-						}
+							} else
+								o.sbm = false;
+						} else
+							o.sbm = false;
 					}
 					// Now run nmapi ...
 					// But first scrape for ids if necessary
@@ -472,10 +484,6 @@ function MT__RUN() {
 					}
 					
 					// Submit this ...
-					//~ console.log(/^([\d\.]+)$/.exec(o.q[0].value))
-					//~ console.log(/^([\d\.]+)$/.exec(o.q[1].value))
-					//~ console.log(o.sbm)
-					//~ console.log(no_color)
 					if (/^([\d\.]+)$/.exec(o.q[0].value) &&
 						/^([\d\.]+)$/.exec(o.q[1].value) &&
 						o.sbm &&
