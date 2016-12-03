@@ -60235,6 +60235,8 @@ Laurens Hammond, Chicago, Ill.**/
 							//Compute distance between two points;
 							
 							
+
+
 							
 							AMT___RunPageScript("function() {"+
 									"var currentLat = " + o.centerMapLat + ";"+
@@ -60242,6 +60244,24 @@ Laurens Hammond, Chicago, Ill.**/
 									"var path = [new google.maps.LatLng(currentLat, currentLng),"+
 									"				new google.maps.LatLng("+obj.latLng.lat+","+ obj.latLng.lng+")"+
 									"			    ];"+
+
+									"window.fPois = [" + JSON.stringify(obj.latLng) + ", {lat:currentLat, lng:currentLng}];" +
+									"window.fPoisIndex = 0;"+							
+									"window.addEventListener('keypress', function(e) {"+
+									"	if(e.keyCode == 102) {"+
+									"		console.log('pressed F');"+
+									"		if(window.fPois[window.fPoisIndex]) {"+
+									"		}"+
+									"		else {"+
+									"			window.fPoisIndex = 0;"+
+									"		}"+
+									"		map.setCenter(new google.maps.LatLng(window.fPois[window.fPoisIndex].lat*1, window.fPois[window.fPoisIndex].lng*1));"+
+									"		window.fPoisIndex++;"+
+									"	}"+
+									"});"+
+
+
+
 									" console.log(document.body.tempLat);"+
 									" console.log('running in here');"+
 									""+
