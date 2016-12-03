@@ -129993,7 +129993,7 @@ qatar,80
 			// Elements
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim(),
+				comp: td[1].innerText.trim().string_to_mixed_case(), // Mixed case here :)
 				addr: td[3].innerText.trim(),
 				phone: td[5].innerText.trim(),
 				boldArray: [],
@@ -130002,6 +130002,18 @@ qatar,80
 				q: [
 					document.getElementById('web_url')
 				],
+			}
+			o.phone = o.phone.replace(/-/g,'');
+			if (o.phone.length == 11) {
+				var x = /(\d{2})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
+				if (x) {
+					o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
+				}
+			} else if (o.phone.length == 12) {
+				var x = /(\d{3})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
+				if (x) {
+					o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
+				}
 			}
 			o.boldArray = o.comp.clean_string_to_array();
 			o.boldArray2= o.addr.clean_string_to_array();
