@@ -613,8 +613,6 @@ function MT__RUN() {
 							for (var i in x) {
 								//x = x[0];
 								if (!x[i].skus) {
-									//~ document.body.appendChild('skus'.div());
-									//~ return;
 									continue; // Skip to next
 								}
 								var a = x[i].skus;
