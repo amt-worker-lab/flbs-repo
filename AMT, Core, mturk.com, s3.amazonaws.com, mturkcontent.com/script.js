@@ -299,6 +299,7 @@ function MT__RUN() {
 					//~ document.getElementById('companyName')
 				],
 				sbm:true,
+				backoff:0 // Backoff reload tries...
 			}
 			o.color = o.color.replace(/&assignment[\d\D]*/,'');
 			o.color = o.color.toUpperCase().replace(/%20/g, ' ');
@@ -328,176 +329,222 @@ function MT__RUN() {
 				AMT___recordAndSubmit();
 				return false;
 			}
-			// xhr
-			new AMT___requests_factory().xhr_with_disk_cache({
-				URL: o.u,
-				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						// do NA
-						//~ if (rs.indexOf('<title>404 - Page Does Not Exist</title>') != -1)
-							//~ doNA();
-						document.body.style.backgroundColor = 'blue';
-						return false;
-					}
-					if (options.response.responseText.indexOf(
-						'<span class="_1-title2">\nWe apologize for the inconvenience.\n</span>'
-						) != -1) {
-						document.body.appendChild('"We apologize for the inconvenience."'.div());
-						return false; // do not save
-					}
-					if (options.response.responseText.trim() == '') {
-						return false; // do not save blanks
-					}
-					// Some type of interstitial...
-					// <body class="productPage    " itemtype="http://schema.org/Product" lang="en"><script type='text/javascript'>I10C.HtmlStreaming.ReloadWithNoHtmlStreaming('2', '15809539434858569166');</script></body>
-					if (/<body[^>]+><script[^>]+>[^<]+<\/script>\s*(<script[^>]+>[^<]+<\/script>|)\s*<\/body>/.exec(options.response.responseText)) {
-						document.body.appendChild('bad page ... try reloading frame ...?'.div());
-						return false;
-					}
-					// Same here .. interstitial...
-					// document.body.innerText==''
-					var dom = new DOMParser().parseFromString(options.response.responseText, 'text/html');
-					if (dom.body.innerText == '') {
-						document.body.appendChild('bad page ... try reloading frame ...?'.div());
-						return false;
-					}
-					//
-					return true;
-				},
-				success_callback: function(options) {
-					var rs = options.response.responseText;
-					if (options.response.status != 200) {
-						return false;
-					}
-					var sbm = true; //  Submit test...
-					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var no_color = false
-					if (o.color.toUpperCase() == '_NO_VARIANT_' || o.color.toUpperCase() == 'NONE') {
-						no_color = true;
-					}
-					// Note no commas...
-					// ...
-					//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
-					var pr = dom.getElementsByClassName('lbl_ItemPriceSingleItem product-price');
-					if (pr && pr[0] && pr[0].innerText) { console.log(pr);
-						pr = pr[0].innerText.trim();
-						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr.replace(/[\$,]/g,'');
-							o.q[1].value = pr.replace(/[\$,]/g,'');
-							if (no_color) {
-								//~ document.body.style.backgroundColor = '#dedede';
-								//AMT___recordAndSubmit();
-								//~ return;
-							}
-						}
-					}
-					// ...
-					//<span tabindex="0" class="pos1override item-price" itemprop="price" >\n					$226.00
-					var pr = dom.getElementsByClassName('pos1override item-price');
-					if (pr && pr[0] && pr[0].innerText) {
-						pr = pr[0].innerText.trim();
-						//o.sbm = false; // Inspect...
-						document.body.appendChild('inspect 1'.div());
-						if (/^\$[\r\n\s\t]*[\d\.,]+$/.exec(pr)) {
-							o.q[1].value = pr.replace(/[\$,]/g,'');
-							if (no_color) {
-								//~ document.body.style.backgroundColor = '#dedede';
-								//AMT___recordAndSubmit();
-								//return;
-							} else {
-								//
-							}
-						} else {
-							//o.q[1].value = 'NA';
-						}
-					} else {
-						//o.q[1].value = 'NA';
-					}
-					// Original price, if a sale is on...
-					// item-price
-					var pr = dom.getElementsByClassName('item-price');
-					if (pr && pr[0] && pr[0].innerText) {
-						pr = pr[0].innerText.trim();
-						//o.sbm = false; // Inspect...
-						document.body.appendChild('inspect 2'.div());
-						if (/^\$[\d\.,]+$/.exec(pr)) {
-							o.q[0].value = pr.replace(/[\$,]/g,'');
-							if (no_color) {
-								//~ document.body.style.backgroundColor = '#dedede';
-								//AMT___recordAndSubmit();
-								//return;
-							}
-						} else {
-							//o.q[1].value = 'NA';
-						}
-					} else {
-						//o.q[1].value = 'NA';
-					}
-					
-					// NA
-					var none = dom.getElementsByClassName('cannotorder');
-					//var soldOut = dom.getElementsByClassName('flag-sold-out');
-					if (none && none[0] && none[0].innerText) {
-						console.log("inside non check");
-						none = none[0].innerText.trim();
-						if (none.indexOf('This item is not available.') != -1) {
-							if (o.q[0].value != '' || o.q[1].value != '') {
-								o.sbm = false;
-								document.body.appendChild('inspect 3'.div());
-								o.q[0].value = 'NA';
-								o.q[1].value = 'NA'; // Pause
-							} else {
-								o.q[0].value = 'NA';
-								o.q[1].value = 'NA'; // Submit
-								AMT___recordAndSubmit();
-							}
+			// Init
+			rsharm();
+			function rsharm() {
+				// Using GM_xmlhttpRequest
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: o.u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if (response.status > 200) {
+							document.body.style.backgroundColor = 'blue';
 							return;
 						}
+						if (rs.indexOf(
+							'<span class="_1-title2">\nWe apologize for the inconvenience.\n</span>'
+							) != -1) {
+							document.body.appendChild('"We apologize for the inconvenience."'.div());
+							return; // do not save
+						}
+						if (rs.trim() == '') {
+							return; // do not save blanks
+						}
+						// Some type of interstitial...
+						// <body class="productPage    " itemtype="http://schema.org/Product" lang="en"><script type='text/javascript'>I10C.HtmlStreaming.ReloadWithNoHtmlStreaming('2', '15809539434858569166');</script></body>
+						if (/<body[^>]+><script[^>]+>[^<]+<\/script>\s*(<script[^>]+>[^<]+<\/script>|)\s*<\/body>/.exec(rs)) {
+							document.body.appendChild('bad page ... try reloading frame ...?'.div());
+							// Try again? + backoff
+							o.backoff++;
+							window.setTimeout(rsharm, o.backoff*2000);
+							return;
+						}
+						// Same here .. interstitial...
+						// document.body.innerText==''
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						if (dom.body.innerText == '') {
+							document.body.appendChild('bad page ... try reloading frame ...?'.div());
+							return;
+						}
+						// Still here?
+						rsharm_load(rs);
 					}
-					
-					
-					// override?
-					if (rs.indexOf('line-item-promo-elim-suites') != -1) {
-						// line-item-promo-elim-suites
-						//~ o.sbm = false;
-						document.body.appendChild('inspect 4'.div());
-						// 40% Off : 
-						var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
-						if (pr && pr[0] && pr[0].innerText) {
-							pr = pr[0].innerText.trim().replace(/\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
-							console.log("trace - line-item-promo-elim, pr: " + pr);
-							document.body.appendChild('inspect 2'.div());
-							if (/^\$[\d\.,]+$/.exec(pr)) {
-								o.q[1].value = pr.replace(/[\$,]/g,'');
-							} else
-								o.sbm = false;
+				});
+			}
+			function rsharm_load(rs) {
+				///////////////////////////////
+				// And now onto filling in...
+				//
+				//
+				///////////////////////////////
+				var sbm = true; //  Submit test...
+				var dom = new DOMParser().parseFromString(rs, 'text/html');
+				var no_color = false
+				if (o.color.toUpperCase() == '_NO_VARIANT_' || o.color.toUpperCase() == 'NONE') {
+					no_color = true;
+				}
+				// Note no commas...
+				// ...
+				//<p class="lbl_ItemPriceSingleItem product-price" itemprop="price">$695.00
+				var pr = dom.getElementsByClassName('lbl_ItemPriceSingleItem product-price');
+				if (pr && pr[0] && pr[0].innerText) { console.log(pr);
+					pr = pr[0].innerText.trim();
+					if (/^\$[\d\.,]+$/.exec(pr)) {
+						o.q[0].value = pr.replace(/[\$,]/g,'');
+						o.q[1].value = pr.replace(/[\$,]/g,'');
+						if (no_color) {
+							//~ document.body.style.backgroundColor = '#dedede';
+							//AMT___recordAndSubmit();
+							//~ return;
+						}
+					}
+				}
+				// ...
+				//<span tabindex="0" class="pos1override item-price" itemprop="price" >\n					$226.00
+				var pr = dom.getElementsByClassName('pos1override item-price');
+				if (pr && pr[0] && pr[0].innerText) {
+					pr = pr[0].innerText.trim();
+					//o.sbm = false; // Inspect...
+					document.body.appendChild('inspect 1'.div());
+					if (/^\$[\r\n\s\t]*[\d\.,]+$/.exec(pr)) {
+						o.q[1].value = pr.replace(/[\$,]/g,'');
+						if (no_color) {
+							//~ document.body.style.backgroundColor = '#dedede';
+							//AMT___recordAndSubmit();
+							//return;
+						} else {
+							//
+						}
+					} else {
+						//o.q[1].value = 'NA';
+					}
+				} else {
+					//o.q[1].value = 'NA';
+				}
+				// Original price, if a sale is on...
+				// item-price
+				var pr = dom.getElementsByClassName('item-price');
+				if (pr && pr[0] && pr[0].innerText) {
+					pr = pr[0].innerText.trim();
+					//o.sbm = false; // Inspect...
+					document.body.appendChild('inspect 2'.div());
+					if (/^\$[\d\.,]+$/.exec(pr)) {
+						o.q[0].value = pr.replace(/[\$,]/g,'');
+						if (no_color) {
+							//~ document.body.style.backgroundColor = '#dedede';
+							//AMT___recordAndSubmit();
+							//return;
+						}
+					} else {
+						//o.q[1].value = 'NA';
+					}
+				} else {
+					//o.q[1].value = 'NA';
+				}
+				
+				// NA
+				var none = dom.getElementsByClassName('cannotorder');
+				//var soldOut = dom.getElementsByClassName('flag-sold-out');
+				if (none && none[0] && none[0].innerText) {
+					console.log("inside non check");
+					none = none[0].innerText.trim();
+					if (none.indexOf('This item is not available.') != -1) {
+						if (o.q[0].value != '' || o.q[1].value != '') {
+							o.sbm = false;
+							document.body.appendChild('inspect 3'.div());
+							o.q[0].value = 'NA';
+							o.q[1].value = 'NA'; // Pause
+						} else {
+							o.q[0].value = 'NA';
+							o.q[1].value = 'NA'; // Submit
+							AMT___recordAndSubmit();
+						}
+						return;
+					}
+				}
+				
+				// override?
+				if (rs.indexOf('line-item-promo-elim-suites') != -1) {
+					// line-item-promo-elim-suites
+					//~ o.sbm = false;
+					document.body.appendChild('inspect 4'.div());
+					// 40% Off : 
+					var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
+					if (pr && pr[0] && pr[0].innerText) {
+						pr = pr[0].innerText.trim().replace(/\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
+						console.log("trace - line-item-promo-elim, pr: " + pr);
+						document.body.appendChild('inspect 2'.div());
+						if (/^\$[\d\.,]+$/.exec(pr)) {
+							o.q[1].value = pr.replace(/[\$,]/g,'');
 						} else
 							o.sbm = false;
-					}
-					// Now run nmapi ...
-					// But first scrape for ids if necessary
-					var x = /\\*"product_id\\*":\[([^\]]+)\]/.exec(rs);
-					if (!x) {
-						document.body.appendChild('bad product id scrape'.div());
-						return;
-					}
-					
-					// Submit this ...
-					if (/^([\d\.]+)$/.exec(o.q[0].value) &&
-						/^([\d\.]+)$/.exec(o.q[1].value) &&
-						o.sbm &&
-						no_color
-						) {
-						AMT___recordAndSubmit();
-						return;
-					}
-					// Only the string eg prod188840039,prod188840040 is necessary.
-					x = x[1].replace(/[^a-z\d,]/g, '');
-					o.prodid = x;
-					nmapi();
+					} else
+						o.sbm = false;
 				}
-			});
+				// Now run nmapi ...
+				// But first scrape for ids if necessary
+				var x = /\\*"product_id\\*":\[([^\]]+)\]/.exec(rs);
+				if (!x) {
+					document.body.appendChild('bad product id scrape'.div());
+					return;
+				}
+				
+				// Submit this ...
+				if (/^([\d\.]+)$/.exec(o.q[0].value) &&
+					/^([\d\.]+)$/.exec(o.q[1].value) &&
+					o.sbm &&
+					no_color
+					) {
+					AMT___recordAndSubmit();
+					return;
+				}
+				// Only the string eg prod188840039,prod188840040 is necessary.
+				x = x[1].replace(/[^a-z\d,]/g, '');
+				o.prodid = x;
+				nmapi();
+			}
+			//~ new AMT___requests_factory().xhr_with_disk_cache({
+				//~ URL: o.u,
+				//~ check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					//~ var rs = options.response.responseText;
+					//~ if (options.response.status != 200) {
+						//~ document.body.style.backgroundColor = 'blue';
+						//~ return false;
+					//~ }
+					//~ if (options.response.responseText.indexOf(
+						//~ '<span class="_1-title2">\nWe apologize for the inconvenience.\n</span>'
+						//~ ) != -1) {
+						//~ document.body.appendChild('"We apologize for the inconvenience."'.div());
+						//~ return false; // do not save
+					//~ }
+					//~ if (options.response.responseText.trim() == '') {
+						//~ return false; // do not save blanks
+					//~ }
+					//~ // Some type of interstitial...
+					//~ // <body class="productPage    " itemtype="http://schema.org/Product" lang="en"><script type='text/javascript'>I10C.HtmlStreaming.ReloadWithNoHtmlStreaming('2', '15809539434858569166');</script></body>
+					//~ if (/<body[^>]+><script[^>]+>[^<]+<\/script>\s*(<script[^>]+>[^<]+<\/script>|)\s*<\/body>/.exec(options.response.responseText)) {
+						//~ document.body.appendChild('bad page ... try reloading frame ...?'.div());
+						//~ return false;
+					//~ }
+					//~ // Same here .. interstitial...
+					//~ // document.body.innerText==''
+					//~ var dom = new DOMParser().parseFromString(options.response.responseText, 'text/html');
+					//~ if (dom.body.innerText == '') {
+						//~ document.body.appendChild('bad page ... try reloading frame ...?'.div());
+						//~ return false;
+					//~ }
+					//~ //
+					//~ return true;
+				//~ },
+				//~ success_callback: function(options) {
+					//~ var rs = options.response.responseText;
+					//~ if (options.response.status != 200) {
+						//~ return false;
+					//~ }
+					//~ // ... //
+				//~ }
+			//~ });
 			function nmapi() {
 				// btoa('{"ProductSizeAndColor":{"productIds":"prod187640021"}}') 
 				// yields "eyJQcm9kdWN0U2l6ZUFuZENvbG9yIjp7InByb2R1Y3RJZHMiOiJwcm9kMTg3NjQwMDIxIn19"
