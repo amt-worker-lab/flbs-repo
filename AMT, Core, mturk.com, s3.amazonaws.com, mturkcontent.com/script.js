@@ -129705,8 +129705,10 @@ qatar,80
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
 			if (ih.indexOf('Enter the domain address') != -1) {
 				o.domain = true;
-			} else if (ih.indexOf('domain') != -1) {
-				alert('contains domain');
+			} else if (ih.indexOf('<li>Enter the website address for the <strong>official website </strong>of the company.</li>') != -1) {
+				// This is okay
+			} else { // And this is neither good version so quit
+				alert('Type not specified.')
 				return;
 			}
 			console.log(o);
