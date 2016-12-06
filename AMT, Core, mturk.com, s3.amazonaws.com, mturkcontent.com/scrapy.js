@@ -83,6 +83,7 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
+				try_autos: false, // Turn on and off as necessary. Default=false (off)
 				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
@@ -240,7 +241,7 @@ function init__scrapy() {
 									 *  url: "https://www.facebook.com/VaultCrossfit/info
 									 * }
 									 */
-									if (callback_obj.matches && callback_obj.matches.length) {
+									if (callback_obj.matches && callback_obj.matches.length && o.try_autos) {
 										var mt = callback_obj.matches;
 										var reg = new RegExp(
 											//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +

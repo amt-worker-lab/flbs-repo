@@ -129699,6 +129699,7 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			o.comp = o.comp.replace(/^import-/i, ''); // Remove "import-"
 			o.boldArray = o.comp.clean_string_to_array();
 			//~ o.boldArray2= o.field2.clean_string_to_array();
 			//~ o.boldArray3= o.field3.clean_string_to_array();
