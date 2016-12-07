@@ -129665,12 +129665,107 @@ qatar,80
 	 * Susan
 	 * Justin Crabbe
 	 * Steve Johnston
-	 * 
+	 * Jeroen Roffel
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
+	// Jeroen Roffel
+	// Find the website address for grocery stores
+	//
+	// 
+	var s = '<li class="li1">Also provided is a Product Name example that could aid in identifying the correct company thus the corresponding domain.</li>';
+	if (ih.indexOf(s) != -1)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().string_to_mixed_case(),
+				field2: td[3].innerText.trim().string_to_mixed_case(),
+				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
+				//~ //phone: td[5].innerText.trim(),
+				boldArray: [],
+				domain: false,
+				//~ boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			o.comp = o.comp.replace(/^import-/i, ''); // Remove "import-"
+			o.boldArray = o.comp.clean_string_to_array();
+			//~ o.boldArray2= o.field2.clean_string_to_array();
+			//~ o.boldArray3= o.field3.clean_string_to_array();
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			if (ih.indexOf('Enter the domain address') != -1) {
+				o.domain = true;
+			} else if (ih.indexOf('<li>Enter the website address for the <strong>official website </strong>of the company.</li>') != -1) {
+				// This is okay
+			} else { // And this is neither good version so quit
+				alert('Type not specified.')
+				return;
+			}
+			console.log(o);
+			AMT___addUserDecision(
+				'stevejohnston,dec,2016', function() {
+					return o.comp;
+				}, ['Id(web_url)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				searches:[
+					o.comp,
+					o.spaced,
+					o.spaced+' '+o.field2,
+				],
+				search_results: {
+					use_domain_only: o.domain,
+					bold: {
+						black: o.boldArray,
+						//~ blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Steve Johnston
 	// Find the Website Domain for Provided List of Companies
 	//
