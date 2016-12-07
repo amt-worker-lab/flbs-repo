@@ -129675,7 +129675,7 @@ qatar,80
 	// Find the website address for grocery stores
 	//
 	// 
-	var s = '<li class="li1">Also provided is a Product Name example that could aid in identifying the correct company thus the corresponding domain.</li>';
+	var s = '<li>When multiple locations of the same store include the link directly to that store.&nbsp;</li>\n	<li><strong>Do not </strong>include URLs to city guides, yelp, foursquare, facebook&nbsp;and listings like Citysearch.&nbsp;</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -129688,12 +129688,12 @@ qatar,80
 			// Elements
 			var td = document.getElementsByTagName('td');
 			var o = {
-				comp: td[1].innerText.trim().string_to_mixed_case(),
-				field2: td[3].innerText.trim().string_to_mixed_case(),
-				//~ field3: td[5].innerText.trim().string_to_mixed_case(),
-				//~ //phone: td[5].innerText.trim(),
+				comp: td[3].innerText.trim().string_to_mixed_case(),
+				field2: td[5].innerText.trim().string_to_mixed_case(),
 				boldArray: [],
+				boldArray2: [],
 				domain: false,
+				zip:'',
 				//~ boldArray2: [],
 				//~ boldArray3: [],
 				q: [
@@ -129701,21 +129701,22 @@ qatar,80
 				],
 			}
 			o.comp = o.comp.replace(/^import-/i, ''); // Remove "import-"
+			o.field2 = o.field2.replace(/https?:\/\/www\.google\.com\/#q=/i, '');
+			o.field2 = decodeURIComponent(o.field2);
+			o.field2 = o.field2.replace(/\+/g, ' ');
+			o.field2 = o.field2.replace(new RegExp(o.comp, 'i'), ''); // Remove first instance of biz name
+			o.field2 = o.field2.replace('-site:yelp.com -site:yelp.co.uk', '');
+			o.field2 = o.field2.string_to_mixed_case();
+			o.field2 = o.field2.trim();
+			o.zip = /(\d{5})$/.exec(o.field2);
+			o.zip = (o.zip) ? o.zip[1] : '';
 			o.boldArray = o.comp.clean_string_to_array();
-			//~ o.boldArray2= o.field2.clean_string_to_array();
+			o.boldArray2= o.field2.clean_string_to_array();
 			//~ o.boldArray3= o.field3.clean_string_to_array();
 			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
-			if (ih.indexOf('Enter the domain address') != -1) {
-				o.domain = true;
-			} else if (ih.indexOf('<li>Enter the website address for the <strong>official website </strong>of the company.</li>') != -1) {
-				// This is okay
-			} else { // And this is neither good version so quit
-				alert('Type not specified.')
-				return;
-			}
 			console.log(o);
 			AMT___addUserDecision(
-				'stevejohnston,dec,2016', function() {
+				'JRoffel,dec,2016', function() {
 					return o.comp;
 				}, ['Id(web_url)']
 			)
@@ -129741,8 +129742,8 @@ qatar,80
 				//~ bold_array: o.boldArray,
 				searches:[
 					o.comp,
-					o.spaced,
-					o.spaced+' '+o.field2,
+					o.comp +' '+ o.field2,
+					(o.zip != '') ? o.comp + ' ' +o.zip : o.spaced,
 				],
 				search_results: {
 					use_domain_only: o.domain,
