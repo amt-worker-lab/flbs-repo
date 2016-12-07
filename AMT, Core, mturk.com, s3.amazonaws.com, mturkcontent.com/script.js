@@ -332,7 +332,8 @@ function MT__RUN() {
 			// Init
 			rsharm();
 			function rsharm() {
-				// Using GM_xmlhttpRequest
+				// Using basic GM_xmlhttpRequest
+				// because this is simple non-cached method.
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: o.u,
@@ -467,12 +468,12 @@ function MT__RUN() {
 				// override?
 				if (rs.indexOf('line-item-promo-elim-suites') != -1) {
 					// line-item-promo-elim-suites
-					//~ o.sbm = false;
 					document.body.appendChild('inspect 4'.div());
 					// 40% Off : 
+					// Extra 40% Off :  (Dec. 7)
 					var pr = dom.getElementsByClassName('line-item-promo-elim-suites');
 					if (pr && pr[0] && pr[0].innerText) {
-						pr = pr[0].innerText.trim().replace(/\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
+						pr = pr[0].innerText.trim().replace(/[^\d]*\d+[\r\n\s\t]*%[\r\n\s\t]*Off[\r\n\s\t]*:/i, '').trim();
 						console.log("trace - line-item-promo-elim, pr: " + pr);
 						document.body.appendChild('inspect 2'.div());
 						if (/^\$[\d\.,]+$/.exec(pr)) {
