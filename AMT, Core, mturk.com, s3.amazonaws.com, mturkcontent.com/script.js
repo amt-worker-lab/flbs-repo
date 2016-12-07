@@ -264,7 +264,7 @@ function MT__RUN() {
 			// na button
 			var x = document.createElement('input');
 			x.type = 'button';
-			x.setAttribute('style','position:absolute;top:0;left:0;width:5%;height:400px;');
+			x.setAttribute('style','position:absolute;top:0;left:50%;width:10%;height:60px;');
 			document.body.appendChild(x);
 			x.value = 'NA';
 			x.onclick = function() {
