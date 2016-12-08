@@ -120519,7 +120519,7 @@ qatar,80
 	// Find local business details
 	// 
 	// 
-	s = '<li>If you are unable to find an in-state location, please check this box & provide information for the closest out-of-state location <span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">(if available)</span>: <input name="NoLocations" type="checkbox" value="y"';
+	s = '<li>If you are unable to find an in-state location, please check this box &amp; provide information for the closest out-of-state location <span style="font-family: Verdana, Geneva, sans-serif; font-size: 11.7px; line-height: 20.8px;">(if available)</span>: <input name="NoLocations" type="checkbox" value="y"></li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {};
@@ -120531,7 +120531,7 @@ qatar,80
 			GM_addStyle('input {height:auto !important;padding:0 !important;width:100%;}');// ADD WIDTH
 			GM_addStyle('.panel-primary {position:absolute;top:1800px;}');
 			GM_addStyle('.highlight-box {position:absolute;top:1400px;}');
-			GM_addStyle('table {position:absolute;top:1400px;}'); // MOVE THIS DOWN
+			GM_addStyle('table {position:absolute;top:0px;}'); // MOVE THIS DOWN
 			GM_addStyle('#mturk_form {margin-top:1000px !important;}'); // MOVE THIS DOWN
 			GM_addStyle('#Q1Url {position:absolute;top:0px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
 			GM_addStyle('#Q2Url {position:absolute;top:24px;height:24px !important;width:100%;}'); // MOVE THIS DOWN
@@ -120540,9 +120540,9 @@ qatar,80
 			var t = document.getElementsByTagName('td');
 			var o = {
 				comp: t[1].innerText.trim(),
-				city: t[3].innerText.trim(),
-				state: t[5].innerText.trim().stateAbbrToFull(),
-				zip: t[7].innerText.trim(),
+				//city: t[3].innerText.trim(),
+				state: t[3].innerText.trim().stateAbbrToFull(),
+				zip: t[5].innerText.trim(),
 				q: [
 					document.getElementById('Field1'),
 					document.getElementById('Field2'),
@@ -120557,16 +120557,20 @@ qatar,80
 			//~ }
 			/*BEGIN ITEMS*/
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:98px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:158px;left:0%;width:99%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:50px;left:0%;width:99%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:100px;left:0%;width:99%;height:40px;');
 			document.body.appendChild(dx2);
 			dx2.value = o.comp +', ' + (o.city ? o.city  + ', ' : '') + o.state + ', ' + o.zip;
-			//~ var dx3 = document.createElement('div');
-			//~ dx3.setAttribute('style','position:absolute;top:300px;left:20%;width:79%;height:200px;border:2px dashed blue;');
-			//~ document.body.appendChild(dx3);
+			dx2.value = o.comp +', ' + o.state + ', ' + o.zip;
+			var dx3 = document.createElement('div'); // info div
+			dx3.setAttribute('style','position:absolute;top:0px;left:80%;width:19%;height:100px;border:1px solid blue;background-color:#eee;font-size:1.6em !important;');
+			document.body.appendChild(dx3);
+			// tmp placeholder for states
+			var dx4 = document.createElement('input');
 			/*END ITEMS*/
+			dx3.innerText = o.zip;
 			//~ showPastReturns('ChrisLintz' + o.comp, function(e) {
 				//~ if (e) {
 					//~ document.body.style.backgroundColor = 'pink';
@@ -120583,7 +120587,7 @@ qatar,80
 					dx1
 					//~ dx3
 				],
-				offset: 100 // offset top
+				offset: 160 // offset top
 			});
 			
 			// submitButton
@@ -120593,7 +120597,7 @@ qatar,80
 				for (var i in o.q) {
 					o.q[i].value = o.q[i].value.trim();
 					if (o.q[i].value == '') return false;
-					if (o.q[i].value.length < 4) return false;
+					if (o.q[i].value.length < 2) return false;
 					//~ if (o.q[i].value == 'http://') return false;
 				}
 				doSubmit(); // Still here? Submit.
@@ -120610,7 +120614,7 @@ qatar,80
 					phone: o.q[4],
 					street: o.q[0],
 					city: o.q[1],
-					state: o.q[2],
+					state: dx4,//o.q[2],
 					zip: o.q[3],
 				},
 				onclick_callback: function(opts) { // (opts)
@@ -120625,10 +120629,30 @@ qatar,80
 						//~ if (opts.profile_url)
 							//~ o.q[0].value = opts.profile_url;
 					//~ }
-					// 
-					// IF ALL FROM LINK ARE FILLED IN
-					// THEN AUTO-SUBMIT?
-					// No because of e.g. http://healthgrades.com/profile/29384974/bleh
+					o.q[2].value = dx4.value.state_full_to_abbr();
+					var x = o.q[4].value.replace(/[\D]/g, '');
+					if (x.length != 10) {
+						o.q[4].style.border = '4px solid blue';
+						return;
+					} else {
+						var x = /^(\d{3})(\d{3})(\d{4})$/.exec(x);
+						o.q[4].value = x[1]+'-'+x[2]+'-'+x[3];
+					}
+					if (o.q[2].value != o.state && o.q[2].value != o.state.state_full_to_abbr()) { // Check if either: state_abbr or state_full
+						o.q[2].style.border = '4px solid blue';
+						return;
+					}
+					// Auto
+					if (
+						o.q[0].value.length > 2 &&
+						o.q[1].value.length > 2 &&
+						o.q[2].value.length == 2 &&
+						/^\d{5}(-\d{4}|)$/.exec(o.q[3].value)
+						// Assuming phone has been integrity checked here...
+						) {
+						doSubmit();
+					}
+						
 				}
 			};
 			new AMT___items_factory().create_dashboard_find_address(opts);
