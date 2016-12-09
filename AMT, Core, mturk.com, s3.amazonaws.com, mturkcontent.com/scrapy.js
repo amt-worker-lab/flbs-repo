@@ -1099,14 +1099,13 @@ function init__scrapy() {
 			var o = {
 				sd_start_urls: [td[1].innerText.trim()],
 				sd_allowed_domains: null,
-				//~ comp: td[1].innerText.trim(),
-				//~ name: td[3].innerText.trim(),
 				q: [
 					document.getElementById('web_url'),
 				],
 				SKIP_SITES: {},
 				util_url: null,
 				//~ auto_emails: ['info','contact','contactus','mail'],
+				try_auto: false, // Off, Dec.9
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
@@ -1281,26 +1280,28 @@ function init__scrapy() {
 									 * }
 									 */
 									if (callback_obj.matches && callback_obj.matches.length) {
-										var mt = callback_obj.matches;
-										//~ console.log(mt);
-										var reg = new RegExp(
-											//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											'^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
-											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
-											'i'
-										);
-										for (var i in mt) {
-											if  (
-												mt[i].email_email &&
-												mt[i].email_email.length > 6 &&
-												mt[i].email_email.indexOf('@') != -1 &&
-												reg.exec(mt[i].email_email)
-												)
-											{
-												document.body.style.zoom = '0.4';
-												o.q[0].value = mt[i].email_email;
-												doSubmit();
-												break; // Stop here
+										if (o.try_auto) {
+											var mt = callback_obj.matches;
+											//~ console.log(mt);
+											var reg = new RegExp(
+												//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+												'^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
+												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+												'i'
+											);
+											for (var i in mt) {
+												if  (
+													mt[i].email_email &&
+													mt[i].email_email.length > 6 &&
+													mt[i].email_email.indexOf('@') != -1 &&
+													reg.exec(mt[i].email_email)
+													)
+												{
+													document.body.style.zoom = '0.4';
+													o.q[0].value = mt[i].email_email;
+													doSubmit();
+													break; // Stop here
+												}
 											}
 										}
 									} else {
