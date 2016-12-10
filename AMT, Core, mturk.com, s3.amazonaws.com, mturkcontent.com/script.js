@@ -27,6 +27,68 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// 
+	// 
+	//
+	//
+	s = '<p>Go to the website using&nbsp;the URL provided below. From there, find and enter the company url and email.&nbsp;</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: td[1].innerText.trim()
+			}
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						document.body.appendChild('x1'.div());
+						return false;
+					}
+					if (options.response.responseText.trim() == '') {
+						document.body.appendChild('x2'.div());
+						return false; // do not save blanks
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('x3'.div());
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var x = dom.getElementById('complimentary');
+					if (!x) {
+						document.body.appendChild('x4'.div());
+						return;
+					}
+					var y = x[0].getElementsByClassName('additional');
+					if (!y) {
+						document.body.appendChild('x5'.div());
+						return;
+					}
+					y = y[0];
+					if (y.innerText.indexOf('Website:') == -1 || y.innerText.indexOf('@') == -1) {
+						document.body.appendChild('x6'.div());
+						return;
+					}
+					
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// Viisights Solutions Ltd
 	// Describe if an object in the image (WARNING: This HIT may contain adult content. Worker discretion is advised.)
 	//
@@ -56,7 +118,7 @@ function MT__RUN() {
 				'position:absolute;top:0px;left:0%;width:99%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;font-size:30px;font-weight:bold;'
 			});
 			document.body.appendChild(d2);
-			/* */
+			/*END ITEMS*/
 			var text = /Is the content of the picture is ([^\?]+)\?/.exec(ih)[1]; // Or breaks...
 			d2.innerText = text;
 			// Make sure there are five of these on the page...
