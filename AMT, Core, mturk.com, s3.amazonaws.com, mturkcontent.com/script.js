@@ -42,7 +42,11 @@ function MT__RUN() {
 			GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
-				u: td[1].innerText.trim()
+				u: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Website')[0],
+					document.getElementsByName('Email')[0],
+				]
 			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
@@ -73,17 +77,55 @@ function MT__RUN() {
 						document.body.appendChild('x4'.div());
 						return;
 					}
-					var y = x[0].getElementsByClassName('additional');
-					if (!y) {
+					var y = x.getElementsByClassName('additional');
+					if (!y || !y.length) {
 						document.body.appendChild('x5'.div());
 						return;
 					}
 					y = y[0];
-					if (y.innerText.indexOf('Website:') == -1 || y.innerText.indexOf('@') == -1) {
+					if (y.innerText.indexOf('Website:') == -1 || y.innerHTML.indexOf('mailto:') == -1) {
 						document.body.appendChild('x6'.div());
 						return;
 					}
-					
+					var a = y.getElementsByClassName('external exticon');
+					if (!a || !a.length) {
+						document.body.appendChild('x7'.div());
+						return;
+					}
+					a = a[0];
+					o.q[0].value = a.innerText.trim(); //a.innerText.trim().indexOf('www') == -1 || 
+					if (a.innerText.trim().length < 6 || a.innerText.trim().indexOf(' ') != -1 ||
+						a.innerText.trim().indexOf('.') == -1
+					) {
+						var x = a.getAttribute('href').trim();
+						o.q[0].value = x;
+						if (x.length < 6 || x.indexOf(' ') != -1 ||
+							x.indexOf('.') == -1
+						) {
+							document.body.appendChild('x8'.div());
+							return;
+						}
+					}
+					var a = y.getElementsByTagName('a');
+					if (!a || !a.length) {
+						document.body.appendChild('x9'.div());
+						return;
+					}
+					var found = false;
+					for (var i=0; i<a.length; i++) {
+						if (a[i].getAttribute('href').indexOf('mailto:') != -1 &&
+							//a[i].innerText.trim().indexOf('@') != -1 &&
+							a[i].innerText.trim().length > 4
+						) {
+							o.q[1].value = a[i].innerText.trim();
+							found = true;
+							break;
+						}
+					}
+					// sbm
+					if (found) {
+						doSubmit();
+					}
 				}
 			});
 		}
