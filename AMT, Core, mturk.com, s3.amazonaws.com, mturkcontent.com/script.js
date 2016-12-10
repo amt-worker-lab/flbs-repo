@@ -27,7 +27,7 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-	// 
+	// garret grohman
 	// 
 	//
 	//
@@ -725,7 +725,14 @@ function MT__RUN() {
 								// So loop looking for one matching color
 								// which is in stock. Then submit if found.
 								for (var j in a) {
-									if (a[j].color.toUpperCase().indexOf(o.color) == 0 &&
+									var indColor = a[j].color.toUpperCase().indexOf(o.color);
+									if (o.color == 'GRAY' || o.color == 'GREY') {
+										indColor = a[j].color.toUpperCase().indexOf('GRAY');
+										if (indColor != 0) { // Try with "GREY"
+											indColor = a[j].color.toUpperCase().indexOf('GREY');
+										}
+									}
+									if (indColor == 0 &&
 										(
 											a[j].status == 'In Stock' ||
 											a[j].status == 'Pre-Order' ||
