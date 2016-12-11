@@ -63,6 +63,7 @@ function init__scrapy() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');// Set width=width:30% !important;
+			GM_addStyle('#workContent {float:right}');
 			/*GM_addStyle('input[type="text"],select {width:80% !important;}');*/
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
@@ -99,7 +100,7 @@ function init__scrapy() {
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:0%;width:20%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;font-size:1.4em !important;'
+				'position:absolute;top:0px;left:0%;width:50%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;font-size:1.0em !important;'
 			);
 			document.body.appendChild(d1b);
 			d1b.innerText = o.sd_start_urls[0].replace(/https?:\/\//i, '');
@@ -146,11 +147,24 @@ function init__scrapy() {
 			// Init
 			function init(SKIP_SITES) {
 				o.SKIP_SITES = SKIP_SITES; // Populate.
+				var ssite;
+				if (o.sd_allowed_domains[0] != 'na') {
+					ssite = 'site:'+o.sd_start_urls[0];
+				} else { // Skip these!
+					//ssite = '';
+					new AMT___core_factory().
+						iframe2parent__postMessage( //
+							{
+								action: 'return_and_accept'
+							}
+						);
+					return;
+				}
 				// SP search.
 				var opts = '&hmb=1&_API_KEY_REDACTED_&vft=DCABQSMSVJUUTQN&cat=web&cmd=process_search&language=english&engine0=v1all&abp=-1&t=air&nj=0&pg=0NamePath';
 				var req_proxy = new AMT___xhr_PROXY_REDACTED_({
 					startPage: true,
-					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent('site:'+o.sd_start_urls[0] + ' ("contact" OR "about" OR "email")') + opts,
+					url: 'https://startpage.com/do/metasearch.pl?query=' + encodeURIComponent(ssite + ' ("contact" OR "about" OR "email")') + opts,
 					callback_function: sp,
 					host: MT___host
 				});
