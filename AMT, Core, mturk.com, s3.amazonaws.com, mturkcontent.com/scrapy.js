@@ -99,7 +99,7 @@ function init__scrapy() {
 			document.body.appendChild(d1);
 			var d1b = document.createElement('div');
 			d1b.setAttribute('style',
-				'position:absolute;top:0px;left:50%;width:49%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;'
+				'position:absolute;top:0px;left:0%;width:20%;height:40px;overflow:auto;background-color:#eee;border:1px solid blue;font-size:1.4em !important;'
 			);
 			document.body.appendChild(d1b);
 			d1b.innerText = o.sd_start_urls[0].replace(/https?:\/\//i, '');
