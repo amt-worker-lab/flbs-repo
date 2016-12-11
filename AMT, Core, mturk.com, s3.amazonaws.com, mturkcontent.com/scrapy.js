@@ -67,7 +67,7 @@ function init__scrapy() {
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
-			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '20');
+			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '40');
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
 			// Call nextTab now...
 			new AMT___core_factory().nextTab();
@@ -83,7 +83,7 @@ function init__scrapy() {
 				],
 				SKIP_SITES: {},
 				util_url: null,
-				try_autos: false, // Turn on and off as necessary. Default=false (off)
+				try_autos: true, // Turn on and off as necessary. Default=false (off)
 				//~ auto_emails: ['info','contact','contactus','mail'],
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
