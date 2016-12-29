@@ -1093,7 +1093,8 @@ function init__scrapy() {
 	// Find contact email on the website of a hotel
 	// 
 	// 
-	s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for a&nbsp;webmaster. Please DO NOT use whois privacy contacts. And Please DO NOT use generic email addresses that aren\'t reletive to the domain (e.g. "domains@microsoft.com" or "abuse@abuseweb.net")</li>';
+	//~ s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for a&nbsp;webmaster. Please DO NOT use whois privacy contacts. And Please DO NOT use generic email addresses that aren\'t reletive to the domain (e.g. "domains@microsoft.com" or "abuse@abuseweb.net")</li>';
+	s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for webmaster, but please DO NOT use whois privacy contacts.</li>';
 	s2 = '<li>If you absolutely cannot find an email address using any of the methods above, please enter a form URL. If you cannot find a form, please put "na" exactly.</li>'
 	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1)
 	{
