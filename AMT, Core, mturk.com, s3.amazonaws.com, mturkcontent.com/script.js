@@ -2750,8 +2750,155 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
+	// taylor l grisham
+	// create_dashboard_find_address
+	// Find the ZIP code for companies
+	//
+	s = '<li>Enter the ZIP code for the <strong>headquarters</strong> for the business</li>\n	<li>The ZIP code should be in the 5 digit format (Example: 95129)</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u1: td[1].innerText.trim(),
+				u2: td[3].innerText.trim(),
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			console.log(o);
+			//Elements
+			var d1 = ''.div({style:'position:absolute;top:26px;width:99%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+			document.body.appendChild(d1);
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:150px;left:0%;width:99%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:104px;left:0%;width:99%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.u1 + ',' + o.u2;
+			//~ // dummy inputs
+			//~ var d2a = document.createElement('input');
+			//~ d2a.setAttribute('style', 'position:absolute;top:1000px;');
+			//~ var d2b = document.createElement('input');
+			//~ d2b.setAttribute('style', 'position:absolute;top:1000px;');
+			// add mouseup for 2nd search....
+			dx2.addEventListener('blur', function() {
+				//setTimeout(place_search, 400); // short timeout
+			}, false);
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					dx1
+				],
+				offset: 150 // offset top
+			});
+			// DoPast
+			AMT___addUserDecision(
+				'grisham,jan,2017',
+				function() { return o.u1 + ',' + o.u2; },
+				[
+					"Id(web_url)",
+				]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				console.log(o.q[0].value);
+				if (o.q[0].value.trim() == '') return false;
+				if (!/^\d{5}$/.exec(o.q[0].value)) return false;
+				AMT___recordAndSubmit();
+				return false;
+			}
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					zip: o.q[0],
+				},
+				//~ onclick_callback: function(opts) { // (opts)
+					//~ console.log(opts);
+					//~ console.log(o);
+					//~ var fc = [];
+					//~ if (opts.o.final_location.city != null &&
+						//~ opts.o.final_location.city.trim() != '') {
+						//~ fc.push(opts.o.final_location.city);
+					//~ }
+					//~ if (opts.o.final_location.state != null &&
+						//~ opts.o.final_location.state.trim() != '') {
+						//~ fc.push(opts.o.final_location.state);
+					//~ }
+					//~ o.q[0].value = convert(fc);
+					//~ o.q[0].focus();
+				//~ }
+			};
+			// Init create_dashboard_find_address
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			// Init place search
+			place_search();
+			// XHR textsearch
+			function place_search() {
+				d1.innerText = 'Loading ...';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL:	
+							'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							'query='+encodeURIComponent(dx2.value)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						d1.innerText = '';
+						/** **/
+						if (!rs.results || !rs.results.length) {
+							return;
+						}
+						for (var i in rs.results) {
+							var n = rs.results[i];
+							console.log(n);
+							d1.appendChild(choice(n.name, n.formatted_address));
+						}
+					}
+				});
+			}
+			function choice(name, text) { // returns clickable div
+				text = text.replace(/, USA$/, '');
+				text = text.split(' ');
+				var a = [];
+				for (var i in text) {
+					var n = text[i].trim().replace(/,/g, '').stateAbbrToFull(); // Try...
+					a.push(n);
+				}
+				a = a.join(' ');// By space
+				// Out div
+				var d = (name + ' ').div({style:'width:100%;border:1px solid #a2a2a2;'});
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: a,
+					output_fields: o.q,
+					//~ callback_mouseup: function(addField) {
+						//~ // Remove trailing commas
+						//~ addField.value = addField.value.replace(/ *,*$/, '');
+					//~ },
+					//~ appendToField: false,
+					//~ appendToField_glue: ', ',
+					//~ delimeter: '',
+					focusToField: true,
+					style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;',
+				});
+				buttons.style.display = 'inline';
+				d.appendChild(buttons);
+				return d;
+			}
+		}
+		new run().f();
+	}
 	// Justin Farrell
-	// 
+	// create_dashboard_find_address
 	//
 	//
 	s = '	<li>Look through first few results and find a reference to a location [CITY or COUNTY] <u>and</u> [the STATE] ("Douglas County, Nebraska" &nbsp;or "Atlanta, Georgia")</li>';
