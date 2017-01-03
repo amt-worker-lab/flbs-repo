@@ -2808,8 +2808,8 @@ Laurens Hammond, Chicago, Ill.**/
 				e.stopPropagation();
 				e.preventDefault();
 				console.log(o.q[0].value);
-				if (o.q[0].value.trim() == '') return false;
-				if (!/^\d{5}$/.exec(o.q[0].value)) return false;
+				//~ if (o.q[0].value.trim() == '') return false;
+				//~ if (!/^\d{5}$/.exec(o.q[0].value)) return false;
 				AMT___recordAndSubmit();
 				return false;
 			}
@@ -5544,7 +5544,7 @@ Laurens Hammond, Chicago, Ill.**/
 	// http://ces16.mapyourshow.com/6_0/exhibitor/exhibitor-details.cfm?ExhID=T0001561 scrape
 	// Find Websites for Companies
 	// 
-	s = '	<li>Enter the company website URL in full.&nbsp;(ie, www.companywebsite.com)</li>';
+	s = '<li>For Website, please provide the full url (www.website.com)</li>\n	<li>If there is no website please provide a facebook url</li>\n';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {}
 		run.prototype.f = function() {
@@ -5554,14 +5554,14 @@ Laurens Hammond, Chicago, Ill.**/
 			// http://ces16.mapyourshow.com/6_0/includes/includePage.cfm?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid=T0007898
 			var td = document.getElementsByTagName('td');
 			var o = {
-				u: td[1].innerText.trim(),
+				u: td[5].innerText.trim(),
 				q: [
 					document.getElementById('web_url')
 				]
 			}
-			o.u = 'http://ces16.mapyourshow.com/6_0/includes/includePage.cfm'+
-					'?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid='+
-					encodeURIComponent(/exhibitor-details\.cfm\?ExhID=(T\d+)$/.exec(o.u)[1]);
+			//~ o.u = 'http://ces16.mapyourshow.com/6_0/includes/includePage.cfm'+
+					//~ '?searchTime=1447455361246&loadpage=exhibitor%2F_exhDetails.cfm&exhid='+
+					//~ encodeURIComponent(/exhibitor-details\.cfm\?ExhID=(T\d+)$/.exec(o.u)[1]);
 			//~ o.u = x;
 			console.log(o.u);
 			// xhr_with_disk_cache
@@ -5573,9 +5573,10 @@ Laurens Hammond, Chicago, Ill.**/
 					rs = '<html><body>' + rs + '</body></html>';
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					console.log(dom);
-					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					//~ var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
+					var x = dom.getElementsByClassName('sc-Exhibitor_Url');
 					console.log(x);
-					if (x && x.length == 2) { //
+					if (x && x.length == 1) { //
 						//~ console.log('succ');
 						return true;
 					}
@@ -5585,8 +5586,11 @@ Laurens Hammond, Chicago, Ill.**/
 					var rs = options.response.responseText;
 					if (options.response.status != 200) return;
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					var x = dom.getElementsByClassName('mys-grid__cell mys-unit-1-2');
-					if (x && x.length == 2) { //
+					var x = dom.getElementsByClassName('sc-Exhibitor_Url');
+					if (x && x.length == 1) { //
+						o.q[0].value = x[0].innerText.trim();
+						if (x[0].innerText.trim().length > 8)
+							doSubmit();
 						// HREF.....
 						//~ var a = x[0].getElementsByTagName('a');
 						//~ if (a && a.length == 1) {
