@@ -1122,7 +1122,7 @@ function init__scrapy() {
 				SKIP_SITES: {},
 				util_url: null,
 				//~ auto_emails: ['info','contact','contactus','mail'],
-				try_auto: false, // Off, Dec.9
+				try_auto: true, // On Jan. 4 2017, Off Dec. 9 2016
 			}
 			o.sd_allowed_domains = [o.sd_start_urls[0].replace(/https?:\/\/(www\.|)([^\/]+)\/*[\d\D]*$/,"$2")]; // Remove https & trailing / if present
 			o.sd_start_urls[0] = (!/^https?:\/\//i.exec(o.sd_start_urls[0])) ? 'http://'+ o.sd_start_urls[0] : o.sd_start_urls[0];
@@ -1297,12 +1297,11 @@ function init__scrapy() {
 									 * }
 									 */
 									if (callback_obj.matches && callback_obj.matches.length) {
-										if (o.try_auto) {
+										if (o.try_auto && !/(gov|edu)/i.exec(o.sd_allowed_domains[0])) {
 											var mt = callback_obj.matches;
-											//~ console.log(mt);
 											var reg = new RegExp(
 												//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-												'^(info|information|contact|contactus|inquiry|support|help|communication|hotel)@' +
+												'^(info|information|contact|contactus|inquiry|support|help|communication|hotel|chamber|hr)@' +
 												__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
 												'i'
 											);
