@@ -43,27 +43,25 @@ function init__scrapy() {
 	 * WebEduCo
 	 * Tait Larson
 	 * Sherry Gould
-	 * Josh Elser
+	 * David Tera
 	 * 
 	 * 
 	 * 
 	 * 
 	 */
-	// Josh Elser
-	// Populate website URL
+	// David Tera
+	// Find the Website and Email address of company based on company information
 	// 
 	// 
-	var s = 'Email address:</label> <input class="form-control" id="web_url" name="email_ad" placeholder="" required="" type="email"';
-	var s2= '<td><label>Business site:</label></td>';
-	//~ s = '<li>Enter the email address of the <strong>main</strong> contact for site feedback/administrative qeustions.</li>';
-	if (ih.indexOf(s) != -1 && ih.indexOf(s2) != -1)
+	var s = '<li><strong>If there is no website address provided here, find their official site through Google.</strong></li>\n	<li>If you don\'t find the company, you can add "architecture" after the name. These are all architects.</li>';
+	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
 			GM_addStyle('.container {margin:0 !important;padding:0 !important;}');// Set width=width:30% !important;
-			GM_addStyle('#workContent {float:right}');
+			//~ GM_addStyle('#workContent {float:right}');
 			/*GM_addStyle('input[type="text"],select {width:80% !important;}');*/
 			//~ document.body.style.backgroundColor = 'orange'; // This is default for "loading".
 			document.body.style.zoom = '0.5'; // This is default for "loading".
@@ -80,7 +78,7 @@ function init__scrapy() {
 				//~ comp: td[1].innerText.trim(),
 				//~ name: td[3].innerText.trim(),
 				q: [
-					document.getElementById('web_url'),
+					document.getElementById('email'),
 				],
 				SKIP_SITES: {},
 				util_url: null,
@@ -148,7 +146,7 @@ function init__scrapy() {
 			function init(SKIP_SITES) {
 				o.SKIP_SITES = SKIP_SITES; // Populate.
 				var ssite;
-				if (o.sd_allowed_domains[0] != 'na') {
+				if (o.sd_allowed_domains[0] != '') {
 					ssite = 'site:'+o.sd_start_urls[0];
 				} else { // Skip these!
 					//ssite = '';
@@ -281,14 +279,6 @@ function init__scrapy() {
 										// Auto return and accept because
 										// there are no emails found.
 										// R&A from global.js...
-										//~ if(AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview && document.getElementById('MT__gm_returnaccept')) {
-											//~ document.getElementById('MT__gm_returnaccept').click();
-											//~ event.preventDefault();
-											//~ return false;
-										//~ }
-										//~ else if(!AMT__Global_Vars.isTopWindow && !AMT__Global_Vars.isPreview)
-										//~ {
-										//~ }
 										//Send a message to the top window and
 										//tell it to return and acceptfresh
 										new AMT___core_factory().
