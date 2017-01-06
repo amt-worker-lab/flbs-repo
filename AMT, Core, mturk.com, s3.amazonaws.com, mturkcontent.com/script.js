@@ -84576,11 +84576,11 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			//
 			var td = document.getElementsByTagName('td');
-			var o = { // Old=3,5,9
-				comp: td[4].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
-				addr: td[6].innerText.trim(),
-				state_abbr: td[10].innerText.trim(),
-				q: document.getElementById('open_date'),
+			var o = { // 
+				comp: td[3].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
+				addr: td[5].innerText.trim() + ',' + td[7].innerText.trim(),
+				state_abbr: td[9].innerText.trim(),
+				//~ q: document.getElementById('open_date'),
 				
 				bold_addr: [],
 				bold_comp: [],
@@ -84651,7 +84651,7 @@ Laurens Hammond, Chicago, Ill.**/
 			/*END ITEMS*/
 			
 			AMT___addUserDecision(
-				'Brendan,YelpScrape,Nov.8',
+				'Brendan,YelpScrape,Jan.5,2016',
 				function() {
 					return o.comp+'|'+o.addr;
 				},
@@ -84668,7 +84668,7 @@ Laurens Hammond, Chicago, Ill.**/
 				// to fill up the whole window, minus their
 				// distance from page top (top:XX pixels;).
 				elements: [
-					d1, d1b, d1c
+					d1, d1b//, d1c
 				],
 				offset: 98 // offset top
 			});
