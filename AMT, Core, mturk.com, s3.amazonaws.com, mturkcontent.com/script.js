@@ -84576,10 +84576,10 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.panel {position:absolute;top:2000px;}');
 			//
 			var td = document.getElementsByTagName('td');
-			var o = {
-				comp: td[3].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
-				addr: td[5].innerText.trim(),
-				state_abbr: td[9].innerText.trim(),
+			var o = { // Old=3,5,9
+				comp: td[4].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
+				addr: td[6].innerText.trim(),
+				state_abbr: td[10].innerText.trim(),
 				q: document.getElementById('open_date'),
 				
 				bold_addr: [],
