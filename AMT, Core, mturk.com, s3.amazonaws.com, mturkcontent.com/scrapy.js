@@ -44,6 +44,7 @@ function init__scrapy() {
 	 * Tait Larson
 	 * Sherry Gould
 	 * David Tera
+	 * David Tera 2
 	 * 
 	 * 
 	 * 
@@ -54,7 +55,8 @@ function init__scrapy() {
 	// 
 	// 
 	var s = '<li><strong>If there is no website address provided here, find their official site through Google.</strong></li>\n	<li>If you don\'t find the company, you can add "architecture" after the name. These are all architects.</li>';
-	if (ih.indexOf(s) != -1)
+	var s2 = '	<li>If there is no website address provided here for the company&nbsp;OR the link goes to a portfolio site,&nbsp;<strong>find their official site through Google or through a link provided at the portfolio site.</strong></li>';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
