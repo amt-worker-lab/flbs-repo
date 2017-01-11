@@ -191094,6 +191094,7 @@ function top_window(okay_to_run) {
 	// Visual Search Requester
 	// Find associated product information for a given barcode value
 	//
+	// Todo: Change button titles "su:" "lu:" etc. to be onmouseover:highlight mini-button.
 	s = '<p class="overview title">Find associated product information for a given barcode value.</p>';
 	if (ih.indexOf(s) != -1)
 	{
