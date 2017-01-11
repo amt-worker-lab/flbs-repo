@@ -192305,19 +192305,20 @@ function top_window(okay_to_run) {
 				console.log('Running through A9_Snaptell_VSR__searchUPC_com');
 				GM_xmlhttpRequest({
 					method: "GET",
-					asynchronous: false,
+					//~ asynchronous: false, // TURN THIS OFF! CAUSING NO LOAD JAN.11, 2016!
 					url: 'http://searchupc.com/upc/' + encodeURIComponent(upc),
+					ontimeout: function(response) {
+						d4a.result_buttons.su.value += '✘';
+						result.searchupc = false;
+						A9_Snaptell_VSR__next();
+					},
 					onerror: function(response) {
-						//~ d3.value = '... searchupc ...';
 						// CALL NEXT
 						d4a.result_buttons.su.value += '✘';
 						result.searchupc = false;
 						A9_Snaptell_VSR__next();
 					},
 					onload: function(response) {
-						//
-						//~ d3.value = '... searchupc ...';
-						//
 						var rs = response.responseText;
 						if (response.status != 200) {
 							//~ console.log('got response in A9_Snaptell_VSR__searchUPC_com: '+ response.status);
