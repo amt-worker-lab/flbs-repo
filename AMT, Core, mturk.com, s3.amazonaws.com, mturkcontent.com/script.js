@@ -2782,23 +2782,30 @@ Laurens Hammond, Chicago, Ill.**/
 			console.log(o);
 			// Replace all state abbr with full!
 			var x = o.u1.split(' ');
+			var found = false;
 			for (var i in x) {
 				var n = x[i].replace(/[\(\)]/g, '');
 				if (n.stateAbbrToFull() != n) {
 					console.log(n);
 					x[i] = n.stateAbbrToFull();
-					break;
+					found = n.stateAbbrToFull();
+					//~ break;
 				}
 			}
-			o.u1 = x.join(' ');
-			o.u1 = o.u1.replace(/My Media Mall/gi, '');	// fluff
-			o.u1 = o.u1.replace(/infonet/gi, '');		// fluff
-			o.u1 = o.u1.replace(/eBranch2Go/gi, '');	// fluff
-			o.u1 = o.u1.replace(/library/gi, '');
+			if (found) // Use just state. No Library System.
+				o.u1 = found;
+			else {
+				o.u1 = x.join(' ');
+				//~ o.u1 = o.u1.replace(/My Media Mall/gi, '');	// fluff
+				//~ o.u1 = o.u1.replace(/infonet/gi, '');		// fluff
+				//~ o.u1 = o.u1.replace(/eBranch2Go/gi, '');	// fluff
+				//~ o.u1 = o.u1.replace(/elibrary/gi, '');	// fluff
+				//~ o.u1 = o.u1.replace(/library/gi, '');
+				o.u1 = o.u1.replace(/\s+/gi, ' ');
+				o.u1 = o.u1.trim();
+			}
 			o.u2 = o.u2.replace(/library/gi, '');
-			o.u1 = o.u1.replace(/\s+/gi, ' ');
 			o.u2 = o.u2.replace(/\s+/gi, ' ');
-			o.u1 = o.u1.trim();
 			o.u2 = o.u2.trim() + ' Library';
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
