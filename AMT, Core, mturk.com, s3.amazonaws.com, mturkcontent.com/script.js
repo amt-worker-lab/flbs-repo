@@ -2791,6 +2791,11 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 			}
 			o.u1 = x.join(' ');
+			o.u1 = o.u1.replace(/library/gi, '');
+			o.u2 = o.u2.replace(/library/gi, '');
+			o.u1 = o.u1.replace(/\s+/gi, ' ');
+			o.u2 = o.u2.replace(/\s+/gi, ' ');
+			o.u2 = o.u2.trim() + ' Library';
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
@@ -2851,10 +2856,18 @@ Laurens Hammond, Chicago, Ill.**/
 				onclick_callback: function(opts) { // (opts) // STATE
 					console.log(opts);
 					console.log(o);
+					// Loop clean...
+					for (var i in o.q) {
+						o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
+						o.q[i].value = o.q[i].value.string_to_mixed_case();
+					}
+					// State fill...
 					if (opts.o.final_location.state != null &&
 						opts.o.final_location.state.trim() != '') {
 						o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
 					}
+					// o.q[4].value
+					o.q[4].value = o.q[4].value.substr(0,5);// Index, howmany
 				}
 			};
 			// Init create_dashboard_find_address
