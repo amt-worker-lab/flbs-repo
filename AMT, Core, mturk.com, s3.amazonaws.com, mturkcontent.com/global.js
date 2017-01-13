@@ -10792,6 +10792,7 @@ AMT___items_factory.prototype.create_dashboard_find_phone = function(options_obj
  * @param options_object						object	
  * @param "".parent								element	
  * @param "".parent_controller_el				element	
+ * @param "".controller_mu_deleterange			element	
  * @param "".submitButton_onclick_callback		function	
  * @param "".output_elements					object	
  * @param "".first_element						element		Default is false. This is the box focused on by default. Also gets "debug" addresses, if present.	
@@ -10893,12 +10894,14 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	// ...
 	var ef = new AMT___events_factory();
 	d2.addEventListener('keydown', ef.keydown__blur_field, true);
-	ef.mouseup__delete_range({
-		element: d2,
-		callback: function(input_object) {
-			input_object.element.blur();
-		}
-	});
+	if (opts.hasOwnProperty('controller_mu_deleterange')) {
+		ef.mouseup__delete_range({
+			element: d2,
+			callback: function(input_object) {
+				input_object.element.blur();
+			}
+		});
+	}
 	
 	// onsubmit
 	if (opts.hasOwnProperty('submitButton_onclick_callback')) {

@@ -2760,9 +2760,11 @@ Laurens Hammond, Chicago, Ill.**/
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;width:150% !important;}');
 			GM_addStyle('#workContent {position:fixed;}');
 			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
-			GM_addStyle('."col-sm-8 col-sm-offset-2" {margin-left:0 !important !important;}');
+			GM_addStyle('.col-sm-offset-2 {left:-48px;}');
+			//~ GM_addStyle('div {margin-left:0 !important !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;}');
 			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
 			var td = document.getElementsByTagName('td');
@@ -2774,19 +2776,31 @@ Laurens Hammond, Chicago, Ill.**/
 					document.getElementById('BranchAddress2'),
 					document.getElementById('BranchCity'),
 					document.getElementById('BranchRegion'),
+					document.getElementById('BranchPostalCode'),
 				],
 			}
 			console.log(o);
+			// Replace all state abbr with full!
+			var x = o.u1.split(' ');
+			for (var i in x) {
+				var n = x[i].replace(/[\(\)]/g, '');
+				if (n.stateAbbrToFull() != n) {
+					console.log(n);
+					x[i] = n.stateAbbrToFull();
+					break;
+				}
+			}
+			o.u1 = x.join(' ');
 			//Elements
-			var d1 = ''.div({style:'position:absolute;top:26px;left:10%;width:89%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:150px;left:10%;width:89%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:150px;left:20%;width:79%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:104px;left:10%;width:89%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:104px;left:20%;width:79%;height:40px;');
 			document.body.appendChild(dx2);
-			dx2.value = o.u1 + ',' + o.u2;
+			dx2.value = o.u1 + ', ' + o.u2;
 			//~ // dummy inputs
 			//~ var d2a = document.createElement('input');
 			//~ d2a.setAttribute('style', 'position:absolute;top:1000px;');
@@ -2805,13 +2819,14 @@ Laurens Hammond, Chicago, Ill.**/
 			});
 			// DoPast
 			AMT___addUserDecision(
-				'grisham,jan,2017',
+				'sterling,jan,2017',
 				function() { return o.u1 + ',' + o.u2; },
 				[
 					"Id(BranchAddress1)",
 					"Id(BranchAddress2)",
 					"Id(BranchCity)",
 					"Id(BranchRegion)",
+					"Id(BranchPostalCode)",
 				]
 			);
 			document.getElementById('submitButton').onclick = function(e) {
@@ -2831,6 +2846,7 @@ Laurens Hammond, Chicago, Ill.**/
 					street2: o.q[1],
 					city: o.q[2],
 					state: o.q[3],
+					zip: o.q[4],
 				},
 				onclick_callback: function(opts) { // (opts) // STATE
 					console.log(opts);
