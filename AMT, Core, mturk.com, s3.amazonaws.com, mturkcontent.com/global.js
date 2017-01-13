@@ -8495,6 +8495,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * .search_results.clean_body_regex					Array(regexes)
  * .search_results.clean_body_string				Array(strings)
  * .search_results.use_domain_only					Boolean, Default=NULL or False
+ * .search_results.use_domain_and_www				Boolean, Default=NULL or False
  * .onclick_check_site_is200						BOOLEAN
  * .onclick_check_site_is200_err_callback			Function()
  * .search											Object
@@ -8982,7 +8983,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 			//domain = match[1].replace(/^(http:\/\/[^\/]+)\/[^$]*$/, '$1');
 			// Return domain only (no WWW, no HTTP)
 			if (options_object.search_results.use_domain_only)
-				x = x.replace(/^https?:\/\/(www[\d]*\.|)/i, ''); // Remove https, www., www[0,1,...,n].,
+				x = x.replace(/^https?:\/\/(www[\d]*\.|)/i, ''); // Remove http, https, www., www[0,1,...,n].,
+			// Return domain only (no WWW, no HTTP)
+			if (options_object.search_results.use_domain_and_www)
+				x = x.replace(/^https?:\/\//i, ''); // Remove http, https
 			// TRAILING
 			if (!options_object.search_results.use_full_urls)
 				x = x.replace(/(\w+)\/[^$]*$/, '$1'); //trailing 0, & slash
