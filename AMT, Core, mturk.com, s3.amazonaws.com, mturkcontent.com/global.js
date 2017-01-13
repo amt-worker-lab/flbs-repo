@@ -1925,9 +1925,11 @@ String.prototype.format_number_with_commas = function() {
  * .string_to_mixed_case
  * 
  * @param		options.REG_INCLUDE_DASHES
+ * @param		options.ALERT
  */
 String.prototype.string_to_mixed_case = function(options) {
 	var s = this.toString().toLowerCase();
+	var original = this.toString();
 	if (options && options.hasOwnProperty('REG_INCLUDE_DASHES')) // Same as normal but toUpperCase "Some-word" to "Some-Word"
 	{
 		s = s.replace(
@@ -1936,6 +1938,9 @@ String.prototype.string_to_mixed_case = function(options) {
 				return match1 + match2.toUpperCase();
 			}
 		);
+		if (options && options.hasOwnProperty('ALERT') && s != original) {
+			alert('String mismatch: '+s+'!='+original);
+		}
 		return s;
 	}
 	else

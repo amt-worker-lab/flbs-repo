@@ -2791,10 +2791,14 @@ Laurens Hammond, Chicago, Ill.**/
 				}
 			}
 			o.u1 = x.join(' ');
+			o.u1 = o.u1.replace(/My Media Mall/gi, '');	// fluff
+			o.u1 = o.u1.replace(/infonet/gi, '');		// fluff
+			o.u1 = o.u1.replace(/eBranch2Go/gi, '');	// fluff
 			o.u1 = o.u1.replace(/library/gi, '');
 			o.u2 = o.u2.replace(/library/gi, '');
 			o.u1 = o.u1.replace(/\s+/gi, ' ');
 			o.u2 = o.u2.replace(/\s+/gi, ' ');
+			o.u1 = o.u1.trim();
 			o.u2 = o.u2.trim() + ' Library';
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
@@ -2837,9 +2841,14 @@ Laurens Hammond, Chicago, Ill.**/
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
 				e.preventDefault();
-				console.log(o.q[0].value);
-				//~ if (o.q[0].value.trim() == '') return false;
-				//~ if (!/^\d{5}$/.exec(o.q[0].value)) return false;
+				// Alert blank...
+				for (var i in o.q) {
+					if (i!=1 && o.q[i].value.trim() == '') {
+						//alert('Empty Field!');
+						o.q[i].style.border='4px solid blue';
+						return false;
+					}
+				}
 				AMT___recordAndSubmit();
 				return false;
 			}
@@ -2858,8 +2867,10 @@ Laurens Hammond, Chicago, Ill.**/
 					console.log(o);
 					// Loop clean...
 					for (var i in o.q) {
-						o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
-						o.q[i].value = o.q[i].value.string_to_mixed_case();
+						if (i<=2) {
+							o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
+							o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, ALERT:true});
+						}
 					}
 					// State fill...
 					if (opts.o.final_location.state != null &&
@@ -2868,6 +2879,13 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					// o.q[4].value
 					o.q[4].value = o.q[4].value.substr(0,5);// Index, howmany
+					// Alert blank...
+					for (var i in o.q) {
+						if (i!=1 && o.q[i].value.trim() == '') {
+							alert('Empty Field!');
+							o.q[i].style.border='4px solid blue';
+						}
+					}
 				}
 			};
 			// Init create_dashboard_find_address
