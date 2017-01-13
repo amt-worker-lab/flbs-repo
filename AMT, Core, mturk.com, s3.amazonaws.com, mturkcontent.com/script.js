@@ -2750,6 +2750,159 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
+	// Jeff Sterling
+	// Find physical addresses for US public library branches
+	//
+	//
+	s = '<p>Given this specific&nbsp;US public library branch, find its physical address (street, city, state, and zip).</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('#workContent {position:fixed;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('."col-sm-8 col-sm-offset-2" {margin-left:0 !important !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;}');
+			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u1: td[1].innerText.trim(),
+				u2: td[3].innerText.trim(),
+				q: [
+					document.getElementById('BranchAddress1'),
+					document.getElementById('BranchAddress2'),
+					document.getElementById('BranchCity'),
+					document.getElementById('BranchRegion'),
+				],
+			}
+			console.log(o);
+			//Elements
+			var d1 = ''.div({style:'position:absolute;top:26px;left:10%;width:89%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+			document.body.appendChild(d1);
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:150px;left:10%;width:89%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:104px;left:10%;width:89%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.u1 + ',' + o.u2;
+			//~ // dummy inputs
+			//~ var d2a = document.createElement('input');
+			//~ d2a.setAttribute('style', 'position:absolute;top:1000px;');
+			//~ var d2b = document.createElement('input');
+			//~ d2b.setAttribute('style', 'position:absolute;top:1000px;');
+			// add mouseup for 2nd search....
+			dx2.addEventListener('blur', function() {
+				//setTimeout(place_search, 400); // short timeout
+			}, false);
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					dx1
+				],
+				offset: 150 // offset top
+			});
+			// DoPast
+			AMT___addUserDecision(
+				'grisham,jan,2017',
+				function() { return o.u1 + ',' + o.u2; },
+				[
+					"Id(BranchAddress1)",
+					"Id(BranchAddress2)",
+					"Id(BranchCity)",
+					"Id(BranchRegion)",
+				]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				console.log(o.q[0].value);
+				//~ if (o.q[0].value.trim() == '') return false;
+				//~ if (!/^\d{5}$/.exec(o.q[0].value)) return false;
+				AMT___recordAndSubmit();
+				return false;
+			}
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					street: o.q[0],
+					street2: o.q[1],
+					city: o.q[2],
+					state: o.q[3],
+				},
+				onclick_callback: function(opts) { // (opts) // STATE
+					console.log(opts);
+					console.log(o);
+					if (opts.o.final_location.state != null &&
+						opts.o.final_location.state.trim() != '') {
+						o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
+					}
+				}
+			};
+			// Init create_dashboard_find_address
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			// Init place search
+			//~ place_search();
+			// XHR textsearch
+			function place_search() {
+				d1.innerText = 'Loading ...';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL:	
+							'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							'query='+encodeURIComponent(dx2.value)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						d1.innerText = '';
+						/** **/
+						if (!rs.results || !rs.results.length) {
+							return;
+						}
+						for (var i in rs.results) {
+							var n = rs.results[i];
+							console.log(n);
+							d1.appendChild(choice(n.name, n.formatted_address));
+						}
+					}
+				});
+			}
+			function choice(name, text) { // returns clickable div
+				text = text.replace(/, USA$/, '');
+				text = text.split(' ');
+				var a = [];
+				for (var i in text) {
+					var n = text[i].trim().replace(/,/g, '').stateAbbrToFull(); // Try...
+					a.push(n);
+				}
+				a = a.join(' ');// By space
+				// Out div
+				var d = (name + ' ').div({style:'width:100%;border:1px solid #a2a2a2;'});
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: a,
+					output_fields: o.q,
+					//~ callback_mouseup: function(addField) {
+						//~ // Remove trailing commas
+						//~ addField.value = addField.value.replace(/ *,*$/, '');
+					//~ },
+					//~ appendToField: false,
+					//~ appendToField_glue: ', ',
+					//~ delimeter: '',
+					focusToField: true,
+					style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;',
+				});
+				buttons.style.display = 'inline';
+				d.appendChild(buttons);
+				return d;
+			}
+		}
+		new run().f();
+	}
 	// taylor l grisham
 	// create_dashboard_find_address
 	// Find the ZIP code for companies
