@@ -2872,11 +2872,33 @@ Laurens Hammond, Chicago, Ill.**/
 				onclick_callback: function(opts) { // (opts) // STATE
 					console.log(opts);
 					console.log(o);
-					// Loop clean...
+					// Reset display stuff.
+					document.body.style.backgroundColor = ''; // Reset bg color
+					for (var i in o.q) {
+						o.q[i].style.border = '';
+					}
+					//~ // Callback for string_to_mixed_case.
+					//~ var cb = function (is_changed) { // is_changed: Will be true or false
+						//~ if (is_changed) {
+							//~ document.body.style.backgroundColor = 'orange';
+						//~ } else {
+							//~ // Do nothing.
+						//~ }
+					//~ }
+					// Loop: Clean and check case.
+					// Just check case difference. Do not change case.
+					// Then alert user that there is a change and
+					// let the user decide what to do.
 					for (var i in o.q) {
 						if (i<=2) {
 							o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
-							o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, ALERT:true, IGNORE: ['NW','SE','SW','NW']});
+							var n = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true});
+							if (n != o.q[i].value) {
+								o.q[i].style.border = '8px dashed green';
+								document.body.style.backgroundColor = 'orange';
+								alert('Case Difference!');
+							}
+							//~ o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, CALLBACK: cb});
 						}
 					}
 					// State fill...
@@ -2890,7 +2912,7 @@ Laurens Hammond, Chicago, Ill.**/
 					for (var i in o.q) {
 						if (i!=1 && o.q[i].value.trim() == '') {
 							alert('Empty Field!');
-							o.q[i].style.border='4px solid blue';
+							o.q[i].style.border = '4px solid blue';
 						}
 					}
 				}
