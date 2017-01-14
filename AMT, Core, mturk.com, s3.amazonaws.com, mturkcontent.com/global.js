@@ -1926,6 +1926,7 @@ String.prototype.format_number_with_commas = function() {
  * 
  * @param		options.REG_INCLUDE_DASHES
  * @param		options.ALERT
+ * @param		Array: options.IGNORE
  */
 String.prototype.string_to_mixed_case = function(options) {
 	var s = this.toString().toLowerCase();
@@ -1938,6 +1939,18 @@ String.prototype.string_to_mixed_case = function(options) {
 				return match1 + match2.toUpperCase();
 			}
 		);
+		//~ // If ignore then loop through ignore and change them back.
+		//~ if (options && options.hasOwnProperty('IGNORE') && options.IGNORE.length > 0) {
+			//~ var n = options.IGNORE;
+			//~ var x = s;
+			//~ for (var i in n) {
+				//~ x = x.replace(new RegExp(n[i], 'gi'), n[i]);
+			//~ }
+			//~ if (x != s) {
+				
+			//~ }
+		//~ }
+		// Alert
 		if (options && options.hasOwnProperty('ALERT') && s != original) {
 			alert('String mismatch: '+s+'!='+original);
 		}
@@ -1951,6 +1964,9 @@ String.prototype.string_to_mixed_case = function(options) {
 				return match1 + match2.toUpperCase();
 			}
 		);
+		if (options && options.hasOwnProperty('ALERT') && s != original) {
+			alert('String mismatch: '+s+'!='+original);
+		}
 		return s;
 	}
 }

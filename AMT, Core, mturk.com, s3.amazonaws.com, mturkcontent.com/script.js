@@ -2876,7 +2876,7 @@ Laurens Hammond, Chicago, Ill.**/
 					for (var i in o.q) {
 						if (i<=2) {
 							o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
-							o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, ALERT:true});
+							o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, ALERT:true, IGNORE: ['NW','SE','SW','NW']});
 						}
 					}
 					// State fill...
