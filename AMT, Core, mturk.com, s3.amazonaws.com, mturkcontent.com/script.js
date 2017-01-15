@@ -45,14 +45,32 @@ function MT__RUN() {
 			var o = {
 				u: a[1].getAttribute('href'),
 				valb: td[3].innerText.trim()*1,
+				valx: null,
 				formula: td[5].innerText.trim(),
 				q: [
 					document.getElementById('web_url'),
 				]
 			}
 			// Only go forward assuming this is the formula.
-			if (o.formula != '59.87 * A * (1 + (B / 100))') { 
+			//~ if (
+				//~ o.formula != '59.87 * A * (1 + (B / 100))' && 
+				//~ o.formula != '429.29 * A * (1 + (B / 100))'
+				//~ ) {
+				//~ alert('formula diff!');
+				//~ return;
+			//~ }
+			if (o.formula == '59.87 * A * (1 + (B / 100))') {
+				
+			} else if (o.formula == '429.29 * A * (1 + (B / 100))') {
+				
+			} else {
 				alert('formula diff!');
+				return;
+			}
+			// XXXX Not 0 .... o.valb != 0
+			// Has a non-digit (or period)
+			if (/[^\d]/.exec(td[3].innerText.trim())) {
+				alert('val b:'+o.valb);
 				return;
 			}
 			// A time.
@@ -92,7 +110,6 @@ function MT__RUN() {
 						return;
 					}
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					//AMT___recordAndSubmit();
 					// Looking for:
 					//<dt>Value</dt>
 					//<dd>8649.9900 ether</dd>
@@ -115,14 +132,18 @@ function MT__RUN() {
 						return;
 					}
 					d = rg.exec(d.innerHTML)[1];
+					// Make a copy of this "original" value for later.
+					var original_d = d;
 					// WARNING !
 					// JAVASCRIPT IS BREAKING ON FLOATING POINT MATH!
+					// That is, e.g.	8649.99*59.87 != 517874.90129999997
+					// In "reality"		8649.99*59.87  = 517874.9013 (!)
 					// So instead. Let's multiply two integers!
-					if (/\.0+$/.exec(d)) {			// remove a single or more trailing 0s
+					if (/\.0+$/.exec(d)) {			// Remove a single or more trailing 0s
 						d = d.replace(/\.0+$/,'');
-					} else if (/\.\d+$/.exec(d)) {	// replace trailing 0s after good digits ... eg 1.1340004430000 is 1.134000443
+					} else if (/\.\d+$/.exec(d)) {	// Replace trailing 0s after good digits ... eg 1.1340004430000 is 1.134000443
 						d = d.replace(/0+$/,'');
-					} else if (/\.$/.exec(d)) {		// replace trailing period (.)
+					} else if (/\.$/.exec(d)) {		// Replace trailing period (.)
 						d = d.replace(/\.$/,'');
 					} else {
 						document.body.appendChild('unexpected d!'.div());
@@ -133,13 +154,14 @@ function MT__RUN() {
 						document.body.appendChild('d.length<1 !'.div());
 						return;
 					}
-					// mult
+					// Calculate the factor.
+					// Then turn d into an integer.
 					var fc = 1;	// Factor to multiply by. Default=1.
 					if (d.indexOf('.') != -1) { // Remove digit.
 						//
 						console.log('Converting d:'+d);
 						// Count the number of digits following the decimal.
-						fc = 10^(/\.(\d+)$/.exec(d)[1].length);
+						fc = Math.pow(10,(/\.(\d+)$/.exec(d)[1].length));
 						console.log('Factor:'+fc);
 						// Then mult. by that number to create an int.
 						d = d*(fc);
@@ -150,16 +172,30 @@ function MT__RUN() {
 					} else {	// Otherwise turn into an int.
 						d = parseInt(d);
 					}
-					console.log(d);
-					console.log(5987 * d);
-					console.log(1 + (o.valb / 100));
-					// fc = fc*100.
+					// Some debugs...
+						console.log(d);
+						console.log(59.87 * d); // Failed here in JS
+						console.log(1 + (o.valb / 100));
+					// fc *= 100.
 					fc = fc*100;			// Add two 0s for 59.87
 					d = 5987 * d;
+					// fc *= 100.
 					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
 					var x = 100 + o.valb;
 					d = d*x;
+					// Set the value.
+					// Divide d by its factor.
 					o.q[0].value = d / fc;
+					// Now.
+					// Let's auto if JS matches what we have done manually.
+					// Otherwise let's inspect it.
+					var x = 59.87 * original_d * (1 + (o.valb / 100));
+					document.body.appendChild(('Calculation is:\n'+(59.87+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
+					if (x == o.q[0].value) {
+						AMT___recordAndSubmit();
+					} else {
+						document.body.appendChild(('JS math fail. !'+(x+'')).div());
+					}
 				}
 			});
 		}
