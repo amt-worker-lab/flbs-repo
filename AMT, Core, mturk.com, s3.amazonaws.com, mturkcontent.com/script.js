@@ -30,7 +30,7 @@ function MT__RUN() {
 	// Wings Foundation
 	// Get amount and calculate result
 	// http://ltc.blockr.io/
-	//
+	// rejected?: "0".... 3MA5N0ATTC92P0QMIQPXVB9WOVKWK1
 	s = '<p>Browse to the <strong>Transactions URL</strong>, find the correct transaction Amount (<strong>A</strong>) by using the <strong>Transaction Number</strong>, then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -121,11 +121,13 @@ function MT__RUN() {
 						return;
 					}
 					var d = JSON.parse(rs);
-					if (!d.data.trade.vouts.length) {
-						// Throws error
+					if (!d || !d.data || !d.data.trade || !d.data.trade.vouts || !d.data.trade.vouts.length || d.data.trade.vouts.length < o.tn) {
+						// Exit
+						document.body.appendChild('json error'.div());
+						return;
 					} else {
 						if (!d.data.trade.vouts[o.tn - 1]) {
-							document.body.appendChild('match1'.div());
+							document.body.appendChild('vouts'.div());
 							return;
 						}
 						// Requesters "trade number #1" is in array #0.
@@ -174,9 +176,7 @@ function MT__RUN() {
 							document.body.appendChild(('Failed. Still a floating point!'+(d+'')).div());
 							return;
 						}
-					}// else {	// Otherwise turn into an int.
-						//d = parseInt(d);
-					//}
+					}
 					// Now parse int...
 					d = parseInt(d);
 					// Some debugs...
