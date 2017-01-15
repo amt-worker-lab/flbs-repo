@@ -104,18 +104,62 @@ function MT__RUN() {
 						return;
 					}
 					d = d[0];
-					var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/;
+					var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/g;
 					if (d.innerHTML.match(rg) == null) {
 						document.body.appendChild('!match1'.div());
 						return;
 					}
 					if (d.innerHTML.match(rg).length != 1) {
-						document.body.appendChild(('!match2'+d.innerHTML.match(rg).length).div());
+						console.log(d.innerHTML.match(rg));
+						document.body.appendChild(('!match2-'+d.innerHTML.match(rg).length).div());
 						return;
 					}
-					d = rg.exec(d.innerHTML)[1]*1;
-					d = 59.87 * d * (1 + (o.valb / 100));
-					o.q[0].value = d;
+					d = rg.exec(d.innerHTML)[1];
+					// WARNING !
+					// JAVASCRIPT IS BREAKING ON FLOATING POINT MATH!
+					// So instead. Let's multiply two integers!
+					if (/\.0+$/.exec(d)) {			// remove a single or more trailing 0s
+						d = d.replace(/\.0+$/,'');
+					} else if (/\.\d+$/.exec(d)) {	// replace trailing 0s after good digits ... eg 1.1340004430000 is 1.134000443
+						d = d.replace(/0+$/,'');
+					} else if (/\.$/.exec(d)) {		// replace trailing period (.)
+						d = d.replace(/\.$/,'');
+					} else {
+						document.body.appendChild('unexpected d!'.div());
+						return;
+					}
+					// Length must be > 0!
+					if (d.length < 1) {
+						document.body.appendChild('d.length<1 !'.div());
+						return;
+					}
+					// mult
+					var fc = 1;	// Factor to multiply by. Default=1.
+					if (d.indexOf('.') != -1) { // Remove digit.
+						//
+						console.log('Converting d:'+d);
+						// Count the number of digits following the decimal.
+						fc = 10^(/\.(\d+)$/.exec(d)[1].length);
+						console.log('Factor:'+fc);
+						// Then mult. by that number to create an int.
+						d = d*(fc);
+						if ((d+'').indexOf('.') != -1) { // Failed. Still a floating point!
+							document.body.appendChild(('Failed. Still a floating point!'+(d+'')).div());
+							return;
+						}
+					} else {	// Otherwise turn into an int.
+						d = parseInt(d);
+					}
+					console.log(d);
+					console.log(5987 * d);
+					console.log(1 + (o.valb / 100));
+					// fc = fc*100.
+					fc = fc*100;			// Add two 0s for 59.87
+					d = 5987 * d;
+					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
+					var x = 100 + o.valb;
+					d = d*x;
+					o.q[0].value = d / fc;
 				}
 			});
 		}
