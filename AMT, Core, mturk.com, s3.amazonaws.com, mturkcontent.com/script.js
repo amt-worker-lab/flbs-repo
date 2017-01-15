@@ -46,6 +46,7 @@ function MT__RUN() {
 				u: a[1].getAttribute('href'),
 				valb: td[3].innerText.trim()*1,
 				valx: null,
+				valx_original: null,
 				formula: td[5].innerText.trim(),
 				q: [
 					document.getElementById('web_url'),
@@ -60,9 +61,11 @@ function MT__RUN() {
 				//~ return;
 			//~ }
 			if (o.formula == '59.87 * A * (1 + (B / 100))') {
-				
+				o.valx = 5987;
+				o.valx_original = 59.87;
 			} else if (o.formula == '429.29 * A * (1 + (B / 100))') {
-				
+				o.valx = 42929;
+				o.valx_original = 429.29;
 			} else {
 				alert('formula diff!');
 				return;
@@ -109,29 +112,59 @@ function MT__RUN() {
 						document.body.appendChild('x3'.div());
 						return;
 					}
-					var dom = new DOMParser().parseFromString(rs, 'text/html');
-					// Looking for:
-					//<dt>Value</dt>
-					//<dd>8649.9900 ether</dd>
-					// In element (el.classname):
-					// dl.dl-horizontal
-					var d = dom.querySelectorAll('dl.dl-horizontal');
-					if (d.length != 1) {
-						document.body.appendChild(('d.length='+d.length).div());
-						return;
+					// etherscan.io
+					if (o.u.indexOf('etherscan.io') != -1) {
+						var d = rs; // just use rs.
+						var rg = /<span title="The amount of ETH to be transferred to the recipient with the transaction">\n([\d,]+)<b>\.<\/b>(\d+) Ether/g;
+						if (d.match(rg) == null) {
+							var rg = /<span title="The amount of ETH to be transferred to the recipient with the transaction">\n(0) Ether/g;
+							if (d.match(rg) == null) {
+								document.body.appendChild('!e match1'.div());
+								return;
+							}
+						}
+						if (d.match(rg).length != 1) {
+							console.log(d.match(rg));
+							document.body.appendChild(('!e match2-'+d.match(rg).length).div());
+							return;
+						}
+						d = rg.exec(d);
+						if (d.length == 3)  {		// ([\d,]+)<b>\.<\/b>(\d+)
+							d = d[1].replace(/,/g, '') +'.'+ d[2];
+						} else if (d.length == 2) {	// (0)
+							d = '0'; // A string...
+						} else {
+							console.log('??'.div());
+							return;
+						}
 					}
-					d = d[0];
-					var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/g;
-					if (d.innerHTML.match(rg) == null) {
-						document.body.appendChild('!match1'.div());
-						return;
+					// ...
+					else {
+						// Dom parse.
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// Looking for:
+						//<dt>Value</dt>
+						//<dd>8649.9900 ether</dd>
+						// In element (el.classname):
+						// dl.dl-horizontal
+						var d = dom.querySelectorAll('dl.dl-horizontal');
+						if (d.length != 1) {
+							document.body.appendChild(('d.length='+d.length).div());
+							return;
+						}
+						d = d[0];
+						var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/g;
+						if (d.innerHTML.match(rg) == null) {
+							document.body.appendChild('!match1'.div());
+							return;
+						}
+						if (d.innerHTML.match(rg).length != 1) {
+							console.log(d.innerHTML.match(rg));
+							document.body.appendChild(('!match2-'+d.innerHTML.match(rg).length).div());
+							return;
+						}
+						d = rg.exec(d.innerHTML)[1];
 					}
-					if (d.innerHTML.match(rg).length != 1) {
-						console.log(d.innerHTML.match(rg));
-						document.body.appendChild(('!match2-'+d.innerHTML.match(rg).length).div());
-						return;
-					}
-					d = rg.exec(d.innerHTML)[1];
 					// Make a copy of this "original" value for later.
 					var original_d = d;
 					// WARNING !
@@ -145,6 +178,8 @@ function MT__RUN() {
 						d = d.replace(/0+$/,'');
 					} else if (/\.$/.exec(d)) {		// Replace trailing period (.)
 						d = d.replace(/\.$/,'');
+					} else if (/^\d+$/.exec(d)) {	// Contains only ints
+						// Do nothing.
 					} else {
 						document.body.appendChild('unexpected d!'.div());
 						return;
@@ -174,11 +209,11 @@ function MT__RUN() {
 					}
 					// Some debugs...
 						console.log(d);
-						console.log(59.87 * d); // Failed here in JS
+						console.log(o.valx * d); // Failed here in JS
 						console.log(1 + (o.valb / 100));
 					// fc *= 100.
-					fc = fc*100;			// Add two 0s for 59.87
-					d = 5987 * d;
+					fc = fc*100;			// Add two 0s for o.valx(eg 429.29 or eg 59.87)
+					d = o.valx * d;
 					// fc *= 100.
 					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
 					var x = 100 + o.valb;
@@ -189,8 +224,8 @@ function MT__RUN() {
 					// Now.
 					// Let's auto if JS matches what we have done manually.
 					// Otherwise let's inspect it.
-					var x = 59.87 * original_d * (1 + (o.valb / 100));
-					document.body.appendChild(('Calculation is:\n'+(59.87+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
+					var x = o.valx_original * original_d * (1 + (o.valb / 100));
+					document.body.appendChild(('Calculation is:\n'+(o.valx_original+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
 					if (x == o.q[0].value) {
 						AMT___recordAndSubmit();
 					} else {
