@@ -27,6 +27,100 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// Wings Foundation
+	// Get amount and calculate result
+	//
+	//
+	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the value field (annotated in blue), then use the <strong>Formula</strong>.</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: a[1].getAttribute('href'),
+				valb: td[3].innerText.trim()*1,
+				formula: td[5].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			// Only go forward assuming this is the formula.
+			if (o.formula != '59.87 * A * (1 + (B / 100))') { 
+				alert('formula diff!');
+				return;
+			}
+			// A time.
+			var t = new Date();
+			var d = t.getDate();
+			var m = t.getMonth();
+			var y = t.getFullYear();
+			var today = m+'/'+d+'/'+y; // Gives eg: 1/5/2016; 12/31/2016; 5/31/2016; 12/1/2016; etc.
+			AMT___addUserDecision(
+				'Wings Foundation,'+(today),
+				function() { return o.u+'|'+o.xa+'|'+o.xb; },
+				[
+					"Id(web_url)"
+				]
+			);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						document.body.appendChild('x1'.div());
+						return false;
+					}
+					if (options.response.responseText.trim() == '') {
+						document.body.appendChild('x2'.div());
+						return false; // do not save blanks
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('x3'.div());
+						return;
+					}
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					//AMT___recordAndSubmit();
+					// Looking for:
+					//<dt>Value</dt>
+					//<dd>8649.9900 ether</dd>
+					// In element (el.classname):
+					// dl.dl-horizontal
+					var d = dom.querySelectorAll('dl.dl-horizontal');
+					if (d.length != 1) {
+						document.body.appendChild(('d.length='+d.length).div());
+						return;
+					}
+					d = d[0];
+					var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/;
+					if (d.innerHTML.match(rg) == null) {
+						document.body.appendChild('!match1'.div());
+						return;
+					}
+					if (d.innerHTML.match(rg).length != 1) {
+						document.body.appendChild(('!match2'+d.innerHTML.match(rg).length).div());
+						return;
+					}
+					d = rg.exec(d.innerHTML)[1]*1;
+					d = 59.87 * d * (1 + (o.valb / 100));
+					o.q[0].value = d;
+				}
+			});
+		}
+		new run().f();return;
+	}
 	// garret grohman
 	// 
 	//
