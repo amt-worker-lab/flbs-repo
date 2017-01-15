@@ -29,6 +29,192 @@ function MT__RUN() {
 	
 	// Wings Foundation
 	// Get amount and calculate result
+	// http://ltc.blockr.io/
+	//
+	s = '<p>Browse to the <strong>Transactions URL</strong>, find the correct transaction Amount (<strong>A</strong>) by using the <strong>Transaction Number</strong>, then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: a[1].getAttribute('href'),
+				tn: parseInt(td[3].innerText.trim()),	//transaction #
+				valb: parseInt(td[5].innerText.trim()),
+				valx: null,
+				valx_original: null,
+				formula: td[7].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			// For ltc.blockr.io it is necessary to get an
+			// api.
+			// E.g. http://ltc.blockr.io/api/v1/tx/info/b33dae36d6c90c975a4479e3e7ebea6c87d6a727d4643ac5a8ee696221c38619
+			// Starting from
+			// E.g. http://ltc.blockr.io/tx/info/5b97a58062bca8411698881e54a541139f80f62ab1c5f1d2f1ee65a80e96c3d4
+			o.u = o.u.replace('/tx/info/', '/api/v1/tx/info/');
+			
+			// Only go forward assuming this is the formula.
+			//~ if (
+				//~ o.formula != '59.87 * A * (1 + (B / 100))' && 
+				//~ o.formula != '429.29 * A * (1 + (B / 100))'
+				//~ ) {
+				//~ alert('formula diff!');
+				//~ return;
+			//~ }
+			if (o.formula == '125.64 * A * (1 + (B / 100))') {
+				o.valx = 12564;
+				o.valx_original = 125.64;
+			//~ } else if (o.formula == '429.29 * A * (1 + (B / 100))') {
+				//~ o.valx = 42929;
+				//~ o.valx_original = 429.29;
+			} else {
+				alert('formula diff!');
+				return;
+			}
+			// XXXX Not 0 .... o.valb != 0
+			// Has a non-digit (or period)
+			if (/[^\d]/.exec(td[3].innerText.trim())) {
+				alert('val b:'+o.valb);
+				return;
+			}
+			// A time.
+			var t = new Date();
+			var d = t.getDate();
+			var m = t.getMonth();
+			var y = t.getFullYear();
+			var today = m+'/'+d+'/'+y; // Gives eg: 1/5/2016; 12/31/2016; 5/31/2016; 12/1/2016; etc.
+			AMT___addUserDecision(
+				'Wings Foundation2,'+(today),
+				function() { return o.u+'|'+o.tn+'|'+o.valb; },
+				[
+					"Id(web_url)"
+				]
+			);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						document.body.appendChild('x1'.div());
+						return false;
+					}
+					if (options.response.responseText.trim() == '') {
+						document.body.appendChild('x2'.div());
+						return false; // do not save blanks
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('x3'.div());
+						return;
+					}
+					var d = JSON.parse(rs);
+					if (!d.data.trade.vouts.length) {
+						// Throws error
+					} else {
+						if (!d.data.trade.vouts[o.tn - 1]) {
+							document.body.appendChild('match1'.div());
+							return;
+						}
+						// Requesters "trade number #1" is in array #0.
+						// Make it a string.
+						d = d.data.trade.vouts[o.tn - 1].amount + '';
+					}
+					// Make a copy of this "original" value for later.
+					var original_d = d;
+					// WARNING !
+					// JAVASCRIPT IS BREAKING ON FLOATING POINT MATH!
+					// That is, e.g.	8649.99*59.87 != 517874.90129999997
+					// In "reality"		8649.99*59.87  = 517874.9013 (!)
+					// So instead. Let's multiply two integers!
+					if (/\.0+$/.exec(d)) {			// Remove a single or more trailing 0s
+						d = d.replace(/\.0+$/,'');
+					} else if (/\.\d+$/.exec(d)) {	// Replace trailing 0s after good digits ... eg 1.1340004430000 is 1.134000443
+						d = d.replace(/0+$/,'');
+					} else if (/\.$/.exec(d)) {		// Replace trailing period (.)
+						d = d.replace(/\.$/,'');
+					} else if (/^\d+$/.exec(d)) {	// Contains only ints
+						// Do nothing.
+					} else {
+						document.body.appendChild('unexpected d!'.div());
+						return;
+					}
+					// Length must be > 0!
+					if (d.length < 1) {
+						document.body.appendChild('d.length<1 !'.div());
+						return;
+					}
+					// Calculate the factor.
+					// Then turn d into an integer.
+					var fc = 1;	// Factor to multiply by. Default=1.
+					if (d.indexOf('.') != -1) { // Remove digit.
+						//
+						console.log('Converting d:'+d);
+						// Count the number of digits following the decimal.
+						fc = Math.pow(10,(/\.(\d+)$/.exec(d)[1].length));
+						console.log('Factor:'+fc);
+						// Then mult. by that number to create an int.
+						// OOPS... DO NOT MULTIPLY HERE!
+						// Just remove the decimal!
+						// OOPS, Not this: d = d*(fc);
+						d = d.replace('.', '');
+						if ((d+'').indexOf('.') != -1) { // Failed. Still a floating point!
+							document.body.appendChild(('Failed. Still a floating point!'+(d+'')).div());
+							return;
+						}
+					}// else {	// Otherwise turn into an int.
+						//d = parseInt(d);
+					//}
+					// Now parse int...
+					d = parseInt(d);
+					// Some debugs...
+						console.log(d);
+						console.log(o.valx * d); // Failed here in JS
+						console.log(1 + (o.valb / 100));
+					// fc *= 100.
+					fc = fc*100;			// Add two 0s for o.valx(eg 429.29 or eg 59.87)
+					d = o.valx * d;
+					// fc *= 100.
+					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
+					var x = 100 + o.valb;
+					d = d*x;
+					// Set the value.
+					// Divide d by its factor.
+					o.q[0].value = d / fc;
+					// Now.
+					// Let's auto if JS matches what we have done manually.
+					// Otherwise let's inspect it.
+					var x = o.valx_original * original_d * (1 + (o.valb / 100));
+					document.body.appendChild(('Calculation is:\n'+(o.valx_original+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
+					if (x == o.q[0].value) {
+						AMT___recordAndSubmit();
+					} else {
+						// This looks good to go!
+						// No issue. JS just fails too much.
+						// So it looks good to go for now...
+						//document.body.appendChild(('JS math fail. !'+(x+'')).div());
+						if (/\d+\.\d+/.exec(o.q[0].value))
+							AMT___recordAndSubmit();
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
+	// Wings Foundation
+	// Get amount and calculate result
 	//
 	//
 	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the value field (annotated in blue), then use the <strong>Formula</strong>.</p>';
@@ -199,14 +385,15 @@ function MT__RUN() {
 						fc = Math.pow(10,(/\.(\d+)$/.exec(d)[1].length));
 						console.log('Factor:'+fc);
 						// Then mult. by that number to create an int.
-						d = d*(fc);
+						// NOT THIS!: //~ d = d*(fc);
+						d = d.replace('.', '');
 						if ((d+'').indexOf('.') != -1) { // Failed. Still a floating point!
 							document.body.appendChild(('Failed. Still a floating point!'+(d+'')).div());
 							return;
 						}
-					} else {	// Otherwise turn into an int.
-						d = parseInt(d);
 					}
+					// Now parse int...
+					d = parseInt(d);
 					// Some debugs...
 						console.log(d);
 						console.log(o.valx * d); // Failed here in JS
