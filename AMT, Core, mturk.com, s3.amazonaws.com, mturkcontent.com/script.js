@@ -215,7 +215,219 @@ function MT__RUN() {
 	}
 	// Wings Foundation
 	// Get amount and calculate result
+	// ripple.com
 	//
+	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the "actual amount delivered" line (annotated in blue), then use the <strong>Formula</strong>.</p>\n\n<p><img alt="example" src="https://s24.postimg.org/wlnj6rkyd/Screenshot_from_2017_01_16_04_03_39.png" style="margin-right: 10px;" /></p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			var a = document.getElementsByTagName('a');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u: a[1].getAttribute('href'),
+				valb: td[3].innerText.trim()*1,
+				valx: null,
+				valx_original: null,
+				formula: td[5].innerText.trim(),
+				q: [
+					document.getElementById('web_url'),
+				]
+			}
+			// Only go forward assuming this is the formula.
+			//~ if (
+				//~ o.formula != '59.87 * A * (1 + (B / 100))' && 
+				//~ o.formula != '429.29 * A * (1 + (B / 100))'
+				//~ ) {
+				//~ alert('formula diff!');
+				//~ return;
+			//~ }
+			if (o.formula == '0.264 * (A - 20) * (1 + (B / 100))') {
+				o.valx = 264;
+				o.valx_original = 0.264;
+			//~ } else if (o.formula == '429.29 * A * (1 + (B / 100))') {
+				//~ o.valx = 42929;
+				//~ o.valx_original = 429.29;
+			} else {
+				alert('formula diff!');
+				return;
+			}
+			// XXXX Not 0 .... o.valb != 0
+			// Has a non-digit (or period)
+			if (/[^\d]/.exec(td[3].innerText.trim())) {
+				alert('val b:'+o.valb);
+				return;
+			}
+			// A time.
+			var t = new Date();
+			var d = t.getDate();
+			var m = t.getMonth();
+			var y = t.getFullYear();
+			var today = m+'/'+d+'/'+y; // Gives eg: 1/5/2016; 12/31/2016; 5/31/2016; 12/1/2016; etc.
+			AMT___addUserDecision(
+				'Wings Foundation,ripple,'+(today),
+				function() { return o.u+'|'+o.xa+'|'+o.xb; },
+				[
+					"Id(web_url)"
+				]
+			);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						document.body.appendChild('x1'.div());
+						return false;
+					}
+					if (options.response.responseText.trim() == '') {
+						document.body.appendChild('x2'.div());
+						return false; // do not save blanks
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('x3'.div());
+						return;
+					}
+					var d = JSON.parse(rs);
+					
+					//~ // etherscan.io
+					//~ if (o.u.indexOf('etherscan.io') != -1) {
+						//~ var d = rs; // just use rs.
+						//~ var rg = /<span title="The amount of ETH to be transferred to the recipient with the transaction">\n([\d,]+)<b>\.<\/b>(\d+) Ether/g;
+						//~ if (d.match(rg) == null) {
+							//~ var rg = /<span title="The amount of ETH to be transferred to the recipient with the transaction">\n(0) Ether/g;
+							//~ if (d.match(rg) == null) {
+								//~ document.body.appendChild('!e match1'.div());
+								//~ return;
+							//~ }
+						//~ }
+						//~ if (d.match(rg).length != 1) {
+							//~ console.log(d.match(rg));
+							//~ document.body.appendChild(('!e match2-'+d.match(rg).length).div());
+							//~ return;
+						//~ }
+						//~ d = rg.exec(d);
+						//~ if (d.length == 3)  {		// ([\d,]+)<b>\.<\/b>(\d+)
+							//~ d = d[1].replace(/,/g, '') +'.'+ d[2];
+						//~ } else if (d.length == 2) {	// (0)
+							//~ d = '0'; // A string...
+						//~ } else {
+							//~ console.log('??'.div());
+							//~ return;
+						//~ }
+					//~ }
+					//~ // ...
+					//~ else {
+						//~ // Dom parse.
+						//~ var dom = new DOMParser().parseFromString(rs, 'text/html');
+						//~ // Looking for:
+						//~ //<dt>Value</dt>
+						//~ //<dd>8649.9900 ether</dd>
+						//~ // In element (el.classname):
+						//~ // dl.dl-horizontal
+						//~ var d = dom.querySelectorAll('dl.dl-horizontal');
+						//~ if (d.length != 1) {
+							//~ document.body.appendChild(('d.length='+d.length).div());
+							//~ return;
+						//~ }
+						//~ d = d[0];
+						//~ var rg = /<dt>Value<\/dt>[\r\n\t\s]+<dd>([\d\.]+) ether<\/dd>/g;
+						//~ if (d.innerHTML.match(rg) == null) {
+							//~ document.body.appendChild('!match1'.div());
+							//~ return;
+						//~ }
+						//~ if (d.innerHTML.match(rg).length != 1) {
+							//~ console.log(d.innerHTML.match(rg));
+							//~ document.body.appendChild(('!match2-'+d.innerHTML.match(rg).length).div());
+							//~ return;
+						//~ }
+						//~ d = rg.exec(d.innerHTML)[1];
+					//~ }
+					// Make a copy of this "original" value for later.
+					var original_d = d;
+					// WARNING !
+					// JAVASCRIPT IS BREAKING ON FLOATING POINT MATH!
+					// That is, e.g.	8649.99*59.87 != 517874.90129999997
+					// In "reality"		8649.99*59.87  = 517874.9013 (!)
+					// So instead. Let's multiply two integers!
+					if (/\.0+$/.exec(d)) {			// Remove a single or more trailing 0s
+						d = d.replace(/\.0+$/,'');
+					} else if (/\.\d+$/.exec(d)) {	// Replace trailing 0s after good digits ... eg 1.1340004430000 is 1.134000443
+						d = d.replace(/0+$/,'');
+					} else if (/\.$/.exec(d)) {		// Replace trailing period (.)
+						d = d.replace(/\.$/,'');
+					} else if (/^\d+$/.exec(d)) {	// Contains only ints
+						// Do nothing.
+					} else {
+						document.body.appendChild('unexpected d!'.div());
+						return;
+					}
+					// Length must be > 0!
+					if (d.length < 1) {
+						document.body.appendChild('d.length<1 !'.div());
+						return;
+					}
+					// Calculate the factor.
+					// Then turn d into an integer.
+					var fc = 1;	// Factor to multiply by. Default=1.
+					if (d.indexOf('.') != -1) { // Remove digit.
+						//
+						console.log('Converting d:'+d);
+						// Count the number of digits following the decimal.
+						fc = Math.pow(10,(/\.(\d+)$/.exec(d)[1].length));
+						console.log('Factor:'+fc);
+						// Then mult. by that number to create an int.
+						// NOT THIS!: //~ d = d*(fc);
+						d = d.replace('.', '');
+						if ((d+'').indexOf('.') != -1) { // Failed. Still a floating point!
+							document.body.appendChild(('Failed. Still a floating point!'+(d+'')).div());
+							return;
+						}
+					}
+					// Now parse int...
+					d = parseInt(d);
+					// Some debugs...
+						console.log(d);
+						console.log(o.valx * d); // Failed here in JS
+						console.log(1 + (o.valb / 100));
+					// fc *= 100.
+					fc = fc*100;			// Add two 0s for o.valx(eg 429.29 or eg 59.87)
+					d = o.valx * d;
+					// fc *= 100.
+					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
+					var x = 100 + o.valb;
+					d = d*x;
+					// Set the value.
+					// Divide d by its factor.
+					o.q[0].value = d / fc;
+					// Now.
+					// Let's auto if JS matches what we have done manually.
+					// Otherwise let's inspect it.
+					var x = o.valx_original * original_d * (1 + (o.valb / 100));
+					document.body.appendChild(('Calculation is:\n'+(o.valx_original+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
+					if (x == o.q[0].value) {
+						AMT___recordAndSubmit();
+					} else {
+						document.body.appendChild(('JS math fail. !'+(x+'')).div());
+					}
+				}
+			});
+		}
+		new run().f();return;
+	}
+	// Wings Foundation
+	// Get amount and calculate result
+	// etherscan.io and [...]
 	//
 	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the value field (annotated in blue), then use the <strong>Formula</strong>.</p>';
 	if (ih.indexOf(s) != -1) {
