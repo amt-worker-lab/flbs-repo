@@ -217,7 +217,7 @@ function MT__RUN() {
 	// Get amount and calculate result
 	// ripple.com
 	//
-	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the "actual amount delivered" line (annotated in blue), then use the <strong>Formula</strong>.</p>\n\n<p><img alt="example" src="https://s24.postimg.org/wlnj6rkyd/Screenshot_from_2017_01_16_04_03_39.png" style="margin-right: 10px;" /></p>';
+	s = '<p>Browse to the <strong>Transaction URL</strong>, locate the correct transaction Amount (<strong>A</strong>), then use the <strong>Formula</strong> to calculate the <strong>Result</strong>.</p>\n\n<p>EXAMPLE: Take the <strong>Amount</strong> from the "actual amount delivered" line (annotated in blue), then use the <strong>Formula</strong>.</p>\n\n<p><img alt="example" src="https://s24.postimg.org/wlnj6rkyd/Screenshot_from_2017_01_16_04_03_39.png" style="margin-right: 10px;"></p>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
@@ -238,6 +238,13 @@ function MT__RUN() {
 					document.getElementById('web_url'),
 				]
 			}
+			// Go to api.
+			// https://data.ripple.com/v2/transactions/2AA5510524C27C0B598D47CD5B899A5C254AB6A50C4949CBE37A3A9746A37C25
+			// Old=
+			// https://charts.ripple.com/#/transactions/2AA5510524C27C0B598D47CD5B899A5C254AB6A50C4949CBE37A3A9746A37C25
+			var n = /\/([^\/]{10,})$/.exec(o.u)[1];
+			o.u = 'https://data.ripple.com/v2/transactions/'+n;
+			
 			// Only go forward assuming this is the formula.
 			//~ if (
 				//~ o.formula != '59.87 * A * (1 + (B / 100))' && 
@@ -299,6 +306,8 @@ function MT__RUN() {
 						return;
 					}
 					var d = JSON.parse(rs);
+					d = d.transaction.meta.delivered_amount;
+					var fc = 1000000; // Must divide by six!
 					
 					//~ // etherscan.io
 					//~ if (o.u.indexOf('etherscan.io') != -1) {
@@ -379,7 +388,7 @@ function MT__RUN() {
 					}
 					// Calculate the factor.
 					// Then turn d into an integer.
-					var fc = 1;	// Factor to multiply by. Default=1.
+					//~ var fc = 1;	// Factor to multiply by. Default=1.
 					if (d.indexOf('.') != -1) { // Remove digit.
 						//
 						console.log('Converting d:'+d);
@@ -397,11 +406,14 @@ function MT__RUN() {
 					// Now parse int...
 					d = parseInt(d);
 					// Some debugs...
-						console.log(d);
-						console.log(o.valx * d); // Failed here in JS
-						console.log(1 + (o.valb / 100));
+						//~ console.log(d);
+						//~ console.log(o.valx * d); // Failed here in JS
+						//~ console.log(1 + (o.valb / 100));
+					
+					// 0.264 * (A - 20) * (1 + (B / 100))
 					// fc *= 100.
-					fc = fc*100;			// Add two 0s for o.valx(eg 429.29 or eg 59.87)
+					d -= 20*1000000;
+					fc = fc*1000;			// Add three 0s for o.valx(eg 429.29 or eg 59.87)
 					d = o.valx * d;
 					// fc *= 100.
 					fc = fc*100;			// Add two 0s for 1+(o.valb/100)
@@ -413,8 +425,8 @@ function MT__RUN() {
 					// Now.
 					// Let's auto if JS matches what we have done manually.
 					// Otherwise let's inspect it.
-					var x = o.valx_original * original_d * (1 + (o.valb / 100));
-					document.body.appendChild(('Calculation is:\n'+(o.valx_original+'*'+original_d+'*'+'(1 + ('+o.valb+' / 100))')).div());
+					var x = o.valx_original * ((original_d/1000000)-20) * (1 + (o.valb / 100));
+					document.body.appendChild(('Calculation is:\n'+(o.valx_original+'*('+(original_d/1000000)+'-20)*'+'(1 + ('+o.valb+' / 100))')).div());
 					if (x == o.q[0].value) {
 						AMT___recordAndSubmit();
 					} else {
