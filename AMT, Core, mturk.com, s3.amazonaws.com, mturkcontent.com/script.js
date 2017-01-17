@@ -131804,31 +131804,55 @@ qatar,80
 			var td = document.getElementsByTagName('td');
 			var o = {
 				comp: td[1].innerText.trim().string_to_mixed_case(), // Mixed case here :)
-				addr: td[3].innerText.trim(),
-				phone: td[5].innerText.trim(),
+				addr: td[3] ? td[3].innerText.trim() : null,
+				phone: td[5] ? td[5].innerText.trim() : null,
 				boldArray: [],
 				boldArray2: [],
 				boldArray3: [],
+				searches: [], // fill
 				q: [
 					document.getElementById('web_url')
 				],
 			}
-			o.phone = o.phone.replace(/-/g,'');
-			if (o.phone.length == 11) {
-				var x = /(\d{2})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
-				if (x) {
-					o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
-				}
-			} else if (o.phone.length == 12) {
-				var x = /(\d{3})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
-				if (x) {
-					o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
-				}
-			}
 			o.boldArray = o.comp.clean_string_to_array();
-			o.boldArray2= o.addr.clean_string_to_array();
-			o.boldArray3= o.phone.clean_string_to_array();
-			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			if (o.addr != null) {
+				o.boldArray2= o.addr.clean_string_to_array();
+			}
+			if (o.phone != null) {
+				o.phone = o.phone.replace(/-/g,'');
+				if (o.phone.length == 11) {
+					var x = /(\d{2})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
+					if (x) {
+						o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
+					}
+				} else if (o.phone.length == 12) {
+					var x = /(\d{3})(\d{3})(\d{3})(\d{3})/.exec(o.phone)
+					if (x) {
+						o.phone = x[1] + ' ' + x[2] + ' ' + x[3] + ' ' + x[4];
+					}
+				}
+				o.boldArray3= o.phone.clean_string_to_array();
+			}
+			////
+			// o.spaced
+			////
+			if (o.comp.indexOf(' ') != -1)
+				o.spaced = '"' + o.comp.split(' ').join('" "') + '"';
+			else
+				o.spaced = '"'+o.comp+'" +company';
+			if (o.phone != null && o.addr != null) {
+				o.searches = [
+					o.comp,
+					o.comp +' '+ o.addr,
+					(o.phone != '' ? '"'+o.phone+'"' : o.spaced+o.addr), // Just phone if available
+				];
+			} else {
+				o.searches = [
+					o.comp,
+					o.comp+' +company',
+					o.spaced,
+				];
+			}
 			console.log(o);
 			AMT___addUserDecision(
 				'Sherry Gould', function() {
@@ -131855,11 +131879,7 @@ qatar,80
 			// create_dashboard_find_url
 			AMT___items_factory.prototype.create_dashboard_find_url({
 				//~ bold_array: o.boldArray,
-				searches:[
-					o.comp,
-					o.comp +' '+ o.addr,
-					(o.phone != '' ? '"'+o.phone+'"' : o.spaced+o.addr), // Just phone if available
-				],
+				searches:o.searches,
 				search_results: {
 					//~ use_domain_only: true,
 					bold: {
