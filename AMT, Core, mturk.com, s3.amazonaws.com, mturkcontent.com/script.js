@@ -131836,10 +131836,11 @@ qatar,80
 			////
 			// o.spaced
 			////
+			var ex = ' (cosmetics OR beauty)';
 			if (o.comp.indexOf(' ') != -1)
-				o.spaced = '"' + o.comp.split(' ').join('" "') + '"';
+				o.spaced = '"' + o.comp.split(' ').join('" "') +'"'+ ex;
 			else
-				o.spaced = '"'+o.comp+'" cosmetics'; //hrm?
+				o.spaced = '"'+o.comp+'"' + ex; //hrm?
 			if (o.phone != null && o.addr != null) {
 				o.searches = [
 					o.comp,
