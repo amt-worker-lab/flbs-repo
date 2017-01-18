@@ -131817,6 +131817,8 @@ qatar,80
 			// Clean the names. Their source data is off.
 			// The source data includes html entities, eg &amp;.
 			o.comp = __js_clean_html_str(o.comp);
+			o.comp = o.comp.replace(/[\(\)]/g, '').trim(); // remove ()
+			o.comp = o.comp.replace(/\s+/g, ' '); // remove ()
 			// ...
 			o.boldArray = o.comp.clean_string_to_array();
 			if (o.addr != null) {
@@ -131854,7 +131856,7 @@ qatar,80
 			} else {
 				o.searches = [
 					o.comp,
-					o.comp+' +company',
+					o.comp+' (company OR product)',
 					o.spaced,
 				];
 			}
