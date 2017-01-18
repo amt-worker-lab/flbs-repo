@@ -131814,6 +131814,10 @@ qatar,80
 					document.getElementById('web_url')
 				],
 			}
+			// Clean the names. Their source data is off.
+			// The source data includes html entities, eg &amp;.
+			o.comp = __js_clean_html_str(o.comp);
+			// ...
 			o.boldArray = o.comp.clean_string_to_array();
 			if (o.addr != null) {
 				o.boldArray2= o.addr.clean_string_to_array();
