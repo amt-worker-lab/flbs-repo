@@ -131839,7 +131839,7 @@ qatar,80
 			if (o.comp.indexOf(' ') != -1)
 				o.spaced = '"' + o.comp.split(' ').join('" "') + '"';
 			else
-				o.spaced = '"'+o.comp+'" +company';
+				o.spaced = '"'+o.comp+'" cosmetics'; //hrm?
 			if (o.phone != null && o.addr != null) {
 				o.searches = [
 					o.comp,
