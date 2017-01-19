@@ -2139,15 +2139,13 @@ String.prototype.stateAbbrToFull = function() {
 	//~ return str.toUpperCase();
 }
 String.prototype.state_full_to_abbr = function() {
-	
 	str = this.toString().toLowerCase().trim();
-	
+	// Loop MT___states
 	for (var i in MT___states) {
 		if (MT___states[i].toLowerCase() == str) {
 			return i;
 		}
 	}
-	
 	// None found?
 	// Returns upper!
 	return str.toUpperCase();

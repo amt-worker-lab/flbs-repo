@@ -3416,11 +3416,6 @@ Laurens Hammond, Chicago, Ill.**/
 				o.u1 = found;
 			else {
 				o.u1 = x.join(' ');
-				//~ o.u1 = o.u1.replace(/My Media Mall/gi, '');	// fluff
-				//~ o.u1 = o.u1.replace(/infonet/gi, '');		// fluff
-				//~ o.u1 = o.u1.replace(/eBranch2Go/gi, '');	// fluff
-				//~ o.u1 = o.u1.replace(/elibrary/gi, '');	// fluff
-				//~ o.u1 = o.u1.replace(/library/gi, '');
 				o.u1 = o.u1.replace(/\s+/gi, ' ');
 				o.u1 = o.u1.trim();
 			}
@@ -3522,12 +3517,26 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 					// State fill...
+					// state_full_to_abbr
 					if (opts.o.final_location.state != null &&
 						opts.o.final_location.state.trim() != '') {
 						o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
 					}
+					// Verify correct state.
+					// Either of two things must be present.
+					// 1) API returns a state abbreviation which matches the currently selected value of BranchRegion input.
+					// 2) API returns a full state which matches the innerText of the option that is currently selected for BranchRegion input.
+					var n = document.getElementById('BranchRegion').options[document.getElementById('BranchRegion').selectedIndex].innerText;
+					if (n != opts.o.final_location.state && opts.o.final_location.state != document.getElementById('BranchRegion').value) {
+						alert('Validate State!');
+						o.q[3].style.border = '4px solid blue';
+					}
 					// o.q[4].value
-					o.q[4].value = o.q[4].value.substr(0,5);// Index, howmany
+					if (!/^[A-Z0-9]{3} ?[A-Z0-9]{3}$/.exec(o.q[4].value)) {
+						alert('Validate Zip Code!');
+						o.q[4].style.border = '4px solid blue';
+					}
+					//~ o.q[4].value = o.q[4].value.substr(0,6);// Index, howmany
 					// Alert blank...
 					for (var i in o.q) {
 						if (i!=1 && o.q[i].value.trim() == '') {
@@ -3756,7 +3765,11 @@ Laurens Hammond, Chicago, Ill.**/
 						o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
 					}
 					// o.q[4].value
-					o.q[4].value = o.q[4].value.substr(0,5);// Index, howmany
+					//~ o.q[4].value = o.q[4].value.substr(0,5);// Index, howmany
+					if (o.q[4].value.length != 5) {
+						alert('Check Zip Code length!');
+						o.q[4].style.border = '4px solid blue';
+					}
 					// Alert blank...
 					for (var i in o.q) {
 						if (i!=1 && o.q[i].value.trim() == '') {
