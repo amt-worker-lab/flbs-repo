@@ -3526,10 +3526,15 @@ Laurens Hammond, Chicago, Ill.**/
 					// Either of two things must be present.
 					// 1) API returns a state abbreviation which matches the currently selected value of BranchRegion input.
 					// 2) API returns a full state which matches the innerText of the option that is currently selected for BranchRegion input.
-					var n = document.getElementById('BranchRegion').options[document.getElementById('BranchRegion').selectedIndex].innerText;
-					if (n != opts.o.final_location.state && opts.o.final_location.state != document.getElementById('BranchRegion').value) {
+					if (document.getElementById('BranchRegion').selectedIndex == -1 || document.getElementById('BranchRegion').value == '') {
 						alert('Validate State!');
 						o.q[3].style.border = '4px solid blue';
+					} else {
+						var n = document.getElementById('BranchRegion').options[document.getElementById('BranchRegion').selectedIndex].innerText;
+						if (n != opts.o.final_location.state && opts.o.final_location.state != document.getElementById('BranchRegion').value) {
+							alert('Validate State!');
+							o.q[3].style.border = '4px solid blue';
+						}
 					}
 					// o.q[4].value
 					if (!/^[A-Z0-9]{3} ?[A-Z0-9]{3}$/.exec(o.q[4].value)) {
