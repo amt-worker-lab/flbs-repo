@@ -184310,6 +184310,8 @@ qatar,80
 						for (i in rs) {
 							// Set found = false
 							found = false;
+							// debug
+							console.log(rs[i][0]);
 							// SOLD
 							if (rs[i][0] == 'sold') {
 								// HAS TO BE YEAR + Annual|Scavenger
@@ -184433,7 +184435,7 @@ qatar,80
 										// Use this way now...
 										document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
 										// Debug mode.
-										alert('Tested sold additional. Comment out.');
+										alert('Passing test: Sold additional.');
 										return;
 										/////
 										// Old way. Approx 2015-2016
@@ -184451,57 +184453,59 @@ qatar,80
 								document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = rs[i][1].total_delinquent1;
 								document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = rs[i][1].total_delinquent2;
 								// Integrity check
+								// Input type=number. It must be valid!
 								if (
-									!/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value) ||
-									!/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value)
-									{
+									!document.getElementsByName('Delinquent 6 - 1st INST Total')[0].validity ||
+									!document.getElementsByName('Delinquent 6 - 1st INST Total')[0].validity.valid ||
+									!document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].validity ||
+									!document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].validity.valid
+								) {
 									alert('Check: Bad del. totals? Stopping here.');
 									return;
 								}
+								//~ if (
+									//~ !/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value) ||
+									//~ !/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value)
+									//~ ) {
+								//~ }
 							}
 							else {
 								alert('Check: Bad type returned! Stopping here.');
 								return;
 							}
 						}
-						
-						//show
+						// Show
 						if (d2.value != '') {
 							d2.style.display = 'block';
 						}
-						
-						// auto sumbit
-						var blank = true;
-						var x = document.getElementsByTagName('input');
-						for (var i in x) {
-							if (x[i].type == 'text' && x[i].value != '') {
-								blank = false;
-								break;
-							}
-						}
-						if (!blank && sbm) {
+						// Auto sumbit
+						var allblanks = false;// OVERRIDE
+						//~ var allblanks = true;
+						//~ var x = document.getElementsByTagName('input');
+						//~ for (var i in x) {
+							//~ if (x[i].type == 'text' && x[i].value != '') {
+								//~ allblanks = false;
+								//~ console.log(blank);
+								//~ console.log(x[i]);
+								//~ console.log(x[i].value);
+								//~ console.log(x[i].type);
+								//~ break;
+							//~ }
+						//~ }
+						if (!allblanks && sbm) {
 							console.log('SUBMIT');
-							
-		
 							document.body.style.backgroundColor = "lightgreen";
-
-							
-							doSubmit();
-							
+							//~ doSubmit();
 							// DEBUG OVERFLOW GOES HERE
 							//~ if (document.getElementsByName('1 - Other Years')[0].value == '')
 							//~ {
 								//~ doSubmit();
 							//~ }
-						} else if (blank && !found) { // none in 2007-2011
-							
+						} else if (allblanks && !found) { // none in 2007-2011
 							// add in all of the "invalid"
 							// no valid years
 							//~ document.getElementsByName('41 - Other Years')[0].value = 'No valid years for this tax PIN.';
 							//~ document.getElementsByName('41 - Other Years')[0].focus();
-							
-							
-							
 							//~ document.getElementsByName('37 - Comments')[0].value = 'No valid years for this tax PIN.';
 							//~ document.getElementsByName('21 - Comments')[0].value = 'No valid years for this tax PIN.';
 							//doSubmit();
@@ -184509,7 +184513,8 @@ qatar,80
 							//
 						}
 						console.log(found);
-						console.log(blank);
+						console.log(allblanks);
+						console.log(sbm);
 					}
 				}
 			}

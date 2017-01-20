@@ -1855,15 +1855,22 @@ function load()
 				}
 				// A totals field is required!
 				// Alert if missing!
-				// 1st capture: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalFirstInstallment
-				// 2nd capture: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalSecondInstallment
-				// 3rd: $66.20|blank
+				// 1st: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalFirstInstallment
+				// 2nd: $66.20|blank
+				// 3rd: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalSecondInstallment
 				// 4th: $43.20|blank
-				var r = /<tr[^>]*>[\r\n\t\s]+<td[^>]*>Total <br \/> Tax Balance <br \/>Due\*<\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<\/tr>/;
+				var r = /<tr[^>]*>[\r\n\t\s]+<td[^>]*>Total <br[^>]*> Tax Balance <br[^>]*>Due\*<\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d,\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d,\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<\/tr>/;
 				//
 				r = r.exec(ih);
 				if (!r) {
 					alert('Check Source: Has Delinquent but missing Total!');
+					return;
+				}
+				if (
+					r[1].indexOf('TotalFirstInstallment') == -1 ||
+					r[3].indexOf('TotalSecondInstallment') == -1
+					) {
+					alert('Check Source: Delinquent ID mismatch!?');
 					return;
 				}
 				// Add a totals field.
@@ -1872,8 +1879,8 @@ function load()
 				arr.push([
 					'delinquent-totals',
 					{
-						total_delinquent1: r[3].replace('$', ''),
-						total_delinquent2: r[4].replace('$', ''),
+						total_delinquent1: r[2].replace(/[,\$]/g, ''),
+						total_delinquent2: r[4].replace(/[,\$]/g, ''),
 					}
 				]);
 			}
