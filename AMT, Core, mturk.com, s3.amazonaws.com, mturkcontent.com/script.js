@@ -184203,12 +184203,22 @@ qatar,80
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 			GM_addStyle('body {width:40%;margin-top:20px;}');
 			GM_addStyle('.highlight-box {position:absolute;top:800px;width:40%;left:0;}');
-			GM_addStyle('#submitButton {position:absolute;top:0px;left:0;}');
+			GM_addStyle('#submitButton {position:absolute;top:0px;left:0;width:60px;height:60px;}');
 			// 
 			var b = document.getElementsByTagName('b')[0].innerText;
 			b = b.replace(/^PIN: /, '');
 			// Iframe
 			var d1;
+			// Add a dosubmit button.
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.setAttribute('style', 'position:absolute;top:0px;left:60px;width:120px;height:60px;');
+			document.body.appendChild(d3);
+			d3.value = 'doSubmit()';
+			d3.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				doSubmit();
+			}
 			// Textarea
 			var d=document.createElement('textarea');
 			d.setAttribute('id','d2');
@@ -184408,12 +184418,14 @@ qatar,80
 										if (j == 'length') break;
 										if (!x[j].innerHTML) continue;
 										
-										if (x[j].innerHTML.indexOf('name="Delinquent ') != -1 && !x[j].isSelected) {
-											
+										if (x[j].innerHTML.indexOf('name="Delinquent ') != -1 &&
+											x[j].innerHTML.indexOf('Forfeited') != -1 &&
+											!x[j].isSelected) {
+											// Set isSelected
 											x[j].isSelected = true;
-											
+											// Set found
 											found = true;
-										
+											// Select field
 											y = x[j].getElementsByTagName('select')[0];
 											if (rs[i][2] == 'Open')
 												y.selectedIndex = 1;
@@ -184425,8 +184437,8 @@ qatar,80
 											y = x[j].getElementsByTagName('input');
 											y[0].value = year;							// Tax year
 											y[1].value = rs[i][3];						// Forfeit data
-											y[2].value = rs[i][4].replace(/^\$/,'');	// 1st installment
-											y[3].value = rs[i][5].replace(/^\$/,'');	// 2nd installment
+											y[2].value = rs[i][4].replace(/[\$,]/g,'');	// 1st installment
+											y[3].value = rs[i][5].replace(/[\$,]/g,'');	// 2nd installment
 											break;
 										}
 									}
@@ -184434,9 +184446,9 @@ qatar,80
 										rs[i].shift();
 										// Use this way now...
 										document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
-										// Debug mode.
-										alert('Passing test: Sold additional.');
-										return;
+										//~ // Debug mode.
+											//~ alert('Passing test: Sold additional.');
+											//~ return;
 										/////
 										// Old way. Approx 2015-2016
 										/////
@@ -184450,8 +184462,8 @@ qatar,80
 								}
 							}
 							else if (rs[i][0] == 'delinquent-totals') {
-								document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = rs[i][1].total_delinquent1;
-								document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = rs[i][1].total_delinquent2;
+								document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = rs[i][1].total_delinquent1.replace(/[\$,]/g,'');
+								document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = rs[i][1].total_delinquent2.replace(/[\$,]/g,'');
 								// Integrity check
 								// Input type=number. It must be valid!
 								if (
