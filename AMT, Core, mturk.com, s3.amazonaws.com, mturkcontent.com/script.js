@@ -184296,7 +184296,7 @@ qatar,80
 						doSubmit(); // comment to debug
 					}
 					else if (rs.indexOf('[') == 0)
-					{	
+					{
 						rs = JSON.parse(rs); // array of arrays
 						console.log(rs);
 						// Vars
@@ -184308,12 +184308,10 @@ qatar,80
 						var sbm = true;
 						// Loop through entries
 						for (i in rs) {
-							
+							// Set found = false
 							found = false;
-							
 							// SOLD
 							if (rs[i][0] == 'sold') {
-							
 								// HAS TO BE YEAR + Annual|Scavenger
 								
 								// 2010 Special Assessment
@@ -184321,18 +184319,13 @@ qatar,80
 								// 2010 Annual Sale
 								// 2010 Scavenger Sale
 								var x = /^(\d+)( Annual Sale| Scavenger Sale| Special Assessment|)$/.exec(rs[i][1]);
-								
 								if (!x) {
 									document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
 									d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
 									continue;
 								}
-								
 								var year = x[1];
 								var type_sale = (x[2] == ' Annual Sale' || x[2] == ' Scavenger Sale') ? x[2] : '';
-									
-								//~ var year = r[1];
-								//~ var type_sale = r[2];
 								
 								//non-static
 								x = document.getElementsByTagName('tr');
@@ -184379,35 +184372,36 @@ qatar,80
 										// STOP HERE!
 										break;
 									}
-									
 								}
 								if (!found) {
 									rs[i].shift();
-									document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
-									d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
+									// Use this way.
+									document.getElementsByName('Sold - Additional Years')[0].checked = true;
+									// Debug mode.
+									alert('Tested sold additional. Comment out.');
+									return;
+									////////////////
+									// Old way, Approx. 2015-2016
+									////////////////
+									//~ document.getElementsByName('1 - Other Years')[0].value += 'Sold Taxes - '+rs[i].join(" ") + ' ';
+									//~ d2.value += 'Sold Taxes - '+rs[i].join(' ') + "\n";
 								}
 							}
-							
+							//////////////////////////////
 							// DELINQUENT
-							// Jan. 23, 2014: "Ignore results in the Delinquent table"
+							// Old notes: Jan. 23, 2014: "Ignore results in the Delinquent table"
+							//////////////////////////////
 							else if (rs[i][0] == 'delinquent') {
-								
 								// Jan. 23, 2014
 								//~ continue;
-								
+								// ...
 								//
 								var year = /(\d+)/.exec(rs[i][1]);
-								//r = /^(\d+)$/.exec(rs[i][0]);
-								
 								if (year) {
 									year = year[1];
-									
-									//non-static
+									// Non-static method.
 									x = document.getElementsByTagName('tr');
-									
-									// ...
-									//~ found = false;
-									
+									// Find an open row and input the data into in.
 									for (j in x) {
 										if (j == 'length') break;
 										if (!x[j].innerHTML) continue;
@@ -184427,22 +184421,47 @@ qatar,80
 												pause = true;
 												
 											y = x[j].getElementsByTagName('input');
-											y[0].value = year;
-											y[1].value = rs[i][3];
-											y[2].value = rs[i][4].replace(/^\$/,''); //$
-											y[3].value = rs[i][5].replace(/^\$/,''); //$
-											
+											y[0].value = year;							// Tax year
+											y[1].value = rs[i][3];						// Forfeit data
+											y[2].value = rs[i][4].replace(/^\$/,'');	// 1st installment
+											y[3].value = rs[i][5].replace(/^\$/,'');	// 2nd installment
 											break;
-											
 										}
 									}
 									if (!found) {
 										rs[i].shift();
-										document.getElementsByName('1 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
-										d2.value += 'Delinquent Taxes - '+rs[i].join(' ') + "\n";
+										// Use this way now...
+										document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
+										// Debug mode.
+										alert('Tested sold additional. Comment out.');
+										return;
+										/////
+										// Old way. Approx 2015-2016
+										/////
+										//document.getElementsByName('1 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
+										//d2.value += 'Delinquent Taxes - '+rs[i].join(' ') + "\n";
+										/////
+										// Old way. Approx 2014
+										/////
 										//~ document.getElementsByName('36 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
 									}
 								}
+							}
+							else if (rs[i][0] == 'delinquent-totals') {
+								document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value = rs[i][1].total_delinquent1;
+								document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value = rs[i][1].total_delinquent2;
+								// Integrity check
+								if (
+									!/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 1st INST Total')[0].value) ||
+									!/^[\d\.]+$/.exec(document.getElementsByName('Delinquent 6 - 2nd INST Total')[0].value)
+									{
+									alert('Check: Bad del. totals? Stopping here.');
+									return;
+								}
+							}
+							else {
+								alert('Check: Bad type returned! Stopping here.');
+								return;
 							}
 						}
 						

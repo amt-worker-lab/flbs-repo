@@ -1765,7 +1765,7 @@ function load()
 				}
 			}
 			
-			// save
+			// Save
 			var saveStr = false;
 			if (/No Sold or Delinquent Taxes for this PIN as of \d+\/\d+\/\d+/.exec(ih))
 			{
@@ -1788,31 +1788,16 @@ function load()
 				return;
 			}
 			
-			//~ else if (
-				//~ ih.indexOf('This is an invalid PIN for tax year 2010 or prior. Please check your property tax bill or your property deed to verify your PIN.') != -1
-				//~ )
-			//~ {
-				//~ // save
-				//~ GM_xmlhttpRequest({
-					//~ method: "GET",
-					//~ url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u='+encodeURIComponent(id)+'&v='+encodeURIComponent('This is an invalid PIN for year 2010 or Prior'),
-					//~ onload: function(response) {
-						//~ var rs=response.responseText;
-						//~ 
-					//~ }
-				//~ });
-				//~ return;
-			//~ }
-			
+			// ...
+			//
+			//
 			var arr = [];
 			var r2;
 
 			// sold
 			r = /<fieldset>[\r\n\t\s]+<h2>Sold Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
 			if (r) {
-				
 				r = r[1];
-				
 				r2= /<td class="row\d+" style="text-align:left;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ popup" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ statusdocumentnumber" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="[^"]+" {0,}>([^<]{0,})/g; // no last td
 				
 				if (r2.exec(r)) {
@@ -1841,17 +1826,23 @@ function load()
 							</td><td class="row2 warrantyear" style="text-align:center;">
 			 */
 			 
-			// delinquent
+			// Delinquent
 			r = /<fieldset>[\r\n\t\s]+<h2>Delinquent Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
 			if (r) {
-				
 				r = r[1];
-				
+				// 1=Year
+				// 2=Status
+				// 3=Forfeit date
+				// 4=1st install
+				// 5=2nd install
+				// 6=Type
+				// 7=Warrant year
 				r2 = /<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]{0,}<td class="row\d+ popup" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]{0,}<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]{0,}<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]{0,}<td class="row\d+" style="[^"]+" {0,}>([^<]{0,})<\/td>/g;
-				
 				if (r2.exec(r)) {
+					// Reset index
 					r2.lastIndex = 0;
 					var m;
+					// Loop
 					while (m = r2.exec(r)) {
 						console.log(m);
 						for (var i = 1; i < m.length; i++) {
@@ -1862,6 +1853,29 @@ function load()
 						arr.push(m);
 					}
 				}
+				// A totals field is required!
+				// Alert if missing!
+				// 1st capture: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalFirstInstallment
+				// 2nd capture: ctl00_ctl17_g_0686ce41_28c4_4973_9bc4_3fc9c61345ec_ctl00_rptTaxYears_ctl02_lblTotalSecondInstallment
+				// 3rd: $66.20|blank
+				// 4th: $43.20|blank
+				var r = /<tr[^>]*>[\r\n\t\s]+<td[^>]*>Total <br \/> Tax Balance <br \/>Due\*<\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><span id="([^"]+)">(\$[\d\.]+|)<\/span><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<td[^>]*><\/td>[\r\n\t\s]+<\/tr>/;
+				//
+				r = r.exec(ih);
+				if (!r) {
+					alert('Check Source: Has Delinquent but missing Total!');
+					return;
+				}
+				// Add a totals field.
+				// Array[0] = "delinquent-totals"
+				// Totals saved into an object.
+				arr.push([
+					'delinquent-totals',
+					{
+						total_delinquent1: r[3].replace('$', ''),
+						total_delinquent2: r[4].replace('$', ''),
+					}
+				]);
 			}
 			console.log('------SAVE ARRAY------');
 			console.log(arr);
@@ -1876,22 +1890,23 @@ function load()
 				});
 			}
 		}
-		/*
+		/**
 		 * Newline Financial
 		 * 
-		 */
+		 **/
 		// AUTO INIT
 		function auto_captcha_init(IMAGE_SRC, id) {
 			setInterval_manual(IMAGE_SRC);
-			
 			var IMAGE_SRC = IMAGE_SRC;
-			
 			console.log(IMAGE_SRC);
-			
 			var start = new Date().getTime();
 			var id = id;
-			
 			return;
+			// Ends here...
+			//
+			//
+			//
+			//
 			GM_xmlhttpRequest({
 				method: "GET",
 				url: MT___host + '/mturk/JordanAGross/JordanAGross.php?u_captcha_id='+encodeURIComponent(id)+'&u_captcha_src='+encodeURIComponent(IMAGE_SRC)+'&init',
