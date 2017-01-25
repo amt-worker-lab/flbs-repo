@@ -3375,7 +3375,8 @@ Laurens Hammond, Chicago, Ill.**/
 	//
 	//
 	s = '<p>Given this specific&nbsp;Canadian public library branch, find its physical address (street, city, province/territory, and postal code).</p>';
-	if (ih.indexOf(s) != -1) {
+	var s2 = '<p>Given this specific public library branch, find its physical address (street, city, province/territory, and postal code).</p>';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
@@ -3391,6 +3392,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var o = {
 				u1: td[1].innerText.trim(),
 				u2: td[3].innerText.trim(),
+				u3: (td[5] && td[5].innerText) ? td[5].innerText.trim() : '',
 				q: [
 					document.getElementById('BranchAddress1'),
 					document.getElementById('BranchAddress2'),
@@ -3419,9 +3421,18 @@ Laurens Hammond, Chicago, Ill.**/
 				o.u1 = o.u1.replace(/\s+/gi, ' ');
 				o.u1 = o.u1.trim();
 			}
+			// Get rid of library system.
+			// It is either o.u1 or o.u2.
+			// If o.u3 is not blank then lib system is o.u2.
+			// Otherwise it is o.u1.
+			if (o.u3 != '') {
+				o.u2 = '';
+			}
 			o.u2 = o.u2.replace(/library/gi, '');
-			o.u2 = o.u2.replace(/\s+/gi, ' ');
-			o.u2 = o.u2.trim() + ' Library';
+			o.u2 = o.u2.replace(/library/gi, '');
+			o.u3 = o.u3.replace(/library/gi, '');
+			o.u3 = o.u3.replace(/\s+/gi, ' ');
+			o.u3 = o.u3.trim() + ', Library';
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
@@ -3431,7 +3442,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var dx2 = document.createElement('textarea');
 			dx2.setAttribute('style','position:absolute;top:104px;left:20%;width:79%;height:40px;');
 			document.body.appendChild(dx2);
-			dx2.value = o.u1 + ', ' + o.u2;
+			dx2.value = o.u1 + ', ' + o.u2 +' '+ o.u3;
 			//~ // dummy inputs
 			//~ var d2a = document.createElement('input');
 			//~ d2a.setAttribute('style', 'position:absolute;top:1000px;');
