@@ -86052,24 +86052,13 @@ Laurens Hammond, Chicago, Ill.**/
 						if (a.is_closed === true) { // If is_closed !== false then is_closed == true
 							o.q[1].value = 'NA';
 							o.q[0].value = 'NA';
-							//~ try_sbm();
+							try_sbm();
 							return;
 						}
 						// Still here.
 						o.q[1].value = a.review_count;
 						o.q[0].value = a.rating;
 						try_sbm();
-						//~ var x = [];
-						//~ for (var i in a.categories) {
-							//~ x.push(a.categories[i][0]);
-						//~ }
-						//~ o.q[4].value = x.join(', ');
-							//o.q[5].value = x.join(', ');
-							//try_sbm();
-						// In order to get price range (q5) it is
-						// necessary to scrape the page!
-						//~ this.chk_url = 'https://www.yelp.com'+a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
-						//~ yp_profile(this);
 					}
 					d.onmouseover = d.onmousemove = function() {
 						var x = document.getElementsByClassName(this.className);
@@ -86229,7 +86218,7 @@ Laurens Hammond, Chicago, Ill.**/
 								if (a.is_closed === true) { // If is_closed !== false then is_closed == true
 									o.q[1].value = 'NA';
 									o.q[0].value = 'NA';
-									//~ try_sbm();
+									try_sbm();
 									return;
 								}
 								// Still here.
@@ -86719,6 +86708,16 @@ Laurens Hammond, Chicago, Ill.**/
 						new AMT___core_factory().nextTab();
 						// Fill in details
 						var a = this.api_response;
+						if (a.is_closed === true) {
+							o.q[0].value = 'Y';
+							o.q[1].value = 'NA';
+							o.q[2].value = 'NA';
+							o.q[3].value = 'NA';
+							o.q[4].value = 'NA';
+							o.q[5].value = 'NA';
+							try_sbm();
+							return;
+						}
 						o.q[0].value = a.is_closed === false ? 'N' : 'Y'; // If is_closed !== false then is_closed == true
 						o.q[1].value = a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
 						o.q[2].value = a.review_count;
@@ -86871,7 +86870,8 @@ Laurens Hammond, Chicago, Ill.**/
 							d.api_response = {
 								url: u.getAttribute('href'),
 								review_count: rvct,
-								rating: rtg
+								rating: rtg,
+								is_closed: (u.innerText.indexOf('CLOSED') != -1) ? true : false, // If name contains CLOSED then is_closed=true, else is_closed=false.
 							}
 							out.appendChild(d);
 							d.innerHTML =
@@ -86890,6 +86890,16 @@ Laurens Hammond, Chicago, Ill.**/
 								new AMT___core_factory().nextTab();
 								// Fill in details
 								var a = this.api_response;
+								if (a.is_closed === true) { // If is_closed !== false then is_closed == true
+									o.q[0].value = 'Y';
+									o.q[1].value = 'NA';
+									o.q[2].value = 'NA';
+									o.q[3].value = 'NA';
+									o.q[4].value = 'NA';
+									o.q[5].value = 'NA';
+									try_sbm();
+									return;
+								}
 								o.q[1].value = 'https://www.yelp.com'+a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
 								o.q[2].value = a.review_count;
 								o.q[3].value = a.rating;

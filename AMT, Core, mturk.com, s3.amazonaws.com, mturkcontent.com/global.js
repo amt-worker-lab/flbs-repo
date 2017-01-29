@@ -573,8 +573,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// Therefore do not run on global.js by filter by id.
 	// That is, if id == "epflnpjnljncblipaikibpjhobgkfmoh"
 	if(request.checkNTPassBy) {
-		console.log('recieved NTPassBy Check msg');
-		console.log('==============');
+		// Turning off debug
+		// console.log('recieved NTPassBy Check msg');
+		// console.log('==============');
 		if (chrome.runtime.id == 'epflnpjnljncblipaikibpjhobgkfmoh') {
 			console.log('chrome.runtime.id == epflnpjnljncblipaikibpjhobgkfmoh. Exiting!');
 			return;
@@ -606,9 +607,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 					}
 				}
 				else { //jump away
-					console.log("ENABLE_TABES_Q JUMPING AWAY");
-					console.log("Value of isQProduct: " + AMT__Global_Vars.isQProduct );
-
+					// Turning off debug
+					// console.log("ENABLE_TABES_Q JUMPING AWAY");
+					// console.log("Value of isQProduct: " + AMT__Global_Vars.isQProduct );
 					window.setTimeout(function() {
 						AMT__Global_Vars.numSubmitQueries++;
 						new AMT___core_factory().nextTab();
