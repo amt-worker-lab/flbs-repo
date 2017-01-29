@@ -85663,6 +85663,650 @@ Laurens Hammond, Chicago, Ill.**/
 	 */
 	// Becky ""
 	// Brendan ""
+	// TODO: SEE NEXT Brendan...
+	// Note: This is same as previous but with only two fields.
+	// 
+	var s = '<li>Enter the&nbsp;<strong>number of yelp reviews</strong>&nbsp;correlated to the restaurant.</li>\n	<li><b>For restaurants that are out of business, type \'N/A\'</b></li>';
+	if  (
+		ih.indexOf(s) != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,table,thead,tbody,tr,th,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('#submitButton {width:10%;}');
+			GM_addStyle('.exe:hover {background-color:aqua;cursor:pointer;}');
+			GM_addStyle('em {font-weight:bold;zoom:2;}');
+			GM_addStyle('#mturk_form {zoom:0.6;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;width:60% !important;margin-left:0% !important;margin-top:1000px !important;}');
+			GM_addStyle('.panel {position:absolute;top:2000px;}');
+			//
+			var td = document.getElementsByTagName('td');
+			var o = { // 
+				comp: td[3].innerText.trim().replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
+				addr: td[5].innerText.trim() + ',' + td[7].innerText.trim(),
+				state_abbr: td[9].innerText.trim(),
+				//~ q: document.getElementById('open_date'),
+				
+				bold_addr: [],
+				bold_comp: [],
+				
+				// For auto
+				comp_cln: null,
+				addr_cln: null,
+				
+				q: [
+					document.getElementsByName('yelpstars')[0],
+					document.getElementsByName('yelpreviews')[0],
+				]
+			}
+			// Add to o.addr
+			if (o.addr.indexOf(td[7].innerText.trim()) == -1) {
+				o.addr += ', ' + td[7].innerText.trim();
+			}
+			if (o.addr.indexOf(td[9].innerText.trim()) == -1) {
+				o.addr += ', ' + td[9].innerText.trim();
+			}
+			if (o.addr.indexOf(td[11].innerText.trim()) == -1) {
+				o.addr += ', ' + td[11].innerText.trim();
+			}
+			//
+			for (var i in o.q) {
+				o.q[i].value = '';
+			}
+			o.comp = o.comp.replace(/&/g, 'and'); // Try this to improve yield...
+			//
+			o.bold_addr = o.addr.clean_string_to_array();
+			o.bold_comp = o.comp.clean_string_to_array();
+			//
+			o.addr_cln = o.addr.toLowerCase().replace(/[, ]*(usa|us)$/, '').replace(/[^a-z0-9]/gi, '').replace(/\d{5}$/, ''); // Remove zip
+			o.comp_cln = o.comp.toLowerCase().replace(/[^a-z0-9]/gi, '');
+			/*BEGIN ITEMS*/
+			var d1 = document.createElement('div');
+			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
+			document.body.appendChild(d1);
+			var d1b = document.createElement('div');
+			d1b.setAttribute('style','position:absolute;top:98px;left:50%;width:49%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			document.body.appendChild(d1b);
+			//~ var d1c = document.createElement('div'); // D1c is for address with no name! (the far right column)
+			//~ d1c.setAttribute('style','position:absolute;top:98px;left:66%;width:33%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');// Hide with display:none, temp override
+			//~ document.body.appendChild(d1c);
+			var d2  = document.createElement('textarea');
+			d2.setAttribute('style','position:absolute;top:0px;left:0px;width:60%;height:30px;font-size:16px !important;');
+			document.body.appendChild(d2);
+			var d2b = document.createElement('textarea');
+			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:60%;height:30px;');
+			document.body.appendChild(d2b);
+			var d2c  = document.createElement('textarea');
+			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
+			d2c.disabled = true; // Disable
+			document.body.appendChild(d2c);
+			var d3b = document.createElement('input');
+			d3b.setAttribute('style','position:absolute;top:64px;left:0px;width:50%;height:30px;');
+			document.body.appendChild(d3b);
+			d3b.value = 'NA';
+			d3b.type = 'button';
+			/*END ITEMS*/
+			
+			AMT___addUserDecision(
+				'Becky,YelpScrape,Jan.5,2016',
+				function() {
+					return o.comp+'|'+o.addr;
+				},
+				['Name(yelpstars)[0]',
+				 'Name(yelpreviews)[0]',
+				]
+			);
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1, d1b//, d1c
+				],
+				offset: 98 // offset top
+			});
+			//
+			d2.value  = o.comp;
+			d2b.value = o.addr;
+			d2c.value = o.comp; // Original name
+			//
+			d2.onblur = d2b.onblur = function() {
+				yelp();
+				//~ new AMT___core_factory().nextTab();
+				//~ yelp_search_snippet();
+			}
+			// NA
+			d3b.onclick = function() {
+				this.style.backgroundColor = 'LightGreen';
+				o.q[0].value = 'Y';
+				for (var i=1; i<=5; i++) {
+					o.q[i].value = 'NA';
+				}
+				AMT___recordAndSubmit();
+			}
+			//
+			var ef = new AMT___events_factory();
+			d2. addEventListener('keydown', ef.keydown__blur_field, true);
+			d2b.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2, d2b],
+				blur_element: true
+			});
+			// submitButton
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				for (var i in o.q) {
+					o.q[i].value = o.q[i].value.trim();
+					if (o.q[i].value == '') {
+						return false;
+					}
+				}
+				document.body.style.backgroundColor = 'LightGreen';
+				doSubmit();
+				return false;
+			}
+			// Init
+			yelp();
+			
+			/**
+			 * try_sbm
+			 */
+			function try_sbm() {
+				if (o.q[0].value == 'Y') {
+					o.q[1].value = 'NA';
+					o.q[2].value = 'NA';
+					o.q[3].value = 'NA';
+					o.q[4].value = 'NA';
+					o.q[5].value = 'NA';
+					AMT___recordAndSubmit();
+					return false;
+				} else if (o.q[0].value != 'N' && o.q[0].value != 'NA') {
+					return false;
+				}
+				if (!/^https:\/\/www\.yelp\.com[\d\D]+/.exec(o.q[1].value) && o.q[1].value != 'NA') {
+					return false;
+				}
+				if (!/^\d+$/.exec(o.q[2].value) && o.q[2].value != 'NA') {
+					return false;
+				}
+				if (!/^\d+\.*\d*$/.exec(o.q[3].value) && o.q[3].value != 'NA') {
+					return false;
+				}
+				if (o.q[4].value == '') {
+					return false;
+				}
+				if (!/^\$+$/.exec(o.q[5].value) && o.q[5].value != 'NA') {
+					return false;
+				}
+				// Still here?
+				AMT___recordAndSubmit();
+			}
+			/**
+			 * function yelp
+			 *
+			 * e.g. http://api.yelp.com/v2/search/?term=home depot&location=San Francisco, CA&limit=10&radius_filter=30000
+			 * TODO: Error message for 25,000 API limit?
+			 */
+			function yelp() {
+				 var auth = {
+					consumer_API_KEY_REDACTED_,
+					consumer_API_KEY_REDACTED_,
+					access_API_KEY_REDACTED_,
+					accessToken_API_KEY_REDACTED_,
+					serviceProvider : {
+						signatureMethod : "HMAC-SHA1"
+					}
+				};
+				var terms = d2.value;
+				var near = d2b.value;//'San+Francisco';
+				var accessor = {
+					consumerSecret : auth.consumerSecret,
+					tokenSecret : auth.accessTokenSecret
+				};
+				parameters = [];
+				parameters.push(['term', terms]);
+				parameters.push(['location', near]);
+				parameters.push(['oauth_consumer_key', auth.consumerKey]);
+				parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+				parameters.push(['oauth_token', auth.accessToken]);
+				parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+				var message = {
+					'action' : 'http://api.yelp.com/v2/search',
+					'method' : 'GET',
+					'parameters' : parameters
+				};
+				OAuth.setTimestampAndNonce(message);
+				OAuth.SignatureMethod.sign(message, accessor);
+				var parameterMap = OAuth.getParameterMap(message.parameters);
+				var p = [];
+				for (var i in parameterMap) {
+					p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+				}
+				p = '?' + p.join('&');
+				
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'http://api.yelp.com/v2/search' + p,
+					filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search|' + d2.value + '|' + d2b.value), // Static file name
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						yelp_success(options.response, d1);
+					}
+				});
+				
+				// If d2.value != "" (blank) then 
+				// run a search with the address
+				// only!
+				if (d2.value != '' && 0 == 1) {
+					var terms = '';
+					var near = d2b.value;//'San+Francisco';
+					var accessor = {
+						consumerSecret : auth.consumerSecret,
+						tokenSecret : auth.accessTokenSecret
+					};
+					parameters = [];
+					parameters.push(['term', terms]);
+					parameters.push(['location', near]);
+					parameters.push(['oauth_consumer_key', auth.consumerKey]);
+					parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+					parameters.push(['oauth_token', auth.accessToken]);
+					parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+					var message = {
+						'action' : 'http://api.yelp.com/v2/search',
+						'method' : 'GET',
+						'parameters' : parameters
+					};
+					OAuth.setTimestampAndNonce(message);
+					OAuth.SignatureMethod.sign(message, accessor);
+					var parameterMap = OAuth.getParameterMap(message.parameters);
+					var p = [];
+					for (var i in parameterMap) {
+						p.push(i + '=' + encodeURIComponent(parameterMap[i]));
+					}
+					p = '?' + p.join('&');
+					new AMT___requests_factory().xhr_with_disk_cache({
+						URL: 'http://api.yelp.com/v2/search' + p,
+						filename: new AMT___requests_factory().md5('http://api.yelp.com/v2/search||' + d2b.value), // Static file name
+						check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+							var rs = options.response.responseText;
+							if  (
+								rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+								rs.indexOf('"text": "Signature was invalid"') != -1
+								)
+							{
+								d1c.style.backgroundColor = 'yellow';
+								return false;
+							}
+							else
+								return true;
+						},
+						success_callback: function(options) {
+							var rs = options.response.responseText;
+							yelp_success(options.response, d1c);
+						}
+					});
+				}
+			}
+			function yelp_success(response, div) {
+				var rs = response.responseText;
+				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
+				div.innerText = '';
+				if (!rs.businesses || rs.businesses.length == 0) {
+					div.innerText += '0 results\n';
+					// DO RIGHT
+					yelp_search_snippet();
+					return;
+				}
+					//d1b.innerText = '--';
+				var b = rs.businesses;
+				var auto_found = false;
+				var found_close_enough_street = false;
+				new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
+				for (var i in b) {
+					// AUTO + CLEAN
+					b[i].name = yelp_clean_name(b[i].name);
+					var fmt_address = '';
+					var fmt_address_match = '';
+					if (b[i].location && b[i].location.display_address && b[i].location.display_address.length) {
+						var l = b[i].location.display_address; // []
+						if (l.length == 3) { // REMOVE "NEIGHBORHOOD" as this is typically just the city repeated, or is at best unnecessary info.
+							l.splice(1, 1); // REMOVES array item #2 ([1,2,3])
+						}
+						var lfmt = [];
+						for (var j in l) {
+							lfmt.push(
+								MT__bold(l[j], o.bold_addr, {style: 'color:blue;text-decoration:none;'}).bold_string
+							);
+							fmt_address_match += l[j];
+							// Old
+							//~ lfmt.push( MT__bold(l[j], o.bold_addr) );
+						}
+						if (lfmt.length)
+							fmt_address = lfmt.join(',');
+					}
+					//
+					if (b[i].location.display_address.toString().indexOf(', '+o.state_abbr) == -1) {
+						continue; // Skip this......
+					}
+					// Number of bolds in address?
+					// Versus number of words
+					var nb_numwords = fmt_address.split(' ').length;
+					var nb_match = fmt_address.match(/<b>/g);
+					var nb_numbolds = (nb_match) ? nb_match.length : 0;
+					var nb_pct = nb_numbolds / nb_numwords;
+					console.log('percent:' + nb_pct);
+					if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+						found_close_enough_street = true;
+						console.log('close enough');
+					}
+					// ...
+					var fmt_cat = [];
+					if (b[i].categories) {
+						var c = b[i].categories;
+						for (var j in c) {
+							fmt_cat.push(c[j][0]); // [name,id]
+						}
+					}
+					fmt_cat = fmt_cat.join(','); // Or blank
+					// Div
+					var d = document.createElement('div');
+					d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+					d.className = 'exe '+b[i].url.replace(/\?[\d\D]*/, '');
+					d.ypurl = b[i].url;
+					d.api_response = b[i];
+					div.appendChild(d);
+					d.innerHTML =
+						MT__bold(b[i].name, o.bold_comp) + '<br>' +
+						fmt_address +'<br>'+
+						'R:'+b[i].review_count; //+'<br>'+
+						//'C:'+fmt_cat;
+					d.onclick = function() {
+						this.style.backgroundColor = 'teal';
+						document.body.style.backgroundColor = 'LightGreen';
+						console.log(this.api_response);
+						// NextTab
+						new AMT___core_factory().nextTab();
+						// Fill in details
+						var a = this.api_response;
+						o.q[0].value = a.is_closed === false ? 'N' : 'Y'; // If is_closed !== false then is_closed == true
+						o.q[1].value = a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
+						o.q[2].value = a.review_count;
+						o.q[3].value = a.rating;
+						var x = [];
+						for (var i in a.categories) {
+							x.push(a.categories[i][0]);
+						}
+						o.q[4].value = x.join(', ');
+							//o.q[5].value = x.join(', ');
+							//try_sbm();
+						// In order to get price range (q5) it is
+						// necessary to scrape the page!
+						this.chk_url = o.q[1].value;
+						yp_profile(this);
+					}
+					d.onmouseover = d.onmousemove = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal') continue; // Skip
+							x[i].style.backgroundColor = 'aqua';
+						}
+					}
+					d.onmouseout = function() {
+						var x = document.getElementsByClassName(this.className);
+						for (var i=0; i<x.length; i++) {
+							if (x[i].style.backgroundColor == 'teal') continue; // Skip
+							x[i].style.backgroundColor = '';
+						}
+					}
+					//
+					var ypnm_cln = b[i].name.clean_str_to_auto();
+					var ypad_cln = fmt_address_match.clean_str_to_auto().replace(/\d+$/, '');
+						console.log(o.comp_cln);
+						console.log(ypnm_cln);
+						console.log(o.addr_cln);
+						console.log(ypad_cln);
+					// Auto found?
+					if  (
+						!auto_found &&
+						o.comp_cln == ypnm_cln &&
+						o.addr_cln == ypad_cln &&
+						o.comp_cln.length > 4 &&
+						o.addr_cln.length > 4
+						)
+					{
+						d.click();
+						auto_found = true;
+					}
+				}
+				if (div.innerHTML != '') {
+					var d = document.createElement('div');
+					d.setAttribute('style','height:2000px;');
+					div.appendChild(d);
+				} else {
+					div.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+				}
+				// If no street from above is close enough based on 
+				// bolding of street string, then run search snippet.
+				//
+				if (!found_close_enough_street) {
+					yelp_search_snippet();
+				}
+			}
+			
+			function yelp_clean_name(name) {
+				// AUTO + CLEAN
+				name = name.replace(/’/g, '\'');
+				name = name.replace(/^The Home Depot$/, 'Home Depot');
+				name = name.replace(/^Lowe's Home Improvement( Warehouse[\d\D]*|)$/, 'Lowe\'s');
+				name = name.replace(/^Lowe's Home Improvement( of[\d\D]*)$/, 'Lowe\'s');
+				return name;
+			}
+			/**
+			 * function yelp_search_snippet
+			 * 
+			 * NOTE: THIS IS THE RIGHT SIDE!
+			 */
+			function yelp_search_snippet() {
+				var out = d1b;
+				u = 'http://www.yelp.com/search/snippet'+
+						'?find_desc='+encodeURIComponent(d2.value) +
+						'&find_loc='+ encodeURIComponent(d2b.value)+
+						//'&cflt=restaurants'+
+						'&parent_request_id=&request_origin=user';
+				out.innerText = d2.value + '\n' + d2b.value;
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: u,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1 ||
+							rs.indexOf('"text": "Signature was invalid"') != -1
+							)
+						{
+							d1.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						// ...
+						rs = JSON.parse(rs);
+						var map = rs.search_map;
+						//
+						if (rs.hasOwnProperty('search_exception') && rs.search_exception.indexOf('<h2>We\'ve found multiple locations matching your search.</h2>') != -1) {
+							out.innerText += '\n"We\'ve found multiple locations matching your search."';
+							return;
+						}
+						//
+						rs = rs.search_results;
+						if (rs.indexOf('<div class="no-results">') != -1) {
+							out.innerText += '\n0';
+							return;
+						}
+						//
+						out.innerHTML = '';
+						//
+						//~ out.innerHTML = rs;return;
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						var rg = dom.getElementsByClassName('regular-search-result');
+						
+						for (var i=0; i<rg.length; i++) {console.log(rg[i]);
+							var u    = rg[i].getElementsByClassName('biz-name')[0];
+							var rvct = rg[i].getElementsByClassName('review-count');
+							var rtg  = /(\d\.\d) stars? rating/.exec(rg[i].innerHTML);
+							var ad = rg[i].getElementsByTagName('address');
+							if (!rvct || rvct.length == 0) {
+								console.log(rg[i].innerHTML);
+								rvct = 'NA';
+							} else {
+								rvct = rvct[0].innerText.replace(/ reviews?/, '').trim();
+							}
+							if (!rtg || rtg.length == 0) {
+								console.log(rg[i].innerHTML);
+								rtg = 'NA';
+							} else {
+								rtg = rtg[1].replace(/\.0/, '');
+							}
+							if (!ad || ad.length == 0 || !ad[0].innerText) {
+								ad = '';
+							} else 
+								ad = ad[0].innerText.replace(/\s+/g, ' ').trim();
+							// Div
+							var d = document.createElement('div');
+							d.setAttribute('style','border-bottom:1px solid #a2a2a2;');
+							d.className = 'exe https://www.yelp.com'+u.getAttribute('href').replace(/\?[\d\D]*/, '');
+							d.api_response = {
+								url: u.getAttribute('href'),
+								review_count: rvct,
+								rating: rtg
+							}
+							out.appendChild(d);
+							d.innerHTML =
+								MT__bold(u.innerText.trim(), o.bold_comp) + '<br>' +
+								MT__bold(
+									ad,
+									//~ dom.getElementsByTagName('address')[0].innerText.trim(),
+									o.bold_addr, {style: 'color:blue;'}
+								).bold_string+'<br>'+
+								'R:'+rvct;
+							d.onclick = function() {
+								this.style.backgroundColor = 'teal';
+								document.body.style.backgroundColor = 'LightGreen';
+								console.log(this.api_response);
+								// NextTab
+								new AMT___core_factory().nextTab();
+								// Fill in details
+								var a = this.api_response;
+								o.q[1].value = 'https://www.yelp.com'+a.url.replace(/\?[\d\D]*/, ''); // Removes trailing "?..."
+								o.q[2].value = a.review_count;
+								o.q[3].value = a.rating;
+								//~ o.q[4].value = a.categories;
+								// In order to get price range (q5) it is
+								// necessary to scrape the page!
+								this.chk_url = o.q[1].value;
+								yp_profile(this, true);
+							}
+							d.onmouseover = d.onmousemove = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal') continue; // Skip
+									x[i].style.backgroundColor = 'aqua';
+								}
+							}
+							d.onmouseout = function() {
+								var x = document.getElementsByClassName(this.className);
+								for (var i=0; i<x.length; i++) {
+									if (x[i].style.backgroundColor == 'teal') continue; // Skip
+									x[i].style.backgroundColor = '';
+								}
+							}
+						}
+						if (d1b.innerHTML != '') {
+							var d = document.createElement('div');
+							d.setAttribute('style','height:2000px;');
+							d1b.appendChild(d);
+						} else {
+							d1b.appendChild(('<b>' + d2.value + '</b>: 0 results').div({innerHTML:true}));
+						}
+					}
+				});
+			}
+			// yp_profile
+			// http://www.yelp.com/biz/longhorn-steakhouse-enfield/review_feed/?start=0&sort_by=date_desc
+			//~ u = u + '/review_feed/?start=0&sort_by=date_desc'; // DESCENDING
+			function yp_profile(div, getCategories) {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: div.chk_url,
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						var rs = options.response.responseText;//console.log(rs);return false;
+						if  (
+							rs.indexOf('we just need to check that you\'re not a robot') != -1
+							)
+						{
+							div.style.backgroundColor = 'yellow';
+							return false;
+						}
+						else
+							return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs,'text/html');
+						// get catg?
+						if (getCategories) {
+							var x = dom.getElementsByClassName('category-str-list');
+							if (!x || x.length == 0) {
+								o.q[4].value = 'NA';
+							} else {
+								o.q[4].value = x[0].innerText.trim().replace(/\s+/g, ' '); // Remove multi-spaces
+							}
+							// Also do isclosed
+							if (rs.indexOf('Yelpers report this location has closed') != -1) {
+								o.q[0].value = 'Y'; // This will in turn force all fields to NA on function:try_sbm();
+							} else {
+								o.q[0].value = 'N';
+							}
+						}
+						var x = dom.getElementsByClassName('business-attribute price-range');
+						if (x.length) {
+							x = x[0].innerText.trim();
+							if (/^\$+$/.exec(x)) { // Is one or more $
+								o.q[5].value = x;
+								try_sbm();
+							} else {
+								// Fail
+							}
+						} else {
+							o.q[5].value = 'NA'; // No $ on page here.....
+							try_sbm();
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+		return;
+	}
+	// Becky ""
+	// Brendan ""
 	// TODO: Add onmouseout of body? page? window?
 	// TODO: Autos: Remove US from Original; Remove Zip from Yelp;
 	//
