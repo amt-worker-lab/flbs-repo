@@ -85717,18 +85717,20 @@ Laurens Hammond, Chicago, Ill.**/
 			for (var i in o.q) {
 				o.q[i].value = '';
 			}
-			o.comp = o.comp.replace(/&/g, 'and'); // Try this to improve yield...
+			o.comp = o.comp.replace(/&/g, ' and '); // Try this to improve yield...
+			// state or state abbr
+			var abbr = o.state.state_full_to_abbr();
+			if (abbr != o.state_abbr) {
+				o.state_abbr = abbr;
+				o.addr = o.addr.replace(o.state, o.state_abbr); // Put abbreviated state into address. Yelp is abbreviated. So this helps with auto.
+			}
 			//
 			o.bold_addr = o.addr.clean_string_to_array();
 			o.bold_comp = o.comp.clean_string_to_array();
 			//
 			o.addr_cln = o.addr.toLowerCase().replace(/[, ]*(usa|us)$/, '').replace(/[^a-z0-9]/gi, '').replace(/\d{5}$/, ''); // Remove zip
 			o.comp_cln = o.comp.toLowerCase().replace(/[^a-z0-9]/gi, '');
-			// state or state abbr
-			var abbr = o.state.state_full_to_abbr();
-			if (abbr != o.state_abbr) {
-				o.state_abbr = abbr;
-			}
+			
 			/*BEGIN ITEMS*/
 			var d1 = document.createElement('div');
 			d1. setAttribute('style','position:absolute;top:98px;left:0;width:50%;height:400px;border:1px solid blue;background-color:#eee;overflow:auto;');
