@@ -85965,7 +85965,7 @@ Laurens Hammond, Chicago, Ill.**/
 					//d1b.innerText = '--';
 				var b = rs.businesses;
 				var auto_found = false;
-				var found_close_enough_street = false;
+				var found_close_enough = false;
 				new AMT___core_factory().createScriptVar('CHELP-PCT-Street', '0.7');
 				for (var i in b) {
 					// AUTO + CLEAN
@@ -86085,6 +86085,10 @@ Laurens Hammond, Chicago, Ill.**/
 					// ToCheck
 					var toCheck = o.comp_cln + o.addr_cln;
 					var diff = toCheck.str_diff(ypnm_cln + ypad_cln)
+					if (diff.pctDiff < 10) {
+						// For example, abcdef versus abcde is 1/11 different, or about 9.1%.
+						found_close_enough = true;
+					}
 				}
 				if (div.innerHTML != '') {
 					var d = document.createElement('div');
@@ -86096,38 +86100,44 @@ Laurens Hammond, Chicago, Ill.**/
 				// If no street from above is close enough based on 
 				// bolding of street string, then run search snippet.
 				//
-				if (!found_close_enough_street) {
+				if (!found_close_enough && !auto_found) {
+					// Do not do second column if either:
+					// 1) It has been auto found (auto_found==true).
+					// 2) There is a close enough match in the API serach (found_close_enough==true).
 					yelp_search_snippet();
+				} else if (found_close_enough == true) {
+					// Debug for testing.
+					alert('DEGBUG: Found close enough!')
 				}
 			}
-			function diff_characters(str1, str2) {
-				// Prototype code:
-				// var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
-				// Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
-				var d = 0;
-				for (var char in str1) {
-					var tmp = str2.replace(str1[char], ''); // Replace the first occurrence.
-					if (tmp == str2) {
-						// No replacement occurred. So increment difference.
-						d++;
-					} else {
-						// Replace the first occurrence.
-						str2 = str2.replace(str1[char], '');
-					}
-				}
-				d += str2.length;
-				return {numDiff: d, pctDiff: d/(str1.length + str2.length)};
-					// Examples:
-					// str1=abc
-					// str2=xyzabc
-					// Thus, diff=xyz
-					// str1=ab
-					// str2=xyzcc
-					// Thus, diff=ab + xyzcc
-					// str1=aaaaaa
-					// str2=b
-					// Thus, diff=aaaaaa + b
-			}
+			//~ function diff_characters(str1, str2) {
+				//~ // Prototype code:
+				//~ // var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
+				//~ // Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
+				//~ var d = 0;
+				//~ for (var char in str1) {
+					//~ var tmp = str2.replace(str1[char], ''); // Replace the first occurrence.
+					//~ if (tmp == str2) {
+						//~ // No replacement occurred. So increment difference.
+						//~ d++;
+					//~ } else {
+						//~ // Replace the first occurrence.
+						//~ str2 = str2.replace(str1[char], '');
+					//~ }
+				//~ }
+				//~ d += str2.length;
+				//~ return {numDiff: d, pctDiff: d/(str1.length + str2.length)};
+					//~ // Examples:
+					//~ // str1=abc
+					//~ // str2=xyzabc
+					//~ // Thus, diff=xyz
+					//~ // str1=ab
+					//~ // str2=xyzcc
+					//~ // Thus, diff=ab + xyzcc
+					//~ // str1=aaaaaa
+					//~ // str2=b
+					//~ // Thus, diff=aaaaaa + b
+			//~ }
 			function yelp_clean_name(name) {
 				// AUTO + CLEAN
 				name = name.replace(/’/g, '\'');

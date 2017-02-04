@@ -1848,27 +1848,55 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * 
  */
 String.prototype.str_diff(str2) {
-	var s = this.toString();
+	var str1 = this.toString();
 	if (typeof(str2) != 'string') {
 		console.log('Not a string!');
+		alert('WARN:Not a string!');		// Try alert. At some point it may be desirable to add suppression of this alert.
 		return {numDiff: 999, pctDiff: 100.0};
+	}
+	var x = { // Copy of values
+		s1: str1,
+		s2: str2,
+		len: str1.length + str2.length,
 	}
 	// Prototype code:
 	// var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
 	// Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
 	var d = 0;
-	for (var char in str1) {
-		var tmp = str2.replace(str1[char], ''); // Replace the first occurrence.
+	var idx, char
+	for (idx in str1) {
+		char = str1[idx];
+		var tmp = str2.replace(char, ''); // Replace the first occurrence.
 		if (tmp == str2) {
 			// No replacement occurred. So increment difference.
 			d++;
 		} else {
 			// Replace the first occurrence.
-			str2 = str2.replace(str1[char], '');
+			str2 = str2.replace(char, '');
 		}
 	}
 	d += str2.length;
-	return {numDiff: d, pctDiff: d/(str1.length + str2.length)};
+	// Percentage given in typical percentage (that is, not ratio).
+	return {numDiff: d, pctDiff: (d/(x.len)) * 100};
+		// Examples
+		// str1=abc
+		// str2=def
+		// numDiff=6, pctDiff=6/6=100%
+		// str1=abcd
+		// str2=defg
+		// numDiff=6, pctDiff=6/8=100%
+		// str1=
+		// str2=defg
+		// numDiff=4, pctDiff=4/4=100%
+		// str1=abcd
+		// str2=
+		// numDiff=4, pctDiff=6/8=100%
+		// str1=abcdef
+		// str2=abcd
+		// numDiff=2, pctDiff=2/10=20%
+		// str1=abcdef
+		// str2=abcde
+		// numDiff=1, pctDiff=1/11=9.1%
 		// Examples:
 		// str1=abc
 		// str2=xyzabc
