@@ -85690,6 +85690,7 @@ Laurens Hammond, Chicago, Ill.**/
 				state_abbr: td[7].innerText.trim(),
 				state: td[7].innerText.trim(),
 				//~ q: document.getElementById('open_date'),
+				comp_original: td[1].innerText.trim(),
 				
 				bold_addr: [],
 				bold_comp: [],
@@ -85747,7 +85748,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var d2b = document.createElement('textarea');
 			d2b.setAttribute('style','position:absolute;top:32px;left:0%;width:60%;height:30px;');
 			document.body.appendChild(d2b);
-			var d2c  = document.createElement('textarea');
+			var d2c  = document.createElement('textarea'); // Original company name
 			d2c.setAttribute('style','position:absolute;top:0px;left:60%;width:39%;height:30px;');
 			d2c.disabled = true; // Disable
 			document.body.appendChild(d2c);
@@ -85780,7 +85781,7 @@ Laurens Hammond, Chicago, Ill.**/
 			//
 			d2.value  = o.comp;
 			d2b.value = o.addr;
-			d2c.value = o.comp; // Original name
+			d2c.value = o.comp_original; // Original name
 			//
 			d2.onblur = d2b.onblur = function() {
 				yelp();
@@ -85998,7 +85999,7 @@ Laurens Hammond, Chicago, Ill.**/
 					var nb_match = fmt_address.match(/<b>/g);
 					var nb_numbolds = (nb_match) ? nb_match.length : 0;
 					var nb_pct = nb_numbolds / nb_numwords;
-					console.log('percent:' + nb_pct);
+					console.log('percent:' + nb_pct); // this is zero a lot ...
 					if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
 						found_close_enough_street = true;
 						console.log('close enough');
