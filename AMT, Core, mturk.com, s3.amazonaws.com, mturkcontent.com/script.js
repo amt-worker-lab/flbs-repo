@@ -85993,17 +85993,17 @@ Laurens Hammond, Chicago, Ill.**/
 					if (b[i].location.display_address.toString().indexOf(', '+o.state_abbr) == -1) {
 						continue; // Skip this......
 					}
-					// Number of bolds in address?
-					// Versus number of words
-					var nb_numwords = fmt_address.split(' ').length;
-					var nb_match = fmt_address.match(/<b>/g);
-					var nb_numbolds = (nb_match) ? nb_match.length : 0;
-					var nb_pct = nb_numbolds / nb_numwords;
-					console.log('percent:' + nb_pct); // this is zero a lot ...
-					if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
-						found_close_enough_street = true;
-						console.log('close enough');
-					}
+					//~ // Number of bolds in address?
+					//~ // Versus number of words
+					//~ var nb_numwords = fmt_address.split(' ').length;
+					//~ var nb_match = fmt_address.match(/<b>/g);
+					//~ var nb_numbolds = (nb_match) ? nb_match.length : 0;
+					//~ var nb_pct = nb_numbolds / nb_numwords;
+					//~ console.log('percent:' + nb_pct); // this is zero a lot ...
+					//~ if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+						//~ found_close_enough_street = true;
+						//~ console.log('close enough');
+					//~ }
 					// ...
 					var fmt_cat = [];
 					if (b[i].categories) {
@@ -86077,6 +86077,14 @@ Laurens Hammond, Chicago, Ill.**/
 						d.click();
 						auto_found = true;
 					}
+					// Right column (decide whether or not to "screen scrape")
+					//~ if (nb_pct > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+						//~ found_close_enough_street = true;
+						//~ console.log('close enough');
+					//~ }
+					// ToCheck
+					var toCheck = o.comp_cln + o.addr_cln;
+					var diff = toCheck.str_diff(ypnm_cln + ypad_cln)
 				}
 				if (div.innerHTML != '') {
 					var d = document.createElement('div');
@@ -86092,7 +86100,34 @@ Laurens Hammond, Chicago, Ill.**/
 					yelp_search_snippet();
 				}
 			}
-			
+			function diff_characters(str1, str2) {
+				// Prototype code:
+				// var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
+				// Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
+				var d = 0;
+				for (var char in str1) {
+					var tmp = str2.replace(str1[char], ''); // Replace the first occurrence.
+					if (tmp == str2) {
+						// No replacement occurred. So increment difference.
+						d++;
+					} else {
+						// Replace the first occurrence.
+						str2 = str2.replace(str1[char], '');
+					}
+				}
+				d += str2.length;
+				return {numDiff: d, pctDiff: d/(str1.length + str2.length)};
+					// Examples:
+					// str1=abc
+					// str2=xyzabc
+					// Thus, diff=xyz
+					// str1=ab
+					// str2=xyzcc
+					// Thus, diff=ab + xyzcc
+					// str1=aaaaaa
+					// str2=b
+					// Thus, diff=aaaaaa + b
+			}
 			function yelp_clean_name(name) {
 				// AUTO + CLEAN
 				name = name.replace(/’/g, '\'');

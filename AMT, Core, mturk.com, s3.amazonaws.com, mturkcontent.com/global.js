@@ -1834,7 +1834,7 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  *********************************************************/
 
 /**
- * String Prototypes
+ * String Prototypes (String., String[dot])
  * 
  * .getNameSynonyms
  * .parseURL
@@ -1845,24 +1845,53 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .div
  * .regexIndexOf
  * .rexexLasIndexOf
+ * 
  */
+String.prototype.str_diff(str2) {
+	var s = this.toString();
+	if (typeof(str2) != 'string') {
+		console.log('Not a string!');
+		return {numDiff: 999, pctDiff: 100.0};
+	}
+	// Prototype code:
+	// var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
+	// Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
+	var d = 0;
+	for (var char in str1) {
+		var tmp = str2.replace(str1[char], ''); // Replace the first occurrence.
+		if (tmp == str2) {
+			// No replacement occurred. So increment difference.
+			d++;
+		} else {
+			// Replace the first occurrence.
+			str2 = str2.replace(str1[char], '');
+		}
+	}
+	d += str2.length;
+	return {numDiff: d, pctDiff: d/(str1.length + str2.length)};
+		// Examples:
+		// str1=abc
+		// str2=xyzabc
+		// Thus, diff=xyz
+		// str1=ab
+		// str2=xyzcc
+		// Thus, diff=ab + xyzcc
+		// str1=aaaaaa
+		// str2=b
+		// Thus, diff=aaaaaa + b
+}
 /**
  * .clean_str_to_auto
  */
- /**
-			 * function 
-			 */
-			function clean_str_to_auto(str) {
-				
-			}
+ //~ /**
+ //~ * function 
+ //~ */
+//~ function clean_str_to_auto(str) {
+//~ }
 String.prototype.clean_str_to_auto = function(opts) {
 	var s = this.toString();
 	return s.toLowerCase().replace(/&/g, 'and').replace(/[^0-9a-z]/gi, ''); // Replace "&" with "and". Remove all but /[0-9a-z]/i
 }
-
-
-
-
 //Returns an array that contains all name synonyms
 //Note: a Name's Synonyms does NOT includes itself
 //Note: names are returned in lower case
