@@ -1847,8 +1847,9 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .rexexLasIndexOf
  * 
  */
-String.prototype.str_diff(str2) {
+String.prototype.str_diff = function(str2) {
 	var str1 = this.toString();
+	//~ console.log('str_diff::Checking:'+str1+';'+str2);
 	if (typeof(str2) != 'string') {
 		console.log('Not a string!');
 		alert('WARN:Not a string!');		// Try alert. At some point it may be desirable to add suppression of this alert.
@@ -1863,21 +1864,30 @@ String.prototype.str_diff(str2) {
 	// var x='abc'; for (i in x) {console.log(i);console.log(x[i]);}
 	// Diff is equal to: Length of str1 not in str2. Plus length of str2 not in str1.
 	var d = 0;
-	var idx, char
+	var idx, c;
 	for (idx in str1) {
-		char = str1[idx];
-		var tmp = str2.replace(char, ''); // Replace the first occurrence.
+		c = str1[idx];
+		if (c.length > 1 || typeof(c) != 'string') continue;
+			// Hm? Occasionally oddity here. The string 'c' is a giant representation string of a function!
+		var tmp = str2.replace(c, ''); // Replace the first occurrence.
 		if (tmp == str2) {
 			// No replacement occurred. So increment difference.
 			d++;
 		} else {
 			// Replace the first occurrence.
-			str2 = str2.replace(char, '');
+			str2 = str2.replace(c, '');
 		}
 	}
+	// Add in remaining difference.
 	d += str2.length;
 	// Percentage given in typical percentage (that is, not ratio).
 	return {numDiff: d, pctDiff: (d/(x.len)) * 100};
+		// Example
+		//thaisinghahouse3906bchestnutstphiladelphiapa
+		//thaisinghahouse3900chesnutstphiladelphiapa
+		//
+		// thaisinghahouse3906bchestnutstphiladelphiapa;
+		// thaisinghahouse3900chesnutstphiladelphiapa
 		// Examples
 		// str1=abc
 		// str2=def

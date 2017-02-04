@@ -85956,6 +85956,8 @@ Laurens Hammond, Chicago, Ill.**/
 				rs = JSON.parse(rs); //{"businesses": [{},{},{}]}
 				console.log(rs);
 				div.innerText = '';
+				// Reset bgcolor of right side.
+				d1b.style.backgroundColor = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
 					div.innerText += '0 results\n';
 					// DO RIGHT
@@ -86084,7 +86086,8 @@ Laurens Hammond, Chicago, Ill.**/
 					//~ }
 					// ToCheck
 					var toCheck = o.comp_cln + o.addr_cln;
-					var diff = toCheck.str_diff(ypnm_cln + ypad_cln)
+					var diff = toCheck.str_diff(ypnm_cln + ypad_cln);
+					console.log(diff);
 					if (diff.pctDiff < 10) {
 						// For example, abcdef versus abcde is 1/11 different, or about 9.1%.
 						found_close_enough = true;
@@ -86106,8 +86109,9 @@ Laurens Hammond, Chicago, Ill.**/
 					// 2) There is a close enough match in the API serach (found_close_enough==true).
 					yelp_search_snippet();
 				} else if (found_close_enough == true) {
+					d1b.style.backgroundColor = 'aqua';
 					// Debug for testing.
-					alert('DEGBUG: Found close enough!')
+					//~ alert('DEBUG: Found close enough!')
 				}
 			}
 			//~ function diff_characters(str1, str2) {
@@ -86153,6 +86157,8 @@ Laurens Hammond, Chicago, Ill.**/
 			 */
 			function yelp_search_snippet() {
 				var out = d1b;
+				// Reset bgcolor
+				d1b.style.backgroundColor = '';
 				u = 'http://www.yelp.com/search/snippet'+
 						'?find_desc='+encodeURIComponent(d2.value) +
 						'&find_loc='+ encodeURIComponent(d2b.value)+
