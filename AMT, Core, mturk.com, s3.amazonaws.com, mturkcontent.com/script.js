@@ -85958,6 +85958,7 @@ Laurens Hammond, Chicago, Ill.**/
 				div.innerText = '';
 				// Reset bgcolor of right side.
 				d1b.style.backgroundColor = '';
+				d1b.innerHTML = '';
 				if (!rs.businesses || rs.businesses.length == 0) {
 					div.innerText += '0 results\n';
 					// DO RIGHT
