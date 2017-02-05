@@ -86096,10 +86096,10 @@ Laurens Hammond, Chicago, Ill.**/
 					var diff = toCheck.str_diff(ypnm_cln + ypad_cln);
 					console.log(diff);
 					if (1-(diff.pctDiff/100) > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
-					//~ if (diff.pctDiff < 10) {
 						// diff.pctDiff is 0-100. So e.g. 1-(20/100)= 0.8
 						// For example, abcdef versus abcde is 1/11 different, or about 9.1%.
-						found_close_enough = true;
+						// Hmm. This is not working very well... Let's turn off for now.
+						//~ found_close_enough = true;
 					}
 				}
 				if (div.innerHTML != '') {
