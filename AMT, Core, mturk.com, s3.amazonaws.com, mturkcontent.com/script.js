@@ -85706,14 +85706,15 @@ Laurens Hammond, Chicago, Ill.**/
 				]
 			}
 			// Add to o.addr
-			if (o.addr.indexOf(td[5].innerText.trim()) == -1) {
+			var lw = o.addr.toLowerCase();
+			if (lw.indexOf(td[5].innerText.trim().toLowerCase()) == -1) {
 				o.addr += ', ' + td[5].innerText.trim();
 			}
-			if (o.addr.indexOf(td[7].innerText.trim()) == -1 &&
+			if (lw.indexOf(td[7].innerText.trim().toLowerCase()) == -1 &&
 				o.addr.indexOf(td[7].innerText.trim().state_full_to_abbr()) == -1) {
 				o.addr += ', ' + td[7].innerText.trim().state_full_to_abbr();
 			}
-			if (o.addr.indexOf(td[9].innerText.trim()) == -1) {
+			if (lw.indexOf(td[9].innerText.trim().toLowerCase()) == -1) {
 				o.addr += ', ' + td[9].innerText.trim();
 			}
 			//
@@ -86094,7 +86095,9 @@ Laurens Hammond, Chicago, Ill.**/
 					var toCheck = o.comp_cln + o.addr_cln;
 					var diff = toCheck.str_diff(ypnm_cln + ypad_cln);
 					console.log(diff);
-					if (diff.pctDiff < 10) {
+					if (1-(diff.pctDiff/100) > AMT__Global_Vars.scriptVars['CHELP-PCT-Street'] * 1) {
+					//~ if (diff.pctDiff < 10) {
+						// diff.pctDiff is 0-100. So e.g. 1-(20/100)= 0.8
 						// For example, abcdef versus abcde is 1/11 different, or about 9.1%.
 						found_close_enough = true;
 					}
