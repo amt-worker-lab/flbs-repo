@@ -85687,7 +85687,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var o = { // 
 				comp: td[1].innerText.trim().replace(/ \([^\)]+\)$/, ''), // Remove (city bleh bleh) information. It is sometimes detrimental.
 						// APOSTROPHE??? .replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
-				addr: td[3].innerText.trim() + ',' + td[5].innerText.trim(),
+				addr: td[3].innerText.trim(),// + ',' + td[5].innerText.trim(),
 				state_abbr: td[7].innerText.trim(),
 				state: td[7].innerText.trim(),
 				//~ q: document.getElementById('open_date'),
@@ -85709,8 +85709,9 @@ Laurens Hammond, Chicago, Ill.**/
 			if (o.addr.indexOf(td[5].innerText.trim()) == -1) {
 				o.addr += ', ' + td[5].innerText.trim();
 			}
-			if (o.addr.indexOf(td[7].innerText.trim()) == -1) {
-				o.addr += ', ' + td[7].innerText.trim();
+			if (o.addr.indexOf(td[7].innerText.trim()) == -1 &&
+				o.addr.indexOf(td[7].innerText.trim().state_full_to_abbr()) == -1) {
+				o.addr += ', ' + td[7].innerText.trim().state_full_to_abbr();
 			}
 			if (o.addr.indexOf(td[9].innerText.trim()) == -1) {
 				o.addr += ', ' + td[9].innerText.trim();
@@ -86350,7 +86351,7 @@ Laurens Hammond, Chicago, Ill.**/
 			var o = { // 
 				comp: td[1].innerText.trim().replace(/ \([^\)]+\)$/, ''), // Remove (city bleh bleh) information. It is sometimes detrimental.
 						// APOSTROPHE??? .replace(/'/, ''), // Remove apostrophe. E.g. O'Reilly is best searched as OReilly
-				addr: td[3].innerText.trim() + ',' + td[5].innerText.trim(),
+				addr: td[3].innerText.trim(),// + ',' + td[5].innerText.trim(),
 				state_abbr: td[7].innerText.trim(),
 				state: td[7].innerText.trim(),
 				//~ q: document.getElementById('open_date'),

@@ -1845,7 +1845,8 @@ function AMT___SetPageScriptVars(varNames, callback, callbackParams) {
  * .div
  * .regexIndexOf
  * .rexexLasIndexOf
- * 
+ * .state_is_valid
+ * .str_diff
  */
 String.prototype.str_diff = function(str2) {
 	var str1 = this.toString();
