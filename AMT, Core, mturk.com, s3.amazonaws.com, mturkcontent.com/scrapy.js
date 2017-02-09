@@ -1361,7 +1361,7 @@ function init__scrapy() {
 	}
 	// Chris Richmond
 	// Find contact email on the website of a hotel
-	// 
+	// icons, animations, news coverage, news articles (third-party api)... screens class
 	// 
 	//~ s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for a&nbsp;webmaster. Please DO NOT use whois privacy contacts. And Please DO NOT use generic email addresses that aren\'t reletive to the domain (e.g. "domains@microsoft.com" or "abuse@abuseweb.net")</li>';
 	//~ s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for webmaster, but please DO NOT use whois privacy contacts.</li>';
@@ -1369,7 +1369,7 @@ function init__scrapy() {
 	s = '<li>Enter the email address for the website URL listed.</li>\n	<li>If the URL listed is a page on a university or .gov website, please find an appropriate contact for that department or division.</li>\n	<li>If you absolutely cannot find an email address, please enter a form URL for contact.</li>';
 	s2 = '<li>If you absolutely cannot find an email address using any of the methods above, please enter a form URL. If you cannot find a form, please put "na" exactly.</li>';
 	s3 = '<li>If you absolutely cannot find an email address using any of the methods above, please enter a form URL. If you cannot find a form, please put "na" exactly. If you put NA and I find an email, I will reject your work.</li>';
-	s3 = '<li>If neither of those things exist, or if the site listed isn\'t an educational facility, please enter an alternative email.&nbsp;</li>';
+	s3 = '<li>If, and only if, you cannot find an email address for somebody running this blog or website, please provide a contact form url.&nbsp;</li>';
 	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1 || ih.indexOf(s3) != -1)
 	{
 		var run = function() {}
