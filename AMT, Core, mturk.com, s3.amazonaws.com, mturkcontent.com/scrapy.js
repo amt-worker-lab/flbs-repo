@@ -1361,7 +1361,7 @@ function init__scrapy() {
 	}
 	// Chris Richmond
 	// Find contact email on the website of a hotel
-	// icons, animations, news coverage, news articles (third-party api)... screens class
+	// icons, animations, sound effects and music, news coverage, news articles (third-party api)... screens class
 	// 
 	//~ s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for a&nbsp;webmaster. Please DO NOT use whois privacy contacts. And Please DO NOT use generic email addresses that aren\'t reletive to the domain (e.g. "domains@microsoft.com" or "abuse@abuseweb.net")</li>';
 	//~ s = '<li>As a last resort, use godaddy.com/whois or networksolutions.com/whois to locate email address for webmaster, but please DO NOT use whois privacy contacts.</li>';
