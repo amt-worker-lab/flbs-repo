@@ -1638,7 +1638,6 @@ function load()
 		init();
 		function init() {
 			var x = document.location;
-			
 			//
 			// t==0
 			// on second run
@@ -1738,7 +1737,7 @@ function load()
 						var input_df = y;
 						setInterval(function() {
 							input_df.focus();
-						}, 1000);
+						}, 400);
 						
 						// IF TRY == 0
 						
@@ -1754,7 +1753,6 @@ function load()
 						{
 							setInterval_manual(IMAGE_SRC);
 						}
-						
 						// move boxes around!!
 						var x = document.getElementById('newsComponentZone1');
 						x.style.position = 'absolute';
@@ -1787,19 +1785,16 @@ function load()
 				});
 				return;
 			}
-			
 			// ...
 			//
 			//
 			var arr = [];
 			var r2;
-
 			// sold
 			r = /<fieldset>[\r\n\t\s]+<h2>Sold Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
 			if (r) {
 				r = r[1];
 				r2= /<td class="row\d+" style="text-align:left;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ popup" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+ statusdocumentnumber" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="text-align:center;" {0,}>([^<]{0,})<\/td>[\r\n\t\s]+<td class="row\d+" style="[^"]+" {0,}>([^<]{0,})/g; // no last td
-				
 				if (r2.exec(r)) {
 					r2.lastIndex = 0;
 					var m;
@@ -1813,7 +1808,6 @@ function load()
 					}
 				}
 			}
-			
 			/*
 			  <td class="row2" style="text-align:center;">2007</td>
 							 <td class="row2 popup" style="text-align:center;">
@@ -1825,7 +1819,6 @@ function load()
 							</td><td class="row2 backtax" style="text-align:center;">
 							</td><td class="row2 warrantyear" style="text-align:center;">
 			 */
-			 
 			// Delinquent
 			r = /<fieldset>[\r\n\t\s]+<h2>Delinquent Taxes<\/h2>((.|\s)*?(?=<\/fieldset>|$)|$)/.exec(ih);
 			if (r) {

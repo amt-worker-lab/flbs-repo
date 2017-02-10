@@ -185345,7 +185345,6 @@ qatar,80
 		
 			
 	}
-	
 	//
 	// Jordan A Gross 
 	// newline financial
@@ -185356,10 +185355,7 @@ qatar,80
 	if (s.exec(ih)) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		//GM_addStyle('body {width:40%;margin-top:0px;}');
-		
 		var a = document.getElementsByTagName('a')[0].href;
-		
-		
 		//<h3>You do not have permission to view this directory or page using the credentials that you supplied.</h3>
 		GM_xmlhttpRequest({ // init
 			method: "GET",
@@ -185368,25 +185364,19 @@ qatar,80
 				//var rs = response.responseText;
 			}
 		});
-		
 		var xint = setInterval(function() {
 			GM_xmlhttpRequest({ // init
 				method: "GET",
 				url: MT___host + '/mturk/.scripts/google/get-page.php?v='+encodeURIComponent(a),
 				onload: function(response) {
 					var rs = response.responseText;
-					
 					if (rs.trim() != '') {
 						clearInterval(xint);
 					} else
 						return;
-				
-				
 					var sbm = true;
-					
 					var r;
 					r = />([\d\-]+)<\/TD><TD WIDTH=10% ALIGN=LEFT><font color="#000000">[^<]*<\/TD><TD WIDTH=10% ALIGN=Center><font color="#000000">[^<]*<\/TD><TD WIDTH=20% ALIGN=RIGHT><font color="#000000">[^<]*<\/TD><TD WIDTH=15% ALIGN=RIGHT><font color="#000000">[^<]*<\/TD><TD WIDTH=15% ALIGN=RIGHT><font color="#000000">[^<]*<\/TD><TD WIDTH=20% ALIGN=RIGHT><font color="#000000">([^<]*)<\/TD><\/TR>/g;
-					
 					var c = 0;
 					if (r.exec(rs)) {
 						var m;
@@ -185957,7 +185947,7 @@ qatar,80
 						if (!allblanks && sbm) {
 							console.log('SUBMIT');
 							document.body.style.backgroundColor = "lightgreen";
-							//~ doSubmit();
+							doSubmit();
 							// DEBUG OVERFLOW GOES HERE
 							//~ if (document.getElementsByName('1 - Other Years')[0].value == '')
 							//~ {
