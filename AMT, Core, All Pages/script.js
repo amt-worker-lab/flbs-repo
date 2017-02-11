@@ -1985,18 +1985,14 @@ function load()
 					z = z.getElementsByTagName('td');
 					if (z) {
 						y = z[1].getElementsByTagName('input')[0];
-						
 						var CAPTCHA_VAL;
 						y.addEventListener('keyup', function(e) {
-							
 							if (this.value.length < 5) {
 								return;
 							}
-							
 							// If here...
 							var CAPTCHA_VAL = this.value;
 							new AMT___global_factory().callNextTabInCoreMturk(); // Next tab
-							
 							// guid
 							// http://www.cookcountyclerk.com/tsd/delinquenttaxsearch/Pages/CaptchaImage.axd?guid=4602e124-1969-4aef-91bc-68b739837c81
 							// guid=4602e124-1969-4aef-91bc-68b739837c81
