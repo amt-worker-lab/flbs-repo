@@ -1304,30 +1304,44 @@ function init__scrapy() {
 									 * }
 									 */
 									if (callback_obj.matches && callback_obj.matches.length) {
-										var mt = callback_obj.matches;
-										var reg = new RegExp(
-											//~ '^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
-											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
-											'i'
-										);
-										for (var i in mt) {
-											if  (
-												mt[i].email_email &&
-												mt[i].email_email.length > 6 &&
-												mt[i].email_email.indexOf('@') != -1 &&
-												reg.exec(mt[i].email_email)
-												)
-											{
-												document.body.style.zoom = '0.4';
-												o.q[0].value = mt[i].email_email;
-												o.q[1].value = mt[i].url;
-												if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
-													return false;
-												doSubmit();
-												break; // Stop here
-											}
-										}
+										//~ var mt = callback_obj.matches;
+										//~ var reg = new RegExp(
+											//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+											//~ '^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+											//~ __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+											//~ 'i'
+										//~ );
+										//~ for (var i in mt) {
+											//~ if  (
+												//~ mt[i].email_email &&
+												//~ mt[i].email_email.length > 6 &&
+												//~ mt[i].email_email.indexOf('@') != -1 &&
+												//~ reg.exec(mt[i].email_email)
+												//~ )
+											//~ {
+												//~ document.body.style.zoom = '0.4';
+												//~ o.q[0].value = mt[i].email_email;
+												//~ o.q[1].value = mt[i].url;
+												//~ if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
+													//~ return false;
+												//~ doSubmit();
+												//~ break; // Stop here
+											//~ }
+										//~ }
+									}
+									else {
+										// Auto return and accept because
+										// there are no emails found.
+										// R&A from global.js...
+										//Send a message to the top window and
+										//tell it to return and acceptfresh
+										new AMT___core_factory().
+											iframe2parent__postMessage( //
+												{
+													action: 'return_and_accept'
+												}
+											);
+										return false;
 									}
 									// CONTINUES (job is NOT in "preview" mode)
 									addToTabsQ();
