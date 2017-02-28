@@ -1121,7 +1121,8 @@ function init__scrapy() {
 	// Collect Email Address from Website
 	// 
 	// 
-	s = '<li>If there is no email address found on the website, then enter notfound@notfound.com into the Email field and notfound.com into the Email page URL field</li>';
+	//s = '<li>If there is no email address found on the website, then enter notfound@notfound.com into the Email field and notfound.com into the Email page URL field</li>';
+	s = '<li>Enter the email address for the website into the <strong>Email </strong>field. Use email from the school\'s general / main administration office where possible.</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
