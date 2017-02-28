@@ -2259,6 +2259,7 @@ function load()
 		console.log(data);
 		// Iframes
 		var withNameSearch = 'https://maps.google.com/maps?hl=en&q='+encodeURIComponent(data.task__name)+'&ll='+data.task__ll.lat+','+data.task__ll.lng+'&output=embed&t=h&z=16'; //&iwloc=A
+		
 		var withoutNameSearch = 'https://maps.google.com/maps?hl=en&geocode=&q='+encodeURIComponent(data.task__name+ ' ' +data.task__address)+'&output=embed&t=h&z=17' + '####ChiosSpecial###'; //&iwloc=A
 		
 		var d2 = document.createElement('iframe');
