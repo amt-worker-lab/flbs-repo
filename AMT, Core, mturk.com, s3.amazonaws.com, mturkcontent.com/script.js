@@ -3431,9 +3431,15 @@ Laurens Hammond, Chicago, Ill.**/
 			}
 			o.u2 = o.u2.replace(/library/gi, '');
 			o.u2 = o.u2.replace(/library/gi, '');
+			o.u2 = o.u2.replace(/ es$/gi, ' elementary school');
+			o.u2 = o.u2.replace(/ ms$/gi, ' middle school');
+
+
 			o.u3 = o.u3.replace(/library/gi, '');
 			o.u3 = o.u3.replace(/\s+/gi, ' ');
+
 			o.u3 = o.u3.trim();// + ', Library';
+		
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
@@ -3523,7 +3529,7 @@ Laurens Hammond, Chicago, Ill.**/
 							if (n != o.q[i].value) {
 								o.q[i].style.border = '8px dashed green';
 								document.body.style.backgroundColor = 'orange';
-								alert('Case Difference!');
+								//alert('Case Difference!');
 							}
 							//~ o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, CALLBACK: cb});
 						}
@@ -3771,7 +3777,7 @@ Laurens Hammond, Chicago, Ill.**/
 							if (n != o.q[i].value) {
 								o.q[i].style.border = '8px dashed green';
 								document.body.style.backgroundColor = 'orange';
-								alert('Case Difference!');
+								//alert('Case Difference!');
 							}
 							//~ o.q[i].value = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true, CALLBACK: cb});
 						}
