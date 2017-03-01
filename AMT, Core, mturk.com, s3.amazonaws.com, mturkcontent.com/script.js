@@ -3376,7 +3376,8 @@ Laurens Hammond, Chicago, Ill.**/
 	//
 	s = '<p>Given this specific&nbsp;Canadian public library branch, find its physical address (street, city, province/territory, and postal code).</p>';
 	var s2 = '<p>Given this specific public library branch, find its physical address (street, city, province/territory, and postal code).</p>';
-	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1) {
+	var s3 = '<p>Given this specific&nbsp;US school or college, find its physical address (street, city, state, and zip).</p>';
+	if (ih.indexOf(s) != -1 || ih.indexOf(s2) != -1 || ih.indexOf(s3) != -1) {
 		var run = function() {};
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
@@ -3432,7 +3433,7 @@ Laurens Hammond, Chicago, Ill.**/
 			o.u2 = o.u2.replace(/library/gi, '');
 			o.u3 = o.u3.replace(/library/gi, '');
 			o.u3 = o.u3.replace(/\s+/gi, ' ');
-			o.u3 = o.u3.trim() + ', Library';
+			o.u3 = o.u3.trim();// + ', Library';
 			//Elements
 			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			document.body.appendChild(d1);
@@ -3548,7 +3549,7 @@ Laurens Hammond, Chicago, Ill.**/
 						}
 					}
 					// o.q[4].value
-					if (!/^[A-Z0-9]{3} ?[A-Z0-9]{3}$/.exec(o.q[4].value)) {
+					if (!/^[A-Z0-9]{3} ?[A-Z0-9]{3}|[0-9]{5}$/.exec(o.q[4].value)) {
 						alert('Validate Zip Code!');
 						o.q[4].style.border = '4px solid blue';
 					}
