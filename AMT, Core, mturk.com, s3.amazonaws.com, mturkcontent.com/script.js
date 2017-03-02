@@ -123238,7 +123238,11 @@ qatar,80
 	 * Kari Hartnett
 	 * Jason Blackbriar
 	 * 
-	 * ...
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 */
 	// Jason Blackbriar
 	// Find local business details
@@ -123296,6 +123300,14 @@ qatar,80
 			var dx4 = document.createElement('input');
 			/*END ITEMS*/
 			dx3.innerText = o.zip;
+			var ef = new AMT___events_factory();
+			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				element: dx2,
+				callback: function(input_object) {
+					input_object.element.blur();
+				}
+			});
 			//~ showPastReturns('ChrisLintz' + o.comp, function(e) {
 				//~ if (e) {
 					//~ document.body.style.backgroundColor = 'pink';
@@ -123356,20 +123368,25 @@ qatar,80
 					//~ }
 					o.q[2].value = dx4.value.state_full_to_abbr();
 					var x = o.q[4].value.replace(/[\D]/g, '');
-					if (x.length != 10) {
+					if (x.length != 10) {	// Phone check 1
 						o.q[4].style.border = '4px solid blue';
 						return;
-					} else {
+					} else { 				// Phone check 2
 						var x = /^(\d{3})(\d{3})(\d{4})$/.exec(x);
 						o.q[4].value = x[1]+'-'+x[2]+'-'+x[3];
 					}
-					if (o.q[2].value != o.state && o.q[2].value != o.state.state_full_to_abbr()) { // Check if either: state_abbr or state_full
+					if (o.q[2].value != o.state && o.q[2].value != o.state.state_full_to_abbr()) {
+						// Check if either: state_abbr or state_full
 						o.q[2].style.border = '4px solid blue';
 						return;
 					}
 					// Auto
+					// Street>=6
+					// City>2
+					// State==2
+					// Zip == 5 or 5-4
 					if (
-						o.q[0].value.length > 2 &&
+						o.q[0].value.length >= 6 &&
 						o.q[1].value.length > 2 &&
 						o.q[2].value.length == 2 &&
 						/^\d{5}(-\d{4}|)$/.exec(o.q[3].value)
