@@ -4510,6 +4510,261 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	// Austin Livingston
+	// Lookup number of school students in an online database.
+	// Find the school on nces.ed.gov
+	//
+	s = '<p>3. Using the <strong>State</strong> drop-down list, select the state shown below.&nbsp; In the <strong>Name</strong> text box, enter the first 1-2 words of the school name shown below.&nbsp; Click "Search."</p>';
+	if(ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;cursor:pointer;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				name: td[1].innerText.trim(),
+				city: td[1].innerText.trim(),
+				state: td[1].innerText.trim(),
+				q: [
+					document.getElementById('total_enrollment'),
+					document.getElementById('web_url'),
+				]
+			}
+			/*BEGIN ITEMS*/
+			var d1 = ''.div({
+				style:
+				'position:absolute;top:40px;left:0%;width:99%;height:420px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:38px;');
+			document.body.appendChild(d2);
+			d2.value = o.name;
+			d2.onblur = g;
+			/*END ITEMS*/
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2],
+				blur_element: true
+			});
+			// Init
+			g();
+			//
+			function done(div) {
+				// nid
+				// div.nid
+				new AMT___requests_factory().xhr_with_disk_cache({
+					// Type=Public is required?
+					URL: 'https://nces.ed.gov/globallocator/sch_info_popup.asp?Type=Public&ID='+encodeURIComponent(div.nid),
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'black';
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						var td = dom.getElementsByTagName('td');
+						// Enroll
+						for (var i=0;i<td.length;i++) {
+							if (td[i].innerText == 'Total enrollment:') {	// Has this?
+								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+							else if (td[i].innerText == 'Total Students:') {// Or has this?
+								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								break;
+							}
+						}
+						// Good to go?
+						o.q[1].value = 'https://nces.ed.gov/globallocator/sch_info_popup.asp?Type=Public&ID='+div.nid;
+						// Submit...
+					}
+				});
+			}
+			// 
+			function g() {
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL: 'https://nces.ed.gov/globallocator/index.asp?search=1&State='+encodeURIComponent(o.state.state_full_to_abbr())+'&city=&zipcode=&miles=&itemname='+encodeURIComponent(o.name)+'&sortby=name&School=1&PrivSchool=1&College=1&Status=Search+Finished&Records=1',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						if (options.response.status != 200) {
+							document.body.style.backgroundColor = 'black';
+							return false;
+						}
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						var dom = new DOMParser().parseFromString(rs, 'text/html');
+						// ?? "No results were found from your search."
+						// hiddenitems_school
+						console.log(dom)
+						console.log(dom.getElementById('hiddenitems_school'))
+						var d = dom.getElementById('hiddenitems_school').getElementsByTagName('table')[0].getElementsByTagName('tr');
+						for (var i=0; i<d.length; i++) {
+							// New item.
+							var x = (d[i].innerText).div({
+								style:
+								'border-bottom:1px solid teal;'
+							});
+							x.className = 'exe';
+							x.nid = /ID=(\d+)'\);/.exec(d[i].innerHTML);
+							if (x.nid && x.nid[1]) { // Validate
+								x.nid = x.nid[1];
+								// Allow onclick
+								x.onclick = function() {
+									this.style.backgroundColor = 'teal';
+									done(this);
+								}
+							}
+							d1.appendChild(x);
+						}
+						
+						//~ // Desc
+						//~ var td = dom.getElementsByTagName('td');
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Description:') {
+								//~ o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Enroll
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText == 'Total enrollment:') {
+								//~ o.q[1].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Underg
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText == 'Undergraduate enrollment:') {
+								//~ o.q[2].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Men
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Men:') {
+								//~ o.q[3].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // American Indian or Alaskan Native
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'American Indian or Alaskan Native:') {
+								//~ o.q[4].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Asian
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Asian:') {
+								//~ o.q[5].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Black or African American
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Black or African American:') {
+								//~ o.q[6].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Hispanic/Latino
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Hispanic/Latino:') {
+								//~ o.q[7].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Native Hawaiian or other Pacific Islander
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Native Hawaiian or other Pacific Islander:') {
+								//~ o.q[8].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // White
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'White:') {
+								//~ o.q[9].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Two or more races
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Two or more races:') {
+								//~ o.q[10].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Race/ethnicity unknown
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Race/ethnicity unknown:') {
+								//~ o.q[11].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Non-resident alien
+						//~ for (var i=0;i<td.length;i++) {
+							//~ if (td[i].innerText.trim() == 'Non-resident alien:') {
+								//~ o.q[12].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								//~ break;
+							//~ }
+						//~ }
+						//~ // Tuition & fees
+						//~ // For 15/16, Must not be talking about in-state, out-of-state, etc.
+						//~ // Has hust one number.....
+						//~ // <font size='2'>2015-16</font> Is required.
+						//~ if (rs.indexOf("<font size='2'>2015-16</font>") != -1) {
+							//~ for (var i=0;i<td.length;i++) {
+								//~ if (td[i].innerText.trim() == 'Tuition & fees') {
+									//~ o.q[13].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+									//~ break;
+								//~ }
+							//~ }
+						//~ }
+						//~ // If no tuition but there is
+						//~ // "in-district / in-state / out-of-state"
+						//~ // then consider submitting.
+						//~ if (o.q[13].value == '' &&
+							//~ rs.indexOf('In-district') != -1 &&
+							//~ rs.indexOf('In-state') != -1 &&
+							//~ rs.indexOf('Out-of-state') != -1
+							//~ ) {
+							//~ for (var i in o.q) {
+								//~ o.q[i].value = o.q[i].value.trim();
+								//~ if (o.q[i].value == '' && i != 13) {
+									//~ document.body.style.backgroundColor = 'LightGreen';
+									//~ document.getElementById('Warning').checked = true;
+									//return;
+								//~ }
+							//~ }
+							//~ // Here?
+							//~ document.getElementById('Warning').checked = true;
+							//~ doSubmit();
+							//~ return;
+						//~ }
+						//~ // sbm
+						//~ for (var i in o.q) {
+							//~ o.q[i].value = o.q[i].value.trim();
+							//~ if (o.q[i].value == '') {
+								//~ document.body.style.backgroundColor = 'LightGreen';
+								//~ document.getElementById('Warning').checked = true;
+								//return;
+							//~ }
+						//~ }
+						//~ // Here?
+						//~ doSubmit();
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	// Austin Livingston
 	// Copy Information from Online Database
 	//
 	//
@@ -9015,7 +9270,6 @@ Laurens Hammond, Chicago, Ill.**/
 			var ef = new AMT___events_factory();
 			d1a.addEventListener('keydown', ef.keydown__blur_field, true);
 			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
-			
 			ef.mouseup__delete_range({
 				elements: [d1a, d2a],
 				blur_element: true
