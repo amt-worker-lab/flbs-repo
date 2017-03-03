@@ -4522,19 +4522,27 @@ Laurens Hammond, Chicago, Ill.**/
 			var td = document.getElementsByTagName('td');
 			var o = {
 				name: td[1].innerText.trim(),
-				city: td[1].innerText.trim(),
-				state: td[1].innerText.trim(),
+				city: td[3].innerText.trim(),
+				state: td[5].innerText.trim(),
+				bold: [],
 				q: [
 					document.getElementById('total_enrollment'),
 					document.getElementById('web_url'),
 				]
 			}
+			o.bold = o.name.clean_string_to_array().concat(o.city.clean_string_to_array());
 			/*BEGIN ITEMS*/
 			var d1 = ''.div({
 				style:
-				'position:absolute;top:40px;left:0%;width:99%;height:420px;background-color:#eee;border:1px solid blue;overflow:auto;'
+				'position:absolute;top:80px;left:0%;width:99%;height:420px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1);
+			var d1b = ''.div({
+				style:
+				'position:absolute;top:40px;left:0%;width:99%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
+			});
+			document.body.appendChild(d1b);
+			d1b.innerText = o.city+'\n'+o.state;
 			var d2 = document.createElement('input');
 			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:38px;');
 			document.body.appendChild(d2);
@@ -4546,6 +4554,16 @@ Laurens Hammond, Chicago, Ill.**/
 			ef.mouseup__delete_range({
 				elements: [d2],
 				blur_element: true
+			});
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 80 // offset top
 			});
 			// Init
 			g();
@@ -4569,11 +4587,11 @@ Laurens Hammond, Chicago, Ill.**/
 						var td = dom.getElementsByTagName('td');
 						// Enroll
 						for (var i=0;i<td.length;i++) {
-							if (td[i].innerText == 'Total enrollment:') {	// Has this?
+							if (td[i].innerText.trim() == 'Total enrollment:') {	// Has this?
 								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
 								break;
 							}
-							else if (td[i].innerText == 'Total Students:') {// Or has this?
+							else if (td[i].innerText.trim() == 'Total Students:') {// Or has this?
 								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
 								break;
 							}
@@ -4581,13 +4599,18 @@ Laurens Hammond, Chicago, Ill.**/
 						// Good to go?
 						o.q[1].value = 'https://nces.ed.gov/globallocator/sch_info_popup.asp?Type=Public&ID='+div.nid;
 						// Submit...
+						if (/^[\d,]+$/.exec(o.q[0].value)) {
+							doSubmit();
+						}
 					}
 				});
 			}
 			// 
 			function g() {
+				d1.innerText = '...';
 				new AMT___requests_factory().xhr_with_disk_cache({
-					URL: 'https://nces.ed.gov/globallocator/index.asp?search=1&State='+encodeURIComponent(o.state.state_full_to_abbr())+'&city=&zipcode=&miles=&itemname='+encodeURIComponent(o.name)+'&sortby=name&School=1&PrivSchool=1&College=1&Status=Search+Finished&Records=1',
+					URL: 'https://nces.ed.gov/globallocator/index.asp?search=1&State='+encodeURIComponent(o.state.state_full_to_abbr())+'&city=&zipcode=&miles=&itemname='+encodeURIComponent(d2.value.trim())+'&sortby=name&School=1&PrivSchool=1&College=1&Status=Search+Finished&Records=1',
+					// 
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						if (options.response.status != 200) {
 							document.body.style.backgroundColor = 'black';
@@ -4599,15 +4622,23 @@ Laurens Hammond, Chicago, Ill.**/
 						var rs = options.response.responseText;
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						// ?? "No results were found from your search."
+						if (rs.indexOf('No results were found from your search.') != -1) {
+							d1.innerText = d2.value + ': 0 results!';
+							return;
+						}
+						// Reset d1
+						d1.innerHTML = '';
 						// hiddenitems_school
 						console.log(dom)
-						console.log(dom.getElementById('hiddenitems_school'))
-						var d = dom.getElementById('hiddenitems_school').getElementsByTagName('table')[0].getElementsByTagName('tr');
+						console.log(dom.getElementById('institutions'))
+						var d = dom.getElementById('institutions').getElementsByTagName('table')[0].getElementsByTagName('tr');
+						var found = false;
 						for (var i=0; i<d.length; i++) {
 							// New item.
-							var x = (d[i].innerText).div({
-								style:
-								'border-bottom:1px solid teal;'
+							var y = MT__bold(d[i].innerText.trim(), o.bold).replace(/\n+/g, '<br>');
+							var x = y.div({
+								style: 'border-bottom:1px solid teal;',
+								innerHTML: true
 							});
 							x.className = 'exe';
 							x.nid = /ID=(\d+)'\);/.exec(d[i].innerHTML);
@@ -4616,10 +4647,23 @@ Laurens Hammond, Chicago, Ill.**/
 								// Allow onclick
 								x.onclick = function() {
 									this.style.backgroundColor = 'teal';
+									// Go to next tab while this loads...
+									new AMT___core_factory().nextTab();
+									// Load it...
 									done(this);
 								}
 							}
 							d1.appendChild(x);
+							// Auto?
+							if (!found &&
+								d[i].innerText.trim().indexOf(o.name) == 0 &&	// Starts with o.name
+								d[i].innerText.trim().indexOf(o.city) != -1 &&	// Contains exact match of city
+								o.name.length > 6 &&	// May not be too short...
+								o.city.length > 6		// May not be too short...
+								) {
+								found = true;
+								x.click();
+							}
 						}
 						
 						//~ // Desc
