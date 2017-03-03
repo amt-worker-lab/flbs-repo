@@ -4542,7 +4542,7 @@ Laurens Hammond, Chicago, Ill.**/
 				'position:absolute;top:40px;left:0%;width:99%;height:40px;background-color:#eee;border:1px solid blue;overflow:auto;'
 			});
 			document.body.appendChild(d1b);
-			d1b.innerText = o.city+'\n'+o.state;
+			d1b.innerText = o.name+'\n'+o.city+','+o.state;
 			var d2 = document.createElement('input');
 			d2.setAttribute('style', 'position:absolute;top:0px;left:0%;width:99%;height:38px;');
 			document.body.appendChild(d2);
@@ -4571,9 +4571,16 @@ Laurens Hammond, Chicago, Ill.**/
 			function done(div) {
 				// nid
 				// div.nid
+				// About two types...
+				// https://nces.ed.gov/globallocator/col_info_popup.asp?ID=208406
+				// https://nces.ed.gov/globallocator/sch_info_popup.asp?'+div.nid, //Type=Public&ID=
+				var u = (div.nid.indexOf('col_info_popup') != -1) ? 
+					'https://nces.ed.gov/globallocator/' + div.nid
+					: 
+					'https://nces.ed.gov/globallocator/sch_info_popup.asp?' + div.nid;
 				new AMT___requests_factory().xhr_with_disk_cache({
 					// Type=Public is required?
-					URL: 'https://nces.ed.gov/globallocator/sch_info_popup.asp?Type=Public&ID='+encodeURIComponent(div.nid),
+					URL: u,
 					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 						if (options.response.status != 200) {
 							document.body.style.backgroundColor = 'black';
@@ -4586,15 +4593,22 @@ Laurens Hammond, Chicago, Ill.**/
 						var dom = new DOMParser().parseFromString(rs, 'text/html');
 						var td = dom.getElementsByTagName('td');
 						// Enroll
+						var found = false;
 						for (var i=0;i<td.length;i++) {
 							if (td[i].innerText.trim() == 'Total enrollment:') {	// Has this?
 								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								found = true;
 								break;
 							}
 							else if (td[i].innerText.trim() == 'Total Students:') {// Or has this?
 								o.q[0].value = td[i].parentNode.getElementsByTagName('td')[1].innerText.trim();
+								found = true;
 								break;
 							}
+						}
+						if (!found) {
+							d1.innerText = 'No enrollment found!';
+							return;
 						}
 						// Good to go?
 						o.q[1].value = 'https://nces.ed.gov/globallocator/sch_info_popup.asp?Type=Public&ID='+div.nid;
@@ -4630,10 +4644,21 @@ Laurens Hammond, Chicago, Ill.**/
 						d1.innerHTML = '';
 						// hiddenitems_school
 						console.log(dom)
-						console.log(dom.getElementById('institutions'))
-						var d = dom.getElementById('institutions').getElementsByTagName('table')[0].getElementsByTagName('tr');
+						console.log(dom.getElementById('Institution'))
+						var d = dom.getElementsByClassName('Institution');
+						var c = []; // An array of TRs
+						for (var i=0; i<d.length; i++) {
+							var x = d[i].getElementsByTagName('tr');
+							for (var j=0; j<x.length; j++)
+								c.push(x[j]); // Add TR to c
+						}
+						d = c;
+						
+						// Hm?
+						//~ var d = dom.getElementById('Institution').getElementsByTagName('table')[0].getElementsByTagName('tr');
 						var found = false;
 						for (var i=0; i<d.length; i++) {
+							if (d[i].innerHTML.indexOf('ID=') == -1) continue;
 							// New item.
 							var y = MT__bold(d[i].innerText.trim(), o.bold).replace(/\n+/g, '<br>');
 							var x = y.div({
@@ -4641,9 +4666,19 @@ Laurens Hammond, Chicago, Ill.**/
 								innerHTML: true
 							});
 							x.className = 'exe';
-							x.nid = /ID=(\d+)'\);/.exec(d[i].innerHTML);
+							// ?Type=Public'+'&amp;ID=063036008941')
+							// ?Type=Private&amp;ID=063036008941')
+							// 'sch_info_popup.asp'+'?Type=Public'+'&amp;ID=292895002063'
+							// Have some limits on the length of these variables
+							// in order to ensure clean and safe URL.
+							x.nid = /(Type=[\w\+']{6,11}&amp;ID=[a-z\d]{0,16})'/i.exec(d[i].innerHTML);
+							console.log(x.nid);
+							console.log(d[i].innerHTML);
 							if (x.nid && x.nid[1]) { // Validate
 								x.nid = x.nid[1];
+								x.nid = x.nid.replace('&amp;', '&'); // Fix &amp
+								x.nid = x.nid.replace("'+'", ''); // Fix plus thingy
+								console.log(x.nid);
 								// Allow onclick
 								x.onclick = function() {
 									this.style.backgroundColor = 'teal';
@@ -4652,12 +4687,28 @@ Laurens Hammond, Chicago, Ill.**/
 									// Load it...
 									done(this);
 								}
+							} else {
+								// There is also a college URL?
+								// Hm...
+								// MoreInfo('col_info_popup.asp'+'?ID=208406');
+								x.nid = /(col_info_popup\.asp'\+'\?ID=[\d]+)/i.exec(d[i].innerHTML);
+								if (x.nid && x.nid[1]) { // Validate
+									x.nid = x.nid[1];
+									x.nid = x.nid.replace("'+'", ''); // Fix plus thingy
+									x.onclick = function() {
+										this.style.backgroundColor = 'teal';
+										// Go to next tab while this loads...
+										new AMT___core_factory().nextTab();
+										// Load it...
+										done(this);
+									}
+								}
 							}
 							d1.appendChild(x);
 							// Auto?
 							if (!found &&
-								d[i].innerText.trim().indexOf(o.name) == 0 &&	// Starts with o.name
-								d[i].innerText.trim().indexOf(o.city) != -1 &&	// Contains exact match of city
+								d[i].innerText.trim().toLowerCase().indexOf(o.name.toLowerCase()) == 0 &&	// Starts with o.name
+								d[i].innerText.trim().toLowerCase().indexOf(o.city.toLowerCase()) != -1 &&	// Contains exact match of city
 								o.name.length > 6 &&	// May not be too short...
 								o.city.length > 6		// May not be too short...
 								) {
