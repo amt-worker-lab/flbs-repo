@@ -61330,6 +61330,7 @@ Laurens Hammond, Chicago, Ill.**/
 	var s13 = "Draw a complete polygon around the target gas station (by clicking on the map). If you don't like the first polygon you drew";
 	var s14 = "Draw a complete polygon around the target&nbsp;hotel";
 	var s15 = '<li>Draw a complete polygon around the target hotel&nbsp;and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
+	var s15 = 'and parking lot (by clicking on the map). If you don\'t like the first polygon you drew, just draw another one. Only your last drawn polygon will be recorded and used as your submission.</li>';
 	
 	if  (
 		ih.indexOf(s)  != -1 ||
