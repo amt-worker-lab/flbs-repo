@@ -361,6 +361,16 @@ function init__scrapy() {
 			o.q[0].value = '';
 			console.log(o);
 			
+			// If NA, then return.
+			if (td[3].innerText.trim() == 'http://NA') {
+				new AMT___core_factory().
+					iframe2parent__postMessage( //
+						{
+							action: 'return_and_accept'
+						}
+					);
+				return;
+			}
 			/* BEGIN ITEMS */
 			var d1 = document.createElement('div');
 			d1.setAttribute('style',
