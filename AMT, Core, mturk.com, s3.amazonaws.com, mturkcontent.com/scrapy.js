@@ -1132,7 +1132,8 @@ function init__scrapy() {
 	// 
 	// 
 	//s = '<li>If there is no email address found on the website, then enter notfound@notfound.com into the Email field and notfound.com into the Email page URL field</li>';
-	s = '<li>Enter the email address for the website into the <strong>Email </strong>field. Use email from the school\'s general / main administration office where possible.</li>';
+	//s = '<li>Enter the email address for the website into the <strong>Email </strong>field. Use email from the school\'s general / main administration office where possible.</li>';
+	s = '<li>Enter the email address in proper format (name@example.com)</li>\n	<li>If there is no email address found on the website, then enter notfound@notfound.com into the Email field and notfound.com into the Email page URL field</li>';
 	if (ih.indexOf(s) != -1)
 	{
 		var run = function() {}
@@ -1146,7 +1147,9 @@ function init__scrapy() {
 			new AMT___core_factory().createScriptVar('OS-TabsQueue', '0');
 			new AMT___core_factory().createScriptVar('arg_max_pages_to_fetch', '40');
 			new AMT___core_factory().createScriptVar('scrapy_do_web_search', '1');
-			
+			// Call nextTab now...
+			new AMT___core_factory().nextTab();
+			//
 			var td = document.getElementsByTagName('td');
 			var o = {
 				sd_start_urls: [td[1].innerText.trim()],
@@ -1315,30 +1318,30 @@ function init__scrapy() {
 									 * }
 									 */
 									if (callback_obj.matches && callback_obj.matches.length) {
-										//~ var mt = callback_obj.matches;
-										//~ var reg = new RegExp(
-											//'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
-											//~ '^(info|information|contact|contactus|inquiry|support|help|communication)@' +
-											//~ __js_escape_regEx(o.sd_allowed_domains[0]) + '$',
-											//~ 'i'
-										//~ );
-										//~ for (var i in mt) {
-											//~ if  (
-												//~ mt[i].email_email &&
-												//~ mt[i].email_email.length > 6 &&
-												//~ mt[i].email_email.indexOf('@') != -1 &&
-												//~ reg.exec(mt[i].email_email)
-												//~ )
-											//~ {
-												//~ document.body.style.zoom = '0.4';
-												//~ o.q[0].value = mt[i].email_email;
-												//~ o.q[1].value = mt[i].url;
-												//~ if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
-													//~ return false;
-												//~ doSubmit();
-												//~ break; // Stop here
-											//~ }
-										//~ }
+										var mt = callback_obj.matches;
+										var reg = new RegExp(
+											//~ //'^(circdesk|circ|reference|helpdesk|library|librarian|circulation)@' +
+											'^(info|information|contact|contactus|inquiry|support|help|communication)@' +
+											__js_escape_regEx(o.sd_allowed_domains[0]) + '$',
+											'i'
+										);
+										for (var i in mt) {
+											if  (
+												mt[i].email_email &&
+												mt[i].email_email.length > 6 &&
+												mt[i].email_email.indexOf('@') != -1 &&
+												reg.exec(mt[i].email_email)
+												)
+											{
+												document.body.style.zoom = '0.4';
+												o.q[0].value = mt[i].email_email;
+												o.q[1].value = mt[i].url;
+												if (o.q[1].value.length < 6 || o.q[1].value.indexOf('http') == -1)
+													return false;
+												doSubmit();
+												break; // Stop here
+											}
+										}
 									}
 									else {
 										// Auto return and accept because
