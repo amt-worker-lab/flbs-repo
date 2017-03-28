@@ -3230,7 +3230,7 @@ function load()
 			ih.indexOf('<span id="ContentPlaceHolder1_lblCurrentTaxYear">Tax Year ') != -1
 			)
 		{
-			if (new Date().getFullYear() != '2016') {
+			if (new Date().getFullYear() != '2017') {
 				alert('_YEAR_'+ new Date().getFullYear());
 				alert('_YEAR_');
 				return;
@@ -3248,13 +3248,13 @@ function load()
 			var dvc;
 			for (var i in dv) {
 				if (i == 'length') break;
-				if (dv[i].getElementsByClassName('pinsummarytaxyeardisplay')[0].innerText.trim() == '2015') {
+				if (dv[i].getElementsByClassName('pinsummarytaxyeardisplay')[0].innerText.trim() == '2016') {
 					dvc = dv[i];
 					break;
 				}
 			}
 			if (!dvc) {
-				console.log('No 2015 Div');
+				console.log('No 2016 Div');
 				return;
 			}
 			complete.ContentPlaceHolder1_CP_BalanceDue = dvc.getElementsByClassName('pinsummaryamountduevalue')[0].innerText.trim();

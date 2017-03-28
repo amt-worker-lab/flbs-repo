@@ -186172,11 +186172,12 @@ qatar,80
 			filename: 'newline_financial_' + (b.replace(/[^\d]/g, '').substr(0, 20)) + '-' + d,
 			
 			q: [
-				document.getElementsByName('01 - 1st Installment Due')[0],
-				document.getElementsByName('04 - 1st Installment Tax')[0],
-				document.getElementsByName('02 - 2nd Installment Due')[0],
-				document.getElementsByName('05 - 2nd Installment Tax')[0],
-				document.getElementsByName('03 - Total Balance Due')[0]
+				document.getElementById('Q1Url')
+				//~ document.getElementsByName('01 - 1st Installment Due')[0],
+				//~ document.getElementsByName('04 - 1st Installment Tax')[0],
+				//~ document.getElementsByName('02 - 2nd Installment Due')[0],
+				//~ document.getElementsByName('05 - 2nd Installment Tax')[0],
+				//~ document.getElementsByName('03 - Total Balance Due')[0]
 			],
 			
 			start: new Date().getTime()
@@ -186254,12 +186255,14 @@ qatar,80
 				/^[\d,]+\.\d{2}$/.exec(v.data.ContentPlaceHolder1_CP_BalanceDue)
 				)
 			{
-				document.getElementsByName('01 - 1st Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount1;
+				
+				o.q[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount1
+				//~ document.getElementsByName('01 - 1st Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount1;
 				//~ document.getElementsByName('04 - 1st Installment Tax')[0].value = v.data.ContentPlaceHolder1_CP_TaxAmount1;
-				document.getElementsByName('02 - 2nd Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount2;
+				//~ document.getElementsByName('02 - 2nd Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount2;
 				//~ document.getElementsByName('05 - 2nd Installment Tax')[0].value = v.data.ContentPlaceHolder1_CP_TaxAmount2;
-				document.getElementsByName('03 - Total Balance Due')[0].value = v.data.ContentPlaceHolder1_CP_BalanceDue;
-				doSubmit();
+				//~ document.getElementsByName('03 - Total Balance Due')[0].value = v.data.ContentPlaceHolder1_CP_BalanceDue;
+				//~ doSubmit();
 			}
 		}
 		
