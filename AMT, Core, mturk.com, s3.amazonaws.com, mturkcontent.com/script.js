@@ -186154,13 +186154,14 @@ qatar,80
 	// Jordan A Gross
 	// newline financial
 	// cookcountytreasurer.com
-	//
+	// Note: 27 Mar 2016: Turn off iframe focus in Bird Variable.
+	// 		But also turn it off in All Pages Bird Variable!!!
 	s = '<li>Enter 14 digit Permanent Index Number (PIN) and Verification Code and click Search</li>';
 	if  (
 		ih.indexOf(s) != -1 &&
 		ih.indexOf('http://cookcountytreasurer.com') != -1 
 		) {
-		window.focus();
+		//~ window.focus();
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:40%;margin-top:0px;}');
 		
