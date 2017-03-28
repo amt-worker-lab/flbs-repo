@@ -186160,7 +186160,7 @@ qatar,80
 		ih.indexOf(s) != -1 &&
 		ih.indexOf('http://cookcountytreasurer.com') != -1 
 		) {
-		
+		window.focus();
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:40%;margin-top:0px;}');
 		
@@ -186172,8 +186172,8 @@ qatar,80
 			filename: 'newline_financial_' + (b.replace(/[^\d]/g, '').substr(0, 20)) + '-' + d,
 			
 			q: [
-				document.getElementById('Q1Url')
-				//~ document.getElementsByName('01 - 1st Installment Due')[0],
+				document.getElementsByName('0 - Result Type')[0],
+				document.getElementsByName('01 - Amount Due')[0],
 				//~ document.getElementsByName('04 - 1st Installment Tax')[0],
 				//~ document.getElementsByName('02 - 2nd Installment Due')[0],
 				//~ document.getElementsByName('05 - 2nd Installment Tax')[0],
@@ -186256,13 +186256,13 @@ qatar,80
 				)
 			{
 				
-				o.q[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount1
+				o.q[1].value = v.data.ContentPlaceHolder1_CP_TotalAmount1
 				//~ document.getElementsByName('01 - 1st Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount1;
 				//~ document.getElementsByName('04 - 1st Installment Tax')[0].value = v.data.ContentPlaceHolder1_CP_TaxAmount1;
 				//~ document.getElementsByName('02 - 2nd Installment Due')[0].value = v.data.ContentPlaceHolder1_CP_TotalAmount2;
 				//~ document.getElementsByName('05 - 2nd Installment Tax')[0].value = v.data.ContentPlaceHolder1_CP_TaxAmount2;
 				//~ document.getElementsByName('03 - Total Balance Due')[0].value = v.data.ContentPlaceHolder1_CP_BalanceDue;
-				//~ doSubmit();
+				doSubmit();
 			}
 		}
 		
@@ -186296,30 +186296,30 @@ qatar,80
 					
 					var rs = response.responseText;
 					rs = JSON.parse(rs);
-					
 					if  (
 						rs.hasOwnProperty('ContentPlaceHolder1_CP_TotalAmount1') &&
-						rs.hasOwnProperty('ContentPlaceHolder1_CP_TotalAmount2') &&
-						rs.hasOwnProperty('ContentPlaceHolder1_CP_TaxAmount1') &&
-						rs.hasOwnProperty('ContentPlaceHolder1_CP_TaxAmount2') &&
-						rs.hasOwnProperty('ContentPlaceHolder1_CP_BalanceDue') &&
+						//~ rs.hasOwnProperty('ContentPlaceHolder1_CP_TotalAmount2') &&
+						//~ rs.hasOwnProperty('ContentPlaceHolder1_CP_TaxAmount1') &&
+						//~ rs.hasOwnProperty('ContentPlaceHolder1_CP_TaxAmount2') &&
+						//~ rs.hasOwnProperty('ContentPlaceHolder1_CP_BalanceDue') &&
 						rs.ContentPlaceHolder1_CP_TotalAmount1.length > 1 &&
-						rs.ContentPlaceHolder1_CP_TotalAmount2.length > 1 &&
-						rs.ContentPlaceHolder1_CP_TaxAmount1.length > 1 &&
-						rs.ContentPlaceHolder1_CP_TaxAmount2.length > 1 &&
-						rs.ContentPlaceHolder1_CP_BalanceDue.length > 1 &&
-						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TotalAmount1) &&
-						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TotalAmount2) &&
-						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TaxAmount1) &&
-						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TaxAmount2) &&
-						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_BalanceDue)
+						//~ rs.ContentPlaceHolder1_CP_TotalAmount2.length > 1 &&
+						//~ rs.ContentPlaceHolder1_CP_TaxAmount1.length > 1 &&
+						//~ rs.ContentPlaceHolder1_CP_TaxAmount2.length > 1 &&
+						//~ rs.ContentPlaceHolder1_CP_BalanceDue.length > 1 &&
+						/^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TotalAmount1)
+						//~ /^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TotalAmount2) &&
+						//~ /^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TaxAmount1) &&
+						//~ /^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_TaxAmount2) &&
+						//~ /^[\d,]+\.\d{2}$/.exec(rs.ContentPlaceHolder1_CP_BalanceDue)
 						)
 					{
-						document.getElementsByName('01 - 1st Installment Due')[0].value = rs.ContentPlaceHolder1_CP_TotalAmount1;
+						o.q[1].value = rs.ContentPlaceHolder1_CP_TotalAmount1
+						//~ document.getElementsByName('01 - 1st Installment Due')[0].value = rs.ContentPlaceHolder1_CP_TotalAmount1;
 						//~ document.getElementsByName('04 - 1st Installment Tax')[0].value = rs.ContentPlaceHolder1_CP_TaxAmount1;
-						document.getElementsByName('02 - 2nd Installment Due')[0].value = rs.ContentPlaceHolder1_CP_TotalAmount2;
+						//~ document.getElementsByName('02 - 2nd Installment Due')[0].value = rs.ContentPlaceHolder1_CP_TotalAmount2;
 						//~ document.getElementsByName('05 - 2nd Installment Tax')[0].value = rs.ContentPlaceHolder1_CP_TaxAmount2;
-						document.getElementsByName('03 - Total Balance Due')[0].value = rs.ContentPlaceHolder1_CP_BalanceDue;
+						//~ document.getElementsByName('03 - Total Balance Due')[0].value = rs.ContentPlaceHolder1_CP_BalanceDue;
 						doSubmit();
 					}
 				}
