@@ -186161,7 +186161,6 @@ qatar,80
 		ih.indexOf(s) != -1 &&
 		ih.indexOf('http://cookcountytreasurer.com') != -1 
 		) {
-		//~ window.focus();
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
 		GM_addStyle('body {width:40%;margin-top:0px;}');
 		
