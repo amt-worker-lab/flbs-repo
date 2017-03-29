@@ -134090,8 +134090,11 @@ qatar,80
 	//
 	// 
 	var s = '<p>***Please only give the main website URL. Please copy and paste the ENTIRE website URL (including the http).</p>';
-	var s = '<p><b>Find the website of the Australian company. Copy and paste the website into the website address field.</b></p>';
-	if (ih.indexOf(s) != -1)
+	var s1 = '<p><b>Find the website of the Australian company. Copy and paste the website into the website address field.</b></p>';
+	var s2 = '<p>Find the website of the Australian legal firm. If the HIT is an individual, find the website of the legal firm that the individual belongs to.</p>\n\n<p>Copy and paste the company website URL.</p>';
+	if (
+		ih.indexOf(s1) != -1 ||
+		ih.indexOf(s2) != -1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {
