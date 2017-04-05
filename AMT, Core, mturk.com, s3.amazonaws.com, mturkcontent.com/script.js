@@ -186534,8 +186534,8 @@ qatar,80
 									// Use this way.
 									document.getElementsByName('Sold - Additional Years')[0].checked = true;
 									// Debug mode.
-									alert('Tested sold additional. Comment out.');
-									return;
+										//~ alert('Tested sold additional. Comment out.');
+										//~ return;
 									////////////////
 									// Old way, Approx. 2015-2016
 									////////////////
