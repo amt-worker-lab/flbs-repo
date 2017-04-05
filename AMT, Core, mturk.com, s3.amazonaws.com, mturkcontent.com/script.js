@@ -186469,7 +186469,6 @@ qatar,80
 							// SOLD
 							if (rs[i][0] == 'sold') {
 								// HAS TO BE YEAR + Annual|Scavenger
-								
 								// 2010 Special Assessment
 								// 2010
 								// 2010 Annual Sale
@@ -186534,8 +186533,14 @@ qatar,80
 									// Use this way.
 									document.getElementsByName('Sold - Additional Years')[0].checked = true;
 									// Debug mode.
-										//~ alert('Tested sold additional. Comment out.');
-										//~ return;
+								//////////////////////////
+								// WARNING
+								// FOR extra entries (extra checkbox=true)
+								// WHAT ABOUT "EMPTY" YEARS?
+								// So.... on cookcounty website... 
+								//////////////////////////
+									alert('Tested sold additional. Comment out.');
+									return;
 									////////////////
 									// Old way, Approx. 2015-2016
 									////////////////
