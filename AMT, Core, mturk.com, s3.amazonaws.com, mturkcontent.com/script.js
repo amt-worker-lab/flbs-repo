@@ -186469,6 +186469,7 @@ qatar,80
 							// SOLD
 							if (rs[i][0] == 'sold') {
 								// HAS TO BE YEAR + Annual|Scavenger
+								// Examples: 
 								// 2010 Special Assessment
 								// 2010
 								// 2010 Annual Sale
@@ -186480,44 +186481,82 @@ qatar,80
 									continue;
 								}
 								var year = x[1];
-								var type_sale = (x[2] == ' Annual Sale' || x[2] == ' Scavenger Sale') ? x[2] : '';
+								var type_sale = '';
+								if (x[2] == ' Annual Sale' ||
+									x[2] == ' Scavenger Sale' ||
+									x[2] == ' Special Assessment'
+									) {
+									type_sale = x[2]
+								}
 								
-								//non-static
+								// Loop through all TR elements.
 								x = document.getElementsByTagName('tr');
 								for (j in x) {
 									if (j == 'length') break;
 									if (!x[j].innerHTML) continue;
 									
 									if (x[j].innerHTML.indexOf('name="Sold ') != -1 && !x[j].isSelected) {
-										
 										x[j].isSelected = true;
-										
 										found = true;
-										
+										// Status field
 										y = x[j].getElementsByTagName('select')[0]; // 0 TO 1
 										switch (type_sale) {
 											case ' Annual Sale':
 												y.selectedIndex = 1;
+												if (y.value != 'Annual Sale') {
+													pause = true
+													console.log('pause1.1a')
+												}
 												break;
 											case ' Scavenger Sale':
 												y.selectedIndex = 2;
+												if (y.value != 'Scavenger Sale') {
+													pause = true
+													console.log('pause1.1b')
+												}
+												break;
+											case ' Special Assessment':
+												y.selectedIndex = 3;
+												if (y.value != 'Special Assessment') {
+													pause = true
+													console.log('pause1.1c')
+												}
 												break;
 											default:
-												//~ sbm = false;
+												pause = true
+												console.log('pause1.1')
 												break;
 										}
 										
 										y = x[j].getElementsByTagName('select')[1]; // 0 TO 1
-										if (rs[i][3] == 'Sold')
+										if (rs[i][3] == 'Sold') {
 											y.selectedIndex = 1;
-										else if (rs[i][3] == 'Redeemed')
+											if (y.value != 'Sold') {
+												pause = true
+												console.log('pause1.2')
+											}
+										} else if (rs[i][3] == 'Redeemed') {
 											y.selectedIndex = 2;
-										else if (rs[i][3] == 'Vacated')
+											if (y.value != 'Redeemed') {
+												pause = true
+												console.log('pause1.3')
+											}
+										} else if (rs[i][3] == 'Vacated') {
 											y.selectedIndex = 3;
-										else if (rs[i][3] == 'Deeded')
+											if (y.value != 'Vacated') {
+												pause = true
+												console.log('pause1.4')
+											}
+										} else if (rs[i][3] == 'Deeded') {
 											y.selectedIndex = 4;
-										else
+											if (y.value != 'Deeded') {
+												pause = true
+												console.log('pause1.5')
+											}
+										} else {
 											pause = true;
+											console.log('pause1.6')
+										}
 										
 										y = x[j].getElementsByTagName('input');
 										y[0].value = year;
@@ -186527,6 +186566,10 @@ qatar,80
 										// STOP HERE!
 										break;
 									}
+								}
+								if (pause) {
+									alert('Pause is true! Either RETURN&ACCEPT or fix the code. Do not submit this one!');
+									return;
 								}
 								if (!found) {
 									rs[i].shift();
@@ -186538,9 +186581,19 @@ qatar,80
 								// FOR extra entries (extra checkbox=true)
 								// WHAT ABOUT "EMPTY" YEARS?
 								// So.... on cookcounty website... 
+								// It looks like on some of the past years
+								// there are some totally blank entries.
+								// It is just the year!
+								// This is on cookcounty. And so, in our
+								// code, we count this as an "extra" year.
+								// Hm. Anyway... There was a test case
+								// but it went away. So at some point
+								// another test case will come up.
+								// A better test for this would be check
+								// when "pause" == true (from above).
 								//////////////////////////
-									alert('Tested sold additional. Comment out.');
-									return;
+									//~ alert('Tested sold additional. Do not submit this one! Comment out.');
+									//~ return;
 									////////////////
 									// Old way, Approx. 2015-2016
 									////////////////
