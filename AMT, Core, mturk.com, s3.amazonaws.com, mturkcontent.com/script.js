@@ -186369,15 +186369,15 @@ qatar,80
 			document.body.appendChild(d);
 			var d2 = document.getElementById('d2');
 			d2.style.position='absolute';
-			d2.style.top='600px';
-			d2.style.left='0%';
-			d2.style.width='38%';
-			d2.style.height='120px';
+			d2.style.top='0';
+			d2.style.left='180px';
+			d2.style.width='40px';
+			d2.style.height='80px';
 			d2.style.border='1px solid blue';
-			d2.style.fontSize='12px';
-			d2.style.display='none';
+			d2.style.fontSize='10px';
+			//~ d2.style.display='none';
 			d2.onblur = function() {
-				this.parentNode.removeChild(this);
+				//~ this.parentNode.removeChild(this);
 			}
 			// post to child
 			var ifr_intv = setInterval(function() {
@@ -186623,18 +186623,26 @@ qatar,80
 										if (x[j].innerHTML.indexOf('name="Delinquent ') != -1 &&
 											x[j].innerHTML.indexOf('Forfeited') != -1 &&
 											!x[j].isSelected) {
-											// Set isSelected
-											x[j].isSelected = true;
-											// Set found
-											found = true;
+											x[j].isSelected = true; // Set isSelected
+											found = true; // Set found
 											// Select field
 											y = x[j].getElementsByTagName('select')[0];
-											if (rs[i][2] == 'Open')
+											if (rs[i][2] == 'Open') {
 												y.selectedIndex = 1;
-											else if (rs[i][2] == 'Forfeited')
+												if (y.value != 'Open') {
+													pause = true
+													console.log('pause2.1')
+												}
+											} else if (rs[i][2] == 'Forfeited') {
 												y.selectedIndex = 2;
-											else
+												if (y.value != 'Forfeited') {
+													pause = true
+													console.log('pause2.2')
+												}
+											} else {
 												pause = true;
+												console.log('pause2.3')
+											}
 												
 											y = x[j].getElementsByTagName('input');
 											y[0].value = year;							// Tax year
@@ -186644,22 +186652,15 @@ qatar,80
 											break;
 										}
 									}
+									if (pause) {
+										alert('Pause is true! Either RETURN&ACCEPT or fix the code. Do not submit this one!');
+										return;
+									}
 									if (!found) {
 										rs[i].shift();
 										// Use this way now...
 										document.getElementById('MoreDelinquentTaxCheckbox').checked = true;
-										//~ // Debug mode.
-											//~ alert('Passing test: Sold additional.');
-											//~ return;
-										/////
-										// Old way. Approx 2015-2016
-										/////
-										//document.getElementsByName('1 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
-										//d2.value += 'Delinquent Taxes - '+rs[i].join(' ') + "\n";
-										/////
-										// Old way. Approx 2014
-										/////
-										//~ document.getElementsByName('36 - Other Years')[0].value += 'Delinquent Taxes - '+rs[i].join(" ") + ' ';
+										
 									}
 								}
 							}
