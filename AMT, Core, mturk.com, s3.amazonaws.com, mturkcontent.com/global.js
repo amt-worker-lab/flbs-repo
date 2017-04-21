@@ -2902,7 +2902,8 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 			var text = this.value;
 			
 			var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
-			this.value = new_text.trim(); // DEFAULT IS TRIM! Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
+			this.value = new_text.trim();	// DEFAULT IS TRIM!
+											// Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
 			
 			if (options_object.hasOwnProperty('callback')) {
 				options_object.callback(options_object);
@@ -2911,6 +2912,26 @@ AMT___events_factory.prototype.mouseup__delete_range = function(options_object) 
 			}
 			
 		}, false);
+		// TODO: TESTING. Does this work as exptected?
+		//~ el.addEventListener('mouseout', function() {
+			
+			//~ // Only run when the selection is not blank.
+			//~ //
+			//~ //
+			//~ if (window.getSelection().toString() == '') return;
+			
+			//~ var text = this.value;
+			
+			//~ var new_text = text.substr(0, this.selectionStart) + text.substr(this.selectionEnd);
+			//~ this.value = new_text.trim(); // DEFAULT IS TRIM! Add something like options_object.hasOwnProperty('DO_NOT_TRIM') to not trim.
+			
+			//~ if (options_object.hasOwnProperty('callback')) {
+				//~ options_object.callback(options_object);
+			//~ } else if (options_object.hasOwnProperty('blur_element')) {
+				//~ this.blur();
+			//~ }
+			
+		//~ }, false);
 	}
 	
 }

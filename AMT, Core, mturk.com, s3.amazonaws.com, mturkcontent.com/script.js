@@ -11191,10 +11191,10 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			/*Begin Items*/
 			var d1 = document.createElement('div');
-			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
+			d1.setAttribute('style','position:absolute;top:220px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
 			document.body.appendChild(d1);
 			var d2 = document.createElement('input');
-			d2.setAttribute('style','position:absolute;top:260px;height:80px;left:0%;width:99%;font-size:2em !important;'); //
+			d2.setAttribute('style','position:absolute;top:160px;height:60px;left:0%;width:99%;font-size:2em !important;'); //
 			document.body.appendChild(d2);
 			d2.value = o.comp;
 			d2.onblur = function() {
@@ -11224,9 +11224,15 @@ Laurens Hammond, Chicago, Ill.**/
 				//~ AMT___recordAndSubmit();
 				//~ doSubmit();
 			}
+			
 			// ef
 			var ef = new AMT___events_factory();
 			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [d2],
+				blur_element: true
+			});
+			
 			// submitButton. Record these.
 			document.getElementById('submitButton').onclick = function(e) {
 				e.stopPropagation();
@@ -11241,6 +11247,14 @@ Laurens Hammond, Chicago, Ill.**/
 			
 			// init
 			cb();
+			
+			//try_sbm
+			function try_sbm() {
+				if (/^https?:\/\/www\.crunchbase\.com\/organization\/[^\/]+\/?$/.exec(o.q[0].value)) {
+					AMT___recordAndSubmit();
+				}
+			}
+			
 			// cb
 			function cb() {
 				document.body.style.backgroundColor = '#fff';
@@ -11282,7 +11296,9 @@ Laurens Hammond, Chicago, Ill.**/
 							alert('unsuccessful load');
 							return;
 						}
+						console.log(rs);
 						rs = JSON.parse(rs); // Array of objects
+						console.log(rs);
 						if (!rs.hasOwnProperty('hits') || !rs.hits.length) {
 							d1.innerHTML = '0 - crunchbase';
 							return;
@@ -11292,13 +11308,18 @@ Laurens Hammond, Chicago, Ill.**/
 						for (var i in rs) {
 							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
 							var p = rs[i].profile_image_url;
+							console.log(rs[i]);
 							
 							var div = document.createElement('div');
 							div.setAttribute('style', 'float:left; width:49%;');
 							rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
 							div.className = 'exe';
 							div.compName = rs[i].name;
-							div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
+							//~ div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
+							// http
+							div.href = 'http://www.crunchbase.com'+rs[i].url.replace(/organizations/, 'organization');
+							// https
+							//~ div.href = 'https://www.crunchbase.com/'+rs[i].url.replace(/organizations/, 'organization');
 							
 							var div2 = document.createElement('div');
 							div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
