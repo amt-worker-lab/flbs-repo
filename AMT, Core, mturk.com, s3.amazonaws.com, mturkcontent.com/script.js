@@ -11158,10 +11158,199 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
-	//
-	//
+	// Dale Chang
+	// 
+	var s = '<li>If the company exists, enter the unique Crunchbase URL for the given startup. Include the full Crunchbase URL. For instance, in the case of "Slack", please provide https://www.crunchbase.com/organization/slack. Not, not all Crunchbase URLs will follow the structure of "organization/name"</li>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('input {width:100% !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:60% !important;height:100px;top:50px;left:40%;position:absolute;top:50px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim(),
+				url: td[3].innerText.trim(), // e.g. www.abc.com
+				description: td[5].innerText.trim(), // e.g. www.abc.com
+				domain: null,
+				bold: null,
+				bolddm: null,
+				q: [
+					document.getElementById('web_url')
+				]
+			}
+			o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '').replace(/\/$/, '');
+			o.bold = o.comp.clean_string_to_array();
+			o.comp_auto = o.comp.clean_str_to_auto();
+			o.bolddm = o.domain.clean_string_to_array();
+			
+			/*Begin Items*/
+			var d1 = document.createElement('div');
+			d1.setAttribute('style','position:absolute;top:340px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
+			document.body.appendChild(d1);
+			var d2 = document.createElement('input');
+			d2.setAttribute('style','position:absolute;top:260px;height:80px;left:0%;width:99%;font-size:2em !important;'); //
+			document.body.appendChild(d2);
+			d2.value = o.comp;
+			d2.onblur = function() {
+				this.value = this.value.trim();
+				cb();
+			}
+			var d3 = document.createElement('input');
+			d3.type = 'button';
+			d3.value = 'N/A';
+			d3.setAttribute('style','position:absolute;top:0px;height:40px;left:40%;width:60% !important;');
+			document.body.appendChild(d3);
+			/*End Items*/
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 340 // offset top
+			});
+			d3.onclick = function() {
+				for (var i in o.q) {
+					o.q[i].value = 'N/A';
+				}
+				//~ AMT___recordAndSubmit();
+				//~ doSubmit();
+			}
+			// ef
+			var ef = new AMT___events_factory();
+			d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			// submitButton. Record these.
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit();
+			}
+			AMT___addUserDecision('Dale Chang-cb', function() {
+					return o.comp +'|||'+ o.url;
+				},
+				['Id(web_url)']
+			)
+			
+			// init
+			cb();
+			// cb
+			function cb() {
+				document.body.style.backgroundColor = '#fff';
+				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
+				d1.innerHTML = '';
+				d2.value = d2.value.trim();
+				//post_object
+				var ux = 'https://a0ef2haqr0-2.algolia.io/1/indexes/main_production/query';
+				var opts = {
+					headers_array: [
+						'Origin: https://www.crunchbase.com',
+						'Accept-Encoding: gzip, deflate',
+						'X-Algolia-API-_API_KEY_REDACTED_,
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36',
+						'Content-type: application/json',
+						'Accept: */*',
+						'X-Algolia-Application-Id: A0EF2HAQR0',
+						'Referer: https://www.crunchbase.com/search?show_results=1&navigation_search_input='+encodeURIComponent(d2.value),
+						'Connection: keep-alive'
+					],
+					do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					post_object_as_str: '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				d1.innerHTML = '';
+				// Xhr request
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						rs = JSON.parse(rs); // Array of objects
+						if (!rs.hasOwnProperty('hits') || !rs.hits.length) {
+							d1.innerHTML = '0 - crunchbase';
+							return;
+						}
+						rs = rs.hits;
+						var first = true;
+						for (var i in rs) {
+							if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
+							var p = rs[i].profile_image_url;
+							
+							var div = document.createElement('div');
+							div.setAttribute('style', 'float:left; width:49%;');
+							rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
+							div.className = 'exe';
+							div.compName = rs[i].name;
+							div.href = 'https://www.crunchbase.com/'+rs[i].api_path.replace(/organizations/, 'organization');
+							
+							var div2 = document.createElement('div');
+							div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
+								'<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold)+
+								'<br>' + MT__bold(div.href, o.bold)+
+								'<br>' + MT__bold(rs[i].domain, o.bolddm);
+							div2.setAttribute('style', 'float:left;');
+							div.appendChild(div2);
+							div.onclick = function() {
+								o.q[0].value = this.href;
+								this.style.backgroundColor = 'LightGreen';
+								try_sbm();
+							}
+							var br = document.createElement('br');
+							br.clear = 'both';
+							div.appendChild(br);
+							// Append
+							d1.appendChild(div);
+							
+							// Auto
+							console.log('auto');
+							console.log(o.comp_auto + ' ' + rs[i].name.clean_str_to_auto());
+							console.log(o.comp_auto == rs[i].name.clean_str_to_auto());
+							console.log(o.domain + ' ' + rs[i].domain);
+							console.log(o.domain == rs[i].domain);
+							if  (
+								first &&
+								o.domain == rs[i].domain && 
+								o.comp_auto == rs[i].name.clean_str_to_auto() &&
+								o.domain.length > 3 &&
+								o.comp_auto.length > 3
+								) {
+								div.click();
+							}
+							first = false; // Set false
+						}
+						if (d1.innerText != '')
+							d1.appendChild(''.div({style:'height:1600px;'}));
+						else
+						{
+							d1.innerText = '0 - crunchbase';
+						}
+					}
+				});
+			}
+		}
+		new run().f();
+	}
+	
 	// Philip Kim
 	// Search for a company on a website and capture one field on that page
+	//
 	s='Look at the page URL and extract the last portion of the URL that mentions the company name.';
 	if(ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -11308,13 +11497,6 @@ Laurens Hammond, Chicago, Ill.**/
 				if (i == 'length') continue;
 				br[i].parentNode.removeChild(br[i]);
 			}
-			//~ // REMOVE ALL "&nbsp;" HTML ELEMENTS!
-			//~ var n = document.getElementsByTagName('*');
-			//~ for (var i=n.length-1; i>=0; i--) {
-				//~ if (i == 'length') continue;
-				//~ if (n[i].innerHTML == '&nbsp;')
-					//~ n[i].parentNode.removeChild(n[i]);
-			//~ }
 			
 			var ef = new AMT___events_factory();
 			d2a.addEventListener('keydown', ef.keydown__blur_field, true);
@@ -11418,19 +11600,6 @@ Laurens Hammond, Chicago, Ill.**/
 							debugDiv.innerText = 'Error scraping URL';
 							return;
 						}
-						//~ //var rdfsLabelReg= /<span class="literal"><span property="rdfs:label"[^>]+>([^<]+)<\/span>/
-						//~ var rdfsLabelReg = /\/([^\/]+)$/;
-						//~ rdfsLabel = rdfsLabelReg.exec(u);
-						//~ console.log(u);
-						//~ if(rdfsLabel) {
-							//~ rdfsLabel = rdfsLabel[1].replace(/\_/g, ' ');
-						//~ }
-						//~ else {
-							//~ console.log('err scraping rdfsLabel');
-							//~ debugDiv.innerText = 'err scraping rdfs label';
-							//~ return;
-						//~ }
-						
 						debugDiv.innerText = 'type: ' + compType + '\nlabel:' + rdfsLabel; 
 						if(
 							compType.toLowerCase().indexOf('company') != -1 ||
@@ -11471,19 +11640,12 @@ Laurens Hammond, Chicago, Ill.**/
 					},
 					onload: function (response) {
 						var rs = response.responseText;
-						//~ 
-						//~ if(rs.indexOf('This XML file does not appear to have any style information associated with it. The document tree is shown below.') != -1) {
-							//~ div.innerHTML = '0';
-						//~ }
-						//~ console.log(rs);
-						
 						if(response.status != '200') {
 							div.innerText = response.status;
 							div.style.backgroundColor = 'yellow';
 							console.log(response.responseState);
 							return;
 						}
-						//console.log(rs);
 						rs = JSON.parse(rs);
 						if(!rs) {
 							console.log('error parsing');
@@ -11502,7 +11664,6 @@ Laurens Hammond, Chicago, Ill.**/
 							el_div.className = 'exe';
 							el_div.innerText = 'c: ' + comps[i].label;
 							el_div.site = comps[i].uri;
-							//~ console.log(el_div.site);
 							document.body.style.backgroundColor = 'MintGreen';
 							el_div.onclick = function() {
 								this.style.backgroundColor = 'LightGreen';
@@ -11520,23 +11681,10 @@ Laurens Hammond, Chicago, Ill.**/
 								window.open(this.site, '_blank');
 							}
 							div.appendChild(el_div);
-							
-							//~ var el_div = document.createElement('div');
-							//~ el_div.setAttribute('style','width:20%;float:left;overflow:hidden;');
-							//~ el_div.className = 'exe';
-							//~ el_div.site = comps[i].uri;
-							//~ el_div.innerText = '_desc_';
-							//~ el_div.onclick = function() {
-								//~ this.style.backgroundColor = 'LightGreen';
-								//~ window.open(this.site, '_blank');
-							//~ }
-							//~ div.appendChild(el_div);
-							
 						}
 					}
 				});
 			}
-			
 			
 			function try_sbm() {
 				o.q[0].value = o.q[0].value.trim();
@@ -11640,7 +11788,6 @@ Laurens Hammond, Chicago, Ill.**/
 						{
 							out.innerText = '0 - crunchbase';
 						}
-						
 					}
 				});
 			}
@@ -11648,8 +11795,6 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
-	
-	//
 	// Binoy Bhansali
 	// Find Company Funding Status
 	// 
@@ -11740,11 +11885,8 @@ Laurens Hammond, Chicago, Ill.**/
 			function cb() {
 				document.body.style.backgroundColor = '#fff';
 				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
-				
 				d1.innerHTML = '';
-				//~ inpVal = d2c.value;
 				d2.value = d2.value.trim();
-				
 				//post_object
 				var ux = 'https://a0ef2haqr0-2.algolia.io/1/indexes/main_production/query';
 				var opts = {
@@ -11937,35 +12079,7 @@ Laurens Hammond, Chicago, Ill.**/
 							
 							// Total funding
 							// document.getElementsByClassName('overview-stats')[0].getElementsByClassName('funding_amount')[0].innerText
-							//~ var fa = os.getElementsByClassName('funding_amount');
-							//~ var dt = os.getElementsByTagName('dt')
-							//~ if (!fa || !fa.length) { //  || os.getElementsByTagName('dt')[0].innerText != 'Funding Received'
-								
-							//~ } else {
-								//~ if (dt[0].innerText == 'Funding Received') {
-									//~ fa = fa[0];
-								//~ } else if (dt[1].innerText == 'Funding Received') {
-									//~ fa = fa[1];
-								//~ } else {
-									//~ return;
-								//~ }
-								
-								
-							//~ }
-							
-							//~ // Most recent...
-							//~ if (os.innerText.indexOf('Most Recent Funding') == -1) {
-								//~ o.q[1].value = 'N/A';
-							//~ } else if (os.getElementsByTagName('dt')[1].innerText != 'Most Recent Funding') {
-								//~ o.q[1].value = 'RF!';
-								//~ return;
-							//~ } else {
-								//~ var dd = os.getElementsByTagName('dd')[1];
-								//~ console.log(dd.innerHTML);
-								
-								
-							//~ }
-						}
+					}
 						
 						// The investors table
 						// NOTE: "All Investors" (if there are more than X...)
