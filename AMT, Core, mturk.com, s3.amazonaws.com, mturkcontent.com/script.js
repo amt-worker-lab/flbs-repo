@@ -97819,11 +97819,11 @@ qatar,80
 					//~ dvlottery_2(); // Go to 4.
 				} else if (this.value.length == 6) {
 					this.blur(); // No more focus.
-					dvlottery_2(); // Go to 4.
+					dvlottery_2(0); // Go to 4.
 				}
 				if (e.keyCode == 13) {
 					this.blur(); // No more focus.
-					dvlottery_2(); // Go to 4.
+					dvlottery_2(0); // Go to 4.
 				}
 			}
 			
@@ -98014,7 +98014,7 @@ qatar,80
 			 * Therefore, this essentially performs a GET request for "http://researchcu.ncua.gov/Views/creditUnionInfo.aspx".
 			 * This is to retrieve the CAPTCHA URL, credit union name, and submit vars.
 			 */
-			function dvlottery_2(rs) {
+			function dvlottery_2(num_tries) {
 				// Display output
 				d2.innerText = 'Loading Response...';
 				// ...
@@ -98170,9 +98170,17 @@ qatar,80
 						// If still here then there is an issue.
 						// Try reloading the frame and re-type captcha.
 						//~ document.location.reload();
-						dvlottery_1();
-						document.body.style.backgroundColor = 'pink';
-						d1.value = '';
+						if (num_tries < 2) {
+							num_tries += 1;
+							d2.innerText = 'tries:'+num_tries;
+							dvlottery_2(num_tries);
+						} else {
+							dvlottery_1();
+							document.body.style.backgroundColor = 'pink';
+							//~ d1.innerText = 'tries:'+num_tries;
+							d1.value = '';
+						}
+						
 						//~ console.log(rs);
 						
 						// If still here then selected?
