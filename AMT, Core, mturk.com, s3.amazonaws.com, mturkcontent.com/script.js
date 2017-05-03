@@ -97797,7 +97797,7 @@ qatar,80
 			document.body.appendChild(o.im);
 			// d1
 			var d1 = document.createElement('input');
-			d1.setAttribute('style', 'position:absolute;left:0;top:100px;height:100px;width:302px;max-width:40%;font-size:40px;'); //
+			d1.setAttribute('style', 'position:absolute;left:0;top:100px;height:100px;width:302px;max-width:40%;font-size:40px;border:4px solid blue;'); //
 			document.body.appendChild(d1);
 			// d2
 			var d2 = document.createElement('div');
@@ -97806,23 +97806,22 @@ qatar,80
 			/*END ITEMS*/
 			
 			// Focus
-			setTimeout(function() {
+			setInterval(function() {
 				d1.focus();
-			}, 2000);
+			}, 100);
 			// Onkeyup
 			d1.onkeyup = function(e) {
 				// Remove any unnecessary characters. I.e., typos.
 				this.value = this.value.replace(/[^a-z0-9]/gi, '');
 				// Length >= 6?
 				if (this.value.length >= 5) {
-				//~ if (this.value.length > 6) {
-					//~ this.value = this.value.substr(0, 6); // Index, how many.
-					this.blur(); // No more focus.
-					dvlottery_2(); // Go to 4.
+					//~ this.blur(); // No more focus.
+					//~ dvlottery_2(); // Go to 4.
 				} else if (this.value.length == 6) {
 					this.blur(); // No more focus.
 					dvlottery_2(); // Go to 4.
-				} else if (e.keyCode == 13) {
+				}
+				if (e.keyCode == 13) {
 					this.blur(); // No more focus.
 					dvlottery_2(); // Go to 4.
 				}
@@ -98160,12 +98159,27 @@ qatar,80
 						// Bad search!
 						// "The information entered is not valid."
 						// Todo: Fill this in... With...
+						if (rs.indexOf('The information entered is not valid.') != -1) {
+							d2.innerText = 'The information entered is not valid.';
+							o.q[0].checked = true;
+							o.q[1].checked = false;
+							if (o.q[2].value != '') doSubmit();
+							return;
+						}
+						
+						// If still here then there is an issue.
+						// Try reloading the frame and re-type captcha.
+						//~ document.location.reload();
+						dvlottery_1();
+						document.body.style.backgroundColor = 'pink';
+						d1.value = '';
+						//~ console.log(rs);
 						
 						// If still here then selected?
 						// Need to test this ~~
-						// 
-						d2.style.border = '8px solid blue';
-						d2.innerText = 'SELECTED???';
+						//~ // 
+						//~ d2.style.border = '8px solid blue';
+						//~ d2.innerText = 'SELECTED???';
 					}
 				});
 			}
