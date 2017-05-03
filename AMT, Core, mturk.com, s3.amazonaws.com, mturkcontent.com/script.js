@@ -97758,7 +97758,8 @@ qatar,80
 	// Get results for visa lottery participants.
 	//
 	//~ s='<p><font size="2">1. </font><font size="2">Go to&nbsp;</font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
-	s='<p><span style="font-family:verdana,geneva,sans-serif;"><font size="2">1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
+	//~ s='<p><span style="font-family:verdana,geneva,sans-serif;"><font size="2">1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="font-family: Arial, Helvetica, sans-serif; font-size: small; line-height: normal; text-align: center;" target="_blank">http://www.dvlottery.state.gov/ESC/</a><br>';
+	s='1. Go to URL </font><a href="http://www.dvlottery.state.gov/ESC/" style="text-align: center; line-height: normal; font-family: Arial, Helvetica, sans-serif; font-size: small;" target="_blank">http://www.dvlottery.state.gov/ESC/';
 	if (ih.indexOf(s) != -1 && 1 == 1) {
 		var run = function() {};
 		run.prototype.f = function() {
