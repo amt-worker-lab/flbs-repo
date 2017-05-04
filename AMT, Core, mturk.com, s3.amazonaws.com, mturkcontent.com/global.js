@@ -8630,6 +8630,7 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
+	console.log('xxxxxxxxxxxxxxxxxxxxxxx')
 	// Styles
 	//
 	//
