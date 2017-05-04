@@ -8630,7 +8630,6 @@ AMT___items_factory.prototype.search_container = function(options_object) {
  * 
  */
 AMT___items_factory.prototype.create_dashboard_find_url = function(options_object) {
-	console.log('xxxxxxxxxxxxxxxxxxxxxxx')
 	// Styles
 	//
 	//
@@ -9016,10 +9015,10 @@ AMT___items_factory.prototype.create_dashboard_find_url = function(options_objec
 	 * @param		response		object
 	 */
 	function company_URL__processProxyResponse(response) {
+		// rs
+		// 0=url
+		// 1=full
 		var rs = response.rs;
-			// rs
-			// 0=url
-			// 1=full
 		// seed_arg
 		var out_div = response.seed;
 		out_div.innerHTML = '';
@@ -14041,18 +14040,18 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		
 		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
 			o.local_URL_init		= 
-							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
-							'&short_filename='+short_filename+
-							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-							header_array;
+				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+				'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+				'&short_filename='+short_filename+
+				'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+				header_array;
 		} else {
 			o.local_URL_init		= 
-							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
-							'&short_filename='+short_filename+
-							'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
-							header_array;
+				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+				'&catch_include='+encodeURIComponent(this.obj_vars.catch_include)+
+				'&short_filename='+short_filename+
+				'&get_post_array='+encodeURIComponent( JSON.stringify(this.obj_vars.post_request) ) +
+				header_array;
 		}
 		
 		o.local_URL_complete	= 
@@ -14079,16 +14078,16 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 		if (this.obj_vars.hasOwnProperty('catch_include_array')) { //catch_include_array
 			
 			o.local_URL_init =
-							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-							'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
-							header_array+
-							catch_success;
+				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+				'&catch_include_array='+encodeURIComponent( JSON.stringify(this.obj_vars.catch_include_array) )+
+				header_array+
+				catch_success;
 		} else {
 			o.local_URL_init =
-							'/mturk/.scripts/google/get-page.php?u='+encodedURI+
-							'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
-							header_array+
-							catch_success;
+				'/mturk/.scripts/google/get-page.php?u='+encodedURI+
+				'&catch_include='+encodeURIComponent(this.obj_vars.catch_include) + 
+				header_array+
+				catch_success;
 		}
 		
 		o.local_URL_complete = 
@@ -14098,10 +14097,15 @@ function AMT___xhr_PROXY_REDACTED_(obj_vars) {
 	
 	// function array_startPage_results
 	// 
+	// UPDATE TO new startpage results May 4, 2017.
+	// 		More info: There was a script added between <ol> and first <li>,
+	//		causing the regex to fail.
+	//		Old regex was: /<ol[^>]*>[\r\n\s\t]*<li[^>]*><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/
+	//		New regex is:  /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/
 	// UPDATE TO startpage results container June 11, 2015.
 	//
 	function array_startPage_results(rs) {
-		var r = /<ol[^>]*>[\r\n\s\t]*<li[^>]*><div class='result' id='first-result'((.|\s)*?(?=<\/ol>|$)|$)/;
+		var r = /<ol class="web_regular_results">((.|\s)*?(?=<\/ol>|$)|$)/;
 		var rslts;
 		var not_enough_results_str = 'Because there are not enough results that match your query, we are showing results without quotes.';
 		if(!(rslts = r.exec(rs))) {
