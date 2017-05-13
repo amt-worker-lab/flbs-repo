@@ -11299,13 +11299,36 @@ Laurens Hammond, Chicago, Ill.**/
 							return;
 						}
 						console.log(rs);
-						if (rs.indexOf('<span class="ss-icon ss-facebook margin-right grey-dark"></span>\nNot connected') != -1) {
-							o.q[1].value = 'N/A';
+						//~ span class="ss-icon ss-facebook facebook color-facebook margin-right"></span>\n<a class="popup" target="_blank" href="https://www.facebook.com/1671638993086170">Platypod Pro</a>
+						var r = /<span class="ss-icon ss-facebook facebook color-facebook margin-right"><\/span>\n(<span class="number f6 nowrap">\n|)<a class="popup" target="_blank" href="([^"]+)">[^<]+<\/a>/.exec(rs);
+						var r2= /<a class="popup" target="_blank" href="([^"]+)">Connected to Facebook<\/a>/.exec(rs);
+						var r3= /<a rel="nofollow" target="_blank" href="([^"]+)">Facebook\.com<\/a>/i.exec(rs);
+						if (r) {
+							o.q[1].value = r[2];
+						} else if (r2) {
+							o.q[1].value = r2[1];
+						} else if (r3) {
+							o.q[1].value = r3[1];
+						} else if (rs.indexOf('<span class="ss-icon ss-facebook margin-right grey-dark"></span>\nNot connected') != -1) {
+							if (rs.toLowerCase().indexOf('www.facebook') == -1)
+								o.q[1].value = 'N/A';
+							else {
+								// It is somewhere on the page.
+								// Oh.
+								var r = /<a href="(https?:\/\/www\.facebook\.com\/[^"]+)">https?:\/\/facebook\.com\n<\/a><\/li>/.exec(rs);
+								if (r) {
+									o.q[1].value = r[1];
+								}
+							}
+						} else { // ?
+							// No exact matching.
 						}
-						var r = /<ul class="websites list-simple f5 bold">\n<li>\n<a href="[^"]+">([^<]+)<\/a><\/li>/.exec(rs);
+						//~ var r = /<ul class="websites list-simple f5 bold">\n<li>\n<a href="[^"]+">([^<]+)<\/a><\/li>/.exec(rs);
+						var r = /<h4 class="mb3 links-title">Websites<\/h4>\n<ul class="links list f5 bold">\n<li>\n<a rel="nofollow" target="_blank" href="([^"]+)">[^<]+<\/a>\n<\/li>/.exec(rs);
 						if (r) {
 							o.q[0].value = r[1];
-							
+						} else if (rs.toLowerCase().indexOf('website') == -1) {
+							o.q[0].value = 'N/A';
 						}
 						try_sbm();
 						//~ rs = JSON.parse(rs); // Array of objects
