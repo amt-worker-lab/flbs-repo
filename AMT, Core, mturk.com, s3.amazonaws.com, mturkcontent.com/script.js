@@ -11158,6 +11158,219 @@ Laurens Hammond, Chicago, Ill.**/
 		new run().f();
 	}
 	
+	// Garret Grohman
+	// 
+	var s = '<p>Go to the campaign using&nbsp;the URL provided below. From there, find and enter the campaign owner\'s website and Facebook&nbsp;found under the campaign creator\'s name.</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea,select,table,tr,td {margin:0 !important;padding:0 !important;font-size:12px !important;}');
+			GM_addStyle('.container {margin:0 !important;width:38% !important;padding:0 !important;margin-top:0px !important;}'); // width:1100px=default
+			GM_addStyle('input {width:100% !important}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			GM_addStyle('#submitButton {width:60% !important;height:100px;top:50px;left:40%;position:absolute;top:50px}');			
+			GM_addStyle('.exe {border-bottom:1px solid #a2a2a2;border-right:1px solid #a2a2a2;cursor:pointer;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			
+			var td = document.getElementsByTagName('td');
+			var o = {
+				url: td[1].innerText.trim(),
+				q: [
+					document.getElementsByName('Website')[0],
+					document.getElementsByName('Facebook')[0]
+				]
+			}
+			//~ o.domain = o.url.replace(/^(http:\/\/|www\.)/gi, '').replace(/\/$/, '');
+			//~ o.bold = o.comp.clean_string_to_array();
+			//~ o.comp_auto = o.comp.clean_str_to_auto();
+			//~ o.bolddm = o.domain.clean_string_to_array();
+			
+			/*Begin Items*/
+			//~ var d1 = document.createElement('div');
+			//~ d1.setAttribute('style','position:absolute;top:220px;height:300px;left:0%;background-color:#EEE;width:99%;overflow:auto;');
+			//~ document.body.appendChild(d1);
+			//~ var d2 = document.createElement('input');
+			//~ d2.setAttribute('style','position:absolute;top:160px;height:60px;left:0%;width:99%;font-size:2em !important;'); //
+			//~ document.body.appendChild(d2);
+			//~ d2.value = o.comp;
+			//~ d2.onblur = function() {
+				//~ this.value = this.value.trim();
+				//~ cb();
+			//~ }
+			//~ var d3 = document.createElement('input');
+			//~ d3.type = 'button';
+			//~ d3.value = 'N/A';
+			//~ d3.setAttribute('style','position:absolute;top:0px;height:40px;left:40%;width:60% !important;');
+			//~ document.body.appendChild(d3);
+			//~ /*End Items*/
+			// innerHeight
+			//~ new AMT___core_factory().el_innerHeight({
+				//~ // This set the elements d1,d1b, and d1c
+				//~ // to fill up the whole window, minus their
+				//~ // distance from page top (top:XX pixels;).
+				//~ elements: [
+					//~ d1
+				//~ ],
+				//~ offset: 340 // offset top
+			//~ });
+			//~ d3.onclick = function() {
+				//~ for (var i in o.q) {
+					//~ o.q[i].value = 'N/A';
+				//~ }
+			//~ }
+			
+			//~ // ef
+			//~ var ef = new AMT___events_factory();
+			//~ d2.addEventListener('keydown', ef.keydown__blur_field, true);
+			//~ ef.mouseup__delete_range({
+				//~ elements: [d2],
+				//~ blur_element: true
+			//~ });
+			
+			//~ // submitButton. Record these.
+			//~ document.getElementById('submitButton').onclick = function(e) {
+				//~ e.stopPropagation();
+				//~ e.preventDefault();
+				//~ AMT___recordAndSubmit();
+			//~ }
+			AMT___addUserDecision('GG-kickstarter2017', function() {
+					return o.url;
+				},
+				['Name(Website)[0]','Name(Facebook)[0]']
+			)
+			
+			// init
+			cb();
+			
+			//try_sbm
+			function try_sbm() {
+				var valid = true
+				// website
+				if (o.q[0].value != 'N/A') {
+					if (!/^https?:\/\/[^$]{6,}/i.exec(o.q[0].value)) { // at least 6
+						valid = false
+					}
+				}
+				// facebook
+				if (o.q[1].value != 'N/A') {
+					if (!/^https?:\/\/[^$]{6,}/i.exec(o.q[1].value)) {
+						valid = false
+					}
+					if (!/facebook/i.exec(o.q[1].value)) {
+						valid = false
+					}
+				}
+				// valid
+				if (valid)
+					AMT___recordAndSubmit();
+			}
+			
+			// cb
+			function cb() {
+				//~ document.body.style.backgroundColor = '#fff';
+				// e.g.? {"params":"query=promodig&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}
+				//post_object
+				var ux = o.url+'creator_bio.js';
+				var opts = {
+					headers_array: [
+						'Accept-Language: en-US,en;q=0.8,nl;q=0.6,es;q=0.4,fr;q=0.2',
+						'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+						'Accept: text/html, */*; q=0.01',
+						'Referer: '+o.url,
+						'X-Requested-With: XMLHttpRequest',
+					],
+					//~ do_not_save_to_file: true, // Do not ever save this to file. (Always new.)
+					//~ post_object_as_str: '{"params":"query='+encodeURIComponent(d2.value)+'&facets=*&distinct=true&page=0&hitsPerPage=20","apiKey":"4568c46b5c97886c88b28f311616ed62","appID":"A0EF2HAQR0"}' // As string.
+				};
+				var u = MT___host + '/mturk/util.php?AMT__output_html_from_URL=' +
+					encodeURIComponent(ux) +
+					'&AMT__output_html_from_URL__options=' +
+					encodeURIComponent(JSON.stringify(
+						opts
+					));
+				// Xhr request
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: u,
+					onload: function (response) {
+						var rs = response.responseText;
+						if(response.status != 200) {
+							alert('unsuccessful load');
+							return;
+						}
+						console.log(rs);
+						if (rs.indexOf('<span class="ss-icon ss-facebook margin-right grey-dark"></span>\nNot connected') != -1) {
+							o.q[1].value = 'N/A';
+						}
+						var r = /<ul class="websites list-simple f5 bold">\n<li>\n<a href="[^"]+">([^<]+)<\/a><\/li>/.exec(rs);
+						if (r) {
+							o.q[0].value = r[1];
+							
+						}
+						try_sbm();
+						//~ rs = JSON.parse(rs); // Array of objects
+						//~ console.log(rs);
+						//~ if (!rs.hasOwnProperty('hits') || !rs.hits.length) {
+							//~ d1.innerHTML = '0 - crunchbase';
+							//~ return;
+						//~ }
+						//~ rs = rs.hits;
+						//~ var first = true;
+						//~ for (var i in rs) {
+							//~ if (rs[i].type == 'Person' || rs[i].type == 'Investor' || rs[i].type == 'Product' || rs[i].type == 'Location') continue;
+							//~ var p = rs[i].profile_image_url;
+							//~ console.log(rs[i]);
+							
+							//~ var div = document.createElement('div');
+							//~ div.setAttribute('style', 'float:left; width:49%;');
+							//~ rs[i].domain = (!rs[i].domain) ? '' : rs[i].domain;
+							//~ var div2 = document.createElement('div');
+							//~ div2.innerHTML = MT__bold(rs[i].name, o.bold) + // o.bold
+								//~ '<br>' + MT__bold(rs[i].primary_role + ':' +rs[i].description, o.bold)+
+								//~ '<br>' + MT__bold(div.href, o.bold)+
+								//~ '<br>' + MT__bold(rs[i].domain, o.bolddm);
+							//~ div2.setAttribute('style', 'float:left;');
+							//~ div.appendChild(div2);
+							//~ div.onclick = function() {
+								//~ o.q[0].value = this.href;
+								//~ this.style.backgroundColor = 'LightGreen';
+								//~ try_sbm();
+							//~ }
+							//~ var br = document.createElement('br');
+							//~ br.clear = 'both';
+							//~ div.appendChild(br);
+							//~ // Append
+							//~ d1.appendChild(div);
+							
+							//~ // Auto
+							//~ console.log('auto');
+							//~ console.log(o.comp_auto + ' ' + rs[i].name.clean_str_to_auto());
+							//~ console.log(o.comp_auto == rs[i].name.clean_str_to_auto());
+							//~ console.log(o.domain + ' ' + rs[i].domain);
+							//~ console.log(o.domain == rs[i].domain);
+							//~ if  (
+								//~ first &&
+								//~ o.domain == rs[i].domain && 
+								//~ o.comp_auto == rs[i].name.clean_str_to_auto() &&
+								//~ o.domain.length > 3 &&
+								//~ o.comp_auto.length > 3
+								//~ ) {
+								//~ div.click();
+							//~ }
+							//~ first = false; // Set false
+						//~ }
+						//~ if (d1.innerText != '')
+							//~ d1.appendChild(''.div({style:'height:1600px;'}));
+						//~ else
+						//~ {
+							//~ d1.innerText = '0 - crunchbase';
+						//~ }
+					}
+				});
+			}
+		}
+		new run().f();
+	}
 	// Dale Chang
 	// 
 	var s = '<li>If the company exists, enter the unique Crunchbase URL for the given startup. Include the full Crunchbase URL. For instance, in the case of "Slack", please provide https://www.crunchbase.com/organization/slack. Not, not all Crunchbase URLs will follow the structure of "organization/name"</li>';
@@ -182926,23 +183139,11 @@ qatar,80
 	if (ih.indexOf(s) != -1) {
 		GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px !important;}');
 		GM_addStyle('body {width:30%;}');
-		
 		var a = document.getElementsByTagName('a')[0].innerText;
-		
 		var id = /\/profile\/([^\/]+)$/.exec(a)[1];
-		
-		/*
-		 * 
-		 * 
-		 */
 		// var states, var countries
 		return;
-		
-		
-		
 		//var a = document.getElementsByTagName('a')[0].innerText;
-		
-		
 		GM_xmlhttpRequest({
 			method: "GET",
 			url: a,
