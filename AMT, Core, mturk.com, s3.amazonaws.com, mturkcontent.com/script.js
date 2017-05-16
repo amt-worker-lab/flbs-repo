@@ -3412,6 +3412,10 @@ Laurens Hammond, Chicago, Ill.**/
 				],
 			}
 			console.log(o);
+			// Warn
+			if (td[5].innerText.trim() != '') {
+				document.body.style.backgroundColor = '#ddd';
+			}
 			//~ // Replace all state abbr with full!
 			//~ var x = o.u1.split(' ');
 			//~ var found = false;
@@ -3550,10 +3554,35 @@ Laurens Hammond, Chicago, Ill.**/
 					}
 					// State fill...
 					// state_full_to_abbr
-					//~ if (opts.o.final_location.state != null &&
-						//~ opts.o.final_location.state.trim() != '') {
-						//~ o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
-					//~ }
+					if (opts.o.final_location.state_abbr != null &&
+						o.q[3].value == '') {
+						switch (opts.o.final_location.state_abbr) {
+							case 'Australian Capital Territory':
+								o.q[3].value = 'ACT';
+								break;
+							case 'New South Wales':
+								o.q[3].value = 'NSW';
+								break;
+							case 'Northern Territory':
+								o.q[3].value = 'NT';
+								break;
+							case 'Queensland':
+								o.q[3].value = 'QLD';
+								break;
+							case 'South Australia':
+								o.q[3].value = 'SA';
+								break;
+							case 'Tasmania':
+								o.q[3].value = 'TAS';
+								break;
+							case 'Victoria':
+								o.q[3].value = 'VIC';
+								break;
+							case 'Western Australia':
+								o.q[3].value = 'WA';
+								break;
+						}
+					}
 					// o.q[4].value
 					if (!/^[0-9]{4}$/.exec(o.q[4].value)) {
 						alert('Validate Zip Code!');
