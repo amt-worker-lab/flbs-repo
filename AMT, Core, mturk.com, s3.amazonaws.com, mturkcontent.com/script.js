@@ -3370,6 +3370,242 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
+	// Peter
+	// Find the Postal Address for Australian Businesses
+	//
+	//
+	var s = '	<li>Search on Google, the&nbsp;company\'s website, YellowPages&nbsp;or&nbsp;Facebook to find the correct postal address for the company below.</li>';
+	//~ var s2 = '<p>Given this specific public library branch, find its physical address (street, city, province/territory, and postal code).</p>';
+	//~ var s3 = '<p>Given this specific&nbsp;US school or college, find its physical address (street, city, state, and zip).</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;width:150% !important;}');
+			GM_addStyle('#workContent {position:fixed;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('.col-sm-offset-2 {left:-48px;}');
+			//~ GM_addStyle('div {margin-left:0 !important !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;top:1400px;}');
+			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
+			var td = document.getElementsByTagName('td');
+			var o = {
+				u1: td[1].innerText.trim(),
+				u2: td[3].innerText.trim(),
+				q: [
+					//~ document.getElementById('address'),
+					document.getElementById('street_number'),
+					document.getElementById('route'),
+					document.getElementById('locality'),
+					document.getElementById('administrative_area_level_1'),
+					document.getElementById('postal_code'),
+				],
+			}
+			console.log(o);
+			//~ // Replace all state abbr with full!
+			//~ var x = o.u1.split(' ');
+			//~ var found = false;
+			//~ for (var i in x) {
+				//~ var n = x[i].replace(/[\(\)]/g, '');
+				//~ if (n.stateAbbrToFull() != n) {
+					//~ console.log(n);
+					//~ x[i] = n.stateAbbrToFull();
+					//~ found = n.stateAbbrToFull();
+				//~ }
+			//~ }
+			//~ if (found) // Use just state. No Library System.
+				//~ o.u1 = found;
+			//~ else {
+				//~ o.u1 = x.join(' ');
+				//~ o.u1 = o.u1.replace(/\s+/gi, ' ');
+				//~ o.u1 = o.u1.trim();
+			//~ }
+			//~ // Get rid of library system.
+			//~ // It is either o.u1 or o.u2.
+			//~ // If o.u3 is not blank then lib system is o.u2.
+			//~ // Otherwise it is o.u1.
+			//~ if (o.u3 != '') {
+				//~ o.u2 = '';
+			//~ }
+			//~ o.u2 = o.u2.replace(/library/gi, '');
+			//~ o.u2 = o.u2.replace(/library/gi, '');
+			//~ o.u2 = o.u2.replace(/ es$/gi, ' elementary school');
+			//~ o.u2 = o.u2.replace(/ ms$/gi, ' middle school');
+			//~ o.u3 = o.u3.replace(/library/gi, '');
+			//~ o.u3 = o.u3.replace(/\s+/gi, ' ');
+			//~ o.u3 = o.u3.trim();// + ', Library';
+		
+			//Elements
+			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+			document.body.appendChild(d1);
+			var dx1 = document.createElement('div');
+			dx1.setAttribute('style','position:absolute;top:150px;left:20%;width:79%;height:600px;border:1px dashed blue;');
+			document.body.appendChild(dx1);
+			var dx2 = document.createElement('textarea');
+			dx2.setAttribute('style','position:absolute;top:104px;left:20%;width:79%;height:40px;');
+			document.body.appendChild(dx2);
+			dx2.value = o.u1 + ', ' + o.u2;
+			// add mouseup for 2nd search....
+			dx2.addEventListener('blur', function() {
+				//setTimeout(place_search, 400); // short timeout
+			}, false);
+			// ih
+			new AMT___core_factory().el_innerHeight({
+				elements: [
+					dx1
+				],
+				offset: 150 // offset top
+			});
+			// DoPast
+			AMT___addUserDecision(
+				'peter-austral,may,2017',
+				function() { return o.u1 + ',' + o.u2; },
+				[
+					"Id(street_number)",
+					"Id(route)",
+					"Id(locality)",
+					"Id(administrative_area_level_1)",
+					"Id(postal_code)",
+				]
+			);
+			document.getElementById('submitButton').onclick = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				// Alert blank...
+				for (var i in o.q) {
+					if (o.q[i].value.trim() == '') {
+						//alert('Empty Field!');
+						o.q[i].style.border='4px solid red';
+						return false;
+					}
+				}
+				AMT___recordAndSubmit();
+				return false;
+			}
+			var opts = {
+				parent: dx1,
+				parent_controller_el: dx2,
+				output_elements: {
+					street: o.q[0], // Same
+					street: o.q[1], // Same (not street2)
+					city: o.q[2],
+					state: o.q[3],
+					zip: o.q[4],
+				},
+				onclick_callback: function(opts) { // (opts) // STATE
+					console.log(opts);
+					console.log(o);
+					// Reset display stuff.
+					document.body.style.backgroundColor = ''; // Reset bg color
+					for (var i in o.q) {
+						o.q[i].style.border = '';
+						o.q[i].value = '';
+					}
+					//~ // Callback for string_to_mixed_case.
+					//~ var cb = function (is_changed) { // is_changed: Will be true or false
+						//~ if (is_changed) {
+							//~ document.body.style.backgroundColor = 'orange';
+						//~ } else {
+							//~ // Do nothing.
+						//~ }
+					//~ }
+					// Loop: Clean and check case.
+					// Just check case difference. Do not change case.
+					// Then alert user that there is a change and
+					// let the user decide what to do.
+					for (var i in o.q) {
+						if (i<=2) {
+							o.q[i].value = o.q[i].value.trim().replace(/\s+/g, ' ');
+							var n = o.q[i].value.string_to_mixed_case({REG_INCLUDE_DASHES:true});
+							if (n != o.q[i].value) {
+								o.q[i].style.border = '8px dashed green';
+								document.body.style.backgroundColor = 'orange';
+							}
+						}
+					}
+					// State fill...
+					// state_full_to_abbr
+					//~ if (opts.o.final_location.state != null &&
+						//~ opts.o.final_location.state.trim() != '') {
+						//~ o.q[3].value = opts.o.final_location.state.state_full_to_abbr();
+					//~ }
+					// o.q[4].value
+					if (!/^[0-9]{4}$/.exec(o.q[4].value)) {
+						alert('Validate Zip Code!');
+						o.q[4].style.border = '4px solid blue';
+					}
+					// Alert blank...
+					for (var i in o.q) {
+						if (o.q[i].value.trim() == '') {
+							alert('Empty Field!');
+							o.q[i].style.border = '4px solid blue';
+						}
+					}
+				}
+			};
+			// Init create_dashboard_find_address
+			new AMT___items_factory().create_dashboard_find_address(opts);
+			// Init place search
+			//~ place_search();
+			// XHR textsearch
+			function place_search() {
+				d1.innerText = 'Loading ...';
+				new AMT___requests_factory().xhr_with_disk_cache({
+					URL:	
+							'https://maps.googleapis.com/maps/api/place/textsearch/json?'+
+							'query='+encodeURIComponent(dx2.value)+'&key=_GOOGLE_API_KEY_REDACTED_',
+					check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+						return true;
+					},
+					success_callback: function(options) {
+						var rs = options.response.responseText;
+						rs = JSON.parse(rs);
+						console.log(rs);
+						d1.innerText = '';
+						/** **/
+						if (!rs.results || !rs.results.length) {
+							return;
+						}
+						for (var i in rs.results) {
+							var n = rs.results[i];
+							console.log(n);
+							d1.appendChild(choice(n.name, n.formatted_address));
+						}
+					}
+				});
+			}
+			function choice(name, text) { // returns clickable div
+				text = text.replace(/, USA$/, '');
+				text = text.split(' ');
+				var a = [];
+				for (var i in text) {
+					var n = text[i].trim().replace(/,/g, '').stateAbbrToFull(); // Try...
+					a.push(n);
+				}
+				a = a.join(' ');// By space
+				// Out div
+				var d = (name + ' ').div({style:'width:100%;border:1px solid #a2a2a2;'});
+				var buttons = new AMT___items_factory().create_annotation_to_output_fields({
+					textToAnnotate: a,
+					output_fields: o.q,
+					//~ callback_mouseup: function(addField) {
+						//~ // Remove trailing commas
+						//~ addField.value = addField.value.replace(/ *,*$/, '');
+					//~ },
+					//~ appendToField: false,
+					//~ appendToField_glue: ', ',
+					//~ delimeter: '',
+					focusToField: true,
+					style: 'border-radius:2px;border:0;zoom:1.0;background-color:#fff;cursor:pointer;',
+				});
+				buttons.style.display = 'inline';
+				d.appendChild(buttons);
+				return d;
+			}
+		}
+		new run().f();
+	}
 	// Jeff Sterling
 	// Find physical addresses for Canadian public library branches
 	//
