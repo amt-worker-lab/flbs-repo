@@ -10950,6 +10950,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 			street2: null,
 			city: null,
 			state: null,
+			state_abbr: null,
 			country: null,
 			zip: null,
 			phone: null,
@@ -11111,20 +11112,9 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 	}
 	/**
 	 * function fill_form_fields
-	 * Create an annotation after fields have been filled initially.
+	 * Optional: Create an annotation after fields have been filled initially.
 	 */
 	function fill_form_fields() {
-		//~ var obj = {
-			//~ name: null,
-			//~ street: null,
-			//~ city: null,
-			//~ state: null,
-			//~ zip: null,
-			//~ country: null,
-			//~ lat: null,
-			//~ lng: null
-		//~ }
-		//~ fill_form_fields(obj);
 		// Annotate
 		// Create an annotation after fields have been filled initially.
 		if (opts.hasOwnProperty('annotate_fields')) {
@@ -11292,34 +11282,41 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							var country;
 							for (var i in id.result.address_components) {
 								var type = id.result.address_components[i].types[0];
-								var j = id.result.address_components[i].long_name;
+								var nl = id.result.address_components[i].long_name;
+								var sl = id.result.address_components[i].short_name;
 								
 								if ((type == 'locality' || type == 'sublocality_level_1')) {
 									if (opts.output_elements.hasOwnProperty('city'))
-										opts.output_elements.city.value = j;
-									opts.o.final_location.city = j;
+										opts.output_elements.city.value = nl;
+									opts.o.final_location.city = nl;
 								}
 								
 								if (type == 'administrative_area_level_1') {
 									if (opts.output_elements.hasOwnProperty('state'))
-										opts.output_elements.state.value = j;
-									opts.o.final_location.state = j;
+										opts.output_elements.state.value = nl;
+									opts.o.final_location.state = nl;
+									// State abbreviation.
+									if (sl != nl) {
+										if (opts.output_elements.hasOwnProperty('state_abbr'))
+											opts.output_elements.state_abbr.value = nl;
+										opts.o.final_location.state_abbr = sl;
+									}
 								}
 								
 								if (type == 'postal_code') {
 									if (opts.output_elements.hasOwnProperty('zip'))
-										opts.output_elements.zip.value = j;
-									opts.o.final_location.zip = j;
+										opts.output_elements.zip.value = nl;
+									opts.o.final_location.zip = nl;
 								}
 								
 								if (type == 'country') {
 									if (opts.output_elements.hasOwnProperty('country'))
-										opts.output_elements.country.value = j;
-									opts.o.final_location.country = j;
+										opts.output_elements.country.value = nl;
+									opts.o.final_location.country = nl;
 								}
 								// Set country
 								if (type == 'country')
-									country = j;
+									country = nl;
 							}
 							
 							// Set street address from formatted...
@@ -11452,6 +11449,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						opts.output_elements.state.value = addr[2];
 						opts.o.final_location.state = addr[2];
 					}
+					else if (opts.output_elements.hasOwnProperty('state_abbr')) { // Same as state.
+						opts.output_elements.state_abbr.value = addr[2];
+						opts.o.final_location.state_abbr = addr[2];
+					}
 					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = addr[3];
 						opts.o.final_location.zip = addr[3];
@@ -11501,12 +11502,6 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					//~ var dbg = r.slice(0, r.length - 1).join(' ');
 					// DEFAULT=Put it in the first output element
 					opts.first_element.value = r[0];
-					//~ if (opts.output_elements.hasOwnProperty('street'))
-						//~ opts.output_elements.street.value	= dbg;
-					//~ else if (opts.output_elements.hasOwnProperty('city'))
-						//~ opts.output_elements.city.value		= dbg;
-					//~ else if (opts.output_elements.hasOwnProperty('state'))
-						//~ opts.output_elements.state.value	= dbg;
 				}
 			}
 		});
@@ -11686,6 +11681,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 					if (opts.output_elements.hasOwnProperty('state')) {
 						opts.output_elements.state.value = r[3];
 						opts.o.final_location.state = r[3];
+					}
+					else if (opts.output_elements.hasOwnProperty('state_abbr')) {
+						opts.output_elements.state_abbr.value = r[3];
+						opts.o.final_location.state_abbr = r[3];
 					}
 					if (opts.output_elements.hasOwnProperty('zip')) {
 						opts.output_elements.zip.value = r[4];
@@ -11974,6 +11973,10 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 								opts.output_elements.state.value = i.state;
 								opts.o.final_location.state = i.state;
 							}
+							else if (i.state && opts.output_elements.hasOwnProperty('state_abbr')) {
+								opts.output_elements.state_abbr.value = i.state;
+								opts.o.final_location.state_abbr = i.state;
+							}
 							if (i.zip && opts.output_elements.hasOwnProperty('zip')) {
 								opts.output_elements.zip.value = i.zip;
 								opts.o.final_location.zip = i.zip;
@@ -12056,6 +12059,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 						if (l.state) {
 							a.push(l.state);
 							opts.o.final_location.state = l.state;
+							opts.o.final_location.state_abbr = l.state_abbr; // Same as state here.
 						}
 						if (l.country) {
 							a.push(l.country);
@@ -12073,29 +12077,17 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 							div.appendChild(document.createElement('br'));
 							div.appendChild(locSpan);
 						}
-						//~ console.log(r[i].location);
-						//~ //OLD
-						//~ for (var j in r[i].location) {
-							//~ div.appendChild(document.createElement('br'));
-							//~ var locSpan = document.createElement('span');
-							//~ locSpan.innerHTML =
-								//~ (opts.bold_locn_array) ?
-								//~ 'A::' + MT__bold(""+r[i].location[j], opts.bold_locn_array) :
-								//~ 'A::' + r[i].location[j];
-							//~ div.appendChild(locSpan);
-						//~ }
 					}
 					
 					if (r[i].website && opts.output_elements.hasOwnProperty('website')) {
 						div.appendChild(('W:'+r[i].website).div());
-					}
-							
+					}		
 					// Append
 					d1.appendChild(div);
 					c++; // Increment
 				}
-				
-				complete('fb');// Mark complete
+				// Mark complete
+				complete('fb');
 				if (c == 0) {
 					d1.innerHTML = '0';
 					return;

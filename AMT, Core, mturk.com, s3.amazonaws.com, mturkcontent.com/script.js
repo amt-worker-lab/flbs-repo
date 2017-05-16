@@ -3383,12 +3383,16 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.highlight-box {margin-top:200px;}');
 			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;width:150% !important;}');
-			GM_addStyle('#workContent {position:fixed;}');
 			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
-			GM_addStyle('.col-sm-offset-2 {left:-48px;}');
+			//~ GM_addStyle('.col-sm-offset-2 {left:-48px;}');
 			//~ GM_addStyle('div {margin-left:0 !important !important;}');
 			GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;top:1400px;}');
 			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
+			//~ GM_addStyle('.col-sm-8 col-sm-offset-2 {margin-left:0 !important;}');
+			GM_addStyle('#workContent {position:absolute;margin:0 !important;}');
+			GM_addStyle('.col-md-4 {display:block !important;float:none !important;}');
+			GM_addStyle('.form-group {margin:0 !important;}');
+			GM_addStyle('.col-sm-offset-2 {margin:0 !important;}');
 			var td = document.getElementsByTagName('td');
 			var o = {
 				u1: td[1].innerText.trim(),
@@ -3487,10 +3491,10 @@ Laurens Hammond, Chicago, Ill.**/
 				parent: dx1,
 				parent_controller_el: dx2,
 				output_elements: {
-					street: o.q[0], // Same
-					street: o.q[1], // Same (not street2)
+					//~ street2: o.q[0], // Same
+					street:  o.q[1], // Same (not street2)
 					city: o.q[2],
-					state: o.q[3],
+					state_abbr: o.q[3],
 					zip: o.q[4],
 				},
 				onclick_callback: function(opts) { // (opts) // STATE
@@ -3500,8 +3504,15 @@ Laurens Hammond, Chicago, Ill.**/
 					document.body.style.backgroundColor = ''; // Reset bg color
 					for (var i in o.q) {
 						o.q[i].style.border = '';
-						o.q[i].value = '';
+						//~ o.q[i].value = '';
 					}
+					// If Street is filled in the fill in street number.
+					var num = /^([^ ]+) /.exec(o.q[1].value)
+					if (num) {
+						o.q[0].value = num[1]
+					}
+					// Focus on Stree number.
+					o.q[0].focus()
 					//~ // Callback for string_to_mixed_case.
 					//~ var cb = function (is_changed) { // is_changed: Will be true or false
 						//~ if (is_changed) {
