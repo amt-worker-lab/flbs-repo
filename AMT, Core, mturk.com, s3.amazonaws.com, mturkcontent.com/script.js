@@ -3382,17 +3382,22 @@ Laurens Hammond, Chicago, Ill.**/
 		run.prototype.f = function() {console.log('x');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
 			GM_addStyle('.highlight-box {margin-top:200px;}');
-			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;width:150% !important;}');
+			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;}');
 			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
 			//~ GM_addStyle('.col-sm-offset-2 {left:-48px;}');
 			//~ GM_addStyle('div {margin-left:0 !important !important;}');
 			GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;top:1400px;}');
 			GM_addStyle('#web_url {position:fixed;top:0;left:0;width:99%;height:24px;font-size:1.2em;}');
-			//~ GM_addStyle('.col-sm-8 col-sm-offset-2 {margin-left:0 !important;}');
+			GM_addStyle('.col-sm-8 col-sm-offset-2 {width:100% !important;}');
 			GM_addStyle('#workContent {position:absolute;margin:0 !important;}');
-			GM_addStyle('.col-md-4 {display:block !important;float:none !important;}');
+			GM_addStyle('.col-md-4 {display:block !important;float:none !important;width:100% !important;}');
 			GM_addStyle('.form-group {margin:0 !important;}');
 			GM_addStyle('.col-sm-offset-2 {margin:0 !important;}');
+			GM_addStyle('table {position:absolute !important  !important !important;top:400px !important;width:100px !important;}');
+			var t = document.getElementsByTagName('table');
+			for (var i=0; i<t.length; i++) { // Workaround ..........
+				t[i].style.position = 'absolute';
+			}
 			var td = document.getElementsByTagName('td');
 			var o = {
 				u1: td[1].innerText.trim(),
@@ -3441,25 +3446,33 @@ Laurens Hammond, Chicago, Ill.**/
 			//~ o.u3 = o.u3.trim();// + ', Library';
 		
 			//Elements
-			var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
-			document.body.appendChild(d1);
+			//~ var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
+			//~ document.body.appendChild(d1);
 			var dx1 = document.createElement('div');
-			dx1.setAttribute('style','position:absolute;top:150px;left:20%;width:79%;height:600px;border:1px dashed blue;');
+			dx1.setAttribute('style','position:absolute;top:50px;left:20%;width:79%;height:600px;border:1px dashed blue;');
 			document.body.appendChild(dx1);
 			var dx2 = document.createElement('textarea');
-			dx2.setAttribute('style','position:absolute;top:104px;left:20%;width:79%;height:40px;');
+			dx2.setAttribute('style','position:absolute;top:0px;left:20%;width:79%;height:40px;border:1px solid #333;');
 			document.body.appendChild(dx2);
 			dx2.value = o.u1 + ', ' + o.u2;
-			// add mouseup for 2nd search....
-			dx2.addEventListener('blur', function() {
-				//setTimeout(place_search, 400); // short timeout
-			}, false);
+			//~ // add mouseup for 2nd search....
+			//~ dx2.addEventListener('blur', function() {
+				//~ //setTimeout(place_search, 400); // short timeout
+			//~ }, false);
+			/*END ITEMS*/
+			// Mouse up
+			var ef = new AMT___events_factory();
+			dx2.addEventListener('keydown', ef.keydown__blur_field, true);
+			ef.mouseup__delete_range({
+				elements: [dx2],
+				blur_element: true
+			});
 			// ih
 			new AMT___core_factory().el_innerHeight({
 				elements: [
 					dx1
 				],
-				offset: 150 // offset top
+				offset: 50 // offset top
 			});
 			// DoPast
 			AMT___addUserDecision(
@@ -3547,12 +3560,15 @@ Laurens Hammond, Chicago, Ill.**/
 						o.q[4].style.border = '4px solid blue';
 					}
 					// Alert blank...
+					do_alert = false
 					for (var i in o.q) {
 						if (o.q[i].value.trim() == '') {
-							alert('Empty Field!');
+							do_alert = true
 							o.q[i].style.border = '4px solid blue';
 						}
 					}
+					if (do_alert)
+						alert('Empty Field!');
 				}
 			};
 			// Init create_dashboard_find_address

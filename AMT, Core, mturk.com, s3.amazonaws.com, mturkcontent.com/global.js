@@ -11298,7 +11298,7 @@ AMT___items_factory.prototype.create_dashboard_find_address = function(options_o
 									// State abbreviation.
 									if (sl != nl) {
 										if (opts.output_elements.hasOwnProperty('state_abbr'))
-											opts.output_elements.state_abbr.value = nl;
+											opts.output_elements.state_abbr.value = sl;
 										opts.o.final_location.state_abbr = sl;
 									}
 								}
