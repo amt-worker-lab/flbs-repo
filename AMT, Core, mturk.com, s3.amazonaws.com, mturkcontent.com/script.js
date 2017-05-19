@@ -133819,7 +133819,7 @@ qatar,80
 			var o = {
 				comp: td[1].innerText.trim().string_to_mixed_case(),
 				field2: td[4].innerText.trim().string_to_mixed_case(), // type
-				field3: td[6].innerText.trim().string_to_mixed_case(), // synopsis
+				field3: td[6].innerText.trim().string_to_mixed_case().substr(0,20), // synopsis
 				field4: td[8].innerText.trim().string_to_mixed_case(), // director
 				field5: td[10].innerText.trim().string_to_mixed_case(), // 
 				field6: td[12].innerText.trim().string_to_mixed_case(), // 
@@ -133868,7 +133868,7 @@ qatar,80
 				searches:[
 					o.comp,
 					o.spaced,
-					o.comp + ' ' + o.field2 + ' ('+o.field3+' OR '+o.field4+' OR '+o.field5+' OR '+o.field6+' OR '+o.field7+')'
+					o.comp + ' ('+o.field3+' OR '+o.field3+' OR '+o.field4+' OR '+o.field5+' OR '+o.field6+' OR '+o.field7+')'
 				],
 				search_results: {
 					//~ use_domain_only: true,
