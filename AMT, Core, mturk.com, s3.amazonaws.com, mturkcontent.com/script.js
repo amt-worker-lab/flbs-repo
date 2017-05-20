@@ -3370,9 +3370,9 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
-	// 
-	// Create dashboard geocode
-	// create_dashboard_geocode
+	// "Techie"
+	// Store Boundary Outliner
+	//
 	var s = '<h4><strong>Read the <u>entire</u> "Polygon Shape Guidelines for HIT Approval" Section below for examples of good and bad outlines.</strong></h4>';
 	if (ih.indexOf(s) != -1) {
 		var run = function() {};
@@ -3384,11 +3384,17 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;top:1400px;}');
 			
 			var l = /lat=([\d\.\-]+)&(amp;|)lng=([\d\.\-]+)" target=/i.exec(ih);
-			//~ console.log(ih)
+			
+			document.getElementById('results').setAttribute('style',
+				'position:absolute;top:1000px;'
+			);
+			
 			// create_dashboard_geocode
 			new AMT___items_factory().create_dashboard_geocode({
 				store: 'Lowes',
 				ll: {lat:l[1], lng:l[3]},
+				output_field: 'results' // This is an ID !
+				//~ output_field: document.getElementById('results')
 			})
 		}
 		new run().f();
@@ -133721,10 +133727,113 @@ qatar,80
 	 * Sean Christy
 	 * CBitLabs
 	 * TurkFaces
-	 * 
+	 * Taylor Ballenger
 	 * 
 	 * 
 	 */
+	// Taylor Ballenger
+	// Find the Website Address for The Given Company Name and Location
+	//
+	// 
+	var s = '<li>Enter the website address for the <strong>official website </strong>of the company.</li>\n	<li>Include the full address, e.g. http://www.thecheesecakefactory.com.</li>\n	<li><strong>Do not </strong>include URLs to city guides and listings like Citysearch.</li>\n	<li>If there is not one, put "NA"</li>';
+	if (ih.indexOf(s) != -1 &&
+		ih.indexOf('Company name:') != -1 &&
+		ih.indexOf('City:') != -1 &&
+		ih.indexOf('State:') != -1
+		)
+	{
+		var run = function() {}
+		run.prototype.f = function() {
+			console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div,textarea {margin:0;padding:0;font-size:12px;}');
+			GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			//~ GM_addStyle('table {margin-bottom:-20px !important;}'); // make more space
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;position:absolute;top:1000px;}');// Move content to bottom...
+			//~ GM_addStyle('.panel-primary {position:absolute;top:1000px;}');
+			// Elements
+			var td = document.getElementsByTagName('td');
+			var o = {
+				comp: td[1].innerText.trim().string_to_mixed_case(),
+				field2: td[3].innerText.trim().string_to_mixed_case(), // City
+				field3: td[5].innerText.trim().string_to_mixed_case(), // State
+				//~ field4: td[7].innerText.trim().string_to_mixed_case(),
+				boldArray: [],
+				boldArray2: [],
+				//~ boldArray3: [],
+				q: [
+					document.getElementById('web_url')
+				],
+			}
+			o.boldArray = o.comp.clean_string_to_array();
+			o.boldArray2= o.field2.clean_string_to_array().concat(o.field3.clean_string_to_array());
+			//~ o.boldArray3= o.field3.clean_string_to_array();
+			o.spaced = '"' + o.comp.split(' ').join('" "') + '" ';
+			console.log(o);
+			AMT___addUserDecision(
+				'T.Ballenger,2017', function() {
+					return o.comp;
+				}, ['Id(web_url)']
+			)
+			/* BEGIN ITEMS */
+			var d1 = document.createElement('div');
+			d1.setAttribute('style',
+				'position:absolute;top:0px;left:0%;width:100%;height:600px;overflow:auto;background-color:#eee;border:1px solid blue;'
+			);
+			document.body.appendChild(d1);
+			/* END ITEMS */
+			// innerHeight
+			new AMT___core_factory().el_innerHeight({
+				// This set the elements d1,d1b, and d1c
+				// to fill up the whole window, minus their
+				// distance from page top (top:XX pixels;).
+				elements: [
+					d1
+				],
+				offset: 0 // offset top
+			});
+			// create_dashboard_find_url
+			AMT___items_factory.prototype.create_dashboard_find_url({
+				//~ bold_array: o.boldArray,
+				//~ search: {
+					//~ str_add_to_searches_hidden: ' site:imdb.com/title/', //
+				//~ },
+				searches:[
+					o.comp,
+					o.comp +', '+ o.field2 +', '+ o.field3,
+					o.spaced +', '+ o.field2 +', '+ o.field3.stateAbbrToFull(),
+				],
+				search_results: {
+					//~ use_domain_only: true,
+					//~ use_full_urls: true,
+					bold: {
+						black: o.boldArray,
+						blue: o.boldArray2,
+						//~ brown: o.boldArray3,
+					},
+					//~ url_modifier_callback: function(url) { // Add @ symbol
+						//~ url = '@' + url;
+						//~ return url;
+					//~ },
+					//~ url_ignore_test: function(obj) {
+						//~ // Ignore URLs such as: imdb.com/title/tt2372855/news
+						//~ // Only keeping URLs such as: imdb.com/title/tt2372855/
+						//~ console.log(obj);
+						//~ if (!/\/title\/[^\/]+\/$/.exec(obj.url)) {
+							//~ return true;
+						//~ }
+						//~ return false;
+					//~ },
+				},
+				out_element: o.q[0],
+				parent: d1,
+				offsetTop: 0,
+				AmtRecordAndSubmit: true,
+				AutoReturnAcceptIfZero: true,
+			});
+		}
+		new run().f();
+		return;
+	}
 	// John White (updated)
 	// 
 	//
@@ -134908,7 +135017,7 @@ qatar,80
 	//
 	// 
 	var s = '<ul>\n	<li>Enter the website address for the <strong>official website </strong>of the company.</li>\n	<li>Include the full address, e.g. http://www.thecheesecakefactory.com.</li>';
-	if (ih.indexOf(s) != -1)
+	if (ih.indexOf(s) != -1 && 0 == 1)
 	{
 		var run = function() {}
 		run.prototype.f = function() {

@@ -7644,8 +7644,8 @@ function AMT___items_factory(obj_vars) {
  * @params
  * options_object (object): Options to take in.
  * 							ll: {lat: ###, lng: ###}
- * 							output_field: <html element>
- *  						separator: default=";"
+ * 							output_field: String (!!!). This is an ID of the output <html element>!
+ *  						separator: Default=";"
  * 							name: String. Default = null. A store to search for, e.g. "Lowes".
  * 							addr: String. Default = null.
  * 							last_point_equals_first_point: Boolean. Default = false. (NOT IMPLEMENTED, i.e. is always false.)
@@ -8762,10 +8762,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		var p2 = null;
 		var co = new Array();
 		console.log(coors)
-		//~ if (coors.hasOwnProperty('b')) {
-			//~ coors = coors.b
-		//~ }
-		// coors.getAt(i)};
 		for (var i=0; i<coors.length; i++) {
 			var latlng = coors[i];
 			var newstr;
@@ -8778,16 +8774,19 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		};
 		// Disable wrap-around if it is present!
 		if (co.length && co.length > 1 && co[0] == co[ co.length-1 ]) {
-			delete co[ co.length-1 ];
+			// Pop array.
+			co.pop();
 		}
 		/**if (co.length && co.length > 1 && co[0] != co[ co.length-1 ]) {
 			// Add an extra coordinate which is the "wrap around"?
 			str += co[0]; // Add it again...
 		}**/
-		// Update value...
+		// Update display value.
 		var x = document.getElementById('d3');
 		x.value = co.join(options_object_on_page.separator);
 		x.value += options_object_on_page.end;
+		// Update task value!
+		document.getElementById(options_object_on_page.output_field).value = x.value;
 		////////////////////////
 		// This is the WeFi way.
 		// That is, "Lng,Lat,Z".
@@ -9260,7 +9259,17 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					strokeColor:'#FFFFFF'
 				});
 				polyline.setMap(map);
-				// Add editable.
+				////////////////////////////////////
+				// Add editable polygon
+				////////////////////////////////////
+				var a = []; // Array coordinates
+				for (var i=0; i<coors.getLength(); i++) {
+					a.push({
+						lat: coors.getAt(i).lat(),
+						lng: coors.getAt(i).lng(),
+					});
+				}
+				add_editable_polygon(a);
 			}
 		});
 		
@@ -9711,7 +9720,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 							//~ x.value = x.value.trim();
 						
 						////////////////////////////////////
-						// Continue to add editable polygon
+						// Add editable polygon
 						////////////////////////////////////
 						var a = []; // Array coordinates
 						for (var i=0; i<window.threeRectPoints.length; i++) {
@@ -9721,6 +9730,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 							});
 						}
 						add_editable_polygon(a);
+						// Update output.
 						coordinates_to_output(a);
 					}
 				}
