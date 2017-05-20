@@ -27,6 +27,71 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// 
+	// 
+	// 
+	s = '<p><strong><label>Please enter ONLY the data in the table cells from the image into the fields below.</label></strong></p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			var img = document.getElementsByTagName('img');
+			//~ var td = document.getElementsByTagName('td');
+			var o = {
+				u: a[1].getAttribute('src'),
+				//~ tn: parseInt(td[3].innerText.trim()),	//transaction #
+				//~ valb: parseInt(td[5].innerText.trim()),
+				//~ valx: null,
+				//~ valx_original: null,
+				//~ formula: td[7].innerText.trim(),
+				q: [
+					document.getElementById('Cells'), 		//3
+					document.getElementById('Number1'), //3
+					document.getElementById('Unit1'),	//25
+					document.getElementById('Date1'),	//6
+					document.getElementById('Volume1'),	//3
+					document.getElementById('Number2'),		//3
+					document.getElementById('Unit2'),		//25
+					document.getElementById('Date2'),		//6
+					document.getElementById('Volume2'),		//3
+				]
+			}
+			
+			// Set default rows=5.
+			o.q[0].value = 5;
+			
+			// Row 1.
+			// Only field that deals with the image name.
+			// Minus 2 is the most common.
+			var x = /row_([\d]+)\.png/.exec(o.u);
+			if (x) {
+				o.q[1].value = parseInt(x[1]) - 2;
+			}
+			
+			// Row 2.
+			// Focus on row 2.
+			o.q[2].focus();
+			
+			// Row 3.
+			// Add '15'
+			
+			// Keypress watch
+			window.addEventListener('keypress', function() {
+				
+			}, false);
+			
+			// On double click, stop automated page stuff.
+			// Turns off...
+			document.body.addEventListener('dblclick', function() {
+				//
+			}, false);
+		}
+		new run().f();return;
+	}
 	// Wings Foundation
 	// Get amount and calculate result
 	// http://ltc.blockr.io/
