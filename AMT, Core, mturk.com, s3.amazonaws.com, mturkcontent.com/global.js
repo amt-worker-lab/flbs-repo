@@ -7645,9 +7645,11 @@ function AMT___items_factory(obj_vars) {
  * options_object (object): Options to take in.
  * 							ll: {lat: ###, lng: ###}
  * 							output_field: <html element>
- *  						separator: NOT IMPLEMENTED, default=";"
+ *  						separator: default=";"
  * 							name: String. Default = null. A store to search for, e.g. "Lowes".
  * 							addr: String. Default = null.
+ * 							last_point_equals_first_point: Boolean. Default = false. (NOT IMPLEMENTED, i.e. is always false.)
+ * 							end: String. Default = separator. End the string with a symbol or string, such as ";".
  * 
  * @returns
  * ...: ...
@@ -7689,6 +7691,9 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	new AMT___core_factory().createScriptVar('DB State Is (0/[state])', '0'); // 0 or state name. State abbr is okay. Exact match required!
 	new AMT___core_factory().createScriptVar("AutoOrientType (e.g. 'S until D')", 0, false);
 	localStorage['orientStyle'] = AMT__Global_Vars.scriptVars["AutoOrientType (e.g. 'S until D')"];
+	
+	// Scope.
+	var options_object = options_object
 	
 	////////////////////////////////////////////////////////////
 	// Local storage of last marker city, state, lat, lng, etc.
@@ -7807,6 +7812,15 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	}
 	if (options_object.addr) {
 		xo.name = options_object.addr;
+	}
+	if (options_object.separator == undefined) {
+		options_object.separator = ';';
+	}
+	if (options_object.last_point_equals_first_point == undefined) {
+		options_object.last_point_equals_first_point = false;
+	}
+	if (options_object.end == undefined) {
+		options_object.end = options_object.separator;
 	}
 	
 	
@@ -8214,6 +8228,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		map.fitBounds(bounds);
 	 */
 	function check_near(opts) {
+		console.log(' .check_near');
 		// xhr_with_disk_cache
 		new AMT___requests_factory().xhr_with_disk_cache({
 			URL:	'https://maps.googleapis.com/maps/api/place/radarsearch/json'+
@@ -8541,6 +8556,32 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		// If lat lang from input, then go ahead.
 		// Otherwise do a Google API geocode of the street address.
 		if (options_object.ll != null) {
+			lat = options_object.ll.lat
+			lng = options_object.ll.lng
+			
+			var latLngOnPage = document.createElement('script');
+			latLngOnPage.textContent = "var latLngOnPage = {lat:" + lat +",lng:" + lng + "};" ; 
+			document.head.appendChild(latLngOnPage);
+			
+			// Add static image.....
+			xo.markers.geocode = xo.ll_as_string;
+			
+			// {lat:lat,lng:lng}
+			xo.fPois.push(options_object.ll)
+			
+			// Check near
+			check_near({
+				lat: lat,
+				lng: lng,
+				marker_array: [], //xo.markers.nearby_searches1,
+				store_name: xo.name,
+			});
+			
+			// Append
+			js_append(loader_func2, JSON.stringify({lat:lat, lng:lng, fPois:xo.fPois}));
+			
+			// getCenterBeforeChiosRuns
+			getCenterBeforeChiosRuns();
 			
 		} else {
 		
@@ -8710,9 +8751,39 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	/**
 	 * coordinates_to_output
 	 * Appended to JavaScript on page.
+	 * Wrap around?
+	 * 
+	 * @examples:
+	 * 	User: "Techie"
+	 *	 41.17244,-96.02046;41.17244,-96.02106;41.17184,-96.02106;41.17184,-96.02046;41.17218,-96.01971;
+	 *  No wrap around (final point is not first point).
+	 *  Ends with ";".
+	 * 
 	 */
 	function coordinates_to_output(coors) {
 		var str = '';
+		var p1 = null;
+		var p2 = null;
+		var co = new Array();
+		for (var i=0; i<coors.length; i++) {
+			var latlng = coors[i];
+			//~ var newstr = latlng.lat() + ',' + latlng.lng();
+			var newstr = latlng.lat + ',' + latlng.lng;
+			co.push(newstr);
+		};
+		/**if (co.length && co.length > 1 && co[0] != co[ co.length-1 ]) {
+			// Add an extra coordinate which is the "wrap around"?
+			str += co[0]; // Add it again...
+		}**/
+		// Update value...
+		var x = document.getElementById('d3');
+		x.value = co.join(options_object.separator);
+		x.value += options_object.end;
+		////////////////////////
+		// This is the WeFi way.
+		// That is, "Lng,Lat,Z".
+		////////////////////////
+		/**var str = '';
 		var p1 = null;
 		var p2 = null;
 		var co = new Array();
@@ -8729,6 +8800,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		// Update value...
 		var x = document.getElementById('d3');
 		x.value = str.trim();
+		**/
 	}
 	function orientToFirstPoint() {
 		var toLoc = new google.maps.LatLng(latLngOnPage.lat, latLngOnPage.lng);
@@ -8795,7 +8867,8 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		});
 	}
 	function show_stats(stats_obj) {
-		var price = AMT__Global_Vars.scriptVars['GeocodePrice'];
+		// Unnecessary.
+		/**var price = AMT__Global_Vars.scriptVars['GeocodePrice'];
 		var st = stats_obj;
 		var a1,a2,a3,a4,a5;
 		a1 = p_fmt(price, st.stores300, 12); // Times 12
@@ -8816,7 +8889,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				'\n8h:'+a7+
 				'\n12h:'+a8+
 				'\nUser:'+st.stores_user+
-				'\nAll:'+st.stores_count;
+				'\nAll:'+st.stores_count;**/
 	}
 	function add_page_marker(ll) { // ll = array(lat, lng)
 		// icon:http://199.180.249.224/FLBS/content/media/Rainbow-Square-16px.png
@@ -9126,11 +9199,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	 * drawingManager :: This is global....
 	 */
 	function loader_func2(obj) {
-		console.log('Inside of loader_func2');
-		console.log('this is obj:')
-		console.log(obj);
-		console.log(window.fPoisFromYellowDots);
-		
 		drawingManager = new google.maps.drawing.DrawingManager({
 			drawingMode: google.maps.drawing.OverlayType.POLYLINE,
 			drawingControl: true,
@@ -9605,23 +9673,29 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 						});
 						polyline.setMap(map);
 						window.fourLines.push(polyline);
-						// d3
-						var x = document.getElementById('d3');
-						x.value = '';
+						
+							//~ // d3
+							//~ var x = document.getElementById('d3');
+							//~ x.value = '';
+						
+							//~ console.log('==========here=======');
+							//~ console.log(coordinates_to_output);
+							//~ 
+							//~ x.value += window.threeRectPoints[0].position.lng() + ',' + window.threeRectPoints[0].position.lat()+',0 ';
+							//~ x.value = x.value.trim();
+						
+						////////////////////////////////////
+						// Continue to add editable polygon
+						////////////////////////////////////
 						var a = []; // Array coordinates
-						for(var i = 0; i < window.threeRectPoints.length; i++) {
-							x.value += window.threeRectPoints[i].position.lng() + ',' + window.threeRectPoints[i].position.lat() +',0 ';
+						for (var i=0; i<window.threeRectPoints.length; i++) {
 							a.push({
 								lat: window.threeRectPoints[i].position.lat(),
 								lng: window.threeRectPoints[i].position.lng(),
 							});
 						}
-						x.value += window.threeRectPoints[0].position.lng() + ',' + window.threeRectPoints[0].position.lat()+',0 ';
-						x.value = x.value.trim();
-						// Continue to add editable polygon
-						// add_editable_polygon
-						//
 						add_editable_polygon(a);
+						coordinates_to_output(a);
 					}
 				}
 				else {
