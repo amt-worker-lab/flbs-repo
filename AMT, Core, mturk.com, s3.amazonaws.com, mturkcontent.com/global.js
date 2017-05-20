@@ -8147,6 +8147,8 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	// ............
 	// Append helper function: add_editable_polygon
 	js_append2(add_editable_polygon);
+	// Append options object on page.
+	js_append2('var options_object_on_page = '+JSON.stringify(options_object));
 	// Append helper function: coordinates_to_output
 	js_append2(coordinates_to_output);
 	// Append helper function: orientToFirstPoint
@@ -8707,7 +8709,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		}
 		if (window.editablePolygon) window.editablePolygon.setMap(null); // Remove any old...
 		window.editablePolygon = new google.maps.Polygon({
-		//~ var polygon = new google.maps.Polygon({
 			editable: true,
 			paths: a,
 			strokeColor: "#FF0000",
@@ -8717,36 +8718,31 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			fillOpacity: 0.1,
 			map: map
 		});
+		//==============================================================
+		// Changes occasionally. Once it was this.j. Now it is this.b.
+		//==============================================================
 		window.editablePolygon.getPaths().forEach(function(path, index){
-		//~ polygon.getPaths().forEach(function(path, index){
 			google.maps.event.addListener(path, 'insert_at', function(){
 				// New point
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 			google.maps.event.addListener(path, 'remove_at', function(){
 				// Point was removed
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 			google.maps.event.addListener(path, 'set_at', function(c){
 				// Point was moved
 				// Iterate this.j, which is an array containing each point,
 				// where point={lat:function(), lng:function()}.
 				// And point.lat() returns lat of the point?
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 		});
 		// Window focus....
 		window.focus();
-		// ..
-		// ..
-		//~ console.log(drawingManager);//.setMap(map);
-		//~ var drawingManager = new google.maps.drawing.DrawingManager({
-			//~ drawingMode: null,
-		//~ });
-		//~ drawingManager.setMap(map);
 	}
 	/**
 	 * coordinates_to_output
@@ -8765,20 +8761,33 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		var p1 = null;
 		var p2 = null;
 		var co = new Array();
+		console.log(coors)
+		//~ if (coors.hasOwnProperty('b')) {
+			//~ coors = coors.b
+		//~ }
+		// coors.getAt(i)};
 		for (var i=0; i<coors.length; i++) {
 			var latlng = coors[i];
-			//~ var newstr = latlng.lat() + ',' + latlng.lng();
-			var newstr = latlng.lat + ',' + latlng.lng;
+			var newstr;
+			if (typeof latlng.lat == 'function') {
+				newstr = latlng.lat() + ',' + latlng.lng();
+			} else {
+				newstr = latlng.lat + ',' + latlng.lng;
+			}
 			co.push(newstr);
 		};
+		// Disable wrap-around if it is present!
+		if (co.length && co.length > 1 && co[0] == co[ co.length-1 ]) {
+			delete co[ co.length-1 ];
+		}
 		/**if (co.length && co.length > 1 && co[0] != co[ co.length-1 ]) {
 			// Add an extra coordinate which is the "wrap around"?
 			str += co[0]; // Add it again...
 		}**/
 		// Update value...
 		var x = document.getElementById('d3');
-		x.value = co.join(options_object.separator);
-		x.value += options_object.end;
+		x.value = co.join(options_object_on_page.separator);
+		x.value += options_object_on_page.end;
 		////////////////////////
 		// This is the WeFi way.
 		// That is, "Lng,Lat,Z".
@@ -8848,21 +8857,27 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		polygon.getPaths().forEach(function(path, index){
 			google.maps.event.addListener(path, 'insert_at', function(){
 				// New point
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				console.log('debug editable:new');
+				console.log(this);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 			google.maps.event.addListener(path, 'remove_at', function(){
 				// Point was removed
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				console.log('debug editable:removed');
+				console.log(this);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 			google.maps.event.addListener(path, 'set_at', function(c){
 				// Point was moved
 				// Iterate this.j, which is an array containing each point,
 				// where point={lat:function(), lng:function()}.
 				// And point.lat() returns lat of the point?
-				if (!this.hasOwnProperty('j')) { alert('No coordinates_to_output!'); return; }
-				coordinates_to_output(this.j);
+				console.log('debug editable:moved');
+				console.log(this);
+				if (!this.hasOwnProperty('b')) { alert('No coordinates_to_output!'); return; }
+				coordinates_to_output(this.b);
 			});
 		});
 	}
@@ -9231,9 +9246,21 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
 			if (event.type == google.maps.drawing.OverlayType.POLYLINE) {
 				coors = event.overlay.getPath();
-				displayNewCoors(coors);
+				coordinates_to_output(coors.b);	// New method
+				//~ displayNewCoors(coors);		// Old method
 				// Switch back to non-drawing mode after drawing a shape.
 				drawingManager.setDrawingMode(null);
+				// Add white line.
+				var polyline = new google.maps.Polyline({
+					path:[
+						coors.getAt(0),
+						coors.getAt(coors.getLength()-1)
+					],
+					strokeWeight:3,
+					strokeColor:'#FFFFFF'
+				});
+				polyline.setMap(map);
+				// Add editable.
 			}
 		});
 		
@@ -9261,45 +9288,44 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		});
 		
 		// displayNewCoors
-		function displayNewCoors(coors) {
-			
-			var str = '';
-			var p1 = null;
-			var p2 = null;
-			var co = new Array();
-			for (var i=0; i<coors.getLength(); i++) {
-				if(i == 1) {p1 = coors.getAt(i)};
-				if(i == coors.getLength()-1) {p2 = coors.getAt(i)};
-				var latlng = coors.getAt(i);
-				str += latlng.lng() + ',' + latlng.lat() + ',0 ';
-				co.push({
-					lat: latlng.lat(),
-					lng: latlng.lng(),
-				});
-			};
-			 
-			var latlng1 = coors.getAt(0);
-			var latlng2 = coors.getAt(coors.getLength()-1);
-			if(latlng1.lat() != latlng2.lat() ||
-				latlng1.lng() != latlng2.lng()) {
-				str += coors.getAt(0).lng() + ',' + coors.getAt(0).lat() + ',0 ';
-			};
-			// Line close... Make editable:true here for fun......
-			var polyline = new google.maps.Polyline({
-				path:[
-					 coors.getAt(0),
-					 coors.getAt(coors.getLength()-1)
-				],
-				strokeWeight:3,
-				strokeColor:'#FFFFFF'
-			});
-			polyline.setMap(map);
-			// Update value...
-			var x = document.getElementById('d3');
-			x.value = str.trim();
-			// Editable polygon.....
-			add_editable_polygon(co);
-		}
+		//~ function displayNewCoors(coors) {
+			//~ var str = '';
+			//~ var p1 = null;
+			//~ var p2 = null;
+			//~ var co = new Array();
+			//~ for (var i=0; i<coors.getLength(); i++) {
+				//~ if(i == 1) {p1 = coors.getAt(i)};
+				//~ if(i == coors.getLength()-1) {p2 = coors.getAt(i)};
+				//~ var latlng = coors.getAt(i);
+				//~ str += latlng.lng() + ',' + latlng.lat() + ',0 ';
+				//~ co.push({
+					//~ lat: latlng.lat(),
+					//~ lng: latlng.lng(),
+				//~ });
+			//~ };
+			//~ // Wrap around.
+			//~ var latlng1 = coors.getAt(0);
+			//~ var latlng2 = coors.getAt(coors.getLength()-1);
+			//~ if(latlng1.lat() != latlng2.lat() ||
+				//~ latlng1.lng() != latlng2.lng()) {
+				//~ str += coors.getAt(0).lng() + ',' + coors.getAt(0).lat() + ',0 ';
+			//~ };
+			//~ // Line close... Make editable:true here for fun......
+			//~ var polyline = new google.maps.Polyline({
+				//~ path:[
+					 //~ coors.getAt(0),
+					 //~ coors.getAt(coors.getLength()-1)
+				//~ ],
+				//~ strokeWeight:3,
+				//~ strokeColor:'#FFFFFF'
+			//~ });
+			//~ polyline.setMap(map);
+			//~ // Update value...
+			//~ var x = document.getElementById('d3');
+			//~ x.value = str.trim();
+			//~ // Editable polygon.....
+			//~ add_editable_polygon(co);
+		//~ }
 		if (latLngOnPage) {
 			console.log(latLngOnPage);
 			map.setCenter(latLngOnPage);
@@ -9719,36 +9745,37 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			}
 		});
 		// displayNewCoors
-		displayNewCoors = function(coors) {
-			var str = '';
-			var p1 = null;
-			var p2 = null;
-			var co = new Array();
-			for (var i =0; i < coors.getLength(); i++) {
-				if(i == 1) {p1 = coors.getAt(i)};
-				if(i == coors.getLength()-1) {p2 = coors.getAt(i)};
-				var latlng = coors.getAt(i);
-				str += latlng.lat() + ',' + latlng.lng() + ',0 ';
-			};
+		//~ displayNewCoors = function(coors) {
+			//~ var str = '';
+			//~ var p1 = null;
+			//~ var p2 = null;
+			//~ var co = new Array();
+			//~ for (var i =0; i < coors.getLength(); i++) {
+				//~ if(i == 1) {p1 = coors.getAt(i)};
+				//~ if(i == coors.getLength()-1) {p2 = coors.getAt(i)};
+				//~ var latlng = coors.getAt(i);
+				//~ str += latlng.lat() + ',' + latlng.lng() + ',0 ';
+			//~ };
 			 
-			var latlng1 = coors.getAt(0);
-			var latlng2 = coors.getAt(coors.getLength()-1);
-			if( latlng1.lat() != latlng2.lat() ||
-				latlng1.lng() != latlng2.lng()) {
-				str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ',0 ';
-			};
-			// Draws line?
-			var polyline = new google.maps.Polyline({
-				path:[
-					coors.getAt(0),
-					coors.getAt(coors.getLength()-1)
-				],
-				strokeWeight:3,
-				strokeColor:'#FFFFFF'
-			});
-			polyline.setMap(map);
-			document.getElementById('d3').value = str.trim();
-		};
+			//~ var latlng1 = coors.getAt(0);
+			//~ var latlng2 = coors.getAt(coors.getLength()-1);
+			//~ if( latlng1.lat() != latlng2.lat() ||
+				//~ latlng1.lng() != latlng2.lng()) {
+				//~ str += coors.getAt(0).lat() + ',' + coors.getAt(0).lng() + ',0 ';
+			//~ };
+			
+			//~ // Draws line
+			//~ var polyline = new google.maps.Polyline({
+				//~ path:[
+					//~ coors.getAt(0),
+					//~ coors.getAt(coors.getLength()-1)
+				//~ ],
+				//~ strokeWeight:3,
+				//~ strokeColor:'#FFFFFF'
+			//~ });
+			//~ polyline.setMap(map);
+			//~ document.getElementById('d3').value = str.trim();
+		//~ };
 		// STREET VIEW LAYER
 		var streetViewLayer = new google.maps.StreetViewCoverageLayer();
 		streetViewLayer.setMap(map);
