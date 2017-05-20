@@ -27,8 +27,8 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
-	// 
-	// 
+	// Lorn Davis
+	// Transcribe table row from image
 	// 
 	s = '<p><strong><label>Please enter ONLY the data in the table cells from the image into the fields below.</label></strong></p>';
 	if (ih.indexOf(s) != -1) {
@@ -38,7 +38,10 @@ function MT__RUN() {
 			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
 			//~ GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
 			//~ GM_addStyle('table {position:absolute !important;top:1000px !important;}');
-			//~ GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			GM_addStyle('input:focus {border:2px solid blue;}');
+			GM_addStyle('input {font-size:2em;max-width:100px}');
+			GM_addStyle('#Number2 {background-color:yellow;}'); // Highlight Number2
+			//~ GM_addStyle('input:active {border:2px solid blue !important;}');
 			var img = document.getElementsByTagName('img');
 			//~ var td = document.getElementsByTagName('td');
 			var o = {
@@ -83,29 +86,44 @@ function MT__RUN() {
 			// Col 1.
 			// Only field that deals with the image name.
 			// Minus 2 is the most common.
+			// The second number (Number2) is commonly +28.
 			var x = /row_([\d]+)\.png/.exec(o.u);
 			if (x) {
 				o.q[1].value = parseInt(x[1]) - 2;
+				o.q[5].value = (parseInt(x[1]) - 2) + 28;
+			}
+			o.q[1].onblur = function() {
+				o.q[5].value = parseInt(this.value) + 28;
 			}
 			
 			// Col 2.
 			// Focus on col.
+			// And set interval.
+			// Also do onkeyup, chars=6.
 			o.q[2].focus();
 			var xint = setInterval(function(){o.q[2].focus();}, 100);
+			o.q[2].addEventListener('keyup', function() {
+				this.value = this.value.replace(/[^\d]/g, '');
+				if (this.value.trim().length == 6) {
+					o.q[3].focus();
+				}
+			}, false);
 			
 			// Col 3.
 			// Add '15' when tabbing out.
+			// Only if the field is not fully entered (d-d-d).
 			o.q[3].addEventListener('blur', function() {
 				this.value = this.value.trim();
-				if (this.value != '')
+				if (this.value != '' && !/^\d+-\d+-\d+/.exec(this.value))
 					this.value += '-15';
 			}, false);
 			
 			// Col 4.
-			// Max three characters. Auto-tab to next box.
+			// Max three characters.
+			// Go back to first box!
 			o.q[4].addEventListener('keyup', function() {
 				if (this.value.trim().length == 3) {
-					o.q[5].focus();
+					o.q[1].focus();
 				}
 			}, false);
 			
@@ -115,8 +133,15 @@ function MT__RUN() {
 			}, false);
 			
 			// Keypress watch
-			window.addEventListener('keypress', function(e) {
+			// Keypress does not capture tab.
+			// Use keyup instead.
+			window.addEventListener('keydown', function(e) {
+				// Clear interval
+				clearInterval(xint);
+			}, false);
+			window.addEventListener('keyup', function(e) {
 				var c = e.keyCode;
+				console.log(c);
 				if (c == 13) {
 					e.stopPropagation();
 					e.preventDefault();
@@ -137,8 +162,6 @@ function MT__RUN() {
 					AMT___recordAndSubmit();
 					return false;
 				}
-				// Clear interval
-				clearInterval(xint);
 			}, false);
 			
 			// Turn off form submit.
