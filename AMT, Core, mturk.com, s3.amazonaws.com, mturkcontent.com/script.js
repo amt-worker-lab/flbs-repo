@@ -81,7 +81,24 @@ function MT__RUN() {
 			);
 			
 			// Set default rows=5.
-			o.q[0].value = 5;
+			// Onkeyup if value==0 then reset form.
+			o.q[0].value = 8;
+			o.q[0].onkeyup = function(e) { //o.q[1].onblur = 
+				if (this.value.trim() == '0') {
+					set0();
+				}
+			}
+			function set0() {
+				o.q[0].value = 0;
+				o.q[1].value = '';
+				o.q[2].value = '';
+				o.q[3].value = '';
+				o.q[4].value = '';
+				o.q[5].value = '';
+				o.q[6].value = '';
+				o.q[7].value = '';
+				o.q[8].value = '';
+			}
 			
 			// Col 1.
 			// Only field that deals with the image name.
@@ -165,6 +182,7 @@ function MT__RUN() {
 			window.addEventListener('keyup', function(e) {
 				var c = e.keyCode;
 				console.log(c);
+				// Enter key
 				if (c == 13) {
 					e.stopPropagation();
 					e.preventDefault();
@@ -184,6 +202,10 @@ function MT__RUN() {
 					}
 					AMT___recordAndSubmit();
 					return false;
+				}
+				// Asterisk key (reset form).
+				else if (c == 106) {
+					set0();
 				}
 			}, false);
 			
