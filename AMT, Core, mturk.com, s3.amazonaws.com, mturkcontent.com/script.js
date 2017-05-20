@@ -35,14 +35,14 @@ function MT__RUN() {
 		var run = function() {};
 		run.prototype.f = function() {console.log('');
 			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
-			GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
-			GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
-			GM_addStyle('table {position:absolute !important;top:1000px !important;}');
-			GM_addStyle('.exe:hover {background-color:LightGreen;}');
+			//~ GM_addStyle('.container {margin:0 !important;padding:0 !important;margin-top:0px !important;}');
+			//~ GM_addStyle('.panel-primary {position:absolute !important;top:2800px !important;}');
+			//~ GM_addStyle('table {position:absolute !important;top:1000px !important;}');
+			//~ GM_addStyle('.exe:hover {background-color:LightGreen;}');
 			var img = document.getElementsByTagName('img');
 			//~ var td = document.getElementsByTagName('td');
 			var o = {
-				u: a[1].getAttribute('src'),
+				u: img[0].getAttribute('src'),
 				//~ tn: parseInt(td[3].innerText.trim()),	//transaction #
 				//~ valb: parseInt(td[5].innerText.trim()),
 				//~ valx: null,
@@ -61,10 +61,26 @@ function MT__RUN() {
 				]
 			}
 			
+			AMT___addUserDecision(
+				'Lorn Davis,May2017',
+				function() { return o.u; },
+				[
+					"Id(Cells)",
+					"Id(Number1)",
+					"Id(Unit1)",
+					"Id(Date1)",
+					"Id(Volume1)",
+					"Id(Number2)",
+					"Id(Unit2)",
+					"Id(Date2)",
+					"Id(Volume2)",
+				]
+			);
+			
 			// Set default rows=5.
 			o.q[0].value = 5;
 			
-			// Row 1.
+			// Col 1.
 			// Only field that deals with the image name.
 			// Minus 2 is the most common.
 			var x = /row_([\d]+)\.png/.exec(o.u);
@@ -72,17 +88,62 @@ function MT__RUN() {
 				o.q[1].value = parseInt(x[1]) - 2;
 			}
 			
-			// Row 2.
-			// Focus on row 2.
+			// Col 2.
+			// Focus on col.
 			o.q[2].focus();
 			
-			// Row 3.
-			// Add '15'
+			// Col 3.
+			// Add '15' when tabbing out.
+			o.q[3].addEventListener('blur', function() {
+				this.value = this.value.trim();
+				if (this.value != '')
+					this.value += '-15';
+			}, false);
 			
-			// Keypress watch
-			window.addEventListener('keypress', function() {
+			// Col 4.
+			// Max three characters. Auto-tab to next box.
+			o.q[4].addEventListener('keyup', function() {
+				if (this.value.trim().length == 3) {
+					o.q[5].focus();
+				}
+			}, false);
+			
+			// Col 5. Auto-submit after two characters?
+			o.q[5].addEventListener('keyup', function() {
 				
 			}, false);
+			
+			// Keypress watch
+			window.addEventListener('keypress', function(e) {
+				var c = e.keyCode;
+				if (c == 13) {
+					e.stopPropagation();
+					e.preventDefault();
+					// Good to go?
+					for (var i=0;i<=5;i++) {
+						o.q[i].value = o.q[i].value.trim();
+						if (o.q[i].value == '') {
+							var x = confirm('There is a blank in 0-5. Submit form?');
+							if (x == true) {
+								// Break and submit.
+								console.log('sbm');
+								break;
+							} else {
+								return false;
+							}
+						}
+					}
+					AMT___recordAndSubmit();
+					return false;
+				}
+			}, false);
+			
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				return false;
+			}
 			
 			// On double click, stop automated page stuff.
 			// Turns off...
