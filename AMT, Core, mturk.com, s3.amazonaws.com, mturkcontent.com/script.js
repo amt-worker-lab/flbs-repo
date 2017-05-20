@@ -91,6 +91,7 @@ function MT__RUN() {
 			// Col 2.
 			// Focus on col.
 			o.q[2].focus();
+			var xint = setInterval(function(){o.q[2].focus();}, 100);
 			
 			// Col 3.
 			// Add '15' when tabbing out.
@@ -136,6 +137,8 @@ function MT__RUN() {
 					AMT___recordAndSubmit();
 					return false;
 				}
+				// Clear interval
+				clearInterval(xint);
 			}, false);
 			
 			// Turn off form submit.
