@@ -3370,6 +3370,29 @@ Laurens Hammond, Chicago, Ill.**/
 		}
 		new run().f();
 	}
+	// 
+	// Create dashboard geocode
+	// create_dashboard_geocode
+	var s = '<h4><strong>Read the <u>entire</u> "Polygon Shape Guidelines for HIT Approval" Section below for examples of good and bad outlines.</strong></h4>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('x');
+			GM_addStyle('body,p,h2,h1,h3,h4,ul,li,form,input,span,p,div {margin:0;padding:0;font-size:10px;}');
+			GM_addStyle('.highlight-box {margin-top:200px;}');
+			GM_addStyle('.form-control {padding:0 !important;height:auto !important;line-height:auto !important;}');
+			GM_addStyle('.container {position:absolute;margin:0 !important;padding:0 !important;top:0px;left:0;width:99% !important;zoom:0.8;}');
+			GM_addStyle('.panel-primary {position:absolute !important;left:0;width:10% !important;top:1400px;}');
+			
+			var l = /lat=([\d\.\-]+)&(amp;|)lng=([\d\.\-]+)" target=/i.exec(ih);
+			//~ console.log(ih)
+			// create_dashboard_geocode
+			new AMT___items_factory().create_dashboard_geocode({
+				store: 'Lowes',
+				ll: {lat:l[1], lng:l[3]},
+			})
+		}
+		new run().f();
+	}
 	// Peter
 	// Find the Postal Address for Australian Businesses
 	//

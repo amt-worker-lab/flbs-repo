@@ -7646,8 +7646,8 @@ function AMT___items_factory(obj_vars) {
  * 							ll: {lat: ###, lng: ###}
  * 							output_field: <html element>
  *  						separator: NOT IMPLEMENTED, default=";"
- * 							store_name: String. Default = "". A store to search for, e.g. "Lowes".
- * 							store_address: String. Default = "".
+ * 							name: String. Default = null. A store to search for, e.g. "Lowes".
+ * 							addr: String. Default = null.
  * 
  * @returns
  * ...: ...
@@ -7690,6 +7690,9 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	new AMT___core_factory().createScriptVar("AutoOrientType (e.g. 'S until D')", 0, false);
 	localStorage['orientStyle'] = AMT__Global_Vars.scriptVars["AutoOrientType (e.g. 'S until D')"];
 	
+	////////////////////////////////////////////////////////////
+	// Local storage of last marker city, state, lat, lng, etc.
+	////////////////////////////////////////////////////////////
 	//~ if (localStorage['db_last_city'] == null)
 		//~ localStorage['db_last_city'] = '';
 	//~ if (localStorage['db_last_state'] == null)
@@ -7710,12 +7713,15 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	var rf = new AMT___requests_factory();
 	var type_wefi_upper = type_wefi[0].toUpperCase() + type_wefi.substr(1);
 	
+	//////////
 	// Revid
+	//////////
 	//~ var revid = /&rid=(\d+)/.exec(document.location.href);
 	//~ revid = (revid) ? parseInt(revid[1]) : '';
 	
+	////////////
 	// xo
-	//
+	////////////
 	var xo = {
 		full: null,
 		pois: [],
@@ -7742,23 +7748,22 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		
 		num_tries_loaded: 0, // For add_static_img
 		
-		review_id: revid,
-		//~ drawingManager: null, // This is the drawing manager.
+		//~ review_id: revid,
 		
 		naTypes: [
-			"N/A Choices",
-			type_wefi_upper+" is too far away from any streetview-enabled roads to been seen accurately in streetview, nor can it be identified in 45-degree view.",
-			"The streetview image is too blurry to identify the "+type_wefi+".",
-			"I cannot get a streetview angle that shows what kind of "+type_wefi+" it is.",
-			"I cannot find the "+type_wefi+" near the desired address.",
-			"The "+type_wefi+" appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
-			"The "+type_wefi+" does not appear in streetview, the trees are blocking the view.",
-			"I've searched the area and cannot find any signs or indicators of the "+type_wefi+".",
-			"I've searched the area and cannot find any signs in streetview or 45-degree view indicating the "+type_wefi+".",
-			"There is a sign on the outside of the building indicating that the "+type_wefi+" is here. However, there is no way to determine where the "+type_wefi+" is located within the building.",
-			type_wefi_upper+' is inside of a mall/airport/university/etc. and it is not possible to precisely locate.',
-			type_wefi_upper+' is inside of a building and it is not possible to precisely locate.',
-			type_wefi_upper+' is inside of a building. '+type_wefi_upper+' is likely within the boundaries:',
+			//~ "N/A Choices",
+			//~ type_wefi_upper+" is too far away from any streetview-enabled roads to been seen accurately in streetview, nor can it be identified in 45-degree view.",
+			//~ "The streetview image is too blurry to identify the "+type_wefi+".",
+			//~ "I cannot get a streetview angle that shows what kind of "+type_wefi+" it is.",
+			//~ "I cannot find the "+type_wefi+" near the desired address.",
+			//~ "The "+type_wefi+" appears to be (or have been) under construction. It cannot be accurately identified in streetview, 45-degree view, or satellite view.",
+			//~ "The "+type_wefi+" does not appear in streetview, the trees are blocking the view.",
+			//~ "I've searched the area and cannot find any signs or indicators of the "+type_wefi+".",
+			//~ "I've searched the area and cannot find any signs in streetview or 45-degree view indicating the "+type_wefi+".",
+			//~ "There is a sign on the outside of the building indicating that the "+type_wefi+" is here. However, there is no way to determine where the "+type_wefi+" is located within the building.",
+			//~ type_wefi_upper+' is inside of a mall/airport/university/etc. and it is not possible to precisely locate.',
+			//~ type_wefi_upper+' is inside of a building and it is not possible to precisely locate.',
+			//~ type_wefi_upper+' is inside of a building. '+type_wefi_upper+' is likely within the boundaries:',
 			//~ 'Appears to be located inside another building.',
 			//"The " + type_wefi + " is not viewable in streetview.mall." //something about malls...?
 		],
@@ -7770,35 +7775,39 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			atm_chkbox: null
 		},
 		
-		//~ starbucks_nearby: new AMT___huge_vars_factory().sb_stores(),
-		
 		elements: {
 			map_key_div: null
 		},
 		
 		challengeMode: [
-		"off",
-		"address_line_2","mall","stadium","lodge",
-        "airforce", "terminal", "base", "train", "railway",
-		"floor","suite","#","number", "unit", "building", "bldg",
-		"university","U of",
-		"turnpike", "tpk","Transport", "crossing", "service", "pass", "toll",
-		"P.O.", "PO Box",
-		"Trading","Travel","Trade",
-		"casino","shop","hotel","resort","hospital",
-		"plaza","place",
-		"market","square","outlet",
-		"Lot","station","bank",
-		"airport",
-		"beach","center", "ctr", "park", "college","lot", "ste",
+		//~ "off",
+		//~ "address_line_2","mall","stadium","lodge",
+        //~ "airforce", "terminal", "base", "train", "railway",
+		//~ "floor","suite","#","number", "unit", "building", "bldg",
+		//~ "university","U of",
+		//~ "turnpike", "tpk","Transport", "crossing", "service", "pass", "toll",
+		//~ "P.O.", "PO Box",
+		//~ "Trading","Travel","Trade",
+		//~ "casino","shop","hotel","resort","hospital",
+		//~ "plaza","place",
+		//~ "market","square","outlet",
+		//~ "Lot","station","bank",
+		//~ "airport",
+		//~ "beach","center", "ctr", "park", "college","lot", "ste",
 		],
 		currentChallenge: null,
 	}
 	
 	// Set variables from options_object.
-	//~ if (options_object.ll) {
-		//~ xo.
-	//~ }
+	if (options_object.ll) {
+		xo.ll_as_string = options_object.ll.lat+','+options_object.ll.lng;
+	}
+	if (options_object.name) {
+		xo.name = options_object.name;
+	}
+	if (options_object.addr) {
+		xo.name = options_object.addr;
+	}
 	
 	
 	///////////////////
@@ -7952,28 +7961,30 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	x_.appendChild(x);
 	d4c.appendChild(x_);
 	xo.d.imp_chkbox = x;
+	///////////////////////////////////
 	// Left and Right Review buttons...
-	if (xo.review_id != '') {
-		var d3z1 = document.createElement('input');
-		d3z1.type = 'button';
-		d3z1.setAttribute('style', 'height:inherit;width:10%;text-align:center;vertical-align:top;float:left;font-weight:bold;');
-		d4c.appendChild(d3z1);
-		d3z1.gotoRowNum = xo.review_id - 1;
-		d3z1.value = '<';// + d3z1.gotoRowNum;
-		var d3z2 = document.createElement('input');
-		d3z2.type = 'button';
-		d3z2.setAttribute('style', 'height:inherit;width:10%;text-align:center;vertical-align:top;float:left;font-weight:bold;');
-		d4c.appendChild(d3z2);
-		d3z2.gotoRowNum = xo.review_id + 1;
-		d3z2.value = '>';// d3z2.gotoRowNum + '>';
-		d3z1.onclick = d3z2.onclick = review_goto_row_num;
-	} else { // If not in review then show a "Review" link...
-		var d3z0 = document.createElement('a');
-		d3z0.setAttribute('style', 'float:left;');
-		d3z0.target = '_blank';
-		d3z0.innerText = 'Review';
-		d4c.appendChild(d3z0);
-	}
+	///////////////////////////////////
+	//~ if (xo.review_id != '') {
+		//~ var d3z1 = document.createElement('input');
+		//~ d3z1.type = 'button';
+		//~ d3z1.setAttribute('style', 'height:inherit;width:10%;text-align:center;vertical-align:top;float:left;font-weight:bold;');
+		//~ d4c.appendChild(d3z1);
+		//~ d3z1.gotoRowNum = xo.review_id - 1;
+		//~ d3z1.value = '<';// + d3z1.gotoRowNum;
+		//~ var d3z2 = document.createElement('input');
+		//~ d3z2.type = 'button';
+		//~ d3z2.setAttribute('style', 'height:inherit;width:10%;text-align:center;vertical-align:top;float:left;font-weight:bold;');
+		//~ d4c.appendChild(d3z2);
+		//~ d3z2.gotoRowNum = xo.review_id + 1;
+		//~ d3z2.value = '>';// d3z2.gotoRowNum + '>';
+		//~ d3z1.onclick = d3z2.onclick = review_goto_row_num;
+	//~ } else { // If not in review then show a "Review" link...
+		//~ var d3z0 = document.createElement('a');
+		//~ d3z0.setAttribute('style', 'float:left;');
+		//~ d3z0.target = '_blank';
+		//~ d3z0.innerText = 'Review';
+		//~ d4c.appendChild(d3z0);
+	//~ }
 	// Middle Line
 	var middleLine = document.createElement('div');
 	middleLine.setAttribute('style','position:absolute;top:78px;width:1px;left:50%;height:50px;background-color:blue;z-index:9999999;visibility:visible;');
@@ -8022,14 +8033,14 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	Z=Exit StreetView'.div();
 	x.appendChild(t);
 	xo.elements.mk2 = x;
-	
+	/////////////////////
 	//Extra Features Div!
+	/////////////////////
 	eFDiv = document.createElement('div');
 	eFDiv.setAttribute('style',
 		'position:absolute;top:2000px;width:100%;height:auto;border:1px solid blue;'
 	);
 	document.body.appendChild(eFDiv);
-	
 	cMStatsInp = document.createElement('input');
 	cMStatsInp.setAttribute('style',
 		'width:10%;'
@@ -8043,35 +8054,51 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	// Initial run of map key toggle
 	map_key_toggle();
 	
+	//////////////////////////////
 	// Populate select field...
-	pop_select_field();
+	//////////////////////////////
+	//~ pop_select_field();
 	
+	//////////////////////////////
 	// Populate challenge mode...
-	pop_ChallengeMode();
+	//////////////////////////////
+	//~ pop_ChallengeMode();
 	
+	//////////////////////////////
 	// cMStatsInp.onclick
-	cMStatsInp.onclick = function() {
-		//~ var cModeParam = xo.challengeMode.slice(1); // xo.challengeMode.slice(1);
-		//~ console.log(cModeParam);
-		//~ rf.database__select(
-			//~ {
-				//~ query: 'AMT_Requester__Wefi_Geocode_CModeStats',
-				//~ encodeStrings: {
-					//~ cModeParam: cModeParam,
-					//~ batch_id: AMT__Global_Vars.scriptVars['Batch #(1,2,...,)'].trim(),
-				//~ }
-			//~ },
-			//~ function(response) {
-				//~ console.log(response);
-				//~ alert(JSON.stringify(response.responseObject));
-			//~ }
-		//~ );
+	//////////////////////////////
+	/**cMStatsInp.onclick = function() {
+		var cModeParam = xo.challengeMode.slice(1); // xo.challengeMode.slice(1);
+		console.log(cModeParam);
+		rf.database__select(
+			{
+				query: 'AMT_Requester__Wefi_Geocode_CModeStats',
+				encodeStrings: {
+					cModeParam: cModeParam,
+					batch_id: AMT__Global_Vars.scriptVars['Batch #(1,2,...,)'].trim(),
+				}
+			},
+			function(response) {
+				console.log(response);
+				alert(JSON.stringify(response.responseObject));
+			}
+		);
 	}
-	//
+	**/
+	
+	//////////////////////////////
+	// review_goto_row_num
+	//////////////////////////////
 	function review_goto_row_num(e) {
-		//~ this.style.backgroundColor = 'LightGreen';
-		//~ window.location.href = window.location.href.replace(/rid=(\d+)/, 'rid=' + this.gotoRowNum); // http://localhost/?Geocode&revid=0
+		/**
+		this.style.backgroundColor = 'LightGreen';
+		window.location.href = window.location.href.replace(/rid=(\d+)/, 'rid=' + this.gotoRowNum); // http://localhost/?Geocode&revid=0
+		**/
 	}
+	
+	//////////////////////////////
+	// map_key_toggle
+	//////////////////////////////
 	function map_key_toggle(keypress) {
 		if (!keypress) {
 			if (!localStorage.hasOwnProperty('map-key-div')) {
@@ -8118,7 +8145,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		select();
 	}, 1000);
 
-
 	/**
 	 * try_sbm
 	 */
@@ -8127,15 +8153,10 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			return false;
 		// Go to next tab when not reviewing
 		// else stay here..
-		if (xo.review_id == '')
-			new AMT___core_factory().nextTab({focusOnPage: true});
+		//~ if (xo.review_id == '')
+			//~ new AMT___core_factory().nextTab({focusOnPage: true});
 								
 		write();
-		//~ if (!/^[\d\D]{80,}$/.exec(o.q.value) && !xo.cannotFindIt) // At least 80 chars.
-			//~ return false;
-		// ..............................
-		//~ new AMT___core_factory().nextTab({focusOnPage: true});
-		//~ AMT___recordAndSubmit();
 	}
 	/**
 	 * window.onkeydown
@@ -8148,20 +8169,23 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		if (e.keyCode == '17') {
 			try_sbm();
 		}
+		///////////////
 		// WeFi R&A Key
-		if (key == AMT__Global_Vars.scriptVars['WeFi R&A Key']) {
-			new AMT___core_factory().nextTab({focusOnPage: true});
-			setTimeout(function() {
-				location.reload(true); //forceGet=True
-			}, 100);
-		}
-		// WeFi R&A Key
-		if (key == AMT__Global_Vars.scriptVars['NA HotKey']) {
+		///////////////
+		//~ if (key == AMT__Global_Vars.scriptVars['WeFi R&A Key']) {
 			//~ new AMT___core_factory().nextTab({focusOnPage: true});
-			d5.selectedIndex = AMT__Global_Vars.scriptVars['midClickNAIndex'];
-			d5.click();
-			try_sbm();
-		}
+			//~ setTimeout(function() {
+				//~ location.reload(true); //forceGet=True
+			//~ }, 100);
+		//~ }
+		////////////////
+		// WeFi R&A Key
+		////////////////
+		//~ if (key == AMT__Global_Vars.scriptVars['NA HotKey']) {
+			//~ d5.selectedIndex = AMT__Global_Vars.scriptVars['midClickNAIndex'];
+			//~ d5.click();
+			//~ try_sbm();
+		//~ }
 	}, false);
 	/**
 	 * function check_near()
@@ -8183,7 +8207,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	 * 
 	 * Note: Above API returns no store details but lat long!
 	 * 
-	 * All results shall be added to map with a flashing marker...
+	 * All results shall be added to map with a flashing marker.
 	 * That is, setInterval
 		var bounds = new google.maps.LatLngBounds();
 		bounds.extend(pt);
@@ -8197,7 +8221,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					'&radius=5000&keyword='+encodeURIComponent(opts.store_name)+
 					'&key=_GOOGLE_API_KEY_REDACTED_',
 			check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
-				//~ var rs = options.response.responseText;
 				if (options.response.status != 200) {
 					xo.num_tries_loaded++;
 					add_static_img(); // Add basic image....
@@ -8218,7 +8241,9 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				var mi = (opts.store_name != AMT__Global_Vars.scriptVars['Workaround Store Name']) ?
 						x.images_base64_yellow_dot16() :
 						false ;
+				//////////////////////
 				// Clear marker array
+				//////////////////////
 				for (var i in opts.marker_array) {
 					delete opts.marker_array[i];
 				}
@@ -8230,9 +8255,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					window.fPoisFromYellowDots = [];
 				}
 				for (var i in rs.results) {
-					
 					var n = rs.results[i];
-					
 					//Turned off for now until debugged
 					if(count < 0) {
 						if(window.fPoisFromYellowDots && window.fPoisFromYellowDots.length != undefined && window.fPoisFromYellowDots.length < 1) {
@@ -8246,7 +8269,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 						}
 					}
 					count++;
-					
 					
 					// js_append (add marker)
 					var x = {
@@ -8285,20 +8307,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 							zIndex: 50,
 						});
 						m.setMap(map);
-						//~ m.addListener('click', function() {
-							//~ infowindow.open(map, this);
-						//~ });
-						//~ google.maps.event.addListener(m, 'click', function(e) {
-							//~ var s = new google.maps.places.PlacesService(map);
-							//~ s.getDetails({place_id: this.place_id}, function(result, status) {
-								//~ if (status !== google.maps.places.PlacesServiceStatus.OK) {
-									//~ console.error(status);
-									//~ return;
-								//~ }
-								//~ infoWindow.setContent(result.name);
-								//~ infoWindow.open(map, this);
-							//~ });
-						//~ });
 						var x = {
 							place_id: object.place_id,
 							reference: object.reference,
@@ -8349,11 +8357,11 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 						d3b.onblur = try_new_location;
 						return;
 					}
-
+					// Check stores near here.
 					check_near({
 						lat: lat,
 						lng: lng,
-						marker_array: xo.markers.nearby_searches1,
+						marker_array: [], //xo.markers.nearby_searches1,
 						store_name: xo.placeSearch,
 					});
 			});
@@ -8413,7 +8421,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			check_near({
 				lat: lat,
 				lng: lng,
-				marker_array: xo.markers.nearby_searches1,
+				marker_array: [], //xo.markers.nearby_searches1,
 				store_name: xo.name,
 			});
 			// Add static image if workaround....
@@ -8421,7 +8429,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				check_near({
 					lat: lat,
 					lng: lng,
-					marker_array: xo.markers.nearby_searches2, // #2
+					marker_array: [], //xo.markers.nearby_searches2, // #2
 					store_name: AMT__Global_Vars.scriptVars['Workaround Store Name'],
 				});
 			}
@@ -8532,418 +8540,111 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		
 		// If lat lang from input, then go ahead.
 		// Otherwise do a Google API geocode of the street address.
+		if (options_object.ll != null) {
+			
+		} else {
 		
-		
-		// Loading the address
-		MT___google_api_geocode(xo.addr, function(lat,lng) {
-			if  (
-				!lat ||
-				!lng ||
-				!/^-?[\d\.]{4,}$/.exec(lat) ||
-				!/^-?[\d\.]{4,}$/.exec(lng)
-				)
-			{
-				d4.style.backgroundColor = 'green'; // Show not found........
-			}
-			console.log('lat lng on page?');
-			console.log(lat);
-			console.log(lng);
-			var latLngOnPage = document.createElement('script');
-			latLngOnPage.textContent = "var latLngOnPage = {lat:" + lat +",lng:" + lng + "};" ; 
-			document.head.appendChild(latLngOnPage);
-			
-			// Add static image.....
-			xo.markers.geocode = lat+','+lng;
-			//xo.pois.push({lat:lat,lng:lng});
-			xo.fPois.push({lat:lat,lng:lng})
-			
-			// Check near
-			check_near({
-				lat: lat,
-				lng: lng,
-				marker_array: xo.markers.nearby_searches1,
-				store_name: xo.name,
-			});
-			
-			if(xo.markers.db_site_scrape_lat_lon) {
-				check_near({
-					lat: xo.markers.db_site_scrape_lat_lon.lat,
-					lng: xo.markers.db_site_scrape_lat_lon.lng,
-					marker_array: xo.markers.nearby_searches3,
-					store_name: xo.name,
-				});
-			}
-			
-			if(xo.markers.db_wefi_lat_lng) {
-				check_near({
-					lat: xo.markers.db_wefi_lat_lng.split(',')[0],
-					lng: xo.markers.db_wefi_lat_lng.split(',')[1],
-					marker_array: xo.markers.nearby_searches4,
-					store_name: xo.name,
-				});
-			}
-			
-			// Add static image if workaround....
-			// If workaround is "1" then only do workaround when 
-			// address_line_2 != "" or address_line_3 != "".
-			if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1' &&
-				(	
-					r[1] != '' ||
-					r[3] != '' ||
-					r[17] != '' 
-				)
-				) {
-				var n = [];
-				if (r[1] != '')
-					n.push(r[1]);
-				if (r[3] != '')
-					n.push(r[3]);
-				if (r[17] != '')
-					n.push(r[17]);
-				AMT__Global_Vars.scriptVars['Workaround Store Name'] = n.join(',');
-			} else if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1') { // Set blank
-				AMT__Global_Vars.scriptVars['Workaround Store Name'] = '';
-			}
-			if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() != '') {
+			// Loading the address
+			MT___google_api_geocode(xo.addr, function(lat,lng) {
+				if  (
+					!lat ||
+					!lng ||
+					!/^-?[\d\.]{4,}$/.exec(lat) ||
+					!/^-?[\d\.]{4,}$/.exec(lng)
+					)
+				{
+					d4.style.backgroundColor = 'green'; // Show not found........
+				}
+				var latLngOnPage = document.createElement('script');
+				latLngOnPage.textContent = "var latLngOnPage = {lat:" + lat +",lng:" + lng + "};" ; 
+				document.head.appendChild(latLngOnPage);
+				
+				// Add static image.....
+				xo.markers.geocode = lat+','+lng;
+				
+				//xo.pois.push({lat:lat,lng:lng});
+				xo.fPois.push({lat:lat,lng:lng})
+				
+				// Check near
 				check_near({
 					lat: lat,
 					lng: lng,
-					marker_array: xo.markers.nearby_searches2, // #2
-					store_name: AMT__Global_Vars.scriptVars['Workaround Store Name'],
+					marker_array: [], //xo.markers.nearby_searches1,
+					store_name: xo.name,
 				});
-			}
-			
-			// Append
-			js_append(loader_func2, JSON.stringify({lat:lat, lng:lng, fPois:xo.fPois}));
-			// getCenterBeforeChiosRuns
-			getCenterBeforeChiosRuns();
-			
-			// If there is an initial Lat Lng then add a marker.
-			add_page_marker(
-				xo.markers.db_wefi_lat_lng.split(',')
-			);
-		}, false, true)
-			
-		//~ rf.database__select(
-			//~ {
-				//~ query: 'AMT_Requester__Wefi_Geocode_select',
-				//~ encodeStrings: {
-					//~ user: AMT__Global_Vars.scriptVars['GeocodeUsername'].toLowerCase().trim(),
-					//~ view_status: AMT__Global_Vars.scriptVars['View(a=Any,m=Mine,n=None)'].toLowerCase().trim(),
-					//~ batch_id: AMT__Global_Vars.scriptVars['Batch #(1,2,...,)'].trim(),
-					//~ review_id: xo.review_id, // # or ""
-					//~ db_store_is_like: (xo.currentChallenge != "off" ? xo.currentChallenge : 
-									  //~ (AMT__Global_Vars.scriptVars['DB Store Is Like'] == "ChallengeMode" ? "0" : AMT__Global_Vars.scriptVars['DB Store Is Like'])),
-					//~ db_state_is: AMT__Global_Vars.scriptVars['DB State Is (0/[state])'],
-					//~ db_dba_equals: AMT__Global_Vars.scriptVars['DB DBA Equals'],
-					//~ db_order_by_nearest: AMT__Global_Vars.scriptVars['DB Order By Nearest (0/1/area/city)'], //'DB Order By Nearest (0/1/area/city)'
-					//~ db_nearest_lat: localStorage['db_last_lat'],
-					//~ db_nearest_lng: localStorage['db_last_lng'],
-					//~ db_last_city: localStorage['db_last_city'],
-					//~ db_last_state: localStorage['db_last_state'],
-				//~ }
-			//~ },
-			//~ function(response) {
-				//~ // No more stores?
-				//~ if (response.responseObject.hasOwnProperty('error')) {
-					//~ if(response.responseObject.error.trim() == 'No Stores Found!' &&
-					   //~ AMT__Global_Vars.scriptVars['DB Store Is Like'] == "ChallengeMode") {
-						//~ localStorage['ChallengeModeIndex'] = "" + (localStorage['ChallengeModeIndex'] * 1 + 1)
-						//~ //Reload the page
-						//~ new AMT___core_factory().nextTab({focusOnPage: true});
-						//~ setTimeout(function() {
-							//~ location.reload(true); //forceGet=True
-						//~ }, 100);
-						//~ return;
-					//~ }
-					//~ alert(response.responseObject.error);
-					//~ return;
-				//~ }
-				//~ // Empty?
-				//~ if (response.responseObject.length == 0) return;
-				//~ var r = response.responseObject[0];
-				//~ console.log(r);
-				//~ /** E.g.
-				//~ 0: dba:"Macy's"
-				//~ 1: store_name: "Macy's Queens - Rego Park"
-				//~ 2: address: "90-01 Queens Blvd."
-				//~ 3: address_line_2: ""
-				//~ 4: "Elmhurst"
-				//~ 5: "NY"
-				//~ 6: "United States"
-				//~ 7: country_code
-				//~ 8: "1"
-				//~ 9: "40.734519,-73.871397"
-				//~ 10: "Macy's"									 => Google Placard
-				//~ 11: "90-01 Queens Blvd, Elmhurst, NY 11373-4937" => Google Placard
-				//~ * 
-				//~ 0: "Bank of America"
-				//~ 1: "Belmont"
-				//~ 2: "645 Park St"
-				//~ 3: null
-				//~ 4: "Belmont"
-				//~ 5: "NC"
-				//~ 6: "United States"
-				//~ 7: "United States"
-				//~ 8: "56"
-				//~ 9: null
-				//~ 10: null
-				//~ 11: null
-				//~ 12: WeFi Lat "35.2538497"
-				//~ 13: WeFi Lng "-81.0279139"
-				//~ 14: ground_floor: "Y" or ""
-				//~ 15: data: [lat lng data] or ""
-				//~ 16: atm: "Y" or "N"
-				//~ 17: address_line_3:
-				//~ 18: store_number: e.g. 23948-2349872
-				//~ 19: FLBS_site_scrape_lat:
-				//~ 20: FLBS_site_scrape_lon:
-				//~ 21: get_nearest_stores: x,x|x,x|x,x|...
-				//~ 22: multibrand: 
-				//~ 23: placemark: Y, N, or null
-				//~ 24: imprecise: Y, N, or null //(xo.d.imp_chkbox.checked ? 'Y' : 'N'),
-				//~ //19: FLBS_site_scrape_lat_lon:
-				//~ //20: FLBS_site_scrape_closest_stores: 
-				//~ **/
-				//~ /**
-				 //~ * Stats is e.g.:
-				//~ {"stores300":"0","stores600":"0","stores1800":"0","stores3600":"75","stores_user":"100","stores_count":"281"}
-				 //~ */
-				//~ // Clean out "null"
-				//~ for (var i in r) {
-					//~ if (r[i] == 'null' || r[i] == null) {
-						//~ r[i] = '';
-					//~ }
-				//~ }
-				//~ if (r[19] && r[19] != '' && r[20] && r[20] != '') {
-					//~ xo.markers.db_site_scrape_lat_lon = {lat: r[19], lng: r[20]};
-				//~ } else {
-					//~ //xo.markers.db_site_scrape_lat_lon = '0,0';
-				//~ }
-				//~ if (r[21] && r[21] != '') {
-					//~ var a = r[21].split('|');
-					//xo.markers.db_site_scrape_lat_lon = {lat: a[0], lng: a[1]};
-					//~ xo.markers.db_site_scrape_lat_lon_nearby = a;
-				//~ } else {
-					//~ //xo.markers.db_site_scrape_lat_lon = '0,0';
-				//~ }
-				//~ var tmpStore = convert_store_name(r[0], r[1]);
-				//~ var tmpCountry = convert_country(r[6], r[7]);
-				//~ // Alert store..
-				//~ ls_alert_store_change(r[0], tmpStore); // Alert...
 				
-				//~ // Show Stats....
-				//~ show_stats(response.responseObject[1]);
-				//~ // Init xo vars.....
-				//~ xo.full = tmpStore +','+r[2]+','+r[3]+','+r[4]+','+r[5]+','+tmpCountry;
-				//~ xo.name = tmpStore;
-				//~ xo.addr = r[2]+','+r[4]+','+r[5]+','+tmpCountry;
-				//~ xo.city = r[4];
-				//~ xo.state_abbr = r[5];
-				//~ xo.db_id = r[8];
-				//~ xo.db_obj = r;
-				//~ xo.startInTopDownView = AMT__Global_Vars.scriptVars['Start in top-down view'];
-				//~ xo.initialZoom = AMT__Global_Vars.scriptVars['InitialZoom'];
-				//~ xo.db_lat_lng = (r[9] != '') ? r[9] : '0,0';
-				//~ xo.markers.db = (r[9] != '') ? r[9] : '0,0'; // Set o.markers.db
-				//~ xo.markers.db_wefi_lat_lng = r[12] + ',' + r[13]; // WeFi Lat/Lng
-				//~ xo.markers.db_stores = (r[12] == '' && r[13] == '') ? '0,0' : xo.markers.db_wefi_lat_lng;
+				///////////////////////////
+				// db_site_scrape_lat_lon
+				///////////////////////////
+				//~ if(xo.markers.db_site_scrape_lat_lon) {
+					//~ check_near({
+						//~ lat: xo.markers.db_site_scrape_lat_lon.lat,
+						//~ lng: xo.markers.db_site_scrape_lat_lon.lng,
+						//~ marker_array: xo.markers.nearby_searches3,
+						//~ store_name: xo.name,
+					//~ });
+				//~ }
 				
-				//~ xo.fPois.push({lat:xo.markers.db_wefi_lat_lng.split(',')[0], lng:xo.markers.db_wefi_lat_lng.split(',')[1]});
-				//~ xo.pois.push({lat:xo.markers.db_wefi_lat_lng.split(',')[0], lng:xo.markers.db_wefi_lat_lng.split(',')[1]});
-				//~ if(xo.markers.db_site_scrape_lat_lon){
-					//~ xo.fPois.push(xo.markers.db_site_scrape_lat_lon);
-					//~ xo.pois.push(xo.markers.db_site_scrape_lat_lon);
+				////////////////////
+				// db_wefi_lat_lng
+				////////////////////
+				//~ if(xo.markers.db_wefi_lat_lng) {
+					//~ check_near({
+						//~ lat: xo.markers.db_wefi_lat_lng.split(',')[0],
+						//~ lng: xo.markers.db_wefi_lat_lng.split(',')[1],
+						//~ marker_array: xo.markers.nearby_searches4,
+						//~ store_name: xo.name,
+					//~ });
 				//~ }
-				//~ xo.fPois.push({lat:xo.markers.db.split(',')[0] * 1, lng: xo.markers.db.split(',')[1] *1});
-				//~ xo.pois.push({lat:xo.markers.db.split(',')[0] * 1, lng: xo.markers.db.split(',')[1] *1});
-				//~ //xo.fPois.push(new google.maps.LatLng(xo.db_lat_lng.split(',')[0] * 1, xo.db_lat_lng.split(',')[1] *1 ));
 				
-				//~ // Update localStorage values
-				//~ update_db_nearest_lng(r[12], r[13]);
-				//~ // city / state
-				//~ localStorage['db_last_city'] = r[4];
-				//~ localStorage['db_last_state'] = r[5];
-				//~ //xo.
-				//~ xo.data = {
-					//~ ground_floor: r[14],
-					//~ data: r[15],
+				///////////////////////////////////////////////////////
+				// Add static image if workaround....
+				// If workaround is "1" then only do workaround when 
+				// address_line_2 != "" or address_line_3 != "".
+				///////////////////////////////////////////////////////
+				//~ if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1' &&
+					//~ (	
+						//~ r[1] != '' ||
+						//~ r[3] != '' ||
+						//~ r[17] != '' 
+					//~ )
+					//~ ) {
+					//~ var n = [];
+					//~ if (r[1] != '')
+						//~ n.push(r[1]);
+					//~ if (r[3] != '')
+						//~ n.push(r[3]);
+					//~ if (r[17] != '')
+						//~ n.push(r[17]);
+					//~ AMT__Global_Vars.scriptVars['Workaround Store Name'] = n.join(',');
+				//~ } else if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1') { // Set blank
+					//~ AMT__Global_Vars.scriptVars['Workaround Store Name'] = '';
 				//~ }
-				//~ console.log(xo); // Debug...
-				//~ d4.innerText = xo.full + '(' + ((r[1] + ' ' + r[3] + ' ' + r[17]).trim()) + ')'; // d4 Display....
-				//~ if (r[14] == 'Y') { // Ground floor checkbox.
-					//~ d3c.checked = true;
-				//~ }
-				//~ if (r[10] != '' && r[11] != '') {
-					//~ d4.innerText += '\n';
-					//~ var x = document.createElement('span');
-					//~ x.innerText = r[10]+','+r[11];
-					//~ x.setAttribute('style',
-						//~ 'text-decoration:underline;'+
-						//~ 'background-color:hotpink;'+
-						//~ 'font-size:1em;'
-					//~ );
-					//~ d4.appendChild(x);
-				//~ }
-				//~ // Add data (r[15]) if in review.
-				//~ if (r[15] != '') {
-					//~ setTimeout(add_rp, 2000); // Wait 2s before making.
-				//~ } else if (xo.review_id == '') { // Make "Review" link.
-					//~ d3z0.href = MT___host + '/?Geocode&rid=' + xo.db_id;
-				//~ }
-				//~ // xo.d.atm_chkbox
-				//~ xo.d.atm_chkbox.checked = (r[16] == 'Y') ? true : false;
-				//~ // xo.d.plc_chkbox
-				//~ xo.d.plc_chkbox.checked = (r[23] == 'Y') ? true : false;
-				//~ // xo.d.imp_chkbox
-				//~ xo.d.imp_chkbox.checked = (r[24] == 'Y') ? true : false;
-				
-				//~ // Loading the address
-				//~ MT___google_api_geocode(xo.addr, function(lat,lng) {
-					//~ if  (
-						//~ !lat ||
-						//~ !lng ||
-						//~ !/^-?[\d\.]{4,}$/.exec(lat) ||
-						//~ !/^-?[\d\.]{4,}$/.exec(lng)
-						//~ )
-					//~ {
-						//~ d4.style.backgroundColor = 'green'; // Show not found........
-					//~ }
-					//~ console.log('lat lng on page?');
-					//~ console.log(lat);
-					//~ console.log(lng);
-					//~ var latLngOnPage = document.createElement('script');
-					//~ latLngOnPage.textContent = "var latLngOnPage = {lat:" + lat +",lng:" + lng + "};" ; 
-					//~ document.head.appendChild(latLngOnPage);
-					
-					//~ // Add static image.....
-					//~ xo.markers.geocode = lat+','+lng;
-					//~ //xo.pois.push({lat:lat,lng:lng});
-					//~ xo.fPois.push({lat:lat,lng:lng})
-					
-					
-					
+				//~ if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() != '') {
 					//~ check_near({
 						//~ lat: lat,
 						//~ lng: lng,
-						//~ marker_array: xo.markers.nearby_searches1,
-						//~ store_name: xo.name,
+						//~ marker_array: xo.markers.nearby_searches2, // #2
+						//~ store_name: AMT__Global_Vars.scriptVars['Workaround Store Name'],
 					//~ });
-					
-					//~ if(xo.markers.db_site_scrape_lat_lon) {
-						//~ check_near({
-							//~ lat: xo.markers.db_site_scrape_lat_lon.lat,
-							//~ lng: xo.markers.db_site_scrape_lat_lon.lng,
-							//~ marker_array: xo.markers.nearby_searches3,
-							//~ store_name: xo.name,
-						//~ });
-					//~ }
-					
-					//~ if(xo.markers.db_wefi_lat_lng) {
-						//~ check_near({
-							//~ lat: xo.markers.db_wefi_lat_lng.split(',')[0],
-							//~ lng: xo.markers.db_wefi_lat_lng.split(',')[1],
-							//~ marker_array: xo.markers.nearby_searches4,
-							//~ store_name: xo.name,
-						//~ });
-					//~ }
-					
-					//~ //if(xo.markers.
-					
-					//~ // Add static image if workaround....
-					//~ // If workaround is "1" then only do workaround when 
-					//~ // address_line_2 != "" or address_line_3 != "".
-					//~ if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1' &&
-						//~ (	
-							//~ r[1] != '' ||
-							//~ r[3] != '' ||
-							//~ r[17] != '' 
-						//~ )
-						//~ ) {
-						//~ var n = [];
-						//~ if (r[1] != '')
-							//~ n.push(r[1]);
-						//~ if (r[3] != '')
-							//~ n.push(r[3]);
-						//~ if (r[17] != '')
-							//~ n.push(r[17]);
-						//~ AMT__Global_Vars.scriptVars['Workaround Store Name'] = n.join(',');
-					//~ } else if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() == '1') { // Set blank
-						//~ AMT__Global_Vars.scriptVars['Workaround Store Name'] = '';
-					//~ }
-					//~ if (AMT__Global_Vars.scriptVars['Workaround Store Name'].trim() != '') {
-						//~ check_near({
-							//~ lat: lat,
-							//~ lng: lng,
-							//~ marker_array: xo.markers.nearby_searches2, // #2
-							//~ store_name: AMT__Global_Vars.scriptVars['Workaround Store Name'],
-						//~ });
-					//~ }
-					
-					//~ // Append
-					//~ js_append(loader_func2, JSON.stringify({lat:lat, lng:lng, fPois:xo.fPois}));
-					//~ // getCenterBeforeChiosRuns
-					//~ getCenterBeforeChiosRuns();
-					//~ // Add marker for db_wefi_lat_lng
-					//~ add_page_marker(
-						//~ xo.markers.db_wefi_lat_lng.split(',')
-					//~ );
-					
-					//~ // TACO BELL NEARBY SEARCH
-					//~ // Adds markers for nearby Taco Bell.
-					//~ //
-					//~ //
-					//taco_bell_nearby(lat, lng);
-					
-					//~ // BUSINESS NEARBY MARKERS
-					//~ // DEC. 27, 2015
-					//~ // NOTE: localStorage['db_nearest_coord_array']
-					//~ //
-					//~ // Add marker for db site scrape NEARBY - green
-					//~ if (xo.markers.db_site_scrape_lat_lon_nearby) {
-						//~ var hg = new AMT___huge_vars_factory().images_base64_heart_green();
-						//~ var hg2 = new AMT___huge_vars_factory().images_base64_heart_green_done(); // IS DONE
-						//~ var a = xo.markers.db_site_scrape_lat_lon_nearby;
-						//~ for (var i in a) {
-							//~ var x = a[i].split(',');
-							//~ var h = (x[2] == '0') ? hg : hg2;
-							//~ add_page_marker2({
-								//~ lat: x[0]*1,
-								//~ lng: x[1]*1,
-								//~ title: 'SB Site Scrape - Close By',
-								//~ icon: h,
-								//~ zIndex: 99,
-							//~ });
-						//~ }
-					//~ }
-					//~ // Add marker for db site scrape RED 
-					//~ if (xo.markers.db_site_scrape_lat_lon) {
-						//~ add_page_marker2({
-							//~ lat: xo.markers.db_site_scrape_lat_lon.lat,
-							//~ lng: xo.markers.db_site_scrape_lat_lon.lng,
-							//~ title: 'SB Site Scrape',
-							//~ icon: new AMT___huge_vars_factory().images_base64_heart(),
-							//~ zIndex: 100,
-						//~ });
-					//~ }
-					//~ // H and M
-					//~ var h = new AMT___huge_vars_factory_lc().wefi_h_and_m().storesCompleteResponse.storesComplete.storeComplete;
-					//~ for (var i in h) {
-						//~ if (h[i].storeId == r[18]) {
-							//~ add_page_marker2({
-								//~ lat: h[i].latitude*1,
-								//~ lng: h[i].longitude*1,
-								//~ title: 'SB Site Scrape',
-								//~ icon: new AMT___huge_vars_factory().images_base64_heart(),
-								//~ zIndex: 100,
-							//~ });
-						//~ } else {
-						//~ }
-					//~ }
-				//~ }, false, true);
-			}
-		);
+				//~ }
+				
+				// Append
+				js_append(loader_func2, JSON.stringify({lat:lat, lng:lng, fPois:xo.fPois}));
+				
+				// getCenterBeforeChiosRuns
+				getCenterBeforeChiosRuns();
+				
+				/////////////////////////////////////////////////////
+				// If there is an initial Lat Lng then add a marker.
+				/////////////////////////////////////////////////////
+				//~ add_page_marker(
+					//~ xo.markers.db_wefi_lat_lng.split(',')
+				//~ );
+			}, false, true);
+		}
 	}
+	
 	/**
 	 * KFC
 	 */
@@ -9199,7 +8900,8 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		}
 		return x;
 	}
-	function add_static_img() { // e.g. obj={m1:lat+','+lng, m2:xo.db_lat_lng}
+	function add_static_img() {
+		// e.g. obj={m1:lat+','+lng, m2:xo.db_lat_lng}
 		//https://developers.google.com/maps/documentation/static-maps/intro#Markers
 		// Size choices are tiny,mid,small. Order is Tiny/Small/Mid.		//https://maps.googleapis.com/maps/api/staticmap?size=100x100&maptype=roadmap&markers=size:mid%7Ccolor:red%7C41.3101,-73.1&markers=size:mid%7Ccolor:blue%7C41.3,-73.1&key=_GOOGLE_API_KEY_REDACTED_
 		// If workaround store name != '' then there will be two different
@@ -9253,9 +8955,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		for(element in xo.naTypes)
 		{
 			var opt = document.createElement("option");
-			//~ if(!xMasColors[pointer]) {
-				//~ pointer = 0;
-			//~ }
 			//opt.style.color = xMasColors[pointer];
 			if(num == AMT__Global_Vars.scriptVars['midClickNAIndex'] * 1) {
 				opt.style.color = 'red';
@@ -9268,7 +8967,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			d5.appendChild(opt);
 		}
 	}
-	function pop_ChallengeMode() {
+	/**function pop_ChallengeMode() {
 		var xMasColors = ['#F5624D', '#CC231E', '#34A65F', '#0F8A5F', '#235E6F'];
 		var pointer = 0;
 		var num = 0;
@@ -9276,9 +8975,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		for(element in xo.challengeMode)
 		{
 			var opt = document.createElement("option");
-			//~ if(!xMasColors[pointer]) {
-				//~ pointer = 0;
-			//~ }
 			//opt.style.color = xMasColors[pointer];
 			if(num == localStorage['ChallengeModeIndex'] * 1) {
 				opt.style.color = 'red';
@@ -9303,11 +8999,11 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		else {
 			localStorage['ChallengeModeIndex'] = "0";
 		}	
-	}
+	}**/
 
 	// d5.onclick
 	d5.onclick = function() {
-		if(this.value != "N/A Choices") {
+		/**if(this.value != "N/A Choices") {
 			var val = d3.value;
 			if(/^[\d\,\.\s\-]{80,}$/.exec(val)) {
 				// type_wefi_upper+' is inside another building. '+type_wefi_upper+' is likely within the boundaries:',
@@ -9351,19 +9047,10 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				try_sbm();
 			}
 			xo.middleClick = false;
-		}
+		}**/
 	}
 	
 	window.addEventListener('click', function(e) {
-		//~ if(e.which == 2) {
-			//~ var dee5 = document.getElementById('d5');	
-			//~ //if(localStorage['lastNA']) {
-				//~ dee5.selectedIndex = AMT__Global_Vars.scriptVars['midClickNAIndex'];
-				//~ xo.middleClick = true;
-				//~ dee5.click();
-			//~ //}
-		//~ }
-		
 		if(e.which == 2) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -9397,7 +9084,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			}
 			return false;
 		}
-
 	});
 	
 	/**
@@ -9445,7 +9131,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		console.log(obj);
 		console.log(window.fPoisFromYellowDots);
 		
-		
 		drawingManager = new google.maps.drawing.DrawingManager({
 			drawingMode: google.maps.drawing.OverlayType.POLYLINE,
 			drawingControl: true,
@@ -9487,8 +9172,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		window.fPois = obj.fPois;
 		window.fPoisIndex = 0;
 		
-
-		
 		//Initialize fPois keypress
 		window.addEventListener('keypress', function(e) {
 			if(e.keyCode == 102) {
@@ -9508,7 +9191,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				window.fPoisIndex++;
 			}
 		});
-		
 		
 		// displayNewCoors
 		function displayNewCoors(coors) {
@@ -9555,41 +9237,42 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			map.setCenter(latLngOnPage);
 			//grid(); // Testing of grid lines........
 		}
-		///////////
-		// Testing of grid lines..........
-		//~ function grid() {
-			//~ // Grid lines...
-			//~ var dist = 0.01; //... .001 is about 1 screen height at zoom=19
-			//~ for (var i=0; i<20; i++) {
-				//~ var x; // Make x range from -10 to 10.
-				//~ if (i < 10) x = i*-1;
-				//~ else x = 20-x;
-				//~ x *= 0.0001; // 0.001 too big...
-				//~ var l1 = {
-					//~ lat:latLngOnPage.lat - dist,
-					//~ lng:latLngOnPage.lng +x,
-				//~ }
-				//~ var l2 = {
-					//~ lat:latLngOnPage.lat + dist,
-					//~ lng:latLngOnPage.lng +x,
-				//~ }
-				//~ console.log(l1);
-				//~ console.log(l2);
-				//~ var polyline = new google.maps.Polyline({
-					//~ path:[
-						 //~ l1,
-						 //~ l2
-					//~ ],
-					//~ strokeWeight:1,
-					//~ strokeColor:'#FFFFFF'
-				//~ });
-				//~ polyline.setMap(map);
-			//~ }
-		//~ }
+		/////////////////////////
+		// Testing of grid lines.
+		/////////////////////////
+		/**function grid() {
+			// Grid lines...
+			var dist = 0.01; //... .001 is about 1 screen height at zoom=19
+			for (var i=0; i<20; i++) {
+				var x; // Make x range from -10 to 10.
+				if (i < 10) x = i*-1;
+				else x = 20-x;
+				x *= 0.0001; // 0.001 too big...
+				var l1 = {
+					lat:latLngOnPage.lat - dist,
+					lng:latLngOnPage.lng +x,
+				}
+				var l2 = {
+					lat:latLngOnPage.lat + dist,
+					lng:latLngOnPage.lng +x,
+				}
+				console.log(l1);
+				console.log(l2);
+				var polyline = new google.maps.Polyline({
+					path:[
+						 l1,
+						 l2
+					],
+					strokeWeight:1,
+					strokeColor:'#FFFFFF'
+				});
+				polyline.setMap(map);
+			}
+		}
 		// Left CLICK
-		//~ google.maps.event.addListener(map, 'click', function(e) {
-			//~ console.log(e);
-		//~ });
+		google.maps.event.addListener(map, 'click', function(e) {
+			console.log(e);
+		});**/
 	}
 	/**
 	 * function add_map_scripts
@@ -9612,7 +9295,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	}
 	function map_scripts_func(obj) {
 		console.log(obj);
-		//~ console.log(map);
 		// obj = {sv_start_in_top_down:..., sv_initial_zoom:..., __host__:...}
 		window.mouseMoveShowRect = false;
 		window.mousePosition = {
@@ -9788,7 +9470,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 		//~ });
 		window.addEventListener('keydown', function(e) {
 			if(e.keyCode == 16) {
-				//console.log(e);
 				if(window.shiftKey) {
 					resetShiftKey();
 					//~ window.shiftKey = false;
@@ -9820,7 +9501,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			sk.style.backgroundColor = 'LightGreen';
 		}
 		
-		
 		//~ var thePanorama = map.getStreetView();
 
 		//~ google.maps.event.addListener(thePanorama, 'visible_changed', function() {
@@ -9843,10 +9523,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				var toggle = panorama.getVisible();
 				if (toggle == false) {
 					panorama.setVisible(true);
-					//~ panorama = map.getStreetView();
 					// THIS WILL SET ZOOM=0 ON DROPDOWNS.......
-					//~ console.log('obj' + obj);
-					//~ console.log('obj.zoomZeroOnAllDropDowns:' + obj.zoomZeroOnAllDropDowns);
 					if(!window.hasSetDropdownZoom || parseInt(obj.zoomZeroOnAllDropDowns) != 0) {
 						panorama.setPov(  { heading: panorama.getPov().heading, pitch: panorama.getPov().pitch, zoom: 0 }  );
 						window.hasSetDropdownZoom = true;
@@ -10016,8 +9693,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 				// Exit Steet View
 				if (char == 'z' || char == 'Z') {
 					// Reset "key div"
-					//~ document.getElementById('map-key-div').innerText = localStorage['map-key-div-text'].split('|')[0];
-					//~ document.getElementById('map-key-div').toggle(0);
 					document.getElementById('map-key-div').style.visibility = 'visible';
 					document.getElementById('map-key-div2').style.visibility = 'hidden';
 					var x = document.getElementsByTagName('div');
@@ -10041,13 +9716,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 							var lat2 = google.maps.geometry.spherical.computeOffset(map.streetView.location.latLng,150, map.streetView.pov.heading);
 							var lat3 = google.maps.geometry.spherical.computeOffset(map.streetView.location.latLng,225, map.streetView.pov.heading);
 							
-							
-							//~ var nextLat = lat1.lat();
-							//~ var nextLng = lat1.lng();
-							//~ var nextLat2 = currentLat + 0.002*Math.cos(headingAngle);
-							//~ var nextLng2 = currentLng - 0.002*Math.sin(headingAngle); 
-							//~ var nextLat3 = currentLat + 0.001*Math.cos(headingAngle);
-							//~ var nextLng3 = currentLng - 0.001*Math.sin(headingAngle); 
 							var path = [map.streetView.location.latLng,
 										lat1
 										];
@@ -10058,10 +9726,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 										lat3
 										];
 							 
-							//~ var path = [new google.maps.LatLng(currentLat, currentLng),
-										//~ new google.maps.LatLng(currentLat + 0, currentLng + 1)
-									//	];
-
 							var lineSymbol = {
 								path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
 							};
@@ -10117,8 +9781,6 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					AMT___RunPageScript(function() {
 						var panorama = map.getStreetView();
 						panorama.setVisible(false);
-						//~ panorama = map.getStreetView();
-						//~ panorama.setPov(  { heading: panorama.getPov().heading, pitch: panorama.getPov().pitch, zoom: 0 }  ); // ZOOM=0
 					});
 				}
 				// Go to map view
@@ -10235,14 +9897,15 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 			addr: xo.addr,
 			max_streetview_height: 600, // default=600
 			curr_map_view: null, // For Z hotkey
-			q: d3, //document.getElementsByName('Q6MultiLineTextInput')[0],
+			q: d3,
 			search: {
 				withNameSearch:'',
 				woutNameSearch:''
 			}
 		};
 		// INIT W/ LAT LNG
-		geocode_result(o.centerMapLat, o.centerMapLng); // replaces `chios_system_geocoding__lat_lng`
+		// replaces `chios_system_geocoding__lat_lng`
+		geocode_result(o.centerMapLat, o.centerMapLng);
 		//~ chios_system_geocoding__lat_lng();
 		
 		/**
@@ -10285,7 +9948,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					"var currentLat = " + o.centerMapLat + ";"+
 					"var currentLng = " + o.centerMapLng + ";" + 
 					"var path = [new google.maps.LatLng(currentLat, currentLng),"+
-					"				new google.maps.LatLng("+xo.db_lat_lng+")"+
+					"				new google.maps.LatLng("+xo.ll_as_string+")"+
 					"			    ];"+
 					""+
 					"var otherLocShower = new google.maps.Polyline({"+
@@ -10298,7 +9961,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					"otherLocShower.setMap(map);"+
 					tmp_hc+
 					"var path = [new google.maps.LatLng(currentLat, currentLng),"+
-					"				new google.maps.LatLng("+xo.db_lat_lng+")"+
+					"				new google.maps.LatLng("+xo.ll_as_string+")"+
 					"			    ];"+
 					""+
 					"var otherLocShower = new google.maps.Polyline({"+
@@ -10324,14 +9987,11 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					"if (unit=='N') { dist = dist * 0.8684 };" +
 					"return dist;" +
 					"};" +
-					"var dst = distance(currentLat,currentLng,"+xo.db_lat_lng+",'M');"+
+					"var dst = distance(currentLat,currentLng,"+xo.ll_as_string+",'M');"+
 					"dst = Math.round(dst*100)/100;"+
 					"var d4 = document.getElementById('d4');"+
 					"d4.appendChild(document.createTextNode('('+dst+' mi)'));"+
-					//~ //"dstShower.setAttribute('style','position:absolute;left:30%;width:10%;top:28px;height:28px;line-height:28px;');"+
-					//~ //"dstShower.setAttribute('id','dstShower');"+
-					//~ //"document.body.appendChild(dstShower);"+
-					//~ //"dstShower.innerText = dst +' mi';"+
+					
 					"function difference(link) {"+
 						"var pano = map.streetView;"+
 						"return Math.abs(pano.pov.heading%360 - link.heading);"+
@@ -10368,7 +10028,7 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 					
 					"function orientToSecondPoint() {" +
 						"if(" + (AMT__Global_Vars.scriptVars['d=nearest'] == '0') + "){"+						
-							"var toLoc = new google.maps.LatLng("+xo.db_lat_lng+");"+
+							"var toLoc = new google.maps.LatLng("+xo.ll_as_string+");"+
 							"var fromLoc = map.streetView.getPosition();"+
 							"var heading = google.maps.geometry.spherical.computeHeading(fromLoc, toLoc);"+
 							"map.streetView.setPov({heading:heading, pitch:0});" +
