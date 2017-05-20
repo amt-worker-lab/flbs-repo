@@ -92,8 +92,11 @@ function MT__RUN() {
 				o.q[1].value = parseInt(x[1]) - 2;
 				o.q[5].value = (parseInt(x[1]) - 2) + 28;
 			}
-			o.q[1].onblur = function() {
-				o.q[5].value = parseInt(this.value) + 28;
+			o.q[1].onkeyup = function(e) { //o.q[1].onblur = 
+				if (this.value.trim() != '')
+					o.q[5].value = parseInt(this.value) + 28;
+				else
+					o.q[5].value = ''; // Clear 5.
 			}
 			
 			// Col 2.
@@ -113,9 +116,24 @@ function MT__RUN() {
 			// Add '15' when tabbing out.
 			// Only if the field is not fully entered (d-d-d).
 			o.q[3].addEventListener('blur', function() {
-				this.value = this.value.trim();
-				if (this.value != '' && !/^\d+-\d+-\d+/.exec(this.value))
+				// One digit trailing.
+				if (/^(8|9|10|11|12)-\d$/.exec(this.value)) {
 					this.value += '-15';
+					o.q[4].focus();
+				} else if (/^(1|2|3|4|5)-\d$/.exec(this.value)) {
+					this.value += '-16';
+					o.q[4].focus();
+				}
+			}, false);
+			o.q[3].addEventListener('keyup', function() {
+				// Two digits trailing.
+				if (/^(8|9|10|11|12)-\d{2}$/.exec(this.value)) {
+					this.value += '-15';
+					o.q[4].focus();
+				} else if (/^(1|2|3|4|5)-\d{2}$/.exec(this.value)) {
+					this.value += '-16';
+					o.q[4].focus();
+				}
 			}, false);
 			
 			// Col 4.
@@ -124,6 +142,7 @@ function MT__RUN() {
 			o.q[4].addEventListener('keyup', function() {
 				if (this.value.trim().length == 3) {
 					o.q[1].focus();
+					o.q[1].select();
 				}
 			}, false);
 			
@@ -136,6 +155,10 @@ function MT__RUN() {
 			// Keypress does not capture tab.
 			// Use keyup instead.
 			window.addEventListener('keydown', function(e) {
+				// Clear interval
+				clearInterval(xint);
+			}, false);
+			window.addEventListener('click', function(e) {
 				// Clear interval
 				clearInterval(xint);
 			}, false);
