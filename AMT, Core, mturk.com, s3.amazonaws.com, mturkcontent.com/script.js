@@ -27,6 +27,100 @@ function MT__RUN() {
 	var s, s2, s3;
 	var ih = document.body.innerHTML; // ...
 	
+	// "m"
+	// [EASY] Collect data from a Website
+	// requesterId A6T6J0YK95YSY
+	s = '<p>Click the link below to review the <strong>Searchlink on&nbsp;Zillow</strong>. Collect the following information if it\'s available on the website. If not, please leave it blank:</p>';
+	if (ih.indexOf(s) != -1) {
+		var run = function() {};
+		run.prototype.f = function() {console.log('');
+			var a = document.getElementsByTagName('a');
+			var o = {
+				u: a[1].href,
+				q: [
+					docuement.getElementById('companyName'),
+					docuement.getElementById('addressLine1'),
+					docuement.getElementById('phoneNumber'),
+					docuement.getElementById('email'),
+					docuement.getElementById('Firstname'),
+					docuement.getElementById('Lastname'),
+					docuement.getElementById('website'),
+				]
+			}
+			AMT___addUserDecision(
+				'A6T6J0YK95YSY,May2017',
+				function() { return o.u; },
+				[
+					"Id(companyName)",
+					"Id(addressLine1)",
+					"Id(phoneNumber)",
+					"Id(email)",
+					"Id(Firstname)",
+					"Id(Lastname)",
+					"Id(website)",
+				]
+			);
+			// xhr
+			new AMT___requests_factory().xhr_with_disk_cache({
+				URL: o.u,
+				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.style.backgroundColor = 'blue';
+						document.body.appendChild('--'.div());
+						return false;
+					}
+					//
+					return true;
+				},
+				success_callback: function(options) {
+					var rs = options.response.responseText;
+					if (options.response.status != 200) {
+						document.body.appendChild('--'.div());
+						return;
+					}
+					// Auto sbm?
+					var sbm = false;
+					// Dom parse.
+					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					var a0 = dom.getElementsByClassName('zsg-lg-3-5 profile-information-address');
+					var a1 = dom.getElementsByClassName('street-address');
+					var a2 = dom.getElementsByClassName('locality');
+					var a3 = dom.getElementsByClassName('region');
+					var a4 = dom.getElementsByClassName('postal-code');
+					if (a0.length && // All are there.
+						a1.length &&
+						a2.length &&
+						a3.length &&
+						a4.length) {
+						// Any have more than one?
+						a0.length || // Any one is there.
+						a1.length ||
+						a2.length ||
+						a3.length ||
+						a4.length
+						o.q[1].value = a1[0].inner
+					} else if (a0.length || // Any one is there.
+						a1.length ||
+						a2.length ||
+						a3.length ||
+						a4.length) {
+						
+					} else { // None are there.
+						
+					}
+						
+					// Website
+					var x = /<a rel="nofollow" href="([^"]+)" target="_blank">Website<\/a>/.exec(rs);
+					if (x) {
+						o.q[6].value = __js_clean_html_str(x[1].trim());
+					}
+				}
+			});
+		}
+		new run().f();
+		return;
+	}
 	// Lorn Davis
 	// Transcribe table row from image
 	// 
