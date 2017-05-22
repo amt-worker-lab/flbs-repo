@@ -60,6 +60,13 @@ function MT__RUN() {
 					"Id(website)",
 				]
 			);
+			// Turn off form submit.
+			document.getElementById('mturk_form').onsubmit = function(e) {
+				e.stopPropagation();
+				e.preventDefault();
+				AMT___recordAndSubmit(); // Do it here.
+				return false;
+			}
 			// xhr
 			new AMT___requests_factory().xhr_with_disk_cache({
 				URL: o.u,
@@ -81,11 +88,12 @@ function MT__RUN() {
 					}
 					
 					// Auto sbm?
-					var sbm = false;
+					var sbm = true;
 					
 					// Dom parse.
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
 					
+					// Address
 					var a0 = dom.getElementsByClassName('zsg-lg-3-5 profile-information-address');
 					var a1 = dom.getElementsByClassName('street-address');
 					var a2 = dom.getElementsByClassName('locality');
@@ -131,20 +139,72 @@ function MT__RUN() {
 					}
 					
 					// Phone
-					var x = dom.getElementsByClassName('zsg-lg-3-5 profile-information-cell');
-					if (x && x.length == 1) {
-						o.q[2].value = x[0].innerText.trim();
+					var x  = dom.getElementsByClassName('zsg-lg-3-5 profile-information-cell');
+					var x2 = dom.getElementsByClassName('zsg-lg-3-5 profile-information-office');
+					var x3 = dom.getElementsByClassName('zsg-lg-3-5 profile-information-mobile');
+					if (x.length == 1) {
+						var n = x[0].getElementsByClassName('zsg-hide');
+						var x = x[0].innerText;
+						if (n.length == 1) {
+							x = x.replace(n[0].innerText, '').trim();
+						}
+						o.q[2].value = x;
+						if (x == '') {
+							sbm = false;
+							o.q[2].style.border = '1px solid blue';
+							o.q[2].value = 'hide?';
+						}
 					} else if (x.length > 1) {
 						// More than one "phone:"?
 						sbm = false;
 						o.q[2].style.border = '1px solid blue';
 						o.q[2].value = 'phone?';
-						console.log(x);
-					} else if (x.length == 0 && rs.toLowerCase().indexOf('phone:') != -1) {
-						// There is a "phone:" on the page?
+					} else if (x2.length == 1) {
+						var n = x2[0].getElementsByClassName('zsg-hide');
+						var x = x2[0].innerText;
+						if (n.length == 1) {
+							x = x.replace(n[0].innerText, '').trim();
+						}
+						o.q[2].value = x;
+						if (x == '') {
+							sbm = false;
+							o.q[2].style.border = '1px solid blue';
+							o.q[2].value = 'hide?';
+						}
+					} else if (x2.length > 1) {
+						// More than one "phone:"?
 						sbm = false;
 						o.q[2].style.border = '1px solid blue';
 						o.q[2].value = 'phone?';
+					} else if (x3.length == 1) {
+						var n = x3[0].getElementsByClassName('zsg-hide');
+						var x = x3[0].innerText;
+						if (n.length == 1) {
+							x = x.replace(n[0].innerText, '').trim();
+						}
+						o.q[2].value = x;
+						if (x == '') {
+							sbm = false;
+							o.q[2].style.border = '1px solid blue';
+							o.q[2].value = 'hide?';
+						}
+					} else if (x3.length > 1) {
+						// More than one "phone:"?
+						sbm = false;
+						o.q[2].style.border = '1px solid blue';
+						o.q[2].value = 'phone?';
+					} else if (/\(\d{3}\)/.exec(rs)) { // Any phone?
+						// There is a "phone" on the page?
+						sbm = false;
+						o.q[2].style.border = '1px solid blue';
+						o.q[2].value = /\(\d{3}\)/.exec(rs)[0];
+						// Not this:
+						// else if (x.length == 0 && rs.toLowerCase().indexOf('phone:') != -1)
+					}
+					if (o.q[2].value.length > 0 && !/^\(\d{3}\) \d{3}-\d{4}$/.exec(o.q[2].value)) {
+						// Wrong length?
+						sbm = false;
+						o.q[2].style.border = '1px solid blue';
 					}
 					
 					// Email
@@ -167,11 +227,13 @@ function MT__RUN() {
 					// Name
 					var x = dom.getElementsByClassName('ctcd-user-name');
 					if (x.length == 1) {
-						v = x[0].innerText.split(' ');
+						var x = x[0].innerText.replace(/\s+/g, ' '); // Remove double spaces.
+						v = x.split(' ');
 						if (v.length == 2) { // f,l
 							o.q[4].value = v[0].trim();
 							o.q[5].value = v[1].trim();
 						} else {
+							sbm = false;
 							o.q[4].style.border = '1px solid blue';
 							o.q[4].value = v[0].trim();
 							if (v.length > 1) {
@@ -198,6 +260,7 @@ function MT__RUN() {
 					// Submit?
 					if (sbm) {
 						console.log('sbm');
+						AMT___recordAndSubmit(); // Submit.
 					}
 				}
 			});
