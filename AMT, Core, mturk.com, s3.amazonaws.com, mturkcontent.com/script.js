@@ -3878,6 +3878,7 @@ Laurens Hammond, Chicago, Ill.**/
 			GM_addStyle('.form-group {margin:0 !important;}');
 			GM_addStyle('.col-sm-offset-2 {margin:0 !important;}');
 			GM_addStyle('table {position:absolute !important  !important !important;top:400px !important;width:100px !important;}');
+			GM_addStyle('#url {margin-top:350px;}');
 			var t = document.getElementsByTagName('table');
 			for (var i=0; i<t.length; i++) { // Workaround ..........
 				t[i].style.position = 'absolute';
@@ -3893,6 +3894,7 @@ Laurens Hammond, Chicago, Ill.**/
 					document.getElementById('locality'),
 					document.getElementById('administrative_area_level_1'),
 					document.getElementById('postal_code'),
+					document.getElementById('url'),
 				],
 			}
 			console.log(o);
@@ -3900,39 +3902,6 @@ Laurens Hammond, Chicago, Ill.**/
 			if (td[5].innerText.trim() != '') {
 				document.body.style.backgroundColor = '#ddd';
 			}
-			//~ // Replace all state abbr with full!
-			//~ var x = o.u1.split(' ');
-			//~ var found = false;
-			//~ for (var i in x) {
-				//~ var n = x[i].replace(/[\(\)]/g, '');
-				//~ if (n.stateAbbrToFull() != n) {
-					//~ console.log(n);
-					//~ x[i] = n.stateAbbrToFull();
-					//~ found = n.stateAbbrToFull();
-				//~ }
-			//~ }
-			//~ if (found) // Use just state. No Library System.
-				//~ o.u1 = found;
-			//~ else {
-				//~ o.u1 = x.join(' ');
-				//~ o.u1 = o.u1.replace(/\s+/gi, ' ');
-				//~ o.u1 = o.u1.trim();
-			//~ }
-			//~ // Get rid of library system.
-			//~ // It is either o.u1 or o.u2.
-			//~ // If o.u3 is not blank then lib system is o.u2.
-			//~ // Otherwise it is o.u1.
-			//~ if (o.u3 != '') {
-				//~ o.u2 = '';
-			//~ }
-			//~ o.u2 = o.u2.replace(/library/gi, '');
-			//~ o.u2 = o.u2.replace(/library/gi, '');
-			//~ o.u2 = o.u2.replace(/ es$/gi, ' elementary school');
-			//~ o.u2 = o.u2.replace(/ ms$/gi, ' middle school');
-			//~ o.u3 = o.u3.replace(/library/gi, '');
-			//~ o.u3 = o.u3.replace(/\s+/gi, ' ');
-			//~ o.u3 = o.u3.trim();// + ', Library';
-		
 			//Elements
 			//~ var d1 = ''.div({style:'position:absolute;top:26px;left:20%;width:79%;height:74px;background-color:#eee;border:1px solid blue;overflow:auto;'});
 			//~ document.body.appendChild(d1);
@@ -3972,6 +3941,7 @@ Laurens Hammond, Chicago, Ill.**/
 					"Id(locality)",
 					"Id(administrative_area_level_1)",
 					"Id(postal_code)",
+					"Id(url)",
 				]
 			);
 			document.getElementById('submitButton').onclick = function(e) {
@@ -4071,6 +4041,19 @@ Laurens Hammond, Chicago, Ill.**/
 					if (!/^[0-9]{4}$/.exec(o.q[4].value)) {
 						alert('Validate Zip Code!');
 						o.q[4].style.border = '4px solid blue';
+					}
+					// url
+					if (opts.profile_url) {
+						o.q[5].value = opts.profile_url
+						if (!/^https?:\/\/[\d\D]{4,}/i.exec(opts.profile_url)) {
+							// At least 4 after https.
+							alert('Validate URL1!');
+							o.q[5].style.border = '4px solid blue';
+						}
+					} else {
+						// Blank.
+						alert('Validate URL2!');
+						o.q[5].style.border = '4px solid blue';
 					}
 					// Alert blank...
 					do_alert = false
