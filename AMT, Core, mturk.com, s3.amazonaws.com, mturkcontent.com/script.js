@@ -38,13 +38,13 @@ function MT__RUN() {
 			var o = {
 				u: a[1].href,
 				q: [
-					docuement.getElementById('companyName'),
-					docuement.getElementById('addressLine1'),
-					docuement.getElementById('phoneNumber'),
-					docuement.getElementById('email'),
-					docuement.getElementById('Firstname'),
-					docuement.getElementById('Lastname'),
-					docuement.getElementById('website'),
+					document.getElementById('companyName'),
+					document.getElementById('addressLine1'),
+					document.getElementById('phoneNumber'),
+					document.getElementById('email'),
+					document.getElementById('Firstname'),
+					document.getElementById('Lastname'),
+					document.getElementById('website'),
 				]
 			}
 			AMT___addUserDecision(
@@ -66,7 +66,7 @@ function MT__RUN() {
 				check_pre_write_to_disk: function(options) { // Return TRUE to write to disk. Return FALSE to not write to disk.
 					var rs = options.response.responseText;
 					if (options.response.status != 200) {
-						document.body.style.backgroundColor = 'blue';
+						document.body.style.backgroundColor = '1px solid blue';
 						document.body.appendChild('--'.div());
 						return false;
 					}
@@ -79,10 +79,13 @@ function MT__RUN() {
 						document.body.appendChild('--'.div());
 						return;
 					}
+					
 					// Auto sbm?
 					var sbm = false;
+					
 					// Dom parse.
 					var dom = new DOMParser().parseFromString(rs, 'text/html');
+					
 					var a0 = dom.getElementsByClassName('zsg-lg-3-5 profile-information-address');
 					var a1 = dom.getElementsByClassName('street-address');
 					var a2 = dom.getElementsByClassName('locality');
@@ -93,27 +96,108 @@ function MT__RUN() {
 						a2.length &&
 						a3.length &&
 						a4.length) {
-						// Any have more than one?
-						a0.length || // Any one is there.
-						a1.length ||
-						a2.length ||
-						a3.length ||
-						a4.length
-						o.q[1].value = a1[0].inner
+						if (a0.length > 1 || // Any more than one?
+							a1.length > 1 ||
+							a2.length > 1 ||
+							a3.length > 1 ||
+							a4.length > 1) {
+							sbm = false;
+							o.q[1].style.border = '1px solid blue';
+							o.q[1].value = 'more than one';
+						} else {
+							o.q[1].value =	a1[0].innerText.trim() +', '+
+											a2[0].innerText.trim() +', '+
+											a3[0].innerText.trim() +' '+
+											a4[0].innerText.trim();
+							var c = /^([^\n]+)/.exec(a0[0].innerText);
+							if (c) {
+								o.q[0].value = c[1];
+							} else { // no comp.?
+								o.q[0].style.border = '1px solid blue';
+								o.q[0].value = 'no comp?';
+								sbm = false;
+							}
+						}
 					} else if (a0.length || // Any one is there.
 						a1.length ||
 						a2.length ||
 						a3.length ||
 						a4.length) {
-						
+						sbm = false;
+						o.q[1].style.border = '1px solid blue';
+						o.q[1].value = 'any one';
 					} else { // None are there.
 						
 					}
-						
+					
+					// Phone
+					var x = dom.getElementsByClassName('zsg-lg-3-5 profile-information-cell');
+					if (x && x.length == 1) {
+						o.q[2].value = x[0].innerText.trim();
+					} else if (x.length > 1) {
+						// More than one "phone:"?
+						sbm = false;
+						o.q[2].style.border = '1px solid blue';
+						o.q[2].value = 'phone?';
+						console.log(x);
+					} else if (x.length == 0 && rs.toLowerCase().indexOf('phone:') != -1) {
+						// There is a "phone:" on the page?
+						sbm = false;
+						o.q[2].style.border = '1px solid blue';
+						o.q[2].value = 'phone?';
+					}
+					
+					// Email
+					var x = dom.getElementById('cCol-pro-contact-info');
+					if (!x) {
+						sbm = false;
+						o.q[3].style.border = '1px solid blue';
+						o.q[3].value = 'not one?';
+					}
+					else if (
+						/(e-mail|email|mail|e mail)/i.exec(x.innerText) ||
+						x.innerText.indexOf('@') != -1 ||
+						x.innerHTML.indexOf('@') != -1
+					) {
+						sbm = false;
+						o.q[3].style.border = '1px solid blue';
+						o.q[3].value = 'email?';
+					}
+					
+					// Name
+					var x = dom.getElementsByClassName('ctcd-user-name');
+					if (x.length == 1) {
+						v = x[0].innerText.split(' ');
+						if (v.length == 2) { // f,l
+							o.q[4].value = v[0].trim();
+							o.q[5].value = v[1].trim();
+						} else {
+							o.q[4].style.border = '1px solid blue';
+							o.q[4].value = v[0].trim();
+							if (v.length > 1) {
+								v.shift(); // Remove first.
+								o.q[5].value = v.join(' ');
+							}
+							o.q[4].focus();
+						}
+					} else {
+						sbm = false;
+						o.q[4].style.border = '1px solid blue';
+						o.q[4].value = 'name?';
+					}
+					
 					// Website
-					var x = /<a rel="nofollow" href="([^"]+)" target="_blank">Website<\/a>/.exec(rs);
+					var x = /<a rel="nofollow" href="([^"]{4,})" target="_blank"[^>]*>Website<\/a>/.exec(rs);
 					if (x) {
 						o.q[6].value = __js_clean_html_str(x[1].trim());
+					} else if (rs.toLowerCase().indexOf('>website<') != -1) {
+						sbm = false;
+						o.q[6].style.border = '1px solid blue';
+					}
+					
+					// Submit?
+					if (sbm) {
+						console.log('sbm');
 					}
 				}
 			});
