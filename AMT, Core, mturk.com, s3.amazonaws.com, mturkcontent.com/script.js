@@ -60,6 +60,12 @@ function MT__RUN() {
 					"Id(website)",
 				]
 			);
+			// dbl
+			for (var i in o.q) {
+				o.q[i].ondblclick = function() {
+					this.value = '';
+				}
+			}
 			// Turn off form submit.
 			document.getElementById('mturk_form').onsubmit = function(e) {
 				e.stopPropagation();
@@ -260,7 +266,18 @@ function MT__RUN() {
 					// Submit?
 					if (sbm) {
 						console.log('sbm');
-						AMT___recordAndSubmit(); // Submit.
+						var found_one = false
+						for (var i in o.q) {
+							o.q[i].value = o.q[i].value.trim();
+							if (o.q[i].value != '') {
+								found_one = true;
+								break;
+							}
+						}
+						if (found_one)
+							// Must be at least one field filled in to
+							// submit.
+							AMT___recordAndSubmit();
 					}
 				}
 			});
