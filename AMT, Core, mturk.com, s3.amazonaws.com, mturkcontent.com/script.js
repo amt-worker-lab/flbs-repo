@@ -3848,7 +3848,8 @@ Laurens Hammond, Chicago, Ill.**/
 			new AMT___items_factory().create_dashboard_geocode({
 				store: 'Lowes',
 				ll: {lat:l[1], lng:l[3]},
-				output_field: 'results' // This is an ID !
+				output_field: 'results', // This is an ID !
+				output_field_el: document.getElementById('results'), // This is an ID !
 				//~ output_field: document.getElementById('results')
 			})
 		}

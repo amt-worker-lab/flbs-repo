@@ -8165,14 +8165,22 @@ AMT___items_factory.prototype.create_dashboard_geocode = function(options_object
 	 * try_sbm
 	 */
 	function try_sbm() {
-		if (d3.value.trim() == '' || d3.value.length < 10)
+		//~ console.log(d3.value);
+		//~ if (d3.value.trim() == '' || d3.value.length < 10)
+			//~ return false;
+		var x = options_object.output_field_el;
+		x.value = d3.value.trim();
+		if (x.value.trim() == '' || x.value < 10)
 			return false;
+		doSubmit();
+		//~ console.log(output_field_el.value);
+		//~ console.log(options_object.output_field.value);
 		// Go to next tab when not reviewing
 		// else stay here..
 		//~ if (xo.review_id == '')
 			//~ new AMT___core_factory().nextTab({focusOnPage: true});
 								
-		write();
+		//~ write();
 	}
 	/**
 	 * window.onkeydown
